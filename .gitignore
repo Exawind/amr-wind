@@ -50,3 +50,5 @@ exec/*/*.ex
 
 exec/*/tmp_build_dir/
 exec/*/Backtrace.*
+exec/*/plt*/
+exec/*/chk*/
