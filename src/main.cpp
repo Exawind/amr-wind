@@ -224,7 +224,10 @@ int main(int argc, char* argv[])
 	if(check_int > 0 && nstep != last_chk)
 		my_incflo.WriteCheckPointFile(check_file, nstep, dt, time);
 	if(plot_int > 0 && nstep != last_plt)
+    {
+        my_incflo.incflo_compute_vort(lev);
 		my_incflo.WritePlotFile(plot_file, nstep, dt, time);
+    }
 
 	Real end_time = ParallelDescriptor::second() - strt_time;
 	ParallelDescriptor::ReduceRealMax(end_time, ParallelDescriptor::IOProcessorNumber());
