@@ -1,5 +1,5 @@
 # Stop time for simulation
-amr.max_step = 0
+amr.max_step = 2
 
 #incflo.fixed_dt = 0.01
 incflo.cfl = 0.5
@@ -22,7 +22,7 @@ amr.max_level = 0
 amr.plot_int   = 1
 
 incflo.mu_g0   = 0.001
-incflo.r0_g0   = 1.0
+incflo.ro_g0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
 # Geometry
