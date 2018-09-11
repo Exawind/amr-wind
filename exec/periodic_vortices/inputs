@@ -1,0 +1,34 @@
+# Stop time for simulation
+amr.max_step = 100
+
+#incflo.fixed_dt = 0.01
+incflo.cfl = 0.5
+
+amrex.fpe_trap_invalid = 1
+
+# Number of grid cells in each direction at the coarsest level
+amr.n_cell = 32 32 32
+
+# Maximum allowable size of each subdomain in the problem domain;
+#    this is used to decompose the domain for parallel calculations.
+amr.max_grid_size = 1024
+
+# Maximum tile size within each grid
+fabarray.mfiter_tile_size = 1024 1024 1024
+
+# Maximum level in hierarchy (for now must be 0, i.e., one level in total)
+amr.max_level = 0
+
+amr.plot_int   = 10
+
+incflo.mu_g0   = 0.001
+incflo.r0_g0   = 1.0
+incflo.gravity = 0.0 0.0 0.0
+
+# Geometry
+geometry.coord_sys   = 0                  # 0: Cartesian
+geometry.is_periodic = 1     1     1      # Is periodic in each direction?
+geometry.prob_lo     = 0.    0.    0.       # lo corner of physical domain
+geometry.prob_hi     = 1.    1.    1.     # hi corner of physical domain
+
+mlmg.v = 2

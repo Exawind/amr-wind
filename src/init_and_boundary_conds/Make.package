@@ -1,0 +1,19 @@
+F90EXE_sources += amrex_to_incflo.F90
+f90EXE_sources += calc_cell.f90
+f90EXE_sources += calc_mu_g.f90
+f90EXE_sources += fill_bc0.f90 
+f90EXE_sources += get_data.f90 
+f90EXE_sources += init_fluid.f90 
+f90EXE_sources += init_namelist.f90
+f90EXE_sources += set_bc0.f90 
+f90EXE_sources += set_bc_flow.f90 
+f90EXE_sources += set_bc_type.f90 
+f90EXE_sources += set_delp_dir.f90
+f90EXE_sources += set_mac_velocity_bcs.f90
+f90EXE_sources += set_p0.f90 
+f90EXE_sources += set_velocity_bcs.f90
+f90EXE_sources += zero_wall_norm_vel.f90 
+
+CEXE_sources += incflo_init.cpp
+
+FEXE_headers += incflo_icbc_F.H 

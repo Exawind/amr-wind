@@ -1,0 +1,52 @@
+*.a
+*.d
+*.mic
+*.mod
+*.o
+*~
+
+tmp.*
+
+*.OUT
+*.RES
+*.LOG
+
+Size*
+
+# Code Info
+compile_commands.json
+tags
+TAGS
+.ctags
+
+# OS Lint
+.DS_Store
+.dirstamp
+
+Makefile
+
+# IDE Lint
+build/
+.build/
+.vscode/
+
+# Documentation Lint
+doc/Doxyfile
+
+# Tex Lint
+doc/UsersGuide/*.aux
+doc/UsersGuide/*.dvi
+doc/UsersGuide/*.idx
+doc/UsersGuide/*.log
+doc/UsersGuide/*.out
+doc/UsersGuide/*.pdf
+doc/UsersGuide/*.ps
+doc/UsersGuide/*.toc
+
+exec/*/*.ex
+
+*.swp
+*.swo
+
+exec/*/tmp_build_dir/
+exec/*/Backtrace.*
