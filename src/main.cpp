@@ -138,8 +138,7 @@ int main(int argc, char* argv[])
 	Real end_init = ParallelDescriptor::second() - strt_time;
 	ParallelDescriptor::ReduceRealMax(end_init, ParallelDescriptor::IOProcessorNumber());
 
-	if(ParallelDescriptor::IOProcessor())
-		std::cout << "Time spent in init      " << end_init << std::endl;
+    amrex::Print() << "Time spent in init      " << end_init << std::endl;
 
 	int finish = 0;
 
@@ -185,8 +184,7 @@ int main(int argc, char* argv[])
 				Real end_step = ParallelDescriptor::second() - strt_step;
 				ParallelDescriptor::ReduceRealMax(end_step,
 												  ParallelDescriptor::IOProcessorNumber());
-				if(ParallelDescriptor::IOProcessor())
-					std::cout << "Time per step        " << end_step << std::endl;
+			    amrex::Print() << "Time per step " << end_step << std::endl;
 
 				if(!steady_state)
 				{
@@ -232,11 +230,8 @@ int main(int argc, char* argv[])
 	Real end_time = ParallelDescriptor::second() - strt_time;
 	ParallelDescriptor::ReduceRealMax(end_time, ParallelDescriptor::IOProcessorNumber());
 
-	if(ParallelDescriptor::IOProcessor())
-	{
-		std::cout << "Time spent in main      " << end_time << std::endl;
-		std::cout << "Time spent in main-init " << end_time - end_init << std::endl;
-	}
+    amrex::Print() << "Time spent in main      " << end_time << std::endl;
+    amrex::Print() << "Time spent in main-init " << end_time - end_init << std::endl;
 
 	BL_PROFILE_REGION_STOP("incflo::main()");
 	BL_PROFILE_VAR_STOP(pmain);

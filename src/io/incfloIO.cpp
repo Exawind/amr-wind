@@ -106,10 +106,7 @@ void incflo_level::WriteCheckPointFile(std::string& check_file, int nstep, Real 
 
 	const std::string& checkpointname = amrex::Concatenate(check_file, nstep);
 
-	if(ParallelDescriptor::IOProcessor())
-	{
-		std::cout << "\n\t Writing checkpoint " << checkpointname << std::endl;
-	}
+    amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
 	const int nlevels = finestLevel() + 1;
 	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, nlevels, true);
