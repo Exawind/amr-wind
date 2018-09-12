@@ -184,6 +184,16 @@ void incflo_level::incflo_project_velocity(int lev)
 	//  data structures and set_velocity_bcs routine
 	mac_projection->update_internals();
 
+    // TODO: Remove after debugging
+    {
+        // Swap ghost cells and apply BCs to velocity
+        incflo_set_velocity_bcs(lev, 0);
+        incflo_compute_diveu(lev);
+        //amrex::Print() << (*diveu[lev])[0] << std::endl; 
+        std::string plot_file{"divu"};
+		WritePlotFile(plot_file, 0, 0.01, 0.0);
+	}
+
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
 	incflo_apply_projection(lev, dummy_dt, proj_2);
