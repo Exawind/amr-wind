@@ -184,16 +184,6 @@ void incflo_level::incflo_project_velocity(int lev)
 	//  data structures and set_velocity_bcs routine
 	mac_projection->update_internals();
 
-    // TODO: Remove after debugging
-    {
-        // Swap ghost cells and apply BCs to velocity
-        incflo_set_velocity_bcs(lev, 0);
-        incflo_compute_diveu(lev);
-        //amrex::Print() << (*diveu[lev])[0] << std::endl; 
-        std::string plot_file{"divu"};
-		WritePlotFile(plot_file, 0, 0.01, 0.0);
-	}
-
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
 	incflo_apply_projection(lev, dummy_dt, proj_2);
@@ -521,13 +511,6 @@ void incflo_level::incflo_compute_diveu(int lev)
         // Create face centered multifabs for and vel
         Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
         incflo_average_cc_to_fc( lev, *vel_g[lev], vel_fc );
-
-        //vel_fc[0]->setVal(1.);
-        //vel_fc[1]->setVal(0.);
-        //vel_fc[2]->setVal(0.);
-        vel_fc[0]->setVal(1., 0, 1, 4);
-        vel_fc[1]->setVal(0., 0, 1, 4);
-        vel_fc[2]->setVal(0., 0, 1, 4);
 
         // This does not need to have correct ghost values in place
         EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );

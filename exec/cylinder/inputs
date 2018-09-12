@@ -1,5 +1,5 @@
 # Stop time for simulation
-amr.max_step = 1
+amr.max_step = 10
 
 #incflo.fixed_dt = 0.01
 incflo.cfl = 0.5
@@ -14,7 +14,7 @@ amr.max_level = 0
 amr.plot_int   = 1
 
 # Physics
-incflo.mu_g0   = 0.001
+incflo.mu_g0   = 0.0
 incflo.ro_g0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
@@ -27,9 +27,8 @@ geometry.prob_hi     = 1.    1.    1.     # hi corner of physical domain
 # Add cylinder 
 incflo.geometry = "cylinder"
 cylinder.internal_flow = false
-cylinder.closed_bottom = false
 cylinder.radius = 0.2
-cylinder.height = 1.0
+cylinder.height = 4.0
 # Choices for direction are {0,1,2}
 cylinder.direction = 2
 cylinder.center    =  0.5 0.5 0.5
