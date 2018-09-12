@@ -72,6 +72,8 @@ void incflo_level::make_eb_cylinder(int lev)
 
 	amrex::Print() << " " << std::endl;
 	amrex::Print() << " Internal Flow: " << inside << std::endl;
+	amrex::Print() << " Closed Bottom: " << close_bottom << std::endl;
+	amrex::Print() << " # Ghost Cells: " << nghost << std::endl;
 	amrex::Print() << " Radius:    " << radius << std::endl;
 	amrex::Print() << " Height:    " << height << std::endl;
 	amrex::Print() << " Offset:    " << offset << std::endl;

@@ -27,6 +27,7 @@ geometry.prob_hi     = 1.    1.    1.     # hi corner of physical domain
 # Add cylinder 
 incflo.geometry = "cylinder"
 cylinder.internal_flow = false
+cylinder.closed_bottom = false
 cylinder.radius = 0.2
 cylinder.height = 1.0
 # Choices for direction are {0,1,2}
