@@ -514,40 +514,16 @@ void incflo_level::incflo_compute_diveu(int lev)
 	}
 	else
 	{
-
-		int extrap_dir_bcs = 1;
+        int extrap_dir_bcs = 1;
 		incflo_set_velocity_bcs(lev, extrap_dir_bcs);
 		vel_g[lev]->FillBoundary(geom[lev].periodicity());
 
-//
-// Average from cell centers to faces -- we can re-use the MAC velocity data
-// structures here
-//
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		for(MFIter mfi(*vel_g[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Cell-centered tile box
-			Box bx = mfi.tilebox();
+        // Create face centered multifabs for and vel
+        Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
+        incflo_average_cc_to_fc( lev, *vel_g[lev], vel_fc );
 
-			average_cc_to_fc(BL_TO_FORTRAN_BOX(bx),
-							 BL_TO_FORTRAN_ANYD((*m_u_mac[lev])[mfi]),
-							 BL_TO_FORTRAN_ANYD((*m_v_mac[lev])[mfi]),
-							 BL_TO_FORTRAN_ANYD((*m_w_mac[lev])[mfi]),
-							 BL_TO_FORTRAN_ANYD((*vel_g[lev])[mfi]));
-		}
-
-		mac_projection->set_velocity_bcs(lev, m_u_mac, m_v_mac, m_w_mac);
-
-		// Store in temporaries for call to computeDivergence
-		Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel_fc;
-		vel_fc.resize(1);
-		(vel_fc[lev])[0] = m_u_mac[lev].get();
-		(vel_fc[lev])[1] = m_v_mac[lev].get();
-		(vel_fc[lev])[2] = m_w_mac[lev].get();
-
-		EB_computeDivergence(*diveu[lev], GetArrOfConstPtrs(vel_fc[lev]), geom[lev]);
+        // This does not need to have correct ghost values in place
+        EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
 	}
 
 	// Restore velocities to carry Dirichlet values on faces
@@ -788,3 +764,82 @@ void incflo_level::incflo_print_max_vel(int lev)
                    << incflo_norm0(vel_g, lev, 2) << "  "
 				   << incflo_norm0(p_g, lev, 0) << "  " << std::endl;
 }
+
+//
+// This subroutines averages component by component
+// The assumption is that cc is multicomponent
+// 
+void
+incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
+                                      Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
+{
+    AMREX_ASSERT(cc.nComp()==AMREX_SPACEDIM);
+    AMREX_ASSERT(AMREX_SPACEDIM==3);
+    
+    // 
+    // First allocate fc
+    //
+    BoxArray x_ba = cc.boxArray();
+    x_ba.surroundingNodes(0);
+    fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost));
+
+    BoxArray y_ba = cc.boxArray();
+    y_ba.surroundingNodes(1);
+    fc[1].reset(new MultiFab(y_ba,cc.DistributionMap(),1,nghost));
+
+    BoxArray z_ba = cc.boxArray();
+    z_ba.surroundingNodes(2);
+    fc[2].reset(new MultiFab(z_ba,cc.DistributionMap(),1,nghost));
+
+    //
+    // Average
+    // We do not care about EB because faces in covered regions
+    // should never get used so we can set them to whatever values
+    // we like
+    //
+#ifdef _OPENMP
+#pragma omp parallel 
+#endif
+    for (MFIter mfi(*vel_g[lev],true); mfi.isValid(); ++mfi)
+    {
+        // Boxes for staggered components
+        Box bx = mfi.tilebox();
+
+        average_cc_to_fc( BL_TO_FORTRAN_BOX(bx),
+                          BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
+                          BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
+                          BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
+                          BL_TO_FORTRAN_ANYD(cc[mfi]));
+    }
+
+    // Set BCs for the fac-centered velocities
+	fc[0]->FillBoundary(geom[lev].periodicity());
+	fc[1]->FillBoundary(geom[lev].periodicity());
+	fc[2]->FillBoundary(geom[lev].periodicity());
+
+	Box domain(geom[lev].Domain());
+
+#ifdef _OPENMP
+#pragma omp parallel 
+#endif
+    for (MFIter mfi(*vel_g[lev],true); mfi.isValid(); ++mfi)
+    {
+        // Boxes for staggered components
+        Box bx = mfi.tilebox();
+
+     	set_mac_velocity_bcs(bx.loVect(),
+     						 bx.hiVect(),
+     						 BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
+     						 BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
+     						 BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
+     						 bc_ilo.dataPtr(),
+     						 bc_ihi.dataPtr(),
+     						 bc_jlo.dataPtr(),
+     						 bc_jhi.dataPtr(),
+     						 bc_klo.dataPtr(),
+     						 bc_khi.dataPtr(),
+     						 domain.loVect(),
+     						 domain.hiVect(),
+     						 &nghost);
+    }
+} 
