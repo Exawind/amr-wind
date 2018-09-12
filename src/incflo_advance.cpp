@@ -522,6 +522,13 @@ void incflo_level::incflo_compute_diveu(int lev)
         Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
         incflo_average_cc_to_fc( lev, *vel_g[lev], vel_fc );
 
+        //vel_fc[0]->setVal(1.);
+        //vel_fc[1]->setVal(0.);
+        //vel_fc[2]->setVal(0.);
+        vel_fc[0]->setVal(1., 0, 1, 4);
+        vel_fc[1]->setVal(0., 0, 1, 4);
+        vel_fc[2]->setVal(0., 0, 1, 4);
+
         // This does not need to have correct ghost values in place
         EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
 	}
@@ -781,15 +788,15 @@ incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
     //
     BoxArray x_ba = cc.boxArray();
     x_ba.surroundingNodes(0);
-    fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost));
+    fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
 
     BoxArray y_ba = cc.boxArray();
     y_ba.surroundingNodes(1);
-    fc[1].reset(new MultiFab(y_ba,cc.DistributionMap(),1,nghost));
+    fc[1].reset(new MultiFab(y_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
 
     BoxArray z_ba = cc.boxArray();
     z_ba.surroundingNodes(2);
-    fc[2].reset(new MultiFab(z_ba,cc.DistributionMap(),1,nghost));
+    fc[2].reset(new MultiFab(z_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
 
     //
     // Average
@@ -842,4 +849,5 @@ incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
      						 domain.hiVect(),
      						 &nghost);
     }
+    
 } 
