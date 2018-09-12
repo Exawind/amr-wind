@@ -257,6 +257,9 @@ private:
 	Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
 	Real incflo_norm0(MultiFab& mf, int lev, int comp);
 
+   void incflo_average_cc_to_fc ( int lev, const MultiFab& cc,
+                                 Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc );
+   
 	Vector<int> istep = {1};
 
 	// Unit vectors in Cartesian space
