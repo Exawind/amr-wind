@@ -547,9 +547,9 @@ contains
 
      integer :: i,j,k,n
 
-      do k = lo(3)-1, hi(3)+1
-         do j = lo(2)-1, hi(2)+1
-            do i = lo(1)-1, hi(1)+1
+      do k = lo(3)-ng, hi(3)+ng
+         do j = lo(2)-ng, hi(2)+ng
+            do i = lo(1)-ng, hi(1)+ng
                vel(i,j,k,:) = vel_in(i,j,k,:)
             end do
          end do
@@ -566,7 +566,7 @@ contains
                        ( bc_ilo_type(j,k,1) == FSW_ )  .or. &
                        ( bc_ilo_type(j,k,1) == PSW_ )  ) then
 
-                     vel(lo(1)-1,j,k,n) = 2.d0*vel_in(lo(1)-1,j,k,n) - vel_in(lo(1),j,k,n)
+                     vel(:lo(1)-1,j,k,n) = 2.d0*vel_in(lo(1)-1,j,k,n) - vel_in(lo(1),j,k,n)
 
                   end if
                end do
@@ -587,7 +587,7 @@ contains
                        ( bc_ihi_type(j,k,1) == FSW_ )  .or. &
                        ( bc_ihi_type(j,k,1) == PSW_ )  ) then
 
-                     vel(hi(1)+1,j,k,n) = 2.d0*vel_in(hi(1)+1,j,k,n) - vel_in(hi(1),j,k,n)
+                     vel(hi(1)+1:,j,k,n) = 2.d0*vel_in(hi(1)+1,j,k,n) - vel_in(hi(1),j,k,n)
 
                   end if
                end do
@@ -608,7 +608,8 @@ contains
                        ( bc_jlo_type(i,k,1) == FSW_ )  .or. &
                        ( bc_jlo_type(i,k,1) == PSW_ )  ) then
 
-                     vel(i,lo(2)-1,k,n) = 2.d0*vel_in(i,lo(2)-1,k,n) - vel_in(i,lo(2),k,n)
+                     
+                     vel(i,:lo(2)-1,k,n) = 2.d0*vel_in(i,lo(2)-1,k,n) - vel_in(i,lo(2),k,n)
 
                   end if
                end do
@@ -629,7 +630,7 @@ contains
                        ( bc_jhi_type(i,k,1) == FSW_ )  .or. &
                        ( bc_jhi_type(i,k,1) == PSW_ )  ) then
 
-                     vel(i,hi(2)+1,k,n) = 2.d0*vel_in(i,hi(2)+1,k,n) - vel_in(i,hi(2),k,n)
+                     vel(i,hi(2)+1:,k,n) = 2.d0*vel_in(i,hi(2)+1,k,n) - vel_in(i,hi(2),k,n)
 
                   end if
                end do
@@ -651,7 +652,7 @@ contains
                        ( bc_klo_type(i,j,1) == FSW_ )  .or. &
                        ( bc_klo_type(i,j,1) == PSW_ )  ) then
 
-                     vel(i,j,lo(3)-1,n) = 2.d0*vel_in(i,j,lo(3)-1,n) - vel_in(i,j,lo(3),n)
+                     vel(i,j,:lo(3)-1,n) = 2.d0*vel_in(i,j,lo(3)-1,n) - vel_in(i,j,lo(3),n)
 
                   end if
                end do
@@ -672,7 +673,7 @@ contains
                        ( bc_khi_type(i,j,1) == FSW_ )  .or. &
                        ( bc_khi_type(i,j,1) == PSW_ )  ) then
 
-                     vel(i,j,hi(3)+1,n) = 2.d0*vel_in(i,j,hi(3)+1,n) - vel_in(i,j,hi(3),n)
+                     vel(i,j,hi(3)+1:,n) = 2.d0*vel_in(i,j,hi(3)+1,n) - vel_in(i,j,hi(3),n)
 
                   end if
                end do
@@ -680,92 +681,99 @@ contains
          end do
       end if
 
-      ! Revisit these
-      if ( lo(1) == domlo(1) ) then
-         i = lo(1)
-         do n = 1, 3
-            do k = lo(3)-1, hi(3)+1
-               do j = lo(2)-1, hi(2)+1
-
-                  if ( ( bc_ilo_type(j,k,1) == MINF_ ) .or. &
-                       ( bc_ilo_type(j,k,1) == NSW_ )  .or. &
-                       ( bc_ilo_type(j,k,1) == FSW_ )  .or. &
-                       ( bc_ilo_type(j,k,1) == PSW_ )  ) then
-
-                     vel(lo(1)-1,j,k,n) = 2.d0*vel_in(lo(1)-1,j,k,n) - vel_in(lo(1),j,k,n)
-
-                  end if
-               end do
-            end do
-         end do
-      end if
-
-      ! Revisit these
-      if ( hi(1) == domhi(1) ) then
-
-         i = hi(1)
-
-         do n = 1, 3
-            do k = lo(3)-1, hi(3)+1
-               do j = lo(2)-1, hi(2)+1
 
 
-                  if ( ( bc_ihi_type(j,k,1) == MINF_ ) .or. &
-                       ( bc_ihi_type(j,k,1) == NSW_ )  .or. &
-                       ( bc_ihi_type(j,k,1) == FSW_ )  .or. &
-                       ( bc_ihi_type(j,k,1) == PSW_ )  ) then
+      !
+      ! WHAT'S THE POINT OF THE CODE BELOW??????
+      ! 
 
-                     vel(hi(1)+1,j,k,n) = 2.d0*vel_in(hi(1)+1,j,k,n) - vel_in(hi(1),j,k,n)
+      ! ! Revisit these
+      ! if ( lo(1) == domlo(1) ) then
+      !    i = lo(1)
+      !    do n = 1, 3
+      !       do k = lo(3)-1, hi(3)+1
+      !          do j = lo(2)-1, hi(2)+1
 
-                  end if
-               end do
-            end do
-         end do
-      end if
+      !             if ( ( bc_ilo_type(j,k,1) == MINF_ ) .or. &
+      !                  ( bc_ilo_type(j,k,1) == NSW_ )  .or. &
+      !                  ( bc_ilo_type(j,k,1) == FSW_ )  .or. &
+      !                  ( bc_ilo_type(j,k,1) == PSW_ )  ) then
 
-      ! Revisit these
-      if ( lo(2) == domlo(2) ) then
+      !                vel(lo(1)-1,j,k,n) = 2.d0*vel_in(lo(1)-1,j,k,n) - vel_in(lo(1),j,k,n)
 
-         j = lo(2)
+      !             end if
+      !          end do
+      !       end do
+      !    end do
+      ! end if
 
-         do n = 1, 3
-            do k = lo(3)-1, hi(3)+1
-               do i = lo(1)-1, hi(1)+1
+      ! ! Revisit these
+      ! if ( hi(1) == domhi(1) ) then
 
-                  if ( ( bc_jlo_type(i,k,1) == MINF_ ) .or. &
-                       ( bc_jlo_type(i,k,1) == NSW_ )  .or. &
-                       ( bc_jlo_type(i,k,1) == FSW_ )  .or. &
-                       ( bc_jlo_type(i,k,1) == PSW_ )  ) then
+      !    i = hi(1)
 
-                     vel(i,lo(2)-1,k,n) = 2.d0*vel_in(i,lo(2)-1,k,n) - vel_in(i,lo(2),k,n)
+      !    do n = 1, 3
+      !       do k = lo(3)-1, hi(3)+1
+      !          do j = lo(2)-1, hi(2)+1
 
-                  end if
-               end do
-            end do
-         end do
-      end if
 
-      ! Revisit these
-      if ( hi(2) == domhi(2) ) then
+      !             if ( ( bc_ihi_type(j,k,1) == MINF_ ) .or. &
+      !                  ( bc_ihi_type(j,k,1) == NSW_ )  .or. &
+      !                  ( bc_ihi_type(j,k,1) == FSW_ )  .or. &
+      !                  ( bc_ihi_type(j,k,1) == PSW_ )  ) then
 
-         j = hi(2)
+      !                vel(hi(1)+1,j,k,n) = 2.d0*vel_in(hi(1)+1,j,k,n) - vel_in(hi(1),j,k,n)
 
-         do n = 1, 3
-            do k = lo(3)-1, hi(3)+1
-               do i = lo(1)-1, hi(1)+1
+      !             end if
+      !          end do
+      !       end do
+      !    end do
+      ! end if
 
-                  if ( ( bc_jhi_type(i,k,1) == MINF_ ) .or. &
-                       ( bc_jhi_type(i,k,1) == NSW_ )  .or. &
-                       ( bc_jhi_type(i,k,1) == FSW_ )  .or. &
-                       ( bc_jhi_type(i,k,1) == PSW_ )  ) then
+      ! ! Revisit these
+      ! if ( lo(2) == domlo(2) ) then
 
-                     vel(i,hi(2)+1,k,n) = 2.d0*vel_in(i,hi(2)+1,k,n) - vel_in(i,hi(2),k,n)
+      !    j = lo(2)
 
-                  end if
-               end do
-            end do
-         end do
-      end if
+      !    do n = 1, 3
+      !       do k = lo(3)-1, hi(3)+1
+      !          do i = lo(1)-1, hi(1)+1
+
+      !             if ( ( bc_jlo_type(i,k,1) == MINF_ ) .or. &
+      !                  ( bc_jlo_type(i,k,1) == NSW_ )  .or. &
+      !                  ( bc_jlo_type(i,k,1) == FSW_ )  .or. &
+      !                  ( bc_jlo_type(i,k,1) == PSW_ )  ) then
+
+      !                vel(i,lo(2)-1,k,n) = 2.d0*vel_in(i,lo(2)-1,k,n) - vel_in(i,lo(2),k,n)
+
+      !             end if
+      !          end do
+      !       end do
+      !    end do
+      ! end if
+
+      ! ! Revisit these
+      ! if ( hi(2) == domhi(2) ) then
+
+      !    j = hi(2)
+
+      !    do n = 1, 3
+      !       do k = lo(3)-1, hi(3)+1
+      !          do i = lo(1)-1, hi(1)+1
+
+      !             if ( ( bc_jhi_type(i,k,1) == MINF_ ) .or. &
+      !                  ( bc_jhi_type(i,k,1) == NSW_ )  .or. &
+      !                  ( bc_jhi_type(i,k,1) == FSW_ )  .or. &
+      !                  ( bc_jhi_type(i,k,1) == PSW_ )  ) then
+
+      !                vel(i,hi(2)+1,k,n) = 2.d0*vel_in(i,hi(2)+1,k,n) - vel_in(i,hi(2),k,n)
+
+      !             end if
+      !          end do
+      !       end do
+      !    end do
+      ! end if
+
 
     end subroutine fill_vel_diff_bc
 

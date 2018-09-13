@@ -156,9 +156,6 @@ contains
          do k = lo(3), hi(3)
             do j = lo(2), hi(2)
                do i = lo(1), hi(1)
-                  divtau(i,j,k,n) =(( fx(i+1,j  ,k  ,n) - fx(i,j,k,n) ) * idx  + &
-                       &            ( fy(i  ,j+1,k  ,n) - fy(i,j,k,n) ) * idy  + &
-                       &            ( fz(i  ,j  ,k+1,n) - fz(i,j,k,n) ) * idz )                  
                   divtau(i,j,k,n) = divtau(i,j,k,n) / ro(i,j,k)
                end do
             end do
