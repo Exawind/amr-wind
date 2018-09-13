@@ -52,25 +52,15 @@ add_sources ( incflo_level.H )
 
 add_sources ( main.cpp )
 
-#
-# I/0
-# 
-include ( io/CMakeLists.txt )
-
-#
-# Projection
-#
-include ( projection/CMakeLists.txt )
-
-#
-# Other directories
-#
 include ( check_data/CMakeLists.txt )
-include ( embedded_boundaries/CMakeLists.txt )
-include ( modules/CMakeLists.txt )
-include ( init_and_boundary_conds/CMakeLists.txt )
-include ( diffusion/CMakeLists.txt )
 include ( convection/CMakeLists.txt )
+include ( diffusion/CMakeLists.txt )
+include ( divop/CMakeLists.txt )
+include ( embedded_boundaries/CMakeLists.txt )
+include ( init_and_boundary_conds/CMakeLists.txt )
+include ( io/CMakeLists.txt )
+include ( modules/CMakeLists.txt )
+include ( projection/CMakeLists.txt )
 
 
 # Remove duplicates from include lists

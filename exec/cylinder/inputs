@@ -14,7 +14,7 @@ amr.max_level = 0
 amr.plot_int   = 1
 
 # Physics
-incflo.mu_g0   = 0.0
+incflo.mu_g0   = 0.001
 incflo.ro_g0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 

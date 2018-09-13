@@ -10,6 +10,7 @@ Bdirs 	:= src
 Bdirs 	+= src/check_data
 Bdirs 	+= src/convection
 Bdirs 	+= src/diffusion
+Bdirs 	+= src/divop
 Bdirs 	+= src/embedded_boundaries
 Bdirs 	+= src/init_and_boundary_conds
 Bdirs 	+= src/io
