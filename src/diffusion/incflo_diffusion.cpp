@@ -22,73 +22,82 @@ void incflo_level::incflo_compute_divtau(int lev,
 	BL_PROFILE("incflo_level::incflo_compute_divtau");
 	Box domain(geom[lev].Domain());
 
+   // Get EB geometric info
+   Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
+   Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
+   const amrex::MultiFab*                    volfrac;
+   
+   areafrac =   ebfactory[lev] -> getAreaFrac();
+   facecent =   ebfactory[lev] -> getFaceCent();
+   volfrac  = &(ebfactory[lev] -> getVolFrac());
+
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-	for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-	{
+   for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi) {
 
-		// Tilebox
-		Box bx = mfi.tilebox();
+      // Tilebox
+      Box bx = mfi.tilebox ();
 
-		const auto& sfab = dynamic_cast<EBFArrayBox const&>(divtau[mfi]);
-		const auto& my_flag = sfab.getEBCellFlagFab();
+      // this is to check efficiently if this tile contains any eb stuff
+      const EBFArrayBox&  vel_fab = dynamic_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
+      const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
 
-		if(my_flag.getType(bx) == FabType::covered)
-		{
-			divtau[mfi].setVal(0.0, bx, 0, 0);
-			divtau[mfi].setVal(0.0, bx, 0, 1);
-			divtau[mfi].setVal(0.0, bx, 0, 2);
-		}
-		else
-		{
+      if (flags.getType(bx) == FabType::covered)
+      {
+         divtau[mfi].setVal(1.2345e200, bx, 0, 3);
+      }
+      else
+      {
+         if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular)
+         {
+            compute_divtau(
+               BL_TO_FORTRAN_BOX(bx),
+               BL_TO_FORTRAN_ANYD(divtau[mfi]),
+               BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+               (*mu_g[lev])[mfi].dataPtr(),
+               (*lambda_g[lev])[mfi].dataPtr(),
+               BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+               domain.loVect (), domain.hiVect (),
+               bc_ilo.dataPtr(), bc_ihi.dataPtr(),
+               bc_jlo.dataPtr(), bc_jhi.dataPtr(),
+               bc_klo.dataPtr(), bc_khi.dataPtr(),
+               geom[lev].CellSize(), &nghost, &explicit_diffusion);
+         }
+         else
+         {
+            compute_divtau_eb(
+               BL_TO_FORTRAN_BOX(bx),
+               BL_TO_FORTRAN_ANYD(divtau[mfi]),
+               BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+               (*mu_g[lev])[mfi].dataPtr(),
+               (*lambda_g[lev])[mfi].dataPtr(),
+               BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+               BL_TO_FORTRAN_ANYD(flags),
+               BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
+               BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
+               BL_TO_FORTRAN_ANYD((*areafrac[2])[mfi]),
+               BL_TO_FORTRAN_ANYD((*facecent[0])[mfi]),
+               BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
+               BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
+               BL_TO_FORTRAN_ANYD((*volfrac)[mfi]),
+               domain.loVect (), domain.hiVect (),
+               bc_ilo.dataPtr(), bc_ihi.dataPtr(),
+               bc_jlo.dataPtr(), bc_jhi.dataPtr(),
+               bc_klo.dataPtr(), bc_khi.dataPtr(),
+               geom[lev].CellSize(), &nghost, &explicit_diffusion);
 
-			if(my_flag.getType(amrex::grow(bx, 1)) == FabType::regular)
-			{
-
-				compute_divtau(BL_TO_FORTRAN_BOX(bx),
-							   BL_TO_FORTRAN_ANYD(divtau[mfi]),
-							   BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-							   (*mu_g[lev])[mfi].dataPtr(),
-							   (*lambda_g[lev])[mfi].dataPtr(),
-							   BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
-							   domain.loVect(),
-							   domain.hiVect(),
-							   bc_ilo.dataPtr(),
-							   bc_ihi.dataPtr(),
-							   bc_jlo.dataPtr(),
-							   bc_jhi.dataPtr(),
-							   bc_klo.dataPtr(),
-							   bc_khi.dataPtr(),
-							   geom[lev].CellSize(),
-							   &nghost,
-							   &explicit_diffusion);
-			}
-			else
-			{
-
-				compute_divtau_eb(BL_TO_FORTRAN_BOX(bx),
-								  BL_TO_FORTRAN_ANYD(divtau[mfi]),
-								  BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-								  (*mu_g[lev])[mfi].dataPtr(),
-								  (*lambda_g[lev])[mfi].dataPtr(),
-								  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
-								  BL_TO_FORTRAN_ANYD(my_flag),
-								  domain.loVect(),
-								  domain.hiVect(),
-								  bc_ilo.dataPtr(),
-								  bc_ihi.dataPtr(),
-								  bc_jlo.dataPtr(),
-								  bc_jhi.dataPtr(),
-								  bc_klo.dataPtr(),
-								  bc_khi.dataPtr(),
-								  geom[lev].CellSize(),
-								  &nghost,
-								  &explicit_diffusion);
-			}
-		}
-	}
+         }
+      }
+   }
 }
+
+
+
+
+
+
+
 //
 // Implicit diffusion
 //

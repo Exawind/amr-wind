@@ -19,11 +19,11 @@ contains
    !
    ! INPUTS:
    !
-   !   fx       the fluxes at the x-faces CENTER (not centroid!)
-   !   fy       the fluxes at the y-faces CENTER (not centroid!)
-   !   fz       the fluxes at the z-faces CENTER (not centroid!)
+   !   fx       the fluxes at the x-face CENTER (not centroid!)
+   !   fy       the fluxes at the y-face CENTER (not centroid!)
+   !   fz       the fluxes at the z-face CENTER (not centroid!)
    !
-   ! WARNING: fx, fy, fz HAS to be filled with at least 2 GHOST nodes
+   ! WARNING: fx, fy, fz HAS to be filled with at least 3 GHOST nodes
    !          
    ! 
    ! 
@@ -88,9 +88,9 @@ contains
       
       ! Conservative div and EB stuff
       real(ar)  ::    &
-           &  divc(lo(1)-ng:hi(1)+ng,lo(2)-ng:hi(2)+ng,lo(3)-ng:hi(3)+ng), &
-           & optmp(lo(1)-ng:hi(1)+ng,lo(2)-ng:hi(2)+ng,lo(3)-ng:hi(3)+ng), &
-           &  delm(lo(1)-ng:hi(1)+ng,lo(2)-ng:hi(2)+ng,lo(3)-ng:hi(3)+ng)
+           &  divc(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
+           & optmp(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
+           &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
 
 
       ! Local variables
@@ -108,43 +108,30 @@ contains
       idz = one / dx(3)
 
       ! Check number of ghost cells
-      if (ng < 3) then
+      if (ng < 4) then
          write(*,*) "ERROR: EB divop requires at least 3 ghost cells"
          stop
       end if
 
-
       !
       ! Fist we interpolate the fluxes at the face centroid
+      ! We need to have the fluxes defined on the faces of all the cells in the tile
+      ! plus two layers of ghost cells (cfr computation of divc below). 
       !
-      !
+      lo_grow = lo - 2 
       
-      ! Interpolate at x-face centroid. Interpolated value now lives in fx_c
-      ! Interpolation must be performed in the ghost nodes as well, except for the
-      ! outermost halo layer in y and z (because of interpolation stencil limitations)
-      lo_grow = lo + [-ng+1, -ng+1, -ng+1 ]
-      hi_grow = hi + [ ng  ,  ng-1,  ng-1 ]
-      
+      ! X direction
+      hi_grow = hi + [ 3, 2, 2 ]
       call interpolate_to_face_centroid( lo_grow, hi_grow, fx_c, fx, ulo, uhi, 3, &
            afrac_x, axlo, axhi, cent_x, cxlo, cxhi, flags, flo, fhi, 1 )
       
-      ! Interpolate at y-face centroid. Interpolated value are returned in fy_c
-      ! Interpolation must be performed in the ghost nodes as well, except for the
-      ! outermost halo layer in x and z (because of interpolation stencil limitations)
-      lo_grow = lo + [-ng+1, -ng+1, -ng+1 ]
-      hi_grow = hi + [ ng-1,  ng  ,  ng-1 ]
-       
+      ! Y direction
+      hi_grow = hi + [ 2, 3, 2 ]
       call interpolate_to_face_centroid( lo_grow, hi_grow, fy_c, fy, vlo, vhi, 3, &
            afrac_y, aylo, ayhi, cent_y, cylo, cyhi, flags, flo, fhi, 2 )
 
-      ! 
-      ! Interpolate at z-face centroid. Interpolated value now lives in fz_c
-      ! Interpolation must be performed in the ghost nodes as well, except for the
-      ! outermost halo layer in x and y (because of interpolation stencil limitations)
-      ! 
-      lo_grow = lo + [-ng+1, -ng+1, -ng+1 ]
-      hi_grow = hi + [ ng-1,  ng-1,  ng   ]
-      
+      ! Z direction
+      hi_grow = hi + [ 2, 2, 3 ]      
       call interpolate_to_face_centroid( lo_grow, hi_grow, fz_c, fz, wlo, whi, 3, &
            afrac_z, azlo, azhi, cent_z, czlo, czhi, flags, flo, fhi, 3 )
       
@@ -152,7 +139,6 @@ contains
       !
       ! The we use the EB algorithmm to compute the divergence at cell centers
       ! 
-
       ncomp_loop: do n = 1, 3
 
          !
@@ -176,8 +162,10 @@ contains
                         fzp = fz_c(i,j,k+1,n) * afrac_z(i,j,k+1)
                         fzm = fz_c(i,j,k  ,n) * afrac_z(i,j,k  )
 
-                        divc(i,j,k) = ( ( fxp - fxm ) * idx + ( fyp - fym ) * idy + &
-                             &          ( fzp - fzm ) * idz ) / vfrac(i,j,k) 
+                        divc(i,j,k) = ( ( fxp - fxm ) * idx + &
+                             &          ( fyp - fym ) * idy + &
+                             &          ( fzp - fzm ) * idz ) &
+                             &        / vfrac(i,j,k) 
                      end if
                   end do
                end do

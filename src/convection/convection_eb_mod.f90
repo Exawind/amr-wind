@@ -116,7 +116,7 @@ contains
 
       ! Check number of ghost cells
       if (ng < 3) then
-         write(*,*) "ERROR: EB convection term requires at least 3 ghost cells"
+         write(*,*) "ERROR: EB convection term requires at least 3 ghost cells, currently ng=",ng
          stop
       end if
 
