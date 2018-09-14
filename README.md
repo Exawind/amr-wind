@@ -30,8 +30,4 @@ Clone and build incflo
 
 # Contributing
 
-We welcome contributions in the form of pull-requests from anyone.  There is a .clang-format file which 
-can be used to format C++ code according to our style guide before commits, e.g: 
-```shell
-> git diff | clang-format-diff -p1 -i
-```
+We welcome contributions in the form of pull-requests from anyone.  
