@@ -496,6 +496,7 @@ contains
       !
       function get_bc_face (bct_array, nghost) result (bc_face)
          integer(c_int), intent(in   ) :: bct_array(:,:,:)
+         integer       , intent(in   ) :: nghost
          integer                       :: bc_face
          integer                       :: is, ie, js, je
 

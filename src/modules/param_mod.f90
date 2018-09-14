@@ -36,6 +36,8 @@ module param
       real(rt), parameter :: large_number = 1.0d32
       real(rt), parameter :: small_number = 1.0d-15
 
+      real(rt), parameter :: my_huge  = 1.0d20
+
 ! Common parameter constants
       real(rt), parameter :: zero = 0.0d0
       real(rt), parameter :: half = 0.5d0

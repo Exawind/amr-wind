@@ -20,7 +20,7 @@ contains
        apx, axlo, axhi,  apy, aylo, ayhi, apz, azlo, azhi) &
        bind(C, name="incflo_eb_to_polygon")
 
-  use amrex_ebcellflag_module, only : is_regular_cell, is_covered_cell
+  use amrex_ebcellflag_module, only : is_regular_cell, is_covered_cell, is_single_valued_cell
 
   implicit none
 
@@ -65,7 +65,9 @@ contains
            !   .not.is_covered_cell(flag(i,j,k))) then
 
            ! Instead only look for EBs
-           if( .not.is_regular_cell(flag(i,j,k))) then
+           ! If covered cells are accounted for in this loop, 
+           ! a FPE arises since apnorm is zero.
+           if(is_single_valued_cell(flag(i,j,k))) then
 
               ! Calculate unit normal
               axm = apx(i,  j  , k  )
