@@ -3,6 +3,7 @@ module eb_diffusion_mod
    use amrex_fort_module, only: rt => amrex_real
    use iso_c_binding ,    only: c_int
    use param,             only: zero, half, one, two
+   use amrex_error_module,  only: amrex_abort
 
    implicit none
    private
@@ -26,6 +27,7 @@ contains
         cent_y,  cylo, cyhi, &
         cent_z,  czlo, czhi, &
         vfrac,   vflo, vfhi, &
+        bcent,    blo,  bhi, &
         domlo,  domhi,       &
         bc_ilo, bc_ihi,      &
         bc_jlo, bc_jhi,      &
@@ -54,6 +56,7 @@ contains
       integer(c_int),  intent(in   ) :: cylo(3), cyhi(3)
       integer(c_int),  intent(in   ) :: czlo(3), czhi(3)
       integer(c_int),  intent(in   ) :: vflo(3), vfhi(3)
+      integer(c_int),  intent(in   ) ::  blo(3),  bhi(3)
       integer(c_int),  intent(in   ) ::domlo(3),domhi(3)
 
       ! Grid
@@ -71,7 +74,8 @@ contains
            & cent_x(cxlo(1):cxhi(1),cxlo(2):cxhi(2),cxlo(3):cxhi(3),2),&
            & cent_y(cylo(1):cyhi(1),cylo(2):cyhi(2),cylo(3):cyhi(3),2),&
            & cent_z(czlo(1):czhi(1),czlo(2):czhi(2),czlo(3):czhi(3),2),&
-           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)) 
+           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)),   &
+           & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3)
            
       real(rt),  intent(inout) ::                                 &
            divtau(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
@@ -107,10 +111,7 @@ contains
       real(rt)       :: idx, idy, idz
      
       ! Check number of ghost cells
-      if (ng < 4) then
-         write(*,*) "ERROR: EB diffusion term requires at least 4 ghost cells, currently ng=",ng
-         stop
-      end if
+      if (ng < 4) call amrex_abort( "compute_divop(): ng must be >= 4")
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -144,11 +145,12 @@ contains
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
          
-         call compute_divop( lo, hi, divtau, dlo, dhi,                         &
+         call compute_divop( lo, hi, divtau, dlo, dhi, vel, vlo, vhi,          &
               & fx, fxlo, fxhi, fy, fylo, fyhi, fz, fzlo, fzhi,                &
               & afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, &
               & cent_x, cxlo, cxhi, cent_y, cylo, cyhi, cent_z, czlo, czhi,    &
-              & flags, flo, fhi, vfrac, vflo, vfhi, dx, ng )
+              & flags, flo, fhi, vfrac, vflo, vfhi, bcent, blo, bhi,           &
+              & dx, ng, mu, lambda )
       end block divop
             
       ! Divide by ro

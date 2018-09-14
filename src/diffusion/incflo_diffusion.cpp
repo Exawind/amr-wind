@@ -26,10 +26,12 @@ void incflo_level::incflo_compute_divtau(int lev,
    Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
    Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
    const amrex::MultiFab*                    volfrac;
-   
-   areafrac =   ebfactory[lev] -> getAreaFrac();
-   facecent =   ebfactory[lev] -> getFaceCent();
-   volfrac  = &(ebfactory[lev] -> getVolFrac());
+   const amrex::MultiCutFab*                 bndrycent;
+
+   areafrac  =   ebfactory[lev] -> getAreaFrac();
+   facecent  =   ebfactory[lev] -> getFaceCent();
+   volfrac   = &(ebfactory[lev] -> getVolFrac());
+   bndrycent = &(ebfactory[lev] -> getBndryCent());
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -81,6 +83,7 @@ void incflo_level::incflo_compute_divtau(int lev,
                BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
                BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
                BL_TO_FORTRAN_ANYD((*volfrac)[mfi]),
+               BL_TO_FORTRAN_ANYD((*bndrycent)[mfi]),
                domain.loVect (), domain.hiVect (),
                bc_ilo.dataPtr(), bc_ihi.dataPtr(),
                bc_jlo.dataPtr(), bc_jhi.dataPtr(),

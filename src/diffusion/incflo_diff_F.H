@@ -42,6 +42,7 @@ extern "C"
           const amrex::Real* cent_y,const int*   cylo,const int*  cyhi, 
           const amrex::Real* cent_z,const int*   czlo,const int*  czhi,
           const amrex::Real* vfrac, const int* vflo, const int*  vfhi, 
+          const amrex::Real* bcent, const int* blo, const int*  bhi, 
           const int* domlo, const int* domhi,
           const int* bc_ilo_type, const int* bc_ihi_type,
           const int* bc_jlo_type, const int* bc_jhi_type,

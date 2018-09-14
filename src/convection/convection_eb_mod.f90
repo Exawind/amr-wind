@@ -2,9 +2,9 @@ module convection_eb_mod
    
    use amrex_fort_module,       only: ar => amrex_real
    use iso_c_binding ,          only: c_int
-   use param,                   only: zero, half, one
+   use param,                   only: zero, half, one, my_huge
    use bc,                      only: minf_, nsw_, fsw_, psw_, pinf_, pout_
-   use eb_interpolation_mod,    only: interpolate_to_face_centroid
+   use amrex_error_module,      only: amrex_abort
    use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell, &
         &                             get_neighbor_cells
 
@@ -17,7 +17,7 @@ contains
    !$************************************************
    !$ WARNING:
    !$
-   !$ Make sure this approach is not problematic with
+   !$ Make sure this piece of code is not problematic with
    !$ OpenMP
    !$    
    !$************************************************
@@ -44,6 +44,7 @@ contains
         cent_z,  czlo, czhi, &
         flags,    flo,  fhi, &
         vfrac,   vflo, vfhi, &
+        bcent,    blo,  bhi, & 
         xslopes, yslopes, zslopes, slo, shi, &
         domlo, domhi, &
         bc_ilo, bc_ihi, &
@@ -71,6 +72,7 @@ contains
       integer(c_int),  intent(in   ) :: czlo(3), czhi(3)
       integer(c_int),  intent(in   ) ::  flo(3),  fhi(3)
       integer(c_int),  intent(in   ) :: vflo(3), vfhi(3)
+      integer(c_int),  intent(in   ) ::  blo(3),  bhi(3)
       integer(c_int),  intent(in   ) :: domlo(3), domhi(3), ng
 
       ! Grid
@@ -91,7 +93,8 @@ contains
            & cent_x(cxlo(1):cxhi(1),cxlo(2):cxhi(2),cxlo(3):cxhi(3),2),&
            & cent_y(cylo(1):cyhi(1),cylo(2):cyhi(2),cylo(3):cyhi(3),2),&
            & cent_z(czlo(1):czhi(1),czlo(2):czhi(2),czlo(3):czhi(3),2),&
-           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3))           
+           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)), &
+           & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3)
       
       real(ar),        intent(  out) ::                           &
            & ugradu(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)
@@ -106,19 +109,15 @@ contains
            & bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
       
-      ! Temporary arrays
-      ! Fluxes (this array can probably be shrinked to tile size)
-      real(ar)  ::    &
-           & fx(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3), &
-           & fy(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           & fz(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3),3)
-
+      ! Temporary array to handle convective fluxes at the cell faces (staggered)
+      ! Just reserve space for the tile + 3 ghost layers
+      integer, parameter :: nh = 3 ! Number of Halo layers      
+      real(ar) :: fx(lo(1)-nh:hi(1)+nh+1,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh  ,3)
+      real(ar) :: fy(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh+1,lo(3)-nh:hi(3)+nh  ,3)
+      real(ar) :: fz(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh+1,3)     
 
       ! Check number of ghost cells
-      if (ng < 3) then
-         write(*,*) "ERROR: EB convection term requires at least 3 ghost cells, currently ng=",ng
-         stop
-      end if
+      if (ng < 4) call amrex_abort( "compute_divop(): ng must be >= 4")
 
       ! 
       ! First compute the convective fluxes at the face center
@@ -130,16 +129,18 @@ contains
          real(ar)               :: upls, umns, vpls, vmns, wpls, wmns
          integer                :: i, j, k, n
          integer, parameter     :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+
          
          do n = 1, 3
+
             ! 
             ! ===================   X   ===================
             !
-            do k = lo(3)-ng, hi(3)+ng
-               do j = lo(2)-ng, hi(2)+ng
-                  do i = lo(1)-ng+1, hi(1)+ng
-                     if ( afrac_x(i,j,k) > zero ) then
-                        if ( i >= domlo(1) .and. any(bc_ilo(j,k,1) == bc_list) ) then
+            do k = lo(3)-nh, hi(3)+nh
+               do j = lo(2)-nh, hi(2)+nh
+                  do i = lo(1)-nh, hi(1)+nh+1
+                      if ( afrac_x(i,j,k) > zero ) then
+                        if ( i <= domlo(1) .and. any(bc_ilo(j,k,1) == bc_list) ) then
                            u_face =  vel(domlo(1)-1,j,k,n)
                         else if ( i >= domhi(1)+1 .and. any(bc_ihi(j,k,1) == bc_list ) ) then
                            u_face =  vel(domhi(1)+1,j,k,n)
@@ -150,7 +151,7 @@ contains
                            u_face = upwind( umns, upls, u(i,j,k) )
                         end if
                      else
-                        u_face = huge(one)
+                        u_face = my_huge
                      end if
                      fx(i,j,k,n) = u(i,j,k) * u_face 
                   end do
@@ -160,9 +161,9 @@ contains
             ! 
             ! ===================   Y   ===================
             !
-            do k = lo(3)-ng,     hi(3)+ng
-               do j = lo(2)-ng+1,   hi(2)+ng
-                  do i = lo(1)-ng,    hi(1)+ng
+            do k = lo(3)-nh, hi(3)+nh
+               do j = lo(2)-nh, hi(2)+nh+1
+                  do i = lo(1)-nh, hi(1)+nh
                      if ( afrac_y(i,j,k) > zero ) then
                         if ( j <= domlo(2) .and. any(bc_jlo(i,k,1) == bc_list) ) then
                            v_face =  vel(i,domlo(2)-1,k,n)
@@ -175,7 +176,7 @@ contains
                            v_face = upwind( vmns, vpls, v(i,j,k) )
                         end if
                      else
-                        v_face = huge(one)
+                        v_face = my_huge
                      end if
                      fy(i,j,k,n) = v(i,j,k) * v_face
                   end do
@@ -185,9 +186,9 @@ contains
             ! 
             ! ===================   Z   ===================
             !
-            do k = lo(3)-ng+1, hi(3)+ng
-               do j = lo(2)-ng, hi(2)+ng
-                  do i = lo(1)-ng, hi(1)+ng
+            do k = lo(3)-nh, hi(3)+nh+1
+               do j = lo(2)-nh, hi(2)+nh
+                  do i = lo(1)-nh, hi(1)+nh
                      if ( afrac_z(i,j,k) > zero ) then
                         if ( k <= domlo(3) .and. any(bc_klo(i,j,1) == bc_list) ) then
                            w_face =  vel(i,j,domlo(3)-1,n)
@@ -200,7 +201,7 @@ contains
                            w_face = upwind( wmns, wpls, w(i,j,k) )
                         end if
                      else
-                        w_face = huge(one)
+                        w_face = my_huge
                      end if
                      fz(i,j,k,n) = w(i,j,k) * w_face
                   end do
@@ -211,14 +212,23 @@ contains
 
       end block
 
-      !
-      ! Compute div(u_mac * u_cc )
-      ! 
-      call compute_divop(lo, hi, ugradu, glo, ghi, fx, ulo, uhi, fy, vlo, vhi, fz, wlo, whi, &
-           afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi,                    &
-           cent_x, cxlo, cxhi, cent_y, cylo, cyhi, cent_z, czlo, czhi, flags, flo, fhi,      &
-           vfrac, vflo, vfhi, dx, ng )
+       divop: block
+         ! Compute div(tau) with EB algorithm
+         integer(c_int)  :: fxlo(3), fxhi(3), fylo(3), fyhi(3), fzlo(3), fzhi(3)
+
+         fxlo = lo-nh
+         fylo = lo-nh
+         fzlo = lo-nh
+
+         fxhi = hi + nh + [1,0,0]
+         fyhi = hi + nh + [0,1,0]
+         fzhi = hi + nh + [0,0,1]
          
+         call compute_divop(lo, hi, ugradu, glo, ghi, vel, vlo, vhi, fx, fxlo, fxhi, fy, fylo, fyhi, fz, fzlo, fzhi, &
+              afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi,      &
+              cent_x, cxlo, cxhi, cent_y, cylo, cyhi, cent_z, czlo, czhi, flags, flo, fhi,      &
+              vfrac, vflo, vfhi, bcent, blo, bhi, dx, ng )
+      end block divop
 
       ! Return the negative 
       block
