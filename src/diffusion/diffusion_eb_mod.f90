@@ -145,9 +145,6 @@ contains
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
          
-      print*,"fxlo",fxlo,"fylo",fylo,"fzlo",fzlo
-      print*,"fxhi",fxhi,"fyhi",fyhi,"fzhi",fzhi
-
          call compute_divop( lo, hi, &
              divtau, dlo, dhi, &
              vel, vlo, vhi, &
