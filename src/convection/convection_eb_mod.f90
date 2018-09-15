@@ -216,18 +216,30 @@ contains
          ! Compute div(tau) with EB algorithm
          integer(c_int)  :: fxlo(3), fxhi(3), fylo(3), fyhi(3), fzlo(3), fzhi(3)
 
-         fxlo = lo-nh
-         fylo = lo-nh
-         fzlo = lo-nh
+         fxlo = lo - nh
+         fylo = lo - nh
+         fzlo = lo - nh
 
          fxhi = hi + nh + [1,0,0]
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
          
-         call compute_divop(lo, hi, ugradu, glo, ghi, vel, vlo, vhi, fx, fxlo, fxhi, fy, fylo, fyhi, fz, fzlo, fzhi, &
-              afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi,      &
-              cent_x, cxlo, cxhi, cent_y, cylo, cyhi, cent_z, czlo, czhi, flags, flo, fhi,      &
-              vfrac, vflo, vfhi, bcent, blo, bhi, dx, ng )
+         call compute_divop(lo, hi, &
+             ugradu, glo, ghi, &
+             vel, vlo, vhi, &
+             fx, fxlo, fxhi, &
+             fy, fylo, fyhi, &
+             fz, fzlo, fzhi, &
+             afrac_x, axlo, axhi, &
+             afrac_y, aylo, ayhi, &
+             afrac_z, azlo, azhi,      &
+             cent_x, cxlo, cxhi, &
+             cent_y, cylo, cyhi, &
+             cent_z, czlo, czhi, &
+             flags, flo, fhi,      &
+             vfrac, vflo, vfhi, &
+             bcent, blo, bhi, &
+             dx, ng )
       end block divop
 
       ! Return the negative 
