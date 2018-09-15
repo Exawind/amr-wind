@@ -31,9 +31,9 @@ contains
    subroutine compute_divop ( lo, hi, &
         div, dlo, dhi, &
         vel,vllo,vlhi, & 
-        fx,  ulo, uhi, &
-        fy,  vlo, vhi, &
-        fz,  wlo, whi, &
+        fx, fxlo,fxhi, &
+        fy, fylo,fyhi, &
+        fz, fzlo,fzhi, &
         afrac_x, axlo, axhi, &
         afrac_y, aylo, ayhi, &
         afrac_z, azlo, azhi, &
@@ -54,9 +54,9 @@ contains
       ! Array Bounds
       integer(c_int),  intent(in   ) :: dlo(3), dhi(3)
       integer(c_int),  intent(in   ) :: vllo(3), vlhi(3)
-      integer(c_int),  intent(in   ) :: ulo(3), uhi(3)
-      integer(c_int),  intent(in   ) :: vlo(3), vhi(3)
-      integer(c_int),  intent(in   ) :: wlo(3), whi(3)
+      integer(c_int),  intent(in   ) :: fxlo(3), fxhi(3)
+      integer(c_int),  intent(in   ) :: fylo(3), fyhi(3)
+      integer(c_int),  intent(in   ) :: fzlo(3), fzhi(3)
       integer(c_int),  intent(in   ) :: axlo(3), axhi(3)
       integer(c_int),  intent(in   ) :: aylo(3), ayhi(3)
       integer(c_int),  intent(in   ) :: azlo(3), azhi(3)
@@ -75,9 +75,9 @@ contains
 
       ! Arrays
       real(ar),        intent(in   ) ::                       &
-           & fx(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3), &
-           & fy(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           & fz(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3),3), &
+           & fx(fxlo(1):fxhi(1),fxlo(2):fxhi(2),fxlo(3):fxhi(3),3), &
+           & fy(fylo(1):fyhi(1),fylo(2):fyhi(2),fylo(3):fyhi(3),3), &
+           & fz(fzlo(1):fzhi(1),fzlo(2):fzhi(2),fzlo(3):fzhi(3),3), &
            & afrac_x(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)), &
            & afrac_y(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)), &
            & afrac_z(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)), &
@@ -174,22 +174,22 @@ contains
 
                         ! interp_to_face_centroid returns the proper flux multiplied
                         ! by the face area
-                        fxp = interp_to_face_centroid( i+1, j, k, 1, fx, ulo, n,  &
+                        fxp = interp_to_face_centroid( i+1, j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fxm = interp_to_face_centroid( i  , j, k, 1, fx, ulo, n,  &
+                        fxm = interp_to_face_centroid( i  , j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fyp = interp_to_face_centroid( i, j+1, k, 2, fy, vlo, n,  &
+                        fyp = interp_to_face_centroid( i, j+1, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fym = interp_to_face_centroid( i, j, k, 2, fy, vlo, n,  &
+                        fym = interp_to_face_centroid( i, j, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fzp = interp_to_face_centroid( i, j, k+1, 3, fz, wlo, n,  &
+                        fzp = interp_to_face_centroid( i, j, k+1, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
-                        fzm = interp_to_face_centroid( i, j, k, 3, fz, wlo, n,  &
+                        fzm = interp_to_face_centroid( i, j, k, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
 
@@ -204,7 +204,7 @@ contains
                         if (is_viscous) then
                            if (n==1) then 
                               call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
-                                   vel, vlo, vhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
+                                   vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
                                    afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi)        
                            end if
                            divc(i,j,k) = divc(i,j,k) + divdiff_w(n,iwall) / &
