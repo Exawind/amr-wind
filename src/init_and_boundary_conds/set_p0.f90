@@ -116,7 +116,7 @@
                pj = pj + dpodx*dx
                p0_g(i,slo(2):shi(2),slo(3):shi(3)) = scale_pressure(pj)
             enddo
-            gp0(:,:,:,1) = dpodx
+            gp0(:,:,:,1) = -dpodx
          endif
 
          if (abs(delp_y) > epsilon(zero)) then
@@ -126,7 +126,7 @@
                pj = pj + dpody*dy
                p0_g(slo(1):shi(1),j,slo(3):shi(3)) = scale_pressure(pj)
             enddo
-            gp0(:,:,:,2) = dpody
+            gp0(:,:,:,2) = -dpody
          endif
 
          if (abs(delp_z) > epsilon(zero)) then
@@ -136,7 +136,7 @@
                pj = pj + dpodz*dz
                p0_g(slo(1):shi(1),slo(2):shi(2),k) = scale_pressure(pj)
             end do
-            gp0(:,:,:,3) = dpodz
+            gp0(:,:,:,3) = -dpodz
          endif
 
       end block

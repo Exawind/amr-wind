@@ -14,22 +14,22 @@ module convection_eb_mod
 contains
 
 
-   !$************************************************
-   !$ WARNING:
-   !$
-   !$ Make sure this piece of code is not problematic with
-   !$ OpenMP
-   !$    
-   !$************************************************
+   !!$************************************************
+   !!$ WARNING:
+   !!$
+   !!$ Make sure this piece of code is not problematic with
+   !!$ OpenMP
+   !!$    
+   !!$************************************************
 
 
-   !$************************************************
-   !$ WARNING 2:
-   !$
-   !$ For now the convective term is only div(u_mac . u)
-   !$ The term -u*grad(u_mac) is omitted
-   !$    
-   !$************************************************  
+   !!$************************************************
+   !!$ WARNING 2:
+   !!$
+   !!$ For now the convective term is only div(u_mac . u)
+   !!$ The term -u*grad(u_mac) is omitted
+   !!$    
+   !!$************************************************  
    subroutine compute_ugradu_eb ( lo, hi, &
         ugradu, glo, ghi, &
         vel, vello, velhi, &
