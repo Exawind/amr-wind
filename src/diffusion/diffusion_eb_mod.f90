@@ -160,6 +160,7 @@ contains
              flags, flo, fhi, &
              vfrac, vflo, vfhi, &
              bcent, blo, bhi, &
+             domlo, domhi, &
              dx, ng, mu, lambda )
 
       end block divop

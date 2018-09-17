@@ -426,24 +426,16 @@ void incflo_level::incflo_set_p0(int lev)
 
 		const Box& bx = mfi.validbox();
 
-		set_p0(bx.loVect(),
-			   bx.hiVect(),
-			   domain.loVect(),
-			   domain.hiVect(),
+        set_p0(bx.loVect(), bx.hiVect(),
+               domain.loVect(), domain.hiVect(),
 			   BL_TO_FORTRAN_ANYD((*p0_g[lev])[mfi]),
-			   &dx,
-			   &dy,
-			   &dz,
-			   &xlen,
-			   &ylen,
-			   &zlen,
+			   BL_TO_FORTRAN_ANYD((*gp0[lev])[mfi]),
+               &dx, &dy, &dz,
+               &xlen, &ylen, &zlen,
 			   &delp_dir,
-			   bc_ilo.dataPtr(),
-			   bc_ihi.dataPtr(),
-			   bc_jlo.dataPtr(),
-			   bc_jhi.dataPtr(),
-			   bc_klo.dataPtr(),
-			   bc_khi.dataPtr(),
+               bc_ilo.dataPtr(), bc_ihi.dataPtr(),
+               bc_jlo.dataPtr(), bc_jhi.dataPtr(),
+               bc_klo.dataPtr(), bc_khi.dataPtr(),
 			   &nghost,
 			   &nodal_pressure);
 	}

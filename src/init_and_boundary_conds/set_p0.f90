@@ -8,6 +8,7 @@
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
       subroutine set_p0(lo, hi, domlo, domhi, &
                         p0_g, slo, shi, &
+                        gp0, glo, ghi, &
                         dx, dy, dz, xlength, ylength, zlength, delp_dir, &
                         bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
                         bct_klo, bct_khi, ng, nodal_pressure) &
@@ -29,11 +30,17 @@
 
       implicit none
 
-      integer, intent(in) :: slo(3), shi(3), lo(3), hi(3)
-      integer, intent(in) :: domlo(3), domhi(3), ng, nodal_pressure
+      integer, intent(in) ::    lo(3),    hi(3)
+      integer, intent(in) ::   slo(3),   shi(3)
+      integer, intent(in) ::   glo(3),   ghi(3)
+      integer, intent(in) :: domlo(3), domhi(3)
+      integer, intent(in) :: ng, nodal_pressure
 
       real(ar), intent(inout) :: p0_g&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+
+      real(ar), intent(inout) :: gp0&
+         (glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)
 
       real(ar), intent(in) :: dx, dy, dz
       real(ar), intent(in) :: xlength, ylength, zlength
@@ -60,6 +67,9 @@
       ! Average pressure drop per unit length
       real(ar) :: dpodx, dpody, dpodz
 
+      ! Initialize all components of gp0 to zero
+      gp0(:,:,:,:) = 0.d0
+
 ! ---------------------------------------------------------------->>>
 
       !  Make sure that ic_p_g is set if using delp pressure conditions
@@ -75,6 +85,7 @@
                if (is_undefined(ic_p_g(icv))) goto 60
                if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
                p0_g(:,:,:) = ic_p_g(icv)
+                gp0(:,:,:,:) = 0.d0
             end if
          end if
       end do
@@ -105,6 +116,7 @@
                pj = pj + dpodx*dx
                p0_g(i,slo(2):shi(2),slo(3):shi(3)) = scale_pressure(pj)
             enddo
+            gp0(:,:,:,1) = dpodx
          endif
 
          if (abs(delp_y) > epsilon(zero)) then
@@ -114,6 +126,7 @@
                pj = pj + dpody*dy
                p0_g(slo(1):shi(1),j,slo(3):shi(3)) = scale_pressure(pj)
             enddo
+            gp0(:,:,:,2) = dpody
          endif
 
          if (abs(delp_z) > epsilon(zero)) then
@@ -123,6 +136,7 @@
                pj = pj + dpodz*dz
                p0_g(slo(1):shi(1),slo(2):shi(2),k) = scale_pressure(pj)
             end do
+            gp0(:,:,:,3) = dpodz
          endif
 
       end block
@@ -148,6 +162,7 @@
       ! pressure at the outlet
       if (is_undefined(pj)) then
          p0_g = zero
+         gp0  = zero
          goto 100
       endif
 
@@ -176,6 +191,8 @@
             enddo
          endif
 
+         gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),1)  = ro_g0 * gravity(1)
+
       else if (abs(gravity(2)) > epsilon(0.0d0)) then
 
          dpody = -gravity(2)*ro_g0
@@ -194,6 +211,8 @@
             enddo
          endif
 
+         gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),2)  = ro_g0 * gravity(1)
+
       else if (abs(gravity(3)) > epsilon(0.0d0)) then
 
          dpodz = -gravity(3)*ro_g0
@@ -211,6 +230,9 @@
                pj = pj - dpodz*dz
             enddo
          endif
+
+         gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)  = ro_g0 * gravity(1)
+
       endif
 
 ! ----------------------------------------------------------------<<<

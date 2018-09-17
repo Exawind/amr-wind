@@ -232,13 +232,14 @@ contains
              fz, fzlo, fzhi, &
              afrac_x, axlo, axhi, &
              afrac_y, aylo, ayhi, &
-             afrac_z, azlo, azhi,      &
+             afrac_z, azlo, azhi, &
              cent_x, cxlo, cxhi, &
              cent_y, cylo, cyhi, &
              cent_z, czlo, czhi, &
-             flags, flo, fhi,      &
+             flags, flo, fhi, &
              vfrac, vflo, vfhi, &
              bcent, blo, bhi, &
+             domlo, domhi, &
              dx, ng )
       end block divop
 
