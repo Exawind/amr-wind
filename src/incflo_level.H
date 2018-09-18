@@ -146,6 +146,7 @@ protected:
 
 private:
 	void make_eb_general(int lev);
+	void make_eb_annulus(int lev);
 	void make_eb_box(int lev);
 	void make_eb_cylinder(int lev);
 	void make_eb_hopper(int lev);

@@ -1,4 +1,5 @@
 add_sources ( incflo_eb.cpp )
+add_sources ( incflo_eb_annulus.cpp )
 add_sources ( incflo_eb_box.cpp )
 add_sources ( incflo_eb_cylinder.cpp )
 add_sources ( incflo_eb_hopper.cpp )

@@ -3,6 +3,7 @@ f90EXE_sources += eb_interpolation_mod.f90
 
 CEXE_sources += incflo_eb.cpp
 CEXE_sources += writeEBsurface.cpp
+CEXE_sources += incflo_eb_annulus.cpp
 CEXE_sources += incflo_eb_box.cpp
 CEXE_sources += incflo_eb_cylinder.cpp
 CEXE_sources += incflo_eb_hopper.cpp

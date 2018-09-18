@@ -82,6 +82,11 @@ void incflo_level::make_eb_geometry(int lev)
 		amrex::Print() << "\n Building box geometry." << std::endl;
 		make_eb_box(lev);
 	}
+	else if(geom_type == "annulus")
+	{
+		amrex::Print() << "\n Building annulus geometry." << std::endl;
+		make_eb_annulus(lev);
+	}
 	else if(geom_type == "cylinder")
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
