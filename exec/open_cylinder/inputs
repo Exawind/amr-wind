@@ -37,4 +37,4 @@ cylinder.center    =  0.5 0.5 0.03125
 amrex.fpe_trap_invalid = 1
 
 # Explicit diffusion?
-incflo.explicit_diffusion = 0
+incflo.explicit_diffusion = 1
