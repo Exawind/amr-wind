@@ -1,0 +1,33 @@
+# Stop time for simulation
+amr.max_step = 1000
+
+#incflo.fixed_dt = 0.01
+incflo.cfl = 0.5
+
+# Number of grid cells in each direction at the coarsest level
+amr.n_cell =  80 16 16
+
+# Maximum level in hierarchy (for now must be 0, i.e., one level in total)
+amr.max_level = 0
+
+# Plot/check interval
+amr.plot_int   = 50
+amr.check_int  = 500
+#amr.restart    = chk01000
+
+# Physics
+incflo.mu_g0   = 0.001
+incflo.ro_g0   = 1.0
+incflo.gravity = 0.0 0.0 0.0
+
+# Geometry
+geometry.coord_sys   = 0                  # 0: Cartesian
+geometry.is_periodic = 1     0     1      # Is periodic in each direction?
+geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
+geometry.prob_hi     = 1.00  0.20  0.20   #hi corner of physical domain
+
+# Trap invalids
+amrex.fpe_trap_invalid = 1
+
+# Explicit diffusion
+incflo.explicit_diffusion = 1

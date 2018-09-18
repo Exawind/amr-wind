@@ -43,6 +43,7 @@ extern "C"
         const amrex::Real* cent_z,const int*   czlo,const int*  czhi, 
         const void* flags, const int*  flo, const int*   fhi, 
         const amrex::Real* vfrac, const int* vflo, const int*  vfhi, 
+        const amrex::Real* bcent, const int* blo, const int*  bhi, 
 	const amrex::Real* xslopes, 
 	const amrex::Real* yslopes, 
 	const amrex::Real* zslopes, const int* slo, const int* shi, 

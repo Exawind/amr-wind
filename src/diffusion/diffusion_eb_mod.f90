@@ -3,6 +3,7 @@ module eb_diffusion_mod
    use amrex_fort_module, only: rt => amrex_real
    use iso_c_binding ,    only: c_int
    use param,             only: zero, half, one, two
+   use amrex_error_module,  only: amrex_abort
 
    implicit none
    private
@@ -26,6 +27,7 @@ contains
         cent_y,  cylo, cyhi, &
         cent_z,  czlo, czhi, &
         vfrac,   vflo, vfhi, &
+        bcent,    blo,  bhi, &
         domlo,  domhi,       &
         bc_ilo, bc_ihi,      &
         bc_jlo, bc_jhi,      &
@@ -54,6 +56,7 @@ contains
       integer(c_int),  intent(in   ) :: cylo(3), cyhi(3)
       integer(c_int),  intent(in   ) :: czlo(3), czhi(3)
       integer(c_int),  intent(in   ) :: vflo(3), vfhi(3)
+      integer(c_int),  intent(in   ) ::  blo(3),  bhi(3)
       integer(c_int),  intent(in   ) ::domlo(3),domhi(3)
 
       ! Grid
@@ -61,17 +64,18 @@ contains
 
       ! Arrays
       real(rt), intent(in   ) ::                                  &
-           & vel_in(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           &     ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),   &
-           &     mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),   &
-           & lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),   &
-           & afrac_x(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)), &
-           & afrac_y(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)), &
-           & afrac_z(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)), &
-           & cent_x(cxlo(1):cxhi(1),cxlo(2):cxhi(2),cxlo(3):cxhi(3),2),&
-           & cent_y(cylo(1):cyhi(1),cylo(2):cyhi(2),cylo(3):cyhi(3),2),&
-           & cent_z(czlo(1):czhi(1),czlo(2):czhi(2),czlo(3):czhi(3),2),&
-           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)) 
+           &  vel_in( vlo(1): vhi(1), vlo(2): vhi(2), vlo(3): vhi(3),3), &
+           &      ro( slo(1): shi(1), slo(2): shi(2), slo(3): shi(3)  ), &
+           &      mu( slo(1): shi(1), slo(2): shi(2), slo(3): shi(3)  ), &
+           &  lambda( slo(1): shi(1), slo(2): shi(2), slo(3): shi(3)  ), &
+           & afrac_x(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)  ), &
+           & afrac_y(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)  ), &
+           & afrac_z(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  ), &
+           &  cent_x(cxlo(1):cxhi(1),cxlo(2):cxhi(2),cxlo(3):cxhi(3),2), &
+           &  cent_y(cylo(1):cyhi(1),cylo(2):cyhi(2),cylo(3):cyhi(3),2), &
+           &  cent_z(czlo(1):czhi(1),czlo(2):czhi(2),czlo(3):czhi(3),2), &
+           &   vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)  ), &
+           &   bcent( blo(1): bhi(1), blo(2): bhi(2), blo(3): bhi(3),3)
            
       real(rt),  intent(inout) ::                                 &
            divtau(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
@@ -107,10 +111,7 @@ contains
       real(rt)       :: idx, idy, idz
      
       ! Check number of ghost cells
-      if (ng < 4) then
-         write(*,*) "ERROR: EB diffusion term requires at least 4 ghost cells, currently ng=",ng
-         stop
-      end if
+      if (ng < 4) call amrex_abort( "compute_divop(): ng must be >= 4")
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -136,19 +137,32 @@ contains
          ! Compute div(tau) with EB algorithm
          integer(c_int)  :: fxlo(3), fxhi(3), fylo(3), fyhi(3), fzlo(3), fzhi(3)
 
-         fxlo = lo-nh
-         fylo = lo-nh
-         fzlo = lo-nh
+         fxlo = lo - nh
+         fylo = lo - nh
+         fzlo = lo - nh
 
          fxhi = hi + nh + [1,0,0]
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
          
-         call compute_divop( lo, hi, divtau, dlo, dhi,                         &
-              & fx, fxlo, fxhi, fy, fylo, fyhi, fz, fzlo, fzhi,                &
-              & afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, &
-              & cent_x, cxlo, cxhi, cent_y, cylo, cyhi, cent_z, czlo, czhi,    &
-              & flags, flo, fhi, vfrac, vflo, vfhi, dx, ng )
+         call compute_divop( lo, hi, &
+             divtau, dlo, dhi, &
+             vel, vlo, vhi, &
+             fx, fxlo, fxhi, &
+             fy, fylo, fyhi, &
+             fz, fzlo, fzhi, &
+             afrac_x, axlo, axhi, &
+             afrac_y, aylo, ayhi, &
+             afrac_z, azlo, azhi, &
+             cent_x, cxlo, cxhi, &
+             cent_y, cylo, cyhi, &
+             cent_z, czlo, czhi,    &
+             flags, flo, fhi, &
+             vfrac, vflo, vfhi, &
+             bcent, blo, bhi, &
+             domlo, domhi, &
+             dx, ng, mu, lambda )
+
       end block divop
             
       ! Divide by ro

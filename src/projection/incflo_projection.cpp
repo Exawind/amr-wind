@@ -35,6 +35,8 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 {
 	BL_PROFILE("incflo_level::incflo_apply_projection");
 
+    vel_g[lev]->FillBoundary(geom[lev].periodicity());
+
 	// Swap ghost cells and apply BCs to velocity
 	incflo_set_velocity_bcs(lev, 0);
 
@@ -89,7 +91,7 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 					*ebfactory[lev]);
 
 	// Initialize fluxes to zero in the event that the solver doesn't need to solve
-	fluxes.setVal(0.);
+	fluxes.setVal(1.0e200);
 
 	solve_poisson_equation(lev, bcoeff, phi, diveu, bc_lo, bc_hi, fluxes);
 

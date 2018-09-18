@@ -279,8 +279,8 @@ void incflo_level::incflo_apply_predictor(
 		MultiFab::Multiply(*vel_g[lev], (*ro_g[lev]), 0, n, 1, vel_g[lev]->nGrow());
 
 	// Add (-dt grad p to momenta)
-	MultiFab::Saxpy(*vel_g[lev], -dt, *gp[lev], 0, 0, 3, 0);
-	MultiFab::Saxpy(*vel_g[lev], -dt, *gp0[lev], 0, 0, 3, 0);
+	MultiFab::Saxpy(*vel_g[lev], -dt, *gp[lev], 0, 0, 3, vel_g[lev]->nGrow());
+	MultiFab::Saxpy(*vel_g[lev], -dt, *gp0[lev], 0, 0, 3, vel_g[lev]->nGrow());
 
 	// Convert momenta back to velocities
 	for(int n = 0; n < 3; n++)
@@ -361,8 +361,8 @@ void incflo_level::incflo_apply_corrector(
 		MultiFab::Multiply(*vel_g[lev], (*ro_g[lev]), 0, n, 1, vel_g[lev]->nGrow());
 
 	// Add (-dt grad p to momenta)
-	MultiFab::Saxpy(*vel_g[lev], -dt, *gp[lev], 0, 0, 3, 0);
-	MultiFab::Saxpy(*vel_g[lev], -dt, *gp0[lev], 0, 0, 3, 0);
+	MultiFab::Saxpy(*vel_g[lev], -dt, *gp[lev], 0, 0, 3, vel_g[lev]->nGrow());
+	MultiFab::Saxpy(*vel_g[lev], -dt, *gp0[lev], 0, 0, 3, vel_g[lev]->nGrow());
 
 	// Convert momenta back to velocities
 	for(int n = 0; n < 3; n++)
@@ -772,14 +772,17 @@ incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
     BoxArray x_ba = cc.boxArray();
     x_ba.surroundingNodes(0);
     fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
+    fc[0]->setVal(1.0e200);
 
     BoxArray y_ba = cc.boxArray();
     y_ba.surroundingNodes(1);
     fc[1].reset(new MultiFab(y_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
+    fc[1]->setVal(1.0e200);
 
     BoxArray z_ba = cc.boxArray();
     z_ba.surroundingNodes(2);
     fc[2].reset(new MultiFab(z_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
+    fc[2]->setVal(1.0e200);
 
     //
     // Average

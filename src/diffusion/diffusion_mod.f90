@@ -430,13 +430,13 @@ contains
       else
 
          ! X at domlo(1)
-         bc_face = get_bc_face(bct_ilo)
+         bc_face = get_bc_face(bct_ilo, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_lo(1) = amrex_lo_neumann
          end if
 
          ! X at domhi(1)
-         bc_face = get_bc_face(bct_ihi)
+         bc_face = get_bc_face(bct_ihi, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_hi(1) = amrex_lo_neumann
          end if
@@ -453,13 +453,13 @@ contains
       else
 
          ! Y at domlo(2)
-         bc_face = get_bc_face(bct_jlo)
+         bc_face = get_bc_face(bct_jlo, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_lo(2) = amrex_lo_neumann
          end if
 
          ! Y at domhi(2)
-         bc_face = get_bc_face(bct_jhi)
+         bc_face = get_bc_face(bct_jhi, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_hi(2) = amrex_lo_neumann
          end if
@@ -475,13 +475,13 @@ contains
       else
 
          ! Z at domlo(3)
-         bc_face = get_bc_face(bct_klo)
+         bc_face = get_bc_face(bct_klo, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_lo(3) = amrex_lo_neumann
          end if
 
          ! Z at domhi(3)
-         bc_face = get_bc_face(bct_khi)
+         bc_face = get_bc_face(bct_khi, ng)
          if ( (bc_face == pinf_) .or. (bc_face == pout_) .or. (bc_face == fsw_) ) then
             bc_hi(3) = amrex_lo_neumann
          end if
@@ -494,16 +494,17 @@ contains
       ! Test whether the BC type is the same everywhere on
       ! the face. If BC is uniform on face, it returns its value
       !
-      function get_bc_face (bct_array) result (bc_face)
+      function get_bc_face (bct_array, nghost) result (bc_face)
          integer(c_int), intent(in   ) :: bct_array(:,:,:)
+         integer       , intent(in   ) :: nghost
          integer                       :: bc_face
          integer                       :: is, ie, js, je
 
          ! Do not consider the edges: they may cause problems
-         is = 3
-         ie = size (bct_array,1) - 2
-         js = 3
-         je = size (bct_array,2) - 2
+         is = nghost+1
+         ie = size(bct_array,1) - nghost
+         js = nghost+1
+         je = size(bct_array,2) - nghost
 
          bc_face = bct_array(is,js,1)
 
