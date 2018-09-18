@@ -35,6 +35,8 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 {
 	BL_PROFILE("incflo_level::incflo_apply_projection");
 
+    vel_g[lev]->FillBoundary(geom[lev].periodicity());
+
 	// Swap ghost cells and apply BCs to velocity
 	incflo_set_velocity_bcs(lev, 0);
 
