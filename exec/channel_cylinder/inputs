@@ -1,18 +1,19 @@
 # Stop time for simulation
-amr.max_step = 100
+amr.max_step = 10000
 
 #incflo.fixed_dt = 0.01
 incflo.cfl = 0.5
+incflo.explicit_diffusion = 1
 
 # Number of grid cells in each direction at the coarsest level
-amr.n_cell =  200 50 50
+amr.n_cell = 128 64 4
 
 # Maximum level in hierarchy (for now must be 0, i.e., one level in total)
 amr.max_level = 0
 
 # Plot/check interval
-amr.plot_int   = 5
-amr.check_int  = -1
+amr.plot_int   = 50
+amr.check_int  = 500
 
 # Physics
 incflo.mu_g0   = 0.001
@@ -20,18 +21,18 @@ incflo.ro_g0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
 # Geometry
-geometry.coord_sys   = 0                  # 0: Cartesian
-geometry.is_periodic = 1     0     0      # Is periodic in each direction?
-geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
-geometry.prob_hi     = 1.95  0.41  0.41   #hi corner of physical domain
+geometry.coord_sys   = 0                    # 0: Cartesian
+geometry.is_periodic = 1     0     1        # Is periodic in each direction?
+geometry.prob_lo     = 0.    0.    0.       # lo corner of physical domain
+geometry.prob_hi     = 2.    1.    0.0625  #hi corner of physical domain
 
 # Add cylinder 
 incflo.geometry = "cylinder"
 cylinder.internal_flow = false
-cylinder.radius = 0.05
+cylinder.radius = 0.1
 # Choices for direction are {0,1,2}
 cylinder.direction = 2
-cylinder.center    =  0.5 0.2 0.205
+cylinder.center    =  0.5 0.51 0.03125
 
 # Trap invalids
 amrex.fpe_trap_invalid = 1
