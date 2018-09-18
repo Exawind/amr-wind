@@ -2,7 +2,7 @@ module divop_mod
 
    use amrex_fort_module,       only: ar => amrex_real
    use iso_c_binding ,          only: c_int
-   use param,                   only: zero, half, one
+   use param,                   only: zero, half, one, my_huge
    use amrex_error_module,      only: amrex_abort
    use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell, &
         &                             get_neighbor_cells
@@ -11,7 +11,6 @@ module divop_mod
 
 contains
 
-   ! 
    ! Compute the divergence operator for EB geometries
    !
    ! OUTPUTS:
@@ -25,12 +24,12 @@ contains
    !   fz       the fluxes at the z-face CENTER (not centroid!)
    !
    ! WARNING: fx, fy, fz HAS to be filled with at least 3 GHOST nodes
-   !          
-   ! 
-   ! 
+   !
+   !
+   !
    subroutine compute_divop ( lo, hi, &
         div, dlo, dhi, &
-        vel,vllo,vlhi, & 
+        vel,vllo,vlhi, &
         fx, fxlo, fxhi, &
         fy, fylo, fyhi, &
         fz, fzlo, fzhi, &
@@ -43,7 +42,7 @@ contains
         flags,    flo,  fhi, &
         vfrac,   vflo, vfhi, &
         bcent,    blo,  bhi, &
-        domlo, domhi, &
+        domlo, domhi,        &
         dx, ng, mu, lambda ) bind(C)
 
       use bc
@@ -136,26 +135,33 @@ contains
           call amrex_abort("compute_divop(): either mu or lambda is not passed in")
       end if
 
+      if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
+           abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
+           abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
+         call amrex_abort("compute_divop(): grid spacing must be uniform")
+      end if
+      
       !
       ! Allocate arrays to host viscous wall fluxes
       !
-      nwalls = 0 
+      nwalls = 0
       if (is_viscous) then
          do k = lo(3)-2, hi(3)+2
-            do j = lo(2)-2, hi(2)+2                             
+            do j = lo(2)-2, hi(2)+2
                do i = lo(1)-2, hi(1)+2
                   if (is_single_valued_cell(flags(i,j,k))) nwalls = nwalls + 1
                end do
             end do
          end do
          allocate( divdiff_w(3,nwalls) )
-      end if   
+         divdiff_w = zero
+      end if
 
       allocate( mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) )
- 
+
       !
       ! The we use the EB algorithmm to compute the divergence at cell centers
-      ! 
+      !
       ncomp_loop: do n = 1, 3
 
          !
@@ -173,7 +179,7 @@ contains
 
                      if (is_covered_cell(flags(i,j,k))) then
 
-                        divc(i,j,k) = huge(one)
+                        divc(i,j,k) = my_huge
 
                      else if (is_single_valued_cell(flags(i,j,k))) then
 
@@ -202,14 +208,13 @@ contains
 
                         divc(i,j,k) = ( ( fxp - fxm ) * idx + &
                              &          ( fyp - fym ) * idy + &
-                             &          ( fzp - fzm ) * idz ) &
-                             &        / vfrac(i,j,k) 
-                        
+                             &          ( fzp - fzm ) * idz ) / vfrac(i,j,k)
+
                         ! Add viscous wall fluxes (compute three components only
                         ! during the first pass, i.e. for n=1
                         iwall = iwall + 1
                         if (is_viscous) then
-                           if (n==1) then 
+                           if (n==1) then
                               call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
                                    vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
                                    afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi)        
@@ -231,19 +236,19 @@ contains
             end do
          end block compute_divc
 
-         mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 1.d0 
+         mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 1.d0
          if (lo(1).eq.domlo(1) .and. .not. cyclic_x) &
-            mask(lo(1)-2:lo(1)-1,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0 
+            mask(lo(1)-2:lo(1)-1,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
          if (hi(1).eq.domhi(1) .and. .not. cyclic_x) &
-            mask(hi(1)+1:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0 
+            mask(hi(1)+1:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
          if (lo(2).eq.domlo(2) .and. .not. cyclic_y) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-2:lo(2)-1,lo(3)-2:hi(3)+2) = 0.d0 
+            mask(lo(1)-2:hi(1)+2,lo(2)-2:lo(2)-1,lo(3)-2:hi(3)+2) = 0.d0
          if (hi(2).eq.domhi(2) .and. .not. cyclic_y) &
-            mask(lo(1)-2:hi(1)+2,hi(2)+1:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0 
+            mask(lo(1)-2:hi(1)+2,hi(2)+1:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
          if (lo(3).eq.domlo(3) .and. .not. cyclic_z) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:lo(3)-1) = 0.d0 
+            mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:lo(3)-1) = 0.d0
          if (hi(3).eq.domhi(3) .and. .not. cyclic_z) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-1:hi(2)+2,hi(3)+1:hi(3)+2) = 0.d0 
+            mask(lo(1)-2:hi(1)+2,lo(2)-1:hi(2)+2,hi(3)+1:hi(3)+2) = 0.d0
 
          !
          ! Step 2: compute delta M ( mass gain or loss ) on (lo-1,hi+1)
@@ -289,7 +294,7 @@ contains
          !
          ! Step 3: redistribute excess/loss of mass
          !
-         block 
+         block
             real(ar) :: wtot
             integer  :: ii, jj, kk
 
