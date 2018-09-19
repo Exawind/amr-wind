@@ -188,8 +188,9 @@ void incflo_level::incflo_project_velocity(int lev)
 	Real dummy_dt = 1.0;
 	incflo_apply_projection(lev, dummy_dt, proj_2);
 
-	// We initialize p_g back to zero (p0_g may still be still non-zero)
+	// We initialize p_g and gp back to zero (p0_g may still be still non-zero)
 	p_g[lev]->setVal(0.0);
+	 gp[lev]->setVal(0.0);
 }
 
 void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, int steady_state)

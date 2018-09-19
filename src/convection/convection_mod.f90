@@ -8,7 +8,7 @@ module convection_mod
 
    use amrex_fort_module, only: ar => amrex_real
    use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one
+   use param,             only: zero, half, one, my_huge
    use bc,                only: minf_, nsw_, fsw_, psw_, pinf_, pout_
 
    implicit none
@@ -162,9 +162,6 @@ contains
       integer(c_int), intent(in   ) ::  &
            & bc_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
            & bc_ihi(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
-
-      ! Temporary arrays
-      real(ar) :: u_tmp(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3))
       
       ! Local variables
       integer(c_int)                 :: i, j, k
@@ -178,23 +175,20 @@ contains
             do i = lo(1), hi(1)
                if ( areafrac(i,j,k) > zero ) then 
                   if ( ( i == domlo(1) ) .and. any( bc_ilo(j,k,1) == bc_list) ) then
-                     u_tmp(i,j,k) = vel(i-1,j,k,1)
+                     u(i,j,k) = vel(i-1,j,k,1)
                   else if ( ( i == domhi(1)+1 ) .and. any( bc_ihi(j,k,1) == bc_list) ) then
-                     u_tmp(i,j,k) = vel(i,j,k,1)
+                     u(i,j,k) = vel(i,j,k,1)
                   else
                      upls     = vel(i  ,j,k,1) - half * slopes(i  ,j,k,1)
                      umns     = vel(i-1,j,k,1) + half * slopes(i-1,j,k,1)
-                     u_tmp(i,j,k) = upwind_normal( umns, upls )
+                     u(i,j,k) = upwind_normal( umns, upls )
                   end if
                else
-                  u_tmp(i,j,k) = huge(one)               
+                  u(i,j,k) = my_huge               
                end if
             end do
          end do
       end do
-      
-      ! call interpolate_to_face_centroid( lo, hi, u, u_tmp, ulo, uhi, 1, &
-      !      areafrac, alo, ahi, cent, clo, chi, flags, flo, fhi, 1 )
    
    end subroutine compute_velocity_at_x_faces_eb
 
@@ -243,9 +237,6 @@ contains
       integer(c_int), intent(in   ) ::  &
            & bc_jlo(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
            & bc_jhi(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
-           
-      ! Temporary arrays
-      real(ar) :: v_tmp(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3))
       
       ! Local variables
       integer(c_int)                 :: i, j, k
@@ -255,23 +246,22 @@ contains
       do k = lo(3)-1, hi(3)+1
          do j = lo(2), hi(2)
             do i = lo(1)-1, hi(1)+1
-               if ( ( j == domlo(2) ) .and. any(bc_jlo(i,k,1) == bc_list) ) then
-                  v_tmp(i,j,k) = vel(i,j-1,k,2)
-               else if ( ( j == domhi(2)+1 ) .and. any(bc_jhi(i,k,1) == bc_list) ) then
-                  v_tmp(i,j,k) = vel(i,j,k,2)
+               if ( areafrac(i,j,k) > zero ) then 
+                  if ( ( j == domlo(2) ) .and. any(bc_jlo(i,k,1) == bc_list) ) then
+                     v(i,j,k) = vel(i,j-1,k,2)
+                  else if ( ( j == domhi(2)+1 ) .and. any(bc_jhi(i,k,1) == bc_list) ) then
+                     v(i,j,k) = vel(i,j,k,2)
+                  else
+                     vpls     = vel(i,j  ,k,2) - half * slopes(i,j,  k,2)
+                     vmns     = vel(i,j-1,k,2) + half * slopes(i,j-1,k,2)
+                     v(i,j,k) = upwind_normal( vmns, vpls )
+                  end if
                else
-                  vpls     = vel(i,j  ,k,2) - half * slopes(i,j,  k,2)
-                  vmns     = vel(i,j-1,k,2) + half * slopes(i,j-1,k,2)
-                  v_tmp(i,j,k) = upwind_normal( vmns, vpls )
+                   v(i,j,k) = my_huge
                end if
             end do
          end do
       end do
-
-      ! Next, we interpolate at the face centroid only when EB geometry cut the face.
-      ! REMEMBER: centroid is NONdimensional and zero at face center
-      ! call interpolate_to_face_centroid( lo, hi, v, v_tmp, vlo, vhi, 1, &
-      !      areafrac, alo, ahi, cent, clo, chi, flags, flo, fhi, 2 )   
       
 
    end subroutine compute_velocity_at_y_faces_eb
@@ -322,9 +312,6 @@ contains
            & bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
       
-      ! Temporary arrays
-      real(ar) :: w_tmp(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))
-      
       ! Local variables
       integer(c_int)                 :: i, j, k
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
@@ -337,25 +324,20 @@ contains
             do i = lo(1)-1, hi(1)+1
                if ( areafrac(i,j,k) > zero ) then
                   if ( ( k == domlo(3) ) .and. any(bc_klo(i,j,1) == bc_list) ) then
-                     w_tmp(i,j,k) = vel(i,j,k-1,3)
+                     w(i,j,k) = vel(i,j,k-1,3)
                   else if ( ( k == domhi(3)+1 ) .and. any(bc_khi(i,j,1) == bc_list) ) then
-                     w_tmp(i,j,k) = vel(i,j,k,3)
+                     w(i,j,k) = vel(i,j,k,3)
                   else
                      wpls     = vel(i,j,k  ,3) - half * slopes(i,j,k  ,3)
                      wmns     = vel(i,j,k-1,3) + half * slopes(i,j,k-1,3)
-                     w_tmp(i,j,k) = upwind_normal( wmns, wpls )
+                     w(i,j,k) = upwind_normal( wmns, wpls )
                   end if
                else
-                  w_tmp(i,j,k) = huge(one)               
+                  w(i,j,k) = my_huge               
                end if
             end do
          end do
       end do
-
-      ! Next, we interpolate at the face centroid only when EB geometry cut the face.
-      ! REMEMBER: centroid is NONdimensional and zero at face center
-      ! call interpolate_to_face_centroid( lo, hi, w, w_tmp, wlo, whi, 1, &
-      !      areafrac, alo, ahi, cent, clo, chi, flags, flo, fhi, 3 )   
 
    end subroutine compute_velocity_at_z_faces_eb
 
