@@ -15,6 +15,7 @@ module diffusion_mod
    use amrex_fort_module, only: rt => amrex_real
    use iso_c_binding ,    only: c_int
    use param,             only: zero, half, one, two
+   use amrex_mempool_module, only: amrex_allocate, amrex_deallocate
 
    implicit none
    private
@@ -39,7 +40,7 @@ contains
    !
    subroutine compute_divtau (lo, hi, &
         divtau, dlo, dhi, &
-        vel_in, vlo, vhi, &
+        vel_in, vinlo, vinhi, &
         mu, lambda, ro, &
         slo, shi, &
         domlo, domhi, &
@@ -62,7 +63,7 @@ contains
     integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
     ! Array bounds
-    integer(c_int),  intent(in   ) :: vlo(3), vhi(3)
+    integer(c_int),  intent(in   ) :: vinlo(3), vinhi(3)
     integer(c_int),  intent(in   ) :: slo(3), shi(3)
     integer(c_int),  intent(in   ) :: dlo(3), dhi(3)
     integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
@@ -72,13 +73,13 @@ contains
 
     ! Arrays
     real(rt),        intent(in   ) ::                           &
-         & vel_in(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-         &      ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
-         &      mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
-         &  lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         & vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
+         & ro(      slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
+         & mu(      slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
+         & lambda(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
 
     real(rt),        intent(inout) ::                        &
-         & divtau(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
+         & divtau(  dlo(1):  dhi(1),  dlo(2):  dhi(2),  dlo(3):  dhi(3),3)
 
     ! BC types
     integer(c_int), intent(in   ) ::  &
@@ -89,11 +90,13 @@ contains
          & bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
          & bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
+
     ! Temporary array just to handle bc's
-    real(rt)   ::  vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
+    integer(c_int) :: vlo(3), vhi(3)
+    real(rt), dimension(:,:,:,:), pointer, contiguous :: vel
 
     ! Temporaty array to handle div(u) at the nodes
-    real(rt)   ::  divu(vlo(1):vhi(1)+1,vlo(2):vhi(2)+1,vlo(3)+1:vhi(3))
+    real(rt), dimension(:,:,:  ), pointer, contiguous :: divu
 
     integer(c_int)                 :: i, j, k, n
     real(rt)                       :: idx, idy, idz
@@ -111,8 +114,13 @@ contains
     idy = one / dx(2)
     idz = one / dx(3)
 
+    vlo = lo - ng
+    vhi = hi + ng
+    call amrex_allocate( vel, vlo(1), vhi(1)  , vlo(2), vhi(2)  , vlo(3), vhi(3)  , 1, 3)
+    call amrex_allocate(divu, vlo(1), vhi(1)+1, vlo(2), vhi(2)+1, vlo(3), vhi(3)+1)
+
     ! Put values into ghost cells so we can easy take derivatives
-    call fill_vel_diff_bc(vel_in, vel, vlo, vhi, lo, hi, domlo, domhi, ng, &
+    call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
                           bc_ilo_type, bc_ihi_type, &
                           bc_jlo_type, bc_jhi_type, &
                           bc_klo_type, bc_khi_type)
@@ -341,6 +349,9 @@ contains
        end do
     end do
 
+    call amrex_deallocate(vel)
+    call amrex_deallocate(divu)
+
  end subroutine compute_divtau
 
    !
@@ -521,7 +532,7 @@ contains
 !-----------------------------------------------------------------------!
 !-----------------------------------------------------------------------!
 
-   subroutine fill_vel_diff_bc(vel_in, vel, vlo, vhi, lo, hi, domlo, domhi, ng, &
+   subroutine fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
                        bc_ilo_type, bc_ihi_type, &
                        bc_jlo_type, bc_jhi_type, &
                        bc_klo_type, bc_khi_type)
@@ -529,12 +540,12 @@ contains
 
    use bc, only: minf_, nsw_, fsw_, psw_
 
-   integer,  intent(in   ) ::   vlo(3),   vhi(3)
+   integer,  intent(in   ) ::   vinlo(3),   vinhi(3)
    integer,  intent(in   ) ::    lo(3),    hi(3)
      integer,  intent(in   ) :: domlo(3), domhi(3)
 
-     real(rt), intent(in   ) :: vel_in(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
-     real(rt), intent(  out) ::    vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
+     real(rt), intent(in   ) :: vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3)
+     real(rt), intent(  out) ::    vel(lo(1)-ng:hi(1)+ng,lo(2)-ng:hi(2)+ng,lo(3)-ng:hi(3)+ng,3)
 
      ! BC types
      integer(c_int), intent(in   ) :: ng,  &

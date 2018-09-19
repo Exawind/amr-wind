@@ -45,7 +45,7 @@ void MacProjection::read_inputs()
 {
 	ParmParse pp("mac");
 
-	// Option to control MGML behavior
+	// Option to control MLMG behavior
 	pp.query("verbose", verbose);
 	pp.query("mg_verbose", m_mg_verbose);
 	pp.query("mg_rtol", m_mg_rtol);
@@ -246,9 +246,6 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 
 	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
 	{
-		// Set velocity bcs
-		set_velocity_bcs(lev, u, v, w);
-
 		if(verbose)
 		{
 			EB_computeDivergence(*m_diveu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
@@ -256,6 +253,9 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 			Print() << "  * On level " << lev << " max(abs(diveu)) = " << norm0(m_diveu, lev)
 					<< "\n";
 		}
+        
+		// Set velocity bcs
+		set_velocity_bcs(lev, u, v, w);
 	}
 }
 

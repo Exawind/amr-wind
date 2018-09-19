@@ -49,10 +49,18 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	}
 
 	// Here we add the (1/rho gradp) back to ustar (note the +dt)
-	// We leave the (-1/rho gradp0) term in vel_g
 	if(proj_2)
 	{
-		incflo_add_grad_phi(lev, scaling_factor, (*p_g[lev]));
+        // Convert velocities to momenta
+        for (int n = 0; n < 3; n++)
+           MultiFab::Multiply(*vel_g[lev],(*ro_g[lev]),0,n,1,vel_g[lev]->nGrow());
+
+        MultiFab::Saxpy (*vel_g[lev], scaling_factor, *gp[lev], 0, 0, 3, vel_g[lev]->nGrow());
+
+        // Convert momenta back to velocities
+        for (int n = 0; n < 3; n++)
+           MultiFab::Divide(*vel_g[lev],(*ro_g[lev]),0,n,1,vel_g[lev]->nGrow());
+
 		incflo_set_velocity_bcs(lev, 0);
 	}
 

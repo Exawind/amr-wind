@@ -1,0 +1,43 @@
+# Stop time for simulation
+amr.max_step = 5000
+
+#incflo.fixed_dt = 0.01
+incflo.cfl = 0.5
+
+# Number of grid cells in each direction at the coarsest level
+amr.n_cell =  64 64 16
+
+# Maximum level in hierarchy (for now must be 0, i.e., one level in total)
+amr.max_level = 0
+
+# Plot/check interval
+amr.plot_int   = 100
+amr.check_int  = 1000
+#amr.restart    = chk01000
+
+# Physics
+incflo.mu_g0   = 0.001
+incflo.ro_g0   = 1.0
+incflo.gravity = 0.0 0.0 0.0
+
+# Geometry
+geometry.coord_sys   = 0                  # 0: Cartesian
+geometry.is_periodic = 0     0     1      # Is periodic in each direction?
+geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
+geometry.prob_hi     = 2.    2.    0.5    #hi corner of physical domain
+
+# Add cylinder 
+incflo.geometry = "annulus"
+annulus.direction       = 2 # Choices for direction are {0,1,2}
+annulus.outer_radius    = 1.
+annulus.inner_radius    = 0.25
+annulus.outer_center    = 1. 1. 0. 
+annulus.inner_center    = 0.75 1. 0. 
+
+# Trap invalids
+amrex.fpe_trap_invalid = 1
+
+# Explicit diffusion
+incflo.explicit_diffusion = 1
+
+#fabarray.mfiter_tile_size = 1024 1024 1024
