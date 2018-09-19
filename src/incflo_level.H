@@ -382,7 +382,7 @@ private:
 	//
 
 	// These values are required when fluid sees EB -- for now
-	const int nghost = 4;
+	const int nghost = 5;
 	int nodal_pressure = 0;
 	int explicit_diffusion = 1;
 
