@@ -32,10 +32,12 @@ annulus.direction       = 2 # Choices for direction are {0,1,2}
 annulus.outer_radius    = 1.
 annulus.inner_radius    = 0.25
 annulus.outer_center    = 1. 1. 0. 
-annulus.inner_center    = 1. 1. 0. 
+annulus.inner_center    = 0.75 1. 0. 
 
 # Trap invalids
 amrex.fpe_trap_invalid = 1
 
 # Explicit diffusion
 incflo.explicit_diffusion = 1
+
+#fabarray.mfiter_tile_size = 1024 1024 1024
