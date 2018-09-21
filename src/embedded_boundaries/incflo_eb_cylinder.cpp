@@ -67,18 +67,11 @@ void incflo_level::make_eb_cylinder(int lev)
 	// Create the cylinder
 	amrex::Print() << "Building the cylinder geometry ..." << std::endl;
 
-    std::unique_ptr<EB2::CylinderIF> my_cyl;
-    if (height < 0.0) 
-    {
-        my_cyl = std::unique_ptr<EB2::CylinderIF>(new EB2::CylinderIF(radius, direction, center, inside));
-    } 
-    else 
-    {
-        my_cyl = std::unique_ptr<EB2::CylinderIF>(
-                new EB2::CylinderIF(radius, height, direction, center, inside));
-    }
+    // Build the Cylinder geometry first representing the curved walls (this is
+    // always present regardless of user input).
+    EB2::CylinderIF my_cyl(radius, height, direction, center, inside);
 
-	auto gshop_cyl = EB2::makeShop(*my_cyl);
+    auto gshop_cyl = EB2::makeShop(my_cyl);
 	int max_coarsening_level = 100;
 	EB2::Build(gshop_cyl, geom.back(), max_level_here, max_level_here + max_coarsening_level);
 
