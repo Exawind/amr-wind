@@ -344,6 +344,9 @@ private:
 	// MAC projection object
 	std::unique_ptr<MacProjection> mac_projection;
 
+    // What solver to use as the bottom solver in the MLMG solves.
+    std::string bottom_solver_type;
+
 	// used if load_balance_type == "KnapSack"
 	Vector<std::unique_ptr<MultiFab>> fluid_cost;
 
@@ -366,9 +369,6 @@ private:
 	Real cfl = 0.5;
 	Real fixed_dt = -1.;
 
-	static int m_eb_basic_grow_cells;
-	static int m_eb_volume_grow_cells;
-	static int m_eb_full_grow_cells;
 	static EBSupport m_eb_support_level;
 
 	Periodicity p0_periodicity;
@@ -383,6 +383,11 @@ private:
 
 	// These values are required when fluid sees EB -- for now
 	const int nghost = 5;
+
+	const int m_eb_basic_grow_cells = nghost;
+	const int m_eb_volume_grow_cells = nghost;
+	const int m_eb_full_grow_cells = nghost;
+
 	int nodal_pressure = 0;
 	int explicit_diffusion = 1;
 

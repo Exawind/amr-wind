@@ -27,6 +27,10 @@ void incflo_level::InitParams()
 		pp.query("mg_rtol", mg_rtol);
 		pp.query("mg_atol", mg_atol);
 
+        // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
+        bottom_solver_type = "bicgstab";
+        pp.query( "bottom_solver_type",  bottom_solver_type );
+
 		// Tolerance to check for steady state (projection only)
 		pp.query("steady_state_tol", steady_state_tol);
 

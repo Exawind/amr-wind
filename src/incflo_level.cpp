@@ -16,9 +16,6 @@ amrex::IntVect incflo_level::e_x(1, 0, 0);
 amrex::IntVect incflo_level::e_y(0, 1, 0);
 amrex::IntVect incflo_level::e_z(0, 0, 1);
 
-int incflo_level::m_eb_basic_grow_cells = 2;
-int incflo_level::m_eb_volume_grow_cells = 2;
-int incflo_level::m_eb_full_grow_cells = 2;
 EBSupport incflo_level::m_eb_support_level = EBSupport::full;
 
 incflo_level::~incflo_level(){};

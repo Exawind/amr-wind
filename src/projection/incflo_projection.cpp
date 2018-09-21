@@ -242,6 +242,20 @@ void incflo_level::solve_poisson_equation(int lev,
 		//
 		MLMG solver(matrix);
 
+       // The default bottom solver is BiCG
+       // Other options include: 
+       ///   Hypre IJ AMG solver 
+       //    solver.setBottomSolver(MLMG::BottomSolver::hypre);
+       ///   regular smoothing
+       //    solver.setBottomSolver(MLMG::BottomSolver::smoother);
+
+       if (bottom_solver_type == "smoother")
+       { 
+          solver.setBottomSolver(MLMG::BottomSolver::smoother);
+       } else if (bottom_solver_type == "hypre") { 
+          solver.setBottomSolver(MLMG::BottomSolver::hypre);
+       }
+	
 		solver.setMaxIter(mg_max_iter);
 		solver.setMaxFmgIter(mg_max_fmg_iter);
 		solver.setVerbose(mg_verbose);

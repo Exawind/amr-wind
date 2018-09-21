@@ -25,9 +25,7 @@ void incflo_level::make_eb_regular(int lev)
      ****************************************************************************/
 
 	// set up ebfactory
-	int m_eb_basic_grow_cells = nghost;
-	int m_eb_volume_grow_cells = nghost;
-	int m_eb_full_grow_cells = nghost;
+
 	EBSupport m_eb_support_level = EBSupport::full;
 
 	int max_coarsening_level = 100;
