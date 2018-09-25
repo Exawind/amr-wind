@@ -291,7 +291,7 @@ void incflo_level::Restart(
 	{
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
-		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "u"));
+		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
 
 		MultiFab mf_gp;
 		VisMF::Read(mf_gp, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));

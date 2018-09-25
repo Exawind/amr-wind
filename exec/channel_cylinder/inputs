@@ -1,5 +1,6 @@
 # Stop time for simulation
-amr.max_step = 1
+amr.max_step = 2
+amr.restart = chk00001
 amr.stop_time = 1.0
 
 #incflo.fixed_dt = 0.01
@@ -14,7 +15,7 @@ amr.max_level = 0
 
 # Plot/check interval
 amr.plot_int   = 1
-amr.check_int  = -1
+amr.check_int  = 1
 
 # Physics
 incflo.mu_0   = 0.01
