@@ -56,6 +56,7 @@ module init_fluid_module
       use amrex_fort_module, only: ar => amrex_real
       use iso_c_binding ,    only: c_int
       use param,             only: zero, half, one
+      use ic,                only: ic_u
  
       implicit none
 
@@ -85,7 +86,7 @@ module init_fluid_module
          y =  (real(j,ar) + half) / num_cells_y
          do i = lo(1), hi(1)
             do k = lo(3), hi(3)
-               vel(i,j,k,1) = 6.0 * y * (one - y)
+               vel(i,j,k,1) = 6.0 * ic_u(1) * y * (one - y)
                vel(i,j,k,2) = zero
                vel(i,j,k,3) = zero
             end do
