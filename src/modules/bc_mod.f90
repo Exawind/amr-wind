@@ -9,7 +9,7 @@ module bc
   use amrex_fort_module, only : rt => amrex_real
   use iso_c_binding , only: c_int
 
-  use param, only: dim_bc, dim_m, dim_n_g, dim_n_s
+  use param, only: dim_bc, dim_n
 
   ! Type of boundary:
   character(len=16) :: BC_Type(dim_bc)
@@ -28,39 +28,39 @@ module bc
   real(rt) :: BC_Center(dim_bc,3)
 
   ! Gas phase BC pressure
-  real(rt) :: BC_P_g(dim_bc)
+  real(rt) :: BC_P(dim_bc)
 
   ! Velocities at a specified boundary
-  real(rt) :: BC_U_g(dim_bc), BC_U_s(dim_bc, dim_m)
-  real(rt) :: BC_V_g(dim_bc), BC_V_s(dim_bc, dim_m)
-  real(rt) :: BC_W_g(dim_bc), BC_W_s(dim_bc, dim_m)
+  real(rt) :: BC_U(dim_bc)
+  real(rt) :: BC_V(dim_bc)
+  real(rt) :: BC_W(dim_bc)
 
   ! Volumetric flow rate through a mass inflow boundary
-  real(rt) :: BC_VolFlow_g(dim_bc), BC_VolFlow_s(dim_bc, dim_m)
+  real(rt) :: BC_VolFlow(dim_bc)
 
   ! Mass flow rate through a mass inflow boundary
-  real(rt) :: BC_MassFlow_g(dim_bc), BC_MassFlow_s(dim_bc, dim_m)
+  real(rt) :: BC_MassFlow(dim_bc)
 
   ! Specified pressure drop cyclic boundary
   real(rt) :: delp_x, delp_y, delp_z
 
   ! Partial slip wall boundary condition (gas only)
-  real(rt) :: BC_hw_g(dim_bc)
-  real(rt) :: BC_Uw_g(dim_bc)
-  real(rt) :: BC_Vw_g(dim_bc)
-  real(rt) :: BC_Ww_g(dim_bc)
+  real(rt) :: BC_hw(dim_bc)
+  real(rt) :: BC_Uw(dim_bc)
+  real(rt) :: BC_Vw(dim_bc)
+  real(rt) :: BC_Ww(dim_bc)
 
   ! Heat transfer boundary condition
-  real(rt) :: BC_T_g   (dim_bc), BC_T_s   (dim_bc, dim_m)
-  real(rt) :: BC_hw_T_g(dim_bc), BC_hw_T_s(dim_bc, dim_m)
-  real(rt) :: BC_Tw_g  (dim_bc), BC_Tw_s  (dim_bc, dim_m)
-  real(rt) :: BC_C_T_g (dim_bc), BC_C_T_s (dim_bc, dim_m)
+  real(rt) :: BC_T   (dim_bc)
+  real(rt) :: BC_hw_T(dim_bc)
+  real(rt) :: BC_Tw  (dim_bc)
+  real(rt) :: BC_C_T (dim_bc)
 
   ! Species transfer boundary condition
-  real(rt) :: BC_X_g(dim_bc, dim_n_g), BC_X_s(dim_bc, dim_m, dim_n_s)
-  real(rt) :: BC_hw_X_g(dim_bc, dim_n_g)
-  real(rt) :: BC_Xw_g  (dim_bc, dim_n_g)
-  real(rt) :: BC_C_X_g (dim_bc, dim_n_g)
+  real(rt) :: BC_X(dim_bc, dim_n)
+  real(rt) :: BC_hw_X(dim_bc, dim_n)
+  real(rt) :: BC_Xw  (dim_bc, dim_n)
+  real(rt) :: BC_C_X (dim_bc, dim_n)
 
   ! External shaking (shaking amplitude vector sets direction of shaking)
   real(rt), dimension(3) :: BC_shaker_A ! shaking amplitude
@@ -274,41 +274,35 @@ contains
 
           if(flow_bc) then
              write (unit_out, "(' ')")
-             if(is_defined(bc_p_g(bcv))) &
-               write (unit_out,1641) bc_p_g(bcv)
-             if(is_defined(bc_t_g(bcv))) &
-               write (unit_out,1642) bc_t_g(bcv)
-             if(is_defined(bc_massflow_g(bcv))) &
-               write (unit_out,1648) bc_massflow_g(bcv)
-             if(is_defined(bc_volflow_g(bcv)))  &
-               write (unit_out,1649) bc_volflow_g(bcv)
-             write (unit_out, 1650) bc_u_g(bcv)
-             write (unit_out, 1651) bc_v_g(bcv)
-             write (unit_out, 1652) bc_w_g(bcv)
+             if(is_defined(bc_p(bcv))) &
+               write (unit_out,1641) bc_p(bcv)
+             if(is_defined(bc_t(bcv))) &
+               write (unit_out,1642) bc_t(bcv)
+             if(is_defined(bc_massflow(bcv))) &
+               write (unit_out,1648) bc_massflow(bcv)
+             if(is_defined(bc_volflow(bcv)))  &
+               write (unit_out,1649) bc_volflow(bcv)
+             write (unit_out, 1650) bc_u(bcv)
+             write (unit_out, 1651) bc_v(bcv)
+             write (unit_out, 1652) bc_w(bcv)
 
-1641  format(9X,'Gas pressure (BC_P_g) ..................... ',g12.5)
-1642  format(9X,'Gas temperature (BC_T_g) .................. ',g12.5)
-1648  format(9X,'Gas mass flow rate (BC_MassFlow_g) ........ ',g12.5)
-1649  format(9X,'Gas volumetric flow rate (BC_VOLFLOW_g) ... ',g12.5)
-1650  format(9X,'X-component of gas velocity (BC_U_g) ...... ',g12.5)
-1651  format(9X,'Y-component of gas velocity (BC_V_g) ...... ',g12.5)
-1652  format(9X,'Z-component of gas velocity (BC_W_g) ...... ',g12.5)
-
-1668  format(9X,'Solids phase-',I2,' mass flow rate (BC_MASSFLOW_s) ........ ',g12.5)
-1669  format(9X,'Solids phase-',I2,' volumetric flow rate (BC_VOLFLOW_s) ... ',g12.5)
-1670  format(9X,'X-component of solids phase-',I2,' velocity (BC_U_s) ...... ',g12.5)
-1671  format(9X,'Y-component of solids phase-',I2,' velocity (BC_V_s) ...... ',g12.5)
-1672  format(9X,'Z-component of solids phase-',I2,' velocity (BC_W_s) ...... ',g12.5)
+1641  format(9X,'Gas pressure (BC_P) ..................... ',g12.5)
+1642  format(9X,'Gas temperature (BC_T) .................. ',g12.5)
+1648  format(9X,'Gas mass flow rate (BC_MassFlow) ........ ',g12.5)
+1649  format(9X,'Gas volumetric flow rate (BC_VOLFLOW) ... ',g12.5)
+1650  format(9X,'X-component of gas velocity (BC_U) ...... ',g12.5)
+1651  format(9X,'Y-component of gas velocity (BC_V) ...... ',g12.5)
+1652  format(9X,'Z-component of gas velocity (BC_W) ...... ',g12.5)
 
           else
              if (bc_type(bcv) == 'PAR_SLIP_WALL' .or. bc_type(bcv) == 'PSW') &
-               write (unit_out, 1675) bc_hw_g(bcv), &
-               bc_uw_g(bcv), bc_vw_g(bcv), bc_ww_g(bcv)
+               write (unit_out, 1675) bc_hw(bcv), &
+               bc_uw(bcv), bc_vw(bcv), bc_ww(bcv)
 
-1675  format(9X,'Partial slip coefficient (BC_hw_g) .... ',G12.5,/,&
-             9X,'Slip velocity U at wall (BC_Uw_g) ..... ',G12.5,/,&
-             9X,'Slip velocity V at wall (BC_Vw_g) ..... ',G12.5,/,&
-             9X,'Slip velocity W at wall (BC_Ww_g) ..... ',G12.5)
+1675  format(9X,'Partial slip coefficient (BC_hw) .... ',G12.5,/,&
+             9X,'Slip velocity U at wall (BC_Uw) ..... ',G12.5,/,&
+             9X,'Slip velocity V at wall (BC_Vw) ..... ',G12.5,/,&
+             9X,'Slip velocity W at wall (BC_Ww) ..... ',G12.5)
 
           endif
        endif

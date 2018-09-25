@@ -1,11 +1,10 @@
 module check_bc_flow_module
 
    use param, only: zero
-   use param,  only: dim_bc, dim_m
+   use param,  only: dim_bc
 
    use bc, only: bc_plane
-   use bc, only: bc_u_g, bc_v_g, bc_w_g
-   use bc, only: bc_u_s, bc_v_s, bc_w_s
+   use bc, only: bc_u, bc_v, bc_w
 
 ! Use the error manager for posting error messages.
 !---------------------------------------------------------------------//
@@ -64,8 +63,6 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
   subroutine check_bc_vel_inflow(bcv)
 
-    use param, only: dim_m
-
     integer, intent(in) :: bcv
 
     ! Define format for error messages
@@ -76,33 +73,33 @@ contains
     select case (bc_plane(bcv))
 
     case ('W')
-       if(bc_u_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_U_g',bcv)), '<'
+       if(bc_u(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_U',bcv)), '<'
           call flush_err_msg(abort=.true.)
        endif
     case('E')
-       if(bc_u_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_U_g',bcv)), '>'
+       if(bc_u(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_U',bcv)), '>'
           call flush_err_msg
        endif
     case('S')
-       if(bc_v_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_V_g',bcv)), '<'
+       if(bc_v(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_V',bcv)), '<'
           call flush_err_msg
        endif
     case('N')
-       if(bc_v_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_V_g',bcv)), '>'
+       if(bc_v(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_V',bcv)), '>'
           call flush_err_msg
        endif
     case('B')
-       if(bc_w_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_W_g',bcv)), '<'
+       if(bc_w(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_W',bcv)), '<'
           call flush_err_msg
        endif
     case('T')
-       if(bc_w_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_W_g',bcv)), '>'
+       if(bc_w(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_W',bcv)), '>'
           call flush_err_msg
        endif
 
@@ -125,8 +122,6 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
   subroutine check_bc_vel_outflow(bcv)
 
-    use bc, only: dim_m
-
     ! loop/variable indices
     integer, intent(in) :: bcv
 
@@ -136,33 +131,33 @@ contains
     select case (bc_plane(BCV))
 
     case ('W')
-       if(bc_u_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_U_g',bcv)), '>'
+       if(bc_u(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_U',bcv)), '>'
           call flush_err_msg
        endif
     case('E')
-       if(bc_u_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_U_g',bcv)), '<'
+       if(bc_u(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_U',bcv)), '<'
           call flush_err_msg
        endif
     case('S')
-       if(bc_v_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_V_g',bcv)), '>'
+       if(bc_v(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_V',bcv)), '>'
           call flush_err_msg
        endif
     case('N')
-       if(bc_v_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_V_g',bcv)), '<'
+       if(bc_v(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_V',bcv)), '<'
           call flush_err_msg
        endif
     case('B')
-       if(bc_w_g(bcv) < zero) then
-          write(err_msg,1300) trim(ivar('BC_W_g',bcv)), '>'
+       if(bc_w(bcv) < zero) then
+          write(err_msg,1300) trim(ivar('BC_W',bcv)), '>'
           call flush_err_msg
        endif
     case('T')
-       if(bc_w_g(bcv) > zero) then
-          write(err_msg,1300) trim(ivar('BC_W_g',bcv)), '<'
+       if(bc_w(bcv) > zero) then
+          write(err_msg,1300) trim(ivar('BC_W',bcv)), '<'
           call flush_err_msg
        endif
 

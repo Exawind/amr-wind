@@ -64,7 +64,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
 
             case ( minf_)
 
-               vel(ulo(1):domlo(1)-1,j,k,1) =  bc_u_g(bcv)
+               vel(ulo(1):domlo(1)-1,j,k,1) =  bc_u(bcv)
                vel(ulo(1):domlo(1)-1,j,k,2) =  zero
                vel(ulo(1):domlo(1)-1,j,k,3) =  zero
 
@@ -111,7 +111,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
             case ( minf_ )
                
 
-               vel(domhi(1)+1:uhi(1),j,k,1) = bc_u_g(bcv)
+               vel(domhi(1)+1:uhi(1),j,k,1) = bc_u(bcv)
                vel(domhi(1)+1:uhi(1),j,k,2) = zero
                vel(domhi(1)+1:uhi(1),j,k,3) = zero
 
@@ -158,7 +158,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
             case ( minf_ )
 
                vel(i,ulo(2):domlo(2)-1,k,1) = zero
-               vel(i,ulo(2):domlo(2)-1,k,2) = bc_v_g(bcv)
+               vel(i,ulo(2):domlo(2)-1,k,2) = bc_v(bcv)
                vel(i,ulo(2):domlo(2)-1,k,3) = zero
 
             case ( nsw_ )
@@ -205,7 +205,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
 
 
                vel(i,domhi(2)+1:uhi(2),k,1) = zero
-               vel(i,domhi(2)+1:uhi(2),k,2) = bc_v_g(bcv)
+               vel(i,domhi(2)+1:uhi(2),k,2) = bc_v(bcv)
                vel(i,domhi(2)+1:uhi(2),k,3) = zero
 
             case ( nsw_) 
@@ -252,7 +252,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
 
                vel(i,j,ulo(3):domlo(3)-1,1) = zero
                vel(i,j,ulo(3):domlo(3)-1,2) = zero
-               vel(i,j,ulo(3):domlo(3)-1,3) = bc_w_g(bcv)
+               vel(i,j,ulo(3):domlo(3)-1,3) = bc_w(bcv)
 
             case ( nsw_ )
 
@@ -298,7 +298,7 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
 
                vel(i,j,domhi(3)+1:uhi(3),1) = zero
                vel(i,j,domhi(3)+1:uhi(3),2) = zero
-               vel(i,j,domhi(3)+1:uhi(3),3) = bc_w_g(bcv)
+               vel(i,j,domhi(3)+1:uhi(3),3) = bc_w(bcv)
 
             case ( nsw_ ) 
 
@@ -338,8 +338,8 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
             bcv = bct_ilo(j,k,2)
             if (bct_ilo(j,k,1) == psw_) then
                vel(ulo(1):domlo(1)-1,j,k,1) = zero
-               vel(ulo(1):domlo(1)-1,j,k,2) = bc_vw_g(bcv)
-               vel(ulo(1):domlo(1)-1,j,k,3) = bc_ww_g(bcv)
+               vel(ulo(1):domlo(1)-1,j,k,2) = bc_vw(bcv)
+               vel(ulo(1):domlo(1)-1,j,k,3) = bc_ww(bcv)
             end if
          end do
       end do
@@ -351,8 +351,8 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
             bcv = bct_ihi(j,k,2)
             if (bct_ihi(j,k,1) == psw_) then
                vel(domhi(1)+1:uhi(1),j,k,1) = zero
-               vel(domhi(1)+1:uhi(1),j,k,2) = bc_vw_g(bcv)
-               vel(domhi(1)+1:uhi(1),j,k,3) = bc_ww_g(bcv)
+               vel(domhi(1)+1:uhi(1),j,k,2) = bc_vw(bcv)
+               vel(domhi(1)+1:uhi(1),j,k,3) = bc_ww(bcv)
             end if
          end do
       end do
@@ -363,9 +363,9 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
          do i=ulo(1),uhi(1)
             bcv = bct_jlo(i,k,2)
             if (bct_jlo(i,k,1) == psw_)then
-               vel(i,ulo(2):domlo(2)-1,k,1) = bc_uw_g(bcv)
+               vel(i,ulo(2):domlo(2)-1,k,1) = bc_uw(bcv)
                vel(i,ulo(2):domlo(2)-1,k,2) = zero
-               vel(i,ulo(2):domlo(2)-1,k,3) = bc_ww_g(bcv)
+               vel(i,ulo(2):domlo(2)-1,k,3) = bc_ww(bcv)
             end if
          end do
       end do
@@ -376,9 +376,9 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
          do i=ulo(1),uhi(1)
             bcv = bct_jhi(i,k,2)
             if (bct_jhi(i,k,1) == psw_)then
-               vel(i,domhi(2)+1:uhi(2),k,1) = bc_uw_g(bcv)
+               vel(i,domhi(2)+1:uhi(2),k,1) = bc_uw(bcv)
                vel(i,domhi(2)+1:uhi(2),k,2) = zero
-               vel(i,domhi(2)+1:uhi(2),k,3) = bc_ww_g(bcv)
+               vel(i,domhi(2)+1:uhi(2),k,3) = bc_ww(bcv)
             end if
          end do
       end do
@@ -389,8 +389,8 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
          do i=ulo(1),uhi(1)
             bcv = bct_klo(i,j,2)
             if (bct_klo(i,j,1) == psw_) then
-               vel(i,j,ulo(3):domlo(3)-1,1) = bc_uw_g(bcv)
-               vel(i,j,ulo(3):domlo(3)-1,2) = bc_vw_g(bcv)
+               vel(i,j,ulo(3):domlo(3)-1,1) = bc_uw(bcv)
+               vel(i,j,ulo(3):domlo(3)-1,2) = bc_vw(bcv)
                vel(i,j,ulo(3):domlo(3)-1,3) = zero
             end if
          end do
@@ -402,8 +402,8 @@ subroutine set_velocity_bcs ( vel, ulo, uhi, &
          do i=ulo(1),uhi(1)
             bcv = bct_khi(i,j,2)
             if (bct_khi(i,j,1) == psw_) then
-               vel(i,j,domhi(3)+1:uhi(3),1) = bc_uw_g(bcv)
-               vel(i,j,domhi(3)+1:uhi(3),2) = bc_vw_g(bcv)
+               vel(i,j,domhi(3)+1:uhi(3),1) = bc_uw(bcv)
+               vel(i,j,domhi(3)+1:uhi(3),2) = bc_vw(bcv)
                vel(i,j,domhi(3)+1:uhi(3),3) = zero
             end if
          end do
@@ -485,7 +485,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
 
             case ( minf_)
 
-               vec(ulo(1):domlo(1)-1,j,k,1) = two * bc_u_g(bcv) - vec(domlo(1),j,k,1)
+               vec(ulo(1):domlo(1)-1,j,k,1) = two * bc_u(bcv) - vec(domlo(1),j,k,1)
                vec(ulo(1):domlo(1)-1,j,k,2) = vec(domlo(1),j,k,2) 
                vec(ulo(1):domlo(1)-1,j,k,3) = vec(domlo(1),j,k,3)
 
@@ -520,7 +520,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
 
             case ( minf_ )
 
-               vec(domhi(1)+1:uhi(1),j,k,1) = two * bc_u_g(bcv) - vec(domhi(1),j,k,1)
+               vec(domhi(1)+1:uhi(1),j,k,1) = two * bc_u(bcv) - vec(domhi(1),j,k,1)
                vec(domhi(1)+1:uhi(1),j,k,2) = vec(domhi(1),j,k,2)
                vec(domhi(1)+1:uhi(1),j,k,3) = vec(domhi(1),j,k,3)
 
@@ -556,7 +556,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
             case ( minf_ )
 
                vec(i,ulo(2):domlo(2)-1,k,1) = vec(i,domlo(2),k,1)
-               vec(i,ulo(2):domlo(2)-1,k,2) = two * bc_v_g(bcv) - vec(i,domlo(2),k,2)
+               vec(i,ulo(2):domlo(2)-1,k,2) = two * bc_v(bcv) - vec(i,domlo(2),k,2)
                vec(i,ulo(2):domlo(2)-1,k,3) = vec(i,domlo(2),k,3)
 
 
@@ -590,7 +590,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
             case ( minf_) 
 
                vec(i,domhi(2)+1:uhi(2),k,1) = vec(i,domhi(2),k,1)
-               vec(i,domhi(2)+1:uhi(2),k,2) = two * bc_v_g(bcv) - vec(i,domhi(2),k,2)
+               vec(i,domhi(2)+1:uhi(2),k,2) = two * bc_v(bcv) - vec(i,domhi(2),k,2)
                vec(i,domhi(2)+1:uhi(2),k,3) = vec(i,domhi(2),k,3)
 
 
@@ -627,7 +627,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
 
                vec(i,j,ulo(3):domlo(3)-1,1) = vec(i,j,domlo(3),1)
                vec(i,j,ulo(3):domlo(3)-1,2) = vec(i,j,domlo(3),2)
-               vec(i,j,ulo(3):domlo(3)-1,3) = two * bc_w_g(bcv) - vec(i,j,domlo(3),3)
+               vec(i,j,ulo(3):domlo(3)-1,3) = two * bc_w(bcv) - vec(i,j,domlo(3),3)
                
             end select
 
@@ -662,7 +662,7 @@ subroutine set_vec_bcs ( vec, ulo, uhi, &
 
                vec(i,j,domhi(3)+1:uhi(3),1) = vec(i,j,domhi(3),1)
                vec(i,j,domhi(3)+1:uhi(3),2) = vec(i,j,domhi(3),2) 
-               vec(i,j,domhi(3)+1:uhi(3),3) = two * bc_w_g(bcv) - vec(i,j,domhi(3),3)
+               vec(i,j,domhi(3)+1:uhi(3),3) = two * bc_w(bcv) - vec(i,j,domhi(3),3)
 
             end select
 

@@ -10,7 +10,7 @@ contains
    !
    ! Compute the vorticity 
    ! 
-   subroutine compute_vort ( lo, hi, vort, slo, shi, vel_g, vlo, vhi, dx) &
+   subroutine compute_vort ( lo, hi, vort, slo, shi, vel, vlo, vhi, dx) &
                             bind(C, name="compute_vort")
 
       integer(c_int), intent(in   ) :: slo(3),shi(3)
@@ -22,7 +22,7 @@ contains
            vort(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       
       real(rt), intent(in   ) :: &
-           vel_g(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
+           vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
 
       ! Local variables
       !-----------------------------------------------
@@ -38,12 +38,12 @@ contains
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
 
-               uy = 0.5d0 * ody * ( vel_g(i,j+1,k,1) - vel_g(i,j-1,k,1))
-               uz = 0.5d0 * odz * ( vel_g(i,j,k+1,1) - vel_g(i,j,k-1,1))
-               vx = 0.5d0 * odz * ( vel_g(i+1,j,k,2) - vel_g(i-1,j,k,2))
-               vz = 0.5d0 * odz * ( vel_g(i,j,k+1,2) - vel_g(i,j,k-1,2))
-               wx = 0.5d0 * odz * ( vel_g(i+1,j,k,3) - vel_g(i-1,j,k,3))
-               wy = 0.5d0 * ody * ( vel_g(i,j+1,k,3) - vel_g(i,j-1,k,3))
+               uy = 0.5d0 * ody * ( vel(i,j+1,k,1) - vel(i,j-1,k,1))
+               uz = 0.5d0 * odz * ( vel(i,j,k+1,1) - vel(i,j,k-1,1))
+               vx = 0.5d0 * odz * ( vel(i+1,j,k,2) - vel(i-1,j,k,2))
+               vz = 0.5d0 * odz * ( vel(i,j,k+1,2) - vel(i,j,k-1,2))
+               wx = 0.5d0 * odz * ( vel(i+1,j,k,3) - vel(i-1,j,k,3))
+               wy = 0.5d0 * ody * ( vel(i,j+1,k,3) - vel(i,j-1,k,3))
                vort(i,j,k) = sqrt((wy-vz)**2+(uz-wx)**2+(vx-uy)**2)
 
             end do

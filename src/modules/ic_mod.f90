@@ -9,7 +9,7 @@ module ic
   use amrex_fort_module, only : rt => amrex_real
   use iso_c_binding , only: c_int
 
-  use param, only: dim_ic, dim_m, dim_n_g, dim_n_s
+  use param, only: dim_ic, dim_n
 
 
   ! Boundary condition coordinates
@@ -18,32 +18,18 @@ module ic
   real(rt) :: IC_Z_b(dim_ic), IC_Z_t(dim_ic)
 
   ! Initial gas pressure
-  real(rt) :: IC_P_g(dim_ic)
+  real(rt) :: IC_P(dim_ic)
 
   ! Initial velocities in specified region
-  real(rt) :: IC_U_g(dim_ic), IC_U_s(dim_ic, dim_m)
-  real(rt) :: IC_V_g(dim_ic), IC_V_s(dim_ic, dim_m)
-  real(rt) :: IC_W_g(dim_ic), IC_W_s(dim_ic, dim_m)
+  real(rt) :: IC_U(dim_ic)
+  real(rt) :: IC_V(dim_ic)
+  real(rt) :: IC_W(dim_ic)
 
   ! Heat transfer boundary condition
-  real(rt) :: IC_T_g(dim_ic), IC_T_s(dim_ic, dim_m)
+  real(rt) :: IC_T(dim_ic)
 
   ! Species transfer boundary condition
-  real(rt) :: IC_X_g(dim_ic, dim_n_g), IC_X_s(dim_ic, dim_m, dim_n_s)
-
-  ! Particle Size properties
-  character(len=16) :: ic_dp_dist(dim_ic, dim_m)
-  real(rt) :: ic_dp_mean(dim_ic, dim_m)
-  real(rt) :: ic_dp_std(dim_ic, dim_m)
-  real(rt) :: ic_dp_min(dim_ic, dim_m)
-  real(rt) :: ic_dp_max(dim_ic, dim_m)
-
-  ! Particle density properties
-  character(len=16) :: ic_ro_s_dist(dim_ic, dim_m)
-  real(rt) :: ic_ro_s_mean(dim_ic, dim_m)
-  real(rt) :: ic_ro_s_std(dim_ic, dim_m)
-  real(rt) :: ic_ro_s_min(dim_ic, dim_m)
-  real(rt) :: ic_ro_s_max(dim_ic, dim_m)
+  real(rt) :: IC_X(dim_ic, dim_n)
 
   character(len=16) :: ic_pack_type(dim_ic)
 

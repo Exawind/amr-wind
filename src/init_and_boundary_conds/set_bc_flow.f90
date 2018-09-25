@@ -4,15 +4,10 @@ module set_bc_flow_module
   use iso_c_binding , only: c_int
 
   use bc, only: bc_type, bc_plane
+  use bc, only: bc_u, bc_v, bc_w
+  use bc, only: bc_massflow, bc_volflow
 
-  use param,  only: dim_m
   use param, only: zero, one, equal, is_defined
-
-  use bc, only: bc_u_g, bc_v_g, bc_w_g
-  use bc, only: bc_massflow_g, bc_volflow_g
-
-  use bc, only: bc_u_s, bc_v_s, bc_w_s
-  use bc, only: bc_massflow_s, bc_volflow_s
 
   implicit none
   private 
@@ -103,22 +98,22 @@ contains
     select case(bc_plane(bcv))
     case('W','E')
        area = dy*dble(j_n-j_s+1)*dz*dble(k_t-k_b+1)
-       vel = sgn*bc_volflow_g(bcv)/(area)
-       bc_u_g(bcv) = vel
-       bc_v_g(bcv) = off * bc_v_g(bcv)
-       bc_w_g(bcv) = off * bc_w_g(bcv)
+       vel = sgn*bc_volflow(bcv)/(area)
+       bc_u(bcv) = vel
+       bc_v(bcv) = off * bc_v(bcv)
+       bc_w(bcv) = off * bc_w(bcv)
     case('S','N')
        area = dx*dble(i_e-i_w+1)*dz*dble(k_t-k_b+1)
-       vel = sgn*bc_volflow_g(bcv)/(area)
-       bc_v_g(bcv) = vel
-       bc_u_g(bcv) = off * bc_u_g(bcv)
-       bc_w_g(bcv) = off * bc_w_g(bcv)
+       vel = sgn*bc_volflow(bcv)/(area)
+       bc_v(bcv) = vel
+       bc_u(bcv) = off * bc_u(bcv)
+       bc_w(bcv) = off * bc_w(bcv)
     case('B','T')
        area = dx*dble(i_e-i_w+1)*dy*dble(j_n-j_s+1)
-       vel = sgn*bc_volflow_g(bcv)/(area)
-       bc_w_g(bcv) = vel
-       bc_u_g(bcv) = off * bc_u_g(bcv)
-       bc_v_g(bcv) = off * bc_v_g(bcv)
+       vel = sgn*bc_volflow(bcv)/(area)
+       bc_w(bcv) = vel
+       bc_u(bcv) = off * bc_u(bcv)
+       bc_v(bcv) = off * bc_v(bcv)
     end select
 
   end subroutine gas_volflow_to_vel

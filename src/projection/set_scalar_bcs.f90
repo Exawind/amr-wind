@@ -10,7 +10,7 @@
 !  Date: December 20, 2017
 !
 ! 
-subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
+subroutine set_scalar_bcs ( ro, mu, lambda, slo, shi, &
      & bct_ilo, bct_ihi, bct_jlo, bct_jhi, bct_klo, bct_khi,           &
      & domlo, domhi, ng ) bind(C) 
 
@@ -18,7 +18,7 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
    use iso_c_binding ,     only: c_int
    use bc
    use scales,             only: scale_pressure
-   use fld_const,          only: ro_g0, mu_g0
+   use fld_const,          only: ro_0, mu_0
    use param    ,          only: is_undefined
    
    implicit none
@@ -43,14 +43,14 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
    ! Arrays
    real(ar),      intent(inout) ::  &
-        ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),     &
-        mu_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),     &
-        lambda_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+        ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),     &
+        mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),     &
+        lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
    ! Local variables
    integer  :: bcv, i, j, k
    integer  :: nlft, nrgt, nbot, ntop, nup, ndwn
-   real(ar) :: bc_ro_g, bc_mu_g, bc_lambda_g
+   real(ar) :: bc_ro, bc_mu, bc_lambda
 
    nlft = max(0,domlo(1)-slo(1))
    nbot = max(0,domlo(2)-slo(2))
@@ -60,7 +60,7 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
    ntop = max(0,shi(2)-domhi(2))
    nup  = max(0,shi(3)-domhi(3))
 
-   bc_ro_g = ro_g0
+   bc_ro = ro_0
    
    if (nlft .gt. 0) then
       do k = slo(3), shi(3)
@@ -72,18 +72,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
                
             case ( pinf_, pout_, nsw_, fsw_) 
 
-               ro_g(slo(1):domlo(1)-1,j,k) =     ro_g(domlo(1),j,k)
-               mu_g(slo(1):domlo(1)-1,j,k) =     mu_g(domlo(1),j,k)
-               lambda_g(slo(1):domlo(1)-1,j,k) = lambda_g(domlo(1),j,k)
+               ro(slo(1):domlo(1)-1,j,k) =     ro(domlo(1),j,k)
+               mu(slo(1):domlo(1)-1,j,k) =     mu(domlo(1),j,k)
+               lambda(slo(1):domlo(1)-1,j,k) = lambda(domlo(1),j,k)
 
             case ( minf_)
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-               ro_g(slo(1):domlo(1)-1,j,k)     = bc_ro_g
-               mu_g(slo(1):domlo(1)-1,j,k)     = bc_mu_g
-               lambda_g(slo(1):domlo(1)-1,j,k) = bc_lambda_g
+               ro(slo(1):domlo(1)-1,j,k)     = bc_ro
+               mu(slo(1):domlo(1)-1,j,k)     = bc_mu
+               lambda(slo(1):domlo(1)-1,j,k) = bc_lambda
 
             end select
             
@@ -102,18 +102,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
             case ( pinf_, pout_, nsw_, fsw_) 
 
-                   ro_g(domhi(1)+1:shi(1),j,k) =     ro_g(domhi(1)  ,j,k)
-                   mu_g(domhi(1)+1:shi(1),j,k) =     mu_g(domhi(1)  ,j,k)
-               lambda_g(domhi(1)+1:shi(1),j,k) = lambda_g(domhi(1)  ,j,k)
+                   ro(domhi(1)+1:shi(1),j,k) =     ro(domhi(1)  ,j,k)
+                   mu(domhi(1)+1:shi(1),j,k) =     mu(domhi(1)  ,j,k)
+               lambda(domhi(1)+1:shi(1),j,k) = lambda(domhi(1)  ,j,k)
 
             case ( minf_ )
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
                
-                   ro_g(domhi(1)+1:shi(1),j,k) = bc_ro_g
-                   mu_g(domhi(1)+1:shi(1),j,k) = bc_mu_g
-               lambda_g(domhi(1)+1:shi(1),j,k) = bc_lambda_g
+                   ro(domhi(1)+1:shi(1),j,k) = bc_ro
+                   mu(domhi(1)+1:shi(1),j,k) = bc_mu
+               lambda(domhi(1)+1:shi(1),j,k) = bc_lambda
 
             end select
 
@@ -132,18 +132,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
             case ( pinf_, pout_, nsw_, fsw_) 
 
-                   ro_g(i,slo(2):domlo(2)-1,k) =     ro_g(i,domlo(2),k)
-                   mu_g(i,slo(2):domlo(2)-1,k) =     mu_g(i,domlo(2),k)
-               lambda_g(i,slo(2):domlo(2)-1,k) = lambda_g(i,domlo(2),k)
+                   ro(i,slo(2):domlo(2)-1,k) =     ro(i,domlo(2),k)
+                   mu(i,slo(2):domlo(2)-1,k) =     mu(i,domlo(2),k)
+               lambda(i,slo(2):domlo(2)-1,k) = lambda(i,domlo(2),k)
 
             case ( minf_ )
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                   ro_g(i,slo(2):domlo(2)-1,k) = bc_ro_g
-                   mu_g(i,slo(2):domlo(2)-1,k) = bc_mu_g
-               lambda_g(i,slo(2):domlo(2)-1,k) = bc_lambda_g
+                   ro(i,slo(2):domlo(2)-1,k) = bc_ro
+                   mu(i,slo(2):domlo(2)-1,k) = bc_mu
+               lambda(i,slo(2):domlo(2)-1,k) = bc_lambda
 
             end select
 
@@ -162,18 +162,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
             case ( pinf_, pout_, nsw_, fsw_) 
 
-                   ro_g(i,domhi(2)+1:shi(2),k) =     ro_g(i,domhi(2)  ,k)
-                   mu_g(i,domhi(2)+1:shi(2),k) =     mu_g(i,domhi(2)  ,k)
-               lambda_g(i,domhi(2)+1:shi(2),k) = lambda_g(i,domhi(2)  ,k)
+                   ro(i,domhi(2)+1:shi(2),k) =     ro(i,domhi(2)  ,k)
+                   mu(i,domhi(2)+1:shi(2),k) =     mu(i,domhi(2)  ,k)
+               lambda(i,domhi(2)+1:shi(2),k) = lambda(i,domhi(2)  ,k)
 
             case ( minf_) 
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                   ro_g(i,domhi(2)+1:shi(2),k) = bc_ro_g
-                   mu_g(i,domhi(2)+1:shi(2),k) = bc_mu_g
-               lambda_g(i,domhi(2)+1:shi(2),k) = bc_lambda_g
+                   ro(i,domhi(2)+1:shi(2),k) = bc_ro
+                   mu(i,domhi(2)+1:shi(2),k) = bc_mu
+               lambda(i,domhi(2)+1:shi(2),k) = bc_lambda
 
             end select
          end do
@@ -191,18 +191,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
             case ( pinf_, pout_, nsw_, fsw_) 
 
-                   ro_g(i,j,slo(3):domlo(3)-1) =     ro_g(i,j,domlo(3))
-                   mu_g(i,j,slo(3):domlo(3)-1) =     mu_g(i,j,domlo(3))
-               lambda_g(i,j,slo(3):domlo(3)-1) = lambda_g(i,j,domlo(3))
+                   ro(i,j,slo(3):domlo(3)-1) =     ro(i,j,domlo(3))
+                   mu(i,j,slo(3):domlo(3)-1) =     mu(i,j,domlo(3))
+               lambda(i,j,slo(3):domlo(3)-1) = lambda(i,j,domlo(3))
 
             case ( minf_ )
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
                
-                   ro_g(i,j,slo(3):domlo(3)-1) = bc_ro_g
-                   mu_g(i,j,slo(3):domlo(3)-1) = bc_mu_g
-               lambda_g(i,j,slo(3):domlo(3)-1) = bc_lambda_g
+                   ro(i,j,slo(3):domlo(3)-1) = bc_ro
+                   mu(i,j,slo(3):domlo(3)-1) = bc_mu
+               lambda(i,j,slo(3):domlo(3)-1) = bc_lambda
 
             end select
          end do
@@ -220,18 +220,18 @@ subroutine set_scalar_bcs ( ro_g, mu_g, lambda_g, slo, shi, &
 
             case ( pinf_, pout_, nsw_, fsw_) 
              
-                   ro_g(i,j,domhi(3)+1:shi(3)) =     ro_g(i,j,domhi(3)  )
-                   mu_g(i,j,domhi(3)+1:shi(3)) =     mu_g(i,j,domhi(3)  )
-               lambda_g(i,j,domhi(3)+1:shi(3)) = lambda_g(i,j,domhi(3)  )
+                   ro(i,j,domhi(3)+1:shi(3)) =     ro(i,j,domhi(3)  )
+                   mu(i,j,domhi(3)+1:shi(3)) =     mu(i,j,domhi(3)  )
+               lambda(i,j,domhi(3)+1:shi(3)) = lambda(i,j,domhi(3)  )
 
             case ( minf_ ) 
 
-               bc_mu_g     = mu_g0
-               bc_lambda_g = -(2.0d0/3.0d0) * mu_g0
+               bc_mu     = mu_0
+               bc_lambda = -(2.0d0/3.0d0) * mu_0
                
-                   ro_g(i,j,domhi(3)+1:shi(3)) = bc_ro_g
-                   mu_g(i,j,domhi(3)+1:shi(3)) = bc_mu_g
-               lambda_g(i,j,domhi(3)+1:shi(3)) = bc_lambda_g
+                   ro(i,j,domhi(3)+1:shi(3)) = bc_ro
+                   mu(i,j,domhi(3)+1:shi(3)) = bc_mu
+               lambda(i,j,domhi(3)+1:shi(3)) = bc_lambda
 
             end select
          end do

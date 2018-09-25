@@ -57,9 +57,9 @@ void incflo_level::incflo_compute_divtau(int lev,
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
                BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-               (*mu_g[lev])[mfi].dataPtr(),
-               (*lambda_g[lev])[mfi].dataPtr(),
-               BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+               (*mu[lev])[mfi].dataPtr(),
+               (*lambda[lev])[mfi].dataPtr(),
+               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                domain.loVect (), domain.hiVect (),
                bc_ilo.dataPtr(), bc_ihi.dataPtr(),
                bc_jlo.dataPtr(), bc_jhi.dataPtr(),
@@ -72,9 +72,9 @@ void incflo_level::incflo_compute_divtau(int lev,
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
                BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-               (*mu_g[lev])[mfi].dataPtr(),
-               (*lambda_g[lev])[mfi].dataPtr(),
-               BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+               (*mu[lev])[mfi].dataPtr(),
+               (*lambda[lev])[mfi].dataPtr(),
+               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                BL_TO_FORTRAN_ANYD(flags),
                BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
                BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
@@ -136,8 +136,8 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 	// Loop over the velocity components
 	for(int i = 0; i < 3; i++)
 	{
-		rhs_diff[lev]->copy(*vel_g[lev], i, 0, 1, nghost, nghost);
-		phi_diff[lev]->copy(*vel_g[lev], i, 0, 1, nghost, nghost);
+		rhs_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
+		phi_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
 
 		amrex::Print() << "Diffusing velocity component " << i << std::endl;
 
@@ -145,7 +145,7 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 		// Here RHS = "vel" which is the current approximation to the new-time velocity (without diffusion terms)
 		solve_diffusion_equation(lev, bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi, dt);
 
-		vel_g[lev]->copy(*phi_diff[lev], 0, i, 1, nghost, nghost);
+		vel[lev]->copy(*phi_diff[lev], 0, i, 1, nghost, nghost);
 	}
 
 	// Swap ghost cells and apply BCs to velocity
@@ -155,15 +155,15 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 //
 // Computes the following decomposition:
 //
-//    u + grad(phi)/ro_g = u*,     where div(eps*u) = 0
+//    u + grad(phi)/ro = u*,     where div(eps*u) = 0
 //
 // where u* is a non-div-free velocity field, stored
-// by components in u_g, v_g, and w_g. The resulting div-free
-// velocity field, u, overwrites the value of u* in u_g, v_g, and w_g.
+// by components in u, v, and w. The resulting div-free
+// velocity field, u, overwrites the value of u* in u, v, and w.
 //
-// phi is an auxiliary function related to the pressure p_g by the relation:
+// phi is an auxiliary function related to the pressure p by the relation:
 //
-//     new p_g  = old p_g + phi
+//     new p  = old p + phi
 
 //
 // Solve :
@@ -211,11 +211,11 @@ void incflo_level::solve_diffusion_equation(int lev,
 	// This sets alpha = 1 and beta = dt
 	matrix.setScalars(1.0, dt);
 
-	// Define RHS = (ro) * (vel_g)
-	MultiFab::Multiply((*rhs_diff[lev]), (*ro_g[lev]), 0, 0, 1, rhs_diff[lev]->nGrow());
+	// Define RHS = (ro) * (vel)
+	MultiFab::Multiply((*rhs_diff[lev]), (*ro[lev]), 0, 0, 1, rhs_diff[lev]->nGrow());
 
 	// This sets the spatially varying A coefficients
-	matrix.setACoeffs(lev, (*ro_g[lev]));
+	matrix.setACoeffs(lev, (*ro[lev]));
 
 	// This sets the spatially varying b coefficients
 	matrix.setBCoeffs(lev, b_tmp);
@@ -246,7 +246,7 @@ void incflo_level::solve_diffusion_equation(int lev,
 }
 
 //
-// Computes bcoeff = mu_g at the faces of the scalar cells
+// Computes bcoeff = mu at the faces of the scalar cells
 //
 void incflo_level::incflo_compute_bcoeff_diff(int lev)
 {
@@ -260,7 +260,7 @@ void incflo_level::incflo_compute_bcoeff_diff(int lev)
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-	for(MFIter mfi(*mu_g[lev], true); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*mu[lev], true); mfi.isValid(); ++mfi)
 	{
 		// Tileboxes for staggered components
 		Box ubx = mfi.tilebox(e_x);
@@ -270,19 +270,19 @@ void incflo_level::incflo_compute_bcoeff_diff(int lev)
 		// X direction
 		compute_bcoeff_diff(BL_TO_FORTRAN_BOX(ubx),
 							BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][0]))[mfi]),
-							BL_TO_FORTRAN_ANYD((*mu_g[lev])[mfi]),
+							BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
 							&xdir);
 
 		// Y direction
 		compute_bcoeff_diff(BL_TO_FORTRAN_BOX(vbx),
 							BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][1]))[mfi]),
-							BL_TO_FORTRAN_ANYD((*mu_g[lev])[mfi]),
+							BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
 							&ydir);
 
 		// Z direction
 		compute_bcoeff_diff(BL_TO_FORTRAN_BOX(wbx),
 							BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][2]))[mfi]),
-							BL_TO_FORTRAN_ANYD((*mu_g[lev])[mfi]),
+							BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
 							&zdir);
 	}
 

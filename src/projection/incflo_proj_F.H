@@ -31,21 +31,21 @@ extern "C"
  
    void compute_gradp0_max (
       const int* lo, const int* hi,
-      amrex::Real* p0_g, const int* slo, const int* shi,
+      amrex::Real* p0, const int* slo, const int* shi,
       const amrex::Real* gradp0max, const amrex::Real* dx,
       const int* nodal_pressure);
 
    void add_grad_pcc (
       const int* lo, const int* hi,
       amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const amrex::Real* p, const amrex::Real* p0,
       const amrex::Real* dx, const amrex::Real* c);
 
    void add_grad_pnd (
       const int* lo, const int* hi,
       amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const amrex::Real* p, 
       const amrex::Real* p0, const int* rlo, const int* rhi,
       const amrex::Real* dx, const amrex::Real* c);
@@ -53,14 +53,14 @@ extern "C"
    void add_grad_phicc (
       const int* lo, const int* hi,
       amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const amrex::Real* phi, 
       const amrex::Real* dx, const amrex::Real* c);
 
    void add_grad_phind (
       const int* lo, const int* hi,
       amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const amrex::Real* phi, const int* rlo, const int* rhi,
       const amrex::Real* dx, const amrex::Real* c);
 
@@ -171,20 +171,20 @@ extern "C"
    void add_forcing (
       const int* lo, const int* hi,
       amrex::Real* vel,  const int* ulo, const int* uhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const int* domlo, const int* domhi,
       const amrex::Real* dx, const amrex::Real* dt);
     
    void compute_bcoeff_cc (
       const int* lo,  const int*  hi,
       amrex::Real* bcoeff, const int* blo, const int* bhi,
-      amrex::Real* ro_g, const int* slo, const int* shi,
+      amrex::Real* ro, const int* slo, const int* shi,
       const int* dir );
 
    void compute_bcoeff_nd (
       const int* lo,  const int*  hi,
       amrex::Real* bcoeff, const int* blo, const int* bhi,
-      const amrex::Real* ro_g, const int* slo, const int* shi,
+      const amrex::Real* ro, const int* slo, const int* shi,
       const int* dir );
 
    void set_phi (
@@ -195,7 +195,7 @@ extern "C"
       const int*  domlo, const int *domhi );
 
    void extrap_pressure_to_ghost_cells (
-      amrex::Real* p_g, const int* slo, const int* shi,
+      amrex::Real* p, const int* slo, const int* shi,
       const int* bc_ilo, const int* bc_ihi,
       const int* bc_jlo, const int* bc_jhi,
       const int* bc_klo, const int* bc_khi,
@@ -203,8 +203,8 @@ extern "C"
       const int* nghost);
 
    void set_scalar_bcs (
-      amrex::Real* ro_g,
-      amrex::Real* mu_g,    amrex::Real* lambda_g,
+      amrex::Real* ro,
+      amrex::Real* mu,    amrex::Real* lambda,
       const int* slo, const int* shi,
       const int* bc_ilo, const int* bc_ihi,
       const int* bc_jlo, const int* bc_jhi,
@@ -213,7 +213,7 @@ extern "C"
       const int* nghost);
 
    void set_pressure_bcs (
-      amrex::Real* p_g, const int* slo, const int* shi,
+      amrex::Real* p, const int* slo, const int* shi,
       const int* bc_ilo, const int* bc_ihi,
       const int* bc_jlo, const int* bc_jhi,
       const int* bc_klo, const int* bc_khi,

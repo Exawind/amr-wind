@@ -18,13 +18,11 @@ MODULE read_namelist_module
 
       use bc
       use constant, only: gravity
-      use fld_const, only: mu_g0, mw_avg
-      use fld_const, only: ro_g0
-      use ic, only: ic_pack_type, ic_p_g, ic_x_w
-      use ic, only: ic_u_g, ic_u_s, ic_v_g, ic_v_s, ic_w_g, ic_w_s
-      use ic, only: ic_x_e, ic_y_n, ic_y_s, ic_z_b, ic_z_t
-      use ic, only: ic_dp_dist, ic_dp_mean, ic_dp_std, ic_dp_min, ic_dp_max
-      use ic, only: ic_ro_s_dist, ic_ro_s_mean, ic_ro_s_std, ic_ro_s_min, ic_ro_s_max
+      use fld_const, only: mu_0, mw_avg
+      use fld_const, only: ro_0
+      use ic, only: ic_pack_type, ic_p
+      use ic, only: ic_u, ic_v, ic_w
+      use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
       use scales, only: p_ref, p_scale
       use utilities, only: blank_line, line_too_big, seek_comment
       use utilities, only: make_upper_case, replace_tab

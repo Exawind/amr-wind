@@ -193,25 +193,25 @@ contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
    subroutine check_ic_gas_phase(ICV)
 
-      use ic,        only: ic_u_g, ic_v_g, ic_w_g
+      use ic,        only: ic_u, ic_v, ic_w
 
       integer, intent(in) :: ICV
 
       call init_err_msg("CHECK_IC_GAS_PHASE")
 
       ! Check that gas phase velocity components are initialized.
-      if(is_undefined(ic_u_g(icv))) then
-         write(err_msg, 1000) trim(ivar('ic_u_g',icv))
+      if(is_undefined(ic_u(icv))) then
+         write(err_msg, 1000) trim(ivar('ic_u',icv))
          call flush_err_msg(abort=.true.)
       endif
 
-      if(is_undefined(ic_v_g(icv))) then
-         write(err_msg, 1000) trim(ivar('ic_v_g',icv))
+      if(is_undefined(ic_v(icv))) then
+         write(err_msg, 1000) trim(ivar('ic_v',icv))
          call flush_err_msg(abort=.true.)
       endif
 
-      if(is_undefined(ic_w_g(icv))) then
-         write(err_msg, 1000) trim(ivar('ic_w_g',icv))
+      if(is_undefined(ic_w(icv))) then
+         write(err_msg, 1000) trim(ivar('ic_w',icv))
          call flush_err_msg(abort=.true.)
       endif
 
@@ -232,23 +232,23 @@ contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
     subroutine check_ic_overflow(ICV)
 
-      use ic,    only: ic_u_g, ic_v_g, ic_w_g
+      use ic,    only: ic_u, ic_v, ic_w
 
       integer, intent(in) :: icv
 
       ! Initialize the error manager.
       call init_err_msg("CHECK_IC_OVERFLOW")
 
-      if(is_defined(ic_u_g(icv))) then
-         write(err_msg, 1010) trim(ivar('IC_U_g',ICV))
+      if(is_defined(ic_u(icv))) then
+         write(err_msg, 1010) trim(ivar('IC_U',ICV))
          call flush_err_msg(abort=.true.)
 
-      elseif(is_defined(ic_v_g(icv))) then
-         write(err_msg, 1010) trim(ivar('IC_V_g',ICV))
+      elseif(is_defined(ic_v(icv))) then
+         write(err_msg, 1010) trim(ivar('IC_V',ICV))
          call flush_err_msg(abort=.true.)
 
-      elseif(is_defined(ic_w_g(icv))) then
-         write(err_msg, 1010) trim(ivar('IC_W_g',ICV))
+      elseif(is_defined(ic_w(icv))) then
+         write(err_msg, 1010) trim(ivar('IC_W',ICV))
          call flush_err_msg(abort=.true.)
 
       endif

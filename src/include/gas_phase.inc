@@ -1,1 +1,1 @@
-      NAMELIST / GAS_PHASE / RO_g0, MU_g0, MW_AVG
+      NAMELIST / GAS_PHASE / RO_0, MU_0, MW_AVG

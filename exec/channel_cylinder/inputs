@@ -7,7 +7,7 @@ incflo.cfl = 0.5
 incflo.explicit_diffusion = 1
 
 # Number of grid cells in each direction at the coarsest level
-amr.n_cell = 480 80 16 
+amr.n_cell = 240 40 8
 
 # Maximum level in hierarchy (for now must be 0, i.e., one level in total)
 amr.max_level = 0

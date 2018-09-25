@@ -39,8 +39,6 @@ module check_boundary_conditions_module
 !---------------------------------------------------------------------//
 ! Maximum number of BCs
       use param, only: DIM_BC
-! Maximum number of disperse phases
-      use param, only: DIM_M
 
       use check_bc_geometry_module, only: check_bc_geometry
       use check_bc_geometry_module, only: check_bc_geometry_flow
@@ -59,8 +57,6 @@ module check_boundary_conditions_module
 !---------------------------------------------------------------------//
 ! Loop counters
       integer :: bcv
-! Flag to skip checks on indexed solid phase.
-      logical :: SKIP(1:DIM_M)
 !......................................................................!
 
 ! Initialize the error manager.
@@ -83,7 +79,7 @@ module check_boundary_conditions_module
             case ('P_INFLOW', 'PI')
                call check_bc_geometry_flow(bcv,dx,dy,dz,&
                   xlength,ylength,zlength,domlo,domhi)
-               call check_bc_p_inflow(mmax, skip, bcv)
+               call check_bc_p_inflow(mmax, bcv)
 
             case ('P_OUTFLOW','PO')
                call check_bc_geometry_flow(bcv,dx,dy,dz,&
@@ -123,15 +119,13 @@ module check_boundary_conditions_module
       subroutine check_bc_range(bcv)
 
       ! Gas phase BC varaibles
-      use bc, only: BC_X_g, BC_P_g
-      use bc, only: BC_U_g, BC_V_g, BC_W_g
+      use bc, only: BC_X, BC_P
+      use bc, only: BC_U, BC_V, BC_W
 
 ! Global Parameters:
 !---------------------------------------------------------------------//
-! Maximum number of disperse phases.
-      use param, only: DIM_M
-! Maximum number of species gas/solids
-      use param, only: DIM_N_G, DIM_N_S
+! Maximum number of species 
+      use param, only: DIM_N
 
       use param, only: zero, one, equal
 
@@ -151,29 +145,29 @@ module check_boundary_conditions_module
 ! Initialize the error manager.
       call INIT_ERR_MSG("CHECK_BC_RANGE")
 
-      if(.not.equal(bc_u_g(bcv),zero)) then
-         write(err_msg,1100) trim(ivar('BC_U_g',bcv))
+      if(.not.equal(bc_u(bcv),zero)) then
+         write(err_msg,1100) trim(ivar('BC_U',bcv))
          call flush_err_msg(abort=.true.)
       endif
 
-      if(.not.equal(bc_v_g(bcv),zero)) then
-         write(err_msg,1100) trim(ivar('BC_V_g',bcv))
+      if(.not.equal(bc_v(bcv),zero)) then
+         write(err_msg,1100) trim(ivar('BC_V',bcv))
          call flush_err_msg(abort=.true.)
       endif
 
-      if (.not.equal(bc_w_g(bcv),zero)) then
-         write(err_msg,1100) trim(ivar('BC_W_g',bcv))
+      if (.not.equal(bc_w(bcv),zero)) then
+         write(err_msg,1100) trim(ivar('BC_W',bcv))
          call flush_err_msg(abort=.true.)
       endif
 
-      if (is_defined(bc_p_g(bcv))) then
-         write(err_msg,1100) trim(ivar('BC_P_g',bcv))
+      if (is_defined(bc_p(bcv))) then
+         write(err_msg,1100) trim(ivar('BC_P',bcv))
          call flush_err_msg(abort=.true.)
       endif
 
-      DO N = 1, DIM_N_G
-         IF(IS_DEFINED(BC_X_G(bcv,N))) THEN
-            WRITE(ERR_MSG,1100) trim(iVar('BC_X_g',bcv,N))
+      DO N = 1, DIM_N
+         IF(IS_DEFINED(BC_X(bcv,N))) THEN
+            WRITE(ERR_MSG,1100) trim(iVar('BC_X',bcv,N))
             call FLUSH_ERR_MSG(ABORT=.TRUE.)
          ENDIF
       ENDDO

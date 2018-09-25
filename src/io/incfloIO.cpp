@@ -26,16 +26,16 @@ void incflo_level::InitIOData()
 {
 	// Define the list of vector variables on faces that need to be written
 	// to plotfile/checkfile.
-	vecVarsName = {"u_g", "v_g", "w_g", "gpx", "gpy", "gpz"};
+	vecVarsName = {"u", "v", "w", "gpx", "gpy", "gpz"};
 
 	// Define the list of scalar variables at cell centers that need to be
 	// written to plotfile/checkfile. "volfrac" MUST always be last without any
 	// mf associated to it!!!
-	pltscaVarsName = {"p_g", "ro_g", "mu_g", "vort", "diveu", "volfrac"};
-	pltscalarVars = {&p_g, &ro_g, &mu_g, &vort, &diveu};
+	pltscaVarsName = {"p", "ro", "mu", "vort", "diveu", "volfrac"};
+	pltscalarVars = {&p, &ro, &mu, &vort, &diveu};
 
-	chkscaVarsName = {"p_g", "ro_g", "mu_g"};
-	chkscalarVars = {&p_g, &ro_g, &mu_g};
+	chkscaVarsName = {"p", "ro", "mu"};
+	chkscalarVars = {&p, &ro, &mu};
 }
 
 void incflo_level::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
@@ -120,7 +120,7 @@ void incflo_level::WriteCheckPointFile(std::string& check_file, int nstep, Real 
 
 		// This writes all three velocity components
 		VisMF::Write(
-			(*vel_g[lev]),
+			(*vel[lev]),
 			amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[0]));
 
 		// This writes all three pressure gradient components
@@ -291,15 +291,15 @@ void incflo_level::Restart(
 	{
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
-		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "u_g"));
+		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "u"));
 
 		MultiFab mf_gp;
 		VisMF::Read(mf_gp, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
 
 		if(Nrep == IntVect::TheUnitVector())
 		{
-			// Simply copy mf_vel into vel_g, mf_gp intp gp
-			vel_g[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
+			// Simply copy mf_vel into vel, mf_gp intp gp
+			vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
 			gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
 		}
 		else
@@ -315,10 +315,10 @@ void incflo_level::Restart(
 			FArrayBox single_fab_gp(mf_gp.boxArray()[0], 3);
 
 			// Copy and replicate mf into velocity
-			for(MFIter mfi(*vel_g[lev]); mfi.isValid(); ++mfi)
+			for(MFIter mfi(*vel[lev]); mfi.isValid(); ++mfi)
 			{
 				int ib = mfi.index();
-				(*vel_g[lev])[ib].copy(
+				(*vel[lev])[ib].copy(
 					single_fab_vel, single_fab_vel.box(), 0, mfi.validbox(), 0, 3);
 				(*gp[lev])[ib].copy(single_fab_gp, single_fab_gp.box(), 0, mfi.validbox(), 0, 3);
 			}
@@ -375,19 +375,19 @@ void incflo_level::Restart(
 	{
 		if(!nodal_pressure)
 		{
-			fill_mf_bc(lev, *p_g[lev]);
-			fill_mf_bc(lev, *p_go[lev]);
+			fill_mf_bc(lev, *p[lev]);
+			fill_mf_bc(lev, *p_o[lev]);
 		}
 
-		fill_mf_bc(lev, *ro_g[lev]);
-		fill_mf_bc(lev, *ro_go[lev]);
+		fill_mf_bc(lev, *ro[lev]);
+		fill_mf_bc(lev, *ro_o[lev]);
 
-		fill_mf_bc(lev, *mu_g[lev]);
-		fill_mf_bc(lev, *lambda_g[lev]);
+		fill_mf_bc(lev, *mu[lev]);
+		fill_mf_bc(lev, *lambda[lev]);
 
 		// Fill the bc's just in case
-		vel_g[lev]->FillBoundary(geom[lev].periodicity());
-		vel_go[lev]->FillBoundary(geom[lev].periodicity());
+		vel[lev]->FillBoundary(geom[lev].periodicity());
+		vel_o[lev]->FillBoundary(geom[lev].periodicity());
 
 		// used in load balancing
 		if(load_balance_type == "KnapSack")
@@ -526,9 +526,9 @@ void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Rea
 		mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow));
 
 		// Velocity components
-		MultiFab::Copy(*mf[lev], (*vel_g[lev]), 0, 0, 1, 0);
-		MultiFab::Copy(*mf[lev], (*vel_g[lev]), 1, 1, 1, 0);
-		MultiFab::Copy(*mf[lev], (*vel_g[lev]), 2, 2, 1, 0);
+		MultiFab::Copy(*mf[lev], (*vel[lev]), 0, 0, 1, 0);
+		MultiFab::Copy(*mf[lev], (*vel[lev]), 1, 1, 1, 0);
+		MultiFab::Copy(*mf[lev], (*vel[lev]), 2, 2, 1, 0);
 
 		// Pressure gradient components
 		MultiFab::Copy(*mf[lev], (*gp[lev]), 0, 3, 1, 0);
@@ -539,20 +539,20 @@ void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Rea
 		int dcomp = vecVarsName.size();
 		for(int i = 0; i < pltscalarVars.size(); i++)
 		{
-			if(pltscaVarsName[i] == "p_g")
+			if(pltscaVarsName[i] == "p")
 			{
 				if(nodal_pressure)
 				{
-					MultiFab p_nd(p_g[lev]->boxArray(), dmap[lev], 1, 0);
+					MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
 					p_nd.setVal(0.);
-					MultiFab::Copy(p_nd, (*p_g[lev]), 0, 0, 1, 0);
-					MultiFab::Add(p_nd, (*p0_g[lev]), 0, 0, 1, 0);
+					MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
+					MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
 					amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
 				}
 				else
 				{
-					MultiFab::Copy(*mf[lev], (*p_g[lev]), 0, dcomp, 1, 0);
-					MultiFab::Add(*mf[lev], (*p0_g[lev]), 0, dcomp, 1, 0);
+					MultiFab::Copy(*mf[lev], (*p[lev]), 0, dcomp, 1, 0);
+					MultiFab::Add(*mf[lev], (*p0[lev]), 0, dcomp, 1, 0);
 				}
 			}
 			else if(pltscaVarsName[i] == "diveu")

@@ -23,14 +23,14 @@ contains
   !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
   subroutine check_bc_p_outflow(BCV)
 
-    use bc       , only: bc_p_g
+    use bc       , only: bc_p
 
     integer, intent(in) :: bcv
 
     call init_err_msg("CHECK_BC_P_OUTFLOW")
 
-    if (is_undefined(bc_p_g(bcv))) then
-       write(err_msg,1000) trim(ivar('BC_P_g',bcv))
+    if (is_undefined(bc_p(bcv))) then
+       write(err_msg,1000) trim(ivar('BC_P',bcv))
        call flush_err_msg(abort=.true.)
     endif
 

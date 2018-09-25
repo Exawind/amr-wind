@@ -10,12 +10,8 @@ module param
   integer, parameter :: dim_bc = 500
   ! Maximum number of items for specifying point sources
   integer, parameter :: dim_ps = 5000
-  ! Maximum number of solids phases
-  integer, parameter :: dim_m = 10
   ! Maximum number of gas species
-  integer, parameter :: dim_n_g = 100
-  ! Maximum number of solids species per phase.
-  integer, parameter :: dim_n_s = 100
+  integer, parameter :: dim_n = 100
 
   ! Number of Equation types:
   !  1) Gas pressure

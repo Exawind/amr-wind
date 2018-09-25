@@ -18,24 +18,24 @@ using namespace std;
 //
 // Computes the following decomposition:
 //
-//    u + grad(phi)/ro_g = u*,     where div(u) = 0
+//    u + grad(phi)/ro = u*,     where div(u) = 0
 //
 // where u* is a non-div-free velocity field, stored
-// by components in u_g, v_g, and w_g. The resulting div-free
-// velocity field, u, overwrites the value of u* in u_g, v_g, and w_g.
+// by components in u, v, and w. The resulting div-free
+// velocity field, u, overwrites the value of u* in u, v, and w.
 //
-// phi is an auxiliary function related to the pressure p_g by the relation:
+// phi is an auxiliary function related to the pressure p by the relation:
 //
-//     new p_g  = phi
+//     new p  = phi
 //
 //     except in the initial iterations when
 //
-//     new p_g  = old p_g + phi
+//     new p  = old p + phi
 void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2)
 {
 	BL_PROFILE("incflo_level::incflo_apply_projection");
 
-    vel_g[lev]->FillBoundary(geom[lev].periodicity());
+    vel[lev]->FillBoundary(geom[lev].periodicity());
 
 	// Swap ghost cells and apply BCs to velocity
 	incflo_set_velocity_bcs(lev, 0);
@@ -53,13 +53,13 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	{
         // Convert velocities to momenta
         for (int n = 0; n < 3; n++)
-           MultiFab::Multiply(*vel_g[lev],(*ro_g[lev]),0,n,1,vel_g[lev]->nGrow());
+           MultiFab::Multiply(*vel[lev],(*ro[lev]),0,n,1,vel[lev]->nGrow());
 
-        MultiFab::Saxpy (*vel_g[lev], scaling_factor, *gp[lev], 0, 0, 3, vel_g[lev]->nGrow());
+        MultiFab::Saxpy (*vel[lev], scaling_factor, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
 
         // Convert momenta back to velocities
         for (int n = 0; n < 3; n++)
-           MultiFab::Divide(*vel_g[lev],(*ro_g[lev]),0,n,1,vel_g[lev]->nGrow());
+           MultiFab::Divide(*vel[lev],(*ro[lev]),0,n,1,vel[lev]->nGrow());
 
 		incflo_set_velocity_bcs(lev, 0);
 	}
@@ -91,10 +91,10 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	phi[lev]->setVal(0.);
 
 	// Solve PPE
-	MultiFab fluxes(vel_g[lev]->boxArray(),
-					vel_g[lev]->DistributionMap(),
-					vel_g[lev]->nComp(),
-					vel_g[lev]->nGrow(),
+	MultiFab fluxes(vel[lev]->boxArray(),
+					vel[lev]->DistributionMap(),
+					vel[lev]->nComp(),
+					vel[lev]->nGrow(),
 					MFInfo(),
 					*ebfactory[lev]);
 
@@ -110,24 +110,24 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 
 	fluxes.mult(scaling_factor, fluxes.nGrow());
 
-	MultiFab::Add(*vel_g[lev], fluxes, 0, 0, 3, 0);
+	MultiFab::Add(*vel[lev], fluxes, 0, 0, 3, 0);
 
 	// After using the fluxes, which currently hold MINUS dt * (1/rho) * grad(phi),
 	//    to modify the velocity field,  convert them to hold grad(phi)
 	fluxes.mult(-1 / scaling_factor, fluxes.nGrow());
 	for(int n = 0; n < 3; n++)
-		MultiFab::Multiply(fluxes, (*ro_g[lev]), 0, n, 1, fluxes.nGrow());
+		MultiFab::Multiply(fluxes, (*ro[lev]), 0, n, 1, fluxes.nGrow());
 
 	if(proj_2)
 	{
 		// p := phi
-		MultiFab::Copy(*p_g[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
+		MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
 		MultiFab::Copy(*gp[lev], fluxes, 0, 0, 3, fluxes.nGrow());
 	}
 	else
 	{
 		// p := p + phi
-		MultiFab::Add(*p_g[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
+		MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
 		MultiFab::Add(*gp[lev], fluxes, 0, 0, 3, fluxes.nGrow());
 	}
 
@@ -139,14 +139,14 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 		amrex::Print() << "After  projection \n";
 		incflo_print_max_vel(lev);
 		incflo_compute_diveu(lev);
-		amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(vel_g, lev, 0) << "\n";
+		amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(vel, lev, 0) << "\n";
 	}
 }
 
 //
 // Solve PPE:
 //
-//                  div( eps_g/rho * grad(phi) ) = div(eps_g*u)
+//                  div( 1/rho * grad(phi) ) = div(u)
 //
 void incflo_level::solve_poisson_equation(int lev,
 										  Vector<Vector<std::unique_ptr<MultiFab>>>& b,
@@ -276,7 +276,7 @@ void incflo_level::solve_poisson_equation(int lev,
 }
 
 //
-// Computes bcoeff = 1/ro_g at the faces of the scalar cells
+// Computes bcoeff = 1/ro at the faces of the scalar cells
 //
 void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 {
@@ -292,7 +292,7 @@ void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-		for(MFIter mfi(*ro_g[lev], true); mfi.isValid(); ++mfi)
+		for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
 		{
 			// Cell-centered tilebox
 			Box bx = mfi.tilebox();
@@ -300,19 +300,19 @@ void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 			// X direction
 			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &xdir);
 
 			// Y direction
 			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &ydir);
 
 			// Z direction
 			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &zdir);
 		}
 	}
@@ -321,7 +321,7 @@ void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-		for(MFIter mfi(*ro_g[lev], true); mfi.isValid(); ++mfi)
+		for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
 		{
 			// Tileboxes for staggered components
 			Box ubx = mfi.tilebox(e_x);
@@ -331,19 +331,19 @@ void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 			// X direction
 			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(ubx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &xdir);
 
 			// Y direction
 			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(vbx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &ydir);
 
 			// Z direction
 			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(wbx),
 							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro_g[lev])[mfi]),
+							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
 							  &zdir);
 		}
 	}

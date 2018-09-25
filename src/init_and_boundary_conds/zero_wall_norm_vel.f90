@@ -9,7 +9,7 @@
 !                                                                      C
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
 subroutine zero_wall_norm_vel(slo, shi, &
-     vel_g, bc_ilo_type, bc_ihi_type, bc_jlo_type, bc_jhi_type, &
+     vel, bc_ilo_type, bc_ihi_type, bc_jlo_type, bc_jhi_type, &
      bc_klo_type, bc_khi_type, domlo, domhi, ng) &
      bind(C, name="zero_wall_norm_vel")
 
@@ -24,7 +24,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
   integer(c_int), intent(in   ) :: domlo(3),domhi(3),ng
 
   real(rt), intent(inout) :: &
-       vel_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+       vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
   integer(c_int), intent(in   ) :: &
        bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
@@ -62,7 +62,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_ilo_type(j,k,1) == PSW_ .or. &
                  bc_ilo_type(j,k,1) == FSW_) then
 
-                 vel_g(ilo-i,j,k,1) = 0.d0
+                 vel(ilo-i,j,k,1) = 0.d0
 
               end if
            end do
@@ -80,7 +80,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_ihi_type(j,k,1) == PSW_ .or. &
                  bc_ihi_type(j,k,1) == FSW_) then
 
-                 vel_g(ihi+i,j,k,1) = 0.d0
+                 vel(ihi+i,j,k,1) = 0.d0
 
               end if
            end do
@@ -98,7 +98,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_jlo_type(i,k,1) == PSW_ .or. &
                  bc_jlo_type(i,k,1) == FSW_) then
 
-                 vel_g(i,jlo-j,k,2) = 0.d0
+                 vel(i,jlo-j,k,2) = 0.d0
 
               end if
            end do
@@ -116,7 +116,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_jhi_type(i,k,1) == PSW_ .or. &
                  bc_jhi_type(i,k,1) == FSW_) then
 
-                 vel_g(i,jhi+j,k,2) = 0.d0
+                 vel(i,jhi+j,k,2) = 0.d0
 
               end if
            end do
@@ -134,7 +134,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_klo_type(i,j,1) == PSW_ .or. &
                  bc_klo_type(i,j,1) == FSW_) then
 
-                 vel_g(i,j,klo-k,3) = 0.d0
+                 vel(i,j,klo-k,3) = 0.d0
 
               end if
            end do
@@ -152,7 +152,7 @@ subroutine zero_wall_norm_vel(slo, shi, &
                  bc_khi_type(i,j,1) == PSW_ .or. &
                  bc_khi_type(i,j,1) == FSW_) then
 
-                 vel_g(i,j,khi+k,3) = 0.d0
+                 vel(i,j,khi+k,3) = 0.d0
 
               end if
            end do

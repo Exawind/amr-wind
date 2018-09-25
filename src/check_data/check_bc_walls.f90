@@ -46,7 +46,7 @@ contains
   !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
   subroutine check_bc_walls_gas(bcv)
 
-    use bc,     only: bc_type, bc_uw_g, bc_vw_g, bc_ww_g
+    use bc,     only: bc_type, bc_uw, bc_vw, bc_ww
     use param, only: is_undefined
 
 
@@ -56,14 +56,14 @@ contains
 
     ! The wall velocities are not needed for no-slip or free-slip
     if(BC_TYPE(BCV) == 'PAR_SLIP_WALL' .or. BC_TYPE(BCV) == 'PSW') then
-       if(is_undefined(bc_uw_g(bcv))) then
-          write(err_msg,1000) trim(ivar('BC_Uw_g',bcv))
+       if(is_undefined(bc_uw(bcv))) then
+          write(err_msg,1000) trim(ivar('BC_Uw',bcv))
           call flush_err_msg(abort=.true.)
-       elseif(is_undefined(bc_vw_g(bcv))) then
-          write(err_msg,1000) trim(ivar('BC_Vw_g',bcv))
+       elseif(is_undefined(bc_vw(bcv))) then
+          write(err_msg,1000) trim(ivar('BC_Vw',bcv))
           call flush_err_msg(abort=.true.)
-       elseif(is_undefined(bc_ww_g(bcv))) then
-          write(err_msg,1000) trim(ivar('BC_Ww_g',bcv))
+       elseif(is_undefined(bc_ww(bcv))) then
+          write(err_msg,1000) trim(ivar('BC_Ww',bcv))
           call flush_err_msg(abort=.true.)
        endif
     endif

@@ -103,11 +103,11 @@ contains
    ! Computes  vel = vel + c * (1/rho) grad(phi)
    !
    ! vel  = velocity            defined at cell centers
-   ! ro_g = density field       defined at cell centers
+   ! ro = density field       defined at cell centers
    ! phi  = pressure correction defined at cell centers
    ! c    = real constant
    !
-   subroutine add_grad_phicc ( lo, hi, vel, ulo, uhi, ro_g, slo, shi, &
+   subroutine add_grad_phicc ( lo, hi, vel, ulo, uhi, ro, slo, shi, &
         & phi, dx, c ) bind (C)
 
       ! Loop bounds
@@ -122,7 +122,7 @@ contains
 
       ! Arrays
       real(ar),        intent(in   ) ::                       &
-           ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
+           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
            phi(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),        intent(inout) ::                       &
@@ -146,28 +146,28 @@ contains
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
 
-               oro_x_lo  = half * ( one/ro_g(i,j,k) + one/ro_g(i-1,j,k) )
+               oro_x_lo  = half * ( one/ro(i,j,k) + one/ro(i-1,j,k) )
                dp_x_lo  =  phi(i,j,k) -  phi(i-1,j,k)
 
-               oro_x_hi  = half * ( one/ro_g(i+1,j,k) + one/ro_g(i,j,k) )
+               oro_x_hi  = half * ( one/ro(i+1,j,k) + one/ro(i,j,k) )
                dp_x_hi  =  phi(i+1,j,k) -  phi(i,j,k)
 
                vel(i,j,k,1) = vel(i,j,k,1) + half * c * odx * (     &
                     oro_x_hi * dp_x_hi + oro_x_lo * dp_x_lo )
 
-               oro_y_lo  = half * ( one/ro_g(i,j,k) + one/ro_g(i,j-1,k) )
+               oro_y_lo  = half * ( one/ro(i,j,k) + one/ro(i,j-1,k) )
                dp_y_lo  =  phi(i,j,k) -  phi(i,j-1,k)
 
-               oro_y_hi  = half * ( one/ro_g(i,j+1,k) + one/ro_g(i,j,k) )
+               oro_y_hi  = half * ( one/ro(i,j+1,k) + one/ro(i,j,k) )
                dp_y_hi  =  phi(i,j+1,k) -  phi(i,j,k)
 
                vel(i,j,k,2) = vel(i,j,k,2) + half * c * ody * (     &
                     oro_y_hi * dp_y_hi + oro_y_lo * dp_y_lo )
 
-               oro_z_lo  = half * ( one/ro_g(i,j,k) + one/ro_g(i,j,k-1) )
+               oro_z_lo  = half * ( one/ro(i,j,k) + one/ro(i,j,k-1) )
                dp_z_lo  =  phi(i,j,k) -  phi(i,j,k-1)
 
-               oro_z_hi  = half * ( one/ro_g(i,j,k+1) + one/ro_g(i,j,k) )
+               oro_z_hi  = half * ( one/ro(i,j,k+1) + one/ro(i,j,k) )
                dp_z_hi  =  phi(i,j,k+1) -  phi(i,j,k)
 
                vel(i,j,k,3) = vel(i,j,k,3) + half * c * odz * (     &
@@ -183,11 +183,11 @@ contains
    ! Computes  vel = vel + c * (1/rho) grad(phi)
    !
    ! vel  = velocity            defined at cell centers
-   ! ro_g = density field       defined at cell centers
+   ! ro = density field       defined at cell centers
    ! phi  = pressure correction defined at nodes
    ! c    = real constant
    !
-   subroutine add_grad_phind ( lo, hi, vel, ulo, uhi, ro_g, slo, shi, &
+   subroutine add_grad_phind ( lo, hi, vel, ulo, uhi, ro, slo, shi, &
         phi, rlo, rhi, dx, c ) bind (C)
 
       ! Loop bounds
@@ -203,7 +203,7 @@ contains
 
       ! Arrays
       real(ar),        intent(in   ) ::                       &
-           ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
+           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),  &
            phi(rlo(1):rhi(1),rlo(2):rhi(2),rlo(3):rhi(3))
 
       real(ar),        intent(inout) ::                       &
@@ -234,7 +234,7 @@ contains
                     phi(i,j,k+1) +  phi(i+1,j,k+1) +  phi(i,j+1,k+1) +  phi(i+1,j+1,k+1) &
                     -  phi(i,j,k  ) -  phi(i+1,j,k  ) -  phi(i,j+1,k  ) -  phi(i+1,j+1,k  ) )
 
-               oro = 1.d0/ro_g(i,j,k)
+               oro = 1.d0/ro(i,j,k)
 
                vel(i,j,k,1) = vel(i,j,k,1) + c * odx * oro * phix
                vel(i,j,k,2) = vel(i,j,k,2) + c * ody * oro * phiy
@@ -252,7 +252,7 @@ contains
    ! particle/fluid momentum exchange
    !
    subroutine add_forcing ( lo, hi, vel, ulo, uhi, &
-        & ro_g, slo, shi, domlo, domhi, dx, dt )  bind(C)
+        & ro, slo, shi, domlo, domhi, dx, dt )  bind(C)
 
       use constant, only: gravity
 
@@ -274,7 +274,7 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(inout) :: &
            vel(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
@@ -297,11 +297,11 @@ contains
    end subroutine add_forcing
 
    !
-   ! Compute the coefficients of the PPE, i.e. 1 / ro_g,
+   ! Compute the coefficients of the PPE, i.e. 1 / ro,
    ! at the faces of the pressure cells along the "dir"-axis.
    !
    subroutine compute_bcoeff_cc ( lo, hi, bcoeff, blo, bhi, &
-        ro_g, slo, shi, dir )  bind(C)
+        ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -315,7 +315,7 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
            bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
@@ -329,7 +329,7 @@ contains
       do k = lo(3),hi(3)
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
-               bcoeff(i,j,k) = half * ( one/ro_g(i,j,k) + one/ro_g(i-i0,j-j0,k-k0) )
+               bcoeff(i,j,k) = half * ( one/ro(i,j,k) + one/ro(i-i0,j-j0,k-k0) )
             end do
          end do
       end do
@@ -337,7 +337,7 @@ contains
    end subroutine compute_bcoeff_cc
 
    subroutine compute_bcoeff_nd ( lo, hi, bcoeff, blo, bhi, &
-        ro_g, slo, shi, dir )  bind(C)
+        ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -351,7 +351,7 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro_g(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
            bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
@@ -361,7 +361,7 @@ contains
       do k = lo(3),hi(3)
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
-               bcoeff(i,j,k) =  one / ro_g(i,j,k)
+               bcoeff(i,j,k) =  one / ro(i,j,k)
             end do
          end do
       end do
@@ -502,7 +502,7 @@ contains
    end subroutine set_ppe_bc
 
    !
-   ! Compute the cell-centered divergence of  u_g
+   ! Compute the cell-centered divergence of  u
    !
    subroutine compute_diveucc ( lo, hi, diveu, slo, shi, vel, ulo, uhi, dx) &
         bind(C)

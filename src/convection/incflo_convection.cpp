@@ -15,7 +15,7 @@ void incflo_level::incflo_compute_ugradu_predictor(int lev,
 
 	incflo_compute_velocity_at_faces(lev, vel);
 
-	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro_g);
+	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro);
 
     // Get EB geometric info
     Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
@@ -122,7 +122,7 @@ void incflo_level::incflo_compute_ugradu_corrector(int lev,
 	incflo_compute_velocity_slopes(lev, vel);
 	incflo_compute_velocity_at_faces(lev, vel);
 
-	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro_g);
+	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro);
 	// Get EB geometric info
 	Array<const MultiCutFab*, AMREX_SPACEDIM> areafrac;
 	Array<const MultiCutFab*, AMREX_SPACEDIM> facecent;

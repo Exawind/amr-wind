@@ -40,14 +40,14 @@ void incflo_level::ResizeArrays()
 {
 	int nlevs_max = maxLevel() + 1;
 
-	p_g.resize(nlevs_max);
-	p_go.resize(nlevs_max);
+	p.resize(nlevs_max);
+	p_o.resize(nlevs_max);
 
-	p0_g.resize(nlevs_max);
-	pp_g.resize(nlevs_max);
+	p0.resize(nlevs_max);
+	pp.resize(nlevs_max);
 
-	ro_g.resize(nlevs_max);
-	ro_go.resize(nlevs_max);
+	ro.resize(nlevs_max);
+	ro_o.resize(nlevs_max);
 
 	phi.resize(nlevs_max);
 	diveu.resize(nlevs_max);
@@ -56,17 +56,17 @@ void incflo_level::ResizeArrays()
 	rhs_diff.resize(nlevs_max);
 	phi_diff.resize(nlevs_max);
 
-	// Current (vel_g) and old (vel_go) velocities
-	vel_g.resize(nlevs_max);
-	vel_go.resize(nlevs_max);
+	// Current (vel) and old (vel_o) velocities
+	vel.resize(nlevs_max);
+	vel_o.resize(nlevs_max);
 
 	// Pressure gradients
 	gp.resize(nlevs_max);
 	gp0.resize(nlevs_max);
 
-	mu_g.resize(nlevs_max);
-	lambda_g.resize(nlevs_max);
-	trD_g.resize(nlevs_max);
+	mu.resize(nlevs_max);
+	lambda.resize(nlevs_max);
+	trD.resize(nlevs_max);
 
 	// Vorticity
 	vort.resize(nlevs_max);
@@ -221,20 +221,20 @@ void incflo_level::incflo_compute_vort(int lev)
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-	for(MFIter mfi(*vel_g[lev], true); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
 	{
 		// Tilebox
 		Box bx = mfi.tilebox();
 
 		// This is to check efficiently if this tile contains any eb stuff
-		const EBFArrayBox& vel_fab = dynamic_cast<EBFArrayBox const&>((*vel_g[lev])[mfi]);
+		const EBFArrayBox& vel_fab = dynamic_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
 		const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
 		if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
 		{
 			compute_vort(BL_TO_FORTRAN_BOX(bx),
 						 BL_TO_FORTRAN_ANYD((*vort[lev])[mfi]),
-						 BL_TO_FORTRAN_ANYD((*vel_g[lev])[mfi]),
+						 BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
 						 geom[lev].CellSize());
 		}
 		else

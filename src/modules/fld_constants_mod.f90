@@ -10,10 +10,10 @@
          use iso_c_binding , only: c_int
 
          ! Specified constant gas density
-         real(rt) :: ro_g0
+         real(rt) :: ro_0
 
          ! Specified constant gas viscosity
-         real(rt) :: mu_g0
+         real(rt) :: mu_0
 
          ! Average molecular weight of gas
          real(rt) :: mw_avg

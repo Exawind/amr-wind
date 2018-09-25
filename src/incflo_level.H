@@ -278,33 +278,33 @@ private:
 	Vector<std::unique_ptr<iMultiFab>> flag;
 
 	// Gas pressure fraction
-	Vector<std::unique_ptr<MultiFab>> p_g;
-	Vector<std::unique_ptr<MultiFab>> p_go;
+	Vector<std::unique_ptr<MultiFab>> p;
+	Vector<std::unique_ptr<MultiFab>> p_o;
 
 	// Gas density
-	Vector<std::unique_ptr<MultiFab>> ro_g;
-	Vector<std::unique_ptr<MultiFab>> ro_go;
+	Vector<std::unique_ptr<MultiFab>> ro;
+	Vector<std::unique_ptr<MultiFab>> ro_o;
 
 	// Gas velocity
-	Vector<std::unique_ptr<MultiFab>> vel_g;
-	Vector<std::unique_ptr<MultiFab>> vel_go;
+	Vector<std::unique_ptr<MultiFab>> vel;
+	Vector<std::unique_ptr<MultiFab>> vel_o;
 
 	// Base state pressure
-	Vector<std::unique_ptr<MultiFab>> p0_g;
+	Vector<std::unique_ptr<MultiFab>> p0;
 
 	// Pressure correction
-	Vector<std::unique_ptr<MultiFab>> pp_g;
+	Vector<std::unique_ptr<MultiFab>> pp;
 
 	// Pressure gradients
 	Vector<std::unique_ptr<MultiFab>> gp;
 	Vector<std::unique_ptr<MultiFab>> gp0;
 
 	// Molecular viscosity
-	Vector<std::unique_ptr<MultiFab>> mu_g;
+	Vector<std::unique_ptr<MultiFab>> mu;
 
 	// Cell-based
-	Vector<std::unique_ptr<MultiFab>> lambda_g;
-	Vector<std::unique_ptr<MultiFab>> trD_g;
+	Vector<std::unique_ptr<MultiFab>> lambda;
+	Vector<std::unique_ptr<MultiFab>> trD;
 	Vector<std::unique_ptr<MultiFab>> vort;
 
 	// These are multi-component multifabs

@@ -32,18 +32,16 @@ contains
 !     be specified. The velocities values essentially serve as IC.     !
 !                                                                      !
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-  subroutine check_bc_p_inflow(m_tot, skip, bcv)
+  subroutine check_bc_p_inflow(m_tot, bcv)
 
-    use param    , only: dim_m
-    use bc,        only: bc_p_g
+    use bc,        only: bc_p
 
     integer, intent(in) :: bcv, m_tot
-    logical, intent(in) :: skip(dim_m)
 
     call init_err_msg("CHECK_BC_P_INFLOW")
 
-    if (is_undefined(bc_p_g(bcv))) then
-       write(err_msg,1000) 'BC_P_g', bcv
+    if (is_undefined(bc_p(bcv))) then
+       write(err_msg,1000) 'BC_P', bcv
        call flush_err_msg(abort=.true.)
     endif
 

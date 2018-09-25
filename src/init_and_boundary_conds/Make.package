@@ -1,6 +1,6 @@
 F90EXE_sources += amrex_to_incflo.F90
 f90EXE_sources += calc_cell.f90
-f90EXE_sources += calc_mu_g.f90
+f90EXE_sources += calc_mu.f90
 f90EXE_sources += fill_bc0.f90 
 f90EXE_sources += get_data.f90 
 f90EXE_sources += init_fluid.f90 

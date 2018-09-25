@@ -273,11 +273,11 @@ void incflo_level::incflo_init_fluid(
 
 	// We deliberately don't tile this loop since we will be looping
 	//    over bc's on faces and it makes more sense to do this one grid at a time
-	for(MFIter mfi(*ro_g[lev], false); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
 	{
 
 		const Box& bx = mfi.validbox();
-		const Box& sbx = (*ro_g[lev])[mfi].box();
+		const Box& sbx = (*ro[lev])[mfi].box();
 
 		if(is_restarting)
 		{
@@ -286,8 +286,8 @@ void incflo_level::incflo_init_fluid(
 							   sbx.hiVect(),
 							   bx.loVect(),
 							   bx.hiVect(),
-							   (*mu_g[lev])[mfi].dataPtr(),
-							   (*lambda_g[lev])[mfi].dataPtr());
+							   (*mu[lev])[mfi].dataPtr(),
+							   (*lambda[lev])[mfi].dataPtr());
 		}
 		else
 		{
@@ -298,11 +298,11 @@ void incflo_level::incflo_init_fluid(
 					   bx.hiVect(),
 					   domain.loVect(),
 					   domain.hiVect(),
-					   (*ro_g[lev])[mfi].dataPtr(),
-					   (*p_g[lev])[mfi].dataPtr(),
-					   (*vel_g[lev])[mfi].dataPtr(),
-					   (*mu_g[lev])[mfi].dataPtr(),
-					   (*lambda_g[lev])[mfi].dataPtr(),
+					   (*ro[lev])[mfi].dataPtr(),
+					   (*p[lev])[mfi].dataPtr(),
+					   (*vel[lev])[mfi].dataPtr(),
+					   (*mu[lev])[mfi].dataPtr(),
+					   (*lambda[lev])[mfi].dataPtr(),
 					   &dx,
 					   &dy,
 					   &dz,
@@ -323,14 +323,14 @@ void incflo_level::incflo_init_fluid(
 	if(!is_restarting)
 	{
 
-		for(MFIter mfi(*ro_g[lev]); mfi.isValid(); ++mfi)
+		for(MFIter mfi(*ro[lev]); mfi.isValid(); ++mfi)
 		{
 
-			const Box& sbx = (*ro_g[lev])[mfi].box();
+			const Box& sbx = (*ro[lev])[mfi].box();
 
 			zero_wall_norm_vel(sbx.loVect(),
 							   sbx.hiVect(),
-							   (*vel_g[lev])[mfi].dataPtr(),
+							   (*vel[lev])[mfi].dataPtr(),
 							   bc_ilo.dataPtr(),
 							   bc_ihi.dataPtr(),
 							   bc_jlo.dataPtr(),
@@ -344,19 +344,19 @@ void incflo_level::incflo_init_fluid(
 	}
 
 	if(!nodal_pressure)
-		incflo_extrap_pressure(lev, p0_g[lev]);
+		incflo_extrap_pressure(lev, p0[lev]);
 
-	fill_mf_bc(lev, *ro_g[lev]);
+	fill_mf_bc(lev, *ro[lev]);
 
-	vel_g[lev]->FillBoundary(geom[lev].periodicity());
+	vel[lev]->FillBoundary(geom[lev].periodicity());
 
-	fill_mf_bc(lev, *mu_g[lev]);
-	fill_mf_bc(lev, *lambda_g[lev]);
+	fill_mf_bc(lev, *mu[lev]);
+	fill_mf_bc(lev, *lambda[lev]);
 
 	if(is_restarting == 1)
 	{
 		if(!nodal_pressure)
-			incflo_extrap_pressure(lev, p_g[lev]);
+			incflo_extrap_pressure(lev, p[lev]);
 	}
 	else
 	{
@@ -375,15 +375,15 @@ void incflo_level::incflo_set_bc0(int lev)
 	Box domain(geom[lev].Domain());
 
 	// Don't tile this -- at least for now
-	for(MFIter mfi(*ro_g[lev]); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*ro[lev]); mfi.isValid(); ++mfi)
 	{
-		const Box& sbx = (*ro_g[lev])[mfi].box();
+		const Box& sbx = (*ro[lev])[mfi].box();
 
 		set_bc0(sbx.loVect(),
 				sbx.hiVect(),
-				(*ro_g[lev])[mfi].dataPtr(),
-				(*mu_g[lev])[mfi].dataPtr(),
-				(*lambda_g[lev])[mfi].dataPtr(),
+				(*ro[lev])[mfi].dataPtr(),
+				(*mu[lev])[mfi].dataPtr(),
+				(*lambda[lev])[mfi].dataPtr(),
 				bc_ilo.dataPtr(),
 				bc_ihi.dataPtr(),
 				bc_jlo.dataPtr(),
@@ -397,15 +397,15 @@ void incflo_level::incflo_set_bc0(int lev)
 	}
 
 	if(!nodal_pressure)
-		fill_mf_bc(lev, *p_g[lev]);
+		fill_mf_bc(lev, *p[lev]);
 
-	fill_mf_bc(lev, *ro_g[lev]);
+	fill_mf_bc(lev, *ro[lev]);
 
 	// Put velocity Dirichlet bc's on faces
 	int extrap_dir_bcs = 0;
 	incflo_set_velocity_bcs(lev, extrap_dir_bcs);
 
-	vel_g[lev]->FillBoundary(geom[lev].periodicity());
+	vel[lev]->FillBoundary(geom[lev].periodicity());
 }
 
 void incflo_level::incflo_set_p0(int lev)
@@ -425,14 +425,14 @@ void incflo_level::incflo_set_p0(int lev)
 
 	// We deliberately don't tile this loop since we will be looping
 	//    over bc's on faces and it makes more sense to do this one grid at a time
-	for(MFIter mfi(*ro_g[lev], false); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
 	{
 
 		const Box& bx = mfi.validbox();
 
         set_p0(bx.loVect(), bx.hiVect(),
                domain.loVect(), domain.hiVect(),
-			   BL_TO_FORTRAN_ANYD((*p0_g[lev])[mfi]),
+			   BL_TO_FORTRAN_ANYD((*p0[lev])[mfi]),
 			   BL_TO_FORTRAN_ANYD((*gp0[lev])[mfi]),
                &dx, &dy, &dz,
                &xlen, &ylen, &zlen,
@@ -444,7 +444,7 @@ void incflo_level::incflo_set_p0(int lev)
 			   &nodal_pressure);
 	}
 
-	// Here we set a separate periodicity flag for p0_g because when we use
+	// Here we set a separate periodicity flag for p0 because when we use
 	// pressure drop (delp) boundary conditions we fill all variables *except* p0
 	// periodically
 
@@ -455,6 +455,6 @@ void incflo_level::incflo_set_p0(int lev)
 		press_per[delp_dir] = 0;
 	p0_periodicity = Periodicity(press_per);
 
-	p0_g[lev]->FillBoundary(p0_periodicity);
+	p0[lev]->FillBoundary(p0_periodicity);
 	 gp0[lev]->FillBoundary(p0_periodicity);
 }

@@ -1,6 +1,6 @@
 add_sources( amrex_to_incflo.F90 )
 add_sources( calc_cell.f90 )
-add_sources( calc_mu_g.f90 )
+add_sources( calc_mu.f90 )
 add_sources( fill_bc0.f90 )
 add_sources( get_data.f90 )
 add_sources( init_fluid.f90 )

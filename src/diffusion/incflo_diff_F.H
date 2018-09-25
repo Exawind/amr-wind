@@ -61,7 +61,7 @@ extern "C"
   void compute_bcoeff_diff (
           const int* lo,  const int*  hi,
           amrex::Real* bcoeff, const int* blo, const int* bhi,
-          const amrex::Real* mu_g, const int* slo, const int* shi,
+          const amrex::Real* mu, const int* slo, const int* shi,
           const int* dir );
 
 #ifdef __cplusplus

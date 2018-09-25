@@ -20,28 +20,28 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
   subroutine check_gas_properties
 
-    use fld_const, only: mu_g0, ro_g0, mw_avg
+    use fld_const, only: mu_0, ro_0, mw_avg
 
     call init_err_msg("CHECK_GAS_PHASE")
 
-    ! We now require that ro_g0 be defined and positive in incflo.dat
-    if (is_defined(ro_g0)) then
-       if (ro_g0 < zero) then ! incompressible
-          write(err_msg, 1001) 'ro_g0', ival(ro_g0)
+    ! We now require that ro_0 be defined and positive in incflo.dat
+    if (is_defined(ro_0)) then
+       if (ro_0 < zero) then ! incompressible
+          write(err_msg, 1001) 'ro_0', ival(ro_0)
           call flush_err_msg(abort=.true.)
        endif
     else
-       write(err_msg, 1001) 'ro_g0', ival(ro_g0)
+       write(err_msg, 1001) 'ro_0', ival(ro_0)
        call flush_err_msg(abort=.true.)
     endif
 
     if (is_defined(mw_avg))then
-       write(err_msg, 1100) 'ro_g0 is specified'
+       write(err_msg, 1100) 'ro_0 is specified'
        call flush_err_msg
     endif
 
-    if (mu_g0 < zero) then
-       write(err_msg,1001) 'MU_G0', ival(mu_g0)
+    if (mu_0 < zero) then
+       write(err_msg,1001) 'MU_0', ival(mu_0)
        call flush_err_msg(abort=.true.)
     endif
 
