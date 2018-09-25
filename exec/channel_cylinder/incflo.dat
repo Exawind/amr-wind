@@ -9,9 +9,9 @@
   IC_Z_b(1) =   0.00    ! (m)
   IC_Z_t(1) =   0.08    ! (m)
 
-  IC_U_g(1) =   0.0         ! (m/sec)
-  IC_V_g(1) =   0.0         ! (m/sec)
-  IC_W_g(1) =   0.0         ! (m/sec)
+  IC_U(1)   =   0.0         ! (m/sec)
+  IC_V(1)   =   0.0         ! (m/sec)
+  IC_W(1)   =   0.0         ! (m/sec)
 
 #_______________________________________________________________________
 # BOUNDARY CONDITIONS SECTION
@@ -27,9 +27,9 @@
   BC_Z_t(1:2) =   0.08      0.08  ! (m)
 
   BC_Type(1:2) =  'MI'      'PO'
-  BC_U_g(1) = 1.0
-  BC_V_g(1) = 0.0
-  BC_W_g(1) = 0.0
+  BC_U(1) = 1.0
+  BC_V(1) = 0.0
+  BC_W(1) = 0.0
 
 # y lo and hi: no slip walls
 
