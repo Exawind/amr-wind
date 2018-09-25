@@ -23,4 +23,5 @@
 ! The east and west boundaries are set at cyclic with a specified
 ! pressure drop (delP_X).
 !---------------------------------------------------------------------//
+
   DELP_Z = 2.0d-3
