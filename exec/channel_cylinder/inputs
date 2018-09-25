@@ -1,23 +1,23 @@
 # Stop time for simulation
 amr.max_step = -1
-amr.stop_time = 7.0
+amr.stop_time = 1.0
 
 #incflo.fixed_dt = 0.01
 incflo.cfl = 0.5
 incflo.explicit_diffusion = 1
 
 # Number of grid cells in each direction at the coarsest level
-amr.n_cell = 120 20 4
+amr.n_cell = 480 80 16 
 
 # Maximum level in hierarchy (for now must be 0, i.e., one level in total)
 amr.max_level = 0
 
 # Plot/check interval
-amr.plot_int   = 50
+amr.plot_int   = 100
 amr.check_int  = -1
 
 # Physics
-incflo.mu_g0   = 0.001
+incflo.mu_g0   = 0.01
 incflo.ro_g0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
@@ -36,3 +36,6 @@ cylinder.center    =  0.4 0.2 0.0
 
 # Trap invalids
 amrex.fpe_trap_invalid = 1
+
+#incflo.mg_verbose = 2
+#incflo.mg_cg_verbose = 2
