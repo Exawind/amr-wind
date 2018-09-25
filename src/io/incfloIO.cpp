@@ -26,7 +26,7 @@ void incflo_level::InitIOData()
 {
 	// Define the list of vector variables on faces that need to be written
 	// to plotfile/checkfile.
-	vecVarsName = {"u", "v", "w", "gpx", "gpy", "gpz"};
+	vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
 
 	// Define the list of scalar variables at cell centers that need to be
 	// written to plotfile/checkfile. "volfrac" MUST always be last without any
@@ -318,8 +318,7 @@ void incflo_level::Restart(
 			for(MFIter mfi(*vel[lev]); mfi.isValid(); ++mfi)
 			{
 				int ib = mfi.index();
-				(*vel[lev])[ib].copy(
-					single_fab_vel, single_fab_vel.box(), 0, mfi.validbox(), 0, 3);
+				(*vel[lev])[ib].copy(single_fab_vel, single_fab_vel.box(), 0, mfi.validbox(), 0, 3);
 				(*gp[lev])[ib].copy(single_fab_gp, single_fab_gp.box(), 0, mfi.validbox(), 0, 3);
 			}
 		}
@@ -525,15 +524,21 @@ void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Rea
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
 		mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow));
 
-		// Velocity components
-		MultiFab::Copy(*mf[lev], (*vel[lev]), 0, 0, 1, 0);
-		MultiFab::Copy(*mf[lev], (*vel[lev]), 1, 1, 1, 0);
-		MultiFab::Copy(*mf[lev], (*vel[lev]), 2, 2, 1, 0);
+        for(int i = 0; i < 3; i++)
+        {
+            // Velocity components
+            MultiFab::Copy(*mf[lev], (*vel[lev]), i, i, 1, 0);
 
-		// Pressure gradient components
-		MultiFab::Copy(*mf[lev], (*gp[lev]), 0, 3, 1, 0);
-		MultiFab::Copy(*mf[lev], (*gp[lev]), 1, 4, 1, 0);
-		MultiFab::Copy(*mf[lev], (*gp[lev]), 2, 5, 1, 0);
+            // Pressure gradient components
+            MultiFab::Copy(*mf[lev], (*gp[lev]), i, i+3, 1, 0);
+            
+            // Multiply by volume fraction to get proper results in EB cells
+            if(ebfactory[lev])
+            {
+                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i, 1, 0);
+                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i+3, 1, 0);
+            }
+        }
 
 		// Scalar variables
 		int dcomp = vecVarsName.size();
@@ -568,6 +573,11 @@ void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Rea
 			{
 				MultiFab::Copy(*mf[lev], *((*pltscalarVars[i])[lev].get()), 0, dcomp, 1, 0);
 			}
+            // Multiply by volume fraction to get proper results in EB cells
+            if(ebfactory[lev])
+            {
+                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, dcomp, 1, 0);
+            }
 			dcomp++;
 		}
 
