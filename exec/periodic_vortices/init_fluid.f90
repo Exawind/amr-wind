@@ -6,15 +6,15 @@ module init_fluid_module
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
-                         domlo, domhi, ro_g, p_g, vel_g, &
-                         mu_g, lambda_g, dx, dy, dz, xlength, ylength, zlength) &
+                         domlo, domhi, ro, p, vel, &
+                         mu, lambda, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use fld_const       , only: ro_g0
-      use calc_mu_g_module, only: calc_mu_g
+      use fld_const       , only: ro_0
+      use calc_mu_module, only: calc_mu
 
       implicit none
 
@@ -23,31 +23,31 @@ module init_fluid_module
       integer(c_int), intent(in   ) :: slo(3), shi(3)
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
-      real(rt), intent(inout) :: ro_g&
+      real(rt), intent(inout) :: ro&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: p_g&
+      real(rt), intent(inout) :: p&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      real(rt), intent(inout) :: vel_g&
+      real(rt), intent(inout) :: vel&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
-      real(rt), intent(inout) :: mu_g&
+      real(rt), intent(inout) :: mu&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda_g&
+      real(rt), intent(inout) :: lambda&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength
 
       ! Set user specified initial conditions (IC)
-      call set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel_g)
+      call set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
-      call init_periodic_vortices ( lo, hi, vel_g, slo, shi, dx, dy, dz, domlo)
+      call init_periodic_vortices ( lo, hi, vel, slo, shi, dx, dy, dz, domlo)
 
       ! Set the initial fluid density and viscosity
-      ro_g  = ro_g0
+      ro  = ro_0
 
-      call calc_mu_g(slo, shi, lo, hi, mu_g, lambda_g)
+      call calc_mu(slo, shi, lo, hi, mu, lambda)
 
    end subroutine init_fluid
 
@@ -136,13 +136,13 @@ module init_fluid_module
 !  Subroutine: init_fluid_restart                                      !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine init_fluid_restart(slo, shi, lo, hi, mu_g, lambda_g) &
+   subroutine init_fluid_restart(slo, shi, lo, hi, mu, lambda) &
       bind(C, name="init_fluid_restart")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use calc_mu_g_module, only: calc_mu_g
+      use calc_mu_module, only: calc_mu
 
       implicit none
 
@@ -150,12 +150,12 @@ module init_fluid_module
       integer(c_int), intent(in   ) ::  lo(3),  hi(3)
       integer(c_int), intent(in   ) :: slo(3), shi(3)
 
-      real(rt), intent(inout) :: mu_g&
+      real(rt), intent(inout) :: mu&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda_g&
+      real(rt), intent(inout) :: lambda&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      call calc_mu_g(slo, shi, lo, hi, mu_g, lambda_g)
+      call calc_mu(slo, shi, lo, hi, mu, lambda)
 
     end subroutine init_fluid_restart
 
@@ -167,10 +167,10 @@ module init_fluid_module
 !  Purpose: This module sets all the initial conditions.               !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel_g)
+   subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
       use ic, only: dim_ic, ic_defined
-      use ic, only: ic_p_g, ic_u_g, ic_v_g, ic_w_g
+      use ic, only: ic_p, ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_y_n, ic_z_t
       use ic, only: ic_x_w, ic_y_s, ic_z_b
       use scales, only: scale_pressure
@@ -187,7 +187,7 @@ module init_fluid_module
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
       real(rt), intent(in   ) :: dx, dy, dz
 
-      real(rt), intent(inout) ::  vel_g&
+      real(rt), intent(inout) ::  vel&
          (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
 !-----------------------------------------------
@@ -215,10 +215,10 @@ module init_fluid_module
               ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
               i_w, i_e, j_s, j_n, k_b, k_t)
 
-            pgx = ic_p_g(icv)
-            ugx = ic_u_g(icv)
-            vgx = ic_v_g(icv)
-            wgx = ic_w_g(icv)
+            pgx = ic_p(icv)
+            ugx = ic_u(icv)
+            vgx = ic_v(icv)
+            wgx = ic_w(icv)
 
             if (is_defined(ugx)) then
                istart = max(slo(1), i_w)
@@ -227,11 +227,11 @@ module init_fluid_module
                iend   = min(shi(1), i_e)
                jend   = min(shi(2), j_n)
                kend   = min(shi(3), k_t)
-               vel_g(istart:iend,jstart:jend,kstart:kend,1) = ugx
+               vel(istart:iend,jstart:jend,kstart:kend,1) = ugx
                if (slo(1).lt.domlo(1) .and. domlo(1) == istart) &
-                  vel_g(slo(1):istart-1,jstart:jend,kstart:kend,1) = ugx
+                  vel(slo(1):istart-1,jstart:jend,kstart:kend,1) = ugx
                if (shi(1).gt.domhi(1) .and. domhi(1) == iend  ) &
-                  vel_g(iend+1:shi(1)  ,jstart:jend,kstart:kend,1) = ugx
+                  vel(iend+1:shi(1)  ,jstart:jend,kstart:kend,1) = ugx
             end if
 
             if (is_defined(vgx)) then
@@ -241,11 +241,11 @@ module init_fluid_module
                iend   = min(shi(1), i_e)
                jend   = min(shi(2), j_n)
                kend   = min(shi(3), k_t)
-               vel_g(istart:iend,jstart:jend,kstart:kend,2) = vgx
+               vel(istart:iend,jstart:jend,kstart:kend,2) = vgx
                if (slo(2).lt.domlo(2) .and. domlo(2) == jstart) &
-                  vel_g(istart:iend,slo(2):jstart-1,kstart:kend,2) = vgx
+                  vel(istart:iend,slo(2):jstart-1,kstart:kend,2) = vgx
                if (shi(2).gt.domhi(2) .and. domhi(2) == jend  ) &
-                  vel_g(istart:iend,jend+1:shi(2)  ,kstart:kend,2) = vgx
+                  vel(istart:iend,jend+1:shi(2)  ,kstart:kend,2) = vgx
             end if
 
             if (is_defined(wgx)) then
@@ -255,11 +255,11 @@ module init_fluid_module
                iend   = min(shi(1), i_e)
                jend   = min(shi(2), j_n)
                kend   = min(shi(3), k_t)
-               vel_g(istart:iend,jstart:jend,kstart:kend,3) = wgx
+               vel(istart:iend,jstart:jend,kstart:kend,3) = wgx
                if (slo(3).lt.domlo(3) .and. domlo(3) == kstart) &
-                  vel_g(istart:iend,jstart:jend,slo(3):kstart-1,3) = wgx
+                  vel(istart:iend,jstart:jend,slo(3):kstart-1,3) = wgx
                if (shi(3).gt.domhi(3) .and. domhi(3) == kend  ) &
-                  vel_g(istart:iend,jstart:jend,kend+1:shi(3)  ,3) = wgx
+                  vel(istart:iend,jstart:jend,kend+1:shi(3)  ,3) = wgx
             end if
 
          endif

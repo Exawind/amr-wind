@@ -13,8 +13,8 @@ amr.max_level = 0
 amr.plot_int   = 10
 
 # physics
-incflo.mu_g0   = 0.0002
-incflo.ro_g0   = 1.0
+incflo.mu_0   = 0.0002
+incflo.ro_0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
 # Geometry
