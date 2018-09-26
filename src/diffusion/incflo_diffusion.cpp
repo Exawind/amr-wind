@@ -139,7 +139,8 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 		rhs_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
 		phi_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
 
-		amrex::Print() << "Diffusing velocity component " << i << std::endl;
+        if(verbose)
+            amrex::Print() << "Diffusing velocity component " << i << std::endl;
 
 		// Solve (1 - div beta grad) u_new = RHS
 		// Here RHS = "vel" which is the current approximation to the new-time velocity (without diffusion terms)
@@ -155,7 +156,7 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 //
 // Computes the following decomposition:
 //
-//    u + grad(phi)/ro = u*,     where div(eps*u) = 0
+//    u + grad(phi)/ro = u*,     where div(u) = 0
 //
 // where u* is a non-div-free velocity field, stored
 // by components in u, v, and w. The resulting div-free
