@@ -2,13 +2,13 @@
 #amr.max_step = 10000
 
 #incflo.fixed_dt = 0.01
-#incflo.cfl = 0.5
+incflo.cfl = 0.9
 
 incflo.verbose = 0
 mac.verbose = 0
 
 amr.steady_state = 1
-incflo.steady_state_tol = 1.0e-3
+incflo.steady_state_tol = 1.0e-8
 
 # Number of grid cells in each direction at the coarsest level
 amr.n_cell =  16 16 4
