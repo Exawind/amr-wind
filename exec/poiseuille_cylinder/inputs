@@ -2,7 +2,7 @@
 #amr.max_step = 10000
 
 #incflo.fixed_dt = 0.01
-incflo.cfl = 0.9
+incflo.cfl = 16.0
 
 incflo.verbose = 0
 mac.verbose = 0
@@ -11,7 +11,7 @@ amr.steady_state = 1
 incflo.steady_state_tol = 1.0e-8
 
 # Number of grid cells in each direction at the coarsest level
-amr.n_cell =  16 16 4
+amr.n_cell =  16 16 8
 
 # Maximum level in hierarchy (for now must be 0, i.e., one level in total)
 amr.max_level = 0
@@ -22,7 +22,7 @@ amr.plot_int   = 1
 #amr.restart    = chk01000
 
 # Physics
-incflo.mu_0   = 0.01
+incflo.mu_0   = 1.0
 incflo.ro_0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 
@@ -30,7 +30,7 @@ incflo.gravity = 0.0 0.0 0.0
 geometry.coord_sys   = 0                  # 0: Cartesian
 geometry.is_periodic = 0     0     1      # Is periodic in each direction?
 geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
-geometry.prob_hi     = 2.    2.    0.5    #hi corner of physical domain
+geometry.prob_hi     = 2.    2.    1.     #hi corner of physical domain
 
 # Add cylinder 
 incflo.geometry = "cylinder"
@@ -44,4 +44,4 @@ cylinder.center    =  1. 1. 1.
 amrex.fpe_trap_invalid = 1
 
 # Explicit diffusion
-incflo.explicit_diffusion = 1
+incflo.explicit_diffusion = 0
