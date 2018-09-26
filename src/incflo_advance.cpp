@@ -232,14 +232,12 @@ void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, i
 //
 //     vel = vel_o + dt * R_u^n + dt * divtau*(1/ro)
 //
-//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient,
-//     and explicit part of particles momentum exchange )
+//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient)
 //
 //     vel = vel + dt * ( g - grad(p+p0)/ro)
 //
-//  3. Add implicit forcing term ( AKA implicit part of particles
-//     momentum exchange )
-//
+//  3. Add implicit forcing term 
+//  
 //     vel = vel / ( 1 + dt * f_gds/ro )
 //
 //  4. Solve for phi
@@ -307,13 +305,11 @@ void incflo_level::incflo_apply_predictor(
 //     where the starred variables are computed using "predictor-step"
 //     variables.
 //
-//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient,
-//     and explicit part of particles momentum exchange )
+//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient )
 //
 //     vel = vel + dt * ( g - grad(p+p0)/ro)
 //
-//  3. Add implicit forcing term ( AKA implicit part of particles
-//     momentum exchange )
+//  3. Add implicit forcing term 
 //
 //     vel = vel / ( 1 + dt * f_gds/ro )
 //
