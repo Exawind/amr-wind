@@ -329,6 +329,10 @@ contains
                   &            ( divu_t - divu_b ) * idz
 
              if (do_explicit_diffusion .eq. 0) then
+                !
+                ! Subtract diagonal terms of stress tensor, to be obtained through implicit solve
+                ! Note that the variable names are misleading, but we want to avoid declaring new ones
+                !
                 do n = 1, 3
                    txx = ( mu_e * ( vel(i+1,j,k,n) - vel(i  ,j,k,n) ) &
                           -mu_w * ( vel(i  ,j,k,n) - vel(i-1,j,k,n) ) ) * idx * idx

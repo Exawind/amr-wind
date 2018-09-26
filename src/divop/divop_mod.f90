@@ -43,7 +43,8 @@ contains
         vfrac,   vflo, vfhi, &
         bcent,    blo,  bhi, &
         domlo, domhi,        &
-        dx, ng, mu, lambda ) bind(C)
+        dx, ng, mu, lambda , & 
+        do_explicit_diffusion ) bind(C)
 
       use bc
       use eb_interpolation_mod, only: interp_to_face_centroid
@@ -102,6 +103,11 @@ contains
       ! BC types
       integer(c_int), intent(in   ) ::  &
            & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
+
+      ! If true  then we include all the diffusive terms in this explicit result
+      ! If false then we include all only the off-diagonal terms here -- we do this
+      !     by computing the full tensor then subtracting the diagonal terms
+      integer(c_int),  intent(in   ), optional :: do_explicit_diffusion
 
       
       ! Conservative div and EB stuff
@@ -217,7 +223,7 @@ contains
                            if (n==1) then
                               call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
                                    vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
-                                   afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi)        
+                                   afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, do_explicit_diffusion)
                            end if
                            divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / &
                                 &         ( dx(n) * vfrac(i,j,k) )

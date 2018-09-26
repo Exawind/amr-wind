@@ -248,8 +248,6 @@ contains
 
    !
    ! Add forcing (acceleration) terms to velocity
-   ! These terms include the volumetric forces and the explicit part of the
-   ! particle/fluid momentum exchange
    !
    subroutine add_forcing ( lo, hi, vel, ulo, uhi, &
         & ro, slo, shi, domlo, domhi, dx, dt )  bind(C)

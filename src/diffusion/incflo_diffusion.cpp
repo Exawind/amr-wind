@@ -7,8 +7,8 @@
 #include <incflo_level.H>
 
 // For multigrid
-#include <AMReX_MLABecLaplacian.H>
 #include <AMReX_MLMG.H>
+#include <AMReX_MLEBABecLap.H>
 
 using namespace std;
 
@@ -154,22 +154,9 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 }
 
 //
-// Computes the following decomposition:
-//
-//    u + grad(phi)/ro = u*,     where div(u) = 0
-//
-// where u* is a non-div-free velocity field, stored
-// by components in u, v, and w. The resulting div-free
-// velocity field, u, overwrites the value of u* in u, v, and w.
-//
-// phi is an auxiliary function related to the pressure p by the relation:
-//
-//     new p  = old p + phi
-
-//
 // Solve :
 //
-//                  (alpha + div dot beta grad) u = RHS
+//                  (1 - div dot mu grad) u = RHS
 //
 void incflo_level::solve_diffusion_equation(int lev,
 											Vector<Vector<std::unique_ptr<MultiFab>>>& b,
@@ -188,7 +175,7 @@ void incflo_level::solve_diffusion_equation(int lev,
 	//       (alpha * a - beta * (del dot b grad)) sol
 	//
 	LPInfo info;
-	MLABecLaplacian matrix(geom, grids, dmap, info);
+    MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 	Vector<const MultiFab*> tmp;
 	array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
 
@@ -228,6 +215,17 @@ void incflo_level::solve_diffusion_equation(int lev,
 	// Then setup the solver ----------------------
 	//
 	MLMG solver(matrix);
+
+    // The default bottom solver is BiCG
+    // Other options include: 
+    ///   regular smoothing ("smoother")
+    ///   Hypre IJ AMG solver ("hypre")
+    if (bottom_solver_type == "smoother")
+    { 
+       solver.setBottomSolver(MLMG::BottomSolver::smoother);
+    } else if (bottom_solver_type == "hypre") { 
+       solver.setBottomSolver(MLMG::BottomSolver::hypre);
+    }
 
 	solver.setMaxIter(mg_max_iter);
 	solver.setMaxFmgIter(mg_max_fmg_iter);

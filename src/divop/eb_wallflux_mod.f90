@@ -20,7 +20,8 @@ contains
         bcent, blo, bhi,   &
         apx, axlo, axhi,   &
         apy, aylo, ayhi,   &
-        apz, azlo, azhi)
+        apz, azlo, azhi,   &
+        do_explicit_diffusion)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
@@ -49,6 +50,11 @@ contains
            & apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)),   &
            & apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3))
 
+      ! If true  then we include all the diffusive terms in this explicit result
+      ! If false then we include all only the off-diagonal terms here -- we do this
+      !     by computing the full tensor then subtracting the diagonal terms
+      integer(c_int),  intent(in   ) :: do_explicit_diffusion
+
       ! Local variable
       real(rt)   :: dxinv(3)
       real(rt)   :: dapx, dapy, dapz
@@ -58,7 +64,7 @@ contains
       real(rt)   :: cxm, cx0, cxp, cym, cy0, cyp, czm, cz0, czp
       real(rt)   :: u1, v1, w1, u2, v2, w2, dudn, dvdn, dwdn
       real(rt)   :: dudx, dudy, dudz, dvdx, dvdy, dvdz, dwdx, dwdy, dwdz, divu
-      real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyz, tautmp
+      real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy, tautmp
       integer    :: ixit, iyit, izit, is
       
       divw  = zero
@@ -249,15 +255,39 @@ contains
 
       divu = dudx+dvdy+dwdz
       tautmp = lam(i,j,k)*divu  ! This MUST be verified
-      tauxx = mu(i,j,k)*2.d0*dudx + tautmp
-      tauyy = mu(i,j,k)*2.d0*dvdy + tautmp
-      tauzz = mu(i,j,k)*2.d0*dwdz + tautmp
-      tauxy = mu(i,j,k)*(dudy+dvdx)
-      tauxz = mu(i,j,k)*(dudz+dwdx)
-      tauyz = mu(i,j,k)*(dwdy+dvdz)
 
-      divw(1) = dxinv(1) * (dapx*tauxx + dapy*tauxy + dapz*tauxz)
-      divw(2) = dxinv(2) * (dapx*tauxy + dapy*tauyy + dapz*tauyz)
+      tauxx = mu(i,j,k) * (dudx + dudx) + tautmp
+      tauxy = mu(i,j,k) * (dudy + dvdx)
+      tauxz = mu(i,j,k) * (dudz + dwdx)
+
+      tauyx = mu(i,j,k) * (dvdx + dudy)
+      tauyy = mu(i,j,k) * (dvdy + dvdy) + tautmp
+      tauyz = mu(i,j,k) * (dvdz + dwdy)
+
+      tauzx = mu(i,j,k) * (dwdx + dudz)
+      tauzy = mu(i,j,k) * (dwdy + dvdz)
+      tauzz = mu(i,j,k) * (dwdz + dwdz) + tautmp
+
+      if (do_explicit_diffusion .eq. 0) then
+         !
+         ! Subtract diagonal terms of stress tensor, to be obtained through 
+         ! implicit solve instead.                   
+         !
+         tauxx = tauxx - mu(i,j,k) * dudx
+         tauxy = tauxy - mu(i,j,k) * dudy
+         tauxz = tauxz - mu(i,j,k) * dudz
+
+         tauyx = tauyx - mu(i,j,k) * dvdx
+         tauyy = tauyy - mu(i,j,k) * dvdy
+         tauyz = tauyz - mu(i,j,k) * dvdz
+
+         tauzx = tauzx - mu(i,j,k) * dwdx
+         tauzy = tauzy - mu(i,j,k) * dwdy
+         tauzz = tauzz - mu(i,j,k) * dwdz
+      end if
+
+      divw(1) = dxinv(1) * (dapx*tauxx + dapy*tauyx + dapz*tauzx)
+      divw(2) = dxinv(2) * (dapx*tauxy + dapy*tauyy + dapz*tauzy)
       divw(3) = dxinv(3) * (dapx*tauxz + dapy*tauyz + dapz*tauzz)
 
    end subroutine compute_diff_wallflux

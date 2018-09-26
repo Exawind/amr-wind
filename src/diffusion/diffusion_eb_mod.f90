@@ -129,15 +129,15 @@ contains
       
       ! tau_xx, tau_xy, tau_xz on west faces
       call compute_tau_x(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flags, flo, fhi, lo, hi, dx, fx, nh ) 
+          flags, flo, fhi, lo, hi, dx, fx, nh, do_explicit_diffusion) 
       
       ! tau_yx, tau_yy, tau_yz on south faces
       call compute_tau_y(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flags, flo, fhi, lo, hi, dx, fy, nh )
+           flags, flo, fhi, lo, hi, dx, fy, nh, do_explicit_diffusion)
       
       ! tau_zx, tau_zy, tau_zz on bottom faces
       call compute_tau_z(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flags, flo, fhi, lo, hi, dx, fz, nh )
+           flags, flo, fhi, lo, hi, dx, fz, nh, do_explicit_diffusion)
 
       divop: block
          ! Compute div(tau) with EB algorithm
@@ -167,7 +167,7 @@ contains
              vfrac, vflo, vfhi, &
              bcent, blo, bhi, &
              domlo, domhi, &
-             dx, ng, mu, lambda )
+             dx, ng, mu, lambda , do_explicit_diffusion)
 
       end block divop
             
@@ -192,7 +192,7 @@ contains
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    subroutine compute_tau_x(vel, vlo, vhi, mu, slo, shi, lambda, &
-        flag, fglo, fghi, lo, hi, dx, tau_x, ng)
+           flag, fglo, fghi, lo, hi, dx, tau_x, ng, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -213,6 +213,8 @@ contains
            tau_x(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
+
+      integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       real(rt) :: dudx, dudy, dudz
       real(rt) :: dvdx, dvdy
@@ -273,10 +275,19 @@ contains
                mu_w     = half * (    mu(i,j,k) +     mu(i-1,j,k))
                lambda_w = half * (lambda(i,j,k) + lambda(i-1,j,k))
 
-               tau_x(i,j,k,1) = mu_w*two*dudx + lambda_w*(dudx + dvdy + dwdz)
+               tau_x(i,j,k,1) = mu_w*(dudx + dudx) + lambda_w*(dudx + dvdy + dwdz)
                tau_x(i,j,k,2) = mu_w*(dudy + dvdx)
                tau_x(i,j,k,3) = mu_w*(dudz + dwdx)
 
+               if (do_explicit_diffusion .eq. 0) then
+                  !
+                  ! Subtract diagonal terms of stress tensor, to be obtained through
+                  ! implicit solve instead.
+                  !
+                  tau_x(i,j,k,1) = tau_x(i,j,k,1) - mu_w*dudx
+                  tau_x(i,j,k,2) = tau_x(i,j,k,2) - mu_w*dvdx
+                  tau_x(i,j,k,3) = tau_x(i,j,k,3) - mu_w*dwdx
+               end if
 
             end do
          end do
@@ -289,7 +300,7 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_y(vel, vlo, vhi, mu, slo, shi, lambda, &
-        flag, fglo, fghi, lo, hi, dx, tau_y, ng)
+        flag, fglo, fghi, lo, hi, dx, tau_y, ng, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -310,6 +321,8 @@ contains
            tau_y(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill  
+
+      integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       real(rt) :: dudx, dudy
       real(rt) :: dvdx, dvdy, dvdz
@@ -373,7 +386,17 @@ contains
 
                tau_y(i,j,k,1) = mu_s*(dudy + dvdx)
                tau_y(i,j,k,2) = mu_s*(dvdy + dvdy) + lambda_s*(dudx + dvdy + dwdz)
-               tau_y(i,j,k,3) = mu_s*(dvdz + dwdy)
+               tau_y(i,j,k,3) = mu_s*(dwdy + dvdz)
+
+               if (do_explicit_diffusion .eq. 0) then
+                  !
+                  ! Subtract diagonal terms of stress tensor, to be obtained through
+                  ! implicit solve instead.
+                  !
+                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - mu_s*dudy
+                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - mu_s*dvdy
+                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - mu_s*dwdy
+               end if
 
             end do
          end do
@@ -388,7 +411,7 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_z(vel, vlo, vhi, mu, slo, shi, lambda, &
-        flag, fglo, fghi, lo, hi, dx, tau_z, ng)
+        flag, fglo, fghi, lo, hi, dx, tau_z, ng, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -409,6 +432,8 @@ contains
            tau_z(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
       
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
+
+      integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       real(rt) :: dudx,       dudz
       real(rt) ::       dvdy, dvdz
@@ -473,6 +498,16 @@ contains
                tau_z(i,j,k,1) = mu_b*(dudz + dwdx)
                tau_z(i,j,k,2) = mu_b*(dvdz + dwdy)
                tau_z(i,j,k,3) = mu_b*(dwdz + dwdz) + lambda_b*(dudx + dvdy + dwdz)
+
+               if (do_explicit_diffusion .eq. 0) then
+                  !
+                  ! Subtract diagonal terms of stress tensor, to be obtained through
+                  ! implicit solve instead.
+                  !
+                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - mu_b*dudz
+                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - mu_b*dvdz
+                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - mu_b*dwdz
+               end if
 
             end do
          end do

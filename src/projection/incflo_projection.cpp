@@ -9,7 +9,6 @@
 
 // For multigrid
 #include <AMReX_MLMG.H>
-// #include <AMReX_MLABecLaplacian.H>
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_MLNodeLaplacian.H>
 
@@ -249,11 +248,8 @@ void incflo_level::solve_poisson_equation(int lev,
 
        // The default bottom solver is BiCG
        // Other options include: 
-       ///   Hypre IJ AMG solver 
-       //    solver.setBottomSolver(MLMG::BottomSolver::hypre);
-       ///   regular smoothing
-       //    solver.setBottomSolver(MLMG::BottomSolver::smoother);
-
+       ///   regular smoothing ("smoother")
+       ///   Hypre IJ AMG solver ("hypre")
        if (bottom_solver_type == "smoother")
        { 
           solver.setBottomSolver(MLMG::BottomSolver::smoother);
