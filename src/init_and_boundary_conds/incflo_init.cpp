@@ -14,9 +14,15 @@ void incflo_level::InitParams()
 	{
 		ParmParse pp("incflo");
 
+        // Verbosity
+        pp.query("verbose", verbose);
+
 		// Options to control time stepping
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
+
+		// Tolerance to check for steady state
+		pp.query("steady_state_tol", steady_state_tol);
 
 		// Option to control MGML behavior
 		pp.query("mg_verbose", mg_verbose);
@@ -30,9 +36,6 @@ void incflo_level::InitParams()
         // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
         bottom_solver_type = "bicgstab";
         pp.query( "bottom_solver_type",  bottom_solver_type );
-
-		// Tolerance to check for steady state (projection only)
-		pp.query("steady_state_tol", steady_state_tol);
 
 		// Should we use explicit vs implicit diffusion
 		pp.query("explicit_diffusion", explicit_diffusion);

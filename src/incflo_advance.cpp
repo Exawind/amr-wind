@@ -66,6 +66,7 @@ void incflo_level::Advance(
 		incflo_apply_predictor(lev, conv_old, divtau_old, dt, proj_2);
 
 		// Print info about predictor step
+        if(verbose > 0)
 		{
 			amrex::Print() << "\nAfter predictor step:\n";
 			incflo_print_max_vel(lev);
@@ -78,6 +79,7 @@ void incflo_level::Advance(
 		incflo_apply_corrector(lev, conv_old, divtau_old, dt, proj_2);
 
 		// Print info about corrector step
+        if(verbose > 0)
 		{
 			amrex::Print() << "\nAfter corrector step:\n";
 			incflo_print_max_vel(lev);

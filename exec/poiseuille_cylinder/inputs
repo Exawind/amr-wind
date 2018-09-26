@@ -1,8 +1,14 @@
 # Stop time for simulation
-amr.max_step = 10000
+#amr.max_step = 10000
 
 #incflo.fixed_dt = 0.01
-incflo.cfl = 0.5
+#incflo.cfl = 0.5
+
+incflo.verbose = 0
+mac.verbose = 0
+
+amr.steady_state = 1
+incflo.steady_state_tol = 1.0e-3
 
 # Number of grid cells in each direction at the coarsest level
 amr.n_cell =  16 16 4
@@ -11,12 +17,12 @@ amr.n_cell =  16 16 4
 amr.max_level = 0
 
 # Plot/check interval
-amr.plot_int   = 100
-amr.check_int  = 1000
+amr.plot_int   = 1
+#amr.check_int  = 1000
 #amr.restart    = chk01000
 
 # Physics
-incflo.mu_0   = 0.001
+incflo.mu_0   = 0.01
 incflo.ro_0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 

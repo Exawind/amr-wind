@@ -350,6 +350,9 @@ private:
 	// used if load_balance_type == "KnapSack"
 	Vector<std::unique_ptr<MultiFab>> fluid_cost;
 
+    // Be verbose? 
+    int verbose = 0;
+
 	// Options to control MLMG behavior
 	int mg_verbose = 0;
 	int mg_cg_verbose = 0;
