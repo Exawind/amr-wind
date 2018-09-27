@@ -2,36 +2,36 @@
 # INITIAL CONDITIONS SECTION
 #_______________________________________________________________________
 
-  IC_X_w(1) =   0.00        ! (m)
-  IC_X_e(1) =   1.00        ! (m)
-  IC_Y_s(1) =   0.00        ! (m)
-  IC_Y_n(1) =   0.20        ! (m)
-  IC_Z_b(1) =   0.00        ! (m)
-  IC_Z_t(1) =   0.20        ! (m)
+  IC_X_w(1) =   0.0        ! (m)
+  IC_X_e(1) =   0.5        ! (m)
+  IC_Y_s(1) =   0.0        ! (m)
+  IC_Y_n(1) =   2.0        ! (m)
+  IC_Z_b(1) =   0.0        ! (m)
+  IC_Z_t(1) =   0.5        ! (m)
 
   IC_P(1) = 101.325d3 ! (Pa)
 
-  IC_U(1) =   4.00        ! (m/sec)
+  IC_U(1) =   0.0         ! (m/sec)
   IC_V(1) =   0.0         ! (m/sec)
-  IC_W(1) =   0.0         ! (m/sec)
+  IC_W(1) =   1.0         ! (m/sec)
 
 #_______________________________________________________________________
 # BOUNDARY CONDITIONS SECTION
 #_______________________________________________________________________
 
 
-! The east and west boundaries are set at cyclic with a specified
-! pressure drop (delP_X).
+! The top and bottom boundaries are set at cyclic with a specified
+! pressure drop (delP_Z).
 !---------------------------------------------------------------------//
-  DELP_X = 1.0
+  DELP_Z = 1.0
 
 # y lo and hi: no slip walls
 
-  BC_X_w(3:4) =   0.00     0.00     ! (m)
-  BC_X_e(3:4) =   1.00     1.00     ! (m)
-  BC_Y_s(3:4) =   0.00     0.20     ! (m)
-  BC_Y_n(3:4) =   0.00     0.20     ! (m)
-  BC_Z_b(3:4) =   0.00     0.00     ! (m)
-  BC_Z_t(3:4) =   0.20     0.20     ! (m)
+  BC_X_w(1:2) =   0.0     0.0     ! (m)
+  BC_X_e(1:2) =   0.5     0.5     ! (m)
+  BC_Y_s(1:2) =   0.0     2.0     ! (m)
+  BC_Y_n(1:2) =   0.0     2.0     ! (m)
+  BC_Z_b(1:2) =   0.0     0.0     ! (m)
+  BC_Z_t(1:2) =   0.5     0.5     ! (m)
 
-  BC_Type(3:4) =  'NSW'    'NSW'
+  BC_Type(1:2) =  'NSW'    'NSW'
