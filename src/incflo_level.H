@@ -57,7 +57,7 @@ public:
 
 	void Restart(std::string& restart_chkfile, int* nstep, Real* dt, Real* time, IntVect& Nrep);
 
-	void Regrid(int lev, int nstep);
+	void Regrid(int lev);
 
 	void Advance(
 		int lev, int nstep, int steady_state, Real& dt, Real& prev_dt, Real time, Real stop_time);
@@ -139,8 +139,7 @@ protected:
 	void incflo_set_pressure_bcs(int lev);
 
 	void AllocateArrays(int lev);
-	void AllocateTempArrays(int lev);
-	void RegridArrays(int lev, BoxArray& new_grids, DistributionMapping& new_dmap);
+	void RegridArrays(int lev);
 
 	void MakeBCArrays();
 
@@ -416,6 +415,8 @@ private:
 
 	Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
 	std::unique_ptr<MultiFab> dummy;
+
+    void incflo_update_ebfactory(int a_lev);
 };
 
 inline std::string incflo_level::get_load_balance_type()

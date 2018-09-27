@@ -219,9 +219,6 @@ void incflo_level::InitLevelData(int lev, Real time)
 void incflo_level::PostInit(
 	int lev, Real& dt, Real time, int nstep, int restart_flag, Real stop_time, int steady_state)
 {
-	// Allocate the temporaries for the fluid evolution
-	AllocateTempArrays(lev);
-
 	// Initial fluid arrays: pressure, velocity, density, viscosity
 	incflo_init_fluid(lev, restart_flag, time, dt, stop_time, steady_state);
 }

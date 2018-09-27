@@ -121,12 +121,10 @@ int main(int argc, char* argv[])
 	}
 
 
-	if(incflo_level::get_load_balance_type() == "FixedSize" ||
-	   incflo_level::get_load_balance_type() == "KnapSack")
-		my_incflo.Regrid(lev, 0);
-
-	// This checks if we want to regrid using the KDTree or KnapSack approach
-	my_incflo.Regrid(lev, nstep);
+	// Regrid
+    if(verbose)
+        amrex::Print() << "Regridding at step " << nstep << std::endl; 
+	my_incflo.Regrid(lev);
 
     // Post-initialisation step
 	my_incflo.PostInit(lev, dt, time, nstep, restart_flag, stop_time, steady_state);
@@ -177,7 +175,11 @@ int main(int argc, char* argv[])
 				Real strt_step = ParallelDescriptor::second();
 
 				if(!steady_state && regrid_int > -1 && nstep % regrid_int == 0)
-					my_incflo.Regrid(lev, nstep);
+                {
+                    if(verbose)
+                        amrex::Print() << "Regridding at step " << nstep << std::endl; 
+                    my_incflo.Regrid(lev);
+                }
 
 				my_incflo.Advance(lev, nstep, steady_state, dt, prev_dt, time, stop_time);
 

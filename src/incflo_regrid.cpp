@@ -6,17 +6,12 @@
 #include <incflo_eb_F.H>
 #include <incflo_level.H>
 
-void incflo_level::Regrid(int base_lev, int nstep)
+void incflo_level::Regrid(int base_lev)
 {
 	BL_PROFILE_REGION_START("incflo::Regrid()");
 
-	amrex::Print() << "In Regrid at step " << nstep << std::endl;
-
 	if(load_balance_type == "KnapSack")
 	{
-
-		amrex::Print() << "Load balancing using KnapSack " << std::endl;
-
 		AMREX_ALWAYS_ASSERT(fluid_cost[0] != nullptr);
 
 		if(ParallelDescriptor::NProcs() == 1)
@@ -33,7 +28,7 @@ void incflo_level::Regrid(int base_lev, int nstep)
 			SetDistributionMap(base_lev, newdm);
 
 			if(dm_changed)
-				RegridArrays(base_lev, grids[base_lev], newdm);
+				RegridArrays(base_lev);
 
 			fluid_cost[base_lev].reset(new MultiFab(grids[base_lev], newdm, 1, 0));
 			fluid_cost[base_lev]->setVal(0.0);
