@@ -10,8 +10,6 @@
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
 
-using namespace std;
-
 //
 // Explicit diffusion
 //
@@ -177,7 +175,7 @@ void incflo_level::solve_diffusion_equation(int lev,
 	LPInfo info;
     MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 	Vector<const MultiFab*> tmp;
-	array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+    std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
 
 	// Copy the PPE coefficient into the proper data strutcure
 	tmp = amrex::GetVecOfConstPtrs(b[lev]);

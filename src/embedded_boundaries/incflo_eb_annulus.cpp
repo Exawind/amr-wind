@@ -5,15 +5,10 @@
 
 #include <AMReX_ParmParse.H>
 
-//#include <AMReX_VisMF.H>  // amrex::VisMF::Write(MultiFab)
-//#include <sstream>
-
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <incflo_eb_F.H>
 #include <incflo_level.H>
-
-using namespace std;
 
 /********************************************************************************
  *                                                                              *

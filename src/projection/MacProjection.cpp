@@ -22,7 +22,7 @@ IntVect MacProjection::e_z(0, 0, 1);
 //
 MacProjection::MacProjection(AmrCore* a_amrcore,
 							 int a_nghost,
-							 amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* a_ebfactory)
+							 Vector<std::unique_ptr<EBFArrayBoxFactory>>* a_ebfactory)
 {
 	m_amrcore = a_amrcore;
 	m_nghost = a_nghost;
@@ -399,7 +399,7 @@ void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
 		const EBFArrayBox& div_fab = dynamic_cast<EBFArrayBox const&>((*m_diveu[lev])[mfi]);
 		const EBCellFlagFab& flags = div_fab.getEBCellFlagFab();
 
-		if(flags.getType(amrex::grow(bx, 0)) == FabType::covered)
+		if(flags.getType(grow(bx, 0)) == FabType::covered)
 		{
 			m_b[lev][0]->setVal(1.2345e300, ubx, 0, 1);
 			m_b[lev][1]->setVal(1.2345e300, vbx, 0, 1);

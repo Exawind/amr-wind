@@ -165,7 +165,6 @@ void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int ste
 			amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: "
 						   << "max dt by CFL     : " << dt_new << "\n"
 						   << "fixed dt specified: " << fixed_dt << std::endl;
-			exit(0);
 		}
 		dt = fixed_dt;
 	}

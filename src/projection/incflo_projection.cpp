@@ -12,8 +12,6 @@
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_MLNodeLaplacian.H>
 
-using namespace std;
-
 //
 // Computes the following decomposition:
 //
@@ -215,7 +213,7 @@ void incflo_level::solve_poisson_equation(int lev,
 		LPInfo info;
 		MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 		Vector<const MultiFab*> tmp;
-		array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
 
 		// Copy the PPE coefficient into the proper data strutcure
 		tmp = amrex::GetVecOfConstPtrs(b[lev]);

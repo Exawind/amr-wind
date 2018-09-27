@@ -109,7 +109,6 @@ contains
       !     by computing the full tensor then subtracting the diagonal terms
       integer(c_int),  intent(in   ), optional :: do_explicit_diffusion
 
-      
       ! Conservative div and EB stuff
       real(ar)  ::    &
            &  divc(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &

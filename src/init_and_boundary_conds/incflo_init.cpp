@@ -7,8 +7,6 @@
 #include <incflo_icbc_F.H>
 #include <incflo_level.H>
 
-using namespace std;
-
 void incflo_level::InitParams()
 {
 	{
@@ -82,7 +80,7 @@ void incflo_level::Init(int lev, Real time)
 	incflo_set_bc_type(lev);
 
 	// Allocate container for eb-normals
-	dummy = unique_ptr<MultiFab>(new MultiFab);
+	dummy = std::unique_ptr<MultiFab>(new MultiFab);
 
 	// Create MAC projection object
 	mac_projection.reset(new MacProjection(this, nghost, &ebfactory));

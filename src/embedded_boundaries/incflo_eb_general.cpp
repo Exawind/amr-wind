@@ -8,16 +8,11 @@
 
 #include <incflo_eb_if.H>
 
-//#include <AMReX_VisMF.H>  // amrex::VisMF::Write(MultiFab)
-//#include <sstream>
-
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <incflo_eb_F.H>
 #include <incflo_level.H>
 #include <type_traits>
-
-using namespace std;
 
 void incflo_level::make_eb_general(int lev)
 {
@@ -200,8 +195,8 @@ incflo_level::get_poly(int lev, int max_order, std::string field_prefix)
 
 	// Coefficients vector is stored in the inputs database with the field name:
 	//      <field_prefix>_[x,y,z]_coeffs
-	const std::array<const string, 3> var_names{"x", "y", "z"};
-	std::array<string, 3> field_names;
+	const std::array<const std::string, 3> var_names{"x", "y", "z"};
+	std::array<std::string, 3> field_names;
 	for(int i = 0; i < 3; i++)
 	{
 		std::stringstream field_name;

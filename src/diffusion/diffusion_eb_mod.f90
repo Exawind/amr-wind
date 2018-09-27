@@ -167,7 +167,7 @@ contains
              vfrac, vflo, vfhi, &
              bcent, blo, bhi, &
              domlo, domhi, &
-             dx, ng, mu, lambda , do_explicit_diffusion)
+             dx, ng, mu, lambda, do_explicit_diffusion)
 
       end block divop
             
