@@ -3,10 +3,11 @@
 #include <AMReX_MacProjector.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
+
 #include <MacProjection.H>
-#include <incflo_icbc_F.H>
-#include <incflo_mac_F.H>
-#include <incflo_proj_F.H>
+#include <icbc_F.H>
+#include <mac_F.H>
+#include <projection_F.H>
 
 // For multigrid
 using namespace amrex;

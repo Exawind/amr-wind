@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <incflo_eb_F.H>
+#include <eb_F.H>
 #include <incflo_level.H>
 
 void incflo_level::WriteEBSurface(int lev)

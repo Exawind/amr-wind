@@ -2,11 +2,11 @@
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
 
-#include <incflo_eb_if.H>
+#include <eb_if.H>
 
 #include <AMReX_EB_levelset.H>
 
-#include <incflo_eb_F.H>
+#include <eb_F.H>
 #include <incflo_level.H>
 
 /********************************************************************************

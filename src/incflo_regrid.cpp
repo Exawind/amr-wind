@@ -2,7 +2,8 @@
 
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
-#include <incflo_eb_F.H>
+
+#include <eb_F.H>
 #include <incflo_level.H>
 
 void incflo_level::Regrid(int base_lev)

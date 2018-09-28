@@ -1,15 +1,13 @@
 #include <AMReX_ParmParse.H>
-
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 #include <AMReX_VisMF.H>
-#include <incflo_level.H>
-#include <incflo_proj_F.H>
-
-// For multigrid
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_MLNodeLaplacian.H>
+
+#include <incflo_level.H>
+#include <projection_F.H>
 
 //
 // Computes the following decomposition:

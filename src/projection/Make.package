@@ -5,5 +5,5 @@ f90EXE_sources += set_pressure_bcs.f90
 f90EXE_sources += set_scalar_bcs.f90
 f90EXE_sources += set_mac_velocity_bcs.f90
 
-CEXE_sources += incflo_projection.cpp  
+CEXE_sources += projection.cpp  
 CEXE_sources += MacProjection.cpp

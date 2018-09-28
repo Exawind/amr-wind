@@ -7,7 +7,7 @@
 
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
-#include <incflo_eb_F.H>
+#include <eb_F.H>
 #include <incflo_level.H>
 
 /********************************************************************************

@@ -3,15 +3,10 @@
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
 
-#include <incflo_eb_if.H>
-
-//#include <AMReX_VisMF.H>  // amrex::VisMF::Write(MultiFab)
-//#include <sstream>
+#include <eb_if.H>
 
 #include <algorithm>
-// //#include <AMReX_EB_levelset.H>
-//#include <AMReX_EB_levelset.H>
-#include <incflo_eb_F.H>
+#include <eb_F.H>
 #include <incflo_level.H>
 
 std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo_level::get_walls(int lev, bool& has_walls)

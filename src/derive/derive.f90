@@ -1,4 +1,4 @@
-module compute_vort_module
+module derive_module
 
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
@@ -52,4 +52,4 @@ contains
 
    end subroutine compute_vort
 
-end module compute_vort_module
+end module derive_module

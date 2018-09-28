@@ -14,4 +14,4 @@ f90EXE_sources += set_p0.f90
 f90EXE_sources += set_velocity_bcs.f90
 f90EXE_sources += zero_wall_norm_vel.f90 
 
-CEXE_sources += incflo_init.cpp
+CEXE_sources += init.cpp

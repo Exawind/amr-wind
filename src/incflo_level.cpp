@@ -3,9 +3,10 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <incflo_derive_F.H>
-#include <incflo_eb_F.H>
-#include <incflo_icbc_F.H>
+
+#include <derive_F.H>
+#include <eb_F.H>
+#include <icbc_F.H>
 #include <incflo_level.H>
 
 // Initiate vars which cannot be initiated in header

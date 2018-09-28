@@ -19,7 +19,7 @@
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
 
-#include <incflo_eb_if.H>
+#include <eb_if.H>
 #include <MacProjection.H>
 
 class incflo_level : public AmrCore

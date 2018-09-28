@@ -6,10 +6,11 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
-#include <incflo_icbc_F.H>
+
+#include <icbc_F.H>
 #include <incflo_level.H>
-#include <incflo_mac_F.H>
-#include <incflo_proj_F.H>
+#include <mac_F.H>
+#include <projection_F.H>
 
 void incflo_level::Advance(
 	int lev, int nstep, int steady_state, Real& dt, Real& prev_dt, Real time, Real stop_time)

@@ -1,12 +1,12 @@
 f90EXE_sources += get_eb_walls.f90
 f90EXE_sources += eb_interpolation_mod.f90
 
-CEXE_sources += incflo_eb.cpp
+CEXE_sources += eb.cpp
 CEXE_sources += writeEBsurface.cpp
-CEXE_sources += incflo_eb_annulus.cpp
-CEXE_sources += incflo_eb_box.cpp
-CEXE_sources += incflo_eb_cylinder.cpp
-CEXE_sources += incflo_eb_hopper.cpp
-CEXE_sources += incflo_eb_regular.cpp
-CEXE_sources += incflo_eb_general.cpp
+CEXE_sources += eb_annulus.cpp
+CEXE_sources += eb_box.cpp
+CEXE_sources += eb_cylinder.cpp
+CEXE_sources += eb_hopper.cpp
+CEXE_sources += eb_regular.cpp
+CEXE_sources += eb_general.cpp
 CEXE_sources += get_walls.cpp
