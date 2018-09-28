@@ -6,7 +6,6 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
-#include <incflo_F.H>
 #include <incflo_icbc_F.H>
 #include <incflo_level.H>
 #include <incflo_mac_F.H>

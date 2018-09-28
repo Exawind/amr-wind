@@ -2,7 +2,6 @@
 
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
-#include <incflo_F.H>
 #include <incflo_eb_F.H>
 #include <incflo_icbc_F.H>
 #include <incflo_level.H>

@@ -9,40 +9,6 @@ CONTAINS
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
-!  function: incflo_isnan                                                !
-!  Purpose: check whether argument is NAN                              !
-!                                                                      !
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-
-      logical FUNCTION incflo_isnan(x)
-
-!-----------------------------------------------
-! Dummy arguments
-!-----------------------------------------------
-      real(rt) :: x
-!-----------------------------------------------
-! Local variables
-!-----------------------------------------------
-      CHARACTER(LEN=80) :: notnumber
-!-----------------------------------------------
-
-      incflo_isnan = .False.
-      write(notnumber,*) x
-! To check for NaN's in x, see if x (a real number) contain a letter "N"
-! "n" or symbol "?", in which case it is a NaN (Not a Number)
-
-      IF(INDEX(notnumber,'?') > 0 .OR.     &
-         INDEX(notnumber,'n') > 0 .OR.     &
-         INDEX(notnumber,'N') > 0 ) THEN
-        incflo_isnan = .TRUE.
-         RETURN
-      ENDIF
-
-      RETURN
-    END FUNCTION incflo_isnan
-
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
 !  Function name: SEEK_COMMENT (LINE_MAXCOL)                           !
 !  Author: P.Nicoletti                                Date: 25-NOV-91  !
 !                                                                      !
@@ -84,77 +50,6 @@ CONTAINS
 !
       RETURN
       END FUNCTION SEEK_COMMENT
-
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
-!  Function name: SEEK_END (LINE, MAXCOL)                              !
-!  Author: P.Nicoletti, M. Syamlal                    Date: 7-AUG-92   !
-!                                                                      !
-!  Purpose: Return the index to where the last character was found in  !
-!  the input data line.  Equals MAXCOL if no trailing blank characters !
-!  in the line.                                                        !
-!                                                                      !
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      PURE integer FUNCTION SEEK_END (LINE, MAXCOL)
-
-      IMPLICIT NONE
-
-! Dummy Arguments
-!---------------------------------------------------------------------//
-! input data line
-      CHARACTER, intent(IN) :: LINE*(*)
-! maximum column of input data line to search
-      integer, intent(IN) :: MAXCOL
-
-! Local Variables
-!---------------------------------------------------------------------//
-      integer :: L
-!.......................................................................!
-
-      SEEK_END = 0
-      DO L = 1, MAXCOL
-         IF (LINE(L:L) /= ' ') SEEK_END = L
-      END DO
-      RETURN
-      END FUNCTION SEEK_END
-
-!
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
-!  Function name: LINE_TOO_BIG (LINE,LINE_LEN,MAXCOL)                  !
-!  Author: P.Nicoletti                                Date: 25-NOV-91  !
-!                                                                      !
-!  Purpose: Return a value greater than 0 to indicate an error         !
-!  condition (data passed column MAXCOL in LINE)                       !
-!                                                                      !
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      PURE integer FUNCTION LINE_TOO_BIG (LINE, LINE_LEN, MAXCOL)
-
-      IMPLICIT NONE
-
-! Dummy Arguments
-!---------------------------------------------------------------------//
-! input data line
-      CHARACTER(LEN=*), intent(IN) :: LINE
-! length of input data line
-      integer, intent(IN) :: LINE_LEN
-! maximum column that non-blank charcater are in the input data line
-      integer, intent(IN) :: MAXCOL
-
-! Local Variables
-!---------------------------------------------------------------------//
-      integer :: L
-!.......................................................................!
-
-      DO L = MAXCOL + 1, LINE_LEN
-         IF (LINE(L:L) /= ' ') THEN
-            LINE_TOO_BIG = L
-            RETURN
-         ENDIF
-      END DO
-      LINE_TOO_BIG = 0
-      RETURN
-      END FUNCTION LINE_TOO_BIG
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !

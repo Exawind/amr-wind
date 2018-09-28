@@ -9,7 +9,6 @@
 
 #include <AMReX_buildInfo.H>
 
-#include <incflo_F.H>
 #include <incflo_level.H>
 
 namespace

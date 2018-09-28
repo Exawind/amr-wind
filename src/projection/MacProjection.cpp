@@ -4,7 +4,6 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <MacProjection.H>
-#include <incflo_F.H>
 #include <incflo_icbc_F.H>
 #include <incflo_mac_F.H>
 #include <incflo_proj_F.H>

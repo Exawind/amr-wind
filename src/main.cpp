@@ -6,9 +6,9 @@
 #include <AMReX_VisMF.H>
 #include <AMReX_iMultiFab.H>
 
-#include <incflo_F.H>
-#include <incflo_io_F.H>
+#include <incflo_derive_F.H>
 #include <incflo_icbc_F.H>
+#include <incflo_io_F.H>
 #include <incflo_level.H>
 
 // Declare and initialise variables

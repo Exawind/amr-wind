@@ -18,7 +18,7 @@ MODULE read_namelist_module
       use ic, only: ic_pack_type, ic_p
       use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
-      use utilities, only: blank_line, line_too_big, seek_comment
+      use utilities, only: blank_line, seek_comment
       use utilities, only: make_upper_case, replace_tab
       use param, only: undefined
 

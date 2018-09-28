@@ -3,7 +3,6 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 #include <AMReX_VisMF.H>
-#include <incflo_F.H>
 #include <incflo_level.H>
 #include <incflo_proj_F.H>
 

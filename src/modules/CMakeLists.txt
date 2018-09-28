@@ -1,5 +1,4 @@
 add_sources ( bc_mod.f90 )
-add_sources ( compute_vort.f90 )
 add_sources ( constant_mod.f90 )
 add_sources ( ic_mod.f90 )
 add_sources ( param_mod.f90 )

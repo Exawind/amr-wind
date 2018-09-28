@@ -1,5 +1,4 @@
 f90EXE_sources += bc_mod.f90
-f90EXE_sources += compute_vort.f90
 f90EXE_sources += constant_mod.f90  
 f90EXE_sources += ic_mod.f90    
 f90EXE_sources += param_mod.f90   

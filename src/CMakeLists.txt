@@ -47,12 +47,12 @@ add_sources ( incflo_arrays.cpp )
 add_sources ( incflo_level.cpp )
 add_sources ( incflo_regrid.cpp )
 
-add_sources ( incflo_F.H )
 add_sources ( incflo_level.H )
 
 add_sources ( main.cpp )
 
 include ( convection/CMakeLists.txt )
+include ( derive/CMakeLists.txt )
 include ( diffusion/CMakeLists.txt )
 include ( divop/CMakeLists.txt )
 include ( embedded_boundaries/CMakeLists.txt )
