@@ -3,7 +3,7 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 #include <AMReX_VisMF.H>
-#include <incflo_diff_F.H>
+#include <diffusion_F.H>
 #include <incflo_level.H>
 
 // For multigrid

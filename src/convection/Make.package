@@ -2,4 +2,4 @@ f90EXE_sources += convection_mod.f90
 f90EXE_sources += convection_eb_mod.f90
 f90EXE_sources += slopes_mod.f90
 
-CEXE_sources += incflo_convection.cpp
+CEXE_sources += convection.cpp

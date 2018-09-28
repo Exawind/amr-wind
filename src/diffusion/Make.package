@@ -1,5 +1,4 @@
 f90EXE_sources += diffusion_mod.f90
 f90EXE_sources += diffusion_eb_mod.f90
 
-CEXE_sources += incflo_diffusion.cpp  
-F90EXE_headers += incflo_diff_F.H
+CEXE_sources += diffusion.cpp  

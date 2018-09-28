@@ -1,6 +1,6 @@
 #include <incflo_level.H>
 #include <incflo_mac_F.H>
-#include <incflo_proj_F.H>
+#include <convection_F.H>
 
 //
 // Compute acc using the vel passed in

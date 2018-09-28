@@ -7,6 +7,3 @@ f90EXE_sources += set_mac_velocity_bcs.f90
 
 CEXE_sources += incflo_projection.cpp  
 CEXE_sources += MacProjection.cpp
-CEXE_headers += MacProjection.H
-F90EXE_headers += incflo_mac_F.H
-F90EXE_headers += incflo_proj_F.H

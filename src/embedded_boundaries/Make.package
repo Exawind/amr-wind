@@ -10,6 +10,3 @@ CEXE_sources += incflo_eb_hopper.cpp
 CEXE_sources += incflo_eb_regular.cpp
 CEXE_sources += incflo_eb_general.cpp
 CEXE_sources += get_walls.cpp
-CEXE_headers += incflo_eb_if.H
-
-FEXE_headers += incflo_eb_F.H
