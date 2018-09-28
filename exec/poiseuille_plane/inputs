@@ -30,7 +30,7 @@ incflo.gravity = 0.0 0.0 8.0
 geometry.coord_sys   = 0                  # 0: Cartesian
 geometry.is_periodic = 1     0     1      # Is periodic in each direction?
 geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
-geometry.prob_hi     = 0.5   2.    0.5    #hi corner of physical domain
+geometry.prob_hi     = 0.5   2.0   0.5    #hi corner of physical domain
 
 # Trap invalids
 amrex.fpe_trap_invalid = 1

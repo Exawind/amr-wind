@@ -52,7 +52,6 @@ add_sources ( incflo_level.H )
 
 add_sources ( main.cpp )
 
-include ( check_data/CMakeLists.txt )
 include ( convection/CMakeLists.txt )
 include ( diffusion/CMakeLists.txt )
 include ( divop/CMakeLists.txt )

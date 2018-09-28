@@ -1,9 +1,0 @@
-f90EXE_sources +=   check_bc_flow.f90
-f90EXE_sources +=   check_bc_geometry.f90
-f90EXE_sources +=   check_bc_inflow.f90
-f90EXE_sources +=   check_bc_outflow.f90
-f90EXE_sources +=   check_bc_walls.f90
-f90EXE_sources +=   check_boundary_conditions.f90
-f90EXE_sources +=   check_initial_conditions.f90
-
-FEXE_headers += incflo_checkdat_F.H

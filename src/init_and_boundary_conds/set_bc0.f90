@@ -1,10 +1,7 @@
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
 !                                                                      C
 !  Subroutine: set_bc0                                                 C
-!  Purpose: This subroutine does the initial setting of all boundary   C
-!  conditions. The user specifications of the boundary conditions are  C
-!  checked for veracity in various check_data/ routines:               C
-!  (e.g., check_boundary_conditions).                                  C
+!  This subroutine does the initial setting of all boundary conditions C
 !                                                                      C
 !  Author: M. Syamlal                                 Date: 29-JAN-92  C
 !                                                                      C

@@ -181,8 +181,6 @@ void incflo_level::MakeNewLevelFromScratch(int lev,
 	SetDistributionMap(lev, new_dmap);
 
 	MakeBCArrays();
-
-	check_data(lev);
 }
 
 void incflo_level::ReMakeNewLevelFromScratch(int lev,
@@ -194,27 +192,8 @@ void incflo_level::ReMakeNewLevelFromScratch(int lev,
 
 	MakeBCArrays();
 
-	check_data(lev);
-
 	// We need to re-fill these arrays for the larger domain (after replication).
 	incflo_set_bc_type(lev);
-}
-
-void incflo_level::check_data(int lev)
-{
-
-	Real dx = geom[lev].CellSize(0);
-	Real dy = geom[lev].CellSize(1);
-	Real dz = geom[lev].CellSize(2);
-
-	Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
-	Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
-	Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
-
-	Box domain(geom[0].Domain());
-
-	// Convert (mass, volume) flows to velocities.
-	set_bc_flow(&xlen, &ylen, &zlen, &dx, &dy, &dz);
 }
 
 void incflo_level::InitLevelData(int lev, Real time)

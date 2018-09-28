@@ -151,8 +151,6 @@ private:
 	void make_eb_clr_riser(int lev);
 	void make_eb_regular(int lev);
 
-	void check_data(int lev);
-
 	void MakeNewLevelFromScratch(int lev,
 								 Real time,
 								 const BoxArray& new_grids,

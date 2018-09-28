@@ -1,13 +1,11 @@
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
-!                                                                      C
-!  Subroutine: zero_wall_norm_vel                                      C
-!                                                                      C
-!  Purpose: This subroutine does the initial setting of all boundary   C
-!  conditions. The user specifications of the boundary conditions are  C
-!  checked for veracity in various check_data/ routines:               C
-!  (e.g., check_boundary_conditions).                                  C
-!                                                                      C
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
+!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
+!                                                                       C
+!  Subroutine: zero_wall_norm_vel                                       C
+!                                                                       C
+!  This subroutine does the initial setting of all boundary conditions. C
+!                                                                       C
+!                                                                       C
+!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
 subroutine zero_wall_norm_vel(slo, shi, &
      vel, bc_ilo_type, bc_ihi_type, bc_jlo_type, bc_jhi_type, &
      bc_klo_type, bc_khi_type, domlo, domhi, ng) &
