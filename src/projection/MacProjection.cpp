@@ -227,6 +227,10 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 
 		if(verbose)
 		{
+            // Fill boundaries before printing div(u) 
+            for(int i = 0; i < 3; i++)
+                (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
+
 			EB_computeDivergence(*m_diveu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
 
 			Print() << "  * On level " << lev << " max(abs(diveu)) = " << norm0(m_diveu, lev)
@@ -265,6 +269,10 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 	{
 		if(verbose)
 		{
+            // Fill boundaries before printing div(u) 
+            for(int i = 0; i < 3; i++)
+                (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
+
 			EB_computeDivergence(*m_diveu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
 
 			Print() << "  * On level " << lev << " max(abs(diveu)) = " << norm0(m_diveu, lev)

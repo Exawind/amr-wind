@@ -178,9 +178,11 @@ contains
 
             iwall = 0
 
-            do k = lo(3)-2, hi(3)+2
-               do j = lo(2)-2, hi(2)+2
-                  do i = lo(1)-2, hi(1)+2
+            divc = zero
+
+            do k =       max(lo(3)-2, domlo(3)), min(hi(3)+2, domhi(3))
+               do j =    max(lo(2)-2, domlo(2)), min(hi(2)+2, domhi(2))
+                  do i = max(lo(1)-2, domlo(1)), min(hi(1)+2, domhi(1))
 
                      if (is_covered_cell(flags(i,j,k))) then
 
@@ -315,7 +317,7 @@ contains
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
                                       .and. (nbr(ii,jj,kk)==1) ) then
-                                    wtot = wtot + vfrac(i+ii,j+jj,k+kk)
+                                    wtot = wtot + vfrac(i+ii,j+jj,k+kk) * mask(i+ii,j+jj,k+kk)
                                  end if
                               end do
                            end do
