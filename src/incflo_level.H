@@ -133,7 +133,6 @@ protected:
 	void incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2);
 	void incflo_set_scalar_bcs(int lev);
 	void incflo_set_velocity_bcs(int lev, int extrap_dir_bcs);
-	void incflo_set_pressure_bcs(int lev);
 
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);

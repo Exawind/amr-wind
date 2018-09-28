@@ -11,7 +11,10 @@ f90EXE_sources += set_bc_type.f90
 f90EXE_sources += set_delp_dir.f90
 f90EXE_sources += set_mac_velocity_bcs.f90
 f90EXE_sources += set_p0.f90 
+f90EXE_sources += set_pressure_bcs.f90
+f90EXE_sources += set_scalar_bcs.f90
 f90EXE_sources += set_velocity_bcs.f90
 f90EXE_sources += zero_wall_norm_vel.f90 
 
+CEXE_sources += bc.cpp
 CEXE_sources += init.cpp

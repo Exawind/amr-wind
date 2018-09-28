@@ -442,3 +442,37 @@ void incflo_level::incflo_set_p0(int lev)
 	p0[lev]->FillBoundary(p0_periodicity);
 	 gp0[lev]->FillBoundary(p0_periodicity);
 }
+
+// 
+// Perform initial pressure iterations 
+//
+void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, int steady_state)
+{
+	// Fill ghost cells
+	incflo_set_scalar_bcs(lev);
+	incflo_set_velocity_bcs(lev, 0);
+
+	// Copy vel into vel_o
+	MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
+
+	Real time = 0.0;
+	incflo_compute_dt(lev, time, stop_time, steady_state, dt);
+
+	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
+
+	//  Create temporary multifabs to hold conv and divtau
+	MultiFab conv(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]);
+	MultiFab divtau(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]);
+
+	for(int iter = 0; iter < 3; ++iter)
+	{
+		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
+
+		bool proj_2 = false;
+		incflo_apply_predictor(lev, conv, divtau, dt, proj_2);
+
+		// Replace vel by the original values
+		MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+	}
+}
+

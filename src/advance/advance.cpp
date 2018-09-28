@@ -7,8 +7,9 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
 
-#include <icbc_F.H>
 #include <incflo_level.H>
+#include <advance_F.H>
+#include <icbc_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
 
@@ -192,36 +193,6 @@ void incflo_level::incflo_project_velocity(int lev)
 	// We initialize p and gp back to zero (p0 may still be still non-zero)
 	p[lev]->setVal(0.0);
 	 gp[lev]->setVal(0.0);
-}
-
-void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, int steady_state)
-{
-	// Fill ghost cells
-	incflo_set_scalar_bcs(lev);
-	incflo_set_velocity_bcs(lev, 0);
-
-	// Copy vel into vel_o
-	MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
-
-	Real time = 0.0;
-	incflo_compute_dt(lev, time, stop_time, steady_state, dt);
-
-	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
-
-	//  Create temporary multifabs to hold conv and divtau
-	MultiFab conv(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]);
-	MultiFab divtau(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]);
-
-	for(int iter = 0; iter < 3; ++iter)
-	{
-		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
-
-		bool proj_2 = false;
-		incflo_apply_predictor(lev, conv, divtau, dt, proj_2);
-
-		// Replace vel by the original values
-		MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
-	}
 }
 
 //
@@ -630,98 +601,6 @@ int incflo_level::steady_state_reached(int lev, Real dt)
 		return 0;
 	else
 		return condition1 || condition2;
-}
-
-//
-// Set the BCs for all the variables EXCEPT pressure or velocity.
-//
-void incflo_level::incflo_set_scalar_bcs(int lev)
-{
-	BL_PROFILE("incflo_level::incflo_set_scalar_bcs()");
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-	{
-		set_scalar_bcs((*ro[lev])[mfi].dataPtr(),
-					   (*mu[lev])[mfi].dataPtr(),
-					   BL_TO_FORTRAN_ANYD((*lambda[lev])[mfi]),
-					   bc_ilo.dataPtr(),
-					   bc_ihi.dataPtr(),
-					   bc_jlo.dataPtr(),
-					   bc_jhi.dataPtr(),
-					   bc_klo.dataPtr(),
-					   bc_khi.dataPtr(),
-					   domain.loVect(),
-					   domain.hiVect(),
-					   &nghost);
-	}
-	ro[lev]->FillBoundary(geom[lev].periodicity());
-	mu[lev]->FillBoundary(geom[lev].periodicity());
-	lambda[lev]->FillBoundary(geom[lev].periodicity());
-}
-
-//
-// Set the BCs for velocity only
-//
-void incflo_level::incflo_set_velocity_bcs(int lev, int extrap_dir_bcs)
-{
-	BL_PROFILE("incflo_level::incflo_set_velocity_bcs()");
-
-	vel[lev]->FillBoundary(geom[lev].periodicity());
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-	{
-		set_velocity_bcs(BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-						 bc_ilo.dataPtr(),
-						 bc_ihi.dataPtr(),
-						 bc_jlo.dataPtr(),
-						 bc_jhi.dataPtr(),
-						 bc_klo.dataPtr(),
-						 bc_khi.dataPtr(),
-						 domain.loVect(),
-						 domain.hiVect(),
-						 &nghost,
-						 &extrap_dir_bcs);
-	}
-}
-
-//
-// Fills ghost cell values of pressure appropriately for the BC type
-//
-void incflo_level::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p)
-{
-	BL_PROFILE("incflo_level::incflo_extrap_pressure()");
-	if(nodal_pressure == 1)
-		return;
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(*p, true); mfi.isValid(); ++mfi)
-	{
-
-		extrap_pressure_to_ghost_cells(BL_TO_FORTRAN_ANYD((*p)[mfi]),
-									   bc_ilo.dataPtr(),
-									   bc_ihi.dataPtr(),
-									   bc_jlo.dataPtr(),
-									   bc_jhi.dataPtr(),
-									   bc_klo.dataPtr(),
-									   bc_khi.dataPtr(),
-									   domain.loVect(),
-									   domain.hiVect(),
-									   &nghost);
-	}
 }
 
 void incflo_level::check_for_nans(int lev)

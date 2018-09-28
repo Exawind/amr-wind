@@ -1,5 +1,3 @@
-CEXE_sources += advance.cpp
 CEXE_sources += incflo_arrays.cpp
 CEXE_sources += incflo_level.cpp
-CEXE_sources += incflo_regrid.cpp
 CEXE_sources += main.cpp

@@ -2,8 +2,6 @@
 !              
 !  This subroutine sets the BCs for all scalar variables involved in
 !  the projection, EXCEPT the pressure and velocity components. 
-!  To set pressure BCs, use "set_pressure_bcs".
-!  To set velocity BCs, use "set_velocity_bcs".
 !  
 !  Author: Michele Rosso
 ! 
