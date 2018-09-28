@@ -1,5 +1,0 @@
-add_sources ( eb_to_pvd.f90 )
-add_sources ( read_namelist.f90 )
-add_sources ( incfloIO.cpp )
-add_sources ( remove_comment.f90 )
-add_sources ( incflo_io_F.H )

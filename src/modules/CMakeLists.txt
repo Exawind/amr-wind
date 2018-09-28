@@ -1,6 +1,0 @@
-add_sources ( bc_mod.f90 )
-add_sources ( constant_mod.f90 )
-add_sources ( ic_mod.f90 )
-add_sources ( param_mod.f90 )
-add_sources ( ps_mod.f90 )
-add_sources ( utilities_mod.f90 )
