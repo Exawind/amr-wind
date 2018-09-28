@@ -609,11 +609,14 @@ int incflo_level::steady_state_reached(int lev, Real dt)
 	//
 	// Print out info on steady state checks
 	//
-	amrex::Print() << "\nSteady state check:\n";
-	amrex::Print() << "||u-uo||/||uo|| , du/dt  = " << tmp1 << " , " << delta_u / dt << "\n";
-	amrex::Print() << "||v-vo||/||vo|| , dv/dt  = " << tmp2 << " , " << delta_v / dt << "\n";
-	amrex::Print() << "||w-wo||/||wo|| , dw/dt  = " << tmp3 << " , " << delta_w / dt << "\n";
-	amrex::Print() << "||p-po||/||po|| , dp/dt  = " << tmp4 << " , " << delta_p / dt << "\n";
+    if(verbose)
+    {
+        amrex::Print() << "\nSteady state check:\n";
+        amrex::Print() << "||u-uo||/||uo|| , du/dt  = " << tmp1 << " , " << delta_u / dt << "\n";
+        amrex::Print() << "||v-vo||/||vo|| , dv/dt  = " << tmp2 << " , " << delta_v / dt << "\n";
+        amrex::Print() << "||w-wo||/||wo|| , dw/dt  = " << tmp3 << " , " << delta_w / dt << "\n";
+        amrex::Print() << "||p-po||/||po|| , dp/dt  = " << tmp4 << " , " << delta_p / dt << "\n";
+    }
 
 	// Count # access
 	naccess++;

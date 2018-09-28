@@ -12,27 +12,27 @@
 #include <incflo_level.H>
 
 // Declare and initialise variables
-int max_step = -1;
 int verbose = -1;
-int regrid_int = -1;
+
 Real stop_time = -1.0;
+int max_step = -1;
 bool steady_state = false;
 
-bool write_eb_surface = false;
+int check_int = -1;
+int last_chk = -1;
+std::string check_file{"chk"};
 std::string restart_file{""};
+
+int plot_int = -1;
+int last_plt = -1;
+std::string plot_file{"plt"};
+bool write_eb_surface = false;
 
 int repl_x = 1;
 int repl_y = 1;
 int repl_z = 1;
 
-int check_int = -1;
-int last_chk = -1;
-std::string check_file{"chk"};
-
-int plot_int = -1;
-int last_plt = -1;
-std::string plot_file{"plt"};
-bool plotfile_on_restart = false;
+int regrid_int = -1;
 
 void ReadParameters();
 
@@ -114,8 +114,6 @@ int main(int argc, char* argv[])
 
 
 	// Regrid
-    if(verbose)
-        amrex::Print() << "Regridding at step " << nstep << std::endl; 
 	my_incflo.Regrid(lev);
 
     // Post-initialisation step
@@ -137,7 +135,7 @@ int main(int argc, char* argv[])
 
 	// We automatically write checkpoint and plotfiles with the initial data
 	//    if plot_int > 0
-	if((restart_file.empty() || plotfile_on_restart) && plot_int > 0)
+	if(restart_file.empty() && plot_int > 0)
 	{
 		my_incflo.incflo_compute_vort(lev);
 		my_incflo.WritePlotFile(plot_file, nstep, dt, time);
@@ -167,11 +165,7 @@ int main(int argc, char* argv[])
 				Real strt_step = ParallelDescriptor::second();
 
 				if(!steady_state && regrid_int > -1 && nstep % regrid_int == 0)
-                {
-                    if(verbose)
-                        amrex::Print() << "Regridding at step " << nstep << std::endl; 
                     my_incflo.Regrid(lev);
-                }
 
 				my_incflo.Advance(lev, nstep, steady_state, dt, prev_dt, time, stop_time);
 
@@ -240,26 +234,23 @@ void ReadParameters()
 	{
 		ParmParse pp("amr");
 
+		pp.query("verbose", verbose);
+
 		pp.query("stop_time", stop_time);
 		pp.query("max_step", max_step);
 		pp.query("steady_state", steady_state);
 
-		pp.add("blocking_factor", 1);
-
 		pp.query("check_file", check_file);
 		pp.query("check_int", check_int);
+		pp.query("restart", restart_file);
 
 		pp.query("plot_file", plot_file);
 		pp.query("plot_int", plot_int);
-
-		pp.query("plotfile_on_restart", plotfile_on_restart);
 		pp.query("write_eb_surface", write_eb_surface);
 
-		pp.query("restart", restart_file);
 		pp.query("repl_x", repl_x);
 		pp.query("repl_y", repl_y);
 		pp.query("repl_z", repl_z);
-		pp.query("verbose", verbose);
 		pp.query("regrid_int", regrid_int);
 	}
 }
