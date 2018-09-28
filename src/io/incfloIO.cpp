@@ -478,20 +478,6 @@ void incflo_level::WriteJobInfo(const std::string& dir) const
 			jobInfoFile << "\n\n";
 		}
 
-		// Add here the info on BCs
-		// jobInfoFile << " Boundary conditions\n";
-
-		// jobInfoFile << "   -x: " << "interior" << "\n";
-		// jobInfoFile << "   +x: " << "interior" << "\n";
-		// if (BL_SPACEDIM >= 2) {
-		//     jobInfoFile << "   -y: " << "interior" << "\n";
-		//     jobInfoFile << "   +y: " << "interior" << "\n";
-		// }
-		// if (BL_SPACEDIM == 3) {
-		//     jobInfoFile << "   -z: " << "interior" << "\n";
-		//     jobInfoFile << "   +z: " << "interior" << "\n";
-		// }
-
 		jobInfoFile << "\n\n";
 
 		// runtime parameters
