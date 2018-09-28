@@ -18,10 +18,6 @@ int regrid_int = -1;
 Real stop_time = -1.0;
 bool steady_state = false;
 
-Real mu_0 = 0.0;
-Real ro_0 = 1.0;
-Vector<Real> gravity(3, 0.);
-
 bool write_eb_surface = false;
 std::string restart_file{""};
 
@@ -78,10 +74,6 @@ int main(int argc, char* argv[])
     // Time and time step counters
 	Real time = 0.0L;
 	int nstep = 0; 
-
-    // Loads the parameters from the `incflo.dat` file:
-    // get_data();
-    incflo_get_data(&ro_0, &mu_0, gravity.dataPtr()); 
 
 	// Default AMR level = 0
 	int lev = 0;
@@ -261,6 +253,7 @@ void ReadParameters()
 		pp.query("plot_int", plot_int);
 
 		pp.query("plotfile_on_restart", plotfile_on_restart);
+		pp.query("write_eb_surface", write_eb_surface);
 
 		pp.query("restart", restart_file);
 		pp.query("repl_x", repl_x);
@@ -268,16 +261,6 @@ void ReadParameters()
 		pp.query("repl_z", repl_z);
 		pp.query("verbose", verbose);
 		pp.query("regrid_int", regrid_int);
-	}
-
-	{
-		ParmParse pp("incflo");
-
-		pp.query("write_eb_surface", write_eb_surface);
-
-		pp.query("mu_0", mu_0);
-		pp.query("ro_0", ro_0);
-		pp.queryarr("gravity", gravity, 0, 3);
 	}
 }
 

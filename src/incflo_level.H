@@ -11,18 +11,15 @@
 #include <AMReX_AmrCore.H>
 #include <AMReX_BLProfiler.H>
 #include <AMReX_iMultiFab.H>
-
 #include <AMReX_EBFabFactory.H>
-
 #include <AMReX_EBFArrayBox.H>
-
 #include <AMReX_EB2.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
-#include <incflo_eb_if.H>
 
+#include <incflo_eb_if.H>
 #include <MacProjection.H>
 
 class incflo_level : public AmrCore
@@ -351,6 +348,11 @@ private:
 
     // Be verbose? 
     int verbose = 0;
+
+    // Physics 
+    static Vector<Real> gravity;
+    Real ro_0 = 1.0;
+    Real mu_0 = 1.0;
 
 	// Options to control MLMG behavior
 	int mg_verbose = 0;

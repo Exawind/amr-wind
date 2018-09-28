@@ -13,7 +13,7 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
   subroutine calc_mu(slo, shi, lo, hi, mu, lambda)
 
-    use fld_const, only: mu_0
+    use constant, only: mu_0
 
     use param, only: is_undefined
 

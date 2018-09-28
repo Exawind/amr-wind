@@ -11,16 +11,14 @@
                         gp0, glo, ghi, &
                         dx, dy, dz, xlength, ylength, zlength, delp_dir, &
                         bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
-                        bct_klo, bct_khi, ng, nodal_pressure) &
-                 bind(C, name="set_p0")
+                        bct_klo, bct_khi, ng, nodal_pressure &
+                        ) bind(C, name="set_p0")
 
       use bc       , only: delp_x, delp_y, delp_z
       use bc       , only: dim_bc, bc_type, bc_p, bc_defined
       use bc       , only: pinf_, pout_, minf_
-      use constant , only: gravity
-      use fld_const, only: ro_0
+      use constant , only: gravity, ro_0
       use ic       , only: ic_p, ic_defined
-      use scales   , only: scale_pressure
 
       use amrex_fort_module, only : ar => amrex_real
       use iso_c_binding , only: c_int
@@ -114,7 +112,7 @@
             pj = pj - dpodx*dx*(hi(1)-domhi(1)+2 + offset )
             do i = shi(1), slo(1), -1
                pj = pj + dpodx*dx
-               p0(i,slo(2):shi(2),slo(3):shi(3)) = scale_pressure(pj)
+               p0(i,slo(2):shi(2),slo(3):shi(3)) = pj
             enddo
             gp0(:,:,:,1) = -dpodx
          endif
@@ -124,7 +122,7 @@
             pj = pj - dpody*dy*(hi(2)-domhi(2)+2 + offset )
             do j = shi(2), slo(2), -1
                pj = pj + dpody*dy
-               p0(slo(1):shi(1),j,slo(3):shi(3)) = scale_pressure(pj)
+               p0(slo(1):shi(1),j,slo(3):shi(3)) = pj
             enddo
             gp0(:,:,:,2) = -dpody
          endif
@@ -134,7 +132,7 @@
             pj = pj - dpodz*dz*(hi(3)-domhi(3)+2 + offset )
             do k = shi(3), slo(3), -1
                pj = pj + dpodz*dz
-               p0(slo(1):shi(1),slo(2):shi(2),k) = scale_pressure(pj)
+               p0(slo(1):shi(1),slo(2):shi(2),k) = pj
             end do
             gp0(:,:,:,3) = -dpodz
          endif
@@ -180,13 +178,13 @@
          if (gravity(1) <= 0.0d0) then
             do i = domhi(1)+1, domlo(1), -1
                if (i <= shi(1) .and. i >= slo(1)) &
-                  p0(i,:,:) = scale_pressure(pj)
+                  p0(i,:,:) = pj
                pj = pj + dpodx*dx
             enddo
          else
             do i = domlo(1), domhi(1)+1
                if (i <= shi(1) .and. i >= slo(1)) &
-                  p0(i,:,:) = scale_pressure(pj)
+                  p0(i,:,:) = pj
                pj = pj - dpodx*dx
             enddo
          endif
@@ -200,13 +198,13 @@
          if (gravity(2) <= 0.0d0) then
             do j = domhi(2)+1, domlo(2), -1
                if (j <= shi(2) .and. j >= slo(2)) &
-                  p0(:,j,:) = scale_pressure(pj)
+                  p0(:,j,:) = pj
                pj = pj + dpody*dy
             enddo
          else
             do j = domlo(2),domhi(2)+1
                if (j <= shi(2) .and. j >= slo(2)) &
-                  p0(:,j,:) = scale_pressure(pj)
+                  p0(:,j,:) = pj
                pj = pj - dpody*dy
             enddo
          endif
@@ -220,13 +218,13 @@
          if(gravity(3) <= 0.0d0) then
             do k = domhi(3)+1, domlo(3), -1
                if (k <= shi(3) .and. k >= slo(3)) &
-                  p0(:,:,k) = scale_pressure(pj)
+                  p0(:,:,k) = pj
                pj = pj + dpodz*dz
             enddo
          else
             do k = domlo(3),domhi(3)+1
                if (k <= shi(3) .and. k >= slo(3)) &
-                  p0(:,:,k) = scale_pressure(pj)
+                  p0(:,:,k) = pj
                pj = pj - dpodz*dz
             enddo
          endif
@@ -269,9 +267,9 @@
 
                    bcv = bct_ilo(j,k,2)
                    if (nodal_pressure .eq. 1) then
-                       p0(slo(1):domlo(1)  ,j,k) = scale_pressure(bc_p(bcv))
+                       p0(slo(1):domlo(1)  ,j,k) = bc_p(bcv)
                    else
-                       p0(slo(1):domlo(1)-1,j,k) = scale_pressure(bc_p(bcv))
+                       p0(slo(1):domlo(1)-1,j,k) = bc_p(bcv)
                    endif
 
                case (minf_)
@@ -294,7 +292,7 @@
                case (pinf_, pout_)
 
                    bcv = bct_ihi(j,k,2)
-                   p0(domhi(1)+1:shi(1),j,k) = scale_pressure(bc_p(bcv))
+                   p0(domhi(1)+1:shi(1),j,k) = bc_p(bcv)
 
                case (minf_)
 
@@ -318,9 +316,9 @@
 
                    bcv = bct_jlo(i,k,2)
                    if (nodal_pressure .eq. 1) then
-                       p0(i,slo(2):domlo(2)  ,k) = scale_pressure(bc_p(bcv))
+                       p0(i,slo(2):domlo(2)  ,k) = bc_p(bcv)
                    else
-                       p0(i,slo(2):domlo(2)-1,k) = scale_pressure(bc_p(bcv))
+                       p0(i,slo(2):domlo(2)-1,k) = bc_p(bcv)
                    endif
 
                case (minf_)
@@ -343,7 +341,7 @@
                case (pinf_, pout_)
 
                   bcv = bct_jhi(i,k,2)
-                  p0(i,domhi(2)+1:shi(2),k) = scale_pressure(bc_p(bcv))
+                  p0(i,domhi(2)+1:shi(2),k) = bc_p(bcv)
 
                case (minf_)
 
@@ -366,9 +364,9 @@
 
                   bcv = bct_klo(i,j,2)
                   if (nodal_pressure .eq. 1) then
-                      p0(i,j,slo(3):domlo(3)  ) = scale_pressure(bc_p(bcv))
+                      p0(i,j,slo(3):domlo(3)  ) = bc_p(bcv)
                   else
-                      p0(i,j,slo(3):domlo(3)-1) = scale_pressure(bc_p(bcv))
+                      p0(i,j,slo(3):domlo(3)-1) = bc_p(bcv)
                   endif
 
                case (minf_)
@@ -391,7 +389,7 @@
                case (pinf_, pout_)
 
                    bcv = bct_khi(i,j,2)
-                   p0(i,j,domhi(3)+1:shi(3)) = scale_pressure(bc_p(bcv))
+                   p0(i,j,domhi(3)+1:shi(3)) = bc_p(bcv)
 
                case (minf_)
 

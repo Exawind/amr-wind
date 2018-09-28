@@ -12,18 +12,16 @@
    subroutine set_bc0(slo, shi, &
                       ro, mu, lambda, &
                       bc_ilo_type, bc_ihi_type, bc_jlo_type, bc_jhi_type, &
-                      bc_klo_type, bc_khi_type, domlo, domhi, ng, nodal_pressure) &
-      bind(C, name="set_bc0")
+                      bc_klo_type, bc_khi_type, domlo, domhi, ng, nodal_pressure &
+                      ) bind(C, name="set_bc0")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
       use bc, only: bc_t
       use bc, only: pinf_, pout_, minf_
+      use constant, only: ro_0, mu_0
 
-      use fld_const, only: ro_0, mu_0
-
-      use scales, only: scale_pressure
       use param , only: is_undefined
 
       implicit none

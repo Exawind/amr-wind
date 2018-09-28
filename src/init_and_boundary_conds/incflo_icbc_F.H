@@ -10,7 +10,7 @@ extern "C"
 #endif
     void set_delp_dir(int* delp_dir);
 
-    void incflo_get_data(amrex::Real* ro_0, amrex::Real* mu_0, amrex::Real* gravity); 
+    void incflo_get_data(amrex::Real* gravity, amrex::Real* ro_0, amrex::Real* mu_0); 
 
     void incflo_set_cyclic(int* cyc_x, int* cyc_y, int* cyc_z);
 
@@ -18,9 +18,9 @@ extern "C"
          amrex::Real* dx,      amrex::Real* dy,      amrex::Real* dz  );
 
     void set_bc_type(
-	const int* bc_ilo, const int* bc_ihi,
-	const int* bc_jlo, const int* bc_jhi,
-	const int* bc_klo, const int* bc_khi,
+        const int* bc_ilo, const int* bc_ihi,
+	    const int* bc_jlo, const int* bc_jhi,
+	    const int* bc_klo, const int* bc_khi,
         const int* domlo , const int* domhi,
         amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
         amrex::Real* xlen, amrex::Real* ylen, amrex::Real* zlen,
@@ -31,9 +31,9 @@ extern "C"
         const int* slo, const int* shi,
         amrex::Real* ro,
         amrex::Real* mu,  amrex::Real* lambda,
-	const int* bc_ilo, const int* bc_ihi,
-	const int* bc_jlo, const int* bc_jhi,
-	const int* bc_klo, const int* bc_khi,
+        const int* bc_ilo, const int* bc_ihi,
+	    const int* bc_jlo, const int* bc_jhi,
+	    const int* bc_klo, const int* bc_khi,
         const int* domlo , const int* domhi,
         const int* ng    , const int* nodal_pressure
     );

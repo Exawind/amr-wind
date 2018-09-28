@@ -1,7 +1,5 @@
 MODULE read_namelist_module
 
-   use parse_line_module, only: parse_line
-
    integer, private :: argc = 0
    character(len=80), private :: argv(32)
 
@@ -17,13 +15,9 @@ MODULE read_namelist_module
       SUBROUTINE READ_NAMELIST()
 
       use bc
-      use constant, only: gravity
-      use fld_const, only: mu_0, mw_avg
-      use fld_const, only: ro_0
       use ic, only: ic_pack_type, ic_p
       use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
-      use scales, only: p_ref, p_scale
       use utilities, only: blank_line, line_too_big, seek_comment
       use utilities, only: make_upper_case, replace_tab
       use param, only: undefined
@@ -123,9 +117,7 @@ MODULE read_namelist_module
 
 ! External namelist files:
 !---------------------------------------------------------------------//
-      include 'physical_params.inc'
       include 'geometry.inc'
-      include 'gas_phase.inc'
       include 'initial_conditions.inc'
       include 'boundary_conditions.inc'
 
@@ -135,30 +127,14 @@ MODULE read_namelist_module
       CALL REPLACE_TAB (LINE_STRING, LINE_LEN)
       call remove_par_blanks(LINE_STRING)
 
-! Complete arithmetic operations and expand line
-      CALL PARSE_LINE (LINE_STRING, LINE_LEN, READ_FLAG)
-
 ! Write the current line to a scratch file
 ! and read the scratch file in NAMELIST format
       IF(.NOT.READ_FLAG) RETURN
-
-! Physical parameter keywords
-      STRING=''; STRING = '&PHYSICAL_PARAM '//&
-           trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-      READ(STRING, NML=PHYSICAL_PARAM, IOSTAT=IOS)
-      IF(IOS == 0)  RETURN
 
 ! Geometry and discretization keywords
       STRING=''; STRING = '&GEOMETRY '//&
          trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
       READ(STRING, NML=GEOMETRY, IOSTAT=IOS)
-      IF(IOS == 0)  RETURN
-
-
-! Gas phase keywords
-      STRING=''; STRING = '&GAS_PHASE '//&
-         trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-      READ(STRING, NML=GAS_PHASE, IOSTAT=IOS)
       IF(IOS == 0)  RETURN
 
 

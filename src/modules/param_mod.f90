@@ -10,14 +10,12 @@ module param
   integer, parameter :: dim_bc = 500
   ! Maximum number of items for specifying point sources
   integer, parameter :: dim_ps = 5000
-  ! Maximum number of gas species
-  integer, parameter :: dim_n = 100
 
   ! Number of Equation types:
-  !  1) Gas pressure
-  !  2) Gas and solids U-Momentum equation
-  !  3) Gas and solids V-Momentum equation
-  !  4) Gas and solids W-Momentum equation
+  !  1) pressure
+  !  2) U-Momentum equation
+  !  3) V-Momentum equation
+  !  4) W-Momentum equation
   integer, parameter :: dim_eqs = 4
 
 ! Parameters describing problem size: (set from user input)

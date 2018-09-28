@@ -17,8 +17,7 @@ subroutine set_scalar_bcs ( ro, mu, lambda, slo, shi, &
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding ,     only: c_int
    use bc
-   use scales,             only: scale_pressure
-   use fld_const,          only: ro_0, mu_0
+   use constant,           only: ro_0, mu_0
    use param    ,          only: is_undefined
    
    implicit none

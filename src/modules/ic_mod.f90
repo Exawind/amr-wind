@@ -9,7 +9,7 @@ module ic
   use amrex_fort_module, only : rt => amrex_real
   use iso_c_binding , only: c_int
 
-  use param, only: dim_ic, dim_n
+  use param, only: dim_ic
 
 
   ! Boundary condition coordinates
@@ -27,9 +27,6 @@ module ic
 
   ! Heat transfer boundary condition
   real(rt) :: IC_T(dim_ic)
-
-  ! Species transfer boundary condition
-  real(rt) :: IC_X(dim_ic, dim_n)
 
   character(len=16) :: ic_pack_type(dim_ic)
 

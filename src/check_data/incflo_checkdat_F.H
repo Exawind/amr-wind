@@ -8,8 +8,6 @@
 extern "C"
 {
 #endif
-    void check_inputs(amrex::Real* dt);
-
     void check_initial_conditions(amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
           const int* domlo, const int* domhi);
 

@@ -13,7 +13,7 @@ module init_fluid_module
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use fld_const       , only: ro_0
+      use constant      , only: ro_0
       use calc_mu_module, only: calc_mu
 
       implicit none
@@ -173,7 +173,6 @@ module init_fluid_module
       use ic, only: ic_p, ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_y_n, ic_z_t
       use ic, only: ic_x_w, ic_y_s, ic_z_b
-      use scales, only: scale_pressure
       use param, only: undefined, is_defined
 
       use amrex_fort_module, only : rt => amrex_real

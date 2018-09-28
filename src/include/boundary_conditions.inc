@@ -7,8 +7,7 @@
       BC_Normal, BC_Center,         &
       BC_Hw, BC_Uw, BC_Vw, BC_Ww,   &
       BC_Hw_T, BC_Tw, BC_C_T,       &
-      BC_Hw_X, BC_Xw, BC_C_X,       &
       BC_P, BC_T,                   &
-      BC_X, BC_U, BC_V, BC_W,       &
+      BC_U, BC_V, BC_W,       &
       BC_VOLFLOW, BC_MASSFLOW,      &
       BC_SHAKER_A, BC_SHAKER_F

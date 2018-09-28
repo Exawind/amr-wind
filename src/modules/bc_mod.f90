@@ -9,7 +9,7 @@ module bc
   use amrex_fort_module, only : rt => amrex_real
   use iso_c_binding , only: c_int
 
-  use param, only: dim_bc, dim_n
+  use param, only: dim_bc
 
   ! Type of boundary:
   character(len=16) :: BC_Type(dim_bc)
@@ -55,12 +55,6 @@ module bc
   real(rt) :: BC_hw_T(dim_bc)
   real(rt) :: BC_Tw  (dim_bc)
   real(rt) :: BC_C_T (dim_bc)
-
-  ! Species transfer boundary condition
-  real(rt) :: BC_X(dim_bc, dim_n)
-  real(rt) :: BC_hw_X(dim_bc, dim_n)
-  real(rt) :: BC_Xw  (dim_bc, dim_n)
-  real(rt) :: BC_C_X (dim_bc, dim_n)
 
   ! External shaking (shaking amplitude vector sets direction of shaking)
   real(rt), dimension(3) :: BC_shaker_A ! shaking amplitude

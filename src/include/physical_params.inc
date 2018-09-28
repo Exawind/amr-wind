@@ -1,3 +1,0 @@
-      NAMELIST / PHYSICAL_PARAM /&
-
-      P_REF, P_SCALE, GRAVITY 

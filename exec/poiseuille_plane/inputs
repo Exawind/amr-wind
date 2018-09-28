@@ -22,9 +22,9 @@ amr.plot_int   = 1
 #amr.restart    = chk01000
 
 # Physics
-incflo.mu_0   = 1.0
-incflo.ro_0   = 1.0
-incflo.gravity = 0.0 0.0 0.0
+incflo.mu_0   = 10.
+incflo.ro_0   = 1.
+incflo.gravity = 0.0 0.0 8.0
 
 # Geometry
 geometry.coord_sys   = 0                  # 0: Cartesian

@@ -15,6 +15,15 @@ void incflo_level::InitParams()
         // Verbosity
         pp.query("verbose", verbose);
 
+        // Initial density
+		pp.queryarr("gravity", gravity, 0, 3);
+
+        pp.query("ro_0", ro_0);
+        AMREX_ASSERT(ro_0 >= 0.0);
+
+        pp.query("mu_0", mu_0);
+        AMREX_ASSERT(mu_0 >= 0.0);
+
 		// Options to control time stepping
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
@@ -47,9 +56,11 @@ void incflo_level::InitParams()
 		pp.query("load_balance_type", load_balance_type);
 		pp.query("knapsack_weight_type", knapsack_weight_type);
 
-		AMREX_ALWAYS_ASSERT(load_balance_type == "FixedSize" || load_balance_type == "KnapSack");
-
-		AMREX_ALWAYS_ASSERT(knapsack_weight_type == "RunTimeCosts");
+		AMREX_ASSERT(load_balance_type == "FixedSize" || load_balance_type == "KnapSack");
+		AMREX_ASSERT(knapsack_weight_type == "RunTimeCosts");
+        
+        // Loads constants given at runtime `inputs` file into the Fortran module "constant"
+        incflo_get_data(gravity.dataPtr(), &ro_0, &mu_0); 
 	}
 }
 
@@ -219,8 +230,8 @@ void incflo_level::InitLevelData(int lev, Real time)
 void incflo_level::PostInit(
 	int lev, Real& dt, Real time, int nstep, int restart_flag, Real stop_time, int steady_state)
 {
-	// Initial fluid arrays: pressure, velocity, density, viscosity
-	incflo_init_fluid(lev, restart_flag, time, dt, stop_time, steady_state);
+    // Initial fluid arrays: pressure, velocity, density, viscosity
+    incflo_init_fluid(lev, restart_flag, time, dt, stop_time, steady_state);
 }
 
 void incflo_level::MakeBCArrays()
@@ -253,8 +264,8 @@ void incflo_level::MakeBCArrays()
 	bc_khi.resize(box_khi, 2);
 }
 
-void incflo_level::incflo_init_fluid(
-	int lev, int is_restarting, Real time, Real& dt, Real stop_time, int steady_state)
+void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real& dt, 
+                                     Real stop_time, int steady_state)
 {
 	Box domain(geom[lev].Domain());
 
@@ -291,7 +302,7 @@ void incflo_level::incflo_init_fluid(
 		{
 
 			init_fluid(sbx.loVect(),
-					   sbx.hiVect(),
+                       sbx.hiVect(),
 					   bx.loVect(),
 					   bx.hiVect(),
 					   domain.loVect(),
@@ -301,12 +312,8 @@ void incflo_level::incflo_init_fluid(
 					   (*vel[lev])[mfi].dataPtr(),
 					   (*mu[lev])[mfi].dataPtr(),
 					   (*lambda[lev])[mfi].dataPtr(),
-					   &dx,
-					   &dy,
-					   &dz,
-					   &xlen,
-					   &ylen,
-					   &zlen);
+                       &dx, &dy, &dz,
+                       &xlen, &ylen, &zlen);
 		}
 	}
 

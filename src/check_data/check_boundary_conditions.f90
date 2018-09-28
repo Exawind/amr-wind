@@ -28,8 +28,6 @@ module check_boundary_conditions_module
 
 ! Global Variables:
 !---------------------------------------------------------------------//
-! Total number of (actual) continuum solids.
-      use constant, only: MMAX
 ! Flag: BC dimensions or Type is specified
       use bc, only: BC_DEFINED
 ! Use specified BC type
@@ -76,11 +74,6 @@ module check_boundary_conditions_module
                call check_bc_geometry_flow(bcv,dx,dy,dz,&
                   xlength,ylength,zlength,domlo,domhi)
 
-            case ('P_INFLOW', 'PI')
-               call check_bc_geometry_flow(bcv,dx,dy,dz,&
-                  xlength,ylength,zlength,domlo,domhi)
-               call check_bc_p_inflow(mmax, bcv)
-
             case ('P_OUTFLOW','PO')
                call check_bc_geometry_flow(bcv,dx,dy,dz,&
                   xlength,ylength,zlength,domlo,domhi)
@@ -119,14 +112,11 @@ module check_boundary_conditions_module
       subroutine check_bc_range(bcv)
 
       ! Gas phase BC varaibles
-      use bc, only: BC_X, BC_P
+      use bc, only: BC_P
       use bc, only: BC_U, BC_V, BC_W
 
 ! Global Parameters:
 !---------------------------------------------------------------------//
-! Maximum number of species 
-      use param, only: DIM_N
-
       use param, only: zero, one, equal
 
       IMPLICIT NONE
@@ -164,13 +154,6 @@ module check_boundary_conditions_module
          write(err_msg,1100) trim(ivar('BC_P',bcv))
          call flush_err_msg(abort=.true.)
       endif
-
-      DO N = 1, DIM_N
-         IF(IS_DEFINED(BC_X(bcv,N))) THEN
-            WRITE(ERR_MSG,1100) trim(iVar('BC_X',bcv,N))
-            call FLUSH_ERR_MSG(ABORT=.TRUE.)
-         ENDIF
-      ENDDO
 
       call finl_err_msg
 

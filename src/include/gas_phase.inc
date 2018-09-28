@@ -1,1 +1,0 @@
-      NAMELIST / GAS_PHASE / RO_0, MU_0, MW_AVG

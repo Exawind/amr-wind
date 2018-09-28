@@ -8,6 +8,8 @@
 #include <incflo_icbc_F.H>
 #include <incflo_level.H>
 
+// Initiate vars which cannot be initiated in header
+Vector<Real> incflo_level::gravity(3, 0.);
 std::string incflo_level::load_balance_type = "FixedSize";
 std::string incflo_level::knapsack_weight_type = "RunTimeCosts";
 

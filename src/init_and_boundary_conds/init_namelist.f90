@@ -26,13 +26,9 @@ MODULE INIT_NAMELIST_MODULE
       use bc
       use ic
       use constant, only: gravity
-      use fld_const, only: mu_0, mw_avg
-      use fld_const, only: ro_0
-      use fld_const, only: ro_0, mu_0, mw_avg
       use ic, only: ic_p, ic_t
       use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
-      use scales, only: p_ref, p_scale
       use utilities, only: blank_line, line_too_big, seek_comment
       use utilities, only: make_upper_case, replace_tab
 
@@ -40,28 +36,6 @@ MODULE INIT_NAMELIST_MODULE
       use param, only: undefined, undefined_c
 
       implicit none
-
-!#####################################################################!
-!                           Physical Parameters                       !
-!#####################################################################!
-
-
-!<keyword category="Physical Parameters" required="false">
-!  <description>Reference pressure. [0.0]</description>
-      P_REF = ZERO
-!</keyword>
-
-!<keyword category="Physical Parameters" required="false">
-!  <description>Scale factor for pressure. [1.0]</description>
-      P_SCALE = ONE
-!</keyword>
-
-!<keyword category="Physical Parameters" required="false">
-!  <description>Gravity vector. [0.0, 9.80, 0.0] m/s^2 </description>
-      gravity(1) =  0.00000d0
-      gravity(2) = -9.80665d0
-      gravity(3) =  0.00000d0
-!</keyword>
 
 !#####################################################################!
 !                      Geometry and Discretization                    !
@@ -90,40 +64,6 @@ MODULE INIT_NAMELIST_MODULE
 !  </description>
       delp_z = zero
 !</keyword>
-
-
-!#####################################################################!
-!                               Gas Phase                             !
-!#####################################################################!
-
-!<keyword category="Gas Phase" required="false">
-!  <description>
-!    Specified constant gas density [g/cm^3 in CGS]. An equation of
-!    state -the ideal gas law by default- is used to calculate the gas
-!    density if this parameter is undefined. The value may be set to
-!    zero to make the drag zero and to simulate granular flow in a
-!    vacuum. For this case, users may turn off solving for gas momentum
-!    equations to accelerate convergence.
-!  </description>
-      RO_0 = UNDEFINED
-!</keyword>
-
-!<keyword category="Gas Phase" required="false">
-!  <description>
-!    Specified constant gas viscosity [g/(cm.s) in CGS].
-!  </description>
-      MU_0 = UNDEFINED
-!</keyword>
-
-!<keyword category="Gas Phase" required="false">
-!  <description>
-!    Average molecular weight of gas [(g/mol) in CGS]. Used in
-!    calculating the gas density for non-reacting flows when the gas
-!    composition is not defined.
-!  </description>
-      MW_AVG = UNDEFINED
-!</keyword>
-
 
 
 !#####################################################################!
@@ -352,37 +292,6 @@ MODULE INIT_NAMELIST_MODULE
 !</keyword>
 
 !<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Gas phase species mass transfer coefficient, Hw, in diffusion boundary condition:
-!    d(X)/dn + Hw (X - Xw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-!  <arg index="2" id="Species" min="1" max="DIM_N"/>
-      BC_HW_X(:,:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Specified wall gas species mass fraction, Xw, in diffusion boundary condition:
-!    d(X)/dn + Hw (X - Xw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <description>Gas phase Xw for mass transfer.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-!  <arg index="2" id="Species" min="1" max="DIM_N"/>
-      BC_XW(:,:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Specified constant gas species mass flux, C, in diffusion boundary condition:
-!    d(X)/dn + Hw (X - Xw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-!  <arg index="2" id="Species" min="1" max="DIM_N"/>
-      BC_C_X(:,:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
 !  <description>Gas pressure at the BC plane.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_P(:) = UNDEFINED
@@ -392,13 +301,6 @@ MODULE INIT_NAMELIST_MODULE
 !  <description>Gas phase temperature at the BC plane.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_T(:) = 293.15d0
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Mass fraction of gas species at the BC plane.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-!  <arg index="2" id="Species" min="1" max="DIM_N"/>
-      BC_X(:,:) = UNDEFINED
 !</keyword>
 
 !<keyword category="Boundary Condition" required="false">
