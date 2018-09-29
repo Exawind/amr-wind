@@ -17,7 +17,7 @@ CONTAINS
 !  in the line.                                                        !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      PURE integer FUNCTION SEEK_COMMENT (LINE, MAXCOL)
+   PURE integer FUNCTION SEEK_COMMENT (LINE, MAXCOL)
 
       IMPLICIT NONE
 
@@ -49,7 +49,7 @@ CONTAINS
       SEEK_COMMENT = MAXCOL + 1
 !
       RETURN
-      END FUNCTION SEEK_COMMENT
+   END FUNCTION SEEK_COMMENT
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -59,7 +59,7 @@ CONTAINS
 ! Purpose: Return .TRUE. if a line contains no input or only spaces.   !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      PURE logical FUNCTION BLANK_LINE (line)
+   PURE logical FUNCTION BLANK_LINE (line)
 
       IMPLICIT NONE
 
@@ -79,8 +79,7 @@ CONTAINS
 
       BLANK_LINE = .TRUE.
       RETURN
-      END FUNCTION BLANK_LINE
-
+   END FUNCTION BLANK_LINE
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
 !                                                                      C
@@ -90,7 +89,7 @@ CONTAINS
 !  Purpose: change lowercase characters to uppercase in input line     C
 !                                                                      C
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
-      SUBROUTINE MAKE_UPPER_CASE(LINE_STRING, MAXCOL)
+   SUBROUTINE MAKE_UPPER_CASE(LINE_STRING, MAXCOL)
 
       IMPLICIT NONE
 
@@ -123,8 +122,7 @@ CONTAINS
          ENDIF
       END DO
       RETURN
-      END SUBROUTINE MAKE_UPPER_CASE
-
+   END SUBROUTINE MAKE_UPPER_CASE
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -134,7 +132,7 @@ CONTAINS
 !  Purpose: replace tab characters with space                          !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      SUBROUTINE REPLACE_TAB(LINE_STRING, MAXCOL)
+   SUBROUTINE REPLACE_TAB(LINE_STRING, MAXCOL)
 
       IMPLICIT NONE
 
@@ -154,10 +152,10 @@ CONTAINS
 !.......................................................................!
 
       DO L = 1, MAXCOL
-        if(LINE_STRING(L:L) .eq. TAB) LINE_STRING(L:L) = ' '
-        if(LINE_STRING(L:L) .eq. CRET) LINE_STRING(L:L) = ' '
+         if(LINE_STRING(L:L) .eq. TAB) LINE_STRING(L:L) = ' '
+         if(LINE_STRING(L:L) .eq. CRET) LINE_STRING(L:L) = ' '
       END DO
       RETURN
-      END SUBROUTINE REPLACE_TAB
+   END SUBROUTINE REPLACE_TAB
 
 END MODULE utilities

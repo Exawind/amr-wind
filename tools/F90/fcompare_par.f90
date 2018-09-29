@@ -58,7 +58,7 @@ program fcompare_par
 
    do p = 1, np
       if ( all( ( abs (particles1(p) % rdata - particles2(p) % rdata) ) <= tol ) .and. &
-           all( ( particles1(p) % idata == particles2(p) % idata ) ) ) cycle
+          all( ( particles1(p) % idata == particles2(p) % idata ) ) ) cycle
       nfails = nfails + 1
       fails (nfails) = p
       write (*,'(2X,A,I0)') "Comparison failed for particle ID ", p
@@ -69,19 +69,16 @@ program fcompare_par
 
    if (  nfails > 0  ) then
       if ( .not. brief ) &
-           call print_diff ( particles1, particles2, fails(1:nfails) )
+         call print_diff ( particles1, particles2, fails(1:nfails) )
       call check ( .false. , " file1 and file2 differ" )
    end if
 
-
 contains
-
 
    subroutine read_inputs ()
 
       integer           :: i, length
       character (500)    :: val1, val2
-
 
       do i = 1, command_argument_count (), 2
          call get_command_argument ( i, val1, length  )
@@ -94,8 +91,6 @@ contains
       end do
 
    end subroutine read_inputs
-
-
 
    subroutine set_inputs ( arg_name, arg_value )
 
@@ -118,7 +113,6 @@ contains
 
    end subroutine set_inputs
 
-
    subroutine print_inputs ()
 
       write (*,"(/,A/)")  repeat ("<",36) // " fcompare_par " // repeat (">",36)
@@ -128,7 +122,6 @@ contains
       write (*,"(3X,A,I0/)")  "nints  = ", ni
 
    end subroutine print_inputs
-
 
    subroutine check_inputs
 
@@ -150,7 +143,6 @@ contains
 
    end subroutine check_inputs
 
-
    subroutine alloc_particle ( a_particle )
 
       type (particle_t), intent (out) :: a_particle
@@ -159,8 +151,6 @@ contains
       allocate ( a_particle % idata ( ni + ni_min ) )
 
    end subroutine alloc_particle
-
-
 
    subroutine read_particle_data ( particles, fh )
 
@@ -200,7 +190,6 @@ contains
 
    end subroutine read_particle_data
 
-
    function find_next_start ( record, istart )  result ( next_start )
 
       character(*), intent(in) :: record
@@ -212,7 +201,7 @@ contains
       do
          ascii = iachar ( record(i:i) )
          if ( ( ascii >= iachar ("0") ) .and. ( ascii <= iachar("9") ) .or. &
-              ( ascii == iachar ("-") ) ) then
+             ( ascii == iachar ("-") ) ) then
             next_start = i
             exit
          else
@@ -221,7 +210,6 @@ contains
       end do
 
    end function find_next_start
-
 
    function find_next_end ( record, istart ) result ( next_end )
 
@@ -244,7 +232,6 @@ contains
       end do
 
    end function find_next_end
-
 
    subroutine print_diff ( p1, p2, ids )
 
@@ -284,7 +271,6 @@ contains
 
    end subroutine print_diff
 
-
    subroutine check ( condition, msg )
 
       logical,      intent (in) :: condition
@@ -297,10 +283,6 @@ contains
          error stop 1
       end if
 
-
    end subroutine check
-
-
-
 
 end program fcompare_par

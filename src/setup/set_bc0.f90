@@ -28,19 +28,19 @@
       integer(c_int), intent(in   ) :: ng, nodal_pressure
 
       real(rt), intent(inout) :: ro&
-           (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       real(rt), intent(inout) :: mu&
-           (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       real(rt), intent(inout) :: lambda&
-           (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer(c_int), intent(in   ) :: &
-           bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
-           bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+         bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
+         bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
 ! Local variables
 !--------------------------------------------------------------------//
@@ -75,8 +75,8 @@
                   bc_mu     = mu_0
                   bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                      ro(slo(1):domlo(1)-1,j,k) = bc_ro
-                      mu(slo(1):domlo(1)-1,j,k) = bc_mu
+                  ro(slo(1):domlo(1)-1,j,k) = bc_ro
+                  mu(slo(1):domlo(1)-1,j,k) = bc_mu
                   lambda(slo(1):domlo(1)-1,j,k) = bc_lambda
 
                end if
@@ -95,14 +95,14 @@
                    bc_ihi_type(j,k,1) == POUT_ .or. &
                    bc_ihi_type(j,k,1) == MINF_) then
 
-                   bc_ro = ro_0
+                  bc_ro = ro_0
 
-                   bc_mu     = mu_0
-                   bc_lambda = -(2.0d0/3.0d0) * mu_0
+                  bc_mu     = mu_0
+                  bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                        ro(domhi(1)+1:shi(1),j,k) = bc_ro
-                        mu(domhi(1)+1:shi(1),j,k) = bc_mu
-                    lambda(domhi(1)+1:shi(1),j,k) = bc_lambda
+                  ro(domhi(1)+1:shi(1),j,k) = bc_ro
+                  mu(domhi(1)+1:shi(1),j,k) = bc_mu
+                  lambda(domhi(1)+1:shi(1),j,k) = bc_lambda
 
                end if
 
@@ -120,13 +120,13 @@
                    bc_jlo_type(i,k,1) == POUT_ .or. &
                    bc_jlo_type(i,k,1) == MINF_) then
 
-                   bc_ro = ro_0
+                  bc_ro = ro_0
 
-                   bc_mu     = mu_0
-                   bc_lambda = -(2.0d0/3.0d0) * mu_0
+                  bc_mu     = mu_0
+                  bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                      ro(i,slo(2):domlo(2)-1,k) = bc_ro
-                      mu(i,slo(2):domlo(2)-1,k) = bc_mu
+                  ro(i,slo(2):domlo(2)-1,k) = bc_ro
+                  mu(i,slo(2):domlo(2)-1,k) = bc_mu
                   lambda(i,slo(2):domlo(2)-1,k) = bc_lambda
 
                end if
@@ -145,13 +145,13 @@
                    bc_jhi_type(i,k,1) == POUT_ .or. &
                    bc_jhi_type(i,k,1) == MINF_) then
 
-                   bc_ro = ro_0
+                  bc_ro = ro_0
 
-                   bc_mu     = mu_0
-                   bc_lambda = -(2.0d0/3.0d0) * mu_0
+                  bc_mu     = mu_0
+                  bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                      ro(i,domhi(2)+1:shi(2),k) = bc_ro
-                      mu(i,domhi(2)+1:shi(2),k) = bc_mu
+                  ro(i,domhi(2)+1:shi(2),k) = bc_ro
+                  mu(i,domhi(2)+1:shi(2),k) = bc_mu
                   lambda(i,domhi(2)+1:shi(2),k) = bc_lambda
 
                end if
@@ -170,14 +170,14 @@
                    bc_klo_type(i,j,1) == POUT_ .or. &
                    bc_klo_type(i,j,1) == MINF_) then
 
-                   bc_ro = ro_0
+                  bc_ro = ro_0
 
-                   bc_mu     = mu_0
-                   bc_lambda = -(2.0d0/3.0d0) * mu_0
+                  bc_mu     = mu_0
+                  bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                       ro(i,j,slo(3):domlo(3)-1) = bc_ro
-                       mu(i,j,slo(3):domlo(3)-1) = bc_mu
-                   lambda(i,j,slo(3):domlo(3)-1) = bc_lambda
+                  ro(i,j,slo(3):domlo(3)-1) = bc_ro
+                  mu(i,j,slo(3):domlo(3)-1) = bc_mu
+                  lambda(i,j,slo(3):domlo(3)-1) = bc_lambda
 
                end if
 
@@ -195,14 +195,14 @@
                    bc_khi_type(i,j,1) == POUT_ .or. &
                    bc_khi_type(i,j,1) == MINF_) then
 
-                   bc_ro = ro_0
+                  bc_ro = ro_0
 
-                   bc_mu     = mu_0
-                   bc_lambda = -(2.0d0/3.0d0) * mu_0
+                  bc_mu     = mu_0
+                  bc_lambda = -(2.0d0/3.0d0) * mu_0
 
-                       ro(i,j,domhi(3)+1:shi(3)) = bc_ro
-                       mu(i,j,domhi(3)+1:shi(3)) = bc_mu
-                   lambda(i,j,domhi(3)+1:shi(3)) = bc_lambda
+                  ro(i,j,domhi(3)+1:shi(3)) = bc_ro
+                  mu(i,j,domhi(3)+1:shi(3)) = bc_mu
+                  lambda(i,j,domhi(3)+1:shi(3)) = bc_lambda
 
                end if
 

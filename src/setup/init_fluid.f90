@@ -1,5 +1,5 @@
 module init_fluid_module
-   contains
+contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
 !  Subroutine: init_fluid                                              !
@@ -24,17 +24,17 @@ module init_fluid_module
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
       real(rt), intent(inout) :: ro&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       real(rt), intent(inout) :: p&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(inout) :: vel&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
       real(rt), intent(inout) :: mu&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       real(rt), intent(inout) :: lambda&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength
@@ -56,7 +56,7 @@ module init_fluid_module
       use amrex_fort_module, only: ar => amrex_real
       use iso_c_binding ,    only: c_int
       use param,             only: zero, half, one
- 
+
       implicit none
 
       ! Array bounds
@@ -64,11 +64,11 @@ module init_fluid_module
 
       ! Tile bounds
       integer(c_int),   intent(in   ) ::  lo(3),  hi(3)
-      
+
       ! Grid and domain lower bound
       integer(c_int),   intent(in   ) :: domlo(3)
       real(ar),         intent(in   ) :: dx, dy, dz
-      
+
       ! Arrays
       real(ar),         intent(inout) ::                   &
            & vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
@@ -76,14 +76,14 @@ module init_fluid_module
       ! Local variables
       integer(c_int)                  :: i, j, k, plane
       real(ar)                        :: x, y, z
-      real(ar)                        :: twopi = 8.0_ar * atan(one) 
+      real(ar)                        :: twopi = 8.0_ar * atan(one)
 
       plane = 1
 
       select case ( plane )
 
       case (1)  ! x-y plane
-         
+
          ! x-direction
          do j = lo(2), hi(2)
             y =  ( real(j,ar) + half ) * dy
@@ -96,9 +96,9 @@ module init_fluid_module
                end do
             end do
          end do
-         
+
       case (2)  ! x-z plane
-         
+
          ! x-direction
          do k = lo(3), hi(3)
             z =  ( real(k,ar) + half ) * dz
@@ -111,24 +111,24 @@ module init_fluid_module
                end do
             end do
          end do
-         
+
       case (3)  ! y-z plane
-         
+
          ! x-direction
          do k = lo(3), hi(3)
             z =  ( real(k,ar) + half ) * dz
             do j = lo(2), hi(2)
                y =  ( real(j,ar) + half ) * dy
                do i = lo(1), hi(1)
-                  vel(i,j,k,1) = zero 
+                  vel(i,j,k,1) = zero
                   vel(i,j,k,2) = tanh ( 30.0_ar * (0.25_ar - abs ( z - 0.5_ar ) ) )
                   vel(i,j,k,3) = 0.05_ar * sin ( twopi * y )
                end do
             end do
          end do
-         
-      end select 
-         
+
+      end select
+
    end subroutine init_periodic_vortices
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
@@ -151,13 +151,13 @@ module init_fluid_module
       integer(c_int), intent(in   ) :: slo(3), shi(3)
 
       real(rt), intent(inout) :: mu&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
       real(rt), intent(inout) :: lambda&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       call calc_mu(slo, shi, lo, hi, mu, lambda)
 
-    end subroutine init_fluid_restart
+   end subroutine init_fluid_restart
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -187,7 +187,7 @@ module init_fluid_module
       real(rt), intent(in   ) :: dx, dy, dz
 
       real(rt), intent(inout) ::  vel&
-         (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
 !-----------------------------------------------
 ! Local variables
@@ -210,9 +210,9 @@ module init_fluid_module
          if (ic_defined(icv)) then
 
             call calc_cell_ic(dx, dy, dz, &
-              ic_x_w(icv), ic_y_s(icv), ic_z_b(icv), &
-              ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
-              i_w, i_e, j_s, j_n, k_b, k_t)
+                              ic_x_w(icv), ic_y_s(icv), ic_z_b(icv), &
+                              ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
+                              i_w, i_e, j_s, j_n, k_b, k_t)
 
             pgx = ic_p(icv)
             ugx = ic_u(icv)

@@ -8,10 +8,10 @@ module derive_module
 contains
 
    !
-   ! Compute the vorticity 
-   ! 
+   ! Compute the vorticity
+   !
    subroutine compute_vort ( lo, hi, vort, slo, shi, vel, vlo, vhi, dx) &
-                            bind(C, name="compute_vort")
+      bind(C, name="compute_vort")
 
       integer(c_int), intent(in   ) :: slo(3),shi(3)
       integer(c_int), intent(in   ) :: vlo(3),vhi(3)
@@ -19,10 +19,10 @@ contains
 
       real(rt),   intent(in   ) :: dx(3)
       real(rt),   intent(  out) :: &
-           vort(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      
+         vort(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+
       real(rt), intent(in   ) :: &
-           vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
+         vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3)
 
       ! Local variables
       !-----------------------------------------------

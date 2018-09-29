@@ -1,5 +1,5 @@
 module convection_eb_mod
-   
+
    use amrex_fort_module,       only: ar => amrex_real
    use iso_c_binding ,          only: c_int
    use param,                   only: zero, half, one, my_huge
@@ -10,49 +10,46 @@ module convection_eb_mod
 
    implicit none
    private
-   
-contains
 
+contains
 
    !!$************************************************
    !!$ WARNING:
    !!$
    !!$ Make sure this piece of code is not problematic with
    !!$ OpenMP
-   !!$    
+   !!$
    !!$************************************************
-
 
    !!$************************************************
    !!$ WARNING 2:
    !!$
    !!$ For now the convective term is only div(u_mac . u)
    !!$ The term -u*grad(u_mac) is omitted
-   !!$    
-   !!$************************************************  
+   !!$
+   !!$************************************************
    subroutine compute_ugradu_eb ( lo, hi, &
-        ugradu, glo, ghi, &
-        vel, vello, velhi, &
-        u, ulo, uhi, &
-        v, vlo, vhi, &
-        w, wlo, whi, &
-        afrac_x, axlo, axhi, &
-        afrac_y, aylo, ayhi, &
-        afrac_z, azlo, azhi, &
-        cent_x,  cxlo, cxhi, &
-        cent_y,  cylo, cyhi, &
-        cent_z,  czlo, czhi, &
-        flags,    flo,  fhi, &
-        vfrac,   vflo, vfhi, &
-        bcent,    blo,  bhi, & 
-        xslopes, yslopes, zslopes, slo, shi, &
-        domlo, domhi, &
-        bc_ilo, bc_ihi, &
-        bc_jlo, bc_jhi, &
-        bc_klo, bc_khi, dx, ng ) bind(C)
+                                 ugradu, glo, ghi, &
+                                 vel, vello, velhi, &
+                                 u, ulo, uhi, &
+                                 v, vlo, vhi, &
+                                 w, wlo, whi, &
+                                 afrac_x, axlo, axhi, &
+                                 afrac_y, aylo, ayhi, &
+                                 afrac_z, azlo, azhi, &
+                                 cent_x,  cxlo, cxhi, &
+                                 cent_y,  cylo, cyhi, &
+                                 cent_z,  czlo, czhi, &
+                                 flags,    flo,  fhi, &
+                                 vfrac,   vflo, vfhi, &
+                                 bcent,    blo,  bhi, &
+                                 xslopes, yslopes, zslopes, slo, shi, &
+                                 domlo, domhi, &
+                                 bc_ilo, bc_ihi, &
+                                 bc_jlo, bc_jhi, &
+                                 bc_klo, bc_khi, dx, ng ) bind(C)
 
       use divop_mod, only: compute_divop
-
 
       ! Tile bounds
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
@@ -95,7 +92,7 @@ contains
            & cent_z(czlo(1):czhi(1),czlo(2):czhi(2),czlo(3):czhi(3),2),&
            & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)), &
            & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3)
-      
+
       real(ar),        intent(  out) ::                           &
            & ugradu(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)
 
@@ -108,21 +105,21 @@ contains
            & bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-      
+
       ! Temporary array to handle convective fluxes at the cell faces (staggered)
       ! Just reserve space for the tile + 3 ghost layers
-      integer, parameter :: nh = 3 ! Number of Halo layers      
+      integer, parameter :: nh = 3 ! Number of Halo layers
       real(ar) :: fx(lo(1)-nh:hi(1)+nh+1,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh  ,3)
       real(ar) :: fy(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh+1,lo(3)-nh:hi(3)+nh  ,3)
-      real(ar) :: fz(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh+1,3)     
+      real(ar) :: fz(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh+1,3)
 
       ! Check number of ghost cells
       if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
 
-      ! 
+      !
       ! First compute the convective fluxes at the face center
       ! Do this on ALL faces on the tile, i.e. INCLUDE as many ghost faces as
-      ! possible      
+      ! possible
       !
       block
          real(ar)               :: u_face, v_face, w_face
@@ -130,16 +127,15 @@ contains
          integer                :: i, j, k, n
          integer, parameter     :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
 
-         
          do n = 1, 3
 
-            ! 
+            !
             ! ===================   X   ===================
             !
             do k = lo(3)-nh, hi(3)+nh
                do j = lo(2)-nh, hi(2)+nh
                   do i = lo(1)-nh, hi(1)+nh+1
-                      if ( afrac_x(i,j,k) > zero ) then
+                     if ( afrac_x(i,j,k) > zero ) then
                         if ( i <= domlo(1) .and. any(bc_ilo(j,k,1) == bc_list) ) then
                            u_face =  vel(domlo(1)-1,j,k,n)
                         else if ( i >= domhi(1)+1 .and. any(bc_ihi(j,k,1) == bc_list ) ) then
@@ -153,12 +149,12 @@ contains
                      else
                         u_face = my_huge
                      end if
-                     fx(i,j,k,n) = u(i,j,k) * u_face 
+                     fx(i,j,k,n) = u(i,j,k) * u_face
                   end do
                end do
             end do
 
-            ! 
+            !
             ! ===================   Y   ===================
             !
             do k = lo(3)-nh, hi(3)+nh
@@ -183,7 +179,7 @@ contains
                end do
             end do
 
-            ! 
+            !
             ! ===================   Z   ===================
             !
             do k = lo(3)-nh, hi(3)+nh+1
@@ -207,12 +203,12 @@ contains
                   end do
                end do
             end do
-            
+
          end do
 
       end block
 
-       divop: block
+      divop: block
          ! Compute div(tau) with EB algorithm
          integer(c_int)  :: fxlo(3), fxhi(3), fylo(3), fyhi(3), fzlo(3), fzhi(3)
 
@@ -223,30 +219,30 @@ contains
          fxhi = hi + nh + [1,0,0]
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
-         
+
          call compute_divop(lo, hi, &
-             ugradu, glo, ghi, &
-             vel, vlo, vhi, &
-             fx, fxlo, fxhi, &
-             fy, fylo, fyhi, &
-             fz, fzlo, fzhi, &
-             afrac_x, axlo, axhi, &
-             afrac_y, aylo, ayhi, &
-             afrac_z, azlo, azhi, &
-             cent_x, cxlo, cxhi, &
-             cent_y, cylo, cyhi, &
-             cent_z, czlo, czhi, &
-             flags, flo, fhi, &
-             vfrac, vflo, vfhi, &
-             bcent, blo, bhi, &
-             domlo, domhi, &
-             dx, ng )
+                            ugradu, glo, ghi, &
+                            vel, vlo, vhi, &
+                            fx, fxlo, fxhi, &
+                            fy, fylo, fyhi, &
+                            fz, fzlo, fzhi, &
+                            afrac_x, axlo, axhi, &
+                            afrac_y, aylo, ayhi, &
+                            afrac_z, azlo, azhi, &
+                            cent_x, cxlo, cxhi, &
+                            cent_y, cylo, cyhi, &
+                            cent_z, czlo, czhi, &
+                            flags, flo, fhi, &
+                            vfrac, vflo, vfhi, &
+                            bcent, blo, bhi, &
+                            domlo, domhi, &
+                            dx, ng )
       end block divop
 
-      ! Return the negative 
+      ! Return the negative
       block
          integer :: i,j,k,n
-         
+
          do n = 1, 3
             do k = lo(3), hi(3)
                do j = lo(2), hi(2)
@@ -257,10 +253,8 @@ contains
             end do
          end do
       end block
-      
+
    end subroutine compute_ugradu_eb
-
-
 
    ! Upwind non-normal velocity
    function upwind ( velmns, velpls, uedge ) result (ev)
@@ -273,11 +267,10 @@ contains
 
       if ( abs(uedge) .lt. small_vel) then
          ev = half * ( velpls + velmns )
-      else 
-         ev = merge ( velmns, velpls, uedge >= zero ) 
+      else
+         ev = merge ( velmns, velpls, uedge >= zero )
       end if
 
    end function upwind
-   
-   
+
 end module convection_eb_mod

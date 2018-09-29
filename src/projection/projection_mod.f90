@@ -25,7 +25,7 @@ contains
    ! at the faces of the pressure cells along the "dir"-axis.
    !
    subroutine compute_bcoeff_cc ( lo, hi, bcoeff, blo, bhi, &
-        ro, slo, shi, dir )  bind(C)
+                                 ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -39,10 +39,10 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
-           bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
+         bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
 
       integer      :: i, j, k, i0, j0, k0
 
@@ -61,7 +61,7 @@ contains
    end subroutine compute_bcoeff_cc
 
    subroutine compute_bcoeff_nd ( lo, hi, bcoeff, blo, bhi, &
-        ro, slo, shi, dir )  bind(C)
+                                 ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -75,10 +75,10 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
-           bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
+         bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
 
       integer      :: i, j, k
 
@@ -151,7 +151,6 @@ contains
          end if
 
       end if
-
 
       !
       ! BC -- Y direction

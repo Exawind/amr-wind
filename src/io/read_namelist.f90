@@ -3,7 +3,7 @@ MODULE read_namelist_module
    integer, private :: argc = 0
    character(len=80), private :: argv(32)
 
-   contains
+contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
 !     Module name: READ_NAMELIST(POST)                                 !
@@ -12,7 +12,7 @@ MODULE read_namelist_module
 !     Purpose: Read in the NAMELIST variables                          !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      SUBROUTINE READ_NAMELIST()
+   SUBROUTINE READ_NAMELIST()
 
       use bc
       use ic, only: ic_pack_type, ic_p
@@ -60,9 +60,9 @@ MODULE read_namelist_module
          WRITE(*,1000)
          stop 20010
 
- 1000 FORMAT(2/,1X,70('*')/' From: READ_NAMELIST',/' Error 1000: ',    &
-         'The input data file, incflo.dat, is missing. Aborting.',/1x,   &
-         70('*'),2/)
+1000     FORMAT(2/,1X,70('*')/' From: READ_NAMELIST',/' Error 1000: ',    &
+                'The input data file, incflo.dat, is missing. Aborting.',/1x,   &
+                ('*'),2/)
 
       ELSE
          OPEN(UNIT=UNIT_DAT, FILE='incflo.dat', STATUS='OLD', IOSTAT=IOS)
@@ -72,13 +72,12 @@ MODULE read_namelist_module
          ENDIF
       ENDIF
 
- 1100 FORMAT(//1X,70('*')/1x,'From: READ_NAMELIST',/1x,'Error 1100: ', &
-         'Line ',A,' in file incflo.dat is too long. Input lines should', &
-         /1x,'not pass column ',A,'.',2/3x,A,2/1x,&
-         'Please correct input deck.',/1X,70('*'),2/)
+1100  FORMAT(//1X,70('*')/1x,'From: READ_NAMELIST',/1x,'Error 1100: ', &
+              'Line ',A,' in file incflo.dat is too long. Input lines should', &
+              /1x,'not pass column ',A,'.',2/3x,A,2/1x,&
+              'Please correct input deck.',/1X,70('*'),2/)
 
-
-     ! Loop through the incflo.dat file and process the input data.
+      ! Loop through the incflo.dat file and process the input data.
       READ_LP: DO
          READ (UNIT_DAT,"(A)",IOSTAT=IOS) LINE_STRING
          IF(IOS < 0) EXIT READ_LP
@@ -90,7 +89,7 @@ MODULE read_namelist_module
 
          IF(LINE_LEN <= 0) CYCLE READ_LP           ! comment line
          IF(BLANK_LINE(LINE_STRING)) CYCLE READ_LP ! blank line
-  
+
          CALL SET_KEYWORD(ERROR)
 
       ENDDO READ_LP
@@ -99,7 +98,7 @@ MODULE read_namelist_module
 
       RETURN
 
-      CONTAINS
+   CONTAINS
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -111,81 +110,77 @@ MODULE read_namelist_module
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
       SUBROUTINE SET_KEYWORD(ERROR)
 
-      IMPLICIT NONE
+         IMPLICIT NONE
 
-      logical, intent(OUT) ::ERROR
+         logical, intent(OUT) ::ERROR
 
 ! External namelist files:
 !---------------------------------------------------------------------//
-      include 'geometry.inc'
-      include 'initial_conditions.inc'
-      include 'boundary_conditions.inc'
+         include 'geometry.inc'
+         include 'initial_conditions.inc'
+         include 'boundary_conditions.inc'
 
-      ERROR = .FALSE.
+         ERROR = .FALSE.
 
-      CALL MAKE_UPPER_CASE (LINE_STRING, LINE_LEN)
-      CALL REPLACE_TAB (LINE_STRING, LINE_LEN)
-      call remove_par_blanks(LINE_STRING)
+         CALL MAKE_UPPER_CASE (LINE_STRING, LINE_LEN)
+         CALL REPLACE_TAB (LINE_STRING, LINE_LEN)
+         call remove_par_blanks(LINE_STRING)
 
 ! Write the current line to a scratch file
 ! and read the scratch file in NAMELIST format
-      IF(.NOT.READ_FLAG) RETURN
+         IF(.NOT.READ_FLAG) RETURN
 
 ! Geometry and discretization keywords
-      STRING=''; STRING = '&GEOMETRY '//&
-         trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-      READ(STRING, NML=GEOMETRY, IOSTAT=IOS)
-      IF(IOS == 0)  RETURN
-
+         STRING=''; STRING = '&GEOMETRY '//&
+ trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
+         READ(STRING, NML=GEOMETRY, IOSTAT=IOS)
+         IF(IOS == 0)  RETURN
 
 ! Initial condtion keywords
-      STRING=''; STRING = '&INITIAL_CONDITIONS '//&
-         trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-      READ(STRING, NML=INITIAL_CONDITIONS, IOSTAT=IOS)
-      IF(IOS == 0)  RETURN
-
+         STRING=''; STRING = '&INITIAL_CONDITIONS '//&
+ trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
+         READ(STRING, NML=INITIAL_CONDITIONS, IOSTAT=IOS)
+         IF(IOS == 0)  RETURN
 
 ! Boundary condition keywords
-      STRING=''; STRING = '&BOUNDARY_CONDITIONS '//&
-         trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-      READ(STRING, NML=BOUNDARY_CONDITIONS, IOSTAT=IOS)
-      IF(IOS == 0)  RETURN
+         STRING=''; STRING = '&BOUNDARY_CONDITIONS '//&
+ trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
+         READ(STRING, NML=BOUNDARY_CONDITIONS, IOSTAT=IOS)
+         IF(IOS == 0)  RETURN
 
-       ERROR = .TRUE.
+         ERROR = .TRUE.
 
-      RETURN
+         RETURN
       END SUBROUTINE SET_KEYWORD
 
-END SUBROUTINE READ_NAMELIST
+   END SUBROUTINE READ_NAMELIST
 
+   subroutine add_argument(fname, nlen) &
+      bind(c,name='incflo_add_argument')
 
-subroutine add_argument(fname, nlen) &
-   bind(c,name='incflo_add_argument')
+      use iso_c_binding, only: c_int, c_float, c_char
+      implicit none
+      integer(c_int), intent(in) :: nlen
+      character(kind=c_char), intent(in) :: fname(nlen)
+      integer :: lc, bnd
 
-   use iso_c_binding, only: c_int, c_float, c_char
-   implicit none
-   integer(c_int), intent(in) :: nlen
-   character(kind=c_char), intent(in) :: fname(nlen)
-   integer :: lc, bnd
-
-   argc = argc + 1
-   if(argc > 32) then
-      write(*,*) 'from add_argument:'
-      write(*,*) 'too many arguments!!!!'
-      stop 986532
-   endif
+      argc = argc + 1
+      if(argc > 32) then
+         write(*,*) 'from add_argument:'
+         write(*,*) 'too many arguments!!!!'
+         stop 986532
+      endif
 
 ! Copy over the string, character-by-character.
-   bnd = min(nlen,80)
-   do lc=1, bnd
-      argv(argc)(lc:lc) = fname(lc)
-   enddo
+      bnd = min(nlen,80)
+      do lc=1, bnd
+         argv(argc)(lc:lc) = fname(lc)
+      enddo
 ! Clear out the remaining string.
-   do lc=bnd+1,80
-      argv(argc)(lc:lc) = ' '
-   enddo
+      do lc=bnd+1,80
+         argv(argc)(lc:lc) = ' '
+      enddo
 
-end subroutine add_argument
-
+   end subroutine add_argument
 
 END MODULE read_namelist_module

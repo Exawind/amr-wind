@@ -163,7 +163,6 @@ program fjoin_par
       lc2 = lc2 + 1
    enddo
 
-
 contains
 
 !-----------------------------------------------------------------------!
@@ -173,18 +172,16 @@ contains
 !-----------------------------------------------------------------------!
    subroutine alloc_particles
 
+      integer :: lc1
 
-     integer :: lc1
+      allocate( particles(np))
 
-     allocate( particles(np))
-
-     do lc1=1,np
-        allocate ( particles(lc1) % rdata ( nr + nr_min ) )
-        allocate ( particles(lc1) % idata ( ni + ni_min ) )
-     enddo
+      do lc1=1,np
+         allocate ( particles(lc1) % rdata ( nr + nr_min ) )
+         allocate ( particles(lc1) % idata ( ni + ni_min ) )
+      enddo
 
    end subroutine alloc_particles
-
 
 !-----------------------------------------------------------------------!
 !                                                                       !
@@ -193,25 +190,25 @@ contains
 !-----------------------------------------------------------------------!
    subroutine read_particle_data
 
-     implicit none
+      implicit none
 
-     character(max_char_len)           :: record
-     integer                           :: i, is, ie, ios
-     integer :: lc1
-     logical :: lverbose
+      character(max_char_len)           :: record
+      integer                           :: i, is, ie, ios
+      integer :: lc1
+      logical :: lverbose
 
-     lverbose = verbose .and. .false.
+      lverbose = verbose .and. .false.
 
-     read (funit,*)
-     read (funit,*)
-     read (funit,*)
-     read (funit,*)
-     read (funit,*)
+      read (funit,*)
+      read (funit,*)
+      read (funit,*)
+      read (funit,*)
+      read (funit,*)
 
-     do lc1=1,np
+      do lc1=1,np
 
-        read (funit,' (A)', iostat = ios) record
-        call check (  (ios==0), "cannot read input file " )
+         read (funit,' (A)', iostat = ios) record
+         call check (  (ios==0), "cannot read input file " )
 
          is = 1
          ie = scan (record, " ") - 1
@@ -231,7 +228,6 @@ contains
 
    end subroutine read_particle_data
 
-
 !-----------------------------------------------------------------------!
 !                                                                       !
 !                                                                       !
@@ -249,47 +245,44 @@ contains
          error stop 1
       end if
 
-
-    end subroutine check
+   end subroutine check
 
 !-----------------------------------------------------------------------!
 !                                                                       !
 !                                                                       !
 !                                                                       !
 !-----------------------------------------------------------------------!
-    subroutine write_var(llc)
+   subroutine write_var(llc)
 
-     implicit none
+      implicit none
 
-     integer, intent(in) :: llc
-     integer :: lc
-     real(dp) :: tmp
+      integer, intent(in) :: llc
+      integer :: lc
+      real(dp) :: tmp
 
-     if(llc == 100) then
-        write(*,trim(io_format),advance='no') &
-           clean_value(calc_granular_temperature())
-     else
-        if(id == -1) then
-           do lc=1,np
-              write(*,trim(io_format),advance='no') &
-                 clean_value(particles(lc) % rdata(llc))
-           enddo
-        else
-           write(*,trim(io_format),advance='no') &
-              clean_value(particles(id) % rdata(llc))
-        endif
-     endif
-     write(*,*)' '
+      if(llc == 100) then
+         write(*,trim(io_format),advance='no') &
+            clean_value(calc_granular_temperature())
+      else
+         if(id == -1) then
+            do lc=1,np
+               write(*,trim(io_format),advance='no') &
+                  clean_value(particles(lc) % rdata(llc))
+            enddo
+         else
+            write(*,trim(io_format),advance='no') &
+               clean_value(particles(id) % rdata(llc))
+         endif
+      endif
+      write(*,*)' '
 
    end subroutine write_var
 
-
    real(dp) function clean_value(vv)
-     real(dp),  intent(in) :: vv
-     clean_value = vv
-     if(abs(clean_value) < epsilon(0.0d0)) clean_value = 0.0d0
+      real(dp),  intent(in) :: vv
+      clean_value = vv
+      if(abs(clean_value) < epsilon(0.0d0)) clean_value = 0.0d0
    end function clean_value
-
 
 !-----------------------------------------------------------------------!
 !                                                                       !
@@ -298,24 +291,23 @@ contains
 !-----------------------------------------------------------------------!
    real(dp) function calc_granular_temperature()
 
-     implicit none
+      implicit none
 
-     integer :: lc
-     real(dp) :: gtmp, tvel
+      integer :: lc
+      real(dp) :: gtmp, tvel
 
-     calc_granular_temperature = 0.0d0
-     if(np <= 0) return
+      calc_granular_temperature = 0.0d0
+      if(np <= 0) return
 
-     gtmp=0.0d0
-     do lc=1,np
-        gtmp = gtmp + dot_product( &
-             particles(lc) % rdata(9:11), &
-             particles(lc) % rdata(9:11) )
-     enddo
-     calc_granular_temperature = gtmp/(3.0d0*dble(np))
+      gtmp=0.0d0
+      do lc=1,np
+         gtmp = gtmp + dot_product( &
+                particles(lc) % rdata(9:11), &
+                particles(lc) % rdata(9:11) )
+      enddo
+      calc_granular_temperature = gtmp/(3.0d0*dble(np))
 
    end function calc_granular_temperature
-
 
 !-----------------------------------------------------------------------!
 !                                                                       !
@@ -330,10 +322,10 @@ contains
       do i = 1, command_argument_count (), 2
          call get_command_argument ( i, val1, length  )
          call check ( length <= max_char_len, &
-           "Argument length exceeds max char length" )
+                     "Argument length exceeds max char length" )
          call get_command_argument ( i+1, val2, length  )
          call check ( length <= max_char_len, &
-           "Command length exceeds max char length" )
+                     "Command length exceeds max char length" )
          call set_inputs ( val1, val2 )
       end do
 
@@ -360,14 +352,14 @@ contains
       case ( "--var" )
          var_count = var_count + 1
          call check ( var_count < max_var, &
-           "Too many variables specified" )
+                     "Too many variables specified" )
          read ( arg_value,*) var(var_count)
       case default
          call check ( .false., &
-           "Option "//trim (arg_name)//" not recognized")
+                     "Option "//trim (arg_name)//" not recognized")
       end select
 
-    end subroutine set_inputs
+   end subroutine set_inputs
 
 !-----------------------------------------------------------------------!
 !                                                                       !
@@ -376,11 +368,11 @@ contains
 !-----------------------------------------------------------------------!
    subroutine check_inputs
 
-     integer :: lc
+      integer :: lc
 
       ! Check that file 1 has been provided and exists
       call check ( allocated (fbase), &
-        "Base file name has not been provided" )
+                  "Base file name has not been provided" )
 
       ! Check that nreals and nints are non-negative
       call check ( id > 0 .or. id == -1, "Particle ID must be positive")
@@ -398,7 +390,7 @@ contains
 !-----------------------------------------------------------------------!
    subroutine print_inputs ()
 
-     integer :: lc
+      integer :: lc
 
       write (*,"(/,A/)")  repeat ("<",36) // " fjoin_par " // repeat (">",36)
       write (*,"(3X,A)")      "fbase    = "//fbase
@@ -410,4 +402,4 @@ contains
 
    end subroutine print_inputs
 
- end program fjoin_par
+end program fjoin_par

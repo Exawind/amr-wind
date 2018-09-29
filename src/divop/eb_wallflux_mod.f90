@@ -1,11 +1,11 @@
 module eb_wallflux_mod
-   
+
    use amrex_fort_module,  only: rt=>amrex_real, c_int
    use amrex_error_module, only: amrex_abort
    use param,              only: zero, half, one
-   
+
    implicit none
-   
+
    private
    public      :: compute_diff_wallflux
 
@@ -15,18 +15,18 @@ contains
    ! We use no-slip boundary for velocities.
    !
    subroutine compute_diff_wallflux (divw, dx, i, j, k, &
-        vel, vlo, vhi,     &
-        lam, mu, slo, shi, &
-        bcent, blo, bhi,   &
-        apx, axlo, axhi,   &
-        apy, aylo, ayhi,   &
-        apz, azlo, azhi,   &
-        do_explicit_diffusion)
+                                     vel, vlo, vhi,     &
+                                     lam, mu, slo, shi, &
+                                     bcent, blo, bhi,   &
+                                     apx, axlo, axhi,   &
+                                     apy, aylo, ayhi,   &
+                                     apz, azlo, azhi,   &
+                                     do_explicit_diffusion)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
 
-      ! Cell indeces 
+      ! Cell indeces
       integer(c_int), intent(in   ) :: i, j, k
 
       ! Grid spacing
@@ -66,10 +66,10 @@ contains
       real(rt)   :: dudx, dudy, dudz, dvdx, dvdy, dvdz, dwdx, dwdy, dwdz, divu
       real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy, tautmp
       integer    :: ixit, iyit, izit, is
-      
+
       divw  = zero
-      dxinv = one / dx 
-      
+      dxinv = one / dx
+
       dapx = apx(i+1,j,k)-apx(i,j,k)
       dapy = apy(i,j+1,k)-apy(i,j,k)
       dapz = apz(i,j,k+1)-apz(i,j,k)
@@ -270,8 +270,8 @@ contains
 
       if (do_explicit_diffusion .eq. 0) then
          !
-         ! Subtract diagonal terms of stress tensor, to be obtained through 
-         ! implicit solve instead.                   
+         ! Subtract diagonal terms of stress tensor, to be obtained through
+         ! implicit solve instead.
          !
          tauxx = tauxx - mu(i,j,k) * dudx
          tauxy = tauxy - mu(i,j,k) * dudy
@@ -292,12 +292,11 @@ contains
 
    end subroutine compute_diff_wallflux
 
-
    real(rt) function interp2d(cym,cy0,cyp,czm,cz0,czp,v)
       real(rt), intent(in) :: cym,cy0,cyp,czm,cz0,czp,v(3,3)
       interp2d = czm*(cym*v(1,1) + cy0*v(2,1) + cyp*v(3,1)) &
-           +     cz0*(cym*v(1,2) + cy0*v(2,2) + cyp*v(3,2)) &
-           +     czp*(cym*v(1,3) + cy0*v(2,3) + cyp*v(3,3))
+                 +     cz0*(cym*v(1,2) + cy0*v(2,2) + cyp*v(3,2)) &
+                 +     czp*(cym*v(1,3) + cy0*v(2,3) + cyp*v(3,3))
    end function interp2d
 
 end module eb_wallflux_mod

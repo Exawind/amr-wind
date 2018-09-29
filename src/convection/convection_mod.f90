@@ -1,9 +1,9 @@
-! 
-!              
+!
+!
 !  This module contains the subroutines to compute the three components
 !  of the convection term (U.grad)U
 !
-! 
+!
 module convection_mod
 
    use amrex_fort_module, only: ar => amrex_real
@@ -14,14 +14,12 @@ module convection_mod
    implicit none
    private
 
-
 contains
 
-
    subroutine compute_velocity_at_faces ( lo, hi, u, ulo, uhi, v, vlo, vhi, &
-        w, wlo, whi, vel, vello, velhi, xslopes, slo, shi, yslopes, zslopes,&
-        bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi, ng,                 & 
-        domlo, domhi ) bind(C)
+                                         w, wlo, whi, vel, vello, velhi, xslopes, slo, shi, yslopes, zslopes,&
+                                         bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi, ng,                 &
+                                         domlo, domhi ) bind(C)
 
       ! Tile bounds
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
@@ -50,7 +48,7 @@ contains
       real(ar),        intent(inout) ::                      &
            & u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
            & v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3)), &
-           & w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))      
+           & w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))
 
       ! BC types
       integer(c_int), intent(in   ) ::  &
@@ -113,21 +111,19 @@ contains
             end do
          end do
       end do
-      
+
    end subroutine compute_velocity_at_faces
-
-
 
    !
    ! EB x-direction MAC velocity
-   ! 
+   !
    subroutine compute_velocity_at_x_faces_eb ( lo, hi, u, ulo, uhi,  &
-        vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
-        cent, clo, chi, flags, flo, fhi, bc_ilo, bc_ihi, ng,         &
-        domlo, domhi ) bind(C)
+                                              vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
+                                              cent, clo, chi, flags, flo, fhi, bc_ilo, bc_ihi, ng,         &
+                                              domlo, domhi ) bind(C)
 
       use  eb_interpolation_mod
-      
+
       ! Tile bounds ( x-face centered )
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
 
@@ -138,12 +134,12 @@ contains
       integer(c_int),  intent(in   ) :: alo(3), ahi(3)
       integer(c_int),  intent(in   ) :: clo(3), chi(3)
       integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-      
+
       ! Domain bounds
       integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
 
       ! Nghost
-      integer(c_int),  intent(in   ) :: ng    
+      integer(c_int),  intent(in   ) :: ng
 
       ! Arrays
       real(ar),        intent(in   ) ::                                     &
@@ -162,7 +158,7 @@ contains
       integer(c_int), intent(in   ) ::  &
            & bc_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
            & bc_ihi(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
-      
+
       ! Local variables
       integer(c_int)                 :: i, j, k
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
@@ -173,7 +169,7 @@ contains
       do k = lo(3)-1, hi(3)+1
          do j = lo(2)-1, hi(2)+1
             do i = lo(1), hi(1)
-               if ( areafrac(i,j,k) > zero ) then 
+               if ( areafrac(i,j,k) > zero ) then
                   if ( ( i == domlo(1) ) .and. any( bc_ilo(j,k,1) == bc_list) ) then
                      u(i,j,k) = vel(i-1,j,k,1)
                   else if ( ( i == domhi(1)+1 ) .and. any( bc_ihi(j,k,1) == bc_list) ) then
@@ -184,25 +180,24 @@ contains
                      u(i,j,k) = upwind_normal( umns, upls )
                   end if
                else
-                  u(i,j,k) = my_huge               
+                  u(i,j,k) = my_huge
                end if
             end do
          end do
       end do
-   
-   end subroutine compute_velocity_at_x_faces_eb
 
+   end subroutine compute_velocity_at_x_faces_eb
 
    !
    ! EB y-direction MAC velocity
-   ! 
+   !
    subroutine compute_velocity_at_y_faces_eb ( lo, hi, v, vlo, vhi,  &
-        vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
-        cent, clo, chi, flags, flo, fhi, bc_jlo, bc_jhi, ng,         &
-        domlo, domhi ) bind(C)
+                                              vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
+                                              cent, clo, chi, flags, flo, fhi, bc_jlo, bc_jhi, ng,         &
+                                              domlo, domhi ) bind(C)
 
       use  eb_interpolation_mod
-      
+
       ! Tile bounds ( x-face centered )
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
 
@@ -213,12 +208,12 @@ contains
       integer(c_int),  intent(in   ) :: alo(3), ahi(3)
       integer(c_int),  intent(in   ) :: clo(3), chi(3)
       integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-      
+
       ! Domain bounds
       integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
 
       ! Nghost
-      integer(c_int),  intent(in   ) :: ng    
+      integer(c_int),  intent(in   ) :: ng
 
       ! Arrays
       real(ar),        intent(in   ) ::                                     &
@@ -237,7 +232,7 @@ contains
       integer(c_int), intent(in   ) ::  &
            & bc_jlo(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
            & bc_jhi(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
-      
+
       ! Local variables
       integer(c_int)                 :: i, j, k
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
@@ -246,7 +241,7 @@ contains
       do k = lo(3)-1, hi(3)+1
          do j = lo(2), hi(2)
             do i = lo(1)-1, hi(1)+1
-               if ( areafrac(i,j,k) > zero ) then 
+               if ( areafrac(i,j,k) > zero ) then
                   if ( ( j == domlo(2) ) .and. any(bc_jlo(i,k,1) == bc_list) ) then
                      v(i,j,k) = vel(i,j-1,k,2)
                   else if ( ( j == domhi(2)+1 ) .and. any(bc_jhi(i,k,1) == bc_list) ) then
@@ -257,26 +252,24 @@ contains
                      v(i,j,k) = upwind_normal( vmns, vpls )
                   end if
                else
-                   v(i,j,k) = my_huge
+                  v(i,j,k) = my_huge
                end if
             end do
          end do
       end do
-      
 
    end subroutine compute_velocity_at_y_faces_eb
 
-   
    !
    ! EB z-direction MAC velocity
-   ! 
+   !
    subroutine compute_velocity_at_z_faces_eb ( lo, hi, w, wlo, whi,  &
-        vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
-        cent, clo, chi, flags, flo, fhi, bc_klo, bc_khi, ng,         &
-        domlo, domhi ) bind(C)
+                                              vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi,     &
+                                              cent, clo, chi, flags, flo, fhi, bc_klo, bc_khi, ng,         &
+                                              domlo, domhi ) bind(C)
 
-       use  eb_interpolation_mod
-      
+      use  eb_interpolation_mod
+
       ! Tile bounds ( x-face centered )
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
 
@@ -287,12 +280,12 @@ contains
       integer(c_int),  intent(in   ) :: alo(3), ahi(3)
       integer(c_int),  intent(in   ) :: clo(3), chi(3)
       integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-      
+
       ! Domain bounds
       integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
 
       ! Nghost
-      integer(c_int),  intent(in   ) :: ng    
+      integer(c_int),  intent(in   ) :: ng
 
       ! Arrays
       real(ar),        intent(in   ) ::                                     &
@@ -311,7 +304,7 @@ contains
       integer(c_int), intent(in   ) ::  &
            & bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
-      
+
       ! Local variables
       integer(c_int)                 :: i, j, k
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
@@ -333,7 +326,7 @@ contains
                      w(i,j,k) = upwind_normal( wmns, wpls )
                   end if
                else
-                  w(i,j,k) = my_huge               
+                  w(i,j,k) = my_huge
                end if
             end do
          end do
@@ -341,25 +334,22 @@ contains
 
    end subroutine compute_velocity_at_z_faces_eb
 
-
-
    !#####################################################
 
    !  MAC VERSION
 
    !#####################################################
    subroutine compute_ugradu ( lo, hi, &
-        ugradu, glo, ghi, &
-        vel, vello, velhi, &
-        u, ulo, uhi, &
-        v, vlo, vhi, &
-        w, wlo, whi, &
-        xslopes, yslopes, zslopes, slo, shi, &
-        domlo, domhi, &
-        bc_ilo_type, bc_ihi_type, &
-        bc_jlo_type, bc_jhi_type, &
-        bc_klo_type, bc_khi_type, dx, ng, ugradu_type ) bind(C)
-
+                              ugradu, glo, ghi, &
+                              vel, vello, velhi, &
+                              u, ulo, uhi, &
+                              v, vlo, vhi, &
+                              w, wlo, whi, &
+                              xslopes, yslopes, zslopes, slo, shi, &
+                              domlo, domhi, &
+                              bc_ilo_type, bc_ihi_type, &
+                              bc_jlo_type, bc_jhi_type, &
+                              bc_klo_type, bc_khi_type, dx, ng, ugradu_type ) bind(C)
 
       ! Tile bounds
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
@@ -410,7 +400,7 @@ contains
       real(ar)                       :: epw_hi_z, epw_lo_z
       real(ar)                       :: divumac
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
-      
+
       idx = one / dx(1)
       idy = one / dx(2)
       idz = one / dx(3)
@@ -523,7 +513,7 @@ contains
                ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (k.eq.domlo(3) .and. any( bc_klo_type(i,j,1) == bc_list ) ) then
-                   u_b =  vel(i,j,k-1,1)
+                  u_b =  vel(i,j,k-1,1)
                   v_b =  vel(i,j,k-1,2)
                   w_b =  vel(i,j,k-1,3)
                else
@@ -568,25 +558,25 @@ contains
                ! ****************************************************
                if (ugradu_type .eq. 2) then
 
-                  divumac = (u(i+1,j,k) - u(i,j,k)) * idx + & 
-                       (v(i,j+1,k) - v(i,j,k)) * idy + & 
-                       (w(i,j,k+1) - w(i,j,k)) * idz
+                  divumac = (u(i+1,j,k) - u(i,j,k)) * idx + &
+                            (v(i,j+1,k) - v(i,j,k)) * idy + &
+                            (w(i,j,k+1) - w(i,j,k)) * idz
 
                   ugradu(i,j,k,1) = (u(i+1,j,k) * u_e - u(i,j,k) * u_w) * idx + &
-                       (v(i,j+1,k) * u_n - v(i,j,k) * u_s) * idy + &
-                       (w(i,j,k+1) * u_t - w(i,j,k) * u_b) * idz - &
-                       vel(i,j,k,1) * divumac
+                                    (v(i,j+1,k) * u_n - v(i,j,k) * u_s) * idy + &
+                                    (w(i,j,k+1) * u_t - w(i,j,k) * u_b) * idz - &
+                                    vel(i,j,k,1) * divumac
                   ugradu(i,j,k,2) = (u(i+1,j,k) * v_e - u(i,j,k) * v_w) * idx + &
-                       (v(i,j+1,k) * v_n - v(i,j,k) * v_s) * idy + &
-                       (w(i,j,k+1) * v_t - w(i,j,k) * v_b) * idz - &
-                       vel(i,j,k,2) * divumac
+                                    (v(i,j+1,k) * v_n - v(i,j,k) * v_s) * idy + &
+                                    (w(i,j,k+1) * v_t - w(i,j,k) * v_b) * idz - &
+                                    vel(i,j,k,2) * divumac
                   ugradu(i,j,k,3) = (u(i+1,j,k) * w_e - u(i,j,k) * w_w) * idx + &
-                       (v(i,j+1,k) * w_n - v(i,j,k) * w_s) * idy + &
-                       (w(i,j,k+1) * w_t - w(i,j,k) * w_b) * idz - &
-                       vel(i,j,k,3) * divumac
+                                    (v(i,j+1,k) * w_n - v(i,j,k) * w_s) * idy + &
+                                    (w(i,j,k+1) * w_t - w(i,j,k) * w_b) * idz - &
+                                    vel(i,j,k,3) * divumac
 
                   ! ****************************************************
-                  ! Define convective terms -- conservatively 
+                  ! Define convective terms -- conservatively
                   !   ugradu = ( div(u^MAC u^cc) - u^cc div(u^MAC) )
                   ! ****************************************************
 
@@ -599,31 +589,31 @@ contains
                   epw_hi_z = w(i,j,k+1)
                   epw_lo_z = w(i,j,k  )
 
-                  divumac = (epu_hi_x - epu_lo_x) * idx + & 
-                       (epv_hi_y - epv_lo_y) * idy + & 
-                       (epw_hi_z - epw_lo_z) * idz
+                  divumac = (epu_hi_x - epu_lo_x) * idx + &
+                            (epv_hi_y - epv_lo_y) * idy + &
+                            (epw_hi_z - epw_lo_z) * idz
 
                   ugradu(i,j,k,1) = (epu_hi_x * u_e - epu_lo_x * u_w) * idx + &
-                       (epv_hi_y * u_n - epv_lo_y * u_s) * idy + &
-                       (epw_hi_z * u_t - epw_lo_z * u_b) * idz - &
-                       vel(i,j,k,1) * divumac
+                                    (epv_hi_y * u_n - epv_lo_y * u_s) * idy + &
+                                    (epw_hi_z * u_t - epw_lo_z * u_b) * idz - &
+                                    vel(i,j,k,1) * divumac
                   ugradu(i,j,k,2) = (epu_hi_x * v_e - epu_lo_x * v_w) * idx + &
-                       (epv_hi_y * v_n - epv_lo_y * v_s) * idy + &
-                       (epw_hi_z * v_t - epw_lo_z * v_b) * idz - &
-                       vel(i,j,k,2) * divumac
+                                    (epv_hi_y * v_n - epv_lo_y * v_s) * idy + &
+                                    (epw_hi_z * v_t - epw_lo_z * v_b) * idz - &
+                                    vel(i,j,k,2) * divumac
                   ugradu(i,j,k,3) = (epu_hi_x * w_e - epu_lo_x * w_w) * idx + &
-                       (epv_hi_y * w_n - epv_lo_y * w_s) * idy + &
-                       (epw_hi_z * w_t - epw_lo_z * w_b) * idz - &
-                       vel(i,j,k,3) * divumac
+                                    (epv_hi_y * w_n - epv_lo_y * w_s) * idy + &
+                                    (epw_hi_z * w_t - epw_lo_z * w_b) * idz - &
+                                    vel(i,j,k,3) * divumac
 
                   ugradu(i,j,k,1) = ugradu(i,j,k,1)
-                  ugradu(i,j,k,2) = ugradu(i,j,k,2) 
+                  ugradu(i,j,k,2) = ugradu(i,j,k,2)
                   ugradu(i,j,k,3) = ugradu(i,j,k,3)
 
                end if
 
                ! ****************************************************
-               ! Return the negative 
+               ! Return the negative
                ! ****************************************************
 
                ugradu(i,j,k,1) = -ugradu(i,j,k,1)
@@ -636,7 +626,6 @@ contains
 
    end subroutine compute_ugradu
 
-
    ! Upwind along direction normal to velocity component
    function upwind_normal ( umns, upls ) result (ev)
 
@@ -645,9 +634,9 @@ contains
 
       if ( umns < zero .and. upls > zero ) then
          ev = zero
-      else 
+      else
          avg = half * ( upls + umns )
-         ev = merge ( umns, upls, avg >= zero ) 
+         ev = merge ( umns, upls, avg >= zero )
       end if
 
    end function upwind_normal
@@ -663,8 +652,8 @@ contains
 
       if ( abs(uedge) .lt. small_vel) then
          ev = half * ( velpls + velmns )
-      else 
-         ev = merge ( velmns, velpls, uedge >= zero ) 
+      else
+         ev = merge ( velmns, velpls, uedge >= zero )
       end if
 
    end function upwind

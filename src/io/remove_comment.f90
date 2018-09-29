@@ -1,5 +1,5 @@
 MODULE REMOVE_COMMENT_MODULE
-   CONTAINS
+CONTAINS
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
 !  Subroutine Name: REMOVE_COMMENT (LINE, LSTART, MAXCOL)              !
@@ -12,7 +12,7 @@ MODULE REMOVE_COMMENT_MODULE
 !                     OUT > LINE ::  "MW_g( 3 ) =  32.0         "      !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      SUBROUTINE REMOVE_COMMENT(LINE, LSTART, MAXCOL)
+   SUBROUTINE REMOVE_COMMENT(LINE, LSTART, MAXCOL)
 
       IMPLICIT NONE
 
@@ -35,8 +35,7 @@ MODULE REMOVE_COMMENT_MODULE
       END DO
 
       RETURN
-      END SUBROUTINE REMOVE_COMMENT
-
+   END SUBROUTINE REMOVE_COMMENT
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -50,7 +49,7 @@ MODULE REMOVE_COMMENT_MODULE
 !                     OUT > LINE :: "MW_g(3)   = 32.0"                 !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-      SUBROUTINE REMOVE_PAR_BLANKS(LINE)
+   SUBROUTINE REMOVE_PAR_BLANKS(LINE)
 
       IMPLICIT NONE
 
@@ -72,7 +71,6 @@ MODULE REMOVE_COMMENT_MODULE
 ! Debug flag
       logical, parameter :: verbose = .FALSE.
 
-
 ! Exit if the string is empty.
       IF(len_trim(LINE) == 0) return
 
@@ -83,12 +81,12 @@ MODULE REMOVE_COMMENT_MODULE
       searchRight = (lP /= 0)
       DO WHILE(searchRight)
 ! Find the position of the first right parentheses.
-        rP = lP + index(LINE(lP:),")")
+         rP = lP + index(LINE(lP:),")")
 ! Check if there are any blank spaces:
-        IF(index(LINE(lP:rP-1)," ") /= 0) THEN
+         IF(index(LINE(lP:rP-1)," ") /= 0) THEN
 
-           IF(verbose) WRITE(*,"(3X,'Removing spaces: ')")
-           IF(verbose) WRITE(*,"(5X,'Before: ',A)") trim(LINE)
+            IF(verbose) WRITE(*,"(3X,'Removing spaces: ')")
+            IF(verbose) WRITE(*,"(5X,'Before: ',A)") trim(LINE)
 
 ! Initialize the loop flag and sub-string position.
             replace = .TRUE.
@@ -108,14 +106,14 @@ MODULE REMOVE_COMMENT_MODULE
 ! Exit if all that remains in the sub-string are empty spaces.
                replace = (len_trim(LINE(POS:rP-1)) /= 0)
             ENDDO
-           IF(verbose) WRITE(*,"(5X,'After:  ',A)") trim(LINE)
-        ENDIF
+            IF(verbose) WRITE(*,"(5X,'After:  ',A)") trim(LINE)
+         ENDIF
 ! Check if there is another set of parentheses.
-        lP = rP + index(LINE(rP+1:),"(")
+         lP = rP + index(LINE(rP+1:),"(")
 ! Exit if no addition parentheses pair is found.
-        searchRight = (lP.NE.rP)
+         searchRight = (lP.NE.rP)
       ENDDO
 
       return
-      END SUBROUTINE REMOVE_PAR_BLANKS
+   END SUBROUTINE REMOVE_PAR_BLANKS
 END MODULE REMOVE_COMMENT_MODULE

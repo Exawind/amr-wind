@@ -1,5 +1,5 @@
 MODULE INIT_NAMELIST_MODULE
-   CONTAINS
+CONTAINS
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
 !  Subroutine: INIT_NAMELIST                                           !
@@ -21,7 +21,7 @@ MODULE INIT_NAMELIST_MODULE
 !</keyword>                                                            !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
 
-      SUBROUTINE INIT_NAMELIST
+   SUBROUTINE INIT_NAMELIST
 
       use bc
       use ic
@@ -65,11 +65,9 @@ MODULE INIT_NAMELIST_MODULE
       delp_z = zero
 !</keyword>
 
-
 !#####################################################################!
 !                   Initial Conditions Section                        !
 !#####################################################################!
-
 
 !<keyword category="Initial Condition" required="false">
 !  <description>X coordinate of the west face.</description>
@@ -193,7 +191,6 @@ MODULE INIT_NAMELIST_MODULE
       BC_CENTER(:,:) = UNDEFINED
 !</keyword>
 
-
 !<keyword category="Boundary Condition" required="false">
 !  <description>Type of boundary.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
@@ -262,7 +259,6 @@ MODULE INIT_NAMELIST_MODULE
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_WW(:) = UNDEFINED
 !</keyword>
-
 
 !<keyword category="Boundary Condition" required="false">
 !  <description>
@@ -333,5 +329,5 @@ MODULE INIT_NAMELIST_MODULE
       BC_MASSFLOW(:) = UNDEFINED
 !</keyword>
 
-      end subroutine init_namelist
+   end subroutine init_namelist
 end module init_namelist_module

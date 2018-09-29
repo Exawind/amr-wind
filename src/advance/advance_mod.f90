@@ -93,13 +93,13 @@ contains
       ! Don't overshoot the final time if not running to steady state
       if (steady_state .eq. 0 .and. stop_time .ge. 0.) then
          if (time+dt .gt. stop_time) &
-              dt = stop_time - time
+            dt = stop_time - time
       end if
 
    end subroutine compute_new_dt
 
    subroutine compute_gradp0_max ( lo, hi, p0, slo, shi, gp0_max, dx, nodal_pressure) &
-        bind (C)
+      bind (C)
 
       ! Loop bounds
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
@@ -113,7 +113,7 @@ contains
 
       ! Arrays
       real(ar),        intent(in   ) ::                       &
-           p0(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         p0(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer(c_int),  intent(in   ) :: nodal_pressure
 
@@ -134,17 +134,16 @@ contains
                do i = lo(1), hi(1)
 
                   gp0_max(1) = max( gp0_max(1), abs( &
-                       p0(i+1,j,k) + p0(i+1,j+1,k) + p0(i+1,j,k+1) + p0(i+1,j+1,k+1) &
-                       - p0(i  ,j,k) - p0(i  ,j+1,k) - p0(i  ,j,k+1) - p0(i  ,j+1,k+1) ) )
+                                   p0(i+1,j,k) + p0(i+1,j+1,k) + p0(i+1,j,k+1) + p0(i+1,j+1,k+1) &
+                                   - p0(i  ,j,k) - p0(i  ,j+1,k) - p0(i  ,j,k+1) - p0(i  ,j+1,k+1) ) )
 
                   gp0_max(2) = max( gp0_max(2), abs( &
-                       p0(i,j+1,k) + p0(i+1,j+1,k) + p0(i,j+1,k+1) + p0(i+1,j+1,k+1) &
-                       - p0(i,j  ,k) - p0(i+1,j  ,k) - p0(i,j  ,k+1) - p0(i+1,j  ,k+1) ) )
+                                   p0(i,j+1,k) + p0(i+1,j+1,k) + p0(i,j+1,k+1) + p0(i+1,j+1,k+1) &
+                                   - p0(i,j  ,k) - p0(i+1,j  ,k) - p0(i,j  ,k+1) - p0(i+1,j  ,k+1) ) )
 
                   gp0_max(3) = max( gp0_max(3), abs( &
-                       p0(i,j,k+1) + p0(i+1,j,k+1) + p0(i,j+1,k+1) + p0(i+1,j+1,k+1) &
-                       - p0(i,j,k  ) - p0(i+1,j,k  ) - p0(i,j+1,k  ) - p0(i+1,j+1,k  ) ) )
-
+                                   p0(i,j,k+1) + p0(i+1,j,k+1) + p0(i,j+1,k+1) + p0(i+1,j+1,k+1) &
+                                   - p0(i,j,k  ) - p0(i+1,j,k  ) - p0(i,j+1,k  ) - p0(i+1,j+1,k  ) ) )
 
                end do
             end do
@@ -203,10 +202,10 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(inout) :: &
-           vel(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
+         vel(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
 
       ! Local variables
       integer(c_int)                :: i, j, k , n
@@ -216,7 +215,7 @@ contains
             do j = lo(2), hi(2)
                do i = lo(1), hi(1)
 
-                  vel(i,j,k,n) = vel(i,j,k,n) + dt * gravity(n) 
+                  vel(i,j,k,n) = vel(i,j,k,n) + dt * gravity(n)
 
                end do
             end do
@@ -229,7 +228,7 @@ contains
    ! Compute the cell-centered divergence of  u
    !
    subroutine compute_diveucc ( lo, hi, diveu, slo, shi, vel, ulo, uhi, dx) &
-        bind(C)
+      bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -243,10 +242,10 @@ contains
 
       ! Array
       real(ar),       intent(  out) :: &
-           diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(in   ) :: &
-           vel(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
+         vel(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
 
       ! Local variables
       integer  :: i, j, k
@@ -282,7 +281,7 @@ contains
    end subroutine compute_diveucc
 
    subroutine compute_diveund ( lo, hi, diveu, slo, shi, vec, ulo, uhi, dx) &
-        bind(C)
+      bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -296,10 +295,10 @@ contains
 
       ! Array
       real(ar),       intent(  out) :: &
-           diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(in   ) :: &
-           vec(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
+         vec(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
 
       ! Local variables
       integer  :: i, j, k
@@ -317,19 +316,19 @@ contains
 
                ! Divergence
                eu_x = ( vec(i  ,j  ,k  ,1) + vec(i  ,j-1,k  ,1) &
-                    +vec(i  ,j  ,k-1,1) + vec(i  ,j-1,k-1,1) &
-                    -vec(i-1,j  ,k  ,1) - vec(i-1,j-1,k  ,1) &
-                    -vec(i-1,j  ,k-1,1) - vec(i-1,j-1,k-1,1) )
+                       +vec(i  ,j  ,k-1,1) + vec(i  ,j-1,k-1,1) &
+                       -vec(i-1,j  ,k  ,1) - vec(i-1,j-1,k  ,1) &
+                       -vec(i-1,j  ,k-1,1) - vec(i-1,j-1,k-1,1) )
 
                eu_y = ( vec(i  ,j  ,k  ,2) + vec(i-1,j  ,k  ,2) &
-                    +vec(i  ,j  ,k-1,2) + vec(i-1,j  ,k-1,2) &
-                    -vec(i  ,j-1,k  ,2) - vec(i-1,j-1,k  ,2) &
-                    -vec(i  ,j-1,k-1,2) - vec(i-1,j-1,k-1,2) )
+                       +vec(i  ,j  ,k-1,2) + vec(i-1,j  ,k-1,2) &
+                       -vec(i  ,j-1,k  ,2) - vec(i-1,j-1,k  ,2) &
+                       -vec(i  ,j-1,k-1,2) - vec(i-1,j-1,k-1,2) )
 
                eu_z = ( vec(i  ,j  ,k  ,3) + vec(i-1,j  ,k  ,3) &
-                    +vec(i  ,j-1,k  ,3) + vec(i-1,j-1,k  ,3) &
-                    -vec(i  ,j  ,k-1,3) - vec(i-1,j  ,k-1,3) &
-                    -vec(i  ,j-1,k-1,3) - vec(i-1,j-1,k-1,3) )
+                       +vec(i  ,j-1,k  ,3) + vec(i-1,j-1,k  ,3) &
+                       -vec(i  ,j  ,k-1,3) - vec(i-1,j  ,k-1,3) &
+                       -vec(i  ,j-1,k-1,3) - vec(i-1,j-1,k-1,3) )
 
                diveu(i,j,k) = 0.25d0 * (eu_x*odx + eu_y*ody + eu_z*odz)
 
@@ -340,11 +339,11 @@ contains
    end subroutine compute_diveund
 
    !
-   ! Average to faces in chosen direction  -- note we only average the "idir"th 
+   ! Average to faces in chosen direction  -- note we only average the "idir"th
    !    component of cc onto the idir'th face
-   ! 
+   !
    subroutine average_cc_to_fc ( lo, hi, fx, fxlo, fxhi, fy, fylo, fyhi, fz, fzlo, fzhi,  &
-                                 cc, slo, shi) bind(C) 
+                                cc, slo, shi) bind(C)
 
       ! Loop bounds (assumed face centered!)
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -357,20 +356,20 @@ contains
 
       ! Array
       real(ar),       intent(inout) :: &
-           fx(fxlo(1):fxhi(1),fxlo(2):fxhi(2),fxlo(3):fxhi(3)), &
-           fy(fylo(1):fyhi(1),fylo(2):fyhi(2),fylo(3):fyhi(3)), &
-           fz(fzlo(1):fzhi(1),fzlo(2):fzhi(2),fzlo(3):fzhi(3))
+         fx(fxlo(1):fxhi(1),fxlo(2):fxhi(2),fxlo(3):fxhi(3)), &
+         fy(fylo(1):fyhi(1),fylo(2):fyhi(2),fylo(3):fyhi(3)), &
+         fz(fzlo(1):fzhi(1),fzlo(2):fzhi(2),fzlo(3):fzhi(3))
 
       real(ar),       intent(in   ) :: &
-           cc(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
-      
+         cc(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+
       ! Local variables
       integer  :: i, j, k
 
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)+1
-               fx(i,j,k) = half * ( cc(i-1,j,k,1) + cc(i,j,k,1) )  
+               fx(i,j,k) = half * ( cc(i-1,j,k,1) + cc(i,j,k,1) )
             end do
          end do
       end do
@@ -378,7 +377,7 @@ contains
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)+1
             do i = lo(1), hi(1)
-               fy(i,j,k) = half * ( cc(i,j-1,k,2) + cc(i,j,k,2) )  
+               fy(i,j,k) = half * ( cc(i,j-1,k,2) + cc(i,j,k,2) )
             end do
          end do
       end do
@@ -386,7 +385,7 @@ contains
       do k = lo(3), hi(3)+1
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               fz(i,j,k) = half * ( cc(i,j,k-1,3) + cc(i,j,k,3) )  
+               fz(i,j,k) = half * ( cc(i,j,k-1,3) + cc(i,j,k,3) )
             end do
          end do
       end do

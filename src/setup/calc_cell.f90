@@ -34,7 +34,6 @@ contains
 
    end function calc_cell
 
-
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
 !  Subroutine: calc_cell_ic                                            !
@@ -42,25 +41,25 @@ contains
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine calc_cell_ic(dx, dy, dz, x_w, y_s, z_b, x_e, y_n, z_t, &
-     i_w, i_e, j_s, j_n, k_b, k_t)
+                           i_w, i_e, j_s, j_n, k_b, k_t)
 
-     use param, only: equal
+      use param, only: equal
 
-     implicit none
+      implicit none
 
-     real(rt), intent(in   ) :: dx, dy, dz
-     real(rt), intent(in   ) :: x_w, y_s, z_b, x_e, y_n, z_t
+      real(rt), intent(in   ) :: dx, dy, dz
+      real(rt), intent(in   ) :: x_w, y_s, z_b, x_e, y_n, z_t
 
-     integer,      intent(  out) :: i_w, j_s, k_b, i_e, j_n, k_t
+      integer,      intent(  out) :: i_w, j_s, k_b, i_e, j_n, k_t
 
-     i_w = calc_cell(x_w, dx) + 1
-     i_e = calc_cell(x_e, dx)
+      i_w = calc_cell(x_w, dx) + 1
+      i_e = calc_cell(x_e, dx)
 
-     j_s = calc_cell(y_s, dy) + 1
-     j_n = calc_cell(y_n, dy)
+      j_s = calc_cell(y_s, dy) + 1
+      j_n = calc_cell(y_n, dy)
 
-     k_b = calc_cell(z_b, dz) + 1
-     k_t = calc_cell(z_t, dz)
+      k_b = calc_cell(z_b, dz) + 1
+      k_t = calc_cell(z_t, dz)
 
    end subroutine calc_cell_ic
 
@@ -71,8 +70,8 @@ contains
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine calc_cell_bc_wall(domlo, domhi, xlength, ylength, &
-      zlength, dx, dy, dz, x_w, y_s, z_b, x_e, y_n, z_t, &
-      i_w, i_e, j_s, j_n, k_b, k_t)
+                                zlength, dx, dy, dz, x_w, y_s, z_b, x_e, y_n, z_t, &
+                                i_w, i_e, j_s, j_n, k_b, k_t)
 
       use param, only: zero, equal
 
@@ -130,8 +129,8 @@ contains
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine calc_cell_bc_flow(xlength, ylength, zlength, &
-      dx, dy, dz, x_w, y_s, z_b, x_e, y_n, z_t, &
-      i_w, i_e, j_s, j_n, k_b, k_t)
+                                dx, dy, dz, x_w, y_s, z_b, x_e, y_n, z_t, &
+                                i_w, i_e, j_s, j_n, k_b, k_t)
 
       use param, only: equal
 

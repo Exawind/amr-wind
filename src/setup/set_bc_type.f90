@@ -3,7 +3,7 @@ module set_bc_type_module
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   contains
+contains
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
 !                                                                      C
@@ -18,7 +18,7 @@ module set_bc_type_module
                           domlo, domhi, dx, dy, dz, &
                           xlength, ylength, zlength,&
                           ng) &
-               bind(c,name='set_bc_type')
+      bind(c,name='set_bc_type')
 
       use bc, only: bc_defined, bc_type, bc_plane
 
@@ -45,17 +45,17 @@ module set_bc_type_module
       real(rt)  , intent(in) :: xlength, ylength, zlength
 
       integer(c_int), intent(inout) :: bc_ilo_type&
-         (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
+                                       (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_ihi_type&
-         (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
+                                       (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_jlo_type&
-         (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
+                                       (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_jhi_type&
-         (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
+                                       (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_klo_type&
-         (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+                                       (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
       integer(c_int), intent(inout) :: bc_khi_type&
-         (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+                                       (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
       ! Local index for boundary condition
       integer :: type, bcv
@@ -74,24 +74,24 @@ module set_bc_type_module
          if (bc_defined(bcv)) then
 
             select case (trim(bc_type(bcv)))
-               case('FREE_SLIP_WALL','FSW'); type = fsw_
-               case('NO_SLIP_WALL'  ,'NSW'); type = nsw_
-               case('PAR_SLIP_WALL' ,'PSW'); type = psw_
-               case('P_INFLOW'      ,'PI' ); type = pinf_
-               case('P_OUTFLOW'     ,'PO' ); type = pout_
-               case('MASS_INFLOW'   ,'MI' ); type = minf_
-               case default
-                  write(6,*) 'unknown bc type'
-                  stop 7655
+            case('FREE_SLIP_WALL','FSW'); type = fsw_
+            case('NO_SLIP_WALL'  ,'NSW'); type = nsw_
+            case('PAR_SLIP_WALL' ,'PSW'); type = psw_
+            case('P_INFLOW'      ,'PI' ); type = pinf_
+            case('P_OUTFLOW'     ,'PO' ); type = pout_
+            case('MASS_INFLOW'   ,'MI' ); type = minf_
+            case default
+               write(6,*) 'unknown bc type'
+               stop 7655
             end select
 
             select case(type)
             case(nsw_, fsw_, psw_)
                call calc_cell_bc_wall(domlo, domhi, &
-                  xlength, ylength, zlength, dx, dy, dz, &
-                  bc_x_w(bcv), bc_y_s(bcv), bc_z_b(bcv), &
-                  bc_x_e(bcv), bc_y_n(bcv), bc_z_t(bcv), &
-                  i_w, i_e, j_s, j_n, k_b, k_t)
+                                      xlength, ylength, zlength, dx, dy, dz, &
+                                      bc_x_w(bcv), bc_y_s(bcv), bc_z_b(bcv), &
+                                      bc_x_e(bcv), bc_y_n(bcv), bc_z_t(bcv), &
+                                      i_w, i_e, j_s, j_n, k_b, k_t)
             case(pinf_, pout_, minf_)
                call calc_cell_bc_flow(&
                   xlength, ylength, zlength, dx, dy, dz, &
@@ -151,7 +151,6 @@ module set_bc_type_module
          endif
       enddo
 
-
 ! Edge cases
 ! --------------------------------------------------------------------------------------------
 
@@ -172,7 +171,6 @@ module set_bc_type_module
          bc_ihi_type(domlo(2)-1:domhi(2)+1,domhi(3)+k,:) = bc_ihi_type(domlo(2)-1:domhi(2)+1,domhi(3),:)
       enddo
 
-
       do i=1,ng
          bc_jlo_type(domlo(1)-i,domlo(3)-1:domhi(3)+1,:) = bc_jlo_type(domlo(1),domlo(3)-1:domhi(3)+1,:)
          bc_jhi_type(domlo(1)-i,domlo(3)-1:domhi(3)+1,:) = bc_jhi_type(domlo(1),domlo(3)-1:domhi(3)+1,:)
@@ -189,7 +187,6 @@ module set_bc_type_module
          bc_jlo_type(domlo(1)-1:domhi(1)+1,domhi(3)+k,:) = bc_jlo_type(domlo(1)-1:domhi(1)+1,domhi(3),:)
          bc_jhi_type(domlo(1)-1:domhi(1)+1,domhi(3)+k,:) = bc_jhi_type(domlo(1)-1:domhi(1)+1,domhi(3),:)
       enddo
-
 
       do i=1,ng
          bc_klo_type(domlo(1)-i,domlo(2)-1:domhi(2)+1,:) = bc_klo_type(domlo(1),domlo(2)-1:domhi(2)+1,:)
@@ -209,4 +206,4 @@ module set_bc_type_module
       enddo
 
    end subroutine set_bc_type
- end module set_bc_type_module
+end module set_bc_type_module

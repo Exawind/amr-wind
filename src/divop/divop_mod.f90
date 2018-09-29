@@ -28,23 +28,23 @@ contains
    !
    !
    subroutine compute_divop ( lo, hi, &
-        div, dlo, dhi, &
-        vel,vllo,vlhi, &
-        fx, fxlo, fxhi, &
-        fy, fylo, fyhi, &
-        fz, fzlo, fzhi, &
-        afrac_x, axlo, axhi, &
-        afrac_y, aylo, ayhi, &
-        afrac_z, azlo, azhi, &
-        cent_x,  cxlo, cxhi, &
-        cent_y,  cylo, cyhi, &
-        cent_z,  czlo, czhi, &
-        flags,    flo,  fhi, &
-        vfrac,   vflo, vfhi, &
-        bcent,    blo,  bhi, &
-        domlo, domhi,        &
-        dx, ng, mu, lambda , & 
-        do_explicit_diffusion ) bind(C)
+                             div, dlo, dhi, &
+                             vel,vllo,vlhi, &
+                             fx, fxlo, fxhi, &
+                             fy, fylo, fyhi, &
+                             fz, fzlo, fzhi, &
+                             afrac_x, axlo, axhi, &
+                             afrac_y, aylo, ayhi, &
+                             afrac_z, azlo, azhi, &
+                             cent_x,  cxlo, cxhi, &
+                             cent_y,  cylo, cyhi, &
+                             cent_z,  czlo, czhi, &
+                             flags,    flo,  fhi, &
+                             vfrac,   vflo, vfhi, &
+                             bcent,    blo,  bhi, &
+                             domlo, domhi,        &
+                             dx, ng, mu, lambda , &
+                             do_explicit_diffusion ) bind(C)
 
       use bc
       use eb_interpolation_mod, only: interp_to_face_centroid
@@ -117,7 +117,7 @@ contains
 
       real(ar), allocatable          :: divdiff_w(:,:)
       real(ar), allocatable          ::      mask(:,:,:)
-           
+
       integer(c_int)                 :: i, j, k, n, nbr(-1:1,-1:1,-1:1)
       integer(c_int)                 :: nwalls
       real(ar)                       :: idx, idy, idz
@@ -137,15 +137,15 @@ contains
       else if ( .not. present(mu) .and. .not. present(lambda) ) then
          is_viscous = .false.
       else
-          call amrex_abort("compute_divop(): either mu or lambda is not passed in")
+         call amrex_abort("compute_divop(): either mu or lambda is not passed in")
       end if
 
       if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
-           abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
-           abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
+          abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
+          abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
          call amrex_abort("compute_divop(): grid spacing must be uniform")
       end if
-      
+
       !
       ! Allocate arrays to host viscous wall fluxes
       !
@@ -212,7 +212,6 @@ contains
                         fzm = interp_to_face_centroid( i, j, k, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
-
                         divc(i,j,k) = ( ( fxp - fxm ) * idx + &
                              &          ( fyp - fym ) * idy + &
                              &          ( fzp - fzm ) * idz ) / vfrac(i,j,k)
@@ -223,8 +222,9 @@ contains
                         if (is_viscous) then
                            if (n==1) then
                               call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
-                                   vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
-                                   afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, do_explicit_diffusion)
+                                                         vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
+                                                         afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, &
+                                                         do_explicit_diffusion)
                            end if
                            divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / &
                                 &         ( dx(n) * vfrac(i,j,k) )
@@ -278,7 +278,7 @@ contains
                               do ii = -1, 1
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
-                                      .and. (nbr(ii,jj,kk)==1) ) then
+                                     .and. (nbr(ii,jj,kk)==1) ) then
                                     vfrac_mask  = vfrac(i+ii,j+jj,k+kk) * mask(i+ii,j+jj,k+kk)
                                     vtot        = vtot  + vfrac_mask
                                     divnc       = divnc + vfrac_mask * divc(i+ii,j+jj,k+kk)
@@ -316,7 +316,7 @@ contains
                               do ii = -1, 1
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
-                                      .and. (nbr(ii,jj,kk)==1) ) then
+                                     .and. (nbr(ii,jj,kk)==1) ) then
                                     wtot = wtot + vfrac(i+ii,j+jj,k+kk) * mask(i+ii,j+jj,k+kk)
                                  end if
                               end do
@@ -330,7 +330,7 @@ contains
                               do ii = -1, 1
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
-                                      .and. (nbr(ii,jj,kk)==1) ) then
+                                     .and. (nbr(ii,jj,kk)==1) ) then
                                     optmp(i+ii,j+jj,k+kk) = optmp(i+ii,j+jj,k+kk) + delm(i,j,k) * wtot
                                  end if
                               end do
@@ -342,9 +342,8 @@ contains
             end do
          end block
 
-
          ! ****************************************************
-         ! Return the negative 
+         ! Return the negative
          ! ****************************************************
          do k = lo(3), hi(3)
             do j = lo(2), hi(2)
@@ -361,6 +360,5 @@ contains
       if (is_viscous) deallocate(divdiff_w)
 
    end subroutine compute_divop
-
 
 end module divop_mod

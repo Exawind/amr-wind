@@ -9,19 +9,19 @@
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
       MODULE constant
 
-      use amrex_fort_module, only : rt => amrex_real
-      use iso_c_binding , only: c_int
+         use amrex_fort_module, only : rt => amrex_real
+         use iso_c_binding , only: c_int
 
 ! Modules
 !---------------------------------------------------------------------//
 
 ! Gravitational acceleration
-      real(rt) :: gravity(3)
+         real(rt) :: gravity(3)
 
-! Initial density 
-      real(rt) :: ro_0
+! Initial density
+         real(rt) :: ro_0
 
 ! Dynamic coefficient of viscosity
-      real(rt) :: mu_0
+         real(rt) :: mu_0
 
       END MODULE constant

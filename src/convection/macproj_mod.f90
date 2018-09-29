@@ -21,7 +21,7 @@ module macproj_mod
 contains
 
    subroutine compute_bcoeff_mac ( lo, hi, bcoeff, alo, ahi, &
-        u_i, ulo, uhi, ro, slo, shi, dir )  bind(C)
+                                  u_i, ulo, uhi, ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -36,11 +36,11 @@ contains
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-           u_i(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
-           ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         u_i(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
+         ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
-           bcoeff(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
+         bcoeff(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
 
       integer      :: i, j, k, i0, j0, k0
       real(ar)     :: ro_f
@@ -55,17 +55,17 @@ contains
 
                ro_f = half * ( ro(i,j,k) + ro(i-i0,j-j0,k-k0) )
 
-               bcoeff(i,j,k) = one / ro_f 
+               bcoeff(i,j,k) = one / ro_f
 
             end do
          end do
       end do
 
    end subroutine compute_bcoeff_mac
-   
+
    !
    ! Compute the cell-centered divergence of {u,v,w}
-   ! 
+   !
    subroutine compute_mac_diveu ( lo, hi, diveu, slo, shi, u, ulo, uhi, &
         & v, vlo, vhi, w, wlo, whi, dx )  bind(C)
 
@@ -78,17 +78,17 @@ contains
       integer(c_int), intent(in   ) :: vlo(3),vhi(3)
       integer(c_int), intent(in   ) :: wlo(3),whi(3)
 
-      ! Grid 
+      ! Grid
       real(ar),       intent(in   ) :: dx(3)
 
       ! Array
       real(ar),       intent(  out) :: &
-           diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(in   ) :: &
-           u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
-           v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3)), &
-           w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))
+         u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
+         v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3)), &
+         w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))
 
       ! Local variables
       integer  :: i, j, k
@@ -122,16 +122,15 @@ contains
 
    end subroutine compute_mac_diveu
 
-
    !
    ! Compute the cell-centered divergence of {u,v,w}
-   ! 
+   !
    subroutine compute_mac_diveu_eb ( lo, hi, diveu, slo, shi, u, ulo, uhi, &
         & v, vlo, vhi, w, wlo, whi, afracx, axlo, axhi, afracy, aylo, ayhi,    &
         & afracz, azlo, azhi, vfrac, vflo, vfhi, flags, flo, fhi, dx )  bind(C)
 
       use amrex_ebcellflag_module, only: is_covered_cell
-      
+
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
 
@@ -145,26 +144,26 @@ contains
       integer(c_int), intent(in   ) :: azlo(3),azhi(3)
       integer(c_int), intent(in   ) :: vflo(3),vfhi(3)
       integer(c_int), intent(in   ) :: flo(3), fhi(3)
-      
-      ! Grid 
+
+      ! Grid
       real(ar),       intent(in   ) :: dx(3)
 
       ! Array
       real(ar),       intent(  out) :: &
-           diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         diveu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(in   ) :: &
-           u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
-           v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3)), &
-           w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3)), &
-           afracx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)), &
-           afracy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)), &
-           afracz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)), &
-           vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3))
+         u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
+         v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3)), &
+         w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3)), &
+         afracx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)), &
+         afracy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)), &
+         afracz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)), &
+         vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3))
 
       integer(c_int), intent(in   ) ::                      &
            & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-           
+
       ! Local variables
       integer  :: i, j, k
       real(ar) :: odx, ody, odz
@@ -179,7 +178,7 @@ contains
             do i = lo(1), hi(1)
                if ( is_covered_cell(flags(i,j,k)) ) then
                   diveu(i,j,k) = huge(one)
-               else                  
+               else
                   eu_e = u(i+1,j,k)
                   eu_w = u(i  ,j,k)
 
@@ -200,7 +199,6 @@ contains
       end do
 
    end subroutine compute_mac_diveu_eb
-   
 
    !
    ! Computes  u_i = u_i + C * (1/ro) * (dphi/dx_i)
@@ -209,12 +207,12 @@ contains
    !
    ! ro       = cell centered density field
    !
-   ! dphidxi  =  i-th component of staggered gradphi 
-   ! 
+   ! dphidxi  =  i-th component of staggered gradphi
+   !
    ! C        = real constant
    !
    ! dir      = 1,2,3 indicates x, y, z direction respectively.
-   !  
+   !
    subroutine project_mac_velocity ( lo, hi, u_i, ulo, uhi, &
         & dphidxi, glo, ghi, ro, slo, shi, c, dir ) bind (C)
 

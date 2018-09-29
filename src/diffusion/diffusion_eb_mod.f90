@@ -16,25 +16,25 @@ module eb_diffusion_mod
 contains
 
    subroutine compute_divtau_eb ( lo, hi,  &
-        divtau, dlo, dhi,    &
-        vel_in, vinlo, vinhi,    &
-        mu, lambda, ro,      &
-        slo, shi,            &
-        flags,    flo,  fhi, &
-        afrac_x, axlo, axhi, &
-        afrac_y, aylo, ayhi, &
-        afrac_z, azlo, azhi, &
-        cent_x,  cxlo, cxhi, &
-        cent_y,  cylo, cyhi, &
-        cent_z,  czlo, czhi, &
-        vfrac,   vflo, vfhi, &
-        bcent,    blo,  bhi, &
-        domlo,  domhi,       &
-        bc_ilo, bc_ihi,      &
-        bc_jlo, bc_jhi,      &
-        bc_klo, bc_khi,      &
-        dx, ng,              &
-        do_explicit_diffusion ) bind(C)
+                                 divtau, dlo, dhi,    &
+                                 vel_in, vinlo, vinhi,    &
+                                 mu, lambda, ro,      &
+                                 slo, shi,            &
+                                 flags,    flo,  fhi, &
+                                 afrac_x, axlo, axhi, &
+                                 afrac_y, aylo, ayhi, &
+                                 afrac_z, azlo, azhi, &
+                                 cent_x,  cxlo, cxhi, &
+                                 cent_y,  cylo, cyhi, &
+                                 cent_z,  czlo, czhi, &
+                                 vfrac,   vflo, vfhi, &
+                                 bcent,    blo,  bhi, &
+                                 domlo,  domhi,       &
+                                 bc_ilo, bc_ihi,      &
+                                 bc_jlo, bc_jhi,      &
+                                 bc_klo, bc_khi,      &
+                                 dx, ng,              &
+                                 do_explicit_diffusion ) bind(C)
 
       use diffusion_mod, only: fill_vel_diff_bc
       use divop_mod,     only: compute_divop
@@ -77,21 +77,21 @@ contains
            &  cent_z( czlo(1): czhi(1), czlo(2): czhi(2), czlo(3): czhi(3),2), &
            &   vfrac( vflo(1): vfhi(1), vflo(2): vfhi(2), vflo(3): vfhi(3)  ), &
            &   bcent(  blo(1):  bhi(1),  blo(2):  bhi(2),  blo(3):  bhi(3),3)
-           
+
       real(rt),  intent(inout) ::                                 &
-           divtau(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
+         divtau(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
 
       integer,  intent(in   ) :: &
-           flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-      
+         flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
+
       ! BC types
       integer, intent(in   ) ::  &
-           bc_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_ihi(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_jlo(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_jhi(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
-           bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
-           bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+         bc_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_ihi(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_jlo(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_jhi(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+         bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
+         bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
       ! If true  then we include all the diffusive terms in this explicit result
       ! If false then we include all only the off-diagonal terms here -- we do this
@@ -104,14 +104,14 @@ contains
 
       ! Temporary array to handle viscous fluxes at the cell faces (staggered)
       ! Just reserve space for the tile + 3 ghost layers
-      integer, parameter :: nh = 3 ! Number of Halo layers      
+      integer, parameter :: nh = 3 ! Number of Halo layers
       real(rt) :: fx(lo(1)-nh:hi(1)+nh+1,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh  ,3)
       real(rt) :: fy(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh+1,lo(3)-nh:hi(3)+nh  ,3)
       real(rt) :: fz(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh+1,3)
 
       integer(c_int) :: i, j, k, n
       real(rt)       :: idx, idy, idz
-     
+
       ! Check number of ghost cells
       if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
 
@@ -125,19 +125,19 @@ contains
 
       ! Put values into ghost cells so we can easy take derivatives
       call fill_vel_diff_bc( vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
-           bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi )
-      
+                            bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi )
+
       ! tau_xx, tau_xy, tau_xz on west faces
       call compute_tau_x(vel, vlo, vhi, mu, slo, shi, lambda, &
-          flags, flo, fhi, lo, hi, dx, fx, nh, domlo, domhi, do_explicit_diffusion) 
-      
+                         flags, flo, fhi, lo, hi, dx, fx, nh, domlo, domhi, do_explicit_diffusion)
+
       ! tau_yx, tau_yy, tau_yz on south faces
       call compute_tau_y(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flags, flo, fhi, lo, hi, dx, fy, nh, domlo, domhi, do_explicit_diffusion)
-      
+                         flags, flo, fhi, lo, hi, dx, fy, nh, domlo, domhi, do_explicit_diffusion)
+
       ! tau_zx, tau_zy, tau_zz on bottom faces
       call compute_tau_z(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flags, flo, fhi, lo, hi, dx, fz, nh, domlo, domhi, do_explicit_diffusion)
+                         flags, flo, fhi, lo, hi, dx, fz, nh, domlo, domhi, do_explicit_diffusion)
 
       divop: block
          ! Compute div(tau) with EB algorithm
@@ -150,27 +150,27 @@ contains
          fxhi = hi + nh + [1,0,0]
          fyhi = hi + nh + [0,1,0]
          fzhi = hi + nh + [0,0,1]
-         
+
          call compute_divop( lo, hi, &
-             divtau, dlo, dhi, &
-             vel, vlo, vhi, &
-             fx, fxlo, fxhi, &
-             fy, fylo, fyhi, &
-             fz, fzlo, fzhi, &
-             afrac_x, axlo, axhi, &
-             afrac_y, aylo, ayhi, &
-             afrac_z, azlo, azhi, &
-             cent_x, cxlo, cxhi, &
-             cent_y, cylo, cyhi, &
-             cent_z, czlo, czhi,    &
-             flags, flo, fhi, &
-             vfrac, vflo, vfhi, &
-             bcent, blo, bhi, &
-             domlo, domhi, &
-             dx, ng, mu, lambda, do_explicit_diffusion)
+                            divtau, dlo, dhi, &
+                            vel, vlo, vhi, &
+                            fx, fxlo, fxhi, &
+                            fy, fylo, fyhi, &
+                            fz, fzlo, fzhi, &
+                            afrac_x, axlo, axhi, &
+                            afrac_y, aylo, ayhi, &
+                            afrac_z, azlo, azhi, &
+                            cent_x, cxlo, cxhi, &
+                            cent_y, cylo, cyhi, &
+                            cent_z, czlo, czhi,    &
+                            flags, flo, fhi, &
+                            vfrac, vflo, vfhi, &
+                            bcent, blo, bhi, &
+                            domlo, domhi, &
+                            dx, ng, mu, lambda, do_explicit_diffusion)
 
       end block divop
-            
+
       ! Divide by ro
       do n = 1, 3
          do k = lo(3), hi(3)
@@ -183,16 +183,15 @@ contains
       end do
 
       call amrex_deallocate(vel)
-      
-   end subroutine compute_divtau_eb
 
+   end subroutine compute_divtau_eb
 
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    subroutine compute_tau_x(vel, vlo, vhi, mu, slo, shi, lambda, &
-           flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -203,15 +202,15 @@ contains
       integer,  intent(in   ) ::domlo(3),domhi(3)
 
       real(rt), intent(in   ) :: dx(3), &
-           vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
-           lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
+                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
+                                 lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
-           flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
+         flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
 
       real(rt), intent(  out) :: &
-           tau_x(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
+         tau_x(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
@@ -248,10 +247,10 @@ contains
                jlop = j + get_neighbor_cells_int_single(flag(i-1,j,k),0, 1,0)
                jlom = j - get_neighbor_cells_int_single(flag(i-1,j,k),0,-1,0)
 
-               if (i == domlo(1)) then 
+               if (i == domlo(1)) then
                   jlop = jhip
                   jlom = jhim
-               else if (i == domhi(1)+1) then 
+               else if (i == domhi(1)+1) then
                   jhip = jlop
                   jhim = jlom
                end if
@@ -260,22 +259,22 @@ contains
                wlo = weights(jlop-jlom)
 
                dudy = (0.5d0*idy) * &
-                    ((vel(i  ,jhip,k,1)-vel(i  ,jhim,k,1))*whi &
-                    +(vel(i-1,jlop,k,1)-vel(i-1,jlom,k,1))*wlo)
+                      ((vel(i  ,jhip,k,1)-vel(i  ,jhim,k,1))*whi &
+                       +(vel(i-1,jlop,k,1)-vel(i-1,jlom,k,1))*wlo)
 
                dvdy = (0.5d0*idy) * &
-                    ((vel(i  ,jhip,k,2)-vel(i  ,jhim,k,2))*whi &
-                    +(vel(i-1,jlop,k,2)-vel(i-1,jlom,k,2))*wlo)
+                      ((vel(i  ,jhip,k,2)-vel(i  ,jhim,k,2))*whi &
+                       +(vel(i-1,jlop,k,2)-vel(i-1,jlom,k,2))*wlo)
 
                khip = k + get_neighbor_cells_int_single(flag(i  ,j,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i  ,j,k),0,0,-1)
                klop = k + get_neighbor_cells_int_single(flag(i-1,j,k),0,0, 1)
                klom = k - get_neighbor_cells_int_single(flag(i-1,j,k),0,0,-1)
 
-               if (i == domlo(1)) then 
+               if (i == domlo(1)) then
                   klop = khip
                   klom = khim
-               else if (i == domhi(1)+1) then 
+               else if (i == domhi(1)+1) then
                   khip = klop
                   khim = klom
                end if
@@ -284,12 +283,12 @@ contains
                wlo = weights(klop-klom)
 
                dudz = (0.5d0*idz) * &
-                    ((vel(i  ,j,khip,1)-vel(i  ,j,khim,1))*whi &
-                    +(vel(i-1,j,klop,1)-vel(i-1,j,klom,1))*wlo)
+                      ((vel(i  ,j,khip,1)-vel(i  ,j,khim,1))*whi &
+                       +(vel(i-1,j,klop,1)-vel(i-1,j,klom,1))*wlo)
 
                dwdz = (0.5d0*idz) * &
-                    ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
-                    +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
+                      ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
+                       +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
 
                mu_w     = half * (    mu(i,j,k) +     mu(i-1,j,k))
                lambda_w = half * (lambda(i,j,k) + lambda(i-1,j,k))
@@ -319,7 +318,7 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_y(vel, vlo, vhi, mu, slo, shi, lambda, &
-        flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -330,17 +329,17 @@ contains
       integer,  intent(in   ) ::domlo(3),domhi(3)
 
       real(rt), intent(in   ) :: dx(3), &
-           vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
-           lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
+                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
+                                 lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
-           flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
+         flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
 
       real(rt), intent(  out) :: &
-           tau_y(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
+         tau_y(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
 
-      integer,  intent(in   ) :: ng ! Number of ghost layer to fill  
+      integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
       integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
@@ -375,10 +374,10 @@ contains
                ilop = i + get_neighbor_cells_int_single(flag(i,j-1,k), 1,0,0)
                ilom = i - get_neighbor_cells_int_single(flag(i,j-1,k),-1,0,0)
 
-               if (j == domlo(2)) then 
+               if (j == domlo(2)) then
                   ilop = ihip
                   ilom = ihim
-               else if (j == domhi(2)+1) then 
+               else if (j == domhi(2)+1) then
                   ihip = ilop
                   ihim = ilom
                end if
@@ -387,22 +386,22 @@ contains
                wlo = weights(ilop-ilom)
 
                dudx = (0.5d0*idx) * &
-                    ((vel(ihip,j  ,k,1)-vel(ihim,j  ,k,1))*whi &
-                    +(vel(ilop,j-1,k,1)-vel(ilom,j-1,k,1))*wlo)
+                      ((vel(ihip,j  ,k,1)-vel(ihim,j  ,k,1))*whi &
+                       +(vel(ilop,j-1,k,1)-vel(ilom,j-1,k,1))*wlo)
 
                dvdx = (0.5d0*idx) * &
-                    ((vel(ihip,j  ,k,2)-vel(ihim,j  ,k,2))*whi &
-                    +(vel(ilop,j-1,k,2)-vel(ilom,j-1,k,2))*wlo)
+                      ((vel(ihip,j  ,k,2)-vel(ihim,j  ,k,2))*whi &
+                       +(vel(ilop,j-1,k,2)-vel(ilom,j-1,k,2))*wlo)
 
                khip = k + get_neighbor_cells_int_single(flag(i,j  ,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i,j  ,k),0,0,-1)
                klop = k + get_neighbor_cells_int_single(flag(i,j-1,k),0,0, 1)
                klom = k - get_neighbor_cells_int_single(flag(i,j-1,k),0,0,-1)
 
-               if (j == domlo(2)) then 
+               if (j == domlo(2)) then
                   klop = khip
                   klom = khim
-               else if (j == domhi(2)+1) then 
+               else if (j == domhi(2)+1) then
                   khip = klop
                   khim = klom
                end if
@@ -411,12 +410,12 @@ contains
                wlo = weights(klop-klom)
 
                dvdz = (0.5d0*idz) * &
-                    ((vel(i,j  ,khip,2)-vel(i,j  ,khim,2))*whi &
-                    +(vel(i,j-1,klop,2)-vel(i,j-1,klom,2))*wlo)
+                      ((vel(i,j  ,khip,2)-vel(i,j  ,khim,2))*whi &
+                       +(vel(i,j-1,klop,2)-vel(i,j-1,klom,2))*wlo)
 
                dwdz = (0.5d0*idz) * &
-                    ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
-                    +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
+                      ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
+                       +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
 
                mu_s     = half * (    mu(i,j,k) +     mu(i,j-1,k))
                lambda_s = half * (lambda(i,j,k) + lambda(i,j-1,k))
@@ -441,14 +440,13 @@ contains
 
    end subroutine compute_tau_y
 
-
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_z(vel, vlo, vhi, mu, slo, shi, lambda, &
-        flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
 
@@ -459,16 +457,16 @@ contains
       integer,  intent(in   ) ::domlo(3),domhi(3)
 
       real(rt), intent(in   ) :: dx(3), &
-           vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-           mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
-           lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
+                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)), &
+                                 lambda(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
-           flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
+         flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
 
       real(rt), intent(  out) :: &
-           tau_z(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
-      
+         tau_z(lo(1)-ng:, lo(2)-ng:, lo(3)-ng:,1: )
+
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
       integer(c_int),  intent(in   ) :: do_explicit_diffusion
@@ -504,10 +502,10 @@ contains
                ilop = i + get_neighbor_cells_int_single(flag(i,j,k-1), 1,0,0)
                ilom = i - get_neighbor_cells_int_single(flag(i,j,k-1),-1,0,0)
 
-               if (k == domlo(3)) then 
+               if (k == domlo(3)) then
                   ilop = ihip
                   ilom = ihim
-               else if (k == domhi(3)+1) then 
+               else if (k == domhi(3)+1) then
                   ihip = ilop
                   ihim = ilom
                end if
@@ -516,22 +514,22 @@ contains
                wlo = weights(ilop-ilom)
 
                dudx = (0.5d0*idx) * &
-                    ((vel(ihip,j,k  ,1)-vel(ihim,j,k  ,1))*whi &
-                    +(vel(ilop,j,k-1,1)-vel(ilom,j,k-1,1))*wlo)
+                      ((vel(ihip,j,k  ,1)-vel(ihim,j,k  ,1))*whi &
+                       +(vel(ilop,j,k-1,1)-vel(ilom,j,k-1,1))*wlo)
                dwdx = (0.5d0*idx) * &
-                    
-                    ((vel(ihip,j,k  ,3)-vel(ihim,j,k  ,3))*whi &
-                    +(vel(ilop,j,k-1,3)-vel(ilom,j,k-1,3))*wlo)
+                      
+                      ((vel(ihip,j,k  ,3)-vel(ihim,j,k  ,3))*whi &
+                       +(vel(ilop,j,k-1,3)-vel(ilom,j,k-1,3))*wlo)
 
                jhip = j + get_neighbor_cells_int_single(flag(i,j,k  ),0 ,1,0)
                jhim = j - get_neighbor_cells_int_single(flag(i,j,k  ),0,-1,0)
                jlop = j + get_neighbor_cells_int_single(flag(i,j,k-1),0 ,1,0)
                jlom = j - get_neighbor_cells_int_single(flag(i,j,k-1),0,-1,0)
 
-               if (k == domlo(3)) then 
+               if (k == domlo(3)) then
                   jlop = jhip
                   jlom = jhim
-               else if (k == domhi(3)+1) then 
+               else if (k == domhi(3)+1) then
                   jhip = jlop
                   jhim = jlom
                end if
@@ -540,12 +538,12 @@ contains
                wlo = weights(jlop-jlom)
 
                dvdy = (0.5d0*idy) * &
-                    ((vel(i,jhip,k  ,2)-vel(i,jhim,k  ,2))*whi &
-                    +(vel(i,jlop,k-1,2)-vel(i,jlom,k-1,2))*wlo)
+                      ((vel(i,jhip,k  ,2)-vel(i,jhim,k  ,2))*whi &
+                       +(vel(i,jlop,k-1,2)-vel(i,jlom,k-1,2))*wlo)
 
                dwdy = (0.5d0*idy) * &
-                    ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
-                    +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
+                      ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
+                       +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
 
                mu_b     = half * (    mu(i,j,k) +     mu(i,j,k-1))
                lambda_b = half * (lambda(i,j,k) + lambda(i,j,k-1))
@@ -569,6 +567,5 @@ contains
       end do
 
    end subroutine compute_tau_z
-
 
 end module eb_diffusion_mod
