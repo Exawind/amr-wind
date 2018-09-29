@@ -92,7 +92,7 @@ void incflo_level::Advance(
 		// Check whether to exit the loop or not
 		//
 		if(steady_state)
-			keep_looping = !steady_state_reached(lev, dt);
+			keep_looping = !steady_state_reached(lev, dt, iter);
 		else
 			keep_looping = 0;
 
@@ -454,23 +454,12 @@ void incflo_level::incflo_compute_diveu(int lev)
 //      max(abs( v^(n+1) - v^(n) )) < tol * dt
 //      max(abs( w^(n+1) - w^(n) )) < tol * dt
 //
-
-int incflo_level::steady_state_reached(int lev, Real dt)
+int incflo_level::steady_state_reached(int lev, Real dt, int iter)
 {
-	//
-	// Count number of access
-	//
-	static int naccess = 0;
-
-	//
 	// Make sure velocity is up to date
-	//
 	incflo_set_velocity_bcs(lev, 0);
 
-	//
-	// Use temporaries to store the difference
-	// between current and previous solution
-	//
+    // Use temporaries to store the difference between current and previous solution
 	MultiFab temp_vel(vel[lev]->boxArray(), vel[lev]->DistributionMap(), 3, 0);
 	MultiFab::LinComb(temp_vel, 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
 
@@ -497,9 +486,7 @@ int incflo_level::steady_state_reached(int lev, Real dt)
 
 	int condition1 = (delta_u < tol * dt) && (delta_v < tol * dt) && (delta_w < tol * dt);
 
-	//
 	// Second stop condition
-	//
 	Real du_n1 = incflo_norm1(temp_vel, lev, 0);
 	Real dv_n1 = incflo_norm1(temp_vel, lev, 1);
 	Real dw_n1 = incflo_norm1(temp_vel, lev, 2);
@@ -535,9 +522,7 @@ int incflo_level::steady_state_reached(int lev, Real dt)
 
 	int condition2 = (tmp1 < tol) && (tmp2 < tol) && (tmp3 < tol); // && (tmp4 < tol);
 
-	//
 	// Print out info on steady state checks
-	//
     if(verbose)
     {
         amrex::Print() << "\nSteady state check:\n";
@@ -547,14 +532,9 @@ int incflo_level::steady_state_reached(int lev, Real dt)
         amrex::Print() << "||p-po||/||po|| , dp/dt  = " << tmp4 << " , " << delta_p / dt << "\n";
     }
 
-	// Count # access
-	naccess++;
-
-	//
-	//  Always return negative to first access. This way
-	//  initial zero velocity field do not test for false positive
-	//
-	if(naccess == 1)
+	// Always return negative to first access. This way
+	// initial zero velocity field do not test for false positive
+	if(iter == 1)
 		return 0;
 	else
 		return condition1 || condition2;
@@ -603,9 +583,7 @@ incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
     AMREX_ASSERT(cc.nComp()==AMREX_SPACEDIM);
     AMREX_ASSERT(AMREX_SPACEDIM==3);
     
-    // 
     // First allocate fc
-    //
     BoxArray x_ba = cc.boxArray();
     x_ba.surroundingNodes(0);
     fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));

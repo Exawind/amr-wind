@@ -203,7 +203,7 @@ private:
 	void
 	incflo_compute_divtau(int lev, amrex::MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
 
-	int steady_state_reached(int lev, Real dt);
+	int steady_state_reached(int lev, Real dt, int iter);
 
 	void incflo_apply_predictor(int lev,
 								amrex::MultiFab& conv_old,

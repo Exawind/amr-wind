@@ -28,10 +28,7 @@ int last_plt = -1;
 std::string plot_file{"plt"};
 bool write_eb_surface = false;
 
-int repl_x = 1;
-int repl_y = 1;
-int repl_z = 1;
-
+int repl_x = 1; int repl_y = 1; int repl_z = 1;
 int regrid_int = -1;
 
 void ReadParameters();
@@ -254,4 +251,3 @@ void ReadParameters()
 		pp.query("regrid_int", regrid_int);
 	}
 }
-
