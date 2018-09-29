@@ -1,8 +1,6 @@
 #include <AMReX_REAL.H>
-
 #include <AMReX_BLFort.H>
 #include <AMReX_SPACE.H>
-#include "AMReX_RealVect.H"
 
 #ifdef __cplusplus
 extern "C"
@@ -28,20 +26,6 @@ extern "C"
       amrex::Real* p0, const int* slo, const int* shi,
       const amrex::Real* gradp0max, const amrex::Real* dx,
       const int* nodal_pressure);
-
-   void add_grad_phicc (
-      const int* lo, const int* hi,
-      amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro, const int* slo, const int* shi,
-      const amrex::Real* phi, 
-      const amrex::Real* dx, const amrex::Real* c);
-
-   void add_grad_phind (
-      const int* lo, const int* hi,
-      amrex::Real* vel, const int* ulo, const int* uhi,
-      const amrex::Real* ro, const int* slo, const int* shi,
-      const amrex::Real* phi, const int* rlo, const int* rhi,
-      const amrex::Real* dx, const amrex::Real* c);
 
    void add_forcing (
       const int* lo, const int* hi,

@@ -6,8 +6,8 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_VisMF.H>
 
-#include <icbc_F.H>
 #include <incflo_level.H>
+#include <setup_F.H>
 
 //
 // Set the BCs for all the variables EXCEPT pressure or velocity.

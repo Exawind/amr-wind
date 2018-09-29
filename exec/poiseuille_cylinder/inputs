@@ -48,13 +48,13 @@ cylinder.center         =   1.  1.  1.  # Center
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-1       # Tolerance for steady-state
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-amr.verbose             =   1           # main
-incflo.verbose          =   0           # incflo_level
+amr.verbose             =   0           # main
+incflo.verbose          =   1           # incflo_level
 mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

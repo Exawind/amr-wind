@@ -13,10 +13,10 @@ Bdirs 	+= src/derive
 Bdirs 	+= src/diffusion
 Bdirs 	+= src/divop
 Bdirs 	+= src/embedded_boundaries
-Bdirs 	+= src/init_and_boundary_conds
 Bdirs 	+= src/io
 Bdirs 	+= src/modules
 Bdirs 	+= src/projection
+Bdirs 	+= src/setup
 
 Bpack	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir))

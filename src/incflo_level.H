@@ -222,7 +222,6 @@ private:
 
 	void
 	incflo_apply_forcing_terms(int lev, amrex::Real dt, Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_add_grad_phi(int lev, amrex::Real coeff, amrex::MultiFab& phi);
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 

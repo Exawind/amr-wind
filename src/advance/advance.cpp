@@ -9,9 +9,9 @@
 
 #include <incflo_level.H>
 #include <advance_F.H>
-#include <icbc_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
+#include <setup_F.H>
 
 void incflo_level::Advance(
 	int lev, int nstep, int steady_state, Real& dt, Real& prev_dt, Real time, Real stop_time)
@@ -345,52 +345,9 @@ void incflo_level::incflo_apply_corrector(
 	incflo_apply_projection(lev, dt, proj_2);
 }
 
-void incflo_level::incflo_add_grad_phi(int lev, amrex::Real coeff, MultiFab& this_phi)
-{
-	BL_PROFILE("incflo_level::incflo_add_grad_phi");
-
-	if(nodal_pressure == 1)
-	{
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Tilebox
-			Box bx = mfi.tilebox();
-
-			add_grad_phind(BL_TO_FORTRAN_BOX(bx),
-						   BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-						   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-						   BL_TO_FORTRAN_ANYD(this_phi[mfi]),
-						   geom[lev].CellSize(),
-						   &coeff);
-		}
-	}
-	else
-	{
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Tilebox
-			Box bx = mfi.tilebox();
-
-			add_grad_phicc(BL_TO_FORTRAN_BOX(bx),
-						   BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-						   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-						   this_phi[mfi].dataPtr(),
-						   geom[lev].CellSize(),
-						   &coeff);
-		}
-	}
-}
-
 void incflo_level::incflo_apply_forcing_terms(int lev,
 											  amrex::Real dt,
 											  Vector<std::unique_ptr<MultiFab>>& vel)
-
 {
 	BL_PROFILE("incflo_level::incflo_apply_forcing_terms");
 

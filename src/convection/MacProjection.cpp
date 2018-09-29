@@ -5,9 +5,9 @@
 #include <AMReX_ParmParse.H>
 
 #include <MacProjection.H>
-#include <icbc_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
+#include <setup_F.H>
 
 // For multigrid
 using namespace amrex;

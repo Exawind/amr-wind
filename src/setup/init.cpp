@@ -1,11 +1,10 @@
 #include <AMReX_ParmParse.H>
-
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 
-#include <eb_F.H>
-#include <icbc_F.H>
 #include <incflo_level.H>
+#include <eb_F.H>
+#include <setup_F.H>
 
 void incflo_level::InitParams()
 {

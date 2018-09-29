@@ -1,8 +1,6 @@
 #include <AMReX_REAL.H>
-
 #include <AMReX_BLFort.H>
 #include <AMReX_SPACE.H>
-#include "AMReX_RealVect.H"
 
 #ifdef __cplusplus
 extern "C"

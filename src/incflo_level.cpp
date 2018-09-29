@@ -7,7 +7,7 @@
 #include <incflo_level.H>
 #include <derive_F.H>
 #include <eb_F.H>
-#include <icbc_F.H>
+#include <setup_F.H>
 
 // Initiate vars which cannot be initiated in header
 Vector<Real> incflo_level::gravity(3, 0.);
