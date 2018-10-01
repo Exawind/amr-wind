@@ -318,6 +318,33 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 	}
 }
 
+void incflo_level::incflo_set_bc_type(int lev)
+{
+	Real dx = geom[lev].CellSize(0);
+	Real dy = geom[lev].CellSize(1);
+	Real dz = geom[lev].CellSize(2);
+	Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
+	Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
+	Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
+	Box domain(geom[lev].Domain());
+
+	set_bc_type(bc_ilo.dataPtr(),
+				bc_ihi.dataPtr(),
+				bc_jlo.dataPtr(),
+				bc_jhi.dataPtr(),
+				bc_klo.dataPtr(),
+				bc_khi.dataPtr(),
+				domain.loVect(),
+				domain.hiVect(),
+				&dx,
+				&dy,
+				&dz,
+				&xlen,
+				&ylen,
+				&zlen,
+				&nghost);
+}
+
 void incflo_level::incflo_set_bc0(int lev)
 {
 	Box domain(geom[lev].Domain());

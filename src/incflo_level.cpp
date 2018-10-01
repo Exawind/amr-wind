@@ -5,10 +5,6 @@
 #include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo_level.H>
-#include <boundary_conditions_F.H>
-#include <derive_F.H>
-#include <embedded_boundaries_F.H>
-#include <setup_F.H>
 
 // Initiate vars which cannot be initiated in header
 Vector<Real> incflo_level::gravity(3, 0.);
@@ -40,138 +36,16 @@ incflo_level::incflo_level()
 #endif
 }
 
-void incflo_level::ResizeArrays()
-{
-	int nlevs_max = maxLevel() + 1;
-
-	p.resize(nlevs_max);
-	p_o.resize(nlevs_max);
-
-	p0.resize(nlevs_max);
-	pp.resize(nlevs_max);
-
-	ro.resize(nlevs_max);
-	ro_o.resize(nlevs_max);
-
-	phi.resize(nlevs_max);
-	divu.resize(nlevs_max);
-
-	// RHS and solution arrays for diffusive solve
-	rhs_diff.resize(nlevs_max);
-	phi_diff.resize(nlevs_max);
-
-	// Current (vel) and old (vel_o) velocities
-	vel.resize(nlevs_max);
-	vel_o.resize(nlevs_max);
-
-	// Pressure gradients
-	gp.resize(nlevs_max);
-	gp0.resize(nlevs_max);
-
-	mu.resize(nlevs_max);
-	lambda.resize(nlevs_max);
-	trD.resize(nlevs_max);
-
-	// Vorticity
-	vort.resize(nlevs_max);
-
-	// MAC velocities used for defining convective term
-	m_u_mac.resize(nlevs_max);
-	m_v_mac.resize(nlevs_max);
-	m_w_mac.resize(nlevs_max);
-
-	xslopes.resize(nlevs_max);
-	yslopes.resize(nlevs_max);
-	zslopes.resize(nlevs_max);
-
-	bcoeff.resize(nlevs_max);
-	for(int i = 0; i < nlevs_max; ++i)
-	{
-		bcoeff[i].resize(3);
-	}
-
-	bcoeff_diff.resize(nlevs_max);
-	for(int i = 0; i < nlevs_max; ++i)
-	{
-		bcoeff_diff[i].resize(3);
-	}
-
-	fluid_cost.resize(nlevs_max);
-
-	// EB factory
-	ebfactory.resize(nlevs_max);
-}
-
-void incflo_level::incflo_set_bc_type(int lev)
-{
-	Real dx = geom[lev].CellSize(0);
-	Real dy = geom[lev].CellSize(1);
-	Real dz = geom[lev].CellSize(2);
-	Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
-	Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
-	Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
-	Box domain(geom[lev].Domain());
-
-	set_bc_type(bc_ilo.dataPtr(),
-				bc_ihi.dataPtr(),
-				bc_jlo.dataPtr(),
-				bc_jhi.dataPtr(),
-				bc_klo.dataPtr(),
-				bc_khi.dataPtr(),
-				domain.loVect(),
-				domain.hiVect(),
-				&dx,
-				&dy,
-				&dz,
-				&xlen,
-				&ylen,
-				&zlen,
-				&nghost);
-}
-
-void incflo_level::fill_mf_bc(int lev, MultiFab& mf)
-{
-	Box domain(geom[lev].Domain());
-
-	if(!mf.boxArray().ixType().cellCentered())
-		amrex::Error("fill_mf_bc only used for cell-centered arrays!");
-
-	// Impose periodic bc's at domain boundaries and fine-fine copies in the interior
-	mf.FillBoundary(geom[lev].periodicity());
-
-// Fill all cell-centered arrays with first-order extrapolation at domain boundaries
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(mf, true); mfi.isValid(); ++mfi)
-	{
-		const Box& sbx = mf[mfi].box();
-		fill_bc0(mf[mfi].dataPtr(),
-				 sbx.loVect(),
-				 sbx.hiVect(),
-				 bc_ilo.dataPtr(),
-				 bc_ihi.dataPtr(),
-				 bc_jlo.dataPtr(),
-				 bc_jhi.dataPtr(),
-				 bc_klo.dataPtr(),
-				 bc_khi.dataPtr(),
-				 domain.loVect(),
-				 domain.hiVect(),
-				 &nghost);
-	}
-}
-
 //
 // Subroutine to compute norm0 of EB multifab
 //
-Real incflo_level::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
+Real incflo_level::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, 
+                                int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
-					mf[lev]->nComp(),
-					0,
-					MFInfo(),
-					*ebfactory[lev]);
+                    mf[lev]->nComp(), 
+                    0, MFInfo(), *ebfactory[lev]);
 
 	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
 	EB_set_covered(mf_tmp, 0.0);
@@ -181,7 +55,10 @@ Real incflo_level::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int
 
 Real incflo_level::incflo_norm0(MultiFab& mf, int lev, int comp)
 {
-	MultiFab mf_tmp(mf.boxArray(), mf.DistributionMap(), mf.nComp(), 0, MFInfo(), *ebfactory[lev]);
+    MultiFab mf_tmp(mf.boxArray(), 
+                    mf.DistributionMap(), 
+                    mf.nComp(), 
+                    0, MFInfo(), *ebfactory[lev]);
 
 	MultiFab::Copy(mf_tmp, mf, comp, comp, 1, 0);
 	EB_set_covered(mf_tmp, 0.0);
@@ -192,14 +69,13 @@ Real incflo_level::incflo_norm0(MultiFab& mf, int lev, int comp)
 //
 // Subroutine to compute norm1 of EB multifab
 //
-Real incflo_level::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
+Real incflo_level::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, 
+                                int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
 					mf[lev]->nComp(),
-					0,
-					MFInfo(),
-					*ebfactory[lev]);
+                    0, MFInfo(), *ebfactory[lev]);
 
 	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
 	EB_set_covered(mf_tmp, 0.0);
@@ -209,7 +85,10 @@ Real incflo_level::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int
 
 Real incflo_level::incflo_norm1(MultiFab& mf, int lev, int comp)
 {
-	MultiFab mf_tmp(mf.boxArray(), mf.DistributionMap(), mf.nComp(), 0, MFInfo(), *ebfactory[lev]);
+	MultiFab mf_tmp(mf.boxArray(), 
+                    mf.DistributionMap(), 
+                    mf.nComp(), 
+                    0, MFInfo(), *ebfactory[lev]);
 
 	MultiFab::Copy(mf_tmp, mf, comp, comp, 1, 0);
 	EB_set_covered(mf_tmp, 0.0);
@@ -217,81 +96,39 @@ Real incflo_level::incflo_norm1(MultiFab& mf, int lev, int comp)
 	return mf_tmp.norm1(comp, geom[lev].periodicity());
 }
 
-void incflo_level::incflo_compute_vort(int lev)
+//
+// Print the maximum values of the velocity components
+//
+void incflo_level::incflo_print_max_vel(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_vort");
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-	{
-		// Tilebox
-		Box bx = mfi.tilebox();
-
-		// This is to check efficiently if this tile contains any eb stuff
-		const EBFArrayBox& vel_fab = dynamic_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
-		const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
-
-		if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
-		{
-			compute_vort(BL_TO_FORTRAN_BOX(bx),
-						 BL_TO_FORTRAN_ANYD((*vort[lev])[mfi]),
-						 BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-						 geom[lev].CellSize());
-		}
-		else
-		{
-			vort[lev]->setVal(0.0, bx, 0, 1);
-		}
-	}
+	amrex::Print() << "max(abs(u/v/w/p))  = " 
+                   << incflo_norm0(vel, lev, 0) << "  "
+				   << incflo_norm0(vel, lev, 1) << "  " 
+                   << incflo_norm0(vel, lev, 2) << "  "
+				   << incflo_norm0(p, lev, 0) << "  " << std::endl;
 }
 
-// This function checks if ebfactory is allocated with 
-// the proper dm and ba
-
-void
-incflo_level::incflo_update_ebfactory (int a_lev)
+void incflo_level::check_for_nans(int lev)
 {
-   // This assert is to verify that some kind of EB geometry
-   // has already been defined
-   AMREX_ASSERT(not EB2::IndexSpace::empty());
+	bool ug_has_nans = vel[lev]->contains_nan(0);
+	bool vg_has_nans = vel[lev]->contains_nan(1);
+	bool wg_has_nans = vel[lev]->contains_nan(2);
+	bool pg_has_nans = p[lev]->contains_nan(0);
 
-   const DistributionMapping&      dm = DistributionMap(a_lev);
-   const BoxArray&                 ba = boxArray(a_lev);
-   const EB2::IndexSpace&        ebis = EB2::IndexSpace::top();
-   const EB2::Level&      ebis_level  = ebis.getLevel(geom[a_lev]);
-      
-   if ( ebfactory[a_lev].get() == nullptr )
-   {
-      amrex::Print() << "Updating ebfactory" << std::endl;
+	if(ug_has_nans)
+		amrex::Print() << "WARNING: u contains NaNs!!!";
 
-      ebfactory[a_lev].reset(new EBFArrayBoxFactory( ebis_level, geom[a_lev], ba, dm,
-                                                     {m_eb_basic_grow_cells,
-                                                      m_eb_volume_grow_cells,
-                                                      m_eb_full_grow_cells},
-                                                      m_eb_support_level));
-   }
-   else                         
-   {
-      amrex::Print() << "Updating ebfactory" << std::endl;
-      
-      const DistributionMapping&  eb_dm = ebfactory[a_lev]->DistributionMap();
-      const BoxArray&             eb_ba = ebfactory[a_lev]->boxArray();
+	if(vg_has_nans)
+		amrex::Print() << "WARNING: v contains NaNs!!!";
 
-      if ( (dm != eb_dm) || (ba != eb_ba) )
-      {
+	if(wg_has_nans)
+		amrex::Print() << "WARNING: w contains NaNs!!!";
 
-         ebfactory[a_lev].reset(new EBFArrayBoxFactory( ebis_level, geom[a_lev], ba, dm,
-                                                        {m_eb_basic_grow_cells,
-                                                         m_eb_volume_grow_cells,
-                                                         m_eb_full_grow_cells},
-                                                         m_eb_support_level));         
-      }
-   }
+	if(pg_has_nans)
+		amrex::Print() << "WARNING: p contains NaNs!!!";
 }
-   
+
+
 void incflo_level::Regrid(int base_lev)
 {
 	BL_PROFILE_REGION_START("incflo::Regrid()");

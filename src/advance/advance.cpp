@@ -128,12 +128,8 @@ void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int ste
 	ParallelDescriptor::ReduceRealMax(gradp0max[1]);
 	ParallelDescriptor::ReduceRealMax(gradp0max[2]);
 
-	compute_new_dt(&umax,
-				   &vmax,
-				   &wmax,
-				   &romax,
-				   &mumax,
-				   gradp0max,
+    compute_new_dt(&umax, &vmax, &wmax,
+                   &romax, &mumax, gradp0max,
 				   geom[lev].CellSize(),
 				   &cfl,
 				   &steady_state,
@@ -414,36 +410,4 @@ int incflo_level::steady_state_reached(int lev, Real dt, int iter)
 		return 0;
 	else
 		return condition1 || condition2;
-}
-
-void incflo_level::check_for_nans(int lev)
-{
-	bool ug_has_nans = vel[lev]->contains_nan(0);
-	bool vg_has_nans = vel[lev]->contains_nan(1);
-	bool wg_has_nans = vel[lev]->contains_nan(2);
-	bool pg_has_nans = p[lev]->contains_nan(0);
-
-	if(ug_has_nans)
-		amrex::Print() << "WARNING: u contains NaNs!!!";
-
-	if(vg_has_nans)
-		amrex::Print() << "WARNING: v contains NaNs!!!";
-
-	if(wg_has_nans)
-		amrex::Print() << "WARNING: w contains NaNs!!!";
-
-	if(pg_has_nans)
-		amrex::Print() << "WARNING: p contains NaNs!!!";
-}
-
-//
-// Print the maximum values of the velocity components
-//
-void incflo_level::incflo_print_max_vel(int lev)
-{
-	amrex::Print() << "max(abs(u/v/w/p))  = " 
-                   << incflo_norm0(vel, lev, 0) << "  "
-				   << incflo_norm0(vel, lev, 1) << "  " 
-                   << incflo_norm0(vel, lev, 2) << "  "
-				   << incflo_norm0(p, lev, 0) << "  " << std::endl;
 }

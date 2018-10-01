@@ -328,3 +328,66 @@ void incflo_level::RegridArrays(int lev)
     fill_mf_bc(lev, *p[lev]);
     fill_mf_bc(lev, *p_o[lev]);
 }
+
+void incflo_level::ResizeArrays()
+{
+	int nlevs_max = maxLevel() + 1;
+
+	p.resize(nlevs_max);
+	p_o.resize(nlevs_max);
+
+	p0.resize(nlevs_max);
+	pp.resize(nlevs_max);
+
+	ro.resize(nlevs_max);
+	ro_o.resize(nlevs_max);
+
+	phi.resize(nlevs_max);
+	divu.resize(nlevs_max);
+
+	// RHS and solution arrays for diffusive solve
+	rhs_diff.resize(nlevs_max);
+	phi_diff.resize(nlevs_max);
+
+	// Current (vel) and old (vel_o) velocities
+	vel.resize(nlevs_max);
+	vel_o.resize(nlevs_max);
+
+	// Pressure gradients
+	gp.resize(nlevs_max);
+	gp0.resize(nlevs_max);
+
+	mu.resize(nlevs_max);
+	lambda.resize(nlevs_max);
+	trD.resize(nlevs_max);
+
+	// Vorticity
+	vort.resize(nlevs_max);
+
+	// MAC velocities used for defining convective term
+	m_u_mac.resize(nlevs_max);
+	m_v_mac.resize(nlevs_max);
+	m_w_mac.resize(nlevs_max);
+
+	xslopes.resize(nlevs_max);
+	yslopes.resize(nlevs_max);
+	zslopes.resize(nlevs_max);
+
+	bcoeff.resize(nlevs_max);
+	for(int i = 0; i < nlevs_max; ++i)
+	{
+		bcoeff[i].resize(3);
+	}
+
+	bcoeff_diff.resize(nlevs_max);
+	for(int i = 0; i < nlevs_max; ++i)
+	{
+		bcoeff_diff[i].resize(3);
+	}
+
+	fluid_cost.resize(nlevs_max);
+
+	// EB factory
+	ebfactory.resize(nlevs_max);
+}
+

@@ -98,3 +98,36 @@ void incflo_level::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiF
 									   &nghost);
 	}
 }
+
+void incflo_level::fill_mf_bc(int lev, MultiFab& mf)
+{
+	Box domain(geom[lev].Domain());
+
+	if(!mf.boxArray().ixType().cellCentered())
+		amrex::Error("fill_mf_bc only used for cell-centered arrays!");
+
+	// Impose periodic bc's at domain boundaries and fine-fine copies in the interior
+	mf.FillBoundary(geom[lev].periodicity());
+
+// Fill all cell-centered arrays with first-order extrapolation at domain boundaries
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+	for(MFIter mfi(mf, true); mfi.isValid(); ++mfi)
+	{
+		const Box& sbx = mf[mfi].box();
+		fill_bc0(mf[mfi].dataPtr(),
+				 sbx.loVect(),
+				 sbx.hiVect(),
+				 bc_ilo.dataPtr(),
+				 bc_ihi.dataPtr(),
+				 bc_jlo.dataPtr(),
+				 bc_jhi.dataPtr(),
+				 bc_klo.dataPtr(),
+				 bc_khi.dataPtr(),
+				 domain.loVect(),
+				 domain.hiVect(),
+				 &nghost);
+	}
+}
+
