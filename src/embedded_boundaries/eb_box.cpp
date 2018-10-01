@@ -10,7 +10,7 @@
 //#include <sstream>
 
 #include <algorithm>
-#include <eb_F.H>
+#include <embedded_boundaries_F.H>
 #include <incflo_level.H>
 
 /****************************************************************************

@@ -6,7 +6,7 @@
 #include <eb_if.H>
 
 #include <algorithm>
-#include <eb_F.H>
+#include <embedded_boundaries_F.H>
 #include <incflo_level.H>
 
 std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo_level::get_walls(int lev, bool& has_walls)

@@ -1,5 +1,4 @@
 !
-!
 !  This subroutine sets the BCs for the pressure field.
 !
 !  Most of the times, this routines will simply perform

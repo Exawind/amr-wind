@@ -12,9 +12,6 @@ extern "C"
 
     void incflo_set_cyclic(int* cyc_x, int* cyc_y, int* cyc_z);
 
-    void set_bc_flow(amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength,
-         amrex::Real* dx,      amrex::Real* dy,      amrex::Real* dz  );
-
     void set_bc_type(
         const int* bc_ilo, const int* bc_ihi,
 	    const int* bc_jlo, const int* bc_jhi,

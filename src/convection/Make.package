@@ -1,7 +1,6 @@
 f90EXE_sources += convection_mod.f90
 f90EXE_sources += convection_eb_mod.f90
 f90EXE_sources += macproj_mod.f90
-f90EXE_sources += set_mac_velocity_bcs.f90
 f90EXE_sources += slopes_mod.f90
 
 CEXE_sources += convection.cpp

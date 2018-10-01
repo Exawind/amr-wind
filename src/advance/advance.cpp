@@ -434,7 +434,7 @@ void incflo_level::incflo_compute_diveu(int lev)
 		incflo_set_velocity_bcs(lev, extrap_dir_bcs);
 		vel[lev]->FillBoundary(geom[lev].periodicity());
 
-        // Create face centered multifabs for and vel
+        // Create face centered multifabs for vel
         Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
         incflo_average_cc_to_fc( lev, *vel[lev], vel_fc );
 

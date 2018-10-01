@@ -3,7 +3,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo_level.H>
-#include <eb_F.H>
+#include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
 void incflo_level::InitParams()

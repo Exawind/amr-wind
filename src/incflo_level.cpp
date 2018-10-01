@@ -6,7 +6,7 @@
 
 #include <incflo_level.H>
 #include <derive_F.H>
-#include <eb_F.H>
+#include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
 // Initiate vars which cannot be initiated in header

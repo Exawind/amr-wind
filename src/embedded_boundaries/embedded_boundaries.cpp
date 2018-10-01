@@ -10,7 +10,7 @@
 
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
-#include <eb_F.H>
+#include <embedded_boundaries_F.H>
 #include <incflo_level.H>
 
 void incflo_level::make_eb_geometry(int lev)
