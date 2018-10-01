@@ -24,4 +24,10 @@
 ! Dynamic coefficient of viscosity
          real(rt) :: mu_0
 
+! Yield stress
+         real(rt) :: tau_0
+
+! Papanastasiou regularisation parameter
+         real(rt) :: papa_reg
+
       END MODULE constant

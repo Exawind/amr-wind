@@ -6,6 +6,11 @@
 extern "C"
 {
 #endif
+    void compute_strainrate(const int* lo, const int* hi,
+                            amrex::Real* vort, const int* slo, const int* shi,
+                            amrex::Real* vel, const int* ulo, const int* uhi,
+                            const amrex::Real* dx);
+
     void compute_vort(const int* lo, const int* hi,
                       amrex::Real* vort, const int* slo, const int* shi,
                       amrex::Real* vel, const int* ulo, const int* uhi,

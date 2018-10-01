@@ -12,7 +12,7 @@ contains
    subroutine incflo_get_data(gravity_in, ro_0_in, mu_0_in) &
       bind(C, name="incflo_get_data")
 
-      use constant , only: gravity, ro_0, mu_0
+      use constant , only: gravity, ro_0, mu_0, tau_0, papa_reg
       use get_data_module, only: get_data
       use param, only: is_undefined
 
@@ -26,6 +26,8 @@ contains
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in
       mu_0 = mu_0_in
+      tau_0 = 0.0d0
+      papa_reg = 0.0d0
 
    end subroutine incflo_get_data
 

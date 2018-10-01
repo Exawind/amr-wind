@@ -46,9 +46,9 @@ void incflo_level::AllocateArrays(int lev)
 	vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	vel_o[lev]->setVal(0.);
     
-	// Div(u)
-	trD[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-	trD[lev]->setVal(0.);
+	// Strain-rate magnitude
+	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	strainrate[lev]->setVal(0.);
 
 	// Vorticity
 	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -248,11 +248,11 @@ void incflo_level::RegridArrays(int lev)
 	gp0_new->copy(*gp0[lev], 0, 0, 1, 0, ng);
 	gp0[lev] = std::move(gp0_new);
 
-	// Trace(D)
-	ng = trD[lev]->nGrow();
-	std::unique_ptr<MultiFab> trD_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-	trD[lev] = std::move(trD_new);
-	trD[lev]->setVal(0.);
+	// Strain-rate magnitude
+	ng = strainrate[lev]->nGrow();
+	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+	strainrate[lev] = std::move(strainrate_new);
+	strainrate[lev]->setVal(0.);
 
 	// Vorticity
 	ng = vort[lev]->nGrow();
@@ -359,9 +359,8 @@ void incflo_level::ResizeArrays()
 
 	mu.resize(nlevs_max);
 	lambda.resize(nlevs_max);
-	trD.resize(nlevs_max);
 
-	// Vorticity
+    strainrate.resize(nlevs_max);
 	vort.resize(nlevs_max);
 
 	// MAC velocities used for defining convective term

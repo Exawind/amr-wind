@@ -82,7 +82,10 @@ public:
 
 	static std::string get_load_balance_type();
 
+	void incflo_compute_strainrate(int lev);
 	void incflo_compute_vort(int lev);
+
+	void incflo_compute_viscosity(int lev);
 
 protected:
 	//! Tagging cells for refinement
@@ -296,7 +299,7 @@ private:
 
 	// Cell-based
 	Vector<std::unique_ptr<MultiFab>> lambda;
-	Vector<std::unique_ptr<MultiFab>> trD;
+	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
 
 	// These are multi-component multifabs

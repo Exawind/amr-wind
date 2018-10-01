@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
 	//    if plot_int > 0
 	if(restart_file.empty() && plot_int > 0)
 	{
+		my_incflo.incflo_compute_strainrate(lev);
 		my_incflo.incflo_compute_vort(lev);
 		my_incflo.WritePlotFile(plot_file, nstep, dt, time);
 	}
@@ -178,6 +179,7 @@ int main(int argc, char* argv[])
 
 					if((plot_int > 0) && (nstep % plot_int == 0))
 					{
+                        my_incflo.incflo_compute_strainrate(lev);
 						my_incflo.incflo_compute_vort(lev);
 						my_incflo.WritePlotFile(plot_file, nstep, dt, time);
 						last_plt = nstep;
@@ -208,6 +210,7 @@ int main(int argc, char* argv[])
 		my_incflo.WriteCheckPointFile(check_file, nstep, dt, time);
 	if(plot_int > 0 && nstep != last_plt)
     {
+		my_incflo.incflo_compute_strainrate(lev);
         my_incflo.incflo_compute_vort(lev);
 		my_incflo.WritePlotFile(plot_file, nstep, dt, time);
     }

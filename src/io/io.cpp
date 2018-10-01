@@ -30,8 +30,8 @@ void incflo_level::InitIOData()
 	// Define the list of scalar variables at cell centers that need to be
 	// written to plotfile/checkfile. "volfrac" MUST always be last without any
 	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "mu", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &mu, &vort, &divu};
+	pltscaVarsName = {"p", "ro", "mu", "strainrate", "vort", "divu", "volfrac"};
+	pltscalarVars = {&p, &ro, &mu, &strainrate, &vort, &divu};
 
 	chkscaVarsName = {"p", "ro", "mu"};
 	chkscalarVars = {&p, &ro, &mu};
@@ -535,6 +535,10 @@ void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Rea
 			{
 				amrex::average_node_to_cellcenter(
 					*mf[lev], dcomp, *(*pltscalarVars[i])[lev].get(), 0, 1);
+			}
+			else if(pltscaVarsName[i] == "strainrate")
+			{
+				MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, dcomp, 1, 0);
 			}
 			else if(pltscaVarsName[i] == "vort")
 			{
