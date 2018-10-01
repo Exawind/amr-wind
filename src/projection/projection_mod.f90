@@ -60,38 +60,6 @@ contains
 
    end subroutine compute_bcoeff_cc
 
-   subroutine compute_bcoeff_nd ( lo, hi, bcoeff, blo, bhi, &
-                                 ro, slo, shi, dir )  bind(C)
-
-      ! Loop bounds
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
-
-      ! Array bounds
-      integer(c_int), intent(in   ) :: slo(3),shi(3)
-      integer(c_int), intent(in   ) :: blo(3),bhi(3)
-
-      ! Direction
-      integer(c_int), intent(in   ) :: dir
-
-      ! Arrays
-      real(ar),       intent(in   ) :: &
-         ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      real(ar),       intent(  out) :: &
-         bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
-
-      integer      :: i, j, k
-
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
-               bcoeff(i,j,k) =  one / ro(i,j,k)
-            end do
-         end do
-      end do
-
-   end subroutine compute_bcoeff_nd
-
    !
    ! Set the boundary condition for Pressure Poisson Equation (PPE)
    !

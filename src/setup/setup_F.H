@@ -30,7 +30,7 @@ extern "C"
 	    const int* bc_jlo, const int* bc_jhi,
 	    const int* bc_klo, const int* bc_khi,
         const int* domlo , const int* domhi,
-        const int* ng    , const int* nodal_pressure
+        const int* ng
     );
 
     void init_fluid(const int* slo, const int* shi,
@@ -59,7 +59,7 @@ extern "C"
 	        const int* bc_ilo, const int* bc_ihi,
         	const int* bc_jlo, const int* bc_jhi,
         	const int* bc_klo, const int* bc_khi,
-            const int* ng, const int* nodal_pressure
+            const int* ng
        );
 
     void set_velocity_bcs (
@@ -69,15 +69,6 @@ extern "C"
 	const int* bc_klo, const int* bc_khi,
 	const int* domlo , const int* domhi,
         const int* ng, const int* extrap_dir_bcs
-       );
-
-    void set_vec_bcs (
-        amrex::Real* vec, const int* ulo, const int* uhi,
-	const int* bc_ilo, const int* bc_ihi,
-	const int* bc_jlo, const int* bc_jhi,
-	const int* bc_klo, const int* bc_khi,
-	const int* domlo , const int* domhi,
-        const int* ng
        );
 
     void zero_wall_norm_vel(

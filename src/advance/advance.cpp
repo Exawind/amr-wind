@@ -120,27 +120,9 @@ void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int ste
 
 	Real gradp0max[3];
 
-	if(nodal_pressure == 1)
-	{
-		for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Cell-centered tilebox
-			Box bx = mfi.tilebox();
-
-			compute_gradp0_max(bx.loVect(),
-							   bx.hiVect(),
-							   BL_TO_FORTRAN_ANYD((*p0[lev])[mfi]),
-							   gradp0max,
-							   geom[lev].CellSize(),
-							   &nodal_pressure);
-		}
-	}
-	else
-	{
-		gradp0max[0] = incflo_norm0(gp0, lev, 0);
-		gradp0max[1] = incflo_norm0(gp0, lev, 1);
-		gradp0max[2] = incflo_norm0(gp0, lev, 2);
-	}
+    gradp0max[0] = incflo_norm0(gp0, lev, 0);
+    gradp0max[1] = incflo_norm0(gp0, lev, 1);
+    gradp0max[2] = incflo_norm0(gp0, lev, 2);
 
 	ParallelDescriptor::ReduceRealMax(gradp0max[0]);
 	ParallelDescriptor::ReduceRealMax(gradp0max[1]);
@@ -378,72 +360,19 @@ void incflo_level::incflo_compute_diveu(int lev)
 {
 	Box domain(geom[lev].Domain());
 
-	if(nodal_pressure == 1)
-	{
+    int extrap_dir_bcs = 1;
+    incflo_set_velocity_bcs(lev, extrap_dir_bcs);
+    vel[lev]->FillBoundary(geom[lev].periodicity());
 
-		// Create a temporary multifab to hold (vel)
-		MultiFab vec(vel[lev]->boxArray(),
-					 vel[lev]->DistributionMap(),
-					 vel[lev]->nComp(),
-					 vel[lev]->nGrow());
+    // Create face centered multifabs for vel
+    Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
+    incflo_average_cc_to_fc( lev, *vel[lev], vel_fc );
 
-		// Fill it with (vel)
-		vec.copy(*vel[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow(), vel[lev]->nGrow());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		// Extrapolate Dirichlet values to ghost cells -- but do it differently in
-		// that
-		//  no-slip walls are treated exactly like slip walls -- this is only
-		//  relevant
-		//  when going into the projection
-		for(MFIter mfi(vec, true); mfi.isValid(); ++mfi)
-		{
-			set_vec_bcs(BL_TO_FORTRAN_ANYD(vec[mfi]),
-						bc_ilo.dataPtr(),
-						bc_ihi.dataPtr(),
-						bc_jlo.dataPtr(),
-						bc_jhi.dataPtr(),
-						bc_klo.dataPtr(),
-						bc_khi.dataPtr(),
-						domain.loVect(),
-						domain.hiVect(),
-						&nghost);
-		}
-
-		vec.FillBoundary(geom[lev].periodicity());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		for(MFIter mfi(*diveu[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Note: this box is nodal!
-			const Box& bx = mfi.tilebox();
-
-			compute_diveund(BL_TO_FORTRAN_BOX(bx),
-							BL_TO_FORTRAN_ANYD((*diveu[lev])[mfi]),
-							BL_TO_FORTRAN_ANYD(vec[mfi]),
-							geom[lev].CellSize());
-		}
-	}
-	else
-	{
-        int extrap_dir_bcs = 1;
-		incflo_set_velocity_bcs(lev, extrap_dir_bcs);
-		vel[lev]->FillBoundary(geom[lev].periodicity());
-
-        // Create face centered multifabs for vel
-        Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
-        incflo_average_cc_to_fc( lev, *vel[lev], vel_fc );
-
-        // This does not need to have correct ghost values in place
-        EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
-	}
+    // This does not need to have correct ghost values in place
+    EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
 
 	// Restore velocities to carry Dirichlet values on faces
-	int extrap_dir_bcs = 0;
+	extrap_dir_bcs = 0;
 	incflo_set_velocity_bcs(lev, extrap_dir_bcs);
 }
 
@@ -464,17 +393,7 @@ int incflo_level::steady_state_reached(int lev, Real dt, int iter)
 	MultiFab::LinComb(temp_vel, 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
 
 	MultiFab tmp;
-
-	if(nodal_pressure)
-	{
-		const BoxArray& nd_grid = amrex::convert(grids[lev], IntVect{1, 1, 1});
-		tmp.define(nd_grid, dmap[lev], 1, 0);
-	}
-	else
-	{
-		tmp.define(grids[lev], dmap[lev], 1, 0);
-	}
-
+    tmp.define(grids[lev], dmap[lev], 1, 0);
 	MultiFab::LinComb(tmp, 1.0, *p[lev], 0, -1.0, *p_o[lev], 0, 0, 1, 0);
 
 	Real delta_u = incflo_norm0(temp_vel, lev, 0);

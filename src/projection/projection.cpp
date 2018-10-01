@@ -157,118 +157,73 @@ void incflo_level::solve_poisson_equation(int lev,
 {
 	BL_PROFILE("incflo_level::solve_poisson_equation");
 
-	if(nodal_pressure == 1)
-	{
+    //
+    // First define the matrix (operator).
+    // Class MLABecLaplacian describes the following operator:
+    //
+    //       (alpha * a - beta * (del dot b grad)) phi
+    //
+    LPInfo info;
+    MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
+    Vector<const MultiFab*> tmp;
+    std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
 
-		//
-		// First define the matrix (operator).
-		//
-		//        (del dot b sigma grad)) phi
-		//
-		LPInfo info;
-		MLNodeLaplacian matrix(geom, grids, dmap, info);
+    // Copy the PPE coefficient into the proper data strutcure
+    tmp = amrex::GetVecOfConstPtrs(b[lev]);
+    b_tmp[0] = tmp[0];
+    b_tmp[1] = tmp[1];
+    b_tmp[2] = tmp[2];
 
-		matrix.setGaussSeidel(true);
-		matrix.setHarmonicAverage(false);
-		matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-						   {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
+    // It is essential that we set MaxOrder of the solver to 2
+    // if we want to use the standard phi(i)-phi(i-1) approximation
+    // for the gradient at Dirichlet boundaries.
+    // The solver's default order is 3 and this uses three points for the
+    // gradient at a Dirichlet boundary.
+    matrix.setMaxOrder(2);
 
-		matrix.setSigma(0, *(b[lev][0]));
-		matrix.setCoarseningStrategy(MLNodeLaplacian::CoarseningStrategy::Sigma);
+    // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+    matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
+                       {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
 
-		// By this point we must have filled the Dirichlet values of phi stored in the ghost cells
-		this_phi[lev]->setVal(0.);
-		matrix.setLevelBC(lev, GetVecOfConstPtrs(this_phi)[lev]);
+    matrix.setScalars(0.0, -1.0);
+    matrix.setBCoeffs(lev, b_tmp);
 
-		//
-		// Then setup the solver ----------------------
-		//
-		MLMG solver(matrix);
+    // By this point we must have filled the Dirichlet values of phi stored in the ghost cells
+    this_phi[lev]->setVal(0.);
+    matrix.setLevelBC(lev, GetVecOfConstPtrs(this_phi)[lev]);
 
-		solver.setMaxIter(mg_max_iter);
-		solver.setMaxFmgIter(mg_max_fmg_iter);
-		solver.setVerbose(mg_verbose);
-		solver.setCGVerbose(mg_cg_verbose);
-		solver.setCGMaxIter(mg_cg_maxiter);
+    //
+    // Then setup the solver ----------------------
+    //
+    MLMG solver(matrix);
 
-		//
-		// Finally, solve the system
-		//
-		solver.solve(GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
+   // The default bottom solver is BiCG
+   // Other options include: 
+   ///   regular smoothing ("smoother")
+   ///   Hypre IJ AMG solver ("hypre")
+   if (bottom_solver_type == "smoother")
+   { 
+      solver.setBottomSolver(MLMG::BottomSolver::smoother);
+   } else if (bottom_solver_type == "hypre") { 
+      solver.setBottomSolver(MLMG::BottomSolver::hypre);
+   }
 
-		this_phi[lev]->FillBoundary(geom[lev].periodicity());
-	}
-	else
-	{
+    solver.setMaxIter(mg_max_iter);
+    solver.setMaxFmgIter(mg_max_fmg_iter);
+    solver.setVerbose(mg_verbose);
+    solver.setCGVerbose(mg_cg_verbose);
+    solver.setCGMaxIter(mg_cg_maxiter);
 
-		//
-		// First define the matrix (operator).
-		// Class MLABecLaplacian describes the following operator:
-		//
-		//       (alpha * a - beta * (del dot b grad)) phi
-		//
-		LPInfo info;
-		MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
-		Vector<const MultiFab*> tmp;
-        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+    // This ensures phi ghost cells are correctly filled when returned from solver
+    solver.setFinalFillBC(true);
 
-		// Copy the PPE coefficient into the proper data strutcure
-		tmp = amrex::GetVecOfConstPtrs(b[lev]);
-		b_tmp[0] = tmp[0];
-		b_tmp[1] = tmp[1];
-		b_tmp[2] = tmp[2];
+    //
+    // Finally, solve the system
+    //
+    solver.solve(GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
+    solver.getFluxes({&fluxes}, MLMG::Location::CellCenter);
 
-		// It is essential that we set MaxOrder of the solver to 2
-		// if we want to use the standard phi(i)-phi(i-1) approximation
-		// for the gradient at Dirichlet boundaries.
-		// The solver's default order is 3 and this uses three points for the
-		// gradient at a Dirichlet boundary.
-		matrix.setMaxOrder(2);
-
-		// LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
-		matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-						   {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
-
-		matrix.setScalars(0.0, -1.0);
-		matrix.setBCoeffs(lev, b_tmp);
-
-		// By this point we must have filled the Dirichlet values of phi stored in the ghost cells
-		this_phi[lev]->setVal(0.);
-		matrix.setLevelBC(lev, GetVecOfConstPtrs(this_phi)[lev]);
-
-		//
-		// Then setup the solver ----------------------
-		//
-		MLMG solver(matrix);
-
-       // The default bottom solver is BiCG
-       // Other options include: 
-       ///   regular smoothing ("smoother")
-       ///   Hypre IJ AMG solver ("hypre")
-       if (bottom_solver_type == "smoother")
-       { 
-          solver.setBottomSolver(MLMG::BottomSolver::smoother);
-       } else if (bottom_solver_type == "hypre") { 
-          solver.setBottomSolver(MLMG::BottomSolver::hypre);
-       }
-	
-		solver.setMaxIter(mg_max_iter);
-		solver.setMaxFmgIter(mg_max_fmg_iter);
-		solver.setVerbose(mg_verbose);
-		solver.setCGVerbose(mg_cg_verbose);
-		solver.setCGMaxIter(mg_cg_maxiter);
-
-		// This ensures that ghost cells of phi are correctly filled when returned from the solver
-		solver.setFinalFillBC(true);
-
-		//
-		// Finally, solve the system
-		//
-		solver.solve(GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
-		solver.getFluxes({&fluxes}, MLMG::Location::CellCenter);
-
-		this_phi[lev]->FillBoundary(geom[lev].periodicity());
-	}
+    this_phi[lev]->FillBoundary(geom[lev].periodicity());
 }
 
 //
@@ -283,67 +238,34 @@ void incflo_level::incflo_compute_bcoeff_ppe(int lev)
 	int ydir = 2;
 	int zdir = 3;
 
-	if(nodal_pressure == 1)
-	{
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-		for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Cell-centered tilebox
-			Box bx = mfi.tilebox();
+    for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
+    {
+        // Tileboxes for staggered components
+        Box ubx = mfi.tilebox(e_x);
+        Box vbx = mfi.tilebox(e_y);
+        Box wbx = mfi.tilebox(e_z);
 
-			// X direction
-			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &xdir);
+        // X direction
+        compute_bcoeff_cc(BL_TO_FORTRAN_BOX(ubx),
+                          BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
+                          BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                          &xdir);
 
-			// Y direction
-			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &ydir);
+        // Y direction
+        compute_bcoeff_cc(BL_TO_FORTRAN_BOX(vbx),
+                          BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
+                          BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                          &ydir);
 
-			// Z direction
-			compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &zdir);
-		}
-	}
-	else
-	{
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-		for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-		{
-			// Tileboxes for staggered components
-			Box ubx = mfi.tilebox(e_x);
-			Box vbx = mfi.tilebox(e_y);
-			Box wbx = mfi.tilebox(e_z);
-
-			// X direction
-			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(ubx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &xdir);
-
-			// Y direction
-			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(vbx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &ydir);
-
-			// Z direction
-			compute_bcoeff_cc(BL_TO_FORTRAN_BOX(wbx),
-							  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
-							  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							  &zdir);
-		}
-	}
-
+        // Z direction
+        compute_bcoeff_cc(BL_TO_FORTRAN_BOX(wbx),
+                          BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
+                          BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                          &zdir);
+    }
 	bcoeff[lev][0]->FillBoundary(geom[lev].periodicity());
 	bcoeff[lev][1]->FillBoundary(geom[lev].periodicity());
 	bcoeff[lev][2]->FillBoundary(geom[lev].periodicity());

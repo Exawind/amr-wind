@@ -77,8 +77,6 @@ void incflo_level::incflo_set_velocity_bcs(int lev, int extrap_dir_bcs)
 void incflo_level::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p)
 {
 	BL_PROFILE("incflo_level::incflo_extrap_pressure()");
-	if(nodal_pressure == 1)
-		return;
 
 	Box domain(geom[lev].Domain());
 

@@ -13,12 +13,6 @@ extern "C"
       amrex::Real* ro, const int* slo, const int* shi,
       const int* dir );
 
-   void compute_bcoeff_nd (
-      const int* lo,  const int*  hi,
-      amrex::Real* bcoeff, const int* blo, const int* bhi,
-      const amrex::Real* ro, const int* slo, const int* shi,
-      const int* dir );
-
    void set_ppe_bc (
       int* bc_lo, int* bc_hi,
       const int* domlo, const int* domhi,

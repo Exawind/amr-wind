@@ -326,8 +326,7 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 		}
 	}
 
-	if(!nodal_pressure)
-		incflo_extrap_pressure(lev, p0[lev]);
+    incflo_extrap_pressure(lev, p0[lev]);
 
 	fill_mf_bc(lev, *ro[lev]);
 
@@ -338,8 +337,7 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 
 	if(is_restarting == 1)
 	{
-		if(!nodal_pressure)
-			incflo_extrap_pressure(lev, p[lev]);
+        incflo_extrap_pressure(lev, p[lev]);
 	}
 	else
 	{
@@ -375,13 +373,10 @@ void incflo_level::incflo_set_bc0(int lev)
 				bc_khi.dataPtr(),
 				domain.loVect(),
 				domain.hiVect(),
-				&nghost,
-				&nodal_pressure);
+				&nghost);
 	}
 
-	if(!nodal_pressure)
-		fill_mf_bc(lev, *p[lev]);
-
+    fill_mf_bc(lev, *p[lev]);
 	fill_mf_bc(lev, *ro[lev]);
 
 	// Put velocity Dirichlet bc's on faces
@@ -423,8 +418,7 @@ void incflo_level::incflo_set_p0(int lev)
                bc_ilo.dataPtr(), bc_ihi.dataPtr(),
                bc_jlo.dataPtr(), bc_jhi.dataPtr(),
                bc_klo.dataPtr(), bc_khi.dataPtr(),
-			   &nghost,
-			   &nodal_pressure);
+			   &nghost);
 	}
 
 	// Here we set a separate periodicity flag for p0 because when we use

@@ -6,7 +6,7 @@ TOP = ../..
 
 # compilation options
 COMP    = gnu
-USE_MPI = TRUE
+USE_MPI = FALSE
 USE_OMP = FALSE
 
 DEBUG     = FALSE
