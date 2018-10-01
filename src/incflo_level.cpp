@@ -5,6 +5,7 @@
 #include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo_level.H>
+#include <boundary_conditions_F.H>
 #include <derive_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
@@ -53,7 +54,7 @@ void incflo_level::ResizeArrays()
 	ro_o.resize(nlevs_max);
 
 	phi.resize(nlevs_max);
-	diveu.resize(nlevs_max);
+	divu.resize(nlevs_max);
 
 	// RHS and solution arrays for diffusive solve
 	rhs_diff.resize(nlevs_max);

@@ -71,8 +71,8 @@ void incflo_level::Advance(
 		{
 			amrex::Print() << "\nAfter predictor step:\n";
 			incflo_print_max_vel(lev);
-			incflo_compute_diveu(lev);
-			amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(diveu, lev, 0) << "\n";
+			incflo_compute_divu(lev);
+			amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
 		}
 
 		// Corrector step
@@ -84,8 +84,8 @@ void incflo_level::Advance(
 		{
 			amrex::Print() << "\nAfter corrector step:\n";
 			incflo_print_max_vel(lev);
-			incflo_compute_diveu(lev);
-			amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(diveu, lev, 0) << "\n";
+			incflo_compute_divu(lev);
+			amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
 		}
 
 		//
@@ -155,26 +155,6 @@ void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int ste
 	{
 		dt = dt_new;
 	}
-}
-
-void incflo_level::incflo_project_velocity(int lev)
-{
-	// Project velocity field to make sure initial velocity is divergence-free
-
-	amrex::Print() << "Initial projection:\n";
-
-	// Need to add this call here so that the MACProjection internal arrays
-	//  are allocated so that the cell-centered projection can use the MAC
-	//  data structures and set_velocity_bcs routine
-	mac_projection->update_internals();
-
-	bool proj_2 = true;
-	Real dummy_dt = 1.0;
-	incflo_apply_projection(lev, dummy_dt, proj_2);
-
-	// We initialize p and gp back to zero (p0 may still be still non-zero)
-	p[lev]->setVal(0.0);
-	 gp[lev]->setVal(0.0);
 }
 
 //
@@ -354,29 +334,6 @@ void incflo_level::incflo_apply_forcing_terms(int lev,
 }
 
 //
-// Compute div(u)
-//
-void incflo_level::incflo_compute_diveu(int lev)
-{
-	Box domain(geom[lev].Domain());
-
-    int extrap_dir_bcs = 1;
-    incflo_set_velocity_bcs(lev, extrap_dir_bcs);
-    vel[lev]->FillBoundary(geom[lev].periodicity());
-
-    // Create face centered multifabs for vel
-    Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
-    incflo_average_cc_to_fc( lev, *vel[lev], vel_fc );
-
-    // This does not need to have correct ghost values in place
-    EB_computeDivergence( *diveu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
-
-	// Restore velocities to carry Dirichlet values on faces
-	extrap_dir_bcs = 0;
-	incflo_set_velocity_bcs(lev, extrap_dir_bcs);
-}
-
-//
 // Check if steady state has been reached by verifying that
 //
 //      max(abs( u^(n+1) - u^(n) )) < tol * dt
@@ -490,84 +447,3 @@ void incflo_level::incflo_print_max_vel(int lev)
                    << incflo_norm0(vel, lev, 2) << "  "
 				   << incflo_norm0(p, lev, 0) << "  " << std::endl;
 }
-
-//
-// This subroutines averages component by component
-// The assumption is that cc is multicomponent
-// 
-void
-incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
-                                      Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
-{
-    AMREX_ASSERT(cc.nComp()==AMREX_SPACEDIM);
-    AMREX_ASSERT(AMREX_SPACEDIM==3);
-    
-    // First allocate fc
-    BoxArray x_ba = cc.boxArray();
-    x_ba.surroundingNodes(0);
-    fc[0].reset(new MultiFab(x_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
-    fc[0]->setVal(1.0e200);
-
-    BoxArray y_ba = cc.boxArray();
-    y_ba.surroundingNodes(1);
-    fc[1].reset(new MultiFab(y_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
-    fc[1]->setVal(1.0e200);
-
-    BoxArray z_ba = cc.boxArray();
-    z_ba.surroundingNodes(2);
-    fc[2].reset(new MultiFab(z_ba,cc.DistributionMap(),1,nghost, MFInfo(), *ebfactory[lev]));
-    fc[2]->setVal(1.0e200);
-
-    //
-    // Average
-    // We do not care about EB because faces in covered regions
-    // should never get used so we can set them to whatever values
-    // we like
-    //
-#ifdef _OPENMP
-#pragma omp parallel 
-#endif
-    for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
-    {
-        // Boxes for staggered components
-        Box bx = mfi.tilebox();
-
-        average_cc_to_fc( BL_TO_FORTRAN_BOX(bx),
-                          BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
-                          BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
-                          BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
-                          BL_TO_FORTRAN_ANYD(cc[mfi]));
-    }
-
-    // Set BCs for the fac-centered velocities
-	fc[0]->FillBoundary(geom[lev].periodicity());
-	fc[1]->FillBoundary(geom[lev].periodicity());
-	fc[2]->FillBoundary(geom[lev].periodicity());
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel 
-#endif
-    for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
-    {
-        // Boxes for staggered components
-        Box bx = mfi.tilebox();
-
-     	set_mac_velocity_bcs(bx.loVect(),
-     						 bx.hiVect(),
-     						 BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
-     						 BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
-     						 BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
-     						 bc_ilo.dataPtr(),
-     						 bc_ihi.dataPtr(),
-     						 bc_jlo.dataPtr(),
-     						 bc_jhi.dataPtr(),
-     						 bc_klo.dataPtr(),
-     						 bc_khi.dataPtr(),
-     						 domain.loVect(),
-     						 domain.hiVect(),
-     						 &nghost);
-    }
-    
-} 

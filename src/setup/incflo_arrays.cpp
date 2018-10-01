@@ -55,10 +55,10 @@ void incflo_level::AllocateArrays(int lev)
 	vort[lev]->setVal(0.);
 
     phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    diveu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    divu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 
 	phi[lev]->setVal(0.);
-	diveu[lev]->setVal(0.);
+	divu[lev]->setVal(0.);
 
 	// Arrays to store the solution and rhs for the diffusion solve
 	phi_diff[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -181,10 +181,10 @@ void incflo_level::RegridArrays(int lev)
     phi[lev] = std::move(phi_new);
     phi[lev]->setVal(0.);
 
-    ng = diveu[lev]->nGrow();
-    std::unique_ptr<MultiFab> diveu_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
-    diveu[lev] = std::move(diveu_new);
-    diveu[lev]->setVal(0.);
+    ng = divu[lev]->nGrow();
+    std::unique_ptr<MultiFab> divu_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
+    divu[lev] = std::move(divu_new);
+    divu[lev]->setVal(0.);
 
     // Cell-centered pressure uses face-based coefficients
     BoxArray x_ba = grids[lev];

@@ -5,6 +5,7 @@
 #include <AMReX_ParmParse.H>
 
 #include <MacProjection.H>
+#include <boundary_conditions_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
 #include <setup_F.H>
@@ -97,9 +98,9 @@ void MacProjection::set_bcs(IArrayBox* a_bc_ilo,
 void MacProjection::update_internals()
 {
 
-	if(m_diveu.size() != (m_amrcore->finestLevel() + 1))
+	if(m_divu.size() != (m_amrcore->finestLevel() + 1))
 	{
-		m_diveu.resize(m_amrcore->finestLevel() + 1);
+		m_divu.resize(m_amrcore->finestLevel() + 1);
 		m_phi.resize(m_amrcore->finestLevel() + 1);
 		m_b.resize(m_amrcore->finestLevel() + 1);
 	}
@@ -107,13 +108,13 @@ void MacProjection::update_internals()
 	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
 	{
 
-		if(m_diveu[lev] == nullptr ||
-		   !BoxArray::SameRefs(m_diveu[lev]->boxArray(), m_amrcore->boxArray(lev)) ||
-		   !DistributionMapping::SameRefs(m_diveu[lev]->DistributionMap(),
+		if(m_divu[lev] == nullptr ||
+		   !BoxArray::SameRefs(m_divu[lev]->boxArray(), m_amrcore->boxArray(lev)) ||
+		   !DistributionMapping::SameRefs(m_divu[lev]->DistributionMap(),
 										  m_amrcore->DistributionMap(lev)))
 		{
 
-			m_diveu[lev].reset(new MultiFab(m_amrcore->boxArray(lev),
+			m_divu[lev].reset(new MultiFab(m_amrcore->boxArray(lev),
 											m_amrcore->DistributionMap(lev),
 											1,
 											m_nghost,
@@ -232,9 +233,9 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
             for(int i = 0; i < 3; i++)
                 (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 
-			EB_computeDivergence(*m_diveu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
+			EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
 
-			Print() << "  * On level " << lev << " max(abs(diveu)) = " << norm0(m_diveu, lev)
+			Print() << "  * On level " << lev << " max(abs(divu)) = " << norm0(m_divu, lev)
 					<< "\n";
 		}
 	}
@@ -274,9 +275,9 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
             for(int i = 0; i < 3; i++)
                 (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 
-			EB_computeDivergence(*m_diveu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
+			EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
 
-			Print() << "  * On level " << lev << " max(abs(diveu)) = " << norm0(m_diveu, lev)
+			Print() << "  * On level " << lev << " max(abs(divu)) = " << norm0(m_divu, lev)
 					<< "\n";
 		}
         
@@ -304,9 +305,9 @@ void MacProjection::set_velocity_bcs(int lev,
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-	for(MFIter mfi(*m_diveu[lev], true); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*m_divu[lev], true); mfi.isValid(); ++mfi)
 	{
-		const Box& bx = (*m_diveu[lev])[mfi].box();
+		const Box& bx = (*m_divu[lev])[mfi].box();
 
 		set_mac_velocity_bcs(bx.loVect(),
 							 bx.hiVect(),
@@ -404,7 +405,7 @@ void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
 		Box wbx = mfi.tilebox(e_z);
 
 		// this is to check efficiently if this tile contains any eb stuff
-		const EBFArrayBox& div_fab = dynamic_cast<EBFArrayBox const&>((*m_diveu[lev])[mfi]);
+		const EBFArrayBox& div_fab = dynamic_cast<EBFArrayBox const&>((*m_divu[lev])[mfi]);
 		const EBCellFlagFab& flags = div_fab.getEBCellFlagFab();
 
 		if(flags.getType(grow(bx, 0)) == FabType::covered)

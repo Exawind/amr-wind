@@ -3,6 +3,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo_level.H>
+#include <boundary_conditions_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
@@ -262,29 +263,21 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 	//    over bc's on faces and it makes more sense to do this one grid at a time
 	for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
 	{
-
 		const Box& bx = mfi.validbox();
 		const Box& sbx = (*ro[lev])[mfi].box();
 
 		if(is_restarting)
 		{
-
-			init_fluid_restart(sbx.loVect(),
-							   sbx.hiVect(),
-							   bx.loVect(),
-							   bx.hiVect(),
+            init_fluid_restart(sbx.loVect(), sbx.hiVect(),
+                               bx.loVect(), bx.hiVect(),
 							   (*mu[lev])[mfi].dataPtr(),
 							   (*lambda[lev])[mfi].dataPtr());
 		}
 		else
 		{
-
-			init_fluid(sbx.loVect(),
-                       sbx.hiVect(),
-					   bx.loVect(),
-					   bx.hiVect(),
-					   domain.loVect(),
-					   domain.hiVect(),
+            init_fluid(sbx.loVect(), sbx.hiVect(),
+                       bx.loVect(), bx.hiVect(),
+                       domain.loVect(), domain.hiVect(),
 					   (*ro[lev])[mfi].dataPtr(),
 					   (*p[lev])[mfi].dataPtr(),
 					   (*vel[lev])[mfi].dataPtr(),
@@ -300,32 +293,6 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 	// Here we re-set the bc values for p and u,v,w just in case init_fluid
 	//      over-wrote some of the bc values with ic values
 	incflo_set_bc0(lev);
-
-	// We deliberately don't tile this loop since we will be looping
-	//    over bc's on faces and it makes more sense to do this one grid at a time
-	if(!is_restarting)
-	{
-
-		for(MFIter mfi(*ro[lev]); mfi.isValid(); ++mfi)
-		{
-
-			const Box& sbx = (*ro[lev])[mfi].box();
-
-			zero_wall_norm_vel(sbx.loVect(),
-							   sbx.hiVect(),
-							   (*vel[lev])[mfi].dataPtr(),
-							   bc_ilo.dataPtr(),
-							   bc_ihi.dataPtr(),
-							   bc_jlo.dataPtr(),
-							   bc_jhi.dataPtr(),
-							   bc_klo.dataPtr(),
-							   bc_khi.dataPtr(),
-							   domain.loVect(),
-							   domain.hiVect(),
-							   &nghost);
-		}
-	}
-
     incflo_extrap_pressure(lev, p0[lev]);
 
 	fill_mf_bc(lev, *ro[lev]);
@@ -346,7 +313,7 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 		incflo_compute_dt(lev, time, stop_time, steady_state, dt);
 
 		incflo_set_scalar_bcs(lev);
-		incflo_project_velocity(lev);
+		incflo_initial_projection(lev);
 		incflo_initial_iterations(lev, dt, stop_time, steady_state);
 	}
 }
@@ -468,4 +435,24 @@ void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, i
 		MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
 	}
 }
+
+void incflo_level::incflo_initial_projection(int lev)
+{
+    // Project velocity field to make sure initial velocity is divergence-free
+	amrex::Print() << "Initial projection:\n";
+
+	// Need to add this call here so that the MACProjection internal arrays
+	//  are allocated so that the cell-centered projection can use the MAC
+	//  data structures and set_velocity_bcs routine
+	mac_projection->update_internals();
+
+	bool proj_2 = true;
+	Real dummy_dt = 1.0;
+	incflo_apply_projection(lev, dummy_dt, proj_2);
+
+	// We initialize p and gp back to zero (p0 may still be still non-zero)
+    p[lev]->setVal(0.0);
+    gp[lev]->setVal(0.0);
+}
+
 

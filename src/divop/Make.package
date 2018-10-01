@@ -1,2 +1,0 @@
-f90EXE_sources += divop_mod.f90
-f90EXE_sources += eb_wallflux_mod.f90

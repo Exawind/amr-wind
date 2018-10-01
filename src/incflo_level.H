@@ -127,7 +127,7 @@ protected:
 	void incflo_set_bc0(int lev);
 	void incflo_set_p0(int lev);
 
-	void incflo_project_velocity(int lev);
+	void incflo_initial_projection(int lev);
 	void
 	incflo_initial_iterations(int lev, amrex::Real dt, amrex::Real stop_time, int steady_state);
 	void incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2);
@@ -225,7 +225,7 @@ private:
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
-	void incflo_compute_diveu(int lev);
+	void incflo_compute_divu(int lev);
 
 	void incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p);
 
@@ -305,7 +305,7 @@ private:
 	Vector<std::unique_ptr<MultiFab>> zslopes;
 
 	// div (u)
-	Vector<std::unique_ptr<MultiFab>> diveu;
+	Vector<std::unique_ptr<MultiFab>> divu;
 
 	// RHS for implicit diffusion solve
 	Vector<std::unique_ptr<MultiFab>> rhs_diff;

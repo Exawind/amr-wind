@@ -64,7 +64,7 @@ private:
 	amrex::IArrayBox* m_bc_klo;
 	amrex::IArrayBox* m_bc_khi;
 
-	amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_diveu;
+	amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_divu;
 	amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_phi;
 	amrex::Vector<amrex::Vector<std::unique_ptr<amrex::MultiFab>>> m_b;
 

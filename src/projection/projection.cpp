@@ -39,8 +39,8 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	{
 		amrex::Print() << "Before projection \n";
 		incflo_print_max_vel(lev);
-		incflo_compute_diveu(lev);
-		amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(diveu, lev, 0) << "\n";
+		incflo_compute_divu(lev);
+		amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
 	}
 
 	// Here we add the (1/rho gradp) back to ustar (note the +dt)
@@ -60,8 +60,8 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	}
 
 	// Compute right hand side, AKA div(u)/dt
-	incflo_compute_diveu(lev);
-	diveu[lev]->mult(1.0 / scaling_factor, diveu[lev]->nGrow());
+	incflo_compute_divu(lev);
+	divu[lev]->mult(1.0 / scaling_factor, divu[lev]->nGrow());
 
 	// Compute the PPE coefficients
 	incflo_compute_bcoeff_ppe(lev);
@@ -96,7 +96,7 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	// Initialize fluxes to zero in the event that the solver doesn't need to solve
 	fluxes.setVal(1.0e200);
 
-	solve_poisson_equation(lev, bcoeff, phi, diveu, bc_lo, bc_hi, fluxes);
+	solve_poisson_equation(lev, bcoeff, phi, divu, bc_lo, bc_hi, fluxes);
 
 	//
 	// NOTE: THE SIGN OF DT (scaling_factor) IS CORRECT HERE
@@ -137,8 +137,8 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 	{
 		amrex::Print() << "After  projection \n";
 		incflo_print_max_vel(lev);
-		incflo_compute_diveu(lev);
-		amrex::Print() << "max(abs(diveu)) = " << incflo_norm0(vel, lev, 0) << "\n";
+		incflo_compute_divu(lev);
+		amrex::Print() << "max(abs(divu)) = " << incflo_norm0(vel, lev, 0) << "\n";
 	}
 }
 

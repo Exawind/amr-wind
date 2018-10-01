@@ -1,7 +1,7 @@
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
 !                                                                      C
 !  Subroutine: set_bc0                                                 C
-!  This subroutine does the initial setting of all boundary conditions C
+!  This subroutine sets initial values of scalar boundary conditions   C
 !                                                                      C
 !  Author: M. Syamlal                                 Date: 29-JAN-92  C
 !                                                                      C
