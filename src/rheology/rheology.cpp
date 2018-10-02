@@ -1,11 +1,11 @@
 #include <AMReX_Box.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <rheology_F.H>
 
-void incflo_level::incflo_compute_viscosity(int lev)
+void incflo::incflo_compute_viscosity(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_viscosity");
+	BL_PROFILE("incflo::incflo_compute_viscosity");
 	Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP

@@ -8,14 +8,14 @@
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
 /********************************************************************************
  *                                                                              *
  * Function to create a simple cylinder EB.                                     *
  *                                                                              *
  ********************************************************************************/
-void incflo_level::make_eb_cylinder(int lev)
+void incflo::make_eb_cylinder(int lev)
 {
 	ParmParse pp("cylinder");
 

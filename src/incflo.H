@@ -22,11 +22,11 @@
 #include <eb_if.H>
 #include <MacProjection.H>
 
-class incflo_level : public AmrCore
+class incflo : public AmrCore
 {
 public:
-	incflo_level();
-	~incflo_level();
+	incflo();
+	~incflo();
 
 	void InitParams();
 
@@ -419,7 +419,7 @@ private:
     void incflo_update_ebfactory(int a_lev);
 };
 
-inline std::string incflo_level::get_load_balance_type()
+inline std::string incflo::get_load_balance_type()
 {
 	return load_balance_type;
 }

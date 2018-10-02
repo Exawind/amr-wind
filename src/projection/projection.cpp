@@ -6,7 +6,7 @@
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_MLNodeLaplacian.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <projection_F.H>
 
 //
@@ -25,9 +25,9 @@
 //     except in the initial iterations when
 //
 //     new p  = old p + phi
-void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2)
+void incflo::incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2)
 {
-	BL_PROFILE("incflo_level::incflo_apply_projection");
+	BL_PROFILE("incflo::incflo_apply_projection");
 
     vel[lev]->FillBoundary(geom[lev].periodicity());
 
@@ -147,7 +147,7 @@ void incflo_level::incflo_apply_projection(int lev, amrex::Real scaling_factor, 
 //
 //                  div( 1/rho * grad(phi) ) = div(u)
 //
-void incflo_level::solve_poisson_equation(int lev,
+void incflo::solve_poisson_equation(int lev,
 										  Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 										  Vector<std::unique_ptr<MultiFab>>& this_phi,
 										  Vector<std::unique_ptr<MultiFab>>& rhs,
@@ -155,7 +155,7 @@ void incflo_level::solve_poisson_equation(int lev,
 										  int bc_hi[],
 										  MultiFab& fluxes)
 {
-	BL_PROFILE("incflo_level::solve_poisson_equation");
+	BL_PROFILE("incflo::solve_poisson_equation");
 
     //
     // First define the matrix (operator).
@@ -229,9 +229,9 @@ void incflo_level::solve_poisson_equation(int lev,
 //
 // Computes bcoeff = 1/ro at the faces of the scalar cells
 //
-void incflo_level::incflo_compute_bcoeff_ppe(int lev)
+void incflo::incflo_compute_bcoeff_ppe(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_bcoeff_ppe");
+	BL_PROFILE("incflo::incflo_compute_bcoeff_ppe");
 
 	// Directions
 	int xdir = 1;

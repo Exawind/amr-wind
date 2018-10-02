@@ -6,7 +6,7 @@
 #include <AMReX_VisMF.H>
 #include <AMReX_iMultiFab.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <derive_F.H>
 #include <io_F.H>
 #include <setup_F.H>
@@ -75,13 +75,13 @@ int main(int argc, char* argv[])
 	// Default AMR level = 0
 	int lev = 0;
 
-	// Define dt here in main (dt is not a member of incflo_level)
+	// Define dt here in main (dt is not a member of incflo)
 	Real dt = -1;
 
-	// Default constructor. Note inheritance: incflo_level : AmrCore : AmrMesh
+	// Default constructor. Note inheritance: incflo : AmrCore : AmrMesh
 	//                                                                  |
 	//  => Geometry is constructed here:  (constructs Geometry) --------+
-	incflo_level my_incflo;
+	incflo my_incflo;
 
 	// Initialize internals from ParmParse database
 	my_incflo.InitParams();

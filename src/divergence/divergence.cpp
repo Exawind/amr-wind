@@ -7,14 +7,14 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <divergence_F.H>
 #include <mac_F.H>
 
 //
 // Compute div(u)
 //
-void incflo_level::incflo_compute_divu(int lev)
+void incflo::incflo_compute_divu(int lev)
 {
 	Box domain(geom[lev].Domain());
 
@@ -39,7 +39,7 @@ void incflo_level::incflo_compute_divu(int lev)
 // The assumption is that cc is multicomponent
 // 
 void
-incflo_level::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
+incflo::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
                                       Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
 {
     AMREX_ASSERT(cc.nComp()==AMREX_SPACEDIM);

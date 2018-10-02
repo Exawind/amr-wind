@@ -1,15 +1,15 @@
-#include <incflo_level.H>
+#include <incflo.H>
 #include <mac_F.H>
 #include <convection_F.H>
 
 //
 // Compute acc using the vel passed in
 //
-void incflo_level::incflo_compute_ugradu_predictor(int lev,
+void incflo::incflo_compute_ugradu_predictor(int lev,
 												   MultiFab& conv,
 												   Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_compute_ugradu");
+	BL_PROFILE("incflo::incflo_compute_ugradu");
 	Box domain(geom[lev].Domain());
 
 	incflo_compute_velocity_at_faces(lev, vel);
@@ -110,11 +110,11 @@ void incflo_level::incflo_compute_ugradu_predictor(int lev,
 //
 // Compute acc using the vel passed in
 //
-void incflo_level::incflo_compute_ugradu_corrector(int lev,
+void incflo::incflo_compute_ugradu_corrector(int lev,
 												   MultiFab& conv,
 												   Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_compute_ugradu");
+	BL_PROFILE("incflo::incflo_compute_ugradu");
 	Box domain(geom[lev].Domain());
 
 	// First compute the slopes
@@ -217,9 +217,9 @@ void incflo_level::incflo_compute_ugradu_corrector(int lev,
 // Compute the slopes of each velocity component in the
 // three directions.
 //
-void incflo_level::incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel)
+void incflo::incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_compute_velocity_slopes");
+	BL_PROFILE("incflo::incflo_compute_velocity_slopes");
 
 	Box domain(geom[lev].Domain());
 
@@ -290,9 +290,9 @@ void incflo_level::incflo_compute_velocity_slopes(int lev, Vector<std::unique_pt
 	zslopes[lev]->FillBoundary(geom[lev].periodicity());
 }
 
-void incflo_level::incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel)
+void incflo::incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_compute_velocity_at_faces");
+	BL_PROFILE("incflo::incflo_compute_velocity_at_faces");
 	Box domain(geom[lev].Domain());
 
 	// First compute the slopes

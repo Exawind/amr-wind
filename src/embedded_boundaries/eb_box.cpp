@@ -11,13 +11,13 @@
 
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
 /****************************************************************************
  * Function to create a simple rectangular box with EB walls.               *
  *                                                                          *
  ****************************************************************************/
-void incflo_level::make_eb_box(int lev)
+void incflo::make_eb_box(int lev)
 {
 	ParmParse pp("box");
 

@@ -7,14 +7,14 @@
 #include <AMReX_EB_levelset.H>
 
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
 /********************************************************************************
  *                                                                              *
  * Placeholder: create a simulation box _without_ EB walls.                     *
  *                                                                              *
  ********************************************************************************/
-void incflo_level::make_eb_regular(int lev)
+void incflo::make_eb_regular(int lev)
 {
 	int max_level_here = 0;
 

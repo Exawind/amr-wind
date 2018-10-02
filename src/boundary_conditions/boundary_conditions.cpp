@@ -6,15 +6,15 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_VisMF.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <boundary_conditions_F.H>
 
 //
 // Set the BCs for all the variables EXCEPT pressure or velocity.
 //
-void incflo_level::incflo_set_scalar_bcs(int lev)
+void incflo::incflo_set_scalar_bcs(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_set_scalar_bcs()");
+	BL_PROFILE("incflo::incflo_set_scalar_bcs()");
 
 	Box domain(geom[lev].Domain());
 
@@ -44,9 +44,9 @@ void incflo_level::incflo_set_scalar_bcs(int lev)
 //
 // Set the BCs for velocity only
 //
-void incflo_level::incflo_set_velocity_bcs(int lev, int extrap_dir_bcs)
+void incflo::incflo_set_velocity_bcs(int lev, int extrap_dir_bcs)
 {
-	BL_PROFILE("incflo_level::incflo_set_velocity_bcs()");
+	BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
 	vel[lev]->FillBoundary(geom[lev].periodicity());
 
@@ -74,9 +74,9 @@ void incflo_level::incflo_set_velocity_bcs(int lev, int extrap_dir_bcs)
 //
 // Fills ghost cell values of pressure appropriately for the BC type
 //
-void incflo_level::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p)
+void incflo::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p)
 {
-	BL_PROFILE("incflo_level::incflo_extrap_pressure()");
+	BL_PROFILE("incflo::incflo_extrap_pressure()");
 
 	Box domain(geom[lev].Domain());
 
@@ -99,7 +99,7 @@ void incflo_level::incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiF
 	}
 }
 
-void incflo_level::fill_mf_bc(int lev, MultiFab& mf)
+void incflo::fill_mf_bc(int lev, MultiFab& mf)
 {
 	Box domain(geom[lev].Domain());
 

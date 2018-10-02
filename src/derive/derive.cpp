@@ -1,12 +1,12 @@
 #include <AMReX_Box.H>
 #include <AMReX_EBMultiFabUtil.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <derive_F.H>
 
-void incflo_level::incflo_compute_strainrate(int lev)
+void incflo::incflo_compute_strainrate(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_strainrate");
+	BL_PROFILE("incflo::incflo_compute_strainrate");
 	Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
@@ -37,9 +37,9 @@ void incflo_level::incflo_compute_strainrate(int lev)
 	}
 }
 
-void incflo_level::incflo_compute_vort(int lev)
+void incflo::incflo_compute_vort(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_vort");
+	BL_PROFILE("incflo::incflo_compute_vort");
 	Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP

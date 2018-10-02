@@ -11,7 +11,7 @@
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
 /********************************************************************************
  * Function to create a simple hopper EB.                                       *
@@ -20,7 +20,7 @@
  * (representing the hopper wall and outlet funnel) around a central axis.      *
  *                                                                              *
  ********************************************************************************/
-void incflo_level::make_eb_hopper(int lev)
+void incflo::make_eb_hopper(int lev)
 {
 	ParmParse pp("hopper");
 

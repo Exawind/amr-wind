@@ -7,13 +7,13 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <advance_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
 #include <setup_F.H>
 
-void incflo_level::Advance(
+void incflo::Advance(
 	int lev, int nstep, int steady_state, Real& dt, Real& prev_dt, Real time, Real stop_time)
 {
 	AMREX_ALWAYS_ASSERT(lev == 0);
@@ -105,7 +105,7 @@ void incflo_level::Advance(
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }
 
-void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int steady_state, Real& dt)
+void incflo::incflo_compute_dt(int lev, Real time, Real stop_time, int steady_state, Real& dt)
 {
 	// DT is always computed even for fixed dt, so we can
 	// issue a warning if fixed dt does not satisfy CFL condition.
@@ -180,7 +180,7 @@ void incflo_level::incflo_compute_dt(int lev, Real time, Real stop_time, int ste
 //
 //     p = phi
 //
-void incflo_level::incflo_apply_predictor(
+void incflo::incflo_apply_predictor(
 	int lev, MultiFab& conv_old, MultiFab& divtau_old, amrex::Real dt, bool proj_2)
 {
 	// Compute the explicit advective term R_u^n
@@ -253,10 +253,10 @@ void incflo_level::incflo_apply_predictor(
 //
 //     p = phi
 //
-void incflo_level::incflo_apply_corrector(
+void incflo::incflo_apply_corrector(
 	int lev, MultiFab& conv_old, MultiFab& divtau_old, amrex::Real dt, bool proj_2)
 {
-	BL_PROFILE("incflo_level::incflo_apply_corrector");
+	BL_PROFILE("incflo::incflo_apply_corrector");
 
 	MultiFab conv(grids[lev], dmap[lev], 3, 0);
 	MultiFab divtau(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]);
@@ -303,11 +303,11 @@ void incflo_level::incflo_apply_corrector(
 	incflo_apply_projection(lev, dt, proj_2);
 }
 
-void incflo_level::incflo_apply_forcing_terms(int lev,
+void incflo::incflo_apply_forcing_terms(int lev,
 											  amrex::Real dt,
 											  Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_apply_forcing_terms");
+	BL_PROFILE("incflo::incflo_apply_forcing_terms");
 
 	Box domain(geom[lev].Domain());
 
@@ -336,7 +336,7 @@ void incflo_level::incflo_apply_forcing_terms(int lev,
 //      max(abs( v^(n+1) - v^(n) )) < tol * dt
 //      max(abs( w^(n+1) - w^(n) )) < tol * dt
 //
-int incflo_level::steady_state_reached(int lev, Real dt, int iter)
+int incflo::steady_state_reached(int lev, Real dt, int iter)
 {
 	// Make sure velocity is up to date
 	incflo_set_velocity_bcs(lev, 0);

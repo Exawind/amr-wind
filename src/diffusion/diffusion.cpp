@@ -4,7 +4,7 @@
 #include <AMReX_Box.H>
 #include <AMReX_VisMF.H>
 #include <diffusion_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
 // For multigrid
 #include <AMReX_MLMG.H>
@@ -13,11 +13,11 @@
 //
 // Explicit diffusion
 //
-void incflo_level::incflo_compute_divtau(int lev,
+void incflo::incflo_compute_divtau(int lev,
 										 MultiFab& divtau,
 										 Vector<std::unique_ptr<MultiFab>>& vel)
 {
-	BL_PROFILE("incflo_level::incflo_compute_divtau");
+	BL_PROFILE("incflo::incflo_compute_divtau");
 	Box domain(geom[lev].Domain());
 
    // Get EB geometric info
@@ -102,10 +102,10 @@ void incflo_level::incflo_compute_divtau(int lev,
 //
 // Implicit diffusion
 //
-void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
+void incflo::incflo_diffuse_velocity(int lev, amrex::Real dt)
 
 {
-	BL_PROFILE("incflo_level::incflo_diffuse_velocity");
+	BL_PROFILE("incflo::incflo_diffuse_velocity");
 
 	// Whole domain
 	Box domain(geom[lev].Domain());
@@ -156,7 +156,7 @@ void incflo_level::incflo_diffuse_velocity(int lev, amrex::Real dt)
 //
 //                  (1 - div dot mu grad) u = RHS
 //
-void incflo_level::solve_diffusion_equation(int lev,
+void incflo::solve_diffusion_equation(int lev,
 											Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 											Vector<std::unique_ptr<MultiFab>>& sol,
 											Vector<std::unique_ptr<MultiFab>>& rhs,
@@ -164,7 +164,7 @@ void incflo_level::solve_diffusion_equation(int lev,
 											int bc_hi[],
 											amrex::Real dt)
 {
-	BL_PROFILE("incflo_level::solve_diffusion_equation");
+	BL_PROFILE("incflo::solve_diffusion_equation");
 
 	//
 	// First define the matrix (operator).
@@ -245,9 +245,9 @@ void incflo_level::solve_diffusion_equation(int lev,
 //
 // Computes bcoeff = mu at the faces of the scalar cells
 //
-void incflo_level::incflo_compute_bcoeff_diff(int lev)
+void incflo::incflo_compute_bcoeff_diff(int lev)
 {
-	BL_PROFILE("incflo_level::incflo_compute_bcoeff_diff");
+	BL_PROFILE("incflo::incflo_compute_bcoeff_diff");
 
 	// Directions
 	int xdir = 1;

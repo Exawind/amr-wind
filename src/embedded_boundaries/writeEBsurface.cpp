@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
-void incflo_level::WriteEBSurface(int lev)
+void incflo::WriteEBSurface(int lev)
 {
 	if(Geom(0).isAllPeriodic())
 		return;

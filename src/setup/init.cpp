@@ -2,12 +2,12 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 #include <boundary_conditions_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
-void incflo_level::InitParams()
+void incflo::InitParams()
 {
 	{
 		ParmParse pp("incflo");
@@ -64,7 +64,7 @@ void incflo_level::InitParams()
 	}
 }
 
-void incflo_level::Init(int lev, Real time)
+void incflo::Init(int lev, Real time)
 {
 	BL_ASSERT(max_level == 0);
 
@@ -98,7 +98,7 @@ void incflo_level::Init(int lev, Real time)
 	mac_projection->set_bcs(&bc_ilo, &bc_ihi, &bc_jlo, &bc_jhi, &bc_klo, &bc_khi);
 }
 
-BoxArray incflo_level::MakeBaseGrids() const
+BoxArray incflo::MakeBaseGrids() const
 {
 	BoxArray ba(geom[0].Domain());
 
@@ -122,7 +122,7 @@ BoxArray incflo_level::MakeBaseGrids() const
 	return ba;
 }
 
-void incflo_level::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
+void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
 {
 	if(ParallelDescriptor::IOProcessor())
 		amrex::Warning(
@@ -172,7 +172,7 @@ void incflo_level::ChopGrids(const Box& domain, BoxArray& ba, int target_size) c
 	}
 }
 
-void incflo_level::MakeNewLevelFromScratch(int lev,
+void incflo::MakeNewLevelFromScratch(int lev,
 										   Real time,
 										   const BoxArray& new_grids,
 										   const DistributionMapping& new_dmap)
@@ -183,7 +183,7 @@ void incflo_level::MakeNewLevelFromScratch(int lev,
 	MakeBCArrays();
 }
 
-void incflo_level::ReMakeNewLevelFromScratch(int lev,
+void incflo::ReMakeNewLevelFromScratch(int lev,
 											 const BoxArray& new_grids,
 											 const DistributionMapping& new_dmap)
 {
@@ -196,7 +196,7 @@ void incflo_level::ReMakeNewLevelFromScratch(int lev,
 	incflo_set_bc_type(lev);
 }
 
-void incflo_level::InitLevelData(int lev, Real time)
+void incflo::InitLevelData(int lev, Real time)
 {
 	// This needs is needed before initializing level MultiFabs: ebfactories should
 	// not change after the eb-dependent MultiFabs are allocated.
@@ -206,14 +206,14 @@ void incflo_level::InitLevelData(int lev, Real time)
 	AllocateArrays(lev);
 }
 
-void incflo_level::PostInit(
+void incflo::PostInit(
 	int lev, Real& dt, Real time, int nstep, int restart_flag, Real stop_time, int steady_state)
 {
     // Initial fluid arrays: pressure, velocity, density, viscosity
     incflo_init_fluid(lev, restart_flag, time, dt, stop_time, steady_state);
 }
 
-void incflo_level::MakeBCArrays()
+void incflo::MakeBCArrays()
 {
 	// Define and allocate the integer MultiFab that is the outside adjacent cells of the problem domain.
 	Box domainx(geom[0].Domain());
@@ -243,7 +243,7 @@ void incflo_level::MakeBCArrays()
 	bc_khi.resize(box_khi, 2);
 }
 
-void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real& dt, 
+void incflo::incflo_init_fluid(int lev, int is_restarting, Real time, Real& dt, 
                                      Real stop_time, int steady_state)
 {
 	Box domain(geom[lev].Domain());
@@ -318,7 +318,7 @@ void incflo_level::incflo_init_fluid(int lev, int is_restarting, Real time, Real
 	}
 }
 
-void incflo_level::incflo_set_bc_type(int lev)
+void incflo::incflo_set_bc_type(int lev)
 {
 	Real dx = geom[lev].CellSize(0);
 	Real dy = geom[lev].CellSize(1);
@@ -345,7 +345,7 @@ void incflo_level::incflo_set_bc_type(int lev)
 				&nghost);
 }
 
-void incflo_level::incflo_set_bc0(int lev)
+void incflo::incflo_set_bc0(int lev)
 {
 	Box domain(geom[lev].Domain());
 
@@ -380,7 +380,7 @@ void incflo_level::incflo_set_bc0(int lev)
 	vel[lev]->FillBoundary(geom[lev].periodicity());
 }
 
-void incflo_level::incflo_set_p0(int lev)
+void incflo::incflo_set_p0(int lev)
 {
 	Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
 	Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
@@ -433,7 +433,7 @@ void incflo_level::incflo_set_p0(int lev)
 // 
 // Perform initial pressure iterations 
 //
-void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, int steady_state)
+void incflo::incflo_initial_iterations(int lev, Real dt, Real stop_time, int steady_state)
 {
 	// Fill ghost cells
 	incflo_set_scalar_bcs(lev);
@@ -463,7 +463,7 @@ void incflo_level::incflo_initial_iterations(int lev, Real dt, Real stop_time, i
 	}
 }
 
-void incflo_level::incflo_initial_projection(int lev)
+void incflo::incflo_initial_projection(int lev)
 {
     // Project velocity field to make sure initial velocity is divergence-free
 	amrex::Print() << "Initial projection:\n";

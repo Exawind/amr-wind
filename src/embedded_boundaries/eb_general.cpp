@@ -11,10 +11,10 @@
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 #include <type_traits>
 
-void incflo_level::make_eb_general(int lev)
+void incflo::make_eb_general(int lev)
 {
 
 	ParmParse pp("incflo");
@@ -181,7 +181,7 @@ void incflo_level::make_eb_general(int lev)
 }
 
 std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>>
-incflo_level::get_poly(int lev, int max_order, std::string field_prefix)
+incflo::get_poly(int lev, int max_order, std::string field_prefix)
 {
 
 	/****************************************************************************
@@ -259,7 +259,7 @@ incflo_level::get_poly(int lev, int max_order, std::string field_prefix)
 }
 
 std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>>
-incflo_level::make_wall(int dir, // direction (long edge) of wall
+incflo::make_wall(int dir, // direction (long edge) of wall
 						Real position,
 						Real height,
 						Real width)

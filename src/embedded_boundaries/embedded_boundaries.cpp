@@ -11,9 +11,9 @@
 #include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <embedded_boundaries_F.H>
-#include <incflo_level.H>
+#include <incflo.H>
 
-void incflo_level::make_eb_geometry(int lev)
+void incflo::make_eb_geometry(int lev)
 {
 
 	/******************************************************************************
@@ -115,7 +115,7 @@ void incflo_level::make_eb_geometry(int lev)
 // the proper dm and ba
 
 void
-incflo_level::incflo_update_ebfactory (int a_lev)
+incflo::incflo_update_ebfactory (int a_lev)
 {
    // This assert is to verify that some kind of EB geometry
    // has already been defined

@@ -1,6 +1,6 @@
-#include <incflo_level.H>
+#include <incflo.H>
 
-void incflo_level::AllocateArrays(int lev)
+void incflo::AllocateArrays(int lev)
 {
     incflo_update_ebfactory(lev);
 
@@ -125,7 +125,7 @@ void incflo_level::AllocateArrays(int lev)
 	m_w_mac[lev]->setVal(0.);
 }
 
-void incflo_level::RegridArrays(int lev)
+void incflo::RegridArrays(int lev)
 {
     incflo_update_ebfactory(lev);
 
@@ -329,7 +329,7 @@ void incflo_level::RegridArrays(int lev)
     fill_mf_bc(lev, *p_o[lev]);
 }
 
-void incflo_level::ResizeArrays()
+void incflo::ResizeArrays()
 {
 	int nlevs_max = maxLevel() + 1;
 

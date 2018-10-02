@@ -4,23 +4,23 @@
 #include <AMReX_Box.H>
 #include <AMReX_EBMultiFabUtil.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 
 // Initiate vars which cannot be initiated in header
-Vector<Real> incflo_level::gravity(3, 0.);
-std::string incflo_level::load_balance_type = "FixedSize";
-std::string incflo_level::knapsack_weight_type = "RunTimeCosts";
+Vector<Real> incflo::gravity(3, 0.);
+std::string incflo::load_balance_type = "FixedSize";
+std::string incflo::knapsack_weight_type = "RunTimeCosts";
 
 // Define unit vectors for easily convert indeces
-amrex::IntVect incflo_level::e_x(1, 0, 0);
-amrex::IntVect incflo_level::e_y(0, 1, 0);
-amrex::IntVect incflo_level::e_z(0, 0, 1);
+amrex::IntVect incflo::e_x(1, 0, 0);
+amrex::IntVect incflo::e_y(0, 1, 0);
+amrex::IntVect incflo::e_z(0, 0, 1);
 
-EBSupport incflo_level::m_eb_support_level = EBSupport::full;
+EBSupport incflo::m_eb_support_level = EBSupport::full;
 
-incflo_level::~incflo_level(){};
+incflo::~incflo(){};
 
-incflo_level::incflo_level()
+incflo::incflo()
 {
 // Geometry on all levels has just been defined in the AmrCore constructor
 
@@ -39,7 +39,7 @@ incflo_level::incflo_level()
 //
 // Subroutine to compute norm0 of EB multifab
 //
-Real incflo_level::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, 
+Real incflo::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, 
                                 int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
@@ -53,7 +53,7 @@ Real incflo_level::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf,
 	return mf_tmp.norm0(comp);
 }
 
-Real incflo_level::incflo_norm0(MultiFab& mf, int lev, int comp)
+Real incflo::incflo_norm0(MultiFab& mf, int lev, int comp)
 {
     MultiFab mf_tmp(mf.boxArray(), 
                     mf.DistributionMap(), 
@@ -69,7 +69,7 @@ Real incflo_level::incflo_norm0(MultiFab& mf, int lev, int comp)
 //
 // Subroutine to compute norm1 of EB multifab
 //
-Real incflo_level::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, 
+Real incflo::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, 
                                 int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
@@ -83,7 +83,7 @@ Real incflo_level::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf,
 	return mf_tmp.norm1(comp, geom[lev].periodicity());
 }
 
-Real incflo_level::incflo_norm1(MultiFab& mf, int lev, int comp)
+Real incflo::incflo_norm1(MultiFab& mf, int lev, int comp)
 {
 	MultiFab mf_tmp(mf.boxArray(), 
                     mf.DistributionMap(), 
@@ -99,7 +99,7 @@ Real incflo_level::incflo_norm1(MultiFab& mf, int lev, int comp)
 //
 // Print the maximum values of the velocity components
 //
-void incflo_level::incflo_print_max_vel(int lev)
+void incflo::incflo_print_max_vel(int lev)
 {
 	amrex::Print() << "max(abs(u/v/w/p))  = " 
                    << incflo_norm0(vel, lev, 0) << "  "
@@ -108,7 +108,7 @@ void incflo_level::incflo_print_max_vel(int lev)
 				   << incflo_norm0(p, lev, 0) << "  " << std::endl;
 }
 
-void incflo_level::check_for_nans(int lev)
+void incflo::check_for_nans(int lev)
 {
 	bool ug_has_nans = vel[lev]->contains_nan(0);
 	bool vg_has_nans = vel[lev]->contains_nan(1);
@@ -129,7 +129,7 @@ void incflo_level::check_for_nans(int lev)
 }
 
 
-void incflo_level::Regrid(int base_lev)
+void incflo::Regrid(int base_lev)
 {
 	BL_PROFILE_REGION_START("incflo::Regrid()");
 

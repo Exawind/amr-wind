@@ -9,7 +9,7 @@
 
 #include <AMReX_buildInfo.H>
 
-#include <incflo_level.H>
+#include <incflo.H>
 
 namespace
 {
@@ -21,7 +21,7 @@ const std::string level_prefix{"Level_"};
 //                                          chkscalarVars, chkscaVarsName.
 // If new variables need to be added to the output/checkpoint, simply add them
 // here and the IO routines will automatically take care of them.
-void incflo_level::InitIOData()
+void incflo::InitIOData()
 {
 	// Define the list of vector variables on faces that need to be written
 	// to plotfile/checkfile.
@@ -37,19 +37,19 @@ void incflo_level::InitIOData()
 	chkscalarVars = {&p, &ro, &mu};
 }
 
-void incflo_level::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
+void incflo::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
 {
 	bool is_checkpoint = 0;
 	WriteHeader(name, nstep, dt, time, is_checkpoint);
 }
 
-void incflo_level::WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const
+void incflo::WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const
 {
 	bool is_checkpoint = 1;
 	WriteHeader(name, nstep, dt, time, is_checkpoint);
 }
 
-void incflo_level::WriteHeader(
+void incflo::WriteHeader(
 	const std::string& name, int nstep, Real dt, Real time, bool is_checkpoint) const
 {
 	if(ParallelDescriptor::IOProcessor())
@@ -99,9 +99,9 @@ void incflo_level::WriteHeader(
 	}
 }
 
-void incflo_level::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Real time) const
+void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Real time) const
 {
-	BL_PROFILE("incflo_level::WriteCheckPointFile()");
+	BL_PROFILE("incflo::WriteCheckPointFile()");
 
 	const std::string& checkpointname = amrex::Concatenate(check_file, nstep);
 
@@ -137,10 +137,10 @@ void incflo_level::WriteCheckPointFile(std::string& check_file, int nstep, Real 
 	}
 }
 
-void incflo_level::Restart(
+void incflo::Restart(
 	std::string& restart_file, int* nstep, Real* dt, Real* time, IntVect& Nrep)
 {
-	BL_PROFILE("incflo_level::Restart()");
+	BL_PROFILE("incflo::Restart()");
 
 	amrex::Print() << "  Restarting from checkpoint " << restart_file << std::endl;
 
@@ -149,7 +149,7 @@ void incflo_level::Restart(
 
 	/***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
-     *              allocate incflo_level memory (incflo_level::AllocateArrays)    *
+     *              allocate incflo memory (incflo::AllocateArrays)    *
      ***************************************************************************/
 
 	{
@@ -394,13 +394,13 @@ void incflo_level::Restart(
 	amrex::Print() << "  Done with incflo::Restart " << std::endl;
 }
 
-void incflo_level::GotoNextLine(std::istream& is)
+void incflo::GotoNextLine(std::istream& is)
 {
 	constexpr std::streamsize bl_ignore_max{100000};
 	is.ignore(bl_ignore_max, '\n');
 }
 
-void incflo_level::WriteJobInfo(const std::string& dir) const
+void incflo::WriteJobInfo(const std::string& dir) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
@@ -487,9 +487,9 @@ void incflo_level::WriteJobInfo(const std::string& dir) const
 	}
 }
 
-void incflo_level::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time) const
+void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time) const
 {
-	BL_PROFILE("incflo_level::WritePlotFile()");
+	BL_PROFILE("incflo::WritePlotFile()");
 
 	const std::string& plotfilename = amrex::Concatenate(plot_file, nstep);
 
