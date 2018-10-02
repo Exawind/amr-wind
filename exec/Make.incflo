@@ -14,11 +14,10 @@ Bdirs 	+= src/derive
 Bdirs 	+= src/diffusion
 Bdirs 	+= src/divergence
 Bdirs 	+= src/embedded_boundaries
-Bdirs 	+= src/io
-Bdirs 	+= src/modules
 Bdirs 	+= src/projection
 Bdirs 	+= src/rheology
 Bdirs 	+= src/setup
+Bdirs 	+= src/utilities
 
 Bpack	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir))
