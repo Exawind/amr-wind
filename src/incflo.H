@@ -76,7 +76,7 @@ public:
 			  Real height,
 			  Real width);
 
-	void WriteEBSurface(int lev);
+	void WriteEBSurface();
 
 	void InitIOData();
 

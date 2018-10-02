@@ -2,10 +2,13 @@
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 
-void incflo::WriteEBSurface(int lev)
+void incflo::WriteEBSurface()
 {
 	if(Geom(0).isAllPeriodic())
 		return;
+
+    // Only write at the finest level! 
+    int lev = nlev - 1;
 
 	const Real* dx = Geom(lev).CellSize();
 

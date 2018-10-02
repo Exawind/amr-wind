@@ -16,6 +16,8 @@ amrex::IntVect incflo::e_x(1, 0, 0);
 amrex::IntVect incflo::e_y(0, 1, 0);
 amrex::IntVect incflo::e_z(0, 0, 1);
 
+int incflo::nlev = 1;
+
 EBSupport incflo::m_eb_support_level = EBSupport::full;
 
 incflo::~incflo(){};
@@ -27,13 +29,7 @@ incflo::incflo()
 // No valid BoxArray and DistributionMapping have been defined.
 // But the arrays for them have been resized.
 
-#if 0
-    int nlevs_max = maxLevel() + 1;
-    istep.resize(nlevs_max, 0);
-    nsubsteps.resize(nlevs_max, 1);
-    for (int lev = 1; lev <= maxLevel(); ++lev) 
-        nsubsteps[lev] = MaxRefRatio(lev-1);
-#endif
+    nlev = maxLevel() + 1;
 }
 
 //
