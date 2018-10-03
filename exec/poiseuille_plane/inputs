@@ -1,39 +1,56 @@
-# Stop time for simulation
-#amr.max_step = 10000
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+amr.stop_time           =   -1.         # Max (simulated) time to evolve
+amr.max_step            =   -1          # Max number of time steps
+amr.steady_state        =   1           # Steady-state solver? 
 
-#incflo.fixed_dt = 0.01
-incflo.cfl = 32.
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+incflo.fixed_dt         =   -1.         # Use this constant dt if > 0
+incflo.cfl              =   100.        # CFL factor
 
-incflo.verbose = 0
-mac.verbose = 0
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+amr.plot_int            =    1          # Steps between plot files
+amr.check_int           =   -1          # Steps between checkpoint files
+amr.restart             =   ""          # Checkpoint to restart from 
 
-amr.steady_state = 1
-incflo.steady_state_tol = 1.0e-6
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.mu_0             =   0.5         # Dynamic viscosity coefficient
+incflo.ro_0             =   1.          # Reference density 
+incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 
-# Number of grid cells in each direction at the coarsest level
-amr.n_cell =  4 16 4
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              =   8   16  8   # Grid cells at coarsest AMRlevel
+amr.max_level           =   0           # Max AMR level in hierarchy 
 
-# Maximum level in hierarchy (for now must be 0, i.e., one level in total)
-amr.max_level = 0
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   1.  2.  1.  # Hi corner coordinates
+geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
-# Plot/check interval
-amr.plot_int   = 1
-#amr.check_int  = 500
-#amr.restart    = chk01000
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#          NUMERICAL PARAMETERS         #
+#.......................................#
+incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
-# Physics
-incflo.mu_0   = 10.
-incflo.ro_0   = 1.
-incflo.gravity = 0.0 0.0 8.0
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   1           # incflo_level
+mac.verbose             =   0           # MacProjector
 
-# Geometry
-geometry.coord_sys   = 0                  # 0: Cartesian
-geometry.is_periodic = 1     0     1      # Is periodic in each direction?
-geometry.prob_lo     = 0.    0.    0.     # lo corner of physical domain
-geometry.prob_hi     = 0.5   2.0   0.5    #hi corner of physical domain
-
-# Trap invalids
-amrex.fpe_trap_invalid = 1
-
-# Explicit diffusion
-incflo.explicit_diffusion = 0
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              DEBUGGING                #
+#.......................................#
+amrex.fpe_trap_invalid  =   0           # Trap NaNs

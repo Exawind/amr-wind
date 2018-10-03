@@ -135,7 +135,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real dt)
 	// Loop over the velocity components
 	for(int i = 0; i < 3; i++)
 	{
-        if(verbose)
+        if(verbose > 1)
             amrex::Print() << "Diffusing velocity component " << i << std::endl;
 
         for(int lev = 0; lev < nlev; lev++)
