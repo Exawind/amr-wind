@@ -24,9 +24,7 @@ extern "C"
    void add_forcing (
       const int* lo, const int* hi,
       amrex::Real* vel,  const int* ulo, const int* uhi,
-      const amrex::Real* ro, const int* slo, const int* shi,
-      const int* domlo, const int* domhi,
-      const amrex::Real* dx, const amrex::Real* dt);
+      const amrex::Real* dt);
 
 #ifdef __cplusplus
 }

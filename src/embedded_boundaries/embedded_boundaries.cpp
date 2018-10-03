@@ -13,7 +13,7 @@
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 
-void incflo::make_eb_geometry(int lev)
+void incflo::make_eb_geometry()
 {
 
 	/******************************************************************************
@@ -80,33 +80,33 @@ void incflo::make_eb_geometry(int lev)
 	if(geom_type == "box")
 	{
 		amrex::Print() << "\n Building box geometry." << std::endl;
-		make_eb_box(lev);
+		make_eb_box();
 	}
 	else if(geom_type == "annulus")
 	{
 		amrex::Print() << "\n Building annulus geometry." << std::endl;
-		make_eb_annulus(lev);
+		make_eb_annulus();
 	}
 	else if(geom_type == "cylinder")
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
-		make_eb_cylinder(lev);
+		make_eb_cylinder();
 	}
 	else if(geom_type == "hopper")
 	{
 		amrex::Print() << "\n Building hopper geometry." << std::endl;
-		make_eb_hopper(lev);
+		make_eb_hopper();
 	}
 	else if(geom_type == "general")
 	{
 		amrex::Print() << "\n Building general geometry (poly2 with extra walls)." << std::endl;
-		make_eb_general(lev);
+		make_eb_general();
 	}
 	else
 	{
 		amrex::Print() << "\n No EB geometry declared in inputs => "
 					   << " Will read walls from incflo.dat only." << std::endl;
-		make_eb_regular(lev);
+		make_eb_regular();
 	}
 }
 

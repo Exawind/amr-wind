@@ -272,7 +272,7 @@ void incflo::Restart(
 
 			// This needs is needed before initializing level MultiFabs: ebfactories should
 			// not change after the eb-dependent MultiFabs are allocated.
-			make_eb_geometry(lev);
+			make_eb_geometry();
 
 			// Allocate the fluid data, NOTE: this depends on the ebfactories.
 			AllocateArrays(lev);
@@ -497,11 +497,10 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 
 	const int ngrow = 0;
 
-	Vector<std::unique_ptr<MultiFab>> mf(finest_level + 1);
+	Vector<std::unique_ptr<MultiFab>> mf(nlev);
 
-	for(int lev = 0; lev <= finest_level; ++lev)
+	for(int lev = 0; lev <= nlev; ++lev)
 	{
-
 		// the "+1" here is for volfrac
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
 		mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow));
@@ -566,9 +565,9 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 		}
 	}
 
-	Vector<const MultiFab*> mf2(finest_level + 1);
+	Vector<const MultiFab*> mf2(nlev);
 
-	for(int lev = 0; lev <= finest_level; ++lev)
+	for(int lev = 0; lev <= nlev; ++lev)
 	{
 		mf2[lev] = mf[lev].get();
 	}
@@ -578,8 +577,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 	names.insert(names.end(), vecVarsName.begin(), vecVarsName.end());
 	names.insert(names.end(), pltscaVarsName.begin(), pltscaVarsName.end());
 
-	amrex::WriteMultiLevelPlotfile(
-		plotfilename, finest_level + 1, mf2, names, Geom(), time, istep, refRatio());
+    amrex::WriteMultiLevelPlotfile(plotfilename, nlev, mf2, names, Geom(), time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }

@@ -15,7 +15,7 @@
  * Function to create a annular cylinder EB.                                     *
  *                                                                              *
  ********************************************************************************/
-void incflo::make_eb_annulus(int lev)
+void incflo::make_eb_annulus()
 {
 	ParmParse pp("annulus");
 
@@ -107,28 +107,31 @@ void incflo::make_eb_annulus(int lev)
 	int max_coarsening_level = 100;
 	EB2::Build(gshop, geom.back(), max_level_here, max_level_here + max_coarsening_level);
 
-	const EB2::IndexSpace& ebis = EB2::IndexSpace::top();
-	const EB2::Level& ebis_lev = ebis.getLevel(geom[lev]);
+    for(int lev = 0; lev < nlev; lev++)
+    {
+        const EB2::IndexSpace& ebis = EB2::IndexSpace::top();
+        const EB2::Level& ebis_lev = ebis.getLevel(geom[lev]);
 
-	amrex::Print() << "Done building the annular cylinder geometry" << std::endl;
+        amrex::Print() << "Done building the annular cylinder geometry" << std::endl;
 
-	/****************************************************************************
-    *                                                                           *
-    * THIS FILLS FLUID EBFACTORY                                                *
-    *                                                                           *
-    *****************************************************************************/
+        /****************************************************************************
+        *                                                                           *
+        * THIS FILLS FLUID EBFACTORY                                                *
+        *                                                                           *
+        *****************************************************************************/
 
-	amrex::Print() << "Now  making the fluid ebfactory ..." << std::endl;
+        amrex::Print() << "Now  making the fluid ebfactory ..." << std::endl;
 
-	eb_level_fluid = &ebis_lev;
+        eb_level_fluid = &ebis_lev;
 
-	ebfactory[lev].reset(new EBFArrayBoxFactory(
-		*eb_level_fluid,
-		geom[lev],
-		grids[lev],
-		dmap[lev],
-		{m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
-		m_eb_support_level));
+        ebfactory[lev].reset(new EBFArrayBoxFactory(
+            *eb_level_fluid,
+            geom[lev],
+            grids[lev],
+            dmap[lev],
+            {m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
+            m_eb_support_level));
 
-	amrex::Print() << "Done making the fluid ebfactory ..." << std::endl;
+        amrex::Print() << "Done making the fluid ebfactory ..." << std::endl;
+    }
 }

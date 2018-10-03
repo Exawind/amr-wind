@@ -339,17 +339,17 @@ contains
    !  MAC VERSION
 
    !#####################################################
-   subroutine compute_ugradu ( lo, hi, &
-                              ugradu, glo, ghi, &
-                              vel, vello, velhi, &
-                              u, ulo, uhi, &
-                              v, vlo, vhi, &
-                              w, wlo, whi, &
-                              xslopes, yslopes, zslopes, slo, shi, &
-                              domlo, domhi, &
-                              bc_ilo_type, bc_ihi_type, &
-                              bc_jlo_type, bc_jhi_type, &
-                              bc_klo_type, bc_khi_type, dx, ng, ugradu_type ) bind(C)
+   subroutine compute_ugradu(lo, hi, &
+                             ugradu, glo, ghi, &
+                             vel, vello, velhi, &
+                             u, ulo, uhi, &
+                             v, vlo, vhi, &
+                             w, wlo, whi, &
+                             xslopes, yslopes, zslopes, slo, shi, &
+                             domlo, domhi, &
+                             bc_ilo_type, bc_ihi_type, &
+                             bc_jlo_type, bc_jhi_type, &
+                             bc_klo_type, bc_khi_type, dx, ng) bind(C)
 
       ! Tile bounds
       integer(c_int),  intent(in   ) :: lo(3),  hi(3)
@@ -361,7 +361,7 @@ contains
       integer(c_int),  intent(in   ) :: ulo(3), uhi(3)
       integer(c_int),  intent(in   ) :: vlo(3), vhi(3)
       integer(c_int),  intent(in   ) :: wlo(3), whi(3)
-      integer(c_int),  intent(in   ) :: domlo(3), domhi(3), ng, ugradu_type
+      integer(c_int),  intent(in   ) :: domlo(3), domhi(3), ng
 
       ! Grid
       real(ar),        intent(in   ) :: dx(3)
@@ -395,20 +395,12 @@ contains
       real(ar)                       :: u_e, u_w, u_s, u_n, u_b, u_t
       real(ar)                       :: v_e, v_w, v_s, v_n, v_b, v_t
       real(ar)                       :: w_e, w_w, w_s, w_n, w_b, w_t
-      real(ar)                       :: epu_hi_x, epu_lo_x
-      real(ar)                       :: epv_hi_y, epv_lo_y
-      real(ar)                       :: epw_hi_z, epw_lo_z
       real(ar)                       :: divumac
       integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
 
       idx = one / dx(1)
       idy = one / dx(2)
       idz = one / dx(3)
-
-      if (ugradu_type < 2 .or. ugradu_type > 3) then
-         print *,'DONT KNOW THIS UGRADU_TYPE ', ugradu_type
-         stop
-      end if
 
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
@@ -556,61 +548,23 @@ contains
                ! Define convective terms -- conservatively
                !   ugradu = ( div(u^MAC u^cc) - u^cc div(u^MAC) )
                ! ****************************************************
-               if (ugradu_type .eq. 2) then
 
-                  divumac = (u(i+1,j,k) - u(i,j,k)) * idx + &
-                            (v(i,j+1,k) - v(i,j,k)) * idy + &
-                            (w(i,j,k+1) - w(i,j,k)) * idz
+               divumac = (u(i+1,j,k) - u(i,j,k)) * idx + &
+                         (v(i,j+1,k) - v(i,j,k)) * idy + &
+                         (w(i,j,k+1) - w(i,j,k)) * idz
 
-                  ugradu(i,j,k,1) = (u(i+1,j,k) * u_e - u(i,j,k) * u_w) * idx + &
-                                    (v(i,j+1,k) * u_n - v(i,j,k) * u_s) * idy + &
-                                    (w(i,j,k+1) * u_t - w(i,j,k) * u_b) * idz - &
-                                    vel(i,j,k,1) * divumac
-                  ugradu(i,j,k,2) = (u(i+1,j,k) * v_e - u(i,j,k) * v_w) * idx + &
-                                    (v(i,j+1,k) * v_n - v(i,j,k) * v_s) * idy + &
-                                    (w(i,j,k+1) * v_t - w(i,j,k) * v_b) * idz - &
-                                    vel(i,j,k,2) * divumac
-                  ugradu(i,j,k,3) = (u(i+1,j,k) * w_e - u(i,j,k) * w_w) * idx + &
-                                    (v(i,j+1,k) * w_n - v(i,j,k) * w_s) * idy + &
-                                    (w(i,j,k+1) * w_t - w(i,j,k) * w_b) * idz - &
-                                    vel(i,j,k,3) * divumac
-
-                  ! ****************************************************
-                  ! Define convective terms -- conservatively
-                  !   ugradu = ( div(u^MAC u^cc) - u^cc div(u^MAC) )
-                  ! ****************************************************
-
-               else if (ugradu_type .eq. 3) then
-
-                  epu_hi_x = u(i+1,j,k)
-                  epu_lo_x = u(i  ,j,k)
-                  epv_hi_y = v(i,j+1,k)
-                  epv_lo_y = v(i,j  ,k)
-                  epw_hi_z = w(i,j,k+1)
-                  epw_lo_z = w(i,j,k  )
-
-                  divumac = (epu_hi_x - epu_lo_x) * idx + &
-                            (epv_hi_y - epv_lo_y) * idy + &
-                            (epw_hi_z - epw_lo_z) * idz
-
-                  ugradu(i,j,k,1) = (epu_hi_x * u_e - epu_lo_x * u_w) * idx + &
-                                    (epv_hi_y * u_n - epv_lo_y * u_s) * idy + &
-                                    (epw_hi_z * u_t - epw_lo_z * u_b) * idz - &
-                                    vel(i,j,k,1) * divumac
-                  ugradu(i,j,k,2) = (epu_hi_x * v_e - epu_lo_x * v_w) * idx + &
-                                    (epv_hi_y * v_n - epv_lo_y * v_s) * idy + &
-                                    (epw_hi_z * v_t - epw_lo_z * v_b) * idz - &
-                                    vel(i,j,k,2) * divumac
-                  ugradu(i,j,k,3) = (epu_hi_x * w_e - epu_lo_x * w_w) * idx + &
-                                    (epv_hi_y * w_n - epv_lo_y * w_s) * idy + &
-                                    (epw_hi_z * w_t - epw_lo_z * w_b) * idz - &
-                                    vel(i,j,k,3) * divumac
-
-                  ugradu(i,j,k,1) = ugradu(i,j,k,1)
-                  ugradu(i,j,k,2) = ugradu(i,j,k,2)
-                  ugradu(i,j,k,3) = ugradu(i,j,k,3)
-
-               end if
+               ugradu(i,j,k,1) = (u(i+1,j,k) * u_e - u(i,j,k) * u_w) * idx + &
+                                 (v(i,j+1,k) * u_n - v(i,j,k) * u_s) * idy + &
+                                 (w(i,j,k+1) * u_t - w(i,j,k) * u_b) * idz - &
+                                 vel(i,j,k,1) * divumac
+               ugradu(i,j,k,2) = (u(i+1,j,k) * v_e - u(i,j,k) * v_w) * idx + &
+                                 (v(i,j+1,k) * v_n - v(i,j,k) * v_s) * idy + &
+                                 (w(i,j,k+1) * v_t - w(i,j,k) * v_b) * idz - &
+                                 vel(i,j,k,2) * divumac
+               ugradu(i,j,k,3) = (u(i+1,j,k) * w_e - u(i,j,k) * w_w) * idx + &
+                                 (v(i,j+1,k) * w_n - v(i,j,k) * w_s) * idy + &
+                                 (w(i,j,k+1) * w_t - w(i,j,k) * w_b) * idz - &
+                                 vel(i,j,k,3) * divumac
 
                ! ****************************************************
                ! Return the negative

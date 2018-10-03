@@ -14,24 +14,28 @@
 //
 // Compute div(u)
 //
-void incflo::incflo_compute_divu(int lev)
+void incflo::incflo_compute_divu()
 {
-	Box domain(geom[lev].Domain());
-
     int extrap_dir_bcs = 1;
-    incflo_set_velocity_bcs(lev, extrap_dir_bcs);
-    vel[lev]->FillBoundary(geom[lev].periodicity());
+    incflo_set_velocity_bcs(extrap_dir_bcs);
 
-    // Create face centered multifabs for vel
-    Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
-    incflo_average_cc_to_fc( lev, *vel[lev], vel_fc );
+    for(int lev = 0; lev < nlev; lev++)
+    {
+        Box domain(geom[lev].Domain());
 
-    // This does not need to have correct ghost values in place
-    EB_computeDivergence( *divu[lev], GetArrOfConstPtrs(vel_fc), geom[lev] );
+        vel[lev]->FillBoundary(geom[lev].periodicity());
+
+        // Create face centered multifabs for vel
+        Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
+        incflo_average_cc_to_fc(lev, *vel[lev], vel_fc);
+
+        // This does not need to have correct ghost values in place
+        EB_computeDivergence(*divu[lev], GetArrOfConstPtrs(vel_fc), geom[lev]);
+    }
 
 	// Restore velocities to carry Dirichlet values on faces
 	extrap_dir_bcs = 0;
-	incflo_set_velocity_bcs(lev, extrap_dir_bcs);
+	incflo_set_velocity_bcs(extrap_dir_bcs);
 }
 
 //
@@ -39,8 +43,9 @@ void incflo::incflo_compute_divu(int lev)
 // The assumption is that cc is multicomponent
 // 
 void
-incflo::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
-                                      Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
+incflo::incflo_average_cc_to_fc(int lev, 
+                                const MultiFab& cc,
+                                Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
 {
     AMREX_ASSERT(cc.nComp()==AMREX_SPACEDIM);
     AMREX_ASSERT(AMREX_SPACEDIM==3);
@@ -102,12 +107,12 @@ incflo::incflo_average_cc_to_fc(int lev, const MultiFab& cc,
      						 BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
      						 BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
      						 BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
-     						 bc_ilo.dataPtr(),
-     						 bc_ihi.dataPtr(),
-     						 bc_jlo.dataPtr(),
-     						 bc_jhi.dataPtr(),
-     						 bc_klo.dataPtr(),
-     						 bc_khi.dataPtr(),
+     						 bc_ilo[lev]->dataPtr(),
+     						 bc_ihi[lev]->dataPtr(),
+     						 bc_jlo[lev]->dataPtr(),
+     						 bc_jhi[lev]->dataPtr(),
+     						 bc_klo[lev]->dataPtr(),
+     						 bc_khi[lev]->dataPtr(),
      						 domain.loVect(),
      						 domain.hiVect(),
      						 &nghost);

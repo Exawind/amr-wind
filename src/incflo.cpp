@@ -30,13 +30,13 @@ incflo::incflo()
 // But the arrays for them have been resized.
 
     nlev = maxLevel() + 1;
+    istep.resize(nlev, 0);
 }
 
 //
 // Subroutine to compute norm0 of EB multifab
 //
-Real incflo::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, 
-                                int lev, int comp)
+Real incflo::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
@@ -65,8 +65,7 @@ Real incflo::incflo_norm0(MultiFab& mf, int lev, int comp)
 //
 // Subroutine to compute norm1 of EB multifab
 //
-Real incflo::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, 
-                                int lev, int comp)
+Real incflo::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
 {
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
@@ -125,9 +124,11 @@ void incflo::check_for_nans(int lev)
 }
 
 
-void incflo::Regrid(int base_lev)
+void incflo::Regrid()
 {
 	BL_PROFILE_REGION_START("incflo::Regrid()");
+
+    int base_lev = 0;
 
 	if(load_balance_type == "KnapSack")
 	{
@@ -152,7 +153,7 @@ void incflo::Regrid(int base_lev)
 			fluid_cost[base_lev].reset(new MultiFab(grids[base_lev], newdm, 1, 0));
 			fluid_cost[base_lev]->setVal(0.0);
 
-			incflo_set_bc0(base_lev);
+			incflo_set_bc0();
 
 			if(ebfactory[base_lev])
 			{

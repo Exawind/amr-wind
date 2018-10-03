@@ -20,27 +20,25 @@ module macproj_mod
 
 contains
 
-   subroutine compute_bcoeff_mac ( lo, hi, bcoeff, alo, ahi, &
-                                  u_i, ulo, uhi, ro, slo, shi, dir )  bind(C)
+   subroutine compute_bcoeff_mac ( lo, hi, bcoeff, blo, bhi, &
+                                  ro, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
 
       ! Array bounds
       integer(c_int), intent(in   ) :: slo(3),shi(3)
-      integer(c_int), intent(in   ) :: alo(3),ahi(3)
-      integer(c_int), intent(in   ) :: ulo(3),uhi(3)
+      integer(c_int), intent(in   ) :: blo(3),bhi(3)
 
       ! Direction
       integer(c_int), intent(in   ) :: dir
 
       ! Arrays
       real(ar),       intent(in   ) :: &
-         u_i(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3)), &
          ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(ar),       intent(  out) :: &
-         bcoeff(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
+         bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
 
       integer      :: i, j, k, i0, j0, k0
       real(ar)     :: ro_f

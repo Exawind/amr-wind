@@ -17,7 +17,7 @@
  * Function to create a simple rectangular box with EB walls.               *
  *                                                                          *
  ****************************************************************************/
-void incflo::make_eb_box(int lev)
+void incflo::make_eb_box()
 {
 	ParmParse pp("box");
 
@@ -38,9 +38,9 @@ void incflo::make_eb_box(int lev)
 	amrex::Print() << " " << std::endl;
 	amrex::Print() << "Now making the ebfactories ..." << std::endl;
 
-	if(geom[lev].isAllPeriodic())
+	if(geom[0].isAllPeriodic())
 	{
-		make_eb_regular(lev);
+		make_eb_regular();
 	}
 	else
 	{
@@ -58,8 +58,8 @@ void incflo::make_eb_box(int lev)
 
 		for(int i = 0; i < 3; i++)
 		{
-			boxLo[i] = geom[lev].ProbLo(i);
-			boxHi[i] = geom[lev].ProbHi(i);
+			boxLo[i] = geom[0].ProbLo(i);
+			boxHi[i] = geom[0].ProbHi(i);
 		}
 
 		pp.queryarr("Lo", boxLo, 0, 3);
@@ -72,10 +72,10 @@ void incflo::make_eb_box(int lev)
 
 		// This ensures that the walls won't even touch the ghost cells. By
 		// putting them one domain width away
-		if(geom[lev].isPeriodic(0))
+		if(geom[0].isPeriodic(0))
 		{
-			xlo = 2.0 * geom[lev].ProbLo(0) - geom[lev].ProbHi(0);
-			xhi = 2.0 * geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
+			xlo = 2.0 * geom[0].ProbLo(0) - geom[0].ProbHi(0);
+			xhi = 2.0 * geom[0].ProbHi(0) - geom[0].ProbLo(0);
 		}
 
 		Real ylo = boxLo[1] + offset;
@@ -83,10 +83,10 @@ void incflo::make_eb_box(int lev)
 
 		// This ensures that the walls won't even touch the ghost cells. By
 		// putting them one domain width away
-		if(geom[lev].isPeriodic(1))
+		if(geom[0].isPeriodic(1))
 		{
-			ylo = 2.0 * geom[lev].ProbLo(1) - geom[lev].ProbHi(1);
-			yhi = 2.0 * geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
+			ylo = 2.0 * geom[0].ProbLo(1) - geom[0].ProbHi(1);
+			yhi = 2.0 * geom[0].ProbHi(1) - geom[0].ProbLo(1);
 		}
 
 		Real zlo = boxLo[2] + offset;
@@ -94,10 +94,10 @@ void incflo::make_eb_box(int lev)
 
 		// This ensures that the walls won't even touch the ghost cells. By
 		// putting them one domain width away
-		if(geom[lev].isPeriodic(2))
+		if(geom[0].isPeriodic(2))
 		{
-			zlo = 2.0 * geom[lev].ProbLo(2) - geom[lev].ProbHi(2);
-			zhi = 2.0 * geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
+			zlo = 2.0 * geom[0].ProbLo(2) - geom[0].ProbHi(2);
+			zhi = 2.0 * geom[0].ProbHi(2) - geom[0].ProbLo(2);
 		}
 
 		Array<Real, 3> point_lox{xlo, 0.0, 0.0};
@@ -130,15 +130,19 @@ void incflo::make_eb_box(int lev)
 		EB2::Build(gshop, geom.back(), max_level_here, max_level_here + max_coarsening_level);
 
 		const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
-		eb_level_fluid = &eb_is.getLevel(geom[lev]);
 
-		ebfactory[lev].reset(new EBFArrayBoxFactory(
-			*eb_level_fluid,
-			geom[lev],
-			grids[lev],
-			dmap[lev],
-			{m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
-			m_eb_support_level));
+        for(int lev = 0; lev < nlev; lev++)
+        {
+            eb_level_fluid = &eb_is.getLevel(geom[lev]);
+
+            ebfactory[lev].reset(new EBFArrayBoxFactory(
+                *eb_level_fluid,
+                geom[lev],
+                grids[lev],
+                dmap[lev],
+                {m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
+                m_eb_support_level));
+        }
 
 		amrex::Print() << "Done making the ebfactories ..." << std::endl;
 		amrex::Print() << " " << std::endl;

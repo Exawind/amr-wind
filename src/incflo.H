@@ -30,12 +30,11 @@ public:
 
 	void InitParams();
 
-	void Init(int lev, Real time);
+	void Init(Real time);
 
-	void InitLevelData(int lev, Real time);
+	void InitLevelData(Real time);
 
-	void PostInit(int lev,
-				  Real& dt,
+	void PostInit(Real& dt,
 				  Real time,
 				  int nstep,
 				  int restart_flag,
@@ -49,26 +48,36 @@ public:
 							 Real dt = 0.0,
 							 Real time = 0.0) const;
 
-	void
-	WritePlotFile(std::string& plot_file_name, int nstep = 0, Real dt = 0.0, Real time = 0.0) const;
+    void WritePlotFile(std::string& plot_file_name, 
+                       int nstep = 0, 
+                       Real dt = 0.0, 
+                       Real time = 0.0) const;
 
-	void Restart(std::string& restart_chkfile, int* nstep, Real* dt, Real* time, IntVect& Nrep);
+	void Restart(std::string& restart_chkfile, 
+                 int* nstep, 
+                 Real* dt, 
+                 Real* time, 
+                 IntVect& Nrep);
 
-	void Regrid(int lev);
+	void Regrid();
 
-	void Advance(
-		int lev, int nstep, int steady_state, Real& dt, Real& prev_dt, Real time, Real stop_time);
+    void Advance(int nstep, 
+                 int steady_state, 
+                 Real& dt, 
+                 Real& prev_dt, 
+                 Real time, 
+                 Real stop_time);
 
 	void make_mg_bc(int mg_bc[]);
 
-	void make_eb_geometry(int lev);
+	void make_eb_geometry();
 
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(int lev, bool& has_walls);
+	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
 
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(int lev, bool& has_real_walls);
+	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
 
-	std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>>
-	get_poly(int lev, int max_order, std::string field_prefix);
+    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, 
+                                                                    std::string field_prefix);
 
 	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>>
 	make_wall(int dir, // direction (long edge) of wall
@@ -82,76 +91,81 @@ public:
 
 	static std::string get_load_balance_type();
 
-	void incflo_compute_strainrate(int lev);
-	void incflo_compute_vort(int lev);
+	void incflo_compute_strainrate();
+	void incflo_compute_vort();
 
-	void incflo_compute_viscosity(int lev);
+	void incflo_compute_viscosity();
 
 protected:
 	//! Tagging cells for refinement
 	virtual void
-	ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int /*ngrow*/) override
+	ErrorEst(int lev, TagBoxArray& tags, Real time, int /*ngrow*/) override
 	{
-		amrex::Abort("ErrorEst: To be implemented");
+		Abort("ErrorEst: To be implemented");
 	}
 
 	//! Make a new level using provided BoxArray and
 	//! DistributionMapping and fill with interpolated coarse level
 	//! data.  Called by AmrCore::regrid.
 	virtual void MakeNewLevelFromCoarse(int lev,
-										amrex::Real time,
-										const amrex::BoxArray& ba,
-										const amrex::DistributionMapping& dm) override
+										Real time,
+										const BoxArray& ba,
+										const DistributionMapping& dm) override
 	{
-		amrex::Abort("MakeNewLevelFromCoarse: To be implemented");
+		Abort("MakeNewLevelFromCoarse: To be implemented");
 	}
 
 	//! Remake an existing level using provided BoxArray and
 	//! DistributionMapping and fill with existing fine and coarse
 	//! data.  Called by AmrCore::regrid.
 	virtual void RemakeLevel(int lev,
-							 amrex::Real time,
-							 const amrex::BoxArray& ba,
-							 const amrex::DistributionMapping& dm) override
+							 Real time,
+							 const BoxArray& ba,
+							 const DistributionMapping& dm) override
 	{
-		amrex::Abort("RemakeLevel: To be implemented");
+		Abort("RemakeLevel: To be implemented");
 	}
 
 	//! Delete level data.  Called by AmrCore::regrid.
 	virtual void ClearLevel(int lev) override
 	{
-		amrex::Abort("ClearLevel: To be implemented");
+		Abort("ClearLevel: To be implemented");
 	}
 
-	void incflo_calc_trd_and_tau(int lev);
+    void incflo_init_fluid(int is_restarting, 
+                           Real time, 
+                           Real& dt, 
+                           Real stop_time, 
+                           int steady_state);
 
-	void incflo_init_fluid(
-		int lev, int is_restarting, Real time, Real& dt, Real stop_time, int steady_state);
-	void incflo_set_bc0(int lev);
-	void incflo_set_p0(int lev);
+	void incflo_set_bc0();
+	void incflo_set_p0();
 
-	void incflo_initial_projection(int lev);
-	void
-	incflo_initial_iterations(int lev, amrex::Real dt, amrex::Real stop_time, int steady_state);
-	void incflo_apply_projection(int lev, amrex::Real scaling_factor, bool proj_2);
-	void incflo_set_scalar_bcs(int lev);
-	void incflo_set_velocity_bcs(int lev, int extrap_dir_bcs);
+	void incflo_initial_projection();
+    void incflo_initial_iterations(Real dt, Real stop_time, int steady_state);
+
+    void incflo_apply_projection(Real scaling_factor, bool proj_2);
+
+	void incflo_set_scalar_bcs();
+	void incflo_set_velocity_bcs(int extrap_dir_bcs);
+
+	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
 
-	void MakeBCArrays();
-
 private:
-	void make_eb_general(int lev);
-	void make_eb_annulus(int lev);
-	void make_eb_box(int lev);
-	void make_eb_cylinder(int lev);
-	void make_eb_hopper(int lev);
-	void make_eb_hourglass(int lev);
-	void make_eb_clr(int lev);
-	void make_eb_clr_riser(int lev);
-	void make_eb_regular(int lev);
+	void make_eb_general();
+	void make_eb_annulus();
+	void make_eb_box();
+	void make_eb_cylinder();
+	void make_eb_hopper();
+	void make_eb_hourglass();
+	void make_eb_clr();
+	void make_eb_clr_riser();
+	void make_eb_regular();
+
+    void MakeBCArrays();
 
 	void MakeNewLevelFromScratch(int lev,
 								 Real time,
@@ -172,65 +186,55 @@ private:
 	static void GotoNextLine(std::istream& is);
 
 	// Projection-related methods
-	void solve_poisson_equation(int lev,
-								Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+	void solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								Vector<std::unique_ptr<MultiFab>>& phi,
 								Vector<std::unique_ptr<MultiFab>>& rhs,
-								int bc_lo[],
-								int bc_hi[],
-								MultiFab& fluxes);
+								Vector<std::unique_ptr<MultiFab>>& fluxes,
+                                int bc_lo[], int bc_hi[]);
 
 	// Solve implicit diffusion
-	void solve_diffusion_equation(int lev,
-								  Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+	void solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								  Vector<std::unique_ptr<MultiFab>>& phi,
 								  Vector<std::unique_ptr<MultiFab>>& rhs,
-								  int bc_lo[],
-								  int bc_hi[],
-								  amrex::Real dt);
+                                  int bc_lo[], int bc_hi[],
+								  Real dt);
 
-	void incflo_compute_bcoeff_ppe(int lev);
-	void incflo_compute_bcoeff_diff(int lev);
+	void incflo_compute_bcoeff_ppe();
+	void incflo_compute_bcoeff_diff();
 
 	void check_for_nans(int lev);
 
-	void incflo_compute_dt(
-		int lev, amrex::Real time, amrex::Real stop_time, int steady_state, amrex::Real& dt);
+	void incflo_compute_dt(Real time, 
+                           Real stop_time, 
+                           int steady_state, 
+                           Real& dt);
 
-	void incflo_compute_ugradu_predictor(int lev,
-										 amrex::MultiFab& conv,
+	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_compute_ugradu_corrector(int lev,
-										 amrex::MultiFab& conv,
+	void incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel);
-	void
-	incflo_compute_divtau(int lev, amrex::MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
+    void incflo_compute_divtau(int lev, 
+                               MultiFab& divtau, 
+                               Vector<std::unique_ptr<MultiFab>>& vel);
 
-	int steady_state_reached(int lev, Real dt, int iter);
+	int steady_state_reached(Real dt, int iter);
 
-	void incflo_apply_predictor(int lev,
-								amrex::MultiFab& conv_old,
-								amrex::MultiFab& divtau_old,
-								amrex::Real dt,
-								bool proj_2);
-	void incflo_apply_corrector(int lev,
-								amrex::MultiFab& conv_old,
-								amrex::MultiFab& divtau_old,
-								amrex::Real dt,
-								bool proj_2);
+	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
+								Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                                Real dt, bool proj_2);
+	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
+								Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                                Real dt, bool proj_2);
 
-	void incflo_diffuse_velocity(int lev, amrex::Real dt);
+	void incflo_diffuse_velocity(Real dt);
 
-	void incflo_compute_intermediate_velocity(int lev, amrex::Real dt);
-
-	void
-	incflo_apply_forcing_terms(int lev, amrex::Real dt, Vector<std::unique_ptr<MultiFab>>& vel);
+    void incflo_apply_forcing_terms(int lev, Real dt, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
-	void incflo_compute_divu(int lev);
+	void incflo_compute_divu();
 
-	void incflo_extrap_pressure(int lev, std::unique_ptr<amrex::MultiFab>& p);
+	void incflo_extrap_pressure(int lev, std::unique_ptr<MultiFab>& p);
 
 	void incflo_print_max_vel(int lev);
 
@@ -248,27 +252,30 @@ private:
     Vector<int> nsubsteps;  // how many substeps on each level?
 #endif
 
-	Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
-	Real incflo_norm1(MultiFab& mf, int lev, int comp);
-	Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
+    Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
+    Real incflo_norm1(MultiFab& mf, int lev, int comp);
+    Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
 	Real incflo_norm0(MultiFab& mf, int lev, int comp);
 
-   void incflo_average_cc_to_fc ( int lev, const MultiFab& cc,
-                                 Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc );
+    void incflo_average_cc_to_fc (int lev, 
+                                  const MultiFab& cc,
+                                  Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
    
+    static int nlev; 
+
 	Vector<int> istep = {1};
 
 	// Unit vectors in Cartesian space
-	static amrex::IntVect e_x;
-	static amrex::IntVect e_y;
-	static amrex::IntVect e_z;
+	static IntVect e_x;
+	static IntVect e_y;
+	static IntVect e_z;
 
-	IArrayBox bc_ilo;
-	IArrayBox bc_ihi;
-	IArrayBox bc_jlo;
-	IArrayBox bc_jhi;
-	IArrayBox bc_klo;
-	IArrayBox bc_khi;
+	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
+	Vector<std::unique_ptr<IArrayBox>> bc_ihi;
+	Vector<std::unique_ptr<IArrayBox>> bc_jlo;
+	Vector<std::unique_ptr<IArrayBox>> bc_jhi;
+	Vector<std::unique_ptr<IArrayBox>> bc_klo;
+	Vector<std::unique_ptr<IArrayBox>> bc_khi;
 
 	Vector<std::unique_ptr<iMultiFab>> flag;
 
@@ -332,9 +339,6 @@ private:
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;
-	// Vector< std::unique_ptr<MultiFab> > m_uo_mac;
-	// Vector< std::unique_ptr<MultiFab> > m_vo_mac;
-	// Vector< std::unique_ptr<MultiFab> > m_wo_mac;
 
 	// MAC projection object
 	std::unique_ptr<MacProjection> mac_projection;
@@ -393,8 +397,6 @@ private:
 
 	int explicit_diffusion = 1;
 
-	int ugradu_type = 3;
-
 	// Variables to simplify IO -- the vectors are the same for plt/chk
 	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
 	Vector<std::string> vecVarsName;
@@ -407,14 +409,13 @@ private:
 
 	/****************************************************************************
      *                                                                          *
-     * EB Data (including level-set data)                                       *
+     * EB Data                                                                  *
      *                                                                          *
      ****************************************************************************/
 
 	const EB2::Level* eb_level_fluid;
 
-	Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
-	std::unique_ptr<MultiFab> dummy;
+	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
     void incflo_update_ebfactory(int a_lev);
 };

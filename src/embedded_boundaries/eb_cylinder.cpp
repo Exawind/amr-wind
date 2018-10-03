@@ -15,7 +15,7 @@
  * Function to create a simple cylinder EB.                                     *
  *                                                                              *
  ********************************************************************************/
-void incflo::make_eb_cylinder(int lev)
+void incflo::make_eb_cylinder()
 {
 	ParmParse pp("cylinder");
 
@@ -69,29 +69,26 @@ void incflo::make_eb_cylinder(int lev)
     auto gshop_cyl = EB2::makeShop(my_cyl);
 	int max_coarsening_level = 100;
 	EB2::Build(gshop_cyl, geom.back(), max_level_here, max_level_here + max_coarsening_level);
+    const EB2::IndexSpace& ebis_cyl = EB2::IndexSpace::top();
+    amrex::Print() << "Done building the cylinder geometry" << std::endl;
 
-	const EB2::IndexSpace& ebis_cyl = EB2::IndexSpace::top();
-	const EB2::Level& ebis_lev_cyl = ebis_cyl.getLevel(geom[lev]);
-
-	amrex::Print() << "Done building the cylinder geometry" << std::endl;
-
-	/****************************************************************************
+    /****************************************************************************
     *                                                                           *
     * THIS FILLS FLUID EBFACTORY                                                *
     *                                                                           *
     *****************************************************************************/
-
-	amrex::Print() << "Now  making the fluid ebfactory ..." << std::endl;
-
-	eb_level_fluid = &ebis_lev_cyl;
-
-	ebfactory[lev].reset(new EBFArrayBoxFactory(
-		*eb_level_fluid,
-		geom[lev],
-		grids[lev],
-		dmap[lev],
-		{m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
-		m_eb_support_level));
-
-	amrex::Print() << "Done making the fluid ebfactory ..." << std::endl;
+    amrex::Print() << "Now  making the fluid ebfactory ..." << std::endl;
+    for(int lev = 0; lev < nlev; lev++)
+    {
+        const EB2::Level& ebis_lev_cyl = ebis_cyl.getLevel(geom[lev]);
+        eb_level_fluid = &ebis_lev_cyl;
+        ebfactory[lev].reset(new EBFArrayBoxFactory(
+            *eb_level_fluid,
+            geom[lev],
+            grids[lev],
+            dmap[lev],
+            {m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
+            m_eb_support_level));
+    }
+    amrex::Print() << "Done making the fluid ebfactory ..." << std::endl;
 }
