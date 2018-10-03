@@ -12,8 +12,6 @@
 #include <setup_F.H>
 
 // Declare and initialise variables
-int verbose = -1;
-
 Real stop_time = -1.0;
 int max_step = -1;
 bool steady_state = false;
@@ -230,8 +228,6 @@ void ReadParameters()
 {
 	{
 		ParmParse pp("amr");
-
-		pp.query("verbose", verbose);
 
 		pp.query("stop_time", stop_time);
 		pp.query("max_step", max_step);

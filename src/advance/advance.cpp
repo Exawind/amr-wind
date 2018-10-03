@@ -23,7 +23,8 @@ void incflo::Advance(int nstep,
 	BL_PROFILE_REGION_START("incflo::Advance");
 	BL_PROFILE("incflo::Advance");
 
-	amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+    if(verbose > 0)
+        amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
 
     for(int lev = 0; lev < nlev; lev++)
     {
@@ -63,13 +64,15 @@ void incflo::Advance(int nstep,
 
 		if(steady_state)
 		{
-			amrex::Print() << "\n   Iteration " << iter << " with dt = " << dt << "\n" << std::endl;
+            if(verbose > 0)
+                amrex::Print() << "\n   Iteration " << iter << " with dt = " << dt << "\n" << std::endl;
 		}
 		else
 		{
-			amrex::Print() << "\n   Step " << nstep + 1 << ": from old_time " << time
-						   << " to new time " << time + dt << " with dt = " << dt << "\n"
-						   << std::endl;
+            if(verbose > 0)
+                amrex::Print() << "\n   Step " << nstep + 1 << ": from old_time " << time
+                               << " to new time " << time + dt << " with dt = " << dt << "\n"
+                               << std::endl;
 		}
 
         for(int lev = 0; lev < nlev; lev++)
@@ -82,7 +85,7 @@ void incflo::Advance(int nstep,
 
 		// Predictor step
         incflo_apply_predictor(conv_old, divtau_old, dt, proj_2);
-        if(verbose > 0)
+        if(verbose > 1)
         {
             amrex::Print() << "\nAfter predictor step:\n";
             for(int lev = 0; lev < nlev; lev++)
@@ -99,7 +102,7 @@ void incflo::Advance(int nstep,
 
 		// Corrector step
         incflo_apply_corrector(conv_old, divtau_old, dt, proj_2);
-        if(verbose > 0)
+        if(verbose > 1)
         {
             amrex::Print() << "\nAfter corrector step:\n";
             for(int lev = 0; lev < nlev; lev++)
@@ -436,7 +439,7 @@ int incflo::steady_state_reached(Real dt, int iter)
         condition2[lev] = (tmp1 < tol) && (tmp2 < tol) && (tmp3 < tol); // && (tmp4 < tol);
 
         // Print out info on steady state checks
-        if(verbose)
+        if(verbose > 0)
         {
             amrex::Print() << "\nSteady state check:\n";
             amrex::Print() << "||u-uo||/||uo|| , du/dt  = " << tmp1 << " , " << delta_u/dt << "\n";
