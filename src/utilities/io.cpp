@@ -499,7 +499,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 
 	Vector<std::unique_ptr<MultiFab>> mf(nlev);
 
-	for(int lev = 0; lev <= nlev; ++lev)
+	for(int lev = 0; lev < nlev; ++lev)
 	{
 		// the "+1" here is for volfrac
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
