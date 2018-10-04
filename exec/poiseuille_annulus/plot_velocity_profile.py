@@ -43,7 +43,3 @@ ax.set_ylabel(r'Error')
 ## Finalize
 fig.tight_layout()
 plt.show()
-#if system() == 'Darwin':
-#    plt.savefig('/Users/ksk/Documents/ViscoplasticArticle/Figures/velocity_profiles_powerlaw.pdf')
-#elif system() == 'Linux':
-#    plt.savefig('/home/knut/Documents/ViscoplasticArticle/Figures/velocity_profiles_powerlaw.pdf')
