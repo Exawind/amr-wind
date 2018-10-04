@@ -9,7 +9,7 @@ amr.steady_state        =   1           # Steady-state solver?
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.         # Use this constant dt if > 0
-incflo.cfl              =   100.        # CFL factor
+incflo.cfl              =   16.         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
