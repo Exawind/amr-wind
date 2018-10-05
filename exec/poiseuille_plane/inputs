@@ -21,28 +21,28 @@ amr.restart             =   ""          # Checkpoint to restart from
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.mu_0             =   0.5         # Dynamic viscosity coefficient
+incflo.mu_0             =   1.          # Dynamic viscosity coefficient
 incflo.ro_0             =   1.          # Reference density 
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   8   16  8   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   32  32  16  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   1.  2.  1.  # Hi corner coordinates
-geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
+geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
+geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
@@ -54,3 +54,4 @@ mac.verbose             =   0           # MacProjector
 #              DEBUGGING                #
 #.......................................#
 amrex.fpe_trap_invalid  =   0           # Trap NaNs
+fabarray.mfiter_tile_size = 1024 1024 1024

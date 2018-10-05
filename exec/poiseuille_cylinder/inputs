@@ -48,7 +48,7 @@ cylinder.center         =   1.  1.  1.  # Center
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
@@ -60,3 +60,4 @@ mac.verbose             =   0           # MacProjector
 #              DEBUGGING                #
 #.......................................#
 amrex.fpe_trap_invalid  =   0           # Trap NaNs
+fabarray.mfiter_tile_size = 1024 1024 1024
