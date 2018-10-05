@@ -116,33 +116,6 @@ contains
                             bc_jlo_type, bc_jhi_type, &
                             bc_klo_type, bc_khi_type)
 
-      !
-      ! Compute div(u) at the nodes
-      !
-      do k = lo(3), hi(3)+1
-         do j = lo(2), hi(2)+1
-            do i = lo(1), hi(1)+1
-
-               ! Divergence
-               du = (   vel(i  ,j  ,k  ,1) + vel(i  ,j-1,k  ,1) &
-                    &  +vel(i  ,j  ,k-1,1) + vel(i  ,j-1,k-1,1) &
-                    &  -vel(i-1,j  ,k  ,1) - vel(i-1,j-1,k  ,1) &
-                    &  -vel(i-1,j  ,k-1,1) - vel(i-1,j-1,k-1,1) )
-
-               dv = (   vel(i  ,j  ,k  ,2) + vel(i-1,j  ,k  ,2) &
-                    &  +vel(i  ,j  ,k-1,2) + vel(i-1,j  ,k-1,2) &
-                    &  -vel(i  ,j-1,k  ,2) - vel(i-1,j-1,k  ,2) &
-                    &  -vel(i  ,j-1,k-1,2) - vel(i-1,j-1,k-1,2) )
-
-               dw = (   vel(i  ,j  ,k  ,3) + vel(i-1,j  ,k  ,3) &
-                    &  +vel(i  ,j-1,k  ,3) + vel(i-1,j-1,k  ,3) &
-                    &  -vel(i  ,j  ,k-1,3) - vel(i-1,j  ,k-1,3) &
-                    &  -vel(i  ,j-1,k-1,3) - vel(i-1,j-1,k-1,3) )
-
-            end do
-         end do
-      end do
-
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)

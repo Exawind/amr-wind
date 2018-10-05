@@ -6,11 +6,22 @@
 
 void incflo::incflo_compute_strainrate()
 {
-	BL_PROFILE("incflo::incflo_compute_strainrate");
+    BL_PROFILE("incflo::incflo_compute_strainrate");
 
     for(int lev = 0; lev < nlev; lev++)
     {
         Box domain(geom[lev].Domain());
+
+        // Get EB geometric info
+        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
+        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
+        const amrex::MultiFab*                    volfrac;
+        const amrex::MultiCutFab*                 bndrycent;
+
+        areafrac  =   ebfactory[lev] -> getAreaFrac();
+        facecent  =   ebfactory[lev] -> getFaceCent();
+        volfrac   = &(ebfactory[lev] -> getVolFrac());
+        bndrycent = &(ebfactory[lev] -> getBndryCent());
 
 #ifdef _OPENMP
 #pragma omp parallel
@@ -24,18 +35,35 @@ void incflo::incflo_compute_strainrate()
             const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
-            if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
+            if (flags.getType(bx) == FabType::covered)
             {
-                compute_strainrate(BL_TO_FORTRAN_BOX(bx),
-                                   BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
-                                   BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                                   geom[lev].CellSize());
+                (*strainrate[lev])[mfi].setVal(1.2345e200, bx, 0, 3);
             }
             else
             {
-                // TODO: How to compute this in cut cells? 
-                // compute_strainrate_eb();
-                strainrate[lev]->setVal(0.0, bx, 0, 1);
+//                if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
+                {
+                    compute_strainrate(BL_TO_FORTRAN_BOX(bx),
+                                       BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
+                                       BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+                                       geom[lev].CellSize());
+                }
+/*                else
+                {
+                    compute_strainrate_eb(BL_TO_FORTRAN_BOX(bx),
+                                          BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+                                          BL_TO_FORTRAN_ANYD(flags),
+                                          BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*areafrac[2])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*facecent[0])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*volfrac)[mfi]),
+                                          BL_TO_FORTRAN_ANYD((*bndrycent)[mfi]),
+                                          geom[lev].CellSize());
+                }*/
             }
         }
     }

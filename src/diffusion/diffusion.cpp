@@ -11,11 +11,11 @@
 #include <AMReX_MLEBABecLap.H>
 
 //
-// Explicit diffusion
+// Divergence of stress tensor
 //
 void incflo::incflo_compute_divtau(int lev,
-										 MultiFab& divtau,
-										 Vector<std::unique_ptr<MultiFab>>& vel)
+                                   MultiFab& divtau,
+                                   Vector<std::unique_ptr<MultiFab>>& vel)
 {
 	BL_PROFILE("incflo::incflo_compute_divtau");
 	Box domain(geom[lev].Domain());

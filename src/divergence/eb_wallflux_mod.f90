@@ -256,12 +256,12 @@ contains
       tauxy = mu(i,j,k) * (dudy + dvdx)
       tauxz = mu(i,j,k) * (dudz + dwdx)
 
-      tauyx = mu(i,j,k) * (dvdx + dudy)
+      tauyx = tauxy
       tauyy = mu(i,j,k) * (dvdy + dvdy)
       tauyz = mu(i,j,k) * (dvdz + dwdy)
 
-      tauzx = mu(i,j,k) * (dwdx + dudz)
-      tauzy = mu(i,j,k) * (dwdy + dvdz)
+      tauzx = tauxz
+      tauzy = tauyz
       tauzz = mu(i,j,k) * (dwdz + dwdz)
 
       if (do_explicit_diffusion .eq. 0) then
