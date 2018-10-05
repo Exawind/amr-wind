@@ -41,7 +41,7 @@ contains
    subroutine compute_divtau (lo, hi, &
                               divtau, dlo, dhi, &
                               vel_in, vinlo, vinhi, &
-                              mu, lambda, ro, &
+                              mu, ro, &
                               slo, shi, &
                               domlo, domhi, &
                               bc_ilo_type, bc_ihi_type, &
@@ -74,8 +74,7 @@ contains
       real(rt),        intent(in   ) ::                           &
            & vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
            & ro(      slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
-           & mu(      slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
-           & lambda(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
+           & mu(      slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
 
       real(rt),        intent(inout) ::                        &
            & divtau(  dlo(1):  dhi(1),  dlo(2):  dhi(2),  dlo(3):  dhi(3),3)
@@ -93,17 +92,12 @@ contains
       integer(c_int) :: vlo(3), vhi(3)
       real(rt), dimension(:,:,:,:), pointer, contiguous :: vel
 
-      ! Temporaty array to handle div(u) at the nodes
-      real(rt), dimension(:,:,:  ), pointer, contiguous :: divu
-
       integer(c_int)                 :: i, j, k, n
       real(rt)                       :: idx, idy, idz
       real(rt)                       :: du, dv, dw
 
       real(rt)  :: txx, tyy, tzz
       real(rt)  :: mu_e, mu_w, mu_n, mu_s, mu_t, mu_b
-      real(rt)  :: lambda_e, lambda_w, lambda_n, lambda_s, lambda_t, lambda_b
-      real(rt)  :: divu_e, divu_w, divu_n, divu_s, divu_t, divu_b
       real(rt)  :: txx_e, txx_w, txy_n, txy_s, txz_t, txz_b
       real(rt)  :: txy_e, txy_w, tyy_n, tyy_s, tyz_t, tyz_b
       real(rt)  :: txz_e, txz_w, tyz_n, tyz_s, tzz_t, tzz_b
@@ -115,7 +109,6 @@ contains
       vlo = lo - ng
       vhi = hi + ng
       call amrex_allocate( vel, vlo(1), vhi(1)  , vlo(2), vhi(2)  , vlo(3), vhi(3)  , 1, 3)
-      call amrex_allocate(divu, vlo(1), vhi(1)+1, vlo(2), vhi(2)+1, vlo(3), vhi(3)+1)
 
       ! Put values into ghost cells so we can easy take derivatives
       call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
@@ -146,8 +139,6 @@ contains
                     &  -vel(i  ,j  ,k-1,3) - vel(i-1,j  ,k-1,3) &
                     &  -vel(i  ,j-1,k-1,3) - vel(i-1,j-1,k-1,3) )
 
-               divu(i,j,k) = ( du*idx + dv*idy + dw*idz ) * q4
-
             end do
          end do
       end do
@@ -162,13 +153,6 @@ contains
                mu_n = half * (mu(i,j,k) + mu(i,j+1,k))
                mu_b = half * (mu(i,j,k) + mu(i,j,k-1))
                mu_t = half * (mu(i,j,k) + mu(i,j,k+1))
-
-               lambda_w = half * (lambda(i,j,k) + lambda(i-1,j,k))
-               lambda_e = half * (lambda(i,j,k) + lambda(i+1,j,k))
-               lambda_s = half * (lambda(i,j,k) + lambda(i,j-1,k))
-               lambda_n = half * (lambda(i,j,k) + lambda(i,j+1,k))
-               lambda_b = half * (lambda(i,j,k) + lambda(i,j,k-1))
-               lambda_t = half * (lambda(i,j,k) + lambda(i,j,k+1))
 
                !*************************************
                !         div(tau)_x
@@ -210,15 +194,10 @@ contains
 
                txz_b = mu_b * ( du*idz + dw*idx )
 
-               ! Div term
-               divu_e = lambda_e * ( divu(i+1,j,k) + divu(i+1,j+1,k) + divu(i+1,j,k+1) + divu(i+1,j+1,k+1)) * q4
-               divu_w = lambda_w * ( divu(i  ,j,k) + divu(i  ,j+1,k) + divu(i  ,j,k+1) + divu(i  ,j+1,k+1)) * q4
-
                ! Assemble
                divtau(i,j,k,1) = ( txx_e - txx_w ) * idx  + &
                     &            ( txy_n - txy_s ) * idy  + &
-                    &            ( txz_t - txz_b ) * idz  + &
-                    &            ( divu_e - divu_w ) * idx
+                    &            ( txz_t - txz_b ) * idz
 
                !*************************************
                !         div(tau)_y
@@ -259,15 +238,10 @@ contains
 
                tyz_b = mu_b * ( dv*idz + dw*idy )
 
-               ! Div term
-               divu_n = lambda_n * ( divu(i,j+1,k) + divu(i,j+1,k+1) + divu(i+1,j+1,k+1) + divu(i+1,j+1,k) ) * q4
-               divu_s = lambda_s * ( divu(i,j  ,k) + divu(i,j  ,k+1) + divu(i+1,j  ,k+1) + divu(i+1,j  ,k) ) * q4
-
                ! Assemble
                divtau(i,j,k,2) = ( txy_e - txy_w ) * idx  + &
                     &            ( tyy_n - tyy_s ) * idy  + &
-                    &            ( tyz_t - tyz_b ) * idz  + &
-                    &            ( divu_n - divu_s ) * idy
+                    &            ( tyz_t - tyz_b ) * idz
 
                !*************************************
                !         div(tau)_z
@@ -309,15 +283,10 @@ contains
                tzz_t = two * mu_t * ( vel(i,j,k+1,3) - vel(i,j,k  ,3) ) * idz
                tzz_b = two * mu_b * ( vel(i,j,k  ,3) - vel(i,j,k-1,3) ) * idz
 
-               ! Div term
-               divu_t = lambda_t * ( divu(i,j,k+1) + divu(i+1,j,k+1) + divu(i+1,j+1,k+1) + divu(i,j+1,k+1) ) * q4
-               divu_b = lambda_b * ( divu(i,j,k  ) + divu(i+1,j,k  ) + divu(i+1,j+1,k  ) + divu(i,j+1,k  ) ) * q4
-
                ! Assemble
                divtau(i,j,k,3) = ( txz_e - txz_w ) * idx  + &
                     &            ( tyz_n - tyz_s ) * idy  + &
-                    &            ( tzz_t - tzz_b ) * idz  + &
-                    &            ( divu_t - divu_b ) * idz
+                    &            ( tzz_t - tzz_b ) * idz
 
                if (do_explicit_diffusion .eq. 0) then
                   !
@@ -345,7 +314,6 @@ contains
       end do
 
       call amrex_deallocate(vel)
-      call amrex_deallocate(divu)
 
    end subroutine compute_divtau
 

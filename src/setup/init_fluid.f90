@@ -7,7 +7,7 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
                          domlo, domhi, ro, p, vel, &
-                         mu, lambda, dx, dy, dz, xlength, ylength, zlength) &
+                         mu, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
       use amrex_fort_module, only : rt => amrex_real
@@ -33,8 +33,6 @@ contains
 
       real(rt), intent(inout) :: mu&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength
@@ -45,7 +43,7 @@ contains
       ! Set the initial fluid density and viscosity
       ro  = ro_0
 
-      call calc_mu(slo, shi, lo, hi, mu, lambda)
+      call calc_mu(slo, shi, lo, hi, mu)
 
    end subroutine init_fluid
 
@@ -54,7 +52,7 @@ contains
 !  Subroutine: init_fluid_restart                                      !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine init_fluid_restart(slo, shi, lo, hi, mu, lambda) &
+   subroutine init_fluid_restart(slo, shi, lo, hi, mu) &
       bind(C, name="init_fluid_restart")
 
       use amrex_fort_module, only : rt => amrex_real
@@ -70,10 +68,8 @@ contains
 
       real(rt), intent(inout) :: mu&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      call calc_mu(slo, shi, lo, hi, mu, lambda)
+      call calc_mu(slo, shi, lo, hi, mu)
 
    end subroutine init_fluid_restart
 

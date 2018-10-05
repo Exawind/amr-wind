@@ -302,8 +302,7 @@ void incflo::incflo_init_fluid(int is_restarting,
             {
                 init_fluid_restart(sbx.loVect(), sbx.hiVect(),
                                    bx.loVect(), bx.hiVect(),
-                                   (*mu[lev])[mfi].dataPtr(),
-                                   (*lambda[lev])[mfi].dataPtr());
+                                   (*mu[lev])[mfi].dataPtr());
             }
             else
             {
@@ -314,7 +313,6 @@ void incflo::incflo_init_fluid(int is_restarting,
                            (*p[lev])[mfi].dataPtr(),
                            (*vel[lev])[mfi].dataPtr(),
                            (*mu[lev])[mfi].dataPtr(),
-                           (*lambda[lev])[mfi].dataPtr(),
                            &dx, &dy, &dz,
                            &xlen, &ylen, &zlen);
             }
@@ -338,7 +336,6 @@ void incflo::incflo_init_fluid(int is_restarting,
         vel[lev]->FillBoundary(geom[lev].periodicity());
 
         fill_mf_bc(lev, *mu[lev]);
-        fill_mf_bc(lev, *lambda[lev]);
 
         if(is_restarting == 1)
             incflo_extrap_pressure(lev, p[lev]);
@@ -399,7 +396,6 @@ void incflo::incflo_set_bc0()
                     sbx.hiVect(),
                     (*ro[lev])[mfi].dataPtr(),
                     (*mu[lev])[mfi].dataPtr(),
-                    (*lambda[lev])[mfi].dataPtr(),
                     bc_ilo[lev]->dataPtr(),
                     bc_ihi[lev]->dataPtr(),
                     bc_jlo[lev]->dataPtr(),

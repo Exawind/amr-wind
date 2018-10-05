@@ -34,10 +34,6 @@ void incflo::AllocateArrays(int lev)
 	mu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	mu[lev]->setVal(0.);
 
-	// Coefficient of grad(div(u)) in viscous terms
-	lambda[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-	lambda[lev]->setVal(0.);
-
 	// Current velocity
 	vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	vel[lev]->setVal(0.);
@@ -212,13 +208,6 @@ void incflo::RegridArrays(int lev)
 	mu_new->copy(*mu[lev], 0, 0, 1, 0, ng);
 	mu[lev] = std::move(mu_new);
 
-	// Lambda
-	ng = lambda[lev]->nGrow();
-    std::unique_ptr<MultiFab> lambda_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-	lambda_new->setVal(0.);
-	lambda_new->copy(*lambda[lev], 0, 0, 1, 0, ng);
-	lambda[lev] = std::move(lambda_new);
-
 	// Gas velocity
 	ng = vel[lev]->nGrow();
 	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], vel[lev]->nComp(), ng, MFInfo(), *ebfactory[lev]));
@@ -323,7 +312,6 @@ void incflo::RegridArrays(int lev)
 	fill_mf_bc(lev, *ro_o[lev]);
 
 	fill_mf_bc(lev, *mu[lev]);
-	fill_mf_bc(lev, *lambda[lev]);
 
     fill_mf_bc(lev, *p[lev]);
     fill_mf_bc(lev, *p_o[lev]);
@@ -358,7 +346,6 @@ void incflo::ResizeArrays()
 	gp0.resize(nlevs_max);
 
 	mu.resize(nlevs_max);
-	lambda.resize(nlevs_max);
 
     strainrate.resize(nlevs_max);
 	vort.resize(nlevs_max);

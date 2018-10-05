@@ -16,7 +16,7 @@ contains
    !
    subroutine compute_diff_wallflux (divw, dx, i, j, k, &
                                      vel, vlo, vhi,     &
-                                     lam, mu, slo, shi, &
+                                     mu, slo, shi, &
                                      bcent, blo, bhi,   &
                                      apx, axlo, axhi,   &
                                      apy, aylo, ayhi,   &
@@ -43,7 +43,6 @@ contains
       ! Arrays
       real(rt),       intent(in   ) ::                               &
            &   vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3),     &
-           &   lam(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),       &
            &    mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),       &
            & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3),     &
            & apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)),   &
@@ -63,8 +62,8 @@ contains
       real(rt)   :: bct(3), d1, d2, ddinv
       real(rt)   :: cxm, cx0, cxp, cym, cy0, cyp, czm, cz0, czp
       real(rt)   :: u1, v1, w1, u2, v2, w2, dudn, dvdn, dwdn
-      real(rt)   :: dudx, dudy, dudz, dvdx, dvdy, dvdz, dwdx, dwdy, dwdz, divu
-      real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy, tautmp
+      real(rt)   :: dudx, dudy, dudz, dvdx, dvdy, dvdz, dwdx, dwdy, dwdz
+      real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy
       integer    :: ixit, iyit, izit, is
 
       divw  = zero
@@ -253,20 +252,17 @@ contains
       dwdy = dwdn * anrmy
       dwdz = dwdn * anrmz
 
-      divu = dudx+dvdy+dwdz
-      tautmp = lam(i,j,k)*divu  ! This MUST be verified
-
-      tauxx = mu(i,j,k) * (dudx + dudx) + tautmp
+      tauxx = mu(i,j,k) * (dudx + dudx) 
       tauxy = mu(i,j,k) * (dudy + dvdx)
       tauxz = mu(i,j,k) * (dudz + dwdx)
 
       tauyx = mu(i,j,k) * (dvdx + dudy)
-      tauyy = mu(i,j,k) * (dvdy + dvdy) + tautmp
+      tauyy = mu(i,j,k) * (dvdy + dvdy)
       tauyz = mu(i,j,k) * (dvdz + dwdy)
 
       tauzx = mu(i,j,k) * (dwdx + dudz)
       tauzy = mu(i,j,k) * (dwdy + dvdz)
-      tauzz = mu(i,j,k) * (dwdz + dwdz) + tautmp
+      tauzz = mu(i,j,k) * (dwdz + dwdz)
 
       if (do_explicit_diffusion .eq. 0) then
          !

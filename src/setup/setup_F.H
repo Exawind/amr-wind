@@ -19,7 +19,7 @@ extern "C"
                      const int* ng);
     
     void set_bc0(const int* slo, const int* shi,
-                 amrex::Real* ro, amrex::Real* mu, amrex::Real* lambda,
+                 amrex::Real* ro, amrex::Real* mu, 
                  const int* bc_ilo, const int* bc_ihi,
                  const int* bc_jlo, const int* bc_jhi,
                  const int* bc_klo, const int* bc_khi,
@@ -30,13 +30,13 @@ extern "C"
                     const int*  lo, const int*  hi,
                     const int* domlo, const int* domhi,
                     amrex::Real* ro, amrex::Real* p, amrex::Real* vel,
-                    amrex::Real* mu, amrex::Real* lambda,
+                    amrex::Real* mu, 
                     amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
                     amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength);
     
     void init_fluid_restart(const int* slo, const int* shi,
                             const int*  lo, const int*  hi,
-                            amrex::Real* mu, amrex::Real* lambda);
+                            amrex::Real* mu);
     
     void set_p0(const int* lo, const int* hi,
                 const int* domlo, const int* domhi,

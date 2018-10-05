@@ -58,8 +58,7 @@ void incflo::incflo_set_scalar_bcs ()
         for (MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
         {
             set_scalar_bcs((*ro[lev])[mfi].dataPtr(),
-                           (*mu[lev])[mfi].dataPtr(),
-                           BL_TO_FORTRAN_ANYD((*lambda[lev])[mfi]),
+                           BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
                            bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                            bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                            bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
@@ -68,7 +67,6 @@ void incflo::incflo_set_scalar_bcs ()
         }
         ro[lev]->FillBoundary(geom[lev].periodicity());
         mu[lev]->FillBoundary(geom[lev].periodicity());
-        lambda[lev]->FillBoundary(geom[lev].periodicity());
     }
 }
 

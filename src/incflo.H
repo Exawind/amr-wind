@@ -305,7 +305,6 @@ private:
 	Vector<std::unique_ptr<MultiFab>> mu;
 
 	// Cell-based
-	Vector<std::unique_ptr<MultiFab>> lambda;
 	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
 

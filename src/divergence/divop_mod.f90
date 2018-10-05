@@ -43,7 +43,7 @@ contains
                              vfrac,   vflo, vfhi, &
                              bcent,    blo,  bhi, &
                              domlo, domhi,        &
-                             dx, ng, mu, lambda , &
+                             dx, ng, mu,          &
                              do_explicit_diffusion ) bind(C)
 
       use bc
@@ -94,8 +94,7 @@ contains
 
       ! Optional arrays (only for viscous calculations)
       real(ar),        intent(in   ), optional  ::                &
-           &     mu(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)),   &
-           & lambda(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3))
+           &     mu(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3))
 
       real(ar),        intent(inout) ::                           &
            & div(dlo(1):dhi(1),dlo(2):dhi(2),dlo(3):dhi(3),3)
@@ -130,14 +129,11 @@ contains
       ! Check number of ghost cells
       if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
 
-      ! Check if we are computing divergence for viscous term by checking if
-      ! both mu and lambda are passed in
-      if ( present(mu) .and. present(lambda) ) then
+      ! Check if we are computing divergence for viscous term
+      if ( present(mu) ) then
          is_viscous = .true.
-      else if ( .not. present(mu) .and. .not. present(lambda) ) then
-         is_viscous = .false.
       else
-         call amrex_abort("compute_divop(): either mu or lambda is not passed in")
+         is_viscous = .false.
       end if
 
       if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
@@ -222,7 +218,7 @@ contains
                         if (is_viscous) then
                            if (n==1) then
                               call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
-                                                         vel, vllo, vlhi, lambda, mu, vflo, vfhi, bcent, blo, bhi,     &
+                                                         vel, vllo, vlhi, mu, vflo, vfhi, bcent, blo, bhi,     &
                                                          afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, &
                                                          do_explicit_diffusion)
                            end if

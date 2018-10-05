@@ -23,7 +23,7 @@
 ! The top and bottom boundaries are set at cyclic with a specified
 ! pressure drop (delP_Z).
 !---------------------------------------------------------------------//
-  DELP_Z = 4.0
+  DELP_Z = 2.0
 
 # y lo and hi: no slip walls
 
@@ -35,12 +35,3 @@
   BC_Z_t(1:2) =   1.0     1.0     ! (m)
 
   BC_Type(1:2) =  'NSW'    'NSW'
-
-  BC_X_w(3:4) =   0.0     2.0     ! (m)
-  BC_X_e(3:4) =   0.0     2.0     ! (m)
-  BC_Y_s(3:4) =   0.0     0.0     ! (m)
-  BC_Y_n(3:4) =   2.0     2.0     ! (m)
-  BC_Z_b(3:4) =   0.0     0.0     ! (m)
-  BC_Z_t(3:4) =   1.0     1.0     ! (m)
-
-  BC_Type(3:4) =  'NSW'    'NSW'

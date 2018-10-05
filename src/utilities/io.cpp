@@ -378,7 +378,6 @@ void incflo::Restart(
 		fill_mf_bc(lev, *ro_o[lev]);
 
 		fill_mf_bc(lev, *mu[lev]);
-		fill_mf_bc(lev, *lambda[lev]);
 
 		// Fill the bc's just in case
 		vel[lev]->FillBoundary(geom[lev].periodicity());

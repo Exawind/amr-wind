@@ -36,7 +36,7 @@ amr.max_level           =   0           # Max AMR level in hierarchy
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
-geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
@@ -54,4 +54,3 @@ mac.verbose             =   0           # MacProjector
 #              DEBUGGING                #
 #.......................................#
 amrex.fpe_trap_invalid  =   0           # Trap NaNs
-fabarray.mfiter_tile_size = 1024 1024 1024
