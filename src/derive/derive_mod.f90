@@ -9,8 +9,6 @@ module derive_module
 
    real(rt), parameter :: q4 = one / ( two * two )
 
-   public compute_strainrate
-
 contains
 
    !

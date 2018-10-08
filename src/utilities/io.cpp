@@ -30,8 +30,8 @@ void incflo::InitIOData()
 	// Define the list of scalar variables at cell centers that need to be
 	// written to plotfile/checkfile. "volfrac" MUST always be last without any
 	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "mu", "strainrate", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &mu, &strainrate, &vort, &divu};
+	pltscaVarsName = {"p", "ro", "mu", "strainrate", "stress", "vort", "divu", "volfrac"};
+	pltscalarVars = {&p, &ro, &mu, &strainrate, &strainrate, &vort, &divu};
 
 	chkscaVarsName = {"p", "ro", "mu"};
 	chkscalarVars = {&p, &ro, &mu};
@@ -537,6 +537,11 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 			else if(pltscaVarsName[i] == "strainrate")
 			{
 				MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, dcomp, 1, 0);
+			}
+			else if(pltscaVarsName[i] == "stress")
+			{
+				MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, dcomp, 1, 0);
+				MultiFab::Multiply(*mf[lev], (*mu[lev]), 0, dcomp, 1, 0);
 			}
 			else if(pltscaVarsName[i] == "vort")
 			{

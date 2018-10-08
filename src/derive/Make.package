@@ -1,3 +1,4 @@
 f90EXE_sources += derive_mod.f90
+f90EXE_sources += derive_eb_mod.f90
 
 CEXE_sources += derive.cpp
