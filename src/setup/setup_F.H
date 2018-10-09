@@ -8,47 +8,71 @@ extern "C"
 #endif
     void set_delp_dir(int* delp_dir);
     
-    void incflo_get_data(amrex::Real* gravity, amrex::Real* ro_0, amrex::Real* mu_0); 
+    void incflo_get_data
+        (
+            amrex::Real* gravity,
+            amrex::Real* ro_0,
+            amrex::Real* mu_0,
+            amrex::Real* tau_0,
+            amrex::Real* papa_reg
+        ); 
     
-    void set_bc_type(const int* bc_ilo, const int* bc_ihi,
-                     const int* bc_jlo, const int* bc_jhi,
-                     const int* bc_klo, const int* bc_khi,
-                     const int* domlo , const int* domhi,
-                     amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-                     amrex::Real* xlen, amrex::Real* ylen, amrex::Real* zlen,
-                     const int* ng);
+    void set_bc_type
+        (
+            const int* bc_ilo, const int* bc_ihi,
+            const int* bc_jlo, const int* bc_jhi,
+            const int* bc_klo, const int* bc_khi,
+            const int* domlo , const int* domhi,
+            amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
+            amrex::Real* xlen, amrex::Real* ylen, amrex::Real* zlen,
+            const int* ng
+        );
     
-    void set_bc0(const int* slo, const int* shi,
-                 amrex::Real* ro, amrex::Real* mu, 
-                 const int* bc_ilo, const int* bc_ihi,
-                 const int* bc_jlo, const int* bc_jhi,
-                 const int* bc_klo, const int* bc_khi,
-                 const int* domlo , const int* domhi,
-                 const int* ng);
+    void set_bc0
+        (
+            const int* slo, const int* shi,
+            amrex::Real* ro, amrex::Real* mu, 
+            const int* bc_ilo, const int* bc_ihi,
+            const int* bc_jlo, const int* bc_jhi,
+            const int* bc_klo, const int* bc_khi,
+            const int* domlo , const int* domhi,
+            const int* ng
+        );
     
-    void init_fluid(const int* slo, const int* shi,
-                    const int*  lo, const int*  hi,
-                    const int* domlo, const int* domhi,
-                    amrex::Real* ro, amrex::Real* p, amrex::Real* vel,
-                    amrex::Real* mu, 
-                    amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-                    amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength);
+    void init_fluid
+        (
+            const int* slo, const int* shi,
+            const int*  lo, const int*  hi,
+            const int* domlo, const int* domhi,
+            amrex::Real* ro, 
+            amrex::Real* p, 
+            amrex::Real* vel,
+            amrex::Real* mu, 
+            amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
+            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength
+        );
     
-    void init_fluid_restart(const int* slo, const int* shi,
-                            const int*  lo, const int*  hi,
-                            amrex::Real* mu);
+    void init_fluid_restart
+        (
+            const int* slo, const int* shi,
+            const int*  lo, const int*  hi,
+            amrex::Real* mu
+        );
     
-    void set_p0(const int* lo, const int* hi,
-                const int* domlo, const int* domhi,
-                amrex::Real* p0,  const int* rlo, const int* rhi,
-                amrex::Real* gp0, const int* glo, const int* ghi,
-                amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-                amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength,
-                int* delp_dir,
-                const int* bc_ilo, const int* bc_ihi,
-        	    const int* bc_jlo, const int* bc_jhi,
-        	    const int* bc_klo, const int* bc_khi,
-                const int* ng);
+    void set_p0
+        (
+            const int* lo, const int* hi,
+            const int* domlo, const int* domhi,
+            amrex::Real* p0,  const int* rlo, const int* rhi,
+            amrex::Real* gp0, const int* glo, const int* ghi,
+            amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
+            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength,
+            int* delp_dir,
+            const int* bc_ilo, const int* bc_ihi,
+        	const int* bc_jlo, const int* bc_jhi,
+        	const int* bc_klo, const int* bc_khi,
+            const int* ng
+        );
    
 #ifdef __cplusplus
 }

@@ -3,7 +3,7 @@ module rheology_module
    use amrex_fort_module, only : rt => amrex_real
    use constant, only: mu_0, tau_0, papa_reg
    use iso_c_binding , only: c_int
-   use param, only: half, one, two
+   use param, only: zero, half, one, two
 
    implicit none
 
@@ -26,6 +26,8 @@ contains
       real(rt), intent(in   ) :: &
          strainrate(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
+      real(rt) :: nu
+
       ! Local variables
       !-----------------------------------------------
       integer      :: i, j, k
@@ -34,8 +36,25 @@ contains
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
 
-               mu(i,j,k) = mu_0 + tau_0 * &
-                  (one - exp(-strainrate(i,j,k) / papa_reg)) / strainrate(i,j,k)
+               ! Newtonian part
+               mu(i,j,k) = mu_0
+
+               ! Non-zero yield stress
+               if (tau_0 .gt. 0.0d0) then 
+
+                  nu = strainrate(i,j,k) / papa_reg
+
+                  ! Bingham model
+                  if (nu .lt. 1.0e-14) then 
+                     ! Avoid overflow
+                     mu(i,j,k) = mu(i,j,k) + tau_0 * & 
+                        (one - half * nu + nu**2 / 6.0d0 - nu**3 / 24.0d0) / papa_reg
+                  else
+                     mu(i,j,k) = mu(i,j,k) + tau_0 * &
+                        (one - exp(-nu)) / strainrate(i,j,k)
+                  end if
+
+               end if
 
             end do
          end do

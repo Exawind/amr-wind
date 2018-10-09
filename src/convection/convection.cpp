@@ -12,8 +12,8 @@ void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& 
 
     for(int lev = 0; lev < nlev; lev++)
     {
-        incflo_compute_velocity_at_faces(lev, vel);
         incflo_compute_velocity_slopes(lev, vel);
+        incflo_compute_velocity_at_faces(lev, vel);
     }
 
     // Do projection on all AMR-levels in one shot
@@ -124,8 +124,8 @@ void incflo::incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& 
 
     for(int lev = 0; lev < nlev; lev++)
     {
-        incflo_compute_velocity_at_faces(lev, vel);
         incflo_compute_velocity_slopes(lev, vel);
+        incflo_compute_velocity_at_faces(lev, vel);
     }
 
 	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro);

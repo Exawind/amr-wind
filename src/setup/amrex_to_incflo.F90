@@ -9,7 +9,7 @@ contains
 ! Take constants from incflo and make them available in the Fortran module !
 ! "constant", so that they can be accessed from f90 functions.             !
 !**************************************************************************!
-   subroutine incflo_get_data(gravity_in, ro_0_in, mu_0_in) &
+   subroutine incflo_get_data(gravity_in, ro_0_in, mu_0_in, tau_0_in, papa_reg_in) &
       bind(C, name="incflo_get_data")
 
       use constant , only: gravity, ro_0, mu_0, tau_0, papa_reg
@@ -19,15 +19,15 @@ contains
       implicit none
 
       real(rt),   intent(in ) :: gravity_in(3)
-      real(rt),   intent(in ) :: ro_0_in, mu_0_in
+      real(rt),   intent(in ) :: ro_0_in, mu_0_in, tau_0_in, papa_reg_in
 
       call get_data()
 
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in
       mu_0 = mu_0_in
-      tau_0 = 0.0d0
-      papa_reg = 0.0d0
+      tau_0 = tau_0_in
+      papa_reg = papa_reg_in
 
    end subroutine incflo_get_data
 

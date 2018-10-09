@@ -355,6 +355,8 @@ private:
     static Vector<Real> gravity;
     Real ro_0 = 1.0;
     Real mu_0 = 1.0;
+    Real tau_0 = 0.0;
+    Real papa_reg = 1.0e-3;
 
 	// Options to control MLMG behavior
 	int mg_verbose = 0;

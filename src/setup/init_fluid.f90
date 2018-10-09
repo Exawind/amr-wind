@@ -13,8 +13,7 @@ contains
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use constant      , only: ro_0
-      use calc_mu_module, only: calc_mu
+      use constant      , only: ro_0, mu_0
 
       implicit none
 
@@ -42,8 +41,7 @@ contains
 
       ! Set the initial fluid density and viscosity
       ro  = ro_0
-
-      call calc_mu(slo, shi, lo, hi, mu)
+      mu = mu_0
 
    end subroutine init_fluid
 
@@ -57,8 +55,7 @@ contains
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
-
-      use calc_mu_module, only: calc_mu
+      use constant, only: mu_0
 
       implicit none
 
@@ -69,7 +66,7 @@ contains
       real(rt), intent(inout) :: mu&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      call calc_mu(slo, shi, lo, hi, mu)
+      mu = mu_0
 
    end subroutine init_fluid_restart
 

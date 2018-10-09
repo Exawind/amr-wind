@@ -24,6 +24,12 @@ void incflo::InitParams()
         pp.query("mu_0", mu_0);
         AMREX_ASSERT(mu_0 >= 0.0);
 
+        pp.query("tau_0", tau_0);
+        AMREX_ASSERT(tau_0 >= 0.0);
+
+        pp.query("papa_reg", papa_reg);
+        AMREX_ASSERT(papa_reg >= 0.0);
+
 		// Options to control time stepping
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
@@ -56,7 +62,7 @@ void incflo::InitParams()
 		AMREX_ASSERT(knapsack_weight_type == "RunTimeCosts");
         
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu_0); 
+        incflo_get_data(gravity.dataPtr(), &ro_0, &mu_0, &tau_0, &papa_reg); 
 	}
 }
 
