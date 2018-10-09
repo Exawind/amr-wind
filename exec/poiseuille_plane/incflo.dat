@@ -23,7 +23,7 @@
 ! The top and bottom boundaries are set at cyclic with a specified
 ! pressure drop (delP_Z).
 !---------------------------------------------------------------------//
-  DELP_Z = 2.0
+  DELP_Z = 8.0
 
 # y lo and hi: no slip walls
 
