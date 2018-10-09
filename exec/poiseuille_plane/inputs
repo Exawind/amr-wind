@@ -43,7 +43,7 @@ geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-3       # Tolerance for steady-state
+incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
