@@ -159,9 +159,13 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
         vmax = std::max(vmax, incflo_norm0(vel, lev, 1));
         wmax = std::max(wmax, incflo_norm0(vel, lev, 2));
         romin = std::min(romin, incflo_norm0(ro, lev, 0));
-        etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
+        // WARNING WARNING: This may cause trouble as we are not doing fully implicit solve!
+        // TODO: revisit
+        if(explicit_diffusion)
+            etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
     }
 
+    // TODO: move out of unnecessary Fortran routine
     compute_new_dt(&umax, &vmax, &wmax, 
                    &romin, &etamax, gp0max,
 				   geom[finest_level].CellSize(),

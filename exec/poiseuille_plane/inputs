@@ -2,14 +2,14 @@
 #            SIMULATION STOP            #
 #.......................................#
 amr.stop_time           =   -1.         # Max (simulated) time to evolve
-amr.max_step            =   200         # Max number of time steps
+amr.max_step            =   60          # Max number of time steps
 amr.steady_state        =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.01        # Use this constant dt if > 0
-incflo.cfl              =   16000.      # CFL factor
+incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
+incflo.cfl              =   0.5         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #

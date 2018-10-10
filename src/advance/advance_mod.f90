@@ -51,29 +51,29 @@ contains
       real(ar),       intent(inout) :: dt
       real(ar)                      :: old_dt
       real(ar)                      :: c_cfl, v_cfl, f_cfl
-      real(ar)                      :: odx, ody, odz
+      real(ar)                      :: idx, idy, idz
       real(ar)                      :: tmp
       real(ar),       parameter     :: two = 2.0_ar, four = two*two
       real(ar),       parameter     :: eps = epsilon (zero)
 
-      odx    = one / dx(1)
-      ody    = one / dx(2)
-      odz    = one / dx(3)
+      idx    = one / dx(1)
+      idy    = one / dx(2)
+      idz    = one / dx(3)
       c_cfl  = zero
       v_cfl  = zero
       f_cfl  = zero
       old_dt = dt
 
       ! Convection
-      c_cfl = max ( umax*odx, vmax*ody, wmax*odz )
+      c_cfl = max ( umax*idx, vmax*idy, wmax*idz )
 
       ! Viscous
-      v_cfl = two * ( etamax / romin ) * ( odx**2 + ody**2 + odz**2 )
+      v_cfl = two * ( etamax / romin ) * ( idx**2 + idy**2 + idz**2 )
 
       ! Gravity and/or gradient of p0
-      f_cfl = abs(gravity(1)-gradp0max(1)) * odx + &
-              abs(gravity(2)-gradp0max(2)) * ody + &
-              abs(gravity(3)-gradp0max(3)) * odz
+      f_cfl = abs(gravity(1)-gradp0max(1)) * idx + &
+              abs(gravity(2)-gradp0max(2)) * idy + &
+              abs(gravity(3)-gradp0max(3)) * idz
 
       ! Put all together
       tmp = (c_cfl + v_cfl)  + sqrt ( (c_cfl + v_cfl)**2 + four * f_cfl )
