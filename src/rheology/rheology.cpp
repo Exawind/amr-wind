@@ -11,18 +11,47 @@ void incflo::incflo_compute_viscosity()
     {
         Box domain(geom[lev].Domain());
 
-    #ifdef _OPENMP
-    #pragma omp parallel
-    #endif
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
         for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
 
-            compute_viscosity(BL_TO_FORTRAN_BOX(bx),
-                              BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
-                              BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
-                              geom[lev].CellSize());
+            if(fluid_model == "newtonian")
+            {
+                newtonian_viscosity(BL_TO_FORTRAN_BOX(bx),
+                                    BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]));
+            }
+            else if(fluid_model == "powerlaw")
+            {
+                powerlaw_viscosity(BL_TO_FORTRAN_BOX(bx),
+                                   BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]));
+            }
+            else if(fluid_model == "bingham")
+            {
+                bingham_viscosity(BL_TO_FORTRAN_BOX(bx),
+                                  BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
+                                  BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]));
+            }
+            else if(fluid_model == "hb")
+            {
+                hb_viscosity(BL_TO_FORTRAN_BOX(bx),
+                             BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
+                             BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]));
+            }
+            else if(fluid_model == "smd")
+            {
+                smd_viscosity(BL_TO_FORTRAN_BOX(bx),
+                              BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
+                              BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]));
+            }
+            else
+            {
+                amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
+            }
         }
     }
 }

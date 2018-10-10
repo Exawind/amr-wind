@@ -29,7 +29,7 @@ void incflo::Advance(int nstep,
     for(int lev = 0; lev < nlev; lev++)
     {
         // Extrapolate boundary values for density and volume fraction
-        fill_mf_bc(lev, *mu[lev]);
+        fill_mf_bc(lev, *eta[lev]);
     }
     // Fill ghost nodes and reimpose boundary conditions
     incflo_set_velocity_bcs(time, 0);
@@ -145,7 +145,7 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
 	Real vmax = -1.e20;
 	Real wmax = -1.e20;
 	Real romin = 1.e20;
-	Real mumax = 0.0;
+	Real etamax = 0.0;
 
     // We only compute gp0max on the coarsest level because it is the same at all levels
 	Real gp0max[3];
@@ -159,11 +159,11 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
         vmax = std::max(vmax, incflo_norm0(vel, lev, 1));
         wmax = std::max(wmax, incflo_norm0(vel, lev, 2));
         romin = std::min(romin, incflo_norm0(ro, lev, 0));
-        mumax = std::max(mumax, incflo_norm0(mu, lev, 0));
+        etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
     }
 
     compute_new_dt(&umax, &vmax, &wmax, 
-                   &romin, &mumax, gp0max,
+                   &romin, &etamax, gp0max,
 				   geom[finest_level].CellSize(),
 				   &cfl,
 				   &steady_state,

@@ -7,13 +7,13 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
                          domlo, domhi, ro, p, vel, &
-                         mu, dx, dy, dz, xlength, ylength, zlength) &
+                         eta, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use constant      , only: ro_0, mu_0
+      use constant      , only: ro_0, mu
 
       implicit none
 
@@ -30,7 +30,7 @@ contains
       real(rt), intent(inout) :: vel&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
-      real(rt), intent(inout) :: mu&
+      real(rt), intent(inout) :: eta&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(in   ) :: dx, dy, dz
@@ -41,7 +41,7 @@ contains
 
       ! Set the initial fluid density and viscosity
       ro  = ro_0
-      mu = mu_0
+      eta = mu
 
    end subroutine init_fluid
 
@@ -50,12 +50,12 @@ contains
 !  Subroutine: init_fluid_restart                                      !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine init_fluid_restart(slo, shi, lo, hi, mu) &
+   subroutine init_fluid_restart(slo, shi, lo, hi, eta) &
       bind(C, name="init_fluid_restart")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
-      use constant, only: mu_0
+      use constant, only: mu
 
       implicit none
 
@@ -63,10 +63,10 @@ contains
       integer(c_int), intent(in   ) ::  lo(3),  hi(3)
       integer(c_int), intent(in   ) :: slo(3), shi(3)
 
-      real(rt), intent(inout) :: mu&
+      real(rt), intent(inout) :: eta&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      mu = mu_0
+      eta = mu
 
    end subroutine init_fluid_restart
 

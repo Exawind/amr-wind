@@ -3,7 +3,7 @@
 !  This module contains the subroutines to compute the three components
 !  of the diffusion term div(tau) where
 !
-!      tau = mu ( grad(u) + grad(u)^T )
+!      tau = eta ( grad(u) + grad(u)^T )
 !
 !  Author: Michele Rosso
 !
@@ -34,14 +34,14 @@ contains
    !
    ! Computes  d(txx)/dx + d(txy)/dy + d(txz)/dz
    !
-   !  txx = 2 * mu * du/dx
-   !  txy =  mu * ( du/dy + dv/dx )
-   !  txz =  mu * ( du/dz + dw/dx )
+   !  txx = 2 * eta * du/dx
+   !  txy =  eta * ( du/dy + dv/dx )
+   !  txz =  eta * ( du/dz + dw/dx )
    !
    subroutine compute_divtau(lo, hi, &
                              divtau, dlo, dhi, &
                              vel_in, vinlo, vinhi, &
-                             mu, ro, slo, shi, &
+                             eta, ro, slo, shi, &
                              domlo, domhi, &
                              bc_ilo_type, bc_ihi_type, &
                              bc_jlo_type, bc_jhi_type, &
@@ -74,7 +74,7 @@ contains
       real(rt),        intent(in   ) :: &
          & vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
          &     ro(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
-         &     mu(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
+         &     eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
 
       real(rt),        intent(inout) ::                        &
          & divtau(  dlo(1):  dhi(1),  dlo(2):  dhi(2),  dlo(3):  dhi(3),3)
@@ -97,7 +97,7 @@ contains
       real(rt)                       :: du, dv, dw
 
       real(rt)  :: txx, tyy, tzz
-      real(rt)  :: mu_e, mu_w, mu_n, mu_s, mu_t, mu_b
+      real(rt)  :: eta_e, eta_w, eta_n, eta_s, eta_t, eta_b
       real(rt)  :: txx_e, txx_w, txy_n, txy_s, txz_t, txz_b
       real(rt)  :: txy_e, txy_w, tyy_n, tyy_s, tyz_t, tyz_b
       real(rt)  :: txz_e, txz_w, tyz_n, tyz_s, tzz_t, tzz_b
@@ -120,20 +120,20 @@ contains
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
 
-               mu_w = half * (mu(i,j,k) + mu(i-1,j,k))
-               mu_e = half * (mu(i,j,k) + mu(i+1,j,k))
-               mu_s = half * (mu(i,j,k) + mu(i,j-1,k))
-               mu_n = half * (mu(i,j,k) + mu(i,j+1,k))
-               mu_b = half * (mu(i,j,k) + mu(i,j,k-1))
-               mu_t = half * (mu(i,j,k) + mu(i,j,k+1))
+               eta_w = half * (eta(i,j,k) + eta(i-1,j,k))
+               eta_e = half * (eta(i,j,k) + eta(i+1,j,k))
+               eta_s = half * (eta(i,j,k) + eta(i,j-1,k))
+               eta_n = half * (eta(i,j,k) + eta(i,j+1,k))
+               eta_b = half * (eta(i,j,k) + eta(i,j,k-1))
+               eta_t = half * (eta(i,j,k) + eta(i,j,k+1))
 
                !*************************************
                !         div(tau)_x
                !*************************************
 
                ! X
-               txx_e = two * mu_e * ( vel(i+1,j,k,1) - vel(i  ,j,k,1) ) * idx
-               txx_w = two * mu_w * ( vel(i  ,j,k,1) - vel(i-1,j,k,1) ) * idx
+               txx_e = two * eta_e * ( vel(i+1,j,k,1) - vel(i  ,j,k,1) ) * idx
+               txx_w = two * eta_w * ( vel(i  ,j,k,1) - vel(i-1,j,k,1) ) * idx
 
                ! Y north
                du = vel(i,j+1,k,1) - vel(i,j,k,1)
@@ -141,7 +141,7 @@ contains
                dv = (  vel(i+1,j,k,2) + vel(i+1,j+1,k,2) + vel(i  ,j,k,2) + vel(i  ,j+1,k,2) &
                     &- vel(i  ,j,k,2) - vel(i  ,j+1,k,2) - vel(i-1,j,k,2) - vel(i-1,j+1,k,2) ) * q4
 
-               txy_n = mu_n * ( du*idy + dv*idx )
+               txy_n = eta_n * ( du*idy + dv*idx )
 
                ! Y south
                du = vel(i,j,k,1) - vel(i,j-1,k,1)
@@ -149,7 +149,7 @@ contains
                dv = (  vel(i+1,j-1,k,2) + vel(i+1,j,k,2) + vel(i  ,j-1,k,2) + vel(i  ,j,k,2) &
                     &- vel(i  ,j-1,k,2) - vel(i  ,j,k,2) - vel(i-1,j-1,k,2) - vel(i-1,j,k,2) ) * q4
 
-               txy_s = mu_s * ( du*idy + dv*idx )
+               txy_s = eta_s * ( du*idy + dv*idx )
 
                ! Z top
                du = vel(i,j,k+1,1) - vel(i,j,k,1)
@@ -157,7 +157,7 @@ contains
                dw = (  vel(i+1,j,k,3) + vel(i+1,j,k+1,3) + vel(i  ,j,k,3) + vel(i  ,j,k+1,3) &
                     &- vel(i  ,j,k,3) - vel(i  ,j,k+1,3) - vel(i-1,j,k,3) - vel(i-1,j,k+1,3) ) * q4
 
-               txz_t = mu_t * ( du*idz + dw*idx )
+               txz_t = eta_t * ( du*idz + dw*idx )
 
                ! Z bottom
                du = vel(i,j,k,1) - vel(i,j,k-1,1)
@@ -165,7 +165,7 @@ contains
                dw = (  vel(i+1,j,k-1,3) + vel(i+1,j,k,3) + vel(i  ,j,k-1,3) + vel(i  ,j,k,3) &
                     &- vel(i  ,j,k-1,3) - vel(i  ,j,k,3) - vel(i-1,j,k-1,3) - vel(i-1,j,k,3) ) * q4
 
-               txz_b = mu_b * ( du*idz + dw*idx )
+               txz_b = eta_b * ( du*idz + dw*idx )
 
                ! Assemble
                divtau(i,j,k,1) = ( txx_e - txx_w ) * idx  + &
@@ -181,7 +181,7 @@ contains
 
                dv = vel(i+1,j,k,2) - vel(i,j,k,2)
 
-               txy_e = mu_e * ( du*idy + dv*idx )
+               txy_e = eta_e * ( du*idy + dv*idx )
 
                ! X west
                du = (   vel(i,j  ,k,1) + vel(i,j+1,k,1) + vel(i-1,j  ,k,1) + vel(i-1,j+1,k,1) &
@@ -189,11 +189,11 @@ contains
 
                dv = vel(i,j,k,2) - vel(i-1,j,k,2)
 
-               txy_w = mu_w * ( du*idy + dv*idx )
+               txy_w = eta_w * ( du*idy + dv*idx )
 
                ! Y
-               tyy_n = two * mu_n * ( vel(i,j+1,k,2) - vel(i,j  ,k,2) ) * idy
-               tyy_s = two * mu_s * ( vel(i,j  ,k,2) - vel(i,j-1,k,2) ) * idy
+               tyy_n = two * eta_n * ( vel(i,j+1,k,2) - vel(i,j  ,k,2) ) * idy
+               tyy_s = two * eta_s * ( vel(i,j  ,k,2) - vel(i,j-1,k,2) ) * idy
 
                ! Z top
                dv = vel(i,j,k+1,2) - vel(i,j,k,2)
@@ -201,7 +201,7 @@ contains
                dw = (   vel(i,j  ,k+1,3) + vel(i,j+1,k+1,3) + vel(i,j  ,k,3) + vel(i,j+1,k,3) &
                     & - vel(i,j-1,k+1,3) - vel(i,j  ,k+1,3) - vel(i,j-1,k,3) - vel(i,j  ,k,3) ) * q4
 
-               tyz_t = mu_t * ( dv*idz + dw*idy )
+               tyz_t = eta_t * ( dv*idz + dw*idy )
 
                ! Z bottom
                dv = vel(i,j,k,2) - vel(i,j,k-1,2)
@@ -209,7 +209,7 @@ contains
                dw = (   vel(i,j  ,k,3) + vel(i,j+1,k,3) + vel(i,j  ,k-1,3) + vel(i,j+1,k-1,3) &
                     & - vel(i,j-1,k,3) - vel(i,j  ,k,3) - vel(i,j-1,k-1,3) - vel(i,j  ,k-1,3) ) * q4
 
-               tyz_b = mu_b * ( dv*idz + dw*idy )
+               tyz_b = eta_b * ( dv*idz + dw*idy )
 
                ! Assemble
                divtau(i,j,k,2) = ( txy_e - txy_w ) * idx  + &
@@ -226,7 +226,7 @@ contains
                du = (   vel(i+1,j,k  ,1) + vel(i+1,j,k+1,1) + vel(i,j,k  ,1) + vel(i,j,k+1,1) &
                     & - vel(i+1,j,k-1,1) - vel(i+1,j,k  ,1) - vel(i,j,k-1,1) - vel(i,j,k  ,1) ) * q4
 
-               txz_e = mu_e * ( du*idz + dw*idx )
+               txz_e = eta_e * ( du*idz + dw*idx )
 
                ! X west
                dw = vel(i,j,k,3) - vel(i-1,j,k,3)
@@ -234,7 +234,7 @@ contains
                du = (   vel(i,j,k  ,1) + vel(i,j,k+1,1) + vel(i-1,j,k  ,1) + vel(i-1,j,k+1,1) &
                     & - vel(i,j,k-1,1) - vel(i,j,k  ,1) - vel(i-1,j,k-1,1) - vel(i-1,j,k  ,1) ) * q4
 
-               txz_w = mu_w * ( du*idz + dw*idx )
+               txz_w = eta_w * ( du*idz + dw*idx )
 
                ! Y north
                dw = vel(i,j+1,k,3) - vel(i,j,k,3)
@@ -242,7 +242,7 @@ contains
                dv = (   vel(i,j,k+1,2) + vel(i,j+1,k+1,2) + vel(i,j,k  ,2) + vel(i,j+1,k  ,2) &
                     & - vel(i,j,k  ,2) - vel(i,j+1,k  ,2) - vel(i,j,k-1,2) - vel(i,j+1,k-1,2) ) * q4
 
-               tyz_n = mu_n * ( dv*idz + dw*idy )
+               tyz_n = eta_n * ( dv*idz + dw*idy )
 
                ! Y south
                dw = vel(i,j,k,3) - vel(i,j-1,k,3)
@@ -250,11 +250,11 @@ contains
                dv = (   vel(i,j-1,k+1,2) + vel(i,j,k+1,2) + vel(i,j-1,k  ,2) + vel(i,j,k  ,2) &
                     & - vel(i,j-1,k  ,2) - vel(i,j,k  ,2) - vel(i,j-1,k-1,2) - vel(i,j,k-1,2) ) * q4
 
-               tyz_s = mu_s * ( dv*idz + dw*idy )
+               tyz_s = eta_s * ( dv*idz + dw*idy )
 
                ! Z
-               tzz_t = two * mu_t * ( vel(i,j,k+1,3) - vel(i,j,k  ,3) ) * idz
-               tzz_b = two * mu_b * ( vel(i,j,k  ,3) - vel(i,j,k-1,3) ) * idz
+               tzz_t = two * eta_t * ( vel(i,j,k+1,3) - vel(i,j,k  ,3) ) * idz
+               tzz_b = two * eta_b * ( vel(i,j,k  ,3) - vel(i,j,k-1,3) ) * idz
 
                ! Assemble
                divtau(i,j,k,3) = ( txz_e - txz_w ) * idx  + &
@@ -267,12 +267,12 @@ contains
                   ! Note that the variable names are misleading, but we want to avoid declaring new ones
                   !
                   do n = 1, 3
-                     txx = ( mu_e * ( vel(i+1,j,k,n) - vel(i  ,j,k,n) ) &
-                            -mu_w * ( vel(i  ,j,k,n) - vel(i-1,j,k,n) ) ) * idx * idx
-                     tyy = ( mu_n * ( vel(i,j+1,k,n) - vel(i,j  ,k,n) ) &
-                            -mu_s * ( vel(i,j  ,k,n) - vel(i,j-1,k,n) ) ) * idy * idy
-                     tzz = ( mu_t * ( vel(i,j,k+1,n) - vel(i,j,k  ,n) ) &
-                            -mu_b * ( vel(i,j,k  ,n) - vel(i,j,k-1,n) ) ) * idz * idz
+                     txx = ( eta_e * ( vel(i+1,j,k,n) - vel(i  ,j,k,n) ) &
+                            -eta_w * ( vel(i  ,j,k,n) - vel(i-1,j,k,n) ) ) * idx * idx
+                     tyy = ( eta_n * ( vel(i,j+1,k,n) - vel(i,j  ,k,n) ) &
+                            -eta_s * ( vel(i,j  ,k,n) - vel(i,j-1,k,n) ) ) * idy * idy
+                     tzz = ( eta_t * ( vel(i,j,k+1,n) - vel(i,j,k  ,n) ) &
+                            -eta_b * ( vel(i,j,k  ,n) - vel(i,j,k-1,n) ) ) * idz * idz
                      divtau(i,j,k,n) = divtau(i,j,k,n) - (txx + tyy + tzz)
                   end do
                end if
@@ -295,7 +295,7 @@ contains
    ! at the faces of the cells along the "dir"-axis.
    !
    subroutine compute_bcoeff_diff ( lo, hi, bcoeff, blo, bhi, &
-                                   mu, slo, shi, dir )  bind(C)
+                                   eta, slo, shi, dir )  bind(C)
 
       ! Loop bounds
       integer(c_int), intent(in   ) ::  lo(3), hi(3)
@@ -309,7 +309,7 @@ contains
 
       ! Arrays
       real(rt),       intent(in   ) :: &
-         mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt),       intent(  out) :: &
          bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
@@ -323,7 +323,7 @@ contains
       do k = lo(3),hi(3)
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
-               bcoeff(i,j,k) = half * (mu(i,j,k) + mu(i-i0,j-j0,k-k0))
+               bcoeff(i,j,k) = half * (eta(i,j,k) + eta(i-i0,j-j0,k-k0))
             end do
          end do
       end do

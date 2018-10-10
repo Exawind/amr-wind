@@ -7,7 +7,7 @@
 !                                                                      C
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
    subroutine set_bc0(slo, shi, &
-                      ro, mu, &
+                      ro, eta, &
                       bc_ilo_type, bc_ihi_type, bc_jlo_type, bc_jhi_type, &
                       bc_klo_type, bc_khi_type, domlo, domhi, ng &
                       ) bind(C, name="set_bc0")
@@ -17,7 +17,7 @@
 
       use bc, only: bc_t
       use bc, only: pinf_, pout_, minf_
-      use constant, only: ro_0, mu_0
+      use constant, only: ro_0, mu
 
       use param , only: is_undefined
 
@@ -29,7 +29,7 @@
 
       real(rt), intent(inout) :: ro&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: mu&
+      real(rt), intent(inout) :: eta&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer(c_int), intent(in   ) :: &
@@ -67,7 +67,7 @@
                    bc_ilo_type(j,k,1) == MINF_) then
 
                   ro(slo(1):domlo(1)-1,j,k) = ro_0
-                  mu(slo(1):domlo(1)-1,j,k) = mu_0
+                  eta(slo(1):domlo(1)-1,j,k) = mu
 
                end if
 
@@ -86,7 +86,7 @@
                    bc_ihi_type(j,k,1) == MINF_) then
 
                   ro(domhi(1)+1:shi(1),j,k) = ro_0
-                  mu(domhi(1)+1:shi(1),j,k) = mu_0
+                  eta(domhi(1)+1:shi(1),j,k) = mu
 
                end if
 
@@ -105,7 +105,7 @@
                    bc_jlo_type(i,k,1) == MINF_) then
 
                   ro(i,slo(2):domlo(2)-1,k) = ro_0
-                  mu(i,slo(2):domlo(2)-1,k) = mu_0
+                  eta(i,slo(2):domlo(2)-1,k) = mu
 
                end if
 
@@ -124,7 +124,7 @@
                    bc_jhi_type(i,k,1) == MINF_) then
 
                   ro(i,domhi(2)+1:shi(2),k) = ro_0
-                  mu(i,domhi(2)+1:shi(2),k) = mu_0
+                  eta(i,domhi(2)+1:shi(2),k) = mu
 
                end if
 
@@ -143,7 +143,7 @@
                    bc_klo_type(i,j,1) == MINF_) then
 
                   ro(i,j,slo(3):domlo(3)-1) = ro_0
-                  mu(i,j,slo(3):domlo(3)-1) = mu_0
+                  eta(i,j,slo(3):domlo(3)-1) = mu
 
                end if
 
@@ -162,7 +162,7 @@
                    bc_khi_type(i,j,1) == MINF_) then
 
                   ro(i,j,domhi(3)+1:shi(3)) = ro_0
-                  mu(i,j,domhi(3)+1:shi(3)) = mu_0
+                  eta(i,j,domhi(3)+1:shi(3)) = mu
 
                end if
 

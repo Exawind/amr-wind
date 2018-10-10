@@ -18,7 +18,7 @@ contains
    subroutine compute_divtau_eb ( lo, hi,  &
                                  divtau, dlo, dhi,    &
                                  vel_in, vinlo, vinhi,    &
-                                 mu, ro,      &
+                                 eta, ro,      &
                                  slo, shi,            &
                                  flags,    flo,  fhi, &
                                  afrac_x, axlo, axhi, &
@@ -67,7 +67,7 @@ contains
       real(rt), intent(in   ) ::                                  &
            &  vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
            &      ro(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
-           &      mu(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
+           &      eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
            & afrac_x( axlo(1): axhi(1), axlo(2): axhi(2), axlo(3): axhi(3)  ), &
            & afrac_y( aylo(1): ayhi(1), aylo(2): ayhi(2), aylo(3): ayhi(3)  ), &
            & afrac_z( azlo(1): azhi(1), azlo(2): azhi(2), azlo(3): azhi(3)  ), &
@@ -127,15 +127,15 @@ contains
                             bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi )
 
       ! tau_xx, tau_xy, tau_xz on west faces
-      call compute_tau_x(vel, vlo, vhi, mu, slo, shi, &
+      call compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
                          flags, flo, fhi, lo, hi, dx, fx, nh, domlo, domhi, do_explicit_diffusion)
 
       ! tau_yx, tau_yy, tau_yz on south faces
-      call compute_tau_y(vel, vlo, vhi, mu, slo, shi, &
+      call compute_tau_y(vel, vlo, vhi, eta, slo, shi, &
                          flags, flo, fhi, lo, hi, dx, fy, nh, domlo, domhi, do_explicit_diffusion)
 
       ! tau_zx, tau_zy, tau_zz on bottom faces
-      call compute_tau_z(vel, vlo, vhi, mu, slo, shi, &
+      call compute_tau_z(vel, vlo, vhi, eta, slo, shi, &
                          flags, flo, fhi, lo, hi, dx, fz, nh, domlo, domhi, do_explicit_diffusion)
 
       divop: block
@@ -166,7 +166,7 @@ contains
                             vfrac, vflo, vfhi, &
                             bcent, blo, bhi, &
                             domlo, domhi, &
-                            dx, ng, mu, do_explicit_diffusion)
+                            dx, ng, eta, do_explicit_diffusion)
 
       end block divop
 
@@ -202,7 +202,7 @@ contains
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
-   subroutine compute_tau_x(vel, vlo, vhi, mu, slo, shi, &
+   subroutine compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
                             flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
@@ -215,7 +215,7 @@ contains
 
       real(rt), intent(in   ) :: dx(3), &
                                  vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
          flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
@@ -233,7 +233,7 @@ contains
 
       real(rt) :: wlo, whi
       real(rt) :: idx, idy, idz
-      real(rt) :: mu_w
+      real(rt) :: eta_w
 
       integer  :: i,j,k
       integer  :: jhip, jhim, jlop, jlom
@@ -301,20 +301,20 @@ contains
                       ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
                        +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
 
-               mu_w     = half * (    mu(i,j,k) +     mu(i-1,j,k))
+               eta_w     = half * (    eta(i,j,k) +     eta(i-1,j,k))
 
-               tau_x(i,j,k,1) = mu_w*(dudx + dudx) 
-               tau_x(i,j,k,2) = mu_w*(dudy + dvdx)
-               tau_x(i,j,k,3) = mu_w*(dudz + dwdx)
+               tau_x(i,j,k,1) = eta_w*(dudx + dudx) 
+               tau_x(i,j,k,2) = eta_w*(dudy + dvdx)
+               tau_x(i,j,k,3) = eta_w*(dudz + dwdx)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
                   ! Subtract diagonal terms of stress tensor, to be obtained through
                   ! implicit solve instead.
                   !
-                  tau_x(i,j,k,1) = tau_x(i,j,k,1) - mu_w*dudx
-                  tau_x(i,j,k,2) = tau_x(i,j,k,2) - mu_w*dvdx
-                  tau_x(i,j,k,3) = tau_x(i,j,k,3) - mu_w*dwdx
+                  tau_x(i,j,k,1) = tau_x(i,j,k,1) - eta_w*dudx
+                  tau_x(i,j,k,2) = tau_x(i,j,k,2) - eta_w*dvdx
+                  tau_x(i,j,k,3) = tau_x(i,j,k,3) - eta_w*dwdx
                end if
 
             end do
@@ -327,7 +327,7 @@ contains
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
 
-   subroutine compute_tau_y(vel, vlo, vhi, mu, slo, shi, &
+   subroutine compute_tau_y(vel, vlo, vhi, eta, slo, shi, &
                             flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
@@ -340,7 +340,7 @@ contains
 
       real(rt), intent(in   ) :: dx(3), &
                                  vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
          flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
@@ -358,7 +358,7 @@ contains
 
       real(rt) :: wlo, whi
       real(rt) :: idx, idy, idz
-      real(rt) :: mu_s
+      real(rt) :: eta_s
 
       integer  :: i,j,k
       integer  :: ihip, ihim, ilop, ilom
@@ -426,20 +426,20 @@ contains
                       ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
                        +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
 
-               mu_s     = half * (    mu(i,j,k) +     mu(i,j-1,k))
+               eta_s     = half * (    eta(i,j,k) +     eta(i,j-1,k))
 
-               tau_y(i,j,k,1) = mu_s*(dudy + dvdx)
-               tau_y(i,j,k,2) = mu_s*(dvdy + dvdy) 
-               tau_y(i,j,k,3) = mu_s*(dwdy + dvdz)
+               tau_y(i,j,k,1) = eta_s*(dudy + dvdx)
+               tau_y(i,j,k,2) = eta_s*(dvdy + dvdy) 
+               tau_y(i,j,k,3) = eta_s*(dwdy + dvdz)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
                   ! Subtract diagonal terms of stress tensor, to be obtained through
                   ! implicit solve instead.
                   !
-                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - mu_s*dudy
-                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - mu_s*dvdy
-                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - mu_s*dwdy
+                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - eta_s*dudy
+                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - eta_s*dvdy
+                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - eta_s*dwdy
                end if
 
             end do
@@ -453,7 +453,7 @@ contains
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
 
-   subroutine compute_tau_z(vel, vlo, vhi, mu, slo, shi, &
+   subroutine compute_tau_z(vel, vlo, vhi, eta, slo, shi, &
                             flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
@@ -466,7 +466,7 @@ contains
 
       real(rt), intent(in   ) :: dx(3), &
                                  vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3), &
-                                 mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+                                 eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       integer,  intent(in   ) :: &
          flag(fglo(1):fghi(1),fglo(2):fghi(2),fglo(3):fghi(3))
@@ -484,7 +484,7 @@ contains
 
       real(rt) :: wlo, whi
       real(rt) :: idx, idy, idz
-      real(rt) :: mu_b
+      real(rt) :: eta_b
 
       integer  :: i,j,k
       integer  :: ihip, ihim, ilop, ilom
@@ -552,20 +552,20 @@ contains
                       ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
                        +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
 
-               mu_b     = half * (    mu(i,j,k) +     mu(i,j,k-1))
+               eta_b     = half * (    eta(i,j,k) +     eta(i,j,k-1))
 
-               tau_z(i,j,k,1) = mu_b*(dudz + dwdx)
-               tau_z(i,j,k,2) = mu_b*(dvdz + dwdy)
-               tau_z(i,j,k,3) = mu_b*(dwdz + dwdz)
+               tau_z(i,j,k,1) = eta_b*(dudz + dwdx)
+               tau_z(i,j,k,2) = eta_b*(dvdz + dwdy)
+               tau_z(i,j,k,3) = eta_b*(dwdz + dwdz)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
                   ! Subtract diagonal terms of stress tensor, to be obtained through
                   ! implicit solve instead.
                   !
-                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - mu_b*dudz
-                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - mu_b*dvdz
-                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - mu_b*dwdz
+                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - eta_b*dudz
+                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - eta_b*dvdz
+                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - eta_b*dwdz
                end if
 
             end do

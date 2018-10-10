@@ -22,12 +22,18 @@
          real(rt) :: ro_0
 
 ! Dynamic coefficient of viscosity
-         real(rt) :: mu_0
+         real(rt) :: mu
+
+! Flow index
+         real(rt) :: n
 
 ! Yield stress
          real(rt) :: tau_0
 
 ! Papanastasiou regularisation parameter
          real(rt) :: papa_reg
+
+! Zero-strain-limit viscosity
+         real(rt) :: eta_0
 
       END MODULE constant

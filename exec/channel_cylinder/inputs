@@ -18,7 +18,7 @@ amr.plot_int   = 50
 amr.check_int  = 1000
 
 # Physics
-incflo.mu_0   = 0.001
+incflo.mu   = 0.001
 incflo.ro_0   = 1.0
 incflo.gravity = 0.0 0.0 0.0
 

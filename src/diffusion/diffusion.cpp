@@ -55,7 +55,7 @@ void incflo::incflo_compute_divtau(int lev,
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
                BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-               (*mu[lev])[mfi].dataPtr(),
+               (*eta[lev])[mfi].dataPtr(),
                BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                domain.loVect (), domain.hiVect (),
                bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
@@ -69,7 +69,7 @@ void incflo::incflo_compute_divtau(int lev,
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
                BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-               (*mu[lev])[mfi].dataPtr(),
+               (*eta[lev])[mfi].dataPtr(),
                BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                BL_TO_FORTRAN_ANYD(flags),
                BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
@@ -159,7 +159,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
 
 //
 // Solve :
-//                  (1 - div dot mu grad) u = RHS
+//                  (1 - div dot eta grad) u = RHS
 //
 void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
                                       Vector<std::unique_ptr<MultiFab>>& sol,
@@ -252,7 +252,7 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
 }
 
 //
-// Computes bcoeff = mu at the faces of the scalar cells
+// Computes bcoeff = eta at the faces of the scalar cells
 //
 void incflo::incflo_compute_bcoeff_diff()
 {
@@ -268,7 +268,7 @@ void incflo::incflo_compute_bcoeff_diff()
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-        for(MFIter mfi(*mu[lev], true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*eta[lev], true); mfi.isValid(); ++mfi)
         {
             // Tileboxes for staggered components
             Box ubx = mfi.tilebox(e_x);
@@ -278,19 +278,19 @@ void incflo::incflo_compute_bcoeff_diff()
             // X direction
             compute_bcoeff_diff(BL_TO_FORTRAN_BOX(ubx),
                                 BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][0]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
+                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
                                 &xdir);
 
             // Y direction
             compute_bcoeff_diff(BL_TO_FORTRAN_BOX(vbx),
                                 BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][1]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
+                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
                                 &ydir);
 
             // Z direction
             compute_bcoeff_diff(BL_TO_FORTRAN_BOX(wbx),
                                 BL_TO_FORTRAN_ANYD((*(bcoeff_diff[lev][2]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*mu[lev])[mfi]),
+                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
                                 &zdir);
         }
 

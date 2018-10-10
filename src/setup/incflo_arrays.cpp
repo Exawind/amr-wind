@@ -31,8 +31,8 @@ void incflo::AllocateArrays(int lev)
 	gp0[lev]->setVal(0.);
 
 	// Molecular viscosity
-	mu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-	mu[lev]->setVal(0.);
+	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	eta[lev]->setVal(0.);
 
 	// Current velocity
 	vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
@@ -202,11 +202,11 @@ void incflo::RegridArrays(int lev)
     bcoeff[lev][2]->setVal(0.0);
 
 	// Molecular viscosity
-	ng = mu[lev]->nGrow();
-	std::unique_ptr<MultiFab> mu_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-	mu_new->setVal(0.);
-	mu_new->copy(*mu[lev], 0, 0, 1, 0, ng);
-	mu[lev] = std::move(mu_new);
+	ng = eta[lev]->nGrow();
+	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+	eta_new->setVal(0.);
+	eta_new->copy(*eta[lev], 0, 0, 1, 0, ng);
+	eta[lev] = std::move(eta_new);
 
 	// Gas velocity
 	ng = vel[lev]->nGrow();
@@ -311,7 +311,7 @@ void incflo::RegridArrays(int lev)
 	fill_mf_bc(lev, *ro[lev]);
 	fill_mf_bc(lev, *ro_o[lev]);
 
-	fill_mf_bc(lev, *mu[lev]);
+	fill_mf_bc(lev, *eta[lev]);
 
     fill_mf_bc(lev, *p[lev]);
     fill_mf_bc(lev, *p_o[lev]);
@@ -345,7 +345,7 @@ void incflo::ResizeArrays()
 	gp.resize(nlevs_max);
 	gp0.resize(nlevs_max);
 
-	mu.resize(nlevs_max);
+	eta.resize(nlevs_max);
 
     strainrate.resize(nlevs_max);
 	vort.resize(nlevs_max);

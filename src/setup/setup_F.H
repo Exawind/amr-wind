@@ -12,9 +12,11 @@ extern "C"
         (
             amrex::Real* gravity,
             amrex::Real* ro_0,
-            amrex::Real* mu_0,
+            amrex::Real* mu,
+            amrex::Real* n,
             amrex::Real* tau_0,
-            amrex::Real* papa_reg
+            amrex::Real* papa_reg,
+            amrex::Real* eta_0
         ); 
     
     void set_bc_type
@@ -31,7 +33,7 @@ extern "C"
     void set_bc0
         (
             const int* slo, const int* shi,
-            amrex::Real* ro, amrex::Real* mu, 
+            amrex::Real* ro, amrex::Real* eta, 
             const int* bc_ilo, const int* bc_ihi,
             const int* bc_jlo, const int* bc_jhi,
             const int* bc_klo, const int* bc_khi,
@@ -47,7 +49,7 @@ extern "C"
             amrex::Real* ro, 
             amrex::Real* p, 
             amrex::Real* vel,
-            amrex::Real* mu, 
+            amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
             amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength
         );
@@ -56,7 +58,7 @@ extern "C"
         (
             const int* slo, const int* shi,
             const int*  lo, const int*  hi,
-            amrex::Real* mu
+            amrex::Real* eta
         );
     
     void set_p0

@@ -6,10 +6,24 @@
 extern "C"
 {
 #endif
-    void compute_viscosity(const int* lo, const int* hi,
-                           amrex::Real* mu, const int* mulo, const int* muhi,
-                           amrex::Real* strainrate, const int* slo, const int* shi,
-                           const amrex::Real* dx);
+    void newtonian_viscosity(const int* lo, const int* hi,
+                             amrex::Real* eta, const int* elo, const int* ehi);
+
+    void powerlaw_viscosity(const int* lo, const int* hi,
+                           amrex::Real* eta, const int* elo, const int* ehi,
+                           amrex::Real* sr, const int* slo, const int* shi);
+
+    void bingham_viscosity(const int* lo, const int* hi,
+                           amrex::Real* eta, const int* elo, const int* ehi,
+                           amrex::Real* sr, const int* slo, const int* shi);
+
+    void hb_viscosity(const int* lo, const int* hi,
+                           amrex::Real* eta, const int* elo, const int* ehi,
+                           amrex::Real* sr, const int* slo, const int* shi);
+
+    void smd_viscosity(const int* lo, const int* hi,
+                           amrex::Real* eta, const int* elo, const int* ehi,
+                           amrex::Real* sr, const int* slo, const int* shi);
 #ifdef __cplusplus
 }
 #endif

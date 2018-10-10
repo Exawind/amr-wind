@@ -15,20 +15,91 @@ void incflo::InitParams()
         // Verbosity
         pp.query("verbose", verbose);
 
-        // Initial density
+        // Physics
 		pp.queryarr("gravity", gravity, 0, 3);
-
         pp.query("ro_0", ro_0);
-        AMREX_ASSERT(ro_0 >= 0.0);
+        AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
-        pp.query("mu_0", mu_0);
-        AMREX_ASSERT(mu_0 >= 0.0);
+        // Fluid properties
+        pp.query("mu", mu);
+        AMREX_ALWAYS_ASSERT(mu > 0.0);
 
-        pp.query("tau_0", tau_0);
-        AMREX_ASSERT(tau_0 >= 0.0);
+        fluid_model = "newtonian";
+        pp.query("fluid_model", fluid_model);
+        if(fluid_model == "newtonian")
+        {
+            amrex::Print() << "Newtonian fluid with"
+                           << " mu = " << mu << std::endl; 
+        }
+        else if(fluid_model == "powerlaw")
+        {
+            pp.query("n", n);
+            AMREX_ALWAYS_ASSERT(n > 0.0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0, 
+                    "No point in using power-law rheology with n = 1"); 
 
-        pp.query("papa_reg", papa_reg);
-        AMREX_ASSERT(papa_reg >= 0.0);
+            amrex::Print() << "Power-law fluid with"
+                           << " mu = " << mu 
+                           << ", n = " << n <<  std::endl; 
+        }
+        else if(fluid_model == "bingham")
+        {
+            pp.query("tau_0", tau_0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
+                    "No point in using Bingham rheology with tau_0 = 0"); 
+
+            pp.query("papa_reg", papa_reg);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0, 
+                    "Papanastasiou regularisation parameter must be positive");
+
+            amrex::Print() << "Bingham fluid with"
+                           << " mu = " << mu 
+                           << ", tau_0 = " << tau_0 
+                           << ", papa_reg = " << papa_reg << std::endl; 
+        }
+        else if(fluid_model == "hb")
+        {
+            pp.query("n", n);
+            AMREX_ALWAYS_ASSERT(n > 0.0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0, 
+                    "No point in using Herschel-Bulkley rheology with n = 1"); 
+
+            pp.query("tau_0", tau_0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
+                    "No point in using Herschel-Bulkley rheology with tau_0 = 0"); 
+
+            pp.query("papa_reg", papa_reg);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0, 
+                    "Papanastasiou regularisation parameter must be positive");
+
+            amrex::Print() << "Herschel-Bulkley fluid with"
+                           << " mu = " << mu 
+                           << ", n = " << n 
+                           << ", tau_0 = " << tau_0 
+                           << ", papa_reg = " << papa_reg << std::endl; 
+        }
+        else if(fluid_model == "smd")
+        {
+            pp.query("n", n);
+            AMREX_ALWAYS_ASSERT(n > 0.0);
+
+            pp.query("tau_0", tau_0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
+                    "No point in using de Souza Mendes-Dutra rheology with tau_0 = 0"); 
+
+            pp.query("eta_0", eta_0);
+            AMREX_ALWAYS_ASSERT(eta_0 > 0.0);
+
+            amrex::Print() << "de Souza Mendes-Dutra fluid with"
+                           << " mu = " << mu 
+                           << ", n = " << n 
+                           << ", tau_0 = " << tau_0 
+                           << ", eta_0 = " << eta_0 << std::endl; 
+        }
+        else
+        {
+            amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
+        }
 
 		// Options to control time stepping
 		pp.query("cfl", cfl);
@@ -62,7 +133,7 @@ void incflo::InitParams()
 		AMREX_ASSERT(knapsack_weight_type == "RunTimeCosts");
         
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu_0, &tau_0, &papa_reg); 
+        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0); 
 	}
 }
 
@@ -308,7 +379,7 @@ void incflo::incflo_init_fluid(int is_restarting,
             {
                 init_fluid_restart(sbx.loVect(), sbx.hiVect(),
                                    bx.loVect(), bx.hiVect(),
-                                   (*mu[lev])[mfi].dataPtr());
+                                   (*eta[lev])[mfi].dataPtr());
             }
             else
             {
@@ -318,7 +389,7 @@ void incflo::incflo_init_fluid(int is_restarting,
                            (*ro[lev])[mfi].dataPtr(),
                            (*p[lev])[mfi].dataPtr(),
                            (*vel[lev])[mfi].dataPtr(),
-                           (*mu[lev])[mfi].dataPtr(),
+                           (*eta[lev])[mfi].dataPtr(),
                            &dx, &dy, &dz,
                            &xlen, &ylen, &zlen);
             }
@@ -341,7 +412,7 @@ void incflo::incflo_init_fluid(int is_restarting,
 
         vel[lev]->FillBoundary(geom[lev].periodicity());
 
-        fill_mf_bc(lev, *mu[lev]);
+        fill_mf_bc(lev, *eta[lev]);
 
         if(is_restarting == 1)
             incflo_extrap_pressure(lev, p[lev]);
@@ -401,7 +472,7 @@ void incflo::incflo_set_bc0()
             set_bc0(sbx.loVect(),
                     sbx.hiVect(),
                     (*ro[lev])[mfi].dataPtr(),
-                    (*mu[lev])[mfi].dataPtr(),
+                    (*eta[lev])[mfi].dataPtr(),
                     bc_ilo[lev]->dataPtr(),
                     bc_ihi[lev]->dataPtr(),
                     bc_jlo[lev]->dataPtr(),

@@ -11,7 +11,7 @@ extern "C"
           const int* lo, const int* hi,
           amrex::Real* divtau, const int* dlo, const int* dhi,
           const amrex::Real* vel  , const int* vlo, const int* vhi,
-          const amrex::Real* mu   ,
+          const amrex::Real* eta   ,
           const amrex::Real* ro   , const int* slo, const int* shi,
           const int* domlo, const int* domhi,
           const int* bc_ilo_type, const int* bc_ihi_type,
@@ -24,7 +24,7 @@ extern "C"
           const int* lo, const int* hi,
           amrex::Real* divtau, const int* dlo, const int* dhi,
           const amrex::Real* vel  , const int* vlo, const int* vhi,
-          const amrex::Real* mu   , 
+          const amrex::Real* eta   , 
           const amrex::Real* ro   , const int* slo, const int* shi,
           const void* flag, const int* fglo, const int* fghi,
           const amrex::Real* afrac_x,const int*  axlo,const int*  axhi, 
@@ -53,7 +53,7 @@ extern "C"
   void compute_bcoeff_diff (
           const int* lo,  const int*  hi,
           amrex::Real* bcoeff, const int* blo, const int* bhi,
-          const amrex::Real* mu, const int* slo, const int* shi,
+          const amrex::Real* eta, const int* slo, const int* shi,
           const int* dir );
 
 #ifdef __cplusplus

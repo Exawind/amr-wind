@@ -30,11 +30,11 @@ void incflo::InitIOData()
 	// Define the list of scalar variables at cell centers that need to be
 	// written to plotfile/checkfile. "volfrac" MUST always be last without any
 	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "mu", "strainrate", "stress", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &mu, &strainrate, &strainrate, &vort, &divu};
+	pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
+	pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
 
-	chkscaVarsName = {"p", "ro", "mu"};
-	chkscalarVars = {&p, &ro, &mu};
+	chkscaVarsName = {"p", "ro", "eta"};
+	chkscalarVars = {&p, &ro, &eta};
 }
 
 void incflo::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
@@ -377,7 +377,7 @@ void incflo::Restart(
 		fill_mf_bc(lev, *ro[lev]);
 		fill_mf_bc(lev, *ro_o[lev]);
 
-		fill_mf_bc(lev, *mu[lev]);
+		fill_mf_bc(lev, *eta[lev]);
 
 		// Fill the bc's just in case
 		vel[lev]->FillBoundary(geom[lev].periodicity());
@@ -541,7 +541,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 			else if(pltscaVarsName[i] == "stress")
 			{
 				MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, dcomp, 1, 0);
-				MultiFab::Multiply(*mf[lev], (*mu[lev]), 0, dcomp, 1, 0);
+				MultiFab::Multiply(*mf[lev], (*eta[lev]), 0, dcomp, 1, 0);
 			}
 			else if(pltscaVarsName[i] == "vort")
 			{

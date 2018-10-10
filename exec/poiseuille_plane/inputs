@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 amr.stop_time           =   -1.         # Max (simulated) time to evolve
-amr.max_step            =   1000        # Max number of time steps
+amr.max_step            =   200         # Max number of time steps
 amr.steady_state        =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -14,7 +14,7 @@ incflo.cfl              =   16000.      # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =    100        # Steps between plot files
+amr.plot_int            =    10         # Steps between plot files
 amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
@@ -23,8 +23,12 @@ amr.restart             =   ""          # Checkpoint to restart from
 #.......................................#
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
-incflo.mu_0             =   1.          # Dynamic viscosity coefficient
+
+incflo.fluid_model      =   "smd"       # Fluid model (rheology)
+incflo.mu               =   1.          # Dynamic viscosity coefficient
+incflo.n                =   1.          # Power-law index
 incflo.tau_0            =   4.          # Yield stress
+incflo.eta_0            =   4.0e3       # Zero-strain viscosity
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

@@ -30,13 +30,13 @@ contains
    !
    ! C = max(|U|)/dx + max(|V|)/dy + max(|W|)/dz    --> Convection
    !
-   ! V = 2 * max(mu/ro) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
+   ! V = 2 * max(eta/ro) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
    !
    ! Fx, Fy, Fz = net acceleration due to external forces
    !
    ! WARNING: We use a slightly modified version of C in the implementation below
    !
-   subroutine compute_new_dt ( umax, vmax, wmax, romin, mumax, gradp0max, &
+   subroutine compute_new_dt ( umax, vmax, wmax, romin, etamax, gradp0max, &
         dx, cfl, steady_state, time, stop_time, dt ) &
         & bind(C)
 
@@ -44,7 +44,7 @@ contains
 
       integer(c_int), intent(in   ) :: steady_state
       real(ar),       intent(in   ) :: umax, vmax, wmax
-      real(ar),       intent(in   ) :: mumax, romin
+      real(ar),       intent(in   ) :: etamax, romin
       real(ar),       intent(in   ) :: dx(3), cfl
       real(ar),       intent(in   ) :: gradp0max(3)
       real(ar),       intent(in   ) :: time, stop_time
@@ -68,7 +68,7 @@ contains
       c_cfl = max ( umax*odx, vmax*ody, wmax*odz )
 
       ! Viscous
-      v_cfl = two * ( mumax / romin ) * ( odx**2 + ody**2 + odz**2 )
+      v_cfl = two * ( etamax / romin ) * ( odx**2 + ody**2 + odz**2 )
 
       ! Gravity and/or gradient of p0
       f_cfl = abs(gravity(1)-gradp0max(1)) * odx + &

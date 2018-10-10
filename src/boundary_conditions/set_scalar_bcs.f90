@@ -8,14 +8,14 @@
 !  Date: December 20, 2017
 !
 !
-subroutine set_scalar_bcs ( ro, mu, slo, shi, &
+subroutine set_scalar_bcs ( ro, eta, slo, shi, &
      & bct_ilo, bct_ihi, bct_jlo, bct_jhi, bct_klo, bct_khi,           &
      & domlo, domhi, ng ) bind(C)
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding ,     only: c_int
    use bc
-   use constant,           only: ro_0, mu_0
+   use constant,           only: ro_0, mu
    use param    ,          only: is_undefined
 
    implicit none
@@ -41,7 +41,7 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
    ! Arrays
    real(ar),      intent(inout) ::  &
       ro(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),     &
-      mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+      eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
    ! Local variables
    integer  :: bcv, i, j, k
@@ -66,12 +66,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(slo(1):domlo(1)-1,j,k) =     ro(domlo(1),j,k)
-               mu(slo(1):domlo(1)-1,j,k) =     mu(domlo(1),j,k)
+               eta(slo(1):domlo(1)-1,j,k) =     eta(domlo(1),j,k)
 
             case ( minf_)
 
                ro(slo(1):domlo(1)-1,j,k) = ro_0 
-               mu(slo(1):domlo(1)-1,j,k) = mu_0 
+               eta(slo(1):domlo(1)-1,j,k) = mu 
 
             end select
 
@@ -91,12 +91,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(domhi(1)+1:shi(1),j,k) =     ro(domhi(1)  ,j,k)
-               mu(domhi(1)+1:shi(1),j,k) =     mu(domhi(1)  ,j,k)
+               eta(domhi(1)+1:shi(1),j,k) =     eta(domhi(1)  ,j,k)
 
             case ( minf_ )
 
                ro(domhi(1)+1:shi(1),j,k) = ro_0
-               mu(domhi(1)+1:shi(1),j,k) = mu_0
+               eta(domhi(1)+1:shi(1),j,k) = mu
 
             end select
 
@@ -116,12 +116,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(i,slo(2):domlo(2)-1,k) =     ro(i,domlo(2),k)
-               mu(i,slo(2):domlo(2)-1,k) =     mu(i,domlo(2),k)
+               eta(i,slo(2):domlo(2)-1,k) =     eta(i,domlo(2),k)
 
             case ( minf_ )
 
                ro(i,slo(2):domlo(2)-1,k) = ro_0
-               mu(i,slo(2):domlo(2)-1,k) = mu_0
+               eta(i,slo(2):domlo(2)-1,k) = mu
 
             end select
 
@@ -141,12 +141,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(i,domhi(2)+1:shi(2),k) =     ro(i,domhi(2)  ,k)
-               mu(i,domhi(2)+1:shi(2),k) =     mu(i,domhi(2)  ,k)
+               eta(i,domhi(2)+1:shi(2),k) =     eta(i,domhi(2)  ,k)
 
             case ( minf_)
 
                ro(i,domhi(2)+1:shi(2),k) = ro_0 
-               mu(i,domhi(2)+1:shi(2),k) = mu_0 
+               eta(i,domhi(2)+1:shi(2),k) = mu 
 
             end select
          end do
@@ -165,12 +165,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(i,j,slo(3):domlo(3)-1) =     ro(i,j,domlo(3))
-               mu(i,j,slo(3):domlo(3)-1) =     mu(i,j,domlo(3))
+               eta(i,j,slo(3):domlo(3)-1) =     eta(i,j,domlo(3))
 
             case ( minf_ )
 
                ro(i,j,slo(3):domlo(3)-1) = ro_0
-               mu(i,j,slo(3):domlo(3)-1) = mu_0
+               eta(i,j,slo(3):domlo(3)-1) = mu
 
             end select
          end do
@@ -189,12 +189,12 @@ subroutine set_scalar_bcs ( ro, mu, slo, shi, &
             case ( pinf_, pout_, nsw_, fsw_)
 
                ro(i,j,domhi(3)+1:shi(3)) =     ro(i,j,domhi(3)  )
-               mu(i,j,domhi(3)+1:shi(3)) =     mu(i,j,domhi(3)  )
+               eta(i,j,domhi(3)+1:shi(3)) =     eta(i,j,domhi(3)  )
 
             case ( minf_ )
 
                ro(i,j,domhi(3)+1:shi(3)) = ro_0
-               mu(i,j,domhi(3)+1:shi(3)) = mu_0
+               eta(i,j,domhi(3)+1:shi(3)) = mu
 
             end select
          end do

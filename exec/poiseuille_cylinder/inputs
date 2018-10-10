@@ -23,7 +23,7 @@ amr.restart             =   ""          # Checkpoint to restart from
 #.......................................#
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
-incflo.mu_0             =   1.          # Dynamic viscosity coefficient
+incflo.mu               =   1.          # Dynamic viscosity coefficient
 incflo.tau_0            =   1.          # Yield stress
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

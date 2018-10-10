@@ -12,7 +12,7 @@ extern "C"
       const amrex::Real* vmax,
       const amrex::Real* wmax,
       const amrex::Real* romin,
-      const amrex::Real* mumax,
+      const amrex::Real* etamax,
       const amrex::Real* gradp0max,
       const amrex::Real* dx,
       const amrex::Real* cfl,

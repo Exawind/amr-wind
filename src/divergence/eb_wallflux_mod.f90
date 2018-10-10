@@ -17,7 +17,7 @@ contains
    !
    subroutine compute_diff_wallflux (divw, dx, i, j, k, &
                                      vel, vlo, vhi,     &
-                                     mu, slo, shi, &
+                                     eta, slo, shi, &
                                      bcent, blo, bhi,   &
                                      apx, axlo, axhi,   &
                                      apy, aylo, ayhi,   &
@@ -44,7 +44,7 @@ contains
       ! Arrays
       real(rt),       intent(in   ) ::                               &
            &   vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3),     &
-           &    mu(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),       &
+           &    eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),       &
            & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3),     &
            & apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)),   &
            & apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)),   &
@@ -86,17 +86,17 @@ contains
       dwdz = gradu(9)
 
       ! compute components of stress tensor on the wall
-      tauxx = mu(i,j,k) * (dudx + dudx) 
-      tauxy = mu(i,j,k) * (dudy + dvdx)
-      tauxz = mu(i,j,k) * (dudz + dwdx)
+      tauxx = eta(i,j,k) * (dudx + dudx) 
+      tauxy = eta(i,j,k) * (dudy + dvdx)
+      tauxz = eta(i,j,k) * (dudz + dwdx)
       !
       tauyx = tauxy
-      tauyy = mu(i,j,k) * (dvdy + dvdy)
-      tauyz = mu(i,j,k) * (dvdz + dwdy)
+      tauyy = eta(i,j,k) * (dvdy + dvdy)
+      tauyz = eta(i,j,k) * (dvdz + dwdy)
       !
       tauzx = tauxz
       tauzy = tauyz
-      tauzz = mu(i,j,k) * (dwdz + dwdz)
+      tauzz = eta(i,j,k) * (dwdz + dwdz)
 
       ! Difference in area fraction across cell, used to find the divergence
       dapx = apx(i+1,j,k)-apx(i,j,k)
@@ -108,17 +108,17 @@ contains
          ! Subtract diagonal terms of stress tensor, to be obtained through
          ! implicit solve instead.
          !
-         tauxx = tauxx - mu(i,j,k) * dudx
-         tauxy = tauxy - mu(i,j,k) * dudy
-         tauxz = tauxz - mu(i,j,k) * dudz
+         tauxx = tauxx - eta(i,j,k) * dudx
+         tauxy = tauxy - eta(i,j,k) * dudy
+         tauxz = tauxz - eta(i,j,k) * dudz
 
-         tauyx = tauyx - mu(i,j,k) * dvdx
-         tauyy = tauyy - mu(i,j,k) * dvdy
-         tauyz = tauyz - mu(i,j,k) * dvdz
+         tauyx = tauyx - eta(i,j,k) * dvdx
+         tauyy = tauyy - eta(i,j,k) * dvdy
+         tauyz = tauyz - eta(i,j,k) * dvdz
 
-         tauzx = tauzx - mu(i,j,k) * dwdx
-         tauzy = tauzy - mu(i,j,k) * dwdy
-         tauzz = tauzz - mu(i,j,k) * dwdz
+         tauzx = tauzx - eta(i,j,k) * dwdx
+         tauzy = tauzy - eta(i,j,k) * dwdy
+         tauzz = tauzz - eta(i,j,k) * dwdz
       end if
 
       ! Return the divergence of the stress tensor 

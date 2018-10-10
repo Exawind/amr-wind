@@ -304,7 +304,7 @@ private:
 	Vector<std::unique_ptr<MultiFab>> gp0;
 
 	// Molecular viscosity
-	Vector<std::unique_ptr<MultiFab>> mu;
+	Vector<std::unique_ptr<MultiFab>> eta;
 
 	// Cell-based
 	Vector<std::unique_ptr<MultiFab>> strainrate;
@@ -356,9 +356,14 @@ private:
     // Physics 
     static Vector<Real> gravity;
     Real ro_0 = 1.0;
-    Real mu_0 = 1.0;
+
+    // Fluid properties
+    std::string fluid_model;
+    Real mu = 1.0;
+    Real n = 0.0;
     Real tau_0 = 0.0;
-    Real papa_reg = 1.0e-3;
+    Real papa_reg = 0.0;
+    Real eta_0 = 0.0;
 
 	// Options to control MLMG behavior
 	int mg_verbose = 0;
