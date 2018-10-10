@@ -10,30 +10,6 @@ contains
 
    !
    ! Compute the viscosity distribution of a 
-   ! Newtonian fluid: 
-   !
-   ! eta = mu
-   !
-   subroutine newtonian_viscosity(lo, hi, eta, elo, ehi) &
-         bind(C, name="newtonian_viscosity")
-
-      use constant, only: mu
-      
-      integer(c_int), intent(in   ) :: elo(3), ehi(3)
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
-
-      real(rt),   intent(  out) :: &
-         eta(elo(1):ehi(1),elo(2):ehi(2),elo(3):ehi(3))
-
-      ! Local variables
-      !-----------------------------------------------
-
-      eta = mu
-
-   end subroutine newtonian_viscosity
-
-   !
-   ! Compute the viscosity distribution of a 
    ! Power-law fluid: 
    !
    ! eta = mu dot(gamma)^(n-1)

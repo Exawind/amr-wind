@@ -6,9 +6,6 @@
 extern "C"
 {
 #endif
-    void newtonian_viscosity(const int* lo, const int* hi,
-                             amrex::Real* eta, const int* elo, const int* ehi);
-
     void powerlaw_viscosity(const int* lo, const int* hi,
                            amrex::Real* eta, const int* elo, const int* ehi,
                            amrex::Real* sr, const int* slo, const int* shi);

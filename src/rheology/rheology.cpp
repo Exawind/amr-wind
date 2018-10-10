@@ -21,8 +21,7 @@ void incflo::incflo_compute_viscosity()
 
             if(fluid_model == "newtonian")
             {
-                newtonian_viscosity(BL_TO_FORTRAN_BOX(bx),
-                                    BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]));
+                // Viscosity is constant, has already been set in init_fluid()
             }
             else if(fluid_model == "powerlaw")
             {
@@ -50,6 +49,7 @@ void incflo::incflo_compute_viscosity()
             }
             else
             {
+                // This should have been caught earlier, but doesn't hurt to double check
                 amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
             }
         }
