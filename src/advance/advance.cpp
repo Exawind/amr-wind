@@ -110,7 +110,7 @@ void incflo::Advance(int nstep,
                 incflo_print_max_vel(lev);
             }
 
-            incflo_compute_divu(time);
+            incflo_compute_divu(time + dt);
             for(int lev = 0; lev < nlev; lev++)
             {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";

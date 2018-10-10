@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 amr.stop_time           =   -1.         # Max (simulated) time to evolve
-amr.max_step            =   1000        # Max number of time steps
+amr.max_step            =   200         # Max number of time steps
 amr.steady_state        =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -14,7 +14,7 @@ incflo.cfl              =   16.         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =    100        # Steps between plot files
+amr.plot_int            =    10         # Steps between plot files
 amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 

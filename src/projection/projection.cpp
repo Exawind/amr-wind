@@ -104,8 +104,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     {
         fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(), 
                                        vel[lev]->DistributionMap(),
-                                       vel[lev]->nComp(), 
-                                       vel[lev]->nGrow(), 
+                                       vel[lev]->nComp(), 1,
                                        MFInfo(), *ebfactory[lev]));
         fluxes[lev]->setVal(1.0e200);
     }

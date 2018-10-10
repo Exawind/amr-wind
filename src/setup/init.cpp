@@ -527,6 +527,8 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
             // Replace vel by the original values
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
         }
+        // Reset the boundary values (necessary if they are time-dependent)
+        incflo_set_velocity_bcs(time, 0);
 	}
 }
 
