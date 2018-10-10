@@ -112,11 +112,10 @@ contains
       real(ar)  ::    &
            &  divc(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
            & optmp(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
-           &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
+           &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
+           &  mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
 
       real(ar), allocatable          :: divdiff_w(:,:)
-      real(ar), allocatable          ::      mask(:,:,:)
-
       integer(c_int)                 :: i, j, k, n, nbr(-1:1,-1:1,-1:1)
       integer(c_int)                 :: nwalls
       real(ar)                       :: idx, idy, idz
@@ -137,8 +136,8 @@ contains
       end if
 
       if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
-          abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
-          abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
+           abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
+           abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
          call amrex_abort("compute_divop(): grid spacing must be uniform")
       end if
 
@@ -158,10 +157,26 @@ contains
          divdiff_w = zero
       end if
 
-      allocate( mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) )
+      !
+      ! Array "mask" is used to sever the link to ghost cells when the BCs are not periodic
+      ! It is set to 1 when the a cell can be used in computations, 0 otherwise
+      !
+      do k = lo(3)-2, hi(3)+2
+         do j = lo(2)-2, hi(2)+2
+            do i = lo(1)-2, hi(1)+2
+               if ( ( .not. cyclic_x .and. (i < domlo(1) .or. i > domhi(1)) ) .or. &
+                    ( .not. cyclic_y .and. (j < domlo(2) .or. j > domhi(2)) ) .or. &
+                    ( .not. cyclic_z .and. (k < domlo(3) .or. k > domhi(3)) ) ) then
+                  mask(i,j,k) = zero
+               else
+                  mask(i,j,k) = one
+               end if
+            end do
+         end do
+      end do
 
       !
-      ! The we use the EB algorithmm to compute the divergence at cell centers
+      ! We use the EB algorithmm to compute the divergence at cell centers
       !
       ncomp_loop: do n = 1, 3
 
@@ -176,9 +191,9 @@ contains
 
             divc = zero
 
-            do k =       max(lo(3)-2, domlo(3)), min(hi(3)+2, domhi(3))
-               do j =    max(lo(2)-2, domlo(2)), min(hi(2)+2, domhi(2))
-                  do i = max(lo(1)-2, domlo(1)), min(hi(1)+2, domhi(1))
+            do k = lo(3)-2, hi(3)+2
+               do j = lo(2)-2, hi(2)+2
+                  do i = lo(1)-2, hi(1)+2
 
                      if (is_covered_cell(flags(i,j,k))) then
 
@@ -217,13 +232,17 @@ contains
                         iwall = iwall + 1
                         if (is_viscous) then
                            if (n==1) then
-                              call compute_diff_wallflux( divdiff_w(:,iwall), dx, i, j, k, &
-                                                         vel, vllo, vlhi, mu, vflo, vfhi, bcent, blo, bhi,     &
-                                                         afrac_x, axlo, axhi, afrac_y, aylo, ayhi, afrac_z, azlo, azhi, &
+                              call compute_diff_wallflux(divdiff_w(:,iwall), &
+                                                         dx, i, j, k, &
+                                                         vel, vllo, vlhi, &
+                                                         mu, vflo, vfhi, &
+                                                         bcent, blo, bhi, &
+                                                         afrac_x, axlo, axhi, &
+                                                         afrac_y, aylo, ayhi, &
+                                                         afrac_z, azlo, azhi, &
                                                          do_explicit_diffusion)
                            end if
-                           divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / &
-                                &         ( dx(n) * vfrac(i,j,k) )
+                           divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
                         end if
 
                      else
@@ -238,20 +257,6 @@ contains
                end do
             end do
          end block compute_divc
-
-         mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 1.d0
-         if (lo(1).eq.domlo(1) .and. .not. cyclic_x) &
-            mask(lo(1)-2:lo(1)-1,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
-         if (hi(1).eq.domhi(1) .and. .not. cyclic_x) &
-            mask(hi(1)+1:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
-         if (lo(2).eq.domlo(2) .and. .not. cyclic_y) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-2:lo(2)-1,lo(3)-2:hi(3)+2) = 0.d0
-         if (hi(2).eq.domhi(2) .and. .not. cyclic_y) &
-            mask(lo(1)-2:hi(1)+2,hi(2)+1:hi(2)+2,lo(3)-2:hi(3)+2) = 0.d0
-         if (lo(3).eq.domlo(3) .and. .not. cyclic_z) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:lo(3)-1) = 0.d0
-         if (hi(3).eq.domhi(3) .and. .not. cyclic_z) &
-            mask(lo(1)-2:hi(1)+2,lo(2)-1:hi(2)+2,hi(3)+1:hi(3)+2) = 0.d0
 
          !
          ! Step 2: compute delta M ( mass gain or loss ) on (lo-1,hi+1)
@@ -282,9 +287,9 @@ contains
                               end do
                            end do
                         end do
-                        divnc   = divnc / vtot
-                        optmp(i,j,k) = (one - vfrac(i,j,k)) * ( divnc-divc(i,j,k) )
-                        delm(i,j,k) = -vfrac(i,j,k) * optmp(i,j,k)
+                        divnc = divnc / vtot
+                        optmp(i,j,k) = (one - vfrac(i,j,k)) * ( divnc - divc(i,j,k) )
+                        delm(i,j,k) = - vfrac(i,j,k) * optmp(i,j,k)
                      else
                         delm(i,j,k) = zero
                      end if
@@ -327,7 +332,9 @@ contains
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
                                      .and. (nbr(ii,jj,kk)==1) ) then
-                                    optmp(i+ii,j+jj,k+kk) = optmp(i+ii,j+jj,k+kk) + delm(i,j,k) * wtot
+                                    optmp(i+ii,j+jj,k+kk) = optmp(i+ii,j+jj,k+kk) &
+                                                          + delm(i,j,k) * wtot &
+                                                          * mask(i+ii,j+jj,k+kk)
                                  end if
                               end do
                            end do
@@ -339,7 +346,7 @@ contains
          end block
 
          ! ****************************************************
-         ! Return the negative
+         ! Resume the correct sign, AKA return the negative
          ! ****************************************************
          do k = lo(3), hi(3)
             do j = lo(2), hi(2)
@@ -351,8 +358,9 @@ contains
 
       end do ncomp_loop
 
-      deallocate(mask)
-
+      !
+      ! Delete working arrays
+      ! 
       if (is_viscous) deallocate(divdiff_w)
 
    end subroutine compute_divop
