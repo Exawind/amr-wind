@@ -93,7 +93,7 @@ void incflo::Advance(int nstep,
                 incflo_print_max_vel(lev);
             }
 
-            incflo_compute_divu(time);
+            incflo_compute_divu(time + dt);
             for(int lev = 0; lev < nlev; lev++)
             {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
@@ -266,6 +266,9 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
 	// Project velocity field
 	incflo_apply_projection(new_time, dt, proj_2);
+    
+	// Project velocity field
+	incflo_set_velocity_bcs(new_time, 0);
 }
 
 //
@@ -361,6 +364,9 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
 	// Apply projection
 	incflo_apply_projection(new_time, dt, proj_2);
+    
+	// Project velocity field
+	incflo_set_velocity_bcs(new_time, 0);
 }
 
 void incflo::incflo_apply_forcing_terms(int lev,

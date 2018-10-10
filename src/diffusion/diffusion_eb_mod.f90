@@ -120,7 +120,7 @@ contains
 
       vlo = lo - ng
       vhi = hi + ng
-      call amrex_allocate( vel, vlo(1), vhi(1)  , vlo(2), vhi(2)  , vlo(3), vhi(3)  , 1, 3)
+      call amrex_allocate(vel, vlo(1), vhi(1), vlo(2), vhi(2), vlo(3), vhi(3), 1, 3)
 
       ! Put values into ghost cells so we can easy take derivatives
       call fill_vel_diff_bc( vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
@@ -185,6 +185,19 @@ contains
 
    end subroutine compute_divtau_eb
 
+   !<$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$>!
+   !                             WARNING                                   !
+   !<$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$>!
+   !                                                                       !
+   !  compute_tau_<dir> computes the viscous fluxes at the cell faces.     !
+   !  The redistribution algorithm in compute_divop() will ignore all the  !
+   !  fluxes outside the domain, EXCEPT when the boundary is periodic.     !
+   !  Therefore we always compute the fluxes in the whole ghost region,    !
+   !  regardless of the BC. compute_divop() will take care to ignore what  !
+   !  is not needed.                                                       !
+   !                                                                       !   
+   !<$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$>!   
+
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
@@ -232,9 +245,9 @@ contains
 
       tau_x = zero
 
-      do k =       max(lo(3)-ng, domlo(1)), min(hi(3)+ng  , domhi(3)  )
-         do j =    max(lo(2)-ng, domlo(2)), min(hi(2)+ng  , domhi(2)  )
-            do i = max(lo(1)-ng, domlo(3)), min(hi(1)+ng+1, domhi(1)+1)
+      do k = lo(3)-ng, hi(3)+ng
+         do j = lo(2)-ng, hi(2)+ng
+            do i = lo(1)-ng, hi(1)+ng+1  
 
                dudx = (vel(i,j,k,1) - vel(i-1,j,k,1))*idx
                dvdx = (vel(i,j,k,2) - vel(i-1,j,k,2))*idx
@@ -317,7 +330,7 @@ contains
    subroutine compute_tau_y(vel, vlo, vhi, mu, slo, shi, &
                             flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, do_explicit_diffusion)
 
-      use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
+      use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
       integer,  intent(in   ) ::  vlo(3),  vhi(3)
       integer,  intent(in   ) ::  slo(3),  shi(3)
@@ -357,9 +370,9 @@ contains
 
       tau_y = zero
 
-      do k =       max(lo(3)-ng, domlo(1)), min(hi(3)+ng  , domhi(3)  )
-         do j =    max(lo(2)-ng, domlo(2)), min(hi(2)+ng+1, domhi(2)+1)
-            do i = max(lo(1)-ng, domlo(3)), min(hi(1)+ng  , domhi(1)  )
+      do k = lo(3)-ng, hi(3)+ng
+         do j = lo(2)-ng, hi(2)+ng+1
+            do i = lo(1)-ng, hi(1)+ng  
 
                dudy = (vel(i,j,k,1) - vel(i,j-1,k,1))*idy
                dvdy = (vel(i,j,k,2) - vel(i,j-1,k,2))*idy
@@ -483,9 +496,9 @@ contains
 
       tau_z = zero
 
-      do k =       max(lo(3)-ng, domlo(1)), min(hi(3)+ng+1, domhi(3)+1)
-         do j =    max(lo(2)-ng, domlo(2)), min(hi(2)+ng  , domhi(2)  )
-            do i = max(lo(1)-ng, domlo(3)), min(hi(1)+ng  , domhi(1)  )
+      do k = lo(3)-ng, hi(3)+ng+1
+         do j = lo(2)-ng, hi(2)+ng
+            do i = lo(1)-ng, hi(1)+ng     
 
                dudz = (vel(i,j,k,1) - vel(i,j,k-1,1))*idz
                dvdz = (vel(i,j,k,2) - vel(i,j,k-1,2))*idz
