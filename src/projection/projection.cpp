@@ -26,7 +26,7 @@
 //     except in the initial iterations when
 //
 //     new p  = old p + phi
-void incflo::incflo_apply_projection(Real scaling_factor, bool proj_2)
+void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_projection");
 
@@ -53,9 +53,9 @@ void incflo::incflo_apply_projection(Real scaling_factor, bool proj_2)
     }
 
     // Swap ghost cells and apply BCs to velocity
-    incflo_set_velocity_bcs(0);
+    incflo_set_velocity_bcs(time, 0);
 
-    incflo_compute_divu();
+    incflo_compute_divu(time);
 
     for(int lev = 0; lev < nlev; lev++)
     {
@@ -82,10 +82,10 @@ void incflo::incflo_apply_projection(Real scaling_factor, bool proj_2)
         }
     }
 
-    incflo_set_velocity_bcs(0);
+    incflo_set_velocity_bcs(time, 0);
 
     // Compute right hand side, AKA div(u)/dt
-    incflo_compute_divu();
+    incflo_compute_divu(time);
 
     for(int lev = 0; lev < nlev; lev++)
     {
@@ -143,9 +143,9 @@ void incflo::incflo_apply_projection(Real scaling_factor, bool proj_2)
     }
 
     // Swap ghost cells and apply BCs to velocity
-    incflo_set_velocity_bcs(0);
+    incflo_set_velocity_bcs(time, 0);
 
-    incflo_compute_divu();
+    incflo_compute_divu(time);
 
     // Print info about predictor step
     if(verbose > 1)

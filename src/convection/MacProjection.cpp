@@ -180,7 +180,8 @@ void MacProjection::update_internals()
 void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 									 Vector<std::unique_ptr<MultiFab>>& v,
 									 Vector<std::unique_ptr<MultiFab>>& w,
-									 const Vector<std::unique_ptr<MultiFab>>& ro)
+									 const Vector<std::unique_ptr<MultiFab>>& ro, 
+                                     Real time)
 {
     BL_PROFILE("MacProjection::apply_projection()");
 
@@ -206,7 +207,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 		compute_b_coeff(u, v, w, ro, lev);
 
 		// Set velocity bcs
-		set_velocity_bcs(lev, u, v, w);
+		set_velocity_bcs(lev, u, v, w, time);
 
 		// Store in temporaries
 		(vel[lev])[0] = u[lev].get();
@@ -266,7 +267,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 		}
         
 		// Set velocity bcs
-		set_velocity_bcs(lev, u, v, w);
+		set_velocity_bcs(lev, u, v, w, time);
 	}
 }
 
@@ -276,7 +277,8 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 void MacProjection::set_velocity_bcs(int lev,
 									 Vector<std::unique_ptr<MultiFab>>& u,
 									 Vector<std::unique_ptr<MultiFab>>& v,
-									 Vector<std::unique_ptr<MultiFab>>& w)
+									 Vector<std::unique_ptr<MultiFab>>& w, 
+                                     Real time)
 {
 	BL_PROFILE("MacProjection::set_velocity_bcs()");
 
@@ -293,7 +295,8 @@ void MacProjection::set_velocity_bcs(int lev,
 	{
 		const Box& bx = (*m_divu[lev])[mfi].box();
 
-		set_mac_velocity_bcs(bx.loVect(),
+		set_mac_velocity_bcs(&time, 
+                             bx.loVect(),
 							 bx.hiVect(),
 							 BL_TO_FORTRAN_ANYD((*u[lev])[mfi]),
 							 BL_TO_FORTRAN_ANYD((*v[lev])[mfi]),

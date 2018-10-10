@@ -418,8 +418,9 @@ void incflo::incflo_set_bc0()
     }
 
     // Put velocity Dirichlet bc's on faces
+    Real time = 0.0;
     int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(extrap_dir_bcs);
+    incflo_set_velocity_bcs(time, extrap_dir_bcs);
 
     for(int lev = 0; lev < nlev; lev++)
     {
@@ -495,7 +496,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 
     // Fill ghost cells
     incflo_set_scalar_bcs();
-    incflo_set_velocity_bcs(0);
+    incflo_set_velocity_bcs(time, 0);
 
     // Copy vel into vel_o
     for(int lev = 0; lev < nlev; lev++)
@@ -519,7 +520,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 	{
 		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		incflo_apply_predictor(conv, divtau, dt, proj_2);
+		incflo_apply_predictor(conv, divtau, time, dt, proj_2);
 
         for(int lev = 0; lev < nlev; lev++)
         {
@@ -541,7 +542,8 @@ void incflo::incflo_initial_projection()
 
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
-	incflo_apply_projection(dummy_dt, proj_2);
+	Real time = 0.0;
+	incflo_apply_projection(time, dummy_dt, proj_2);
 
 	// We initialize p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev < nlev; lev++)

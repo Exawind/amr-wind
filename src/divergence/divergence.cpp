@@ -14,15 +14,14 @@
 //
 // Compute div(u)
 //
-void incflo::incflo_compute_divu()
+void incflo::incflo_compute_divu(Real time)
 {
     int extrap_dir_bcs = 1;
-    incflo_set_velocity_bcs(extrap_dir_bcs);
+    incflo_set_velocity_bcs(time, extrap_dir_bcs);
 
     for(int lev = 0; lev < nlev; lev++)
     {
         Box domain(geom[lev].Domain());
-
         vel[lev]->FillBoundary(geom[lev].periodicity());
 
         // Create face centered multifabs for vel
@@ -35,7 +34,7 @@ void incflo::incflo_compute_divu()
 
 	// Restore velocities to carry Dirichlet values on faces
 	extrap_dir_bcs = 0;
-	incflo_set_velocity_bcs(extrap_dir_bcs);
+	incflo_set_velocity_bcs(time, extrap_dir_bcs);
 }
 
 //
@@ -91,31 +90,5 @@ incflo::incflo_average_cc_to_fc(int lev,
 	fc[0]->FillBoundary(geom[lev].periodicity());
 	fc[1]->FillBoundary(geom[lev].periodicity());
 	fc[2]->FillBoundary(geom[lev].periodicity());
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel 
-#endif
-    for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
-    {
-        // Boxes for staggered components
-        Box bx = mfi.tilebox();
-
-     	set_mac_velocity_bcs(bx.loVect(),
-     						 bx.hiVect(),
-     						 BL_TO_FORTRAN_ANYD((*fc[0])[mfi]),
-     						 BL_TO_FORTRAN_ANYD((*fc[1])[mfi]),
-     						 BL_TO_FORTRAN_ANYD((*fc[2])[mfi]),
-     						 bc_ilo[lev]->dataPtr(),
-     						 bc_ihi[lev]->dataPtr(),
-     						 bc_jlo[lev]->dataPtr(),
-     						 bc_jhi[lev]->dataPtr(),
-     						 bc_klo[lev]->dataPtr(),
-     						 bc_khi[lev]->dataPtr(),
-     						 domain.loVect(),
-     						 domain.hiVect(),
-     						 &nghost);
-    }
-    
+    // We do not fill BCs and halo regions in this routine
 } 

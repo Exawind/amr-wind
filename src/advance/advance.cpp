@@ -32,7 +32,7 @@ void incflo::Advance(int nstep,
         fill_mf_bc(lev, *mu[lev]);
     }
     // Fill ghost nodes and reimpose boundary conditions
-    incflo_set_velocity_bcs(0);
+    incflo_set_velocity_bcs(time, 0);
     incflo_set_scalar_bcs();
 
 	// Start loop: if we are not seeking a steady state solution,
@@ -84,7 +84,7 @@ void incflo::Advance(int nstep,
         }
 
 		// Predictor step
-        incflo_apply_predictor(conv_old, divtau_old, dt, proj_2);
+        incflo_apply_predictor(conv_old, divtau_old, time, dt, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter predictor step:\n";
@@ -93,7 +93,7 @@ void incflo::Advance(int nstep,
                 incflo_print_max_vel(lev);
             }
 
-            incflo_compute_divu();
+            incflo_compute_divu(time);
             for(int lev = 0; lev < nlev; lev++)
             {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
@@ -101,7 +101,7 @@ void incflo::Advance(int nstep,
         }
 
 		// Corrector step
-        incflo_apply_corrector(conv_old, divtau_old, dt, proj_2);
+        incflo_apply_corrector(conv_old, divtau_old, time, dt, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter corrector step:\n";
@@ -110,7 +110,7 @@ void incflo::Advance(int nstep,
                 incflo_print_max_vel(lev);
             }
 
-            incflo_compute_divu();
+            incflo_compute_divu(time);
             for(int lev = 0; lev < nlev; lev++)
             {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
@@ -216,10 +216,15 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
 //
 void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    amrex::Real dt, bool proj_2)
+                                    Real time, Real dt, bool proj_2)
 {
+	BL_PROFILE("incflo::incflo_apply_predictor");
+    
+    // We use the new ime value for things computed on the "*" state
+    Real new_time = time + dt; 
+
     // Compute the explicit advective term R_u^n
-    incflo_compute_ugradu_predictor(conv_old, vel_o);
+    incflo_compute_ugradu_predictor(conv_old, vel_o, time);
 
     incflo_compute_strainrate();
     incflo_compute_viscosity();
@@ -257,10 +262,10 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
-        incflo_diffuse_velocity(dt);
+        incflo_diffuse_velocity(new_time, dt);
 
 	// Project velocity field
-	incflo_apply_projection(dt, proj_2);
+	incflo_apply_projection(new_time, dt, proj_2);
 }
 
 //
@@ -295,9 +300,12 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    amrex::Real dt, bool proj_2)
+                                    Real time, Real dt, bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_corrector");
+
+    // We use the new time value for things computed on the "*" state
+    Real new_time = time + dt; 
 
 	Vector<std::unique_ptr<MultiFab>> conv;
 	Vector<std::unique_ptr<MultiFab>> divtau;   
@@ -310,7 +318,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // Compute the explicit advective term R_u^*
-    incflo_compute_ugradu_corrector(conv, vel);
+    incflo_compute_ugradu_corrector(conv, vel, new_time);
 
     incflo_compute_strainrate();
     incflo_compute_viscosity();
@@ -349,10 +357,10 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
-        incflo_diffuse_velocity(dt);
+        incflo_diffuse_velocity(new_time, dt);
 
 	// Apply projection
-	incflo_apply_projection(dt, proj_2);
+	incflo_apply_projection(new_time, dt, proj_2);
 }
 
 void incflo::incflo_apply_forcing_terms(int lev,
@@ -387,7 +395,8 @@ int incflo::steady_state_reached(Real dt, int iter)
     int condition2[nlev];
 
     // Make sure velocity is up to date
-    incflo_set_velocity_bcs(0);
+    Real time = 0.0;
+    incflo_set_velocity_bcs(time, 0);
 
     for(int lev = 0; lev < nlev; lev++)
     {

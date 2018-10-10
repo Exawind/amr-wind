@@ -571,7 +571,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 
 	Vector<const MultiFab*> mf2(nlev);
 
-	for(int lev = 0; lev <= nlev; ++lev)
+	for(int lev = 0; lev < nlev; ++lev)
 	{
 		mf2[lev] = mf[lev].get();
 	}

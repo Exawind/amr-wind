@@ -144,10 +144,10 @@ protected:
 	void incflo_initial_projection();
     void incflo_initial_iterations(Real dt, Real stop_time, int steady_state);
 
-    void incflo_apply_projection(Real scaling_factor, bool proj_2);
+    void incflo_apply_projection(Real dt, Real scaling_factor, bool proj_2);
 
 	void incflo_set_scalar_bcs();
-	void incflo_set_velocity_bcs(int extrap_dir_bcs);
+	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
 
 	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 
@@ -210,9 +210,11 @@ private:
                            Real& dt);
 
 	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel);
+										 Vector<std::unique_ptr<MultiFab>>& vel, 
+                                         Real time);
 	void incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel);
+										 Vector<std::unique_ptr<MultiFab>>& vel, 
+                                         Real time);
     void incflo_compute_divtau(int lev, 
                                MultiFab& divtau, 
                                Vector<std::unique_ptr<MultiFab>>& vel);
@@ -221,18 +223,18 @@ private:
 
 	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real dt, bool proj_2);
+                                Real time, Real dt, bool proj_2);
 	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real dt, bool proj_2);
+                                Real time, Real dt, bool proj_2);
 
-	void incflo_diffuse_velocity(Real dt);
+	void incflo_diffuse_velocity(Real time, Real dt);
 
     void incflo_apply_forcing_terms(int lev, Real dt, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
-	void incflo_compute_divu();
+	void incflo_compute_divu(Real time);
 
 	void incflo_extrap_pressure(int lev, std::unique_ptr<MultiFab>& p);
 

@@ -13,7 +13,8 @@ extern "C"
 	                          const amrex::Real* ro, const int* slo, const int* shi,
                               const amrex::Real* c, const int* dir);
 
-    void set_mac_velocity_bcs(const int* slo, const int* shi,
+    void set_mac_velocity_bcs(amrex::Real* time, 
+                              const int* slo, const int* shi,
                               amrex::Real* u,  const int* ulo, const int* uhi,
                               amrex::Real* v,  const int* vlo, const int* vhi,
                               amrex::Real* w,  const int* wlo, const int* whi,

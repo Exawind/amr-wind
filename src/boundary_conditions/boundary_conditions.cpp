@@ -73,7 +73,7 @@ void incflo::incflo_set_scalar_bcs ()
 //
 // Set the BCs for velocity only
 //
-void incflo::incflo_set_velocity_bcs(int extrap_dir_bcs)
+void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
 {
     BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
@@ -86,7 +86,8 @@ void incflo::incflo_set_velocity_bcs(int extrap_dir_bcs)
 #endif
         for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
         {
-            set_velocity_bcs(BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+            set_velocity_bcs(&time, 
+                             BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
                              bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                              bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                              bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
