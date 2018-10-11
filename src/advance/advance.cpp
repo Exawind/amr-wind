@@ -296,6 +296,8 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
 
         // Add the forcing terms
+        // TODO: Could we rather use something like: 
+        // MultiFab::Saxpy(*vel[lev], dt, gravity, 0, 0, 3, 0);
         incflo_apply_forcing_terms(lev, dt, vel);
 
         // Convert velocities to momenta
