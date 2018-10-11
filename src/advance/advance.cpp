@@ -134,6 +134,23 @@ void incflo::Advance(int nstep,
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }
 
+//
+// Compute new dt by using the formula derived in
+// "A Boundary Condition Capturing Method for Multiphase Incompressible Flow"
+// by Kang et al. (JCP).
+//
+//  dt/2 * ( C+V + sqrt( (C+V)**2 + 4Fx/dx + 4Fy/dy + 4Fz/dz )
+//
+// where
+//
+// C = max(|U|)/dx + max(|V|)/dy + max(|W|)/dz    --> Convection
+//
+// V = 2 * max(eta/ro) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
+//
+// Fx, Fy, Fz = net acceleration due to external forces
+//
+// WARNING: We use a slightly modified version of C in the implementation below
+//
 void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real& dt)
 {
 	// DT is always computed even for fixed dt, so we can
@@ -147,7 +164,7 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
 	Real romin = 1.e20;
 	Real etamax = 0.0;
 
-    // We only compute gp0max on the coarsest level because it is the same at all levels
+    // We only compute gp0max on the coarsest level because it is the same at all 
 	Real gp0max[3];
     gp0max[0] = incflo_norm0(gp0, 0, 0);
     gp0max[1] = incflo_norm0(gp0, 0, 1);
@@ -159,27 +176,57 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
         vmax = std::max(vmax, incflo_norm0(vel, lev, 1));
         wmax = std::max(wmax, incflo_norm0(vel, lev, 2));
         romin = std::min(romin, incflo_norm0(ro, lev, 0));
-        // WARNING WARNING: This may cause trouble as we are not doing fully implicit solve!
+        // WARNING: This may cause trouble as we are not doing fully implicit solve!
         // TODO: revisit
         if(explicit_diffusion)
             etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
     }
 
-    // TODO: move out of unnecessary Fortran routine
-    compute_new_dt(&umax, &vmax, &wmax, 
-                   &romin, &etamax, gp0max,
-				   geom[finest_level].CellSize(),
-				   &cfl,
-				   &steady_state,
-				   &time,
-				   &stop_time,
-				   &dt_new);
+    const Real* dx = geom[finest_level].CellSize();
+    Real idx = 1.0 / dx[0];
+    Real idy = 1.0 / dx[1];
+    Real idz = 1.0 / dx[2];
 
-	if(fixed_dt > 0.)
+    // Convective term
+    Real conv_cfl = std::max({umax * idx, vmax * idy, wmax * idz});
+
+    // Viscous term
+    Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
+
+    // Forcing term 
+    Real forc_cfl = abs(gravity[0] - gp0max[0]) * idx 
+                  + abs(gravity[1] - gp0max[1]) * idy  
+                  + abs(gravity[2] - gp0max[2]) * idz;
+
+    // Combined CFL conditioner 
+    Real comb_cfl = 0.5 * (conv_cfl + diff_cfl 
+            + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl));
+
+    dt_new = cfl / comb_cfl;
+
+    // Protect against very small comb_cfl
+    // This may happen, for example, when the initial velocity field
+    // is zero for an inviscid flow with no external forcing
+    if(comb_cfl <= 1.0e-18)
+        dt_new = 0.5 * dt;
+
+    // Don't let the timestep grow by more than 1% per step.
+    if(dt > 0.0)
+        dt_new = std::min(dt_new, 1.01*dt);
+
+    // Don't overshoot the final time if not running to steady state
+    if((!steady_state) & (stop_time >= 0.0))
+    {
+        if(time + dt_new > stop_time)
+            dt_new = stop_time - time;
+    }
+
+    // If using fixed time step, check CFL condition and give warning if not satisfied
+	if(fixed_dt > 0.0)
 	{
 		if(dt_new < fixed_dt)
 		{
-			amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: "
+			amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: \n"
 						   << "max dt by CFL     : " << dt_new << "\n"
 						   << "fixed dt specified: " << fixed_dt << std::endl;
 		}
