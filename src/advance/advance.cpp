@@ -8,7 +8,6 @@
 #include <AMReX_VisMF.H>
 
 #include <incflo.H>
-#include <advance_F.H>
 #include <mac_F.H>
 #include <projection_F.H>
 #include <setup_F.H>
@@ -26,11 +25,10 @@ void incflo::Advance(int nstep,
     if(verbose > 0)
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
 
+    // Extrapolate boundary values for density and volume fraction
     for(int lev = 0; lev < nlev; lev++)
-    {
-        // Extrapolate boundary values for density and volume fraction
         fill_mf_bc(lev, *eta[lev]);
-    }
+   
     // Fill ghost nodes and reimpose boundary conditions
     incflo_set_velocity_bcs(time, 0);
     incflo_set_scalar_bcs();
@@ -42,19 +40,15 @@ void incflo::Advance(int nstep,
     bool proj_2 = true;
 
     // Create temporary multifabs to hold the old-time conv and divtau
-    //    so we don't have to re-compute them in the corrector
+    // so we don't have to re-compute them in the corrector
     Vector<std::unique_ptr<MultiFab>> conv_old;
     Vector<std::unique_ptr<MultiFab>> divtau_old;
-
     conv_old.resize(nlev);
     divtau_old.resize(nlev);
-
     for(int lev = 0; lev < nlev; lev++)
     {
-        conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, 
-                                         MFInfo(), *ebfactory[lev]));
-        divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, 
-                                           MFInfo(), *ebfactory[lev]));
+        conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
+        divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
     }
 
 	do
@@ -62,22 +56,27 @@ void incflo::Advance(int nstep,
         // Compute time step size
 		incflo_compute_dt(time, stop_time, steady_state, dt);
 
-		if(steady_state)
-		{
-            if(verbose > 0)
-                amrex::Print() << "\n   Iteration " << iter << " with dt = " << dt << "\n" << std::endl;
-		}
-		else
-		{
-            if(verbose > 0)
-                amrex::Print() << "\n   Step " << nstep + 1 << ": from old_time " << time
-                               << " to new time " << time + dt << " with dt = " << dt << "\n"
-                               << std::endl;
-		}
+        if(verbose > 0)
+        {
+            if(steady_state)
+            {
+                amrex::Print() << "\n   Iteration " << iter 
+                               << " with dt = " << dt 
+                               << "\n" << std::endl;
+            }
+            else
+            {
+                amrex::Print() << "\n   Step " << nstep + 1 
+                               << ": from old_time " << time 
+                               << " to new time " << time + dt 
+                               << " with dt = " << dt 
+                               << "\n" << std::endl;
+            }
+        }
 
+        // Backup field variables to old
         for(int lev = 0; lev < nlev; lev++)
         {
-            // Backup field variable to old
             MultiFab::Copy(*p_o[lev], *p[lev], 0, 0, p[lev]->nComp(), p_o[lev]->nGrow());
             MultiFab::Copy(*ro_o[lev], *ro[lev], 0, 0, ro[lev]->nComp(), ro_o[lev]->nGrow());
             MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
@@ -89,15 +88,11 @@ void incflo::Advance(int nstep,
         {
             amrex::Print() << "\nAfter predictor step:\n";
             for(int lev = 0; lev < nlev; lev++)
-            {
                 incflo_print_max_vel(lev);
-            }
 
             incflo_compute_divu(time + dt);
             for(int lev = 0; lev < nlev; lev++)
-            {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
-            }
         }
 
 		// Corrector step
@@ -106,20 +101,14 @@ void incflo::Advance(int nstep,
         {
             amrex::Print() << "\nAfter corrector step:\n";
             for(int lev = 0; lev < nlev; lev++)
-            {
                 incflo_print_max_vel(lev);
-            }
 
             incflo_compute_divu(time + dt);
             for(int lev = 0; lev < nlev; lev++)
-            {
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
-            }
         }
 
-		//
 		// Check whether to exit the loop or not
-		//
 		if(steady_state)
 			keep_looping = !steady_state_reached(dt, iter);
 		else
@@ -283,22 +272,20 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     for(int lev = 0; lev < nlev; lev++)
     {
 
-        // If explicit_diffusion == true  then we compute the full diffusive terms here
-        // If explicit_diffusion == false then we compute only the off-diagonal terms here
+        // explicit_diffusion == true:  compute the full diffusive terms here
+        // explicit_diffusion == false: compute only the off-diagonal terms here
         incflo_compute_divtau(lev, *divtau_old[lev], vel_o);
 
         // First add the convective term
         MultiFab::Saxpy(*vel[lev], dt, *conv_old[lev], 0, 0, 3, 0);
 
         // Add the diffusion terms (either all if explicit_diffusion == true or just
-        // the
-        //    off-diagonal terms if explicit_diffusion == false)
+        // the off-diagonal terms if explicit_diffusion == false)
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
 
         // Add the forcing terms
-        // TODO: Could we rather use something like: 
-        // MultiFab::Saxpy(*vel[lev], dt, gravity, 0, 0, 3, 0);
-        incflo_apply_forcing_terms(lev, dt, vel);
+        for(int n = 0; n < 3; n++)
+            (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
 
         // Convert velocities to momenta
         for(int n = 0; n < 3; n++)
@@ -395,8 +382,9 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev], 0, 0, 3, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, 3, 0);
 
-        // Add forcing terms
-        incflo_apply_forcing_terms(lev, dt, vel);
+        // Add gravity
+        for(int n = 0; n < 3; n++)
+            (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
 
         // Convert velocities to momenta
         for(int n = 0; n < 3; n++)
@@ -420,25 +408,6 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     
 	// Project velocity field
 	incflo_set_velocity_bcs(new_time, 0);
-}
-
-void incflo::incflo_apply_forcing_terms(int lev,
-                                        amrex::Real dt,
-                                        Vector<std::unique_ptr<MultiFab>>& vel)
-{
-	BL_PROFILE("incflo::incflo_apply_forcing_terms");
-
-	Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
-	{
-		// Tilebox
-		Box bx = mfi.tilebox();
-        add_forcing(BL_TO_FORTRAN_BOX(bx), BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]), &dt);
-	}
 }
 
 //
