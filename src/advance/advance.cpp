@@ -413,9 +413,15 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 // Check if steady state has been reached by verifying that
 //
-//      max(abs( u^(n+1) - u^(n) )) < tol * dt
-//      max(abs( v^(n+1) - v^(n) )) < tol * dt
-//      max(abs( w^(n+1) - w^(n) )) < tol * dt
+//      max(abs( u^(n+1) - u^(n) )) / dt < tol
+//      max(abs( v^(n+1) - v^(n) )) / dt < tol
+//      max(abs( w^(n+1) - w^(n) )) / dt < tol
+//
+//      OR 
+//
+//      sum(abs( u^(n+1) - u^(n) )) / sum(abs( u^(n) )) < tol
+//      sum(abs( v^(n+1) - v^(n) )) / sum(abs( v^(n) )) < tol
+//      sum(abs( w^(n+1) - w^(n) )) / sum(abs( w^(n) )) < tol
 //
 int incflo::steady_state_reached(Real dt, int iter)
 {
@@ -429,66 +435,33 @@ int incflo::steady_state_reached(Real dt, int iter)
     for(int lev = 0; lev < nlev; lev++)
     {
         // Use temporaries to store the difference between current and previous solution
-        MultiFab temp_vel(vel[lev]->boxArray(), vel[lev]->DistributionMap(), 3, 0);
-        MultiFab::LinComb(temp_vel, 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
+        MultiFab diff_vel(vel[lev]->boxArray(), vel[lev]->DistributionMap(), 3, 0);
+        MultiFab::LinComb(diff_vel, 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
 
-        MultiFab tmp;
-        tmp.define(grids[lev], dmap[lev], 1, 0);
-        MultiFab::LinComb(tmp, 1.0, *p[lev], 0, -1.0, *p_o[lev], 0, 0, 1, 0);
+        Real max_change = 0.0;
+        Real max_relchange = 0.0;
+        // Loop over components, only need to check the largest one
+        for(int i = 0; i < 3; i++)
+        {
+            // max(abs(u^{n+1}-u^n))
+            max_change = std::max(max_change, incflo_norm0(diff_vel, lev, i));
+            
+            // sum(abs(u^{n+1}-u^n)) / sum(abs(u^n))
+            Real norm1_diff = incflo_norm1(diff_vel, lev, i);
+            Real norm1_old = incflo_norm1(vel_o, lev, i);
+            Real relchange = norm1_old > 1.0e-15 ? norm1_diff / norm1_old : 0.0;
+            max_relchange = std::max(max_relchange, relchange);
+        }
 
-        Real delta_u = incflo_norm0(temp_vel, lev, 0);
-        Real delta_v = incflo_norm0(temp_vel, lev, 1);
-        Real delta_w = incflo_norm0(temp_vel, lev, 2);
-        Real delta_p = incflo_norm0(tmp, lev, 0);
-
-        Real tol = steady_state_tol;
-
-        condition1[lev] = (delta_u < tol * dt) && (delta_v < tol * dt) && (delta_w < tol * dt);
-
-        // Second stop condition
-        Real du_n1 = incflo_norm1(temp_vel, lev, 0);
-        Real dv_n1 = incflo_norm1(temp_vel, lev, 1);
-        Real dw_n1 = incflo_norm1(temp_vel, lev, 2);
-        Real dp_n1 = incflo_norm1(tmp, lev, 0);
-        Real uo_n1 = incflo_norm1(vel_o, lev, 0);
-        Real vo_n1 = incflo_norm1(vel_o, lev, 1);
-        Real wo_n1 = incflo_norm1(vel_o, lev, 2);
-        Real po_n1 = incflo_norm1(p_o, lev, 0);
-
-        Real tmp1, tmp2, tmp3, tmp4;
-
-        Real local_tol = 1.0e-8;
-
-        if(uo_n1 < local_tol)
-            tmp1 = 0.0;
-        else
-            tmp1 = du_n1 / uo_n1;
-
-        if(vo_n1 < local_tol)
-            tmp2 = 0.0;
-        else
-            tmp2 = dv_n1 / vo_n1;
-
-        if(wo_n1 < local_tol)
-            tmp3 = 0.0;
-        else
-            tmp3 = dw_n1 / wo_n1;
-
-        if(po_n1 < local_tol)
-            tmp4 = 0.0;
-        else
-            tmp4 = dp_n1 / po_n1;
-
-        condition2[lev] = (tmp1 < tol) && (tmp2 < tol) && (tmp3 < tol); // && (tmp4 < tol);
+        condition1[lev] = (max_change < steady_state_tol * dt);
+        condition2[lev] = (max_relchange < steady_state_tol);
 
         // Print out info on steady state checks
         if(verbose > 0)
         {
             amrex::Print() << "\nSteady state check:\n";
-            amrex::Print() << "||u-uo||/||uo|| , du/dt  = " << tmp1 << " , " << delta_u/dt << "\n";
-            amrex::Print() << "||v-vo||/||vo|| , dv/dt  = " << tmp2 << " , " << delta_v/dt << "\n";
-            amrex::Print() << "||w-wo||/||wo|| , dw/dt  = " << tmp3 << " , " << delta_w/dt << "\n";
-            amrex::Print() << "||p-po||/||po|| , dp/dt  = " << tmp4 << " , " << delta_p/dt << "\n";
+            amrex::Print() << "||u-uo||/||uo|| = " << max_relchange 
+                           << ", du/dt  = " << max_change/dt << std::endl;
         }
     }
 
