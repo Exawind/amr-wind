@@ -418,11 +418,12 @@ void incflo::incflo_init_fluid(int is_restarting,
             incflo_extrap_pressure(lev, p[lev]);
     }
 
-    if(is_restarting == 0)
+    if(!is_restarting)
     {
         // Here initialize dt to -1 so that we don't check new dt against a previous value
         dt = -1.;
-        incflo_compute_dt(time, stop_time, steady_state, dt);
+        int initialisation = 1;
+        incflo_compute_dt(time, stop_time, steady_state, initialisation, dt);
         incflo_set_scalar_bcs();
         // Project the initial velocity field
         incflo_initial_projection();
@@ -561,7 +562,8 @@ void incflo::incflo_set_p0()
 void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state)
 {
 	Real time = 0.0;
-	incflo_compute_dt(time, stop_time, steady_state, dt);
+    int initialisation = 1;
+	incflo_compute_dt(time, stop_time, steady_state, initialisation, dt);
 
 	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 

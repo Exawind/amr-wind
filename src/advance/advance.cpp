@@ -54,7 +54,7 @@ void incflo::Advance(int nstep,
 	do
 	{
         // Compute time step size
-		incflo_compute_dt(time, stop_time, steady_state, dt);
+        incflo_compute_dt(time, stop_time, steady_state, 0, dt);
 
         if(verbose > 0)
         {
@@ -140,7 +140,11 @@ void incflo::Advance(int nstep,
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real& dt)
+void incflo::incflo_compute_dt(Real time, 
+                               Real stop_time, 
+                               int steady_state, 
+                               int initialisation, 
+                               Real& dt)
 {
 	// DT is always computed even for fixed dt, so we can
 	// issue a warning if fixed dt does not satisfy CFL condition.
@@ -166,7 +170,7 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
         wmax = std::max(wmax, incflo_norm0(vel, lev, 2));
         romin = std::min(romin, incflo_norm0(ro, lev, 0));
         // WARNING: This may cause trouble as we are not doing fully implicit solve!
-        // TODO: revisit
+        // TODO: revisit after testing fully 2/3 dimensional flows
         if(explicit_diffusion)
             etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
     }
@@ -177,7 +181,7 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
     Real idz = 1.0 / dx[2];
 
     // Convective term
-    Real conv_cfl = std::max({umax * idx, vmax * idy, wmax * idz});
+    Real conv_cfl = umax * idx + vmax * idy + wmax * idz;
 
     // Viscous term
     Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
@@ -188,10 +192,14 @@ void incflo::incflo_compute_dt(Real time, Real stop_time, int steady_state, Real
                   + abs(gravity[2] - gp0max[2]) * idz;
 
     // Combined CFL conditioner 
-    Real comb_cfl = 0.5 * (conv_cfl + diff_cfl 
-            + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl));
+    Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
 
+    // Update dt
     dt_new = cfl / comb_cfl;
+
+    // Reduce CFL for initial step
+    if(initialisation)
+        dt_new *= 0.1;
 
     // Protect against very small comb_cfl
     // This may happen, for example, when the initial velocity field

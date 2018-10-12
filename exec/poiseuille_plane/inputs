@@ -1,15 +1,15 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-amr.stop_time           =   -1.         # Max (simulated) time to evolve
-amr.max_step            =   60          # Max number of time steps
+amr.stop_time           =   5.          # Max (simulated) time to evolve
+amr.max_step            =   -1          # Max number of time steps
 amr.steady_state        =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
-incflo.cfl              =   0.5         # CFL factor
+incflo.cfl              =   0.7         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
@@ -24,11 +24,10 @@ amr.restart             =   ""          # Checkpoint to restart from
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
 
-incflo.fluid_model      =   "smd"       # Fluid model (rheology)
+incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
-incflo.n                =   1.          # Power-law index
-incflo.tau_0            =   4.          # Yield stress
-incflo.eta_0            =   4.0e3       # Zero-strain viscosity
+incflo.tau_0            =   4.0         # Yield stress
+incflo.papa_reg         =   1.0e-3      # Papanastasiou regularisation parameter
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
