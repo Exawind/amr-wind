@@ -27,3 +27,20 @@ for i, N in enumerate(np.unique(data['N'])):
         plt.plot(datapoint['tau0'],  datapoint['dt'], marker='.', markerfacecolor=None, color=color)
 
 plt.show()
+
+num_tau_vals = len(np.unique(data['tau0']))
+# Set up figure environment
+fig = plt.figure(num=num_tau_vals, figsize=(3,10))
+fig.clf()
+
+for i, tau in enumerate(np.unique(data['tau0'])):
+    ax = fig.add_subplot(num_tau_vals,1,i+1)
+    mask = data['tau0'] == tau
+    for datapoint in data[mask]:
+        if datapoint['umax'] == 0.0:
+            color = 'red'
+        else:
+            color = 'green'
+        plt.plot(datapoint['N'],  datapoint['dt'], marker='.', markerfacecolor=None, color=color)
+
+plt.show()
