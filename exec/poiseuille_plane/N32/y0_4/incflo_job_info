@@ -1,0 +1,59 @@
+===============================================================================
+ incflo Job Information
+===============================================================================
+number of MPI processes: 2
+
+
+===============================================================================
+ Build Information
+===============================================================================
+build date:    2018-10-13 09:00:54.624927
+build machine: Darwin Knuts-MacBook-Pro.local 17.7.0 Darwin Kernel Version 17.7.0: Thu Jun 21 22:53:14 PDT 2018; root:xnu-4570.71.2~1/RELEASE_X86_64 x86_64
+build dir:     /Users/ksk/Workspace/incflo/exec/poiseuille_plane
+AMReX dir:     /Users/ksk/Workspace/amrex
+
+COMP:          gnu
+COMP version:  4.2.1
+FCOMP:         
+FCOMP version: 
+
+incflo git hash: bb0ab50
+AMReX git hash: 18.09.1-1223-g6da8d37c9
+
+
+===============================================================================
+ Grid Information
+===============================================================================
+ level: 0
+   number of boxes = 4
+   maximum zones   = 64 64 32 
+
+
+
+===============================================================================
+ Inputs File Parameters
+===============================================================================
+amr.stop_time = 5.
+amr.max_step = -1
+amr.steady_state = 0
+incflo.fixed_dt = 0.004
+incflo.cfl = 0.7
+amr.plot_int = 10
+amr.check_int = -1
+amr.restart = 
+incflo.gravity = 0. 0. 0.
+incflo.ro_0 = 1.
+incflo.fluid_model = bingham
+incflo.mu = 1.
+incflo.tau_0 = 2.22222
+incflo.papa_reg = 1.0e-3
+amr.n_cell = 64 64 32
+amr.max_level = 0
+geometry.prob_lo = 0. 0. 0.
+geometry.prob_hi = 2. 2. 1.
+geometry.is_periodic = 1 0 1
+incflo.explicit_diffusion = 0
+incflo.steady_state_tol = 1.e-4
+incflo.verbose = 1
+mac.verbose = 0
+amrex.fpe_trap_invalid = 0
