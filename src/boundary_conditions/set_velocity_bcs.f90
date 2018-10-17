@@ -11,7 +11,7 @@ subroutine set_velocity_bcs(time, &
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding    ,  only: c_int
-   use param            ,  only: zero,two
+   use param            ,  only: zero,one,two,half
    use bc
 
    implicit none

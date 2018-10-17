@@ -7,9 +7,15 @@
 !  Date: December 20, 2017
 !
 !
-subroutine set_mac_velocity_bcs ( slo, shi, u, ulo, uhi, v, vlo, vhi, w, wlo, whi, &
-     & bct_ilo, bct_ihi, bct_jlo, bct_jhi, bct_klo, bct_khi,               &
-     & domlo, domhi, ng ) bind(C)
+subroutine set_mac_velocity_bcs(time, slo, shi, &
+                                u, ulo, uhi, &
+                                v, vlo, vhi, &
+                                w, wlo, whi, &
+                                bct_ilo, bct_ihi, &
+                                bct_jlo, bct_jhi, &
+                                bct_klo, bct_khi, &
+                                domlo, domhi, &
+                                ng ) bind(C)
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding ,     only: c_int
@@ -17,6 +23,9 @@ subroutine set_mac_velocity_bcs ( slo, shi, u, ulo, uhi, v, vlo, vhi, w, wlo, wh
    use bc
 
    implicit none
+
+   ! Time (necessary if we have time-dependent BCs)
+   real(ar),       intent(in   ) :: time
 
    ! Array bounds
    integer(c_int), intent(in   ) :: slo(3), shi(3)
