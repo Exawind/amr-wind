@@ -23,7 +23,7 @@ data = np.loadtxt(filename, datatype, skiprows=1)
 dx = (data['x'][1] - data['x'][0])
 x = data['x'] + dx / 2 - Ro
 mask = (x >= Ri)
-ax.plot(x[mask], data['u'][mask], 'G', markerfacecolor='none', label='Computed')
+ax.plot(x[mask], data['u'][mask], '.', markerfacecolor='none', label='Computed')
 r = np.linspace(Ri, Ro, 1000)
 ax.plot(r, u(r), label='Analytical')
 ax.legend(loc='best')

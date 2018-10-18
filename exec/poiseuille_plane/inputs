@@ -1,15 +1,15 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-amr.stop_time           =   4.          # Max (simulated) time to evolve
+amr.stop_time           =   -1.0        # Max (simulated) time to evolve
 amr.max_step            =   -1          # Max number of time steps
-amr.steady_state        =   0           # Steady-state solver? 
+amr.steady_state        =   1           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.003       # Use this constant dt if > 0
-incflo.cfl              =   0.7         # CFL factor
+incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
+incflo.cfl              =   0.5         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
@@ -24,15 +24,13 @@ amr.restart             =   ""          # Checkpoint to restart from
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
 
-incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
+incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
-incflo.tau_0            =   15.5556     # Yield stress
-incflo.papa_reg         =   1.0e-3      # Papanastasiou regularisation parameter
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   64  64  32  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   16  16  8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -46,7 +44,7 @@ geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
