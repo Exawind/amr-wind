@@ -205,7 +205,7 @@
                enddo
             endif
 
-            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),2)  = ro_0 * gravity(1)
+            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),2)  = ro_0 * gravity(2)
 
          else if (abs(gravity(3)) > epsilon(0.0d0)) then
 
@@ -225,7 +225,7 @@
                enddo
             endif
 
-            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)  = ro_0 * gravity(1)
+            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)  = ro_0 * gravity(3)
 
          endif
 

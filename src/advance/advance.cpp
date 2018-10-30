@@ -291,7 +291,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
         // the off-diagonal terms if explicit_diffusion == false)
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
 
-        // Add the forcing terms
+        // Add gravitational forces
         for(int n = 0; n < 3; n++)
             (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
 
@@ -390,7 +390,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev], 0, 0, 3, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, 3, 0);
 
-        // Add gravity
+        // Add gravitational forces
         for(int n = 0; n < 3; n++)
             (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
 
