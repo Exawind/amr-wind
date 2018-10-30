@@ -2,48 +2,48 @@
 #            SIMULATION STOP            #
 #.......................................#
 amr.stop_time           =   -1.         # Max (simulated) time to evolve
-amr.max_step            =   100         # Max number of time steps
+amr.max_step            =   10000       # Max number of time steps
 amr.steady_state        =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   -1.         # Use this constant dt if > 0
+incflo.fixed_dt         =   0.025       # Use this constant dt if > 0
 incflo.cfl              =   0.7         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   1           # Steps between plot files
-amr.check_int           =   -1          # Steps between checkpoint files
+amr.plot_int            =   100         # Steps between plot files
+amr.check_int           =   500         # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.mu               =   0.030       # Dynamic viscosity coefficient
-incflo.ro_0             =   1000.       # Reference density 
+incflo.mu               =   0.001       # Dynamic viscosity coefficient
+incflo.ro_0             =   1.          # Reference density 
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   64  64  64  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   64  64  16  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   0.4 0.4 0.4 # Hi corner coordinates
+geometry.prob_hi        =   2.0 2.0 0.5 # Hi corner coordinates
 geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
 
 incflo.geometry         =   "annulus"   # Add cylinder
 annulus.direction       =   2           # Choices are {0,1,2}
-annulus.outer_radius    =   0.2         # Outer cylinder radius
-annulus.inner_radius    =   0.15        # Inner cylinder radius
-annulus.outer_center    =   0.2 0.2 0.  # Outer cylinder center
-annulus.inner_center    =   0.2 0.2 0.  # Inner cylinder center
+annulus.outer_radius    =   1.0         # Outer cylinder radius
+annulus.inner_radius    =   0.25        # Inner cylinder radius
+annulus.outer_center    =   1.0 1.0 0.  # Outer cylinder center
+annulus.inner_center    =   1.0 1.0 0.  # Inner cylinder center
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
