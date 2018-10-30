@@ -187,9 +187,9 @@ void incflo::incflo_compute_dt(Real time,
     Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
 
     // Forcing term 
-    Real forc_cfl = abs(gravity[0] - gp0max[0]) * idx 
-                  + abs(gravity[1] - gp0max[1]) * idy  
-                  + abs(gravity[2] - gp0max[2]) * idz;
+    Real forc_cfl = std::abs(gravity[0] - gp0max[0]) * idx 
+                  + std::abs(gravity[1] - gp0max[1]) * idy  
+                  + std::abs(gravity[2] - gp0max[2]) * idz;
 
     // Combined CFL conditioner 
     Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
