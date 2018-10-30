@@ -7,14 +7,13 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
                          domlo, domhi, ro, p, vel, &
-                         mu, lambda, dx, dy, dz, xlength, ylength, zlength) &
+                         eta, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use constant      , only: ro_0
-      use calc_mu_module, only: calc_mu
+      use constant      , only: ro_0, mu
 
       implicit none
 
@@ -31,9 +30,7 @@ contains
       real(rt), intent(inout) :: vel&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
-      real(rt), intent(inout) :: mu&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda&
+      real(rt), intent(inout) :: eta&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
       real(rt), intent(in   ) :: dx, dy, dz
@@ -46,12 +43,11 @@ contains
 
       ! Set the initial fluid density and viscosity
       ro  = ro_0
-
-      call calc_mu(slo, shi, lo, hi, mu, lambda)
+      eta = mu
 
    end subroutine init_fluid
 
-   subroutine plane_poiseuille ( lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+   subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
       use amrex_fort_module, only: ar => amrex_real
       use iso_c_binding ,    only: c_int
@@ -100,13 +96,12 @@ contains
 !  Subroutine: init_fluid_restart                                      !
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine init_fluid_restart(slo, shi, lo, hi, mu, lambda) &
+   subroutine init_fluid_restart(slo, shi, lo, hi, eta) &
       bind(C, name="init_fluid_restart")
 
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
-
-      use calc_mu_module, only: calc_mu
+      use constant, only: mu
 
       implicit none
 
@@ -114,12 +109,10 @@ contains
       integer(c_int), intent(in   ) ::  lo(3),  hi(3)
       integer(c_int), intent(in   ) :: slo(3), shi(3)
 
-      real(rt), intent(inout) :: mu&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: lambda&
+      real(rt), intent(inout) :: eta&
                                  (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-      call calc_mu(slo, shi, lo, hi, mu, lambda)
+      eta = mu
 
    end subroutine init_fluid_restart
 

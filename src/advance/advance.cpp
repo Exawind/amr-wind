@@ -195,7 +195,7 @@ void incflo::incflo_compute_dt(Real time,
     Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
 
     // Update dt
-    dt_new = cfl / comb_cfl;
+    dt_new = 2.0 * cfl / comb_cfl;
 
     // Reduce CFL for initial step
     if(initialisation)
