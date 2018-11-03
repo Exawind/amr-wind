@@ -101,7 +101,6 @@ void incflo::incflo_compute_divtau(int lev,
 // Implicit diffusion
 //
 void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
-
 {
 	BL_PROFILE("incflo::incflo_diffuse_velocity");
 
@@ -114,7 +113,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
 	// Whole domain
 	Box domain(geom[0].Domain());
 
-	// Set BCs for Poisson's solver
+	// Set BCs for Poisson solver
 	set_diff_bc(bc_lo,
 				bc_hi,
 				domain.loVect(),

@@ -30,11 +30,13 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
 {
 	BL_PROFILE("incflo::incflo_apply_projection");
 
-    // Set domain BCs for Poisson solver
-    // The domain BCs refer to level 0 only
-    int bc_lo[3], bc_hi[3];
+    // The boundary conditions need only be set once -- we do this at level 0
+	int bc_lo[3], bc_hi[3];
+
+	// Whole domain
     Box domain(geom[0].Domain());
 
+	// Set BCs for Poisson solver
     set_ppe_bc(bc_lo,
                bc_hi,
                domain.loVect(),
@@ -52,8 +54,8 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
 
-    // Swap ghost cells and apply BCs to velocity
-    incflo_set_velocity_bcs(time, 0);
+	// Swap ghost cells and apply BCs to velocity
+	incflo_set_velocity_bcs(time, 0);
 
     incflo_compute_divu(time);
 
@@ -75,6 +77,11 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
                 MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
 
             MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
+
+            incflo_compute_divu(time);
+            amrex::Print() << "At level " << lev << ", after Saxpy(gp): \n";
+            incflo_print_max_vel(lev);
+            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
 
             // Convert momenta back to velocities
             for(int n = 0; n < 3; n++)
