@@ -296,9 +296,6 @@ private:
 	// Base state pressure
 	Vector<std::unique_ptr<MultiFab>> p0;
 
-	// Pressure correction
-	Vector<std::unique_ptr<MultiFab>> pp;
-
 	// Pressure gradients
 	Vector<std::unique_ptr<MultiFab>> gp;
 	Vector<std::unique_ptr<MultiFab>> gp0;
@@ -306,8 +303,10 @@ private:
 	// Molecular viscosity
 	Vector<std::unique_ptr<MultiFab>> eta;
 
-	// Cell-based
+	// Strain-rate magnitude
 	Vector<std::unique_ptr<MultiFab>> strainrate;
+
+    // Vorticity
 	Vector<std::unique_ptr<MultiFab>> vort;
 
 	// These are multi-component multifabs

@@ -21,20 +21,17 @@ void incflo::AllocateArrays(int lev)
         p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
         p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
         p_o[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        pp[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
     } 
     else 
     {
         p0[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
         p[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
         p_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        pp[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
     }
 
 	p0[lev]->setVal(0.);
 	p[lev]->setVal(0.);
 	p_o[lev]->setVal(0.);
-	pp[lev]->setVal(0.);
 
 	// Pressure gradients
 	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
@@ -42,7 +39,7 @@ void incflo::AllocateArrays(int lev)
 	gp[lev]->setVal(0.);
 	gp0[lev]->setVal(0.);
 
-	// Molecular viscosity
+	// Viscosity
 	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	eta[lev]->setVal(0.);
 
@@ -53,7 +50,7 @@ void incflo::AllocateArrays(int lev)
 	// Old velocity
 	vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	vel_o[lev]->setVal(0.);
-    
+
 	// Strain-rate magnitude
 	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	strainrate[lev]->setVal(0.);
@@ -169,7 +166,7 @@ void incflo::RegridArrays(int lev)
     //
     // After calling copy() with dst_ngrow set to ng, we do not need to call
     // FillBoundary().
-    // 
+    //
     //
 
 	// Gas density
@@ -207,12 +204,6 @@ void incflo::RegridArrays(int lev)
         p0_new->setVal(0.0);
         p0_new->copy(*p0[lev],0,0,1,0,ng);
         p0[lev] = std::move(p0_new);
-
-        ng = pp[lev]->nGrow();
-        std::unique_ptr<MultiFab> pp_new(new MultiFab(nd_grids,dmap[lev],1,ng));
-        pp_new->FillBoundary(p0_periodicity);
-        pp_new->copy(*pp[lev],0,0,1,0,ng);
-        pp[lev] = std::move(pp_new);
 
         std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids,dmap[lev],1,divu[lev]->nGrow()));
         divu[lev] = std::move(divu_new);
@@ -258,12 +249,6 @@ void incflo::RegridArrays(int lev)
         p0_new->copy(*p0[lev], 0, 0, 1, 0, ng);
         p0[lev] = std::move(p0_new);
 
-        ng = pp[lev]->nGrow();
-        std::unique_ptr<MultiFab> pp_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-        pp_new->setVal(0.);
-        pp_new->copy(*pp[lev], 0, 0, 1, 0, ng);
-        pp[lev] = std::move(pp_new);
-
         ng = phi[lev]->nGrow();
         std::unique_ptr<MultiFab> phi_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
         phi[lev] = std::move(phi_new);
@@ -303,15 +288,16 @@ void incflo::RegridArrays(int lev)
 
 	// Gas velocity
 	ng = vel[lev]->nGrow();
-	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], vel[lev]->nComp(), ng, MFInfo(), *ebfactory[lev]));
+	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], vel[lev]->nComp(), ng,
+                                                   MFInfo(), *ebfactory[lev]));
 	vel_new->setVal(0.);
 	vel_new->copy(*vel[lev], 0, 0, vel[lev]->nComp(), 0, ng);
 	vel[lev] = std::move(vel_new);
 
 	// Old gas velocity
 	ng = vel_o[lev]->nGrow();
-    std::unique_ptr<MultiFab> vel_o_new(new MultiFab(grids[lev], dmap[lev], 
-                                        vel_o[lev]->nComp(), ng, MFInfo(), *ebfactory[lev]));
+    std::unique_ptr<MultiFab> vel_o_new(new MultiFab(grids[lev], dmap[lev], vel_o[lev]->nComp(), ng,
+                                                     MFInfo(), *ebfactory[lev]));
 	vel_o_new->setVal(0.);
 	vel_o_new->copy(*vel_o[lev], 0, 0, vel_o[lev]->nComp(), 0, ng);
 	vel_o[lev] = std::move(vel_o_new);
@@ -404,7 +390,7 @@ void incflo::RegridArrays(int lev)
     std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], zslopes[lev]->nComp(), nghost));
     zslopes[lev] = std::move(zslopes_new);
     zslopes[lev] -> setVal(0.);
-    
+
 	/****************************************************************************
     * Nodal Arrays                                                             *
     ****************************************************************************/
@@ -431,9 +417,7 @@ void incflo::ResizeArrays()
 
 	p.resize(nlevs_max);
 	p_o.resize(nlevs_max);
-
 	p0.resize(nlevs_max);
-	pp.resize(nlevs_max);
 
 	ro.resize(nlevs_max);
 	ro_o.resize(nlevs_max);
