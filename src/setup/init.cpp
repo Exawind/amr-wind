@@ -152,17 +152,21 @@ void incflo::Init(Real time)
 
 	MakeNewLevelFromScratch(0, time, ba, dm);
 
-    for(int lev = 1; lev < finest_level; lev++)
+    for(int lev = 1; lev < nlev; lev++)
     {
         // This refines the central half of the domain
         int ilo = ba[0].size()[0] / 2;
         int ihi = 3 * ba[0].size()[0] / 2 - 1;
-        IntVect lo(ilo, ilo, ilo);
-        IntVect hi(ihi, ihi, ihi);
+        int jlo = ba[0].size()[1] / 2;
+        int jhi = 3 * ba[0].size()[1] / 2 - 1;
+        int klo = ba[0].size()[2] / 2;
+        int khi = 3 * ba[0].size()[2] / 2 - 1;
+        IntVect lo(ilo, jlo, klo);
+        IntVect hi(ihi, jhi, khi);
         Box bx(lo, hi);
         BoxArray ba_ref(bx);
 
-        std::cout << "Setting refined region to " << ba_ref << std::endl; 
+        amrex::Print() << "Setting refined region to " << ba_ref << std::endl; 
 
         DistributionMapping dm_ref(ba_ref, ParallelDescriptor::NProcs());
         MakeNewLevelFromScratch(lev, time, ba_ref, dm_ref);
@@ -614,7 +618,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 void incflo::incflo_initial_projection()
 {
     // Project velocity field to make sure initial velocity is divergence-free
-	amrex::Print() << "Initial projection:\n";
+	amrex::Print() << "Initial projection:" << std::endl;
 
 	// Need to add this call here so that the MACProjection internal arrays
 	//  are allocated so that the cell-centered projection can use the MAC
