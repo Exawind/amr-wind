@@ -16,12 +16,12 @@ void incflo::AllocateArrays(int lev)
 
     if (nodal_pressure)
     {
-       const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
 
-       p0[lev].reset(new MultiFab(nd_grids,dmap[lev],1,0));
-        p[lev].reset(new MultiFab(nd_grids,dmap[lev],1,0));
-       p_o[lev].reset(new MultiFab(nd_grids,dmap[lev],1,0));
-       pp[lev].reset(new MultiFab(nd_grids,dmap[lev],1,0));
+        p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        p_o[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        pp[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
     } 
     else 
     {
