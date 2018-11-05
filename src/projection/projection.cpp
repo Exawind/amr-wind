@@ -186,7 +186,7 @@ void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > 
         //        (del dot b sigma grad)) phi
         //
         LPInfo info;
-        MLNodeLaplacian matrix(geom, grids, dmap, info);
+        MLNodeLaplacian matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 
         matrix.setGaussSeidel(true);
         matrix.setHarmonicAverage(false);

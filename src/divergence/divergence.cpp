@@ -52,7 +52,7 @@ void incflo::incflo_compute_divu(Real time)
         //        (del dot b sigma grad)) phi
         //
         LPInfo                       info;
-        MLNodeLaplacian              matrix(geom, grids, dmap, info);
+        MLNodeLaplacian              matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 
         // Set domain BCs for Poisson's solver
         // The domain BCs refer to level 0 only
