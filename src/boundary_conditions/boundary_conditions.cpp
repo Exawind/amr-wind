@@ -102,7 +102,7 @@ void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
 //
 // Fills ghost cell values of pressure appropriately for the BC type
 //
-void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& p)
+void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& p_in)
 {
     BL_PROFILE("incflo::incflo_extrap_pressure()");
     if (nodal_pressure == 1) return;
@@ -112,9 +112,9 @@ void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& 
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-    for(MFIter mfi(*p, true); mfi.isValid(); ++mfi) 
+    for(MFIter mfi(*p_in, true); mfi.isValid(); ++mfi) 
     {
-        extrap_pressure_to_ghost_cells(BL_TO_FORTRAN_ANYD((*p)[mfi]),
+        extrap_pressure_to_ghost_cells(BL_TO_FORTRAN_ANYD((*p_in)[mfi]),
                                        bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                                        bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                                        bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),

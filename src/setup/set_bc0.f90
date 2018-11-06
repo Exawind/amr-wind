@@ -15,7 +15,6 @@
       use amrex_fort_module, only : rt => amrex_real
       use iso_c_binding , only: c_int
 
-      use bc, only: bc_t
       use bc, only: pinf_, pout_, minf_
       use constant, only: ro_0, mu
 

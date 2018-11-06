@@ -292,25 +292,24 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
 
         // Add gravitational forces
-        for(int n = 0; n < 3; n++)
-            (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
+        for(int dir = 0; dir < 3; dir++)
+            (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
 
         // Convert velocities to momenta
-        for(int n = 0; n < 3; n++)
-            MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; dir++)
+            MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
         MultiFab::Saxpy(*vel[lev], -dt, *gp0[lev], 0, 0, 3, vel[lev]->nGrow());
 
         // Convert momenta back to velocities
-        for(int n = 0; n < 3; n++)
-            MultiFab::Divide(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; n++)
+            MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion)
-        incflo_diffuse_velocity(new_time, dt);
+    if(!explicit_diffusion) incflo_diffuse_velocity(new_time, dt);
 
 	// Project velocity field
 	incflo_apply_projection(new_time, dt, proj_2);
@@ -391,25 +390,24 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, 3, 0);
 
         // Add gravitational forces
-        for(int n = 0; n < 3; n++)
-            (*vel[lev]).plus(dt * gravity[n], n, 1, 0);
+        for(int dir = 0; dir < 3; dir++)
+            (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
 
         // Convert velocities to momenta
-        for(int n = 0; n < 3; n++)
-            MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; dir++)
+            MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
         MultiFab::Saxpy(*vel[lev], -dt, *gp0[lev], 0, 0, 3, vel[lev]->nGrow());
 
         // Convert momenta back to velocities
-        for(int n = 0; n < 3; n++)
-            MultiFab::Divide(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; dir++)
+            MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion)
-        incflo_diffuse_velocity(new_time, dt);
+    if(!explicit_diffusion) incflo_diffuse_velocity(new_time, dt);
 
 	// Apply projection
 	incflo_apply_projection(new_time, dt, proj_2);

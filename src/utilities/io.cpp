@@ -402,13 +402,13 @@ void incflo::GotoNextLine(std::istream& is)
 	is.ignore(bl_ignore_max, '\n');
 }
 
-void incflo::WriteJobInfo(const std::string& dir) const
+void incflo::WriteJobInfo(const std::string& path) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
 		// job_info file with details about the run
 		std::ofstream jobInfoFile;
-		std::string FullPathJobInfoFile = dir;
+		std::string FullPathJobInfoFile = path;
 		std::string PrettyLine =
 			"===============================================================================\n";
 
@@ -469,9 +469,9 @@ void incflo::WriteJobInfo(const std::string& dir) const
 			jobInfoFile << " level: " << i << "\n";
 			jobInfoFile << "   number of boxes = " << grids[i].size() << "\n";
 			jobInfoFile << "   maximum zones   = ";
-			for(int n = 0; n < BL_SPACEDIM; n++)
+			for(int dir = 0; dir < BL_SPACEDIM; dir++)
 			{
-				jobInfoFile << geom[i].Domain().length(n) << " ";
+				jobInfoFile << geom[i].Domain().length(dir) << " ";
 			}
 			jobInfoFile << "\n\n";
 		}

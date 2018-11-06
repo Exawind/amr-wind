@@ -220,7 +220,7 @@ void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
 			"Using max_grid_size only did not make enough grids for the number of processors");
 
 	// Here we hard-wire the maximum number of times we divide the boxes.
-	int n = 10;
+	int max_div = 10;
 
 	// Here we hard-wire the minimum size in any one direction the boxes can be
 	int min_grid_size = 4;
@@ -228,7 +228,7 @@ void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
 	IntVect chunk(domain.length(0), domain.length(1), domain.length(2));
 
 	int j;
-	for(int cnt = 1; cnt <= n; ++cnt)
+	for(int cnt = 1; cnt <= max_div; ++cnt)
 	{
 		if(chunk[0] >= chunk[1] && chunk[0] >= chunk[2])
 		{
@@ -271,10 +271,11 @@ void incflo::MakeNewLevelFromScratch(int lev,
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);
 
-    if(lev == 0)
-        MakeBCArrays();
+    if(lev == 0) MakeBCArrays();
 }
 
+// Only used when restarting from checkpoint file 
+// Might be deprecated after we implement RemakeLevel
 void incflo::ReMakeNewLevelFromScratch(int lev,
                                        const BoxArray& new_grids,
                                        const DistributionMapping& new_dmap)
@@ -282,8 +283,7 @@ void incflo::ReMakeNewLevelFromScratch(int lev,
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);
 
-    if(lev == 0)
-        MakeBCArrays();
+    if(lev == 0) MakeBCArrays();
 
 	// We need to re-fill these arrays for the larger domain (after replication).
 	incflo_set_bc_type(lev);
@@ -297,9 +297,7 @@ void incflo::InitLevelData(Real time)
 
 	// Allocate the fluid data, NOTE: this depends on the ebfactories.
     for(int lev = 0; lev < nlev; lev++)
-    {
         AllocateArrays(lev);
-    }
 }
 
 void incflo::PostInit(Real& dt, 

@@ -28,10 +28,10 @@ std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo::get_walls(bool& has_walls)
 			amrex::Print() << "Normal " << normal << std::endl;
 			amrex::Print() << "Center " << center << std::endl;
 
-			RealArray p = {AMREX_D_DECL(center[0], center[1], center[2])};
-			RealArray n = {AMREX_D_DECL(normal[0], normal[1], normal[2])};
+			RealArray plane_center = {AMREX_D_DECL(center[0], center[1], center[2])};
+			RealArray plane_normal = {AMREX_D_DECL(normal[0], normal[1], normal[2])};
 
-			planes.emplace_back(p, n, false);
+			planes.emplace_back(plane_center, plane_normal, false);
 		}
 	}
 
@@ -60,10 +60,10 @@ std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo::get_real_walls(bool& has_real
 			amrex::Print() << "Normal " << normal << std::endl;
 			amrex::Print() << "Center " << center << std::endl;
 
-			RealArray p = {AMREX_D_DECL(center[0], center[1], center[2])};
-			RealArray n = {AMREX_D_DECL(normal[0], normal[1], normal[2])};
+			RealArray plane_center = {AMREX_D_DECL(center[0], center[1], center[2])};
+			RealArray plane_normal = {AMREX_D_DECL(normal[0], normal[1], normal[2])};
 
-			planes.emplace_back(p, n, false);
+			planes.emplace_back(plane_center, plane_normal, false);
 		}
 	}
 

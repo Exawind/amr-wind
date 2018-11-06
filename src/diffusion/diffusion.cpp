@@ -15,7 +15,7 @@
 //
 void incflo::incflo_compute_divtau(int lev,
                                    MultiFab& divtau,
-                                   Vector<std::unique_ptr<MultiFab>>& vel)
+                                   Vector<std::unique_ptr<MultiFab>>& vel_in)
 {
 	BL_PROFILE("incflo::incflo_compute_divtau");
 	Box domain(geom[lev].Domain());
@@ -34,13 +34,13 @@ void incflo::incflo_compute_divtau(int lev,
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-   for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi) {
+   for (MFIter mfi(*vel_in[lev],true); mfi.isValid(); ++mfi) {
 
       // Tilebox
       Box bx = mfi.tilebox ();
 
       // this is to check efficiently if this tile contains any eb stuff
-      const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
+      const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
       const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
 
       if (flags.getType(bx) == FabType::covered)
@@ -54,7 +54,7 @@ void incflo::incflo_compute_divtau(int lev,
             compute_divtau(
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
-               BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+               BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                (*eta[lev])[mfi].dataPtr(),
                BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                domain.loVect (), domain.hiVect (),
@@ -68,7 +68,7 @@ void incflo::incflo_compute_divtau(int lev,
             compute_divtau_eb(
                BL_TO_FORTRAN_BOX(bx),
                BL_TO_FORTRAN_ANYD(divtau[mfi]),
-               BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+               BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                (*eta[lev])[mfi].dataPtr(),
                BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                BL_TO_FORTRAN_ANYD(flags),

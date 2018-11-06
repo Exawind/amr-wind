@@ -73,8 +73,8 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         if(proj_2)
         {
             // Convert velocities to momenta
-            for(int n = 0; n < 3; n++)
-                MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+            for(int dir = 0; dir < 3; dir++)
+                MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
 
             MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
 
@@ -84,8 +84,8 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
             amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
 
             // Convert momenta back to velocities
-            for(int n = 0; n < 3; n++)
-                MultiFab::Divide(*vel[lev], (*ro[lev]), 0, n, 1, vel[lev]->nGrow());
+            for(int dir = 0; dir < 3; dir++)
+                MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
 
@@ -135,10 +135,8 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         // The fluxes currently hold MINUS dt * (1/rho) * grad(phi),
         // so now we multiply by rho and divide by (-dt) to get grad(phi)
         fluxes[lev]->mult( -1.0 / scaling_factor, fluxes[lev]->nGrow());
-        for(int n = 0; n < 3; n++)
-        {
-            MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, n, 1, fluxes[lev]->nGrow());
-        }
+        for(int dir = 0; dir < 3; dir++)
+            MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, dir, 1, fluxes[lev]->nGrow());
 
         if(proj_2)
         {

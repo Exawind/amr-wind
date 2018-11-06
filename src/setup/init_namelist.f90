@@ -24,8 +24,6 @@ CONTAINS
    SUBROUTINE INIT_NAMELIST
 
       use bc
-      use ic
-      use constant, only: gravity
       use ic, only: ic_p, ic_t
       use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
