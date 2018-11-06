@@ -53,11 +53,12 @@ include $(AMREX_HOME)/Src/LinearSolvers/MLMG/Make.package
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 
-ALGOIM_HOME ?= $(AMREX_HOME)/../algoim
-BLITZ_HOME ?= /usr/include/blitz
-INCLUDE_LOCATIONS += $(ALGOIM_HOME)
+ALGOIM_HOME ?= /path/to/algoim
+BLITZ_HOME ?= /path/to/blitz
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Extern/Algoim
 INCLUDE_LOCATIONS += $(ALGOIM_HOME)/src
 INCLUDE_LOCATIONS += $(BLITZ_HOME)
+VPATH_LOCATIONS   += $(AMREX_HOME)/Src/Extern/Algoim
 VPATH_LOCATIONS   += $(ALGOIM_HOME)
 
 DEFINES += -DUSE_ALGOIM
