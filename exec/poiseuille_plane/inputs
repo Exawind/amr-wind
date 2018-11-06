@@ -2,8 +2,8 @@
 #            SIMULATION STOP            #
 #.......................................#
 amr.stop_time           =   -1.0        # Max (simulated) time to evolve
-amr.max_step            =   10          # Max number of time steps
-amr.steady_state        =   0           # Steady-state solver? 
+amr.max_step            =   -1          # Max number of time steps
+amr.steady_state        =   1           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -14,7 +14,7 @@ incflo.cfl              =   0.5         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   1           # Steps between plot files
+amr.plot_int            =   100         # Steps between plot files
 amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
@@ -50,8 +50,8 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   2           # incflo_level
-mac.verbose             =   2           # MacProjector
+incflo.verbose          =   1           # incflo_level
+mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              DEBUGGING                #
