@@ -423,3 +423,267 @@ subroutine set_velocity_bcs(time, &
 end subroutine set_velocity_bcs
 
 ! *****************************************************************
+
+subroutine set_vec_bcs ( vec, ulo, uhi, &
+     & bct_ilo, bct_ihi, bct_jlo, bct_jhi, bct_klo, bct_khi, &
+     & domlo, domhi, ng) bind(C) 
+
+   use amrex_fort_module,  only: ar => amrex_real
+   use iso_c_binding    ,  only: c_int
+   use param            ,  only: zero, half, one, two
+   use bc
+   
+   implicit none
+
+   ! Array bounds
+   integer(c_int), intent(in   ) :: ulo(3), uhi(3)
+ 
+   ! Grid bounds
+   integer(c_int), intent(in   ) :: domlo(3), domhi(3)
+   integer(c_int), intent(in   ) :: ng
+   
+   ! BCs type
+   integer(c_int), intent(in   )  ::                                 &
+        & bct_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+        & bct_ihi(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+        & bct_jlo(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+        & bct_jhi(domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2), &
+        & bct_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
+        & bct_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+
+   ! Arrays
+   real(ar),      intent(inout) ::  &
+        vec(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3),3)
+
+   ! Local variables
+   integer :: bcv, i, j, k
+   integer :: nlft, nrgt, nbot, ntop, nup, ndwn
+   integer :: num_cells_y
+   real    :: y
+
+   nlft = max(0,domlo(1)-ulo(1))
+   nbot = max(0,domlo(2)-ulo(2))
+   ndwn = max(0,domlo(3)-ulo(3))
+
+   nrgt = max(0,uhi(1)-domhi(1))
+   ntop = max(0,uhi(2)-domhi(2))
+   nup  = max(0,uhi(3)-domhi(3))
+
+   num_cells_y = domhi(2) - domlo(2) + 1
+
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+   ! NOTE:  vec = vel 
+   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+   if (nlft .gt. 0) then
+      do k = ulo(3), uhi(3)
+         do j = ulo(2), uhi(2)
+
+            y = (real(j,ar) + half) / num_cells_y
+            bcv = bct_ilo(j,k,2)
+
+            select case (bct_ilo(j,k,1))
+               
+            ! Note that the pinf_ and pout_ cases are irrelevant here because 
+            !   we will use a Dirichlet condition on pressure there
+            case ( pinf_, pout_) 
+               
+               vec(ulo(1):domlo(1)-1,j,k,1) =  vec(domlo(1),j,k,1)
+               vec(ulo(1):domlo(1)-1,j,k,2) =  vec(domlo(1),j,k,2)
+               vec(ulo(1):domlo(1)-1,j,k,3) =  vec(domlo(1),j,k,3)
+
+            case ( nsw_, fsw_) 
+               
+               vec(ulo(1):domlo(1)-1,j,k,1) =  -vec(domlo(1),j,k,1)
+               vec(ulo(1):domlo(1)-1,j,k,2) =   vec(domlo(1),j,k,2)
+               vec(ulo(1):domlo(1)-1,j,k,3) =   vec(domlo(1),j,k,3)
+
+            case ( minf_)
+
+               vec(ulo(1):domlo(1)-1,j,k,1) = two * 6.0 * bc_u(bcv) * y * (one - y) - vec(domlo(1),j,k,1)
+               vec(ulo(1):domlo(1)-1,j,k,2) = vec(domlo(1),j,k,2) 
+               vec(ulo(1):domlo(1)-1,j,k,3) = vec(domlo(1),j,k,3)
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nrgt .gt. 0) then
+      
+      do k = ulo(3),uhi(3)
+         do j = ulo(2),uhi(2)
+            
+            bcv = bct_ihi(j,k,2)
+            
+            select case ( bct_ihi(j,k,1) )
+
+            ! Note that the pinf_ and pout_ cases are irrelevant here because 
+            !   we will use a Dirichlet condition on pressure there
+            case ( pinf_, pout_ )
+               
+               vec(domhi(1)+1:uhi(1),j,k,1) = vec(domhi(1),j,k,1)
+               vec(domhi(1)+1:uhi(1),j,k,2) = vec(domhi(1),j,k,2)
+               vec(domhi(1)+1:uhi(1),j,k,3) = vec(domhi(1),j,k,3)
+
+            case ( nsw_, fsw_) 
+
+               vec(domhi(1)+1:uhi(1),j,k,1) = -vec(domhi(1),j,k,1)
+               vec(domhi(1)+1:uhi(1),j,k,2) =  vec(domhi(1),j,k,2)
+               vec(domhi(1)+1:uhi(1),j,k,3) =  vec(domhi(1),j,k,3)
+
+            case ( minf_ )
+
+               vec(domhi(1)+1:uhi(1),j,k,1) = two * bc_u(bcv) - vec(domhi(1),j,k,1)
+               vec(domhi(1)+1:uhi(1),j,k,2) = vec(domhi(1),j,k,2)
+               vec(domhi(1)+1:uhi(1),j,k,3) = vec(domhi(1),j,k,3)
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nbot .gt. 0) then
+      
+      do k = ulo(3), uhi(3)
+         do i = ulo(1), uhi(1)
+            
+            bcv = bct_jlo(i,k,2)
+
+            select case ( bct_jlo(i,k,1) )
+
+            ! Note that the pinf_ and pout_ cases are irrelevant here because 
+            !   we will use a Dirichlet condition on pressure there
+            case ( pinf_, pout_) 
+
+               vec(i,ulo(2):domlo(2)-1,k,1) = vec(i,domlo(2),k,1)
+               vec(i,ulo(2):domlo(2)-1,k,2) = vec(i,domlo(2),k,2)
+               vec(i,ulo(2):domlo(2)-1,k,3) = vec(i,domlo(2),k,3)
+
+            case ( nsw_, fsw_) 
+
+               vec(i,ulo(2):domlo(2)-1,k,1) =  vec(i,domlo(2),k,1)
+               vec(i,ulo(2):domlo(2)-1,k,2) = -vec(i,domlo(2),k,2)
+               vec(i,ulo(2):domlo(2)-1,k,3) =  vec(i,domlo(2),k,3)
+
+            case ( minf_ )
+
+               vec(i,ulo(2):domlo(2)-1,k,1) = vec(i,domlo(2),k,1)
+               vec(i,ulo(2):domlo(2)-1,k,2) = two * bc_v(bcv) - vec(i,domlo(2),k,2)
+               vec(i,ulo(2):domlo(2)-1,k,3) = vec(i,domlo(2),k,3)
+
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (ntop .gt. 0) then
+
+      do k = ulo(3), uhi(3)
+         do i = ulo(1), uhi(1)
+            
+            bcv = bct_jhi(i,k,2)
+
+            select case ( bct_jhi(i,k,1) )
+
+            case ( pinf_, pout_ )
+               
+               vec(i,domhi(2)+1:uhi(2),k,1) = vec(i,domhi(2),k,1)
+               vec(i,domhi(2)+1:uhi(2),k,2) = vec(i,domhi(2),k,2)
+               vec(i,domhi(2)+1:uhi(2),k,3) = vec(i,domhi(2),k,3)
+
+            case ( nsw_, fsw_) 
+               
+               vec(i,domhi(2)+1:uhi(2),k,1) =  vec(i,domhi(2),k,1)
+               vec(i,domhi(2)+1:uhi(2),k,2) = -vec(i,domhi(2),k,2)
+               vec(i,domhi(2)+1:uhi(2),k,3) =  vec(i,domhi(2),k,3)
+
+            case ( minf_) 
+
+               vec(i,domhi(2)+1:uhi(2),k,1) = vec(i,domhi(2),k,1)
+               vec(i,domhi(2)+1:uhi(2),k,2) = two * bc_v(bcv) - vec(i,domhi(2),k,2)
+               vec(i,domhi(2)+1:uhi(2),k,3) = vec(i,domhi(2),k,3)
+
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (ndwn .gt. 0) then
+
+      do j = ulo(2), uhi(2)
+         do i = ulo(1), uhi(1)
+            
+            bcv = bct_klo(i,j,2)
+
+            select case (bct_klo(i,j,1))
+
+            ! Note that the pinf_ and pout_ cases are irrelevant here because 
+            !   we will use a Dirichlet condition on pressure there
+            case ( pinf_, pout_ ) 
+
+               vec(i,j,ulo(3):domlo(3)-1,1) =  vec(i,j,domlo(3),1)
+               vec(i,j,ulo(3):domlo(3)-1,2) =  vec(i,j,domlo(3),2)
+               vec(i,j,ulo(3):domlo(3)-1,3) =  vec(i,j,domlo(3),3)
+
+            case ( nsw_, fsw_) 
+
+               vec(i,j,ulo(3):domlo(3)-1,1) =  vec(i,j,domlo(3),1)
+               vec(i,j,ulo(3):domlo(3)-1,2) =  vec(i,j,domlo(3),2)
+               vec(i,j,ulo(3):domlo(3)-1,3) = -vec(i,j,domlo(3),3)
+
+            case ( minf_ )
+
+               vec(i,j,ulo(3):domlo(3)-1,1) = vec(i,j,domlo(3),1)
+               vec(i,j,ulo(3):domlo(3)-1,2) = vec(i,j,domlo(3),2)
+               vec(i,j,ulo(3):domlo(3)-1,3) = two * bc_w(bcv) - vec(i,j,domlo(3),3)
+               
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nup .gt. 0) then
+
+      do j = ulo(2), uhi(2)
+         do i = ulo(1), uhi(1)
+            
+            bcv = bct_khi(i,j,2)
+
+            select case ( bct_khi(i,j,1) )
+
+            ! Note that the pinf_ and pout_ cases are irrelevant here because 
+            !   we will use a Dirichlet condition on pressure there
+            case ( pinf_, pout_ )
+               
+               vec(i,j,domhi(3)+1:uhi(3),1) = vec(i,j,domhi(3),1)
+               vec(i,j,domhi(3)+1:uhi(3),2) = vec(i,j,domhi(3),2)
+               vec(i,j,domhi(3)+1:uhi(3),3) = vec(i,j,domhi(3),3)
+
+            case ( nsw_, fsw_) 
+
+               vec(i,j,domhi(3)+1:uhi(3),1) =  vec(i,j,domhi(3),1)
+               vec(i,j,domhi(3)+1:uhi(3),2) =  vec(i,j,domhi(3),2)
+               vec(i,j,domhi(3)+1:uhi(3),3) = -vec(i,j,domhi(3),3)
+
+            case ( minf_ ) 
+
+               vec(i,j,domhi(3)+1:uhi(3),1) = vec(i,j,domhi(3),1)
+               vec(i,j,domhi(3)+1:uhi(3),2) = vec(i,j,domhi(3),2) 
+               vec(i,j,domhi(3)+1:uhi(3),3) = two * bc_w(bcv) - vec(i,j,domhi(3),3)
+
+            end select
+
+         end do
+      end do
+   endif
+
+end subroutine set_vec_bcs
+
