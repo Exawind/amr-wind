@@ -267,7 +267,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
                                     Real time, Real dt, bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_predictor");
-    
+
     // We use the new ime value for things computed on the "*" state
     Real new_time = time + dt; 
 
@@ -279,7 +279,6 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
     for(int lev = 0; lev < nlev; lev++)
     {
-
         // explicit_diffusion == true:  compute the full diffusive terms here
         // explicit_diffusion == false: compute only the off-diagonal terms here
         incflo_compute_divtau(lev, *divtau_old[lev], vel_o);
@@ -304,7 +303,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
         MultiFab::Saxpy(*vel[lev], -dt, *gp0[lev], 0, 0, 3, vel[lev]->nGrow());
 
         // Convert momenta back to velocities
-        for(int dir = 0; dir < 3; n++)
+        for(int dir = 0; dir < 3; dir++)
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
     }
 
@@ -314,7 +313,6 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 	// Project velocity field
 	incflo_apply_projection(new_time, dt, proj_2);
     
-	// Project velocity field
 	incflo_set_velocity_bcs(new_time, 0);
 }
 
