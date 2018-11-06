@@ -9,7 +9,7 @@ void incflo::AllocateArrays(int lev)
 	// ********************************************************************************
 
     // Gas density
-	ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro[lev]->setVal(0.);
 	ro_o[lev]->setVal(0.);
