@@ -108,7 +108,7 @@ void incflo::InitParams()
 		// Tolerance to check for steady state
 		pp.query("steady_state_tol", steady_state_tol);
 
-		// Option to control MGML behavior
+		// Option to control MLMG behavior
 		pp.query("mg_verbose", mg_verbose);
 		pp.query("mg_cg_verbose", mg_cg_verbose);
 		pp.query("mg_max_iter", mg_max_iter);
@@ -120,6 +120,9 @@ void incflo::InitParams()
         // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
         bottom_solver_type = "bicgstab";
         pp.query( "bottom_solver_type",  bottom_solver_type );
+
+        // Option to control approximate projection 
+        pp.query("nodal_pressure", nodal_pressure);
 
 		// Should we use explicit vs implicit diffusion
 		pp.query("explicit_diffusion", explicit_diffusion);
@@ -406,27 +409,29 @@ void incflo::incflo_init_fluid(int is_restarting,
     {
         Box domain(geom[lev].Domain());
 
-        incflo_extrap_pressure(lev, p0[lev]);
+        if(!nodal_pressure)
+            incflo_extrap_pressure(lev, p0[lev]);
 
         fill_mf_bc(lev, *ro[lev]);
-
         vel[lev]->FillBoundary(geom[lev].periodicity());
-
         fill_mf_bc(lev, *eta[lev]);
 
-        if(is_restarting == 1)
-            incflo_extrap_pressure(lev, p[lev]);
+        if(is_restarting)
+        {
+            if(!nodal_pressure)
+                incflo_extrap_pressure(lev, p[lev]);
+        }
     }
 
     if(!is_restarting)
     {
         // Here initialize dt to -1 so that we don't check new dt against a previous value
         dt = -1.;
-        int initialisation = 1;
-        incflo_compute_dt(time, stop_time, steady_state, initialisation, dt);
         incflo_set_scalar_bcs();
+
         // Project the initial velocity field
         incflo_initial_projection();
+
         // Iterate to compute the initial pressure
         incflo_initial_iterations(dt, stop_time, steady_state);
     }
@@ -482,10 +487,11 @@ void incflo::incflo_set_bc0()
                     bc_khi[lev]->dataPtr(),
                     domain.loVect(),
                     domain.hiVect(),
-                    &nghost);
+                    &nghost, &nodal_pressure);
         }
 
-        fill_mf_bc(lev, *p[lev]);
+        if(!nodal_pressure)
+            fill_mf_bc(lev, *p[lev]);
         fill_mf_bc(lev, *ro[lev]);
     }
 
@@ -548,7 +554,7 @@ void incflo::incflo_set_p0()
                    bc_jhi[lev]->dataPtr(),
                    bc_klo[lev]->dataPtr(), 
                    bc_khi[lev]->dataPtr(),
-                   &nghost);
+                   &nghost, &nodal_pressure);
         }
 
         p0[lev]->FillBoundary(p0_periodicity);

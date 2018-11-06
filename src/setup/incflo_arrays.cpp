@@ -9,22 +9,34 @@ void incflo::AllocateArrays(int lev)
 	// ********************************************************************************
 
     // Gas density
-	ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro[lev]->setVal(0.);
 	ro_o[lev]->setVal(0.);
 
-    p0[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-    p[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-    p_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-    pp[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    if (nodal_pressure)
+    {
+        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+
+        p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        p_o[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+        pp[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    } 
+    else 
+    {
+        p0[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        p[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        p_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        pp[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    }
 
 	p0[lev]->setVal(0.);
 	p[lev]->setVal(0.);
 	p_o[lev]->setVal(0.);
 	pp[lev]->setVal(0.);
 
-	// Presssure gradients
+	// Pressure gradients
 	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
 	gp0[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
 	gp[lev]->setVal(0.);
@@ -50,8 +62,18 @@ void incflo::AllocateArrays(int lev)
 	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	vort[lev]->setVal(0.);
 
-    phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    divu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    if (nodal_pressure)
+    {
+        const BoxArray& nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+
+        phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+        divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    }
+    else
+    {
+        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+        divu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    }
 
 	phi[lev]->setVal(0.);
 	divu[lev]->setVal(0.);
@@ -76,23 +98,33 @@ void incflo::AllocateArrays(int lev)
 	// X-face-based arrays
 	// ********************************************************************************
 
-    // Create a BoxArray on x-faces.
-    BoxArray x_edge_ba = grids[lev];
-    x_edge_ba.surroundingNodes(0);
-    bcoeff[lev][0].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, 
-                         MFInfo(), *ebfactory[lev]));
+    // When the pressure is on nodes, bcoeff is at cell centers
+    if (nodal_pressure)
+    {
+        bcoeff[lev][0].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        bcoeff[lev][1].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        bcoeff[lev][2].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    }
+    else
+    {
+        // Create a BoxArray on x-faces.
+        BoxArray x_edge_ba = grids[lev];
+        x_edge_ba.surroundingNodes(0);
+        bcoeff[lev][0].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, 
+                             MFInfo(), *ebfactory[lev]));
 
-    // Create a BoxArray on y-faces.
-    BoxArray y_edge_ba = grids[lev];
-    y_edge_ba.surroundingNodes(1);
-    bcoeff[lev][1].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, 
-                         MFInfo(), *ebfactory[lev]));
+        // Create a BoxArray on y-faces.
+        BoxArray y_edge_ba = grids[lev];
+        y_edge_ba.surroundingNodes(1);
+        bcoeff[lev][1].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, 
+                             MFInfo(), *ebfactory[lev]));
 
-    // Create a BoxArray on y-faces.
-    BoxArray z_edge_ba = grids[lev];
-    z_edge_ba.surroundingNodes(2);
-    bcoeff[lev][2].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, 
-                         MFInfo(), *ebfactory[lev]));
+        // Create a BoxArray on y-faces.
+        BoxArray z_edge_ba = grids[lev];
+        z_edge_ba.surroundingNodes(2);
+        bcoeff[lev][2].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, 
+                             MFInfo(), *ebfactory[lev]));
+    }
 
 	bcoeff[lev][0]->setVal(0.);
 	bcoeff[lev][1]->setVal(0.);
@@ -101,14 +133,20 @@ void incflo::AllocateArrays(int lev)
 	// ****************************************************************
 
 	// Create a BoxArray on x-faces.
+    BoxArray x_edge_ba = grids[lev];
+    x_edge_ba.surroundingNodes(0);
 	bcoeff_diff[lev][0].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost));
 	m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 
 	// Create a BoxArray on y-faces.
+    BoxArray y_edge_ba = grids[lev];
+    y_edge_ba.surroundingNodes(1);
 	bcoeff_diff[lev][1].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost));
 	m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 
 	// Create a BoxArray on y-faces.
+    BoxArray z_edge_ba = grids[lev];
+    z_edge_ba.surroundingNodes(2);
 	bcoeff_diff[lev][2].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost));
 	m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 
@@ -148,58 +186,113 @@ void incflo::RegridArrays(int lev)
 	ro_o_new->copy(*ro_o[lev], 0, 0, 1, ng, ng);
 	ro_o[lev] = std::move(ro_o_new);
 
-    ng = p[lev]->nGrow();
-    std::unique_ptr<MultiFab> p_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-    p_new->setVal(0.);
-    p_new->copy(*p[lev], 0, 0, 1, 0, ng);
-    p[lev] = std::move(p_new);
+    if (nodal_pressure)
+    {
+        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
 
-    ng = p_o[lev]->nGrow();
-    std::unique_ptr<MultiFab> p_o_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-    p_o_new->setVal(0.);
-    p_o_new->copy(*p_o[lev], 0, 0, 1, 0, ng);
-    p_o[lev] = std::move(p_o_new);
+        ng = p[lev]->nGrow();
+        std::unique_ptr<MultiFab> p_new(new MultiFab(nd_grids, dmap[lev], 1, ng));
+        p_new->setVal(0.0);
+        p_new->copy(*p[lev],0,0,1,0,ng);
+        p[lev] = std::move(p_new);
 
-    ng = p0[lev]->nGrow();
-    std::unique_ptr<MultiFab> p0_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-    p0_new->setVal(0.);
-    p0_new->copy(*p0[lev], 0, 0, 1, 0, ng);
-    p0[lev] = std::move(p0_new);
+        ng = p_o[lev]->nGrow();
+        std::unique_ptr<MultiFab> p_o_new(new MultiFab(nd_grids,dmap[lev],1,ng));
+        p_o_new->setVal(0.0);
+        p_o_new->copy(*p_o[lev],0,0,1,0,ng);
+        p_o[lev] = std::move(p_o_new);
 
-    ng = pp[lev]->nGrow();
-    std::unique_ptr<MultiFab> pp_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
-    pp_new->setVal(0.);
-    pp_new->copy(*pp[lev], 0, 0, 1, 0, ng);
-    pp[lev] = std::move(pp_new);
+        ng = p0[lev]->nGrow();
+        std::unique_ptr<MultiFab> p0_new(new MultiFab(nd_grids,dmap[lev],1,ng));
+        p0_new->setVal(0.0);
+        p0_new->copy(*p0[lev],0,0,1,0,ng);
+        p0[lev] = std::move(p0_new);
 
-    ng = phi[lev]->nGrow();
-    std::unique_ptr<MultiFab> phi_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
-    phi[lev] = std::move(phi_new);
-    phi[lev]->setVal(0.);
+        ng = pp[lev]->nGrow();
+        std::unique_ptr<MultiFab> pp_new(new MultiFab(nd_grids,dmap[lev],1,ng));
+        pp_new->FillBoundary(p0_periodicity);
+        pp_new->copy(*pp[lev],0,0,1,0,ng);
+        pp[lev] = std::move(pp_new);
 
-    ng = divu[lev]->nGrow();
-    std::unique_ptr<MultiFab> divu_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
-    divu[lev] = std::move(divu_new);
-    divu[lev]->setVal(0.);
+        std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids,dmap[lev],1,divu[lev]->nGrow()));
+        divu[lev] = std::move(divu_new);
+        divu[lev]->setVal(0.);
 
-    // Cell-centered pressure uses face-based coefficients
-    BoxArray x_ba = grids[lev];
-    x_ba = x_ba.surroundingNodes(0);
-    std::unique_ptr<MultiFab> bc0_new(new MultiFab(x_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][0] = std::move(bc0_new);
-    bcoeff[lev][0]->setVal(0.0);
+        std::unique_ptr<MultiFab> phi_new(new MultiFab(nd_grids,dmap[lev],1,phi[lev]->nGrow()));
+        phi[lev] = std::move(phi_new);
+        phi[lev]->setVal(0.);
 
-    BoxArray y_ba = grids[lev];
-    y_ba = y_ba.surroundingNodes(1);
-    std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][1] = std::move(bc1_new);
-    bcoeff[lev][1]->setVal(0.0);
+        std::unique_ptr<MultiFab> bc0_new(new MultiFab(grids[lev],dmap[lev],1,bcoeff[lev][0]->nGrow(),
+                                                      MFInfo(), *ebfactory[lev] ));
+        bcoeff[lev][0] = std::move(bc0_new);
+        bcoeff[lev][0]->setVal(0.);
 
-    BoxArray z_ba = grids[lev];
-    z_ba = z_ba.surroundingNodes(2);
-    std::unique_ptr<MultiFab> bc2_new(new MultiFab(z_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][2] = std::move(bc2_new);
-    bcoeff[lev][2]->setVal(0.0);
+        std::unique_ptr<MultiFab> bc1_new(new MultiFab(grids[lev],dmap[lev],1,bcoeff[lev][1]->nGrow(),
+                                                      MFInfo(), *ebfactory[lev] ));
+        bcoeff[lev][1] = std::move(bc1_new);
+        bcoeff[lev][1]->setVal(0.);
+
+        std::unique_ptr<MultiFab> bc2_new(new MultiFab(grids[lev],dmap[lev],1,bcoeff[lev][2]->nGrow(),
+                                                      MFInfo(), *ebfactory[lev] ));
+        bcoeff[lev][2] = std::move(bc2_new);
+        bcoeff[lev][2]->setVal(0.);
+
+    }
+    else
+    {
+        ng = p[lev]->nGrow();
+        std::unique_ptr<MultiFab> p_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+        p_new->setVal(0.);
+        p_new->copy(*p[lev], 0, 0, 1, 0, ng);
+        p[lev] = std::move(p_new);
+
+        ng = p_o[lev]->nGrow();
+        std::unique_ptr<MultiFab> p_o_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+        p_o_new->setVal(0.);
+        p_o_new->copy(*p_o[lev], 0, 0, 1, 0, ng);
+        p_o[lev] = std::move(p_o_new);
+
+        ng = p0[lev]->nGrow();
+        std::unique_ptr<MultiFab> p0_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+        p0_new->setVal(0.);
+        p0_new->copy(*p0[lev], 0, 0, 1, 0, ng);
+        p0[lev] = std::move(p0_new);
+
+        ng = pp[lev]->nGrow();
+        std::unique_ptr<MultiFab> pp_new(new MultiFab(grids[lev], dmap[lev], 1, ng));
+        pp_new->setVal(0.);
+        pp_new->copy(*pp[lev], 0, 0, 1, 0, ng);
+        pp[lev] = std::move(pp_new);
+
+        ng = phi[lev]->nGrow();
+        std::unique_ptr<MultiFab> phi_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
+        phi[lev] = std::move(phi_new);
+        phi[lev]->setVal(0.);
+
+        ng = divu[lev]->nGrow();
+        std::unique_ptr<MultiFab> divu_new(new MultiFab(grids[lev], dmap[lev], 1, ng, MFInfo(), *ebfactory[lev]));
+        divu[lev] = std::move(divu_new);
+        divu[lev]->setVal(0.);
+
+        // Cell-centered pressure uses face-based coefficients
+        BoxArray x_ba = grids[lev];
+        x_ba = x_ba.surroundingNodes(0);
+        std::unique_ptr<MultiFab> bc0_new(new MultiFab(x_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+        bcoeff[lev][0] = std::move(bc0_new);
+        bcoeff[lev][0]->setVal(0.0);
+
+        BoxArray y_ba = grids[lev];
+        y_ba = y_ba.surroundingNodes(1);
+        std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+        bcoeff[lev][1] = std::move(bc1_new);
+        bcoeff[lev][1]->setVal(0.0);
+
+        BoxArray z_ba = grids[lev];
+        z_ba = z_ba.surroundingNodes(2);
+        std::unique_ptr<MultiFab> bc2_new(new MultiFab(z_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+        bcoeff[lev][2] = std::move(bc2_new);
+        bcoeff[lev][2]->setVal(0.0);
+    }
 
 	// Molecular viscosity
 	ng = eta[lev]->nGrow();
@@ -253,14 +346,21 @@ void incflo::RegridArrays(int lev)
     * Face-based Arrays                                                        *
     ****************************************************************************/
 
+    BoxArray x_ba = grids[lev];
+    x_ba = x_ba.surroundingNodes(0);
+
 	// MAC velocity
 	std::unique_ptr<MultiFab> u_mac_new(new MultiFab(x_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_u_mac[lev] = std::move(u_mac_new);
 	m_u_mac[lev]->setVal(0.0);
 
 	// Diffusion coefficient on x-faces
+    std::unique_ptr<MultiFab> bc0_new(new MultiFab(x_ba,dmap[lev],1,nghost,MFInfo(), *ebfactory[lev]));
 	bcoeff_diff[lev][0] = std::move(bc0_new);
 	bcoeff_diff[lev][0]->setVal(0.0);
+
+    BoxArray y_ba = grids[lev];
+    y_ba = y_ba.surroundingNodes(1);
 
     // MAC velocity
     std::unique_ptr<MultiFab> v_mac_new(new MultiFab(y_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -268,8 +368,12 @@ void incflo::RegridArrays(int lev)
     m_v_mac[lev] -> setVal(0.0);
 
     // Diffusion coefficient on y-faces
+    std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba,dmap[lev],1,nghost,MFInfo(), *ebfactory[lev]));
     bcoeff_diff[lev][1] = std::move(bc1_new);
     bcoeff_diff[lev][1] -> setVal(0.0);
+
+    BoxArray z_ba = grids[lev];
+    z_ba = z_ba.surroundingNodes(2);
 
     // MAC velocity
     std::unique_ptr<MultiFab> w_mac_new(new MultiFab(z_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -277,6 +381,7 @@ void incflo::RegridArrays(int lev)
     m_w_mac[lev] -> setVal(0.0);
 
     // Diffusion coefficient on z-faces
+    std::unique_ptr<MultiFab> bc2_new(new MultiFab(z_ba,dmap[lev],1,nghost,MFInfo(), *ebfactory[lev]));
     bcoeff[lev][2] = std::move(bc2_new);
     bcoeff[lev][2] -> setVal(0.0);
 
@@ -313,8 +418,11 @@ void incflo::RegridArrays(int lev)
 
 	fill_mf_bc(lev, *eta[lev]);
 
-    fill_mf_bc(lev, *p[lev]);
-    fill_mf_bc(lev, *p_o[lev]);
+    if (!nodal_pressure)
+    {
+        fill_mf_bc(lev, *p[lev]);
+        fill_mf_bc(lev, *p_o[lev]);
+    }
 }
 
 void incflo::ResizeArrays()

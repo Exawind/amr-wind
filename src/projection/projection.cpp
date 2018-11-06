@@ -95,14 +95,14 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         phi[lev]->setVal(0.);
     }
 
-    // Compute the PPE coefficients
+    // Compute the PPE coefficients ( = 1 / rho )
     incflo_compute_bcoeff_ppe();
 
 	Vector<std::unique_ptr<MultiFab>> fluxes;
     fluxes.resize(nlev);
     for(int lev = 0; lev < nlev; lev++)
     {
-        fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(), 
+        fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(),
                                        vel[lev]->DistributionMap(),
                                        vel[lev]->nComp(), 1,
                                        MFInfo(), *ebfactory[lev]));
@@ -116,16 +116,22 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     {
         // NOTE: THE SIGN OF DT (scaling_factor) IS CORRECT HERE
         if(verbose > 1)
-            amrex::Print() << "Multiplying fluxes at level " << lev 
+            amrex::Print() << "Multiplying fluxes at level " << lev
                             << " by dt " << scaling_factor << std::endl;
+
+        // The fluxes currently hold MINUS (1/rho) * grad(phi) so we multiply by dt
         fluxes[lev]->mult(scaling_factor, fluxes[lev]->nGrow());
+
+        // Now we correct the velocity with MINUS dt * (1/rho) * grad(phi),
         MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, 3, 0);
 
-        // After using the fluxes, which currently hold MINUS dt * (1/rho) * grad(phi),
-        //    to modify the velocity field,  convert them to hold grad(phi)
-        fluxes[lev]->mult(-1.0 / scaling_factor, fluxes[lev]->nGrow());
+        // The fluxes currently hold MINUS dt * (1/rho) * grad(phi),
+        // so now we multiply by rho and divide by (-dt) to get grad(phi)
+        fluxes[lev]->mult( -1.0 / scaling_factor, fluxes[lev]->nGrow());
         for(int n = 0; n < 3; n++)
+        {
             MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, n, 1, fluxes[lev]->nGrow());
+        }
 
         if(proj_2)
         {
@@ -163,84 +169,141 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
 //
 //                  div( 1/rho * grad(phi) ) = div(u)
 //
-void incflo::solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-                                    Vector<std::unique_ptr<MultiFab>>& this_phi,
-                                    Vector<std::unique_ptr<MultiFab>>& rhs,
-                                    Vector<std::unique_ptr<MultiFab>>& fluxes,
-                                    int bc_lo[], int bc_hi[])
+void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > >& b,
+			                      Vector< std::unique_ptr<MultiFab> >& this_phi,
+			                      Vector< std::unique_ptr<MultiFab> >& rhs,
+			                      Vector< std::unique_ptr<MultiFab> >& fluxes,
+			                      int bc_lo[], int bc_hi[])
 {
-	BL_PROFILE("incflo::solve_poisson_equation");
+    BL_PROFILE("incflo::solve_poisson_equation");
 
-    //
-    // First define the matrix (operator).
-    // Class MLABecLaplacian describes the following operator:
-    //
-    //       (alpha * a - beta * (del dot b grad)) phi
-    //
-    LPInfo info;
-    MLEBABecLap matrix(geom, grids, dmap, info, GetVecOfConstPtrs(ebfactory));
-    Vector<const MultiFab*> tmp;
-    std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+    if (nodal_pressure == 1)
+    {
 
-    int lev = 0;
+        //
+        // First define the matrix (operator).
+        //
+        //        (del dot b sigma grad)) phi
+        //
+        LPInfo info;
+        MLNodeLaplacian matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
 
-    // Copy the PPE coefficient into the proper data strutcure
-    tmp = GetVecOfConstPtrs(b[lev]);
-    b_tmp[0] = tmp[0];
-    b_tmp[1] = tmp[1];
-    b_tmp[2] = tmp[2];
+        matrix.setGaussSeidel(true);
+        matrix.setHarmonicAverage(false);
+        matrix.setDomainBC({(LinOpBCType) bc_lo[0], (LinOpBCType) bc_lo[1], (LinOpBCType) bc_lo[2]},
+                           {(LinOpBCType) bc_hi[0], (LinOpBCType) bc_hi[1], (LinOpBCType) bc_hi[2]} );
 
-    // It is essential that we set MaxOrder of the solver to 2
-    // if we want to use the standard phi(i)-phi(i-1) approximation
-    // for the gradient at Dirichlet boundaries.
-    // The solver's default order is 3 and this uses three points for the
-    // gradient at a Dirichlet boundary.
-    matrix.setMaxOrder(2);
+        matrix.setCoarseningStrategy(MLNodeLaplacian::CoarseningStrategy::Sigma);
 
-    // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
-    matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-                       {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
+        for (int lev = 0; lev < nlev; lev++)
+        {
+           matrix.setSigma(0, *(b[lev][0]));
 
-    matrix.setScalars(0.0, -1.0);
-    matrix.setBCoeffs(lev, b_tmp);
+           // By this point we must have filled the Dirichlet values of phi stored in the ghost cells
+           this_phi[lev]->setVal(0.);
+           matrix.setLevelBC ( lev, GetVecOfConstPtrs(this_phi)[lev] );
+        }
 
-    // By this point we must have filled the Dirichlet values of phi stored in the ghost cells
-    this_phi[lev]->setVal(0.);
-    matrix.setLevelBC(lev, GetVecOfConstPtrs(this_phi)[lev]);
+        //
+        // Then setup the solver ----------------------
+        //
+        MLMG  solver(matrix);
 
-    //
-    // Then setup the solver ----------------------
-    //
-    MLMG solver(matrix);
+        solver.setMaxIter (mg_max_iter);
+        solver.setMaxFmgIter (mg_max_fmg_iter);
+        solver.setVerbose (mg_verbose);
+        solver.setCGVerbose (mg_cg_verbose);
+        solver.setCGMaxIter (mg_cg_maxiter);
 
-   // The default bottom solver is BiCG
-   // Other options include: 
-   ///   regular smoothing ("smoother")
-   ///   Hypre IJ AMG solver ("hypre")
-   if (bottom_solver_type == "smoother")
-   { 
-      solver.setBottomSolver(MLMG::BottomSolver::smoother);
-   } else if (bottom_solver_type == "hypre") { 
-      solver.setBottomSolver(MLMG::BottomSolver::hypre);
-   }
+        //
+        // Finally, solve the system
+        //
+        solver.solve ( GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol );
+        solver.getFluxes( amrex::GetVecOfPtrs(fluxes) );
+    }
+    else
+    {
+        //
+        // First define the matrix (operator).
+        // Class MLABecLaplacian describes the following operator:
+        //
+        //       (alpha * a - beta * (del dot b grad)) phi
+        //
+        LPInfo info;
+        MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
+        Vector<const MultiFab*> tmp;
+        std::array<MultiFab const*,AMREX_SPACEDIM> b_tmp;
 
-    solver.setMaxIter(mg_max_iter);
-    solver.setMaxFmgIter(mg_max_fmg_iter);
-    solver.setVerbose(mg_verbose);
-    solver.setCGVerbose(mg_cg_verbose);
-    solver.setCGMaxIter(mg_cg_maxiter);
+        // It is essential that we set MaxOrder of the solver to 2
+        // if we want to use the standard phi(i)-phi(i-1) approximation
+        // for the gradient at Dirichlet boundaries.
+        // The solver's default order is 3 and this uses three points for the
+        // gradient at a Dirichlet boundary.
+        matrix.setMaxOrder(2);
 
-    // This ensures phi ghost cells are correctly filled when returned from solver
-    solver.setFinalFillBC(true);
+        // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+        matrix.setDomainBC({(LinOpBCType) bc_lo[0], (LinOpBCType) bc_lo[1], (LinOpBCType) bc_lo[2]},
+                           {(LinOpBCType) bc_hi[0], (LinOpBCType) bc_hi[1], (LinOpBCType) bc_hi[2]});
 
-    //
-    // Finally, solve the system
-    //
-    solver.solve(GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
-    solver.getFluxes(GetVecOfPtrs(fluxes), MLMG::Location::CellCenter);
+        matrix.setScalars( 0.0, -1.0 );
 
-    this_phi[lev]->FillBoundary(geom[lev].periodicity());
+
+        for (int lev = 0; lev < nlev; lev++)
+        {
+
+            // Copy the PPE coefficient into the proper data strutcure
+            tmp = amrex::GetVecOfConstPtrs( b[lev] ) ;
+            b_tmp[0] = tmp[0];
+            b_tmp[1] = tmp[1];
+            b_tmp[2] = tmp[2];
+
+            matrix.setBCoeffs( lev, b_tmp );
+
+            // By this point we must have filled Dirichlet values of phi stored in ghost cells
+            this_phi[lev]->setVal(0.);
+            matrix.setLevelBC( lev, GetVecOfConstPtrs(this_phi)[lev] );
+        }
+
+        //
+        // Then setup the solver ----------------------
+        //
+        MLMG  solver(matrix);
+
+        // The default bottom solver is BiCG
+        // Other options include:
+        ///   Hypre IJ AMG solver
+        //    solver.setBottomSolver(MLMG::BottomSolver::hypre);
+        ///   regular smoothing
+        //    solver.setBottomSolver(MLMG::BottomSolver::smoother);
+
+        if (bottom_solver_type == "smoother")
+        {
+            solver.setBottomSolver(MLMG::BottomSolver::smoother);
+        }
+        else if (bottom_solver_type == "hypre")
+        {
+            solver.setBottomSolver(MLMG::BottomSolver::hypre);
+        }
+
+        solver.setMaxIter(mg_max_iter);
+        solver.setMaxFmgIter(mg_max_fmg_iter);
+        solver.setVerbose(mg_verbose);
+        solver.setCGVerbose(mg_cg_verbose);
+        solver.setCGMaxIter(mg_cg_maxiter);
+
+        // This ensures that ghost cells of phi are correctly filled when returned from solver
+        solver.setFinalFillBC(true);
+
+        //
+        // Finally, solve the system
+        //
+        solver.solve( GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol );
+        solver.getFluxes( amrex::GetVecOfPtrs(fluxes), MLMG::Location::CellCenter );
+    }
+    for (int lev = 0; lev < nlev; lev++)
+       this_phi[lev] -> FillBoundary(geom[lev].periodicity());
 }
+
 
 //
 // Computes bcoeff = 1/ro at the faces of the scalar cells
@@ -256,34 +319,67 @@ void incflo::incflo_compute_bcoeff_ppe()
 
     for(int lev = 0; lev < nlev; lev++)
     {
+        if (nodal_pressure == 1)
+        {
+#ifdef _OPENMP
+#pragma omp parallel 
+#endif
+            for (MFIter mfi(*ro[lev],true); mfi.isValid(); ++mfi)
+            {
+                // Cell-centered tilebox
+                Box bx = mfi.tilebox();
+
+                // X direction
+                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &xdir );
+
+                // Y direction
+                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &ydir );
+
+                // Z direction
+                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &zdir );
+            }
+        } 
+        else 
+        {
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-        for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-        {
-            // Tileboxes for staggered components
-            Box ubx = mfi.tilebox(e_x);
-            Box vbx = mfi.tilebox(e_y);
-            Box wbx = mfi.tilebox(e_z);
+            for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
+            {
+                // Tileboxes for staggered components
+                Box ubx = mfi.tilebox(e_x);
+                Box vbx = mfi.tilebox(e_y);
+                Box wbx = mfi.tilebox(e_z);
 
-            // X direction
-            compute_bcoeff_mac(BL_TO_FORTRAN_BOX(ubx),
-                               BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-                               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-                               &xdir);
+                // X direction
+                compute_bcoeff_mac(BL_TO_FORTRAN_BOX(ubx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &xdir);
 
-            // Y direction
-            compute_bcoeff_mac(BL_TO_FORTRAN_BOX(vbx),
-                               BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-                               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-                               &ydir);
+                // Y direction
+                compute_bcoeff_mac(BL_TO_FORTRAN_BOX(vbx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &ydir);
 
-            // Z direction
-            compute_bcoeff_mac(BL_TO_FORTRAN_BOX(wbx),
-                               BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
-                               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-                               &zdir);
+                // Z direction
+                compute_bcoeff_mac(BL_TO_FORTRAN_BOX(wbx),
+                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
+                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                   &zdir);
+            }
         }
+
         bcoeff[lev][0]->FillBoundary(geom[lev].periodicity());
         bcoeff[lev][1]->FillBoundary(geom[lev].periodicity());
         bcoeff[lev][2]->FillBoundary(geom[lev].periodicity());

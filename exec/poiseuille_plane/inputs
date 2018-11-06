@@ -43,6 +43,7 @@ geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
+incflo.nodal_pressure     = 1           # Node-based pressure? 
 incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 

@@ -371,8 +371,11 @@ void incflo::Restart(
 
 	for(int lev = 0, nlevs = finestLevel() + 1; lev < nlevs; ++lev)
 	{
-        fill_mf_bc(lev, *p[lev]);
-        fill_mf_bc(lev, *p_o[lev]);
+        if(!nodal_pressure)
+        {
+            fill_mf_bc(lev, *p[lev]);
+            fill_mf_bc(lev, *p_o[lev]);
+        }
 
 		fill_mf_bc(lev, *ro[lev]);
 		fill_mf_bc(lev, *ro_o[lev]);
@@ -526,8 +529,19 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 		{
 			if(pltscaVarsName[i] == "p")
 			{
-                MultiFab::Copy(*mf[lev], (*p[lev]), 0, dcomp, 1, 0);
-                MultiFab::Add(*mf[lev], (*p0[lev]), 0, dcomp, 1, 0);
+                if(nodal_pressure)
+                {
+                    MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
+                    p_nd.setVal(0.0);
+                    MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
+                    MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
+                    amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
+                }
+                else
+                {
+                    MultiFab::Copy(*mf[lev], (*p[lev]), 0, dcomp, 1, 0);
+                    MultiFab::Add(*mf[lev], (*p0[lev]), 0, dcomp, 1, 0);
+                }
 			}
 			else if(pltscaVarsName[i] == "divu")
 			{
