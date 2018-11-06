@@ -127,6 +127,9 @@ void incflo::InitParams()
 		// Should we use explicit vs implicit diffusion
 		pp.query("explicit_diffusion", explicit_diffusion);
 
+        // Option to refine on cutcells 
+        pp.query("refine_cutcells", refine_cutcells);
+
 		// The default type is "FixedSize" but we can over-write that in the inputs file
 		//  with "KDTree" or "KnapSack"
 		pp.query("load_balance_type", load_balance_type);
@@ -261,17 +264,6 @@ void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
 		if(ba.size() >= target_size)
 			return;
 	}
-}
-
-void incflo::MakeNewLevelFromScratch(int lev,
-                                     Real time,
-                                     const BoxArray& new_grids,
-                                     const DistributionMapping& new_dmap)
-{
-	SetBoxArray(lev, new_grids);
-	SetDistributionMap(lev, new_dmap);
-
-    if(lev == 0) MakeBCArrays();
 }
 
 // Only used when restarting from checkpoint file 

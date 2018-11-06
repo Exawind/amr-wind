@@ -2,6 +2,7 @@
 
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
+#include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo.H>
@@ -31,6 +32,71 @@ incflo::incflo()
 
     nlev = maxLevel() + 1;
     istep.resize(nlev, 0);
+}
+
+// tag all cells for refinement
+// overrides the pure virtual function in AmrCore
+void incflo::ErrorEst(int lev, 
+                      TagBoxArray& tags, 
+                      Real time, 
+                      int ngrow)
+{
+    BL_PROFILE("incflo::ErrorEst()");
+
+    // Refine on cut cells
+    if (refine_cutcells) amrex::TagCutCells(tags, *ro[lev]);
+}
+
+// Make a new level from scratch using provided BoxArray and DistributionMapping.
+// Only used during initialization.
+// overrides the pure virtual function in AmrCore
+void incflo::MakeNewLevelFromScratch(int lev,
+                                     Real time,
+                                     const BoxArray& new_grids,
+                                     const DistributionMapping& new_dmap)
+{
+    BL_PROFILE("incflo::MakeNewLevelFromScratch()");
+
+	SetBoxArray(lev, new_grids);
+	SetDistributionMap(lev, new_dmap);
+
+    if(lev == 0) MakeBCArrays();
+}
+
+// Make a new level using provided BoxArray and DistributionMapping and 
+// fill with interpolated coarse level data.
+// overrides the pure virtual function in AmrCore
+void incflo::MakeNewLevelFromCoarse (int lev, 
+                                     Real time, 
+                                     const BoxArray& ba, 
+                                     const DistributionMapping& dm)
+{
+    BL_PROFILE("incflo::MakeNewLevelFromCoarse()");
+
+    amrex::Print() << "ABORT: incflo::MakeNewLevelFromCoarse() not yet implemented. " << std::endl;
+    amrex::Abort();
+}
+
+// Remake an existing level using provided BoxArray and DistributionMapping and 
+// fill with existing fine and coarse data.
+// overrides the pure virtual function in AmrCore
+void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
+			 const DistributionMapping& dm)
+{
+    BL_PROFILE("incflo::RemakeLevel()");
+
+    amrex::Print() << "ABORT: incflo::RemakeLevel() not yet implemented. " << std::endl;
+    amrex::Abort();
+}
+
+// Delete level data
+// overrides the pure virtual function in AmrCore
+void incflo::ClearLevel (int lev)
+{
+    BL_PROFILE("incflo::ClearLevel()");
+
+    amrex::Print() << "ABORT: incflo::ClearLevel() not yet implemented. " << std::endl;
+    amrex::Abort();
 }
 
 //

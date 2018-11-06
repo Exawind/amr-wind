@@ -97,41 +97,6 @@ public:
 	void incflo_compute_viscosity();
 
 protected:
-	//! Tagging cells for refinement
-	virtual void
-	ErrorEst(int lev, TagBoxArray& tags, Real time, int /*ngrow*/) override
-	{
-		Abort("ErrorEst: To be implemented");
-	}
-
-	//! Make a new level using provided BoxArray and
-	//! DistributionMapping and fill with interpolated coarse level
-	//! data.  Called by AmrCore::regrid.
-	virtual void MakeNewLevelFromCoarse(int lev,
-										Real time,
-										const BoxArray& ba,
-										const DistributionMapping& dm) override
-	{
-		Abort("MakeNewLevelFromCoarse: To be implemented");
-	}
-
-	//! Remake an existing level using provided BoxArray and
-	//! DistributionMapping and fill with existing fine and coarse
-	//! data.  Called by AmrCore::regrid.
-	virtual void RemakeLevel(int lev,
-							 Real time,
-							 const BoxArray& ba,
-							 const DistributionMapping& dm) override
-	{
-		Abort("RemakeLevel: To be implemented");
-	}
-
-	//! Delete level data.  Called by AmrCore::regrid.
-	virtual void ClearLevel(int lev) override
-	{
-		Abort("ClearLevel: To be implemented");
-	}
-
     void incflo_init_fluid(int is_restarting, 
                            Real time, 
                            Real& dt, 
@@ -167,20 +132,30 @@ private:
 
     void MakeBCArrays();
 
-	void MakeNewLevelFromScratch(int lev,
-								 Real time,
-								 const BoxArray& new_grids,
-								 const DistributionMapping& new_dmap) override;
+    void ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow) override;
+
+    void MakeNewLevelFromScratch(int lev, Real time, 
+                                 const BoxArray& new_grids, 
+                                 const DistributionMapping& new_dmap) override;
+
+    void MakeNewLevelFromCoarse(int lev, Real time, 
+                                const BoxArray& ba, 
+                                const DistributionMapping& dm) override;
+
+    void RemakeLevel(int lev, Real time, 
+                             const BoxArray& ba, 
+                             const DistributionMapping& dm) override;
+
+    void ClearLevel(int lev) override; 
 
 	void ReMakeNewLevelFromScratch(int lev,
 								   const BoxArray& new_grids,
 								   const DistributionMapping& new_dmap);
 
-	void
-	WriteHeader(const std::string& name, int nstep, Real dt, Real time, bool is_checkpoint) const;
+    void WriteHeader(const std::string& name, int nstep, Real dt, Real time, 
+                     bool is_checkpoint) const;
 	void WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const;
 	void WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const;
-
 	void WriteJobInfo(const std::string& dir) const;
 
 	static void GotoNextLine(std::istream& is);
@@ -402,8 +377,10 @@ private:
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
 
+    // TODO: Make nodal pressure default? 
     int nodal_pressure = 0;
 	int explicit_diffusion = 1;
+	int refine_cutcells = 1;
 
 	// Variables to simplify IO -- the vectors are the same for plt/chk
 	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
