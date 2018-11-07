@@ -32,3 +32,8 @@ Clone and build incflo
 # Contributing
 
 We welcome contributions in the form of pull-requests from anyone.  
+
+# Acknowledgement of external libraries
+
+This code relies on [Blitz++](https://github.com/blitzpp/blitz/wiki) and
+[Algoim](https://fastmath-scidac.llnl.gov/software/algoim.html). 
