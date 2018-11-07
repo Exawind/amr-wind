@@ -1,6 +1,5 @@
 #include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <AMReX_ParmParse.H>
 
 #include <incflo.H>
 
@@ -9,7 +8,7 @@
 // which the incflo class inherits from. 
 incflo::incflo()
 {
-    // Read parameters from ParmParse
+    // Read inputs file using ParmParse
     ReadParameters();
 }
 
