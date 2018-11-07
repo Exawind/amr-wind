@@ -143,7 +143,7 @@ void incflo::InitParams()
 	}
 }
 
-void incflo::Init(Real time)
+void incflo::Init()
 {
 	InitIOData();
 
@@ -153,6 +153,7 @@ void incflo::Init(Real time)
 	const BoxArray& ba = MakeBaseGrids();
 	DistributionMapping dm(ba, ParallelDescriptor::NProcs());
 
+    Real time = 0.0;
 	MakeNewLevelFromScratch(0, time, ba, dm);
 
     for(int lev = 1; lev < nlev; lev++)

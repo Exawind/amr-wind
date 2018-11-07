@@ -1,5 +1,5 @@
-#ifndef INCFLO_LEVEL_H_
-#define INCFLO_LEVEL_H_
+#ifndef INCFLO_H_
+#define INCFLO_H_
 
 #include <iostream>
 #include <memory>
@@ -25,12 +25,66 @@
 class incflo : public AmrCore
 {
 public:
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Public member functions are defined directly in incflo.cpp.
+    // They include the functions called directly in main.cpp, 
+    // and the 5 pure virtual functions in the AmrCore class, which must be implemented. 
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Functions called directly in main() 
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Constructor
+    //  - reads in parameters from inputs file
+    //  - sizes multilevel arrays and datastructures
 	incflo();
 	~incflo();
 
+    // Initialize multilevel AMR data
+    void InitData();
+
+    // Evolve solution to final time through repeated calls to Advance()
+    void Evolve();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Pure virtual functions from AmrCore class
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Tag cells for refinement
+    virtual void ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow) override;
+
+    // Make a new level from scratch using provided BoxArray and DistributionMapping
+    // Only used during initialization
+    void MakeNewLevelFromScratch(int lev, Real time, 
+                                 const BoxArray& new_grids, 
+                                 const DistributionMapping& new_dmap) override;
+
+    // Make a new level using provided BoxArray and DistributionMapping, 
+    // and fill with interpolated coarse level data
+    void MakeNewLevelFromCoarse(int lev, Real time, 
+                                const BoxArray& ba, 
+                                const DistributionMapping& dm) override;
+
+    // Remake an existing level using provided BoxArray and DistributionMapping, 
+    // and fill with existing fine and coarse data
+    void RemakeLevel(int lev, Real time, 
+                             const BoxArray& ba, 
+                             const DistributionMapping& dm) override;
+
+    // Delete level data
+    void ClearLevel(int lev) override; 
+
+    // TODO: Everything below here private? 
 	void InitParams();
 
-	void Init(Real time);
+	void Init();
 
 	void InitLevelData(Real time);
 
@@ -131,22 +185,6 @@ private:
 	void make_eb_regular();
 
     void MakeBCArrays();
-
-    void ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow) override;
-
-    void MakeNewLevelFromScratch(int lev, Real time, 
-                                 const BoxArray& new_grids, 
-                                 const DistributionMapping& new_dmap) override;
-
-    void MakeNewLevelFromCoarse(int lev, Real time, 
-                                const BoxArray& ba, 
-                                const DistributionMapping& dm) override;
-
-    void RemakeLevel(int lev, Real time, 
-                             const BoxArray& ba, 
-                             const DistributionMapping& dm) override;
-
-    void ClearLevel(int lev) override; 
 
 	void ReMakeNewLevelFromScratch(int lev,
 								   const BoxArray& new_grids,
@@ -323,6 +361,11 @@ private:
 
 	// used if load_balance_type == "KnapSack"
 	Vector<std::unique_ptr<MultiFab>> fluid_cost;
+
+    // Time and time step counters
+	Real time = 0.0L;
+	int nstep = 0;
+	Real dt = -1;
 
     // Be verbose? 
     int verbose = 0;

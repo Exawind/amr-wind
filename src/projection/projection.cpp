@@ -78,11 +78,6 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
 
             MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
 
-            incflo_compute_divu(time);
-            amrex::Print() << "At level " << lev << ", after Saxpy(gp): \n";
-            incflo_print_max_vel(lev);
-            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
-
             // Convert momenta back to velocities
             for(int dir = 0; dir < 3; dir++)
                 MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
