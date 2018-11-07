@@ -212,7 +212,7 @@ void incflo::incflo_compute_dt(Real time,
         dt_new = std::min(dt_new, 1.01*dt);
 
     // Don't overshoot the final time if not running to steady state
-    if((!steady_state) & (stop_time >= 0.0))
+    if((!steady_state) & (stop_time > 0.0))
     {
         if(time + dt_new > stop_time)
             dt_new = stop_time - time;

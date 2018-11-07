@@ -444,8 +444,7 @@ private:
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
 
-    // TODO: Make nodal pressure default? 
-    int nodal_pressure = 0;
+    int nodal_pressure = 1;
 	int explicit_diffusion = 1;
 	int refine_cutcells = 1;
 
