@@ -15,6 +15,38 @@ incflo::incflo()
 
 incflo::~incflo(){};
 
+void incflo::InitData()
+{
+	// Initialize memory for data-array internals
+	ResizeArrays();
+
+	// Initialize derived internals
+	Init();
+
+	// Either init from scratch or from the checkpoint file
+	int restart_flag = 0;
+	if(restart_file.empty())
+	{
+		// NOTE: this also builds ebfactories
+		InitLevelData(time);
+	}
+	else
+	{
+		restart_flag = 1;
+
+		// NOTE: 1) this also builds ebfactories
+        //       2) this can change the grids (during replication)
+		Restart(restart_file, &nstep, &dt, &time);
+	}
+
+    // Post-initialisation step
+	PostInit(dt, time, nstep, restart_flag, stop_time, steady_state);
+
+	// Write out EB sruface
+	if(write_eb_surface)
+		WriteEBSurface();
+}
+
 void incflo::Evolve()
 {
     BL_PROFILE("Evolve");
@@ -100,38 +132,6 @@ void incflo::Evolve()
         incflo_compute_vort();
 		WritePlotFile(plot_file, nstep, dt, time);
     }
-}
-
-void incflo::InitData()
-{
-	// Initialize memory for data-array internals
-	ResizeArrays();
-
-	// Initialize derived internals
-	Init();
-
-	// Either init from scratch or from the checkpoint file
-	int restart_flag = 0;
-	if(restart_file.empty())
-	{
-		// NOTE: this also builds ebfactories
-		InitLevelData(time);
-	}
-	else
-	{
-		restart_flag = 1;
-
-		// NOTE: 1) this also builds ebfactories
-        //       2) this can change the grids (during replication)
-		Restart(restart_file, &nstep, &dt, &time);
-	}
-
-    // Post-initialisation step
-	PostInit(dt, time, nstep, restart_flag, stop_time, steady_state);
-
-	// Write out EB sruface
-	if(write_eb_surface)
-		WriteEBSurface();
 }
 
 // tag all cells for refinement
