@@ -1,19 +1,8 @@
-#include <AMReX_BC_TYPES.H>
-#include <AMReX_Box.H>
 #include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 
 #include <incflo.H>
-#include <derive_F.H>
-#include <setup_F.H>
-
-#include <fstream>
-#include <iomanip>
-
-#include <AMReX_Geometry.H>
-#include <AMReX_VisMF.H>
-#include <AMReX_iMultiFab.H>
 
 // Declare and initialise variables
 Real stop_time = -1.0;

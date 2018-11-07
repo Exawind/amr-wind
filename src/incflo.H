@@ -1,19 +1,12 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
-#include <iostream>
-#include <memory>
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-#include <AMReX_AmrCore.H>
-#include <AMReX_BLProfiler.H>
 #include <AMReX_iMultiFab.H>
-#include <AMReX_EBFabFactory.H>
 #include <AMReX_EBFArrayBox.H>
-#include <AMReX_EB2.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
