@@ -4,6 +4,7 @@
 | ----------| --------------------------------------------------- |
 | doc       | Documentation                                       |
 | exec      | Run directory for executables                       |
+| extern    | External libraries (notably Algoim and Blitz++)     |
 | src       | C++/Fortran source files                            |
 | tools     | CMake configuration files                           |
 
