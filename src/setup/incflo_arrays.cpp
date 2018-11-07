@@ -463,8 +463,6 @@ void incflo::ResizeArrays()
 		bcoeff_diff[i].resize(3);
 	}
 
-	fluid_cost.resize(nlevs_max);
-
 	// EB factory
 	ebfactory.resize(nlevs_max);
 }

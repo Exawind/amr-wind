@@ -4,76 +4,13 @@
 
 #include <incflo.H>
 
-// Declare and initialise variables
-Real stop_time = -1.0;
-int max_step = -1;
-bool steady_state = false;
-
-int check_int = -1;
-int last_chk = -1;
-std::string check_file{"chk"};
-std::string restart_file{""};
-
-int plot_int = -1;
-int last_plt = -1;
-std::string plot_file{"plt"};
-bool write_eb_surface = false;
-
-int repl_x = 1; int repl_y = 1; int repl_z = 1;
-int regrid_int = -1;
-
-void ReadParameters()
-{
-	{
-		ParmParse pp("amr");
-
-		pp.query("stop_time", stop_time);
-		pp.query("max_step", max_step);
-		pp.query("steady_state", steady_state);
-
-		pp.query("check_file", check_file);
-		pp.query("check_int", check_int);
-		pp.query("restart", restart_file);
-
-		pp.query("plot_file", plot_file);
-		pp.query("plot_int", plot_int);
-		pp.query("write_eb_surface", write_eb_surface);
-
-		pp.query("repl_x", repl_x);
-		pp.query("repl_y", repl_y);
-		pp.query("repl_z", repl_z);
-		pp.query("regrid_int", regrid_int);
-	}
-}
-
-// Initiate vars which cannot be initiated in header
-Vector<Real> incflo::gravity(3, 0.);
-std::string incflo::load_balance_type = "FixedSize";
-std::string incflo::knapsack_weight_type = "RunTimeCosts";
-
-// Define unit vectors for easily convert indeces
-amrex::IntVect incflo::e_x(1, 0, 0);
-amrex::IntVect incflo::e_y(0, 1, 0);
-amrex::IntVect incflo::e_z(0, 0, 1);
-
-int incflo::nlev = 1;
-
-EBSupport incflo::m_eb_support_level = EBSupport::full;
-
-
 // Constructor
+// Note that geometry on all levels has already been defined in the AmrCore constructor, 
+// which the incflo class inherits from. 
 incflo::incflo()
 {
     // Read parameters from ParmParse
     ReadParameters();
-
-    // Geometry on all levels has just been defined in the AmrCore constructor
-
-    // No valid BoxArray and DistributionMapping have been defined.
-    // But the arrays for them have been resized.
-
-    nlev = maxLevel() + 1;
-    istep.resize(nlev, 0);
 }
 
 incflo::~incflo(){};
@@ -114,9 +51,6 @@ void incflo::Evolve()
         while(finish == 0)
         {
             Real strt_step = ParallelDescriptor::second();
-
-            if(!steady_state && regrid_int > -1 && nstep % regrid_int == 0)
-                Regrid();
 
             Advance(nstep, steady_state, dt, prev_dt, time, stop_time);
 
@@ -170,9 +104,6 @@ void incflo::Evolve()
 
 void incflo::InitData()
 {
-	// Initialize internals from ParmParse database
-	InitParams();
-
 	// Initialize memory for data-array internals
 	ResizeArrays();
 
@@ -192,13 +123,8 @@ void incflo::InitData()
 
 		// NOTE: 1) this also builds ebfactories
         //       2) this can change the grids (during replication)
-		IntVect Nrep(repl_x, repl_y, repl_z);
-		Restart(restart_file, &nstep, &dt, &time, Nrep);
+		Restart(restart_file, &nstep, &dt, &time);
 	}
-
-
-	// Regrid
-	Regrid();
 
     // Post-initialisation step
 	PostInit(dt, time, nstep, restart_flag, stop_time, steady_state);
@@ -361,51 +287,4 @@ void incflo::check_for_nans(int lev)
 
 	if(pg_has_nans)
 		amrex::Print() << "WARNING: p contains NaNs!!!";
-}
-
-
-void incflo::Regrid()
-{
-	BL_PROFILE_REGION_START("incflo::Regrid()");
-
-    int base_lev = 0;
-
-	if(load_balance_type == "KnapSack")
-	{
-		AMREX_ALWAYS_ASSERT(fluid_cost[0] != nullptr);
-
-		if(ParallelDescriptor::NProcs() == 1)
-			return;
-		{
-			MultiFab costs(grids[base_lev], dmap[base_lev], 1, 0);
-			costs.setVal(0.0);
-			costs.plus(*fluid_cost[base_lev], 0, 1, 0);
-
-			DistributionMapping newdm = DistributionMapping::makeKnapSack(costs);
-
-			bool dm_changed = (newdm != dmap[base_lev]);
-
-			SetDistributionMap(base_lev, newdm);
-
-			if(dm_changed)
-				RegridArrays(base_lev);
-
-			fluid_cost[base_lev].reset(new MultiFab(grids[base_lev], newdm, 1, 0));
-			fluid_cost[base_lev]->setVal(0.0);
-
-			incflo_set_bc0();
-
-			if(ebfactory[base_lev])
-			{
-				ebfactory[base_lev].reset(new EBFArrayBoxFactory(
-					*eb_level_fluid,
-					geom[base_lev],
-					grids[base_lev],
-					dmap[base_lev],
-					{m_eb_basic_grow_cells, m_eb_volume_grow_cells, m_eb_full_grow_cells},
-					m_eb_support_level));
-			}
-		}
-	}
-	BL_PROFILE_REGION_STOP("incflo::Regrid()");
 }

@@ -10,13 +10,12 @@
 #include <projection_F.H>
 #include <setup_F.H>
 
-// For multigrid
-using namespace amrex;
+// Define unit vectors to easily convert indices
+extern const amrex::IntVect e_x(1, 0, 0);
+extern const amrex::IntVect e_y(0, 1, 0);
+extern const amrex::IntVect e_z(0, 0, 1);
 
-// Define unit vectors for easily convert indeces
-IntVect MacProjection::e_x(1, 0, 0);
-IntVect MacProjection::e_y(0, 1, 0);
-IntVect MacProjection::e_z(0, 0, 1);
+using namespace amrex;
 
 // Constructor
 MacProjection::MacProjection(AmrCore* a_amrcore,

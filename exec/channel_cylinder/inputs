@@ -1,9 +1,9 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-amr.stop_time           =   2.          # Max (simulated) time to evolve
-amr.max_step            =   -1          # Max number of time steps
-amr.steady_state        =   0           # Steady-state solver? 
+stop_time               =   2.          # Max (simulated) time to evolve
+max_step                =   -1          # Max number of time steps
+steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #

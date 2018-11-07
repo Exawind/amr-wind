@@ -1,10 +1,6 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 #include <AMReX_iMultiFab.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
@@ -14,6 +10,8 @@
 
 #include <eb_if.H>
 #include <MacProjection.H>
+// Note: a lot of stuff is included through MacProjection.H...
+
 
 class incflo : public AmrCore
 {
@@ -74,7 +72,15 @@ public:
     // Delete level data
     void ClearLevel(int lev) override; 
 
-    // TODO: Everything below here private? 
+private:
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Initialization
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    
+    void ReadParameters();
+
 	void InitParams();
 
 	void Init();
@@ -90,6 +96,21 @@ public:
 
 	void ResizeArrays();
 
+    void incflo_init_fluid(int is_restarting, 
+                           Real time, 
+                           Real& dt, 
+                           Real stop_time, 
+                           int steady_state);
+
+	void incflo_set_bc0();
+	void incflo_set_p0();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Input / Output
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
 	void WriteCheckPointFile(std::string& check_file_name,
 							 int nstep = 0,
 							 Real dt = 0.0,
@@ -100,13 +121,20 @@ public:
                        Real dt = 0.0, 
                        Real time = 0.0) const;
 
-	void Restart(std::string& restart_chkfile, 
-                 int* nstep, 
-                 Real* dt, 
-                 Real* time, 
-                 IntVect& Nrep);
+    void Restart(std::string& restart_chkfile, int* nstep, Real* dt, Real* time);
 
-	void Regrid();
+    void WriteHeader(const std::string& name, int nstep, Real dt, Real time, 
+                     bool is_checkpoint) const;
+	void WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const;
+	void WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const;
+	void WriteJobInfo(const std::string& dir) const;
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Simulate!
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Advance(int nstep, 
                  int steady_state, 
@@ -115,7 +143,11 @@ public:
                  Real time, 
                  Real stop_time);
 
-	void make_mg_bc(int mg_bc[]);
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Embedded Boundaries
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void make_eb_geometry();
 
@@ -134,39 +166,6 @@ public:
 
 	void WriteEBSurface();
 
-	void InitIOData();
-
-	static std::string get_load_balance_type();
-
-	void incflo_compute_strainrate();
-	void incflo_compute_vort();
-
-	void incflo_compute_viscosity();
-
-protected:
-    void incflo_init_fluid(int is_restarting, 
-                           Real time, 
-                           Real& dt, 
-                           Real stop_time, 
-                           int steady_state);
-
-	void incflo_set_bc0();
-	void incflo_set_p0();
-
-	void incflo_initial_projection();
-    void incflo_initial_iterations(Real dt, Real stop_time, int steady_state);
-
-    void incflo_apply_projection(Real dt, Real scaling_factor, bool proj_2);
-
-	void incflo_set_scalar_bcs();
-	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
-
-	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
-
-	void AllocateArrays(int lev);
-	void RegridArrays(int lev);
-
-private:
 	void make_eb_general();
 	void make_eb_annulus();
 	void make_eb_box();
@@ -177,17 +176,63 @@ private:
 	void make_eb_clr_riser();
 	void make_eb_regular();
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Derived quantities
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void incflo_compute_strainrate();
+	void incflo_compute_vort();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Rheology
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void incflo_compute_viscosity();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Projection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void incflo_apply_projection(Real dt, Real scaling_factor, bool proj_2);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Boundary conditions
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void incflo_set_scalar_bcs();
+	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Not yet classified
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void make_mg_bc(int mg_bc[]);
+
+	void InitIOData();
+
+	void incflo_initial_projection();
+    void incflo_initial_iterations(Real dt, Real stop_time, int steady_state);
+
+	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
+
+	void AllocateArrays(int lev);
+	void RegridArrays(int lev);
+
     void MakeBCArrays();
 
 	void ReMakeNewLevelFromScratch(int lev,
 								   const BoxArray& new_grids,
 								   const DistributionMapping& new_dmap);
-
-    void WriteHeader(const std::string& name, int nstep, Real dt, Real time, 
-                     bool is_checkpoint) const;
-	void WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const;
-	void WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const;
-	void WriteJobInfo(const std::string& dir) const;
 
 	static void GotoNextLine(std::istream& is);
 
@@ -253,12 +298,6 @@ private:
 	void incflo_set_bc_type(int lev);
 
 	void fill_mf_bc(int lev, MultiFab& mf);
-#if 0
-    void WritePlotFile() const;
-
-      // which step?
-    Vector<int> nsubsteps;  // how many substeps on each level?
-#endif
 
     Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
     Real incflo_norm1(MultiFab& mf, int lev, int comp);
@@ -269,14 +308,14 @@ private:
                                   const MultiFab& cc,
                                   Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
    
-    static int nlev; 
+    // TODO: Get rid of this. 
+    // Use either max_level for maximum allowable levels 
+    // or finest_level for the highest level we currently have 
+    int nlev = 1; 
 
-	Vector<int> istep = {1};
-
-	// Unit vectors in Cartesian space
-	static IntVect e_x;
-	static IntVect e_y;
-	static IntVect e_z;
+    // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
+    // but will never change unless we use subcycling. 
+    Vector<int> istep = {1};
 
 	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
 	Vector<std::unique_ptr<IArrayBox>> bc_ihi;
@@ -352,9 +391,6 @@ private:
     // What solver to use as the bottom solver in the MLMG solves.
     std::string bottom_solver_type;
 
-	// used if load_balance_type == "KnapSack"
-	Vector<std::unique_ptr<MultiFab>> fluid_cost;
-
     // Time and time step counters
 	Real time = 0.0L;
 	int nstep = 0;
@@ -364,7 +400,7 @@ private:
     int verbose = 0;
 
     // Physics 
-    static Vector<Real> gravity;
+    Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
     // Fluid properties
@@ -387,14 +423,9 @@ private:
 	// Tolerance to check for steady state
 	Real steady_state_tol = 1.0e-5;
 
-	static std::string load_balance_type;
-	static std::string knapsack_weight_type;
-
 	// Options to control time stepping
 	Real cfl = 0.5;
 	Real fixed_dt = -1.;
-
-	static EBSupport m_eb_support_level;
 
 	Periodicity p0_periodicity;
 
@@ -428,6 +459,23 @@ private:
 	Vector<const Vector<std::unique_ptr<MultiFab>>*> pltscalarVars;
 	Vector<std::string> chkscaVarsName;
 
+// Declare and initialise variables
+Real stop_time = -1.0;
+int max_step = -1;
+bool steady_state = false;
+
+int check_int = -1;
+int last_chk = -1;
+std::string check_file{"chk"};
+std::string restart_file{""};
+
+int plot_int = -1;
+int last_plt = -1;
+std::string plot_file{"plt"};
+bool write_eb_surface = false;
+
+int regrid_int = -1;
+
 	/****************************************************************************
      *                                                                          *
      * EB Data                                                                  *
@@ -440,10 +488,5 @@ private:
 
     void incflo_update_ebfactory(int a_lev);
 };
-
-inline std::string incflo::get_load_balance_type()
-{
-	return load_balance_type;
-}
 
 #endif

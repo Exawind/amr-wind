@@ -7,13 +7,43 @@
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
-void incflo::InitParams()
+void incflo::ReadParameters()
 {
+    {
+        // Variables without prefix in inputs file
+		ParmParse pp;
+
+		pp.query("stop_time", stop_time);
+		pp.query("max_step", max_step);
+		pp.query("steady_state", steady_state);
+    }
 	{
+        // Prefix amr
+		ParmParse pp("amr");
+
+		pp.query("regrid_int", regrid_int);
+        pp.query("refine_cutcells", refine_cutcells);
+
+		pp.query("check_file", check_file);
+		pp.query("check_int", check_int);
+		pp.query("restart", restart_file);
+
+		pp.query("plot_file", plot_file);
+		pp.query("plot_int", plot_int);
+
+        // TODO: maybe move this?
+		pp.query("write_eb_surface", write_eb_surface);
+	}
+	{
+        // Prefix incflo
 		ParmParse pp("incflo");
 
-        // Verbosity
         pp.query("verbose", verbose);
+		pp.query("cfl", cfl);
+		pp.query("fixed_dt", fixed_dt);
+		pp.query("steady_state_tol", steady_state_tol);
+        pp.query("nodal_pressure", nodal_pressure);
+		pp.query("explicit_diffusion", explicit_diffusion);
 
         // Physics
 		pp.queryarr("gravity", gravity, 0, 3);
@@ -29,54 +59,54 @@ void incflo::InitParams()
         if(fluid_model == "newtonian")
         {
             amrex::Print() << "Newtonian fluid with"
-                           << " mu = " << mu << std::endl; 
+                           << " mu = " << mu << std::endl;
         }
         else if(fluid_model == "powerlaw")
         {
             pp.query("n", n);
             AMREX_ALWAYS_ASSERT(n > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0, 
-                    "No point in using power-law rheology with n = 1"); 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0,
+                    "No point in using power-law rheology with n = 1");
 
             amrex::Print() << "Power-law fluid with"
-                           << " mu = " << mu 
-                           << ", n = " << n <<  std::endl; 
+                           << " mu = " << mu
+                           << ", n = " << n <<  std::endl;
         }
         else if(fluid_model == "bingham")
         {
             pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
-                    "No point in using Bingham rheology with tau_0 = 0"); 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
+                    "No point in using Bingham rheology with tau_0 = 0");
 
             pp.query("papa_reg", papa_reg);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0, 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0,
                     "Papanastasiou regularisation parameter must be positive");
 
             amrex::Print() << "Bingham fluid with"
-                           << " mu = " << mu 
-                           << ", tau_0 = " << tau_0 
-                           << ", papa_reg = " << papa_reg << std::endl; 
+                           << " mu = " << mu
+                           << ", tau_0 = " << tau_0
+                           << ", papa_reg = " << papa_reg << std::endl;
         }
         else if(fluid_model == "hb")
         {
             pp.query("n", n);
             AMREX_ALWAYS_ASSERT(n > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0, 
-                    "No point in using Herschel-Bulkley rheology with n = 1"); 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0,
+                    "No point in using Herschel-Bulkley rheology with n = 1");
 
             pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
-                    "No point in using Herschel-Bulkley rheology with tau_0 = 0"); 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
+                    "No point in using Herschel-Bulkley rheology with tau_0 = 0");
 
             pp.query("papa_reg", papa_reg);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0, 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0,
                     "Papanastasiou regularisation parameter must be positive");
 
             amrex::Print() << "Herschel-Bulkley fluid with"
-                           << " mu = " << mu 
-                           << ", n = " << n 
-                           << ", tau_0 = " << tau_0 
-                           << ", papa_reg = " << papa_reg << std::endl; 
+                           << " mu = " << mu
+                           << ", n = " << n
+                           << ", tau_0 = " << tau_0
+                           << ", papa_reg = " << papa_reg << std::endl;
         }
         else if(fluid_model == "smd")
         {
@@ -84,29 +114,22 @@ void incflo::InitParams()
             AMREX_ALWAYS_ASSERT(n > 0.0);
 
             pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0, 
-                    "No point in using de Souza Mendes-Dutra rheology with tau_0 = 0"); 
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
+                    "No point in using de Souza Mendes-Dutra rheology with tau_0 = 0");
 
             pp.query("eta_0", eta_0);
             AMREX_ALWAYS_ASSERT(eta_0 > 0.0);
 
             amrex::Print() << "de Souza Mendes-Dutra fluid with"
-                           << " mu = " << mu 
-                           << ", n = " << n 
-                           << ", tau_0 = " << tau_0 
-                           << ", eta_0 = " << eta_0 << std::endl; 
+                           << " mu = " << mu
+                           << ", n = " << n
+                           << ", tau_0 = " << tau_0
+                           << ", eta_0 = " << eta_0 << std::endl;
         }
         else
         {
             amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
         }
-
-		// Options to control time stepping
-		pp.query("cfl", cfl);
-		pp.query("fixed_dt", fixed_dt);
-
-		// Tolerance to check for steady state
-		pp.query("steady_state_tol", steady_state_tol);
 
 		// Option to control MLMG behavior
 		pp.query("mg_verbose", mg_verbose);
@@ -121,25 +144,8 @@ void incflo::InitParams()
         bottom_solver_type = "bicgstab";
         pp.query( "bottom_solver_type",  bottom_solver_type );
 
-        // Option to control approximate projection 
-        pp.query("nodal_pressure", nodal_pressure);
-
-		// Should we use explicit vs implicit diffusion
-		pp.query("explicit_diffusion", explicit_diffusion);
-
-        // Option to refine on cutcells 
-        pp.query("refine_cutcells", refine_cutcells);
-
-		// The default type is "FixedSize" but we can over-write that in the inputs file
-		//  with "KDTree" or "KnapSack"
-		pp.query("load_balance_type", load_balance_type);
-		pp.query("knapsack_weight_type", knapsack_weight_type);
-
-		AMREX_ASSERT(load_balance_type == "FixedSize" || load_balance_type == "KnapSack");
-		AMREX_ASSERT(knapsack_weight_type == "RunTimeCosts");
-        
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0); 
+        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0);
 	}
 }
 
@@ -170,12 +176,12 @@ void incflo::Init()
         Box bx(lo, hi);
         BoxArray ba_ref(bx);
 
-        amrex::Print() << "Setting refined region to " << ba_ref << std::endl; 
+        amrex::Print() << "Setting refined region to " << ba_ref << std::endl;
 
         DistributionMapping dm_ref(ba_ref, ParallelDescriptor::NProcs());
         MakeNewLevelFromScratch(lev, time, ba_ref, dm_ref);
     }
-    
+
     // We only do these at level 0
 	int cyc_x = 0, cyc_y = 0, cyc_z = 0;
     if(geom[0].isPeriodic(0)) cyc_x = 1;
@@ -203,16 +209,12 @@ BoxArray incflo::MakeBaseGrids() const
 	//    create enough grids to have at least one grid per processor.
 	// This option is controlled by "refine_grid_layout" which defaults to true.
 
-	if(refine_grid_layout && ba.size() < ParallelDescriptor::NProcs() &&
-	   (load_balance_type == "FixedSize" || load_balance_type == "KnapSack"))
-	{
+    if(refine_grid_layout && ba.size() < ParallelDescriptor::NProcs())
 		ChopGrids(geom[0].Domain(), ba, ParallelDescriptor::NProcs());
-	}
 
 	if(ba == grids[0])
-	{
 		ba = grids[0]; // to avoid dupliates
-	}
+
 	amrex::Print() << "In MakeBaseGrids: BA HAS " << ba.size() << " GRIDS " << std::endl;
 	return ba;
 }
@@ -267,7 +269,7 @@ void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
 	}
 }
 
-// Only used when restarting from checkpoint file 
+// Only used when restarting from checkpoint file
 // Might be deprecated after we implement RemakeLevel
 void incflo::ReMakeNewLevelFromScratch(int lev,
                                        const BoxArray& new_grids,
@@ -293,11 +295,11 @@ void incflo::InitLevelData(Real time)
         AllocateArrays(lev);
 }
 
-void incflo::PostInit(Real& dt, 
-                      Real time, 
-                      int nstep, 
-                      int restart_flag, 
-                      Real stop_time, 
+void incflo::PostInit(Real& dt,
+                      Real time,
+                      int nstep,
+                      int restart_flag,
+                      Real stop_time,
                       int steady_state)
 {
     // Initial fluid arrays: pressure, velocity, density, viscosity
@@ -345,10 +347,10 @@ void incflo::MakeBCArrays()
     }
 }
 
-void incflo::incflo_init_fluid(int is_restarting, 
-                               Real time, 
-                               Real& dt, 
-                               Real stop_time, 
+void incflo::incflo_init_fluid(int is_restarting,
+                               Real time,
+                               Real& dt,
+                               Real stop_time,
                                int steady_state)
 {
 	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
@@ -510,7 +512,7 @@ void incflo::incflo_set_p0()
 	int delp_dir;
 	set_delp_dir(&delp_dir);
 
-    IntVect press_per = IntVect(geom[0].isPeriodic(0), 
+    IntVect press_per = IntVect(geom[0].isPeriodic(0),
                                 geom[0].isPeriodic(1),
                                 geom[0].isPeriodic(2));
 
@@ -543,11 +545,11 @@ void incflo::incflo_set_p0()
                    &dx, &dy, &dz,
                    &xlen, &ylen, &zlen,
                    &delp_dir,
-                   bc_ilo[lev]->dataPtr(), 
+                   bc_ilo[lev]->dataPtr(),
                    bc_ihi[lev]->dataPtr(),
-                   bc_jlo[lev]->dataPtr(), 
+                   bc_jlo[lev]->dataPtr(),
                    bc_jhi[lev]->dataPtr(),
-                   bc_klo[lev]->dataPtr(), 
+                   bc_klo[lev]->dataPtr(),
                    bc_khi[lev]->dataPtr(),
                    &nghost, &nodal_pressure);
         }
@@ -557,8 +559,8 @@ void incflo::incflo_set_p0()
     }
 }
 
-// 
-// Perform initial pressure iterations 
+//
+// Perform initial pressure iterations
 //
 void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state)
 {

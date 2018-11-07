@@ -138,7 +138,7 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 }
 
 void incflo::Restart(
-	std::string& restart_file, int* nstep, Real* dt, Real* time, IntVect& Nrep)
+	std::string& restart_file, int* nstep, Real* dt, Real* time)
 {
 	BL_PROFILE("incflo::Restart()");
 
@@ -207,14 +207,6 @@ void incflo::Restart(
 			}
 		}
 
-		if(Nrep != IntVect::TheUnitVector())
-		{
-			for(int d = 0; d < BL_SPACEDIM; d++)
-			{
-				prob_lo[d] = Nrep[d] * prob_lo[d];
-				prob_hi[d] = Nrep[d] * prob_hi[d];
-			}
-		}
 		Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
 
 		for(int lev = 0; lev < nlevs; ++lev)
@@ -229,46 +221,18 @@ void incflo::Restart(
 
 			Box orig_domain(orig_ba.minimalBox());
 
-			if(Nrep != IntVect::TheUnitVector())
-			{
-				amrex::Print() << " OLD BA had " << orig_ba.size() << " GRIDS " << std::endl;
-				amrex::Print() << " OLD Domain" << orig_domain << std::endl;
-			}
-
+            // TODO: Check if this is necessary, or if we can just let ba = orig_ba
+            {
 			BoxList bl;
 			for(int nb = 0; nb < orig_ba.size(); nb++)
 			{
-				for(int k = 0; k < Nrep[2]; k++)
-				{
-					for(int j = 0; j < Nrep[1]; j++)
-					{
-						for(int i = 0; i < Nrep[0]; i++)
-						{
-							Box b(orig_ba[nb]);
-							IntVect lo(b.smallEnd());
-							IntVect hi(b.bigEnd());
-							IntVect shift_vec(i * orig_domain.length(0),
-											  j * orig_domain.length(1),
-											  k * orig_domain.length(2));
-							b.shift(shift_vec);
-							bl.push_back(b);
-						}
-					}
-				}
+                Box b(orig_ba[nb]);
+                IntVect lo(b.smallEnd());
+                IntVect hi(b.bigEnd());
+                bl.push_back(b);
 			}
 			ba.define(bl);
-
-			if(Nrep != IntVect::TheUnitVector())
-			{
-				Box new_domain(ba.minimalBox());
-				geom[lev].Domain(new_domain);
-
-				amrex::Print() << " NEW BA has " << ba.size() << " GRIDS " << std::endl;
-				amrex::Print() << " NEW Domain" << geom[0].Domain() << std::endl;
-
-				DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
-				ReMakeNewLevelFromScratch(lev, ba, dm);
-			}
+            }
 
 			// This needs is needed before initializing level MultiFabs: ebfactories should
 			// not change after the eb-dependent MultiFabs are allocated.
@@ -295,76 +259,17 @@ void incflo::Restart(
 		MultiFab mf_gp;
 		VisMF::Read(mf_gp, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
 
-		if(Nrep == IntVect::TheUnitVector())
-		{
-			// Simply copy mf_vel into vel, mf_gp intp gp
-			vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
-			gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
-		}
-		else
-		{
-
-			if(mf_vel.boxArray().size() > 1)
-				amrex::Abort("Replication only works if one initial grid");
-
-			mf_vel.FillBoundary(geom[lev].periodicity());
-			mf_gp.FillBoundary(geom[lev].periodicity());
-
-			FArrayBox single_fab_vel(mf_vel.boxArray()[0], 3);
-			FArrayBox single_fab_gp(mf_gp.boxArray()[0], 3);
-
-			// Copy and replicate mf into velocity
-			for(MFIter mfi(*vel[lev]); mfi.isValid(); ++mfi)
-			{
-				int ib = mfi.index();
-				(*vel[lev])[ib].copy(single_fab_vel, single_fab_vel.box(), 0, mfi.validbox(), 0, 3);
-				(*gp[lev])[ib].copy(single_fab_gp, single_fab_gp.box(), 0, mfi.validbox(), 0, 3);
-			}
-		}
+        vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
+        gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
 
 		// Read scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)
 		{
 			MultiFab mf;
-			VisMF::Read(
-				mf,
-				amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, chkscaVarsName[i]));
-
-			if(Nrep == IntVect::TheUnitVector())
-			{
-				amrex::Print() << "  - loading scalar data: " << chkscaVarsName[i] << std::endl;
-
-				// Copy mf into chkscalarVars
-				if(chkscaVarsName[i] == "level-set")
-				{
-					// The level-set data is special, and because we want
-					// to access it even without a fluid present, it is
-					// loaded below.
-				}
-				else
-				{
-					(*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
-				}
-			}
-			else
-			{
-
-				if(mf.boxArray().size() > 1)
-					amrex::Abort("Replication only works if one initial grid");
-
-				mf.FillBoundary(geom[lev].periodicity());
-
-				FArrayBox single_fab(mf.boxArray()[0], 1);
-				mf.copyTo(single_fab);
-
-				// Copy and replicate mf into chkscalarVars
-				for(MFIter mfi(*(*chkscalarVars[i])[lev]); mfi.isValid(); ++mfi)
-				{
-					int ib = mfi.index();
-					(*(*chkscalarVars[i])[lev])[ib].copy(
-						single_fab, single_fab.box(), 0, mfi.validbox(), 0, 1);
-				}
-			}
+            VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, 
+                                                          level_prefix, chkscaVarsName[i]));
+            amrex::Print() << "  - loading scalar data: " << chkscaVarsName[i] << std::endl;
+            (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
 		}
 	}
 	amrex::Print() << "  Finished reading fluid data" << std::endl;
@@ -385,13 +290,6 @@ void incflo::Restart(
 		// Fill the bc's just in case
 		vel[lev]->FillBoundary(geom[lev].periodicity());
 		vel_o[lev]->FillBoundary(geom[lev].periodicity());
-
-		// used in load balancing
-		if(load_balance_type == "KnapSack")
-		{
-			fluid_cost[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0));
-			fluid_cost[lev]->setVal(0.0);
-		}
 	}
 	amrex::Print() << "  Done with incflo::Restart " << std::endl;
 }
