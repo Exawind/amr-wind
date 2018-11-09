@@ -14,16 +14,6 @@ incflo::incflo()
     
 	// Initialize memory for data-array internals
 	ResizeArrays();
-
-    // Set BC-types (cyclic only at level 0)
-	int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-    if(geom[0].isPeriodic(0)) cyc_x = 1;
-    if(geom[0].isPeriodic(1)) cyc_y = 1;
-    if(geom[0].isPeriodic(2)) cyc_z = 1;
-	incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
-
-    for(int lev = 0; lev <= max_level; lev++)
-        incflo_set_bc_type(lev);
 }
 
 incflo::~incflo(){};
@@ -32,10 +22,6 @@ void incflo::InitData()
 {
     // Initialize the IO variables (pltscalarVars etc)
 	InitIOData();
-
-	// Create MAC projection object
-	mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
-	mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
 	// Either init from scratch or from the checkpoint file
 	int restart_flag = 0;
@@ -49,6 +35,21 @@ void incflo::InitData()
 
 		// NOTE: this also builds ebfactories
 		InitLevelData();
+
+        // Set BC-types (cyclic only at level 0)
+        int cyc_x = 0, cyc_y = 0, cyc_z = 0;
+        if(geom[0].isPeriodic(0)) cyc_x = 1;
+        if(geom[0].isPeriodic(1)) cyc_y = 1;
+        if(geom[0].isPeriodic(2)) cyc_z = 1;
+        incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
+
+        for(int lev = 0; lev <= max_level; lev++)
+            incflo_set_bc_type(lev);
+
+        // Create MAC projection object
+        mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
+        mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
+
 	}
 	else
 	{
