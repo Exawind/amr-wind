@@ -85,23 +85,19 @@ private:
 
 	void Init();
 
-	void InitLevelData(Real time);
+	void InitLevelData();
 
-	void PostInit(Real time,
-				  int nstep,
-				  int restart_flag,
-				  Real stop_time,
-				  int steady_state);
+	void PostInit(int restart_flag);
 
 	void ResizeArrays();
 
-    void incflo_init_fluid(int is_restarting, 
-                           Real time, 
-                           Real stop_time, 
-                           int steady_state);
+    void incflo_init_fluid(int is_restarting);
 
 	void incflo_set_bc0();
 	void incflo_set_p0();
+
+	void InitIOData();
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -109,22 +105,12 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void WriteCheckPointFile(std::string& check_file_name,
-							 int nstep = 0,
-							 Real time = 0.0) const;
-
-    void WritePlotFile(std::string& plot_file_name, 
-                       int nstep = 0, 
-                       Real time = 0.0) const;
-
-    void Restart(std::string& restart_chkfile, int* nstep, Real* time);
-
-    void WriteHeader(const std::string& name, int nstep, Real time, 
-                     bool is_checkpoint) const;
-	void WritePlotHeader(const std::string& name, int nstep, Real time) const;
-	void WriteCheckHeader(const std::string& name, int nstep, Real time) const;
+    void WriteHeader(const std::string& name, bool is_checkpoint) const;
 	void WriteJobInfo(const std::string& dir) const;
+    void WriteCheckPointFile() const;
+    void WritePlotFile() const;
 
+    void Restart();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -132,10 +118,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void Advance(int nstep, 
-                 int steady_state, 
-                 Real time, 
-                 Real stop_time);
+    void Advance();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -212,12 +195,10 @@ private:
 
 	void make_mg_bc(int mg_bc[]);
 
-	void InitIOData();
-
 	void incflo_initial_projection();
-    void incflo_initial_iterations(Real stop_time, int steady_state);
+    void incflo_initial_iterations();
 
-	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
+	void FillPatch(int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
@@ -248,17 +229,12 @@ private:
 
 	void check_for_nans(int lev);
 
-	void incflo_compute_dt(Real time, 
-                           Real stop_time, 
-                           int steady_state, 
-                           int initialisation);
+    void incflo_compute_dt(int initialisation);
 
 	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel, 
-                                         Real time);
+										 Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel, 
-                                         Real time);
+										 Vector<std::unique_ptr<MultiFab>>& vel);
     void incflo_compute_divtau(int lev, 
                                MultiFab& divtau, 
                                Vector<std::unique_ptr<MultiFab>>& vel);
@@ -267,10 +243,10 @@ private:
 
 	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real time, bool proj_2);
+                                bool proj_2);
 	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real time, bool proj_2);
+                                bool proj_2);
 
 	void incflo_diffuse_velocity(Real time);
 
@@ -377,11 +353,10 @@ private:
     std::string bottom_solver_type;
 
     // Time and time step counters
-    // TODO: time should be called something else (like t)
-    // TODO: remove unnecessary function parameters since there are now member functions
-	Real time = 0.0L;
-	int nstep = 0;
+    // TODO: rename t to something more descriptive like cur_time?
+	Real t = 0.0;
 	Real dt = -1;
+	int nstep = 0;
 
     // Be verbose? 
     int verbose = 0;
@@ -409,7 +384,6 @@ private:
 	Real mg_atol = 1.0e-14;
 
 	// Tolerance to check for steady state
-	Real steady_state_tol = 1.0e-5;
 
 	// Options to control time stepping
 	Real cfl = 0.5;
@@ -450,6 +424,7 @@ private:
     Real stop_time = -1.0;
     int max_step = -1;
     bool steady_state = false;
+	Real steady_state_tol = 1.0e-5;
 
     int check_int = -1;
     int last_chk = -1;

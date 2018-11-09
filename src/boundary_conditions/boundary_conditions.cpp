@@ -13,7 +13,7 @@
 // Compute a new multifab by coping in phi from valid region and filling ghost cells
 // works for single level and 2-level cases (fill fine grid ghost by interpolating from coarse)
 void
-incflo::FillPatch (int lev, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icomp, int ncomp)
+incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icomp, int ncomp)
 {
 #if 0
     if (lev == 0)

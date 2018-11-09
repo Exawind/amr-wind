@@ -157,10 +157,10 @@ void incflo::Init()
 	const BoxArray& ba = MakeBaseGrids();
 	DistributionMapping dm(ba, ParallelDescriptor::NProcs());
 
-    Real time = 0.0;
-	MakeNewLevelFromScratch(0, time, ba, dm);
+    // The time t is a member variable initalized to zero, and has not been changed yet. 
+	MakeNewLevelFromScratch(0, t, ba, dm);
 
-    //TODO : get rid of this stuff and add call to AmrCore::InitFromScratch(time). 
+    //TODO : get rid of this stuff and add call to AmrCore::InitFromScratch(t). 
     finest_level = max_level;
     for(int lev = 1; lev <= max_level; lev++)
     {
@@ -179,7 +179,7 @@ void incflo::Init()
         amrex::Print() << "Setting refined region to " << ba_ref << std::endl;
 
         DistributionMapping dm_ref(ba_ref, ParallelDescriptor::NProcs());
-        MakeNewLevelFromScratch(lev, time, ba_ref, dm_ref);
+        MakeNewLevelFromScratch(lev, t, ba_ref, dm_ref);
     }
 
     // We only do these at level 0
@@ -305,7 +305,7 @@ void incflo::ReMakeNewLevelFromScratch(int lev,
 	incflo_set_bc_type(lev);
 }
 
-void incflo::InitLevelData(Real time)
+void incflo::InitLevelData()
 {
 	// This needs is needed before initializing level MultiFabs: ebfactories should
 	// not change after the eb-dependent MultiFabs are allocated.
@@ -316,14 +316,10 @@ void incflo::InitLevelData(Real time)
         AllocateArrays(lev);
 }
 
-void incflo::PostInit(Real time,
-                      int nstep,
-                      int restart_flag,
-                      Real stop_time,
-                      int steady_state)
+void incflo::PostInit(int restart_flag)
 {
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    incflo_init_fluid(restart_flag, time, stop_time, steady_state);
+    incflo_init_fluid(restart_flag);
 }
 
 void incflo::MakeBCArrays()
@@ -367,10 +363,7 @@ void incflo::MakeBCArrays()
     }
 }
 
-void incflo::incflo_init_fluid(int is_restarting,
-                               Real time,
-                               Real stop_time,
-                               int steady_state)
+void incflo::incflo_init_fluid(int is_restarting)
 {
 	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
 	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
@@ -449,7 +442,7 @@ void incflo::incflo_init_fluid(int is_restarting,
         incflo_initial_projection();
 
         // Iterate to compute the initial pressure
-        incflo_initial_iterations(stop_time, steady_state);
+        incflo_initial_iterations();
     }
 }
 
@@ -512,9 +505,8 @@ void incflo::incflo_set_bc0()
     }
 
     // Put velocity Dirichlet bc's on faces
-    Real time = 0.0;
     int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(time, extrap_dir_bcs);
+    incflo_set_velocity_bcs(t, extrap_dir_bcs);
 
     for(int lev = 0; lev <= max_level; lev++)
     {
@@ -581,17 +573,16 @@ void incflo::incflo_set_p0()
 //
 // Perform initial pressure iterations
 //
-void incflo::incflo_initial_iterations(Real stop_time, int steady_state)
+void incflo::incflo_initial_iterations()
 {
-	Real time = 0.0;
     int initialisation = 1;
-	incflo_compute_dt(time, stop_time, steady_state, initialisation);
+	incflo_compute_dt(initialisation);
 
 	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
     // Fill ghost cells
     incflo_set_scalar_bcs();
-    incflo_set_velocity_bcs(time, 0);
+    incflo_set_velocity_bcs(t, 0);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
@@ -615,7 +606,7 @@ void incflo::incflo_initial_iterations(Real stop_time, int steady_state)
 	{
 		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		incflo_apply_predictor(conv, divtau, time, proj_2);
+		incflo_apply_predictor(conv, divtau, proj_2);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -623,7 +614,7 @@ void incflo::incflo_initial_iterations(Real stop_time, int steady_state)
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
         }
         // Reset the boundary values (necessary if they are time-dependent)
-        incflo_set_velocity_bcs(time, 0);
+        incflo_set_velocity_bcs(t, 0);
 	}
 }
 
@@ -639,8 +630,7 @@ void incflo::incflo_initial_projection()
 
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
-	Real time = 0.0;
-	incflo_apply_projection(time, dummy_dt, proj_2);
+	incflo_apply_projection(t, dummy_dt, proj_2);
 
 	// We initialize p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev <= finest_level; lev++)

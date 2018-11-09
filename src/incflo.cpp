@@ -27,7 +27,7 @@ void incflo::InitData()
 	if(restart_file.empty())
 	{
 		// NOTE: this also builds ebfactories
-		InitLevelData(time);
+		InitLevelData();
 	}
 	else
 	{
@@ -35,11 +35,11 @@ void incflo::InitData()
 
 		// NOTE: 1) this also builds ebfactories
         //       2) this can change the grids (during replication)
-		Restart(restart_file, &nstep, &time);
+		Restart();
 	}
 
     // Post-initialisation step
-	PostInit(time, nstep, restart_flag, stop_time, steady_state);
+	PostInit(restart_flag);
 
 	// Write out EB sruface
 	if(write_eb_surface)
@@ -59,19 +59,19 @@ void incflo::Evolve()
 	{
 		incflo_compute_strainrate();
 		incflo_compute_vort();
-		WritePlotFile(plot_file, nstep, time);
+		WritePlotFile();
 	}
 
 	// We automatically write checkpoint files with the initial data
 	//    if check_int > 0
 	if(restart_file.empty() && check_int > 0)
 	{
-		WriteCheckPointFile(check_file, nstep, time);
+		WriteCheckPointFile();
 		last_chk = nstep;
 	}
 
 	bool do_not_evolve =
-		!steady_state && ((max_step == 0) || ((stop_time >= 0.) && (time > stop_time)) ||
+		!steady_state && ((max_step == 0) || ((stop_time >= 0.) && (t > stop_time)) ||
 						  ((stop_time <= 0.) && (max_step <= 0)));
 
     if(!do_not_evolve)
@@ -80,7 +80,7 @@ void incflo::Evolve()
         {
             Real strt_step = ParallelDescriptor::second();
 
-            Advance(nstep, steady_state, time, stop_time);
+            Advance();
 
             Real end_step = ParallelDescriptor::second() - strt_step;
             ParallelDescriptor::ReduceRealMax(end_step,
@@ -89,27 +89,27 @@ void incflo::Evolve()
 
             if(!steady_state)
             {
-                time += dt;
+                t += dt;
                 nstep++;
 
                 if((plot_int > 0) && (nstep % plot_int == 0))
                 {
                     incflo_compute_strainrate();
                     incflo_compute_vort();
-                    WritePlotFile(plot_file, nstep, time);
+                    WritePlotFile();
                     last_plt = nstep;
                 }
 
                 if((check_int > 0) && (nstep % check_int == 0))
                 {
-                    WriteCheckPointFile(check_file, nstep, time);
+                    WriteCheckPointFile();
                     last_chk = nstep;
                 }
             }
 
             // Mechanism to terminate incflo normally.
             do_not_evolve =
-                steady_state || (((stop_time >= 0.) && (time + 0.1 * dt >= stop_time)) ||
+                steady_state || (((stop_time >= 0.) && fabs(t - stop_time) < 0.01 * dt) ||
                                  (max_step >= 0 && nstep >= max_step));
             if(do_not_evolve)
                 finish = 1;
@@ -121,12 +121,12 @@ void incflo::Evolve()
 
 	// Dump plotfile at the final time
 	if(check_int > 0 && nstep != last_chk)
-		WriteCheckPointFile(check_file, nstep, time);
+		WriteCheckPointFile();
 	if(plot_int > 0 && nstep != last_plt)
     {
 		incflo_compute_strainrate();
         incflo_compute_vort();
-		WritePlotFile(plot_file, nstep, time);
+		WritePlotFile();
     }
 }
 

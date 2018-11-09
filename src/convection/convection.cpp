@@ -6,8 +6,7 @@
 // Compute acc using the vel passed in
 //
 void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
-                                             Vector<std::unique_ptr<MultiFab>>& vel_in, 
-                                             Real time)
+                                             Vector<std::unique_ptr<MultiFab>>& vel_in)
 {
 	BL_PROFILE("incflo::incflo_compute_ugradu");
 
@@ -18,7 +17,7 @@ void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& 
     }
 
     // Do projection on all AMR-level_ins in one shot
-	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, time);
+	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, t);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -119,8 +118,7 @@ void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& 
 // Compute acc using the vel_in passed in
 //
 void incflo::incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
-                                             Vector<std::unique_ptr<MultiFab>>& vel_in, 
-                                             Real time)
+                                             Vector<std::unique_ptr<MultiFab>>& vel_in)
 {
 	BL_PROFILE("incflo::incflo_compute_ugradu");
 
@@ -130,7 +128,7 @@ void incflo::incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& 
         incflo_compute_velocity_at_faces(lev, vel_in);
     }
 
-	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, time);
+	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, t + dt);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {

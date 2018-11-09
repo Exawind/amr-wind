@@ -16,20 +16,8 @@ namespace
 const std::string level_prefix{"Level_"};
 }
 
-void incflo::WritePlotHeader(const std::string& name, int nstep, Real time) const
-{
-	bool is_checkpoint = 0;
-	WriteHeader(name, nstep, time, is_checkpoint);
-}
-
-void incflo::WriteCheckHeader(const std::string& name, int nstep, Real time) const
-{
-	bool is_checkpoint = 1;
-	WriteHeader(name, nstep, time, is_checkpoint);
-}
-
 void incflo::WriteHeader(
-	const std::string& name, int nstep, Real time, bool is_checkpoint) const
+	const std::string& name, bool is_checkpoint) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
@@ -57,7 +45,7 @@ void incflo::WriteHeader(
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
 		HeaderFile << dt << "\n";
-		HeaderFile << time << "\n";
+		HeaderFile << t << "\n";
 
 		// Geometry
 		for(int i = 0; i < BL_SPACEDIM; ++i)
@@ -77,7 +65,7 @@ void incflo::WriteHeader(
 	}
 }
 
-void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real time) const
+void incflo::WriteCheckPointFile() const
 {
 	BL_PROFILE("incflo::WriteCheckPointFile()");
 
@@ -87,8 +75,8 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real time) 
 
 	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
-	WriteCheckHeader(checkpointname, nstep, time);
-
+    bool is_checkpoint = true;
+	WriteHeader(checkpointname, is_checkpoint);
 	WriteJobInfo(checkpointname);
 
 	for(int lev = 0; lev <= finest_level; ++lev)
@@ -114,8 +102,7 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real time) 
 	}
 }
 
-void incflo::Restart(
-	std::string& restart_file, int* nstep, Real* time)
+void incflo::Restart()
 {
 	BL_PROFILE("incflo::Restart()");
 
@@ -153,7 +140,7 @@ void incflo::Restart(
 
 		// Time stepping controls
 		is >> int_tmp;
-		*nstep = int_tmp;
+		nstep = int_tmp;
 		GotoNextLine(is);
 
 		is >> real_tmp;
@@ -161,7 +148,7 @@ void incflo::Restart(
 		GotoNextLine(is);
 
 		is >> real_tmp;
-		*time = real_tmp;
+		t = real_tmp;
 		GotoNextLine(is);
 
 		std::getline(is, line);
@@ -220,8 +207,6 @@ void incflo::Restart(
 		}
 	}
 
-	amrex::Print() << "  Finished reading header" << std::endl;
-
 	/***************************************************************************
      * Load fluid data                                                         *
      ***************************************************************************/
@@ -245,11 +230,9 @@ void incflo::Restart(
 			MultiFab mf;
             VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, 
                                                           level_prefix, chkscaVarsName[i]));
-            amrex::Print() << "  - loading scalar data: " << chkscaVarsName[i] << std::endl;
             (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
 		}
 	}
-	amrex::Print() << "  Finished reading fluid data" << std::endl;
 
 	for(int lev = 0; lev <= finest_level; ++lev)
 	{
@@ -262,7 +245,7 @@ void incflo::Restart(
 		vel[lev]->FillBoundary(geom[lev].periodicity());
 		vel_o[lev]->FillBoundary(geom[lev].periodicity());
 	}
-	amrex::Print() << "  Done with incflo::Restart " << std::endl;
+	amrex::Print() << "Restart complete" << std::endl;
 }
 
 void incflo::GotoNextLine(std::istream& is)
@@ -358,7 +341,7 @@ void incflo::WriteJobInfo(const std::string& path) const
 	}
 }
 
-void incflo::WritePlotFile(std::string& plot_file, int nstep, Real time) const
+void incflo::WritePlotFile() const
 {
 	BL_PROFILE("incflo::WritePlotFile()");
 
@@ -464,7 +447,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real time) const
 	names.insert(names.end(), vecVarsName.begin(), vecVarsName.end());
 	names.insert(names.end(), pltscaVarsName.begin(), pltscaVarsName.end());
 
-    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), time, istep, refRatio());
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), t, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }

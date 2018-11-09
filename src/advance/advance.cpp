@@ -12,10 +12,7 @@
 #include <projection_F.H>
 #include <setup_F.H>
 
-void incflo::Advance(int nstep, 
-                     int steady_state, 
-                     Real time, 
-                     Real stop_time)
+void incflo::Advance()
 {
 	BL_PROFILE_REGION_START("incflo::Advance");
 	BL_PROFILE("incflo::Advance");
@@ -28,7 +25,7 @@ void incflo::Advance(int nstep,
         fill_mf_bc(lev, *eta[lev]);
    
     // Fill ghost nodes and reimpose boundary conditions
-    incflo_set_velocity_bcs(time, 0);
+    incflo_set_velocity_bcs(t, 0);
     incflo_set_scalar_bcs();
 
 	// Start loop: if we are not seeking a steady state solution,
@@ -39,7 +36,7 @@ void incflo::Advance(int nstep,
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector
-    // TODO: Make this smarter
+    // TODO: Make this smarter -- actually shouldn't need separate implementatino of applyinf pred corr
     Vector<std::unique_ptr<MultiFab>> conv_old;
     Vector<std::unique_ptr<MultiFab>> divtau_old;
     conv_old.resize(finest_level + 1);
@@ -53,7 +50,8 @@ void incflo::Advance(int nstep,
 	do
 	{
         // Compute time step size
-        incflo_compute_dt(time, stop_time, steady_state, 0);
+        int initialisation = 0;
+        incflo_compute_dt(initialisation);
 
         if(verbose > 0)
         {
@@ -66,8 +64,8 @@ void incflo::Advance(int nstep,
             else
             {
                 amrex::Print() << "\n   Step " << nstep + 1 
-                               << ": from old_time " << time 
-                               << " to new time " << time + dt 
+                               << ": from old_time " << t 
+                               << " to new time " << t + dt 
                                << " with dt = " << dt 
                                << "\n" << std::endl;
             }
@@ -78,27 +76,27 @@ void incflo::Advance(int nstep,
             MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
 
 		// Predictor step
-        incflo_apply_predictor(conv_old, divtau_old, time, proj_2);
+        incflo_apply_predictor(conv_old, divtau_old, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter predictor step:\n";
             for(int lev = 0; lev <= finest_level; lev++)
                 incflo_print_max_vel(lev);
 
-            incflo_compute_divu(time + dt);
+            incflo_compute_divu(t + dt);
             for(int lev = 0; lev <= finest_level; lev++)
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
         }
 
 		// Corrector step
-        incflo_apply_corrector(conv_old, divtau_old, time, proj_2);
+        incflo_apply_corrector(conv_old, divtau_old, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter corrector step:\n";
             for(int lev = 0; lev <= finest_level; lev++)
                 incflo_print_max_vel(lev);
 
-            incflo_compute_divu(time + dt);
+            incflo_compute_divu(t + dt);
             for(int lev = 0; lev <= finest_level; lev++)
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
         }
@@ -133,10 +131,7 @@ void incflo::Advance(int nstep,
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::incflo_compute_dt(Real time, 
-                               Real stop_time, 
-                               int steady_state, 
-                               int initialisation)
+void incflo::incflo_compute_dt(int initialisation)
 {
 	// DT is always computed even for fixed dt, so we can
 	// issue a warning if fixed dt does not satisfy CFL condition.
@@ -206,8 +201,8 @@ void incflo::incflo_compute_dt(Real time,
     // Don't overshoot the final time if not running to steady state
     if((!steady_state) & (stop_time > 0.0))
     {
-        if(time + dt_new > stop_time)
-            dt_new = stop_time - time;
+        if(t + dt_new > stop_time)
+            dt_new = stop_time - t;
     }
 
     // If using fixed time step, check CFL condition and give warning if not satisfied
@@ -256,15 +251,15 @@ void incflo::incflo_compute_dt(Real time,
 //
 void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    Real time, bool proj_2)
+                                    bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_predictor");
 
     // We use the new ime value for things computed on the "*" state
-    Real new_time = time + dt; 
+    Real new_time = t + dt; 
 
     // Compute the explicit advective term R_u^n
-    incflo_compute_ugradu_predictor(conv_old, vel_o, time);
+    incflo_compute_ugradu_predictor(conv_old, vel_o);
 
     incflo_compute_strainrate();
     incflo_compute_viscosity();
@@ -340,12 +335,12 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    Real time, bool proj_2)
+                                    bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_corrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = time + dt; 
+    Real new_time = t + dt; 
 
 	Vector<std::unique_ptr<MultiFab>> conv;
 	Vector<std::unique_ptr<MultiFab>> divtau;   
@@ -358,7 +353,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // Compute the explicit advective term R_u^*
-    incflo_compute_ugradu_corrector(conv, vel, new_time);
+    incflo_compute_ugradu_corrector(conv, vel);
 
     incflo_compute_strainrate();
     incflo_compute_viscosity();
@@ -425,8 +420,7 @@ int incflo::steady_state_reached(int iter)
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    Real time = 0.0;
-    incflo_set_velocity_bcs(time, 0);
+    incflo_set_velocity_bcs(t, 0);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
