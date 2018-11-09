@@ -14,8 +14,6 @@
 
 void incflo::Advance(int nstep, 
                      int steady_state, 
-                     Real& dt, 
-                     Real& prev_dt, 
                      Real time, 
                      Real stop_time)
 {
@@ -55,7 +53,7 @@ void incflo::Advance(int nstep,
 	do
 	{
         // Compute time step size
-        incflo_compute_dt(time, stop_time, steady_state, 0, dt);
+        incflo_compute_dt(time, stop_time, steady_state, 0);
 
         if(verbose > 0)
         {
@@ -80,7 +78,7 @@ void incflo::Advance(int nstep,
             MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
 
 		// Predictor step
-        incflo_apply_predictor(conv_old, divtau_old, time, dt, proj_2);
+        incflo_apply_predictor(conv_old, divtau_old, time, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter predictor step:\n";
@@ -93,7 +91,7 @@ void incflo::Advance(int nstep,
         }
 
 		// Corrector step
-        incflo_apply_corrector(conv_old, divtau_old, time, dt, proj_2);
+        incflo_apply_corrector(conv_old, divtau_old, time, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter corrector step:\n";
@@ -107,15 +105,13 @@ void incflo::Advance(int nstep,
 
 		// Check whether to exit the loop or not
 		if(steady_state)
-			keep_looping = !steady_state_reached(dt, iter);
+			keep_looping = !steady_state_reached(iter);
 		else
 			keep_looping = 0;
 
 		// Update interations count
 		++iter;
 	} while(keep_looping);
-
-    prev_dt = dt;
 
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }
@@ -140,8 +136,7 @@ void incflo::Advance(int nstep,
 void incflo::incflo_compute_dt(Real time, 
                                Real stop_time, 
                                int steady_state, 
-                               int initialisation, 
-                               Real& dt)
+                               int initialisation)
 {
 	// DT is always computed even for fixed dt, so we can
 	// issue a warning if fixed dt does not satisfy CFL condition.
@@ -261,7 +256,7 @@ void incflo::incflo_compute_dt(Real time,
 //
 void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    Real time, Real dt, bool proj_2)
+                                    Real time, bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_predictor");
 
@@ -305,7 +300,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) incflo_diffuse_velocity(new_time, dt);
+    if(!explicit_diffusion) incflo_diffuse_velocity(new_time);
 
 	// Project velocity field
 	incflo_apply_projection(new_time, dt, proj_2);
@@ -345,7 +340,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    Real time, Real dt, bool proj_2)
+                                    Real time, bool proj_2)
 {
 	BL_PROFILE("incflo::incflo_apply_corrector");
 
@@ -402,7 +397,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) incflo_diffuse_velocity(new_time, dt);
+    if(!explicit_diffusion) incflo_diffuse_velocity(new_time);
 
 	// Apply projection
 	incflo_apply_projection(new_time, dt, proj_2);
@@ -424,7 +419,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //      sum(abs( v^(n+1) - v^(n) )) / sum(abs( v^(n) )) < tol
 //      sum(abs( w^(n+1) - w^(n) )) / sum(abs( w^(n) )) < tol
 //
-int incflo::steady_state_reached(Real dt, int iter)
+int incflo::steady_state_reached(int iter)
 {
     int condition1[finest_level + 1];
     int condition2[finest_level + 1];

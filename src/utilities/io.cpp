@@ -16,20 +16,20 @@ namespace
 const std::string level_prefix{"Level_"};
 }
 
-void incflo::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
+void incflo::WritePlotHeader(const std::string& name, int nstep, Real time) const
 {
 	bool is_checkpoint = 0;
-	WriteHeader(name, nstep, dt, time, is_checkpoint);
+	WriteHeader(name, nstep, time, is_checkpoint);
 }
 
-void incflo::WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const
+void incflo::WriteCheckHeader(const std::string& name, int nstep, Real time) const
 {
 	bool is_checkpoint = 1;
-	WriteHeader(name, nstep, dt, time, is_checkpoint);
+	WriteHeader(name, nstep, time, is_checkpoint);
 }
 
 void incflo::WriteHeader(
-	const std::string& name, int nstep, Real dt, Real time, bool is_checkpoint) const
+	const std::string& name, int nstep, Real time, bool is_checkpoint) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
@@ -77,7 +77,7 @@ void incflo::WriteHeader(
 	}
 }
 
-void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Real time) const
+void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real time) const
 {
 	BL_PROFILE("incflo::WriteCheckPointFile()");
 
@@ -87,7 +87,7 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 
 	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
-	WriteCheckHeader(checkpointname, nstep, dt, time);
+	WriteCheckHeader(checkpointname, nstep, time);
 
 	WriteJobInfo(checkpointname);
 
@@ -115,7 +115,7 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 }
 
 void incflo::Restart(
-	std::string& restart_file, int* nstep, Real* dt, Real* time)
+	std::string& restart_file, int* nstep, Real* time)
 {
 	BL_PROFILE("incflo::Restart()");
 
@@ -157,7 +157,7 @@ void incflo::Restart(
 		GotoNextLine(is);
 
 		is >> real_tmp;
-		*dt = real_tmp;
+		dt = real_tmp;
 		GotoNextLine(is);
 
 		is >> real_tmp;
@@ -358,7 +358,7 @@ void incflo::WriteJobInfo(const std::string& path) const
 	}
 }
 
-void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time) const
+void incflo::WritePlotFile(std::string& plot_file, int nstep, Real time) const
 {
 	BL_PROFILE("incflo::WritePlotFile()");
 

@@ -100,7 +100,7 @@ void incflo::incflo_compute_divtau(int lev,
 //
 // Implicit diffusion
 //
-void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
+void incflo::incflo_diffuse_velocity(amrex::Real time)
 {
 	BL_PROFILE("incflo::incflo_diffuse_velocity");
 
@@ -144,7 +144,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
 
 		// Solve (1 - div beta grad) u_new = RHS
 		// Here RHS = "vel" which is the current approximation to the new-time velocity (without diffusion terms)
-		solve_diffusion_equation(bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi, dt);
+		solve_diffusion_equation(bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -163,8 +163,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
 void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
                                       Vector<std::unique_ptr<MultiFab>>& sol,
                                       Vector<std::unique_ptr<MultiFab>>& rhs,
-                                      int bc_lo[], int bc_hi[],
-                                      amrex::Real dt)
+                                      int bc_lo[], int bc_hi[])
 {
 	BL_PROFILE("incflo::solve_diffusion_equation");
 

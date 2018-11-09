@@ -87,8 +87,7 @@ private:
 
 	void InitLevelData(Real time);
 
-	void PostInit(Real& dt,
-				  Real time,
+	void PostInit(Real time,
 				  int nstep,
 				  int restart_flag,
 				  Real stop_time,
@@ -98,7 +97,6 @@ private:
 
     void incflo_init_fluid(int is_restarting, 
                            Real time, 
-                           Real& dt, 
                            Real stop_time, 
                            int steady_state);
 
@@ -113,20 +111,18 @@ private:
 
 	void WriteCheckPointFile(std::string& check_file_name,
 							 int nstep = 0,
-							 Real dt = 0.0,
 							 Real time = 0.0) const;
 
     void WritePlotFile(std::string& plot_file_name, 
                        int nstep = 0, 
-                       Real dt = 0.0, 
                        Real time = 0.0) const;
 
-    void Restart(std::string& restart_chkfile, int* nstep, Real* dt, Real* time);
+    void Restart(std::string& restart_chkfile, int* nstep, Real* time);
 
-    void WriteHeader(const std::string& name, int nstep, Real dt, Real time, 
+    void WriteHeader(const std::string& name, int nstep, Real time, 
                      bool is_checkpoint) const;
-	void WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const;
-	void WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const;
+	void WritePlotHeader(const std::string& name, int nstep, Real time) const;
+	void WriteCheckHeader(const std::string& name, int nstep, Real time) const;
 	void WriteJobInfo(const std::string& dir) const;
 
 
@@ -138,8 +134,6 @@ private:
 
     void Advance(int nstep, 
                  int steady_state, 
-                 Real& dt, 
-                 Real& prev_dt, 
                  Real time, 
                  Real stop_time);
 
@@ -221,7 +215,7 @@ private:
 	void InitIOData();
 
 	void incflo_initial_projection();
-    void incflo_initial_iterations(Real dt, Real stop_time, int steady_state);
+    void incflo_initial_iterations(Real stop_time, int steady_state);
 
 	void FillPatch(int lev, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 
@@ -247,8 +241,7 @@ private:
 	void solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								  Vector<std::unique_ptr<MultiFab>>& phi,
 								  Vector<std::unique_ptr<MultiFab>>& rhs,
-                                  int bc_lo[], int bc_hi[],
-								  Real dt);
+                                  int bc_lo[], int bc_hi[]);
 
 	void incflo_compute_bcoeff_ppe();
 	void incflo_compute_bcoeff_diff();
@@ -258,8 +251,7 @@ private:
 	void incflo_compute_dt(Real time, 
                            Real stop_time, 
                            int steady_state, 
-                           int initialisation, 
-                           Real& dt);
+                           int initialisation);
 
 	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel, 
@@ -271,16 +263,16 @@ private:
                                MultiFab& divtau, 
                                Vector<std::unique_ptr<MultiFab>>& vel);
 
-	int steady_state_reached(Real dt, int iter);
+	int steady_state_reached(int iter);
 
 	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real time, Real dt, bool proj_2);
+                                Real time, bool proj_2);
 	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                Real time, Real dt, bool proj_2);
+                                Real time, bool proj_2);
 
-	void incflo_diffuse_velocity(Real time, Real dt);
+	void incflo_diffuse_velocity(Real time);
 
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);

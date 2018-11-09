@@ -11,6 +11,10 @@
 #include <projection_F.H>
 
 //
+// TODO: 
+// explain that scaling_factor = dt expect when called during initial_projection, when it is set to unity
+//
+//
 // Computes the following decomposition:
 //
 //    u + grad(phi)/ro = u*,     where div(u) = 0

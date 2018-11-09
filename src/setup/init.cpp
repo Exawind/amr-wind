@@ -316,15 +316,14 @@ void incflo::InitLevelData(Real time)
         AllocateArrays(lev);
 }
 
-void incflo::PostInit(Real& dt,
-                      Real time,
+void incflo::PostInit(Real time,
                       int nstep,
                       int restart_flag,
                       Real stop_time,
                       int steady_state)
 {
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    incflo_init_fluid(restart_flag, time, dt, stop_time, steady_state);
+    incflo_init_fluid(restart_flag, time, stop_time, steady_state);
 }
 
 void incflo::MakeBCArrays()
@@ -370,7 +369,6 @@ void incflo::MakeBCArrays()
 
 void incflo::incflo_init_fluid(int is_restarting,
                                Real time,
-                               Real& dt,
                                Real stop_time,
                                int steady_state)
 {
@@ -451,7 +449,7 @@ void incflo::incflo_init_fluid(int is_restarting,
         incflo_initial_projection();
 
         // Iterate to compute the initial pressure
-        incflo_initial_iterations(dt, stop_time, steady_state);
+        incflo_initial_iterations(stop_time, steady_state);
     }
 }
 
@@ -583,11 +581,11 @@ void incflo::incflo_set_p0()
 //
 // Perform initial pressure iterations
 //
-void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state)
+void incflo::incflo_initial_iterations(Real stop_time, int steady_state)
 {
 	Real time = 0.0;
     int initialisation = 1;
-	incflo_compute_dt(time, stop_time, steady_state, initialisation, dt);
+	incflo_compute_dt(time, stop_time, steady_state, initialisation);
 
 	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
@@ -617,7 +615,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 	{
 		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		incflo_apply_predictor(conv, divtau, time, dt, proj_2);
+		incflo_apply_predictor(conv, divtau, time, proj_2);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {
