@@ -199,9 +199,9 @@ void incflo::incflo_compute_dt(Real time,
     if(comb_cfl <= 1.0e-18)
         dt_new = 0.5 * dt;
 
-    // Don't let the timestep grow by more than 1% per step.
+    // Don't let the timestep grow by more than 10% per step.
     if(dt > 0.0)
-        dt_new = std::min(dt_new, 1.01*dt);
+        dt_new = std::min(dt_new, 1.1*dt);
 
     // Don't overshoot the final time if not running to steady state
     if((!steady_state) & (stop_time > 0.0))
