@@ -43,7 +43,9 @@ void incflo::InitData()
 	{
         // These are AmrCore member functions
         InitFromScratch(t);
-        AverageDown();
+
+        // TODO: Implement
+        // AverageDown();
 
 		// NOTE: this also builds ebfactories
 		InitLevelData();
