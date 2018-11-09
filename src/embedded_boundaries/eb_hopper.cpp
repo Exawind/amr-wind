@@ -113,7 +113,7 @@ void incflo::make_eb_hopper()
 
 	const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         eb_level_fluid = &eb_is.getLevel(geom[lev]);
 

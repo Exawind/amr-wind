@@ -48,7 +48,7 @@ void incflo::incflo_set_scalar_bcs ()
 {
     BL_PROFILE("incflo::incflo_set_scalar_bcs()");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -77,7 +77,7 @@ void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
 {
     BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         vel[lev]->FillBoundary(geom[lev].periodicity());
         Box domain(geom[lev].Domain());

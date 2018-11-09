@@ -24,7 +24,7 @@ void incflo::incflo_compute_divu(Real time)
         int extrap_dir_bcs = 0;
         incflo_set_velocity_bcs (time, extrap_dir_bcs);
 
-        for (int lev = 0; lev < nlev; lev++)
+        for (int lev = 0; lev <= finest_level; lev++)
         {
             Box domain(geom[lev].Domain());
             vel[lev]->FillBoundary (geom[lev].periodicity());     
@@ -77,7 +77,7 @@ void incflo::incflo_compute_divu(Real time)
         int extrap_dir_bcs = 1;
         incflo_set_velocity_bcs(time, extrap_dir_bcs);
 
-        for(int lev = 0; lev < nlev; lev++)
+        for(int lev = 0; lev <= finest_level; lev++)
         {
             Box domain(geom[lev].Domain());
             vel[lev]->FillBoundary(geom[lev].periodicity());

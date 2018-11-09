@@ -135,7 +135,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
         if(verbose > 1)
             amrex::Print() << "Diffusing velocity component " << i << std::endl;
 
-        for(int lev = 0; lev < nlev; lev++)
+        for(int lev = 0; lev <= finest_level; lev++)
         {
             rhs_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
             phi_diff[lev]->copy(*vel[lev], i, 0, 1, nghost, nghost);
@@ -146,7 +146,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time, amrex::Real dt)
 		// Here RHS = "vel" which is the current approximation to the new-time velocity (without diffusion terms)
 		solve_diffusion_equation(bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi, dt);
 
-        for(int lev = 0; lev < nlev; lev++)
+        for(int lev = 0; lev <= finest_level; lev++)
         {
             vel[lev]->copy(*phi_diff[lev], 0, i, 1, nghost, nghost);
         }
@@ -193,7 +193,7 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
 	// This sets alpha = 1 and beta = dt
 	matrix.setScalars(1.0, dt);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // Copy the PPE coefficient into the proper data strutcure
         tmp = amrex::GetVecOfConstPtrs(b[lev]);
@@ -244,7 +244,7 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
 	//
 	solver.solve(GetVecOfPtrs(sol), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         sol[lev]->FillBoundary(geom[lev].periodicity());
     }
@@ -262,7 +262,7 @@ void incflo::incflo_compute_bcoeff_diff()
 	int ydir = 2;
 	int zdir = 3;
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
 #ifdef _OPENMP
 #pragma omp parallel

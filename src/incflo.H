@@ -199,7 +199,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void incflo_apply_projection(Real dt, Real scaling_factor, bool proj_2);
+    void incflo_apply_projection(Real time, Real scaling_factor, bool proj_2);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -307,11 +307,6 @@ private:
     void incflo_average_cc_to_fc (int lev, 
                                   const MultiFab& cc,
                                   Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
-   
-    // TODO: Get rid of this. 
-    // Use either max_level for maximum allowable levels 
-    // or finest_level for the highest level we currently have 
-    int nlev = 1; 
 
     // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
     // but will never change unless we use subcycling. 
@@ -328,11 +323,9 @@ private:
 
 	// Gas pressure fraction
 	Vector<std::unique_ptr<MultiFab>> p;
-	Vector<std::unique_ptr<MultiFab>> p_o;
 
 	// Gas density
 	Vector<std::unique_ptr<MultiFab>> ro;
-	Vector<std::unique_ptr<MultiFab>> ro_o;
 
 	// Gas velocity
 	Vector<std::unique_ptr<MultiFab>> vel;
@@ -392,6 +385,8 @@ private:
     std::string bottom_solver_type;
 
     // Time and time step counters
+    // TODO: time should be called something else (like t)
+    // TODO: remove unnecessary function parameters since there are now member functions
 	Real time = 0.0L;
 	int nstep = 0;
 	Real dt = -1;
@@ -412,6 +407,7 @@ private:
     Real eta_0 = 0.0;
 
 	// Options to control MLMG behavior
+    // TODO: get this out of here , should not be member functions
 	int mg_verbose = 0;
 	int mg_cg_verbose = 0;
 	int mg_max_iter = 100;
@@ -458,22 +454,22 @@ private:
 	Vector<const Vector<std::unique_ptr<MultiFab>>*> pltscalarVars;
 	Vector<std::string> chkscaVarsName;
 
-// Declare and initialise variables
-Real stop_time = -1.0;
-int max_step = -1;
-bool steady_state = false;
+    // Declare and initialise variables
+    Real stop_time = -1.0;
+    int max_step = -1;
+    bool steady_state = false;
 
-int check_int = -1;
-int last_chk = -1;
-std::string check_file{"chk"};
-std::string restart_file{""};
+    int check_int = -1;
+    int last_chk = -1;
+    std::string check_file{"chk"};
+    std::string restart_file{""};
 
-int plot_int = -1;
-int last_plt = -1;
-std::string plot_file{"plt"};
-bool write_eb_surface = false;
+    int plot_int = -1;
+    int last_plt = -1;
+    std::string plot_file{"plt"};
+    bool write_eb_surface = false;
 
-int regrid_int = -1;
+    int regrid_int = -1;
 
 	/****************************************************************************
      *                                                                          *

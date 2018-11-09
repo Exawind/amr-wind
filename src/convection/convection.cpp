@@ -11,7 +11,7 @@ void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& 
 {
 	BL_PROFILE("incflo::incflo_compute_ugradu");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         incflo_compute_velocity_slopes(lev, vel_in);
         incflo_compute_velocity_at_faces(lev, vel_in);
@@ -20,7 +20,7 @@ void incflo::incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& 
     // Do projection on all AMR-level_ins in one shot
 	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, time);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -124,7 +124,7 @@ void incflo::incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& 
 {
 	BL_PROFILE("incflo::incflo_compute_ugradu");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         incflo_compute_velocity_slopes(lev, vel_in);
         incflo_compute_velocity_at_faces(lev, vel_in);
@@ -132,7 +132,7 @@ void incflo::incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& 
 
 	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, time);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 

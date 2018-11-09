@@ -107,7 +107,7 @@ void incflo::make_eb_annulus()
 	int max_coarsening_level = 100;
 	EB2::Build(gshop, geom.back(), max_level_here, max_level_here + max_coarsening_level);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         const EB2::IndexSpace& ebis = EB2::IndexSpace::top();
         const EB2::Level& ebis_lev = ebis.getLevel(geom[lev]);

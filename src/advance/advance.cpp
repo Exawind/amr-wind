@@ -26,7 +26,7 @@ void incflo::Advance(int nstep,
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
 
     // Extrapolate boundary values for density and volume fraction
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
         fill_mf_bc(lev, *eta[lev]);
    
     // Fill ghost nodes and reimpose boundary conditions
@@ -41,11 +41,12 @@ void incflo::Advance(int nstep,
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector
+    // TODO: Make this smarter
     Vector<std::unique_ptr<MultiFab>> conv_old;
     Vector<std::unique_ptr<MultiFab>> divtau_old;
-    conv_old.resize(nlev);
-    divtau_old.resize(nlev);
-    for(int lev = 0; lev < nlev; lev++)
+    conv_old.resize(finest_level + 1);
+    divtau_old.resize(finest_level + 1);
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
         divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
@@ -74,24 +75,20 @@ void incflo::Advance(int nstep,
             }
         }
 
-        // Backup field variables to old
-        for(int lev = 0; lev < nlev; lev++)
-        {
-            MultiFab::Copy(*p_o[lev], *p[lev], 0, 0, p[lev]->nComp(), p_o[lev]->nGrow());
-            MultiFab::Copy(*ro_o[lev], *ro[lev], 0, 0, ro[lev]->nComp(), ro_o[lev]->nGrow());
+        // Backup velocity to old
+        for(int lev = 0; lev <= finest_level; lev++)
             MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
-        }
 
 		// Predictor step
         incflo_apply_predictor(conv_old, divtau_old, time, dt, proj_2);
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter predictor step:\n";
-            for(int lev = 0; lev < nlev; lev++)
+            for(int lev = 0; lev <= finest_level; lev++)
                 incflo_print_max_vel(lev);
 
             incflo_compute_divu(time + dt);
-            for(int lev = 0; lev < nlev; lev++)
+            for(int lev = 0; lev <= finest_level; lev++)
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
         }
 
@@ -100,11 +97,11 @@ void incflo::Advance(int nstep,
         if(verbose > 1)
         {
             amrex::Print() << "\nAfter corrector step:\n";
-            for(int lev = 0; lev < nlev; lev++)
+            for(int lev = 0; lev <= finest_level; lev++)
                 incflo_print_max_vel(lev);
 
             incflo_compute_divu(time + dt);
-            for(int lev = 0; lev < nlev; lev++)
+            for(int lev = 0; lev <= finest_level; lev++)
                 amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
         }
 
@@ -163,7 +160,7 @@ void incflo::incflo_compute_dt(Real time,
     gp0max[1] = incflo_norm0(gp0, 0, 1);
     gp0max[2] = incflo_norm0(gp0, 0, 2);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         umax = std::max(umax, incflo_norm0(vel, lev, 0));
         vmax = std::max(vmax, incflo_norm0(vel, lev, 1));
@@ -277,7 +274,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     incflo_compute_strainrate();
     incflo_compute_viscosity();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // explicit_diffusion == true:  compute the full diffusive terms here
         // explicit_diffusion == false: compute only the off-diagonal terms here
@@ -357,9 +354,9 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
 	Vector<std::unique_ptr<MultiFab>> conv;
 	Vector<std::unique_ptr<MultiFab>> divtau;   
-    conv.resize(nlev);
-    divtau.resize(nlev);
-    for(int lev = 0; lev < nlev; lev++)
+    conv.resize(finest_level + 1);
+    divtau.resize(finest_level + 1);
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
         divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
@@ -371,7 +368,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     incflo_compute_strainrate();
     incflo_compute_viscosity();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // If explicit_diffusion == true  then we compute the full diffusive terms here
         // If explicit_diffusion == false then we compute only the off-diagonal terms here
@@ -429,14 +426,14 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 int incflo::steady_state_reached(Real dt, int iter)
 {
-    int condition1[nlev];
-    int condition2[nlev];
+    int condition1[finest_level + 1];
+    int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
     Real time = 0.0;
     incflo_set_velocity_bcs(time, 0);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // Use temporaries to store the difference between current and previous solution
         MultiFab diff_vel(vel[lev]->boxArray(), vel[lev]->DistributionMap(), 3, 0);
@@ -470,7 +467,7 @@ int incflo::steady_state_reached(Real dt, int iter)
     }
 
     int reached = 1;
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         reached = reached && (condition1[lev] || condition2[lev]);
     }

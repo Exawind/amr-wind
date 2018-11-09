@@ -49,7 +49,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
                bc_klo[0]->dataPtr(),
                bc_khi[0]->dataPtr());
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
@@ -59,7 +59,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
 
     incflo_compute_divu(time);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // Print info about predictor step
         if(verbose > 1)
@@ -89,7 +89,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     // Compute right hand side, AKA div(u)/dt
     incflo_compute_divu(time);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         divu[lev]->mult(1.0 / scaling_factor, divu[lev]->nGrow());
 
@@ -101,8 +101,8 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     incflo_compute_bcoeff_ppe();
 
 	Vector<std::unique_ptr<MultiFab>> fluxes;
-    fluxes.resize(nlev);
-    for(int lev = 0; lev < nlev; lev++)
+    fluxes.resize(max_level + 1);
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(),
                                        vel[lev]->DistributionMap(),
@@ -114,7 +114,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
 	// Solve PPE
 	solve_poisson_equation(bcoeff, phi, divu, fluxes, bc_lo, bc_hi);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         // NOTE: THE SIGN OF DT (scaling_factor) IS CORRECT HERE
         if(verbose > 1)
@@ -155,7 +155,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     // Print info about predictor step
     if(verbose > 1)
     {
-        for(int lev = 0; lev < nlev; lev++)
+        for(int lev = 0; lev <= finest_level; lev++)
         {
             amrex::Print() << "At level " << lev << ", after projection: \n";
             incflo_print_max_vel(lev);
@@ -195,7 +195,7 @@ void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > 
 
         matrix.setCoarseningStrategy(MLNodeLaplacian::CoarseningStrategy::Sigma);
 
-        for (int lev = 0; lev < nlev; lev++)
+        for (int lev = 0; lev <= finest_level; lev++)
         {
            matrix.setSigma(0, *(b[lev][0]));
 
@@ -248,7 +248,7 @@ void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > 
         matrix.setScalars( 0.0, -1.0 );
 
 
-        for (int lev = 0; lev < nlev; lev++)
+        for (int lev = 0; lev <= finest_level; lev++)
         {
 
             // Copy the PPE coefficient into the proper data strutcure
@@ -300,7 +300,7 @@ void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > 
         solver.solve( GetVecOfPtrs(this_phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol );
         solver.getFluxes( amrex::GetVecOfPtrs(fluxes), MLMG::Location::CellCenter );
     }
-    for (int lev = 0; lev < nlev; lev++)
+    for (int lev = 0; lev <= finest_level; lev++)
        this_phi[lev] -> FillBoundary(geom[lev].periodicity());
 }
 
@@ -317,7 +317,7 @@ void incflo::incflo_compute_bcoeff_ppe()
 	int ydir = 2;
 	int zdir = 3;
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         if (nodal_pressure == 1)
         {

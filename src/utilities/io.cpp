@@ -16,27 +16,6 @@ namespace
 const std::string level_prefix{"Level_"};
 }
 
-// This function initializes the attributes vecVarsName,
-//                                          pltscalarVars, pltscaVarsName,
-//                                          chkscalarVars, chkscaVarsName.
-// If new variables need to be added to the output/checkpoint, simply add them
-// here and the IO routines will automatically take care of them.
-void incflo::InitIOData()
-{
-	// Define the list of vector variables on faces that need to be written
-	// to plotfile/checkfile.
-	vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
-
-	// Define the list of scalar variables at cell centers that need to be
-	// written to plotfile/checkfile. "volfrac" MUST always be last without any
-	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
-
-	chkscaVarsName = {"p", "ro", "eta"};
-	chkscalarVars = {&p, &ro, &eta};
-}
-
 void incflo::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
 {
 	bool is_checkpoint = 0;
@@ -73,8 +52,7 @@ void incflo::WriteHeader(
 		else
 			HeaderFile << "HyperCLaw-V1.1\n";
 
-		const int nlevels = finestLevel() + 1;
-		HeaderFile << nlevels << "\n";
+		HeaderFile << finest_level + 1 << "\n";
 
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
@@ -91,7 +69,7 @@ void incflo::WriteHeader(
 		HeaderFile << '\n';
 
 		// BoxArray
-		for(int lev = 0; lev < nlevels; ++lev)
+		for(int lev = 0; lev <= finest_level; ++lev)
 		{
 			boxArray(lev).writeOn(HeaderFile);
 			HeaderFile << '\n';
@@ -107,14 +85,13 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 
     amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
-	const int nlevels = finestLevel() + 1;
-	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, nlevels, true);
+	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
 	WriteCheckHeader(checkpointname, nstep, dt, time);
 
 	WriteJobInfo(checkpointname);
 
-	for(int lev = 0; lev < nlevels; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 
 		// This writes all three velocity components
@@ -250,7 +227,7 @@ void incflo::Restart(
      ***************************************************************************/
 
 	// Load the field data
-	for(int lev = 0, nlevs = finestLevel() + 1; lev < nlevs; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
@@ -274,17 +251,11 @@ void incflo::Restart(
 	}
 	amrex::Print() << "  Finished reading fluid data" << std::endl;
 
-	for(int lev = 0, nlevs = finestLevel() + 1; lev < nlevs; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
-        if(!nodal_pressure)
-        {
-            fill_mf_bc(lev, *p[lev]);
-            fill_mf_bc(lev, *p_o[lev]);
-        }
+        if(!nodal_pressure) fill_mf_bc(lev, *p[lev]);
 
 		fill_mf_bc(lev, *ro[lev]);
-		fill_mf_bc(lev, *ro_o[lev]);
-
 		fill_mf_bc(lev, *eta[lev]);
 
 		// Fill the bc's just in case
@@ -397,9 +368,9 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 
 	const int ngrow = 0;
 
-	Vector<std::unique_ptr<MultiFab>> mf(nlev);
+	Vector<std::unique_ptr<MultiFab>> mf(finest_level + 1);
 
-	for(int lev = 0; lev < nlev; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		// the "+1" here is for volfrac
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
@@ -481,9 +452,9 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 		}
 	}
 
-	Vector<const MultiFab*> mf2(nlev);
+	Vector<const MultiFab*> mf2(finest_level + 1);
 
-	for(int lev = 0; lev < nlev; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		mf2[lev] = mf[lev].get();
 	}
@@ -493,7 +464,7 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 	names.insert(names.end(), vecVarsName.begin(), vecVarsName.end());
 	names.insert(names.end(), pltscaVarsName.begin(), pltscaVarsName.end());
 
-    amrex::WriteMultiLevelPlotfile(plotfilename, nlev, mf2, names, Geom(), time, istep, refRatio());
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }

@@ -101,7 +101,7 @@ void incflo::make_eb_general()
     // Stores implicit function for the particle walls IF only
     std::unique_ptr<MultiFab> mf_impfunc_walls;
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         if(use_poly2)
         {

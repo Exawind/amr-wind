@@ -8,7 +8,7 @@ void incflo::incflo_compute_strainrate()
 {
     BL_PROFILE("incflo::incflo_compute_strainrate");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -73,7 +73,7 @@ void incflo::incflo_compute_vort()
 {
 	BL_PROFILE("incflo::incflo_compute_vort");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 

@@ -10,15 +10,15 @@ incflo::incflo()
 {
     // Read inputs file using ParmParse
     ReadParameters();
+    
+	// Initialize memory for data-array internals
+	ResizeArrays();
 }
 
 incflo::~incflo(){};
 
 void incflo::InitData()
 {
-	// Initialize memory for data-array internals
-	ResizeArrays();
-
 	// Initialize derived internals
 	Init();
 

@@ -153,8 +153,6 @@ void incflo::Init()
 {
 	InitIOData();
 
-	finest_level = nlev - 1;
-
     // Define coarse level BoxArray and DistributionMap
 	const BoxArray& ba = MakeBaseGrids();
 	DistributionMapping dm(ba, ParallelDescriptor::NProcs());
@@ -162,7 +160,9 @@ void incflo::Init()
     Real time = 0.0;
 	MakeNewLevelFromScratch(0, time, ba, dm);
 
-    for(int lev = 1; lev < nlev; lev++)
+    //TODO : get rid of this stuff and add call to AmrCore::InitFromScratch(time). 
+    finest_level = max_level;
+    for(int lev = 1; lev <= max_level; lev++)
     {
         // This refines the central half of the domain
         int ilo = ba[0].size()[0] / 2;
@@ -189,7 +189,7 @@ void incflo::Init()
     if(geom[0].isPeriodic(2)) cyc_z = 1;
 	incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         incflo_set_bc_type(lev);
     }
@@ -197,6 +197,27 @@ void incflo::Init()
 	// Create MAC projection object
 	mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
 	mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
+}
+
+// This function initializes the attributes vecVarsName,
+//                                          pltscalarVars, pltscaVarsName,
+//                                          chkscalarVars, chkscaVarsName.
+// If new variables need to be added to the output/checkpoint, simply add them
+// here and the IO routines will automatically take care of them.
+void incflo::InitIOData()
+{
+	// Define the list of vector variables on faces that need to be written
+	// to plotfile/checkfile.
+	vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
+
+	// Define the list of scalar variables at cell centers that need to be
+	// written to plotfile/checkfile. "volfrac" MUST always be last without any
+	// mf associated to it!!!
+	pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
+	pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
+
+	chkscaVarsName = {"p", "ro", "eta"};
+	chkscalarVars = {&p, &ro, &eta};
 }
 
 BoxArray incflo::MakeBaseGrids() const
@@ -291,7 +312,7 @@ void incflo::InitLevelData(Real time)
 	make_eb_geometry();
 
 	// Allocate the fluid data, NOTE: this depends on the ebfactories.
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
         AllocateArrays(lev);
 }
 
@@ -308,14 +329,14 @@ void incflo::PostInit(Real& dt,
 
 void incflo::MakeBCArrays()
 {
-	bc_ilo.resize(nlev);
-	bc_ihi.resize(nlev);
-	bc_jlo.resize(nlev);
-	bc_jhi.resize(nlev);
-	bc_klo.resize(nlev);
-	bc_khi.resize(nlev);
+	bc_ilo.resize(max_level + 1);
+	bc_ihi.resize(max_level + 1);
+	bc_jlo.resize(max_level + 1);
+	bc_jhi.resize(max_level + 1);
+	bc_klo.resize(max_level + 1);
+	bc_khi.resize(max_level + 1);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         // Define and allocate the integer MultiFab that is the outside adjacent cells of the
         // problem domain.
@@ -360,7 +381,7 @@ void incflo::incflo_init_fluid(int is_restarting,
     // Here we set bc values for p and u,v,w before the IC's are set
     incflo_set_bc0();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -402,7 +423,7 @@ void incflo::incflo_init_fluid(int is_restarting,
     //      over-wrote some of the bc values with ic values
     incflo_set_bc0();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -463,7 +484,7 @@ void incflo::incflo_set_bc_type(int lev)
 
 void incflo::incflo_set_bc0()
 {
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -497,7 +518,7 @@ void incflo::incflo_set_bc0()
     int extrap_dir_bcs = 0;
     incflo_set_velocity_bcs(time, extrap_dir_bcs);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
@@ -523,7 +544,7 @@ void incflo::incflo_set_p0()
 		press_per[delp_dir] = 0;
 	p0_periodicity = Periodicity(press_per);
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         Real dx = geom[lev].CellSize(0);
         Real dy = geom[lev].CellSize(1);
@@ -575,7 +596,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
     incflo_set_velocity_bcs(time, 0);
 
     // Copy vel into vel_o
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
@@ -583,9 +604,9 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 	//  Create temporary multifabs to hold conv and divtau
 	Vector<std::unique_ptr<MultiFab>> conv;
 	Vector<std::unique_ptr<MultiFab>> divtau;
-    conv.resize(nlev);
-    divtau.resize(nlev);
-    for(int lev = 0; lev < nlev; lev++)
+    conv.resize(finest_level + 1);
+    divtau.resize(finest_level + 1);
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
         divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
@@ -598,7 +619,7 @@ void incflo::incflo_initial_iterations(Real dt, Real stop_time, int steady_state
 
 		incflo_apply_predictor(conv, divtau, time, dt, proj_2);
 
-        for(int lev = 0; lev < nlev; lev++)
+        for(int lev = 0; lev <= finest_level; lev++)
         {
             // Replace vel by the original values
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
@@ -624,7 +645,7 @@ void incflo::incflo_initial_projection()
 	incflo_apply_projection(time, dummy_dt, proj_2);
 
 	// We initialize p and gp back to zero (p0 may still be still non-zero)
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         p[lev]->setVal(0.0);
         gp[lev]->setVal(0.0);
