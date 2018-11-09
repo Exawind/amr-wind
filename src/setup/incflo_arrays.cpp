@@ -371,9 +371,6 @@ void incflo::RegridArrays(int lev)
 // This is only done at the very start of the simulation. 
 void incflo::ResizeArrays()
 {
-    amrex::Print() << "max_level = " << max_level << std::endl; 
-    amrex::Print() << "Resizing arrays to size " << max_level + 1 << std::endl; 
-
 	p.resize(max_level + 1);
 	p0.resize(max_level + 1);
 

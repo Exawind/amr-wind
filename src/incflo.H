@@ -83,8 +83,6 @@ private:
 
 	void InitParams();
 
-	void Init();
-
 	void InitLevelData();
 
 	void PostInit(int restart_flag);
