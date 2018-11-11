@@ -40,7 +40,7 @@ void incflo::WriteHeader(
 		else
 			HeaderFile << "HyperCLaw-V1.1\n";
 
-		HeaderFile << finest_level + 1 << "\n";
+		HeaderFile << finest_level << "\n";
 
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
@@ -116,96 +116,90 @@ void incflo::Restart()
      *              allocate incflo memory (incflo::AllocateArrays)    *
      ***************************************************************************/
 
-	{
-		std::string File(restart_file + "/Header");
+    std::string File(restart_file + "/Header");
 
-		VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
+    VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
 
-		Vector<char> fileCharPtr;
-		ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
-		std::string fileCharPtrString(fileCharPtr.dataPtr());
-		std::istringstream is(fileCharPtrString, std::istringstream::in);
+    Vector<char> fileCharPtr;
+    ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
+    std::string fileCharPtrString(fileCharPtr.dataPtr());
+    std::istringstream is(fileCharPtrString, std::istringstream::in);
 
-		std::string line, word;
+    std::string line, word;
 
-		std::getline(is, line);
+    // read in title line
+    std::getline(is, line);
 
-		int nlevs;
-		int int_tmp;
-		Real real_tmp;
+    // read in finest_level
+    is >> finest_level;
+    GotoNextLine(is);
 
-		is >> nlevs;
-		GotoNextLine(is);
-		// finest_level = nlevs-1;
+    // read in step count
+    is >> nstep;
+    GotoNextLine(is);
 
-		// Time stepping controls
-		is >> int_tmp;
-		nstep = int_tmp;
-		GotoNextLine(is);
+    // read in time step
+    is >> dt;
+    GotoNextLine(is);
 
-		is >> real_tmp;
-		dt = real_tmp;
-		GotoNextLine(is);
+    // read in current time
+    is >> t;
+    GotoNextLine(is);
 
-		is >> real_tmp;
-		t = real_tmp;
-		GotoNextLine(is);
+    std::getline(is, line);
+    {
+        std::istringstream lis(line);
+        int i = 0;
+        while(lis >> word)
+        {
+            prob_lo[i++] = std::stod(word);
+        }
+    }
 
-		std::getline(is, line);
-		{
-			std::istringstream lis(line);
-			int i = 0;
-			while(lis >> word)
-			{
-				prob_lo[i++] = std::stod(word);
-			}
-		}
+    std::getline(is, line);
+    {
+        std::istringstream lis(line);
+        int i = 0;
+        while(lis >> word)
+        {
+            prob_hi[i++] = std::stod(word);
+        }
+    }
 
-		std::getline(is, line);
-		{
-			std::istringstream lis(line);
-			int i = 0;
-			while(lis >> word)
-			{
-				prob_hi[i++] = std::stod(word);
-			}
-		}
+    Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
 
-		Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
+    for(int lev = 0; lev <= finest_level; ++lev)
+    {
+        BoxArray orig_ba, ba;
+        orig_ba.readFrom(is);
+        GotoNextLine(is);
 
-		for(int lev = 0; lev < nlevs; ++lev)
-		{
-			BoxArray orig_ba, ba;
-			orig_ba.readFrom(is);
-			GotoNextLine(is);
+        SetBoxArray(lev, orig_ba);
+        DistributionMapping orig_dm{orig_ba, ParallelDescriptor::NProcs()};
+        SetDistributionMap(lev, orig_dm);
 
-			SetBoxArray(lev, orig_ba);
-			DistributionMapping orig_dm{orig_ba, ParallelDescriptor::NProcs()};
-			SetDistributionMap(lev, orig_dm);
+        Box orig_domain(orig_ba.minimalBox());
 
-			Box orig_domain(orig_ba.minimalBox());
+        // TODO: Check if this is necessary, or if we can just let ba = orig_ba
+        {
+        BoxList bl;
+        for(int nb = 0; nb < orig_ba.size(); nb++)
+        {
+            Box b(orig_ba[nb]);
+            IntVect lo(b.smallEnd());
+            IntVect hi(b.bigEnd());
+            bl.push_back(b);
+        }
+        ba.define(bl);
+        }
 
-            // TODO: Check if this is necessary, or if we can just let ba = orig_ba
-            {
-			BoxList bl;
-			for(int nb = 0; nb < orig_ba.size(); nb++)
-			{
-                Box b(orig_ba[nb]);
-                IntVect lo(b.smallEnd());
-                IntVect hi(b.bigEnd());
-                bl.push_back(b);
-			}
-			ba.define(bl);
-            }
+        // This needs is needed before initializing level MultiFabs: ebfactories should
+        // not change after the eb-dependent MultiFabs are allocated.
+        make_eb_geometry();
 
-			// This needs is needed before initializing level MultiFabs: ebfactories should
-			// not change after the eb-dependent MultiFabs are allocated.
-			make_eb_geometry();
-
-			// Allocate the fluid data, NOTE: this depends on the ebfactories.
-			AllocateArrays(lev);
-		}
-	}
+        // Allocate the fluid data, NOTE: this depends on the ebfactories.
+        AllocateArrays(lev);
+    }
 
 	/***************************************************************************
      * Load fluid data                                                         *

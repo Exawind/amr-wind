@@ -1,11 +1,11 @@
-# AMREX_HOME defines the directory in which we will find all the AMReX code
+# Path to AMReX directory
 AMREX_HOME ?= ../../../amrex
 
-# TOP defines the directory in which we will find Source, Exec, etc
+# Path to incflo directory
 TOP = ../..
 
 # Use OS-friendly compiler
-UNAME  := $(shell uname)
+UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
 	COMP = gnu
 else ifeq ($(UNAME), Darwin)
@@ -17,14 +17,14 @@ USE_MPI = TRUE
 USE_OMP = FALSE
 
 # Debug mode (much slower)
-DEBUG     = TRUE
+DEBUG = TRUE
 
 PROFILE       = FALSE
 TRACE_PROFILE = FALSE
 COMM_PROFILE  = FALSE
 TINY_PROFILE  = FALSE
 
-# physics
+# Physics
 DIM      = 3
 
 include ../Make.incflo
