@@ -4,11 +4,19 @@ AMREX_HOME ?= ../../../amrex
 # TOP defines the directory in which we will find Source, Exec, etc
 TOP = ../..
 
-# compilation options
-COMP    = gnu
+# Use OS-friendly compiler
+UNAME  := $(shell uname)
+ifeq ($(UNAME), Linux)
+	COMP = gnu
+else ifeq ($(UNAME), Darwin)
+	COMP = llvm
+endif
+
+# Parallelisation options
 USE_MPI = TRUE
 USE_OMP = FALSE
 
+# Debug mode (much slower)
 DEBUG     = TRUE
 
 PROFILE       = FALSE

@@ -53,11 +53,9 @@ include $(AMREX_HOME)/Src/LinearSolvers/MLMG/Make.package
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 
-ALGOIM_HOME ?= $(TOP)/extern/algoim
-BLITZ_HOME ?= $(TOP)/extern/blitz
+ALGOIM_HOME ?= $(TOP)/src/extern/algoim
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Extern/Algoim
 INCLUDE_LOCATIONS += $(ALGOIM_HOME)/src
-INCLUDE_LOCATIONS += $(BLITZ_HOME)
 VPATH_LOCATIONS   += $(AMREX_HOME)/Src/Extern/Algoim
 VPATH_LOCATIONS   += $(ALGOIM_HOME)
 
