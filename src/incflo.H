@@ -236,7 +236,7 @@ private:
                                MultiFab& divtau, 
                                Vector<std::unique_ptr<MultiFab>>& vel);
 
-	int steady_state_reached(int iter);
+	int steady_state_reached();
 
 	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,

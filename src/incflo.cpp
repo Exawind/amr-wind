@@ -4,13 +4,13 @@
 #include <incflo.H>
 
 // Constructor
-// Note that geometry on all levels has already been defined in the AmrCore constructor, 
-// which the incflo class inherits from. 
+// Note that geometry on all levels has already been defined in the AmrCore constructor,
+// which the incflo class inherits from.
 incflo::incflo()
 {
     // Read inputs file using ParmParse
     ReadParameters();
-    
+
 	// Initialize memory for data-array internals
 	ResizeArrays();
 }
@@ -43,9 +43,9 @@ void incflo::InitData()
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
-    
-    // Post-initialisation step 
-    // - Set BC types 
+
+    // Post-initialisation step
+    // - Set BC types
     // - Fill boundaries
     // - Create instance of MAC projection class
     // - Apply initial conditions
@@ -64,58 +64,48 @@ void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
 
-	int finish = 0;
-	bool do_not_evolve =
-		!steady_state && ((max_step == 0) || ((stop_time >= 0.) && (t > stop_time)) ||
-						  ((stop_time <= 0.) && (max_step <= 0)));
+    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (t > stop_time)) ||
+						  ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
 
-    if(!do_not_evolve)
+    while(!do_not_evolve)
     {
-        while(finish == 0)
+        // Start timing current time step
+        Real strt_step = ParallelDescriptor::second();
+
+        // Advance to time t + dt
+        Advance();
+
+        // Stop timing current time step
+        Real end_step = ParallelDescriptor::second() - strt_step;
+        ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
+        amrex::Print() << "Time per step " << end_step << std::endl;
+
+        // Increment time and step counters
+        t += dt;
+        nstep++;
+
+        // Write plot and checkpoint files
+        if((plot_int > 0) && (nstep % plot_int == 0))
         {
-            Real strt_step = ParallelDescriptor::second();
-
-            Advance();
-
-            Real end_step = ParallelDescriptor::second() - strt_step;
-            ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
-            amrex::Print() << "Time per step " << end_step << std::endl;
-
-            if(!steady_state)
-            {
-                t += dt;
-                nstep++;
-
-                if((plot_int > 0) && (nstep % plot_int == 0))
-                {
-                    incflo_compute_strainrate();
-                    incflo_compute_vort();
-                    WritePlotFile();
-                    last_plt = nstep;
-                }
-
-                if((check_int > 0) && (nstep % check_int == 0))
-                {
-                    WriteCheckPointFile();
-                    last_chk = nstep;
-                }
-            }
-
-            // Mechanism to terminate incflo normally.
-            do_not_evolve =
-                steady_state || (((stop_time >= 0.) && fabs(t - stop_time) < 0.01 * dt) ||
-                                 (max_step >= 0 && nstep >= max_step));
-            if(do_not_evolve)
-                finish = 1;
+            incflo_compute_strainrate();
+            incflo_compute_vort();
+            WritePlotFile();
+            last_plt = nstep;
         }
+        if((check_int > 0) && (nstep % check_int == 0))
+        {
+            WriteCheckPointFile();
+            last_chk = nstep;
+        }
+
+        // Mechanism to terminate incflo normally.
+        do_not_evolve = (steady_state && steady_state_reached()) ||
+                        (((stop_time > 0.) && (t >= stop_time)) ||
+                         (max_step >= 0 && nstep >= max_step));
     }
 
-	if(steady_state)
-		nstep = 1;
-
-	// Dump plotfile at the final time
-	if(check_int > 0 && nstep != last_chk)
-		WriteCheckPointFile();
+	// Output at the final time
+    if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
 	if(plot_int > 0 && nstep != last_plt)
     {
 		incflo_compute_strainrate();
@@ -192,7 +182,7 @@ void incflo::ClearLevel (int lev)
 // Set covered coarse cells to be the average of overlying fine cells
 // TODO: EB_average_down() does not seem to have support for nodal data -- check with pressure
 // TODO: Move somewhere else, for example setup/incflo_arrays.cpp
-// TODO: Possible to loop over variables like: "for mf in list of mfs"? 
+// TODO: Possible to loop over variables like: "for mf in list of mfs"?
 void incflo::AverageDown()
 {
     BL_PROFILE("incflo::AverageDown()");

@@ -17,22 +17,20 @@ void incflo::Advance()
 	BL_PROFILE_REGION_START("incflo::Advance");
 	BL_PROFILE("incflo::Advance");
 
-    if(verbose > 0)
-        amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+    if(verbose > 0) amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+
+    bool proj_2 = true;
 
     // Extrapolate boundary values for density and volume fraction
     for(int lev = 0; lev <= finest_level; lev++)
+    {
+        fill_mf_bc(lev, *ro[lev]);
         fill_mf_bc(lev, *eta[lev]);
+    }
    
     // Fill ghost nodes and reimpose boundary conditions
     incflo_set_velocity_bcs(t, 0);
     incflo_set_scalar_bcs();
-
-	// Start loop: if we are not seeking a steady state solution,
-	// the loop will execute only once
-	int keep_looping = 1;
-	int iter = 1;
-    bool proj_2 = true;
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector
@@ -47,69 +45,27 @@ void incflo::Advance()
         divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
     }
 
-	do
-	{
-        // Compute time step size
-        int initialisation = 0;
-        incflo_compute_dt(initialisation);
+    // Compute time step size
+    int initialisation = 0;
+    incflo_compute_dt(initialisation);
 
-        if(verbose > 0)
-        {
-            if(steady_state)
-            {
-                amrex::Print() << "\n   Iteration " << iter 
-                               << " with dt = " << dt 
-                               << "\n" << std::endl;
-            }
-            else
-            {
-                amrex::Print() << "\n   Step " << nstep + 1 
-                               << ": from old_time " << t 
-                               << " to new time " << t + dt 
-                               << " with dt = " << dt 
-                               << "\n" << std::endl;
-            }
-        }
+    if(verbose > 0)
+    {
+        amrex::Print() << "\nStep " << nstep + 1 
+                       << ": from old_time " << t 
+                       << " to new time " << t + dt 
+                       << " with dt = " << dt << ".\n" << std::endl;
+    }
 
-        // Backup velocity to old
-        for(int lev = 0; lev <= finest_level; lev++)
-            MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
+    // Backup velocity to old
+    for(int lev = 0; lev <= finest_level; lev++)
+        MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
 
-		// Predictor step
-        incflo_apply_predictor(conv_old, divtau_old, proj_2);
-        if(verbose > 1)
-        {
-            amrex::Print() << "\nAfter predictor step:\n";
-            for(int lev = 0; lev <= finest_level; lev++)
-                incflo_print_max_vel(lev);
+    // Predictor step
+    incflo_apply_predictor(conv_old, divtau_old, proj_2);
 
-            incflo_compute_divu(t + dt);
-            for(int lev = 0; lev <= finest_level; lev++)
-                amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
-        }
-
-		// Corrector step
-        incflo_apply_corrector(conv_old, divtau_old, proj_2);
-        if(verbose > 1)
-        {
-            amrex::Print() << "\nAfter corrector step:\n";
-            for(int lev = 0; lev <= finest_level; lev++)
-                incflo_print_max_vel(lev);
-
-            incflo_compute_divu(t + dt);
-            for(int lev = 0; lev <= finest_level; lev++)
-                amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
-        }
-
-		// Check whether to exit the loop or not
-		if(steady_state)
-			keep_looping = !steady_state_reached(iter);
-		else
-			keep_looping = 0;
-
-		// Update interations count
-		++iter;
-	} while(keep_looping);
+    // Corrector step
+    incflo_apply_corrector(conv_old, divtau_old, proj_2);
 
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }
@@ -301,6 +257,17 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 	incflo_apply_projection(new_time, dt, proj_2);
     
 	incflo_set_velocity_bcs(new_time, 0);
+
+    if(verbose > 1)
+    {
+        amrex::Print() << "\nAfter predictor step:\n";
+        for(int lev = 0; lev <= finest_level; lev++)
+            incflo_print_max_vel(lev);
+
+        incflo_compute_divu(t + dt);
+        for(int lev = 0; lev <= finest_level; lev++)
+            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
+    }
 }
 
 //
@@ -399,6 +366,17 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     
 	// Project velocity field
 	incflo_set_velocity_bcs(new_time, 0);
+
+    if(verbose > 1)
+    {
+        amrex::Print() << "\nAfter corrector step:\n";
+        for(int lev = 0; lev <= finest_level; lev++)
+            incflo_print_max_vel(lev);
+
+        incflo_compute_divu(t + dt);
+        for(int lev = 0; lev <= finest_level; lev++)
+            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
+    }
 }
 
 //
@@ -414,7 +392,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //      sum(abs( v^(n+1) - v^(n) )) / sum(abs( v^(n) )) < tol
 //      sum(abs( w^(n+1) - w^(n) )) / sum(abs( w^(n) )) < tol
 //
-int incflo::steady_state_reached(int iter)
+int incflo::steady_state_reached()
 {
     int condition1[finest_level + 1];
     int condition2[finest_level + 1];
@@ -463,7 +441,7 @@ int incflo::steady_state_reached(int iter)
 
 	// Always return negative to first access. This way
 	// initial zero velocity field do not test for false positive
-	if(iter == 1)
+	if(nstep < 2)
 		return 0;
 	else
 		return reached;
