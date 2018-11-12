@@ -69,6 +69,17 @@ void incflo::Evolve()
 
     while(!do_not_evolve)
     {
+        // TODO: Necessary for dynamic meshing
+        /* if (regrid_int > 0) 
+        {
+            // Make sure we don't regrid on max_level
+            for (int lev = 0; lev < max_level; ++lev)
+            {
+                // regrid is a member function of AmrCore
+                if (nstep % regrid_int == 0) regrid(lev, time);
+            }
+        }*/
+
         // Advance to time t + dt
         Advance();
 
