@@ -103,12 +103,14 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+	static void GotoNextLine(std::istream& is);
+
     void WriteHeader(const std::string& name, bool is_checkpoint) const;
 	void WriteJobInfo(const std::string& dir) const;
     void WriteCheckPointFile() const;
     void WritePlotFile() const;
 
-    void Restart();
+    void ReadCheckpointFile();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -203,12 +205,6 @@ private:
 
     void MakeBCArrays();
 
-	void ReMakeNewLevelFromScratch(int lev,
-								   const BoxArray& new_grids,
-								   const DistributionMapping& new_dmap);
-
-	static void GotoNextLine(std::istream& is);
-
 	// Projection-related methods
 	void solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								Vector<std::unique_ptr<MultiFab>>& phi,
@@ -256,10 +252,6 @@ private:
 	void incflo_extrap_pressure(int lev, std::unique_ptr<MultiFab>& p);
 
 	void incflo_print_max_vel(int lev);
-
-	// Make a level 0 grids covering the whole domain.  It does NOT install the new grids.
-	BoxArray MakeBaseGrids() const;
-	void ChopGrids(const Box& domain, BoxArray& ba, int target_size) const;
 
 	void incflo_set_bc_type(int lev);
 

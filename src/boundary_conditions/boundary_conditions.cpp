@@ -133,7 +133,7 @@ void incflo::fill_mf_bc(int lev, MultiFab& mf)
 	// Impose periodic bc's at domain boundaries and fine-fine copies in the interior
 	mf.FillBoundary(geom[lev].periodicity());
 
-// Fill all cell-centered arrays with first-order extrapolation at domain boundaries
+    // Fill all cell-centered arrays with first-order extrapolation at domain boundaries
 #ifdef _OPENMP
 #pragma omp parallel
 #endif

@@ -169,91 +169,6 @@ void incflo::InitIOData()
 	chkscalarVars = {&p, &ro, &eta};
 }
 
-BoxArray incflo::MakeBaseGrids() const
-{
-	BoxArray ba(geom[0].Domain());
-
-	ba.maxSize(max_grid_size[0]);
-
-	// We only call ChopGrids if dividing up the grid using max_grid_size didn't
-	//    create enough grids to have at least one grid per processor.
-	// This option is controlled by "refine_grid_layout" which defaults to true.
-
-    if(refine_grid_layout && ba.size() < ParallelDescriptor::NProcs())
-		ChopGrids(geom[0].Domain(), ba, ParallelDescriptor::NProcs());
-
-	if(ba == grids[0])
-		ba = grids[0]; // to avoid dupliates
-
-	amrex::Print() << "In MakeBaseGrids: BA HAS " << ba.size() << " GRIDS " << std::endl;
-	return ba;
-}
-
-void incflo::ChopGrids(const Box& domain, BoxArray& ba, int target_size) const
-{
-	if(ParallelDescriptor::IOProcessor())
-		amrex::Warning(
-			"Using max_grid_size only did not make enough grids for the number of processors");
-
-	// Here we hard-wire the maximum number of times we divide the boxes.
-	int max_div = 10;
-
-	// Here we hard-wire the minimum size in any one direction the boxes can be
-	int min_grid_size = 4;
-
-	IntVect chunk(domain.length(0), domain.length(1), domain.length(2));
-
-	int j;
-	for(int cnt = 1; cnt <= max_div; ++cnt)
-	{
-		if(chunk[0] >= chunk[1] && chunk[0] >= chunk[2])
-		{
-			j = 0;
-		}
-		else if(chunk[1] >= chunk[0] && chunk[1] >= chunk[2])
-		{
-			j = 1;
-		}
-		else if(chunk[2] >= chunk[0] && chunk[2] >= chunk[1])
-		{
-			j = 2;
-		}
-		chunk[j] /= 2;
-
-		if(chunk[j] >= min_grid_size)
-		{
-			ba.maxSize(chunk);
-		}
-		else
-		{
-			// chunk[j] was the biggest chunk -- if this is too small then we're done
-			if(ParallelDescriptor::IOProcessor())
-				amrex::Warning(
-					"ChopGrids was unable to make enough grids for the number of processors");
-			return;
-		}
-
-		// Test if we now have enough grids
-		if(ba.size() >= target_size)
-			return;
-	}
-}
-
-// Only used when restarting from checkpoint file
-// Might be deprecated after we implement RemakeLevel
-void incflo::ReMakeNewLevelFromScratch(int lev,
-                                       const BoxArray& new_grids,
-                                       const DistributionMapping& new_dmap)
-{
-	SetBoxArray(lev, new_grids);
-	SetDistributionMap(lev, new_dmap);
-
-    if(lev == 0) MakeBCArrays();
-
-	// We need to re-fill these arrays for the larger domain (after replication).
-	incflo_set_bc_type(lev);
-}
-
 void incflo::InitLevelData()
 {
 	// This needs is needed before initializing level MultiFabs: ebfactories should
@@ -269,47 +184,6 @@ void incflo::PostInit(int restart_flag)
 {
     // Initial fluid arrays: pressure, velocity, density, viscosity
     incflo_init_fluid(restart_flag);
-}
-
-void incflo::MakeBCArrays()
-{
-	bc_ilo.resize(max_level + 1);
-	bc_ihi.resize(max_level + 1);
-	bc_jlo.resize(max_level + 1);
-	bc_jhi.resize(max_level + 1);
-	bc_klo.resize(max_level + 1);
-	bc_khi.resize(max_level + 1);
-
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        // Define and allocate the integer MultiFab that is the outside adjacent cells of the
-        // problem domain.
-        Box domainx(geom[lev].Domain());
-        domainx.grow(1, nghost);
-        domainx.grow(2, nghost);
-        Box box_ilo = amrex::adjCellLo(domainx, 0, 1);
-        Box box_ihi = amrex::adjCellHi(domainx, 0, 1);
-
-        Box domainy(geom[lev].Domain());
-        domainy.grow(0, nghost);
-        domainy.grow(2, nghost);
-        Box box_jlo = amrex::adjCellLo(domainy, 1, 1);
-        Box box_jhi = amrex::adjCellHi(domainy, 1, 1);
-
-        Box domainz(geom[lev].Domain());
-        domainz.grow(0, nghost);
-        domainz.grow(1, nghost);
-        Box box_klo = amrex::adjCellLo(domainz, 2, 1);
-        Box box_khi = amrex::adjCellHi(domainz, 2, 1);
-
-        // Note that each of these is a single IArrayBox so every process has a copy of them
-        bc_ilo[lev].reset(new IArrayBox(box_ilo, 2));
-        bc_ihi[lev].reset(new IArrayBox(box_ihi, 2));
-        bc_jlo[lev].reset(new IArrayBox(box_jlo, 2));
-        bc_jhi[lev].reset(new IArrayBox(box_jhi, 2));
-        bc_klo[lev].reset(new IArrayBox(box_klo, 2));
-        bc_khi[lev].reset(new IArrayBox(box_khi, 2));
-    }
 }
 
 void incflo::incflo_init_fluid(int is_restarting)

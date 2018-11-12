@@ -418,3 +418,45 @@ void incflo::ResizeArrays()
 	// EB factory
 	ebfactory.resize(max_level + 1);
 }
+
+void incflo::MakeBCArrays()
+{
+	bc_ilo.resize(max_level + 1);
+	bc_ihi.resize(max_level + 1);
+	bc_jlo.resize(max_level + 1);
+	bc_jhi.resize(max_level + 1);
+	bc_klo.resize(max_level + 1);
+	bc_khi.resize(max_level + 1);
+
+    for(int lev = 0; lev <= max_level; lev++)
+    {
+        // Define and allocate the integer MultiFab that is the outside adjacent cells of the
+        // problem domain.
+        Box domainx(geom[lev].Domain());
+        domainx.grow(1, nghost);
+        domainx.grow(2, nghost);
+        Box box_ilo = amrex::adjCellLo(domainx, 0, 1);
+        Box box_ihi = amrex::adjCellHi(domainx, 0, 1);
+
+        Box domainy(geom[lev].Domain());
+        domainy.grow(0, nghost);
+        domainy.grow(2, nghost);
+        Box box_jlo = amrex::adjCellLo(domainy, 1, 1);
+        Box box_jhi = amrex::adjCellHi(domainy, 1, 1);
+
+        Box domainz(geom[lev].Domain());
+        domainz.grow(0, nghost);
+        domainz.grow(1, nghost);
+        Box box_klo = amrex::adjCellLo(domainz, 2, 1);
+        Box box_khi = amrex::adjCellHi(domainz, 2, 1);
+
+        // Note that each of these is a single IArrayBox so every process has a copy of them
+        bc_ilo[lev].reset(new IArrayBox(box_ilo, 2));
+        bc_ihi[lev].reset(new IArrayBox(box_ihi, 2));
+        bc_jlo[lev].reset(new IArrayBox(box_jlo, 2));
+        bc_jhi[lev].reset(new IArrayBox(box_jhi, 2));
+        bc_klo[lev].reset(new IArrayBox(box_klo, 2));
+        bc_khi[lev].reset(new IArrayBox(box_khi, 2));
+    }
+}
+

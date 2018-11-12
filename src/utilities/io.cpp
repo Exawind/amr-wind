@@ -102,11 +102,11 @@ void incflo::WriteCheckPointFile() const
 	}
 }
 
-void incflo::Restart()
+void incflo::ReadCheckpointFile()
 {
-	BL_PROFILE("incflo::Restart()");
+	BL_PROFILE("incflo::ReadCheckpointFile()");
 
-	amrex::Print() << "  Restarting from checkpoint " << restart_file << std::endl;
+	amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
 
 	Real prob_lo[BL_SPACEDIM];
 	Real prob_hi[BL_SPACEDIM];
@@ -127,25 +127,28 @@ void incflo::Restart()
 
     std::string line, word;
 
-    // read in title line
+    // Start reading from checkpoint file 
+    
+    // Title line
     std::getline(is, line);
 
-    // read in finest_level
+    // Finest level
     is >> finest_level;
     GotoNextLine(is);
 
-    // read in step count
+    // Step count
     is >> nstep;
     GotoNextLine(is);
 
-    // read in time step
+    // Time step size
     is >> dt;
     GotoNextLine(is);
 
-    // read in current time
+    // Current time
     is >> t;
     GotoNextLine(is);
 
+    // Low coordinates of domain bounding box
     std::getline(is, line);
     {
         std::istringstream lis(line);
@@ -156,6 +159,7 @@ void incflo::Restart()
         }
     }
 
+    // High coordinates of domain bounding box
     std::getline(is, line);
     {
         std::istringstream lis(line);
@@ -166,32 +170,24 @@ void incflo::Restart()
         }
     }
 
+    // Set up problem domain
     Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
 
     for(int lev = 0; lev <= finest_level; ++lev)
     {
-        BoxArray orig_ba, ba;
-        orig_ba.readFrom(is);
+        // read in level 'lev' BoxArray from Header
+        BoxArray ba;
+        ba.readFrom(is);
         GotoNextLine(is);
 
-        SetBoxArray(lev, orig_ba);
-        DistributionMapping orig_dm{orig_ba, ParallelDescriptor::NProcs()};
-        SetDistributionMap(lev, orig_dm);
+        // Create distribution mapping
+        DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-        Box orig_domain(orig_ba.minimalBox());
+        // Set BoxArray grids and DistributionMapping dmap in AmrMesh class
+        SetBoxArray(lev, ba);
+        SetDistributionMap(lev, dm);
 
-        // TODO: Check if this is necessary, or if we can just let ba = orig_ba
-        {
-        BoxList bl;
-        for(int nb = 0; nb < orig_ba.size(); nb++)
-        {
-            Box b(orig_ba[nb]);
-            IntVect lo(b.smallEnd());
-            IntVect hi(b.bigEnd());
-            bl.push_back(b);
-        }
-        ba.define(bl);
-        }
+        if(lev == 0) MakeBCArrays();
 
         // This needs is needed before initializing level MultiFabs: ebfactories should
         // not change after the eb-dependent MultiFabs are allocated.
@@ -210,35 +206,24 @@ void incflo::Restart()
 	{
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
-		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
+		VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
+        vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
 
 		MultiFab mf_gp;
-		VisMF::Read(mf_gp, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
-
-        vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
+		VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
         gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
+
 
 		// Read scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)
 		{
 			MultiFab mf;
-            VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, 
-                                                          level_prefix, chkscaVarsName[i]));
+            VisMF::Read(mf, MultiFabFileFullPrefix(lev, restart_file, 
+                                                   level_prefix, chkscaVarsName[i]));
             (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
 		}
 	}
 
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
-        if(!nodal_pressure) fill_mf_bc(lev, *p[lev]);
-
-		fill_mf_bc(lev, *ro[lev]);
-		fill_mf_bc(lev, *eta[lev]);
-
-		// Fill the bc's just in case
-		vel[lev]->FillBoundary(geom[lev].periodicity());
-		vel_o[lev]->FillBoundary(geom[lev].periodicity());
-	}
 	amrex::Print() << "Restart complete" << std::endl;
 }
 

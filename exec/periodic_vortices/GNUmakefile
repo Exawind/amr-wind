@@ -17,7 +17,7 @@ USE_MPI = TRUE
 USE_OMP = FALSE
 
 # Debug mode (much slower)
-DEBUG = TRUE
+DEBUG = FALSE
 
 PROFILE       = FALSE
 TRACE_PROFILE = FALSE
