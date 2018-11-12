@@ -178,10 +178,6 @@ void incflo::InitLevelData()
 
 	// Write out EB sruface
     if(write_eb_surface) WriteEBSurface();
-
-	// Allocate the fluid data, NOTE: this depends on the ebfactories.
-    for(int lev = 0; lev <= max_level; lev++)
-        AllocateArrays(lev);
 }
 
 void incflo::PostInit(int restart_flag)

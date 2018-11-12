@@ -1,7 +1,9 @@
 #include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
+#include <AMReX_MultiFabUtil.H>
 
 #include <incflo.H>
+#include <derive_F.H>
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
@@ -28,18 +30,18 @@ void incflo::InitData()
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-        // This is an AmrCore member function
-        InitFromScratch(t);
-
-        // Set covered coarse cells to be the average of overlying fine cells
-        AverageDown();
-
-		// NOTE: this also builds ebfactories
+		// Initialize level data: 
+        // - Make EB geometry
 		InitLevelData();
+
+        // This is an AmrCore member function
+        // - Set BA and DM 
+        // - Allocate arrays for level
+        InitFromScratch(t);
 	}
 	else
 	{
-		// NOTE: 1) this also builds ebfactories
+		// NOTE: this also builds ebfactories
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
@@ -50,6 +52,9 @@ void incflo::InitData()
     // - Create instance of MAC projection class
     // - Apply initial conditions
 	PostInit(restart_flag);
+
+    // Set covered coarse cells to be the average of overlying fine cells
+    AverageDown();
 
     // Plot initial distribution
     if(plot_int > 0)
@@ -126,8 +131,52 @@ void incflo::ErrorEst(int lev,
 {
     BL_PROFILE("incflo::ErrorEst()");
 
-    // Refine on cut cells
-    if (refine_cutcells) amrex::TagCutCells(tags, *ro[lev]);
+    amrex::Print() << "Tagging cells at level " << lev << std::endl; 
+
+    const int clearval = TagBox::CLEAR;
+    const int   tagval = TagBox::SET;
+
+    const Real* dx      = geom[lev].CellSize();
+    const Real* prob_lo = geom[lev].ProbLo();
+
+    Vector<int>  itags;
+
+    for (MFIter mfi(*ro[lev],true); mfi.isValid(); ++mfi)
+    {
+        const Box& tilebox  = mfi.tilebox();
+
+        TagBox&     tagfab  = tags[mfi];
+        
+        // We cannot pass tagfab to Fortran becuase it is BaseFab<char>.
+        // So we are going to get a temporary integer array.
+            // set itags initially to 'untagged' everywhere
+            // we define itags over the tilebox region
+        tagfab.get_itags(itags, tilebox);
+        
+            // data pointer and index space
+        int*        tptr    = itags.dataPtr();
+        const int*  tlo     = tilebox.loVect();
+        const int*  thi     = tilebox.hiVect();
+
+            // tag cells for refinement
+        state_error(tptr,  AMREX_ARLIM_3D(tlo), AMREX_ARLIM_3D(thi),
+            BL_TO_FORTRAN_3D((*ro[lev])[mfi]),
+            &tagval, &clearval, 
+            AMREX_ARLIM_3D(tilebox.loVect()), AMREX_ARLIM_3D(tilebox.hiVect()), 
+            AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
+        //
+        // Now update the tags in the TagBox in the tilebox region
+            // to be equal to itags
+        //
+        tagfab.tags_and_untags(itags, tilebox);
+    }
+    
+    /* TODO: This is what we want to refine on, but it gives segfault like this
+     * // Refine on cut cells
+    if (refine_cutcells) 
+    {
+        amrex::TagCutCells(tags, *ro[lev]);
+    }*/
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
@@ -143,6 +192,8 @@ void incflo::MakeNewLevelFromScratch(int lev,
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);
 
+	// Allocate the fluid data, NOTE: this depends on the ebfactories.
+    AllocateArrays(lev);
     if(lev == 0) MakeBCArrays();
 }
 
@@ -185,7 +236,6 @@ void incflo::ClearLevel (int lev)
 // Set covered coarse cells to be the average of overlying fine cells
 // TODO: EB_average_down() does not seem to have support for nodal data -- check with pressure
 // TODO: Move somewhere else, for example setup/incflo_arrays.cpp
-// TODO: Possible to loop over variables like: "for mf in list of mfs"?
 void incflo::AverageDown()
 {
     BL_PROFILE("incflo::AverageDown()");
@@ -201,31 +251,12 @@ void incflo::AverageDownTo(int crse_lev)
     BL_PROFILE("incflo::AverageDownTo()");
 
     IntVect rr = refRatio(crse_lev);
-    amrex::EB_average_down(*ro[crse_lev+1],          *ro[crse_lev],           0, 1, rr);
-    amrex::EB_average_down(*p0[crse_lev+1],          *p0[crse_lev],           0, 1, rr);
-    amrex::EB_average_down(*p[crse_lev+1],           *p[crse_lev],            0, 1, rr);
-    amrex::EB_average_down(*gp0[crse_lev+1],         *gp0[crse_lev],          0, 3, rr);
-    amrex::EB_average_down(*gp[crse_lev+1],          *gp[crse_lev],           0, 3, rr);
-    amrex::EB_average_down(*eta[crse_lev+1],         *eta[crse_lev],          0, 1, rr);
-    amrex::EB_average_down(*vel[crse_lev+1],         *vel[crse_lev],          0, 3, rr);
-    amrex::EB_average_down(*vel_o[crse_lev+1],       *vel_o[crse_lev],        0, 3, rr);
-    amrex::EB_average_down(*strainrate[crse_lev+1],  *strainrate[crse_lev],   0, 1, rr);
-    amrex::EB_average_down(*vort[crse_lev+1],        *vort[crse_lev],         0, 1, rr);
-    amrex::EB_average_down(*divu[crse_lev+1],        *divu[crse_lev],         0, 1, rr);
-    amrex::EB_average_down(*phi[crse_lev+1],         *phi[crse_lev],          0, 1, rr);
-    amrex::EB_average_down(*phi_diff[crse_lev+1],    *phi_diff[crse_lev],     0, 1, rr);
-    amrex::EB_average_down(*rhs_diff[crse_lev+1],    *rhs_diff[crse_lev],     0, 1, rr);
-    amrex::EB_average_down(*xslopes[crse_lev+1],     *xslopes[crse_lev],      0, 3, rr);
-    amrex::EB_average_down(*yslopes[crse_lev+1],     *yslopes[crse_lev],      0, 3, rr);
-    amrex::EB_average_down(*zslopes[crse_lev+1],     *zslopes[crse_lev],      0, 3, rr);
-    for (int i = 0; i < 3; i++)
-    {
-        amrex::EB_average_down(*bcoeff[crse_lev+1][i],      *bcoeff[crse_lev][i],      0, 1, rr);
-        amrex::EB_average_down(*bcoeff_diff[crse_lev+1][i], *bcoeff_diff[crse_lev][i], 0, 1, rr);
-    }
-    amrex::EB_average_down(*m_u_mac[crse_lev+1], *m_u_mac[crse_lev], 0, 3, rr);
-    amrex::EB_average_down(*m_v_mac[crse_lev+1], *m_v_mac[crse_lev], 0, 3, rr);
-    amrex::EB_average_down(*m_w_mac[crse_lev+1], *m_w_mac[crse_lev], 0, 3, rr);
+    amrex::average_down(*ro[crse_lev+1],    *ro[crse_lev],    0, 1, rr);
+    amrex::average_down(*p0[crse_lev+1],    *p0[crse_lev],    0, 1, rr);
+    amrex::average_down(*p[crse_lev+1],     *p[crse_lev],     0, 1, rr);
+    amrex::average_down(*gp0[crse_lev+1],   *gp0[crse_lev],   0, 3, rr);
+    amrex::average_down(*gp[crse_lev+1],    *gp[crse_lev],    0, 3, rr);
+    amrex::average_down(*vel[crse_lev+1],   *vel[crse_lev],   0, 3, rr);
 }
 
 //

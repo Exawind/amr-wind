@@ -415,12 +415,7 @@ void incflo::ResizeArrays()
 	for(int i = 0; i < max_level + 1; ++i)
 		bcoeff_diff[i].resize(3);
 
-	// EB factory
-	ebfactory.resize(max_level + 1);
-}
-
-void incflo::MakeBCArrays()
-{
+    // BCs
 	bc_ilo.resize(max_level + 1);
 	bc_ihi.resize(max_level + 1);
 	bc_jlo.resize(max_level + 1);
@@ -428,6 +423,12 @@ void incflo::MakeBCArrays()
 	bc_klo.resize(max_level + 1);
 	bc_khi.resize(max_level + 1);
 
+	// EB factory
+	ebfactory.resize(max_level + 1);
+}
+
+void incflo::MakeBCArrays()
+{
     for(int lev = 0; lev <= max_level; lev++)
     {
         // Define and allocate the integer MultiFab that is the outside adjacent cells of the
