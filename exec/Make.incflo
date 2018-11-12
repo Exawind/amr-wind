@@ -1,3 +1,20 @@
+# Path to AMReX directory and incflo directories
+# Note that these relative paths are based on 
+# specific problem directories (like exec/periodic_vortices)
+AMREX_HOME ?= ../../../amrex
+TOP = ../..
+
+# Use OS-friendly compiler
+UNAME := $(shell uname)
+ifeq ($(UNAME), Linux)
+	COMP = gnu
+else ifeq ($(UNAME), Darwin)
+	COMP = llvm
+endif
+
+# Always use 3 dimensions for incflo
+DIM = 3
+
 EBASE     ?= incflo
 
 USE_MG        = TRUE
