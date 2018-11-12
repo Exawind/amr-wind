@@ -14,8 +14,10 @@
 
 void incflo::Advance()
 {
-	BL_PROFILE_REGION_START("incflo::Advance");
 	BL_PROFILE("incflo::Advance");
+
+    // Start timing current time step
+    Real strt_step = ParallelDescriptor::second();
 
     if(verbose > 0) amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
 
@@ -66,6 +68,11 @@ void incflo::Advance()
 
     // Corrector step
     incflo_apply_corrector(conv_old, divtau_old, proj_2);
+
+    // Stop timing current time step
+    Real end_step = ParallelDescriptor::second() - strt_step;
+    ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
+    amrex::Print() << "Time per step " << end_step << std::endl;
 
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }

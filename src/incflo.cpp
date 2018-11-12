@@ -69,16 +69,8 @@ void incflo::Evolve()
 
     while(!do_not_evolve)
     {
-        // Start timing current time step
-        Real strt_step = ParallelDescriptor::second();
-
         // Advance to time t + dt
         Advance();
-
-        // Stop timing current time step
-        Real end_step = ParallelDescriptor::second() - strt_step;
-        ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
-        amrex::Print() << "Time per step " << end_step << std::endl;
 
         // Increment time and step counters
         t += dt;
