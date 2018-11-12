@@ -2,7 +2,6 @@
 #include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo.H>
-#include <boundary_conditions_F.H>
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor, 
@@ -27,11 +26,12 @@ void incflo::InitData()
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-        // These are AmrCore member functions
+        // This is an AmrCore member function
         InitFromScratch(t);
 
-        // TODO: Implement
-        // AverageDown();
+        // Set covered coarse cells to be the average of overlying fine cells
+        // TODO: implement
+        AverageDown();
 
 		// NOTE: this also builds ebfactories
 		InitLevelData();
@@ -39,45 +39,16 @@ void incflo::InitData()
 	else
 	{
 		// NOTE: 1) this also builds ebfactories
-        //       2) this can change the grids (during replication)
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
     
-    // Set BC-types (cyclic only at level 0)
-    int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-    if(geom[0].isPeriodic(0)) cyc_x = 1;
-    if(geom[0].isPeriodic(1)) cyc_y = 1;
-    if(geom[0].isPeriodic(2)) cyc_z = 1;
-    incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
-
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        incflo_set_bc_type(lev);
-    }
-
-    // Fill boundaries
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
-        if(!nodal_pressure) fill_mf_bc(lev, *p[lev]);
-		fill_mf_bc(lev, *ro[lev]);
-		fill_mf_bc(lev, *eta[lev]);
-
-		// Fill the bc's just in case
-		vel[lev]->FillBoundary(geom[lev].periodicity());
-		vel_o[lev]->FillBoundary(geom[lev].periodicity());
-	}
-
-    // TODO: Put this into PostInit or somethign
-    // Create MAC projection object
-    mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
-    mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
-
-    // Post-initialisation step (TODO: this is currrently just init_fluid)
+    // Post-initialisation step 
+    // - Set BC types 
+    // - Fill boundaries
+    // - Create instance of MAC projection class
+    // - Apply initial conditions
 	PostInit(restart_flag);
-
-	// Write out EB sruface
-    if(write_eb_surface) WriteEBSurface();
 }
 
 void incflo::Evolve()

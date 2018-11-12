@@ -193,6 +193,9 @@ void incflo::ReadCheckpointFile()
         // not change after the eb-dependent MultiFabs are allocated.
         make_eb_geometry();
 
+        // Write out EB sruface
+        if(write_eb_surface) WriteEBSurface();
+
         // Allocate the fluid data, NOTE: this depends on the ebfactories.
         AllocateArrays(lev);
     }

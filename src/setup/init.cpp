@@ -3,6 +3,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo.H>
+#include <boundary_conditions_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
 
@@ -175,6 +176,9 @@ void incflo::InitLevelData()
 	// not change after the eb-dependent MultiFabs are allocated.
 	make_eb_geometry();
 
+	// Write out EB sruface
+    if(write_eb_surface) WriteEBSurface();
+
 	// Allocate the fluid data, NOTE: this depends on the ebfactories.
     for(int lev = 0; lev <= max_level; lev++)
         AllocateArrays(lev);
@@ -182,6 +186,35 @@ void incflo::InitLevelData()
 
 void incflo::PostInit(int restart_flag)
 {
+    // Set BC-types (cyclic only at level 0)
+    int cyc_x = 0, cyc_y = 0, cyc_z = 0;
+    if(geom[0].isPeriodic(0)) cyc_x = 1;
+    if(geom[0].isPeriodic(1)) cyc_y = 1;
+    if(geom[0].isPeriodic(2)) cyc_z = 1;
+    incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
+
+    for(int lev = 0; lev <= max_level; lev++)
+    {
+        incflo_set_bc_type(lev);
+    }
+
+    // Fill boundaries
+	for(int lev = 0; lev <= finest_level; ++lev)
+	{
+        if(!nodal_pressure) fill_mf_bc(lev, *p[lev]);
+		fill_mf_bc(lev, *ro[lev]);
+		fill_mf_bc(lev, *eta[lev]);
+
+		// Fill the bc's just in case
+		vel[lev]->FillBoundary(geom[lev].periodicity());
+		vel_o[lev]->FillBoundary(geom[lev].periodicity());
+	}
+
+    // TODO: Put this into PostInit or somethign
+    // Create MAC projection object
+    mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
+    mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
+
     // Initial fluid arrays: pressure, velocity, density, viscosity
     incflo_init_fluid(restart_flag);
 }
