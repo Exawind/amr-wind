@@ -30,7 +30,6 @@ void incflo::InitData()
         InitFromScratch(t);
 
         // Set covered coarse cells to be the average of overlying fine cells
-        // TODO: implement
         AverageDown();
 
 		// NOTE: this also builds ebfactories
@@ -198,6 +197,43 @@ void incflo::ClearLevel (int lev)
 
     amrex::Print() << "ABORT: incflo::ClearLevel() not yet implemented. " << std::endl;
     amrex::Abort();
+}
+
+// Set covered coarse cells to be the average of overlying fine cells
+// TODO: EB_average_down() does not seem to have support for nodal data -- check with pressure
+// TODO: Move somewhere else, for example setup/incflo_arrays.cpp
+// TODO: Possible to loop over variables like: "for mf in list of mfs"? 
+void incflo::AverageDown()
+{
+    for (int lev = finest_level - 1; lev >= 0; --lev)
+    {
+        IntVect rr = refRatio(lev);
+        amrex::EB_average_down(*ro[lev+1],          *ro[lev],           0, 1, rr);
+        amrex::EB_average_down(*p0[lev+1],          *p0[lev],           0, 1, rr);
+        amrex::EB_average_down(*p[lev+1],           *p[lev],            0, 1, rr);
+        amrex::EB_average_down(*gp0[lev+1],         *gp0[lev],          0, 3, rr);
+        amrex::EB_average_down(*gp[lev+1],          *gp[lev],           0, 3, rr);
+        amrex::EB_average_down(*eta[lev+1],         *eta[lev],          0, 1, rr);
+        amrex::EB_average_down(*vel[lev+1],         *vel[lev],          0, 3, rr);
+        amrex::EB_average_down(*vel_o[lev+1],       *vel_o[lev],        0, 3, rr);
+        amrex::EB_average_down(*strainrate[lev+1],  *strainrate[lev],   0, 1, rr);
+        amrex::EB_average_down(*vort[lev+1],        *vort[lev],         0, 1, rr);
+        amrex::EB_average_down(*divu[lev+1],        *divu[lev],         0, 1, rr);
+        amrex::EB_average_down(*phi[lev+1],         *phi[lev],          0, 1, rr);
+        amrex::EB_average_down(*phi_diff[lev+1],    *phi_diff[lev],     0, 1, rr);
+        amrex::EB_average_down(*rhs_diff[lev+1],    *rhs_diff[lev],     0, 1, rr);
+        amrex::EB_average_down(*xslopes[lev+1],     *xslopes[lev],      0, 3, rr);
+        amrex::EB_average_down(*yslopes[lev+1],     *yslopes[lev],      0, 3, rr);
+        amrex::EB_average_down(*zslopes[lev+1],     *zslopes[lev],      0, 3, rr);
+        for (int i = 0; i < 3; i++)
+        {
+            amrex::EB_average_down(*bcoeff[lev+1][i],       *bcoeff[lev][i],        0, 1, rr);
+            amrex::EB_average_down(*bcoeff_diff[lev+1][i],  *bcoeff_diff[lev][i],   0, 1, rr);
+        }
+        amrex::EB_average_down(*m_u_mac[lev+1], *m_u_mac[lev], 0, 3, rr);
+        amrex::EB_average_down(*m_v_mac[lev+1], *m_v_mac[lev], 0, 3, rr);
+        amrex::EB_average_down(*m_w_mac[lev+1], *m_w_mac[lev], 0, 3, rr);
+    }
 }
 
 //
