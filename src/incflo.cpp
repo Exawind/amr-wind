@@ -19,6 +19,8 @@ incflo::~incflo(){};
 
 void incflo::InitData()
 {
+    BL_PROFILE("incflo::InitData()");
+
     // Initialize the IO variables (pltscalarVars etc)
 	InitIOData();
 
@@ -48,32 +50,21 @@ void incflo::InitData()
     // - Create instance of MAC projection class
     // - Apply initial conditions
 	PostInit(restart_flag);
+
+    // Plot initial distribution
+    if(plot_int > 0)
+    {
+		incflo_compute_strainrate();
+		incflo_compute_vort();
+		WritePlotFile();
+    }
 }
 
 void incflo::Evolve()
 {
-    BL_PROFILE("Evolve");
-    BL_PROFILE_REGION("Evolve");
+    BL_PROFILE("incflo::Evolve()");
 
 	int finish = 0;
-
-	// We automatically write checkpoint and plotfiles with the initial data
-	//    if plot_int > 0
-	if(restart_file.empty() && plot_int > 0)
-	{
-		incflo_compute_strainrate();
-		incflo_compute_vort();
-		WritePlotFile();
-	}
-
-	// We automatically write checkpoint files with the initial data
-	//    if check_int > 0
-	if(restart_file.empty() && check_int > 0)
-	{
-		WriteCheckPointFile();
-		last_chk = nstep;
-	}
-
 	bool do_not_evolve =
 		!steady_state && ((max_step == 0) || ((stop_time >= 0.) && (t > stop_time)) ||
 						  ((stop_time <= 0.) && (max_step <= 0)));
@@ -87,8 +78,7 @@ void incflo::Evolve()
             Advance();
 
             Real end_step = ParallelDescriptor::second() - strt_step;
-            ParallelDescriptor::ReduceRealMax(end_step,
-                                              ParallelDescriptor::IOProcessorNumber());
+            ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
             amrex::Print() << "Time per step " << end_step << std::endl;
 
             if(!steady_state)
@@ -205,35 +195,44 @@ void incflo::ClearLevel (int lev)
 // TODO: Possible to loop over variables like: "for mf in list of mfs"? 
 void incflo::AverageDown()
 {
+    BL_PROFILE("incflo::AverageDown()");
+
     for (int lev = finest_level - 1; lev >= 0; --lev)
     {
-        IntVect rr = refRatio(lev);
-        amrex::EB_average_down(*ro[lev+1],          *ro[lev],           0, 1, rr);
-        amrex::EB_average_down(*p0[lev+1],          *p0[lev],           0, 1, rr);
-        amrex::EB_average_down(*p[lev+1],           *p[lev],            0, 1, rr);
-        amrex::EB_average_down(*gp0[lev+1],         *gp0[lev],          0, 3, rr);
-        amrex::EB_average_down(*gp[lev+1],          *gp[lev],           0, 3, rr);
-        amrex::EB_average_down(*eta[lev+1],         *eta[lev],          0, 1, rr);
-        amrex::EB_average_down(*vel[lev+1],         *vel[lev],          0, 3, rr);
-        amrex::EB_average_down(*vel_o[lev+1],       *vel_o[lev],        0, 3, rr);
-        amrex::EB_average_down(*strainrate[lev+1],  *strainrate[lev],   0, 1, rr);
-        amrex::EB_average_down(*vort[lev+1],        *vort[lev],         0, 1, rr);
-        amrex::EB_average_down(*divu[lev+1],        *divu[lev],         0, 1, rr);
-        amrex::EB_average_down(*phi[lev+1],         *phi[lev],          0, 1, rr);
-        amrex::EB_average_down(*phi_diff[lev+1],    *phi_diff[lev],     0, 1, rr);
-        amrex::EB_average_down(*rhs_diff[lev+1],    *rhs_diff[lev],     0, 1, rr);
-        amrex::EB_average_down(*xslopes[lev+1],     *xslopes[lev],      0, 3, rr);
-        amrex::EB_average_down(*yslopes[lev+1],     *yslopes[lev],      0, 3, rr);
-        amrex::EB_average_down(*zslopes[lev+1],     *zslopes[lev],      0, 3, rr);
-        for (int i = 0; i < 3; i++)
-        {
-            amrex::EB_average_down(*bcoeff[lev+1][i],       *bcoeff[lev][i],        0, 1, rr);
-            amrex::EB_average_down(*bcoeff_diff[lev+1][i],  *bcoeff_diff[lev][i],   0, 1, rr);
-        }
-        amrex::EB_average_down(*m_u_mac[lev+1], *m_u_mac[lev], 0, 3, rr);
-        amrex::EB_average_down(*m_v_mac[lev+1], *m_v_mac[lev], 0, 3, rr);
-        amrex::EB_average_down(*m_w_mac[lev+1], *m_w_mac[lev], 0, 3, rr);
+        AverageDownTo(lev);
     }
+}
+
+void incflo::AverageDownTo(int crse_lev)
+{
+    BL_PROFILE("incflo::AverageDownTo()");
+
+    IntVect rr = refRatio(crse_lev);
+    amrex::EB_average_down(*ro[crse_lev+1],          *ro[crse_lev],           0, 1, rr);
+    amrex::EB_average_down(*p0[crse_lev+1],          *p0[crse_lev],           0, 1, rr);
+    amrex::EB_average_down(*p[crse_lev+1],           *p[crse_lev],            0, 1, rr);
+    amrex::EB_average_down(*gp0[crse_lev+1],         *gp0[crse_lev],          0, 3, rr);
+    amrex::EB_average_down(*gp[crse_lev+1],          *gp[crse_lev],           0, 3, rr);
+    amrex::EB_average_down(*eta[crse_lev+1],         *eta[crse_lev],          0, 1, rr);
+    amrex::EB_average_down(*vel[crse_lev+1],         *vel[crse_lev],          0, 3, rr);
+    amrex::EB_average_down(*vel_o[crse_lev+1],       *vel_o[crse_lev],        0, 3, rr);
+    amrex::EB_average_down(*strainrate[crse_lev+1],  *strainrate[crse_lev],   0, 1, rr);
+    amrex::EB_average_down(*vort[crse_lev+1],        *vort[crse_lev],         0, 1, rr);
+    amrex::EB_average_down(*divu[crse_lev+1],        *divu[crse_lev],         0, 1, rr);
+    amrex::EB_average_down(*phi[crse_lev+1],         *phi[crse_lev],          0, 1, rr);
+    amrex::EB_average_down(*phi_diff[crse_lev+1],    *phi_diff[crse_lev],     0, 1, rr);
+    amrex::EB_average_down(*rhs_diff[crse_lev+1],    *rhs_diff[crse_lev],     0, 1, rr);
+    amrex::EB_average_down(*xslopes[crse_lev+1],     *xslopes[crse_lev],      0, 3, rr);
+    amrex::EB_average_down(*yslopes[crse_lev+1],     *yslopes[crse_lev],      0, 3, rr);
+    amrex::EB_average_down(*zslopes[crse_lev+1],     *zslopes[crse_lev],      0, 3, rr);
+    for (int i = 0; i < 3; i++)
+    {
+        amrex::EB_average_down(*bcoeff[crse_lev+1][i],      *bcoeff[crse_lev][i],      0, 1, rr);
+        amrex::EB_average_down(*bcoeff_diff[crse_lev+1][i], *bcoeff_diff[crse_lev][i], 0, 1, rr);
+    }
+    amrex::EB_average_down(*m_u_mac[crse_lev+1], *m_u_mac[crse_lev], 0, 3, rr);
+    amrex::EB_average_down(*m_v_mac[crse_lev+1], *m_v_mac[crse_lev], 0, 3, rr);
+    amrex::EB_average_down(*m_w_mac[crse_lev+1], *m_w_mac[crse_lev], 0, 3, rr);
 }
 
 //

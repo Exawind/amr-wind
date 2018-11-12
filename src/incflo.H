@@ -201,6 +201,7 @@ private:
 	void FillPatch(int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 
 	void AverageDown();
+	void AverageDownTo(int crse_lev);
 
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
