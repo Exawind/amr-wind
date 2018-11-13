@@ -4,6 +4,17 @@
 #include <incflo.H>
 #include <derive_F.H>
 
+void incflo::update_derived_quantities()
+{
+    BL_PROFILE("incflo::update_derived_quantities()");
+
+    incflo_compute_divu(t);
+    incflo_compute_strainrate();
+    incflo_compute_viscosity();
+    incflo_compute_vort();
+    AverageDown();
+}
+
 void incflo::incflo_compute_strainrate()
 {
     BL_PROFILE("incflo::incflo_compute_strainrate");

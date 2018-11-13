@@ -159,15 +159,9 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    void update_derived_quantities();
 	void incflo_compute_strainrate();
 	void incflo_compute_vort();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Rheology
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
 	void incflo_compute_viscosity();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,10 +262,6 @@ private:
     void incflo_average_cc_to_fc (int lev, 
                                   const MultiFab& cc,
                                   Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
-
-    // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
-    // but will never change unless we use subcycling. 
-    Vector<int> istep = {1};
 
 	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
 	Vector<std::unique_ptr<IArrayBox>> bc_ihi;

@@ -53,15 +53,12 @@ void incflo::InitData()
     // - Apply initial conditions
 	PostInit(restart_flag);
 
-    // Set covered coarse cells to be the average of overlying fine cells
-    AverageDown();
-
     // Plot initial distribution
-    if(plot_int > 0)
+    if(plot_int > 0) 
     {
-		incflo_compute_strainrate();
-		incflo_compute_vort();
-		WritePlotFile();
+        update_derived_quantities();
+        WritePlotFile();
+        last_plt = 0;
     }
 }
 
@@ -95,8 +92,7 @@ void incflo::Evolve()
         // Write plot and checkpoint files
         if((plot_int > 0) && (nstep % plot_int == 0))
         {
-            incflo_compute_strainrate();
-            incflo_compute_vort();
+            update_derived_quantities();
             WritePlotFile();
             last_plt = nstep;
         }
@@ -114,11 +110,10 @@ void incflo::Evolve()
 
 	// Output at the final time
     if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
-	if(plot_int > 0 && nstep != last_plt)
+    if(plot_int > 0 && nstep != last_plt)
     {
-		incflo_compute_strainrate();
-        incflo_compute_vort();
-		WritePlotFile();
+        update_derived_quantities();
+        WritePlotFile();
     }
 }
 
@@ -130,8 +125,6 @@ void incflo::ErrorEst(int lev,
                       int ngrow)
 {
     BL_PROFILE("incflo::ErrorEst()");
-
-    amrex::Print() << "Tagging cells at level " << lev << std::endl; 
 
     const int clearval = TagBox::CLEAR;
     const int   tagval = TagBox::SET;
@@ -251,12 +244,15 @@ void incflo::AverageDownTo(int crse_lev)
     BL_PROFILE("incflo::AverageDownTo()");
 
     IntVect rr = refRatio(crse_lev);
-    amrex::average_down(*ro[crse_lev+1],    *ro[crse_lev],    0, 1, rr);
-    amrex::average_down(*p0[crse_lev+1],    *p0[crse_lev],    0, 1, rr);
-    amrex::average_down(*p[crse_lev+1],     *p[crse_lev],     0, 1, rr);
-    amrex::average_down(*gp0[crse_lev+1],   *gp0[crse_lev],   0, 3, rr);
-    amrex::average_down(*gp[crse_lev+1],    *gp[crse_lev],    0, 3, rr);
-    amrex::average_down(*vel[crse_lev+1],   *vel[crse_lev],   0, 3, rr);
+    amrex::EB_average_down(*ro[crse_lev+1],         *ro[crse_lev],         0, 1, rr);
+    amrex::EB_average_down(*p0[crse_lev+1],         *p0[crse_lev],         0, 1, rr);
+    amrex::EB_average_down(*p[crse_lev+1],          *p[crse_lev],          0, 1, rr);
+    amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
+    amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
+    amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
+    amrex::EB_average_down(*gp0[crse_lev+1],        *gp0[crse_lev],        0, 3, rr);
+    amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, 3, rr);
+    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, 3, rr);
 }
 
 //

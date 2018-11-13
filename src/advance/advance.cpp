@@ -224,8 +224,7 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     // Compute the explicit advective term R_u^n
     incflo_compute_ugradu_predictor(conv_old, vel_o);
 
-    incflo_compute_strainrate();
-    incflo_compute_viscosity();
+    update_derived_quantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -329,8 +328,7 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     // Compute the explicit advective term R_u^*
     incflo_compute_ugradu_corrector(conv, vel);
 
-    incflo_compute_strainrate();
-    incflo_compute_viscosity();
+    update_derived_quantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
