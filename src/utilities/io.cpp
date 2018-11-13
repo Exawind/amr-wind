@@ -429,6 +429,10 @@ void incflo::WritePlotFile() const
 	names.insert(names.end(), vecVarsName.begin(), vecVarsName.end());
 	names.insert(names.end(), pltscaVarsName.begin(), pltscaVarsName.end());
 
+    // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
+    // but will never change unless we use subcycling. 
+    // If we do use subcycling, this should be a incflo class member. 
+    Vector<int> istep(finest_level + 1, 1);
     amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), t, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
