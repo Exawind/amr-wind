@@ -68,9 +68,9 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         // Print info about predictor step
         if(verbose > 1)
         {
-            amrex::Print() << "At level " << lev << ", before projection: \n";
+            amrex::Print() << "At level " << lev << ", before projection:" << std::endl; 
             incflo_print_max_vel(lev);
-            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
+            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << std::endl;
         }
 
         // Here we add the (1/rho gradp) back to ustar (note the +dt)
@@ -87,7 +87,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
                 MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
-
+    
     incflo_set_velocity_bcs(time, 0);
 
     // Compute right hand side, AKA div(u)/dt
@@ -100,7 +100,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
         // Initialize phi to zero (any non-zero bc's are stored in p0)
         phi[lev]->setVal(0.);
     }
-
+    
     // Compute the PPE coefficients ( = 1 / rho )
     incflo_compute_bcoeff_ppe();
 
@@ -201,7 +201,7 @@ void incflo::solve_poisson_equation(Vector< Vector< std::unique_ptr<MultiFab> > 
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
-           matrix.setSigma(0, *(b[lev][0]));
+           matrix.setSigma(lev, *(b[lev][0]));
 
            // By this point we must have filled the Dirichlet values of phi stored in the ghost cells
            this_phi[lev]->setVal(0.);
@@ -334,19 +334,19 @@ void incflo::incflo_compute_bcoeff_ppe()
                 Box bx = mfi.tilebox();
 
                 // X direction
-                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
-                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
-                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-                                   &xdir );
+                compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
+                                  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][0]))[mfi]),
+                                  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                  &xdir );
 
                 // Y direction
-                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
-                                   BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
-                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-                                   &ydir );
+                compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
+                                  BL_TO_FORTRAN_ANYD((*(bcoeff[lev][1]))[mfi]),
+                                  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                  &ydir );
 
                 // Z direction
-                compute_bcoeff_nd (BL_TO_FORTRAN_BOX(bx),
+                compute_bcoeff_nd(BL_TO_FORTRAN_BOX(bx),
                                    BL_TO_FORTRAN_ANYD((*(bcoeff[lev][2]))[mfi]),
                                    BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
                                    &zdir );
