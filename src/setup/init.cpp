@@ -290,9 +290,18 @@ void incflo::incflo_init_fluid(int is_restarting)
         dt = -1.;
         incflo_set_scalar_bcs();
 
+        // TODO: this is just for debug
+        if(plot_int > 0)
+        {
+            update_derived_quantities();
+            nstep = 1337;
+            WritePlotFile();
+            nstep = 0;
+        }
+
         // Project the initial velocity field
         incflo_initial_projection();
-
+        
         // Iterate to compute the initial pressure
         incflo_initial_iterations();
     }
@@ -484,7 +493,7 @@ void incflo::incflo_initial_projection()
 	Real dummy_dt = 1.0;
 	incflo_apply_projection(t, dummy_dt, proj_2);
 
-	// We initialize p and gp back to zero (p0 may still be still non-zero)
+	// We set p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev <= finest_level; lev++)
     {
         p[lev]->setVal(0.0);
