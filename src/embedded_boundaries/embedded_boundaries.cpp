@@ -129,8 +129,6 @@ incflo::incflo_update_ebfactory (int a_lev)
     EBSupport m_eb_support_level = EBSupport::full;
     if ( ebfactory[a_lev].get() == nullptr )
     {
-        amrex::Print() << "Updating ebfactory" << std::endl;
-
         ebfactory[a_lev].reset(new EBFArrayBoxFactory( ebis_level, geom[a_lev], ba, dm,
                                                       {m_eb_basic_grow_cells,
                                                        m_eb_volume_grow_cells,
@@ -139,7 +137,6 @@ incflo::incflo_update_ebfactory (int a_lev)
     }
     else
     {
-        amrex::Print() << "Updating ebfactory" << std::endl;
 
         const DistributionMapping&  eb_dm = ebfactory[a_lev]->DistributionMap();
         const BoxArray&             eb_ba = ebfactory[a_lev]->boxArray();
