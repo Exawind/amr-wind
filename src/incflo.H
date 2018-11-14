@@ -122,6 +122,12 @@ private:
     void Advance();
     void incflo_compute_dt(int initialisation);
 	int steady_state_reached();
+	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
+								Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                                bool proj_2);
+	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
+								Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                                bool proj_2);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,6 +176,13 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void incflo_apply_projection(Real time, Real scaling_factor, bool proj_2);
+	void solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+								Vector<std::unique_ptr<MultiFab>>& phi,
+								Vector<std::unique_ptr<MultiFab>>& rhs,
+								Vector<std::unique_ptr<MultiFab>>& fluxes,
+                                int bc_lo[], int bc_hi[]);
+	void incflo_compute_bcoeff_ppe();
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -177,8 +190,9 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void incflo_set_scalar_bcs();
 	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
+	void incflo_set_bc_type(int lev);
+	void fill_mf_bc(int lev, MultiFab& mf);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -187,6 +201,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void check_for_nans(int lev);
+	void incflo_print_max_vel(int lev);
     Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
     Real incflo_norm1(MultiFab& mf, int lev, int comp);
     Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
@@ -213,54 +228,40 @@ private:
 
     void MakeBCArrays();
 
-	// Projection-related methods
-	void solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-								Vector<std::unique_ptr<MultiFab>>& phi,
-								Vector<std::unique_ptr<MultiFab>>& rhs,
-								Vector<std::unique_ptr<MultiFab>>& fluxes,
-                                int bc_lo[], int bc_hi[]);
-	void incflo_compute_bcoeff_ppe();
 
-	// Solve implicit diffusion
+
+
+    void incflo_compute_divtau(int lev, 
+                               MultiFab& divtau, 
+                               Vector<std::unique_ptr<MultiFab>>& vel);
+	void incflo_diffuse_velocity(Real time);
 	void solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								  Vector<std::unique_ptr<MultiFab>>& phi,
 								  Vector<std::unique_ptr<MultiFab>>& rhs,
                                   int bc_lo[], int bc_hi[]);
 	void incflo_compute_bcoeff_diff();
 
+
+
+
 	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel);
-    void incflo_compute_divtau(int lev, 
-                               MultiFab& divtau, 
-                               Vector<std::unique_ptr<MultiFab>>& vel);
-
-	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
-								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                bool proj_2);
-	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
-								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                bool proj_2);
-
-	void incflo_diffuse_velocity(Real time);
-
 	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
+
+
 	void incflo_compute_divu(Real time);
+
 
 	void incflo_extrap_pressure(int lev, std::unique_ptr<MultiFab>& p);
 
-	void incflo_print_max_vel(int lev);
 
-	void incflo_set_bc_type(int lev);
-
-	void fill_mf_bc(int lev, MultiFab& mf);
-
-    void incflo_average_cc_to_fc (int lev, 
-                                  const MultiFab& cc,
-                                  Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
+    void incflo_average_cc_to_fc(int lev, 
+                                 const MultiFab& cc,
+                                 Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

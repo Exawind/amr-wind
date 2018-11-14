@@ -23,16 +23,13 @@ void incflo::Advance()
 
     bool proj_2 = true;
 
-    // Extrapolate boundary values for density and volume fraction
+    // Fill ghost nodes and reimpose boundary conditions
     for(int lev = 0; lev <= finest_level; lev++)
     {
         fill_mf_bc(lev, *ro[lev]);
         fill_mf_bc(lev, *eta[lev]);
     }
-   
-    // Fill ghost nodes and reimpose boundary conditions
     incflo_set_velocity_bcs(t, 0);
-    incflo_set_scalar_bcs();
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector

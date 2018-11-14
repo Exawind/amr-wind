@@ -36,12 +36,12 @@ void incflo::incflo_compute_divu(Real time)
            //  when going into the projection
            for (MFIter mfi((*vel[lev]), true); mfi.isValid(); ++mfi)
            {
-                set_vec_bcs ( BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                              bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                              bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                              bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                              domain.loVect(), domain.hiVect(),
-                              &nghost);
+                set_vec_bcs (BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+                             bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
+                             bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
+                             bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
+                             domain.loVect(), domain.hiVect(),
+                             &nghost);
            }
 
            vel[lev]->FillBoundary (geom[lev].periodicity());

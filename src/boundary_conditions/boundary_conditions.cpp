@@ -42,35 +42,6 @@ incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fm
 }
 
 //
-// Set the BCs for all the variables EXCEPT pressure or velocity.
-//
-void incflo::incflo_set_scalar_bcs ()
-{
-    BL_PROFILE("incflo::incflo_set_scalar_bcs()");
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-        for (MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-        {
-            set_scalar_bcs((*ro[lev])[mfi].dataPtr(),
-                           BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                           bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                           bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                           bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                           domain.loVect(), domain.hiVect(),
-                           &nghost);
-        }
-        ro[lev]->FillBoundary(geom[lev].periodicity());
-        eta[lev]->FillBoundary(geom[lev].periodicity());
-    }
-}
-
-//
 // Set the BCs for velocity only
 //
 void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
@@ -79,8 +50,8 @@ void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        vel[lev]->FillBoundary(geom[lev].periodicity());
         Box domain(geom[lev].Domain());
+        vel[lev]->FillBoundary(geom[lev].periodicity());
 #ifdef _OPENMP
 #pragma omp parallel
 #endif

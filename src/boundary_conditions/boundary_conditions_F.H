@@ -45,17 +45,6 @@ extern "C"
        const int* bc_klo, const int* bc_khi,
        const int* domlo , const int* domhi,
        const int* nghost);
-
-    void set_scalar_bcs (
-       amrex::Real* ro, amrex::Real* eta,
-       const int* slo, const int* shi,
-       const int* bc_ilo, const int* bc_ihi,
-       const int* bc_jlo, const int* bc_jhi,
-       const int* bc_klo, const int* bc_khi,
-       const int* domlo , const int* domhi,
-       const int* nghost);
-
-   
 #ifdef __cplusplus
 }
 #endif

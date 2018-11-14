@@ -220,8 +220,10 @@ void incflo::InitFluid(int is_restarting)
         }
     }
 
+    // Set the background pressure and gradients in "DELP" cases
     incflo_set_p0();
 
+    // Fill boundaries
     for(int lev = 0; lev <= max_level; lev++)
     {
         Box domain(geom[lev].Domain());
@@ -240,11 +242,11 @@ void incflo::InitFluid(int is_restarting)
         }
     }
     
+    // Initial projection and pressure iterations
     if(!is_restarting)
     {
         // Here initialize dt to -1 so that we don't check new dt against a previous value
         dt = -1.;
-        incflo_set_scalar_bcs();
 
         // Project the initial velocity field
         incflo_initial_projection();
@@ -348,7 +350,11 @@ void incflo::incflo_initial_iterations()
 	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
     // Fill ghost cells
-    incflo_set_scalar_bcs();
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        fill_mf_bc(lev, *ro[lev]);
+        fill_mf_bc(lev, *eta[lev]);
+    }
     incflo_set_velocity_bcs(t, 0);
 
     // Copy vel into vel_o
