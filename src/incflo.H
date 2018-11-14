@@ -88,7 +88,7 @@ private:
 
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
 	void PostInit(int restart_flag);
-
+	void SetBCTypes();
     void InitFluid();
 	void SetBackgroundPressure();
 
@@ -191,7 +191,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
-	void incflo_set_bc_type(int lev);
 	void fill_mf_bc(int lev, MultiFab& mf);
 
     //////////////////////////////////////////////////////////////////////////////////////////////

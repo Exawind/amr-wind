@@ -151,19 +151,10 @@ void incflo::ReadParameters()
 
 void incflo::PostInit(int restart_flag)
 {
-    // Set BC-types (cyclic only at level 0)
-    int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-    if(geom[0].isPeriodic(0)) cyc_x = 1;
-    if(geom[0].isPeriodic(1)) cyc_y = 1;
-    if(geom[0].isPeriodic(2)) cyc_z = 1;
-    incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
+    // Set the BC types on domain boundary
+    SetBCTypes();
 
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        incflo_set_bc_type(lev);
-    }
-
-    // Create MAC projection object
+    // Reset MAC projection object
     mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
@@ -228,31 +219,32 @@ void incflo::InitFluid()
     }
 }
 
-void incflo::incflo_set_bc_type(int lev)
+void incflo::SetBCTypes()
 {
-	Real dx = geom[lev].CellSize(0);
-	Real dy = geom[lev].CellSize(1);
-	Real dz = geom[lev].CellSize(2);
-	Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
-	Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
-	Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
-	Box domain(geom[lev].Domain());
+    // Set periodicity only at level 0
+    int cyc_x = 0, cyc_y = 0, cyc_z = 0;
+    if(geom[0].isPeriodic(0)) cyc_x = 1;
+    if(geom[0].isPeriodic(1)) cyc_y = 1;
+    if(geom[0].isPeriodic(2)) cyc_z = 1;
+    incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
 
-	set_bc_type(bc_ilo[lev]->dataPtr(),
-				bc_ihi[lev]->dataPtr(),
-				bc_jlo[lev]->dataPtr(),
-				bc_jhi[lev]->dataPtr(),
-				bc_klo[lev]->dataPtr(),
-				bc_khi[lev]->dataPtr(),
-				domain.loVect(),
-				domain.hiVect(),
-				&dx,
-				&dy,
-				&dz,
-				&xlen,
-				&ylen,
-				&zlen,
-				&nghost);
+    // Set BC-types 
+    for(int lev = 0; lev <= max_level; lev++)
+    {
+        Real dx = geom[lev].CellSize(0);
+        Real dy = geom[lev].CellSize(1);
+        Real dz = geom[lev].CellSize(2);
+        Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
+        Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
+        Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
+        Box domain(geom[lev].Domain());
+
+        set_bc_type(bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
+                    bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
+                    bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
+                    domain.loVect(), domain.hiVect(),
+                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost);
+    }
 }
 
 void incflo::SetBackgroundPressure()
@@ -271,8 +263,7 @@ void incflo::SetBackgroundPressure()
 	// Here we set a separate periodicity flag for p0 because when we use
 	// pressure drop (delp) boundary conditions we fill all variables *except* p0
 	// periodically
-	if(delp_dir > -1)
-		press_per[delp_dir] = 0;
+    if(delp_dir > -1) press_per[delp_dir] = 0;
 	p0_periodicity = Periodicity(press_per);
 
     for(int lev = 0; lev <= max_level; lev++)
