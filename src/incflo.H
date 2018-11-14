@@ -91,6 +91,8 @@ private:
 	void SetBCTypes();
     void InitFluid();
 	void SetBackgroundPressure();
+	void InitialProjection();
+    void InitialIterations();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -213,9 +215,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void make_mg_bc(int mg_bc[]);
-
-	void incflo_initial_projection();
-    void incflo_initial_iterations();
 
 	void FillPatch(int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
 

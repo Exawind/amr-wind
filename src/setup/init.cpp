@@ -180,8 +180,8 @@ void incflo::PostInit(int restart_flag)
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
     {
-        incflo_initial_projection();
-        incflo_initial_iterations();
+        InitialProjection();
+        InitialIterations();
     }
 }
 
@@ -305,12 +305,14 @@ void incflo::SetBackgroundPressure()
 //
 // Perform initial pressure iterations
 //
-void incflo::incflo_initial_iterations()
+void incflo::InitialIterations()
 {
+    BL_PROFILE("incflo::InitialIterations()");
+
     int initialisation = 1;
 	ComputeDt(initialisation);
 
-	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
+    if(verbose) amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
@@ -340,7 +342,7 @@ void incflo::incflo_initial_iterations()
     bool proj_2 = false;
 	for(int iter = 0; iter < 3; ++iter)
 	{
-		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
+        if(verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
 		ApplyPredictor(conv, divtau, proj_2);
 
@@ -354,10 +356,12 @@ void incflo::incflo_initial_iterations()
 	}
 }
 
-void incflo::incflo_initial_projection()
+// Project velocity field to make sure initial velocity is divergence-free
+void incflo::InitialProjection()
 {
-    // Project velocity field to make sure initial velocity is divergence-free
-	amrex::Print() << "Initial projection:" << std::endl;
+    BL_PROFILE("incflo::InitialProjection()");
+
+    if(verbose) amrex::Print() << "Initial projection:" << std::endl;
 
 	// Need to add this call here so that the MACProjection internal arrays
 	//  are allocated so that the cell-centered projection can use the MAC
