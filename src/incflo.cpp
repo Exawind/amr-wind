@@ -1,6 +1,5 @@
 #include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <AMReX_MultiFabUtil.H>
 
 #include <incflo.H>
 #include <derive_F.H>
@@ -15,6 +14,11 @@ incflo::incflo()
 
 	// Initialize memory for data-array internals
 	ResizeArrays();
+
+    // This needs is needed before initializing level MultiFabs: ebfactories should
+    // not change after the eb-dependent MultiFabs are allocated.
+    make_eb_geometry();
+    if(write_eb_surface) WriteEBSurface();
 }
 
 incflo::~incflo(){};
@@ -23,25 +27,22 @@ void incflo::InitData()
 {
     BL_PROFILE("incflo::InitData()");
 
-    // Initialize the IO variables (pltscalarVars etc)
-	InitIOData();
-
 	// Either init from scratch or from the checkpoint file
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-		// Initialize level data: 
-        // - Make EB geometry
-		InitLevelData();
-
-        // This is an AmrCore member function
+        // This is an AmrCore member function. 
+        // Importantly, it calls MakeNewLevelFromScratch():
         // - Set BA and DM 
         // - Allocate arrays for level
         InitFromScratch(t);
 	}
 	else
 	{
-		// NOTE: this also builds ebfactories
+        // Read starting configuration from chk file. 
+        // Importantly, it calls MakeNewLevelFromScratch():
+        // - Set BA and DM 
+        // - Allocate arrays for level
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
@@ -51,10 +52,12 @@ void incflo::InitData()
     // - Fill boundaries
     // - Create instance of MAC projection class
     // - Apply initial conditions
+    // - Project initial velocity to make divergence free
+    // - Perform dummy iterations to find pressure distribution
 	PostInit(restart_flag);
 
     // Plot initial distribution
-    if(plot_int > 0) 
+    if(plot_int > 0 and !restart_flag) 
     {
         update_derived_quantities();
         WritePlotFile();
@@ -185,9 +188,10 @@ void incflo::MakeNewLevelFromScratch(int lev,
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);
 
+    if(lev == 0) MakeBCArrays();
+
 	// Allocate the fluid data, NOTE: this depends on the ebfactories.
     AllocateArrays(lev);
-    if(lev == 0) MakeBCArrays();
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and
@@ -227,7 +231,6 @@ void incflo::ClearLevel (int lev)
 }
 
 // Set covered coarse cells to be the average of overlying fine cells
-// TODO: EB_average_down() does not seem to have support for nodal data -- check with pressure
 // TODO: Move somewhere else, for example setup/incflo_arrays.cpp
 void incflo::AverageDown()
 {

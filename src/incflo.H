@@ -33,6 +33,7 @@ public:
     // Constructor
     //  - reads in parameters from inputs file
     //  - sizes multilevel arrays and datastructures
+    //  - makes EB geometry
 	incflo();
 	~incflo();
 
@@ -79,23 +80,18 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
     
+    // Read inputs file using ParmParse
     void ReadParameters();
 
-	void InitParams();
-
-	void InitLevelData();
-
-	void PostInit(int restart_flag);
-
+    // Resize arrays to fit (up to) max_level + 1 AMR levels
 	void ResizeArrays();
 
-    void incflo_init_fluid(int is_restarting);
+    // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
+	void PostInit(int restart_flag);
 
+    void incflo_init_fluid(int is_restarting);
 	void incflo_set_bc0();
 	void incflo_set_p0();
-
-	void InitIOData();
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -103,13 +99,19 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	static void GotoNextLine(std::istream& is);
-
+    // Write header, which is the same for plot and checkpoint files 
     void WriteHeader(const std::string& name, bool is_checkpoint) const;
+
+    // Write job info (compilers, #processors, git hash etc etc)
 	void WriteJobInfo(const std::string& dir) const;
+
+    // Write checkpoint file to restart from 
     void WriteCheckPointFile() const;
+
+    // Write plot file for visualisation of results
     void WritePlotFile() const;
 
+    // Read checkpoint file and restart simulation from it
     void ReadCheckpointFile();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,6 +121,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Advance();
+    void incflo_compute_dt(int initialisation);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -127,19 +130,15 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void make_eb_geometry();
+    void incflo_update_ebfactory(int a_lev);
 
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
-
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
 
     std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, 
                                                                     std::string field_prefix);
 
-	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>>
-	make_wall(int dir, // direction (long edge) of wall
-			  Real position,
-			  Real height,
-			  Real width);
+	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
 
 	void WriteEBSurface();
 
@@ -183,6 +182,18 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
+    // Diagnostics
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void check_for_nans(int lev);
+    Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
+    Real incflo_norm1(MultiFab& mf, int lev, int comp);
+    Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
+	Real incflo_norm0(MultiFab& mf, int lev, int comp);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
     // Not yet classified
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,19 +219,14 @@ private:
 								Vector<std::unique_ptr<MultiFab>>& rhs,
 								Vector<std::unique_ptr<MultiFab>>& fluxes,
                                 int bc_lo[], int bc_hi[]);
+	void incflo_compute_bcoeff_ppe();
 
 	// Solve implicit diffusion
 	void solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 								  Vector<std::unique_ptr<MultiFab>>& phi,
 								  Vector<std::unique_ptr<MultiFab>>& rhs,
                                   int bc_lo[], int bc_hi[]);
-
-	void incflo_compute_bcoeff_ppe();
 	void incflo_compute_bcoeff_diff();
-
-	void check_for_nans(int lev);
-
-    void incflo_compute_dt(int initialisation);
 
 	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
 										 Vector<std::unique_ptr<MultiFab>>& vel);
@@ -254,14 +260,15 @@ private:
 
 	void fill_mf_bc(int lev, MultiFab& mf);
 
-    Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
-    Real incflo_norm1(MultiFab& mf, int lev, int comp);
-    Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
-	Real incflo_norm0(MultiFab& mf, int lev, int comp);
-
     void incflo_average_cc_to_fc (int lev, 
                                   const MultiFab& cc,
                                   Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: MultiFabs and IArrayBoxes existing on each level
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
 	Vector<std::unique_ptr<IArrayBox>> bc_ihi;
@@ -269,67 +276,63 @@ private:
 	Vector<std::unique_ptr<IArrayBox>> bc_jhi;
 	Vector<std::unique_ptr<IArrayBox>> bc_klo;
 	Vector<std::unique_ptr<IArrayBox>> bc_khi;
-
 	Vector<std::unique_ptr<iMultiFab>> flag;
-
-	// Gas pressure fraction
 	Vector<std::unique_ptr<MultiFab>> p;
-
-	// Gas density
 	Vector<std::unique_ptr<MultiFab>> ro;
-
-	// Gas velocity
 	Vector<std::unique_ptr<MultiFab>> vel;
 	Vector<std::unique_ptr<MultiFab>> vel_o;
-
-	// Base state pressure
 	Vector<std::unique_ptr<MultiFab>> p0;
-
-	// Pressure gradients
 	Vector<std::unique_ptr<MultiFab>> gp;
 	Vector<std::unique_ptr<MultiFab>> gp0;
-
-	// Molecular viscosity
 	Vector<std::unique_ptr<MultiFab>> eta;
-
-	// Strain-rate magnitude
 	Vector<std::unique_ptr<MultiFab>> strainrate;
-
-    // Vorticity
 	Vector<std::unique_ptr<MultiFab>> vort;
-
-	// These are multi-component multifabs
 	Vector<std::unique_ptr<MultiFab>> xslopes;
 	Vector<std::unique_ptr<MultiFab>> yslopes;
 	Vector<std::unique_ptr<MultiFab>> zslopes;
-
-	// div (u)
 	Vector<std::unique_ptr<MultiFab>> divu;
-
-	// RHS for implicit diffusion solve
 	Vector<std::unique_ptr<MultiFab>> rhs_diff;
-
-	// Solution for implicit diffusion solve
 	Vector<std::unique_ptr<MultiFab>> phi_diff;
-
-	//
 	Vector<std::unique_ptr<MultiFab>> fp;
-
-	// Coefficients b of div(b*grad(p))
-	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff;
-
-	// Coefficients b in implicit diffusion solve
-	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff_diff;
-
-	// Pressure increment
 	Vector<std::unique_ptr<MultiFab>> phi;
-
-	// MAC velocity
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;
+	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff;
+	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff_diff;
 
-	// MAC projection object
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: I/O
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    int plot_int = -1;
+    int last_plt = -1;
+    std::string plot_file{"plt"};
+
+    int check_int = -1;
+    int last_chk = -1;
+    std::string check_file{"chk"};
+    std::string restart_file{""};
+
+	// Vector variables to simplify IO -- the vectors are the same for plt/chk
+	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
+	Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
+
+    // Scalar variables at cell centers that need to be written to plotfile/checkfile. 
+    // "volfrac" MUST always be last without any mf associated to it!
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
+    Vector<std::string> pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
+	Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
+	Vector<std::string> chkscaVarsName = {"p", "ro", "eta"};
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: unassigned
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
 	std::unique_ptr<MacProjection> mac_projection;
 
     // What solver to use as the bottom solver in the MLMG solves.
@@ -374,17 +377,10 @@ private:
 
 	Periodicity p0_periodicity;
 
-	//
-	// Here we set the number of ghost nodes of the field arrays.
-	// Since this is  a class attribute, it will be propagated to
-	// all the member functions.
-	//
-	// DO NOT USE  A LOCAL VARIABLE WITH THE SAME NAME
-	//
-
-	// These values are required when fluid sees EB -- for now
+	// Number of ghost nodes for field arrays.
 	const int nghost = 5;
 
+	// These values are required when fluid sees EB -- for now
 	const int m_eb_basic_grow_cells = nghost;
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
@@ -392,16 +388,7 @@ private:
     int nodal_pressure = 1;
 	int explicit_diffusion = 1;
 	int refine_cutcells = 1;
-
-	// Variables to simplify IO -- the vectors are the same for plt/chk
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
-	Vector<std::string> vecVarsName;
-
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars;
-	Vector<std::string> pltscaVarsName;
-
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> pltscalarVars;
-	Vector<std::string> chkscaVarsName;
+    int regrid_int = -1;
 
     // Declare and initialise variables
     Real stop_time = -1.0;
@@ -409,29 +396,12 @@ private:
     bool steady_state = false;
 	Real steady_state_tol = 1.0e-5;
 
-    int check_int = -1;
-    int last_chk = -1;
-    std::string check_file{"chk"};
-    std::string restart_file{""};
-
-    int plot_int = -1;
-    int last_plt = -1;
-    std::string plot_file{"plt"};
-    bool write_eb_surface = false;
-
-    int regrid_int = -1;
-
-	/****************************************************************************
-     *                                                                          *
-     * EB Data                                                                  *
-     *                                                                          *
-     ****************************************************************************/
 
 	const EB2::Level* eb_level_fluid;
+    bool write_eb_surface = false;
 
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
-    void incflo_update_ebfactory(int a_lev);
 };
 
 #endif

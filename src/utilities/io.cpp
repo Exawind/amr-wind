@@ -11,9 +11,12 @@
 
 #include <incflo.H>
 
-namespace
+namespace { const std::string level_prefix{"Level_"}; }
+
+void GotoNextLine(std::istream& is)
 {
-const std::string level_prefix{"Level_"};
+	constexpr std::streamsize bl_ignore_max{100000};
+	is.ignore(bl_ignore_max, '\n');
 }
 
 void incflo::WriteHeader(
@@ -183,21 +186,7 @@ void incflo::ReadCheckpointFile()
         // Create distribution mapping
         DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-        // Set BoxArray grids and DistributionMapping dmap in AmrMesh class
-        SetBoxArray(lev, ba);
-        SetDistributionMap(lev, dm);
-
-        if(lev == 0) MakeBCArrays();
-
-        // This needs is needed before initializing level MultiFabs: ebfactories should
-        // not change after the eb-dependent MultiFabs are allocated.
-        make_eb_geometry();
-
-        // Write out EB sruface
-        if(write_eb_surface) WriteEBSurface();
-
-        // Allocate the fluid data, NOTE: this depends on the ebfactories.
-        AllocateArrays(lev);
+        MakeNewLevelFromScratch(lev, t, ba, dm);
     }
 
 	/***************************************************************************
@@ -228,12 +217,6 @@ void incflo::ReadCheckpointFile()
 	}
 
 	amrex::Print() << "Restart complete" << std::endl;
-}
-
-void incflo::GotoNextLine(std::istream& is)
-{
-	constexpr std::streamsize bl_ignore_max{100000};
-	is.ignore(bl_ignore_max, '\n');
 }
 
 void incflo::WriteJobInfo(const std::string& path) const

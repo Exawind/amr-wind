@@ -149,37 +149,6 @@ void incflo::ReadParameters()
 	}
 }
 
-// This function initializes the attributes vecVarsName,
-//                                          pltscalarVars, pltscaVarsName,
-//                                          chkscalarVars, chkscaVarsName.
-// If new variables need to be added to the output/checkpoint, simply add them
-// here and the IO routines will automatically take care of them.
-void incflo::InitIOData()
-{
-	// Define the list of vector variables on faces that need to be written
-	// to plotfile/checkfile.
-	vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
-
-	// Define the list of scalar variables at cell centers that need to be
-	// written to plotfile/checkfile. "volfrac" MUST always be last without any
-	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
-
-	chkscaVarsName = {"p", "ro", "eta"};
-	chkscalarVars = {&p, &ro, &eta};
-}
-
-void incflo::InitLevelData()
-{
-	// This needs is needed before initializing level MultiFabs: ebfactories should
-	// not change after the eb-dependent MultiFabs are allocated.
-	make_eb_geometry();
-
-	// Write out EB sruface
-    if(write_eb_surface) WriteEBSurface();
-}
-
 void incflo::PostInit(int restart_flag)
 {
     // Set BC-types (cyclic only at level 0)
@@ -283,21 +252,12 @@ void incflo::incflo_init_fluid(int is_restarting)
                 incflo_extrap_pressure(lev, p[lev]);
         }
     }
-
+    
     if(!is_restarting)
     {
         // Here initialize dt to -1 so that we don't check new dt against a previous value
         dt = -1.;
         incflo_set_scalar_bcs();
-
-        // TODO: this is just for debug
-        if(plot_int > 0)
-        {
-            update_derived_quantities();
-            nstep = 1337;
-            WritePlotFile();
-            nstep = 0;
-        }
 
         // Project the initial velocity field
         incflo_initial_projection();
