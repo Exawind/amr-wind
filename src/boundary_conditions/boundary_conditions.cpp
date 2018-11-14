@@ -15,6 +15,7 @@
 void
 incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icomp, int ncomp)
 {
+    /*
     if (lev == 0)
     {
         Vector<MultiFab*> smf;
@@ -37,6 +38,7 @@ incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fm
                                    cphysbc, fphysbc, refRatio(lev-1),
                                    mapper, bcs);
     }
+    */
 }
 
 //
