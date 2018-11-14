@@ -30,17 +30,6 @@ extern "C"
             const int* ng
         );
     
-    void set_bc0
-        (
-            const int* slo, const int* shi,
-            amrex::Real* ro, amrex::Real* eta, 
-            const int* bc_ilo, const int* bc_ihi,
-            const int* bc_jlo, const int* bc_jhi,
-            const int* bc_klo, const int* bc_khi,
-            const int* domlo , const int* domhi,
-            const int* ng, const int* nodal_pressure
-        );
-    
     void init_fluid
         (
             const int* slo, const int* shi,
@@ -52,13 +41,6 @@ extern "C"
             amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
             amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength
-        );
-    
-    void init_fluid_restart
-        (
-            const int* slo, const int* shi,
-            const int*  lo, const int*  hi,
-            amrex::Real* eta
         );
     
     void set_p0

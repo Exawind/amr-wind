@@ -181,17 +181,14 @@ void incflo::PostInit(int restart_flag)
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    incflo_init_fluid(restart_flag);
+    InitFluid(restart_flag);
 }
 
-void incflo::incflo_init_fluid(int is_restarting)
+void incflo::InitFluid(int is_restarting)
 {
 	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
 	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
 	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
-
-    // Here we set bc values for p and u,v,w before the IC's are set
-    incflo_set_bc0();
 
     for(int lev = 0; lev <= max_level; lev++)
     {
@@ -208,13 +205,7 @@ void incflo::incflo_init_fluid(int is_restarting)
             const Box& bx = mfi.validbox();
             const Box& sbx = (*ro[lev])[mfi].box();
 
-            if(is_restarting)
-            {
-                init_fluid_restart(sbx.loVect(), sbx.hiVect(),
-                                   bx.loVect(), bx.hiVect(),
-                                   (*eta[lev])[mfi].dataPtr());
-            }
-            else
+            if(!is_restarting)
             {
                 init_fluid(sbx.loVect(), sbx.hiVect(),
                            bx.loVect(), bx.hiVect(),
@@ -230,10 +221,6 @@ void incflo::incflo_init_fluid(int is_restarting)
     }
 
     incflo_set_p0();
-
-    // Here we re-set the bc values for p and u,v,w just in case init_fluid
-    //      over-wrote some of the bc values with ic values
-    incflo_set_bc0();
 
     for(int lev = 0; lev <= max_level; lev++)
     {
@@ -292,47 +279,6 @@ void incflo::incflo_set_bc_type(int lev)
 				&ylen,
 				&zlen,
 				&nghost);
-}
-
-void incflo::incflo_set_bc0()
-{
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        Box domain(geom[lev].Domain());
-
-        // Don't tile this -- at least for now
-        for(MFIter mfi(*ro[lev]); mfi.isValid(); ++mfi)
-        {
-            const Box& sbx = (*ro[lev])[mfi].box();
-
-            set_bc0(sbx.loVect(),
-                    sbx.hiVect(),
-                    (*ro[lev])[mfi].dataPtr(),
-                    (*eta[lev])[mfi].dataPtr(),
-                    bc_ilo[lev]->dataPtr(),
-                    bc_ihi[lev]->dataPtr(),
-                    bc_jlo[lev]->dataPtr(),
-                    bc_jhi[lev]->dataPtr(),
-                    bc_klo[lev]->dataPtr(),
-                    bc_khi[lev]->dataPtr(),
-                    domain.loVect(),
-                    domain.hiVect(),
-                    &nghost, &nodal_pressure);
-        }
-
-        if(!nodal_pressure)
-            fill_mf_bc(lev, *p[lev]);
-        fill_mf_bc(lev, *ro[lev]);
-    }
-
-    // Put velocity Dirichlet bc's on faces
-    int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(t, extrap_dir_bcs);
-
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        vel[lev]->FillBoundary(geom[lev].periodicity());
-    }
 }
 
 void incflo::incflo_set_p0()

@@ -89,8 +89,7 @@ private:
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
 	void PostInit(int restart_flag);
 
-    void incflo_init_fluid(int is_restarting);
-	void incflo_set_bc0();
+    void InitFluid(int is_restarting);
 	void incflo_set_p0();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,22 +121,23 @@ private:
 
     void Advance();
     void incflo_compute_dt(int initialisation);
+	int steady_state_reached();
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Embedded Boundaries
+    // TODO: How much of this really needs to be member functions of incflo? 
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    
 	void make_eb_geometry();
     void incflo_update_ebfactory(int a_lev);
 
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
-
-    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, 
-                                                                    std::string field_prefix);
-
+    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
 	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
 
 	void WriteEBSurface();
@@ -235,8 +235,6 @@ private:
     void incflo_compute_divtau(int lev, 
                                MultiFab& divtau, 
                                Vector<std::unique_ptr<MultiFab>>& vel);
-
-	int steady_state_reached();
 
 	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 								Vector<std::unique_ptr<MultiFab>>& divtau_old,
