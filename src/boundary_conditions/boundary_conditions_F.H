@@ -24,13 +24,6 @@ extern "C"
                           const int* domlo , const int* domhi,
                           const int* ng, const int* extrap_dir_bcs);
 
-    void set_vec_bcs(amrex::Real* vec, const int* ulo, const int* uhi, 
-                                const int* bct_ilo, const int* bct_ihi, 
-                                const int* bct_jlo, const int* bct_jhi, 
-                                const int* bct_klo, const int* bct_khi,
-                                const int* domlo, const int* domhi, 
-                                const int* ng);
-
     void fill_bc0(amrex::Real* s, const int* slo, const int* shi,
                   const int* bc_ilo, const int* bc_ihi,
                   const int* bc_jlo, const int* bc_jhi,

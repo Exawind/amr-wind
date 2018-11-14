@@ -24,29 +24,6 @@ void incflo::incflo_compute_divu(Real time)
         int extrap_dir_bcs = 0;
         incflo_set_velocity_bcs (time, extrap_dir_bcs);
 
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-            Box domain(geom[lev].Domain());
-            vel[lev]->FillBoundary (geom[lev].periodicity());     
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-           // Extrapolate Dirichlet values to ghost cells -- but do it differently in that 
-           //  no-slip walls are treated exactly like slip walls -- this is only relevant
-           //  when going into the projection
-           for (MFIter mfi((*vel[lev]), true); mfi.isValid(); ++mfi)
-           {
-                set_vec_bcs (BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                             bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                             bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                             bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                             domain.loVect(), domain.hiVect(),
-                             &nghost);
-           }
-
-           vel[lev]->FillBoundary (geom[lev].periodicity());
-       }
-
         // Define the operator in order to compute the multi-level divergence
         //
         //        (del dot b sigma grad)) phi
