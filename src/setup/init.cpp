@@ -190,23 +190,23 @@ void incflo::InitFluid(int is_restarting)
 	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
 	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
 
-    for(int lev = 0; lev <= max_level; lev++)
+    if(!is_restarting)
     {
-        Box domain(geom[lev].Domain());
-
-        Real dx = geom[lev].CellSize(0);
-        Real dy = geom[lev].CellSize(1);
-        Real dz = geom[lev].CellSize(2);
-
-        // We deliberately don't tile this loop since we will be looping
-        //    over bc's on faces and it makes more sense to do this one grid at a time
-        for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
+        for(int lev = 0; lev <= max_level; lev++)
         {
-            const Box& bx = mfi.validbox();
-            const Box& sbx = (*ro[lev])[mfi].box();
+            Box domain(geom[lev].Domain());
 
-            if(!is_restarting)
+            Real dx = geom[lev].CellSize(0);
+            Real dy = geom[lev].CellSize(1);
+            Real dz = geom[lev].CellSize(2);
+
+            // We deliberately don't tile this loop since we will be looping
+            //    over bc's on faces and it makes more sense to do this one grid at a time
+            for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
             {
+                const Box& bx = mfi.validbox();
+                const Box& sbx = (*ro[lev])[mfi].box();
+
                 init_fluid(sbx.loVect(), sbx.hiVect(),
                            bx.loVect(), bx.hiVect(),
                            domain.loVect(), domain.hiVect(),
@@ -242,16 +242,11 @@ void incflo::InitFluid(int is_restarting)
         }
     }
     
-    // Initial projection and pressure iterations
+    // Project the initial velocity field to make it divergence free
+    // Perform initial iterations to find pressure distribution
     if(!is_restarting)
     {
-        // Here initialize dt to -1 so that we don't check new dt against a previous value
-        dt = -1.;
-
-        // Project the initial velocity field
         incflo_initial_projection();
-        
-        // Iterate to compute the initial pressure
         incflo_initial_iterations();
     }
 }
@@ -345,7 +340,7 @@ void incflo::incflo_set_p0()
 void incflo::incflo_initial_iterations()
 {
     int initialisation = 1;
-	incflo_compute_dt(initialisation);
+	ComputeDt(initialisation);
 
 	amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
@@ -379,7 +374,7 @@ void incflo::incflo_initial_iterations()
 	{
 		amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		incflo_apply_predictor(conv, divtau, proj_2);
+		ApplyPredictor(conv, divtau, proj_2);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {

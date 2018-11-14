@@ -94,6 +94,23 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
+    // Simulate!
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void Advance();
+    void ComputeDt(int initialisation);
+	bool SteadyStateReached();
+	void ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
+						Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                        bool proj_2);
+	void ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
+						Vector<std::unique_ptr<MultiFab>>& divtau_old,
+                        bool proj_2);
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
     // Input / Output
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,23 +129,6 @@ private:
 
     // Read checkpoint file and restart simulation from it
     void ReadCheckpointFile();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Simulate!
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void Advance();
-    void incflo_compute_dt(int initialisation);
-	int steady_state_reached();
-	void incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
-								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                bool proj_2);
-	void incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
-								Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                                bool proj_2);
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

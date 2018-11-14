@@ -46,7 +46,7 @@ void incflo::Advance()
 
     // Compute time step size
     int initialisation = 0;
-    incflo_compute_dt(initialisation);
+    ComputeDt(initialisation);
 
     if(verbose > 0)
     {
@@ -61,10 +61,10 @@ void incflo::Advance()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
 
     // Predictor step
-    incflo_apply_predictor(conv_old, divtau_old, proj_2);
+    ApplyPredictor(conv_old, divtau_old, proj_2);
 
     // Corrector step
-    incflo_apply_corrector(conv_old, divtau_old, proj_2);
+    ApplyCorrector(conv_old, divtau_old, proj_2);
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
@@ -91,8 +91,10 @@ void incflo::Advance()
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::incflo_compute_dt(int initialisation)
+void incflo::ComputeDt(int initialisation)
 {
+	BL_PROFILE("incflo::ComputeDt");
+
 	// DT is always computed even for fixed dt, so we can
 	// issue a warning if fixed dt does not satisfy CFL condition.
 	Real dt_new = dt;
@@ -209,11 +211,11 @@ void incflo::incflo_compute_dt(int initialisation)
 //
 //     p = phi
 //
-void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
+void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
                                     bool proj_2)
 {
-	BL_PROFILE("incflo::incflo_apply_predictor");
+	BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new ime value for things computed on the "*" state
     Real new_time = t + dt; 
@@ -303,11 +305,11 @@ void incflo::incflo_apply_predictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 //     p = phi
 //
-void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
+void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old, 
                                     bool proj_2)
 {
-	BL_PROFILE("incflo::incflo_apply_corrector");
+	BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = t + dt; 
@@ -394,8 +396,10 @@ void incflo::incflo_apply_corrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //      sum(abs( v^(n+1) - v^(n) )) / sum(abs( v^(n) )) < tol
 //      sum(abs( w^(n+1) - w^(n) )) / sum(abs( w^(n) )) < tol
 //
-int incflo::steady_state_reached()
+bool incflo::SteadyStateReached()
 {
+    BL_PROFILE("incflo::SteadyStateReached()");
+
     int condition1[finest_level + 1];
     int condition2[finest_level + 1];
 
@@ -435,7 +439,7 @@ int incflo::steady_state_reached()
         }
     }
 
-    int reached = 1;
+    bool reached = true;
     for(int lev = 0; lev <= finest_level; lev++)
     {
         reached = reached && (condition1[lev] || condition2[lev]);
@@ -443,8 +447,6 @@ int incflo::steady_state_reached()
 
 	// Always return negative to first access. This way
 	// initial zero velocity field do not test for false positive
-	if(nstep < 2)
-		return 0;
-	else
-		return reached;
+    if(nstep < 2) return false;
+    else return reached;
 }

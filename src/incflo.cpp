@@ -106,7 +106,7 @@ void incflo::Evolve()
         }
 
         // Mechanism to terminate incflo normally.
-        do_not_evolve = (steady_state && steady_state_reached()) ||
+        do_not_evolve = (steady_state && SteadyStateReached()) ||
                         (((stop_time > 0.) && (t >= stop_time - 1.e-6 * dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
