@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   1.2         # Max (simulated) time to evolve
-max_step                =   0           # Max number of time steps
+max_step                =   100         # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -16,7 +16,7 @@ incflo.cfl              =   0.7         # CFL factor
 #.......................................#
 amr.plot_int            =   1           # Steps between plot files
 amr.check_int           =   100         # Steps between checkpoint files
-amr.restart             =   ""          # Checkpoint to restart from 
+amr.restart             =   "" #"chk00075"  # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -29,7 +29,7 @@ incflo.mu               =   0.0002      # Dynamic viscosity coefficient
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              =   32  32  8   # Grid cells at coarsest AMRlevel
-amr.max_level           =   1           # Max AMR level in hierarchy 
+amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -48,7 +48,7 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   2           # incflo_level
+incflo.verbose          =   1           # incflo_level
 mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

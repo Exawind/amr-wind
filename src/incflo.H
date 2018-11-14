@@ -89,8 +89,8 @@ private:
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
 	void PostInit(int restart_flag);
 
-    void InitFluid(int is_restarting);
-	void incflo_set_p0();
+    void InitFluid();
+	void SetBackgroundPressure();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

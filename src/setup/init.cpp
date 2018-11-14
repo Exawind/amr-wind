@@ -163,91 +163,68 @@ void incflo::PostInit(int restart_flag)
         incflo_set_bc_type(lev);
     }
 
-    // Fill boundaries
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
-        if(!nodal_pressure) fill_mf_bc(lev, *p[lev]);
-		fill_mf_bc(lev, *ro[lev]);
-		fill_mf_bc(lev, *eta[lev]);
-
-		// Fill the bc's just in case
-		vel[lev]->FillBoundary(geom[lev].periodicity());
-		vel_o[lev]->FillBoundary(geom[lev].periodicity());
-	}
-
-    // TODO: Put this into PostInit or somethign
     // Create MAC projection object
     mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    InitFluid(restart_flag);
+    if(!restart_flag) InitFluid();
+
+    // Set the background pressure and gradients in "DELP" cases
+    SetBackgroundPressure();
+
+    // Fill boundaries
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        if(!nodal_pressure)
+        {
+            incflo_extrap_pressure(lev, p[lev]);
+            incflo_extrap_pressure(lev, p0[lev]);
+        }
+        fill_mf_bc(lev, *ro[lev]);
+        fill_mf_bc(lev, *eta[lev]);
+        vel[lev]->FillBoundary(geom[lev].periodicity());
+    }
+    // Project the initial velocity field to make it divergence free
+    // Perform initial iterations to find pressure distribution
+    if(!restart_flag)
+    {
+        incflo_initial_projection();
+        incflo_initial_iterations();
+    }
 }
 
-void incflo::InitFluid(int is_restarting)
+void incflo::InitFluid()
 {
 	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
 	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
 	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
 
-    if(!is_restarting)
-    {
-        for(int lev = 0; lev <= max_level; lev++)
-        {
-            Box domain(geom[lev].Domain());
-
-            Real dx = geom[lev].CellSize(0);
-            Real dy = geom[lev].CellSize(1);
-            Real dz = geom[lev].CellSize(2);
-
-            // We deliberately don't tile this loop since we will be looping
-            //    over bc's on faces and it makes more sense to do this one grid at a time
-            for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
-            {
-                const Box& bx = mfi.validbox();
-                const Box& sbx = (*ro[lev])[mfi].box();
-
-                init_fluid(sbx.loVect(), sbx.hiVect(),
-                           bx.loVect(), bx.hiVect(),
-                           domain.loVect(), domain.hiVect(),
-                           (*ro[lev])[mfi].dataPtr(),
-                           (*p[lev])[mfi].dataPtr(),
-                           (*vel[lev])[mfi].dataPtr(),
-                           (*eta[lev])[mfi].dataPtr(),
-                           &dx, &dy, &dz,
-                           &xlen, &ylen, &zlen);
-            }
-        }
-    }
-
-    // Set the background pressure and gradients in "DELP" cases
-    incflo_set_p0();
-
-    // Fill boundaries
     for(int lev = 0; lev <= max_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
-        if(!nodal_pressure)
-            incflo_extrap_pressure(lev, p0[lev]);
+        Real dx = geom[lev].CellSize(0);
+        Real dy = geom[lev].CellSize(1);
+        Real dz = geom[lev].CellSize(2);
 
-        fill_mf_bc(lev, *ro[lev]);
-        vel[lev]->FillBoundary(geom[lev].periodicity());
-        fill_mf_bc(lev, *eta[lev]);
-
-        if(is_restarting)
+        // We deliberately don't tile this loop since we will be looping
+        //    over bc's on faces and it makes more sense to do this one grid at a time
+        for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
         {
-            if(!nodal_pressure)
-                incflo_extrap_pressure(lev, p[lev]);
+            const Box& bx = mfi.validbox();
+            const Box& sbx = (*ro[lev])[mfi].box();
+
+            init_fluid(sbx.loVect(), sbx.hiVect(),
+                       bx.loVect(), bx.hiVect(),
+                       domain.loVect(), domain.hiVect(),
+                       (*ro[lev])[mfi].dataPtr(),
+                       (*p[lev])[mfi].dataPtr(),
+                       (*vel[lev])[mfi].dataPtr(),
+                       (*eta[lev])[mfi].dataPtr(),
+                       &dx, &dy, &dz,
+                       &xlen, &ylen, &zlen);
         }
-    }
-    
-    // Project the initial velocity field to make it divergence free
-    // Perform initial iterations to find pressure distribution
-    if(!is_restarting)
-    {
-        incflo_initial_projection();
-        incflo_initial_iterations();
     }
 }
 
@@ -278,7 +255,7 @@ void incflo::incflo_set_bc_type(int lev)
 				&nghost);
 }
 
-void incflo::incflo_set_p0()
+void incflo::SetBackgroundPressure()
 {
 	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
 	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
