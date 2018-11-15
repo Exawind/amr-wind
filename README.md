@@ -2,10 +2,8 @@
 
 | File      | Description                                         |
 | ----------| --------------------------------------------------- |
-| doc       | Documentation                                       |
 | exec      | Run directory for executables                       |
 | src       | C++/Fortran source files                            |
-| tools     | CMake configuration files                           |
 
 
 # Using incflo
