@@ -30,9 +30,6 @@ build/
 .build/
 .vscode/
 
-# Documentation Lint
-doc/Doxyfile
-
 # Tex Lint
 doc/UsersGuide/*.aux
 doc/UsersGuide/*.dvi
