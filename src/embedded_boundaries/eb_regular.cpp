@@ -1,11 +1,9 @@
 #include <AMReX_EB2.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
-
-#include <eb_if.H>
-
 #include <AMReX_EB_levelset.H>
 
+#include <eb_if.H>
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 

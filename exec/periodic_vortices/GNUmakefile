@@ -2,7 +2,7 @@
 USE_MPI = TRUE
 USE_OMP = FALSE
 
-# Debug mode (much slower)
+# Debug mode?
 DEBUG = FALSE
 
 # Profiling

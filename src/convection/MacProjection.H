@@ -85,6 +85,7 @@ private:
 
 	int m_mg_verbose = 0;
 	amrex::Real m_mg_rtol = 1.0e-11;
+	amrex::Real m_mg_atol = 0.0;
 
 	void read_inputs();
 

@@ -66,7 +66,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // Print info about predictor step
-        if(verbose > 1)
+        if(incflo_verbose > 1)
         {
             amrex::Print() << "At level " << lev << ", before projection:" << std::endl; 
             incflo_print_max_vel(lev);
@@ -121,7 +121,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // NOTE: THE SIGN OF DT (scaling_factor) IS CORRECT HERE
-        if(verbose > 1)
+        if(incflo_verbose > 1)
             amrex::Print() << "Multiplying fluxes at level " << lev
                             << " by dt " << scaling_factor << std::endl;
 
@@ -157,7 +157,7 @@ void incflo::incflo_apply_projection(Real time, Real scaling_factor, bool proj_2
     incflo_compute_divu(time);
 
     // Print info about predictor step
-    if(verbose > 1)
+    if(incflo_verbose > 1)
     {
         for(int lev = 0; lev <= finest_level; lev++)
         {

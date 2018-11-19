@@ -116,7 +116,8 @@ void incflo::ReadCheckpointFile()
 
 	/***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
-     *              allocate incflo memory (incflo::AllocateArrays)    *
+     *              allocate incflo memory (incflo::AllocateArrays)            *
+     *              (by calling MakeNewLevelFromScratch)
      ***************************************************************************/
 
     std::string File(restart_file + "/Header");
@@ -204,7 +205,6 @@ void incflo::ReadCheckpointFile()
 		MultiFab mf_gp;
 		VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
         gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
-
 
 		// Read scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)

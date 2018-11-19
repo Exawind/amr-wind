@@ -18,7 +18,7 @@ incflo::incflo()
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     make_eb_geometry();
-    if(write_eb_surface) WriteEBSurface();
+    if(incflo_verbose > 0) WriteEBSurface();
 }
 
 incflo::~incflo(){};
@@ -184,6 +184,12 @@ void incflo::MakeNewLevelFromScratch(int lev,
                                      const DistributionMapping& new_dmap)
 {
     BL_PROFILE("incflo::MakeNewLevelFromScratch()");
+
+    if(incflo_verbose > 0)
+    { 
+        amrex::Print() << "Making new level " << lev << std::endl; 
+        amrex::Print() << "with BoxArray " << new_grids << std::endl; 
+    }
 
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);

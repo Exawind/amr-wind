@@ -30,15 +30,12 @@ void incflo::ReadParameters()
 
 		pp.query("plot_file", plot_file);
 		pp.query("plot_int", plot_int);
-
-        // TODO: maybe move this?
-		pp.query("write_eb_surface", write_eb_surface);
 	}
 	{
         // Prefix incflo
 		ParmParse pp("incflo");
 
-        pp.query("verbose", verbose);
+        pp.query("verbose", incflo_verbose);
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
 		pp.query("steady_state_tol", steady_state_tol);
@@ -312,7 +309,7 @@ void incflo::InitialIterations()
     int initialisation = 1;
 	ComputeDt(initialisation);
 
-    if(verbose) amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
+    if(incflo_verbose) amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
 
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
@@ -342,7 +339,7 @@ void incflo::InitialIterations()
     bool proj_2 = false;
 	for(int iter = 0; iter < 3; ++iter)
 	{
-        if(verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
+        if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
 		ApplyPredictor(conv, divtau, proj_2);
 
@@ -361,7 +358,7 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("incflo::InitialProjection()");
 
-    if(verbose) amrex::Print() << "Initial projection:" << std::endl;
+    if(incflo_verbose) amrex::Print() << "Initial projection:" << std::endl;
 
 	// Need to add this call here so that the MACProjection internal arrays
 	//  are allocated so that the cell-centered projection can use the MAC

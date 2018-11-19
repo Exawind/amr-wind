@@ -342,7 +342,7 @@ private:
 	int nstep = 0;
 
     // Be verbose? 
-    int verbose = 0;
+    int incflo_verbose = 0;
 
     // Physics 
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
@@ -395,10 +395,7 @@ private:
 
 
 	const EB2::Level* eb_level_fluid;
-    bool write_eb_surface = false;
-
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
-
 };
 
 #endif

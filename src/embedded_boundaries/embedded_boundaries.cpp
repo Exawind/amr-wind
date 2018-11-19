@@ -1,24 +1,15 @@
-//#include <AMReX_EB2.H>
-//#include <AMReX_EB2_IF_Cylinder.H>
-//#include <AMReX_EB2_IF_Plane.H>
-//#include <AMReX_EB2_IF_Union.H>
-
-//#include <AMReX_VisMF.H>  // amrex::VisMF::Write(MultiFab)
-//#include <sstream>
-
 #include <AMReX_ParmParse.H>
-
 #include <AMReX_EB_levelset.H>
+
 #include <algorithm>
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 
 void incflo::make_eb_geometry()
 {
-
 	/******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be on of    *
-   * box, cylinder, hopper, clr, clr_riser, general (or blank)                  *
+   * box, cylinder, hopper, clr, clr_riser, general (or blank)                    *
    ******************************************************************************/
 
 	ParmParse pp("incflo");
@@ -113,9 +104,7 @@ void incflo::make_eb_geometry()
 
 // This function checks if ebfactory is allocated with
 // the proper dm and ba
-
-void
-incflo::incflo_update_ebfactory (int a_lev)
+void incflo::incflo_update_ebfactory (int a_lev)
 {
     // This assert is to verify that some kind of EB geometry
     // has already been defined

@@ -19,7 +19,7 @@ void incflo::Advance()
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
 
-    if(verbose > 0) amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+    if(incflo_verbose > 0) amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
 
     bool proj_2 = true;
 
@@ -48,7 +48,7 @@ void incflo::Advance()
     int initialisation = 0;
     ComputeDt(initialisation);
 
-    if(verbose > 0)
+    if(incflo_verbose > 0)
     {
         amrex::Print() << "\nStep " << nstep + 1 
                        << ": from old_time " << t 
@@ -114,14 +114,14 @@ void incflo::ComputeDt(int initialisation)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        umax = std::max(umax, incflo_norm0(vel, lev, 0));
-        vmax = std::max(vmax, incflo_norm0(vel, lev, 1));
-        wmax = std::max(wmax, incflo_norm0(vel, lev, 2));
-        romin = std::min(romin, incflo_norm0(ro, lev, 0));
+        umax = amrex::max(umax, incflo_norm0(vel, lev, 0));
+        vmax = amrex::max(vmax, incflo_norm0(vel, lev, 1));
+        wmax = amrex::max(wmax, incflo_norm0(vel, lev, 2));
+        romin = amrex::min(romin, incflo_norm0(ro, lev, 0));
         // WARNING: This may cause trouble as we are not doing fully implicit solve!
         // TODO: revisit after testing fully 2/3 dimensional flows
         if(explicit_diffusion)
-            etamax = std::max(etamax, incflo_norm0(eta, lev, 0));
+            etamax = amrex::max(etamax, incflo_norm0(eta, lev, 0));
     }
 
     const Real* dx = geom[finest_level].CellSize();
@@ -158,7 +158,7 @@ void incflo::ComputeDt(int initialisation)
 
     // Don't let the timestep grow by more than 10% per step.
     if(dt > 0.0)
-        dt_new = std::min(dt_new, 1.1*dt);
+        dt_new = amrex::min(dt_new, 1.1*dt);
 
     // Don't overshoot the final time if not running to steady state
     if((!steady_state) & (stop_time > 0.0))
@@ -263,7 +263,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     
 	incflo_set_velocity_bcs(new_time, 0);
 
-    if(verbose > 1)
+    if(incflo_verbose > 1)
     {
         amrex::Print() << "\nAfter predictor step:\n";
         for(int lev = 0; lev <= finest_level; lev++)
@@ -371,7 +371,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 	// Project velocity field
 	incflo_set_velocity_bcs(new_time, 0);
 
-    if(verbose > 1)
+    if(incflo_verbose > 1)
     {
         amrex::Print() << "\nAfter corrector step:\n";
         for(int lev = 0; lev <= finest_level; lev++)
@@ -418,20 +418,20 @@ bool incflo::SteadyStateReached()
         for(int i = 0; i < 3; i++)
         {
             // max(abs(u^{n+1}-u^n))
-            max_change = std::max(max_change, incflo_norm0(diff_vel, lev, i));
+            max_change = amrex::max(max_change, incflo_norm0(diff_vel, lev, i));
             
             // sum(abs(u^{n+1}-u^n)) / sum(abs(u^n))
             Real norm1_diff = incflo_norm1(diff_vel, lev, i);
             Real norm1_old = incflo_norm1(vel_o, lev, i);
             Real relchange = norm1_old > 1.0e-15 ? norm1_diff / norm1_old : 0.0;
-            max_relchange = std::max(max_relchange, relchange);
+            max_relchange = amrex::max(max_relchange, relchange);
         }
 
         condition1[lev] = (max_change < steady_state_tol * dt);
         condition2[lev] = (max_relchange < steady_state_tol);
 
         // Print out info on steady state checks
-        if(verbose > 0)
+        if(incflo_verbose > 0)
         {
             amrex::Print() << "\nSteady state check:\n";
             amrex::Print() << "||u-uo||/||uo|| = " << max_relchange 
