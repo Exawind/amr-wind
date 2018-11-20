@@ -332,8 +332,7 @@ private:
     std::string bottom_solver_type;
 
     // Time and time step counters
-    // TODO: rename t to something more descriptive like cur_time?
-	Real t = 0.0;
+	Real cur_time = 0.0;
 	Real dt = -1;
 	int nstep = 0;
 

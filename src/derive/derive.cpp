@@ -8,7 +8,7 @@ void incflo::UpdateDerivedQuantities()
 {
     BL_PROFILE("incflo::UpdateDerivedQuantities()");
 
-    ComputeDivU(t);
+    ComputeDivU(cur_time);
     ComputeStrainrate();
     ComputeViscosity();
     ComputeVorticity();

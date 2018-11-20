@@ -50,3 +50,5 @@ exec/*/Backtrace.*
 exec/*/plt*/
 exec/*/chk*/
 exec/*/movie.visit
+exec/*/*.vtp
+exec/*/*.pvtp

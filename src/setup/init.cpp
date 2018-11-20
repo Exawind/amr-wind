@@ -317,7 +317,7 @@ void incflo::InitialIterations()
         FillScalarBC(lev, *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
     }
-    FillVelocityBC(t, 0);
+    FillVelocityBC(cur_time, 0);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
@@ -349,7 +349,7 @@ void incflo::InitialIterations()
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
         }
         // Reset the boundary values (necessary if they are time-dependent)
-        FillVelocityBC(t, 0);
+        FillVelocityBC(cur_time, 0);
 	}
 }
 
@@ -367,7 +367,7 @@ void incflo::InitialProjection()
 
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
-	ApplyProjection(t, dummy_dt, proj_2);
+	ApplyProjection(cur_time, dummy_dt, proj_2);
 
 	// We set p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev <= finest_level; lev++)

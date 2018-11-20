@@ -35,7 +35,7 @@ void incflo::InitData()
         // Importantly, it calls MakeNewLevelFromScratch():
         // - Set BA and DM 
         // - Allocate arrays for level
-        InitFromScratch(t);
+        InitFromScratch(cur_time);
 	}
 	else
 	{
@@ -69,7 +69,7 @@ void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
 
-    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (t > stop_time)) ||
+    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (cur_time > stop_time)) ||
 						  ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
 
     while(!do_not_evolve)
@@ -89,7 +89,7 @@ void incflo::Evolve()
         Advance();
 
         // Increment time and step counters
-        t += dt;
+        cur_time += dt;
         nstep++;
 
         // Write plot and checkpoint files
@@ -107,7 +107,7 @@ void incflo::Evolve()
 
         // Mechanism to terminate incflo normally.
         do_not_evolve = (steady_state && SteadyStateReached()) ||
-                        (((stop_time > 0.) && (t >= stop_time - 1.e-6 * dt)) ||
+                        (((stop_time > 0.) && (cur_time >= stop_time - 1.e-6 * dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
 

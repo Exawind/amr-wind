@@ -32,7 +32,7 @@ void incflo::Advance()
         FillScalarBC(lev, *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
     }
-    FillVelocityBC(t, 0);
+    FillVelocityBC(cur_time, 0);
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector
@@ -54,8 +54,8 @@ void incflo::Advance()
     if(incflo_verbose > 0)
     {
         amrex::Print() << "\nStep " << nstep + 1 
-                       << ": from old_time " << t 
-                       << " to new time " << t + dt 
+                       << ": from old_time " << cur_time
+                       << " to new time " << cur_time + dt 
                        << " with dt = " << dt << ".\n" << std::endl;
     }
 
@@ -170,15 +170,15 @@ void incflo::ComputeDt(int initialisation)
     // Don't let the timestep grow by more than 10% per step.
     if(dt > 0.0)
     {
-        dt_new = amrex::min(dt_new, 1.1*dt);
+        dt_new = amrex::min(dt_new, 1.1 * dt);
     }
 
     // Don't overshoot the final time if not running to steady state
     if((!steady_state) & (stop_time > 0.0))
     {
-        if(t + dt_new > stop_time)
+        if(cur_time + dt_new > stop_time)
         {
-            dt_new = stop_time - t;
+            dt_new = stop_time - cur_time;
         }
     }
 
@@ -233,10 +233,10 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 	BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new ime value for things computed on the "*" state
-    Real new_time = t + dt; 
+    Real new_time = cur_time + dt; 
 
     // Compute the explicit advective term R_u^n
-    ComputeUGradU(conv_old, vel_o, t);
+    ComputeUGradU(conv_old, vel_o, cur_time);
 
     UpdateDerivedQuantities();
 
@@ -330,7 +330,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 	BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = t + dt; 
+    Real new_time = cur_time + dt; 
 
 	Vector<std::unique_ptr<MultiFab>> conv;
 	Vector<std::unique_ptr<MultiFab>> divtau;   
@@ -426,7 +426,7 @@ bool incflo::SteadyStateReached()
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    FillVelocityBC(t, 0);
+    FillVelocityBC(cur_time, 0);
 
     // Use temporaries to store the difference between current and previous solution
 	Vector<std::unique_ptr<MultiFab>> diff_vel;

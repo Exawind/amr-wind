@@ -48,7 +48,7 @@ void incflo::WriteHeader(
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
 		HeaderFile << dt << "\n";
-		HeaderFile << t << "\n";
+		HeaderFile << cur_time << "\n";
 
 		// Geometry
 		for(int i = 0; i < BL_SPACEDIM; ++i)
@@ -149,7 +149,7 @@ void incflo::ReadCheckpointFile()
     GotoNextLine(is);
 
     // Current time
-    is >> t;
+    is >> cur_time;
     GotoNextLine(is);
 
     // Low coordinates of domain bounding box
@@ -187,7 +187,7 @@ void incflo::ReadCheckpointFile()
         // Create distribution mapping
         DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-        MakeNewLevelFromScratch(lev, t, ba, dm);
+        MakeNewLevelFromScratch(lev, cur_time, ba, dm);
     }
 
 	/***************************************************************************
@@ -416,7 +416,7 @@ void incflo::WritePlotFile() const
     // but will never change unless we use subcycling. 
     // If we do use subcycling, this should be a incflo class member. 
     Vector<int> istep(finest_level + 1, 1);
-    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), t, istep, refRatio());
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }

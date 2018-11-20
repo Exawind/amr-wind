@@ -17,7 +17,7 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
     }
 
     // Do projection on all AMR-level_ins in one shot
-	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, t);
+	mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, cur_time);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
