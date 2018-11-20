@@ -11,10 +11,6 @@
 #include <projection_F.H>
 
 //
-// TODO:
-// explain that scaling_factor = dt expect when called during initial_projection, when it is set to unity
-//
-//
 // Computes the following decomposition:
 //
 //    u + grad(phi)/ro = u*,     where div(u) = 0
@@ -27,9 +23,12 @@
 //
 //     new p  = phi
 //
-//     except in the initial iterations when
+// except in the initial iterations when
 //
-//     new p  = old p + phi
+//     new p  = old p + phi     (proj_2 = false)
+//
+// Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
+//
 void incflo::ApplyProjection(Real time, Real scaling_factor, bool proj_2)
 {
 	BL_PROFILE("incflo::ApplyProjection");
