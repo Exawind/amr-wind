@@ -238,7 +238,7 @@ private:
 								Vector<std::unique_ptr<MultiFab>>& phi,
 								Vector<std::unique_ptr<MultiFab>>& rhs,
                                 int bc_lo[], int bc_hi[]);
-	void ComputeDiffusionCoeff();
+    void ComputeDiffusionCoeff(Vector<Vector<std::unique_ptr<MultiFab>>>& beta);
 
     // CONVECTION
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
@@ -284,15 +284,11 @@ private:
 	Vector<std::unique_ptr<MultiFab>> yslopes;
 	Vector<std::unique_ptr<MultiFab>> zslopes;
 	Vector<std::unique_ptr<MultiFab>> divu;
-	Vector<std::unique_ptr<MultiFab>> rhs_diff;
-	Vector<std::unique_ptr<MultiFab>> phi_diff;
-	Vector<std::unique_ptr<MultiFab>> fp;
 	Vector<std::unique_ptr<MultiFab>> phi;
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;
 	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff;
-	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff_diff;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

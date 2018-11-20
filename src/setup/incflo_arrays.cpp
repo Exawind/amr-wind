@@ -68,10 +68,6 @@ void incflo::AllocateArrays(int lev)
 	phi[lev]->setVal(0.);
 	divu[lev]->setVal(0.);
 
-	// Arrays to store the solution and rhs for the diffusion solve
-	phi_diff[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-	rhs_diff[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-
 	// Slopes in x-direction
 	xslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
 	xslopes[lev]->setVal(0.);
@@ -89,59 +85,37 @@ void incflo::AllocateArrays(int lev)
 	// ********************************************************************************
 
     // When the pressure is on nodes, bcoeff is at cell centers
-    if (nodal_pressure)
+    for(int dir = 0; dir < 3; dir++)
     {
-        bcoeff[lev][0].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        bcoeff[lev][1].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        bcoeff[lev][2].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        if (nodal_pressure)
+        {
+            bcoeff[lev][dir].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        }
+        else
+        {
+            // Create a BoxArray on x-faces.
+            BoxArray edge_ba = grids[lev];
+            edge_ba.surroundingNodes(dir);
+            bcoeff[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost, 
+                                              MFInfo(), *ebfactory[lev]));
+        }
+        bcoeff[lev][dir]->setVal(0.);
     }
-    else
-    {
-        // Create a BoxArray on x-faces.
-        BoxArray x_edge_ba = grids[lev];
-        x_edge_ba.surroundingNodes(0);
-        bcoeff[lev][0].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, 
-                                          MFInfo(), *ebfactory[lev]));
-
-        // Create a BoxArray on y-faces.
-        BoxArray y_edge_ba = grids[lev];
-        y_edge_ba.surroundingNodes(1);
-        bcoeff[lev][1].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, 
-                                          MFInfo(), *ebfactory[lev]));
-
-        // Create a BoxArray on y-faces.
-        BoxArray z_edge_ba = grids[lev];
-        z_edge_ba.surroundingNodes(2);
-        bcoeff[lev][2].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, 
-                                          MFInfo(), *ebfactory[lev]));
-    }
-	bcoeff[lev][0]->setVal(0.);
-	bcoeff[lev][1]->setVal(0.);
-	bcoeff[lev][2]->setVal(0.);
 
 	// ****************************************************************
 
 	// Create a BoxArray on x-faces.
-    BoxArray x_edge_ba = grids[lev];
-    x_edge_ba.surroundingNodes(0);
-	bcoeff_diff[lev][0].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost));
-	bcoeff_diff[lev][0]->setVal(0.);
+    BoxArray x_edge_ba = grids[lev].surroundingNodes(0);
 	m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_u_mac[lev]->setVal(0.);
 
 	// Create a BoxArray on y-faces.
-    BoxArray y_edge_ba = grids[lev];
-    y_edge_ba.surroundingNodes(1);
-	bcoeff_diff[lev][1].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost));
-	bcoeff_diff[lev][1]->setVal(0.);
+    BoxArray y_edge_ba = grids[lev].surroundingNodes(1);
 	m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_v_mac[lev]->setVal(0.);
 
 	// Create a BoxArray on y-faces.
-    BoxArray z_edge_ba = grids[lev];
-    z_edge_ba.surroundingNodes(2);
-	bcoeff_diff[lev][2].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost));
-	bcoeff_diff[lev][2]->setVal(0.);
+    BoxArray z_edge_ba = grids[lev].surroundingNodes(2);
 	m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_w_mac[lev]->setVal(0.);
 }
@@ -304,12 +278,6 @@ void incflo::RegridArrays(int lev)
 	m_u_mac[lev] = std::move(u_mac_new);
 	m_u_mac[lev]->setVal(0.0);
 
-	// Diffusion coefficient on x-faces
-    std::unique_ptr<MultiFab> bc0_new(new MultiFab(x_ba, dmap[lev], 1, nghost,
-                                                   MFInfo(), *ebfactory[lev]));
-	bcoeff_diff[lev][0] = std::move(bc0_new);
-	bcoeff_diff[lev][0]->setVal(0.0);
-
     BoxArray y_ba = grids[lev];
     y_ba = y_ba.surroundingNodes(1);
 
@@ -322,9 +290,6 @@ void incflo::RegridArrays(int lev)
     // Diffusion coefficient on y-faces
     std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba, dmap[lev], 1, nghost, 
                                                    MFInfo(), *ebfactory[lev]));
-    bcoeff_diff[lev][1] = std::move(bc1_new);
-    bcoeff_diff[lev][1] -> setVal(0.0);
-
     BoxArray z_ba = grids[lev];
     z_ba = z_ba.surroundingNodes(2);
 
@@ -379,10 +344,6 @@ void incflo::ResizeArrays()
 	phi.resize(max_level + 1);
 	divu.resize(max_level + 1);
 
-	// RHS and solution arrays for diffusive solve
-	rhs_diff.resize(max_level + 1);
-	phi_diff.resize(max_level + 1);
-
 	// Current (vel) and old (vel_o) velocities
 	vel.resize(max_level + 1);
 	vel_o.resize(max_level + 1);
@@ -408,12 +369,8 @@ void incflo::ResizeArrays()
 
     // Coefficients for elliptic solves
 	bcoeff.resize(max_level + 1);
-	for(int i = 0; i < max_level + 1; ++i)
-		bcoeff[i].resize(3);
-
-	bcoeff_diff.resize(max_level + 1);
-	for(int i = 0; i < max_level + 1; ++i)
-		bcoeff_diff[i].resize(3);
+	for(int lev = 0; lev < max_level + 1; ++lev)
+		bcoeff[lev].resize(3);
 
     // BCs
 	bc_ilo.resize(max_level + 1);
