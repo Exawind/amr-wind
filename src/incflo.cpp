@@ -17,7 +17,7 @@ incflo::incflo()
 
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
-    make_eb_geometry();
+    MakeEBGeometry();
     if(incflo_verbose > 0) WriteEBSurface();
 }
 
@@ -59,7 +59,7 @@ void incflo::InitData()
     // Plot initial distribution
     if(plot_int > 0 and !restart_flag) 
     {
-        update_derived_quantities();
+        UpdateDerivedQuantities();
         WritePlotFile();
         last_plt = 0;
     }
@@ -95,7 +95,7 @@ void incflo::Evolve()
         // Write plot and checkpoint files
         if((plot_int > 0) && (nstep % plot_int == 0))
         {
-            update_derived_quantities();
+            UpdateDerivedQuantities();
             WritePlotFile();
             last_plt = nstep;
         }
@@ -115,7 +115,7 @@ void incflo::Evolve()
     if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
     if(plot_int > 0 && nstep != last_plt)
     {
-        update_derived_quantities();
+        UpdateDerivedQuantities();
         WritePlotFile();
     }
 }
@@ -262,94 +262,4 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::EB_average_down(*gp0[crse_lev+1],        *gp0[crse_lev],        0, 3, rr);
     amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, 3, rr);
     amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, 3, rr);
-}
-
-//
-// Subroutine to compute norm0 of EB multifab
-//
-Real incflo::incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
-{
-	MultiFab mf_tmp(mf[lev]->boxArray(),
-					mf[lev]->DistributionMap(),
-                    mf[lev]->nComp(),
-                    0, MFInfo(), *ebfactory[lev]);
-
-	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
-
-	return mf_tmp.norm0(comp);
-}
-
-Real incflo::incflo_norm0(MultiFab& mf, int lev, int comp)
-{
-    MultiFab mf_tmp(mf.boxArray(),
-                    mf.DistributionMap(),
-                    mf.nComp(),
-                    0, MFInfo(), *ebfactory[lev]);
-
-	MultiFab::Copy(mf_tmp, mf, comp, comp, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
-
-	return mf_tmp.norm0(comp);
-}
-
-//
-// Subroutine to compute norm1 of EB multifab
-//
-Real incflo::incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp)
-{
-	MultiFab mf_tmp(mf[lev]->boxArray(),
-					mf[lev]->DistributionMap(),
-					mf[lev]->nComp(),
-                    0, MFInfo(), *ebfactory[lev]);
-
-	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
-
-	return mf_tmp.norm1(comp, geom[lev].periodicity());
-}
-
-Real incflo::incflo_norm1(MultiFab& mf, int lev, int comp)
-{
-	MultiFab mf_tmp(mf.boxArray(),
-                    mf.DistributionMap(),
-                    mf.nComp(),
-                    0, MFInfo(), *ebfactory[lev]);
-
-	MultiFab::Copy(mf_tmp, mf, comp, comp, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
-
-	return mf_tmp.norm1(comp, geom[lev].periodicity());
-}
-
-//
-// Print the maximum values of the velocity components
-//
-void incflo::incflo_print_max_vel(int lev)
-{
-	amrex::Print() << "max(abs(u/v/w/p))  = "
-                   << incflo_norm0(vel, lev, 0) << "  "
-				   << incflo_norm0(vel, lev, 1) << "  "
-                   << incflo_norm0(vel, lev, 2) << "  "
-				   << incflo_norm0(p, lev, 0) << "  " << std::endl;
-}
-
-void incflo::check_for_nans(int lev)
-{
-	bool ug_has_nans = vel[lev]->contains_nan(0);
-	bool vg_has_nans = vel[lev]->contains_nan(1);
-	bool wg_has_nans = vel[lev]->contains_nan(2);
-	bool pg_has_nans = p[lev]->contains_nan(0);
-
-	if(ug_has_nans)
-		amrex::Print() << "WARNING: u contains NaNs!!!";
-
-	if(vg_has_nans)
-		amrex::Print() << "WARNING: v contains NaNs!!!";
-
-	if(wg_has_nans)
-		amrex::Print() << "WARNING: w contains NaNs!!!";
-
-	if(pg_has_nans)
-		amrex::Print() << "WARNING: p contains NaNs!!!";
 }

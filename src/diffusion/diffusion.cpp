@@ -13,11 +13,11 @@
 //
 // Divergence of stress tensor
 //
-void incflo::incflo_compute_divtau(int lev,
+void incflo::ComputeDivTau(int lev,
                                    MultiFab& divtau,
                                    Vector<std::unique_ptr<MultiFab>>& vel_in)
 {
-	BL_PROFILE("incflo::incflo_compute_divtau");
+	BL_PROFILE("incflo::ComputeDivTau");
 	Box domain(geom[lev].Domain());
 
    // Get EB geometric info
@@ -100,12 +100,12 @@ void incflo::incflo_compute_divtau(int lev,
 //
 // Implicit diffusion
 //
-void incflo::incflo_diffuse_velocity(amrex::Real time)
+void incflo::DiffuseVelocity(amrex::Real time)
 {
-	BL_PROFILE("incflo::incflo_diffuse_velocity");
+	BL_PROFILE("incflo::DiffuseVelocity");
 
 	// Swap ghost cells and apply BCs to velocity
-	incflo_set_velocity_bcs(time, 0);
+	FillVelocityBC(time, 0);
 
     // The boundary conditions need only be set once -- we do this at level 0
 	int bc_lo[3], bc_hi[3];
@@ -114,20 +114,15 @@ void incflo::incflo_diffuse_velocity(amrex::Real time)
 	Box domain(geom[0].Domain());
 
 	// Set BCs for Poisson solver
-	set_diff_bc(bc_lo,
-				bc_hi,
-				domain.loVect(),
-				domain.hiVect(),
+    set_diff_bc(bc_lo, bc_hi,
+                domain.loVect(), domain.hiVect(),
 				&nghost,
-				bc_ilo[0]->dataPtr(),
-				bc_ihi[0]->dataPtr(),
-				bc_jlo[0]->dataPtr(),
-				bc_jhi[0]->dataPtr(),
-				bc_klo[0]->dataPtr(),
-				bc_khi[0]->dataPtr());
+                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
 
 	// Compute the coefficients
-	incflo_compute_bcoeff_diff();
+	ComputeDiffusionCoeff();
 
 	// Loop over the velocity components
 	for(int i = 0; i < 3; i++)
@@ -144,7 +139,7 @@ void incflo::incflo_diffuse_velocity(amrex::Real time)
 
 		// Solve (1 - div beta grad) u_new = RHS
 		// Here RHS = "vel" which is the current approximation to the new-time velocity (without diffusion terms)
-		solve_diffusion_equation(bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi);
+		SolveDiffusionEquation(bcoeff_diff, phi_diff, rhs_diff, bc_lo, bc_hi);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -153,48 +148,48 @@ void incflo::incflo_diffuse_velocity(amrex::Real time)
 	}
 
 	// Swap ghost cells and apply BCs to velocity
-	incflo_set_velocity_bcs(time, 0);
+	FillVelocityBC(time, 0);
 }
 
+// TODO: See if we can avoid setting everything up in every time step
+//       Can we store previous solution as initial guess for next one?
 //
 // Solve :
-//                  (1 - div dot eta grad) u = RHS
+//                  (1 - div dot eta grad) u = rhs
 //
-void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+void incflo::SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
                                       Vector<std::unique_ptr<MultiFab>>& sol,
                                       Vector<std::unique_ptr<MultiFab>>& rhs,
                                       int bc_lo[], int bc_hi[])
 {
-	BL_PROFILE("incflo::solve_diffusion_equation");
+	BL_PROFILE("incflo::SolveDiffusionEquation");
 
-	//
-	// First define the matrix (operator).
+	// First define the matrix.
+	LPInfo info;
 	// Class MLABecLaplacian describes the following operator:
 	//
-	//       (alpha * a - beta * (del dot b grad)) sol
+	//       (alpha * a - beta * (del dot b grad)) phi = rhs
 	//
-	LPInfo info;
     MLEBABecLap matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
-	Vector<const MultiFab*> tmp;
-    std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
 
-	// It is essential that we set MaxOrder of the solver to 2
-	// if we want to use the standard sol(i)-sol(i-1) approximation
-	// for the gradient at Dirichlet boundaries.
-	// The solver's default order is 3 and this uses three points for the
-	// gradient at a Dirichlet boundary.
+	// Set alpha and beta
+	matrix.setScalars(1.0, dt);
+
+    // It is essential that we set MaxOrder of the solver to 2 if we want to use the standard
+    // phi(i)-phi(i-1) approximation for the gradient at Dirichlet boundaries.
+    // The solver's default order is 3 and this uses three points for the gradient.
 	matrix.setMaxOrder(2);
 
 	// LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
 	matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
 					   {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
 
-	// This sets alpha = 1 and beta = dt
-	matrix.setScalars(1.0, dt);
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // Copy the PPE coefficient into the proper data strutcure
+        Vector<const MultiFab*> tmp;
+        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+
         tmp = amrex::GetVecOfConstPtrs(b[lev]);
         b_tmp[0] = tmp[0];
         b_tmp[1] = tmp[1];
@@ -213,19 +208,16 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
         matrix.setLevelBC(lev, GetVecOfConstPtrs(sol)[lev]);
     }
 
-	//
 	// Then setup the solver ----------------------
-	//
 	MLMG solver(matrix);
 
     // The default bottom solver is BiCG
-    // Other options include: 
-    ///   regular smoothing ("smoother")
-    ///   Hypre IJ AMG solver ("hypre")
-    if (bottom_solver_type == "smoother")
-    { 
+    if(bottom_solver_type == "smoother")
+    {
        solver.setBottomSolver(MLMG::BottomSolver::smoother);
-    } else if (bottom_solver_type == "hypre") { 
+    }
+    else if(bottom_solver_type == "hypre")
+    {
        solver.setBottomSolver(MLMG::BottomSolver::hypre);
     }
 
@@ -238,9 +230,7 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
 	// This ensures that ghost cells of sol are correctly filled when returned from the solver
 	solver.setFinalFillBC(true);
 
-	//
 	// Finally, solve the system
-	//
 	solver.solve(GetVecOfPtrs(sol), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -252,9 +242,9 @@ void incflo::solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>&
 //
 // Computes bcoeff = eta at the faces of the scalar cells
 //
-void incflo::incflo_compute_bcoeff_diff()
+void incflo::ComputeDiffusionCoeff()
 {
-	BL_PROFILE("incflo::incflo_compute_bcoeff_diff");
+	BL_PROFILE("incflo::ComputeDiffusionCoeff");
 
 	// Directions
 	int xdir = 1;
@@ -291,7 +281,6 @@ void incflo::incflo_compute_bcoeff_diff()
                                 BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
                                 &zdir);
         }
-
         bcoeff_diff[lev][0]->FillBoundary(geom[lev].periodicity());
         bcoeff_diff[lev][1]->FillBoundary(geom[lev].periodicity());
         bcoeff_diff[lev][2]->FillBoundary(geom[lev].periodicity());

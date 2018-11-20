@@ -166,11 +166,11 @@ void incflo::PostInit(int restart_flag)
     {
         if(!nodal_pressure)
         {
-            incflo_extrap_pressure(lev, p[lev]);
-            incflo_extrap_pressure(lev, p0[lev]);
+            ExtrapolatePressure(lev, p[lev]);
+            ExtrapolatePressure(lev, p0[lev]);
         }
-        fill_mf_bc(lev, *ro[lev]);
-        fill_mf_bc(lev, *eta[lev]);
+        FillScalarBC(lev, *ro[lev]);
+        FillScalarBC(lev, *eta[lev]);
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
     // Project the initial velocity field to make it divergence free
@@ -314,10 +314,10 @@ void incflo::InitialIterations()
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        fill_mf_bc(lev, *ro[lev]);
-        fill_mf_bc(lev, *eta[lev]);
+        FillScalarBC(lev, *ro[lev]);
+        FillScalarBC(lev, *eta[lev]);
     }
-    incflo_set_velocity_bcs(t, 0);
+    FillVelocityBC(t, 0);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
@@ -349,7 +349,7 @@ void incflo::InitialIterations()
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
         }
         // Reset the boundary values (necessary if they are time-dependent)
-        incflo_set_velocity_bcs(t, 0);
+        FillVelocityBC(t, 0);
 	}
 }
 
@@ -367,7 +367,7 @@ void incflo::InitialProjection()
 
 	bool proj_2 = true;
 	Real dummy_dt = 1.0;
-	incflo_apply_projection(t, dummy_dt, proj_2);
+	ApplyProjection(t, dummy_dt, proj_2);
 
 	// We set p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev <= finest_level; lev++)

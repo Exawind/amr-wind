@@ -2,9 +2,6 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_BLassert.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLMG.H>
-#include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
@@ -12,73 +9,13 @@
 #include <incflo.H>
 #include <boundary_conditions_F.H>
 #include <divergence_F.H>
-#include <projection_F.H>
-
-//
-// Compute div(u)
-//
-void incflo::incflo_compute_divu(Real time)
-{
-    if (nodal_pressure == 1)
-    {
-        int extrap_dir_bcs = 0;
-        incflo_set_velocity_bcs (time, extrap_dir_bcs);
-
-        // Define the operator in order to compute the multi-level divergence
-        //
-        //        (del dot b sigma grad)) phi
-        //
-        LPInfo info;
-        MLNodeLaplacian matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
-
-        // Set domain BCs for Poisson's solver
-        // The domain BCs refer to level 0 only
-        int bc_lo[3], bc_hi[3];
-        Box domain(geom[0].Domain());
-
-        set_ppe_bc(bc_lo, bc_hi,
-                   domain.loVect(), domain.hiVect(),
-                   &nghost,
-                   bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-                   bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-                   bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
-
-        matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-                           {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
-
-        matrix.compDivergence(GetVecOfPtrs(divu), GetVecOfPtrs(vel)); 
-
-    }
-    else
-    {
-        int extrap_dir_bcs = 1;
-        incflo_set_velocity_bcs(time, extrap_dir_bcs);
-
-        for(int lev = 0; lev <= finest_level; lev++)
-        {
-            Box domain(geom[lev].Domain());
-            vel[lev]->FillBoundary(geom[lev].periodicity());
-
-            // Create face centered multifabs for vel
-            Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM> vel_fc;
-            incflo_average_cc_to_fc(lev, *vel[lev], vel_fc);
-
-            // This does not need to have correct ghost values in place
-            EB_computeDivergence(*divu[lev], GetArrOfConstPtrs(vel_fc), geom[lev]);
-        }
-    }
-
-	// Restore velocities to carry Dirichlet values on faces
-	int extrap_dir_bcs = 0;
-	incflo_set_velocity_bcs(time, extrap_dir_bcs);
-}
 
 //
 // This subroutines averages component by component
 // The assumption is that cc is multicomponent
 // 
 void
-incflo::incflo_average_cc_to_fc(int lev, 
+incflo::AverageCcToFc(int lev, 
                                 const MultiFab& cc,
                                 Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc )
 {

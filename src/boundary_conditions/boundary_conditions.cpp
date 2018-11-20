@@ -42,11 +42,11 @@ incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fm
 }
 
 //
-// Set the BCs for velocity only
+// Fill the BCs for velocity only
 //
-void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
+void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
 {
-    BL_PROFILE("incflo::incflo_set_velocity_bcs()");
+    BL_PROFILE("incflo::FillVelocityBC()");
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -73,9 +73,9 @@ void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
 //
 // Fills ghost cell values of pressure appropriately for the BC type
 //
-void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& p_in)
+void incflo::ExtrapolatePressure(int lev, std::unique_ptr<amrex::MultiFab>& p_in)
 {
-    BL_PROFILE("incflo::incflo_extrap_pressure()");
+    BL_PROFILE("incflo::ExtrapolatePressure()");
     if (nodal_pressure == 1) return;
  
     Box domain(geom[lev].Domain());
@@ -94,8 +94,9 @@ void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& 
     }
 }
 
-void incflo::fill_mf_bc(int lev, MultiFab& mf)
+void incflo::FillScalarBC(int lev, MultiFab& mf)
 {
+    BL_PROFILE("incflo:FillScalarBC()");
 	Box domain(geom[lev].Domain());
 
 	if(!mf.boxArray().ixType().cellCentered())

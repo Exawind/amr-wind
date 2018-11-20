@@ -1,6 +1,9 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
+#include <AMReX_MLEBABecLap.H>
+#include <AMReX_MLMG.H>
+#include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_iMultiFab.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
@@ -10,6 +13,7 @@
 
 #include <eb_if.H>
 #include <MacProjection.H>
+#include <projection_F.H>
 // Note: a lot of stuff is included through MacProjection.H...
 
 
@@ -113,6 +117,44 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
+    // Embedded Boundaries
+    // TODO: How much of this really needs to be member functions of incflo? 
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void MakeEBGeometry();
+    void UpdateEBFactory(int a_lev);
+	void WriteEBSurface();
+
+	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
+	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
+    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
+	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
+
+	void make_eb_general();
+	void make_eb_annulus();
+	void make_eb_box();
+	void make_eb_cylinder();
+	void make_eb_hopper();
+	void make_eb_hourglass();
+	void make_eb_clr();
+	void make_eb_clr_riser();
+	void make_eb_regular();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Derived quantities
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void UpdateDerivedQuantities();
+	void ComputeDivU(Real time);
+	void ComputeStrainrate();
+	void ComputeVorticity();
+	void ComputeViscosity();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
     // Input / Output
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,56 +176,17 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Embedded Boundaries
-    // TODO: How much of this really needs to be member functions of incflo? 
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    
-	void make_eb_geometry();
-    void incflo_update_ebfactory(int a_lev);
-
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
-    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
-	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
-
-	void WriteEBSurface();
-
-	void make_eb_general();
-	void make_eb_annulus();
-	void make_eb_box();
-	void make_eb_cylinder();
-	void make_eb_hopper();
-	void make_eb_hourglass();
-	void make_eb_clr();
-	void make_eb_clr_riser();
-	void make_eb_regular();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Derived quantities
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void update_derived_quantities();
-	void incflo_compute_strainrate();
-	void incflo_compute_vort();
-	void incflo_compute_viscosity();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
     // Projection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void incflo_apply_projection(Real time, Real scaling_factor, bool proj_2);
-	void solve_poisson_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-								Vector<std::unique_ptr<MultiFab>>& phi,
-								Vector<std::unique_ptr<MultiFab>>& rhs,
-								Vector<std::unique_ptr<MultiFab>>& fluxes,
-                                int bc_lo[], int bc_hi[]);
-	void incflo_compute_bcoeff_ppe();
+    void ApplyProjection(Real time, Real scaling_factor, bool proj_2);
+	void SolvePoissonEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+							  Vector<std::unique_ptr<MultiFab>>& phi,
+							  Vector<std::unique_ptr<MultiFab>>& rhs,
+							  Vector<std::unique_ptr<MultiFab>>& fluxes,
+                              int bc_lo[], int bc_hi[]);
+	void ComputePoissonCoeff();
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,8 +195,8 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void incflo_set_velocity_bcs(Real time, int extrap_dir_bcs);
-	void fill_mf_bc(int lev, MultiFab& mf);
+	void FillScalarBC(int lev, MultiFab& mf);
+	void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -201,12 +204,11 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void check_for_nans(int lev);
-	void incflo_print_max_vel(int lev);
-    Real incflo_norm1(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
-    Real incflo_norm1(MultiFab& mf, int lev, int comp);
-    Real incflo_norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp);
-	Real incflo_norm0(MultiFab& mf, int lev, int comp);
+    Real Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type);
+	void PrintMaxValues(Real time);
+	void PrintMaxVel(int lev);
+	void PrintMaxGp(int lev);
+	void CheckForNans(int lev);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -229,37 +231,31 @@ private:
 
 
 
-    void incflo_compute_divtau(int lev, 
-                               MultiFab& divtau, 
-                               Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_diffuse_velocity(Real time);
-	void solve_diffusion_equation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-								  Vector<std::unique_ptr<MultiFab>>& phi,
-								  Vector<std::unique_ptr<MultiFab>>& rhs,
-                                  int bc_lo[], int bc_hi[]);
-	void incflo_compute_bcoeff_diff();
+    // DIFFUSION
+    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
+	void DiffuseVelocity(Real time);
+	void SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
+								Vector<std::unique_ptr<MultiFab>>& phi,
+								Vector<std::unique_ptr<MultiFab>>& rhs,
+                                int bc_lo[], int bc_hi[]);
+	void ComputeDiffusionCoeff();
+
+    // CONVECTION
+	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
+					   Vector<std::unique_ptr<MultiFab>>& vel, 
+                       Real time);
+	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
 
 
 
-	void incflo_compute_ugradu_predictor(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_compute_ugradu_corrector(Vector<std::unique_ptr<MultiFab>>& conv,
-										 Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_compute_velocity_slopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-	void incflo_compute_velocity_at_faces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+
+	void ExtrapolatePressure(int lev, std::unique_ptr<MultiFab>& p);
 
 
-
-	void incflo_compute_divu(Real time);
-
-
-	void incflo_extrap_pressure(int lev, std::unique_ptr<MultiFab>& p);
-
-
-    void incflo_average_cc_to_fc(int lev, 
-                                 const MultiFab& cc,
-                                 Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
+    void AverageCcToFc(int lev, const MultiFab& cc, 
+                       Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -382,6 +378,7 @@ private:
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
 
+    // TODO: remove nodal pressure option? 
     int nodal_pressure = 1;
 	int explicit_diffusion = 1;
 	int refine_cutcells = 1;

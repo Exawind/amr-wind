@@ -5,7 +5,7 @@
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 
-void incflo::make_eb_geometry()
+void incflo::MakeEBGeometry()
 {
 	/******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be on of    *
@@ -104,7 +104,7 @@ void incflo::make_eb_geometry()
 
 // This function checks if ebfactory is allocated with
 // the proper dm and ba
-void incflo::incflo_update_ebfactory (int a_lev)
+void incflo::UpdateEBFactory(int a_lev)
 {
     // This assert is to verify that some kind of EB geometry
     // has already been defined

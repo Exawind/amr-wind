@@ -19,17 +19,20 @@ void incflo::Advance()
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
 
-    if(incflo_verbose > 0) amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+    if(incflo_verbose > 0) 
+    {
+        amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+    }
 
     bool proj_2 = true;
 
     // Fill ghost nodes and reimpose boundary conditions
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        fill_mf_bc(lev, *ro[lev]);
-        fill_mf_bc(lev, *eta[lev]);
+        FillScalarBC(lev, *ro[lev]);
+        FillScalarBC(lev, *eta[lev]);
     }
-    incflo_set_velocity_bcs(t, 0);
+    FillVelocityBC(t, 0);
 
     // Create temporary multifabs to hold the old-time conv and divtau
     // so we don't have to re-compute them in the corrector
@@ -58,7 +61,9 @@ void incflo::Advance()
 
     // Backup velocity to old
     for(int lev = 0; lev <= finest_level; lev++)
+    {
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
+    }
 
     // Predictor step
     ApplyPredictor(conv_old, divtau_old, proj_2);
@@ -108,20 +113,22 @@ void incflo::ComputeDt(int initialisation)
 
     // We only compute gp0max on the coarsest level because it is the same at all 
 	Real gp0max[3];
-    gp0max[0] = incflo_norm0(gp0, 0, 0);
-    gp0max[1] = incflo_norm0(gp0, 0, 1);
-    gp0max[2] = incflo_norm0(gp0, 0, 2);
+    gp0max[0] = Norm(gp0, 0, 0, 0);
+    gp0max[1] = Norm(gp0, 0, 1, 0);
+    gp0max[2] = Norm(gp0, 0, 2, 0);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        umax = amrex::max(umax, incflo_norm0(vel, lev, 0));
-        vmax = amrex::max(vmax, incflo_norm0(vel, lev, 1));
-        wmax = amrex::max(wmax, incflo_norm0(vel, lev, 2));
-        romin = amrex::min(romin, incflo_norm0(ro, lev, 0));
+        umax = amrex::max(umax, Norm(vel, lev, 0, 0));
+        vmax = amrex::max(vmax, Norm(vel, lev, 1, 0));
+        wmax = amrex::max(wmax, Norm(vel, lev, 2, 0));
+        romin = amrex::min(romin, Norm(ro, lev, 0, 0));
         // WARNING: This may cause trouble as we are not doing fully implicit solve!
         // TODO: revisit after testing fully 2/3 dimensional flows
         if(explicit_diffusion)
-            etamax = amrex::max(etamax, incflo_norm0(eta, lev, 0));
+        {
+            etamax = amrex::max(etamax, Norm(eta, lev, 0, 0));
+        }
     }
 
     const Real* dx = geom[finest_level].CellSize();
@@ -148,23 +155,31 @@ void incflo::ComputeDt(int initialisation)
 
     // Reduce CFL for initial step
     if(initialisation)
+    {
         dt_new *= 0.1;
+    }
 
     // Protect against very small comb_cfl
     // This may happen, for example, when the initial velocity field
     // is zero for an inviscid flow with no external forcing
     if(comb_cfl <= 1.0e-18)
+    {
         dt_new = 0.5 * dt;
+    }
 
     // Don't let the timestep grow by more than 10% per step.
     if(dt > 0.0)
+    {
         dt_new = amrex::min(dt_new, 1.1*dt);
+    }
 
     // Don't overshoot the final time if not running to steady state
     if((!steady_state) & (stop_time > 0.0))
     {
         if(t + dt_new > stop_time)
+        {
             dt_new = stop_time - t;
+        }
     }
 
     // If using fixed time step, check CFL condition and give warning if not satisfied
@@ -221,15 +236,15 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     Real new_time = t + dt; 
 
     // Compute the explicit advective term R_u^n
-    incflo_compute_ugradu_predictor(conv_old, vel_o);
+    ComputeUGradU(conv_old, vel_o, t);
 
-    update_derived_quantities();
+    UpdateDerivedQuantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // explicit_diffusion == true:  compute the full diffusive terms here
         // explicit_diffusion == false: compute only the off-diagonal terms here
-        incflo_compute_divtau(lev, *divtau_old[lev], vel_o);
+        ComputeDivTau(lev, *divtau_old[lev], vel_o);
 
         // First add the convective term
         MultiFab::Saxpy(*vel[lev], dt, *conv_old[lev], 0, 0, 3, 0);
@@ -240,11 +255,15 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
         // Add gravitational forces
         for(int dir = 0; dir < 3; dir++)
+        {
             (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
+        }
 
         // Convert velocities to momenta
         for(int dir = 0; dir < 3; dir++)
+        {
             MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
+        }
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
@@ -252,26 +271,25 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < 3; dir++)
+        {
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
+        }
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) incflo_diffuse_velocity(new_time);
+    if(!explicit_diffusion) 
+    {
+        DiffuseVelocity(new_time);
+    }
 
 	// Project velocity field
-	incflo_apply_projection(new_time, dt, proj_2);
-    
-	incflo_set_velocity_bcs(new_time, 0);
+	ApplyProjection(new_time, dt, proj_2);
+	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 1)
     {
-        amrex::Print() << "\nAfter predictor step:\n";
-        for(int lev = 0; lev <= finest_level; lev++)
-            incflo_print_max_vel(lev);
-
-        incflo_compute_divu(t + dt);
-        for(int lev = 0; lev <= finest_level; lev++)
-            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
+        amrex::Print() << "After predictor step:" << std::endl; 
+        PrintMaxValues(new_time);
     }
 }
 
@@ -325,15 +343,15 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // Compute the explicit advective term R_u^*
-    incflo_compute_ugradu_corrector(conv, vel);
+    ComputeUGradU(conv, vel, new_time);
 
-    update_derived_quantities();
+    UpdateDerivedQuantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // If explicit_diffusion == true  then we compute the full diffusive terms here
         // If explicit_diffusion == false then we compute only the off-diagonal terms here
-        incflo_compute_divtau(lev, *divtau[lev], vel);
+        ComputeDivTau(lev, *divtau[lev], vel);
 
         // Define u = u_o + dt/2 (R_u^* + R_u^n)
         MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv[lev], 0, 0, 3, 0);
@@ -347,11 +365,15 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
         // Add gravitational forces
         for(int dir = 0; dir < 3; dir++)
+        {
             (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
+        }
 
         // Convert velocities to momenta
         for(int dir = 0; dir < 3; dir++)
+        {
             MultiFab::Multiply(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
+        }
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
@@ -359,27 +381,27 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < 3; dir++)
+        {
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
+        }
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) incflo_diffuse_velocity(new_time);
+    if(!explicit_diffusion) 
+    {
+        DiffuseVelocity(new_time);
+    }
 
 	// Apply projection
-	incflo_apply_projection(new_time, dt, proj_2);
+	ApplyProjection(new_time, dt, proj_2);
     
 	// Project velocity field
-	incflo_set_velocity_bcs(new_time, 0);
+	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 1)
     {
         amrex::Print() << "\nAfter corrector step:\n";
-        for(int lev = 0; lev <= finest_level; lev++)
-            incflo_print_max_vel(lev);
-
-        incflo_compute_divu(t + dt);
-        for(int lev = 0; lev <= finest_level; lev++)
-            amrex::Print() << "max(abs(divu)) = " << incflo_norm0(divu, lev, 0) << "\n";
+        PrintMaxValues(new_time);
     }
 }
 
@@ -404,13 +426,15 @@ bool incflo::SteadyStateReached()
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    incflo_set_velocity_bcs(t, 0);
+    FillVelocityBC(t, 0);
 
+    // Use temporaries to store the difference between current and previous solution
+	Vector<std::unique_ptr<MultiFab>> diff_vel;
+    diff_vel.resize(finest_level + 1);
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // Use temporaries to store the difference between current and previous solution
-        MultiFab diff_vel(vel[lev]->boxArray(), vel[lev]->DistributionMap(), 3, 0);
-        MultiFab::LinComb(diff_vel, 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
+        diff_vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+        MultiFab::LinComb(*diff_vel[lev], 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
 
         Real max_change = 0.0;
         Real max_relchange = 0.0;
@@ -418,11 +442,11 @@ bool incflo::SteadyStateReached()
         for(int i = 0; i < 3; i++)
         {
             // max(abs(u^{n+1}-u^n))
-            max_change = amrex::max(max_change, incflo_norm0(diff_vel, lev, i));
+            max_change = amrex::max(max_change, Norm(diff_vel, lev, i, 0));
             
             // sum(abs(u^{n+1}-u^n)) / sum(abs(u^n))
-            Real norm1_diff = incflo_norm1(diff_vel, lev, i);
-            Real norm1_old = incflo_norm1(vel_o, lev, i);
+            Real norm1_diff = Norm(diff_vel, lev, i, 1);
+            Real norm1_old = Norm(vel_o, lev, i, 1);
             Real relchange = norm1_old > 1.0e-15 ? norm1_diff / norm1_old : 0.0;
             max_relchange = amrex::max(max_relchange, relchange);
         }
@@ -447,6 +471,12 @@ bool incflo::SteadyStateReached()
 
 	// Always return negative to first access. This way
 	// initial zero velocity field do not test for false positive
-    if(nstep < 2) return false;
-    else return reached;
+    if(nstep < 2) 
+    {
+        return false;
+    }
+    else 
+    {
+        return reached;
+    }
 }

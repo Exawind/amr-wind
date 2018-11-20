@@ -2,7 +2,7 @@
 
 void incflo::AllocateArrays(int lev)
 {
-    incflo_update_ebfactory(lev);
+    UpdateEBFactory(lev);
 
 	// ********************************************************************************
 	// Cell- or node-based arrays
@@ -148,7 +148,7 @@ void incflo::AllocateArrays(int lev)
 
 void incflo::RegridArrays(int lev)
 {
-    incflo_update_ebfactory(lev);
+    UpdateEBFactory(lev);
 
 	// ********************************************************************************
 	// Cell-based arrays
@@ -361,10 +361,10 @@ void incflo::RegridArrays(int lev)
 	// Make sure we fill the ghost cells as appropriate -- this is copied from init_fluid
 	// ********************************************************************************
 
-	fill_mf_bc(lev, *ro[lev]);
-	fill_mf_bc(lev, *eta[lev]);
+	FillScalarBC(lev, *ro[lev]);
+	FillScalarBC(lev, *eta[lev]);
 
-    if (!nodal_pressure) fill_mf_bc(lev, *p[lev]);
+    if (!nodal_pressure) FillScalarBC(lev, *p[lev]);
 }
 
 // Resize all arrays when instance of incflo class is constructed.
