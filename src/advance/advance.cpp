@@ -400,7 +400,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
     if(incflo_verbose > 1)
     {
-        amrex::Print() << "\nAfter corrector step:\n";
+        amrex::Print() << "After corrector step:" << std::endl;
         PrintMaxValues(new_time);
     }
 }
@@ -433,7 +433,7 @@ bool incflo::SteadyStateReached()
     diff_vel.resize(finest_level + 1);
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        diff_vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+        diff_vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
         MultiFab::LinComb(*diff_vel[lev], 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, 3, 0);
 
         Real max_change = 0.0;

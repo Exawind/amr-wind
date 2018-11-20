@@ -48,7 +48,7 @@ void incflo::PrintMaxValues(Real time)
 //
 void incflo::PrintMaxVel(int lev)
 {
-	amrex::Print() << "max(abs(u/v/w))  = "
+	amrex::Print() << "max(abs(u/v/w/divu))  = "
                    << Norm(vel, lev, 0, 0) << "  "
 				   << Norm(vel, lev, 1, 0) << "  "
                    << Norm(vel, lev, 2, 0) << "  " 
