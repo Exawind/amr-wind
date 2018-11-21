@@ -1,14 +1,11 @@
-#include <AMReX_ParmParse.H>
-
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
-#include <AMReX_VisMF.H>
-#include <diffusion_F.H>
-#include <incflo.H>
-
-// For multigrid
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
+#include <AMReX_VisMF.H>
+
+#include <diffusion_F.H>
+#include <incflo.H>
 
 //
 // Divergence of stress tensor
@@ -91,12 +88,6 @@ void incflo::ComputeDivTau(int lev,
    }
 }
 
-
-
-
-
-
-
 //
 // Implicit diffusion
 //
@@ -133,7 +124,8 @@ void incflo::DiffuseVelocity(amrex::Real time)
         beta[lev].resize(3);
         for(int dir = 0; dir < 3; dir++)
         {
-            BoxArray edge_ba = grids[lev].surroundingNodes(dir);
+            BoxArray edge_ba = grids[lev];
+            edge_ba.surroundingNodes(dir);
             beta[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost));
         }
         sol[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -186,7 +178,6 @@ void incflo::SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b
 {
 	BL_PROFILE("incflo::SolveDiffusionEquation");
 
-    int debug = 0;
 	// First define the matrix.
 	LPInfo info;
 	// Class MLABecLaplacian describes the following operator:
@@ -228,14 +219,11 @@ void incflo::SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b
         matrix.setBCoeffs(lev, b_tmp);
 
         // By this point we must have filled the Dirichlet values of sol stored in the ghost cells
-        amrex::Print() << ++debug << std::endl; 
         matrix.setLevelBC(lev, GetVecOfConstPtrs(sol)[lev]);
-        amrex::Print() << ++debug << std::endl; 
     }
 
 	// Then setup the solver ----------------------
 	MLMG solver(matrix);
-    amrex::Print() << ++debug << std::endl; 
 
     // The default bottom solver is BiCG
     if(bottom_solver_type == "smoother")
@@ -256,10 +244,8 @@ void incflo::SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b
 	// This ensures that ghost cells of sol are correctly filled when returned from the solver
 	solver.setFinalFillBC(true);
 
-    amrex::Print() << ++debug << std::endl; 
 	// Finally, solve the system
 	solver.solve(GetVecOfPtrs(sol), GetVecOfConstPtrs(RHS), mg_rtol, mg_atol);
-    amrex::Print() << ++debug << std::endl; 
 
     for(int lev = 0; lev <= finest_level; lev++)
     {

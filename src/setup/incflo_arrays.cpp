@@ -105,17 +105,20 @@ void incflo::AllocateArrays(int lev)
 	// ****************************************************************
 
 	// Create a BoxArray on x-faces.
-    BoxArray x_edge_ba = grids[lev].surroundingNodes(0);
+    BoxArray x_edge_ba = grids[lev];
+    x_edge_ba.surroundingNodes(0);
 	m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_u_mac[lev]->setVal(0.);
 
 	// Create a BoxArray on y-faces.
-    BoxArray y_edge_ba = grids[lev].surroundingNodes(1);
+    BoxArray y_edge_ba = grids[lev];
+    y_edge_ba.surroundingNodes(1);
 	m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_v_mac[lev]->setVal(0.);
 
 	// Create a BoxArray on y-faces.
-    BoxArray z_edge_ba = grids[lev].surroundingNodes(2);
+    BoxArray z_edge_ba = grids[lev];
+    z_edge_ba.surroundingNodes(2);
 	m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	m_w_mac[lev]->setVal(0.);
 }
