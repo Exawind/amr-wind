@@ -2,3 +2,4 @@ f90EXE_sources += diffusion_mod.f90
 f90EXE_sources += diffusion_eb_mod.f90
 
 CEXE_sources += diffusion.cpp  
+CEXE_sources += DiffusionEquation.cpp  

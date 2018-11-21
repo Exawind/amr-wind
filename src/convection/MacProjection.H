@@ -17,11 +17,7 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Vector.H>
 
-// Define unit vectors to easily convert indices
-// TODO: Think about moving these to "global constants" or similar
-extern const amrex::IntVect e_x;
-extern const amrex::IntVect e_y;
-extern const amrex::IntVect e_z;
+#include <constants.H>
 
 class MacProjection
 {

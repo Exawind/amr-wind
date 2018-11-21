@@ -12,6 +12,7 @@
 #include <AMReX_EB2_IF_Translation.H>
 
 #include <eb_if.H>
+#include <DiffusionEquation.H>
 #include <MacProjection.H>
 #include <projection_F.H>
 // Note: a lot of stuff is included through MacProjection.H...
@@ -323,9 +324,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	std::unique_ptr<MacProjection> mac_projection;
-
-    // What solver to use as the bottom solver in the MLMG solves.
-    std::string bottom_solver_type;
+	std::unique_ptr<DiffusionEquation> diffusion_equation;
 
     // Time and time step counters
 	Real cur_time = 0.0;
@@ -347,8 +346,8 @@ private:
     Real papa_reg = 0.0;
     Real eta_0 = 0.0;
 
-	// Options to control MLMG behavior
     // TODO: get this out of here , should not be member functions
+	// Options to control MLMG behavior
 	int mg_verbose = 0;
 	int mg_cg_verbose = 0;
 	int mg_max_iter = 100;
@@ -356,6 +355,9 @@ private:
 	int mg_max_fmg_iter = 0;
 	Real mg_rtol = 1.0e-11;
 	Real mg_atol = 1.0e-14;
+    // What solver to use as the bottom solver in the MLMG solves.
+    std::string bottom_solver_type;
+
 
 	// Tolerance to check for steady state
 

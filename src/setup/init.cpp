@@ -128,6 +128,7 @@ void incflo::ReadParameters()
             amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
         }
 
+        // TODO: get rid of when there are separate classes for each solve
 		// Option to control MLMG behavior
 		pp.query("mg_verbose", mg_verbose);
 		pp.query("mg_cg_verbose", mg_cg_verbose);
@@ -155,8 +156,19 @@ void incflo::PostInit(int restart_flag)
     mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
+    if(!explicit_diffusion)
+    {
+        diffusion_equation.reset(new DiffusionEquation(this, &ebfactory, 
+                                                       bc_ilo, bc_ihi, 
+                                                       bc_jlo, bc_jhi, 
+                                                       bc_klo, bc_khi, nghost));
+    }
+
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    if(!restart_flag) InitFluid();
+    if(!restart_flag) 
+    {
+        InitFluid();
+    }
 
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
@@ -220,9 +232,18 @@ void incflo::SetBCTypes()
 {
     // Set periodicity only at level 0
     int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-    if(geom[0].isPeriodic(0)) cyc_x = 1;
-    if(geom[0].isPeriodic(1)) cyc_y = 1;
-    if(geom[0].isPeriodic(2)) cyc_z = 1;
+    if(geom[0].isPeriodic(0)) 
+    {
+        cyc_x = 1;
+    }
+    if(geom[0].isPeriodic(1)) 
+    {
+        cyc_y = 1;
+    }
+    if(geom[0].isPeriodic(2)) 
+    {
+        cyc_z = 1;
+    }
     incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
 
     // Set BC-types 
@@ -275,7 +296,6 @@ void incflo::SetBackgroundPressure()
         //    over bc's on faces and it makes more sense to do this one grid at a time
         for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
         {
-
             const Box& bx = mfi.validbox();
 
             set_p0(bx.loVect(), bx.hiVect(),
@@ -309,7 +329,10 @@ void incflo::InitialIterations()
     int initialisation = 1;
 	ComputeDt(initialisation);
 
-    if(incflo_verbose) amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
+    if(incflo_verbose) 
+    {
+        amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
+    }
 
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
@@ -358,7 +381,10 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("incflo::InitialProjection()");
 
-    if(incflo_verbose) amrex::Print() << "Initial projection:" << std::endl;
+    if(incflo_verbose) 
+    {
+        amrex::Print() << "Initial projection:" << std::endl;
+    }
 
 	// Need to add this call here so that the MACProjection internal arrays
 	//  are allocated so that the cell-centered projection can use the MAC
