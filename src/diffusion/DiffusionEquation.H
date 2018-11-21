@@ -41,7 +41,9 @@ public:
     void setSolverSettings(amrex::MLMG& solver);
 
     // Solve the diffusion equation, update vel
-    void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, int dir);
+    void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
+               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
+               int dir);
 
 private:
     // Update the variable coefficients in the Poisson operator, called from setCurrentState()

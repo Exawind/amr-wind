@@ -106,17 +106,11 @@ void incflo::DiffuseVelocity(amrex::Real time)
 	// Update the solver with the relevant current states of the simulation
 	diffusion_equation->setCurrentState(ro, eta, dt);
 
-    amrex::Print() << "Before solving diffusion equation: " << std::endl;
-    PrintMaxVel(0);
-
 	// Loop over the velocity components
 	for(int dir = 0; dir < 3; dir++)
 	{
-		diffusion_equation->solve(vel, dir);
+		diffusion_equation->solve(vel, ro, dir);
 	}
-
-    amrex::Print() << "After solving diffusion equation: " << std::endl;
-    PrintMaxVel(0);
 
 	// Swap ghost cells and apply BCs to velocity
 	FillVelocityBC(time, 0);

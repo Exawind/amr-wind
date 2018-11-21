@@ -149,9 +149,6 @@ void DiffusionEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>&
 
         // This sets the spatially varying b coefficients
         matrix.setBCoeffs(lev, b_tmp);
-
-        // Set the right hand side to equal ro (to be multiplied by vel[dir])
-        rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
     }
 }
 
@@ -216,11 +213,6 @@ void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab
 //
 void DiffusionEquation::setSolverSettings(MLMG& solver)
 {
-    if(verbose > 0)
-    {
-        amrex::Print() << "Setting solver settings... " << std::endl;
-    }
-
     // The default bottom solver is BiCG
     if(bottom_solver_type == "smoother")
     {
@@ -247,7 +239,9 @@ void DiffusionEquation::setSolverSettings(MLMG& solver)
 //
 // Solve the matrix equation
 //
-void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, int dir)
+void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, 
+                              const Vector<std::unique_ptr<MultiFab>>& ro, 
+                              int dir)
 {
 	BL_PROFILE("DiffusionEquation::solve");
 
@@ -258,6 +252,9 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, int dir)
 
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
+        // Set the right hand side to equal ro 
+        rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
+
         // Multiply rhs by vel(dir) to get momentum
         MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
 
@@ -277,3 +274,4 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, int dir)
         vel[lev]->copy(*phi[lev], 0, dir, 1, nghost, nghost);
     }
 }
+

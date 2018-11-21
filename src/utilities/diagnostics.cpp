@@ -8,6 +8,7 @@
 //
 Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type)
 {
+    // TODO: is it necessary to create tmp MF? 
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
                     mf[lev]->nComp(),
