@@ -135,20 +135,17 @@ void DiffusionEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>&
 
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
-        // TODO: just make b be in the proper data structure? 
-        // Copy the PPE coefficient into the proper data strutcure
-        Vector<const MultiFab*> tmp;
-        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
-
-        tmp = GetVecOfConstPtrs(b[lev]);
-        b_tmp[0] = tmp[0];
-        b_tmp[1] = tmp[1];
-        b_tmp[2] = tmp[2];
-
         // This sets the spatially varying A coefficients
         matrix.setACoeffs(lev, (*ro[lev]));
 
-        // This sets the spatially varying b coefficients
+        // Copy the spatially varying b  coefficients into the proper data strutcure
+        Vector<const MultiFab*> tmp = GetVecOfConstPtrs(b[lev]);
+        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
+        for(int dir = 0; dir < 3; dir++)
+        {
+            b_tmp[dir] = tmp[dir];
+        }
+        // Set the coefficients
         matrix.setBCoeffs(lev, b_tmp);
     }
 }
