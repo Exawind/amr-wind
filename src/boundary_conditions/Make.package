@@ -2,8 +2,6 @@ f90EXE_sources += bc_mod.f90
 F90EXE_sources += bc_fill_nd.F90
 f90EXE_sources += fill_bc0.f90 
 f90EXE_sources += set_mac_velocity_bcs.f90
-f90EXE_sources += set_pressure_bcs.f90
-f90EXE_sources += set_scalar_bcs.f90
 f90EXE_sources += set_velocity_bcs.f90
 
 CEXE_sources += boundary_conditions.cpp

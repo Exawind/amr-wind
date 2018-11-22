@@ -11,7 +11,7 @@
                         gp0, glo, ghi, &
                         dx, dy, dz, xlength, ylength, zlength, delp_dir, &
                         bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
-                        bct_klo, bct_khi, ng, nodal_pressure &
+                        bct_klo, bct_khi, ng &
                         ) bind(C, name="set_p0")
 
          use bc       , only: delp_x, delp_y, delp_z
@@ -32,7 +32,7 @@
          integer, intent(in) ::   slo(3),   shi(3)
          integer, intent(in) ::   glo(3),   ghi(3)
          integer, intent(in) :: domlo(3), domhi(3)
-         integer, intent(in) :: ng, nodal_pressure
+         integer, intent(in) :: ng
 
          real(ar), intent(inout) :: p0&
                                     (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
@@ -101,11 +101,7 @@
             !  is set at the last cell center location.
             real(ar) :: offset
 
-            if ( nodal_pressure == 1 ) then
-               offset = - 0.5_ar
-            else
-               offset = 0.0_ar
-            end if
+            offset = - 0.5_ar
 
             if (abs(delp_x) > epsilon(zero)) then
                dpodx = delp_x/xlength
@@ -242,11 +238,7 @@
          block
             integer offset
 
-            if (nodal_pressure == 1) then
-               offset = 1
-            else
-               offset = 0
-            end if
+            offset = 1
 
             nlft = max(0,domlo(1)-slo(1)+offset)
             nbot = max(0,domlo(2)-slo(2)+offset)
@@ -271,18 +263,7 @@
                   case (pinf_, pout_)
 
                      bcv = bct_ilo(jbc,kbc,2)
-                     if (nodal_pressure .eq. 1) then
-                        p0(slo(1):domlo(1)  ,j,k) = bc_p(bcv)
-                     else
-                        p0(slo(1):domlo(1)-1,j,k) = bc_p(bcv)
-                     endif
-
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then
-                        p0(slo(1):domlo(1)-1,j,k) = &
-                           2.d0 * p0(domlo(1),j,k) - p0(domlo(1)+1,j,k)
-                     end if
+                     p0(slo(1):domlo(1)  ,j,k) = bc_p(bcv)
 
                   end select
                end do
@@ -305,13 +286,6 @@
                      bcv = bct_ihi(jbc,kbc,2)
                      p0(domhi(1)+1:shi(1),j,k) = bc_p(bcv)
 
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then
-                        p0(domhi(1)+1:shi(1),j,k) = &
-                           2.d0 * p0(domhi(1),j,k) - p0(domhi(1)-1,j,k)
-                     end if
-
                   end select
                end do
             end do
@@ -331,18 +305,7 @@
                   case (pinf_, pout_)
 
                      bcv = bct_jlo(ibc,kbc,2)
-                     if (nodal_pressure .eq. 1) then
-                         p0(i,slo(2):domlo(2)  ,k) = bc_p(bcv)
-                     else
-                         p0(i,slo(2):domlo(2)-1,k) = bc_p(bcv)
-                     endif
-
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then
-                     p0(i,slo(2):domlo(2)-1,k) = &
-                        2.d0 * p0(i,domlo(2),k) - p0(i,domlo(2)+1,k)
-                     end if
+                     p0(i,slo(2):domlo(2)  ,k) = bc_p(bcv)
 
                   end select
                end do
@@ -365,13 +328,6 @@
                      bcv = bct_jhi(ibc,kbc,2)
                      p0(i,domhi(2)+1:shi(2),k) = bc_p(bcv)
 
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then 
-                        p0(i,domhi(2)+1:shi(2),k) = &
-                           2.d0 * p0(i,domhi(2),k) - p0(i,domhi(2)-1,k)
-                     end if
-
                   end select
                end do
             end do
@@ -391,18 +347,7 @@
                   case (pinf_, pout_)
 
                      bcv = bct_klo(ibc,jbc,2)
-                     if (nodal_pressure .eq. 1) then
-                        p0(i,j,slo(3):domlo(3)  ) = bc_p(bcv)
-                     else
-                        p0(i,j,slo(3):domlo(3)-1) = bc_p(bcv)
-                     end if
-
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then
-                        p0(i,j,slo(3):domlo(3)-1) = &
-                           2.d0 * p0(i,j,domlo(3)) - p0(i,j,domlo(3)+1)
-                     end if
+                     p0(i,j,slo(3):domlo(3)  ) = bc_p(bcv)
 
                   end select
                end do
@@ -424,13 +369,6 @@
 
                      bcv = bct_khi(ibc,jbc,2)
                      p0(i,j,domhi(3)+1:shi(3)) = bc_p(bcv)
-
-                  case (minf_)
-
-                     if (nodal_pressure .eq. 0) then 
-                        p0(i,j,domhi(3)+1:shi(3)) = &
-                           2.d0 * p0(i,j,domhi(3)) - p0(i,j,domhi(3)-1)
-                     end if
 
                   end select
                end do

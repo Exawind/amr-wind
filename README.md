@@ -2,13 +2,23 @@
 
 | File      | Description                                         |
 | ----------| --------------------------------------------------- |
-| doc       | Documentation                                       |
 | exec      | Run directory for executables                       |
 | src       | C++/Fortran source files                            |
-| tools     | CMake configuration files                           |
 
 
 # Using incflo
+
+## Install [Blitz++](https://github.com/blitzpp/blitz/wiki)
+
+APT (Debian):
+```shell
+> sudo apt install libblitz-doc libblitz0-dev libblitz0ldbl
+```
+
+[Homebrew](https://brew.sh/) (macOS):
+```shell
+> brew install blitz
+```
 
 ## Build AMReX Library
 
@@ -31,3 +41,8 @@ Clone and build incflo
 # Contributing
 
 We welcome contributions in the form of pull-requests from anyone.  
+
+# Acknowledgement of external libraries
+
+This code relies on [Blitz++](https://github.com/blitzpp/blitz/wiki) and
+[Algoim](https://fastmath-scidac.llnl.gov/software/algoim.html). 

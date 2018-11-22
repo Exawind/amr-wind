@@ -65,7 +65,7 @@ contains
       integer,  intent(in   ) :: &
          flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
 
-      integer(c_int) :: i, j, k, n
+      integer(c_int) :: i, j, k
       real(rt)       :: idx, idy, idz
       real(rt)       :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)       :: gradu(9)
@@ -186,9 +186,9 @@ contains
       integer,  intent(in   ) :: &
          flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
 
-      integer(c_int) :: i, j, k, n
+      integer(c_int) :: i, j, k
       real(rt)       :: idx, idy, idz
-      real(rt)       :: ux, uy, uz, vx, vy, vz, wx, wy, wz
+      real(rt)       :: uy, uz, vx, vz, wx, wy
       real(rt)       :: gradu(9)
 
       idx = one / dx(1)

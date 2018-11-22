@@ -155,32 +155,4 @@ contains
 
    END SUBROUTINE READ_NAMELIST
 
-   subroutine add_argument(fname, nlen) &
-      bind(c,name='incflo_add_argument')
-
-      use iso_c_binding, only: c_int, c_float, c_char
-      implicit none
-      integer(c_int), intent(in) :: nlen
-      character(kind=c_char), intent(in) :: fname(nlen)
-      integer :: lc, bnd
-
-      argc = argc + 1
-      if(argc > 32) then
-         write(*,*) 'from add_argument:'
-         write(*,*) 'too many arguments!!!!'
-         stop 986532
-      endif
-
-! Copy over the string, character-by-character.
-      bnd = min(nlen,80)
-      do lc=1, bnd
-         argv(argc)(lc:lc) = fname(lc)
-      enddo
-! Clear out the remaining string.
-      do lc=bnd+1,80
-         argv(argc)(lc:lc) = ' '
-      enddo
-
-   end subroutine add_argument
-
 END MODULE read_namelist_module

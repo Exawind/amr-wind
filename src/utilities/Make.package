@@ -1,8 +1,10 @@
 f90EXE_sources += constant_mod.f90  
+f90EXE_sources += divop_mod.f90
 f90EXE_sources += eb_to_pvd.f90      
 f90EXE_sources += param_mod.f90   
 f90EXE_sources += read_namelist.f90  
 f90EXE_sources += remove_comment.f90
 f90EXE_sources += utilities_mod.f90
 
+CEXE_sources += diagnostics.cpp  
 CEXE_sources += io.cpp

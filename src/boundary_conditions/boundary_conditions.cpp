@@ -13,9 +13,9 @@
 // Compute a new multifab by coping in phi from valid region and filling ghost cells
 // works for single level and 2-level cases (fill fine grid ghost by interpolating from coarse)
 void
-incflo::FillPatch (int lev, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icomp, int ncomp)
+incflo::FillPatch (int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icomp, int ncomp)
 {
-#if 0
+    /*
     if (lev == 0)
     {
         Vector<MultiFab*> smf;
@@ -38,49 +38,20 @@ incflo::FillPatch (int lev, MultiFab& mf, MultiFab& cmf, MultiFab& fmf, int icom
                                    cphysbc, fphysbc, refRatio(lev-1),
                                    mapper, bcs);
     }
-#endif
+    */
 }
 
 //
-// Set the BCs for all the variables EXCEPT pressure or velocity.
+// Fill the BCs for velocity only
 //
-void incflo::incflo_set_scalar_bcs ()
+void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
 {
-    BL_PROFILE("incflo::incflo_set_scalar_bcs()");
+    BL_PROFILE("incflo::FillVelocityBC()");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-        for (MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
-        {
-            set_scalar_bcs((*ro[lev])[mfi].dataPtr(),
-                           BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                           bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                           bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                           bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                           domain.loVect(), domain.hiVect(),
-                           &nghost);
-        }
-        ro[lev]->FillBoundary(geom[lev].periodicity());
-        eta[lev]->FillBoundary(geom[lev].periodicity());
-    }
-}
-
-//
-// Set the BCs for velocity only
-//
-void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
-{
-    BL_PROFILE("incflo::incflo_set_velocity_bcs()");
-
-    for(int lev = 0; lev < nlev; lev++)
-    {
         vel[lev]->FillBoundary(geom[lev].periodicity());
-        Box domain(geom[lev].Domain());
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
@@ -99,32 +70,9 @@ void incflo::incflo_set_velocity_bcs(Real time, int extrap_dir_bcs)
     }
 }
 
-//
-// Fills ghost cell values of pressure appropriately for the BC type
-//
-void incflo::incflo_extrap_pressure (int lev, std::unique_ptr<amrex::MultiFab>& p)
+void incflo::FillScalarBC(int lev, MultiFab& mf)
 {
-    BL_PROFILE("incflo::incflo_extrap_pressure()");
-    if (nodal_pressure == 1) return;
- 
-    Box domain(geom[lev].Domain());
- 
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-    for(MFIter mfi(*p, true); mfi.isValid(); ++mfi) 
-    {
-        extrap_pressure_to_ghost_cells(BL_TO_FORTRAN_ANYD((*p)[mfi]),
-                                       bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                                       bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                                       bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                                       domain.loVect(), domain.hiVect(),
-                                       &nghost);
-    }
-}
-
-void incflo::fill_mf_bc(int lev, MultiFab& mf)
-{
+    BL_PROFILE("incflo:FillScalarBC()");
 	Box domain(geom[lev].Domain());
 
 	if(!mf.boxArray().ixType().cellCentered())
@@ -133,7 +81,7 @@ void incflo::fill_mf_bc(int lev, MultiFab& mf)
 	// Impose periodic bc's at domain boundaries and fine-fine copies in the interior
 	mf.FillBoundary(geom[lev].periodicity());
 
-// Fill all cell-centered arrays with first-order extrapolation at domain boundaries
+    // Fill all cell-centered arrays with first-order extrapolation at domain boundaries
 #ifdef _OPENMP
 #pragma omp parallel
 #endif

@@ -10,13 +10,12 @@
 #include <projection_F.H>
 #include <setup_F.H>
 
-// For multigrid
-using namespace amrex;
+// Define unit vectors to easily convert indices
+extern const amrex::IntVect e_x(1, 0, 0);
+extern const amrex::IntVect e_y(0, 1, 0);
+extern const amrex::IntVect e_z(0, 0, 1);
 
-// Define unit vectors for easily convert indeces
-IntVect MacProjection::e_x(1, 0, 0);
-IntVect MacProjection::e_y(0, 1, 0);
-IntVect MacProjection::e_z(0, 0, 1);
+using namespace amrex;
 
 // Constructor
 MacProjection::MacProjection(AmrCore* a_amrcore,
@@ -44,6 +43,7 @@ void MacProjection::read_inputs()
 	pp.query("verbose", verbose);
 	pp.query("mg_verbose", m_mg_verbose);
 	pp.query("mg_rtol", m_mg_rtol);
+	pp.query("mg_atol", m_mg_atol);
 
    // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
    bottom_solver_type = "bicgstab";
@@ -247,7 +247,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
         macproj.setBottomSolver(MLMG::BottomSolver::hypre);
     }
 
-	macproj.project(m_mg_rtol);
+	macproj.project(m_mg_rtol, m_mg_atol);
 
 	if(verbose)
 		Print() << " >> After projection\n";

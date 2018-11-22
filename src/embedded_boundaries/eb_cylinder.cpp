@@ -78,7 +78,7 @@ void incflo::make_eb_cylinder()
     *                                                                           *
     *****************************************************************************/
     amrex::Print() << "Now  making the fluid ebfactory ..." << std::endl;
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         const EB2::Level& ebis_lev_cyl = ebis_cyl.getLevel(geom[lev]);
         eb_level_fluid = &ebis_lev_cyl;

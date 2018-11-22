@@ -8,7 +8,7 @@ void incflo::WriteEBSurface()
 		return;
 
     // Only write at the finest level! 
-    int lev = nlev - 1;
+    int lev = max_level;
 
 	const Real* dx = Geom(lev).CellSize();
 

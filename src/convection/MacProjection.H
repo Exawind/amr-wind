@@ -17,6 +17,8 @@
 #include <AMReX_MultiFab.H>
 #include <AMReX_Vector.H>
 
+#include <constants.H>
+
 class MacProjection
 {
 public:
@@ -48,11 +50,6 @@ public:
                           amrex::Real time);
 
 private:
-	// Unit vectors in Cartesian space
-	static amrex::IntVect e_x;
-	static amrex::IntVect e_y;
-	static amrex::IntVect e_z;
-
 	int m_nghost;
 
 	amrex::AmrCore* m_amrcore;
@@ -84,6 +81,7 @@ private:
 
 	int m_mg_verbose = 0;
 	amrex::Real m_mg_rtol = 1.0e-11;
+	amrex::Real m_mg_atol = 0.0;
 
 	void read_inputs();
 

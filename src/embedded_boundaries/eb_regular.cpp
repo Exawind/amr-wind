@@ -1,11 +1,9 @@
 #include <AMReX_EB2.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
-
-#include <eb_if.H>
-
 #include <AMReX_EB_levelset.H>
 
+#include <eb_if.H>
 #include <embedded_boundaries_F.H>
 #include <incflo.H>
 
@@ -52,7 +50,7 @@ void incflo::make_eb_regular()
 
     const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= max_level; lev++)
     {
         eb_level_fluid = &eb_is.getLevel(geom[lev]);
         ebfactory[lev].reset(new EBFArrayBoxFactory(*eb_level_fluid,

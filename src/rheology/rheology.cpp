@@ -3,11 +3,11 @@
 #include <incflo.H>
 #include <rheology_F.H>
 
-void incflo::incflo_compute_viscosity()
+void incflo::ComputeViscosity()
 {
-	BL_PROFILE("incflo::incflo_compute_viscosity");
+	BL_PROFILE("incflo::ComputeViscosity");
 
-    for(int lev = 0; lev < nlev; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 

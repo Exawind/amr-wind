@@ -11,46 +11,16 @@
 
 #include <incflo.H>
 
-namespace
+namespace { const std::string level_prefix{"Level_"}; }
+
+void GotoNextLine(std::istream& is)
 {
-const std::string level_prefix{"Level_"};
-}
-
-// This function initializes the attributes vecVarsName,
-//                                          pltscalarVars, pltscaVarsName,
-//                                          chkscalarVars, chkscaVarsName.
-// If new variables need to be added to the output/checkpoint, simply add them
-// here and the IO routines will automatically take care of them.
-void incflo::InitIOData()
-{
-	// Define the list of vector variables on faces that need to be written
-	// to plotfile/checkfile.
-	vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
-
-	// Define the list of scalar variables at cell centers that need to be
-	// written to plotfile/checkfile. "volfrac" MUST always be last without any
-	// mf associated to it!!!
-	pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
-	pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
-
-	chkscaVarsName = {"p", "ro", "eta"};
-	chkscalarVars = {&p, &ro, &eta};
-}
-
-void incflo::WritePlotHeader(const std::string& name, int nstep, Real dt, Real time) const
-{
-	bool is_checkpoint = 0;
-	WriteHeader(name, nstep, dt, time, is_checkpoint);
-}
-
-void incflo::WriteCheckHeader(const std::string& name, int nstep, Real dt, Real time) const
-{
-	bool is_checkpoint = 1;
-	WriteHeader(name, nstep, dt, time, is_checkpoint);
+	constexpr std::streamsize bl_ignore_max{100000};
+	is.ignore(bl_ignore_max, '\n');
 }
 
 void incflo::WriteHeader(
-	const std::string& name, int nstep, Real dt, Real time, bool is_checkpoint) const
+	const std::string& name, bool is_checkpoint) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
@@ -73,13 +43,12 @@ void incflo::WriteHeader(
 		else
 			HeaderFile << "HyperCLaw-V1.1\n";
 
-		const int nlevels = finestLevel() + 1;
-		HeaderFile << nlevels << "\n";
+		HeaderFile << finest_level << "\n";
 
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
 		HeaderFile << dt << "\n";
-		HeaderFile << time << "\n";
+		HeaderFile << cur_time << "\n";
 
 		// Geometry
 		for(int i = 0; i < BL_SPACEDIM; ++i)
@@ -91,7 +60,7 @@ void incflo::WriteHeader(
 		HeaderFile << '\n';
 
 		// BoxArray
-		for(int lev = 0; lev < nlevels; ++lev)
+		for(int lev = 0; lev <= finest_level; ++lev)
 		{
 			boxArray(lev).writeOn(HeaderFile);
 			HeaderFile << '\n';
@@ -99,7 +68,7 @@ void incflo::WriteHeader(
 	}
 }
 
-void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Real time) const
+void incflo::WriteCheckPointFile() const
 {
 	BL_PROFILE("incflo::WriteCheckPointFile()");
 
@@ -107,14 +76,13 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 
     amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
-	const int nlevels = finestLevel() + 1;
-	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, nlevels, true);
+	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
-	WriteCheckHeader(checkpointname, nstep, dt, time);
-
+    bool is_checkpoint = true;
+	WriteHeader(checkpointname, is_checkpoint);
 	WriteJobInfo(checkpointname);
 
-	for(int lev = 0; lev < nlevels; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 
 		// This writes all three velocity components
@@ -137,278 +105,127 @@ void incflo::WriteCheckPointFile(std::string& check_file, int nstep, Real dt, Re
 	}
 }
 
-void incflo::Restart(
-	std::string& restart_file, int* nstep, Real* dt, Real* time, IntVect& Nrep)
+void incflo::ReadCheckpointFile()
 {
-	BL_PROFILE("incflo::Restart()");
+	BL_PROFILE("incflo::ReadCheckpointFile()");
 
-	amrex::Print() << "  Restarting from checkpoint " << restart_file << std::endl;
+	amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
 
 	Real prob_lo[BL_SPACEDIM];
 	Real prob_hi[BL_SPACEDIM];
 
 	/***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
-     *              allocate incflo memory (incflo::AllocateArrays)    *
+     *              allocate incflo memory (incflo::AllocateArrays)            *
+     *              (by calling MakeNewLevelFromScratch)
      ***************************************************************************/
 
-	{
-		std::string File(restart_file + "/Header");
+    std::string File(restart_file + "/Header");
 
-		VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
+    VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
 
-		Vector<char> fileCharPtr;
-		ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
-		std::string fileCharPtrString(fileCharPtr.dataPtr());
-		std::istringstream is(fileCharPtrString, std::istringstream::in);
+    Vector<char> fileCharPtr;
+    ParallelDescriptor::ReadAndBcastFile(File, fileCharPtr);
+    std::string fileCharPtrString(fileCharPtr.dataPtr());
+    std::istringstream is(fileCharPtrString, std::istringstream::in);
 
-		std::string line, word;
+    std::string line, word;
 
-		std::getline(is, line);
+    // Start reading from checkpoint file 
+    
+    // Title line
+    std::getline(is, line);
 
-		int nlevs;
-		int int_tmp;
-		Real real_tmp;
+    // Finest level
+    is >> finest_level;
+    GotoNextLine(is);
 
-		is >> nlevs;
-		GotoNextLine(is);
-		// finest_level = nlevs-1;
+    // Step count
+    is >> nstep;
+    GotoNextLine(is);
 
-		// Time stepping controls
-		is >> int_tmp;
-		*nstep = int_tmp;
-		GotoNextLine(is);
+    // Time step size
+    is >> dt;
+    GotoNextLine(is);
 
-		is >> real_tmp;
-		*dt = real_tmp;
-		GotoNextLine(is);
+    // Current time
+    is >> cur_time;
+    GotoNextLine(is);
 
-		is >> real_tmp;
-		*time = real_tmp;
-		GotoNextLine(is);
+    // Low coordinates of domain bounding box
+    std::getline(is, line);
+    {
+        std::istringstream lis(line);
+        int i = 0;
+        while(lis >> word)
+        {
+            prob_lo[i++] = std::stod(word);
+        }
+    }
 
-		std::getline(is, line);
-		{
-			std::istringstream lis(line);
-			int i = 0;
-			while(lis >> word)
-			{
-				prob_lo[i++] = std::stod(word);
-			}
-		}
+    // High coordinates of domain bounding box
+    std::getline(is, line);
+    {
+        std::istringstream lis(line);
+        int i = 0;
+        while(lis >> word)
+        {
+            prob_hi[i++] = std::stod(word);
+        }
+    }
 
-		std::getline(is, line);
-		{
-			std::istringstream lis(line);
-			int i = 0;
-			while(lis >> word)
-			{
-				prob_hi[i++] = std::stod(word);
-			}
-		}
+    // Set up problem domain
+    Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
 
-		if(Nrep != IntVect::TheUnitVector())
-		{
-			for(int d = 0; d < BL_SPACEDIM; d++)
-			{
-				prob_lo[d] = Nrep[d] * prob_lo[d];
-				prob_hi[d] = Nrep[d] * prob_hi[d];
-			}
-		}
-		Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
+    for(int lev = 0; lev <= finest_level; ++lev)
+    {
+        // read in level 'lev' BoxArray from Header
+        BoxArray ba;
+        ba.readFrom(is);
+        GotoNextLine(is);
 
-		for(int lev = 0; lev < nlevs; ++lev)
-		{
-			BoxArray orig_ba, ba;
-			orig_ba.readFrom(is);
-			GotoNextLine(is);
+        // Create distribution mapping
+        DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-			SetBoxArray(lev, orig_ba);
-			DistributionMapping orig_dm{orig_ba, ParallelDescriptor::NProcs()};
-			SetDistributionMap(lev, orig_dm);
-
-			Box orig_domain(orig_ba.minimalBox());
-
-			if(Nrep != IntVect::TheUnitVector())
-			{
-				amrex::Print() << " OLD BA had " << orig_ba.size() << " GRIDS " << std::endl;
-				amrex::Print() << " OLD Domain" << orig_domain << std::endl;
-			}
-
-			BoxList bl;
-			for(int nb = 0; nb < orig_ba.size(); nb++)
-			{
-				for(int k = 0; k < Nrep[2]; k++)
-				{
-					for(int j = 0; j < Nrep[1]; j++)
-					{
-						for(int i = 0; i < Nrep[0]; i++)
-						{
-							Box b(orig_ba[nb]);
-							IntVect lo(b.smallEnd());
-							IntVect hi(b.bigEnd());
-							IntVect shift_vec(i * orig_domain.length(0),
-											  j * orig_domain.length(1),
-											  k * orig_domain.length(2));
-							b.shift(shift_vec);
-							bl.push_back(b);
-						}
-					}
-				}
-			}
-			ba.define(bl);
-
-			if(Nrep != IntVect::TheUnitVector())
-			{
-				Box new_domain(ba.minimalBox());
-				geom[lev].Domain(new_domain);
-
-				amrex::Print() << " NEW BA has " << ba.size() << " GRIDS " << std::endl;
-				amrex::Print() << " NEW Domain" << geom[0].Domain() << std::endl;
-
-				DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
-				ReMakeNewLevelFromScratch(lev, ba, dm);
-			}
-
-			// This needs is needed before initializing level MultiFabs: ebfactories should
-			// not change after the eb-dependent MultiFabs are allocated.
-			make_eb_geometry();
-
-			// Allocate the fluid data, NOTE: this depends on the ebfactories.
-			AllocateArrays(lev);
-		}
-	}
-
-	amrex::Print() << "  Finished reading header" << std::endl;
+        MakeNewLevelFromScratch(lev, cur_time, ba, dm);
+    }
 
 	/***************************************************************************
      * Load fluid data                                                         *
      ***************************************************************************/
 
 	// Load the field data
-	for(int lev = 0, nlevs = finestLevel() + 1; lev < nlevs; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
-		VisMF::Read(mf_vel, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
+		VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
+        vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
 
 		MultiFab mf_gp;
-		VisMF::Read(mf_gp, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
-
-		if(Nrep == IntVect::TheUnitVector())
-		{
-			// Simply copy mf_vel into vel, mf_gp intp gp
-			vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
-			gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
-		}
-		else
-		{
-
-			if(mf_vel.boxArray().size() > 1)
-				amrex::Abort("Replication only works if one initial grid");
-
-			mf_vel.FillBoundary(geom[lev].periodicity());
-			mf_gp.FillBoundary(geom[lev].periodicity());
-
-			FArrayBox single_fab_vel(mf_vel.boxArray()[0], 3);
-			FArrayBox single_fab_gp(mf_gp.boxArray()[0], 3);
-
-			// Copy and replicate mf into velocity
-			for(MFIter mfi(*vel[lev]); mfi.isValid(); ++mfi)
-			{
-				int ib = mfi.index();
-				(*vel[lev])[ib].copy(single_fab_vel, single_fab_vel.box(), 0, mfi.validbox(), 0, 3);
-				(*gp[lev])[ib].copy(single_fab_gp, single_fab_gp.box(), 0, mfi.validbox(), 0, 3);
-			}
-		}
+		VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
+        gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
 
 		// Read scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)
 		{
 			MultiFab mf;
-			VisMF::Read(
-				mf,
-				amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix, chkscaVarsName[i]));
-
-			if(Nrep == IntVect::TheUnitVector())
-			{
-				amrex::Print() << "  - loading scalar data: " << chkscaVarsName[i] << std::endl;
-
-				// Copy mf into chkscalarVars
-				if(chkscaVarsName[i] == "level-set")
-				{
-					// The level-set data is special, and because we want
-					// to access it even without a fluid present, it is
-					// loaded below.
-				}
-				else
-				{
-					(*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
-				}
-			}
-			else
-			{
-
-				if(mf.boxArray().size() > 1)
-					amrex::Abort("Replication only works if one initial grid");
-
-				mf.FillBoundary(geom[lev].periodicity());
-
-				FArrayBox single_fab(mf.boxArray()[0], 1);
-				mf.copyTo(single_fab);
-
-				// Copy and replicate mf into chkscalarVars
-				for(MFIter mfi(*(*chkscalarVars[i])[lev]); mfi.isValid(); ++mfi)
-				{
-					int ib = mfi.index();
-					(*(*chkscalarVars[i])[lev])[ib].copy(
-						single_fab, single_fab.box(), 0, mfi.validbox(), 0, 1);
-				}
-			}
+            VisMF::Read(mf, MultiFabFileFullPrefix(lev, restart_file, 
+                                                   level_prefix, chkscaVarsName[i]));
+            (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
 		}
 	}
-	amrex::Print() << "  Finished reading fluid data" << std::endl;
 
-	for(int lev = 0, nlevs = finestLevel() + 1; lev < nlevs; ++lev)
-	{
-        if(!nodal_pressure)
-        {
-            fill_mf_bc(lev, *p[lev]);
-            fill_mf_bc(lev, *p_o[lev]);
-        }
-
-		fill_mf_bc(lev, *ro[lev]);
-		fill_mf_bc(lev, *ro_o[lev]);
-
-		fill_mf_bc(lev, *eta[lev]);
-
-		// Fill the bc's just in case
-		vel[lev]->FillBoundary(geom[lev].periodicity());
-		vel_o[lev]->FillBoundary(geom[lev].periodicity());
-
-		// used in load balancing
-		if(load_balance_type == "KnapSack")
-		{
-			fluid_cost[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0));
-			fluid_cost[lev]->setVal(0.0);
-		}
-	}
-	amrex::Print() << "  Done with incflo::Restart " << std::endl;
+	amrex::Print() << "Restart complete" << std::endl;
 }
 
-void incflo::GotoNextLine(std::istream& is)
-{
-	constexpr std::streamsize bl_ignore_max{100000};
-	is.ignore(bl_ignore_max, '\n');
-}
-
-void incflo::WriteJobInfo(const std::string& dir) const
+void incflo::WriteJobInfo(const std::string& path) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
 		// job_info file with details about the run
 		std::ofstream jobInfoFile;
-		std::string FullPathJobInfoFile = dir;
+		std::string FullPathJobInfoFile = path;
 		std::string PrettyLine =
 			"===============================================================================\n";
 
@@ -469,9 +286,9 @@ void incflo::WriteJobInfo(const std::string& dir) const
 			jobInfoFile << " level: " << i << "\n";
 			jobInfoFile << "   number of boxes = " << grids[i].size() << "\n";
 			jobInfoFile << "   maximum zones   = ";
-			for(int n = 0; n < BL_SPACEDIM; n++)
+			for(int dir = 0; dir < BL_SPACEDIM; dir++)
 			{
-				jobInfoFile << geom[i].Domain().length(n) << " ";
+				jobInfoFile << geom[i].Domain().length(dir) << " ";
 			}
 			jobInfoFile << "\n\n";
 		}
@@ -489,7 +306,7 @@ void incflo::WriteJobInfo(const std::string& dir) const
 	}
 }
 
-void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time) const
+void incflo::WritePlotFile() const
 {
 	BL_PROFILE("incflo::WritePlotFile()");
 
@@ -499,9 +316,9 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 
 	const int ngrow = 0;
 
-	Vector<std::unique_ptr<MultiFab>> mf(nlev);
+	Vector<std::unique_ptr<MultiFab>> mf(finest_level + 1);
 
-	for(int lev = 0; lev < nlev; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		// the "+1" here is for volfrac
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
@@ -529,19 +346,11 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 		{
 			if(pltscaVarsName[i] == "p")
 			{
-                if(nodal_pressure)
-                {
-                    MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
-                    p_nd.setVal(0.0);
-                    MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
-                    MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
-                    amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
-                }
-                else
-                {
-                    MultiFab::Copy(*mf[lev], (*p[lev]), 0, dcomp, 1, 0);
-                    MultiFab::Add(*mf[lev], (*p0[lev]), 0, dcomp, 1, 0);
-                }
+                MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
+                p_nd.setVal(0.0);
+                MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
+                MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
+                amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
 			}
 			else if(pltscaVarsName[i] == "divu")
 			{
@@ -583,9 +392,9 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 		}
 	}
 
-	Vector<const MultiFab*> mf2(nlev);
+	Vector<const MultiFab*> mf2(finest_level + 1);
 
-	for(int lev = 0; lev < nlev; ++lev)
+	for(int lev = 0; lev <= finest_level; ++lev)
 	{
 		mf2[lev] = mf[lev].get();
 	}
@@ -595,7 +404,11 @@ void incflo::WritePlotFile(std::string& plot_file, int nstep, Real dt, Real time
 	names.insert(names.end(), vecVarsName.begin(), vecVarsName.end());
 	names.insert(names.end(), pltscaVarsName.begin(), pltscaVarsName.end());
 
-    amrex::WriteMultiLevelPlotfile(plotfilename, nlev, mf2, names, Geom(), time, istep, refRatio());
+    // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
+    // but will never change unless we use subcycling. 
+    // If we do use subcycling, this should be a incflo class member. 
+    Vector<int> istep(finest_level + 1, 1);
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }

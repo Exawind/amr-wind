@@ -1,5 +1,0 @@
-f90EXE_sources += average_cc_to_fc.f90
-f90EXE_sources += divop_mod.f90
-f90EXE_sources += eb_wallflux_mod.f90
-
-CEXE_sources += divergence.cpp

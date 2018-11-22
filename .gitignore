@@ -30,9 +30,6 @@ build/
 .build/
 .vscode/
 
-# Documentation Lint
-doc/Doxyfile
-
 # Tex Lint
 doc/UsersGuide/*.aux
 doc/UsersGuide/*.dvi
@@ -53,3 +50,5 @@ exec/*/Backtrace.*
 exec/*/plt*/
 exec/*/chk*/
 exec/*/movie.visit
+exec/*/*.vtp
+exec/*/*.pvtp
