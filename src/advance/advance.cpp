@@ -24,8 +24,6 @@ void incflo::Advance()
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
     }
 
-    bool proj_2 = true;
-
     // Fill ghost nodes and reimpose boundary conditions
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -53,7 +51,7 @@ void incflo::Advance()
 
     if(incflo_verbose > 0)
     {
-        amrex::Print() << "\nStep " << nstep + 1 
+        amrex::Print() << "\nStep " << nstep + 1
                        << ": from old_time " << cur_time
                        << " to new time " << cur_time + dt 
                        << " with dt = " << dt << ".\n" << std::endl;
@@ -66,10 +64,10 @@ void incflo::Advance()
     }
 
     // Predictor step
-    ApplyPredictor(conv_old, divtau_old, proj_2);
+    ApplyPredictor(conv_old, divtau_old);
 
     // Corrector step
-    ApplyCorrector(conv_old, divtau_old, proj_2);
+    ApplyCorrector(conv_old, divtau_old);
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
@@ -227,8 +225,7 @@ void incflo::ComputeDt(int initialisation)
 //     p = phi
 //
 void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
-                                    Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    bool proj_2)
+                                    Vector<std::unique_ptr<MultiFab>>& divtau_old)
 {
 	BL_PROFILE("incflo::ApplyPredictor");
 
@@ -283,7 +280,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
 	// Project velocity field
-	ApplyProjection(new_time, dt, proj_2);
+	ApplyProjection(new_time, dt);
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 1)
@@ -324,8 +321,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //     p = phi
 //
 void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
-                                    Vector<std::unique_ptr<MultiFab>>& divtau_old, 
-                                    bool proj_2)
+                                    Vector<std::unique_ptr<MultiFab>>& divtau_old)
 {
 	BL_PROFILE("incflo::ApplyCorrector");
 
@@ -393,7 +389,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
 	// Project velocity field
-	ApplyProjection(new_time, dt, proj_2);
+	ApplyProjection(new_time, dt);
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 1)

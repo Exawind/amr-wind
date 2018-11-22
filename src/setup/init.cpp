@@ -359,12 +359,11 @@ void incflo::InitialIterations()
         divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
     }
 
-    bool proj_2 = false;
 	for(int iter = 0; iter < 3; ++iter)
 	{
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		ApplyPredictor(conv, divtau, proj_2);
+		ApplyPredictor(conv, divtau);
 
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -391,9 +390,13 @@ void incflo::InitialProjection()
 	//  data structures and set_velocity_bcs routine
 	mac_projection->update_internals();
 
-	bool proj_2 = true;
 	Real dummy_dt = 1.0;
-	ApplyProjection(cur_time, dummy_dt, proj_2);
+	ApplyProjection(cur_time, dummy_dt);
+
+    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection() 
+    // use the correct decomposition.  
+    nstep = 0;
+
 
 	// We set p and gp back to zero (p0 may still be still non-zero)
     for(int lev = 0; lev <= finest_level; lev++)

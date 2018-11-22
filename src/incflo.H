@@ -109,11 +109,9 @@ private:
     void ComputeDt(int initialisation);
 	bool SteadyStateReached();
 	void ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
-						Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                        bool proj_2);
+						Vector<std::unique_ptr<MultiFab>>& divtau_old);
 	void ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
-						Vector<std::unique_ptr<MultiFab>>& divtau_old,
-                        bool proj_2);
+						Vector<std::unique_ptr<MultiFab>>& divtau_old);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +179,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ApplyProjection(Real time, Real scaling_factor, bool proj_2);
+    void ApplyProjection(Real time, Real scaling_factor);
 	void SolvePoissonEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
 							  Vector<std::unique_ptr<MultiFab>>& phi,
 							  Vector<std::unique_ptr<MultiFab>>& rhs,
@@ -328,8 +326,8 @@ private:
 
     // Time and time step counters
 	Real cur_time = 0.0;
-	Real dt = -1;
-	int nstep = 0;
+	Real dt = -1.0;
+	int nstep = -1;
 
     // Be verbose? 
     int incflo_verbose = 0;

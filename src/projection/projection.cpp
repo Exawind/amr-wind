@@ -23,13 +23,13 @@
 //
 //     new p  = phi
 //
-// except in the initial iterations when
+// except in the initial projection when
 //
-//     new p  = old p + phi     (proj_2 = false)
+//     new p  = old p + phi     (nstep has its initial value -1)
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection(Real time, Real scaling_factor, bool proj_2)
+void incflo::ApplyProjection(Real time, Real scaling_factor)
 {
 	BL_PROFILE("incflo::ApplyProjection");
 
@@ -68,7 +68,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool proj_2)
         }
 
         // Here we add the (1/rho gradp) back to ustar (note the +dt)
-        if(proj_2)
+        if(nstep >= 0)
         {
             // Convert velocities to momenta
             for(int dir = 0; dir < 3; dir++)
@@ -135,7 +135,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool proj_2)
         for(int dir = 0; dir < 3; dir++)
             MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, dir, 1, fluxes[lev]->nGrow());
 
-        if(proj_2)
+        if(nstep >= 0)
         {
             // p := phi
             MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());

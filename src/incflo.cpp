@@ -87,10 +87,8 @@ void incflo::Evolve()
 
         // Advance to time t + dt
         Advance();
-
-        // Increment time and step counters
-        cur_time += dt;
         nstep++;
+        cur_time += dt;
 
         // Write plot and checkpoint files
         if((plot_int > 0) && (nstep % plot_int == 0))
