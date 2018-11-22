@@ -14,14 +14,14 @@ class PoissonEquation
 public: 
     // Constructor, with initialisation
     PoissonEquation(amrex::AmrCore* _amrcore, 
-                      amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ilo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ihi, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jlo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
-                      int nghost);
+                    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ilo, 
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ihi, 
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jlo, 
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
+                    amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
+                    int _nghost);
 
     // Destructor
     ~PoissonEquation();
@@ -33,33 +33,24 @@ public:
     void updateInternals(amrex::AmrCore* amrcore_in, 
                          amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory_in);
 
-     // Update the matrix based on the current state of the simulation
-    void setCurrentState(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta, 
-                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-                         amrex::Real dt);
-
     // Set user-supplied solver settings (must be done every time step)
     void setSolverSettings(amrex::MLMG& solver);
 
-    // Solve the diffusion equation, update vel
-    void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
-               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-               int dir);
+    // Solve the Poisson equation, put results in phi and fluxes
+    void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& phi, 
+               amrex::Vector<std::unique_ptr<amrex::MultiFab>>& fluxes,
+               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro,
+               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divu);
 
 private:
-    // Update the variable coefficients in the Poisson operator, called from setCurrentState()
-    void updateCoefficients(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta);
-
     // AmrCore data 
     amrex::AmrCore* amrcore;
 	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
     int nghost; 
 
     // Internal data used in the matrix solve
-    amrex::Vector<amrex::Vector<std::unique_ptr<amrex::MultiFab>>> b;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
-    amrex::MLEBABecLap matrix;
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>> sigma;
+    amrex::MLNodeLaplacian matrix;
 
     // Boundary conditions
     int bc_lo[3], bc_hi[3];

@@ -1,8 +1,8 @@
+#include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
 
 #include <PoissonEquation.H>
 #include <projection_F.H>
-// #include <constants.H>
 
 using namespace amrex;
 
@@ -42,41 +42,32 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
 
     // The boundary conditions need only be set at level 0
     set_ppe_bc(bc_lo, bc_hi,
-                domain.loVect(), domain.hiVect(),
-				&nghost,
-                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+               domain.loVect(), domain.hiVect(),
+			   &nghost,
+               bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+               bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+               bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
 
-    // Resize and reset data
-    b.resize(max_level + 1);
-    phi.resize(max_level + 1);
-    rhs.resize(max_level + 1);
+    // Resize and reset sigma
+    sigma.resize(max_level + 1);
     for(int lev = 0; lev <= max_level; lev++)
     {
-        b[lev].resize(3);
-        for(int dir = 0; dir < 3; dir++)
-        {
-            BoxArray edge_ba = grids[lev];
-            edge_ba.surroundingNodes(dir);
-            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost));
-        }
-        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
     }
 
 	// First define the matrix.
-	// Class MLABecLaplacian describes the following operator:
-	//
-	//       (alpha * a - beta * (del dot b grad)) phi = rhs
-	//
+    // Class MLNodeLaplacian describes the following operator:
+    //
+    //       del dot (sigma grad) phi = rhs,
+    //
+    // where phi and rhs are nodal, and sigma is cell-centered
 	LPInfo info;
     matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
 
-    // It is essential that we set MaxOrder to 2 if we want to use the standard
-    // phi(i)-phi(i-1) approximation for the gradient at Dirichlet boundaries.
-    // The solver's default order is 3 and this uses three points for the gradient.
-	matrix.setMaxOrder(2);
+    // Set matrix options
+    matrix.setGaussSeidel(true);
+    matrix.setHarmonicAverage(false);
+    matrix.setCoarseningStrategy(MLNodeLaplacian::CoarseningStrategy::Sigma);
 
 	// LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
 	matrix.setDomainBC({(LinOpBCType) bc_lo[0], (LinOpBCType) bc_lo[1], (LinOpBCType) bc_lo[2]},
@@ -89,7 +80,7 @@ PoissonEquation::~PoissonEquation()
 
 void PoissonEquation::readParameters()
 {
-    ParmParse pp("diffusion");
+    ParmParse pp("projection");
 
     pp.query("verbose", verbose);
     pp.query("mg_verbose", mg_verbose);
@@ -103,108 +94,12 @@ void PoissonEquation::readParameters()
 }
 
 void PoissonEquation::updateInternals(AmrCore* amrcore_in, 
-                                        Vector<std::unique_ptr<EBFArrayBoxFactory>>* ebfactory_in)
+                                      Vector<std::unique_ptr<EBFArrayBoxFactory>>* ebfactory_in)
 {
     // This must be implemented when we want dynamic meshing
     //
     amrex::Print() << "ERROR: PoissonEquation::updateInternals() not yet implemented" << std::endl;
     amrex::Abort(); 
-}
-
-//
-// Updates the vectors going into the solve based on the current state of the simulation. 
-// Also sets the current time step size. 
-//
-void PoissonEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>& ro, 
-                                        const Vector<std::unique_ptr<MultiFab>>& eta,
-                                        Real dt)
-{
-	BL_PROFILE("PoissonEquation::setCurrentState");
-
-    if(verbose > 0)
-    {
-        amrex::Print() << "Updating PoissonEquation with current data... " << std::endl;
-    }
-
-    // Set alpha and beta
-    matrix.setScalars(1.0, dt);
-
-    // Set the variable coefficients (on faces) to equal the apparent viscosity
-    updateCoefficients(eta);
-
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-        // TODO: just make b be in the proper data structure? 
-        // Copy the PPE coefficient into the proper data strutcure
-        Vector<const MultiFab*> tmp;
-        std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
-
-        tmp = GetVecOfConstPtrs(b[lev]);
-        b_tmp[0] = tmp[0];
-        b_tmp[1] = tmp[1];
-        b_tmp[2] = tmp[2];
-
-        // This sets the spatially varying A coefficients
-        matrix.setACoeffs(lev, (*ro[lev]));
-
-        // This sets the spatially varying b coefficients
-        matrix.setBCoeffs(lev, b_tmp);
-    }
-}
-
-//
-// Computes b = eta at the faces of the scalar cells
-//
-void PoissonEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab>>& eta)
-{
-	BL_PROFILE("PoissonEquation::updateCoefficients");
-
-    if(verbose > 0)
-    {
-        amrex::Print() << "Updating PoissonEquation coefficients" << std::endl;
-    }
-
-	// Directions
-	int xdir = 1;
-	int ydir = 2;
-	int zdir = 3;
-
-    Vector<Geometry> geom = amrcore->Geom();
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-        for(MFIter mfi(*eta[lev], true); mfi.isValid(); ++mfi)
-        {
-            // Tileboxes for staggered components
-            Box ubx = mfi.tilebox(e_x);
-            Box vbx = mfi.tilebox(e_y);
-            Box wbx = mfi.tilebox(e_z);
-
-            // X direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(ubx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][0]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &xdir);
-
-            // Y direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(vbx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][1]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &ydir);
-
-            // Z direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(wbx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][2]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &zdir);
-        }
-        // TODO: do we need these? 
-        b[lev][0]->FillBoundary(geom[lev].periodicity());
-        b[lev][1]->FillBoundary(geom[lev].periodicity());
-        b[lev][2]->FillBoundary(geom[lev].periodicity());
-    }
 }
 
 // 
@@ -237,41 +132,36 @@ void PoissonEquation::setSolverSettings(MLMG& solver)
 }
 
 //
-// Solve the matrix equation
+// Solve Poisson Equation:
 //
-void PoissonEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, 
-                              const Vector<std::unique_ptr<MultiFab>>& ro, 
-                              int dir)
+//                  div( 1/rho * grad(phi) ) = div(u)
+//
+// We output grad(phi) / rho into "fluxes"
+//
+void PoissonEquation::solve(Vector<std::unique_ptr<MultiFab>>& phi,
+			                Vector<std::unique_ptr<MultiFab>>& fluxes,
+                            const Vector<std::unique_ptr<MultiFab>>& ro, 
+                            const Vector<std::unique_ptr<MultiFab>>& divu)
 {
-	BL_PROFILE("PoissonEquation::solve");
-
-    if(verbose > 0)
-    {
-        amrex::Print() << "Diffusing velocity component " << dir << std::endl;
-    }
-
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
-        // Set the right hand side to equal ro 
-        rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
+        // Set the coefficients to equal 1 / ro 
+        sigma[lev]->setVal(1.0);
+        MultiFab::Divide(*sigma[lev], *ro[lev], 0, 0, 1, nghost);
+        matrix.setSigma(lev, *sigma[lev]);
 
-        // Multiply rhs by vel(dir) to get momentum
-        MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
-
-        // By this point we must have filled the Dirichlet values of phi stored in ghost cells
-        phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
+        // By this point we must have filled the Dirichlet values of phi in ghost cells
         matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
     }
 
+    // Set up the solver
 	MLMG solver(matrix);
     setSolverSettings(solver);
-	solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
 
-    Vector<Geometry> geom = amrcore->Geom();
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-        phi[lev]->FillBoundary(geom[lev].periodicity());
-        vel[lev]->copy(*phi[lev], 0, dir, 1, nghost, nghost);
-    }
+    // Solve!
+	solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(divu), mg_rtol, mg_atol);
+
+    // Get fluxes (grad(phi) / rho)
+    solver.getFluxes(amrex::GetVecOfPtrs(fluxes));
 }
 

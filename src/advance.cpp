@@ -19,7 +19,7 @@ void incflo::Advance()
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
 
-    if(incflo_verbose > 0) 
+    if(incflo_verbose > 0)
     {
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
     }
@@ -53,7 +53,7 @@ void incflo::Advance()
     {
         amrex::Print() << "\nStep " << nstep + 1
                        << ": from old_time " << cur_time
-                       << " to new time " << cur_time + dt 
+                       << " to new time " << cur_time + dt
                        << " with dt = " << dt << ".\n" << std::endl;
     }
 
@@ -72,7 +72,10 @@ void incflo::Advance()
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
     ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
-    amrex::Print() << "Time per step " << end_step << std::endl;
+    if(incflo_verbose > 0)
+    {
+        amrex::Print() << "Time per step " << end_step << std::endl;
+    }
 
 	BL_PROFILE_REGION_STOP("incflo::Advance");
 }
@@ -109,7 +112,7 @@ void incflo::ComputeDt(int initialisation)
 	Real romin = 1.e20;
 	Real etamax = 0.0;
 
-    // We only compute gp0max on the coarsest level because it is the same at all 
+    // We only compute gp0max on the coarsest level because it is the same at all
 	Real gp0max[3];
     gp0max[0] = Norm(gp0, 0, 0, 0);
     gp0max[1] = Norm(gp0, 0, 1, 0);
@@ -140,12 +143,12 @@ void incflo::ComputeDt(int initialisation)
     // Viscous term
     Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
 
-    // Forcing term 
-    Real forc_cfl = std::abs(gravity[0] - gp0max[0]) * idx 
-                  + std::abs(gravity[1] - gp0max[1]) * idy  
+    // Forcing term
+    Real forc_cfl = std::abs(gravity[0] - gp0max[0]) * idx
+                  + std::abs(gravity[1] - gp0max[1]) * idy
                   + std::abs(gravity[2] - gp0max[2]) * idz;
 
-    // Combined CFL conditioner 
+    // Combined CFL conditioner
     Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
 
     // Update dt
@@ -208,8 +211,8 @@ void incflo::ComputeDt(int initialisation)
 //
 //     vel = vel + dt * ( g - grad(p+p0)/ro)
 //
-//  3. Add implicit forcing term 
-//  
+//  3. Add implicit forcing term
+//
 //     vel = vel / ( 1 + dt * f_gds/ro )
 //
 //  4. Solve for phi
@@ -224,13 +227,13 @@ void incflo::ComputeDt(int initialisation)
 //
 //     p = phi
 //
-void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old, 
+void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old)
 {
 	BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new ime value for things computed on the "*" state
-    Real new_time = cur_time + dt; 
+    Real new_time = cur_time + dt;
 
     // Compute the explicit advective term R_u^n
     ComputeUGradU(conv_old, vel_o, cur_time);
@@ -274,7 +277,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) 
+    if(!explicit_diffusion)
     {
         DiffuseVelocity(new_time);
     }
@@ -285,7 +288,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 
     if(incflo_verbose > 1)
     {
-        amrex::Print() << "After predictor step:" << std::endl; 
+        amrex::Print() << "After predictor step:" << std::endl;
         PrintMaxValues(new_time);
     }
 }
@@ -304,7 +307,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 //     vel = vel + dt * ( g - grad(p+p0)/ro)
 //
-//  3. Add implicit forcing term 
+//  3. Add implicit forcing term
 //
 //     vel = vel / ( 1 + dt * f_gds/ro )
 //
@@ -320,16 +323,16 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 //     p = phi
 //
-void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old, 
+void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
                                     Vector<std::unique_ptr<MultiFab>>& divtau_old)
 {
 	BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = cur_time + dt; 
+    Real new_time = cur_time + dt;
 
 	Vector<std::unique_ptr<MultiFab>> conv;
-	Vector<std::unique_ptr<MultiFab>> divtau;   
+	Vector<std::unique_ptr<MultiFab>> divtau;
     conv.resize(finest_level + 1);
     divtau.resize(finest_level + 1);
     for(int lev = 0; lev <= finest_level; lev++)
@@ -383,7 +386,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
     }
 
     // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion) 
+    if(!explicit_diffusion)
     {
         DiffuseVelocity(new_time);
     }
@@ -406,7 +409,7 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //      max(abs( v^(n+1) - v^(n) )) / dt < tol
 //      max(abs( w^(n+1) - w^(n) )) / dt < tol
 //
-//      OR 
+//      OR
 //
 //      sum(abs( u^(n+1) - u^(n) )) / sum(abs( u^(n) )) < tol
 //      sum(abs( v^(n+1) - v^(n) )) / sum(abs( v^(n) )) < tol
@@ -437,7 +440,7 @@ bool incflo::SteadyStateReached()
         {
             // max(abs(u^{n+1}-u^n))
             max_change = amrex::max(max_change, Norm(diff_vel, lev, i, 0));
-            
+
             // sum(abs(u^{n+1}-u^n)) / sum(abs(u^n))
             Real norm1_diff = Norm(diff_vel, lev, i, 1);
             Real norm1_old = Norm(vel_o, lev, i, 1);
@@ -452,7 +455,7 @@ bool incflo::SteadyStateReached()
         if(incflo_verbose > 0)
         {
             amrex::Print() << "\nSteady state check:\n";
-            amrex::Print() << "||u-uo||/||uo|| = " << max_relchange 
+            amrex::Print() << "||u-uo||/||uo|| = " << max_relchange
                            << ", du/dt  = " << max_change/dt << std::endl;
         }
     }
@@ -465,11 +468,11 @@ bool incflo::SteadyStateReached()
 
 	// Always return negative to first access. This way
 	// initial zero velocity field do not test for false positive
-    if(nstep < 2) 
+    if(nstep < 2)
     {
         return false;
     }
-    else 
+    else
     {
         return reached;
     }

@@ -50,6 +50,7 @@ void incflo::ReadParameters()
         pp.query("mu", mu);
         AMREX_ALWAYS_ASSERT(mu > 0.0);
 
+        // TODO: Make a rheology class
         fluid_model = "newtonian";
         pp.query("fluid_model", fluid_model);
         if(fluid_model == "newtonian")
@@ -127,20 +128,6 @@ void incflo::ReadParameters()
             amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
         }
 
-        // TODO: get rid of when there are separate classes for each solve
-		// Option to control MLMG behavior
-		pp.query("mg_verbose", mg_verbose);
-		pp.query("mg_cg_verbose", mg_cg_verbose);
-		pp.query("mg_max_iter", mg_max_iter);
-		pp.query("mg_cg_maxiter", mg_cg_maxiter);
-		pp.query("mg_max_fmg_iter", mg_max_fmg_iter);
-		pp.query("mg_rtol", mg_rtol);
-		pp.query("mg_atol", mg_atol);
-
-        // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
-        bottom_solver_type = "bicgstab";
-        pp.query( "bottom_solver_type",  bottom_solver_type );
-
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
         incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0);
 	}
@@ -154,6 +141,11 @@ void incflo::PostInit(int restart_flag)
     // Reset MAC projection object
     mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
+
+    poisson_equation.reset(new PoissonEquation(this, &ebfactory, 
+                                               bc_ilo, bc_ihi, 
+                                               bc_jlo, bc_jhi, 
+                                               bc_klo, bc_khi, nghost));
 
     if(!explicit_diffusion)
     {

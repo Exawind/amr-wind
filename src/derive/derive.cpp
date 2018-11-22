@@ -3,6 +3,7 @@
 
 #include <incflo.H>
 #include <derive_F.H>
+#include <projection_F.H>
 
 void incflo::UpdateDerivedQuantities()
 {

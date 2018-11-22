@@ -6,7 +6,6 @@
 #include <AMReX_IArrayBox.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
-#include <AMReX_ParmParse.H>
 
 // TODO: DOCUMENTATION
 
@@ -22,7 +21,7 @@ public:
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
-                      int nghost);
+                      int _nghost);
 
     // Destructor
     ~DiffusionEquation();

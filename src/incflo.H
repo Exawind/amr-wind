@@ -14,7 +14,7 @@
 #include <eb_if.H>
 #include <DiffusionEquation.H>
 #include <MacProjection.H>
-#include <projection_F.H>
+#include <PoissonEquation.H>
 // Note: a lot of stuff is included through MacProjection.H...
 
 
@@ -180,13 +180,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ApplyProjection(Real time, Real scaling_factor);
-	void SolvePoissonEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-							  Vector<std::unique_ptr<MultiFab>>& phi,
-							  Vector<std::unique_ptr<MultiFab>>& rhs,
-							  Vector<std::unique_ptr<MultiFab>>& fluxes,
-                              int bc_lo[], int bc_hi[]);
-	void ComputePoissonCoeff();
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -224,20 +217,12 @@ private:
 
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
-
     void MakeBCArrays();
-
-
 
 
     // DIFFUSION
     void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
 	void DiffuseVelocity(Real time);
-	void SolveDiffusionEquation(Vector<Vector<std::unique_ptr<MultiFab>>>& b,
-								Vector<std::unique_ptr<MultiFab>>& phi,
-								Vector<std::unique_ptr<MultiFab>>& rhs,
-                                int bc_lo[], int bc_hi[]);
-    void ComputeDiffusionCoeff(Vector<Vector<std::unique_ptr<MultiFab>>>& beta);
 
     // CONVECTION
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
@@ -273,11 +258,9 @@ private:
 	Vector<std::unique_ptr<MultiFab>> yslopes;
 	Vector<std::unique_ptr<MultiFab>> zslopes;
 	Vector<std::unique_ptr<MultiFab>> divu;
-	Vector<std::unique_ptr<MultiFab>> phi;
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;
-	Vector<Vector<std::unique_ptr<MultiFab>>> bcoeff;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -313,11 +296,19 @@ private:
 
 	std::unique_ptr<MacProjection> mac_projection;
 	std::unique_ptr<DiffusionEquation> diffusion_equation;
+	std::unique_ptr<PoissonEquation> poisson_equation;
 
     // Time and time step counters
 	Real cur_time = 0.0;
 	Real dt = -1.0;
 	int nstep = -1;
+
+    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step 
+    // OR steady_state = true AND steady_state_tol is reached
+    Real stop_time = -1.0;
+    int max_step = -1;
+    bool steady_state = false;
+	Real steady_state_tol = 1.0e-5;
 
     // Be verbose? 
     int incflo_verbose = 0;
@@ -334,21 +325,6 @@ private:
     Real papa_reg = 0.0;
     Real eta_0 = 0.0;
 
-    // TODO: get this out of here , should not be member functions
-	// Options to control MLMG behavior
-	int mg_verbose = 0;
-	int mg_cg_verbose = 0;
-	int mg_max_iter = 100;
-	int mg_cg_maxiter = 100;
-	int mg_max_fmg_iter = 0;
-	Real mg_rtol = 1.0e-11;
-	Real mg_atol = 1.0e-14;
-    // What solver to use as the bottom solver in the MLMG solves.
-    std::string bottom_solver_type;
-
-
-	// Tolerance to check for steady state
-
 	// Options to control time stepping
 	Real cfl = 0.5;
 	Real fixed_dt = -1.;
@@ -363,16 +339,9 @@ private:
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
 
-    // TODO: remove nodal pressure option? 
 	int explicit_diffusion = 1;
 	int refine_cutcells = 1;
     int regrid_int = -1;
-
-    // Declare and initialise variables
-    Real stop_time = -1.0;
-    int max_step = -1;
-    bool steady_state = false;
-	Real steady_state_tol = 1.0e-5;
 
 
 	const EB2::Level* eb_level_fluid;

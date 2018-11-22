@@ -1,3 +1,4 @@
+#include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
 
 #include <DiffusionEquation.H>

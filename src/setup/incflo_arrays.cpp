@@ -62,22 +62,13 @@ void incflo::AllocateArrays(int lev)
     p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
 	p[lev]->setVal(0.);
 
-	// Arrays to store the solution and rhs for the projection
-    phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-	phi[lev]->setVal(0.);
+	// Divergence of velocity field
     divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	divu[lev]->setVal(0.);
 
 	// ********************************************************************************
 	// Face-based arrays
 	// ********************************************************************************
-
-    // When the pressure is on nodes, bcoeff is at cell centers
-    for(int dir = 0; dir < 3; dir++)
-    {
-        bcoeff[lev][dir].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        bcoeff[lev][dir]->setVal(0.);
-    }
 
 	// Create a BoxArray on x-faces.
     BoxArray x_edge_ba = grids[lev];
@@ -115,21 +106,6 @@ void incflo::RegridArrays(int lev)
 	ro_new->setVal(0.0);
 	ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
 	ro[lev] = std::move(ro_new);
-
-    std::unique_ptr<MultiFab> bc0_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
-                                                   MFInfo(), *ebfactory[lev] ));
-    bcoeff[lev][0] = std::move(bc0_new);
-    bcoeff[lev][0]->setVal(0.);
-
-    std::unique_ptr<MultiFab> bc1_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
-                                                   MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][1] = std::move(bc1_new);
-    bcoeff[lev][1]->setVal(0.);
-
-    std::unique_ptr<MultiFab> bc2_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
-                                                   MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][2] = std::move(bc2_new);
-    bcoeff[lev][2]->setVal(0.);
 
 	// Molecular viscosity
 	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -209,10 +185,6 @@ void incflo::RegridArrays(int lev)
     divu[lev] = std::move(divu_new);
     divu[lev]->setVal(0.);
 
-    std::unique_ptr<MultiFab> phi_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-    phi[lev] = std::move(phi_new);
-    phi[lev]->setVal(0.);
-
 	/****************************************************************************
     * Face-based Arrays                                                        *
     ****************************************************************************/
@@ -261,7 +233,6 @@ void incflo::ResizeArrays()
 
 	ro.resize(max_level + 1);
 
-	phi.resize(max_level + 1);
 	divu.resize(max_level + 1);
 
 	// Current (vel) and old (vel_o) velocities
@@ -286,13 +257,6 @@ void incflo::ResizeArrays()
 	xslopes.resize(max_level + 1);
 	yslopes.resize(max_level + 1);
 	zslopes.resize(max_level + 1);
-
-    // Coefficients for elliptic solves
-	bcoeff.resize(max_level + 1);
-	for(int lev = 0; lev < max_level + 1; ++lev)
-    {
-		bcoeff[lev].resize(3);
-    }
 
     // BCs
 	bc_ilo.resize(max_level + 1);
