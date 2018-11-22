@@ -246,16 +246,6 @@ private:
 	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
 
-
-
-
-
-	void ExtrapolatePressure(int lev, std::unique_ptr<MultiFab>& p);
-
-
-    void AverageCcToFc(int lev, const MultiFab& cc, 
-                       Array<std::unique_ptr<MultiFab>,AMREX_SPACEDIM>& fc);
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Member variables: MultiFabs and IArrayBoxes existing on each level
@@ -374,7 +364,6 @@ private:
 	const int m_eb_full_grow_cells = nghost;
 
     // TODO: remove nodal pressure option? 
-    int nodal_pressure = 1;
 	int explicit_diffusion = 1;
 	int refine_cutcells = 1;
     int regrid_int = -1;

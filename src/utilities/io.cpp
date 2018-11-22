@@ -346,19 +346,11 @@ void incflo::WritePlotFile() const
 		{
 			if(pltscaVarsName[i] == "p")
 			{
-                if(nodal_pressure)
-                {
-                    MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
-                    p_nd.setVal(0.0);
-                    MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
-                    MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
-                    amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
-                }
-                else
-                {
-                    MultiFab::Copy(*mf[lev], (*p[lev]), 0, dcomp, 1, 0);
-                    MultiFab::Add(*mf[lev], (*p0[lev]), 0, dcomp, 1, 0);
-                }
+                MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
+                p_nd.setVal(0.0);
+                MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
+                MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
+                amrex::average_node_to_cellcenter(*mf[lev], dcomp, p_nd, 0, 1);
 			}
 			else if(pltscaVarsName[i] == "divu")
 			{

@@ -24,12 +24,10 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 #These are the directories in incflo/src
 Bdirs 	:= src
-Bdirs 	+= src/advance
 Bdirs 	+= src/boundary_conditions
 Bdirs 	+= src/convection
 Bdirs 	+= src/derive
 Bdirs 	+= src/diffusion
-Bdirs 	+= src/divergence
 Bdirs 	+= src/embedded_boundaries
 Bdirs 	+= src/projection
 Bdirs 	+= src/rheology

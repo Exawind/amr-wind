@@ -70,30 +70,6 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     }
 }
 
-//
-// Fills ghost cell values of pressure appropriately for the BC type
-//
-void incflo::ExtrapolatePressure(int lev, std::unique_ptr<amrex::MultiFab>& p_in)
-{
-    BL_PROFILE("incflo::ExtrapolatePressure()");
-    if (nodal_pressure == 1) return;
- 
-    Box domain(geom[lev].Domain());
- 
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-    for(MFIter mfi(*p_in, true); mfi.isValid(); ++mfi) 
-    {
-        extrap_pressure_to_ghost_cells(BL_TO_FORTRAN_ANYD((*p_in)[mfi]),
-                                       bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                                       bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                                       bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                                       domain.loVect(), domain.hiVect(),
-                                       &nghost);
-    }
-}
-
 void incflo::FillScalarBC(int lev, MultiFab& mf)
 {
     BL_PROFILE("incflo:FillScalarBC()");

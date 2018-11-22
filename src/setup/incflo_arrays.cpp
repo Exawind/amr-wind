@@ -5,27 +5,12 @@ void incflo::AllocateArrays(int lev)
     UpdateEBFactory(lev);
 
 	// ********************************************************************************
-	// Cell- or node-based arrays
+	// Cell-based arrays
 	// ********************************************************************************
 
     // Gas density
     ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro[lev]->setVal(0.);
-
-    // Pressure
-    if (nodal_pressure)
-    {
-        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
-        p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-    } 
-    else 
-    {
-        p0[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        p[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-    }
-	p0[lev]->setVal(0.);
-	p[lev]->setVal(0.);
 
 	// Pressure gradients
 	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
@@ -53,21 +38,6 @@ void incflo::AllocateArrays(int lev)
 	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	vort[lev]->setVal(0.);
 
-	// Arrays to store the solution and rhs for the projection
-    if (nodal_pressure)
-    {
-        const BoxArray& nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
-        phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-        divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    }
-    else
-    {
-        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-        divu[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    }
-	phi[lev]->setVal(0.);
-	divu[lev]->setVal(0.);
-
 	// Slopes in x-direction
 	xslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
 	xslopes[lev]->setVal(0.);
@@ -81,28 +51,33 @@ void incflo::AllocateArrays(int lev)
 	zslopes[lev]->setVal(0.);
 
 	// ********************************************************************************
-	// X-face-based arrays
+	// Node-based arrays
+	// ********************************************************************************
+
+    const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+
+    // Pressure
+    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+	p0[lev]->setVal(0.);
+    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+	p[lev]->setVal(0.);
+
+	// Arrays to store the solution and rhs for the projection
+    phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+	phi[lev]->setVal(0.);
+    divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+	divu[lev]->setVal(0.);
+
+	// ********************************************************************************
+	// Face-based arrays
 	// ********************************************************************************
 
     // When the pressure is on nodes, bcoeff is at cell centers
     for(int dir = 0; dir < 3; dir++)
     {
-        if (nodal_pressure)
-        {
-            bcoeff[lev][dir].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        }
-        else
-        {
-            // Create a BoxArray on x-faces.
-            BoxArray edge_ba = grids[lev];
-            edge_ba.surroundingNodes(dir);
-            bcoeff[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost, 
-                                              MFInfo(), *ebfactory[lev]));
-        }
+        bcoeff[lev][dir].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
         bcoeff[lev][dir]->setVal(0.);
     }
-
-	// ****************************************************************
 
 	// Create a BoxArray on x-faces.
     BoxArray x_edge_ba = grids[lev];
@@ -134,7 +109,6 @@ void incflo::RegridArrays(int lev)
     // After calling copy() with dst_ngrow set to ng, we do not need to call
     // FillBoundary().
     //
-    //
 
 	// Gas density
 	std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -142,89 +116,20 @@ void incflo::RegridArrays(int lev)
 	ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
 	ro[lev] = std::move(ro_new);
 
-    // Pressures, projection vars
-    if (nodal_pressure)
-    {
-        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+    std::unique_ptr<MultiFab> bc0_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+                                                   MFInfo(), *ebfactory[lev] ));
+    bcoeff[lev][0] = std::move(bc0_new);
+    bcoeff[lev][0]->setVal(0.);
 
-        std::unique_ptr<MultiFab> p_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        p_new->setVal(0.0);
-        p_new->copy(*p[lev],0,0,1,0,nghost);
-        p[lev] = std::move(p_new);
+    std::unique_ptr<MultiFab> bc1_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                   MFInfo(), *ebfactory[lev]));
+    bcoeff[lev][1] = std::move(bc1_new);
+    bcoeff[lev][1]->setVal(0.);
 
-        std::unique_ptr<MultiFab> p0_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        p0_new->setVal(0.0);
-        p0_new->copy(*p0[lev],0,0,1,0,nghost);
-        p0[lev] = std::move(p0_new);
-
-        std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        divu[lev] = std::move(divu_new);
-        divu[lev]->setVal(0.);
-
-        std::unique_ptr<MultiFab> phi_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
-        phi[lev] = std::move(phi_new);
-        phi[lev]->setVal(0.);
-
-        std::unique_ptr<MultiFab> bc0_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
-                                                       MFInfo(), *ebfactory[lev] ));
-        bcoeff[lev][0] = std::move(bc0_new);
-        bcoeff[lev][0]->setVal(0.);
-
-        std::unique_ptr<MultiFab> bc1_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
-                                                       MFInfo(), *ebfactory[lev]));
-        bcoeff[lev][1] = std::move(bc1_new);
-        bcoeff[lev][1]->setVal(0.);
-
-        std::unique_ptr<MultiFab> bc2_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
-                                                       MFInfo(), *ebfactory[lev]));
-        bcoeff[lev][2] = std::move(bc2_new);
-        bcoeff[lev][2]->setVal(0.);
-
-    }
-    else
-    {
-        std::unique_ptr<MultiFab> p_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        p_new->setVal(0.);
-        p_new->copy(*p[lev], 0, 0, 1, 0, nghost);
-        p[lev] = std::move(p_new);
-
-        std::unique_ptr<MultiFab> p0_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        p0_new->setVal(0.);
-        p0_new->copy(*p0[lev], 0, 0, 1, 0, nghost);
-        p0[lev] = std::move(p0_new);
-
-        std::unique_ptr<MultiFab> phi_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
-                                                       MFInfo(), *ebfactory[lev]));
-        phi[lev] = std::move(phi_new);
-        phi[lev]->setVal(0.);
-
-        std::unique_ptr<MultiFab> divu_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
-                                           MFInfo(), *ebfactory[lev]));
-        divu[lev] = std::move(divu_new);
-        divu[lev]->setVal(0.);
-
-        // Cell-centered pressure uses face-based coefficients
-        BoxArray x_ba = grids[lev];
-        x_ba = x_ba.surroundingNodes(0);
-        std::unique_ptr<MultiFab> bc0_new(new MultiFab(x_ba, dmap[lev], 1, nghost, 
-                                                       MFInfo(), *ebfactory[lev]));
-        bcoeff[lev][0] = std::move(bc0_new);
-        bcoeff[lev][0]->setVal(0.0);
-
-        BoxArray y_ba = grids[lev];
-        y_ba = y_ba.surroundingNodes(1);
-        std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba, dmap[lev], 1, nghost, 
-                                                       MFInfo(), *ebfactory[lev]));
-        bcoeff[lev][1] = std::move(bc1_new);
-        bcoeff[lev][1]->setVal(0.0);
-
-        BoxArray z_ba = grids[lev];
-        z_ba = z_ba.surroundingNodes(2);
-        std::unique_ptr<MultiFab> bc2_new(new MultiFab(z_ba, dmap[lev], 1, nghost, 
-                                                       MFInfo(), *ebfactory[lev]));
-        bcoeff[lev][2] = std::move(bc2_new);
-        bcoeff[lev][2]->setVal(0.0);
-    }
+    std::unique_ptr<MultiFab> bc2_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                   MFInfo(), *ebfactory[lev]));
+    bcoeff[lev][2] = std::move(bc2_new);
+    bcoeff[lev][2]->setVal(0.);
 
 	// Molecular viscosity
 	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
@@ -268,6 +173,46 @@ void incflo::RegridArrays(int lev)
 	vort[lev] = std::move(vort_new);
 	vort[lev]->setVal(0.);
 
+    // Slopes in x-direction
+    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], xslopes[lev]->nComp(), nghost));
+    xslopes[lev] = std::move(xslopes_new);
+    xslopes[lev] -> setVal(0.);
+
+    // Slopes in y-direction
+    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], yslopes[lev]->nComp(), nghost));
+    yslopes[lev] = std::move(yslopes_new);
+    yslopes[lev] -> setVal(0.);
+
+    // Slopes in z-direction
+    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], zslopes[lev]->nComp(), nghost));
+    zslopes[lev] = std::move(zslopes_new);
+    zslopes[lev] -> setVal(0.);
+
+	/****************************************************************************
+    * Node-based Arrays                                                        *
+    ****************************************************************************/
+
+    // Pressures, projection vars
+    const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+
+    std::unique_ptr<MultiFab> p_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    p_new->setVal(0.0);
+    p_new->copy(*p[lev],0,0,1,0,nghost);
+    p[lev] = std::move(p_new);
+
+    std::unique_ptr<MultiFab> p0_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    p0_new->setVal(0.0);
+    p0_new->copy(*p0[lev],0,0,1,0,nghost);
+    p0[lev] = std::move(p0_new);
+
+    std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    divu[lev] = std::move(divu_new);
+    divu[lev]->setVal(0.);
+
+    std::unique_ptr<MultiFab> phi_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    phi[lev] = std::move(phi_new);
+    phi[lev]->setVal(0.);
+
 	/****************************************************************************
     * Face-based Arrays                                                        *
     ****************************************************************************/
@@ -290,9 +235,6 @@ void incflo::RegridArrays(int lev)
     m_v_mac[lev] = std::move(v_mac_new);
     m_v_mac[lev] -> setVal(0.0);
 
-    // Diffusion coefficient on y-faces
-    std::unique_ptr<MultiFab> bc1_new(new MultiFab(y_ba, dmap[lev], 1, nghost, 
-                                                   MFInfo(), *ebfactory[lev]));
     BoxArray z_ba = grids[lev];
     z_ba = z_ba.surroundingNodes(2);
 
@@ -302,37 +244,12 @@ void incflo::RegridArrays(int lev)
     m_w_mac[lev] = std::move(w_mac_new);
     m_w_mac[lev] -> setVal(0.0);
 
-    // Diffusion coefficient on z-faces
-    std::unique_ptr<MultiFab> bc2_new(new MultiFab(z_ba, dmap[lev], 1, nghost,
-                                                   MFInfo(), *ebfactory[lev]));
-    bcoeff[lev][2] = std::move(bc2_new);
-    bcoeff[lev][2] -> setVal(0.0);
-
-	//****************************************************************************
-
-    // Slopes in x-direction
-    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], xslopes[lev]->nComp(), nghost));
-    xslopes[lev] = std::move(xslopes_new);
-    xslopes[lev] -> setVal(0.);
-
-    // Slopes in y-direction
-    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], yslopes[lev]->nComp(), nghost));
-    yslopes[lev] = std::move(yslopes_new);
-    yslopes[lev] -> setVal(0.);
-
-    // Slopes in z-direction
-    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], zslopes[lev]->nComp(), nghost));
-    zslopes[lev] = std::move(zslopes_new);
-    zslopes[lev] -> setVal(0.);
-
 	// ********************************************************************************
 	// Make sure we fill the ghost cells as appropriate -- this is copied from init_fluid
 	// ********************************************************************************
 
 	FillScalarBC(lev, *ro[lev]);
 	FillScalarBC(lev, *eta[lev]);
-
-    if (!nodal_pressure) FillScalarBC(lev, *p[lev]);
 }
 
 // Resize all arrays when instance of incflo class is constructed.
@@ -373,7 +290,9 @@ void incflo::ResizeArrays()
     // Coefficients for elliptic solves
 	bcoeff.resize(max_level + 1);
 	for(int lev = 0; lev < max_level + 1; ++lev)
+    {
 		bcoeff[lev].resize(3);
+    }
 
     // BCs
 	bc_ilo.resize(max_level + 1);

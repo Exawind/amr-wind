@@ -39,7 +39,6 @@ void incflo::ReadParameters()
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
 		pp.query("steady_state_tol", steady_state_tol);
-        pp.query("nodal_pressure", nodal_pressure);
 		pp.query("explicit_diffusion", explicit_diffusion);
 
         // Physics
@@ -176,11 +175,6 @@ void incflo::PostInit(int restart_flag)
     // Fill boundaries
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        if(!nodal_pressure)
-        {
-            ExtrapolatePressure(lev, p[lev]);
-            ExtrapolatePressure(lev, p0[lev]);
-        }
         FillScalarBC(lev, *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
         vel[lev]->FillBoundary(geom[lev].periodicity());
@@ -311,7 +305,7 @@ void incflo::SetBackgroundPressure()
                    bc_jhi[lev]->dataPtr(),
                    bc_klo[lev]->dataPtr(),
                    bc_khi[lev]->dataPtr(),
-                   &nghost, &nodal_pressure);
+                   &nghost);
         }
 
         p0[lev]->FillBoundary(p0_periodicity);
