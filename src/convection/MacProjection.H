@@ -1,21 +1,7 @@
 #ifndef MAC_PROJECTION_H_
 #define MAC_PROJECTION_H_
 
-#include <iostream>
-#include <memory>
-
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
-#include <AMReX.H>
 #include <AMReX_AmrCore.H>
-#include <AMReX_ArrayLim.H>
-#include <AMReX_BLProfiler.H>
-#include <AMReX_IArrayBox.H>
-#include <AMReX_LO_BCTYPES.H>
-#include <AMReX_MultiFab.H>
-#include <AMReX_Vector.H>
 
 #include <constants.H>
 

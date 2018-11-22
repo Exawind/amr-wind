@@ -15,7 +15,6 @@
 #include <DiffusionEquation.H>
 #include <MacProjection.H>
 #include <PoissonEquation.H>
-// Note: a lot of stuff is included through MacProjection.H...
 
 
 class incflo : public AmrCore
@@ -113,6 +112,55 @@ private:
 	void ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
 						Vector<std::unique_ptr<MultiFab>>& divtau_old);
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Projection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void ApplyProjection(Real time, Real scaling_factor);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Convection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
+					   Vector<std::unique_ptr<MultiFab>>& vel, 
+                       Real time);
+	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Diffusion
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
+	void DiffuseVelocity(Real time);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Derived quantities
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void UpdateDerivedQuantities();
+	void ComputeDivU(Real time);
+	void ComputeStrainrate();
+	void ComputeVorticity();
+	void ComputeViscosity();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Boundary conditions
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+	void FillScalarBC(int lev, MultiFab& mf);
+	void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -142,18 +190,6 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Derived quantities
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void UpdateDerivedQuantities();
-	void ComputeDivU(Real time);
-	void ComputeStrainrate();
-	void ComputeVorticity();
-	void ComputeViscosity();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
     // Input / Output
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -172,23 +208,6 @@ private:
 
     // Read checkpoint file and restart simulation from it
     void ReadCheckpointFile();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Projection
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void ApplyProjection(Real time, Real scaling_factor);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Boundary conditions
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-	void FillScalarBC(int lev, MultiFab& mf);
-	void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -219,31 +238,77 @@ private:
 	void RegridArrays(int lev);
     void MakeBCArrays();
 
-
-    // DIFFUSION
-    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
-	void DiffuseVelocity(Real time);
-
-    // CONVECTION
-	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
-					   Vector<std::unique_ptr<MultiFab>>& vel, 
-                       Real time);
-	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: MultiFabs and IArrayBoxes existing on each level
+    // Member variables: Runtime parameters
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Be verbose? 
+    int incflo_verbose = 0;
+
+    // Time and time step counters
+	Real cur_time = 0.0;
+	Real dt = -1.0;
+	int nstep = -1;
+
+    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step 
+    // OR steady_state = true AND steady_state_tol is reached
+    Real stop_time = -1.0;
+    int max_step = -1;
+    bool steady_state = false;
+	Real steady_state_tol = 1.0e-5;
+
+	// Options to control time stepping
+	Real cfl = 0.5;
+	Real fixed_dt = -1.;
+
+    // Whether to use the explicit diffusion or the semi-implicit one
+	int explicit_diffusion = 1;
+
+    // AMR / refinement settings 
+	int refine_cutcells = 1;
+    int regrid_int = -1;
+
+	Periodicity p0_periodicity;
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Physics
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
+    Real ro_0 = 1.0;
+
+    // Fluid properties
+    std::string fluid_model;
+    Real mu = 1.0;
+    Real n = 0.0;
+    Real tau_0 = 0.0;
+    Real papa_reg = 0.0;
+    Real eta_0 = 0.0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Data containers
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Instances of self-written classes for MAC projection, diffusion + Poisson equations 
+	std::unique_ptr<MacProjection> mac_projection;
+	std::unique_ptr<DiffusionEquation> diffusion_equation;
+	std::unique_ptr<PoissonEquation> poisson_equation;
+
+    // Boundary conditions
 	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
 	Vector<std::unique_ptr<IArrayBox>> bc_ihi;
 	Vector<std::unique_ptr<IArrayBox>> bc_jlo;
 	Vector<std::unique_ptr<IArrayBox>> bc_jhi;
 	Vector<std::unique_ptr<IArrayBox>> bc_klo;
 	Vector<std::unique_ptr<IArrayBox>> bc_khi;
+
 	Vector<std::unique_ptr<iMultiFab>> flag;
+
 	Vector<std::unique_ptr<MultiFab>> p;
 	Vector<std::unique_ptr<MultiFab>> ro;
 	Vector<std::unique_ptr<MultiFab>> vel;
@@ -254,10 +319,12 @@ private:
 	Vector<std::unique_ptr<MultiFab>> eta;
 	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
+    // TODO: Could make this 3 comps like vel, gp? 
 	Vector<std::unique_ptr<MultiFab>> xslopes;
 	Vector<std::unique_ptr<MultiFab>> yslopes;
 	Vector<std::unique_ptr<MultiFab>> zslopes;
 	Vector<std::unique_ptr<MultiFab>> divu;
+    // TODO: Could make this 3 comps like vel, gp? 
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;
@@ -290,46 +357,12 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: unassigned
+    // Member variables: EB 
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	std::unique_ptr<MacProjection> mac_projection;
-	std::unique_ptr<DiffusionEquation> diffusion_equation;
-	std::unique_ptr<PoissonEquation> poisson_equation;
-
-    // Time and time step counters
-	Real cur_time = 0.0;
-	Real dt = -1.0;
-	int nstep = -1;
-
-    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step 
-    // OR steady_state = true AND steady_state_tol is reached
-    Real stop_time = -1.0;
-    int max_step = -1;
-    bool steady_state = false;
-	Real steady_state_tol = 1.0e-5;
-
-    // Be verbose? 
-    int incflo_verbose = 0;
-
-    // Physics 
-    Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
-    Real ro_0 = 1.0;
-
-    // Fluid properties
-    std::string fluid_model;
-    Real mu = 1.0;
-    Real n = 0.0;
-    Real tau_0 = 0.0;
-    Real papa_reg = 0.0;
-    Real eta_0 = 0.0;
-
-	// Options to control time stepping
-	Real cfl = 0.5;
-	Real fixed_dt = -1.;
-
-	Periodicity p0_periodicity;
+	const EB2::Level* eb_level_fluid;
+	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
 	// Number of ghost nodes for field arrays.
 	const int nghost = 5;
@@ -338,14 +371,6 @@ private:
 	const int m_eb_basic_grow_cells = nghost;
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
-
-	int explicit_diffusion = 1;
-	int refine_cutcells = 1;
-    int regrid_int = -1;
-
-
-	const EB2::Level* eb_level_fluid;
-	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 };
 
 #endif

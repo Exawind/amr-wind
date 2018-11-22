@@ -2,8 +2,6 @@
 #define POISSON_EQUATION_H_
 
 #include <AMReX_AmrCore.H>
-#include <AMReX_BC_TYPES.H>
-#include <AMReX_IArrayBox.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLNodeLaplacian.H>
 
