@@ -392,10 +392,8 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
         DiffuseVelocity(new_time);
     }
 
-	// Apply projection
-	ApplyProjection(new_time, dt, proj_2);
-    
 	// Project velocity field
+	ApplyProjection(new_time, dt, proj_2);
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 1)
