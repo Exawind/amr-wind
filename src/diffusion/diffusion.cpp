@@ -87,32 +87,3 @@ void incflo::ComputeDivTau(int lev,
       }
    }
 }
-
-//
-// Implicit diffusion: solve 
-//
-//      ( 1 - del dot ( eta grad ) ) u_new = RHS
-//
-// Here RHS = "vel" which is the current approximation to 
-// the new-time velocity (without the diffusion terms solved for implicitly)
-//
-void incflo::DiffuseVelocity(amrex::Real time)
-{
-	BL_PROFILE("incflo::DiffuseVelocity");
-
-	// Swap ghost cells and apply BCs to velocity
-	FillVelocityBC(time, 0);
-
-	// Update the solver with the relevant current states of the simulation
-	diffusion_equation->setCurrentState(ro, eta, dt);
-
-	// Loop over the velocity components
-	for(int dir = 0; dir < 3; dir++)
-	{
-		diffusion_equation->solve(vel, ro, dir);
-	}
-
-	// Swap ghost cells and apply BCs to velocity
-	FillVelocityBC(time, 0);
-}
-

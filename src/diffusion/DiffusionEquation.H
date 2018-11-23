@@ -5,7 +5,17 @@
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
 
-// TODO: DOCUMENTATION
+//
+// Solver for the implicit part of the diffusion equation: 
+//
+// ( 1 - dt div ( eta / ro grad ) ) u* = u_old + dt ( u grad u + div tau + gravity - grad p )
+//
+// Input "vel" holds the right hand side of this equation. 
+// This is replaced by the solution of the matrix solve. 
+// Output "vel" therefore holds u*
+//
+// Note: we actually solve the above equation multiplied by the density ro.
+//
 
 class DiffusionEquation
 {
@@ -31,21 +41,17 @@ public:
     void updateInternals(amrex::AmrCore* amrcore_in, 
                          amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory_in);
 
-     // Update the matrix based on the current state of the simulation
-    void setCurrentState(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta, 
-                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-                         amrex::Real dt);
-
     // Set user-supplied solver settings (must be done every time step)
     void setSolverSettings(amrex::MLMG& solver);
 
     // Solve the diffusion equation, update vel
     void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
                const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-               int dir);
+               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta, 
+               amrex::Real dt);
 
 private:
-    // Update the variable coefficients in the Poisson operator, called from setCurrentState()
+    // Update the variable coefficients in the matrix operator, called from setCurrentState()
     void updateCoefficients(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta);
 
     // AmrCore data 
@@ -54,10 +60,15 @@ private:
     int nghost; 
 
     // Internal data used in the matrix solve
+    //
+    // MultiLevel EmbeddedBoundary cell-centered Laplacian: 
+    //
+    // ( alpha a - beta div ( b grad ) ) phi = rhs
+    //
+    amrex::MLEBABecLap matrix;
     amrex::Vector<amrex::Vector<std::unique_ptr<amrex::MultiFab>>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
-    amrex::MLEBABecLap matrix;
 
     // Boundary conditions
     int bc_lo[3], bc_hi[3];

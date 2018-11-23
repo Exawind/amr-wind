@@ -35,7 +35,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         PrintMaxValues(time);
     }
 
-    // Add the (1/rho gradp) back to ustar (note the +dt)
+    // Add the ( grad p /ro ) back to ustar (note the +dt)
     if(nstep >= 0)
     {
         for(int lev = 0; lev <= finest_level; lev++)

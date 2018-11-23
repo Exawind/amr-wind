@@ -235,7 +235,7 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
     // We use the new ime value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
-    // Compute the explicit advective term R_u^n
+    // Compute the explicit advective term 
     ComputeUGradU(conv_old, vel_o, cur_time);
 
     UpdateDerivedQuantities();
@@ -276,10 +276,12 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
         }
     }
 
+    FillVelocityBC(new_time, 0);
+
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
-        DiffuseVelocity(new_time);
+        diffusion_equation->solve(vel, ro, eta, dt);
     }
 
 	// Project velocity field
@@ -385,10 +387,12 @@ void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
         }
     }
 
+    FillVelocityBC(new_time, 0);
+
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
-        DiffuseVelocity(new_time);
+        diffusion_equation->solve(vel, ro, eta, dt);
     }
 
 	// Project velocity field

@@ -66,11 +66,7 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
         rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
     }
 
-	// First define the matrix.
-	// Class MLABecLaplacian describes the following operator:
-	//
-	//       (alpha * a - beta * (del dot b grad)) phi = rhs
-	//
+	// Define the matrix.
 	LPInfo info;
     matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
 
@@ -113,20 +109,27 @@ void DiffusionEquation::updateInternals(AmrCore* amrcore_in,
 }
 
 //
-// Updates the vectors going into the solve based on the current state of the simulation. 
-// Also sets the current time step size. 
+// Solve the matrix equation
 //
-void DiffusionEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>& ro, 
-                                        const Vector<std::unique_ptr<MultiFab>>& eta,
-                                        Real dt)
+void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, 
+                              const Vector<std::unique_ptr<MultiFab>>& ro, 
+                              const Vector<std::unique_ptr<MultiFab>>& eta, 
+                              Real dt)
 {
-	BL_PROFILE("DiffusionEquation::setCurrentState");
+	BL_PROFILE("DiffusionEquation::solve");
 
-    if(verbose > 0)
-    {
-        amrex::Print() << "Updating DiffusionEquation with current data... " << std::endl;
-    }
-
+    // Update the coefficients of the matrix going into the solve based on the current state of the
+    // simulation. Recall that the relevant matrix is 
+    //
+    //      alpha a - beta div ( b grad )   <--->   rho - dt div ( eta grad )
+    //
+    // So the constants and variable coefficients are: 
+    //
+    //      alpha: 1
+    //      beta: dt
+    //      a: ro
+    //      b: eta
+    
     // Set alpha and beta
     matrix.setScalars(1.0, dt);
 
@@ -135,10 +138,10 @@ void DiffusionEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>&
 
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
-        // This sets the spatially varying A coefficients
+        // This sets the spatially varying a coefficients
         matrix.setACoeffs(lev, (*ro[lev]));
 
-        // Copy the spatially varying b  coefficients into the proper data strutcure
+        // Copy the spatially varying b coefficients into the proper data strutcure
         Vector<const MultiFab*> tmp = GetVecOfConstPtrs(b[lev]);
         std::array<MultiFab const*, AMREX_SPACEDIM> b_tmp;
         for(int dir = 0; dir < 3; dir++)
@@ -147,6 +150,42 @@ void DiffusionEquation::setCurrentState(const Vector<std::unique_ptr<MultiFab>>&
         }
         // Set the coefficients
         matrix.setBCoeffs(lev, b_tmp);
+    }
+
+    // Loop over the velocity components
+    for(int dir = 0; dir < 3; dir++)
+    {
+        if(verbose > 0)
+        {
+            amrex::Print() << "Diffusing velocity component " << dir << std::endl;
+        }
+
+        for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
+        {
+            // Set the right hand side to equal ro 
+            rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
+
+            // Multiply rhs by vel(dir) to get momentum
+            // Note that vel holds the updated velocity:
+            //
+            //      u_old + dt ( u grad u + div tau + gravity - grad p )
+            //
+            MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
+
+            // By this point we must have filled the Dirichlet values of phi stored in ghost cells
+            phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
+            matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
+        }
+
+        MLMG solver(matrix);
+        setSolverSettings(solver);
+        solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
+
+        for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
+        {
+            phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
+            vel[lev]->copy(*phi[lev], 0, dir, 1, nghost, nghost);
+        }
     }
 }
 
@@ -232,44 +271,5 @@ void DiffusionEquation::setSolverSettings(MLMG& solver)
 
 	// This ensures that ghost cells of phi are correctly filled when returned from the solver
 	solver.setFinalFillBC(true);
-}
-
-//
-// Solve the matrix equation
-//
-void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, 
-                              const Vector<std::unique_ptr<MultiFab>>& ro, 
-                              int dir)
-{
-	BL_PROFILE("DiffusionEquation::solve");
-
-    if(verbose > 0)
-    {
-        amrex::Print() << "Diffusing velocity component " << dir << std::endl;
-    }
-
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-        // Set the right hand side to equal ro 
-        rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
-
-        // Multiply rhs by vel(dir) to get momentum
-        MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
-
-        // By this point we must have filled the Dirichlet values of phi stored in ghost cells
-        phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
-        matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
-    }
-
-	MLMG solver(matrix);
-    setSolverSettings(solver);
-	solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(rhs), mg_rtol, mg_atol);
-
-    Vector<Geometry> geom = amrcore->Geom();
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-        phi[lev]->FillBoundary(geom[lev].periodicity());
-        vel[lev]->copy(*phi[lev], 0, dir, 1, nghost, nghost);
-    }
 }
 

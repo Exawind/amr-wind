@@ -1,7 +1,7 @@
 !
 !
 !  This module contains the subroutines to compute the three components
-!  of the diffusion term div(tau) where
+!  of the diffusion term   div(tau) / ro  , where
 !
 !      tau = eta ( grad(u) + grad(u)^T )
 !
