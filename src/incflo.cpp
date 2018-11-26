@@ -12,13 +12,20 @@ incflo::incflo()
     // Read inputs file using ParmParse
     ReadParameters();
 
-	// Initialize memory for data-array internals
-	ResizeArrays();
+    // Generate multi-level refined geometry based on implicit function
+    if (use_amr_ls)
+    {
+        MakeAMRGeometry(); 
+    }
 
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
     if(incflo_verbose > 0) WriteEBSurface();
+    
+	// Initialize memory for data-array internals
+	ResizeArrays();
+
 }
 
 incflo::~incflo(){};
@@ -28,21 +35,18 @@ void incflo::InitData()
     BL_PROFILE("incflo::InitData()");
 
 	// Either init from scratch or from the checkpoint file
+    // In both cases, we call MakeNewLevelFromScratch():
+    // - Set BA and DM 
+    // - Allocate arrays for level
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-        // This is an AmrCore member function.
-        // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM
-        // - Allocate arrays for level
+        // This is an AmrCore member function. 
         InitFromScratch(cur_time);
 	}
 	else
 	{
-        // Read starting configuration from chk file.
-        // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM
-        // - Allocate arrays for level
+        // Read starting configuration from chk file. 
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}

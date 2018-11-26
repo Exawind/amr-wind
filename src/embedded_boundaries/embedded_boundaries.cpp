@@ -53,14 +53,10 @@ void incflo::MakeEBGeometry()
 		}
 	}
 
-	if(hourglass)
-		geom_type = "hourglass";
-	if(clr)
-		geom_type = "clr";
-	if(clr_riser)
-		geom_type = "clr_riser";
-	if(eb_general)
-		geom_type = "general";
+    if(hourglass) geom_type = "hourglass";
+    if(clr) geom_type = "clr";
+    if(clr_riser) geom_type = "clr_riser";
+    if(eb_general) geom_type = "general";
 
 	/******************************************************************************
    *                                                                            *
@@ -71,36 +67,100 @@ void incflo::MakeEBGeometry()
 	if(geom_type == "box")
 	{
 		amrex::Print() << "\n Building box geometry." << std::endl;
-		make_eb_box();
+        if(use_amr_ls)
+        {
+            amrex::Abort("box amr geometry not implemented yet");
+        }
+        else
+        {
+            make_eb_box();
+        }
 	}
 	else if(geom_type == "annulus")
 	{
 		amrex::Print() << "\n Building annulus geometry." << std::endl;
-		make_eb_annulus();
+        if(use_amr_ls)
+        {
+            amrex::Abort("annulus amr geometry not implemented yet");
+        }
+        else
+        {
+            make_eb_annulus();
+        }
 	}
 	else if(geom_type == "cylinder")
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
-		make_eb_cylinder();
+        if(use_amr_ls)
+        {
+            make_amr_cylinder();
+        }
+        else
+        {
+            make_eb_cylinder();
+        }
 	}
 	else if(geom_type == "hopper")
 	{
 		amrex::Print() << "\n Building hopper geometry." << std::endl;
-		make_eb_hopper();
+        if(use_amr_ls)
+        {
+            amrex::Abort("hopper amr geometry not implemented yet");
+        }
+        else
+        {
+            make_eb_hopper();
+        }
 	}
 	else if(geom_type == "general")
 	{
 		amrex::Print() << "\n Building general geometry (poly2 with extra walls)." << std::endl;
-		make_eb_general();
+        if(use_amr_ls)
+        {
+            amrex::Abort("general amr geometry not implemented yet");
+        }
+        else
+        {
+            make_eb_general();
+        }
 	}
 	else
 	{
 		amrex::Print() << "\n No EB geometry declared in inputs => "
 					   << " Will read walls from incflo.dat only." << std::endl;
-		make_eb_regular();
+        if(use_amr_ls)
+        {
+            amrex::Abort("regular amr geometry not implemented yet");
+        }
+        else
+        {
+            make_eb_regular();
+        }
 	}
-}
 
+    if(use_amr_ls)
+    {
+      amrex::Print() << "Constructing AMR levelset on "
+                     << amr_ls_max_level + 1 << " levels" << std::endl;
+
+      Vector<Real> ls_tags;
+      for (Real tag = amr_ls_baseline_tag; tag > 0; tag -= amr_ls_tag_step)
+      {
+          ls_tags.push_back(tag);
+      }
+
+      amrex::Print() << "Level tags: ";
+      for (Real tag : ls_tags)
+      {
+          amrex::Print() << tag << " ";
+      }
+      amrex::Print() << std::endl;
+
+      amr_level_set->InitData(ls_tags);
+      amr_level_set->WritePlotFile();
+      amrex::Print() << "... done constructing AMR levelset" << std::endl;
+    }
+}
 
 // This function checks if ebfactory is allocated with
 // the proper dm and ba
