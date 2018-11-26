@@ -334,22 +334,11 @@ void incflo::InitialIterations()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
 
-	//  Create temporary multifabs to hold conv and divtau
-	Vector<std::unique_ptr<MultiFab>> conv;
-	Vector<std::unique_ptr<MultiFab>> divtau;
-    conv.resize(finest_level + 1);
-    divtau.resize(finest_level + 1);
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-        divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-    }
-
 	for(int iter = 0; iter < 3; ++iter)
 	{
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		ApplyPredictor(conv, divtau);
+		ApplyPredictor();
 
         for(int lev = 0; lev <= finest_level; lev++)
         {

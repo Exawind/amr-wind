@@ -107,10 +107,8 @@ private:
     void Advance();
     void ComputeDt(int initialisation);
 	bool SteadyStateReached();
-	void ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
-						Vector<std::unique_ptr<MultiFab>>& divtau_old);
-	void ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
-						Vector<std::unique_ptr<MultiFab>>& divtau_old);
+	void ApplyPredictor();
+	void ApplyCorrector();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -308,22 +306,27 @@ private:
 
 	Vector<std::unique_ptr<iMultiFab>> flag;
 
-	Vector<std::unique_ptr<MultiFab>> p;
+    // Primary variables
 	Vector<std::unique_ptr<MultiFab>> ro;
 	Vector<std::unique_ptr<MultiFab>> vel;
 	Vector<std::unique_ptr<MultiFab>> vel_o;
+	Vector<std::unique_ptr<MultiFab>> p;
 	Vector<std::unique_ptr<MultiFab>> p0;
 	Vector<std::unique_ptr<MultiFab>> gp;
 	Vector<std::unique_ptr<MultiFab>> gp0;
+    // Derived variables TODO: to save memory, would only need to have 2 temporary variables
 	Vector<std::unique_ptr<MultiFab>> eta;
 	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
-    // TODO: Could make this 3 comps like vel, gp? 
+	Vector<std::unique_ptr<MultiFab>> divu;
+    // Helper variables 
+    Vector<std::unique_ptr<MultiFab>> conv; 
+    Vector<std::unique_ptr<MultiFab>> conv_old; 
+    Vector<std::unique_ptr<MultiFab>> divtau; 
+    Vector<std::unique_ptr<MultiFab>> divtau_old; 
 	Vector<std::unique_ptr<MultiFab>> xslopes;
 	Vector<std::unique_ptr<MultiFab>> yslopes;
 	Vector<std::unique_ptr<MultiFab>> zslopes;
-	Vector<std::unique_ptr<MultiFab>> divu;
-    // TODO: Could make this 3 comps like vel, gp? 
 	Vector<std::unique_ptr<MultiFab>> m_u_mac;
 	Vector<std::unique_ptr<MultiFab>> m_v_mac;
 	Vector<std::unique_ptr<MultiFab>> m_w_mac;

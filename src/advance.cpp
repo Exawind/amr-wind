@@ -32,19 +32,6 @@ void incflo::Advance()
     }
     FillVelocityBC(cur_time, 0);
 
-    // Create temporary multifabs to hold the old-time conv and divtau
-    // so we don't have to re-compute them in the corrector
-    // TODO: Make this smarter -- actually shouldn't need separate implementatino of applyinf pred corr
-    Vector<std::unique_ptr<MultiFab>> conv_old;
-    Vector<std::unique_ptr<MultiFab>> divtau_old;
-    conv_old.resize(finest_level + 1);
-    divtau_old.resize(finest_level + 1);
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-        divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-    }
-
     // Compute time step size
     int initialisation = 0;
     ComputeDt(initialisation);
@@ -64,10 +51,10 @@ void incflo::Advance()
     }
 
     // Predictor step
-    ApplyPredictor(conv_old, divtau_old);
+    ApplyPredictor();
 
     // Corrector step
-    ApplyCorrector(conv_old, divtau_old);
+    ApplyCorrector();
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
@@ -227,8 +214,7 @@ void incflo::ComputeDt(int initialisation)
 //
 //     p = phi
 //
-void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
-                                    Vector<std::unique_ptr<MultiFab>>& divtau_old)
+void incflo::ApplyPredictor()
 {
 	BL_PROFILE("incflo::ApplyPredictor");
 
@@ -325,23 +311,12 @@ void incflo::ApplyPredictor(Vector<std::unique_ptr<MultiFab>>& conv_old,
 //
 //     p = phi
 //
-void incflo::ApplyCorrector(Vector<std::unique_ptr<MultiFab>>& conv_old,
-                                    Vector<std::unique_ptr<MultiFab>>& divtau_old)
+void incflo::ApplyCorrector()
 {
 	BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
-
-	Vector<std::unique_ptr<MultiFab>> conv;
-	Vector<std::unique_ptr<MultiFab>> divtau;
-    conv.resize(finest_level + 1);
-    divtau.resize(finest_level + 1);
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-        divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
-    }
 
     // Compute the explicit advective term R_u^*
     ComputeUGradU(conv, vel, new_time);

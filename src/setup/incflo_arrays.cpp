@@ -12,6 +12,14 @@ void incflo::AllocateArrays(int lev)
     ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	ro[lev]->setVal(0.);
 
+	// Current velocity
+	vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
+	vel[lev]->setVal(0.);
+
+	// Old velocity
+	vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
+	vel_o[lev]->setVal(0.);
+
 	// Pressure gradients
 	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
 	gp0[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
@@ -22,14 +30,6 @@ void incflo::AllocateArrays(int lev)
 	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	eta[lev]->setVal(0.);
 
-	// Current velocity
-	vel[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
-	vel[lev]->setVal(0.);
-
-	// Old velocity
-	vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
-	vel_o[lev]->setVal(0.);
-
 	// Strain-rate magnitude
 	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	strainrate[lev]->setVal(0.);
@@ -37,6 +37,18 @@ void incflo::AllocateArrays(int lev)
 	// Vorticity
 	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	vort[lev]->setVal(0.);
+
+    // Convective terms for diffusion equation
+    conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
+    conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
+    conv[lev]->setVal(0.);
+    conv_old[lev]->setVal(0.);
+
+    // Divergence of stress tensor terms for diffusion equation
+    divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
+    divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
+    divtau[lev]->setVal(0.);
+    divtau_old[lev]->setVal(0.);
 
 	// Slopes in x-direction
 	xslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
@@ -107,21 +119,15 @@ void incflo::RegridArrays(int lev)
 	ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
 	ro[lev] = std::move(ro_new);
 
-	// Molecular viscosity
-	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-	eta_new->setVal(0.);
-	eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
-	eta[lev] = std::move(eta_new);
-
 	// Gas velocity
-	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], vel[lev]->nComp(), nghost,
+	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                    MFInfo(), *ebfactory[lev]));
 	vel_new->setVal(0.);
 	vel_new->copy(*vel[lev], 0, 0, vel[lev]->nComp(), 0, nghost);
 	vel[lev] = std::move(vel_new);
 
 	// Old gas velocity
-    std::unique_ptr<MultiFab> vel_o_new(new MultiFab(grids[lev], dmap[lev], vel_o[lev]->nComp(), nghost,
+    std::unique_ptr<MultiFab> vel_o_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                      MFInfo(), *ebfactory[lev]));
 	vel_o_new->setVal(0.);
 	vel_o_new->copy(*vel_o[lev], 0, 0, vel_o[lev]->nComp(), 0, nghost);
@@ -139,6 +145,12 @@ void incflo::RegridArrays(int lev)
 	gp0_new->copy(*gp0[lev], 0, 0, 1, 0, nghost);
 	gp0[lev] = std::move(gp0_new);
 
+	// Molecular viscosity
+	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	eta_new->setVal(0.);
+	eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
+	eta[lev] = std::move(eta_new);
+
 	// Strain-rate magnitude
 	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
 	strainrate[lev] = std::move(strainrate_new);
@@ -149,18 +161,40 @@ void incflo::RegridArrays(int lev)
 	vort[lev] = std::move(vort_new);
 	vort[lev]->setVal(0.);
 
+    // Convective terms
+    std::unique_ptr<MultiFab> conv_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
+                                                    MFInfo(), *ebfactory[lev]));
+    conv[lev] = std::move(conv_new);
+    conv[lev]->setVal(0.);
+
+    std::unique_ptr<MultiFab> conv_old_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
+                                                        MFInfo(), *ebfactory[lev]));
+    conv[lev] = std::move(conv_old_new);
+    conv[lev]->setVal(0.);
+
+    // Divergence of stress tensor terms 
+    std::unique_ptr<MultiFab> divtau_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
+                                                      MFInfo(), *ebfactory[lev]));
+    divtau[lev] = std::move(divtau_new);
+    divtau[lev]->setVal(0.);
+
+    std::unique_ptr<MultiFab> divtau_old_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
+                                                          MFInfo(), *ebfactory[lev]));
+    divtau[lev] = std::move(divtau_old_new);
+    divtau[lev]->setVal(0.);
+
     // Slopes in x-direction
-    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], xslopes[lev]->nComp(), nghost));
+    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
     xslopes[lev] = std::move(xslopes_new);
     xslopes[lev] -> setVal(0.);
 
     // Slopes in y-direction
-    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], yslopes[lev]->nComp(), nghost));
+    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
     yslopes[lev] = std::move(yslopes_new);
     yslopes[lev] -> setVal(0.);
 
     // Slopes in z-direction
-    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], zslopes[lev]->nComp(), nghost));
+    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
     zslopes[lev] = std::move(zslopes_new);
     zslopes[lev] -> setVal(0.);
 
@@ -228,25 +262,32 @@ void incflo::RegridArrays(int lev)
 // This is only done at the very start of the simulation. 
 void incflo::ResizeArrays()
 {
-	p.resize(max_level + 1);
-	p0.resize(max_level + 1);
-
+    // Density 
 	ro.resize(max_level + 1);
-
-	divu.resize(max_level + 1);
 
 	// Current (vel) and old (vel_o) velocities
 	vel.resize(max_level + 1);
 	vel_o.resize(max_level + 1);
 
+    // Pressure
+	p.resize(max_level + 1);
+	p0.resize(max_level + 1);
+
 	// Pressure gradients
 	gp.resize(max_level + 1);
 	gp0.resize(max_level + 1);
 
-    // Derived quantities: viscosity, strainrate, vorticity
+    // Derived quantities: viscosity, strainrate, vorticity, div(u)
 	eta.resize(max_level + 1);
     strainrate.resize(max_level + 1);
 	vort.resize(max_level + 1);
+	divu.resize(max_level + 1);
+
+    // Convective terms u grad u 
+    conv.resize(max_level + 1);
+    conv_old.resize(max_level + 1);
+    divtau.resize(max_level + 1);
+    divtau_old.resize(max_level + 1);
 
 	// MAC velocities used for defining convective term
 	m_u_mac.resize(max_level + 1);
