@@ -49,7 +49,7 @@ contains
    ! Compute the viscosity distribution of a 
    ! Papanastasiou-regularised Bingham fluid: 
    !
-   ! eta = (mu dot(gamma) + tau_0) (1 - exp(-dot(gamma) / eps)) / dot(gamma)
+   ! eta = mu + tau_0 (1 - exp(-dot(gamma) / eps)) / dot(gamma)
    !
    subroutine bingham_viscosity(lo, hi, eta, elo, ehi, sr, slo, shi) &
          bind(C, name="bingham_viscosity")
@@ -76,7 +76,7 @@ contains
             do i = lo(1),hi(1)
 
                nu = sr(i,j,k) / papa_reg
-               eta(i,j,k) = (mu * sr(i,j,k) + tau_0) * expterm(nu) / papa_reg
+               eta(i,j,k) = mu + tau_0 * expterm(nu) / papa_reg
 
             end do
          end do
@@ -162,6 +162,13 @@ contains
 
    end subroutine smd_viscosity
 
+   ! 
+   ! Compute the exponential term:
+   !
+   !  ( 1 - exp(-nu) ) / nu ,
+   !
+   ! making sure to avoid overflow for small nu by using the exponential Taylor series
+   !
    real(rt) function expterm(nu)
       real(rt), intent(in) :: nu
       ! Avoid overflow 
