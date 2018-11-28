@@ -2,7 +2,6 @@
 #define INCFLO_H_
 
 #include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLMG.H>
 #include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_iMultiFab.H>
 #include <AMReX_EBFArrayBox.H>
