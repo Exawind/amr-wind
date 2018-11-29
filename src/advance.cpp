@@ -198,7 +198,7 @@ void incflo::ComputeDt(int initialisation)
 //
 //  1. Compute
 //
-//     vel = vel_o + dt * R_u^n + dt * divtau*(1/ro)
+//     vel = vel_o + dt * (conv^n + dt * divtau^n / ro)
 //
 //  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient)
 //
