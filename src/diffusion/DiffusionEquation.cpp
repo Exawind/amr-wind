@@ -168,7 +168,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
             // Multiply rhs by vel(dir) to get momentum
             // Note that vel holds the updated velocity:
             //
-            //      u_old + dt ( u grad u + div tau + gravity - grad p )
+            //      u_old + dt ( - u grad u + div tau / ro - grad p / rho + gravity )
             //
             MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
 

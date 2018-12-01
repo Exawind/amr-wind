@@ -50,10 +50,8 @@ void incflo::Advance()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
 
-    // Predictor step
     ApplyPredictor();
 
-    // Corrector step
     ApplyCorrector();
 
     // Stop timing current time step
@@ -87,10 +85,6 @@ void incflo::Advance()
 void incflo::ComputeDt(int initialisation)
 {
 	BL_PROFILE("incflo::ComputeDt");
-
-	// DT is always computed even for fixed dt, so we can
-	// issue a warning if fixed dt does not satisfy CFL condition.
-	Real dt_new = dt;
 
 	// Compute dt for this time step
 	Real umax = -1.e20;
@@ -139,7 +133,7 @@ void incflo::ComputeDt(int initialisation)
     Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
 
     // Update dt
-    dt_new = 2.0 * cfl / comb_cfl;
+    Real dt_new = 2.0 * cfl / comb_cfl;
 
     // Reduce CFL for initial step
     if(initialisation)
@@ -195,6 +189,7 @@ void incflo::ComputeDt(int initialisation)
 
 //
 // Compute predictor:
+// TODO: update documentation
 //
 //  1. Compute
 //
@@ -227,7 +222,7 @@ void incflo::ApplyPredictor()
     // We use the new ime value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
-    // Compute the explicit advective term 
+    // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
     ComputeUGradU(conv_old, vel_o, cur_time);
 
     UpdateDerivedQuantities();
@@ -324,7 +319,7 @@ void incflo::ApplyCorrector()
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
-    // Compute the explicit advective term R_u^*
+    // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
     ComputeUGradU(conv, vel, new_time);
 
     UpdateDerivedQuantities();
