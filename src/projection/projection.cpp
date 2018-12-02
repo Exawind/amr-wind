@@ -8,7 +8,7 @@
 //
 // Computes the following decomposition:
 //
-//    u + grad(phi)/ro = u*,     where div(u) = 0
+//    u + dt grad(phi) / ro = u*,     where div(u) = 0
 //
 // where u* is a non-div-free velocity field, stored
 // by components in u, v, and w. The resulting div-free
