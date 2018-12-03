@@ -57,7 +57,7 @@ void incflo::InitData()
 	PostInit(restart_flag);
 
     // Plot initial distribution
-    if(plot_int > 0 and !restart_flag) 
+    if((plot_int > 0 || plot_per > 0) && !restart_flag) 
     {
         UpdateDerivedQuantities();
         WritePlotFile();
@@ -91,13 +91,14 @@ void incflo::Evolve()
         cur_time += dt;
 
         // Write plot and checkpoint files
-        if((plot_int > 0) && (nstep % plot_int == 0))
+        if((plot_int > 0 && (nstep % plot_int == 0)) || 
+           (plot_per > 0 && (abs(remainder(cur_time, plot_per)) < 1.e-6)))
         {
             UpdateDerivedQuantities();
             WritePlotFile();
             last_plt = nstep;
         }
-        if((check_int > 0) && (nstep % check_int == 0))
+        if(check_int > 0 && (nstep % check_int == 0))
         {
             WriteCheckPointFile();
             last_chk = nstep;
@@ -105,13 +106,13 @@ void incflo::Evolve()
 
         // Mechanism to terminate incflo normally.
         do_not_evolve = (steady_state && SteadyStateReached()) ||
-                        (((stop_time > 0.) && (cur_time >= stop_time - 1.e-6 * dt)) ||
+                        ((stop_time > 0. && (cur_time >= stop_time - 1.e-6 * dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
 
 	// Output at the final time
     if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
-    if(plot_int > 0 && nstep != last_plt)
+    if((plot_int > 0 || plot_per > 0) && nstep != last_plt)
     {
         UpdateDerivedQuantities();
         WritePlotFile();

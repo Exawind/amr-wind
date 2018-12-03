@@ -30,6 +30,7 @@ void incflo::ReadParameters()
 
 		pp.query("plot_file", plot_file);
 		pp.query("plot_int", plot_int);
+		pp.query("plot_per", plot_per);
 	}
 	{
         // Prefix incflo

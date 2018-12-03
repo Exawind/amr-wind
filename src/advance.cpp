@@ -156,13 +156,19 @@ void incflo::ComputeDt(int initialisation)
     }
 
     // Don't let the timestep grow by more than 10% per step.
-    if(dt > 0.0)
+    if(dt > 0.0 && last_plt != nstep)
     {
         dt_new = amrex::min(dt_new, 1.1 * dt);
     }
 
+    // Don't overshoot specified plot times
+    if(plot_per > 0.0 && (trunc((cur_time + dt_new) / plot_per) > trunc(cur_time / plot_per)))
+    {
+        dt_new = trunc((cur_time + dt_new) / plot_per) * plot_per - cur_time;
+    }
+
     // Don't overshoot the final time if not running to steady state
-    if((!steady_state) & (stop_time > 0.0))
+    if(!steady_state && stop_time > 0.0)
     {
         if(cur_time + dt_new > stop_time)
         {
