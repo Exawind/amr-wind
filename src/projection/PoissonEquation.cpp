@@ -65,8 +65,6 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
     matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
 
     // Set matrix options
-    matrix.setGaussSeidel(true);
-    matrix.setHarmonicAverage(false);
     matrix.setCoarseningStrategy(MLNodeLaplacian::CoarseningStrategy::Sigma);
 
 	// LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
