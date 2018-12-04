@@ -169,13 +169,13 @@ void incflo::ErrorEst(int lev,
         //
         tagfab.tags_and_untags(itags, tilebox);
     }
-
-    /* TODO: This is what we want to refine on, but it gives segfault like this
-     * // Refine on cut cells
-    if (refine_cutcells)
+    
+    // TODO: This is what we want to refine on, but it gives segfault like this
+    // Refine on cut cells
+    if (refine_cutcells) 
     {
         amrex::TagCutCells(tags, *ro[lev]);
-    }*/
+    }
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.

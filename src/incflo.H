@@ -1,14 +1,15 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
-#include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLNodeLaplacian.H>
-#include <AMReX_iMultiFab.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
+#include <AMReX_MLEBABecLap.H>
+#include <AMReX_MLNodeLaplacian.H>
+#include <AMReX_PhysBCFunct.H>
+#include <AMReX_iMultiFab.H>
 
 #include <eb_if.H>
 #include <DiffusionEquation.H>
@@ -76,6 +77,20 @@ public:
     // Delete level data
     void ClearLevel(int lev) override; 
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Some getters (TODO: do we need these?)
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    const int* get_bc_ilo_ptr(int lev) {return bc_ilo[lev]->dataPtr();}
+    const int* get_bc_ihi_ptr(int lev) {return bc_ihi[lev]->dataPtr();}
+    const int* get_bc_jlo_ptr(int lev) {return bc_jlo[lev]->dataPtr();}
+    const int* get_bc_jhi_ptr(int lev) {return bc_jhi[lev]->dataPtr();}
+    const int* get_bc_klo_ptr(int lev) {return bc_klo[lev]->dataPtr();}
+    const int* get_bc_khi_ptr(int lev) {return bc_khi[lev]->dataPtr();}
+
+    int get_nghost() { return nghost; }
+
 private:
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -127,7 +142,7 @@ private:
 					   Vector<std::unique_ptr<MultiFab>>& vel, 
                        Real time);
 	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -174,14 +189,14 @@ private:
     std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
 	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
 
-	void make_eb_general();
 	void make_eb_annulus();
 	void make_eb_box();
-	void make_eb_cylinder();
-	void make_eb_hopper();
-	void make_eb_hourglass();
 	void make_eb_clr();
 	void make_eb_clr_riser();
+	void make_eb_cylinder();
+	void make_eb_general();
+	void make_eb_hopper();
+	void make_eb_hourglass();
 	void make_eb_regular();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +240,9 @@ private:
 
 	void make_mg_bc(int mg_bc[]);
 
-	void FillPatch(int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
+    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp,
+                      const Vector<BCRec>& bcr);
+    void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
 	void AverageDown();
 	void AverageDownTo(int crse_lev);
@@ -233,6 +250,18 @@ private:
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
     void MakeBCArrays();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Not yet classified
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+     Vector<Real> t_old;
+     Vector<Real> t_new;
+
+     amrex::Vector<BCRec> bcs_u; // For velocity components
+     amrex::Vector<BCRec> bcs_s; // For scalars
+     amrex::Vector<BCRec> bcs_f; // For generic first-order extrapolation
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -373,47 +402,6 @@ private:
 	const int m_eb_basic_grow_cells = nghost;
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Member variables: Level-set 
-    // TODO: these shouldnt all be incflo class members, especially the settings
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    
-    // level-set (nodal index space corresponding to cells, but n_refinement times finer)
-    std::unique_ptr<LSFactory> level_set;
-
-    // AMR level-set
-    std::unique_ptr<LSCoreBase> amr_level_set;
-
-    // Use multilevel level-set if true
-    bool use_amr_ls   = false;
-
-    // How much coarser should the zeroth-level of the level-set be? This is
-    // needed because the coarse level is used to describe the approximate
-    // level-set far from any boundaries.
-    int amr_ls_crse = 4;
-
-    // The max search-radius (ghost cells) over which to look for eb-facets
-    int amr_ls_eb_pad     = 4;
-    int amr_ls_max_eb_pad = 4;
-
-    // The base-line refinement value. This is a fiddly one: it needs to be
-    // small enough so that all eb facets are picked up but also not too small
-    // which would make the amr_ls data structure overly refined.
-    Real amr_ls_baseline_tag = 1.e-4;
-
-    // Level-set refinement tagging step size. Also a bit fiddly: this sets the
-    // steps (from the baseline tag) which are used to refine the AMR level-set
-    Real amr_ls_tag_step     = 1.e-5;
-
-    // Max level in AMR level-set
-    int amr_ls_max_level = 0;
-
-    // Max level for fluid solve
-    int amr_max_level = 0;
-
 };
 
 #endif
