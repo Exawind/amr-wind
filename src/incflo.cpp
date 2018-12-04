@@ -12,12 +12,6 @@ incflo::incflo()
     // Read inputs file using ParmParse
     ReadParameters();
 
-    // Generate multi-level refined geometry based on implicit function
-    if (use_amr_ls)
-    {
-        MakeAMRGeometry(); 
-    }
-
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();

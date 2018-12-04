@@ -1,3 +1,4 @@
+#include <AMReX_AmrParGDB.H>
 #include <AMReX_Array.H>
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_BLassert.H>
@@ -137,18 +138,18 @@ incflo::GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& da
 
     if (time > t_new[lev] - teps && time < t_new[lev] + teps)
     {
-        data.push_back(vel_g[lev].get());
+        data.push_back(vel[lev].get());
         datatime.push_back(t_new[lev]);
     }
     else if (time > t_old[lev] - teps && time < t_old[lev] + teps)
     {
-        data.push_back(vel_go[lev].get());
+        data.push_back(vel_o[lev].get());
         datatime.push_back(t_old[lev]);
     }
     else
     {
-        data.push_back(vel_go[lev].get());
-        data.push_back(vel_g[lev].get());
+        data.push_back(vel_o[lev].get());
+        data.push_back(vel[lev].get());
         datatime.push_back(t_old[lev]);
         datatime.push_back(t_new[lev]);
     }

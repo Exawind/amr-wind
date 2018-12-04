@@ -142,7 +142,7 @@ private:
 					   Vector<std::unique_ptr<MultiFab>>& vel, 
                        Real time);
 	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
