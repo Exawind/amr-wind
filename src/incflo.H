@@ -266,13 +266,13 @@ private:
 	int refine_cutcells = 1;
     int regrid_int = -1;
 
-	Periodicity p0_periodicity;
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Member variables: Physics
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+	Periodicity p0_periodicity;
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
@@ -373,6 +373,47 @@ private:
 	const int m_eb_basic_grow_cells = nghost;
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Level-set 
+    // TODO: these shouldnt all be incflo class members, especially the settings
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    
+    // level-set (nodal index space corresponding to cells, but n_refinement times finer)
+    std::unique_ptr<LSFactory> level_set;
+
+    // AMR level-set
+    std::unique_ptr<LSCoreBase> amr_level_set;
+
+    // Use multilevel level-set if true
+    bool use_amr_ls   = false;
+
+    // How much coarser should the zeroth-level of the level-set be? This is
+    // needed because the coarse level is used to describe the approximate
+    // level-set far from any boundaries.
+    int amr_ls_crse = 4;
+
+    // The max search-radius (ghost cells) over which to look for eb-facets
+    int amr_ls_eb_pad     = 4;
+    int amr_ls_max_eb_pad = 4;
+
+    // The base-line refinement value. This is a fiddly one: it needs to be
+    // small enough so that all eb facets are picked up but also not too small
+    // which would make the amr_ls data structure overly refined.
+    Real amr_ls_baseline_tag = 1.e-4;
+
+    // Level-set refinement tagging step size. Also a bit fiddly: this sets the
+    // steps (from the baseline tag) which are used to refine the AMR level-set
+    Real amr_ls_tag_step     = 1.e-5;
+
+    // Max level in AMR level-set
+    int amr_ls_max_level = 0;
+
+    // Max level for fluid solve
+    int amr_max_level = 0;
+
 };
 
 #endif
