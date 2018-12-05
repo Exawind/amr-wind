@@ -31,17 +31,17 @@ void incflo::InitData()
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-        // This is an AmrCore member function. 
+        // This is an AmrCore member function.
         // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM 
+        // - Set BA and DM
         // - Allocate arrays for level
         InitFromScratch(cur_time);
 	}
 	else
 	{
-        // Read starting configuration from chk file. 
+        // Read starting configuration from chk file.
         // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM 
+        // - Set BA and DM
         // - Allocate arrays for level
 		ReadCheckpointFile();
 		restart_flag = 1;
@@ -57,7 +57,7 @@ void incflo::InitData()
 	PostInit(restart_flag);
 
     // Plot initial distribution
-    if((plot_int > 0 || plot_per > 0) && !restart_flag) 
+    if((plot_int > 0 || plot_per > 0) && !restart_flag)
     {
         UpdateDerivedQuantities();
         WritePlotFile();
@@ -75,7 +75,7 @@ void incflo::Evolve()
     while(!do_not_evolve)
     {
         // TODO: Necessary for dynamic meshing
-        /* if (regrid_int > 0) 
+        /* if (regrid_int > 0)
         {
             // Make sure we don't regrid on max_level
             for (int lev = 0; lev < max_level; ++lev)
@@ -91,7 +91,7 @@ void incflo::Evolve()
         cur_time += dt;
 
         // Write plot and checkpoint files
-        if((plot_int > 0 && (nstep % plot_int == 0)) || 
+        if((plot_int > 0 && (nstep % plot_int == 0)) ||
            (plot_per > 0 && (abs(remainder(cur_time, plot_per)) < 1.e-6)))
         {
             UpdateDerivedQuantities();
@@ -112,7 +112,7 @@ void incflo::Evolve()
 
 	// Output at the final time
     if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
-    if((plot_int > 0 || plot_per > 0) && nstep != last_plt)
+    if((plot_int > 0 || plot_per > 0) && nstep != last_plt)
     {
         UpdateDerivedQuantities();
         WritePlotFile();
@@ -141,13 +141,13 @@ void incflo::ErrorEst(int lev,
         const Box& tilebox  = mfi.tilebox();
 
         TagBox&     tagfab  = tags[mfi];
-        
+
         // We cannot pass tagfab to Fortran becuase it is BaseFab<char>.
         // So we are going to get a temporary integer array.
             // set itags initially to 'untagged' everywhere
             // we define itags over the tilebox region
         tagfab.get_itags(itags, tilebox);
-        
+
             // data pointer and index space
         int*        tptr    = itags.dataPtr();
         const int*  tlo     = tilebox.loVect();
@@ -156,8 +156,8 @@ void incflo::ErrorEst(int lev,
             // tag cells for refinement
         state_error(tptr,  AMREX_ARLIM_3D(tlo), AMREX_ARLIM_3D(thi),
             BL_TO_FORTRAN_3D((*ro[lev])[mfi]),
-            &tagval, &clearval, 
-            AMREX_ARLIM_3D(tilebox.loVect()), AMREX_ARLIM_3D(tilebox.hiVect()), 
+            &tagval, &clearval,
+            AMREX_ARLIM_3D(tilebox.loVect()), AMREX_ARLIM_3D(tilebox.hiVect()),
             AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
         //
         // Now update the tags in the TagBox in the tilebox region
@@ -165,10 +165,10 @@ void incflo::ErrorEst(int lev,
         //
         tagfab.tags_and_untags(itags, tilebox);
     }
-    
+
     /* TODO: This is what we want to refine on, but it gives segfault like this
      * // Refine on cut cells
-    if (refine_cutcells) 
+    if (refine_cutcells)
     {
         amrex::TagCutCells(tags, *ro[lev]);
     }*/
@@ -185,9 +185,9 @@ void incflo::MakeNewLevelFromScratch(int lev,
     BL_PROFILE("incflo::MakeNewLevelFromScratch()");
 
     if(incflo_verbose > 0)
-    { 
-        amrex::Print() << "Making new level " << lev << std::endl; 
-        amrex::Print() << "with BoxArray " << new_grids << std::endl; 
+    {
+        amrex::Print() << "Making new level " << lev << std::endl;
+        amrex::Print() << "with BoxArray " << new_grids << std::endl;
     }
 
 	SetBoxArray(lev, new_grids);
