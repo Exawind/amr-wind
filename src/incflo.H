@@ -1,15 +1,15 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
-#include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLMG.H>
-#include <AMReX_MLNodeLaplacian.H>
-#include <AMReX_iMultiFab.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
+#include <AMReX_MLEBABecLap.H>
+#include <AMReX_MLNodeLaplacian.H>
+#include <AMReX_PhysBCFunct.H>
+#include <AMReX_iMultiFab.H>
 
 #include <eb_if.H>
 #include <DiffusionEquation.H>
@@ -77,6 +77,22 @@ public:
     // Delete level data
     void ClearLevel(int lev) override; 
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Some getters (TODO: find better way to do fillpatching)
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    const Geometry get_geom_ref(int lev){ return geom[lev]; }
+
+    const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
+    const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
+    const int* get_bc_jlo_ptr(int lev){ return bc_jlo[lev]->dataPtr(); }
+    const int* get_bc_jhi_ptr(int lev){ return bc_jhi[lev]->dataPtr(); }
+    const int* get_bc_klo_ptr(int lev){ return bc_klo[lev]->dataPtr(); }
+    const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
+
+    int get_nghost(){ return nghost; }
+
 private:
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -127,8 +143,8 @@ private:
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
 					   Vector<std::unique_ptr<MultiFab>>& vel, 
                        Real time);
-	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
-	void ComputeVelocityAtFaces(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocitySlopes(int lev, MultiFab& Sborder);
+	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -175,14 +191,14 @@ private:
     std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
 	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
 
-	void make_eb_general();
 	void make_eb_annulus();
 	void make_eb_box();
-	void make_eb_cylinder();
-	void make_eb_hopper();
-	void make_eb_hourglass();
 	void make_eb_clr();
 	void make_eb_clr_riser();
+	void make_eb_cylinder();
+	void make_eb_general();
+	void make_eb_hopper();
+	void make_eb_hourglass();
 	void make_eb_regular();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +242,9 @@ private:
 
 	void make_mg_bc(int mg_bc[]);
 
-	void FillPatch(int lev, Real time, MultiFab& mf, MultiFab& cmf, MultiFab &fmf, int icomp, int ncomp);
+    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp,
+                      const Vector<BCRec>& bcr);
+    void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
 	void AverageDown();
 	void AverageDownTo(int crse_lev);
@@ -234,6 +252,18 @@ private:
 	void AllocateArrays(int lev);
 	void RegridArrays(int lev);
     void MakeBCArrays();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Not yet classified
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+     Vector<Real> t_old;
+     Vector<Real> t_new;
+
+     Vector<BCRec> bcs_u; // For velocity components
+     Vector<BCRec> bcs_s; // For scalars
+     Vector<BCRec> bcs_f; // For generic first-order extrapolation
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -267,13 +297,13 @@ private:
 	int refine_cutcells = 1;
     int regrid_int = -1;
 
-	Periodicity p0_periodicity;
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Member variables: Physics
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+	Periodicity p0_periodicity;
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 

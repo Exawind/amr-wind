@@ -8,7 +8,7 @@
 //
 // Computes the following decomposition:
 //
-//    u + grad(phi)/ro = u*,     where div(u) = 0
+//    u + dt grad(phi) / ro = u*,     where div(u) = 0
 //
 // where u* is a non-div-free velocity field, stored
 // by components in u, v, and w. The resulting div-free
@@ -56,12 +56,8 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         }
     }
 
-    // Make sure div(u) is updated before scaling by dt (to be used as RHS for Poisson equation)
+    // Make sure div(u) is up to date
     ComputeDivU(time);
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        divu[lev]->mult(1.0 / scaling_factor, divu[lev]->nGrow());
-    }
 
     // Declare, resize, reset and initialize MultiFabs to hold the solution of the Poisson solve
 	Vector<std::unique_ptr<MultiFab>> phi;
@@ -91,9 +87,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // Multiply fluxes by dt
-        fluxes[lev]->mult(scaling_factor, fluxes[lev]->nGrow());
-
         // Now we correct the velocity with MINUS dt * (1/rho) * grad(phi),
         MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, 3, 0);
 
@@ -103,6 +96,9 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         {
             MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, dir, 1, fluxes[lev]->nGrow());
         }
+
+        // phi currently holds dt * phi so we divide by dt 
+        phi[lev]->mult(1.0 / scaling_factor, phi[lev]->nGrow());
 
         if(nstep >= 0)
         {

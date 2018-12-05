@@ -1,5 +1,4 @@
 #include <AMReX_ParmParse.H>
-#include <AMReX_EB_levelset.H>
 
 #include <algorithm>
 #include <embedded_boundaries_F.H>
@@ -53,14 +52,10 @@ void incflo::MakeEBGeometry()
 		}
 	}
 
-	if(hourglass)
-		geom_type = "hourglass";
-	if(clr)
-		geom_type = "clr";
-	if(clr_riser)
-		geom_type = "clr_riser";
-	if(eb_general)
-		geom_type = "general";
+    if(hourglass) geom_type = "hourglass";
+    if(clr) geom_type = "clr";
+    if(clr_riser) geom_type = "clr_riser";
+    if(eb_general) geom_type = "general";
 
 	/******************************************************************************
    *                                                                            *
@@ -71,36 +66,35 @@ void incflo::MakeEBGeometry()
 	if(geom_type == "box")
 	{
 		amrex::Print() << "\n Building box geometry." << std::endl;
-		make_eb_box();
+        make_eb_box();
 	}
 	else if(geom_type == "annulus")
 	{
 		amrex::Print() << "\n Building annulus geometry." << std::endl;
-		make_eb_annulus();
+        make_eb_annulus();
 	}
 	else if(geom_type == "cylinder")
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
-		make_eb_cylinder();
+        make_eb_cylinder();
 	}
 	else if(geom_type == "hopper")
 	{
 		amrex::Print() << "\n Building hopper geometry." << std::endl;
-		make_eb_hopper();
+        make_eb_hopper();
 	}
 	else if(geom_type == "general")
 	{
 		amrex::Print() << "\n Building general geometry (poly2 with extra walls)." << std::endl;
-		make_eb_general();
+        make_eb_general();
 	}
 	else
 	{
 		amrex::Print() << "\n No EB geometry declared in inputs => "
 					   << " Will read walls from incflo.dat only." << std::endl;
-		make_eb_regular();
+        make_eb_regular();
 	}
 }
-
 
 // This function checks if ebfactory is allocated with
 // the proper dm and ba

@@ -19,6 +19,7 @@ incflo::incflo()
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
     if(incflo_verbose > 0) WriteEBSurface();
+    
 }
 
 incflo::~incflo(){};
@@ -28,21 +29,18 @@ void incflo::InitData()
     BL_PROFILE("incflo::InitData()");
 
 	// Either init from scratch or from the checkpoint file
+    // In both cases, we call MakeNewLevelFromScratch():
+    // - Set BA and DM 
+    // - Allocate arrays for level
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
-        // This is an AmrCore member function.
-        // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM
-        // - Allocate arrays for level
+        // This is an AmrCore member function. 
         InitFromScratch(cur_time);
 	}
 	else
 	{
-        // Read starting configuration from chk file.
-        // Importantly, it calls MakeNewLevelFromScratch():
-        // - Set BA and DM
-        // - Allocate arrays for level
+        // Read starting configuration from chk file. 
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
@@ -92,7 +90,7 @@ void incflo::Evolve()
 
         // Write plot and checkpoint files
         if((plot_int > 0 && (nstep % plot_int == 0)) ||
-           (plot_per > 0 && (abs(remainder(cur_time, plot_per)) < 1.e-6)))
+           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-6)))
         {
             UpdateDerivedQuantities();
             WritePlotFile();
@@ -165,13 +163,13 @@ void incflo::ErrorEst(int lev,
         //
         tagfab.tags_and_untags(itags, tilebox);
     }
-
-    /* TODO: This is what we want to refine on, but it gives segfault like this
-     * // Refine on cut cells
-    if (refine_cutcells)
+    
+    // TODO: This is what we want to refine on, but it gives segfault like this
+    // Refine on cut cells
+    if (refine_cutcells) 
     {
-        amrex::TagCutCells(tags, *ro[lev]);
-    }*/
+        // amrex::TagCutCells(tags, *ro[lev]);
+    }
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.

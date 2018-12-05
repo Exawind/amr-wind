@@ -45,6 +45,7 @@ void incflo::PrintMaxValues(Real time)
             PrintMaxVel(lev);
             PrintMaxGp(lev);
         }
+        amrex::Print() << std::endl; 
 }
 
 //
@@ -79,14 +80,22 @@ void incflo::CheckForNans(int lev)
 	bool pg_has_nans = p[lev]->contains_nan(0);
 
 	if(ug_has_nans)
+    {
 		amrex::Print() << "WARNING: u contains NaNs!!!";
+    }
 
 	if(vg_has_nans)
+    {
 		amrex::Print() << "WARNING: v contains NaNs!!!";
+    }
 
 	if(wg_has_nans)
+    {
 		amrex::Print() << "WARNING: w contains NaNs!!!";
+    }
 
 	if(pg_has_nans)
+    {
 		amrex::Print() << "WARNING: p contains NaNs!!!";
+    }
 }
