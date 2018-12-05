@@ -262,6 +262,15 @@ void incflo::RegridArrays(int lev)
 // This is only done at the very start of the simulation. 
 void incflo::ResizeArrays()
 {
+    // BCRecs for fillpatch stuff
+    bcs_u.resize(3);
+    bcs_s.resize(1);
+    bcs_f.resize(1);
+
+    // Time holders for fillpatch stuff
+    t_new.resize(max_level + 1);
+    t_old.resize(max_level + 1);
+
     // Density 
 	ro.resize(max_level + 1);
 

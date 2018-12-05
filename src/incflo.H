@@ -261,9 +261,9 @@ private:
      Vector<Real> t_old;
      Vector<Real> t_new;
 
-     amrex::Vector<BCRec> bcs_u; // For velocity components
-     amrex::Vector<BCRec> bcs_s; // For scalars
-     amrex::Vector<BCRec> bcs_f; // For generic first-order extrapolation
+     Vector<BCRec> bcs_u; // For velocity components
+     Vector<BCRec> bcs_s; // For scalars
+     Vector<BCRec> bcs_f; // For generic first-order extrapolation
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
