@@ -53,8 +53,8 @@ incflo.steady_state_tol   = 1.e-3       # Tolerance for steady-state
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   2           # incflo_level
-mac.verbose             =   2           # MacProjector
+incflo.verbose          =   1           # incflo_level
+mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              DEBUGGING                #
