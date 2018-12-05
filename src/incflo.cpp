@@ -90,7 +90,7 @@ void incflo::Evolve()
 
         // Write plot and checkpoint files
         if((plot_int > 0 && (nstep % plot_int == 0)) ||
-           (plot_per > 0 && (abs(remainder(cur_time, plot_per)) < 1.e-6)))
+           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-6)))
         {
             UpdateDerivedQuantities();
             WritePlotFile();
@@ -168,7 +168,7 @@ void incflo::ErrorEst(int lev,
     // Refine on cut cells
     if (refine_cutcells) 
     {
-        amrex::TagCutCells(tags, *ro[lev]);
+        // amrex::TagCutCells(tags, *ro[lev]);
     }
 }
 
