@@ -229,6 +229,12 @@ void incflo::ApplyPredictor()
     // We use the new ime value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
+    if(incflo_verbose > 1)
+    {
+        amrex::Print() << "Before predictor step:" << std::endl;
+        PrintMaxValues(new_time);
+    }
+
     // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
     ComputeUGradU(conv_old, vel_o, cur_time);
 
@@ -325,6 +331,12 @@ void incflo::ApplyCorrector()
 
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
+
+    if(incflo_verbose > 1)
+    {
+        amrex::Print() << "Before corrector step:" << std::endl;
+        PrintMaxValues(new_time);
+    }
 
     // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
     ComputeUGradU(conv, vel, new_time);
@@ -429,6 +441,7 @@ bool incflo::SteadyStateReached()
             max_change = amrex::max(max_change, Norm(diff_vel, lev, i, 0));
 
             // sum(abs(u^{n+1}-u^n)) / sum(abs(u^n))
+            // TODO: this gives zero often, check for bug
             Real norm1_diff = Norm(diff_vel, lev, i, 1);
             Real norm1_old = Norm(vel_o, lev, i, 1);
             Real relchange = norm1_old > 1.0e-15 ? norm1_diff / norm1_old : 0.0;
@@ -441,7 +454,7 @@ bool incflo::SteadyStateReached()
         // Print out info on steady state checks
         if(incflo_verbose > 0)
         {
-            amrex::Print() << "\nSteady state check:\n";
+            amrex::Print() << "\nSteady state check level " << lev << std::endl; 
             amrex::Print() << "||u-uo||/||uo|| = " << max_relchange
                            << ", du/dt  = " << max_change/dt << std::endl;
         }
