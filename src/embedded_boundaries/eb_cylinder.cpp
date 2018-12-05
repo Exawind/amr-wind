@@ -2,11 +2,8 @@
 #include <AMReX_EB2_IF_Cylinder.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
-
 #include <AMReX_ParmParse.H>
 
-#include <AMReX_EB_LSCore.H>
-#include <AMReX_EB_levelset.H>
 #include <algorithm>
 #include <embedded_boundaries_F.H>
 #include <incflo.H>

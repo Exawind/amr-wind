@@ -1,4 +1,3 @@
-#include <AMReX_AmrParGDB.H>
 #include <AMReX_Array.H>
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_BLassert.H>
@@ -25,29 +24,35 @@ void set_ptr_to_incflo(incflo& incflo_for_fillpatching_in)
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 // We can't get around this so instead we create an incflo object
 //    and use that to access the quantities that aren't passed here.
-inline void VelFillBox (Box const& bx, FArrayBox& dest, const int dcomp, const int numcomp,
-                        GeometryData const& geom, const Real time_in, const BCRec* bcr, 
-                        const int bcomp, const int orig_comp)
+inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const int numcomp,
+                       GeometryData const& geom, const Real time_in, const BCRec* bcr, 
+                       const int bcomp, const int orig_comp)
 {
     if (dcomp != 0)
+    {
          amrex::Abort("Must have dcomp = 0 in VelFillBox");
+    }
     if (numcomp != 3)
+    {
          amrex::Abort("Must have numcomp = 3 in VelFillBox");
+    }
 
     const Box& domain = geom.Domain();
 
-    AmrParGDB* my_gdb = incflo_for_fillpatching->GetParGDB();
-
     // This is a bit hack-y but does get us the right level 
     int lev = 0;
-    for (int ilev = 0; ilev < 10; ilev++)
+    while(lev < 20)
     {
-       const Geometry& lev_geom = incflo_for_fillpatching->GetParGDB()->Geom(ilev);
+       const Geometry& lev_geom = incflo_for_fillpatching->get_geom_ref(lev);
        if (domain.length()[0] == (lev_geom.Domain()).length()[0]) 
        {
-         lev = ilev;
          break;
        }
+       lev++;
+    }
+    if(lev == 20)
+    {
+        amrex::Abort("Reached lev = 20 in VelFillBox...");
     }
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
@@ -79,13 +84,13 @@ inline void VelFillBox (Box const& bx, FArrayBox& dest, const int dcomp, const i
     }
 
 #else
-    set_velocity_bcs ( &time, 
-                       BL_TO_FORTRAN_ANYD(dest), 
-                       bc_ilo_ptr, bc_ihi_ptr, 
-                       bc_jlo_ptr, bc_jhi_ptr, 
-                       bc_klo_ptr, bc_khi_ptr, 
-                       domain.loVect(), domain.hiVect(),
-                       &nghost, &extrap_dir_bcs );
+    set_velocity_bcs(&time, 
+                     BL_TO_FORTRAN_ANYD(dest), 
+                     bc_ilo_ptr, bc_ihi_ptr, 
+                     bc_jlo_ptr, bc_jhi_ptr, 
+                     bc_klo_ptr, bc_khi_ptr, 
+                     domain.loVect(), domain.hiVect(),
+                     &nghost, &extrap_dir_bcs);
 #endif
 }
 

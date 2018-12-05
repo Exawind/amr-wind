@@ -79,17 +79,19 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Some getters (TODO: do we need these?)
+    // Some getters (TODO: find better way to do fillpatching)
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    const int* get_bc_ilo_ptr(int lev) {return bc_ilo[lev]->dataPtr();}
-    const int* get_bc_ihi_ptr(int lev) {return bc_ihi[lev]->dataPtr();}
-    const int* get_bc_jlo_ptr(int lev) {return bc_jlo[lev]->dataPtr();}
-    const int* get_bc_jhi_ptr(int lev) {return bc_jhi[lev]->dataPtr();}
-    const int* get_bc_klo_ptr(int lev) {return bc_klo[lev]->dataPtr();}
-    const int* get_bc_khi_ptr(int lev) {return bc_khi[lev]->dataPtr();}
+    const Geometry get_geom_ref(int lev){ return geom[lev]; }
 
-    int get_nghost() { return nghost; }
+    const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
+    const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
+    const int* get_bc_jlo_ptr(int lev){ return bc_jlo[lev]->dataPtr(); }
+    const int* get_bc_jhi_ptr(int lev){ return bc_jhi[lev]->dataPtr(); }
+    const int* get_bc_klo_ptr(int lev){ return bc_klo[lev]->dataPtr(); }
+    const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
+
+    int get_nghost(){ return nghost; }
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +143,7 @@ private:
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
 					   Vector<std::unique_ptr<MultiFab>>& vel, 
                        Real time);
-	void ComputeVelocitySlopes(int lev, Vector<std::unique_ptr<MultiFab>>& vel);
+	void ComputeVelocitySlopes(int lev, MultiFab& Sborder);
 	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
