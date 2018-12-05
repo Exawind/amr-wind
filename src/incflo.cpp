@@ -12,14 +12,14 @@ incflo::incflo()
     // Read inputs file using ParmParse
     ReadParameters();
 
+	// Initialize memory for data-array internals
+	ResizeArrays();
+
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
     if(incflo_verbose > 0) WriteEBSurface();
     
-	// Initialize memory for data-array internals
-	ResizeArrays();
-
 }
 
 incflo::~incflo(){};
