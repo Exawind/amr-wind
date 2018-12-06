@@ -61,6 +61,12 @@ void incflo::Advance()
 
     ApplyCorrector();
 
+    if(incflo_verbose > 1)
+    {
+        amrex::Print() << "End of time step: " << std::endl;
+        PrintMaxValues(cur_time + dt);
+    }
+
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
     ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
@@ -229,7 +235,7 @@ void incflo::ApplyPredictor()
     // We use the new ime value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "Before predictor step:" << std::endl;
         PrintMaxValues(new_time);
@@ -288,7 +294,7 @@ void incflo::ApplyPredictor()
 	ApplyProjection(new_time, dt);
 	FillVelocityBC(new_time, 0);
 
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "After predictor step:" << std::endl;
         PrintMaxValues(new_time);
@@ -332,7 +338,7 @@ void incflo::ApplyCorrector()
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "Before corrector step:" << std::endl;
         PrintMaxValues(new_time);
@@ -394,7 +400,7 @@ void incflo::ApplyCorrector()
 	ApplyProjection(new_time, dt);
 	FillVelocityBC(new_time, 0);
 
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "After corrector step:" << std::endl;
         PrintMaxValues(new_time);

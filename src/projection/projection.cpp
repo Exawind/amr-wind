@@ -28,8 +28,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
 {
 	BL_PROFILE("incflo::ApplyProjection");
 
-    // Print info about predictor step
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "Before projection:" << std::endl;
         PrintMaxValues(time);
@@ -114,8 +113,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         }
     }
 
-    // Print info about predictor step
-    if(incflo_verbose > 1)
+    if(incflo_verbose > 2)
     {
         amrex::Print() << "After projection: " << std::endl; 
         PrintMaxValues(time);
