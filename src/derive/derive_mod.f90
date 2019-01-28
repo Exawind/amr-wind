@@ -156,6 +156,10 @@ subroutine state_error(tag,tag_lo,tag_hi, &
 
   integer          :: i, j, k
   real(amrex_real) :: x,y
+  real(amrex_real) :: x0,y0,rad
+  x0 = 0.5
+  y0 = 0.5
+  rad = 0.2
 
   ! Tag on regions of high phi
   do       k = lo(3), hi(3)
@@ -164,11 +168,11 @@ subroutine state_error(tag,tag_lo,tag_hi, &
            if ( state(i,j,k) .lt. 1.0 ) then 
                tag(i,j,k) = set
            endif
-           !x = problo(1) + (i -0.5) * dx(1)
-           !y = problo(2) + (j -0.5) * dx(2)
-           !if ((abs(x-0.5) .le. 0.2) .and. (abs(y-0.5) .le. 0.2)) then
-           !   tag(i,j,k) = set
-           !endif
+           ! x = problo(1) + (i - 0.5) * dx(1)
+           ! y = problo(2) + (j - 0.5) * dx(2)
+           ! if ( sqrt((x - x0) ** 2 + (y - y0) ** 2) .le. rad ) then
+           !    tag(i,j,k) = set
+           ! endif
         enddo
      enddo
   enddo
