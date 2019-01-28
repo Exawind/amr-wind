@@ -153,7 +153,7 @@ void incflo::ErrorEst(int lev,
 
             // tag cells for refinement
         state_error(tptr,  AMREX_ARLIM_3D(tlo), AMREX_ARLIM_3D(thi),
-            BL_TO_FORTRAN_3D((*ro[lev])[mfi]),
+            BL_TO_FORTRAN_3D((ebfactory[lev]->getVolFrac())[mfi]),
             &tagval, &clearval,
             AMREX_ARLIM_3D(tilebox.loVect()), AMREX_ARLIM_3D(tilebox.hiVect()),
             AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);

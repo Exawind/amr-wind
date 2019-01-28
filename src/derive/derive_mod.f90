@@ -161,11 +161,14 @@ subroutine state_error(tag,tag_lo,tag_hi, &
   do       k = lo(3), hi(3)
      do    j = lo(2), hi(2)
         do i = lo(1), hi(1)
-           x = problo(1) + (i -0.5) * dx(1)
-           y = problo(2) + (j -0.5) * dx(2)
-           if ((abs(x-0.5) .le. 0.2) .and. (abs(y-0.5) .le. 0.2)) then
-              tag(i,j,k) = set
+           if ( state(i,j,k) .lt. 1.0 ) then 
+               tag(i,j,k) = set
            endif
+           !x = problo(1) + (i -0.5) * dx(1)
+           !y = problo(2) + (j -0.5) * dx(2)
+           !if ((abs(x-0.5) .le. 0.2) .and. (abs(y-0.5) .le. 0.2)) then
+           !   tag(i,j,k) = set
+           !endif
         enddo
      enddo
   enddo
