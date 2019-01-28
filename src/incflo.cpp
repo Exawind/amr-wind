@@ -125,7 +125,7 @@ void incflo::ErrorEst(int lev,
                       int ngrow)
 {
     BL_PROFILE("incflo::ErrorEst()");
-
+/*
     const int clearval = TagBox::CLEAR;
     const int   tagval = TagBox::SET;
 
@@ -162,13 +162,13 @@ void incflo::ErrorEst(int lev,
             // to be equal to itags
         //
         tagfab.tags_and_untags(itags, tilebox);
-    }
+    }*/
     
     // TODO: This is what we want to refine on, but it gives segfault like this
     // Refine on cut cells
     if (refine_cutcells) 
     {
-        // amrex::TagCutCells(tags, *ro[lev]);
+        amrex::TagCutCells(tags, *ro[lev]);
     }
 }
 

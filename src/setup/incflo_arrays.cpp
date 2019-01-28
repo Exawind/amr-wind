@@ -9,7 +9,7 @@ void incflo::AllocateArrays(int lev)
 	// ********************************************************************************
 
     // Gas density
-    ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+    ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	ro[lev]->setVal(0.);
 
 	// Current velocity
