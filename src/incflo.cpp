@@ -117,7 +117,7 @@ void incflo::Evolve()
     }
 }
 
-// tag all cells for refinement
+// tag cells for refinement
 // overrides the pure virtual function in AmrCore
 void incflo::ErrorEst(int lev,
                       TagBoxArray& tags,
