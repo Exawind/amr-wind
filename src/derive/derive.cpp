@@ -18,6 +18,9 @@ void incflo::UpdateDerivedQuantities()
 
 void incflo::ComputeDivU(Real time)
 {
+    int extrap_dir_bcs = 0;
+    FillVelocityBC(time, extrap_dir_bcs);
+
     // Define the operator in order to compute the multi-level divergence
     //
     //        (del dot b sigma grad)) phi
