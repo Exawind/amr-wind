@@ -57,9 +57,14 @@ void incflo::Advance()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
 
+    amrex::Print() << "Applying predictor..." << std::endl;
     ApplyPredictor();
 
-    ApplyCorrector();
+    if (!steady_state)
+    {
+        amrex::Print() << "Applying corrector..." << std::endl;
+        ApplyCorrector();
+    }
 
     if(incflo_verbose > 1)
     {

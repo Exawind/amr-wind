@@ -49,7 +49,7 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   1           # incflo_level
+incflo.verbose          =   2           # incflo_level
 diffusion.verbose       =   0           # DiffusionEquation
 mac.verbose             =   0           # MacProjector
 
