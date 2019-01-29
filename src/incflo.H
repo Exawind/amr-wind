@@ -293,6 +293,10 @@ private:
     // Whether to use the explicit diffusion or the semi-implicit one
 	int explicit_diffusion = 1;
 
+    // Initial projection / iterations
+    bool do_initial_proj    = true;
+    int  initial_iterations = 3;
+
     // AMR / refinement settings 
 	int refine_cutcells = 1;
     int regrid_int = -1;

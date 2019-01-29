@@ -5,7 +5,6 @@
 #include <AMReX_ParmParse.H>
 
 #include <algorithm>
-#include <embedded_boundaries_F.H>
 #include <incflo.H>
 
 /********************************************************************************
@@ -15,28 +14,28 @@
  ********************************************************************************/
 void incflo::make_eb_cylinder()
 {
-	ParmParse pp("cylinder");
+    ParmParse pp("cylinder");
 
-	int max_level_here = 0;
+    int max_level_here = 0;
 
-	/****************************************************************************
+    /****************************************************************************
      * Get cylinder information from inputs file.                               *
-     ****************************************************************************/
+     ***************************************************************************/
 	bool inside = true;
 
-	Real radius = 0.0002;
-	Real height = -1.0;
+    Real radius = 0.0002;
+    Real height = -1.0;
 
-	int direction = 0;
-	Vector<Real> centervec(3);
+    int direction = 0;
+    Vector<Real> centervec(3);
 
-	pp.query("internal_flow", inside);
+    pp.query("internal_flow", inside);
 
-	pp.query("radius", radius);
-	pp.query("height", height);
-	pp.query("direction", direction);
-	pp.getarr("center", centervec, 0, 3);
-	Array<Real, 3> center = {centervec[0], centervec[1], centervec[2]};
+    pp.query("radius", radius);
+    pp.query("height", height);
+    pp.query("direction", direction);
+    pp.getarr("center", centervec, 0, 3);
+    Array<Real, 3> center = {centervec[0], centervec[1], centervec[2]};
 
 	amrex::Print() << " " << std::endl;
 	amrex::Print() << " Internal Flow: " << inside << std::endl;
@@ -47,18 +46,17 @@ void incflo::make_eb_cylinder()
 	amrex::Print() << " Center:    " << center[0] << ", " << center[1] << ", " << center[2]
 				   << std::endl;
 
-	/****************************************************************************
+    /****************************************************************************
      *                                                                          *
      * Build standard EB Factories                                              *
      *                                                                          *
-     ****************************************************************************/
+     ***************************************************************************/
 
-	// set up ebfactory
+    // set up ebfactory
+    EBSupport m_eb_support_level = EBSupport::full;
 
-	EBSupport m_eb_support_level = EBSupport::full;
-
-	// Create the cylinder
-	amrex::Print() << "Building the cylinder geometry ..." << std::endl;
+    // Create the cylinder
+    amrex::Print() << "Building the cylinder geometry ..." << std::endl;
 
     // Build the Cylinder geometry first representing the curved walls (this is
     // always present regardless of user input).

@@ -41,6 +41,8 @@ void incflo::ReadParameters()
 		pp.query("fixed_dt", fixed_dt);
 		pp.query("steady_state_tol", steady_state_tol);
 		pp.query("explicit_diffusion", explicit_diffusion);
+        pp.query("initial_iterations", initial_iterations);
+        pp.query("do_initial_proj", do_initial_proj);
 
         // Physics
 		pp.queryarr("gravity", gravity, 0, 3);
@@ -176,8 +178,10 @@ void incflo::PostInit(int restart_flag)
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
     {
-        InitialProjection();
-        InitialIterations();
+        if (do_initial_proj)
+            InitialProjection();
+        if (initial_iterations > 0)
+            InitialIterations();
     }
 }
 
@@ -335,7 +339,7 @@ void incflo::InitialIterations()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
 
-	for(int iter = 0; iter < 3; ++iter)
+	for(int iter = 0; iter < initial_iterations; ++iter)
 	{
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 

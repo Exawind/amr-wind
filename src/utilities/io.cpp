@@ -1,12 +1,7 @@
-#include <AMReX_MultiFab.H>
-#include <AMReX_PlotFileUtil.H>
-
-#include <AMReX_AmrCore.H>
+#include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
-#include <AMReX_VectorIO.H> // amrex::[read,write]IntData(array_of_ints)
-#include <AMReX_VisMF.H> // amrex::VisMF::Write(MultiFab)
-
+#include <AMReX_PlotFileUtil.H>
 #include <AMReX_buildInfo.H>
 
 #include <incflo.H>
@@ -322,7 +317,7 @@ void incflo::WritePlotFile() const
 	{
 		// the "+1" here is for volfrac
 		const int ncomp = vecVarsName.size() + pltscalarVars.size() + 1;
-		mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow));
+		mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo(), *ebfactory[lev]));
 
         for(int i = 0; i < 3; i++)
         {
@@ -396,6 +391,7 @@ void incflo::WritePlotFile() const
 
 	for(int lev = 0; lev <= finest_level; ++lev)
 	{
+        EB_set_covered(*mf[lev], 0.0);
 		mf2[lev] = mf[lev].get();
 	}
 
@@ -408,7 +404,8 @@ void incflo::WritePlotFile() const
     // but will never change unless we use subcycling. 
     // If we do use subcycling, this should be a incflo class member. 
     Vector<int> istep(finest_level + 1, 1);
-    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, Geom(), cur_time, istep, refRatio());
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, 
+                                   Geom(), cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 }
