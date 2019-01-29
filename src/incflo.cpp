@@ -125,7 +125,8 @@ void incflo::ErrorEst(int lev,
                       int ngrow)
 {
     BL_PROFILE("incflo::ErrorEst()");
-/*
+/* TODO: Activate if we want to tag on other features, like vorticity for example
+ *
     const int clearval = TagBox::CLEAR;
     const int   tagval = TagBox::SET;
 
