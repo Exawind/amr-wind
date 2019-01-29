@@ -164,7 +164,6 @@ void incflo::ErrorEst(int lev,
         tagfab.tags_and_untags(itags, tilebox);
     }*/
     
-    // TODO: This is what we want to refine on, but it gives segfault like this
     // Refine on cut cells
     if (refine_cutcells) 
     {
