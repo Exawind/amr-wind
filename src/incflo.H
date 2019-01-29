@@ -183,7 +183,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void MakeEBGeometry();
-    void UpdateEBFactory(int a_lev);
+    bool UpdateEBFactory(int a_lev);
 	void WriteEBSurface();
 
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);

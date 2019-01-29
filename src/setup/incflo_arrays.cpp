@@ -21,21 +21,21 @@ void incflo::AllocateArrays(int lev)
 	vel_o[lev]->setVal(0.);
 
 	// Pressure gradients
-	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
-	gp0[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
+	gp0[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	gp[lev]->setVal(0.);
 	gp0[lev]->setVal(0.);
 
 	// Viscosity
-	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	eta[lev]->setVal(0.);
 
 	// Strain-rate magnitude
-	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	strainrate[lev]->setVal(0.);
 
 	// Vorticity
-	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	vort[lev]->setVal(0.);
 
     // Convective terms for diffusion equation
@@ -51,15 +51,15 @@ void incflo::AllocateArrays(int lev)
     divtau_old[lev]->setVal(0.);
 
 	// Slopes in x-direction
-	xslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	xslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	xslopes[lev]->setVal(0.);
 
 	// Slopes in y-direction
-	yslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	yslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	yslopes[lev]->setVal(0.);
 
 	// Slopes in z-direction
-	zslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	zslopes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	zslopes[lev]->setVal(0.);
 
 	// ********************************************************************************
@@ -69,9 +69,9 @@ void incflo::AllocateArrays(int lev)
     const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
 
     // Pressure
-    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	p0[lev]->setVal(0.);
-    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	p[lev]->setVal(0.);
 
 	// Divergence of velocity field
@@ -103,7 +103,12 @@ void incflo::AllocateArrays(int lev)
 
 void incflo::RegridArrays(int lev)
 {
-    UpdateEBFactory(lev);
+    bool need_regrid = UpdateEBFactory(lev);
+
+    // exit this function is ebfactory has not been updated because that means
+    // that dm and ba haven't changed
+    if (!need_regrid)
+        return;
 
 	// ********************************************************************************
 	// Cell-based arrays
@@ -114,7 +119,8 @@ void incflo::RegridArrays(int lev)
     //
 
 	// Gas density
-	std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+                                                  MFInfo(), *ebfactory[lev]));
 	ro_new->setVal(0.0);
 	ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
 	ro[lev] = std::move(ro_new);
@@ -134,30 +140,35 @@ void incflo::RegridArrays(int lev)
 	vel_o[lev] = std::move(vel_o_new);
 
 	// Pressure gradients
-	std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
+                                                  MFInfo(), *ebfactory[lev]));
     gp_new->setVal(0.);
 	gp_new->copy(*gp[lev], 0, 0, 1, 0, nghost);
 	gp[lev] = std::move(gp_new);
 
 	// Pressure gradients
-	std::unique_ptr<MultiFab> gp0_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+	std::unique_ptr<MultiFab> gp0_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
+                                                   MFInfo(), *ebfactory[lev]));
     gp0_new->setVal(0.);
 	gp0_new->copy(*gp0[lev], 0, 0, 1, 0, nghost);
 	gp0[lev] = std::move(gp0_new);
 
 	// Molecular viscosity
-	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                   MFInfo(), *ebfactory[lev]));
 	eta_new->setVal(0.);
 	eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
 	eta[lev] = std::move(eta_new);
 
 	// Strain-rate magnitude
-	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                          MFInfo(), *ebfactory[lev]));
 	strainrate[lev] = std::move(strainrate_new);
 	strainrate[lev]->setVal(0.);
 
 	// Vorticity
-	std::unique_ptr<MultiFab> vort_new(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+	std::unique_ptr<MultiFab> vort_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                    MFInfo(), *ebfactory[lev]));
 	vort[lev] = std::move(vort_new);
 	vort[lev]->setVal(0.);
 
@@ -184,17 +195,20 @@ void incflo::RegridArrays(int lev)
     divtau[lev]->setVal(0.);
 
     // Slopes in x-direction
-    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+    std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
+                                                       MFInfo(), *ebfactory[lev]));
     xslopes[lev] = std::move(xslopes_new);
     xslopes[lev] -> setVal(0.);
 
     // Slopes in y-direction
-    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+    std::unique_ptr<MultiFab> yslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
+                                                       MFInfo(), *ebfactory[lev]));
     yslopes[lev] = std::move(yslopes_new);
     yslopes[lev] -> setVal(0.);
 
     // Slopes in z-direction
-    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost));
+    std::unique_ptr<MultiFab> zslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
+                                                       MFInfo(), *ebfactory[lev]));
     zslopes[lev] = std::move(zslopes_new);
     zslopes[lev] -> setVal(0.);
 
@@ -205,17 +219,20 @@ void incflo::RegridArrays(int lev)
     // Pressures, projection vars
     const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
 
-    std::unique_ptr<MultiFab> p_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    std::unique_ptr<MultiFab> p_new(new MultiFab(nd_grids, dmap[lev], 1, nghost, 
+                                                 MFInfo(), *ebfactory[lev]));
     p_new->setVal(0.0);
     p_new->copy(*p[lev],0,0,1,0,nghost);
     p[lev] = std::move(p_new);
 
-    std::unique_ptr<MultiFab> p0_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    std::unique_ptr<MultiFab> p0_new(new MultiFab(nd_grids, dmap[lev], 1, nghost, 
+                                                  MFInfo(), *ebfactory[lev]));
     p0_new->setVal(0.0);
     p0_new->copy(*p0[lev],0,0,1,0,nghost);
     p0[lev] = std::move(p0_new);
 
-    std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids, dmap[lev], 1, nghost));
+    std::unique_ptr<MultiFab> divu_new(new MultiFab(nd_grids, dmap[lev], 1, nghost, 
+                                                    MFInfo(), *ebfactory[lev]));
     divu[lev] = std::move(divu_new);
     divu[lev]->setVal(0.);
 
