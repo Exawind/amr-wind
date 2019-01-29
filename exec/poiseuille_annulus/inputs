@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   -1.         # Max (simulated) time to evolve
+stop_time               =   10.         # Max (simulated) time to evolve
 max_step                =   1000        # Max number of time steps
 steady_state            =   1           # Steady-state solver? 
 
