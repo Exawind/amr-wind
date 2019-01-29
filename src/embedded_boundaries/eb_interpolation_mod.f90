@@ -278,7 +278,7 @@ contains
                   ivar= (one-fracz) * (     fracy * var(i,j+1,k  ,n)  + &
                        &              (one-fracy) * var(i,j  ,k  ,n)) + &
                        &      fracz * (     fracy * var(i,j+1,k+1,n)  + &
-                       &(one-fracy) * var(i,j  ,k+1,n))
+                       &              (one-fracy) * var(i,j  ,k+1,n))
                endif
             end if
          end if
@@ -295,8 +295,8 @@ contains
                if ( cent(i,j,k,2) <= zero ) then
                   fracz = - cent(i,j,k,2) * nbr(0,0,-1)
                   ivar = (one-fracz) * (     fracx * var(i-1,j,k  ,n)  + &
-                       &               (one-fracx) * var(i-1,j,k  ,n)) + &
-                       &       fracz * (     fracx * var(i  ,j,k-1,n)  + &
+                       &               (one-fracx) * var(i  ,j,k  ,n)) + &
+                       &       fracz * (     fracx * var(i-1,j,k-1,n)  + &
                        &               (one-fracx) * var(i  ,j,k-1,n))
                else
                   fracz =  cent(i,j,k,2) * nbr(0,0,1)
