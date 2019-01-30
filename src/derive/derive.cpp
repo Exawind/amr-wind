@@ -188,7 +188,6 @@ void incflo::ComputeVorticity()
                                     geom[lev].CellSize());
                 }
             }
-
         }
     }
 }
