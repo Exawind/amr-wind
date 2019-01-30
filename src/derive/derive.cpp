@@ -54,6 +54,14 @@ void incflo::ComputeStrainrate()
     {
         Box domain(geom[lev].Domain());
 
+        // State with ghost cells
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
+                         MFInfo(), *ebfactory[lev]);
+        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp(), bcs_u);
+    
+        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
+        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+
         // Get EB geometric info
         Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
         Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
@@ -68,13 +76,13 @@ void incflo::ComputeStrainrate()
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-        for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
 
             // This is to check efficiently if this tile contains any eb stuff
-            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
+            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
             if (flags.getType(bx) == FabType::covered)
@@ -119,6 +127,14 @@ void incflo::ComputeVorticity()
     {
         Box domain(geom[lev].Domain());
 
+        // State with ghost cells
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
+                         MFInfo(), *ebfactory[lev]);
+        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp(), bcs_u);
+    
+        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
+        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+
         // Get EB geometric info
         Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
         Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
@@ -133,13 +149,13 @@ void incflo::ComputeVorticity()
     #ifdef _OPENMP
     #pragma omp parallel
     #endif
-        for(MFIter mfi(*vel[lev], true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
 
             // This is to check efficiently if this tile contains any eb stuff
-            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
+            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
             if (flags.getType(bx) == FabType::covered)
