@@ -13,7 +13,6 @@ void incflo::UpdateDerivedQuantities()
     ComputeStrainrate();
     ComputeViscosity();
     ComputeVorticity();
-    AverageDown();
 }
 
 void incflo::ComputeDivU(Real time)

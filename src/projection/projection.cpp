@@ -113,6 +113,8 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         }
     }
 
+    AverageDown();
+
     if(incflo_verbose > 2)
     {
         amrex::Print() << "After projection: " << std::endl; 
