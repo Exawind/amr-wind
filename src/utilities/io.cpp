@@ -369,11 +369,13 @@ void incflo::WritePlotFile() const
 			{
 				MultiFab::Copy(*mf[lev], *((*pltscalarVars[i])[lev].get()), 0, dcomp, 1, 0);
 			}
-         // Multiply by volume fraction to get proper results in EB cells
-         if(ebfactory[lev])
-         {
-             MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, dcomp, 1, 0);
-         }
+
+            // Multiply by volume fraction to get proper results in EB cells
+            if(ebfactory[lev])
+            {
+                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, dcomp, 1, 0);
+            }
+
 			dcomp++;
 		}
 
