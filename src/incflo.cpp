@@ -36,17 +36,16 @@ void incflo::InitData()
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
+        // This tells the AmrMesh class not to iterate when creating the initial
+        // grid hierarchy
         SetIterateToFalse();
+        
+        // This tells the Cluster routine to use the new chopping routine which
+        // rejects cuts if they don't improve the efficiency
         SetUseNewChop();
-        // This is an AmrCore member function. 
+
+        // This is an AmrCore member function which recursively makes new levels
         InitFromScratch(cur_time);
-        const BoxArray& ba = MakeBaseGrids();
-        DistributionMapping dm(ba, ParallelDescriptor::NProcs());
-        MakeNewLevelFromScratch(0, cur_time, ba, dm);
-        for (int lev = 1; lev <= finest_level; lev++)
-        {
-            MakeNewLevelFromScratch(lev, cur_time, grids[lev], dmap[lev]);
-        }
 	}
 	else
 	{
@@ -54,6 +53,8 @@ void incflo::InitData()
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
+
+    WritePlotFile();
 
     // Post-initialisation step
     // - Set BC types
