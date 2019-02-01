@@ -42,13 +42,13 @@ contains
       integer(c_int), intent(in   ) ::  blo(3),  bhi(3)
 
       ! Arrays
-      real(rt),       intent(in   ) ::                               &
-           &   vel(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3),3),     &
-           &    eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3)),       &
-           & bcent(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3),3),     &
-           & apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)),   &
-           & apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)),   &
-           & apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3))
+      real(rt),       intent(in   ) ::                                 &
+           &   vel( vlo(1): vhi(1), vlo(2): vhi(2), vlo(3): vhi(3),3), &
+           &   eta( slo(1): shi(1), slo(2): shi(2), slo(3): shi(3)  ), &
+           & bcent( blo(1): bhi(1), blo(2): bhi(2), blo(3): bhi(3),3), &
+           &   apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)  ), &
+           &   apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)  ), &
+           &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  )
 
       ! If true  then we include all the diffusive terms in this explicit result
       ! If false then we include all only the off-diagonal terms here -- we do this
