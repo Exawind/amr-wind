@@ -19,7 +19,7 @@ incflo::incflo()
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
-    if(incflo_verbose > 0) WriteEBSurface();
+    // if(incflo_verbose > 0) WriteEBSurface();
     
 }
 
@@ -36,8 +36,17 @@ void incflo::InitData()
 	int restart_flag = 0;
 	if(restart_file.empty())
 	{
+        SetIterateToFalse();
+        SetUseNewChop();
         // This is an AmrCore member function. 
         InitFromScratch(cur_time);
+        const BoxArray& ba = MakeBaseGrids();
+        DistributionMapping dm(ba, ParallelDescriptor::NProcs());
+        MakeNewLevelFromScratch(0, cur_time, ba, dm);
+        for (int lev = 1; lev <= finest_level; lev++)
+        {
+            MakeNewLevelFromScratch(lev, cur_time, grids[lev], dmap[lev]);
+        }
 	}
 	else
 	{
@@ -64,6 +73,75 @@ void incflo::InitData()
     }
 }
 
+BoxArray incflo::MakeBaseGrids () const
+{
+    BoxArray ba(geom[0].Domain());
+
+    ba.maxSize(max_grid_size[0]);
+
+    // We only call ChopGrids if dividing up the grid using max_grid_size didn't
+    //    create enough grids to have at least one grid per processor.
+    // This option is controlled by "refine_grid_layout" which defaults to true.
+
+    if ( refine_grid_layout &&
+         ba.size() < ParallelDescriptor::NProcs() ){
+        ChopGrids(geom[0].Domain(), ba, ParallelDescriptor::NProcs());
+    }
+
+    if (ba == grids[0]) {
+        ba = grids[0];  // to avoid dupliates
+    }
+    amrex::Print() << "In MakeBaseGrids: BA HAS " << ba.size() << " GRIDS " << std::endl;
+    return ba;
+}
+
+
+void incflo::ChopGrids (const Box& domain, BoxArray& ba, int target_size) const
+{
+    if ( ParallelDescriptor::IOProcessor() )
+       amrex::Warning("Using max_grid_size only did not make enough grids for the number of processors");
+
+    // Here we hard-wire the maximum number of times we divide the boxes.
+    int n = 10;
+
+    // Here we hard-wire the minimum size in any one direction the boxes can be
+    int min_grid_size = 4;
+
+    IntVect chunk(domain.length(0),domain.length(1),domain.length(2));
+
+    int j;
+    for (int cnt = 1; cnt <= n; ++cnt)
+    {
+        if (chunk[0] >= chunk[1] && chunk[0] >= chunk[2])
+        {
+            j = 0;
+        }
+        else if (chunk[1] >= chunk[0] && chunk[1] >= chunk[2])
+        {
+            j = 1;
+        }
+        else if (chunk[2] >= chunk[0] && chunk[2] >= chunk[1])
+        {
+            j = 2;
+        }
+        chunk[j] /= 2;
+
+        if (chunk[j] >= min_grid_size)
+        {
+            ba.maxSize(chunk);
+        }
+        else
+        {
+            // chunk[j] was the biggest chunk -- if this is too small then we're done
+            if ( ParallelDescriptor::IOProcessor() )
+               amrex::Warning("ChopGrids was unable to make enough grids for the number of processors");
+            return;
+        }
+
+        // Test if we now have enough grids
+        if (ba.size() >= target_size) return;
+    }
+}
 void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
@@ -193,8 +271,6 @@ void incflo::MakeNewLevelFromScratch(int lev,
 
 	SetBoxArray(lev, new_grids);
 	SetDistributionMap(lev, new_dmap);
-
-    if(lev == 0) MakeBCArrays();
 
 	// Allocate the fluid data, NOTE: this depends on the ebfactories.
     AllocateArrays(lev);

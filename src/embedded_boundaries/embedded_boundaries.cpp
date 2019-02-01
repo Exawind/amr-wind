@@ -6,6 +6,8 @@
 
 void incflo::MakeEBGeometry()
 {
+    MakeBCArrays();
+
 	/******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be on of    *
    * box, cylinder, hopper, clr, clr_riser, general (or blank)                    *
@@ -52,10 +54,10 @@ void incflo::MakeEBGeometry()
 		}
 	}
 
-    if(hourglass) geom_type = "hourglass";
-    if(clr) geom_type = "clr";
-    if(clr_riser) geom_type = "clr_riser";
-    if(eb_general) geom_type = "general";
+    if (hourglass)  geom_type = "hourglass";
+    if (clr)        geom_type = "clr";
+    if (clr_riser)  geom_type = "clr_riser";
+    if (eb_general) geom_type = "general";
 
 	/******************************************************************************
    *                                                                            *
@@ -104,10 +106,10 @@ bool incflo::UpdateEBFactory(int a_lev)
     // has already been defined
     AMREX_ASSERT(not EB2::IndexSpace::empty());
 
-    const DistributionMapping&      dm = DistributionMap(a_lev);
-    const BoxArray&                 ba = boxArray(a_lev);
-    const EB2::IndexSpace&        ebis = EB2::IndexSpace::top();
-    const EB2::Level&      ebis_level  = ebis.getLevel(geom[a_lev]);
+    const DistributionMapping& dm = DistributionMap(a_lev);
+    const BoxArray&            ba = boxArray(a_lev);
+    const EB2::IndexSpace&   ebis = EB2::IndexSpace::top();
+    const EB2::Level&  ebis_level = ebis.getLevel(geom[a_lev]);
 
     bool is_updated = false;
 

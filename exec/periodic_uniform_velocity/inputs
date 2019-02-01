@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   -0.1        # Max (simulated) time to evolve
-max_step                =   1           # Max number of time steps
+max_step                =   0           # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -31,6 +31,9 @@ incflo.mu               =   0.0002      # Dynamic viscosity coefficient
 #.......................................#
 amr.n_cell              =   32  32  8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   1           # Max AMR level in hierarchy 
+amr.blocking_factor     =   4 
+amr.grid_eff            =   0.7
+amr.n_error_buf         =   1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -39,10 +42,10 @@ geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   1.  1.  .25 #Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 # Add cylinder
-incflo.geometry         = "cylinder"
-cylinder.internal_flow  = false
-cylinder.radius         = 0.2 
-cylinder.direction      = 2
+incflo.geometry         =   "cylinder"
+cylinder.internal_flow  =   false
+cylinder.radius         =   0.2 
+cylinder.direction      =   2
 cylinder.center         =   .5  .5  .5 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
