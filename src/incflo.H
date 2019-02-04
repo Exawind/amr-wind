@@ -389,10 +389,15 @@ private:
 
     // Scalar variables at cell centers that need to be written to plotfile/checkfile. 
     // "volfrac" MUST always be last without any mf associated to it!
-    Vector<const Vector<std::unique_ptr<MultiFab>>*> pltscalarVars = {&p, &ro, &eta, &strainrate, &strainrate, &vort, &divu};
-    Vector<std::string> pltscaVarsName = {"p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac"};
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
-	Vector<std::string> chkscaVarsName = {"p", "ro", "eta"};
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> 
+        pltscalarVars = { &p, &ro, &eta, &strainrate, &strainrate, &vort, &divu };
+    Vector<std::string> 
+        pltscaVarsName = { "p", "ro", "eta", "strainrate", "stress", "vort", "divu", "volfrac" };
+
+	Vector<const Vector<std::unique_ptr<MultiFab>>*> 
+        chkscalarVars = {&p, &ro, &eta};
+	Vector<std::string> 
+        chkscaVarsName = {"p", "ro", "eta"};
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

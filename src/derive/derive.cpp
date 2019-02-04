@@ -86,7 +86,7 @@ void incflo::ComputeStrainrate()
 
             if (flags.getType(bx) == FabType::covered)
             {
-                (*strainrate[lev])[mfi].setVal(1.2345e200, bx, 0, 3);
+                (*strainrate[lev])[mfi].setVal(1.2345e200, bx);
             }
             else
             {
@@ -159,7 +159,7 @@ void incflo::ComputeVorticity()
 
             if (flags.getType(bx) == FabType::covered)
             {
-                (*vort[lev])[mfi].setVal(1.2345e200, bx, 0, 3);
+                (*vort[lev])[mfi].setVal(1.2345e200, bx);
             }
             else
             {
