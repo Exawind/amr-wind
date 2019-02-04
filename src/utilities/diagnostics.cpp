@@ -8,10 +8,7 @@
 //
 Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type)
 {
-    // TODO: is it necessary to create tmp MF? 
-    // Answer: yes, and it is because arrays allocated without MFInfo and ebfactory get segfaults
-    // if trying to call EB_set_covered. This is true for pressure and pressure gradients. 
-    // TODO: find out why not all MFs are allocated with the EB info...
+    // Make copy of MF so that we can set values in covered cells to zero. 
 	MultiFab mf_tmp(mf[lev]->boxArray(),
 					mf[lev]->DistributionMap(),
                     mf[lev]->nComp(),
