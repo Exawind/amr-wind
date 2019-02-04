@@ -60,10 +60,13 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
         {
             BoxArray edge_ba = grids[lev];
             edge_ba.surroundingNodes(dir);
-            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost));
+            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost, 
+                                           MFInfo(), *(*ebfactory)[lev]));
         }
-        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
-        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                    MFInfo(), *(*ebfactory)[lev]));
+        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                    MFInfo(), *(*ebfactory)[lev]));
     }
 
 	// Define the matrix.

@@ -52,7 +52,8 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
     sigma.resize(max_level + 1);
     for(int lev = 0; lev <= max_level; lev++)
     {
-        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost));
+        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+                                      MFInfo(), *(*ebfactory)[lev]));
     }
 
 	// First define the matrix.
