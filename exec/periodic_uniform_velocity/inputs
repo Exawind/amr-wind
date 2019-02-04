@@ -53,7 +53,7 @@ cylinder.center         =   .5  .5  .5
 #.......................................#
 incflo.explicit_diffusion = 1           # Explicit viscous diffusion?
 incflo.do_initial_proj    = 1           # Do initial projection?
-incflo.initial_iterations = 3           # Number of initial iterations for pressure
+incflo.initial_iterations = 1           # Number of initial iterations for pressure
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
