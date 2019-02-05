@@ -1,6 +1,5 @@
 #include <AMReX_EBAmrUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <AMReX_EB_LSCore.H>
 
 #include <incflo.H>
 #include <derive_F.H>
@@ -248,8 +247,6 @@ void incflo::ErrorEst(int lev,
     // Refine on cut cells
     if (refine_cutcells) 
     {
-        // TODO: If we end up not using this, remove #include AMReX_EB_LSCoreBase as well
-        // LSCoreBase::FillVolfracTags(lev, tags, 8, grids, dmap, *ebfactory[lev]->getEBLevel(), geom);
         amrex::TagCutCells(tags, *ro[lev]);
     }
 }
