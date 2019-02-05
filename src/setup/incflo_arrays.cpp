@@ -143,14 +143,14 @@ void incflo::RegridArrays(int lev)
 	std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
                                                   MFInfo(), *ebfactory[lev]));
     gp_new->setVal(0.);
-	gp_new->copy(*gp[lev], 0, 0, 1, 0, nghost);
+	gp_new->copy(*gp[lev], 0, 0, 3, 0, nghost);
 	gp[lev] = std::move(gp_new);
 
 	// Pressure gradients
 	std::unique_ptr<MultiFab> gp0_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                    MFInfo(), *ebfactory[lev]));
     gp0_new->setVal(0.);
-	gp0_new->copy(*gp0[lev], 0, 0, 1, 0, nghost);
+	gp0_new->copy(*gp0[lev], 0, 0, 3, 0, nghost);
 	gp0[lev] = std::move(gp0_new);
 
 	// Molecular viscosity
