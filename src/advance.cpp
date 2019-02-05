@@ -37,7 +37,7 @@ void incflo::Advance()
     ComputeDt(initialisation);
 
     // Set new and old time to correctly use in fillpatching
-    for(int lev = 0; lev < finest_level; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         t_old[lev] = cur_time; 
         t_new[lev] = cur_time + dt; 
