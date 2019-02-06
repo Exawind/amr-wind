@@ -3,7 +3,6 @@ f90EXE_sources += eb_interpolation_mod.f90
 f90EXE_sources += eb_gradu.f90
 
 CEXE_sources += embedded_boundaries.cpp
-CEXE_sources += writeEBsurface.cpp
 CEXE_sources += eb_annulus.cpp
 CEXE_sources += eb_box.cpp
 CEXE_sources += eb_cylinder.cpp

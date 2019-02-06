@@ -18,8 +18,6 @@ incflo::incflo()
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
-    // if(incflo_verbose > 0) WriteEBSurface();
-    
 }
 
 incflo::~incflo(){};
@@ -52,8 +50,6 @@ void incflo::InitData()
 		ReadCheckpointFile();
 		restart_flag = 1;
 	}
-
-    WritePlotFile();
 
     // Post-initialisation step
     // - Set BC types
