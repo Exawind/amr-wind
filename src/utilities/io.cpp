@@ -400,6 +400,8 @@ void incflo::WritePlotFile() const
     // but will never change unless we use subcycling. 
     // If we do use subcycling, this should be a incflo class member. 
     Vector<int> istep(finest_level + 1, 1);
+
+    // Write the plotfile
     amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), names, 
                                    Geom(), cur_time, istep, refRatio());
 
