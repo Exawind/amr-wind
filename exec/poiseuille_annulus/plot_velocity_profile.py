@@ -33,7 +33,7 @@ ax.set_ylabel(r'$u$')
 # error
 ax = fig.add_subplot(1,2,2)  
 err = np.abs(u(x[mask]) - data['u'][mask])
-relerr = err / u(x[mask])
+#relerr = err / u(x[mask])
 ax.plot(x[mask], err, 'x', markerfacecolor='none', label='Absolute')
 #ax.plot(x[mask], relerr, '+', markerfacecolor='none', label='Relative')
 #ax.legend(loc='best')
