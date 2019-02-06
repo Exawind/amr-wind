@@ -387,14 +387,8 @@ void incflo::WritePlotFile() const
 		{
 			mf[lev]->setVal(1.0, dcomp, 1, 0);
 		}
-	}
 
-	Vector<const MultiFab*> mf2(finest_level + 1);
-
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
         EB_set_covered(*mf[lev], 0.0);
-		mf2[lev] = mf[lev].get();
 	}
 
 	// Concatenate scalar and vector var names
@@ -406,7 +400,7 @@ void incflo::WritePlotFile() const
     // but will never change unless we use subcycling. 
     // If we do use subcycling, this should be a incflo class member. 
     Vector<int> istep(finest_level + 1, 1);
-    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf2, names, 
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), names, 
                                    Geom(), cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
