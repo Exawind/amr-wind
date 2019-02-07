@@ -201,6 +201,7 @@ private:
 	void make_eb_hopper();
 	void make_eb_hourglass();
 	void make_eb_regular();
+	void make_eb_sphere();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

@@ -85,6 +85,11 @@ void incflo::MakeEBGeometry()
 		amrex::Print() << "\n Building hopper geometry." << std::endl;
         make_eb_hopper();
 	}
+	else if(geom_type == "sphere")
+	{
+		amrex::Print() << "\n Building sphere geometry." << std::endl;
+        make_eb_sphere();
+	}
 	else if(geom_type == "general")
 	{
 		amrex::Print() << "\n Building general geometry (poly2 with extra walls)." << std::endl;
