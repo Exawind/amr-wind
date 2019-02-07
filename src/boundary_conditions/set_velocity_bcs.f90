@@ -78,8 +78,8 @@ subroutine set_velocity_bcs(time, &
             case ( nsw_)
 
                vel(ulo(1):domlo(1)-1,j,k,1) = zero
-               vel(ulo(1):domlo(1)-1,j,k,2) = zero
-               vel(ulo(1):domlo(1)-1,j,k,3) = zero
+               vel(ulo(1):domlo(1)-1,j,k,2) = bc_v(bcv)
+               vel(ulo(1):domlo(1)-1,j,k,3) = bc_w(bcv)
 
             case ( fsw_)
 
@@ -124,8 +124,8 @@ subroutine set_velocity_bcs(time, &
             case ( nsw_ )
 
                vel(domhi(1)+1:uhi(1),j,k,1) = zero
-               vel(domhi(1)+1:uhi(1),j,k,2) = zero
-               vel(domhi(1)+1:uhi(1),j,k,3) = zero
+               vel(domhi(1)+1:uhi(1),j,k,2) = bc_v(bcv)
+               vel(domhi(1)+1:uhi(1),j,k,3) = bc_w(bcv)
 
             case ( fsw_ )
 
@@ -169,9 +169,9 @@ subroutine set_velocity_bcs(time, &
 
             case ( nsw_ )
 
-               vel(i,ulo(2):domlo(2)-1,k,1) = zero
+               vel(i,ulo(2):domlo(2)-1,k,1) = bc_u(bcv)
                vel(i,ulo(2):domlo(2)-1,k,2) = zero
-               vel(i,ulo(2):domlo(2)-1,k,3) = zero
+               vel(i,ulo(2):domlo(2)-1,k,3) = bc_w(bcv)
 
             case ( fsw_)
 
@@ -215,9 +215,9 @@ subroutine set_velocity_bcs(time, &
 
             case ( nsw_)
 
-               vel(i,domhi(2)+1:uhi(2),k,1) = zero
+               vel(i,domhi(2)+1:uhi(2),k,1) = bc_u(bcv)
                vel(i,domhi(2)+1:uhi(2),k,2) = zero
-               vel(i,domhi(2)+1:uhi(2),k,3) = zero
+               vel(i,domhi(2)+1:uhi(2),k,3) = bc_w(bcv)
 
             case ( fsw_)
 
@@ -261,8 +261,8 @@ subroutine set_velocity_bcs(time, &
 
             case ( nsw_ )
 
-               vel(i,j,ulo(3):domlo(3)-1,1) = zero
-               vel(i,j,ulo(3):domlo(3)-1,2) = zero
+               vel(i,j,ulo(3):domlo(3)-1,1) = bc_u(bcv)
+               vel(i,j,ulo(3):domlo(3)-1,2) = bc_v(bcv)
                vel(i,j,ulo(3):domlo(3)-1,3) = zero
 
             case ( fsw_ )
@@ -307,8 +307,8 @@ subroutine set_velocity_bcs(time, &
 
             case ( nsw_ )
 
-               vel(i,j,domhi(3)+1:uhi(3),1) = zero
-               vel(i,j,domhi(3)+1:uhi(3),2) = zero
+               vel(i,j,domhi(3)+1:uhi(3),1) = bc_u(bcv)
+               vel(i,j,domhi(3)+1:uhi(3),2) = bc_v(bcv)
                vel(i,j,domhi(3)+1:uhi(3),3) = zero
 
             case ( fsw_ )
