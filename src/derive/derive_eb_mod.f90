@@ -92,17 +92,17 @@ contains
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
                                         afrac_z, azlo, azhi, 1)
-                  ux = gradu(1) * idx
-                  uy = gradu(2) * idy
-                  uz = gradu(3) * idz
+                  ux = gradu(1)
+                  uy = gradu(2)
+                  uz = gradu(3)
                   !
-                  vx = gradu(4) * idx
-                  vy = gradu(5) * idy
-                  vz = gradu(6) * idz
+                  vx = gradu(4)
+                  vy = gradu(5)
+                  vz = gradu(6)
                   !
-                  wx = gradu(7) * idx
-                  wy = gradu(8) * idy
-                  wz = gradu(9) * idz
+                  wx = gradu(7)
+                  wy = gradu(8)
+                  wz = gradu(9)
 
                   sr(i,j,k) = &
                      sqrt(two * ux**2 + two * vy**2 + two * wz**2 + &
@@ -213,14 +213,14 @@ contains
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
                                         afrac_z, azlo, azhi, 1)
-                  uy = gradu(2) * idy
-                  uz = gradu(3) * idz
+                  uy = gradu(2)
+                  uz = gradu(3)
                   !
-                  vx = gradu(4) * idx
-                  vz = gradu(6) * idz
+                  vx = gradu(4)
+                  vz = gradu(6)
                   !
-                  wx = gradu(7) * idx
-                  wy = gradu(8) * idy
+                  wx = gradu(7)
+                  wy = gradu(8)
 
                   vort(i,j,k) = sqrt((wy-vz)**2+(uz-wx)**2+(vx-uy)**2)
 
