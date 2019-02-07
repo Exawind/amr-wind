@@ -1,13 +1,8 @@
 #include <AMReX_EB2.H>
-#include <AMReX_EB2_IF_Cylinder.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
-
 #include <AMReX_ParmParse.H>
-
-//#include <AMReX_VisMF.H>  // amrex::VisMF::Write(MultiFab)
-//#include <sstream>
 
 #include <algorithm>
 #include <embedded_boundaries_F.H>

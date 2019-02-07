@@ -9,8 +9,8 @@ void incflo::MakeEBGeometry()
     MakeBCArrays();
 
 	/******************************************************************************
-   * incflo.geometry=<string> specifies the EB geometry. <string> can be on of    *
-   * box, cylinder, hopper, clr, clr_riser, general (or blank)                    *
+   * incflo.geometry=<string> specifies the EB geometry. <string> can be one of    *
+   * box, cylinder, sphere, general (or blank)                                     *
    ******************************************************************************/
 
 	ParmParse pp("incflo");
@@ -20,21 +20,11 @@ void incflo::MakeEBGeometry()
 
 	/******************************************************************************
    * Legacy inputs:                                                             *
-   *   -- incflo.hourglass = true <=> incflo.geometry=box                           *
-   *   -- incflo.clr       = true <=> incflo.geometry=clr                           *
-   *   -- incflo.clr_riser = true <=> incflo.geometry=clr_riser                     *
    *   -- incflo.use_walls = true <=> incflo.geometry=general                       *
    *   -- incflo.use_poy2  = true <=> incflo.geometry=general                       *
    ******************************************************************************/
 
-	bool hourglass = false;
-	bool clr = false;
-	bool clr_riser = false;
 	bool eb_general = false;
-
-	pp.query("hourglass", hourglass);
-	pp.query("clr", clr);
-	pp.query("clr_riser", clr_riser);
 
 	bool eb_poly2 = false;
 	bool eb_walls = false;
@@ -44,7 +34,7 @@ void incflo::MakeEBGeometry()
 	eb_general = eb_poly2 || eb_walls;
 
 	// Avoid multiple (ambiguous) inputs
-	if(hourglass || clr || clr_riser || eb_general)
+	if(eb_general)
 	{
 		if(!geom_type.empty())
 		{
@@ -54,9 +44,6 @@ void incflo::MakeEBGeometry()
 		}
 	}
 
-    if (hourglass)  geom_type = "hourglass";
-    if (clr)        geom_type = "clr";
-    if (clr_riser)  geom_type = "clr_riser";
     if (eb_general) geom_type = "general";
 
 	/******************************************************************************
@@ -79,11 +66,6 @@ void incflo::MakeEBGeometry()
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
         make_eb_cylinder();
-	}
-	else if(geom_type == "hopper")
-	{
-		amrex::Print() << "\n Building hopper geometry." << std::endl;
-        make_eb_hopper();
 	}
 	else if(geom_type == "sphere")
 	{

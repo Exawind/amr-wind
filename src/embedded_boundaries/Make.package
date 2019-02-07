@@ -6,7 +6,6 @@ CEXE_sources += embedded_boundaries.cpp
 CEXE_sources += eb_annulus.cpp
 CEXE_sources += eb_box.cpp
 CEXE_sources += eb_cylinder.cpp
-CEXE_sources += eb_hopper.cpp
 CEXE_sources += eb_regular.cpp
 CEXE_sources += eb_sphere.cpp
 CEXE_sources += eb_general.cpp

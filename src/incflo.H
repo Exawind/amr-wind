@@ -194,12 +194,8 @@ private:
 
 	void make_eb_annulus();
 	void make_eb_box();
-	void make_eb_clr();
-	void make_eb_clr_riser();
 	void make_eb_cylinder();
 	void make_eb_general();
-	void make_eb_hopper();
-	void make_eb_hourglass();
 	void make_eb_regular();
 	void make_eb_sphere();
 
