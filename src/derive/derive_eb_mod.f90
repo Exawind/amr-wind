@@ -69,6 +69,12 @@ contains
       real(rt)       :: idx, idy, idz
       real(rt)       :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)       :: gradu(9)
+      real(rt)       :: c0, c1, c2
+
+      ! Coefficients for one-sided difference estimation
+      c0 = -1.5d0
+      c1 = 2.0d0
+      c2 = -0.5d0
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -84,7 +90,7 @@ contains
 
                else if (is_single_valued_cell(flags(i,j,k))) then
 
-                  ! Compute the velocity gradients at the cell centres
+                  ! Compute the velocity gradients at the cell centroid
                   ! 
                   call compute_eb_gradu(gradu, dx, i, j, k, & 
                                         vel, vlo, vhi, &
@@ -92,17 +98,17 @@ contains
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
                                         afrac_z, azlo, azhi, 1)
-                  ux = gradu(1)
-                  uy = gradu(2)
-                  uz = gradu(3)
+                  ux = gradu(1) * idx
+                  uy = gradu(2) * idy
+                  uz = gradu(3) * idz
                   !
-                  vx = gradu(4)
-                  vy = gradu(5)
-                  vz = gradu(6)
+                  vx = gradu(4) * idx
+                  vy = gradu(5) * idy
+                  vz = gradu(6) * idz
                   !
-                  wx = gradu(7)
-                  wy = gradu(8)
-                  wz = gradu(9)
+                  wx = gradu(7) * idx
+                  wy = gradu(8) * idy
+                  wz = gradu(9) * idz
 
                   sr(i,j,k) = &
                      sqrt(two * ux**2 + two * vy**2 + two * wz**2 + &
@@ -110,24 +116,80 @@ contains
 
                else
 
-                  ! TODO: 
-                  ! This needs to take into consideration if there are cut cells at i+-1/j+-1!
-                  ux = (vel(i+1,j  ,k  ,1) - vel(i-1,j  ,k  ,1)) * idx
-                  vx = (vel(i+1,j  ,k  ,2) - vel(i-1,j  ,k  ,2)) * idx
-                  wx = (vel(i+1,j  ,k  ,3) - vel(i-1,j  ,k  ,3)) * idx
+                  ! Need to check if there are cut cells in neighbours --
+                  ! -- if so, use one-sided difference computation (but still quadratic)
+
+                  if ( is_single_valued_cell(flags(i+1,j,k)) ) then 
+
+                     ! Cut cell to the right, go fish left
+                     ux = (c0 * vel(i,j,k,1) + c1 * vel(i-1,j,k,1) + c2 * vel(i-2,j,k,1)) * idx
+                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
+                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
+
+                  else if ( is_single_valued_cell(flags(i-1,j,k)) ) then 
+
+                     ! Cut cell to the left, go fish right
+                     ux = (c0 * vel(i,j,k,1) + c1 * vel(i+1,j,k,1) + c2 * vel(i+2,j,k,1)) * idx
+                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i+1,j,k,2) + c2 * vel(i+2,j,k,2)) * idx
+                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i+1,j,k,3) + c2 * vel(i+2,j,k,3)) * idx
+
+                  else
+
+                     ! No cut cells right or left, use standard stencil
+                     ux = half * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx
+                     vx = half * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx
+                     wx = half * (vel(i+1,j,k,3) - vel(i-1,j,k,3)) * idx
+
+                  end if
                                                                    
-                  uy = (vel(i  ,j+1,k  ,1) - vel(i  ,j-1,k  ,1)) * idy
-                  vy = (vel(i  ,j+1,k  ,2) - vel(i  ,j-1,k  ,2)) * idy
-                  wy = (vel(i  ,j+1,k  ,3) - vel(i  ,j-1,k  ,3)) * idy
+                  ! Do the same in y-direction 
+
+                  if ( is_single_valued_cell(flags(i,j+1,k)) ) then 
+
+                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
+                     vy = (c0 * vel(i,j,k,2) + c1 * vel(i,j-1,k,2) + c2 * vel(i,j-2,k,2)) * idy
+                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
+
+                  else if ( is_single_valued_cell(flags(i,j-1,k)) ) then 
+
+                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j+1,k,1) + c2 * vel(i,j+2,k,1)) * idy
+                     vy = (c0 * vel(i,j,k,2) + c1 * vel(i,j+1,k,2) + c2 * vel(i,j+2,k,2)) * idy
+                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j+1,k,3) + c2 * vel(i,j+2,k,3)) * idy
                                                                    
-                  uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz
-                  vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz
-                  wz = (vel(i  ,j  ,k+1,3) - vel(i  ,j  ,k-1,3)) * idz
+                  else
+
+                     uy = half * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy
+                     vy = half * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy
+                     wy = half * (vel(i,j+1,k,3) - vel(i,j-1,k,3)) * idy
+                                                                   
+                  end if
+
+                  ! Do the same in z-direction 
+
+                  if ( is_single_valued_cell(flags(i,j,k+1)) ) then 
+
+                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
+                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
+                     wz = (c0 * vel(i,j,k,3) + c1 * vel(i,j,k-1,3) + c2 * vel(i,j,k-2,3)) * idz
+
+                  else if ( is_single_valued_cell(flags(i,j,k-1)) ) then 
+
+                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k+1,1) + c2 * vel(i,j,k+2,1)) * idz
+                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k+1,2) + c2 * vel(i,j,k+2,2)) * idz
+                     wz = (c0 * vel(i,j,k,3) + c1 * vel(i,j,k+1,3) + c2 * vel(i,j,k+2,3)) * idz
+                                                                   
+                  else
+
+                     uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz * half
+                     vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz * half
+                     wz = (vel(i  ,j  ,k+1,3) - vel(i  ,j  ,k-1,3)) * idz * half
+                                                                   
+                  end if
                   
-                  ! The factor half is included here instead of in each of the above
-                  sr(i,j,k) = half * &
-                     sqrt(two * ux**2 + two * vy**2 + two * wz**2 + &
-                          (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2)
+                  ! Finally, compute the strain-rate magnitude
+                  sr(i,j,k) = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + & 
+                                   (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2)
+
                end if
 
             end do
@@ -192,6 +254,12 @@ contains
       real(rt)       :: idx, idy, idz
       real(rt)       :: uy, uz, vx, vz, wx, wy
       real(rt)       :: gradu(9)
+      real(rt)       :: c0, c1, c2
+
+      ! Coefficients for one-sided difference estimation
+      c0 = -1.5d0
+      c1 = 2.0d0
+      c2 = -0.5d0
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -207,7 +275,7 @@ contains
 
                else if (is_single_valued_cell(flags(i,j,k))) then
 
-                  ! Compute the velocity gradients on the EB wall 
+                  ! Compute the velocity gradients at the cell centroid
                   ! 
                   call compute_eb_gradu(gradu, dx, i, j, k, & 
                                         vel, vlo, vhi, &
@@ -215,30 +283,82 @@ contains
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
                                         afrac_z, azlo, azhi, 1)
-                  uy = gradu(2)
-                  uz = gradu(3)
+                  uy = gradu(2) * idy
+                  uz = gradu(3) * idz
                   !
-                  vx = gradu(4)
-                  vz = gradu(6)
+                  vx = gradu(4) * idx
+                  vz = gradu(6) * idz
                   !
-                  wx = gradu(7)
-                  wy = gradu(8)
+                  wx = gradu(7) * idx
+                  wy = gradu(8) * idy
 
                   vort(i,j,k) = sqrt((wy-vz)**2+(uz-wx)**2+(vx-uy)**2)
 
                else
 
-                  vx = (vel(i+1,j  ,k  ,2) - vel(i-1,j  ,k  ,2)) * idx
-                  wx = (vel(i+1,j  ,k  ,3) - vel(i-1,j  ,k  ,3)) * idx
+                  ! Need to check if there are cut cells in neighbours --
+                  ! -- if so, use one-sided difference computation (but still quadratic)
+
+                  if ( is_single_valued_cell(flags(i+1,j,k)) ) then 
+
+                     ! Cut cell to the right, go fish left
+                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
+                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
+
+                  else if ( is_single_valued_cell(flags(i-1,j,k)) ) then 
+
+                     ! Cut cell to the left, go fish right
+                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i+1,j,k,2) + c2 * vel(i+2,j,k,2)) * idx
+                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i+1,j,k,3) + c2 * vel(i+2,j,k,3)) * idx
+
+                  else
+
+                     ! No cut cells right or left, use standard stencil
+                     vx = half * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx
+                     wx = half * (vel(i+1,j,k,3) - vel(i-1,j,k,3)) * idx
+
+                  end if
                                                                    
-                  uy = (vel(i  ,j+1,k  ,1) - vel(i  ,j-1,k  ,1)) * idy
-                  wy = (vel(i  ,j+1,k  ,3) - vel(i  ,j-1,k  ,3)) * idy
+                  ! Do the same in y-direction 
+
+                  if ( is_single_valued_cell(flags(i,j+1,k)) ) then 
+
+                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
+                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
+
+                  else if ( is_single_valued_cell(flags(i,j-1,k)) ) then 
+
+                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j+1,k,1) + c2 * vel(i,j+2,k,1)) * idy
+                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j+1,k,3) + c2 * vel(i,j+2,k,3)) * idy
                                                                    
-                  uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz
-                  vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz
+                  else
+
+                     uy = half * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy
+                     wy = half * (vel(i,j+1,k,3) - vel(i,j-1,k,3)) * idy
+                                                                   
+                  end if
+
+                  ! Do the same in z-direction 
+
+                  if ( is_single_valued_cell(flags(i,j,k+1)) ) then 
+
+                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
+                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
+
+                  else if ( is_single_valued_cell(flags(i,j,k-1)) ) then 
+
+                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k+1,1) + c2 * vel(i,j,k+2,1)) * idz
+                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k+1,2) + c2 * vel(i,j,k+2,2)) * idz
+                                                                   
+                  else
+
+                     uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz * half
+                     vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz * half
+                                                                   
+                  end if
                   
-                  ! The factor half is included here instead of in each of the above
-                  vort(i,j,k) = half * sqrt((wy-vz)**2 + (uz-wx)**2 + (vx-uy)**2)
+                  ! Finally, compute the vorticity magnitude
+                  vort(i,j,k) = sqrt((wy-vz)**2 + (uz-wx)**2 + (vx-uy)**2)
 
                end if
 

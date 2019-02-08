@@ -327,12 +327,13 @@ void incflo::WritePlotFile() const
             // Pressure gradient components
             MultiFab::Copy(*mf[lev], (*gp[lev]), i, i+3, 1, 0);
             
-            // Multiply by volume fraction to get proper results in EB cells
-            if(ebfactory[lev])
-            {
-                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i, 1, 0);
-                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i+3, 1, 0);
-            }
+            // Multiply by volume fraction to get smoother looks in EB cells
+            // (but otherwise, the results are more accurate inside the contour vfrac=0.5)
+            // if(ebfactory[lev])
+            // {
+            //     MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i, 1, 0);
+            //     MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, i+3, 1, 0);
+            // }
         }
 
 		// Scalar variables
@@ -369,12 +370,6 @@ void incflo::WritePlotFile() const
 			{
 				MultiFab::Copy(*mf[lev], *((*pltscalarVars[i])[lev].get()), 0, dcomp, 1, 0);
 			}
-
-            // Multiply by volume fraction to get proper results in EB cells
-            if(ebfactory[lev])
-            {
-                MultiFab::Multiply(*mf[lev], ebfactory[lev]->getVolFrac(), 0, dcomp, 1, 0);
-            }
 
 			dcomp++;
 		}
