@@ -1,21 +1,21 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   -1.0        # Max (simulated) time to evolve
+stop_time               =   2.          # Max (simulated) time to evolve
 max_step                =   -1          # Max number of time steps
-steady_state            =   1           # Steady-state solver? 
+steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
-incflo.cfl              =   0.9         # CFL factor
+incflo.cfl              =   9000.       # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   10          # Steps between plot files
-amr.check_int           =   100         # Steps between checkpoint files
+amr.plot_int            =   100         # Steps between plot files
+amr.check_int           =   1000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -24,8 +24,10 @@ amr.restart             =   ""          # Checkpoint to restart from
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
 
-incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
+incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
+incflo.tau_0            =   1.          # Dynamic viscosity coefficient
+incflo.papa_reg         =   0.001       # Dynamic viscosity coefficient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
