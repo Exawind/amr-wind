@@ -84,14 +84,14 @@ contains
 
                else if (is_single_valued_cell(flags(i,j,k))) then
 
-                  ! Compute the velocity gradients on the EB wall 
+                  ! Compute the velocity gradients at the cell centres
                   ! 
                   call compute_eb_gradu(gradu, dx, i, j, k, & 
                                         vel, vlo, vhi, &
                                         bcent, blo, bhi, &
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
-                                        afrac_z, azlo, azhi, 0)
+                                        afrac_z, azlo, azhi, 1)
                   ux = gradu(1)
                   uy = gradu(2)
                   uz = gradu(3)
