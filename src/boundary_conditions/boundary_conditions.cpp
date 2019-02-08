@@ -71,19 +71,6 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
 
     int nghost = incflo_for_fillpatching->get_nghost();
 
-#if 0
-
-    const Real* dx = geom.CellSize();
-    Real xlo[AMREX_SPACEDIM];
-
-    for (int icomp = 0; icomp < numcomp; ++icomp)
-    {
-        generic_fill(BL_TO_FORTRAN_N_ANYD(dest,dcomp+icomp), 
-                     BL_TO_FORTRAN_BOX(domain),
-                     &icomp, dx, xlo, &time, bcr[bcomp+icomp].vect());
-    }
-
-#else
     set_velocity_bcs(&time, 
                      BL_TO_FORTRAN_ANYD(dest), 
                      bc_ilo_ptr, bc_ihi_ptr, 
@@ -91,7 +78,6 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
                      bc_klo_ptr, bc_khi_ptr, 
                      domain.loVect(), domain.hiVect(),
                      &nghost, &extrap_dir_bcs);
-#endif
 }
 
 // Compute a new multifab by copying array from valid region and filling ghost cells

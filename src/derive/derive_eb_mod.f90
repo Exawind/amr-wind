@@ -91,7 +91,7 @@ contains
                                         bcent, blo, bhi, &
                                         afrac_x, axlo, axhi, & 
                                         afrac_y, aylo, ayhi, & 
-                                        afrac_z, azlo, azhi, 1)
+                                        afrac_z, azlo, azhi, 0)
                   ux = gradu(1)
                   uy = gradu(2)
                   uz = gradu(3)
