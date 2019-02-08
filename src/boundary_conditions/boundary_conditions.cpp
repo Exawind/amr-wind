@@ -57,7 +57,7 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
     //    at the faces (not the ghost cell center)
-    int extrap_dir_bcs = 0;
+    int extrap_dir_bcs = 1;
 
     // We only do this to make it not const
     Real time = time_in;
