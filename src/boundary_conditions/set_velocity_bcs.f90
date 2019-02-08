@@ -46,6 +46,18 @@ subroutine set_velocity_bcs(time, &
    ! Local variables
    integer :: bcv, i, j, k
    integer :: nlft, nrgt, nbot, ntop, nup, ndwn
+   real    :: c0, c1, c2
+
+   ! Coefficients for linear extrapolation to ghost cells
+   c0 = two 
+   c1 = -one 
+   c2 = zero 
+
+   ! Coefficients for quadratic extrapolation to ghost cells
+   ! (Comment to stay linear)
+   c0 = 8.0d0 / 3.0d0
+   c1 = -2.0d0
+   c2 = 1.0d0 / 3.0d0
 
    nlft = max(0,domlo(1)-ulo(1))
    nbot = max(0,domlo(2)-ulo(2))
@@ -92,7 +104,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_ilo(j,k,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(domlo(1)-1,j,k,1:3) = two*vel(domlo(1)-1,j,k,1:3) - vel(domlo(1),j,k,1:3)
+                  vel(domlo(1)-1,j,k,1:3) = c0 * vel(domlo(1)-1,j,k,1:3) &
+                                          + c1 * vel(domlo(1)  ,j,k,1:3) &
+                                          + c2 * vel(domlo(1)+1,j,k,1:3)
                end select
             end if
 
@@ -138,7 +152,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_ihi(j,k,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(domhi(1)+1,j,k,1:3) = two*vel(domhi(1)+1,j,k,1:3) - vel(domhi(1),j,k,1:3)
+                  vel(domhi(1)+1,j,k,1:3) = c0*vel(domhi(1)+1,j,k,1:3) &
+                                          + c1*vel(domhi(1)  ,j,k,1:3) &
+                                          + c2*vel(domhi(1)-1,j,k,1:3)
                end select
             end if
 
@@ -184,7 +200,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_jlo(i,k,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(i,domlo(2)-1,k,1:3) = two*vel(i,domlo(2)-1,k,1:3) - vel(i,domlo(2),k,1:3)
+                  vel(i,domlo(2)-1,k,1:3) = c0 * vel(i,domlo(2)-1,k,1:3) &
+                                          + c1 * vel(i,domlo(2)  ,k,1:3) &
+                                          + c2 * vel(i,domlo(2)+1,k,1:3)
                end select
             end if
 
@@ -230,7 +248,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_jhi(i,k,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(i,domhi(2)+1,k,1:3) = two*vel(i,domhi(2)+1,k,1:3) - vel(i,domhi(2),k,1:3)
+                  vel(i,domhi(2)+1,k,1:3) = c0 * vel(i,domhi(2)+1,k,1:3) &
+                                          + c1 * vel(i,domhi(2)  ,k,1:3) &
+                                          + c2 * vel(i,domhi(2)-1,k,1:3)
                end select
             end if
 
@@ -276,7 +296,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_klo(i,j,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(i,j,domlo(3)-1,1:3) = two*vel(i,j,domlo(3)-1,1:3) - vel(i,j,domlo(3),1:3)
+                  vel(i,j,domlo(3)-1,1:3) = c0 * vel(i,j,domlo(3)-1,1:3) &
+                                          + c1 * vel(i,j,domlo(3)  ,1:3) &
+                                          + c2 * vel(i,j,domlo(3)+1,1:3)
                end select
             end if
 
@@ -322,7 +344,9 @@ subroutine set_velocity_bcs(time, &
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_khi(i,j,1))
                case ( minf_, nsw_, fsw_, psw_)
-                  vel(i,j,domhi(3)+1,1:3) = two*vel(i,j,domhi(3)+1,1:3) - vel(i,j,domhi(3),1:3)
+                  vel(i,j,domhi(3)+1,1:3) = c0 * vel(i,j,domhi(3)+1,1:3) &
+                                          + c1 * vel(i,j,domhi(3)  ,1:3) &
+                                          + c2 * vel(i,j,domhi(3)-1,1:3)
                end select
             end if
 
