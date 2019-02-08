@@ -101,9 +101,9 @@ void incflo::ComputeDt(int initialisation)
 	BL_PROFILE("incflo::ComputeDt");
 
 	// Compute dt for this time step
-	Real umax = -1.e20;
-	Real vmax = -1.e20;
-	Real wmax = -1.e20;
+	Real umax = 0.0;
+	Real vmax = 0.0;
+	Real wmax = 0.0;
 	Real romin = 1.e20;
 	Real etamax = 0.0;
 
@@ -119,12 +119,7 @@ void incflo::ComputeDt(int initialisation)
         vmax = amrex::max(vmax, Norm(vel, lev, 1, 0));
         wmax = amrex::max(wmax, Norm(vel, lev, 2, 0));
         romin = amrex::min(romin, Norm(ro, lev, 0, 0));
-        // WARNING: This may cause trouble as we are not doing fully implicit solve!
-        // TODO: revisit after testing fully 2/3 dimensional flows
-        if(explicit_diffusion)
-        {
-            etamax = amrex::max(etamax, Norm(eta, lev, 0, 0));
-        }
+        etamax = amrex::max(etamax, Norm(eta, lev, 0, 0));
     }
 
     const Real* dx = geom[finest_level].CellSize();
