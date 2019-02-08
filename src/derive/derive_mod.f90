@@ -99,17 +99,17 @@ contains
          do j = lo(2),hi(2)
             do i = lo(1),hi(1)
 
-               uy = idy * ( vel(i,j+1,k,1) - vel(i,j-1,k,1))
-               uz = idz * ( vel(i,j,k+1,1) - vel(i,j,k-1,1))
-
-               vx = idz * ( vel(i+1,j,k,2) - vel(i-1,j,k,2))
-               vz = idz * ( vel(i,j,k+1,2) - vel(i,j,k-1,2))
-
-               wx = idz * ( vel(i+1,j,k,3) - vel(i-1,j,k,3))
-               wy = idy * ( vel(i,j+1,k,3) - vel(i,j-1,k,3))
+               vx = (vel(i+1,j  ,k  ,2) - vel(i-1,j  ,k  ,2)) * idx
+               wx = (vel(i+1,j  ,k  ,3) - vel(i-1,j  ,k  ,3)) * idx
+                                                                
+               uy = (vel(i  ,j+1,k  ,1) - vel(i  ,j-1,k  ,1)) * idy
+               wy = (vel(i  ,j+1,k  ,3) - vel(i  ,j-1,k  ,3)) * idy
+                                                                
+               uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz
+               vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz
 
                ! The factor half is included here instead of in each of the above
-               vort(i,j,k) = half * sqrt((wy-vz)**2+(uz-wx)**2+(vx-uy)**2)
+               vort(i,j,k) = half * sqrt((wy-vz)**2 + (uz-wx)**2 + (vx-uy)**2)
 
             end do
          end do

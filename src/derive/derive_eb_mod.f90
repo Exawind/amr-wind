@@ -110,6 +110,8 @@ contains
 
                else
 
+                  ! TODO: 
+                  ! This needs to take into consideration if there are cut cells at i+-1/j+-1!
                   ux = (vel(i+1,j  ,k  ,1) - vel(i-1,j  ,k  ,1)) * idx
                   vx = (vel(i+1,j  ,k  ,2) - vel(i-1,j  ,k  ,2)) * idx
                   wx = (vel(i+1,j  ,k  ,3) - vel(i-1,j  ,k  ,3)) * idx
@@ -236,7 +238,8 @@ contains
                   vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz
                   
                   ! The factor half is included here instead of in each of the above
-                  vort(i,j,k) = half * sqrt((wy-vz)**2+(uz-wx)**2+(vx-uy)**2)
+                  vort(i,j,k) = half * sqrt((wy-vz)**2 + (uz-wx)**2 + (vx-uy)**2)
+
                end if
 
             end do
