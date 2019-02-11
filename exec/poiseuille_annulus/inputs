@@ -2,28 +2,29 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   -1          # Max (simulated) time to evolve
-max_step                =   20000       # Max number of time steps
+max_step                =   10000       # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
-incflo.cfl              =   0.7         # CFL factor
+incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   5000        # Steps between plot files
-amr.check_int           =   10000       # Steps between checkpoint files
+amr.plot_int            =   100         # Steps between plot files
+amr.plot_per            =   -1          # Steps between plot files
+amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
+incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.mu               =   0.001       # Dynamic viscosity coefficient
 incflo.ro_0             =   1.          # Reference density 
-incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
@@ -48,8 +49,8 @@ annulus.inner_center    =   1.0 1.0 0.  # Inner cylinder center
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.explicit_diffusion = 1           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-6       # Tolerance for steady-state
+incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #

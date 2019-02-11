@@ -7,8 +7,8 @@
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
       subroutine set_p0(lo, hi, domlo, domhi, &
                         p0, slo, shi, &
-                        gp0, glo, ghi, &
-                        dx, dy, dz, xlength, ylength, zlength, delp_dir, &
+                        gp0, &
+                        dx, dy, dz, xlength, ylength, zlength, delp_dir_in, &
                         bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
                         bct_klo, bct_khi, ng &
                         ) bind(C, name="set_p0")
@@ -29,19 +29,17 @@
 
          integer, intent(in) ::    lo(3),    hi(3)
          integer, intent(in) ::   slo(3),   shi(3)
-         integer, intent(in) ::   glo(3),   ghi(3)
          integer, intent(in) :: domlo(3), domhi(3)
          integer, intent(in) :: ng
 
          real(ar), intent(inout) :: p0&
                                     (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
 
-         real(ar), intent(inout) :: gp0&
-                                    (glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)
+         real(ar), intent(inout) :: gp0(3)
 
          real(ar), intent(in) :: dx, dy, dz
          real(ar), intent(in) :: xlength, ylength, zlength
-         integer     , intent(in) :: delp_dir
+         integer     , intent(in) :: delp_dir_in
 
          integer(c_int), intent(in   ) :: &
             bct_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
@@ -55,37 +53,146 @@
 ! Local variables
 !-----------------------------------------------
          ! indices
-         integer :: i, j, k, ibc, jbc, kbc, icv, bcv
+         integer :: i, j, k, ibc, jbc, kbc
+         integer :: icv, bcv, bcv_lo, bcv_hi
          integer :: nlft, nbot, ndwn, nrgt, ntop, nup
+         integer :: delp_dir
 
          ! Gas pressure at the axial location j
-         real(ar) :: pj
+         real(ar) :: pj, p_lo, p_hi
 
          ! Average pressure drop per unit length
          real(ar) :: dpodx, dpody, dpodz
 
-         ! Initialize all components of gp0 to zero
-         gp0(:,:,:,:) = 0.d0
+         ! Initialize gp0 to zero
+         gp0(:) = 0.d0
+
+         delp_dir = delp_dir_in
+
+! ---------------------------------------------------------------->>>
+!     If the bc's are pressure inflow/outflow then be sure to capture that in p0 and gp0
+! ---------------------------------------------------------------->>>
+
+      if ( (bct_ilo(domlo(2),domlo(3),1) .eq. pinf_)   .and. &
+           (bct_ihi(domlo(2),domlo(3),1) .eq. pout_) ) then
+
+          delp_dir = 0
+
+          bcv_lo = bct_ilo(domlo(2),domlo(3),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_ihi(domlo(2),domlo(3),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_x = p_lo - p_hi
+
+          pj  = p_hi
+
+      else if ( bct_ihi(domlo(2),domlo(3),1) .eq. pinf_  .and. &
+                bct_ilo(domlo(2),domlo(3),1) .eq. pout_) then
+
+          delp_dir = 0
+
+          bcv_lo = bct_ilo(domlo(2),domlo(3),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_ihi(domlo(2),domlo(3),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_x = p_lo - p_hi
+
+          pj  = p_hi
+
+      else if ( bct_jlo(domlo(1),domlo(3),1) .eq. pinf_  .and. &
+                bct_jhi(domlo(1),domlo(3),1) .eq. pout_) then
+
+
+          delp_dir = 1
+
+          bcv_lo = bct_jlo(domlo(1),domlo(3),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_jhi(domlo(1),domlo(3),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_y = p_lo - p_hi
+
+          pj  = p_hi
+
+      else if ( bct_jhi(domlo(1),domlo(3),1) .eq. pinf_  .and. &
+                bct_jlo(domlo(1),domlo(3),1) .eq. pout_) then
+
+          delp_dir = 1
+
+          bcv_lo = bct_jlo(domlo(1),domlo(3),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_jhi(domlo(1),domlo(3),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_y = p_lo - p_hi
+
+          pj = p_hi
+
+      else if ( bct_klo(domlo(1),domlo(2),1) .eq. pinf_  .and. &
+                bct_khi(domlo(1),domlo(2),1) .eq. pout_) then
+
+          delp_dir = 2
+
+          bcv_lo = bct_klo(domlo(1),domlo(1),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_khi(domlo(1),domlo(2),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_z = p_lo - p_hi
+
+          pj  = p_hi
+
+
+      else if ( bct_khi(domlo(1),domlo(2),1) .eq. pinf_  .and. &
+                bct_klo(domlo(1),domlo(2),1) .eq. pout_) then
+
+          delp_dir = 2
+
+          bcv_lo = bct_klo(domlo(1),domlo(2),2)
+          p_lo   = bc_p(bcv_lo)
+
+          bcv_hi = bct_khi(domlo(1),domlo(2),2)
+          p_hi   = bc_p(bcv_hi)
+
+          delp_z = p_lo - p_hi
+
+          pj = p_hi
+
+      end if
 
 ! ---------------------------------------------------------------->>>
 
-         !  Make sure that ic_p is set if using delp pressure conditions
-         do icv = 1, dim_ic
-            if (ic_defined(icv)) then
-               if ( delp_dir .ge. 0 ) then
-                  if (.not. is_defined(ic_p(icv))) then
-                     print *,'MUST DEFINE ic_p if using DELP condition'
-                     stop
-                  end if
-                  pj = ic_p(icv)
-               else
-                  if (is_undefined(ic_p(icv))) goto 60
-                  if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
-                  p0(:,:,:) = ic_p(icv)
-                  gp0(:,:,:,:) = 0.d0
+      !  Make sure that ic_p is set if using delp pressure conditions
+      do icv = 1, dim_ic
+         if (ic_defined(icv)) then
+            if ( (delp_dir .ge. 0) .and. (delp_dir .eq. delp_dir_in) ) then
+               if (.not. is_defined(ic_p(icv))) then
+                  print *,'MUST DEFINE ic_p if using the DELP pressure condition'
+                  stop
                end if
+               pj = ic_p(icv)
+
+            else if ( (delp_dir .ge. 0) .and. (delp_dir .ne. delp_dir_in) ) then
+               if (is_defined(ic_p(icv))) then
+                  print *,'MUST not define ic_p if setting p_inflow and p_outflow'
+                  stop
+               end if
+
+            else
+               if (is_undefined(ic_p(icv))) goto 60
+               if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
+                  p0(:,:,:) = ic_p(icv)
+                  gp0(:) = 0.d0
             end if
-         end do
+         end if
+      end do
 
 ! ---------------------------------------------------------------->>>
 
@@ -96,11 +203,10 @@
          block
 
             !  This hack allows to set the IC pressure  at L-dx/2
-            !  -> reference value for pressure, AKA IC_P_G,
+            !  -> reference value for pressure, AKA IC_P,
             !  is set at the last cell center location.
-            real(ar) :: offset
-
-            offset = - 0.5_ar
+            real(ar) :: offset = - 0.5_ar
+            if (delp_dir .ne. delp_dir_in) offset = -1.0_ar
 
             if (abs(delp_x) > epsilon(zero)) then
                dpodx = delp_x/xlength
@@ -109,7 +215,7 @@
                   pj = pj + dpodx*dx
                   p0(i,slo(2):shi(2),slo(3):shi(3)) = pj
                enddo
-               gp0(:,:,:,1) = -dpodx
+               gp0(1) = -dpodx
             endif
 
             if (abs(delp_y) > epsilon(zero)) then
@@ -119,7 +225,7 @@
                   pj = pj + dpody*dy
                   p0(slo(1):shi(1),j,slo(3):shi(3)) = pj
                enddo
-               gp0(:,:,:,2) = -dpody
+               gp0(2) = -dpody
             endif
 
             if (abs(delp_z) > epsilon(zero)) then
@@ -129,7 +235,7 @@
                   pj = pj + dpodz*dz
                   p0(slo(1):shi(1),slo(2):shi(2),k) = pj
                end do
-               gp0(:,:,:,3) = -dpodz
+               gp0(3) = -dpodz
             endif
 
          end block
@@ -184,7 +290,7 @@
                enddo
             endif
 
-            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),1)  = ro_0 * gravity(1)
+            gp0(1)  = ro_0 * gravity(1)
 
          else if (abs(gravity(2)) > epsilon(0.0d0)) then
 
@@ -204,7 +310,7 @@
                enddo
             endif
 
-            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),2)  = ro_0 * gravity(2)
+            gp0(2)  = ro_0 * gravity(2)
 
          else if (abs(gravity(3)) > epsilon(0.0d0)) then
 
@@ -224,7 +330,7 @@
                enddo
             endif
 
-            gp0(glo(1):ghi(1),glo(2):ghi(2),glo(3):ghi(3),3)  = ro_0 * gravity(3)
+            gp0(3)  = ro_0 * gravity(3)
 
          endif
 

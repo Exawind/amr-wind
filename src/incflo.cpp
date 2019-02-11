@@ -327,7 +327,6 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
-    amrex::EB_average_down(*gp0[crse_lev+1],        *gp0[crse_lev],        0, 3, rr);
     amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, 3, rr);
     amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, 3, rr);
 }

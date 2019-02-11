@@ -48,7 +48,7 @@ extern "C"
             const int* lo, const int* hi,
             const int* domlo, const int* domhi,
             amrex::Real* p0,  const int* rlo, const int* rhi,
-            amrex::Real* gp0, const int* glo, const int* ghi,
+            amrex::Real* gp0, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
             amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength,
             int* delp_dir,

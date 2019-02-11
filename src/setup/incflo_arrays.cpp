@@ -22,9 +22,7 @@ void incflo::AllocateArrays(int lev)
 
 	// Pressure gradients
 	gp[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
-	gp0[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), *ebfactory[lev]));
 	gp[lev]->setVal(0.);
-	gp0[lev]->setVal(0.);
 
 	// Viscosity
 	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -145,13 +143,6 @@ void incflo::RegridArrays(int lev)
     gp_new->setVal(0.);
 	gp_new->copy(*gp[lev], 0, 0, 3, 0, nghost);
 	gp[lev] = std::move(gp_new);
-
-	// Pressure gradients
-	std::unique_ptr<MultiFab> gp0_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
-                                                   MFInfo(), *ebfactory[lev]));
-    gp0_new->setVal(0.);
-	gp0_new->copy(*gp0[lev], 0, 0, 3, 0, nghost);
-	gp0[lev] = std::move(gp0_new);
 
 	// Molecular viscosity
 	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
@@ -301,7 +292,6 @@ void incflo::ResizeArrays()
 
 	// Pressure gradients
 	gp.resize(max_level + 1);
-	gp0.resize(max_level + 1);
 
     // Derived quantities: viscosity, strainrate, vorticity, div(u)
 	eta.resize(max_level + 1);

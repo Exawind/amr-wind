@@ -306,6 +306,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	Periodicity p0_periodicity;
+    Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
@@ -345,7 +346,6 @@ private:
 	Vector<std::unique_ptr<MultiFab>> p;
 	Vector<std::unique_ptr<MultiFab>> p0;
 	Vector<std::unique_ptr<MultiFab>> gp;
-	Vector<std::unique_ptr<MultiFab>> gp0;
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
 	Vector<std::unique_ptr<MultiFab>> eta;
 	Vector<std::unique_ptr<MultiFab>> strainrate;

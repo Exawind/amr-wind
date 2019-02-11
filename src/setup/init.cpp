@@ -292,9 +292,8 @@ void incflo::SetBackgroundPressure()
             set_p0(bx.loVect(), bx.hiVect(),
                    domain.loVect(), domain.hiVect(),
                    BL_TO_FORTRAN_ANYD((*p0[lev])[mfi]),
-                   BL_TO_FORTRAN_ANYD((*gp0[lev])[mfi]),
-                   &dx, &dy, &dz,
-                   &xlen, &ylen, &zlen,
+                   &gp0[0],
+                   &dx, &dy, &dz, &xlen, &ylen, &zlen,
                    &delp_dir,
                    bc_ilo[lev]->dataPtr(),
                    bc_ihi[lev]->dataPtr(),
@@ -306,7 +305,6 @@ void incflo::SetBackgroundPressure()
         }
 
         p0[lev]->FillBoundary(p0_periodicity);
-        gp0[lev]->FillBoundary(p0_periodicity);
     }
 }
 

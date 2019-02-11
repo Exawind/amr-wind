@@ -22,7 +22,7 @@ filename = 'visit.curve'
 data = np.loadtxt(filename, datatype, skiprows=1)
 dx = (data['x'][1] - data['x'][0])
 x = data['x'] + dx / 2 - Ro
-mask = (x > Ri)
+mask = (Ri * (1 + 2 * dx) < x) & (x < Ro * (1 - 2 * dx))
 ax.plot(x[mask], data['u'][mask], '.', markerfacecolor='none', label='Computed')
 r = np.linspace(Ri, Ro, 1000)
 ax.plot(r, u(r), label='Analytical')
@@ -33,10 +33,10 @@ ax.set_ylabel(r'$u$')
 # error
 ax = fig.add_subplot(1,2,2)  
 err = np.abs(u(x[mask]) - data['u'][mask])
-#relerr = err / u(x[mask])
+relerr = err / u(x[mask])
 ax.plot(x[mask], err, 'x', markerfacecolor='none', label='Absolute')
-#ax.plot(x[mask], relerr, '+', markerfacecolor='none', label='Relative')
-#ax.legend(loc='best')
+ax.plot(x[mask], relerr, '+', markerfacecolor='none', label='Relative')
+ax.legend(loc='best')
 ax.set_xlabel(r'$x$')
 ax.set_ylabel(r'Error')
 

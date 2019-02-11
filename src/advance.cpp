@@ -107,12 +107,6 @@ void incflo::ComputeDt(int initialisation)
 	Real romin = 1.e20;
 	Real etamax = 0.0;
 
-    // We only compute gp0max on the coarsest level because it is the same at all
-	Real gp0max[3];
-    gp0max[0] = Norm(gp0, 0, 0, 0);
-    gp0max[1] = Norm(gp0, 0, 1, 0);
-    gp0max[2] = Norm(gp0, 0, 2, 0);
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
         umax = amrex::max(umax, Norm(vel, lev, 0, 0));
@@ -134,9 +128,9 @@ void incflo::ComputeDt(int initialisation)
     Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
 
     // Forcing term
-    Real forc_cfl = std::abs(gravity[0] - gp0max[0]) * idx
-                  + std::abs(gravity[1] - gp0max[1]) * idy
-                  + std::abs(gravity[2] - gp0max[2]) * idz;
+    Real forc_cfl = std::abs(gravity[0] - std::abs(gp0[0])) * idx
+                  + std::abs(gravity[1] - std::abs(gp0[1])) * idy
+                  + std::abs(gravity[2] - std::abs(gp0[2])) * idz;
 
     // Combined CFL conditioner
     Real comb_cfl = conv_cfl + diff_cfl + sqrt(pow(conv_cfl + diff_cfl, 2) + 4.0 * forc_cfl);
@@ -269,7 +263,10 @@ void incflo::ApplyPredictor()
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
-        MultiFab::Saxpy(*vel[lev], -dt, *gp0[lev], 0, 0, 3, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; dir++)
+        {
+            (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
+        }
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < 3; dir++)
@@ -375,7 +372,10 @@ void incflo::ApplyCorrector()
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
-        MultiFab::Saxpy(*vel[lev], -dt, *gp0[lev], 0, 0, 3, vel[lev]->nGrow());
+        for(int dir = 0; dir < 3; dir++)
+        {
+            (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
+        }
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < 3; dir++)

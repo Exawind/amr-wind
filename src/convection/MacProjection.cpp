@@ -119,6 +119,8 @@ void MacProjection::update_internals()
 										  MFInfo(),
 										  *((*m_ebfactory)[lev])));
 
+            m_phi[lev]->setVal(0.);
+
 			// Staggered quantities
 			// NOTE: no ghost node for grad(phi)
 			m_b[lev].resize(3);
