@@ -119,14 +119,14 @@ contains
                   ! Need to check if there are cut cells in neighbours --
                   ! -- if so, use one-sided difference computation (but still quadratic)
 
-                  if ( is_single_valued_cell(flags(i+1,j,k)) ) then 
+                  if (is_single_valued_cell(flags(i+1,j,k))) then 
 
                      ! Cut cell to the right, go fish left
-                     ux = (c0 * vel(i,j,k,1) + c1 * vel(i-1,j,k,1) + c2 * vel(i-2,j,k,1)) * idx
-                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
-                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
+                     ux = - (c0 * vel(i,j,k,1) + c1 * vel(i-1,j,k,1) + c2 * vel(i-2,j,k,1)) * idx
+                     vx = - (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
+                     wx = - (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
 
-                  else if ( is_single_valued_cell(flags(i-1,j,k)) ) then 
+                  else if (is_single_valued_cell(flags(i-1,j,k))) then
 
                      ! Cut cell to the left, go fish right
                      ux = (c0 * vel(i,j,k,1) + c1 * vel(i+1,j,k,1) + c2 * vel(i+2,j,k,1)) * idx
@@ -144,13 +144,13 @@ contains
                                                                    
                   ! Do the same in y-direction 
 
-                  if ( is_single_valued_cell(flags(i,j+1,k)) ) then 
+                  if (is_single_valued_cell(flags(i,j+1,k))) then
 
-                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
-                     vy = (c0 * vel(i,j,k,2) + c1 * vel(i,j-1,k,2) + c2 * vel(i,j-2,k,2)) * idy
-                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
+                     uy = - (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
+                     vy = - (c0 * vel(i,j,k,2) + c1 * vel(i,j-1,k,2) + c2 * vel(i,j-2,k,2)) * idy
+                     wy = - (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
 
-                  else if ( is_single_valued_cell(flags(i,j-1,k)) ) then 
+                  else if (is_single_valued_cell(flags(i,j-1,k))) then
 
                      uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j+1,k,1) + c2 * vel(i,j+2,k,1)) * idy
                      vy = (c0 * vel(i,j,k,2) + c1 * vel(i,j+1,k,2) + c2 * vel(i,j+2,k,2)) * idy
@@ -166,13 +166,13 @@ contains
 
                   ! Do the same in z-direction 
 
-                  if ( is_single_valued_cell(flags(i,j,k+1)) ) then 
+                  if (is_single_valued_cell(flags(i,j,k+1))) then
 
-                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
-                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
-                     wz = (c0 * vel(i,j,k,3) + c1 * vel(i,j,k-1,3) + c2 * vel(i,j,k-2,3)) * idz
+                     uz = - (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
+                     vz = - (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
+                     wz = - (c0 * vel(i,j,k,3) + c1 * vel(i,j,k-1,3) + c2 * vel(i,j,k-2,3)) * idz
 
-                  else if ( is_single_valued_cell(flags(i,j,k-1)) ) then 
+                  else if (is_single_valued_cell(flags(i,j,k-1))) then
 
                      uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k+1,1) + c2 * vel(i,j,k+2,1)) * idz
                      vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k+1,2) + c2 * vel(i,j,k+2,2)) * idz
@@ -180,9 +180,9 @@ contains
                                                                    
                   else
 
-                     uz = (vel(i  ,j  ,k+1,1) - vel(i  ,j  ,k-1,1)) * idz * half
-                     vz = (vel(i  ,j  ,k+1,2) - vel(i  ,j  ,k-1,2)) * idz * half
-                     wz = (vel(i  ,j  ,k+1,3) - vel(i  ,j  ,k-1,3)) * idz * half
+                     uz = half * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz
+                     vz = half * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz
+                     wz = half * (vel(i,j,k+1,3) - vel(i,j,k-1,3)) * idz
                                                                    
                   end if
                   
@@ -302,8 +302,8 @@ contains
                   if ( is_single_valued_cell(flags(i+1,j,k)) ) then 
 
                      ! Cut cell to the right, go fish left
-                     vx = (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
-                     wx = (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
+                     vx = - (c0 * vel(i,j,k,2) + c1 * vel(i-1,j,k,2) + c2 * vel(i-2,j,k,2)) * idx
+                     wx = - (c0 * vel(i,j,k,3) + c1 * vel(i-1,j,k,3) + c2 * vel(i-2,j,k,3)) * idx
 
                   else if ( is_single_valued_cell(flags(i-1,j,k)) ) then 
 
@@ -323,8 +323,8 @@ contains
 
                   if ( is_single_valued_cell(flags(i,j+1,k)) ) then 
 
-                     uy = (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
-                     wy = (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
+                     uy = - (c0 * vel(i,j,k,1) + c1 * vel(i,j-1,k,1) + c2 * vel(i,j-2,k,1)) * idy
+                     wy = - (c0 * vel(i,j,k,3) + c1 * vel(i,j-1,k,3) + c2 * vel(i,j-2,k,3)) * idy
 
                   else if ( is_single_valued_cell(flags(i,j-1,k)) ) then 
 
@@ -342,8 +342,8 @@ contains
 
                   if ( is_single_valued_cell(flags(i,j,k+1)) ) then 
 
-                     uz = (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
-                     vz = (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
+                     uz = - (c0 * vel(i,j,k,1) + c1 * vel(i,j,k-1,1) + c2 * vel(i,j,k-2,1)) * idz
+                     vz = - (c0 * vel(i,j,k,2) + c1 * vel(i,j,k-1,2) + c2 * vel(i,j,k-2,2)) * idz
 
                   else if ( is_single_valued_cell(flags(i,j,k-1)) ) then 
 
