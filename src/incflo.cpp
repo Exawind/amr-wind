@@ -165,7 +165,7 @@ void incflo::Evolve()
 
         // Write plot and checkpoint files
         if((plot_int > 0 && (nstep % plot_int == 0)) ||
-           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-6)))
+           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-12)))
         {
             UpdateDerivedQuantities();
             WritePlotFile();
@@ -179,7 +179,7 @@ void incflo::Evolve()
 
         // Mechanism to terminate incflo normally.
         do_not_evolve = (steady_state && SteadyStateReached()) ||
-                        ((stop_time > 0. && (cur_time >= stop_time - 1.e-6 * dt)) ||
+                        ((stop_time > 0. && (cur_time >= stop_time - 1.e-12 * dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
 
