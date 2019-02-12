@@ -10,7 +10,7 @@ void incflo::MakeEBGeometry()
 
 	/******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be one of    *
-   * box, cylinder, sphere, general (or blank)                                     *
+   * box, cylinder, annulus, sphere
    ******************************************************************************/
 
 	ParmParse pp("incflo");
@@ -19,63 +19,30 @@ void incflo::MakeEBGeometry()
 	pp.query("geometry", geom_type);
 
 	/******************************************************************************
-   * Legacy inputs:                                                             *
-   *   -- incflo.use_walls = true <=> incflo.geometry=general                       *
-   *   -- incflo.use_poy2  = true <=> incflo.geometry=general                       *
-   ******************************************************************************/
-
-	bool eb_general = false;
-
-	bool eb_poly2 = false;
-	bool eb_walls = false;
-
-	pp.query("use_poly2", eb_poly2);
-	pp.query("use_walls", eb_walls);
-	eb_general = eb_poly2 || eb_walls;
-
-	// Avoid multiple (ambiguous) inputs
-	if(eb_general)
-	{
-		if(!geom_type.empty())
-		{
-			amrex::Abort("The input file cannot specify both:\n"
-						 "incflo.<geom_type>=true and incflo.geometry=<geom_type>\n"
-						 "at the same time.");
-		}
-	}
-
-    if (eb_general) geom_type = "general";
-
-	/******************************************************************************
    *                                                                            *
    *  CONSTRUCT EB                                                              *
    *                                                                            *
    ******************************************************************************/
 
-	if(geom_type == "box")
+    if(geom_type == "box")
 	{
 		amrex::Print() << "\n Building box geometry." << std::endl;
         make_eb_box();
-	}
-	else if(geom_type == "annulus")
-	{
-		amrex::Print() << "\n Building annulus geometry." << std::endl;
-        make_eb_annulus();
 	}
 	else if(geom_type == "cylinder")
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
         make_eb_cylinder();
 	}
+	else if(geom_type == "annulus")
+	{
+		amrex::Print() << "\n Building annulus geometry." << std::endl;
+        make_eb_annulus();
+	}
 	else if(geom_type == "sphere")
 	{
 		amrex::Print() << "\n Building sphere geometry." << std::endl;
         make_eb_sphere();
-	}
-	else if(geom_type == "general")
-	{
-		amrex::Print() << "\n Building general geometry (poly2 with extra walls)." << std::endl;
-        make_eb_general();
 	}
 	else
 	{
@@ -83,6 +50,7 @@ void incflo::MakeEBGeometry()
 					   << " Will read walls from incflo.dat only." << std::endl;
         make_eb_regular();
 	}
+    amrex::Print() << "Done making the geometry ebfactory.\n" << std::endl;
 }
 
 // This function checks if ebfactory is allocated with

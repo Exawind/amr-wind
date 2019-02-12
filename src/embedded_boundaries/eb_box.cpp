@@ -1,5 +1,4 @@
 #include <AMReX_EB2.H>
-#include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Union.H>
 #include <AMReX_ParmParse.H>
@@ -14,24 +13,8 @@
  ****************************************************************************/
 void incflo::make_eb_box()
 {
+    // Get box information from inputs file
     ParmParse pp("box");
-
-    int max_level_here = 0;
-
-    /****************************************************************************
-     *                                                                          *
-     * Build standard EB Factories                                              *
-     *                                                                          *
-     ****************************************************************************/
-
-    // set up ebfactory
-
-    EBSupport m_eb_support_level = EBSupport::full;
-
-    int max_coarsening_level = 100;
-
-    amrex::Print() << " " << std::endl;
-    amrex::Print() << "Now making the ebfactories ..." << std::endl;
 
     if(geom[0].isAllPeriodic())
     {
@@ -119,29 +102,31 @@ void incflo::make_eb_box()
         EB2::PlaneIF plane_loz(point_loz, normal_loz);
         EB2::PlaneIF plane_hiz(point_hiz, normal_hiz);
 
+        // Generate GeometryShop
         auto gshop = EB2::makeShop(EB2::makeUnion(plane_lox, plane_hix,
                                                   plane_loy, plane_hiy,
                                                   plane_loz, plane_hiz));
 
+        // Build index space
+        int max_level_here = 0;
+        int max_coarsening_level = 100;
+        EBSupport m_eb_support_level = EBSupport::full;
         EB2::Build(gshop, geom.back(), max_level_here, max_level_here + max_coarsening_level);
+        const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
 
-		const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
-
+        // Make the EBFabFactory
         for(int lev = 0; lev <= max_level; lev++)
         {
-            eb_level_fluid = &eb_is.getLevel(geom[lev]);
-
-            ebfactory[lev].reset(new EBFArrayBoxFactory(*eb_level_fluid, 
+            const EB2::Level& eb_is_lev = eb_is.getLevel(geom[lev]);
+            eb_level = &eb_is_lev;
+            ebfactory[lev].reset(new EBFArrayBoxFactory(*eb_level, 
                                                         geom[lev], 
-                                                        grids[lev],
-                                                        dmap[lev], 
-                                                        {m_eb_basic_grow_cells,
-                                                        m_eb_volume_grow_cells,
-                                                        m_eb_full_grow_cells}, 
+                                                        grids[lev], 
+                                                        dmap[lev],
+                                                        {m_eb_basic_grow_cells, 
+                                                        m_eb_volume_grow_cells, 
+                                                        m_eb_full_grow_cells},
                                                         m_eb_support_level));
         }
-
-        amrex::Print() << "Done making the ebfactories ..." << std::endl;
-        amrex::Print() << " " << std::endl;
     }
 }

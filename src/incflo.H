@@ -180,22 +180,17 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Embedded Boundaries
-    // TODO: How much of this really needs to be member functions of incflo? 
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_walls(bool& has_walls);
 	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
-    std::unique_ptr<EB2::TranslationIF<EB2::PolynomialIF>> get_poly(int max_order, std::string field_prefix);
-	std::unique_ptr<EB2::IntersectionIF<EB2::PlaneIF, EB2::PlaneIF, EB2::PlaneIF>> make_wall(int dir, Real position, Real height, Real width);
 
 	void make_eb_annulus();
 	void make_eb_box();
 	void make_eb_cylinder();
-	void make_eb_general();
 	void make_eb_regular();
 	void make_eb_sphere();
 
@@ -401,7 +396,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	const EB2::Level* eb_level_fluid;
+	const EB2::Level* eb_level;
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
 	// Number of ghost nodes for field arrays.
