@@ -17,7 +17,7 @@
 # BOUNDARY CONDITIONS SECTION
 #_______________________________________________________________________
 
-# x lo and hi: inlet / outlet
+# x lo and hi: no slip walls
 
   BC_X_w(1:2)   =   0.0     4.0
   BC_X_e(1:2)   =   0.0     4.0
@@ -44,17 +44,3 @@
   BC_U(3:4)     =   0.0     0.0
   BC_V(3:4)     =   0.0     0.0
   BC_W(3:4)     =   1.0     1.0
-
-# z lo and hi: mass inflow / pressure outflow
-
-  BC_X_w(5:6)   =   0.0     0.0
-  BC_X_e(5:6)   =   4.0     4.0
-  BC_Y_s(5:6)   =   0.0     0.0
-  BC_Y_n(5:6)   =   4.0     4.0
-  BC_Z_b(5:6)   =   0.0     6.0
-  BC_Z_t(5:6)   =   0.0     6.0
-
-  BC_Type(5:6)  =   'MI'    'PO'
-  BC_U(5)       =   0.0 
-  BC_V(5)       =   0.0 
-  BC_W(5)       =   1.0 
