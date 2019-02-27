@@ -155,54 +155,54 @@ contains
 ! --------------------------------------------------------------------------------------------
 
       do j=1,ng
-         bc_ilo_type(domlo(2)-j,domlo(3)-1:domhi(3)+1,:) = bc_ilo_type(domlo(2),domlo(3)-1:domhi(3)+1,:)
-         bc_ihi_type(domlo(2)-j,domlo(3)-1:domhi(3)+1,:) = bc_ihi_type(domlo(2),domlo(3)-1:domhi(3)+1,:)
+         bc_ilo_type(domlo(2)-j,domlo(3)-ng:domhi(3)+ng,:) = bc_ilo_type(domlo(2),domlo(3)-ng:domhi(3)+ng,:)
+         bc_ihi_type(domlo(2)-j,domlo(3)-ng:domhi(3)+ng,:) = bc_ihi_type(domlo(2),domlo(3)-ng:domhi(3)+ng,:)
       enddo
       do j=1,ng
-         bc_ilo_type(domhi(2)+j,domlo(3)-1:domhi(3)+1,:) = bc_ilo_type(domhi(2),domlo(3)-1:domhi(3)+1,:)
-         bc_ihi_type(domhi(2)+j,domlo(3)-1:domhi(3)+1,:) = bc_ihi_type(domhi(2),domlo(3)-1:domhi(3)+1,:)
+         bc_ilo_type(domhi(2)+j,domlo(3)-ng:domhi(3)+ng,:) = bc_ilo_type(domhi(2),domlo(3)-ng:domhi(3)+ng,:)
+         bc_ihi_type(domhi(2)+j,domlo(3)-ng:domhi(3)+ng,:) = bc_ihi_type(domhi(2),domlo(3)-ng:domhi(3)+ng,:)
       enddo
       do k=1,ng
-         bc_ilo_type(domlo(2)-1:domhi(2)+1,domlo(3)-k,:) = bc_ilo_type(domlo(2)-1:domhi(2)+1,domlo(3),:)
-         bc_ihi_type(domlo(2)-1:domhi(2)+1,domlo(3)-k,:) = bc_ihi_type(domlo(2)-1:domhi(2)+1,domlo(3),:)
+         bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-k,:) = bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3),:)
+         bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-k,:) = bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3),:)
       enddo
       do k=1,ng
-         bc_ilo_type(domlo(2)-1:domhi(2)+1,domhi(3)+k,:) = bc_ilo_type(domlo(2)-1:domhi(2)+1,domhi(3),:)
-         bc_ihi_type(domlo(2)-1:domhi(2)+1,domhi(3)+k,:) = bc_ihi_type(domlo(2)-1:domhi(2)+1,domhi(3),:)
+         bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domhi(3)+k,:) = bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domhi(3),:)
+         bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domhi(3)+k,:) = bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domhi(3),:)
       enddo
 
       do i=1,ng
-         bc_jlo_type(domlo(1)-i,domlo(3)-1:domhi(3)+1,:) = bc_jlo_type(domlo(1),domlo(3)-1:domhi(3)+1,:)
-         bc_jhi_type(domlo(1)-i,domlo(3)-1:domhi(3)+1,:) = bc_jhi_type(domlo(1),domlo(3)-1:domhi(3)+1,:)
+         bc_jlo_type(domlo(1)-i,domlo(3)-ng:domhi(3)+ng,:) = bc_jlo_type(domlo(1),domlo(3)-ng:domhi(3)+ng,:)
+         bc_jhi_type(domlo(1)-i,domlo(3)-ng:domhi(3)+ng,:) = bc_jhi_type(domlo(1),domlo(3)-ng:domhi(3)+ng,:)
       enddo
       do i=1,ng
-         bc_jlo_type(domhi(1)+i,domlo(3)-1:domhi(3)+1,:) = bc_jlo_type(domhi(1),domlo(3)-1:domhi(3)+1,:)
-         bc_jhi_type(domhi(1)+i,domlo(3)-1:domhi(3)+1,:) = bc_jhi_type(domhi(1),domlo(3)-1:domhi(3)+1,:)
+         bc_jlo_type(domhi(1)+i,domlo(3)-ng:domhi(3)+ng,:) = bc_jlo_type(domhi(1),domlo(3)-ng:domhi(3)+ng,:)
+         bc_jhi_type(domhi(1)+i,domlo(3)-ng:domhi(3)+ng,:) = bc_jhi_type(domhi(1),domlo(3)-ng:domhi(3)+ng,:)
       enddo
       do k=1,ng
-         bc_jlo_type(domlo(1)-1:domhi(1)+1,domlo(3)-k,:) = bc_jlo_type(domlo(1)-1:domhi(1)+1,domlo(3),:)
-         bc_jhi_type(domlo(1)-1:domhi(1)+1,domlo(3)-k,:) = bc_jhi_type(domlo(1)-1:domhi(1)+1,domlo(3),:)
+         bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-k,:) = bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3),:)
+         bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-k,:) = bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3),:)
       enddo
       do k=1,ng
-         bc_jlo_type(domlo(1)-1:domhi(1)+1,domhi(3)+k,:) = bc_jlo_type(domlo(1)-1:domhi(1)+1,domhi(3),:)
-         bc_jhi_type(domlo(1)-1:domhi(1)+1,domhi(3)+k,:) = bc_jhi_type(domlo(1)-1:domhi(1)+1,domhi(3),:)
+         bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domhi(3)+k,:) = bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domhi(3),:)
+         bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domhi(3)+k,:) = bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domhi(3),:)
       enddo
 
       do i=1,ng
-         bc_klo_type(domlo(1)-i,domlo(2)-1:domhi(2)+1,:) = bc_klo_type(domlo(1),domlo(2)-1:domhi(2)+1,:)
-         bc_khi_type(domlo(1)-i,domlo(2)-1:domhi(2)+1,:) = bc_khi_type(domlo(1),domlo(2)-1:domhi(2)+1,:)
+         bc_klo_type(domlo(1)-i,domlo(2)-ng:domhi(2)+ng,:) = bc_klo_type(domlo(1),domlo(2)-ng:domhi(2)+ng,:)
+         bc_khi_type(domlo(1)-i,domlo(2)-ng:domhi(2)+ng,:) = bc_khi_type(domlo(1),domlo(2)-ng:domhi(2)+ng,:)
       enddo
       do i=1,ng
-         bc_klo_type(domhi(1)+i,domlo(2)-1:domhi(2)+1,:) = bc_klo_type(domhi(1),domlo(2)-1:domhi(2)+1,:)
-         bc_khi_type(domhi(1)+i,domlo(2)-1:domhi(2)+1,:) = bc_khi_type(domhi(1),domlo(2)-1:domhi(2)+1,:)
+         bc_klo_type(domhi(1)+i,domlo(2)-ng:domhi(2)+ng,:) = bc_klo_type(domhi(1),domlo(2)-ng:domhi(2)+ng,:)
+         bc_khi_type(domhi(1)+i,domlo(2)-ng:domhi(2)+ng,:) = bc_khi_type(domhi(1),domlo(2)-ng:domhi(2)+ng,:)
       enddo
       do j=1,ng
-         bc_klo_type(domlo(1)-1:domhi(1)+1,domlo(2)-j,:) = bc_klo_type(domlo(1)-1:domhi(1)+1,domlo(2),:)
-         bc_khi_type(domlo(1)-1:domhi(1)+1,domlo(2)-j,:) = bc_khi_type(domlo(1)-1:domhi(1)+1,domlo(2),:)
+         bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-j,:) = bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2),:)
+         bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-j,:) = bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2),:)
       enddo
       do j=1,ng
-         bc_klo_type(domlo(1)-1:domhi(1)+1,domhi(2)+j,:) = bc_klo_type(domlo(1)-1:domhi(1)+1,domhi(2),:)
-         bc_khi_type(domlo(1)-1:domhi(1)+1,domhi(2)+j,:) = bc_khi_type(domlo(1)-1:domhi(1)+1,domhi(2),:)
+         bc_klo_type(domlo(1)-ng:domhi(1)+ng,domhi(2)+j,:) = bc_klo_type(domlo(1)-ng:domhi(1)+ng,domhi(2),:)
+         bc_khi_type(domlo(1)-ng:domhi(1)+ng,domhi(2)+j,:) = bc_khi_type(domlo(1)-ng:domhi(1)+ng,domhi(2),:)
       enddo
 
    end subroutine set_bc_type
