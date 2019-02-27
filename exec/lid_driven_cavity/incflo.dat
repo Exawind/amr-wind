@@ -17,7 +17,7 @@
 # BOUNDARY CONDITIONS SECTION
 #_______________________________________________________________________
 
-# x lo and hi: inlet / outlet
+# x lo and hi: no slip walls
 
   BC_X_w(1:2)   =   0.0     1.0     ! (m)
   BC_X_e(1:2)   =   0.0     1.0     ! (m)
