@@ -125,6 +125,9 @@ void incflo::ComputeVorticity()
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
+        Real idx = 1.0 / geom[lev].CellSize()[0];
+        Real idy = 1.0 / geom[lev].CellSize()[1];
+        Real idz = 1.0 / geom[lev].CellSize()[2];
 
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
@@ -165,10 +168,23 @@ void incflo::ComputeVorticity()
             {
                 if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
                 {
-                    compute_vort(BL_TO_FORTRAN_BOX(bx),
-                                 BL_TO_FORTRAN_ANYD((*vort[lev])[mfi]),
-                                 BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                                 geom[lev].CellSize());
+                    const auto& vel_arr = Sborder.array(mfi);
+                    const auto& vort_arr = vort[lev]->array(mfi);
+
+                    for(int i = bx.smallEnd(0); i <= bx.bigEnd(0); i++)
+                    for(int j = bx.smallEnd(1); j <= bx.bigEnd(1); j++)
+                    for(int k = bx.smallEnd(2); k <= bx.bigEnd(2); k++)
+                    {
+                        Real vx = (vel_arr(i+1, j  , k  , 1) - vel_arr(i-1, j  , k  , 1)) * idx;
+                        Real wx = (vel_arr(i+1, j  , k  , 2) - vel_arr(i-1, j  , k  , 2)) * idx;
+                        Real uy = (vel_arr(i  , j+1, k  , 0) - vel_arr(i  , j-1, k  , 0)) * idy;
+                        Real wy = (vel_arr(i  , j+1, k  , 2) - vel_arr(i  , j-1, k  , 2)) * idy;
+                        Real uz = (vel_arr(i  , j  , k+1, 0) - vel_arr(i  , j  , k-1, 0)) * idz;
+                        Real vz = (vel_arr(i  , j  , k+1, 1) - vel_arr(i  , j  , k-1, 1)) * idz;
+                        
+                        // The factor half is included here instead of in each of the above
+                        vort_arr(i,j,k) = 0.5 * sqrt(pow(wy - vz, 2) + pow(uz - wx, 2) + pow(vx - uy, 2));
+                    }
                 }
                 else
                 {
