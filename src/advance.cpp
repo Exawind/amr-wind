@@ -59,8 +59,7 @@ void incflo::Advance()
 
     ApplyPredictor();
 
-    if (!steady_state)
-        ApplyCorrector();
+    ApplyCorrector();
 
     if(incflo_verbose > 1)
     {
@@ -157,9 +156,10 @@ void incflo::ComputeDt(int initialisation)
     {
         dt_new = amrex::min(dt_new, 1.1 * dt);
     }
-
+    
     // Don't overshoot specified plot times
-    if(plot_per > 0.0 && (trunc((cur_time + dt_new) / plot_per) > trunc(cur_time / plot_per)))
+    // TODO: 1.0e-18 --> std::numeric_limits<double>::epsilon() (#include <limits>)
+    if(plot_per > 0.0 && (trunc((cur_time + dt_new + 1.0e-18) / plot_per) > trunc((cur_time + 1.0e-18) / plot_per)))
     {
         dt_new = trunc((cur_time + dt_new) / plot_per) * plot_per - cur_time;
     }
