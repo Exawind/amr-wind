@@ -2,8 +2,10 @@ module eb_wallflux_mod
 
    use amrex_fort_module,  only: rt=>amrex_real, c_int
    use amrex_error_module, only: amrex_abort
-   use param,              only: zero, half, one
+   use param,              only: zero, half, one, two
    use eb_gradu_module,    only: compute_eb_gradu
+   use constant,           only: mu, tau_0, papa_reg
+   use rheology_module,    only: expterm
 
    implicit none
 
@@ -56,14 +58,17 @@ contains
       integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       ! Local variable
-      real(rt)   :: dxinv(3)
+      real(rt)   :: idx, idy, idz
       real(rt)   :: dapx, dapy, dapz
-      real(rt)   :: dudx, dudy, dudz, dvdx, dvdy, dvdz, dwdx, dwdy, dwdz
+      real(rt)   :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)   :: gradu(9)
       real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy
+      real(rt)   :: strain, nu, visc
 
       divw  = zero
-      dxinv = one / dx
+      idx = one / dx(1)
+      idy = one / dx(2)
+      idz = one / dx(3)
 
       ! Compute the velocity gradients on the EB wall 
       ! 
@@ -73,30 +78,39 @@ contains
                             apx, axlo, axhi, & 
                             apy, aylo, ayhi, & 
                             apz, azlo, azhi, 0)
-      dudx = gradu(1)
-      dudy = gradu(2)
-      dudz = gradu(3)
+      ux = gradu(1) * idx
+      uy = gradu(2) * idy
+      uz = gradu(3) * idz
       !
-      dvdx = gradu(4)
-      dvdy = gradu(5)
-      dvdz = gradu(6)
+      vx = gradu(4) * idx
+      vy = gradu(5) * idy
+      vz = gradu(6) * idz
       !
-      dwdx = gradu(7)
-      dwdy = gradu(8)
-      dwdz = gradu(9)
+      wx = gradu(7) * idx
+      wy = gradu(8) * idy
+      wz = gradu(9) * idz
+
+      ! TODO: GENERALISE FOR ALL RHEOLOGY MODELS
+      if (tau_0 > zero) then 
+         strain = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
+         nu = strain / papa_reg
+         visc = mu + tau_0 * expterm(nu) / papa_reg
+      else
+         visc = eta(i,j,k)
+      endif
 
       ! compute components of stress tensor on the wall
-      tauxx = eta(i,j,k) * (dudx + dudx) 
-      tauxy = eta(i,j,k) * (dudy + dvdx)
-      tauxz = eta(i,j,k) * (dudz + dwdx)
+      tauxx = visc * (ux + ux) 
+      tauxy = visc * (uy + vx)
+      tauxz = visc * (uz + wx)
       !
       tauyx = tauxy
-      tauyy = eta(i,j,k) * (dvdy + dvdy)
-      tauyz = eta(i,j,k) * (dvdz + dwdy)
+      tauyy = visc * (vy + vy)
+      tauyz = visc * (vz + wy)
       !
       tauzx = tauxz
       tauzy = tauyz
-      tauzz = eta(i,j,k) * (dwdz + dwdz)
+      tauzz = visc * (wz + wz)
 
       ! Difference in area fraction across cell, used to find the divergence
       dapx = apx(i+1,j,k)-apx(i,j,k)
@@ -108,23 +122,23 @@ contains
          ! Subtract diagonal terms of stress tensor, to be obtained through
          ! implicit solve instead.
          !
-         tauxx = tauxx - eta(i,j,k) * dudx
-         tauxy = tauxy - eta(i,j,k) * dudy
-         tauxz = tauxz - eta(i,j,k) * dudz
+         tauxx = tauxx - visc * ux
+         tauxy = tauxy - visc * uy
+         tauxz = tauxz - visc * uz
 
-         tauyx = tauyx - eta(i,j,k) * dvdx
-         tauyy = tauyy - eta(i,j,k) * dvdy
-         tauyz = tauyz - eta(i,j,k) * dvdz
+         tauyx = tauyx - visc * vx
+         tauyy = tauyy - visc * vy
+         tauyz = tauyz - visc * vz
 
-         tauzx = tauzx - eta(i,j,k) * dwdx
-         tauzy = tauzy - eta(i,j,k) * dwdy
-         tauzz = tauzz - eta(i,j,k) * dwdz
+         tauzx = tauzx - visc * wx
+         tauzy = tauzy - visc * wy
+         tauzz = tauzz - visc * wz
       end if
 
       ! Return the divergence of the stress tensor 
-      divw(1) = dxinv(1) * (dapx*tauxx + dapy*tauyx + dapz*tauzx)
-      divw(2) = dxinv(2) * (dapx*tauxy + dapy*tauyy + dapz*tauzy)
-      divw(3) = dxinv(3) * (dapx*tauxz + dapy*tauyz + dapz*tauzz)
+      divw(1) = dapx*tauxx + dapy*tauyx + dapz*tauzx
+      divw(2) = dapx*tauxy + dapy*tauyy + dapz*tauzy
+      divw(3) = dapx*tauxz + dapy*tauyz + dapz*tauzz
 
    end subroutine compute_diff_wallflux
 
