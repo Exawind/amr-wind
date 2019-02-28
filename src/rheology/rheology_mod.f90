@@ -1,166 +1,67 @@
 module rheology_module
 
+   use amrex_error_module, only: amrex_abort
    use amrex_fort_module, only : rt => amrex_real
-   use iso_c_binding , only: c_int
-   use param, only: zero, half, one, two
+   use constant, only: mu, n, tau_0, eta_0, papa_reg, fluid_model
+   use param, only: half, one
 
    implicit none
 
 contains
 
-   !
-   ! Compute the viscosity distribution of a 
-   ! Power-law fluid: 
-   !
-   ! eta = mu dot(gamma)^(n-1)
-   !
-   subroutine powerlaw_viscosity(lo, hi, eta, elo, ehi, sr, slo, shi) &
-         bind(C, name="powerlaw_viscosity")
+   real(rt) function viscosity(sr) & 
+         bind(C, name="viscosity")
 
-      use constant, only: mu, n
-      
-      integer(c_int), intent(in   ) :: elo(3), ehi(3)
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
+      real(rt), value :: sr
+      real(rt)        :: nu
 
-      real(rt),   intent(  out) :: &
-         eta(elo(1):ehi(1),elo(2):ehi(2),elo(3):ehi(3))
+      if (fluid_model == "newtonian") then 
 
-      real(rt), intent(in   ) :: &
-         sr(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         ! Viscosity is constant
+         viscosity = mu
 
-      ! Local variables
-      !-----------------------------------------------
-      integer      :: i, j, k
+      else if (fluid_model == "powerlaw") then 
 
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
-               
-               eta(i,j,k) = mu * sr(i,j,k)**(n - one)
+         ! Power-law fluid: 
+         !
+         ! eta = mu dot(gamma)^(n-1)
+         viscosity = mu * sr**(n - one)
 
-            end do
-         end do
-      end do
+      else if (fluid_model == "bingham") then 
 
-   end subroutine powerlaw_viscosity
+         ! Papanastasiou-regularised Bingham fluid: 
+         !
+         ! eta = mu + tau_0 (1 - exp(-dot(gamma) / eps)) / dot(gamma)
+         nu = sr / papa_reg
+         viscosity = mu + tau_0 * expterm(nu) / papa_reg
 
-   !
-   ! Compute the viscosity distribution of a 
-   ! Papanastasiou-regularised Bingham fluid: 
-   !
-   ! eta = mu + tau_0 (1 - exp(-dot(gamma) / eps)) / dot(gamma)
-   !
-   subroutine bingham_viscosity(lo, hi, eta, elo, ehi, sr, slo, shi) &
-         bind(C, name="bingham_viscosity")
+      else if (fluid_model == "hb") then 
 
-      use constant, only: mu, tau_0, papa_reg
-      
-      integer(c_int), intent(in   ) :: elo(3), ehi(3)
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
+         ! Papanastasiou-regularised Herschel-Bulkley fluid: 
+         !
+         ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-dot(gamma) / eps)) / dot(gamma)
+         
+         nu = sr / papa_reg
+         viscosity = (mu * sr**n + tau_0) * expterm(nu) / papa_reg
 
-      real(rt),   intent(  out) :: &
-         eta(elo(1):ehi(1),elo(2):ehi(2),elo(3):ehi(3))
+      else if (fluid_model == "smd") then
 
-      real(rt), intent(in   ) :: &
-         sr(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+         ! de Souza Mendes - Dutra fluid: 
+         !
+         ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-eta_0 dot(gamma) / tau_0)) / dot(gamma)
+         
+         nu = eta_0 * sr / tau_0
+         viscosity = (mu * sr**n + tau_0) * expterm(nu) * eta_0 / tau_0
 
-      ! Local variables
-      !-----------------------------------------------
-      integer      :: i, j, k
-      real(rt) :: nu
+      else
 
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
+         ! This should have been caught earlier, but doesn't hurt to double check
+         call amrex_abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd")
 
-               nu = sr(i,j,k) / papa_reg
-               eta(i,j,k) = mu + tau_0 * expterm(nu) / papa_reg
+      end if
 
-            end do
-         end do
-      end do
+   end function viscosity
 
-   end subroutine bingham_viscosity
-
-   !
-   ! Compute the viscosity distribution of a 
-   ! Papanastasiou-regularised Herschel-Bulkley fluid: 
-   !
-   ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-dot(gamma) / eps)) / dot(gamma)
-   !
-   subroutine hb_viscosity(lo, hi, eta, elo, ehi, sr, slo, shi) &
-         bind(C, name="hb_viscosity")
-
-      use constant, only: mu, n, tau_0, papa_reg
-      
-      integer(c_int), intent(in   ) :: elo(3), ehi(3)
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
-
-      real(rt),   intent(  out) :: &
-         eta(elo(1):ehi(1),elo(2):ehi(2),elo(3):ehi(3))
-
-      real(rt), intent(in   ) :: &
-         sr(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      ! Local variables
-      !-----------------------------------------------
-      integer  :: i, j, k
-      real(rt) :: nu
-
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
-
-               nu = sr(i,j,k) / papa_reg
-               eta(i,j,k) = (mu * sr(i,j,k)**n + tau_0) * expterm(nu) / papa_reg
-
-            end do
-         end do
-      end do
-
-   end subroutine hb_viscosity
-
-   !
-   ! Compute the viscosity distribution of a 
-   ! de Souza Mendes - Dutra fluid: 
-   !
-   ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-eta_0 dot(gamma) / tau_0)) / dot(gamma)
-   !
-   subroutine smd_viscosity(lo, hi, eta, elo, ehi, sr, slo, shi) &
-         bind(C, name="smd_viscosity")
-
-      use constant, only: mu, n, tau_0, eta_0
-      
-      integer(c_int), intent(in   ) :: elo(3), ehi(3)
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
-
-      real(rt),   intent(  out) :: &
-         eta(elo(1):ehi(1),elo(2):ehi(2),elo(3):ehi(3))
-
-      real(rt), intent(in   ) :: &
-         sr(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      ! Local variables
-      !-----------------------------------------------
-      integer  :: i, j, k
-      real(rt) :: nu
-
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
-
-               nu = eta_0 * sr(i,j,k) / tau_0
-               eta(i,j,k) = (mu * sr(i,j,k)**n + tau_0) * expterm(nu) * eta_0 / tau_0
-
-            end do
-         end do
-      end do
-
-   end subroutine smd_viscosity
 
    ! 
    ! Compute the exponential term:

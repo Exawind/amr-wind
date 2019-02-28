@@ -132,7 +132,8 @@ void incflo::ReadParameters()
         }
 
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0);
+        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0, 
+                        fluid_model.c_str(), fluid_model.size());
 	}
 }
 

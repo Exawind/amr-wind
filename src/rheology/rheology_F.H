@@ -6,21 +6,7 @@
 extern "C"
 {
 #endif
-    void powerlaw_viscosity(const int* lo, const int* hi,
-                           amrex::Real* eta, const int* elo, const int* ehi,
-                           amrex::Real* sr, const int* slo, const int* shi);
-
-    void bingham_viscosity(const int* lo, const int* hi,
-                           amrex::Real* eta, const int* elo, const int* ehi,
-                           amrex::Real* sr, const int* slo, const int* shi);
-
-    void hb_viscosity(const int* lo, const int* hi,
-                           amrex::Real* eta, const int* elo, const int* ehi,
-                           amrex::Real* sr, const int* slo, const int* shi);
-
-    void smd_viscosity(const int* lo, const int* hi,
-                           amrex::Real* eta, const int* elo, const int* ehi,
-                           amrex::Real* sr, const int* slo, const int* shi);
+    amrex::Real viscosity(amrex::Real sr);
 #ifdef __cplusplus
 }
 #endif

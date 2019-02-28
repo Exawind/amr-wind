@@ -1,11 +1,9 @@
 module eb_wallflux_mod
 
    use amrex_fort_module,  only: rt=>amrex_real, c_int
-   use amrex_error_module, only: amrex_abort
-   use param,              only: zero, half, one, two
    use eb_gradu_module,    only: compute_eb_gradu
-   use constant,           only: mu, tau_0, papa_reg
-   use rheology_module,    only: expterm
+   use param,              only: zero, one, two
+   use rheology_module,    only: viscosity
 
    implicit none
 
@@ -19,7 +17,6 @@ contains
    !
    subroutine compute_diff_wallflux (divw, dx, i, j, k, &
                                      vel, vlo, vhi,     &
-                                     eta, slo, shi, &
                                      bcent, blo, bhi,   &
                                      apx, axlo, axhi,   &
                                      apy, aylo, ayhi,   &
@@ -37,7 +34,6 @@ contains
 
       ! Array bounds
       integer(c_int), intent(in   ) ::  vlo(3),  vhi(3)
-      integer(c_int), intent(in   ) ::  slo(3),  shi(3)
       integer(c_int), intent(in   ) :: axlo(3), axhi(3)
       integer(c_int), intent(in   ) :: aylo(3), ayhi(3)
       integer(c_int), intent(in   ) :: azlo(3), azhi(3)
@@ -46,7 +42,6 @@ contains
       ! Arrays
       real(rt),       intent(in   ) ::                                 &
            &   vel( vlo(1): vhi(1), vlo(2): vhi(2), vlo(3): vhi(3),3), &
-           &   eta( slo(1): shi(1), slo(2): shi(2), slo(3): shi(3)  ), &
            & bcent( blo(1): bhi(1), blo(2): bhi(2), blo(3): bhi(3),3), &
            &   apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)  ), &
            &   apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)  ), &
@@ -63,7 +58,7 @@ contains
       real(rt)   :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)   :: gradu(9)
       real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy
-      real(rt)   :: strain, nu, visc
+      real(rt)   :: strain, visc
 
       divw  = zero
       idx = one / dx(1)
@@ -78,6 +73,7 @@ contains
                             apx, axlo, axhi, & 
                             apy, aylo, ayhi, & 
                             apz, azlo, azhi, 0)
+
       ux = gradu(1) * idx
       uy = gradu(2) * idy
       uz = gradu(3) * idz
@@ -90,14 +86,8 @@ contains
       wy = gradu(8) * idy
       wz = gradu(9) * idz
 
-      ! TODO: GENERALISE FOR ALL RHEOLOGY MODELS
-      if (tau_0 > zero) then 
-         strain = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
-         nu = strain / papa_reg
-         visc = mu + tau_0 * expterm(nu) / papa_reg
-      else
-         visc = eta(i,j,k)
-      endif
+      strain = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
+      visc = viscosity(strain)
 
       ! compute components of stress tensor on the wall
       tauxx = visc * (ux + ux) 

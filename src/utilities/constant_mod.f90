@@ -10,7 +10,7 @@
       MODULE constant
 
          use amrex_fort_module, only : rt => amrex_real
-         use iso_c_binding , only: c_int
+         use iso_c_binding , only: c_int, c_char
 
 ! Modules
 !---------------------------------------------------------------------//
@@ -35,5 +35,8 @@
 
 ! Zero-strain-limit viscosity
          real(rt) :: eta_0
+
+! Fluid type
+         character(:), allocatable :: fluid_model
 
       END MODULE constant

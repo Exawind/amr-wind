@@ -16,7 +16,9 @@ extern "C"
             amrex::Real* n,
             amrex::Real* tau_0,
             amrex::Real* papa_reg,
-            amrex::Real* eta_0
+            amrex::Real* eta_0,
+            const char* fluid_model_name, 
+            int fluid_model_namelength
         ); 
     
     void set_bc_type
