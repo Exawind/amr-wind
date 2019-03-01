@@ -35,12 +35,8 @@ contains
       papa_reg = papa_reg_in
       eta_0 = eta_0_in
       
-      print*,fluid_model_namelength
-
       allocate(character(fluid_model_namelength) :: fluid_model)
       forall(i = 1:fluid_model_namelength) fluid_model(i:i) = fluid_model_name(i)
-
-      print*,fluid_model
 
    end subroutine incflo_get_data
 
