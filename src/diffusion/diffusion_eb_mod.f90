@@ -112,7 +112,7 @@ contains
       real(rt)       :: idx, idy, idz
 
       ! Check number of ghost cells
-      if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
+      if (ng < 5) call amrex_abort( "compute_divtau_eb(): ng must be >= 5")
 
       idx = one / dx(1)
       idy = one / dx(2)
