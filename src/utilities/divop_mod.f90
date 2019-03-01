@@ -105,7 +105,7 @@ contains
       ! If true  then we include all the diffusive terms in this explicit result
       ! If false then we include all only the off-diagonal terms here -- we do this
       !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in   ), optional :: do_explicit_diffusion
+      integer(c_int),  intent(in), optional :: do_explicit_diffusion
 
       ! Conservative div and EB stuff
       real(ar)  ::    &
@@ -114,10 +114,11 @@ contains
            &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
            &  mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
 
-      real(ar), allocatable          :: divdiff_w(:,:)
-      integer(c_int)                 :: i, j, k, n, nbr(-1:1,-1:1,-1:1)
-      integer(c_int)                 :: nwalls
-      real(ar)                       :: idx, idy, idz
+      real(ar), allocatable :: divdiff_w(:,:)
+      integer(c_int)        :: i, j, k, n, nbr(-1:1,-1:1,-1:1)
+      integer(c_int)        :: nwalls
+      real(ar)              :: idx, idy, idz
+      logical               :: is_viscous
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -127,6 +128,12 @@ contains
       if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
 
       ! Check if we are computing divergence for viscous term
+      if ( present(eta) ) then
+         is_viscous = .true.
+      else
+         is_viscous = .false.
+      end if
+
       if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
            abs(dx(1) - dx(3)) > epsilon(0.0_ar) .or.&
            abs(dx(3) - dx(2)) > epsilon(0.0_ar) ) then
@@ -137,15 +144,17 @@ contains
       ! Allocate arrays to host viscous wall fluxes
       !
       nwalls = 0
-      do k = lo(3)-2, hi(3)+2
-         do j = lo(2)-2, hi(2)+2
-            do i = lo(1)-2, hi(1)+2
-               if (is_single_valued_cell(flags(i,j,k))) nwalls = nwalls + 1
+      if (is_viscous) then
+         do k = lo(3)-2, hi(3)+2
+            do j = lo(2)-2, hi(2)+2
+               do i = lo(1)-2, hi(1)+2
+                  if (is_single_valued_cell(flags(i,j,k))) nwalls = nwalls + 1
+               end do
             end do
          end do
-      end do
-      allocate( divdiff_w(3,nwalls) )
-      divdiff_w = zero
+         allocate( divdiff_w(3,nwalls) )
+         divdiff_w = zero
+      end if
 
       !
       ! Array "mask" is used to sever the link to ghost cells when the BCs are not periodic
@@ -220,17 +229,19 @@ contains
                         ! Add viscous wall fluxes (compute three components only
                         ! during the first pass, i.e. for n=1
                         iwall = iwall + 1
-                        if (n==1) then
-                           call compute_diff_wallflux(divdiff_w(:,iwall), &
-                                                      dx, i, j, k, &
-                                                      vel, vllo, vlhi, &
-                                                      bcent, blo, bhi, &
-                                                      afrac_x, axlo, axhi, &
-                                                      afrac_y, aylo, ayhi, &
-                                                      afrac_z, azlo, azhi, &
-                                                      do_explicit_diffusion)
+                        if (is_viscous) then
+                           if (n==1) then
+                              call compute_diff_wallflux(divdiff_w(:,iwall), &
+                                                         dx, i, j, k, &
+                                                         vel, vllo, vlhi, &
+                                                         bcent, blo, bhi, &
+                                                         afrac_x, axlo, axhi, &
+                                                         afrac_y, aylo, ayhi, &
+                                                         afrac_z, azlo, azhi, &
+                                                         do_explicit_diffusion)
+                           end if
+                           divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
                         end if
-                        divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
 
                      else
 
@@ -347,8 +358,8 @@ contains
 
       !
       ! Delete working arrays
-      ! 
-      deallocate(divdiff_w)
+      !
+      if (is_viscous) deallocate(divdiff_w)
 
    end subroutine compute_divop
 

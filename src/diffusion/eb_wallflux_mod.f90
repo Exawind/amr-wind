@@ -107,7 +107,7 @@ contains
       dapy = apy(i,j+1,k)-apy(i,j,k)
       dapz = apz(i,j,k+1)-apz(i,j,k)
 
-      if (do_explicit_diffusion .eq. 0) then
+      if (do_explicit_diffusion == 0) then
          !
          ! Subtract diagonal terms of stress tensor, to be obtained through
          ! implicit solve instead.
