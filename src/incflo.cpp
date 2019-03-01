@@ -200,46 +200,38 @@ void incflo::ErrorEst(int lev,
                       int ngrow)
 {
     BL_PROFILE("incflo::ErrorEst()");
-/* TODO: Activate if we want to tag on other features, like vorticity for example
- *
-    const int clearval = TagBox::CLEAR;
-    const int   tagval = TagBox::SET;
+
+    const char   tagval = TagBox::SET;
+    const char clearval = TagBox::CLEAR;
+
+    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(ro[lev]->Factory());
+    auto const& flags = factory.getMultiEBCellFlagFab();
 
     const Real* dx      = geom[lev].CellSize();
     const Real* prob_lo = geom[lev].ProbLo();
 
-    Vector<int>  itags;
-
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
     for (MFIter mfi(*ro[lev],true); mfi.isValid(); ++mfi)
     {
-        const Box& tilebox  = mfi.tilebox();
-
-        TagBox&     tagfab  = tags[mfi];
-
-        // We cannot pass tagfab to Fortran becuase it is BaseFab<char>.
-        // So we are going to get a temporary integer array.
-            // set itags initially to 'untagged' everywhere
-            // we define itags over the tilebox region
-        tagfab.get_itags(itags, tilebox);
-
-            // data pointer and index space
-        int*        tptr    = itags.dataPtr();
-        const int*  tlo     = tilebox.loVect();
-        const int*  thi     = tilebox.hiVect();
+        const Box& bx  = mfi.tilebox();
+        const auto& flag = flags[mfi];
+        const FabType typ = flag.getType(bx);
+        if (typ != FabType::covered)
+        {
+            TagBox&     tagfab  = tags[mfi];
 
             // tag cells for refinement
-        state_error(tptr,  AMREX_ARLIM_3D(tlo), AMREX_ARLIM_3D(thi),
-            BL_TO_FORTRAN_3D((ebfactory[lev]->getVolFrac())[mfi]),
-            &tagval, &clearval,
-            AMREX_ARLIM_3D(tilebox.loVect()), AMREX_ARLIM_3D(tilebox.hiVect()),
-            AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
-        //
-        // Now update the tags in the TagBox in the tilebox region
-            // to be equal to itags
-        //
-        tagfab.tags_and_untags(itags, tilebox);
-    }*/
+            state_error(BL_TO_FORTRAN_BOX(bx), 
+                        BL_TO_FORTRAN_ANYD(tagfab),
+                        BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]), 
+                        &tagval, &clearval,
+                        AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
+        }
+    }
 
+    refine_cutcells = true;
     // Refine on cut cells
     if (refine_cutcells) 
     {

@@ -44,12 +44,11 @@ extern "C"
                          const amrex::Real* bcent, const int* blo, const int*  bhi, 
                          const amrex::Real* dx);
 
-    void state_error(int* tag, const int* tag_lo, const int* tag_hi,
-		     const BL_FORT_FAB_ARG_3D(state),
-		     const int* tagval, const int* clearval,
-		     const int* lo, const int* hi,
-		     const amrex_real* dx, const amrex_real* problo,
-		     const amrex_real* time);
+    void state_error(const int* lo, const int* hi,
+                     char* tag, const int* tag_lo, const int* tag_hi,
+                     const BL_FORT_FAB_ARG_3D(state),
+                     const char* tagval, const char* clearval,
+                     const amrex_real* dx, const amrex_real* problo, const amrex_real* time);
 #ifdef __cplusplus
 }
 #endif
