@@ -93,31 +93,6 @@ contains
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
-!  Subroutine: init_fluid_restart                                      !
-!                                                                      !
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine init_fluid_restart(slo, shi, lo, hi, eta) &
-      bind(C, name="init_fluid_restart")
-
-      use amrex_fort_module, only : rt => amrex_real
-      use iso_c_binding , only: c_int
-      use constant, only: mu
-
-      implicit none
-
-! Dummy arguments .....................................................//
-      integer(c_int), intent(in   ) ::  lo(3),  hi(3)
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-
-      real(rt), intent(inout) :: eta&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      eta = mu
-
-   end subroutine init_fluid_restart
-
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
 !  Subroutine: SET_IC                                                  !
 !  Author: M. Syamlal                                 Date: 21-JAN-92  !
 !                                                                      !
@@ -127,7 +102,7 @@ contains
    subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
       use ic, only: dim_ic, ic_defined
-      use ic, only: ic_p, ic_u, ic_v, ic_w
+      use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_y_n, ic_z_t
       use ic, only: ic_x_w, ic_y_s, ic_z_b
       use param, only: undefined, is_defined
@@ -157,7 +132,7 @@ contains
       integer :: icv
 
       ! Temporary variables for storing IC values
-      real(rt) :: pgx, ugx, vgx, wgx
+      real(rt) :: ugx, vgx, wgx
 
       integer :: i_w, j_s, k_b
       integer :: i_e, j_n, k_t
@@ -171,7 +146,6 @@ contains
                               ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
                               i_w, i_e, j_s, j_n, k_b, k_t)
 
-            pgx = ic_p(icv)
             ugx = ic_u(icv)
             vgx = ic_v(icv)
             wgx = ic_w(icv)

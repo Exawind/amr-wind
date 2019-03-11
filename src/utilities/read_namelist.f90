@@ -118,7 +118,6 @@ contains
 !---------------------------------------------------------------------//
          include 'geometry.inc'
          include 'initial_conditions.inc'
-         include 'boundary_conditions.inc'
 
          ERROR = .FALSE.
 
@@ -140,12 +139,6 @@ contains
          STRING=''; STRING = '&INITIAL_CONDITIONS '//&
  trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
          READ(STRING, NML=INITIAL_CONDITIONS, IOSTAT=IOS)
-         IF(IOS == 0)  RETURN
-
-! Boundary condition keywords
-         STRING=''; STRING = '&BOUNDARY_CONDITIONS '//&
- trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-         READ(STRING, NML=BOUNDARY_CONDITIONS, IOSTAT=IOS)
          IF(IOS == 0)  RETURN
 
          ERROR = .TRUE.

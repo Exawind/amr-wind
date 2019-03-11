@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   2.          # Max (simulated) time to evolve
-max_step                =   -1          # Max number of time steps
+max_step                =   5           # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -14,7 +14,7 @@ incflo.cfl              =   0.9         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   -1          # Steps between plot files
+amr.plot_int            =   1           # Steps between plot files
 amr.plot_per            =   0.05        # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
@@ -40,9 +40,20 @@ amr.n_error_buf         =   8
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =   0.   0.    0.   # Lo corner coordinates
-geometry.prob_hi        =   1.2  0.4   0.05 # Hi corner coordinates
-geometry.is_periodic    =   0    0     1    # Periodicity x y z (0/1)
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   1.2 0.4 .05 # Hi corner coordinates
+geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+
+# Boundary conditions
+xlo.type                =   "mi"
+xlo.velocity            =   1.  0.  0.
+xhi.type                =   "po"
+xhi.pressure            =   0.0
+ylo.type                =   "nsw"
+ylo.velocity            =   0.  0.  0.
+yhi.type                =   "nsw"
+yhi.velocity            =   0.  0.  0.
+
 # Add cylinder 
 incflo.geometry         = "cylinder"
 cylinder.internal_flow  = false
@@ -53,7 +64,6 @@ cylinder.center         = 0.15   0.2   0.0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.explicit_diffusion = 1           # Explicit viscous diffusion?
 incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

@@ -12,6 +12,8 @@
 #include <projection_F.H>
 #include <setup_F.H>
 
+#include <limits>
+
 void incflo::Advance()
 {
 	BL_PROFILE("incflo::Advance");
@@ -27,8 +29,8 @@ void incflo::Advance()
     // Fill ghost nodes and reimpose boundary conditions
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        FillScalarBC(lev, *ro[lev]);
-        FillScalarBC(lev, *eta[lev]);
+         ro[lev]->FillBoundary(geom[lev].periodicity());
+        eta[lev]->FillBoundary(geom[lev].periodicity());
     }
     FillVelocityBC(cur_time, 0);
 
@@ -108,10 +110,10 @@ void incflo::ComputeDt(int initialisation)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        umax = amrex::max(umax, Norm(vel, lev, 0, 0));
-        vmax = amrex::max(vmax, Norm(vel, lev, 1, 0));
-        wmax = amrex::max(wmax, Norm(vel, lev, 2, 0));
-        romin = amrex::min(romin, Norm(ro, lev, 0, 0));
+        umax   = amrex::max(umax,   Norm(vel, lev, 0, 0));
+        vmax   = amrex::max(vmax,   Norm(vel, lev, 1, 0));
+        wmax   = amrex::max(wmax,   Norm(vel, lev, 2, 0));
+        romin  = amrex::min(romin,  Norm( ro, lev, 0, 0));
         etamax = amrex::max(etamax, Norm(eta, lev, 0, 0));
     }
 
@@ -121,7 +123,7 @@ void incflo::ComputeDt(int initialisation)
     Real idz = 1.0 / dx[2];
 
     // Convective term
-    Real conv_cfl = umax * idx + vmax * idy + wmax * idz;
+    Real conv_cfl = std::max(std::max(umax * idx, vmax * idy), wmax * idz);
 
     // Viscous term
     Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
@@ -146,7 +148,8 @@ void incflo::ComputeDt(int initialisation)
     // Protect against very small comb_cfl
     // This may happen, for example, when the initial velocity field
     // is zero for an inviscid flow with no external forcing
-    if(comb_cfl <= 1.0e-18)
+    Real eps = std::numeric_limits<Real>::epsilon();
+    if(comb_cfl <= eps)
     {
         dt_new = 0.5 * dt;
     }
@@ -158,8 +161,8 @@ void incflo::ComputeDt(int initialisation)
     }
     
     // Don't overshoot specified plot times
-    // TODO: 1.0e-18 --> std::numeric_limits<double>::epsilon() (#include <limits>)
-    if(plot_per > 0.0 && (trunc((cur_time + dt_new + 1.0e-18) / plot_per) > trunc((cur_time + 1.0e-18) / plot_per)))
+    if(plot_per > 0.0 && 
+            (trunc((cur_time + dt_new + eps) / plot_per) > trunc((cur_time + eps) / plot_per)))
     {
         dt_new = trunc((cur_time + dt_new) / plot_per) * plot_per - cur_time;
     }

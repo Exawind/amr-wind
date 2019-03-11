@@ -32,6 +32,15 @@ extern "C"
             const int* ng
         );
     
+    void set_bc_mod
+        (
+            const int* pID, const int* pType,
+            const amrex::Real* pLo, const amrex::Real* pHi,
+            amrex::Real* pLoc,
+            amrex::Real* pPg,
+            amrex::Real* pVel
+        );
+
     void init_fluid
         (
             const int* slo, const int* shi,

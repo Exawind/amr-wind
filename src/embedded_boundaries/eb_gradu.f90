@@ -61,7 +61,7 @@ contains
       integer    :: ixit, iyit, izit, is
 
       ! Distance from wall to location where grad(u) is computed. 
-      ! We leave it unless extrap_to_zero is true
+      ! We leave it unless extrap_to_cc is true
       dist = zero
 
       dxinv = one / dx

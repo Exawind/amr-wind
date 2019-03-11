@@ -73,9 +73,9 @@ void incflo::ComputeStrainrate()
         bndrycent = &(ebfactory[lev] -> getBndryCent());
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
@@ -149,9 +149,9 @@ void incflo::ComputeVorticity()
         bndrycent = &(ebfactory[lev] -> getBndryCent());
 
     #ifdef _OPENMP
-    #pragma omp parallel
+    #pragma omp parallel if (Gpu::notInLaunchRegion())
     #endif
-        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();

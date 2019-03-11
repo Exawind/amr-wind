@@ -95,6 +95,9 @@ public:
 
     int get_nghost(){ return nghost; }
 
+    // Get boundary conditions from inputs file
+    void GetInputBCs();
+
 private:
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -102,6 +105,9 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
     
+    // Set boundary conditions from inputs file
+    void SetInputBCs(const std::string bcID, const int index, const int cyclic, const Real domloc);
+
     // Read inputs file using ParmParse
     void ReadParameters();
 
@@ -174,7 +180,6 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void FillScalarBC(int lev, MultiFab& mf);
 	void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +289,7 @@ private:
 	Real fixed_dt = -1.;
 
     // Whether to use the explicit diffusion or the semi-implicit one
-	int explicit_diffusion = 1;
+	int explicit_diffusion = 0;
 
     // Initial projection / iterations
     bool do_initial_proj    = true;

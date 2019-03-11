@@ -71,8 +71,6 @@ private:
 
 	void read_inputs();
 
-	void set_ccmf_bcs(int lev, amrex::MultiFab& mf);
-
 	void compute_b_coeff(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& u,
 						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& v,
 						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& w,

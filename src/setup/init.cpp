@@ -171,8 +171,8 @@ void incflo::PostInit(int restart_flag)
     // Fill boundaries
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        FillScalarBC(lev, *ro[lev]);
-        FillScalarBC(lev, *eta[lev]);
+         ro[lev]->FillBoundary(geom[lev].periodicity());
+        eta[lev]->FillBoundary(geom[lev].periodicity());
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
     // Project the initial velocity field to make it divergence free
@@ -304,7 +304,6 @@ void incflo::SetBackgroundPressure()
                    bc_khi[lev]->dataPtr(),
                    &nghost);
         }
-
         p0[lev]->FillBoundary(p0_periodicity);
     }
 }
@@ -327,8 +326,8 @@ void incflo::InitialIterations()
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        FillScalarBC(lev, *ro[lev]);
-        FillScalarBC(lev, *eta[lev]);
+         ro[lev]->FillBoundary(geom[lev].periodicity());
+        eta[lev]->FillBoundary(geom[lev].periodicity());
     }
     FillVelocityBC(cur_time, 0);
 

@@ -41,6 +41,7 @@ amr.n_error_buf         =   2
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   1.  1.  .25 #Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
 # Add cylinder
 incflo.geometry         =   "cylinder"
 cylinder.internal_flow  =   false
@@ -51,7 +52,6 @@ cylinder.center         =   .5  .5  .5
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.explicit_diffusion = 1           # Explicit viscous diffusion?
 incflo.do_initial_proj    = 1           # Do initial projection?
 incflo.initial_iterations = 3           # Number of initial iterations for pressure
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state

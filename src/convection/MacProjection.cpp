@@ -69,20 +69,15 @@ void MacProjection::set_bcs(Vector<std::unique_ptr<IArrayBox>>& a_bc_ilo,
     int lev = 0;
 	Box domain(m_amrcore->Geom(0).Domain());
 
-	set_ppe_bc(bc_lo,
-			   bc_hi,
-			   domain.loVect(),
-			   domain.hiVect(),
-			   &m_nghost,
-			   (*m_bc_ilo)[lev]->dataPtr(),
-			   (*m_bc_ihi)[lev]->dataPtr(),
-			   (*m_bc_jlo)[lev]->dataPtr(),
-			   (*m_bc_jhi)[lev]->dataPtr(),
-			   (*m_bc_klo)[lev]->dataPtr(),
-			   (*m_bc_khi)[lev]->dataPtr());
+    set_ppe_bc(bc_lo, bc_hi,
+               domain.loVect(), domain.hiVect(),
+               &m_nghost,
+               (*m_bc_ilo)[lev]->dataPtr(), (*m_bc_ihi)[lev]->dataPtr(),
+               (*m_bc_jlo)[lev]->dataPtr(), (*m_bc_jhi)[lev]->dataPtr(),
+               (*m_bc_klo)[lev]->dataPtr(), (*m_bc_khi)[lev]->dataPtr());
 
-	m_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
-	m_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+    m_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
+    m_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 }
 
 // redefine working arrays if amrcore has changed
@@ -300,7 +295,7 @@ void MacProjection::set_velocity_bcs(int lev,
 	Box domain(m_amrcore->Geom(lev).Domain());
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
 	for(MFIter mfi(*m_divu[lev], false); mfi.isValid(); ++mfi)
 	{
@@ -325,53 +320,6 @@ void MacProjection::set_velocity_bcs(int lev,
 }
 
 //
-// Set Cell-Centered-Multifab BCs
-//
-void MacProjection::set_ccmf_bcs(int lev, MultiFab& mf)
-{
-
-	Box domain(m_amrcore->Geom(lev).Domain());
-
-	if(!mf.boxArray().ixType().cellCentered())
-		amrex::Error("MacProjection::set_ccmf_bcs() can only be used for cell-centered arrays!");
-
-	// Impose periodic bc's at domain boundaries and fine-fine copies in the
-	// interior It is essential that we do this before the call to fill_bc0
-	// below since fill_bc0 can extrapolate out to fill ghost cells outside the
-	// domain after we have filled ghost cells inside the domain, but doing
-	// this call after fill_bc0 can't fill ghost cells from ghost cells.
-	mf.FillBoundary(m_amrcore->Geom(lev).periodicity());
-
-// Fill all cell-centered arrays with first-order extrapolation at domain
-// boundaries
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-	for(MFIter mfi(mf, false); mfi.isValid(); ++mfi)
-	{
-		const Box& sbx = mf[mfi].box();
-
-		fill_bc0(mf[mfi].dataPtr(),
-				 sbx.loVect(),
-				 sbx.hiVect(),
-				 (*m_bc_ilo)[lev]->dataPtr(),
-				 (*m_bc_ihi)[lev]->dataPtr(),
-				 (*m_bc_jlo)[lev]->dataPtr(),
-				 (*m_bc_jhi)[lev]->dataPtr(),
-				 (*m_bc_klo)[lev]->dataPtr(),
-				 (*m_bc_khi)[lev]->dataPtr(),
-				 domain.loVect(),
-				 domain.hiVect(),
-				 &m_nghost);
-	}
-
-	// Impose periodic bc's at domain boundaries and fine-fine copies in the
-	// interior It's not 100% clear whether we need this call or not.  Worth
-	// testing.
-	mf.FillBoundary(m_amrcore->Geom(lev).periodicity());
-}
-
-//
 // Computes the staggered Poisson's operator coefficients:
 //
 //      bcoeff = 1/ro
@@ -392,9 +340,9 @@ void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
 	int zdir = 3;
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-	for(MFIter mfi(*ro[lev], true); mfi.isValid(); ++mfi)
+	for(MFIter mfi(*ro[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
 	{
 		// Boxes for staggered components
 		Box bx = mfi.tilebox();
@@ -412,25 +360,33 @@ void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
 			m_b[lev][1]->setVal(1.2345e300, vbx, 0, 1);
 			m_b[lev][2]->setVal(1.2345e300, wbx, 0, 1);
 		}
-		else
+        else
 		{
-			// X direction
-			compute_bcoeff_mac(BL_TO_FORTRAN_BOX(ubx),
-							   BL_TO_FORTRAN_ANYD((*(m_b[lev][0]))[mfi]),
-							   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							   &xdir);
+            const auto& betax_fab = (*(m_b[lev])[0]).array(mfi);
+            const auto& betay_fab = (*(m_b[lev])[1]).array(mfi);
+            const auto& betaz_fab = (*(m_b[lev])[2]).array(mfi);
+            const auto&   den_fab =  ro[lev]->array(mfi);
 
-			// Y direction
-			compute_bcoeff_mac(BL_TO_FORTRAN_BOX(vbx),
-							   BL_TO_FORTRAN_ANYD((*(m_b[lev][1]))[mfi]),
-							   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							   &ydir);
+            amrex::ParallelFor(ubx, 
+                  [=] (int i, int j, int k)
+            {
+                // X-faces
+                betax_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i-1,j,k) );
+            });
 
-			// Z direction
-			compute_bcoeff_mac(BL_TO_FORTRAN_BOX(wbx),
-							   BL_TO_FORTRAN_ANYD((*(m_b[lev][2]))[mfi]),
-							   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
-							   &zdir);
+            amrex::ParallelFor(vbx, 
+                  [=] (int i, int j, int k)
+            {
+                // Y-faces
+                betay_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i,j-1,k) );
+            });
+
+            amrex::ParallelFor(wbx, 
+                  [=] (int i, int j, int k)
+            {
+                // Z-faces
+                betaz_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i,j,k-1) );
+            });
 		}
 	}
 

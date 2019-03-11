@@ -155,11 +155,11 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         matrix.setBCoeffs(lev, b_tmp);
 
         // This sets the coefficient on the wall and defines it as a homogeneous Dirichlet bc
-        matrix.setEBHomogDirichlet(lev, *eta[lev]);
+        // matrix.setEBHomogDirichlet(lev, *eta[lev]);
 
         // Tells the solver to use the higher order extrapolation to define d(phi)/dn at EB walls
         // It may not be robust in the presence of small cells so it is an option, not required. 
-        matrix.setEBHODirichlet();
+        // matrix.setEBHODirichlet();
     }
 
     // Loop over the velocity components

@@ -13,10 +13,10 @@ std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo::get_real_walls(bool& has_real
 
 	has_real_walls = false; // will be set to true if there are any walls
 
-	// Walls can be defined per phase => Iterate over all phases and check
-	// each for walls in the incflo.dat
+	// Walls can be defined per box face 
+    // => Iterate over all 6 faces and check each for walls in the inputs file
 	Vector<EB2::PlaneIF> planes;
-	for(int i = 1; i <= 500; i++)
+	for(int i = 1; i <= 6; i++)
 	{
 		int exists;
 		RealVect normal, center;
@@ -38,3 +38,4 @@ std::unique_ptr<UnionListIF<EB2::PlaneIF>> incflo::get_real_walls(bool& has_real
 		std::unique_ptr<UnionListIF<EB2::PlaneIF>>(new UnionListIF<EB2::PlaneIF>(planes));
 	return ret;
 }
+

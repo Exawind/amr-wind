@@ -93,17 +93,11 @@ subroutine set_velocity_bcs(time, &
                vel(ulo(1):domlo(1)-1,j,k,2) = bc_v(bcv)
                vel(ulo(1):domlo(1)-1,j,k,3) = bc_w(bcv)
 
-            case ( fsw_)
-
-               vel(ulo(1):domlo(1)-1,j,k,1) = zero
-               vel(ulo(1):domlo(1)-1,j,k,2) = vel(domlo(1),j,k,2)
-               vel(ulo(1):domlo(1)-1,j,k,3) = vel(domlo(1),j,k,3)
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_ilo(j,k,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(domlo(1)-1,j,k,1:3) = c0 * vel(domlo(1)-1,j,k,1:3) &
                                           + c1 * vel(domlo(1)  ,j,k,1:3) &
                                           + c2 * vel(domlo(1)+1,j,k,1:3)
@@ -141,17 +135,11 @@ subroutine set_velocity_bcs(time, &
                vel(domhi(1)+1:uhi(1),j,k,2) = bc_v(bcv)
                vel(domhi(1)+1:uhi(1),j,k,3) = bc_w(bcv)
 
-            case ( fsw_ )
-
-               vel(domhi(1)+1:uhi(1),j,k,1) = zero
-               vel(domhi(1)+1:uhi(1),j,k,2) = vel(domhi(1),j,k,2)
-               vel(domhi(1)+1:uhi(1),j,k,3) = vel(domhi(1),j,k,3)
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_ihi(j,k,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(domhi(1)+1,j,k,1:3) = c0*vel(domhi(1)+1,j,k,1:3) &
                                           + c1*vel(domhi(1)  ,j,k,1:3) &
                                           + c2*vel(domhi(1)-1,j,k,1:3)
@@ -189,17 +177,11 @@ subroutine set_velocity_bcs(time, &
                vel(i,ulo(2):domlo(2)-1,k,2) = zero
                vel(i,ulo(2):domlo(2)-1,k,3) = bc_w(bcv)
 
-            case ( fsw_)
-
-               vel(i,ulo(2):domlo(2)-1,k,1) = vel(i,domlo(2),k,1)
-               vel(i,ulo(2):domlo(2)-1,k,2) = zero
-               vel(i,ulo(2):domlo(2)-1,k,3) = vel(i,domlo(2),k,3)
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_jlo(i,k,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(i,domlo(2)-1,k,1:3) = c0 * vel(i,domlo(2)-1,k,1:3) &
                                           + c1 * vel(i,domlo(2)  ,k,1:3) &
                                           + c2 * vel(i,domlo(2)+1,k,1:3)
@@ -237,17 +219,11 @@ subroutine set_velocity_bcs(time, &
                vel(i,domhi(2)+1:uhi(2),k,2) = zero
                vel(i,domhi(2)+1:uhi(2),k,3) = bc_w(bcv)
 
-            case ( fsw_)
-
-               vel(i,domhi(2)+1:uhi(2),k,1) = vel(i,domhi(2),k,1)
-               vel(i,domhi(2)+1:uhi(2),k,2) = zero
-               vel(i,domhi(2)+1:uhi(2),k,3) = vel(i,domhi(2),k,3)
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_jhi(i,k,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(i,domhi(2)+1,k,1:3) = c0 * vel(i,domhi(2)+1,k,1:3) &
                                           + c1 * vel(i,domhi(2)  ,k,1:3) &
                                           + c2 * vel(i,domhi(2)-1,k,1:3)
@@ -285,17 +261,11 @@ subroutine set_velocity_bcs(time, &
                vel(i,j,ulo(3):domlo(3)-1,2) = bc_v(bcv)
                vel(i,j,ulo(3):domlo(3)-1,3) = zero
 
-            case ( fsw_ )
-
-               vel(i,j,ulo(3):domlo(3)-1,1) = vel(i,j,domlo(3),1)
-               vel(i,j,ulo(3):domlo(3)-1,2) = vel(i,j,domlo(3),2)
-               vel(i,j,ulo(3):domlo(3)-1,3) = zero
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_klo(i,j,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(i,j,domlo(3)-1,1:3) = c0 * vel(i,j,domlo(3)-1,1:3) &
                                           + c1 * vel(i,j,domlo(3)  ,1:3) &
                                           + c2 * vel(i,j,domlo(3)+1,1:3)
@@ -333,108 +303,17 @@ subroutine set_velocity_bcs(time, &
                vel(i,j,domhi(3)+1:uhi(3),2) = bc_v(bcv)
                vel(i,j,domhi(3)+1:uhi(3),3) = zero
 
-            case ( fsw_ )
-
-               vel(i,j,domhi(3)+1:uhi(3),1) = vel(i,j,domhi(3),1)
-               vel(i,j,domhi(3)+1:uhi(3),2) = vel(i,j,domhi(3),2)
-               vel(i,j,domhi(3)+1:uhi(3),3) = zero
-
             end select
 
             if (extrap_dir_bcs .gt. 0) then
                select case (bct_khi(i,j,1))
-               case ( minf_, nsw_, fsw_, psw_)
+               case ( minf_, nsw_ )
                   vel(i,j,domhi(3)+1,1:3) = c0 * vel(i,j,domhi(3)+1,1:3) &
                                           + c1 * vel(i,j,domhi(3)  ,1:3) &
                                           + c2 * vel(i,j,domhi(3)-1,1:3)
                end select
             end if
 
-         end do
-      end do
-   endif
-
-   ! *********************************************************************************
-   ! We have to do the psw_ bc's last because otherwise non-zero moving wall values
-   ! can get over-written
-   ! *********************************************************************************
-
-   ! HACK HACK HACK -- we still need to fix the cases below for extrap_dir_bcs = 1
-
-   if (nlft .gt. 0) then
-      do k=ulo(3),uhi(3)
-         do j=ulo(2),uhi(2)
-            bcv = bct_ilo(j,k,2)
-            if (bct_ilo(j,k,1) == psw_) then
-               vel(ulo(1):domlo(1)-1,j,k,1) = zero
-               vel(ulo(1):domlo(1)-1,j,k,2) = bc_vw(bcv)
-               vel(ulo(1):domlo(1)-1,j,k,3) = bc_ww(bcv)
-            end if
-         end do
-      end do
-   endif
-
-   if (nrgt .gt. 0) then
-      do k=ulo(3),uhi(3)
-         do j=ulo(2),uhi(2)
-            bcv = bct_ihi(j,k,2)
-            if (bct_ihi(j,k,1) == psw_) then
-               vel(domhi(1)+1:uhi(1),j,k,1) = zero
-               vel(domhi(1)+1:uhi(1),j,k,2) = bc_vw(bcv)
-               vel(domhi(1)+1:uhi(1),j,k,3) = bc_ww(bcv)
-            end if
-         end do
-      end do
-   endif
-
-   if (nbot .gt. 0) then
-      do k=ulo(3),uhi(3)
-         do i=ulo(1),uhi(1)
-            bcv = bct_jlo(i,k,2)
-            if (bct_jlo(i,k,1) == psw_)then
-               vel(i,ulo(2):domlo(2)-1,k,1) = bc_uw(bcv)
-               vel(i,ulo(2):domlo(2)-1,k,2) = zero
-               vel(i,ulo(2):domlo(2)-1,k,3) = bc_ww(bcv)
-            end if
-         end do
-      end do
-   endif
-
-   if (ntop .gt. 0) then
-      do k=ulo(3),uhi(3)
-         do i=ulo(1),uhi(1)
-            bcv = bct_jhi(i,k,2)
-            if (bct_jhi(i,k,1) == psw_)then
-               vel(i,domhi(2)+1:uhi(2),k,1) = bc_uw(bcv)
-               vel(i,domhi(2)+1:uhi(2),k,2) = zero
-               vel(i,domhi(2)+1:uhi(2),k,3) = bc_ww(bcv)
-            end if
-         end do
-      end do
-   endif
-
-   if (ndwn .gt. 0) then
-      do j=ulo(2),uhi(2)
-         do i=ulo(1),uhi(1)
-            bcv = bct_klo(i,j,2)
-            if (bct_klo(i,j,1) == psw_) then
-               vel(i,j,ulo(3):domlo(3)-1,1) = bc_uw(bcv)
-               vel(i,j,ulo(3):domlo(3)-1,2) = bc_vw(bcv)
-               vel(i,j,ulo(3):domlo(3)-1,3) = zero
-            end if
-         end do
-      end do
-   endif
-
-   if (nup .gt. 0) then
-      do j=ulo(2),uhi(2)
-         do i=ulo(1),uhi(1)
-            bcv = bct_khi(i,j,2)
-            if (bct_khi(i,j,1) == psw_) then
-               vel(i,j,domhi(3)+1:uhi(3),1) = bc_uw(bcv)
-               vel(i,j,domhi(3)+1:uhi(3),2) = bc_vw(bcv)
-               vel(i,j,domhi(3)+1:uhi(3),3) = zero
-            end if
          end do
       end do
    endif

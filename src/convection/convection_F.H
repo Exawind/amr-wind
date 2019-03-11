@@ -102,18 +102,7 @@ extern "C"
 	const amrex::Real* dx, const int* ng
       );
 
-   void compute_slopes (
-      const int* lo, const int* hi,
-      const amrex::Real* u, const int* ulo, const int* uhi, 
-      amrex::Real* xslopes, amrex::Real* yslopes,
-      amrex::Real* zslopes, const int* slo, const int* shi, 
-      const int* domlo, const int* domhi,
-      const int* bc_ilo_type, const int* bc_ihi_type, 
-      const int* bc_jlo_type, const int* bc_jhi_type,
-      const int* bc_klo_type, const int* bc_khi_type,
-      const int* nghost );
-
-   void compute_slopes_eb (
+   void correct_slopes (
       const int* lo, const int* hi,
       const amrex::Real* u, const int* ulo, const int* uhi, 
       amrex::Real* xslopes, amrex::Real* yslopes,

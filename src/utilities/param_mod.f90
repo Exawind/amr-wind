@@ -7,7 +7,7 @@ module param
    ! Maximum number of items for specifying initial conditions
    integer, parameter :: dim_ic = 500
    ! Maximum number of items for specifying boundary conditions
-   integer, parameter :: dim_bc = 500
+   integer, parameter :: dim_bc = 6
    ! Maximum number of items for specifying point sources
    integer, parameter :: dim_ps = 5000
 

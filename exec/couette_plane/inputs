@@ -42,10 +42,15 @@ geometry.prob_lo        =   0.  0.  0.   # Lo corner coordinates
 geometry.prob_hi        =   4.  1.  0.5  # Hi corner coordinates
 geometry.is_periodic    =   1   0   1    # Periodicity x y z (0/1)
 
+# Boundary conditions
+ylo.type                =   "nsw"
+ylo.velocity            =   0.  0.  0.
+yhi.type                =   "nsw"
+yhi.velocity            =   1.  0.  0.
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

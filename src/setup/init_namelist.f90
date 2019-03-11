@@ -114,12 +114,6 @@ CONTAINS
 !</keyword>
 
 !<keyword category="Initial Condition" required="false">
-!  <description>Initial gas phase temperature in the IC region.</description>
-!  <arg index="1" id="IC" min="1" max="DIM_IC"/>
-      IC_T(:) = 293.15d0
-!</keyword>
-
-!<keyword category="Initial Condition" required="false">
 !  <description>Initial x-component of gas velocity in the IC region.</description>
 !  <arg index="1" id="IC" min="1" max="DIM_IC"/>
       IC_U(:) = UNDEFINED
@@ -142,42 +136,6 @@ CONTAINS
 !#####################################################################!
 
 !<keyword category="Boundary Condition" required="false">
-!  <description>X coordinate of the west face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_X_W(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>X coordinate of the east face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_X_E(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Y coordinate of the south face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_Y_S(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Y coordinate of the north face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_Y_N(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Z coordinate of the bottom face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_Z_B(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Z coordinate of the top face or edge.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_Z_T(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
 !  <description>Z coordinate of the top face or edge.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_NORMAL(:,:) = UNDEFINED
@@ -192,109 +150,13 @@ CONTAINS
 !<keyword category="Boundary Condition" required="false">
 !  <description>Type of boundary.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-!
-!  <valid value='DUMMY'
-!    note='The specified boundary condition is ignored. This is
-!      useful for turning off some boundary conditions without having
-!      to delete them from the file.' />
-!
-!  <valid value='MASS_INFLOW' alias='MI'
-!    note='Mass inflow rates for gas and solids phases are
-!      specified at the boundary.'/>
-!
-!  <valid value='MASS_OUTFLOW' alias='MO'
-!    note='The specified values of gas and solids mass outflow
-!      rates at the boundary are maintained, approximately. This
-!      condition should be used sparingly for minor outflows, when
-!      the bulk of the outflow is occurring through other constant
-!      pressure outflow boundaries.' />
-!
-!  <valid value='P_INFLOW' alias='PI'
-!    note='Inflow from a boundary at a specified constant
-!      pressure. To specify as the west, south, or bottom end of
-!      the computational region, add a layer of wall cells to the
-!      west, south, or bottom of the PI cells. Users need to specify
-!      all scalar quantities and velocity components. The specified
-!      values of fluid and solids velocities are only used initially
-!      as incflo computes these values at this inlet boundary.' />
-!
-!  <valid value='FREE_SLIP_WALL' alias='FSW'
-!    note='Velocity gradients at the wall vanish./>
-!
-!  <valid value='NO_SLIP_WALL' alias='NSW'
-!    note='All components of the velocity vanish at the wall./>
-!
-!  <valid value='PAR_SLIP_WALL' alias='PSW'
-!    note='Partial slip at the wall implemented as
-!      dv/dn + hw (v - vw) = 0, where n is the normal pointing from the
-!      fluid into the wall. The coefficients hw and vw should be
-!      specified. For free slip set hw = 0. For no slip leave hw
-!      undefined (hw=+inf) and set vw = 0. To set hw = +inf, leave it
-!      unspecified. />
       BC_TYPE(:) = UNDEFINED_C
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas phase hw for partial slip boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_HW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas phase Uw for partial slip boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_UW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas phase Vw for partial slip boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_VW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas phase Ww for partial slip boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_WW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Gas phase heat transfer coefficient, Hw, in diffusion boundary condition:
-!    d(T)/dn + Hw (T - Tw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_HW_T(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Specified gas phase wall temperature, Tw, in diffusion boundary condition:
-!    d(T)/dn + Hw (T - Tw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_TW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>
-!    Specified constant gas phase heat flux, C, in diffusion boundary condition:
-!    d(T)/dn + Hw (T - Tw) = C, where n is the fluid-to-wall normal.
-!  </description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_C_T(:) = UNDEFINED
 !</keyword>
 
 !<keyword category="Boundary Condition" required="false">
 !  <description>Gas pressure at the BC plane.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_P(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas phase temperature at the BC plane.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_T(:) = 293.15d0
 !</keyword>
 
 !<keyword category="Boundary Condition" required="false">
@@ -313,18 +175,6 @@ CONTAINS
 !  <description>Z-component of gas velocity at the BC plane.</description>
 !  <arg index="1" id="BC" min="1" max="DIM_BC"/>
       BC_W(:) = ZERO
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas volumetric flow rate through the boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_VOLFLOW(:) = UNDEFINED
-!</keyword>
-
-!<keyword category="Boundary Condition" required="false">
-!  <description>Gas mass flow rate through the boundary.</description>
-!  <arg index="1" id="BC" min="1" max="DIM_BC"/>
-      BC_MASSFLOW(:) = UNDEFINED
 !</keyword>
 
    end subroutine init_namelist

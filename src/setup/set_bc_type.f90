@@ -18,18 +18,13 @@ contains
                           domlo, domhi, dx, dy, dz, &
                           xlength, ylength, zlength,&
                           ng) &
-      bind(c,name='set_bc_type')
+               bind(c,name='set_bc_type')
 
       use bc, only: bc_defined, bc_type, bc_plane
 
-      use bc, only: nsw_, fsw_, psw_
-      use bc, only: pinf_, pout_
-      use bc, only: minf_
-      use bc, only: undef_cell, cycl_
+      use bc, only: nsw_, pinf_, pout_, minf_
+      use bc, only: undef_cell
       use bc, only: cyclic_x, cyclic_y, cyclic_z
-
-      use bc, only: bc_x_w, bc_y_s, bc_z_b
-      use bc, only: bc_x_e, bc_y_n, bc_z_t
 
       use param, only: dim_bc
       use param, only: equal
@@ -45,17 +40,17 @@ contains
       real(rt)  , intent(in) :: xlength, ylength, zlength
 
       integer(c_int), intent(inout) :: bc_ilo_type&
-                                       (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
+         (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_ihi_type&
-                                       (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
+         (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_jlo_type&
-                                       (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
+         (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_jhi_type&
-                                       (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
+         (domlo(1)-ng:domhi(1)+ng,domlo(3)-ng:domhi(3)+ng,2)
       integer(c_int), intent(inout) :: bc_klo_type&
-                                       (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+         (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
       integer(c_int), intent(inout) :: bc_khi_type&
-                                       (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
+         (domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
       ! Local index for boundary condition
       integer :: type, bcv
@@ -74,9 +69,7 @@ contains
          if (bc_defined(bcv)) then
 
             select case (trim(bc_type(bcv)))
-            case('FREE_SLIP_WALL','FSW'); type = fsw_
             case('NO_SLIP_WALL'  ,'NSW'); type = nsw_
-            case('PAR_SLIP_WALL' ,'PSW'); type = psw_
             case('P_INFLOW'      ,'PI' ); type = pinf_
             case('P_OUTFLOW'     ,'PO' ); type = pout_
             case('MASS_INFLOW'   ,'MI' ); type = minf_
@@ -85,125 +78,164 @@ contains
                stop 7655
             end select
 
-            select case(type)
-            case(nsw_, fsw_, psw_)
-               call calc_cell_bc_wall(domlo, domhi, &
-                                      xlength, ylength, zlength, dx, dy, dz, &
-                                      bc_x_w(bcv), bc_y_s(bcv), bc_z_b(bcv), &
-                                      bc_x_e(bcv), bc_y_n(bcv), bc_z_t(bcv), &
-                                      i_w, i_e, j_s, j_n, k_b, k_t)
-            case(pinf_, pout_, minf_)
-               call calc_cell_bc_flow(&
-                  xlength, ylength, zlength, dx, dy, dz, &
-                  bc_x_w(bcv), bc_y_s(bcv), bc_z_b(bcv), &
-                  bc_x_e(bcv), bc_y_n(bcv), bc_z_t(bcv), &
-                  i_w, i_e, j_s, j_n, k_b, k_t)
-            end select
+            if (bc_plane(bcv) == 'E') then
+               bc_ilo_type(:,:,1) = type
+               bc_ilo_type(:,:,2) = bcv
 
-            if (i_w == i_e) then
-               if(i_w == domlo(1)-1) then
-                  bc_ilo_type(j_s:j_n, k_b:k_t,1) = type
-                  bc_ilo_type(j_s:j_n, k_b:k_t,2) = bcv
+            else if(bc_plane(bcv) == 'W') then
+               bc_ihi_type(:,:,1) = type
+               bc_ihi_type(:,:,2) = bcv
 
-                  bc_plane(bcv) = 'E' ! Fluid is to East of bc!
+            else if(bc_plane(bcv) == 'N') then
+               bc_jlo_type(:,:,1) = type
+               bc_jlo_type(:,:,2) = bcv
 
-               else if(i_w == domhi(1)+1) then
-                  bc_ihi_type(j_s:j_n, k_b:k_t,1) = type
-                  bc_ihi_type(j_s:j_n, k_b:k_t,2) = bcv
+            else if(bc_plane(bcv) == 'S') then
+               bc_jhi_type(:,:,1) = type
+               bc_jhi_type(:,:,2) = bcv
 
-                  bc_plane(bcv) = 'W' ! Fluid is to West of bc!
+            else if(bc_plane(bcv) == 'T') then
+               bc_klo_type(:,:,1) = type
+               bc_klo_type(:,:,2) = bcv
 
-               endif
-            endif
+            else if(bc_plane(bcv) == 'B') then
+               bc_khi_type(:,:,1) = type
+               bc_khi_type(:,:,2) = bcv
 
-            if (j_s == j_n) then
-               if(j_s == domlo(2)-1) then
-                  bc_jlo_type(i_w:i_e, k_b:k_t,1) = type
-                  bc_jlo_type(i_w:i_e, k_b:k_t,2) = bcv
-
-                  bc_plane(bcv) = 'N' ! Fluid is to North of bc!
-
-               else if(j_s == domhi(2)+1) then
-                  bc_jhi_type(i_w:i_e, k_b:k_t,1) = type
-                  bc_jhi_type(i_w:i_e, k_b:k_t,2) = bcv
-
-                  bc_plane(bcv) = 'S' ! Fluid is to South of bc!
-
-               endif
-            endif
-
-            if (k_b == k_t) then
-               if(k_b == domlo(3)-1) then
-                  bc_klo_type(i_w:i_e, j_s:j_n,1) = type
-                  bc_klo_type(i_w:i_e, j_s:j_n,2) = bcv
-
-                  bc_plane(bcv) = 'T' ! Fluid is to Top of bc!
-
-               elseif(k_b == domhi(3)+1) then
-                  bc_khi_type(i_w:i_e, j_s:j_n,1) = type
-                  bc_khi_type(i_w:i_e, j_s:j_n,2) = bcv
-
-                  bc_plane(bcv) = 'B' ! Fluid is to Bottom of bc!
-
-               endif
             endif
 
          endif
       enddo
 
-! Edge cases
-! --------------------------------------------------------------------------------------------
-
-      do j=1,ng
-         bc_ilo_type(domlo(2)-j,domlo(3)-ng:domhi(3)+ng,:) = bc_ilo_type(domlo(2),domlo(3)-ng:domhi(3)+ng,:)
-         bc_ihi_type(domlo(2)-j,domlo(3)-ng:domhi(3)+ng,:) = bc_ihi_type(domlo(2),domlo(3)-ng:domhi(3)+ng,:)
-      enddo
-      do j=1,ng
-         bc_ilo_type(domhi(2)+j,domlo(3)-ng:domhi(3)+ng,:) = bc_ilo_type(domhi(2),domlo(3)-ng:domhi(3)+ng,:)
-         bc_ihi_type(domhi(2)+j,domlo(3)-ng:domhi(3)+ng,:) = bc_ihi_type(domhi(2),domlo(3)-ng:domhi(3)+ng,:)
-      enddo
-      do k=1,ng
-         bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-k,:) = bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domlo(3),:)
-         bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3)-k,:) = bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domlo(3),:)
-      enddo
-      do k=1,ng
-         bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domhi(3)+k,:) = bc_ilo_type(domlo(2)-ng:domhi(2)+ng,domhi(3),:)
-         bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domhi(3)+k,:) = bc_ihi_type(domlo(2)-ng:domhi(2)+ng,domhi(3),:)
-      enddo
-
-      do i=1,ng
-         bc_jlo_type(domlo(1)-i,domlo(3)-ng:domhi(3)+ng,:) = bc_jlo_type(domlo(1),domlo(3)-ng:domhi(3)+ng,:)
-         bc_jhi_type(domlo(1)-i,domlo(3)-ng:domhi(3)+ng,:) = bc_jhi_type(domlo(1),domlo(3)-ng:domhi(3)+ng,:)
-      enddo
-      do i=1,ng
-         bc_jlo_type(domhi(1)+i,domlo(3)-ng:domhi(3)+ng,:) = bc_jlo_type(domhi(1),domlo(3)-ng:domhi(3)+ng,:)
-         bc_jhi_type(domhi(1)+i,domlo(3)-ng:domhi(3)+ng,:) = bc_jhi_type(domhi(1),domlo(3)-ng:domhi(3)+ng,:)
-      enddo
-      do k=1,ng
-         bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-k,:) = bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domlo(3),:)
-         bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3)-k,:) = bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domlo(3),:)
-      enddo
-      do k=1,ng
-         bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domhi(3)+k,:) = bc_jlo_type(domlo(1)-ng:domhi(1)+ng,domhi(3),:)
-         bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domhi(3)+k,:) = bc_jhi_type(domlo(1)-ng:domhi(1)+ng,domhi(3),:)
-      enddo
-
-      do i=1,ng
-         bc_klo_type(domlo(1)-i,domlo(2)-ng:domhi(2)+ng,:) = bc_klo_type(domlo(1),domlo(2)-ng:domhi(2)+ng,:)
-         bc_khi_type(domlo(1)-i,domlo(2)-ng:domhi(2)+ng,:) = bc_khi_type(domlo(1),domlo(2)-ng:domhi(2)+ng,:)
-      enddo
-      do i=1,ng
-         bc_klo_type(domhi(1)+i,domlo(2)-ng:domhi(2)+ng,:) = bc_klo_type(domhi(1),domlo(2)-ng:domhi(2)+ng,:)
-         bc_khi_type(domhi(1)+i,domlo(2)-ng:domhi(2)+ng,:) = bc_khi_type(domhi(1),domlo(2)-ng:domhi(2)+ng,:)
-      enddo
-      do j=1,ng
-         bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-j,:) = bc_klo_type(domlo(1)-ng:domhi(1)+ng,domlo(2),:)
-         bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2)-j,:) = bc_khi_type(domlo(1)-ng:domhi(1)+ng,domlo(2),:)
-      enddo
-      do j=1,ng
-         bc_klo_type(domlo(1)-ng:domhi(1)+ng,domhi(2)+j,:) = bc_klo_type(domlo(1)-ng:domhi(1)+ng,domhi(2),:)
-         bc_khi_type(domlo(1)-ng:domhi(1)+ng,domhi(2)+j,:) = bc_khi_type(domlo(1)-ng:domhi(1)+ng,domhi(2),:)
-      enddo
-
    end subroutine set_bc_type
+
+SUBROUTINE SET_BC_MOD(PID, PTYPE, PLO, PHI, PLOC, PPG, PVEL) &
+     BIND(C,NAME='set_bc_mod')
+
+  USE BC, ONLY: BC_DEFINED
+  USE BC, ONLY: BC_TYPE, BC_PLANE
+
+  USE BC, ONLY: NSW_, PINF_, POUT_, MINF_
+
+  USE BC, ONLY: BC_CENTER
+  USE BC, ONLY: BC_NORMAL
+
+  USE BC, ONLY: BC_P
+  USE BC, ONLY: BC_U, BC_V, BC_W
+
+  IMPLICIT NONE
+
+  INTEGER(C_INT), INTENT(IN   ) :: PID, PTYPE
+  REAL(RT),       INTENT(IN   ) :: PLO(3), PHI(3), PLOC, PPG, PVEL(3)
+
+  REAL(RT), PARAMETER :: OFFSET = 1.0D-15
+
+  SELECT CASE(PID)
+
+  CASE(1); BC_PLANE(PID) = 'E'
+
+     BC_CENTER(PID,1) = PLOC + OFFSET
+     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
+     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+
+     BC_NORMAL(PID,:) = (/ 1.0D0, 0.0D0, 0.0D0/)
+
+  CASE(2); BC_PLANE(PID) = 'W'
+
+     BC_CENTER(PID,1) = PLOC - OFFSET
+     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
+     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+
+     BC_NORMAL(PID,:) = (/-1.0D0, 0.0D0, 0.0D0/)
+
+  CASE(3); BC_PLANE(PID) = 'N'
+
+     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
+     BC_CENTER(PID,2) = PLOC + OFFSET
+     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+
+     BC_NORMAL(PID,:) = (/ 0.0D0, 1.0D0, 0.0D0/)
+
+  CASE(4); BC_PLANE(PID) = 'S'
+
+     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
+     BC_CENTER(PID,2) = PLOC - OFFSET
+     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+
+     BC_NORMAL(PID,:) = (/ 0.0D0,-1.0D0, 0.0D0/)
+
+  CASE(5); BC_PLANE(PID) = 'T'
+
+     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
+     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
+     BC_CENTER(PID,3) = PLOC + OFFSET
+
+     BC_NORMAL(PID,:) = (/ 0.0D0, 0.0D0, 1.0D0/)
+
+  CASE(6); BC_PLANE(PID) = 'B'
+
+     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
+     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
+     BC_CENTER(PID,3) = PLOC - OFFSET
+
+     BC_NORMAL(PID,:) = (/ 0.0D0, 0.0D0,-1.0D0/)
+
+  END SELECT
+
+
+  SELECT CASE(PTYPE)
+
+  CASE(MINF_)
+
+     BC_TYPE(PID) = 'MI'
+
+     BC_P(PID) =   PPG;
+
+     BC_U(PID) = PVEL(1);
+     BC_V(PID) = PVEL(2);
+     BC_W(PID) = PVEL(3);
+
+     BC_DEFINED(PID) = .TRUE.
+
+  CASE(PINF_)
+
+     BC_TYPE(PID) = 'PI'
+
+     BC_P(PID) =   PPG;
+
+     BC_DEFINED(PID) = .TRUE.
+
+  CASE(POUT_)
+
+     BC_TYPE(PID) = 'PO'
+
+     BC_P(PID) =   PPG;
+
+     BC_DEFINED(PID) = .TRUE.
+
+  CASE(NSW_)
+
+     BC_TYPE(PID) = 'NSW'
+
+     BC_U(PID) = PVEL(1)
+     BC_V(PID) = PVEL(2)
+     BC_W(PID) = PVEL(3)
+
+     SELECT CASE(PID)
+     CASE(1,2); BC_U(PID) = 0.0D0;
+     CASE(3,4); BC_V(PID) = 0.0D0;
+     CASE(5,6); BC_W(PID) = 0.0D0;
+     END SELECT
+
+     BC_DEFINED(PID) = .TRUE.
+
+  CASE DEFAULT
+
+     BC_DEFINED(PID) = .FALSE.
+
+  END SELECT
+
+
+END SUBROUTINE SET_BC_MOD
+
 end module set_bc_type_module
