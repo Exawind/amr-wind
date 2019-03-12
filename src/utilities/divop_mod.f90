@@ -10,6 +10,7 @@ module divop_mod
 
 contains
 
+   !
    ! Compute the divergence operator for EB geometries
    !
    ! OUTPUTS:
@@ -26,24 +27,24 @@ contains
    !
    !
    !
-   subroutine compute_divop ( lo, hi, &
-                             div, dlo, dhi, &
-                             vel,vllo,vlhi, &
-                             fx, fxlo, fxhi, &
-                             fy, fylo, fyhi, &
-                             fz, fzlo, fzhi, &
-                             afrac_x, axlo, axhi, &
-                             afrac_y, aylo, ayhi, &
-                             afrac_z, azlo, azhi, &
-                             cent_x,  cxlo, cxhi, &
-                             cent_y,  cylo, cyhi, &
-                             cent_z,  czlo, czhi, &
-                             flags,    flo,  fhi, &
-                             vfrac,   vflo, vfhi, &
-                             bcent,    blo,  bhi, &
-                             domlo, domhi,        &
-                             dx, ng, eta,          &
-                             do_explicit_diffusion ) bind(C)
+   subroutine compute_divop(lo, hi, &
+                            div, dlo, dhi,       &
+                            vel,vllo,vlhi,       &
+                            fx, fxlo, fxhi,      &
+                            fy, fylo, fyhi,      &
+                            fz, fzlo, fzhi,      &
+                            afrac_x, axlo, axhi, &
+                            afrac_y, aylo, ayhi, &
+                            afrac_z, azlo, azhi, &
+                            cent_x,  cxlo, cxhi, &
+                            cent_y,  cylo, cyhi, &
+                            cent_z,  czlo, czhi, &
+                            flags,    flo,  fhi, &
+                            vfrac,   vflo, vfhi, &
+                            bcent,    blo,  bhi, &
+                            domlo, domhi,        &
+                            dx, ng, eta,         &
+                            do_explicit_diffusion) bind(C)
 
       use bc
       use eb_interpolation_mod, only: interp_to_face_centroid
@@ -105,7 +106,7 @@ contains
       ! If true  then we include all the diffusive terms in this explicit result
       ! If false then we include all only the off-diagonal terms here -- we do this
       !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in), optional :: do_explicit_diffusion
+      integer(c_int),  intent(in   ), optional :: do_explicit_diffusion
 
       ! Conservative div and EB stuff
       real(ar)  ::    &
@@ -114,11 +115,12 @@ contains
            &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
            &  mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
 
+      ! Local variables
       real(ar), allocatable :: divdiff_w(:,:)
       integer(c_int)        :: i, j, k, n, nbr(-1:1,-1:1,-1:1)
       integer(c_int)        :: nwalls
       real(ar)              :: idx, idy, idz
-      logical               :: is_viscous
+      logical               :: is_dirichlet
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -128,10 +130,10 @@ contains
       if (ng < 5) call amrex_abort( "compute_divop(): ng must be >= 5")
 
       ! Check if we are computing divergence for viscous term
-      if ( present(eta) ) then
-         is_viscous = .true.
+      if (present(eta)) then
+         is_dirichlet = .true.
       else
-         is_viscous = .false.
+         is_dirichlet = .false.
       end if
 
       if ( abs(dx(1) - dx(2)) > epsilon(0.0_ar) .or.&
@@ -144,7 +146,7 @@ contains
       ! Allocate arrays to host viscous wall fluxes
       !
       nwalls = 0
-      if (is_viscous) then
+      if (is_dirichlet) then
          do k = lo(3)-2, hi(3)+2
             do j = lo(2)-2, hi(2)+2
                do i = lo(1)-2, hi(1)+2
@@ -229,12 +231,13 @@ contains
                         ! Add viscous wall fluxes (compute three components only
                         ! during the first pass, i.e. for n=1
                         iwall = iwall + 1
-                        if (is_viscous) then
+                        if (is_dirichlet) then
                            if (n==1) then
-                              call compute_diff_wallflux(divdiff_w(:,iwall), &
-                                                         dx, i, j, k, &
-                                                         vel, vllo, vlhi, &
-                                                         bcent, blo, bhi, &
+                              call compute_diff_wallflux(divdiff_w(:,iwall),  &
+                                                         dx, i, j, k,         &
+                                                         vel, vllo, vlhi,     &
+                                                         bcent, blo, bhi,     &
+                                                         flags, flo, fhi,     &
                                                          afrac_x, axlo, axhi, &
                                                          afrac_y, aylo, ayhi, &
                                                          afrac_z, azlo, azhi, &
@@ -277,7 +280,7 @@ contains
                               do ii = -1, 1
                                  ! Check if we have to include also cell (i,j,k) itself
                                  if ( ( ii /= 0 .or. jj /= 0 .or. kk /= 0) &
-                                     .and. (nbr(ii,jj,kk)==1) ) then
+                                    .and. (nbr(ii,jj,kk)==1) ) then
                                     vfrac_mask  = vfrac(i+ii,j+jj,k+kk) * mask(i+ii,j+jj,k+kk)
                                     vtot        = vtot  + vfrac_mask
                                     divnc       = divnc + vfrac_mask * divc(i+ii,j+jj,k+kk)
@@ -344,7 +347,7 @@ contains
          end block
 
          ! ****************************************************
-         ! Resume the correct sign, AKA return the negative
+         ! Return the correct sign, AKA the negative
          ! ****************************************************
          do k = lo(3), hi(3)
             do j = lo(2), hi(2)
@@ -359,7 +362,7 @@ contains
       !
       ! Delete working arrays
       !
-      if (is_viscous) deallocate(divdiff_w)
+      if (is_dirichlet) deallocate(divdiff_w)
 
    end subroutine compute_divop
 
