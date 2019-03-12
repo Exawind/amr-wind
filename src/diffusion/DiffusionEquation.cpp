@@ -217,8 +217,8 @@ void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab
 
     // Directions
     int xdir = 1;
-    int ydir = 1;
-    int zdir = 1;
+    int ydir = 2;
+    int zdir = 3;
 
     Vector<Geometry> geom = amrcore->Geom();
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
