@@ -15,26 +15,25 @@ module eb_diffusion_mod
 
 contains
 
-   subroutine compute_divtau_eb ( lo, hi,  &
-                                 divtau, dlo, dhi,    &
-                                 vel_in, vinlo, vinhi,    &
-                                 eta, ro,      &
-                                 slo, shi,            &
-                                 flags,    flo,  fhi, &
-                                 afrac_x, axlo, axhi, &
-                                 afrac_y, aylo, ayhi, &
-                                 afrac_z, azlo, azhi, &
-                                 cent_x,  cxlo, cxhi, &
-                                 cent_y,  cylo, cyhi, &
-                                 cent_z,  czlo, czhi, &
-                                 vfrac,   vflo, vfhi, &
-                                 bcent,    blo,  bhi, &
-                                 domlo,  domhi,       &
-                                 bc_ilo, bc_ihi,      &
-                                 bc_jlo, bc_jhi,      &
-                                 bc_klo, bc_khi,      &
-                                 dx, ng,              &
-                                 do_explicit_diffusion ) bind(C)
+   subroutine compute_divtau_eb(lo, hi,  &
+                                divtau, dlo, dhi,    &
+                                vel_in, vinlo, vinhi,&
+                                eta, ro, slo, shi,   &
+                                flags,    flo,  fhi, &
+                                afrac_x, axlo, axhi, &
+                                afrac_y, aylo, ayhi, &
+                                afrac_z, azlo, azhi, &
+                                cent_x,  cxlo, cxhi, &
+                                cent_y,  cylo, cyhi, &
+                                cent_z,  czlo, czhi, &
+                                vfrac,   vflo, vfhi, &
+                                bcent,    blo,  bhi, &
+                                domlo,  domhi,       &
+                                bc_ilo, bc_ihi,      &
+                                bc_jlo, bc_jhi,      &
+                                bc_klo, bc_khi,      &
+                                dx, ng,              &
+                                do_explicit_diffusion) bind(C)
 
       use diffusion_mod, only: fill_vel_diff_bc
       use divop_mod,     only: compute_divop
@@ -67,7 +66,7 @@ contains
       real(rt), intent(in   ) ::                                  &
            &  vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
            &      ro(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
-           &      eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
+           &     eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
            & afrac_x( axlo(1): axhi(1), axlo(2): axhi(2), axlo(3): axhi(3)  ), &
            & afrac_y( aylo(1): ayhi(1), aylo(2): ayhi(2), aylo(3): ayhi(3)  ), &
            & afrac_z( azlo(1): azhi(1), azlo(2): azhi(2), azlo(3): azhi(3)  ), &
@@ -123,8 +122,8 @@ contains
       call amrex_allocate(vel, vlo(1), vhi(1), vlo(2), vhi(2), vlo(3), vhi(3), 1, 3)
 
       ! Put values into ghost cells so we can easy take derivatives
-      call fill_vel_diff_bc( vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
-                            bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi )
+      call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
+                            bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi)
 
       ! tau_xx, tau_xy, tau_xz on west faces
       call compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
@@ -193,19 +192,20 @@ contains
    !  The redistribution algorithm in compute_divop() will ignore all the  !
    !  fluxes outside the domain, EXCEPT when the boundary is periodic.     !
    !  Therefore we always compute the fluxes in the whole ghost region,    !
-   !  regardless of the BC. compute_divop() will take care to ignore what  !
+   !  regardless of the BC. compute_divop() will take care of ignore what  !
    !  is not needed.                                                       !
-   !                                                                       !   
-   !<$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$>!   
+   !                                                                       !
+   !<$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$>!
 
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    subroutine compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, &
+                            do_explicit_diffusion)
 
-      use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
+      use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
       integer,  intent(in   ) ::  vlo(3),  vhi(3)
       integer,  intent(in   ) ::  slo(3),  shi(3)
@@ -247,7 +247,7 @@ contains
 
       do k = lo(3)-ng, hi(3)+ng
          do j = lo(2)-ng, hi(2)+ng
-            do i = lo(1)-ng, hi(1)+ng+1  
+            do i = lo(1)-ng, hi(1)+ng+1
 
                dudx = (vel(i,j,k,1) - vel(i-1,j,k,1))*idx
                dvdx = (vel(i,j,k,2) - vel(i-1,j,k,2))*idx
@@ -270,12 +270,12 @@ contains
                wlo = weights(jlop-jlom)
 
                dudy = (0.5d0*idy) * &
-                      ((vel(i  ,jhip,k,1)-vel(i  ,jhim,k,1))*whi &
-                       +(vel(i-1,jlop,k,1)-vel(i-1,jlom,k,1))*wlo)
+                  ((vel(i  ,jhip,k,1)-vel(i  ,jhim,k,1))*whi &
+                  +(vel(i-1,jlop,k,1)-vel(i-1,jlom,k,1))*wlo)
 
                dvdy = (0.5d0*idy) * &
-                      ((vel(i  ,jhip,k,2)-vel(i  ,jhim,k,2))*whi &
-                       +(vel(i-1,jlop,k,2)-vel(i-1,jlom,k,2))*wlo)
+                  ((vel(i  ,jhip,k,2)-vel(i  ,jhim,k,2))*whi &
+                  +(vel(i-1,jlop,k,2)-vel(i-1,jlom,k,2))*wlo)
 
                khip = k + get_neighbor_cells_int_single(flag(i  ,j,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i  ,j,k),0,0,-1)
@@ -294,18 +294,18 @@ contains
                wlo = weights(klop-klom)
 
                dudz = (0.5d0*idz) * &
-                      ((vel(i  ,j,khip,1)-vel(i  ,j,khim,1))*whi &
-                       +(vel(i-1,j,klop,1)-vel(i-1,j,klom,1))*wlo)
+                  ((vel(i  ,j,khip,1)-vel(i  ,j,khim,1))*whi &
+                  +(vel(i-1,j,klop,1)-vel(i-1,j,klom,1))*wlo)
 
                dwdz = (0.5d0*idz) * &
-                      ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
-                       +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
+                  ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
+                  +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
 
-               eta_w     = half * (    eta(i,j,k) +     eta(i-1,j,k))
+               eta_w = half * (eta(i,j,k) + eta(i-1,j,k))
 
-               tau_x(i,j,k,1) = eta_w*(dudx + dudx) 
-               tau_x(i,j,k,2) = eta_w*(dudy + dvdx)
-               tau_x(i,j,k,3) = eta_w*(dudz + dwdx)
+               tau_x(i,j,k,1) = eta_w * (dudx + dudx)
+               tau_x(i,j,k,2) = eta_w * (dudy + dvdx)
+               tau_x(i,j,k,3) = eta_w * (dudz + dwdx)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
@@ -328,7 +328,8 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_y(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, &
+                            do_explicit_diffusion)
 
       use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
@@ -372,7 +373,7 @@ contains
 
       do k = lo(3)-ng, hi(3)+ng
          do j = lo(2)-ng, hi(2)+ng+1
-            do i = lo(1)-ng, hi(1)+ng  
+            do i = lo(1)-ng, hi(1)+ng
 
                dudy = (vel(i,j,k,1) - vel(i,j-1,k,1))*idy
                dvdy = (vel(i,j,k,2) - vel(i,j-1,k,2))*idy
@@ -395,12 +396,12 @@ contains
                wlo = weights(ilop-ilom)
 
                dudx = (0.5d0*idx) * &
-                      ((vel(ihip,j  ,k,1)-vel(ihim,j  ,k,1))*whi &
-                       +(vel(ilop,j-1,k,1)-vel(ilom,j-1,k,1))*wlo)
+                  ((vel(ihip,j  ,k,1)-vel(ihim,j  ,k,1))*whi &
+                  +(vel(ilop,j-1,k,1)-vel(ilom,j-1,k,1))*wlo)
 
                dvdx = (0.5d0*idx) * &
-                      ((vel(ihip,j  ,k,2)-vel(ihim,j  ,k,2))*whi &
-                       +(vel(ilop,j-1,k,2)-vel(ilom,j-1,k,2))*wlo)
+                  ((vel(ihip,j  ,k,2)-vel(ihim,j  ,k,2))*whi &
+                  +(vel(ilop,j-1,k,2)-vel(ilom,j-1,k,2))*wlo)
 
                khip = k + get_neighbor_cells_int_single(flag(i,j  ,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i,j  ,k),0,0,-1)
@@ -419,27 +420,27 @@ contains
                wlo = weights(klop-klom)
 
                dvdz = (0.5d0*idz) * &
-                      ((vel(i,j  ,khip,2)-vel(i,j  ,khim,2))*whi &
-                       +(vel(i,j-1,klop,2)-vel(i,j-1,klom,2))*wlo)
+                  ((vel(i,j  ,khip,2)-vel(i,j  ,khim,2))*whi &
+                  +(vel(i,j-1,klop,2)-vel(i,j-1,klom,2))*wlo)
 
                dwdz = (0.5d0*idz) * &
-                      ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
-                       +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
+                  ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
+                  +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
 
-               eta_s     = half * (    eta(i,j,k) +     eta(i,j-1,k))
+               eta_s = half * (eta(i,j,k) + eta(i,j-1,k))
 
-               tau_y(i,j,k,1) = eta_s*(dudy + dvdx)
-               tau_y(i,j,k,2) = eta_s*(dvdy + dvdy) 
-               tau_y(i,j,k,3) = eta_s*(dwdy + dvdz)
+               tau_y(i,j,k,1) = eta_s * (dudy + dvdx)
+               tau_y(i,j,k,2) = eta_s * (dvdy + dvdy)
+               tau_y(i,j,k,3) = eta_s * (dwdy + dvdz)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
                   ! Subtract diagonal terms of stress tensor, to be obtained through
                   ! implicit solve instead.
                   !
-                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - eta_s*dudy
-                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - eta_s*dvdy
-                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - eta_s*dwdy
+                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - eta_s * dudy
+                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - eta_s * dvdy
+                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - eta_s * dwdy
                end if
 
             end do
@@ -454,9 +455,10 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_z(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, & 
+                            do_explicit_diffusion)
 
-      use amrex_ebcellflag_module, only : get_neighbor_cells_int_single
+      use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
       integer,  intent(in   ) ::  vlo(3),  vhi(3)
       integer,  intent(in   ) ::  slo(3),  shi(3)
@@ -498,7 +500,7 @@ contains
 
       do k = lo(3)-ng, hi(3)+ng+1
          do j = lo(2)-ng, hi(2)+ng
-            do i = lo(1)-ng, hi(1)+ng     
+            do i = lo(1)-ng, hi(1)+ng
 
                dudz = (vel(i,j,k,1) - vel(i,j,k-1,1))*idz
                dvdz = (vel(i,j,k,2) - vel(i,j,k-1,2))*idz
@@ -521,12 +523,12 @@ contains
                wlo = weights(ilop-ilom)
 
                dudx = (0.5d0*idx) * &
-                      ((vel(ihip,j,k  ,1)-vel(ihim,j,k  ,1))*whi &
-                       +(vel(ilop,j,k-1,1)-vel(ilom,j,k-1,1))*wlo)
+                  ((vel(ihip,j,k  ,1)-vel(ihim,j,k  ,1))*whi &
+                  +(vel(ilop,j,k-1,1)-vel(ilom,j,k-1,1))*wlo)
+
                dwdx = (0.5d0*idx) * &
-                      
-                      ((vel(ihip,j,k  ,3)-vel(ihim,j,k  ,3))*whi &
-                       +(vel(ilop,j,k-1,3)-vel(ilom,j,k-1,3))*wlo)
+                  ((vel(ihip,j,k  ,3)-vel(ihim,j,k  ,3))*whi &
+                  +(vel(ilop,j,k-1,3)-vel(ilom,j,k-1,3))*wlo)
 
                jhip = j + get_neighbor_cells_int_single(flag(i,j,k  ),0 ,1,0)
                jhim = j - get_neighbor_cells_int_single(flag(i,j,k  ),0,-1,0)
@@ -545,27 +547,27 @@ contains
                wlo = weights(jlop-jlom)
 
                dvdy = (0.5d0*idy) * &
-                      ((vel(i,jhip,k  ,2)-vel(i,jhim,k  ,2))*whi &
-                       +(vel(i,jlop,k-1,2)-vel(i,jlom,k-1,2))*wlo)
+                  ((vel(i,jhip,k  ,2)-vel(i,jhim,k  ,2))*whi &
+                  +(vel(i,jlop,k-1,2)-vel(i,jlom,k-1,2))*wlo)
 
                dwdy = (0.5d0*idy) * &
-                      ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
-                       +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
+                  ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
+                  +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
 
-               eta_b     = half * (    eta(i,j,k) +     eta(i,j,k-1))
+               eta_b = half * (eta(i,j,k) + eta(i,j,k-1))
 
-               tau_z(i,j,k,1) = eta_b*(dudz + dwdx)
-               tau_z(i,j,k,2) = eta_b*(dvdz + dwdy)
-               tau_z(i,j,k,3) = eta_b*(dwdz + dwdz)
+               tau_z(i,j,k,1) = eta_b * (dudz + dwdx)
+               tau_z(i,j,k,2) = eta_b * (dvdz + dwdy)
+               tau_z(i,j,k,3) = eta_b * (dwdz + dwdz)
 
                if (do_explicit_diffusion .eq. 0) then
                   !
                   ! Subtract diagonal terms of stress tensor, to be obtained through
                   ! implicit solve instead.
                   !
-                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - eta_b*dudz
-                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - eta_b*dvdz
-                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - eta_b*dwdz
+                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - eta_b * dudz
+                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - eta_b * dvdz
+                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - eta_b * dwdz
                end if
 
             end do
