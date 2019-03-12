@@ -277,13 +277,13 @@ void incflo::ApplyPredictor()
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
-
     FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
+        FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
@@ -386,13 +386,13 @@ void incflo::ApplyCorrector()
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
-
     FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
+        FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
