@@ -38,20 +38,18 @@ contains
    !  txy =  eta * ( du/dy + dv/dx )
    !  txz =  eta * ( du/dz + dw/dx )
    !
-   subroutine compute_divtau(lo, hi, &
-                             divtau, dlo, dhi, &
-                             vel_in, vinlo, vinhi, &
-                             eta, ro, slo, shi, &
-                             domlo, domhi, &
+   subroutine compute_divtau(lo, hi,                   &
+                             divtau, dlo, dhi,         &
+                             vel_in, vinlo, vinhi,     &
+                             eta, ro, slo, shi,        &
+                             domlo, domhi,             &
                              bc_ilo_type, bc_ihi_type, &
                              bc_jlo_type, bc_jhi_type, &
                              bc_klo_type, bc_khi_type, &
-                             dx, ng, &
-                             do_explicit_diffusion) bind(C)
-
+                             dx, ng, do_explicit_diffusion) bind(C)
 
       ! Loops bounds (cell-centered)
-      integer(c_int),  intent(in   ) :: lo(3),  hi(3)
+      integer(c_int),  intent(in   ) :: lo(3), hi(3)
 
       ! Number of ghost cells
       integer(c_int),  intent(in   ) :: ng
@@ -63,8 +61,8 @@ contains
 
       ! Array bounds
       integer(c_int),  intent(in   ) :: vinlo(3), vinhi(3)
-      integer(c_int),  intent(in   ) :: slo(3), shi(3)
-      integer(c_int),  intent(in   ) :: dlo(3), dhi(3)
+      integer(c_int),  intent(in   ) ::   slo(3),   shi(3)
+      integer(c_int),  intent(in   ) ::   dlo(3),   dhi(3)
       integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
 
       ! Grid
@@ -73,8 +71,8 @@ contains
       ! Arrays
       real(rt),        intent(in   ) :: &
          & vel_in(vinlo(1):vinhi(1),vinlo(2):vinhi(2),vinlo(3):vinhi(3),3), &
-         &     ro(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)),  &
-         &     eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3))
+         &     ro(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  ), &
+         &    eta(  slo(1):  shi(1),  slo(2):  shi(2),  slo(3):  shi(3)  )
 
       real(rt),        intent(inout) ::                        &
          & divtau(  dlo(1):  dhi(1),  dlo(2):  dhi(2),  dlo(3):  dhi(3),3)

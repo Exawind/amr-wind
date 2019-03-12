@@ -1,3 +1,4 @@
+#include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
 
@@ -8,36 +9,36 @@
 using namespace amrex;
 
 //
-// Constructor: 
+// Constructor:
 // We set up everything which doesn't change between timesteps here
 //
 DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
                                      Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory,
-                                     Vector<std::unique_ptr<IArrayBox>>& bc_ilo, 
-                                     Vector<std::unique_ptr<IArrayBox>>& bc_ihi, 
-                                     Vector<std::unique_ptr<IArrayBox>>& bc_jlo, 
-                                     Vector<std::unique_ptr<IArrayBox>>& bc_jhi, 
-                                     Vector<std::unique_ptr<IArrayBox>>& bc_klo, 
+                                     Vector<std::unique_ptr<IArrayBox>>& bc_ilo,
+                                     Vector<std::unique_ptr<IArrayBox>>& bc_ihi,
+                                     Vector<std::unique_ptr<IArrayBox>>& bc_jlo,
+                                     Vector<std::unique_ptr<IArrayBox>>& bc_jhi,
+                                     Vector<std::unique_ptr<IArrayBox>>& bc_klo,
                                      Vector<std::unique_ptr<IArrayBox>>& bc_khi,
                                      int _nghost)
 {
     // Get inputs from ParmParse
 	readParameters();
-    
+
     if(verbose > 0)
     {
         amrex::Print() << "Constructing DiffusionEquation class" << std::endl;
     }
 
     // Set AmrCore and ebfactory based on input, fetch some data needed in constructor
-    amrcore = _amrcore; 
+    amrcore = _amrcore;
     ebfactory = _ebfactory;
     nghost = _nghost;
     Vector<Geometry> geom = amrcore->Geom();
     Vector<BoxArray> grids = amrcore->boxArray();
     Vector<DistributionMapping> dmap = amrcore->DistributionMap();
     int max_level = amrcore->maxLevel();
-    
+
     // Whole domain
     Box domain(geom[0].Domain());
 
@@ -60,7 +61,7 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
         {
             BoxArray edge_ba = grids[lev];
             edge_ba.surroundingNodes(dir);
-            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost, 
+            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost,
                                            MFInfo(), *(*ebfactory)[lev]));
         }
         phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
@@ -102,37 +103,37 @@ void DiffusionEquation::readParameters()
     pp.query( "bottom_solver_type", bottom_solver_type);
 }
 
-void DiffusionEquation::updateInternals(AmrCore* amrcore_in, 
+void DiffusionEquation::updateInternals(AmrCore* amrcore_in,
                                         Vector<std::unique_ptr<EBFArrayBoxFactory>>* ebfactory_in)
 {
     // This must be implemented when we want dynamic meshing
     //
     amrex::Print() << "ERROR: DiffusionEquation::updateInternals() not yet implemented" << std::endl;
-    amrex::Abort(); 
+    amrex::Abort();
 }
 
 //
 // Solve the matrix equation
 //
-void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel, 
-                              const Vector<std::unique_ptr<MultiFab>>& ro, 
-                              const Vector<std::unique_ptr<MultiFab>>& eta, 
+void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
+                              const Vector<std::unique_ptr<MultiFab>>& ro,
+                              const Vector<std::unique_ptr<MultiFab>>& eta,
                               Real dt)
 {
 	BL_PROFILE("DiffusionEquation::solve");
 
     // Update the coefficients of the matrix going into the solve based on the current state of the
-    // simulation. Recall that the relevant matrix is 
+    // simulation. Recall that the relevant matrix is
     //
     //      alpha a - beta div ( b grad )   <--->   rho - dt div ( eta grad )
     //
-    // So the constants and variable coefficients are: 
+    // So the constants and variable coefficients are:
     //
     //      alpha: 1
     //      beta: dt
     //      a: ro
     //      b: eta
-    
+
     // Set alpha and beta
     matrix.setScalars(1.0, dt);
 
@@ -151,14 +152,15 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         {
             b_tmp[dir] = tmp[dir];
         }
+
         // Set the coefficients
         matrix.setBCoeffs(lev, b_tmp);
 
         // This sets the coefficient on the wall and defines it as a homogeneous Dirichlet bc
-        // matrix.setEBHomogDirichlet(lev, *eta[lev]);
+        matrix.setEBHomogDirichlet(lev, *eta[lev]);
 
         // Tells the solver to use the higher order extrapolation to define d(phi)/dn at EB walls
-        // It may not be robust in the presence of small cells so it is an option, not required. 
+        // It may not be robust in the presence of small cells so it is an option, not required.
         // matrix.setEBHODirichlet();
     }
 
@@ -172,7 +174,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
 
         for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
         {
-            // Set the right hand side to equal ro 
+            // Set the right hand side to equal ro
             rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
 
             // Multiply rhs by vel(dir) to get momentum
@@ -184,6 +186,8 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
 
             // By this point we must have filled the Dirichlet values of phi stored in ghost cells
             phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
+            EB_set_covered(*phi[lev], 1.0e40);
+            phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
             matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
         }
 
@@ -211,10 +215,10 @@ void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab
         amrex::Print() << "Updating DiffusionEquation coefficients" << std::endl;
     }
 
-	// Directions
-	int xdir = 1;
-	int ydir = 2;
-	int zdir = 3;
+    // Directions
+    int xdir = 1;
+    int ydir = 1;
+    int zdir = 1;
 
     Vector<Geometry> geom = amrcore->Geom();
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
@@ -247,14 +251,14 @@ void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab
                                 BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
                                 &zdir);
         }
-        // TODO: do we need these? 
-        b[lev][0]->FillBoundary(geom[lev].periodicity());
-        b[lev][1]->FillBoundary(geom[lev].periodicity());
-        b[lev][2]->FillBoundary(geom[lev].periodicity());
+        for(int dir = 0; dir < 3; dir++)
+        {
+            b[lev][dir]->FillBoundary(geom[lev].periodicity());
+        }
     }
 }
 
-// 
+//
 // Set the user-supplied settings for the MLMG solver
 // (this must be done every time step, since MLMG is created after updating matrix
 //
