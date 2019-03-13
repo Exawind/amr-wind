@@ -54,9 +54,6 @@ subroutine fill_bc0(s, slo, shi, &
    integer :: ilo, ihi, jlo, jhi, klo, khi
    integer :: i, j, k
 
-   ! These are the BCS for which we need to extrapolate
-   integer, parameter :: valid_bcs(1) = [NSW_]
-
    !......................................................................
 
    nlft = max(0,domlo(1)-slo(1))
@@ -72,7 +69,7 @@ subroutine fill_bc0(s, slo, shi, &
       do i = 1, nlft
          do k=slo(3),shi(3)
             do j=slo(2),shi(2)
-               if(any(bc_ilo_type(j,k,1) == valid_bcs)) s(ilo-i,j,k) = s(ilo,j,k)
+               if(bc_ilo_type(j,k,1) == NSW_) s(ilo-i,j,k) = s(ilo,j,k)
             end do
          end do
       end do
@@ -83,7 +80,7 @@ subroutine fill_bc0(s, slo, shi, &
       do i = 1, nrgt
          do k=slo(3),shi(3)
             do j=slo(2),shi(2)
-               if(any(bc_ihi_type(j,k,1) == valid_bcs)) s(ihi+i,j,k) = s(ihi,j,k)
+               if(bc_ihi_type(j,k,1) == NSW_) s(ihi+i,j,k) = s(ihi,j,k)
             end do
          end do
       end do
@@ -94,7 +91,7 @@ subroutine fill_bc0(s, slo, shi, &
       do j = 1, nbot
          do k=slo(3),shi(3)
             do i=slo(1),shi(1)
-               if(any(bc_jlo_type(i,k,1) == valid_bcs)) s(i,jlo-j,k) = s(i,jlo,k)
+               if(bc_jlo_type(i,k,1) == NSW_) s(i,jlo-j,k) = s(i,jlo,k)
             end do
          end do
       end do
@@ -105,7 +102,7 @@ subroutine fill_bc0(s, slo, shi, &
       do j = 1, ntop
          do k=slo(3),shi(3)
             do i=slo(1),shi(1)
-               if(any(bc_jhi_type(i,k,1) == valid_bcs)) s(i,jhi+j,k) = s(i,jhi,k)
+               if(bc_jhi_type(i,k,1) == NSW_) s(i,jhi+j,k) = s(i,jhi,k)
             end do
          end do
       end do
@@ -116,7 +113,7 @@ subroutine fill_bc0(s, slo, shi, &
       do k = 1, ndwn
          do j=slo(2),shi(2)
             do i=slo(1),shi(1)
-               if(any(bc_klo_type(i,j,1) == valid_bcs)) s(i,j,klo-k) = s(i,j,klo)
+               if(bc_klo_type(i,j,1) == NSW_) s(i,j,klo-k) = s(i,j,klo)
             end do
          end do
       end do
@@ -127,7 +124,7 @@ subroutine fill_bc0(s, slo, shi, &
       do k = 1, nup
          do j=slo(2),shi(2)
             do i=slo(1),shi(1)
-               if(any(bc_khi_type(i,j,1) == valid_bcs)) s(i,j,khi+k) = s(i,j,khi)
+               if(bc_khi_type(i,j,1) == NSW_) s(i,j,khi+k) = s(i,j,khi)
             end do
          end do
       end do
@@ -140,12 +137,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nlft
       do j = 1, nbot
          do k=slo(3)+ndwn,shi(3)-nup
-            if ( any( bc_ilo_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_ilo_type(j,k,1) == NSW_   .and. &
+             &    bc_jlo_type(i,k,1) == NSW_ ) then
                s(domlo(1)-i,domlo(2)-j,k) = s(domlo(1),domlo(2),k)
-            else if ( any( bc_ilo_type(j,k,1) == valid_bcs ) ) then 
+            else if (  bc_ilo_type(j,k,1) == NSW_ ) then 
                s(domlo(1)-i,domlo(2)-j,k) = s(domlo(1),domlo(2)-j,k)
-            else if ( any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            else if (  bc_jlo_type(i,k,1) == NSW_ ) then
                s(domlo(1)-i,domlo(2)-j,k) = s(domlo(1)-i,domlo(2),k)
             end if
          end do
@@ -155,12 +152,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nlft
       do j = 1, ntop
          do k=slo(3)+ndwn,shi(3)-nup
-            if ( any( bc_ilo_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_jhi_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_ilo_type(j,k,1) == NSW_   .and. &
+             &    bc_jhi_type(i,k,1) == NSW_ ) then
                s(domlo(1)-i,domhi(2)+j,k) = s(domlo(1),domhi(2),k)
-            else if ( any( bc_ilo_type(j,k,1) == valid_bcs ) ) then
+            else if (  bc_ilo_type(j,k,1) == NSW_ ) then
                s(domlo(1)-i,domhi(2)+j,k) = s(domlo(1),domhi(2)+j,k)
-            else if ( any( bc_jhi_type(i,k,1) == valid_bcs ) ) then
+            else if (  bc_jhi_type(i,k,1) == NSW_ ) then
                s(domlo(1)-i,domhi(2)+j,k) = s(domlo(1)-i,domhi(2),k)
             end if
          end do
@@ -170,12 +167,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nlft
       do k = 1, ndwn
          do j=slo(2)+nbot,shi(2)-ntop
-            if ( any( bc_ilo_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_klo_type(i,j,1) == valid_bcs ) ) then 
+            if (  bc_ilo_type(j,k,1) == NSW_   .and. &
+             &    bc_klo_type(i,j,1) == NSW_ ) then 
                s(domlo(1)-i,j,domlo(3)-k) = s(domlo(1),j,domlo(3))
-            else if ( any( bc_ilo_type(j,k,1) == valid_bcs ) ) then
+            else if (  bc_ilo_type(j,k,1) == NSW_ ) then
                s(domlo(1)-i,j,domlo(3)-k) = s(domlo(1),j,domlo(3)-k)
-            else if ( any( bc_klo_type(i,j,1) == valid_bcs ) ) then 
+            else if (  bc_klo_type(i,j,1) == NSW_ ) then 
                s(domlo(1)-i,j,domlo(3)-k) = s(domlo(1)-i,j,domlo(3))
             end if
          end do
@@ -185,12 +182,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nlft
       do k = 1, nup
          do j=slo(2)+nbot,shi(2)-ntop
-            if ( any( bc_ilo_type(j,k,1) == valid_bcs )   .and. & 
-             &   any( bc_khi_type(i,k,1) == valid_bcs ) ) then 
+            if (  bc_ilo_type(j,k,1) == NSW_   .and. & 
+             &    bc_khi_type(i,k,1) == NSW_ ) then 
                s(domlo(1)-i,j,domhi(3)+k) = s(domlo(1),j,domhi(3))
-            else if ( any( bc_ilo_type(j,k,1) == valid_bcs ) ) then 
+            else if (  bc_ilo_type(j,k,1) == NSW_ ) then 
                s(domlo(1)-i,j,domhi(3)+k) = s(domlo(1),j,domhi(3)+k)
-            else if ( any( bc_khi_type(i,k,1) == valid_bcs ) ) then 
+            else if (  bc_khi_type(i,k,1) == NSW_ ) then 
                s(domlo(1)-i,j,domhi(3)+k) = s(domlo(1)-i,j,domhi(3))
             end if
          end do
@@ -200,12 +197,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nrgt
       do j = 1, nbot
          do k=slo(3)+ndwn,shi(3)-nup
-            if ( any( bc_ihi_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_ihi_type(j,k,1) == NSW_   .and. &
+             &    bc_jlo_type(i,k,1) == NSW_ ) then
                s(domhi(1)+i,domlo(2)-j,k) = s(domhi(1),domlo(2),k)
-            else if ( any( bc_ihi_type(j,k,1) == valid_bcs ) ) then
+            else if (  bc_ihi_type(j,k,1) == NSW_ ) then
                s(domhi(1)+i,domlo(2)-j,k) = s(domhi(1),domlo(2)-j,k)
-            else if ( any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            else if (  bc_jlo_type(i,k,1) == NSW_ ) then
                s(domhi(1)+i,domlo(2)-j,k) = s(domhi(1)+i,domlo(2),k)
             end if
          end do
@@ -215,12 +212,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nrgt
       do j = 1, ntop
          do k=slo(3)+ndwn,shi(3)-nup
-            if ( any( bc_ihi_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_jhi_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_ihi_type(j,k,1) == NSW_   .and. &
+             &    bc_jhi_type(i,k,1) == NSW_ ) then
                s(domhi(1)+i,domhi(2)+j,k) = s(domhi(1),domhi(2),k)
-            else if ( any( bc_ihi_type(j,k,1) == valid_bcs ) ) then 
+            else if (  bc_ihi_type(j,k,1) == NSW_ ) then 
                s(domhi(1)+i,domhi(2)+j,k) = s(domhi(1),domhi(2)+j,k)
-            else if ( any( bc_jhi_type(i,k,1) == valid_bcs ) ) then 
+            else if (  bc_jhi_type(i,k,1) == NSW_ ) then 
                s(domhi(1)+i,domhi(2)+j,k) = s(domhi(1)+i,domhi(2),k)
             end if
          end do
@@ -230,12 +227,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nrgt
       do k = 1, ndwn
          do j=slo(2)+nbot,shi(2)-ntop
-            if ( any( bc_ihi_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_klo_type(i,j,1) == valid_bcs ) ) then 
+            if (  bc_ihi_type(j,k,1) == NSW_   .and. &
+             &    bc_klo_type(i,j,1) == NSW_ ) then 
                s(domhi(1)+i,j,domlo(3)-k) = s(domhi(1),j,domlo(3))
-            else if ( any( bc_ihi_type(j,k,1) == valid_bcs ) ) then
+            else if (  bc_ihi_type(j,k,1) == NSW_ ) then
                s(domhi(1)+i,j,domlo(3)-k) = s(domhi(1),j,domlo(3)-k)
-            else if ( any( bc_klo_type(i,j,1) == valid_bcs ) ) then 
+            else if (  bc_klo_type(i,j,1) == NSW_ ) then 
                s(domhi(1)+i,j,domlo(3)-k) = s(domhi(1)+i,j,domlo(3))
             end if
          end do
@@ -245,12 +242,12 @@ subroutine fill_bc0(s, slo, shi, &
    do i = 1, nrgt
       do k = 1, nup
          do j=slo(2)+nbot,shi(2)-ntop
-            if ( any( bc_ihi_type(j,k,1) == valid_bcs )   .and. &
-             &   any( bc_khi_type(i,j,1) == valid_bcs ) ) then 
+            if (  bc_ihi_type(j,k,1) == NSW_   .and. &
+             &    bc_khi_type(i,j,1) == NSW_ ) then 
                s(domhi(1)+i,j,domhi(3)+k) = s(domhi(1),j,domhi(3))
-            else if ( any( bc_ihi_type(j,k,1) == valid_bcs ) ) then
+            else if (  bc_ihi_type(j,k,1) == NSW_ ) then
                s(domhi(1)+i,j,domhi(3)+k) = s(domhi(1),j,domhi(3)+k)
-            else if ( any( bc_khi_type(i,j,1) == valid_bcs ) ) then 
+            else if (  bc_khi_type(i,j,1) == NSW_ ) then 
                s(domhi(1)+i,j,domhi(3)+k) = s(domhi(1)+i,j,domhi(3))
             end if
          end do
@@ -260,12 +257,12 @@ subroutine fill_bc0(s, slo, shi, &
    do j = 1, nbot
       do k = 1, ndwn
          do i=slo(1)+nlft,shi(1)-nrgt
-            if ( any( bc_klo_type(i,j,1) == valid_bcs )   .and. &
-             &   any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_klo_type(i,j,1) == NSW_   .and. &
+             &    bc_jlo_type(i,k,1) == NSW_ ) then
                s(i,domlo(2)-j,domlo(3)-k) = s(i,domlo(2),domlo(3))
-            else if ( any( bc_klo_type(i,j,1) == valid_bcs ) ) then
+            else if (  bc_klo_type(i,j,1) == NSW_ ) then
                s(i,domlo(2)-j,domlo(3)-k) = s(i,domlo(2)-j,domlo(3))
-            else if ( any( bc_jlo_type(i,k,1) == valid_bcs ) ) then
+            else if (  bc_jlo_type(i,k,1) == NSW_ ) then
                s(i,domlo(2)-j,domlo(3)-k) = s(i,domlo(2),domlo(3)-k)
             end if
          end do
@@ -275,12 +272,12 @@ subroutine fill_bc0(s, slo, shi, &
    do j = 1, ntop
       do k = 1, ndwn
          do i=slo(1)+nlft,shi(1)-nrgt
-            if ( any( bc_klo_type(i,j,1) == valid_bcs )   .and. &
-             &   any( bc_jhi_type(i,k,1) == valid_bcs ) ) then
+            if (  bc_klo_type(i,j,1) == NSW_   .and. &
+             &    bc_jhi_type(i,k,1) == NSW_ ) then
                s(i,domhi(2)+j,domlo(3)-k) = s(i,domhi(2),domlo(3))
-            else if ( any( bc_klo_type(i,j,1) == valid_bcs ) ) then
+            else if (  bc_klo_type(i,j,1) == NSW_ ) then
                s(i,domhi(2)+j,domlo(3)-k) = s(i,domhi(2)+j,domlo(3))
-            else if ( any( bc_jhi_type(i,k,1) == valid_bcs ) ) then 
+            else if (  bc_jhi_type(i,k,1) == NSW_ ) then 
                s(i,domhi(2)+j,domlo(3)-k) = s(i,domhi(2),domlo(3)-k)
             end if
          end do
@@ -290,12 +287,12 @@ subroutine fill_bc0(s, slo, shi, &
    do j = 1, nbot
       do k = 1, nup
          do i=slo(1)+nlft,shi(1)-nrgt
-            if ( any( bc_khi_type(i,j,1) == valid_bcs )   .and. &
-             &   any( bc_jlo_type(i,k,1) == valid_bcs ) ) then 
+            if (  bc_khi_type(i,j,1) == NSW_   .and. &
+             &    bc_jlo_type(i,k,1) == NSW_ ) then 
                s(i,domlo(2)-j,domhi(3)+k) = s(i,domlo(2),domhi(3))
-            else if ( any( bc_khi_type(i,j,1) == valid_bcs ) ) then 
+            else if (  bc_khi_type(i,j,1) == NSW_ ) then 
                s(i,domlo(2)-j,domhi(3)+k) = s(i,domlo(2)-j,domhi(3))
-            else if ( any( bc_jlo_type(i,k,1) == valid_bcs ) ) then 
+            else if (  bc_jlo_type(i,k,1) == NSW_ ) then 
                s(i,domlo(2)-j,domhi(3)+k) = s(i,domlo(2),domhi(3)+k)
             end if
          end do
@@ -305,12 +302,12 @@ subroutine fill_bc0(s, slo, shi, &
    do j = 1, ntop
       do k = 1, nup
          do i=slo(1)+nlft,shi(1)-nrgt
-            if ( any( bc_khi_type(i,j,1) == valid_bcs )   .and. &
-               & any( bc_jhi_type(i,k,1) == valid_bcs ) ) then 
+            if (  bc_khi_type(i,j,1) == NSW_   .and. &
+               &  bc_jhi_type(i,k,1) == NSW_ ) then 
                s(i,domhi(2)+j,domhi(3)+k) = s(i,domhi(2),domhi(3))
-            else if ( any( bc_khi_type(i,j,1) == valid_bcs ) ) then 
+            else if (  bc_khi_type(i,j,1) == NSW_ ) then 
                s(i,domhi(2)+j,domhi(3)+k) = s(i,domhi(2)+j,domhi(3))
-            else if ( any( bc_jhi_type(i,k,1) == valid_bcs ) ) then 
+            else if (  bc_jhi_type(i,k,1) == NSW_ ) then 
                s(i,domhi(2)+j,domhi(3)+k) = s(i,domhi(2),domhi(3)+k)
             end if
          end do
