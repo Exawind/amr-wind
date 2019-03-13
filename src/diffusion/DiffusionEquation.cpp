@@ -1,3 +1,4 @@
+#include <AMReX_EBFArrayBox.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
@@ -169,7 +170,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
     {
         if(verbose > 0)
         {
-            amrex::Print() << "Diffusing velocity component " << dir << std::endl;
+            amrex::Print() << "Diffusing velocity component " << dir << "...";
         }
 
         for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
@@ -186,7 +187,6 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
 
             // By this point we must have filled the Dirichlet values of phi stored in ghost cells
             phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
-            EB_set_covered(*phi[lev], 1.0e40);
             phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
             matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
         }
@@ -200,6 +200,12 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
             phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
             vel[lev]->copy(*phi[lev], 0, dir, 1, nghost, nghost);
         }
+
+        if(verbose > 0)
+        {
+            amrex::Print() << " done!" << std::endl;
+        }
+
     }
 }
 
@@ -215,41 +221,58 @@ void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab
         amrex::Print() << "Updating DiffusionEquation coefficients" << std::endl;
     }
 
-    // Directions
-    int xdir = 1;
-    int ydir = 2;
-    int zdir = 3;
-
     Vector<Geometry> geom = amrcore->Geom();
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(*eta[lev], true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*eta[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tileboxes for staggered components
+            Box bx = mfi.tilebox();
             Box ubx = mfi.tilebox(e_x);
             Box vbx = mfi.tilebox(e_y);
             Box wbx = mfi.tilebox(e_z);
 
-            // X direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(ubx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][0]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &xdir);
+            // this is to check efficiently if this tile contains any eb stuff
+            const EBFArrayBox& eta_fab = static_cast<EBFArrayBox const&>((*eta[lev])[mfi]);
+            const EBCellFlagFab& flags = eta_fab.getEBCellFlagFab();
 
-            // Y direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(vbx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][1]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &ydir);
+            if(flags.getType(grow(bx, 0)) == FabType::covered)
+            {
+                b[lev][0]->setVal(1.2345e300, ubx, 0, 1);
+                b[lev][1]->setVal(1.2345e300, vbx, 0, 1);
+                b[lev][2]->setVal(1.2345e300, wbx, 0, 1);
+            }
+            else
+            {
+                const auto& betax_fab = (*(b[lev])[0]).array(mfi);
+                const auto& betay_fab = (*(b[lev])[1]).array(mfi);
+                const auto& betaz_fab = (*(b[lev])[2]).array(mfi);
+                const auto&   eta_arr = eta[lev]->array(mfi);
 
-            // Z direction
-            compute_bcoeff_diff(BL_TO_FORTRAN_BOX(wbx),
-                                BL_TO_FORTRAN_ANYD((*(b[lev][2]))[mfi]),
-                                BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                                &zdir);
+                amrex::ParallelFor(ubx, 
+                      [=] (int i, int j, int k)
+                {
+                    // X-faces
+                    betax_fab(i,j,k) = 0.5 * ( eta_arr(i,j,k) + eta_arr(i-1,j,k) );
+                });
+
+                amrex::ParallelFor(vbx, 
+                      [=] (int i, int j, int k)
+                {
+                    // Y-faces
+                    betay_fab(i,j,k) = 0.5 * ( eta_arr(i,j,k) + eta_arr(i,j-1,k) );
+                });
+
+                amrex::ParallelFor(wbx, 
+                      [=] (int i, int j, int k)
+                {
+                    // Z-faces
+                    betaz_fab(i,j,k) = 0.5 * ( eta_arr(i,j,k) + eta_arr(i,j,k-1) );
+                });
+            }
         }
         for(int dir = 0; dir < 3; dir++)
         {

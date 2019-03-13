@@ -289,46 +289,6 @@ contains
    end subroutine compute_divtau
 
    !
-   ! Compute the coefficients for the diffusion solve
-   ! at the faces of the cells along the "dir"-axis.
-   !
-   subroutine compute_bcoeff_diff ( lo, hi, bcoeff, blo, bhi, &
-                                   eta, slo, shi, dir )  bind(C)
-
-      ! Loop bounds
-      integer(c_int), intent(in   ) ::  lo(3), hi(3)
-
-      ! Array bounds
-      integer(c_int), intent(in   ) :: slo(3),shi(3)
-      integer(c_int), intent(in   ) :: blo(3),bhi(3)
-
-      ! Direction
-      integer(c_int), intent(in   ) :: dir
-
-      ! Arrays
-      real(rt),       intent(in   ) :: &
-         eta(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      real(rt),       intent(  out) :: &
-         bcoeff(blo(1):bhi(1),blo(2):bhi(2),blo(3):bhi(3))
-
-      integer      :: i, j, k, i0, j0, k0
-
-      i0 = e_i(dir,1)
-      j0 = e_i(dir,2)
-      k0 = e_i(dir,3)
-
-      do k = lo(3),hi(3)
-         do j = lo(2),hi(2)
-            do i = lo(1),hi(1)
-               bcoeff(i,j,k) = half * (eta(i,j,k) + eta(i-i0,j-j0,k-k0))
-            end do
-         end do
-      end do
-
-   end subroutine compute_bcoeff_diff
-
-   !
    ! Set the boundary condition for diffusion solve
    !
    ! MLMG expects the BC type to be the uniform on each domain wall.
