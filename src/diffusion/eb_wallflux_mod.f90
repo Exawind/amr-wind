@@ -70,6 +70,7 @@ contains
 
       divw  = zero
       dxinv = one / dx
+
       idx = dxinv(1)
       idy = dxinv(2)
       idz = dxinv(3)
@@ -114,7 +115,7 @@ contains
       ! transform them to d/dx, d/dy and d/dz given transverse derivatives are zero
       ux = dudn * anrmx * idx
       uy = dudn * anrmy * idy
-      ux = dudn * anrmz * idz
+      uz = dudn * anrmz * idz
       !                       
       vx = dvdn * anrmx * idx
       vy = dvdn * anrmy * idy
