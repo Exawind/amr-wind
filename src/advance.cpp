@@ -29,8 +29,8 @@ void incflo::Advance()
     // Fill ghost nodes and reimpose boundary conditions
     for(int lev = 0; lev <= finest_level; lev++)
     {
-         ro[lev]->FillBoundary(geom[lev].periodicity());
-        eta[lev]->FillBoundary(geom[lev].periodicity());
+        FillScalarBC(lev,  *ro[lev]);
+        FillScalarBC(lev, *eta[lev]);
     }
     FillVelocityBC(cur_time, 0);
 

@@ -261,8 +261,8 @@ void incflo::RegridArrays(int lev)
 	// ********************************************************************************
 	// Make sure we fill the ghost cells as appropriate -- this is copied from init_fluid
 	// ********************************************************************************
-     ro[lev]->FillBoundary(geom[lev].periodicity());
-    eta[lev]->FillBoundary(geom[lev].periodicity());
+    FillScalarBC(lev,  *ro[lev]);
+    FillScalarBC(lev, *eta[lev]);
 }
 
 // Resize all arrays when instance of incflo class is constructed.

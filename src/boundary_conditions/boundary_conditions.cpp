@@ -181,6 +181,34 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     }
 }
 
+void incflo::FillScalarBC(int lev, MultiFab& mf)
+{
+    BL_PROFILE("incflo:FillScalarBC()");
+
+    Box domain(geom[lev].Domain());
+    
+    if(!mf.boxArray().ixType().cellCentered())
+        amrex::Error("fill_mf_bc only used for cell-centered arrays!");
+
+    // Impose periodic BCs at domain boundaries and fine-fine copies in the interior
+    mf.FillBoundary(geom[lev].periodicity());
+
+    // Fill all cell-centered arrays with first-order extrapolation at domain boundaries
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for(MFIter mfi(mf, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        const Box& sbx = mf[mfi].box();
+        fill_bc0(mf[mfi].dataPtr(), sbx.loVect(), sbx.hiVect(),
+                 bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
+                 bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
+                 bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
+                 domain.loVect(), domain.hiVect(),
+                 &nghost);
+    }
+}
+
 void incflo::GetInputBCs()
 {
     // Extracts all walls from the inputs file
