@@ -334,11 +334,6 @@ void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
 {
 	BL_PROFILE("MacProjection::compute_b_coeff");
 
-	// Directions
-	int xdir = 1;
-	int ydir = 2;
-	int zdir = 3;
-
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
