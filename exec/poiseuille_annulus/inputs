@@ -8,15 +8,15 @@ steady_state            =   0           # Steady-state solver?
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
+incflo.fixed_dt         =   -1          # Use this constant dt if > 0
 incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   100         # Steps between plot files
+amr.plot_int            =   1000        # Steps between plot files
 amr.plot_per            =   -1          # Steps between plot files
-amr.check_int           =   -1          # Steps between checkpoint files
+amr.check_int           =   5000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -29,8 +29,12 @@ incflo.ro_0             =   1.          # Reference density
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   64  64  16  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   40  40  10  # Grid cells at coarsest AMRlevel
+amr.blocking_factor     =   2           # Blocking factor for grids
 amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.max_grid_size_x     =   10
+amr.max_grid_size_y     =   10
+amr.max_grid_size_z     =   10
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -49,15 +53,11 @@ annulus.inner_center    =   1.0 1.0 0.  # Inner cylinder center
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+incflo.steady_state_tol = 1.e-5       # Tolerance for steady-state
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
 mac.verbose             =   0           # MacProjector
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs
