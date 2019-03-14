@@ -1,22 +1,22 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   -1         # Max (simulated) time to evolve
-max_step                =   10000       # Max number of time steps
+stop_time               =   1.0        # Max (simulated) time to evolve
+max_step                =   -1          # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.0001      # Use this constant dt if > 0
-incflo.cfl              =   0.9         # CFL factor
+incflo.fixed_dt         =   0.01        # Use this constant dt if > 0
+#incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   100         # Steps between plot files
-amr.plot_per            =   -1          # Steps between plot files
-amr.check_int           =   1000        # Steps between checkpoint files
+amr.plot_int            =   -1          # Steps between plot files
+amr.plot_per            =   0.1         # Steps between plot files
+amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -33,15 +33,19 @@ incflo.papa_reg         =   0.001       # Papanastasiou regularisation parameter
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   64  64  8   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   80  80  10  # Grid cells at coarsest AMRlevel
+amr.blocking_factor     =   2           # Blocking factor for grids
 amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.max_grid_size_x     =   10
+amr.max_grid_size_y     =   10
+amr.max_grid_size_z     =   10
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   4.  4.  0.5 # Hi corner coordinates
-geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
 
 incflo.geometry         =   "cylinder"  # Add cylinder
 cylinder.internal_flow  =   true        # Internal vs external flow
@@ -50,17 +54,14 @@ cylinder.direction      =   2           # Choices are {0,1,2}
 cylinder.center         =   2.  2.  0.  # Center
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#          NUMERICAL PARAMETERS         #
+#            SOLVER SETTINGS            #
 #.......................................#
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
+diffusion.verbose       =   0
 mac.verbose             =   0           # MacProjector
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs
