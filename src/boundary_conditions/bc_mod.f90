@@ -33,11 +33,6 @@ module bc
    real(rt) :: bc_v(1:dim_bc) = zero
    real(rt) :: bc_w(1:dim_bc) = zero
 
-   ! Specified pressure drop cyclic boundary
-   real(rt) :: delp_x = zero
-   real(rt) :: delp_y = zero
-   real(rt) :: delp_z = zero
-
    ! Character variable to determine the flow plane of a flow cell
    character :: bc_plane(dim_bc)
 

@@ -12,16 +12,17 @@ contains
 ! "constant", so that they can be accessed from f90 functions.             !
 !**************************************************************************!
 
-   subroutine incflo_get_data(gravity_in, ro_0_in, mu_in, &
+   subroutine incflo_get_data(delp_in, gravity_in, ro_0_in, mu_in, &
                               n_in, tau_0_in, papa_reg_in, eta_0_in, &
                               fluid_model_name, fluid_model_namelength) &
                            bind(C, name="incflo_get_data")
 
-      use constant , only: gravity, ro_0, mu, n, tau_0, papa_reg, eta_0, fluid_model
+      use constant , only: delp, gravity, ro_0, mu, n, tau_0, papa_reg, eta_0, fluid_model
       use read_namelist_module, only: read_namelist
 
       implicit none
 
+      real(rt),               intent(in) :: delp_in(3)
       real(rt),               intent(in) :: gravity_in(3)
       real(rt),               intent(in) :: ro_0_in, mu_in, n_in, tau_0_in, papa_reg_in, eta_0_in
       character(kind=c_char), intent(in) :: fluid_model_name(*)
@@ -31,6 +32,7 @@ contains
 
       call read_namelist()
 
+      delp(:) = delp_in(:)
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in
       mu = mu_in

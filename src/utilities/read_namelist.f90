@@ -11,7 +11,6 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    SUBROUTINE READ_NAMELIST()
 
-      use bc, only: delp_x, delp_y, delp_z
       use ic, only: ic_p, ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
       use utilities, only: blank_line, seek_comment
@@ -110,7 +109,6 @@ contains
 
 ! External namelist files:
 !---------------------------------------------------------------------//
-         include 'geometry.inc'
          include 'initial_conditions.inc'
 
          ERROR = .FALSE.
@@ -122,12 +120,6 @@ contains
 ! Write the current line to a scratch file
 ! and read the scratch file in NAMELIST format
          IF(.NOT.READ_FLAG) RETURN
-
-! Geometry and discretization keywords
-         STRING=''; STRING = '&GEOMETRY '//&
- trim(adjustl(LINE_STRING(1:LINE_LEN)))//'/'
-         READ(STRING, NML=GEOMETRY, IOSTAT=IOS)
-         IF(IOS == 0)  RETURN
 
 ! Initial condtion keywords
          STRING=''; STRING = '&INITIAL_CONDITIONS '//&

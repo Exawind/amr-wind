@@ -22,7 +22,8 @@ amr.restart             =   ""          # Checkpoint to restart from
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
+incflo.gravity          =   0.  0.  0.  # Gravitational force
 incflo.ro_0             =   1.          # Reference density 
 
 incflo.fluid_model      =   "bingham"   # Rheological model

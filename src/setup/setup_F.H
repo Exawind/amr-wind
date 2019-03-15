@@ -10,6 +10,7 @@ extern "C"
     
     void incflo_get_data
         (
+            amrex::Real* delp,
             amrex::Real* gravity,
             amrex::Real* ro_0,
             amrex::Real* mu,

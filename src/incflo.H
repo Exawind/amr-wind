@@ -309,6 +309,7 @@ private:
 	Periodicity p0_periodicity;
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
+    Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
     // Fluid properties

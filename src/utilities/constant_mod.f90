@@ -6,6 +6,9 @@ module constant
 ! Gravitational acceleration
    real(rt) :: gravity(3)
 
+! Prescribed pressure gradient for cyclic BCs
+   real(rt) :: delp(3)
+
 ! Initial density
    real(rt) :: ro_0
 

@@ -45,6 +45,7 @@ void incflo::ReadParameters()
         pp.query("do_initial_proj", do_initial_proj);
 
         // Physics
+		pp.queryarr("delp", delp, 0, 3);
 		pp.queryarr("gravity", gravity, 0, 3);
         pp.query("ro_0", ro_0);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
@@ -132,7 +133,8 @@ void incflo::ReadParameters()
         }
 
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0, 
+        incflo_get_data(delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
+                        &n, &tau_0, &papa_reg, &eta_0, 
                         fluid_model.c_str(), fluid_model.size());
 	}
 }
