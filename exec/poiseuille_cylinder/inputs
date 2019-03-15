@@ -46,7 +46,7 @@ amr.max_grid_size_z     =   1024
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   4.  4.  0.5 # Hi corner coordinates
-geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
 incflo.geometry         =   "cylinder"  # Add cylinder
 cylinder.internal_flow  =   true        # Internal vs external flow
