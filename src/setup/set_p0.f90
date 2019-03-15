@@ -22,7 +22,7 @@
          use amrex_fort_module, only : ar => amrex_real
          use iso_c_binding , only: c_int
          use param   , only: zero, undefined
-         use param   , only: is_defined, is_undefined
+         use param   , only: is_defined
          use param, only: dim_ic
 
          implicit none
@@ -184,7 +184,7 @@
                end if
 
             else
-               if (is_undefined(ic_p(icv))) goto 60
+               if (.not. is_defined(ic_p(icv))) goto 60
                if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
                   p0(:,:,:) = ic_p(icv)
                   gp0(:) = 0.d0
@@ -257,7 +257,7 @@
 
          ! Either a PO was not specified and/or a PO was specified but not the
          ! pressure at the outlet
-         if (is_undefined(pj)) then
+         if (.not. is_defined(pj)) then
             p0 = zero
             gp0  = zero
             goto 100

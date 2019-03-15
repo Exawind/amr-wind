@@ -17,25 +17,22 @@ contains
                           bc_klo_type, bc_khi_type, &
                           domlo, domhi, dx, dy, dz, &
                           xlength, ylength, zlength,&
-                          ng) &
-               bind(c,name='set_bc_type')
+                          ng) bind(c,name='set_bc_type')
 
       use bc, only: bc_defined, bc_type, bc_plane
-
-      use bc, only: nsw_, pinf_, pout_, minf_
-      use bc, only: undef_cell
       use bc, only: cyclic_x, cyclic_y, cyclic_z
+      use bc, only: minf_, nsw_, pinf_, pout_
+      use bc, only: undef_cell
 
       use param, only: dim_bc
-      use param, only: equal
 
       implicit none
 
       integer(c_int), intent(in   ) :: ng
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
-      real(rt), intent(in) :: dx, dy, dz
-      real(rt)  , intent(in) :: xlength, ylength, zlength
+      real(rt),       intent(in   ) :: dx, dy, dz
+      real(rt)  ,     intent(in   ) :: xlength, ylength, zlength
 
       integer(c_int), intent(inout) :: bc_ilo_type&
          (domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2)

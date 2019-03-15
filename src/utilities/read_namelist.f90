@@ -11,13 +11,11 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    SUBROUTINE READ_NAMELIST()
 
-      use bc
-      use ic, only: ic_p
-      use ic, only: ic_u, ic_v, ic_w
+      use bc, only: delp_x, delp_y, delp_z
+      use ic, only: ic_p, ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
       use utilities, only: blank_line, seek_comment
       use utilities, only: make_upper_case, replace_tab
-      use param, only: undefined
 
       use remove_comment_module, only: remove_comment
       use remove_comment_module, only: remove_par_blanks

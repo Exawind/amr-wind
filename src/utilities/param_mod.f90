@@ -8,7 +8,6 @@ module param
 
 ! Parameters for testing if user input was specifed.
    real(rt),  parameter :: undefined = 9.87654321d31
-   character, parameter :: undefined_c = ' '
 
 ! Cutoffs for large and small numbers
    real(rt), parameter :: my_huge  = 1.0d20
@@ -23,17 +22,12 @@ contains
 
    pure logical function is_defined(x)
       real(rt), intent(in) :: x
-      is_defined = .not.equal(x, undefined)
+      is_defined = not_equal(x, undefined)
    end function is_defined
 
-   pure logical function is_undefined(x)
-      real(rt), intent(in) :: x
-      is_undefined = equal(x, undefined)
-   end function is_undefined
-
-   pure logical function equal(x, y)
+   pure logical function not_equal(x, y)
       real(rt), intent(in) :: x, y
-      equal = (abs(x-y) < epsilon(x))
-   end function equal
+      not_equal = (abs(x-y) >= epsilon(x))
+   end function not_equal
 
 end module param

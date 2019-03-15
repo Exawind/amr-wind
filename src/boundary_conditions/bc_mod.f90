@@ -9,10 +9,10 @@ module bc
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   use param, only: dim_bc, undefined, undefined_c, zero
+   use param, only: dim_bc, undefined, zero
 
    ! Type of boundary:
-   character(len=16) :: bc_type(1:dim_bc) = undefined_c
+   character(len=16) :: bc_type(dim_bc)
 
    ! Flags for periodic boundary conditions
    logical :: cyclic_x = .false.
@@ -39,7 +39,7 @@ module bc
    real(rt) :: delp_z = zero
 
    ! Character variable to determine the flow plane of a flow cell
-   character :: bc_plane(1:dim_bc) = undefined_c
+   character :: bc_plane(dim_bc)
 
    ! Cell flag definitions
    integer, parameter :: undef_cell =   0 ! undefined
