@@ -176,6 +176,12 @@ void incflo::ComputeDt(int initialisation)
         }
     }
 
+    // Make sure the timestep is not set to zero after a plot_per stop
+    if(dt_new < eps)
+    {
+        dt_new = 0.5 * dt;
+    }
+
     // If using fixed time step, check CFL condition and give warning if not satisfied
 	if(fixed_dt > 0.0)
 	{
