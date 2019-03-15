@@ -25,11 +25,6 @@ module diffusion_mod
    public compute_divtau
    public fill_vel_diff_bc
 
-   ! Define here the unit vectors
-   ! This is used to shift index  based on how the variable is staggered
-   ! Check e_x, e_y and e_z in incflo.H
-   integer(c_int), parameter :: e_i(3,3) = reshape ( [1,0,0,0,1,0,0,0,1], [3,3] )
-
 contains
    !
    ! Computes  d(txx)/dx + d(txy)/dy + d(txz)/dz
