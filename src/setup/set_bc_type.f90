@@ -101,133 +101,124 @@ contains
 
    end subroutine set_bc_type
 
-SUBROUTINE SET_BC_MOD(PID, PTYPE, PLO, PHI, PLOC, PPG, PVEL) &
-     BIND(C,NAME='set_bc_mod')
+subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
+     bind(C,name='set_bc_mod')
 
-  USE BC, ONLY: BC_DEFINED
-  USE BC, ONLY: BC_TYPE, BC_PLANE
+  use bc
 
-  USE BC, ONLY: NSW_, PINF_, POUT_, MINF_
+  implicit none
 
-  USE BC, ONLY: BC_CENTER
-  USE BC, ONLY: BC_NORMAL
+  integer(c_int), intent(in   ) :: pid, ptype
+  real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3)
 
-  USE BC, ONLY: BC_P
-  USE BC, ONLY: BC_U, BC_V, BC_W
+  real(rt), parameter :: offset = 1.0d-15
 
-  IMPLICIT NONE
+  select case(pid)
 
-  INTEGER(C_INT), INTENT(IN   ) :: PID, PTYPE
-  REAL(RT),       INTENT(IN   ) :: PLO(3), PHI(3), PLOC, PPG, PVEL(3)
+  case(1); bc_plane(pid) = 'E'
 
-  REAL(RT), PARAMETER :: OFFSET = 1.0D-15
+     bc_center(pid,1) = ploc + offset
+     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
+     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
 
-  SELECT CASE(PID)
+     bc_normal(pid,:) = (/ 1.0d0, 0.0d0, 0.0d0/)
 
-  CASE(1); BC_PLANE(PID) = 'E'
+  case(2); bc_plane(pid) = 'W'
 
-     BC_CENTER(PID,1) = PLOC + OFFSET
-     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
-     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+     bc_center(pid,1) = ploc - offset
+     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
+     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
 
-     BC_NORMAL(PID,:) = (/ 1.0D0, 0.0D0, 0.0D0/)
+     bc_normal(pid,:) = (/-1.0d0, 0.0d0, 0.0d0/)
 
-  CASE(2); BC_PLANE(PID) = 'W'
+  case(3); bc_plane(pid) = 'N'
 
-     BC_CENTER(PID,1) = PLOC - OFFSET
-     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
-     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
+     bc_center(pid,2) = ploc + offset
+     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
 
-     BC_NORMAL(PID,:) = (/-1.0D0, 0.0D0, 0.0D0/)
+     bc_normal(pid,:) = (/ 0.0d0, 1.0d0, 0.0d0/)
 
-  CASE(3); BC_PLANE(PID) = 'N'
+  case(4); bc_plane(pid) = 'S'
 
-     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
-     BC_CENTER(PID,2) = PLOC + OFFSET
-     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
+     bc_center(pid,2) = ploc - offset
+     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
 
-     BC_NORMAL(PID,:) = (/ 0.0D0, 1.0D0, 0.0D0/)
+     bc_normal(pid,:) = (/ 0.0d0,-1.0d0, 0.0d0/)
 
-  CASE(4); BC_PLANE(PID) = 'S'
+  case(5); bc_plane(pid) = 'T'
 
-     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
-     BC_CENTER(PID,2) = PLOC - OFFSET
-     BC_CENTER(PID,3) = PLO(3) + 0.5_RT*(PHI(3) - PLO(3))
+     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
+     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
+     bc_center(pid,3) = ploc + offset
 
-     BC_NORMAL(PID,:) = (/ 0.0D0,-1.0D0, 0.0D0/)
+     bc_normal(pid,:) = (/ 0.0d0, 0.0d0, 1.0d0/)
 
-  CASE(5); BC_PLANE(PID) = 'T'
+  case(6); bc_plane(pid) = 'B'
 
-     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
-     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
-     BC_CENTER(PID,3) = PLOC + OFFSET
+     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
+     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
+     bc_center(pid,3) = ploc - offset
 
-     BC_NORMAL(PID,:) = (/ 0.0D0, 0.0D0, 1.0D0/)
+     bc_normal(pid,:) = (/ 0.0d0, 0.0d0,-1.0d0/)
 
-  CASE(6); BC_PLANE(PID) = 'B'
-
-     BC_CENTER(PID,1) = PLO(1) + 0.5_RT*(PHI(1) - PLO(1))
-     BC_CENTER(PID,2) = PLO(2) + 0.5_RT*(PHI(2) - PLO(2))
-     BC_CENTER(PID,3) = PLOC - OFFSET
-
-     BC_NORMAL(PID,:) = (/ 0.0D0, 0.0D0,-1.0D0/)
-
-  END SELECT
+  end select
 
 
-  SELECT CASE(PTYPE)
+  select case(ptype)
 
-  CASE(MINF_)
+  case(MINF_)
 
-     BC_TYPE(PID) = 'MI'
+     bc_type(pid) = 'MI'
 
-     BC_P(PID) =   PPG;
+     bc_p(pid) =   ppg;
 
-     BC_U(PID) = PVEL(1);
-     BC_V(PID) = PVEL(2);
-     BC_W(PID) = PVEL(3);
+     bc_u(pid) = pvel(1);
+     bc_v(pid) = pvel(2);
+     bc_w(pid) = pvel(3);
 
-     BC_DEFINED(PID) = .TRUE.
+     bc_defined(pid) = .true.
 
-  CASE(PINF_)
+  case(PINF_)
 
-     BC_TYPE(PID) = 'PI'
+     bc_type(pid) = 'PI'
 
-     BC_P(PID) =   PPG;
+     bc_p(pid) =   ppg;
 
-     BC_DEFINED(PID) = .TRUE.
+     bc_defined(pid) = .true.
 
-  CASE(POUT_)
+  case(POUT_)
 
-     BC_TYPE(PID) = 'PO'
+     bc_type(pid) = 'PO'
 
-     BC_P(PID) =   PPG;
+     bc_p(pid) =   ppg;
 
-     BC_DEFINED(PID) = .TRUE.
+     bc_defined(pid) = .true.
 
-  CASE(NSW_)
+  case(NSW_)
 
-     BC_TYPE(PID) = 'NSW'
+     bc_type(pid) = 'NSW'
 
-     BC_U(PID) = PVEL(1)
-     BC_V(PID) = PVEL(2)
-     BC_W(PID) = PVEL(3)
+     bc_u(pid) = pvel(1)
+     bc_v(pid) = pvel(2)
+     bc_w(pid) = pvel(3)
 
-     SELECT CASE(PID)
-     CASE(1,2); BC_U(PID) = 0.0D0;
-     CASE(3,4); BC_V(PID) = 0.0D0;
-     CASE(5,6); BC_W(PID) = 0.0D0;
-     END SELECT
+     select case(pid)
+     case(1,2); bc_u(pid) = 0.0d0;
+     case(3,4); bc_v(pid) = 0.0d0;
+     case(5,6); bc_w(pid) = 0.0d0;
+     end select
 
-     BC_DEFINED(PID) = .TRUE.
+     bc_defined(pid) = .true.
 
-  CASE DEFAULT
+  case DEFAULT
 
-     BC_DEFINED(PID) = .FALSE.
+     bc_defined(pid) = .false.
 
-  END SELECT
+  end select
 
 
-END SUBROUTINE SET_BC_MOD
+end subroutine set_bc_mod
 
 end module set_bc_type_module
