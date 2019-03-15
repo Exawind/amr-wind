@@ -338,8 +338,6 @@ private:
 	Vector<std::unique_ptr<IArrayBox>> bc_klo;
 	Vector<std::unique_ptr<IArrayBox>> bc_khi;
 
-	Vector<std::unique_ptr<iMultiFab>> flag;
-
     // Primary variables
 	Vector<std::unique_ptr<MultiFab>> ro;
 	Vector<std::unique_ptr<MultiFab>> vel;
