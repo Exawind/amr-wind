@@ -12,6 +12,9 @@ else ifeq ($(UNAME), Darwin)
 	COMP = llvm
 endif
 
+# Non-verbose compilation
+VERBOSE = FALSE
+
 # Always use 3 dimensions for incflo
 DIM = 3
 
