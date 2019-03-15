@@ -8,28 +8,18 @@ module param
    integer, parameter :: dim_ic = 500
    ! Maximum number of items for specifying boundary conditions
    integer, parameter :: dim_bc = 6
-   ! Maximum number of items for specifying point sources
-   integer, parameter :: dim_ps = 5000
-
-   ! Number of Equation types:
-   !  1) pressure
-   !  2) U-Momentum equation
-   !  3) V-Momentum equation
-   !  4) W-Momentum equation
-   integer, parameter :: dim_eqs = 4
 
 ! Parameters describing problem size: (set from user input)
 !'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 ! Parameters for testing if user input was specifed.
-   real(rt), parameter :: undefined = 9.87654321d31
-   integer,      parameter :: undefined_i = 987654321
-   character,    parameter :: undefined_c = ' '
+   real(rt),  parameter :: undefined = 9.87654321d31
+   integer,   parameter :: undefined_i = 987654321
+   character, parameter :: undefined_c = ' '
 
 ! Cutoffs for large and small numbers
    real(rt), parameter :: large_number = 1.0d32
    real(rt), parameter :: small_number = 1.0d-15
-
    real(rt), parameter :: my_huge  = 1.0d20
 
 ! Common parameter constants
