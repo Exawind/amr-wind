@@ -71,10 +71,9 @@ contains
            & vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
       ! Local variables
-      integer(c_int)                  :: i, j, k, plane
+      integer(c_int)                  :: i, j, k
       integer(c_int)                  :: num_cells_y
-      real(ar)                        :: x, y, z
-      real(ar)                        :: twopi = 8.0_ar * atan(one)
+      real(ar)                        :: y
 
       num_cells_y = domhi(2) - domlo(2) + 1
 
