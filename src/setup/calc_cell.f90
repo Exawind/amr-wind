@@ -1,4 +1,4 @@
-MODULE CALC_CELL_MODULE
+module calc_cell_module
 
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
@@ -19,7 +19,7 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    pure integer function calc_cell(location, dx)
 
-      use param, only : half
+      use param, only : half, one
 
       implicit none
 
@@ -29,7 +29,7 @@ contains
       ! the cell lengths along the corresponding axis (dx, dy or dz)
       real(rt), intent(in) :: dx
 
-      calc_cell = floor(location/dx + half) - 1
+      calc_cell = floor(location/dx + half) - one
 
    end function calc_cell
 
@@ -61,3 +61,5 @@ contains
       k_t = calc_cell(z_t, dz)
 
    end subroutine calc_cell_ic
+
+end module calc_cell_module
