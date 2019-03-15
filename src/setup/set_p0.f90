@@ -27,19 +27,16 @@
 
          implicit none
 
-         integer, intent(in) ::    lo(3),    hi(3)
-         integer, intent(in) ::   slo(3),   shi(3)
-         integer, intent(in) :: domlo(3), domhi(3)
-         integer, intent(in) :: ng
+         integer,  intent(in)    ::    lo(3),    hi(3)
+         integer,  intent(in)    :: domlo(3), domhi(3)
+         integer,  intent(in)    ::   slo(3),   shi(3)
 
-         real(ar), intent(inout) :: p0&
-                                    (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
+         real(ar), intent(inout) :: p0(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
          real(ar), intent(inout) :: gp0(3)
 
-         real(ar), intent(in) :: dx, dy, dz
-         real(ar), intent(in) :: xlength, ylength, zlength
-         integer     , intent(in) :: delp_dir_in
+         real(ar), intent(in)    :: dx, dy, dz
+         real(ar), intent(in)    :: xlength, ylength, zlength
+         integer,  intent(in)    :: delp_dir_in, ng
 
          integer(c_int), intent(in   ) :: &
             bct_ilo(domlo(2)-ng:domhi(2)+ng,domlo(3)-ng:domhi(3)+ng,2), &
@@ -64,8 +61,9 @@
          ! Average pressure drop per unit length
          real(ar) :: dpodx, dpody, dpodz
 
-         ! Initialize gp0 to zero
+         ! Initialize gp0 and pj to zero
          gp0(:) = 0.d0
+         pj     = 0.d0
 
          delp_dir = delp_dir_in
 
