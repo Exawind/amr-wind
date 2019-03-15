@@ -13,7 +13,7 @@ contains
       bind(C, name="incflo_get_data")
 
       use constant , only: gravity, ro_0, mu, n, tau_0, papa_reg, eta_0, fluid_model
-      use get_data_module, only: get_data
+      use read_namelist_module, only: read_namelist
       use param, only: is_undefined
 
       implicit none
@@ -25,7 +25,7 @@ contains
 
       integer :: i
 
-      call get_data()
+      call read_namelist()
 
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in

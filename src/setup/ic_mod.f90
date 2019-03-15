@@ -9,25 +9,23 @@ module ic
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   use param, only: dim_ic
+   use param, only: dim_ic, undefined, zero
 
    ! Boundary condition coordinates
-   real(rt) :: IC_X_w(dim_ic), IC_X_e(dim_ic)
-   real(rt) :: IC_Y_s(dim_ic), IC_Y_n(dim_ic)
-   real(rt) :: IC_Z_b(dim_ic), IC_Z_t(dim_ic)
+   real(rt) :: ic_x_w(1:dim_ic) = undefined
+   real(rt) :: ic_x_e(1:dim_ic) = undefined
+   real(rt) :: ic_y_s(1:dim_ic) = undefined
+   real(rt) :: ic_y_n(1:dim_ic) = undefined
+   real(rt) :: ic_z_b(1:dim_ic) = undefined
+   real(rt) :: ic_z_t(1:dim_ic) = undefined
 
-   ! Initial gas pressure
-   real(rt) :: IC_P(dim_ic)
+   ! Initial pressure
+   real(rt) :: ic_p(1:dim_ic) = zero
 
    ! Initial velocities in specified region
-   real(rt) :: IC_U(dim_ic)
-   real(rt) :: IC_V(dim_ic)
-   real(rt) :: IC_W(dim_ic)
-
-   ! Heat transfer boundary condition
-   real(rt) :: IC_T(dim_ic)
-
-   character(len=16) :: ic_pack_type(dim_ic)
+   real(rt) :: ic_u(1:dim_ic) = zero
+   real(rt) :: ic_v(1:dim_ic) = zero
+   real(rt) :: ic_w(1:dim_ic) = zero
 
 contains
 
@@ -35,7 +33,7 @@ contains
 !                                                                      !
 ! Subroutine: ic_defined                                               !
 !                                                                      !
-! Purpose: Return if a IC region has been defined based on coordinates !
+! Purpose: Return if a ic region has been defined based on coordinates !
 ! defined in the input deck.                                           !
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
    logical function ic_defined(icv)

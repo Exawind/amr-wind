@@ -9,11 +9,10 @@ module bc
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   use param, only: undefined
-   use param, only: dim_bc
+   use param, only: dim_bc, undefined, undefined_c, zero
 
    ! Type of boundary:
-   character(len=16) :: BC_Type(dim_bc)
+   character(len=16) :: bc_type(1:dim_bc) = undefined_c
 
    ! Flags for periodic boundary conditions
    logical :: cyclic_x = .false.
@@ -23,22 +22,24 @@ module bc
    logical :: bc_defined(1:dim_bc) = .false.
 
    ! Boundary condition location (EB planes)
-   real(rt) :: BC_Normal(1:dim_bc,1:3) = undefined
-   real(rt) :: BC_Center(1:dim_bc,1:3) = undefined
+   real(rt) :: bc_normal(1:dim_bc,1:3) = undefined
+   real(rt) :: bc_center(1:dim_bc,1:3) = undefined
 
    ! Gas phase BC pressure
-   real(rt) :: BC_P(dim_bc)
+   real(rt) :: bc_p(1:dim_bc) = undefined
 
    ! Velocities at a specified boundary
-   real(rt) :: BC_U(dim_bc)
-   real(rt) :: BC_V(dim_bc)
-   real(rt) :: BC_W(dim_bc)
+   real(rt) :: bc_u(1:dim_bc) = zero
+   real(rt) :: bc_v(1:dim_bc) = zero
+   real(rt) :: bc_w(1:dim_bc) = zero
 
    ! Specified pressure drop cyclic boundary
-   real(rt) :: delp_x, delp_y, delp_z
+   real(rt) :: delp_x = zero
+   real(rt) :: delp_y = zero
+   real(rt) :: delp_z = zero
 
    ! Character variable to determine the flow plane of a flow cell
-   character :: BC_Plane(dim_bc)
+   character :: bc_plane(1:dim_bc) = undefined_c
 
    ! Cell flag definitions
    integer, parameter :: undef_cell =   0 ! undefined
