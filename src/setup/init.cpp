@@ -273,7 +273,10 @@ void incflo::SetBackgroundPressure()
 	// Here we set a separate periodicity flag for p0 because when we use
 	// pressure drop (delp) boundary conditions we fill all variables *except* p0
 	// periodically
-    if(delp_dir > -1) press_per[delp_dir] = 0;
+    if(delp_dir > -1) 
+    {
+        press_per[delp_dir] = 0;
+    }
 	p0_periodicity = Periodicity(press_per);
 
     for(int lev = 0; lev <= max_level; lev++)
