@@ -12,7 +12,7 @@
 // Divergence of stress tensor
 //
 void incflo::ComputeDivTau(int lev,
-                           MultiFab& divtau,
+                           MultiFab& divtau_in,
                            Vector<std::unique_ptr<MultiFab>>& vel_in)
 {
     BL_PROFILE("incflo::ComputeDivTau");
@@ -45,14 +45,14 @@ void incflo::ComputeDivTau(int lev,
 
         if (flags.getType(bx) == FabType::covered)
         {
-            divtau[mfi].setVal(1.2345e200, bx, 0, 3);
+            divtau_in[mfi].setVal(1.2345e200, bx, 0, 3);
         }
         else
         {
             if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular)
             {
                 compute_divtau(BL_TO_FORTRAN_BOX(bx),
-                               BL_TO_FORTRAN_ANYD(divtau[mfi]),
+                               BL_TO_FORTRAN_ANYD(divtau_in[mfi]),
                                BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                (*eta[lev])[mfi].dataPtr(),
                                BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
@@ -65,7 +65,7 @@ void incflo::ComputeDivTau(int lev,
             else
             {
                 compute_divtau_eb(BL_TO_FORTRAN_BOX(bx),
-                                  BL_TO_FORTRAN_ANYD(divtau[mfi]),
+                                  BL_TO_FORTRAN_ANYD(divtau_in[mfi]),
                                   BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                   (*eta[lev])[mfi].dataPtr(),
                                   BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),

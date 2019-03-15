@@ -52,9 +52,6 @@ contains
 
       ! Local index for boundary condition
       integer :: type, bcv
-      integer :: i,j,k
-
-      integer :: i_w, j_s, k_b, i_e, j_n, k_t
 
       bc_ilo_type(:,:,1) = merge(undef_cell, nsw_, cyclic_x)
       bc_ihi_type(:,:,1) = merge(undef_cell, nsw_, cyclic_x)
