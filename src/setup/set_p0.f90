@@ -15,7 +15,7 @@ subroutine set_p0(lo, hi, domlo, domhi, &
    use bc       , only: dim_bc, bc_type, bc_p, bc_defined
    use bc       , only: pinf_, pout_, minf_
    use constant , only: delp, gravity, ro_0
-   use ic       , only: ic_p, ic_defined
+   use ic       , only: ic_p
 
    use amrex_fort_module, only : ar => amrex_real
    use iso_c_binding , only: c_int
@@ -165,26 +165,24 @@ end if
 ! ---------------------------------------------------------------->>>
 
 !  Make sure that ic_p is set if using delp pressure conditions
-if (ic_defined()) then
-   if ( (delp_dir .ge. 0) .and. (delp_dir .eq. delp_dir_in) ) then
-      if (.not. is_defined(ic_p)) then
-         print *,'MUST DEFINE ic_p if using the DELP pressure condition'
-         stop
-      end if
-      pj = ic_p
-
-   else if ( (delp_dir .ge. 0) .and. (delp_dir .ne. delp_dir_in) ) then
-      if (is_defined(ic_p)) then
-         print *,'MUST not define ic_p if setting p_inflow and p_outflow'
-         stop
-      end if
-
-   else
-      if (.not. is_defined(ic_p)) goto 60
-      if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
-         p0(:,:,:) = ic_p
-         gp0(:) = 0.d0
+if ( (delp_dir .ge. 0) .and. (delp_dir .eq. delp_dir_in) ) then
+   if (.not. is_defined(ic_p)) then
+      print *,'MUST DEFINE ic_p if using the DELP pressure condition'
+      stop
    end if
+   pj = ic_p
+
+else if ( (delp_dir .ge. 0) .and. (delp_dir .ne. delp_dir_in) ) then
+   if (is_defined(ic_p)) then
+      print *,'MUST not define ic_p if setting p_inflow and p_outflow'
+      stop
+   end if
+
+else
+   if (.not. is_defined(ic_p)) goto 60
+   if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
+      p0(:,:,:) = ic_p
+      gp0(:) = 0.d0
 end if
 
 ! ---------------------------------------------------------------->>>

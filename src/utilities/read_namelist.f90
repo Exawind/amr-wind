@@ -12,7 +12,6 @@ contains
    SUBROUTINE READ_NAMELIST()
 
       use ic, only: ic_p, ic_u, ic_v, ic_w
-      use ic, only: ic_x_e, ic_x_w, ic_y_n, ic_y_s, ic_z_b, ic_z_t
       use utilities, only: blank_line, seek_comment
       use utilities, only: make_upper_case, replace_tab
       use utilities, only: remove_comment
