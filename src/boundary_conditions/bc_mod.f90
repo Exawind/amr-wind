@@ -9,7 +9,7 @@ module bc
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   use param, only: dim_bc, undefined, zero
+   use constant, only: dim_bc, undefined, zero
 
    ! Type of boundary:
    character(len=16) :: bc_type(dim_bc)

@@ -1,3 +1,0 @@
-    NAMELIST / INITIAL_CONDITIONS /&
-
-    IC_U, IC_V, IC_W, IC_P

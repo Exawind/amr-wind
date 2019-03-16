@@ -7,8 +7,9 @@
 module projection_mod
 
    use amrex_fort_module, only: ar => amrex_real
-   use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one
+   use iso_c_binding,     only: c_int
+
+   use constant,          only: zero, half, one
 
    implicit none
    private

@@ -1,5 +1,4 @@
 F90EXE_sources += amrex_to_incflo.F90
-f90EXE_sources += ic_mod.f90 
 f90EXE_sources += init_fluid.f90 
 f90EXE_sources += set_bc_type.f90 
 f90EXE_sources += set_delp_dir.f90

@@ -7,8 +7,7 @@ subroutine incflo_get_real_walls(bcv, exists, normal, center) &
 
    use bc, only: bc_defined, bc_type
    use bc, only: bc_normal, bc_center
-
-   use param, only: is_defined
+   use constant, only: is_defined
 
    implicit none
 

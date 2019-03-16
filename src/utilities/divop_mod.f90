@@ -4,7 +4,8 @@ module divop_mod
    use amrex_error_module,      only: amrex_abort
    use amrex_fort_module,       only: ar => amrex_real
    use iso_c_binding,           only: c_int
-   use param,                   only: zero, half, one, my_huge
+
+   use constant,                only: zero, half, one, my_huge
 
    implicit none
 

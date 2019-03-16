@@ -3,7 +3,8 @@ module eb_wallflux_mod
    use amrex_fort_module,  only: rt=>amrex_real, c_int
    use amrex_error_module, only: amrex_abort
    use amrex_mlebabeclap_3d_module
-   use param,              only: zero, half, one, two
+
+   use constant,           only: zero, half, one, two
    use rheology_module,    only: viscosity
 
 

@@ -1,10 +1,10 @@
 module derive_eb_module
 
+   use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell
    use amrex_fort_module, only: rt => amrex_real
    use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one, two, my_huge
-   use amrex_ebcellflag_module, only: is_covered_cell, &
-                                      is_single_valued_cell
+
+   use constant,          only: zero, half, one, two, my_huge
 
    implicit none
    private

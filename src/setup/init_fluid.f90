@@ -1,4 +1,8 @@
 module init_fluid_module
+
+      use amrex_fort_module, only: rt => amrex_real
+      use iso_c_binding,     only: c_int
+
 contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -10,11 +14,8 @@ contains
                          eta, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
-      use amrex_fort_module, only: rt => amrex_real
-      use iso_c_binding,     only: c_int
-
       use constant, only: ro_0, mu
-      use ic,       only: ic_u, ic_v, ic_w
+      use constant, only: ic_u, ic_v, ic_w
 
       implicit none
 
@@ -23,16 +24,10 @@ contains
       integer(c_int), intent(in   ) :: slo(3), shi(3)
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
-      real(rt), intent(inout) :: ro&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: p&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      real(rt), intent(inout) :: vel&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
-
-      real(rt), intent(inout) :: eta&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+      real(rt), intent(inout) ::  ro(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) ::   p(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),3)
+      real(rt), intent(inout) :: eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength

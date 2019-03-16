@@ -1,8 +1,9 @@
 module eb_interpolation_mod
 
    use amrex_fort_module, only: ar => amrex_real
-   use iso_c_binding ,    only: c_int
-   use param,             only: zero, one
+   use iso_c_binding,     only: c_int
+
+   use constant,          only: zero, one
 
    implicit none
    private

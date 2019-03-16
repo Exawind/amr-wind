@@ -19,12 +19,11 @@ contains
                           xlength, ylength, zlength,&
                           ng) bind(c,name='set_bc_type')
 
-      use bc, only: bc_defined, bc_type, bc_plane
-      use bc, only: cyclic_x, cyclic_y, cyclic_z
-      use bc, only: minf_, nsw_, pinf_, pout_
-      use bc, only: undef_cell
-
-      use param, only: dim_bc
+      use bc,       only: bc_defined, bc_type, bc_plane
+      use bc,       only: cyclic_x, cyclic_y, cyclic_z
+      use bc,       only: minf_, nsw_, pinf_, pout_
+      use bc,       only: undef_cell
+      use constant, only: dim_bc
 
       implicit none
 

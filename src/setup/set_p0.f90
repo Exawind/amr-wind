@@ -12,15 +12,13 @@ subroutine set_p0(lo, hi, domlo, domhi, &
                   bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
                   bct_klo, bct_khi, ng ) bind(C, name="set_p0")
 
-   use bc       , only: dim_bc, bc_type, bc_p, bc_defined
-   use bc       , only: pinf_, pout_, minf_
-   use constant , only: delp, gravity, ro_0
-   use ic       , only: ic_p
+   use bc,       only: dim_bc, bc_type, bc_p, bc_defined
+   use bc,       only: pinf_, pout_, minf_
+   use constant, only: delp, gravity, ro_0, ic_p
+   use constant, only: zero, undefined, is_defined
 
    use amrex_fort_module, only : ar => amrex_real
    use iso_c_binding , only: c_int
-   use param   , only: zero, undefined
-   use param   , only: is_defined
 
    implicit none
 

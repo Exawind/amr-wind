@@ -12,10 +12,11 @@
 !
 module diffusion_mod
 
-   use amrex_fort_module, only: rt => amrex_real
-   use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one, two
-   use amrex_mempool_module, only: amrex_allocate, amrex_deallocate
+   use amrex_fort_module,     only: rt => amrex_real
+   use amrex_mempool_module,  only: amrex_allocate, amrex_deallocate
+   use iso_c_binding,         only: c_int
+
+   use constant,              only: zero, half, one, two
 
    implicit none
    private

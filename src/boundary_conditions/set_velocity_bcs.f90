@@ -10,9 +10,10 @@ subroutine set_velocity_bcs(time, &
                             ng, extrap_dir_bcs ) bind(C)
 
    use amrex_fort_module,  only: ar => amrex_real
-   use iso_c_binding    ,  only: c_int
-   use param            ,  only: zero,one,two,half
+   use iso_c_binding,      only: c_int
+
    use bc
+   use constant,           only: zero, half, one, two
 
    implicit none
 

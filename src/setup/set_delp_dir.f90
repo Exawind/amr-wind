@@ -1,8 +1,7 @@
 subroutine set_delp_dir(delp_dir) &
    bind(C, name="set_delp_dir")
 
-   use constant, only: delp
-   use param,    only: zero
+   use constant, only: delp, zero
 
    implicit none
 

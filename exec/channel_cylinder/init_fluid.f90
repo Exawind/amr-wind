@@ -1,4 +1,8 @@
 module init_fluid_module
+
+      use amrex_fort_module, only: rt => amrex_real
+      use iso_c_binding,     only: c_int
+
 contains
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -10,10 +14,8 @@ contains
                          eta, dx, dy, dz, xlength, ylength, zlength) &
       bind(C, name="init_fluid")
 
-      use amrex_fort_module, only : rt => amrex_real
-      use iso_c_binding , only: c_int
-
-      use constant      , only: ro_0, mu
+      use constant, only: ro_0, mu
+      use constant, only: ic_u, ic_v, ic_w
 
       implicit none
 
@@ -22,66 +24,53 @@ contains
       integer(c_int), intent(in   ) :: slo(3), shi(3)
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
-      real(rt), intent(inout) :: ro&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-      real(rt), intent(inout) :: p&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
-
-      real(rt), intent(inout) :: vel&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
-
-      real(rt), intent(inout) :: eta&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3))
+      real(rt), intent(inout) ::  ro(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) ::   p(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),3)
+      real(rt), intent(inout) :: eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength
 
-      ! Set user specified initial conditions (IC)
-      call set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
-
-      call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
-
       ! Set the initial fluid density and viscosity
       ro  = ro_0
       eta = mu
+      vel(:,:,:,1) = ic_u
+      vel(:,:,:,2) = ic_v
+      vel(:,:,:,3) = ic_w
+
+      ! Set user specified initial conditions (IC)
+      call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
    subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
-      use amrex_fort_module, only: ar => amrex_real
-      use iso_c_binding ,    only: c_int
-      use param,             only: zero, half, one
-      use ic,                only: ic_u
+      use constant,          only: zero, half, one
+      use constant,          only: ic_u
 
       implicit none
 
-      ! Array bounds
-      integer(c_int),   intent(in   ) :: slo(3), shi(3)
-
-      ! Tile bounds
-      integer(c_int),   intent(in   ) ::  lo(3),  hi(3)
-
-      ! Grid and domain lower bound
+      integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
       integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
-      real(ar),         intent(in   ) :: dx, dy, dz
+      integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
 
-      ! Arrays
-      real(ar),         intent(inout) ::                   &
-           & vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+      real(rt),         intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+
+      real(rt),         intent(in   ) :: dx, dy, dz
 
       ! Local variables
       integer(c_int)                  :: i, j, k
       integer(c_int)                  :: num_cells_y
-      real(ar)                        :: y
+      real(rt)                        :: y
 
       num_cells_y = domhi(2) - domlo(2) + 1
 
       do j = lo(2), hi(2)
-         y =  (real(j,ar) + half) / num_cells_y
+         y =  (real(j,rt) + half) / num_cells_y
          do i = lo(1), hi(1)
             do k = lo(3), hi(3)
-               vel(i,j,k,1) = 6.0 * ic_u(1) * y * (one - y)
+               vel(i,j,k,1) = 6.0 * ic_u * y * (one - y)
                vel(i,j,k,2) = zero
                vel(i,j,k,3) = zero
             end do
@@ -89,107 +78,5 @@ contains
       end do
 
    end subroutine plane_poiseuille
-
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
-!  Subroutine: SET_IC                                                  !
-!  Author: M. Syamlal                                 Date: 21-JAN-92  !
-!                                                                      !
-!  Purpose: This module sets all the initial conditions.               !
-!                                                                      !
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
-   subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
-
-      use ic, only: ic_defined
-      use ic, only: ic_u, ic_v, ic_w
-      use ic, only: ic_x_e, ic_y_n, ic_z_t
-      use ic, only: ic_x_w, ic_y_s, ic_z_b
-      use param, only: undefined, is_defined
-
-      use amrex_fort_module, only : rt => amrex_real
-      use iso_c_binding , only: c_int
-
-      use calc_cell_module, only: calc_cell_ic
-
-      implicit none
-
-      integer(c_int), intent(in   ) :: slo(3), shi(3)
-      integer(c_int), intent(in   ) :: domlo(3),domhi(3)
-      real(rt), intent(in   ) :: dx, dy, dz
-
-      real(rt), intent(inout) ::  vel&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
-
-!-----------------------------------------------
-! Local variables
-!-----------------------------------------------
-! indices
-      integer :: istart, iend
-      integer :: jstart, jend
-      integer :: kstart, kend
-
-      ! Temporary variables for storing IC values
-      real(rt) :: ugx, vgx, wgx
-
-      integer :: i_w, j_s, k_b
-      integer :: i_e, j_n, k_t
-
-!  Set the initial conditions.
-      if (ic_defined()) then
-
-         call calc_cell_ic(dx, dy, dz, &
-                           ic_x_w, ic_y_s, ic_z_b, &
-                           ic_x_e, ic_y_n, ic_z_t, &
-                           i_w, i_e, j_s, j_n, k_b, k_t)
-
-         ugx = ic_u
-         vgx = ic_v
-         wgx = ic_w
-
-         if (is_defined(ugx)) then
-            istart = max(slo(1), i_w)
-            jstart = max(slo(2), j_s)
-            kstart = max(slo(3), k_b)
-            iend   = min(shi(1), i_e)
-            jend   = min(shi(2), j_n)
-            kend   = min(shi(3), k_t)
-            vel(istart:iend,jstart:jend,kstart:kend,1) = ugx
-            if (slo(1).lt.domlo(1) .and. domlo(1) == istart) &
-               vel(slo(1):istart-1,jstart:jend,kstart:kend,1) = ugx
-            if (shi(1).gt.domhi(1) .and. domhi(1) == iend  ) &
-               vel(iend+1:shi(1)  ,jstart:jend,kstart:kend,1) = ugx
-         end if
-
-         if (is_defined(vgx)) then
-            istart = max(slo(1), i_w)
-            jstart = max(slo(2), j_s)
-            kstart = max(slo(3), k_b)
-            iend   = min(shi(1), i_e)
-            jend   = min(shi(2), j_n)
-            kend   = min(shi(3), k_t)
-            vel(istart:iend,jstart:jend,kstart:kend,2) = vgx
-            if (slo(2).lt.domlo(2) .and. domlo(2) == jstart) &
-               vel(istart:iend,slo(2):jstart-1,kstart:kend,2) = vgx
-            if (shi(2).gt.domhi(2) .and. domhi(2) == jend  ) &
-               vel(istart:iend,jend+1:shi(2)  ,kstart:kend,2) = vgx
-         end if
-
-         if (is_defined(wgx)) then
-            istart = max(slo(1), i_w)
-            jstart = max(slo(2), j_s)
-            kstart = max(slo(3), k_b)
-            iend   = min(shi(1), i_e)
-            jend   = min(shi(2), j_n)
-            kend   = min(shi(3), k_t)
-            vel(istart:iend,jstart:jend,kstart:kend,3) = wgx
-            if (slo(3).lt.domlo(3) .and. domlo(3) == kstart) &
-               vel(istart:iend,jstart:jend,slo(3):kstart-1,3) = wgx
-            if (shi(3).gt.domhi(3) .and. domhi(3) == kend  ) &
-               vel(istart:iend,jstart:jend,kend+1:shi(3)  ,3) = wgx
-         end if
-
-      endif
-
-   end subroutine set_ic
 
 end module init_fluid_module

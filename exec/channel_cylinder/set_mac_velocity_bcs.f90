@@ -19,7 +19,7 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding ,     only: c_int
-   use param,              only: zero, one, two, half
+   use constant,           only: zero, one, two, half
    use bc
 
    implicit none

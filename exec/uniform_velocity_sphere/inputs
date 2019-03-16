@@ -50,6 +50,14 @@ cylinder.direction      =   2
 cylinder.center         =   .5  .5  .5 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#           INITIAL CONDITIONS          #
+#.......................................#
+incflo.ic_u             =   -0.70710678 #
+incflo.ic_v             =    0.70710678 #
+incflo.ic_w             =    0.         #
+incflo.ic_p             =    0.         #
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
 incflo.do_initial_proj    = 1           # Do initial projection?

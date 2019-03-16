@@ -8,8 +8,9 @@ module convection_mod
 
    use amrex_fort_module, only: ar => amrex_real
    use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one, my_huge
+
    use bc,                only: minf_, nsw_, pinf_, pout_
+   use constant,          only: zero, half, one, my_huge
 
    implicit none
    public upwind, upwind_normal
@@ -365,7 +366,7 @@ contains
    function upwind_normal ( umns, upls ) result (ev)
 
       ! Small value to protect against tiny velocities used in upwinding
-      real(ar),        parameter     :: small_vel = 1.0d-10
+      real(ar), parameter  :: small_vel = 1.0d-10
 
       real(ar), intent(in) :: umns, upls
       real(ar)             :: ev, avg
@@ -387,7 +388,7 @@ contains
    function upwind ( velmns, velpls, uedge ) result (ev)
 
       ! Small value to protect against tiny velocities used in upwinding
-      real(ar),        parameter     :: small_vel = 1.0d-10
+      real(ar), parameter  :: small_vel = 1.0d-10
 
       real(ar), intent(in) :: velmns, velpls, uedge
       real(ar)             :: ev
