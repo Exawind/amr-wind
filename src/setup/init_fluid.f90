@@ -55,7 +55,7 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
-      use ic, only: dim_ic, ic_defined
+      use ic, only: ic_defined
       use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_y_n, ic_z_t
       use ic, only: ic_x_w, ic_y_s, ic_z_b
@@ -72,8 +72,7 @@ contains
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
       real(rt), intent(in   ) :: dx, dy, dz
 
-      real(rt), intent(inout) ::  vel&
-                                 (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+      real(rt), intent(inout) ::  vel (slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
 
 !-----------------------------------------------
 ! Local variables
@@ -82,8 +81,6 @@ contains
       integer :: istart, iend
       integer :: jstart, jend
       integer :: kstart, kend
-      ! local index for initial condition
-      integer :: icv
 
       ! Temporary variables for storing IC values
       real(rt) :: ugx, vgx, wgx
@@ -92,62 +89,60 @@ contains
       integer :: i_e, j_n, k_t
 
 !  Set the initial conditions.
-      do icv = 1, dim_ic
-         if (ic_defined(icv)) then
+      if (ic_defined()) then
 
-            call calc_cell_ic(dx, dy, dz, &
-                              ic_x_w(icv), ic_y_s(icv), ic_z_b(icv), &
-                              ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
-                              i_w, i_e, j_s, j_n, k_b, k_t)
+         call calc_cell_ic(dx, dy, dz, &
+                           ic_x_w, ic_y_s, ic_z_b, &
+                           ic_x_e, ic_y_n, ic_z_t, &
+                           i_w, i_e, j_s, j_n, k_b, k_t)
 
-            ugx = ic_u(icv)
-            vgx = ic_v(icv)
-            wgx = ic_w(icv)
+         ugx = ic_u
+         vgx = ic_v
+         wgx = ic_w
 
-            if (is_defined(ugx)) then
-               istart = max(slo(1), i_w)
-               jstart = max(slo(2), j_s)
-               kstart = max(slo(3), k_b)
-               iend   = min(shi(1), i_e)
-               jend   = min(shi(2), j_n)
-               kend   = min(shi(3), k_t)
-               vel(istart:iend,jstart:jend,kstart:kend,1) = ugx
-               if (slo(1).lt.domlo(1) .and. domlo(1) == istart) &
-                  vel(slo(1):istart-1,jstart:jend,kstart:kend,1) = ugx
-               if (shi(1).gt.domhi(1) .and. domhi(1) == iend  ) &
-                  vel(iend+1:shi(1)  ,jstart:jend,kstart:kend,1) = ugx
-            end if
+         if (is_defined(ugx)) then
+            istart = max(slo(1), i_w)
+            jstart = max(slo(2), j_s)
+            kstart = max(slo(3), k_b)
+            iend   = min(shi(1), i_e)
+            jend   = min(shi(2), j_n)
+            kend   = min(shi(3), k_t)
+            vel(istart:iend,jstart:jend,kstart:kend,1) = ugx
+            if (slo(1).lt.domlo(1) .and. domlo(1) == istart) &
+               vel(slo(1):istart-1,jstart:jend,kstart:kend,1) = ugx
+            if (shi(1).gt.domhi(1) .and. domhi(1) == iend  ) &
+               vel(iend+1:shi(1)  ,jstart:jend,kstart:kend,1) = ugx
+         end if
 
-            if (is_defined(vgx)) then
-               istart = max(slo(1), i_w)
-               jstart = max(slo(2), j_s)
-               kstart = max(slo(3), k_b)
-               iend   = min(shi(1), i_e)
-               jend   = min(shi(2), j_n)
-               kend   = min(shi(3), k_t)
-               vel(istart:iend,jstart:jend,kstart:kend,2) = vgx
-               if (slo(2).lt.domlo(2) .and. domlo(2) == jstart) &
-                  vel(istart:iend,slo(2):jstart-1,kstart:kend,2) = vgx
-               if (shi(2).gt.domhi(2) .and. domhi(2) == jend  ) &
-                  vel(istart:iend,jend+1:shi(2)  ,kstart:kend,2) = vgx
-            end if
+         if (is_defined(vgx)) then
+            istart = max(slo(1), i_w)
+            jstart = max(slo(2), j_s)
+            kstart = max(slo(3), k_b)
+            iend   = min(shi(1), i_e)
+            jend   = min(shi(2), j_n)
+            kend   = min(shi(3), k_t)
+            vel(istart:iend,jstart:jend,kstart:kend,2) = vgx
+            if (slo(2).lt.domlo(2) .and. domlo(2) == jstart) &
+               vel(istart:iend,slo(2):jstart-1,kstart:kend,2) = vgx
+            if (shi(2).gt.domhi(2) .and. domhi(2) == jend  ) &
+               vel(istart:iend,jend+1:shi(2)  ,kstart:kend,2) = vgx
+         end if
 
-            if (is_defined(wgx)) then
-               istart = max(slo(1), i_w)
-               jstart = max(slo(2), j_s)
-               kstart = max(slo(3), k_b)
-               iend   = min(shi(1), i_e)
-               jend   = min(shi(2), j_n)
-               kend   = min(shi(3), k_t)
-               vel(istart:iend,jstart:jend,kstart:kend,3) = wgx
-               if (slo(3).lt.domlo(3) .and. domlo(3) == kstart) &
-                  vel(istart:iend,jstart:jend,slo(3):kstart-1,3) = wgx
-               if (shi(3).gt.domhi(3) .and. domhi(3) == kend  ) &
-                  vel(istart:iend,jstart:jend,kend+1:shi(3)  ,3) = wgx
-            end if
+         if (is_defined(wgx)) then
+            istart = max(slo(1), i_w)
+            jstart = max(slo(2), j_s)
+            kstart = max(slo(3), k_b)
+            iend   = min(shi(1), i_e)
+            jend   = min(shi(2), j_n)
+            kend   = min(shi(3), k_t)
+            vel(istart:iend,jstart:jend,kstart:kend,3) = wgx
+            if (slo(3).lt.domlo(3) .and. domlo(3) == kstart) &
+               vel(istart:iend,jstart:jend,slo(3):kstart-1,3) = wgx
+            if (shi(3).gt.domhi(3) .and. domhi(3) == kend  ) &
+               vel(istart:iend,jstart:jend,kend+1:shi(3)  ,3) = wgx
+         end if
 
-         endif
-      enddo
+      endif
 
    end subroutine set_ic
 

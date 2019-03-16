@@ -21,7 +21,6 @@ subroutine set_p0(lo, hi, domlo, domhi, &
    use iso_c_binding , only: c_int
    use param   , only: zero, undefined
    use param   , only: is_defined
-   use param, only: dim_ic
 
    implicit none
 
@@ -166,29 +165,27 @@ end if
 ! ---------------------------------------------------------------->>>
 
 !  Make sure that ic_p is set if using delp pressure conditions
-do icv = 1, dim_ic
-   if (ic_defined(icv)) then
-      if ( (delp_dir .ge. 0) .and. (delp_dir .eq. delp_dir_in) ) then
-         if (.not. is_defined(ic_p(icv))) then
-            print *,'MUST DEFINE ic_p if using the DELP pressure condition'
-            stop
-         end if
-         pj = ic_p(icv)
-
-      else if ( (delp_dir .ge. 0) .and. (delp_dir .ne. delp_dir_in) ) then
-         if (is_defined(ic_p(icv))) then
-            print *,'MUST not define ic_p if setting p_inflow and p_outflow'
-            stop
-         end if
-
-      else
-         if (.not. is_defined(ic_p(icv))) goto 60
-         if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
-            p0(:,:,:) = ic_p(icv)
-            gp0(:) = 0.d0
+if (ic_defined()) then
+   if ( (delp_dir .ge. 0) .and. (delp_dir .eq. delp_dir_in) ) then
+      if (.not. is_defined(ic_p)) then
+         print *,'MUST DEFINE ic_p if using the DELP pressure condition'
+         stop
       end if
+      pj = ic_p
+
+   else if ( (delp_dir .ge. 0) .and. (delp_dir .ne. delp_dir_in) ) then
+      if (is_defined(ic_p)) then
+         print *,'MUST not define ic_p if setting p_inflow and p_outflow'
+         stop
+      end if
+
+   else
+      if (.not. is_defined(ic_p)) goto 60
+      if (gravity(1).ne.0.d0 .or. gravity(2).ne.0.d0 .or. gravity(3).ne.0.d0) goto 60
+         p0(:,:,:) = ic_p
+         gp0(:) = 0.d0
    end if
-end do
+end if
 
 ! ---------------------------------------------------------------->>>
 

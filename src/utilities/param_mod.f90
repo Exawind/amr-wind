@@ -2,8 +2,7 @@ module param
 
    use amrex_fort_module, only : rt => amrex_real
 
-! Parameters limiting maximum number of items for specifying ICs and BCs
-   integer, parameter :: dim_ic = 6
+! Parameters limiting maximum number of items for specifying BCs
    integer, parameter :: dim_bc = 6
 
 ! Parameters for testing if user input was specifed.
