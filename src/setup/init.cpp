@@ -51,6 +51,7 @@ void incflo::ReadParameters()
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
+        pp.query("probtype", probtype);
         pp.query("ic_u", ic_u);
         pp.query("ic_v", ic_v);
         pp.query("ic_w", ic_w);
@@ -215,7 +216,6 @@ void incflo::InitFluid()
         {
             const Box& bx = mfi.validbox();
             const Box& sbx = (*ro[lev])[mfi].box();
-
             init_fluid(sbx.loVect(), sbx.hiVect(),
                        bx.loVect(), bx.hiVect(),
                        domain.loVect(), domain.hiVect(),
@@ -224,7 +224,7 @@ void incflo::InitFluid()
                        (*vel[lev])[mfi].dataPtr(),
                        (*eta[lev])[mfi].dataPtr(),
                        &dx, &dy, &dz,
-                       &xlen, &ylen, &zlen);
+                       &xlen, &ylen, &zlen, &probtype);
         }
     }
 }

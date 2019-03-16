@@ -40,17 +40,18 @@ geometry.prob_hi        =   1.  1.  0.25 #Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#          INITIAL CONDITIONS           #
+#.......................................#
+incflo.probtype         =   1
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+incflo.steady_state_tol =   1.e-5       # Tolerance for steady-state
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   1           # incflo_level
 mac.verbose             =   0           # MacProjector
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

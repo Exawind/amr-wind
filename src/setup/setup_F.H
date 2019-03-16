@@ -56,7 +56,8 @@ extern "C"
             amrex::Real* vel,
             amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength
+            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength, 
+            const int* probtype
         );
     
     void set_p0

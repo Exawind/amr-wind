@@ -325,6 +325,7 @@ private:
     // Member variables: Initial conditions
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+    int probtype = 0;
     Real ic_u = 0.0;
     Real ic_v = 0.0;
     Real ic_w = 0.0;

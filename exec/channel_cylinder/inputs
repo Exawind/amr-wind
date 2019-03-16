@@ -67,6 +67,7 @@ cylinder.center         = 0.15   0.2   0.0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
 #.......................................#
+incflo.prob_type        =   3
 incflo.ic_u             =   1.0         #
 incflo.ic_v             =   0.0         #
 incflo.ic_w             =   0.0         #
