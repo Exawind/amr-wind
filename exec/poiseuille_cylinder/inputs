@@ -22,7 +22,6 @@ amr.restart             =   ""          # Checkpoint to restart from
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
 incflo.gravity          =   0.  0.  0.  # Gravitational force
 incflo.ro_0             =   1.          # Reference density 
 
@@ -47,6 +46,8 @@ amr.max_grid_size_z     =   1024
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   4.  4.  0.5 # Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
 
 incflo.geometry         =   "cylinder"  # Add cylinder
 cylinder.internal_flow  =   true        # Internal vs external flow

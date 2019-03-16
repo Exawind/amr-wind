@@ -21,7 +21,6 @@ amr.restart             =   ""          # Checkpoint to restart from
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.delp             =   0.  0.  2.  # Gravitational force (3D)
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
 
@@ -40,6 +39,8 @@ amr.max_level           =   0           # Max AMR level in hierarchy
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
 geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 ylo.type                =   "nsw"

@@ -43,6 +43,8 @@ geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
 geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
+
 # Boundary conditions
 ylo.type                =   "nsw"
 yhi.type                =   "nsw"

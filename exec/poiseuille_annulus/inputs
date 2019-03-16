@@ -41,7 +41,9 @@ amr.max_grid_size_z     =   10
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   2.0 2.0 0.5 # Hi corner coordinates
-geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  6.7745e-3 # Prescribed (cyclic) pressure gradient
 
 incflo.geometry         =   "annulus"   # Add cylinder
 annulus.direction       =   2           # Choices are {0,1,2}

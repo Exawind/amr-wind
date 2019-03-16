@@ -31,8 +31,8 @@ incflo.mu               =   0.001       # Dynamic viscosity coefficient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   96  32  4   # Grid cells at coarsest AMRlevel
-amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.n_cell              =   192 64  8   # Grid cells at coarsest AMRlevel
+amr.max_level           =   1           # Max AMR level in hierarchy 
 amr.blocking_factor     =   4 
 amr.grid_eff            =   0.7 
 amr.n_error_buf         =   8

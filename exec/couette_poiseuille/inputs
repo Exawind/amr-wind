@@ -3,7 +3,7 @@
 #.......................................#
 stop_time               =   10          # Max (simulated) time to evolve
 max_step                =   -1          # Max number of time steps
-steady_state            =   0           # Steady-state solver? 
+steady_state            =   0           # Steady-state solver?
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -16,13 +16,13 @@ incflo.cfl              =   9.0         # CFL factor
 #.......................................#
 amr.plot_int            =   100         # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
-amr.restart             =   ""          # Checkpoint to restart from 
+amr.restart             =   ""          # Checkpoint to restart from
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
-incflo.ro_0             =   1.          # Reference density 
+incflo.ro_0             =   1.          # Reference density
 
 incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
@@ -31,7 +31,7 @@ incflo.mu               =   1.          # Dynamic viscosity coefficient
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              =   16  16  8   # Grid cells at coarsest AMRlevel
-amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.max_level           =   0           # Max AMR level in hierarchy
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
@@ -39,6 +39,8 @@ amr.max_level           =   0           # Max AMR level in hierarchy
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
 geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 ylo.type                =   "nsw"
