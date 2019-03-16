@@ -37,94 +37,14 @@ contains
       real(rt), intent(in   ) :: xlength, ylength, zlength
 
       ! Set user specified initial conditions (IC)
-      call set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
-
       call init_uniform_velocity ( lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      call set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
       ! Set the initial fluid density and viscosity
       ro  = ro_0
       eta = mu
 
    end subroutine init_fluid
-
-   subroutine init_uniform_velocity(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-
-      use amrex_fort_module, only: ar => amrex_real
-      use iso_c_binding ,    only: c_int
-      use param,             only: zero, half, one
-
-      implicit none
-
-      ! Array bounds
-      integer(c_int),   intent(in   ) :: slo(3), shi(3)
-
-      ! Tile bounds
-      integer(c_int),   intent(in   ) ::  lo(3),  hi(3)
-
-      ! Grid and domain lower bound
-      integer(c_int),   intent(in   ) :: domlo(3)
-      real(ar),         intent(in   ) :: dx, dy, dz
-
-      ! Arrays
-      real(ar),         intent(inout) ::                   &
-           & vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
-
-      ! Local variables
-      integer(c_int)                  :: i, j, k, plane
-      real(ar)                        :: x, y, z
-
-      plane = 1
-
-      select case ( plane )
-
-      case (1)  ! x-y plane
-
-         ! x-direction
-         do j = lo(2), hi(2)
-            y =  ( real(j,ar) + half ) * dy
-            do i = lo(1), hi(1)
-               x =  ( real(i,ar) + half ) * dx
-               do k = lo(3), hi(3)
-                  vel(i,j,k,1) = sqrt(half)
-                  vel(i,j,k,2) = sqrt(half)
-                  vel(i,j,k,3) = zero
-               end do
-            end do
-         end do
-
-      case (2)  ! x-z plane
-
-         ! x-direction
-         do k = lo(3), hi(3)
-            z =  ( real(k,ar) + half ) * dz
-            do i = lo(1), hi(1)
-               x =  ( real(i,ar) + half ) * dx
-               do j = lo(2), hi(2)
-                  vel(i,j,k,1) = sqrt(half)
-                  vel(i,j,k,2) = zero
-                  vel(i,j,k,3) = sqrt(half)
-               end do
-            end do
-         end do
-
-      case (3)  ! y-z plane
-
-         ! x-direction
-         do k = lo(3), hi(3)
-            z =  ( real(k,ar) + half ) * dz
-            do j = lo(2), hi(2)
-               y =  ( real(j,ar) + half ) * dy
-               do i = lo(1), hi(1)
-                  vel(i,j,k,1) = zero
-                  vel(i,j,k,2) = sqrt(half)
-                  vel(i,j,k,3) = sqrt(half)
-               end do
-            end do
-         end do
-
-      end select
-
-   end subroutine init_uniform_velocity
 
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
 !                                                                      !
@@ -137,7 +57,7 @@ contains
    subroutine set_ic(slo, shi, domlo, domhi, dx, dy, dz, vel)
 
       use ic, only: dim_ic, ic_defined
-      use ic, only: ic_p, ic_u, ic_v, ic_w
+      use ic, only: ic_u, ic_v, ic_w
       use ic, only: ic_x_e, ic_y_n, ic_z_t
       use ic, only: ic_x_w, ic_y_s, ic_z_b
       use param, only: undefined, is_defined
@@ -167,7 +87,7 @@ contains
       integer :: icv
 
       ! Temporary variables for storing IC values
-      real(rt) :: pgx, ugx, vgx, wgx
+      real(rt) :: ugx, vgx, wgx
 
       integer :: i_w, j_s, k_b
       integer :: i_e, j_n, k_t
@@ -181,7 +101,6 @@ contains
                               ic_x_e(icv), ic_y_n(icv), ic_z_t(icv), &
                               i_w, i_e, j_s, j_n, k_b, k_t)
 
-            pgx = ic_p(icv)
             ugx = ic_u(icv)
             vgx = ic_v(icv)
             wgx = ic_w(icv)
