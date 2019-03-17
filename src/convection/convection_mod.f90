@@ -8,8 +8,9 @@ module convection_mod
 
    use amrex_fort_module, only: ar => amrex_real
    use iso_c_binding ,    only: c_int
-   use param,             only: zero, half, one, my_huge
-   use bc,                only: minf_, nsw_, fsw_, psw_, pinf_, pout_
+
+   use bc,                only: minf_, nsw_, pinf_, pout_
+   use constant,          only: zero, half, one, my_huge
 
    implicit none
    public upwind, upwind_normal
@@ -62,7 +63,7 @@ contains
 
       ! Local variables
       integer(c_int)                 :: i, j, k
-      integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+      integer, parameter             :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
       real(ar)                       :: upls, umns, vpls, vmns, wpls, wmns
 
       do k = lo(3), hi(3)
@@ -177,7 +178,7 @@ contains
       real(ar)                       :: v_e, v_w, v_s, v_n, v_b, v_t
       real(ar)                       :: w_e, w_w, w_s, w_n, w_b, w_t
       real(ar)                       :: divumac
-      integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+      integer, parameter             :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
 
       idx = one / dx(1)
       idy = one / dx(2)
@@ -191,7 +192,7 @@ contains
                ! West face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (i.eq.domlo(1) .and. any(bc_ilo_type(j,k,1) == bc_list ) ) then
                   u_w =  vel(i-1,j,k,1)
@@ -214,7 +215,7 @@ contains
                ! East face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (i.eq.domhi(1) .and. any(bc_ihi_type(j,k,1) == bc_list ) ) then
                   u_e =  vel(i+1,j,k,1)
@@ -237,7 +238,7 @@ contains
                ! South face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (j.eq.domlo(2) .and. any(bc_jlo_type(i,k,1) == bc_list ) ) then
                   u_s =  vel(i,j-1,k,1)
@@ -260,7 +261,7 @@ contains
                ! North face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (j.eq.domhi(2) .and.  any(bc_jhi_type(i,k,1) == bc_list ) ) then
                   u_n =  vel(i,j+1,k,1)
@@ -283,7 +284,7 @@ contains
                ! Bottom face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (k.eq.domlo(3) .and. any( bc_klo_type(i,j,1) == bc_list ) ) then
                   u_b =  vel(i,j,k-1,1)
@@ -306,7 +307,7 @@ contains
                ! Top face
                ! ****************************************************
 
-               ! In the case of MINF, NSW, FSW, PSW we are using the prescribed Dirichlet value
+               ! In the case of MINF, NSW, we are using the prescribed Dirichlet value
                ! In the case of PINF, POUT          we are using the upwind value
                if (k.eq.domhi(3) .and. any( bc_khi_type(i,j,1) == bc_list ) ) then
                   u_t =  vel(i,j,k+1,1)
@@ -365,7 +366,7 @@ contains
    function upwind_normal ( umns, upls ) result (ev)
 
       ! Small value to protect against tiny velocities used in upwinding
-      real(ar),        parameter     :: small_vel = 1.0d-10
+      real(ar), parameter  :: small_vel = 1.0d-10
 
       real(ar), intent(in) :: umns, upls
       real(ar)             :: ev, avg
@@ -387,7 +388,7 @@ contains
    function upwind ( velmns, velpls, uedge ) result (ev)
 
       ! Small value to protect against tiny velocities used in upwinding
-      real(ar),        parameter     :: small_vel = 1.0d-10
+      real(ar), parameter  :: small_vel = 1.0d-10
 
       real(ar), intent(in) :: velmns, velpls, uedge
       real(ar)             :: ev

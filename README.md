@@ -33,9 +33,9 @@ Clone AMReX from the official Git repository and checkout the _development_ bran
 Clone and build incflo
 ```shell
 > git clone http://github.com/AMReX-Codes/incflo.git
-> cd exec/periodic_vortices
+> cd exec
 > make -j
-> ./incflo3d.gnu.MPI.ex inputs
+> ./incflo3d.gnu.MPI.ex inputs.double_shear_layer
 ```
 
 # Contributing
@@ -44,5 +44,7 @@ We welcome contributions in the form of pull-requests from anyone.
 
 # Acknowledgement of external libraries
 
-This code relies on [Blitz++](https://github.com/blitzpp/blitz/wiki) and
+Apart from 
+[AMReX](https://amrex-codes.github.io/), this code relies on
+[Blitz++](https://github.com/blitzpp/blitz/wiki) and
 [Algoim](https://fastmath-scidac.llnl.gov/software/algoim.html). 

@@ -1,3 +1,0 @@
-      NAMELIST / GEOMETRY/&
-
-      DELP_X, DELP_Y, DELP_Z

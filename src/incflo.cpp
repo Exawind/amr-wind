@@ -98,7 +98,7 @@ void incflo::ChopGrids (const Box& domain, BoxArray& ba, int target_size) const
        amrex::Warning("Using max_grid_size only did not make enough grids for the number of processors");
 
     // Here we hard-wire the maximum number of times we divide the boxes.
-    int n = 10;
+    int max_div = 10;
 
     // Here we hard-wire the minimum size in any one direction the boxes can be
     int min_grid_size = 4;
@@ -106,7 +106,7 @@ void incflo::ChopGrids (const Box& domain, BoxArray& ba, int target_size) const
     IntVect chunk(domain.length(0),domain.length(1),domain.length(2));
 
     int j;
-    for (int cnt = 1; cnt <= n; ++cnt)
+    for (int cnt = 1; cnt <= max_div; ++cnt)
     {
         if (chunk[0] >= chunk[1] && chunk[0] >= chunk[2])
         {

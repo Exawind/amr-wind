@@ -59,23 +59,12 @@ void incflo::ComputeStrainrate()
         FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp(), bcs_u);
     
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
-        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
-
-        // Get EB geometric info
-        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
-        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
-        const amrex::MultiFab*                    volfrac;
-        const amrex::MultiCutFab*                 bndrycent;
-
-        areafrac  =   ebfactory[lev] -> getAreaFrac();
-        facecent  =   ebfactory[lev] -> getFaceCent();
-        volfrac   = &(ebfactory[lev] -> getVolFrac());
-        bndrycent = &(ebfactory[lev] -> getBndryCent());
+        MultiFab::Copy(*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
@@ -103,14 +92,6 @@ void incflo::ComputeStrainrate()
                                           BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
                                           BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
                                           BL_TO_FORTRAN_ANYD(flags),
-                                          BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*areafrac[2])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*facecent[0])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*volfrac)[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*bndrycent)[mfi]),
                                           geom[lev].CellSize());
                 }
             }
@@ -137,21 +118,10 @@ void incflo::ComputeVorticity()
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
 
-        // Get EB geometric info
-        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
-        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
-        const amrex::MultiFab*                    volfrac;
-        const amrex::MultiCutFab*                 bndrycent;
-
-        areafrac  =   ebfactory[lev] -> getAreaFrac();
-        facecent  =   ebfactory[lev] -> getFaceCent();
-        volfrac   = &(ebfactory[lev] -> getVolFrac());
-        bndrycent = &(ebfactory[lev] -> getBndryCent());
-
     #ifdef _OPENMP
-    #pragma omp parallel
+    #pragma omp parallel if (Gpu::notInLaunchRegion())
     #endif
-        for(MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
@@ -192,14 +162,6 @@ void incflo::ComputeVorticity()
                                     BL_TO_FORTRAN_ANYD((*vort[lev])[mfi]),
                                     BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
                                     BL_TO_FORTRAN_ANYD(flags),
-                                    BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*areafrac[2])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*facecent[0])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*volfrac)[mfi]),
-                                    BL_TO_FORTRAN_ANYD((*bndrycent)[mfi]),
                                     geom[lev].CellSize());
                 }
             }

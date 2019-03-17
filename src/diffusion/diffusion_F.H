@@ -50,12 +50,6 @@ extern "C"
           const int* bct_jlo, const int* bct_jhi,
           const int* bct_klo, const int* bct_khi);
 
-  void compute_bcoeff_diff (
-          const int* lo,  const int*  hi,
-          amrex::Real* bcoeff, const int* blo, const int* bhi,
-          const amrex::Real* eta, const int* slo, const int* shi,
-          const int* dir );
-
 #ifdef __cplusplus
 }
 #endif

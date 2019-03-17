@@ -1,9 +1,12 @@
 module eb_wallflux_mod
 
    use amrex_fort_module,  only: rt=>amrex_real, c_int
-   use eb_gradu_module,    only: compute_eb_gradu
-   use param,              only: zero, one, two
+   use amrex_error_module, only: amrex_abort
+   use amrex_mlebabeclap_3d_module
+
+   use constant,           only: zero, half, one, two
    use rheology_module,    only: viscosity
+
 
    implicit none
 
@@ -15,18 +18,19 @@ contains
    !
    ! We use no-slip boundary for velocities.
    !
-   subroutine compute_diff_wallflux (divw, dx, i, j, k, &
-                                     vel, vlo, vhi,     &
-                                     bcent, blo, bhi,   &
-                                     apx, axlo, axhi,   &
-                                     apy, aylo, ayhi,   &
-                                     apz, azlo, azhi,   &
-                                     do_explicit_diffusion)
+   subroutine compute_diff_wallflux(divw, dx, i, j, k, &
+                                    vel, vlo, vhi,     &
+                                    bcent, blo, bhi,   &
+                                    flag,  flo, fhi,   &
+                                    apx, axlo, axhi,   &
+                                    apy, aylo, ayhi,   &
+                                    apz, azlo, azhi,   &
+                                    do_explicit_diffusion)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
 
-      ! Cell indeces
+      ! Cell indices
       integer(c_int), intent(in   ) :: i, j, k
 
       ! Grid spacing
@@ -38,6 +42,7 @@ contains
       integer(c_int), intent(in   ) :: aylo(3), ayhi(3)
       integer(c_int), intent(in   ) :: azlo(3), azhi(3)
       integer(c_int), intent(in   ) ::  blo(3),  bhi(3)
+      integer(c_int), intent(in   ) ::  flo(3),  fhi(3)
 
       ! Arrays
       real(rt),       intent(in   ) ::                                 &
@@ -47,57 +52,93 @@ contains
            &   apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)  ), &
            &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  )
 
+      integer(c_int),  intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
+
       ! If true  then we include all the diffusive terms in this explicit result
       ! If false then we include all only the off-diagonal terms here -- we do this
       !     by computing the full tensor then subtracting the diagonal terms
       integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       ! Local variable
-      real(rt)   :: idx, idy, idz
+      real(rt)   :: dxinv(3), idx, idy, idz
       real(rt)   :: dapx, dapy, dapz
+      real(rt)   :: apnorm, apnorminv, anrmx, anrmy, anrmz
+      real(rt)   :: dudn, dvdn, dwdn
       real(rt)   :: ux, uy, uz, vx, vy, vz, wx, wy, wz
-      real(rt)   :: gradu(9)
-      real(rt)   :: tauxx, tauyy, tauzz, tauxy, tauxz, tauyx, tauyz, tauzx, tauzy
+      real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
+      real(rt)   :: phib
 
       divw  = zero
-      idx = one / dx(1)
-      idy = one / dx(2)
-      idz = one / dx(3)
+      dxinv = one / dx
 
-      ! Compute the velocity gradients on the EB wall 
-      ! 
-      call compute_eb_gradu(gradu, dx, i, j, k, & 
-                            vel, vlo, vhi, &
-                            bcent, blo, bhi, &
-                            apx, axlo, axhi, & 
-                            apy, aylo, ayhi, & 
-                            apz, azlo, azhi, 0)
+      idx = dxinv(1)
+      idy = dxinv(2)
+      idz = dxinv(3)
 
-      ux = gradu(1) * idx
-      uy = gradu(2) * idy
-      uz = gradu(3) * idz
+      dapx = apx(i+1,j  ,k  ) - apx(i,j,k)
+      dapy = apy(i  ,j+1,k  ) - apy(i,j,k)
+      dapz = apz(i  ,j  ,k+1) - apz(i,j,k)
+
+      apnorm = sqrt(dapx**2 + dapy**2 + dapz**2)
+
+      if ( apnorm == zero ) then
+         call amrex_abort("compute_diff_wallflux: we are in trouble.")
+      end if
+
+      apnorminv = one/apnorm
+      anrmx = -dapx * apnorminv  ! unit vector pointing toward the wall
+      anrmy = -dapy * apnorminv
+      anrmz = -dapz * apnorminv
+
+      ! Value on wall -- here we enforce no-slip therefore 0 for all components
+      phib = 0.d0
+
+      call compute_dphidn_3d(dudn, dxinv, i, j, k, &
+                             vel(:,:,:,1), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz)
+
+      call compute_dphidn_3d(dvdn, dxinv, i, j, k, &
+                             vel(:,:,:,2), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz)
+
+      call compute_dphidn_3d(dwdn, dxinv, i, j, k, &
+                             vel(:,:,:,3), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz)
+
       !
-      vx = gradu(4) * idx
-      vy = gradu(5) * idy
-      vz = gradu(6) * idz
-      !
-      wx = gradu(7) * idx
-      wy = gradu(8) * idy
-      wz = gradu(9) * idz
+      ! transform them to d/dx, d/dy and d/dz given transverse derivatives are zero
+      ux = dudn * anrmx * idx
+      uy = dudn * anrmy * idy
+      uz = dudn * anrmz * idz
+      !                       
+      vx = dvdn * anrmx * idx
+      vy = dvdn * anrmy * idy
+      vz = dvdn * anrmz * idz
+      !                       
+      wx = dwdn * anrmx * idx
+      wy = dwdn * anrmy * idy
+      wz = dwdn * anrmz * idz
 
-      strain = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
+      strain = sqrt(two * ux**2 + two * vy**2 + two * wz**2 + &
+                    (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
       visc = viscosity(strain)
 
       ! compute components of stress tensor on the wall
       tauxx = visc * (ux + ux) 
       tauxy = visc * (uy + vx)
       tauxz = visc * (uz + wx)
-      !
+      
       tauyx = tauxy
       tauyy = visc * (vy + vy)
       tauyz = visc * (vz + wy)
-      !
+      
       tauzx = tauxz
       tauzy = tauyz
       tauzz = visc * (wz + wz)
@@ -126,9 +167,9 @@ contains
       end if
 
       ! Return the divergence of the stress tensor 
-      divw(1) = dapx*tauxx + dapy*tauyx + dapz*tauzx
-      divw(2) = dapx*tauxy + dapy*tauyy + dapz*tauzy
-      divw(3) = dapx*tauxz + dapy*tauyz + dapz*tauzz
+      divw(1) = dapx * tauxx + dapy * tauxy + dapz * tauxz
+      divw(2) = dapx * tauyx + dapy * tauyy + dapz * tauyz
+      divw(3) = dapx * tauzx + dapy * tauzy + dapz * tauzz
 
    end subroutine compute_diff_wallflux
 

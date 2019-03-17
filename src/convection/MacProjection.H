@@ -10,7 +10,8 @@ class MacProjection
 public:
 	MacProjection(amrex::AmrCore* a_amrcore,
 				  int a_nghost,
-				  amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* a_ebfactory);
+				  amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* a_ebfactory, 
+                  int a_probtype);
 
 	~MacProjection();
 
@@ -37,6 +38,7 @@ public:
 
 private:
 	int m_nghost;
+    int m_probtype = 0;
 
 	amrex::AmrCore* m_amrcore;
 	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* m_ebfactory;
@@ -70,8 +72,6 @@ private:
 	amrex::Real m_mg_atol = 0.0;
 
 	void read_inputs();
-
-	void set_ccmf_bcs(int lev, amrex::MultiFab& mf);
 
 	void compute_b_coeff(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& u,
 						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& v,

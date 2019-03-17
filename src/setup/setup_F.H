@@ -10,9 +10,14 @@ extern "C"
     
     void incflo_get_data
         (
+            amrex::Real* delp,
             amrex::Real* gravity,
             amrex::Real* ro_0,
             amrex::Real* mu,
+            amrex::Real* ic_u,
+            amrex::Real* ic_v,
+            amrex::Real* ic_w,
+            amrex::Real* ic_p,
             amrex::Real* n,
             amrex::Real* tau_0,
             amrex::Real* papa_reg,
@@ -32,6 +37,15 @@ extern "C"
             const int* ng
         );
     
+    void set_bc_mod
+        (
+            const int* pID, const int* pType,
+            const amrex::Real* pLo, const amrex::Real* pHi,
+            amrex::Real* pLoc,
+            amrex::Real* pPg,
+            amrex::Real* pVel
+        );
+
     void init_fluid
         (
             const int* slo, const int* shi,
@@ -42,7 +56,8 @@ extern "C"
             amrex::Real* vel,
             amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength
+            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength, 
+            const int* probtype
         );
     
     void set_p0

@@ -42,6 +42,17 @@ amr.max_level           =   0           # Max AMR level in hierarchy
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   4.  4.  6.  # Hi corner coordinates
 geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+
+# Boundary conditions
+xlo.type                =   "nsw"
+xlo.velocity            =   0.  0.  1.
+xhi.type                =   "nsw"
+xhi.velocity            =   0.  0.  1.
+ylo.type                =   "nsw"
+ylo.velocity            =   0.  0.  1.
+yhi.type                =   "nsw"
+yhi.velocity            =   0.  0.  1.
+
 # Add sphere 
 incflo.geometry         =   "sphere"
 sphere.internal_flow    =   false
@@ -49,10 +60,18 @@ sphere.radius           =   0.5
 sphere.center           =   2.  2.  3.
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#           INITIAL CONDITIONS          #
+#.......................................#
+incflo.ic_u             =   0.0         #
+incflo.ic_v             =   0.0         #
+incflo.ic_w             =   1.0         #
+incflo.ic_p             =   0.0         #
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.explicit_diffusion = 0           # Explicit viscous diffusion?
-incflo.steady_state_tol   = 1.e-4       # Tolerance for steady-state
+incflo.steady_state_tol =   1.e-4       # Tolerance for steady-state
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
@@ -61,8 +80,3 @@ incflo.verbose          =   2           # incflo_level
 mac.verbose             =   0           # MacProjector
 projection.verbose      =   0
 diffusion.verbose       =   0
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

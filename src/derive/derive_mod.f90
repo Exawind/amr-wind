@@ -1,8 +1,9 @@
 module derive_module
 
-   use amrex_fort_module, only : rt => amrex_real
-   use iso_c_binding , only: c_int
-   use param, only: half, one, two
+   use amrex_fort_module,  only : rt => amrex_real
+   use iso_c_binding,      only: c_int
+
+   use constant,           only: zero, half, one, two
 
    implicit none
    private

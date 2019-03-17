@@ -45,9 +45,17 @@ void incflo::ReadParameters()
         pp.query("do_initial_proj", do_initial_proj);
 
         // Physics
+		pp.queryarr("delp", delp, 0, 3);
 		pp.queryarr("gravity", gravity, 0, 3);
         pp.query("ro_0", ro_0);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
+
+        // Initial conditions
+        pp.query("probtype", probtype);
+        pp.query("ic_u", ic_u);
+        pp.query("ic_v", ic_v);
+        pp.query("ic_w", ic_w);
+        pp.query("ic_p", ic_p);
 
         // Fluid properties
         pp.query("mu", mu);
@@ -132,7 +140,9 @@ void incflo::ReadParameters()
         }
 
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(gravity.dataPtr(), &ro_0, &mu, &n, &tau_0, &papa_reg, &eta_0, 
+        incflo_get_data(delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
+                        &ic_u, &ic_v, &ic_w, &ic_p,
+                        &n, &tau_0, &papa_reg, &eta_0, 
                         fluid_model.c_str(), fluid_model.size());
 	}
 }
@@ -143,7 +153,7 @@ void incflo::PostInit(int restart_flag)
     SetBCTypes();
 
     // Reset MAC projection object
-    mac_projection.reset(new MacProjection(this, nghost, &ebfactory));
+    mac_projection.reset(new MacProjection(this, nghost, &ebfactory, probtype));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
     poisson_equation.reset(new PoissonEquation(this, &ebfactory, 
@@ -171,7 +181,7 @@ void incflo::PostInit(int restart_flag)
     // Fill boundaries
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        FillScalarBC(lev, *ro[lev]);
+        FillScalarBC(lev,  *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
         vel[lev]->FillBoundary(geom[lev].periodicity());
     }
@@ -206,7 +216,6 @@ void incflo::InitFluid()
         {
             const Box& bx = mfi.validbox();
             const Box& sbx = (*ro[lev])[mfi].box();
-
             init_fluid(sbx.loVect(), sbx.hiVect(),
                        bx.loVect(), bx.hiVect(),
                        domain.loVect(), domain.hiVect(),
@@ -215,7 +224,7 @@ void incflo::InitFluid()
                        (*vel[lev])[mfi].dataPtr(),
                        (*eta[lev])[mfi].dataPtr(),
                        &dx, &dy, &dz,
-                       &xlen, &ylen, &zlen);
+                       &xlen, &ylen, &zlen, &probtype);
         }
     }
 }
@@ -273,7 +282,10 @@ void incflo::SetBackgroundPressure()
 	// Here we set a separate periodicity flag for p0 because when we use
 	// pressure drop (delp) boundary conditions we fill all variables *except* p0
 	// periodically
-    if(delp_dir > -1) press_per[delp_dir] = 0;
+    if(delp_dir > -1) 
+    {
+        press_per[delp_dir] = 0;
+    }
 	p0_periodicity = Periodicity(press_per);
 
     for(int lev = 0; lev <= max_level; lev++)
@@ -304,7 +316,6 @@ void incflo::SetBackgroundPressure()
                    bc_khi[lev]->dataPtr(),
                    &nghost);
         }
-
         p0[lev]->FillBoundary(p0_periodicity);
     }
 }
@@ -327,7 +338,7 @@ void incflo::InitialIterations()
     // Fill ghost cells
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        FillScalarBC(lev, *ro[lev]);
+        FillScalarBC(lev,  *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
     }
     FillVelocityBC(cur_time, 0);

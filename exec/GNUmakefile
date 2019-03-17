@@ -1,8 +1,26 @@
+
+# Parallelisation options
+USE_MPI = TRUE
+USE_OMP = FALSE
+
+# Debug mode?
+DEBUG = FALSE
+
+# Profiling
+PROFILE       = FALSE
+TINY_PROFILE  = FALSE
+
+
+
+########################################################################\
+# 																		#
+# Below are settings which we probably don't want to change very often. #
+# 																		#
+########################################################################/
+
 # Path to AMReX directory and incflo directories
-# Note that these relative paths are based on 
-# specific problem directories (like exec/periodic_vortices)
-AMREX_HOME ?= ../../../amrex
-TOP = ../..
+AMREX_HOME ?= ../../amrex
+TOP = ..
 
 # Use OS-friendly compiler
 UNAME := $(shell uname)
@@ -11,6 +29,9 @@ ifeq ($(UNAME), Linux)
 else ifeq ($(UNAME), Darwin)
 	COMP = llvm
 endif
+
+# Non-verbose compilation
+VERBOSE = FALSE
 
 # Always use 3 dimensions for incflo
 DIM = 3
@@ -41,12 +62,8 @@ include $(Bpack)
 INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
-INCLUDE_LOCATIONS += $(TOP)/src/include
-VPATH_LOCATIONS   += $(TOP)/src/include
-
 #These are the directories in AMReX
-
-Pdirs   := Base AmrCore Boundary Particle EB
+Pdirs   := Base AmrCore Boundary EB
 Pdirs   += Extern/Algoim
 
 ifeq ($(USE_HYPRE), TRUE)

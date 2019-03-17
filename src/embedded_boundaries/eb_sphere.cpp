@@ -15,7 +15,6 @@ void incflo::make_eb_sphere()
     // Initialise sphere parameters
 	bool inside = true;
     Real radius = 0.0002;
-    int direction = 0;
     Vector<Real> centervec(3);
 
     // Get sphere information from inputs file.                               *

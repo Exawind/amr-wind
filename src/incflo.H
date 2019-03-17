@@ -94,6 +94,8 @@ public:
     const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
 
     int get_nghost(){ return nghost; }
+    int get_probtype(){ return probtype; }
+    void GetInputBCs();
 
 private:
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +104,9 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
     
+    // Set boundary conditions from inputs file
+    void SetInputBCs(const std::string bcID, const int index, const int cyclic, const Real domloc);
+
     // Read inputs file using ParmParse
     void ReadParameters();
 
@@ -174,7 +179,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void FillScalarBC(int lev, MultiFab& mf);
+    void FillScalarBC(int lev, MultiFab& mf);
 	void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,7 +289,7 @@ private:
 	Real fixed_dt = -1.;
 
     // Whether to use the explicit diffusion or the semi-implicit one
-	int explicit_diffusion = 1;
+	int explicit_diffusion = 0;
 
     // Initial projection / iterations
     bool do_initial_proj    = true;
@@ -303,6 +308,7 @@ private:
 	Periodicity p0_periodicity;
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
+    Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
     // Fluid properties
@@ -312,6 +318,17 @@ private:
     Real tau_0 = 0.0;
     Real papa_reg = 0.0;
     Real eta_0 = 0.0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Member variables: Initial conditions
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    int probtype = 0;
+    Real ic_u = 0.0;
+    Real ic_v = 0.0;
+    Real ic_w = 0.0;
+    Real ic_p = 0.0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -331,8 +348,6 @@ private:
 	Vector<std::unique_ptr<IArrayBox>> bc_jhi;
 	Vector<std::unique_ptr<IArrayBox>> bc_klo;
 	Vector<std::unique_ptr<IArrayBox>> bc_khi;
-
-	Vector<std::unique_ptr<iMultiFab>> flag;
 
     // Primary variables
 	Vector<std::unique_ptr<MultiFab>> ro;

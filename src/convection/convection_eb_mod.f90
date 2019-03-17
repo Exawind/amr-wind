@@ -1,12 +1,12 @@
 module convection_eb_mod
 
+   use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell, get_neighbor_cells
+   use amrex_error_module,      only: amrex_abort
    use amrex_fort_module,       only: ar => amrex_real
    use iso_c_binding ,          only: c_int
-   use param,                   only: zero, half, one, my_huge
-   use bc,                      only: minf_, nsw_, fsw_, psw_, pinf_, pout_
-   use amrex_error_module,      only: amrex_abort
-   use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell, &
-        &                             get_neighbor_cells
+
+   use bc,                      only: minf_, nsw_, pinf_, pout_
+   use constant,                only: zero, half, one, my_huge
 
    implicit none
    private
@@ -21,7 +21,7 @@ contains
                                               cent, clo, chi, flags, flo, fhi, bc_ilo, bc_ihi, ng,         &
                                               domlo, domhi ) bind(C)
 
-      use  eb_interpolation_mod
+      use eb_interpolation_mod
       use convection_mod 
 
       ! Tile bounds ( x-face centered )
@@ -61,7 +61,7 @@ contains
 
       ! Local variables
       integer(c_int)                 :: i, j, k
-      integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+      integer, parameter             :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
       real(ar)                       :: upls, umns
 
       ! First we compute the face centered MAC velocity
@@ -136,7 +136,7 @@ contains
 
       ! Local variables
       integer(c_int)                 :: i, j, k
-      integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+      integer, parameter             :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
       real(ar)                       :: vpls, vmns
 
       do k = lo(3)-1, hi(3)+1
@@ -209,7 +209,7 @@ contains
 
       ! Local variables
       integer(c_int)                 :: i, j, k
-      integer, parameter             :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+      integer, parameter             :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
       real(ar)                       :: wpls, wmns
 
       ! First we compute the face centered MAC velocity
@@ -340,7 +340,7 @@ contains
          real(ar)               :: u_face, v_face, w_face
          real(ar)               :: upls, umns, vpls, vmns, wpls, wmns
          integer                :: i, j, k, n
-         integer, parameter     :: bc_list(6) = [MINF_, NSW_, FSW_, PSW_, PINF_, POUT_]
+         integer, parameter     :: bc_list(4) = [MINF_, NSW_, PINF_, POUT_]
 
          do n = 1, 3
 

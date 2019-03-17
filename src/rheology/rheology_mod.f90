@@ -2,8 +2,8 @@ module rheology_module
 
    use amrex_error_module, only: amrex_abort
    use amrex_fort_module, only : rt => amrex_real
+   use constant, only: half, one
    use constant, only: mu, n, tau_0, eta_0, papa_reg, fluid_model
-   use param, only: half, one
 
    implicit none
 
