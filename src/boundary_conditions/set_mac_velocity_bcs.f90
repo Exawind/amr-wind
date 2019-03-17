@@ -15,10 +15,11 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
                                 bct_jlo, bct_jhi, &
                                 bct_klo, bct_khi, &
                                 domlo, domhi, &
-                                ng ) bind(C)
+                                ng, probtype ) bind(C)
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding ,     only: c_int
+   use constant,           only: zero, one, two, half
    use bc
 
    implicit none
@@ -36,7 +37,7 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
    integer(c_int), intent(in   ) :: domlo(3), domhi(3)
 
    ! Number of ghost nodes
-   integer(c_int), intent(in   ) :: ng
+   integer(c_int), intent(in   ) :: ng, probtype
 
    ! BCs type
    integer(c_int), intent(in   ) :: &
@@ -56,6 +57,9 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
    ! Local variables
    integer  :: bcv, i, j, k
    integer  :: nlft, nrgt, nbot, ntop, nup, ndwn
+   
+   ! Used for protype = 3, channel_cylinder with Poiseuille plane inflow BCs
+   real(ar) :: y
 
    nlft = max(0,domlo(1)-slo(1))
    nbot = max(0,domlo(2)-slo(2))
@@ -84,6 +88,11 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
                u(ulo(1):domlo(1)  ,j,k) = bc_u(bcv)
                v(vlo(1):domlo(1)-1,j,k) = 0.0d0
                w(wlo(1):domlo(1)-1,j,k) = 0.0d0
+
+               if(probtype == 3) then
+                  y = (real(j,ar) + half) / (domhi(2) - domlo(2) + 1)
+                  u(ulo(1):domlo(1)  ,j,k) = 6 * bc_u(bcv) * y * (one - y)
+               endif
 
             case ( nsw_)
 

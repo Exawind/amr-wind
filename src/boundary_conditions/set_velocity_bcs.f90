@@ -7,7 +7,7 @@ subroutine set_velocity_bcs(time, &
                             bct_jlo, bct_jhi, &
                             bct_klo, bct_khi, &
                             domlo, domhi, &
-                            ng, extrap_dir_bcs ) bind(C)
+                            ng, extrap_dir_bcs, probtype) bind(C)
 
    use amrex_fort_module,  only: ar => amrex_real
    use iso_c_binding,      only: c_int
@@ -29,7 +29,7 @@ subroutine set_velocity_bcs(time, &
 
    ! Grid bounds
    integer(c_int), intent(in   ) :: domlo(3), domhi(3)
-   integer(c_int), intent(in   ) :: ng
+   integer(c_int), intent(in   ) :: ng, probtype
 
    ! BCs type
    integer(c_int), intent(in   )  ::                                 &
@@ -48,6 +48,9 @@ subroutine set_velocity_bcs(time, &
    integer :: bcv, i, j, k
    integer :: nlft, nrgt, nbot, ntop, nup, ndwn
    real    :: c0, c1, c2
+
+   ! Used for probtype = 3 (channel_cylinder with Poiseuille plane inflow BC)
+   real    :: y
 
    ! Coefficients for linear extrapolation to ghost cells
    c0 = two 
@@ -68,6 +71,7 @@ subroutine set_velocity_bcs(time, &
    ntop = max(0,uhi(2)-domhi(2))
    nup  = max(0,uhi(3)-domhi(3))
 
+
    if (nlft .gt. 0) then
       do k = ulo(3), uhi(3)
          do j = ulo(2), uhi(2)
@@ -87,6 +91,11 @@ subroutine set_velocity_bcs(time, &
                vel(ulo(1):domlo(1)-1,j,k,1) =  bc_u(bcv)
                vel(ulo(1):domlo(1)-1,j,k,2) =  zero
                vel(ulo(1):domlo(1)-1,j,k,3) =  zero
+
+               if(probtype == 3) then
+                  y = (real(j,ar) + half) / (domhi(2) - domlo(2) + 1)
+                  vel(ulo(1):domlo(1)-1,j,k,1) =  6.0 * bc_u(bcv) * y * (one - y)
+               endif
 
             case ( nsw_)
 

@@ -94,8 +94,7 @@ public:
     const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
 
     int get_nghost(){ return nghost; }
-
-    // Get boundary conditions from inputs file
+    int get_probtype(){ return probtype; }
     void GetInputBCs();
 
 private:

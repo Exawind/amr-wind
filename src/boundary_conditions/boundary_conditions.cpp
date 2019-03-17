@@ -72,6 +72,7 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
     const int* bc_khi_ptr = incflo_for_fillpatching->get_bc_khi_ptr(lev);
 
     int nghost = incflo_for_fillpatching->get_nghost();
+    int probtype = incflo_for_fillpatching->get_probtype();
 
     set_velocity_bcs(&time, 
                      BL_TO_FORTRAN_ANYD(dest), 
@@ -79,7 +80,7 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
                      bc_jlo_ptr, bc_jhi_ptr, 
                      bc_klo_ptr, bc_khi_ptr, 
                      domain.loVect(), domain.hiVect(),
-                     &nghost, &extrap_dir_bcs);
+                     &nghost, &extrap_dir_bcs, &probtype);
 }
 
 // Compute a new multifab by copying array from valid region and filling ghost cells
@@ -171,7 +172,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
                              bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                              bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                              domain.loVect(), domain.hiVect(),
-                             &nghost, &extrap_dir_bcs);
+                             &nghost, &extrap_dir_bcs, &probtype);
         }
 
         EB_set_covered(*vel[lev], 1.0e20);

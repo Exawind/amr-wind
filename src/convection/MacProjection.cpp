@@ -20,11 +20,13 @@ using namespace amrex;
 // Constructor
 MacProjection::MacProjection(AmrCore* a_amrcore,
 							 int a_nghost,
-							 Vector<std::unique_ptr<EBFArrayBoxFactory>>* a_ebfactory)
+							 Vector<std::unique_ptr<EBFArrayBoxFactory>>* a_ebfactory, 
+                             int a_probtype)
 {
 	m_amrcore = a_amrcore;
 	m_nghost = a_nghost;
 	m_ebfactory = a_ebfactory;
+    m_probtype = a_probtype;
 
 	read_inputs();
 }
@@ -315,7 +317,7 @@ void MacProjection::set_velocity_bcs(int lev,
 							 (*m_bc_khi)[lev]->dataPtr(),
 							 domain.loVect(),
 							 domain.hiVect(),
-							 &m_nghost);
+							 &m_nghost, &m_probtype);
 	}
 }
 
