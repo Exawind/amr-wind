@@ -1,8 +1,26 @@
+
+# Parallelisation options
+USE_MPI = TRUE
+USE_OMP = FALSE
+
+# Debug mode?
+DEBUG = FALSE
+
+# Profiling
+PROFILE       = FALSE
+TINY_PROFILE  = FALSE
+
+
+
+########################################################################\
+# 																		#
+# Below are settings which we probably don't want to change very often. #
+# 																		#
+########################################################################/
+
 # Path to AMReX directory and incflo directories
-# Note that these relative paths are based on 
-# specific problem directories (like exec/periodic_vortices)
-AMREX_HOME ?= ../../../amrex
-TOP = ../..
+AMREX_HOME ?= ../../amrex
+TOP = ..
 
 # Use OS-friendly compiler
 UNAME := $(shell uname)
