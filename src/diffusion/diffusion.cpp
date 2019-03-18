@@ -37,7 +37,7 @@ void incflo::ComputeDivTau(int lev,
     for (MFIter mfi(*vel_in[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi) {
 
         // Tilebox
-        Box bx = mfi.tilebox ();
+        Box bx = mfi.tilebox();
 
         // this is to check efficiently if this tile contains any eb stuff
         const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
