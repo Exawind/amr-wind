@@ -274,7 +274,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, time, Sborder, 0, Sborder.nComp(), bcs_u);
+        FillPatchVel(lev, time, Sborder, 0, Sborder.nComp());
     
         // Compute the slopes
         ComputeVelocitySlopes(lev, Sborder);

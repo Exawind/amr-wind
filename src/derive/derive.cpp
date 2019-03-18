@@ -56,7 +56,7 @@ void incflo::ComputeStrainrate()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp(), bcs_u);
+        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
     
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy(*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
@@ -113,7 +113,7 @@ void incflo::ComputeVorticity()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp(), bcs_u);
+        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
     
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());

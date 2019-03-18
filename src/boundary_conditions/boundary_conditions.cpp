@@ -86,9 +86,10 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
 // Compute a new multifab by copying array from valid region and filling ghost cells
 // works for single level and 2-level cases (fill fine grid ghost by interpolating from coarse)
 void
-incflo::FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp, 
-                     const Vector<BCRec>& bcs)
+incflo::FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp)
 {
+    Vector<BCRec> bcs(3);
+
     if (lev == 0)
     {
         Vector<MultiFab*> smf;

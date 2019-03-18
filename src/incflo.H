@@ -240,8 +240,7 @@ private:
 
 	void make_mg_bc(int mg_bc[]);
 
-    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp,
-                      const Vector<BCRec>& bcr);
+    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
     void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
 	void AverageDown();
@@ -258,10 +257,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
      Vector<Real> t_old;
      Vector<Real> t_new;
-
-     Vector<BCRec> bcs_u; // For velocity components
-     Vector<BCRec> bcs_s; // For scalars
-     Vector<BCRec> bcs_f; // For generic first-order extrapolation
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
