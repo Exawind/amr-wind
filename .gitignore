@@ -40,15 +40,14 @@ doc/UsersGuide/*.pdf
 doc/UsersGuide/*.ps
 doc/UsersGuide/*.toc
 
-exec/*/*.ex
-
 *.swp
 *.swo
 
-exec/*/tmp_build_dir/
-exec/*/Backtrace.*
-exec/*/plt*/
-exec/*/chk*/
-exec/*/movie.visit
-exec/*/*.vtp
-exec/*/*.pvtp
+exec/*.ex
+exec/tmp_build_dir/
+exec/Backtrace.*
+exec/plt*/
+exec/chk*/
+exec/movie.visit
+exec/*.vtp
+exec/*.pvtp
