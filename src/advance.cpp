@@ -245,6 +245,8 @@ void incflo::ApplyPredictor()
 
     UpdateDerivedQuantities();
 
+    FillVelocityBC(new_time, 0);
+
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // explicit_diffusion == true:  compute the full diffusive terms here
@@ -257,6 +259,13 @@ void incflo::ApplyPredictor()
         // Add the diffusion terms (either all if explicit_diffusion == true or just
         // the off-diagonal terms if explicit_diffusion == false)
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
+
+    for (MFIter mfi(*vel[0],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+       const auto& dtu_fab = divtau_old[0]->array(mfi);
+       std::cout << "DIVTAU VEL AT (0,0,0) " << dtu_fab(0,0,0) << std::endl;
+    }
+       exit(0);
 
         // Add gravitational forces
         for(int dir = 0; dir < 3; dir++)
@@ -283,6 +292,7 @@ void incflo::ApplyPredictor()
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
+
     FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*

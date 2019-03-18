@@ -318,6 +318,13 @@ contains
                   tau_x(i,j,k,3) = tau_x(i,j,k,3) - eta_w*dwdx
                end if
 
+               if (i.eq.0.and.j.eq.0.and.k.eq.0) then
+                  print *,'TAU_X(0,0,0,1) IN COMPUTE_TAU_X   ', tau_x(i,j,k,1)
+                  print *,'DUDX  AT (0,0,0) IN COMPUTE_TAU_X ', dudx 
+                  print *,'ETA_W AT (0,0,0) IN COMPUTE_TAU_X ', eta_w, eta(i,j,k), eta(i-1,j,k)
+                  stop
+               end if
+
             end do
          end do
       end do
