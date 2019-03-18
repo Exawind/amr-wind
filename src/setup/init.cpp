@@ -183,8 +183,9 @@ void incflo::PostInit(int restart_flag)
     {
         FillScalarBC(lev,  *ro[lev]);
         FillScalarBC(lev, *eta[lev]);
-        vel[lev]->FillBoundary(geom[lev].periodicity());
+        FillVelocityBC(cur_time, 0);
     }
+
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
