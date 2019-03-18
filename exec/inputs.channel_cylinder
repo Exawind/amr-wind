@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   5.          # Max (simulated) time to evolve
-max_step                =   5           # Max number of time steps
+max_step                =   1           # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -17,7 +17,7 @@ incflo.cfl              =   0.9         # CFL factor
 amr.plot_int            =   1           # Steps between plot files
 amr.plot_per            =   0.05        # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
-amr.restart             =   ""          # Checkpoint to restart from 
+#amr.restart             =   "chk00001"  # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -31,8 +31,8 @@ incflo.mu               =   0.001       # Dynamic viscosity coefficient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   192 64  8   # Grid cells at coarsest AMRlevel
-amr.max_level           =   1           # Max AMR level in hierarchy 
+amr.n_cell              =   96  32  4   # Grid cells at coarsest AMRlevel
+amr.max_level           =   0           # Max AMR level in hierarchy 
 amr.blocking_factor     =   4 
 amr.grid_eff            =   0.7 
 amr.n_error_buf         =   8
@@ -76,7 +76,7 @@ incflo.ic_p             =   0.0         #
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.steady_state_tol = 1.e-4         # Tolerance for steady-state
+incflo.steady_state_tol =   1.e-4       # Tolerance for steady-state
 amrex.fpe_trap_invalid  =   1           # Trap NaNs
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
