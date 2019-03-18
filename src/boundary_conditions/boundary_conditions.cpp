@@ -89,6 +89,9 @@ void
 incflo::FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp, 
                      const Vector<BCRec>& bcs)
 {
+    // Hack so that ghost cells are not undefined
+    mf.setVal(1.e40);
+
     if (lev == 0)
     {
         Vector<MultiFab*> smf;
@@ -160,6 +163,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
+
         vel[lev]->FillBoundary(geom[lev].periodicity());
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
