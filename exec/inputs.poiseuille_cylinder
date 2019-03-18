@@ -1,0 +1,69 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+stop_time               =   1.0        # Max (simulated) time to evolve
+max_step                =   -1          # Max number of time steps
+steady_state            =   0           # Steady-state solver? 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+incflo.fixed_dt         =   0.01        # Use this constant dt if > 0
+incflo.cfl              =   0.9         # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+amr.plot_int            =   -1          # Steps between plot files
+amr.plot_per            =   0.1         # Steps between plot files
+amr.check_int           =   -1          # Steps between checkpoint files
+amr.restart             =   ""          # Checkpoint to restart from 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity          =   0.  0.  0.  # Gravitational force
+incflo.ro_0             =   1.          # Reference density 
+
+incflo.fluid_model      =   "bingham"   # Rheological model
+incflo.mu               =   1.          # Dynamic viscosity coefficient
+incflo.tau_0            =   1.          # Yield stress
+incflo.papa_reg         =   0.001       # Papanastasiou regularisation parameter
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              =   64  64  8   # Grid cells at coarsest AMRlevel
+amr.blocking_factor     =   8           # Blocking factor for grids
+amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.max_grid_size_x     =   1024
+amr.max_grid_size_y     =   1024
+amr.max_grid_size_z     =   1024
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   4.  4.  0.5 # Hi corner coordinates
+geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
+
+incflo.geometry         =   "cylinder"  # Add cylinder
+cylinder.internal_flow  =   true        # Internal vs external flow
+cylinder.radius         =   1.          # Radius
+cylinder.direction      =   2           # Choices are {0,1,2}
+cylinder.center         =   2.  2.  0.  # Center
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SOLVER SETTINGS            #
+#.......................................#
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+amrex.fpe_trap_invalid  =   1           # Trap NaNs
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   2           # incflo_level
+diffusion.verbose       =   0
+mac.verbose             =   0           # MacProjector
