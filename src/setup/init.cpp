@@ -179,11 +179,7 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        FillScalarBC(lev,  *ro[lev]);
-        FillScalarBC(lev, *eta[lev]);
-    }
+    FillScalarBC();
     FillVelocityBC(cur_time, 0);
 
     // Project the initial velocity field to make it divergence free
@@ -337,11 +333,7 @@ void incflo::InitialIterations()
     }
 
     // Fill ghost cells
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        FillScalarBC(lev,  *ro[lev]);
-        FillScalarBC(lev, *eta[lev]);
-    }
+    FillScalarBC();
     FillVelocityBC(cur_time, 0);
 
     // Copy vel into vel_o

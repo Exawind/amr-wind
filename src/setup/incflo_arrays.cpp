@@ -257,12 +257,6 @@ void incflo::RegridArrays(int lev)
                                                      MFInfo(), *ebfactory[lev]));
     m_w_mac[lev] = std::move(w_mac_new);
     m_w_mac[lev] -> setVal(0.0);
-
-	// ********************************************************************************
-	// Make sure we fill the ghost cells as appropriate -- this is copied from init_fluid
-	// ********************************************************************************
-    FillScalarBC(lev,  *ro[lev]);
-    FillScalarBC(lev, *eta[lev]);
 }
 
 // Resize all arrays when instance of incflo class is constructed.
