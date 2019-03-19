@@ -123,6 +123,7 @@ contains
       call amrex_allocate(vel, vlo(1), vhi(1), vlo(2), vhi(2), vlo(3), vhi(3), 1, 3)
 
       ! Put values into ghost cells so we can easy take derivatives
+      ! TODO: is this necessary? We have filled 
       call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
                             bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi)
 

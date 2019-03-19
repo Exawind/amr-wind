@@ -92,7 +92,7 @@ incflo::FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp)
     Vector<BCRec> bcs(3);
 
     // Hack so that ghost cells are not undefined
-    mf.setVal(1.e40);
+    mf.setDomainBndry(boundary_val, geom[lev]);
 
     if (lev == 0)
     {
@@ -166,6 +166,9 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     {
         Box domain(geom[lev].Domain());
 
+        // Hack so that ghost cells are not undefined
+        vel[lev]->setDomainBndry(boundary_val, geom[lev]);
+
         vel[lev]->FillBoundary(geom[lev].periodicity());
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -180,8 +183,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
                              domain.loVect(), domain.hiVect(),
                              &nghost, &extrap_dir_bcs, &probtype);
         }
-
-        EB_set_covered(*vel[lev], 1.0e20);
+        EB_set_covered(*vel[lev], covered_val);
         
         // Do this after as well as before to pick up terms that got updated in the call above
         vel[lev]->FillBoundary(geom[lev].periodicity());
@@ -196,6 +198,9 @@ void incflo::FillScalarBC(int lev, MultiFab& mf)
     
     if(!mf.boxArray().ixType().cellCentered())
         amrex::Error("fill_mf_bc only used for cell-centered arrays!");
+
+    // Hack so that ghost cells are not undefined
+    mf.setDomainBndry(boundary_val, geom[lev]);
 
     // Impose periodic BCs at domain boundaries and fine-fine copies in the interior
     mf.FillBoundary(geom[lev].periodicity());

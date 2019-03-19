@@ -4,7 +4,7 @@ USE_MPI = TRUE
 USE_OMP = FALSE
 
 # Debug mode?
-DEBUG = TRUE
+DEBUG = FALSE
 
 # Profiling
 PROFILE       = FALSE

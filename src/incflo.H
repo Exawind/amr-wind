@@ -121,6 +121,13 @@ private:
 	void InitialProjection();
     void InitialIterations();
 
+    // Member variables for initial conditions
+    int probtype = 0;
+    Real ic_u = 0.0;
+    Real ic_v = 0.0;
+    Real ic_w = 0.0;
+    Real ic_p = 0.0;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Simulate!
@@ -132,13 +139,6 @@ private:
 	bool SteadyStateReached();
 	void ApplyPredictor();
 	void ApplyCorrector();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Projection
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
     void ApplyProjection(Real time, Real scaling_factor);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,64 +199,16 @@ private:
 	void make_eb_regular();
 	void make_eb_sphere();
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Input / Output
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+	const EB2::Level* eb_level;
+	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
-    // Write header, which is the same for plot and checkpoint files 
-    void WriteHeader(const std::string& name, bool is_checkpoint) const;
+	// Number of ghost nodes for field arrays.
+	const int nghost = 5;
 
-    // Write job info (compilers, #processors, git hash etc etc)
-	void WriteJobInfo(const std::string& dir) const;
-
-    // Write checkpoint file to restart from 
-    void WriteCheckPointFile() const;
-
-    // Write plot file for visualisation of results
-    void WritePlotFile() const;
-
-    // Read checkpoint file and restart simulation from it
-    void ReadCheckpointFile();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Diagnostics
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    Real Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type);
-	void PrintMaxValues(Real time);
-	void PrintMaxVel(int lev);
-	void PrintMaxGp(int lev);
-	void CheckForNans(int lev);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Not yet classified
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-	void make_mg_bc(int mg_bc[]);
-
-    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
-    void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
-
-	void AverageDown();
-	void AverageDownTo(int crse_lev);
-
-	void AllocateArrays(int lev);
-	void RegridArrays(int lev);
-    void MakeBCArrays();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Member variables: Not yet classified
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-     Vector<Real> t_old;
-     Vector<Real> t_new;
+	// These values are required when fluid sees EB -- for now
+	const int m_eb_basic_grow_cells = nghost;
+	const int m_eb_volume_grow_cells = nghost;
+	const int m_eb_full_grow_cells = nghost;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -316,14 +268,55 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: Initial conditions
+    // Input / Output
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    int probtype = 0;
-    Real ic_u = 0.0;
-    Real ic_v = 0.0;
-    Real ic_w = 0.0;
-    Real ic_p = 0.0;
+
+    void WriteHeader(const std::string& name, bool is_checkpoint) const;
+	void WriteJobInfo(const std::string& dir) const;
+    void WriteCheckPointFile() const;
+    void WritePlotFile() const;
+    void ReadCheckpointFile();
+
+    // Member variables for I/O
+    int plot_int = -1;
+    Real plot_per = -1.0;
+    int last_plt = -1;
+    std::string plot_file{"plt"};
+
+    int check_int = -1;
+    int last_chk = -1;
+    std::string check_file{"chk"};
+    std::string restart_file{""};
+
+	// Vector variables to simplify IO -- the vectors are the same for plt/chk
+	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
+	Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
+
+    // Scalar variables at cell centers that need to be written to plotfile/checkfile. 
+    // "volfrac" MUST always be last without any mf associated to it!
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> 
+        pltscalarVars = { &p, &ro, &eta, &strainrate, &strainrate, &vort, &divu };
+    Vector<std::string> 
+        pltscaVarsName = { "p", "ro", "eta", "strainrate", "stress", "vort", "divu", "vfrac" };
+
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
+    Vector<std::string> chkscaVarsName = {"p", "ro", "eta"};
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Diagnostics
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    Real Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type);
+	void PrintMaxValues(Real time);
+	void PrintMaxVel(int lev);
+	void PrintMaxGp(int lev);
+	void CheckForNans(int lev);
+
+    const Real covered_val = 1.0e40;
+    const Real boundary_val = 1.0e80;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -370,52 +363,24 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: I/O
+    // Not yet classified
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    int plot_int = -1;
-    Real plot_per = -1.0;
-    int last_plt = -1;
-    std::string plot_file{"plt"};
+	void make_mg_bc(int mg_bc[]);
 
-    int check_int = -1;
-    int last_chk = -1;
-    std::string check_file{"chk"};
-    std::string restart_file{""};
+    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
+    void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
-	// Vector variables to simplify IO -- the vectors are the same for plt/chk
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
-	Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
+	void AverageDown();
+	void AverageDownTo(int crse_lev);
 
-    // Scalar variables at cell centers that need to be written to plotfile/checkfile. 
-    // "volfrac" MUST always be last without any mf associated to it!
-    Vector<const Vector<std::unique_ptr<MultiFab>>*> 
-        pltscalarVars = { &p, &ro, &eta, &strainrate, &strainrate, &vort, &divu };
-    Vector<std::string> 
-        pltscaVarsName = { "p", "ro", "eta", "strainrate", "stress", "vort", "divu", "vfrac" };
+	void AllocateArrays(int lev);
+	void RegridArrays(int lev);
+    void MakeBCArrays();
 
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> 
-        chkscalarVars = {&p, &ro, &eta};
-	Vector<std::string> 
-        chkscaVarsName = {"p", "ro", "eta"};
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Member variables: EB 
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-	const EB2::Level* eb_level;
-	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
-
-	// Number of ghost nodes for field arrays.
-	const int nghost = 5;
-
-	// These values are required when fluid sees EB -- for now
-	const int m_eb_basic_grow_cells = nghost;
-	const int m_eb_volume_grow_cells = nghost;
-	const int m_eb_full_grow_cells = nghost;
+     Vector<Real> t_old;
+     Vector<Real> t_new;
 };
 
 #endif
