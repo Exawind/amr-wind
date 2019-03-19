@@ -166,7 +166,6 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     {
         Box domain(geom[lev].Domain());
 
-        std::cout << "SETTING VEL GHOST CELLS TO 1e150 " << std::endl;
         vel[lev]->setDomainBndry(1.e150,geom[lev]);
 
         vel[lev]->FillBoundary(geom[lev].periodicity());
@@ -183,8 +182,6 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
                              domain.loVect(), domain.hiVect(),
                              &nghost, &extrap_dir_bcs, &probtype);
         }
-
-        std::cout << "SETTING VEL COVERED CELLS TO 1e80 " << std::endl;
         EB_set_covered(*vel[lev], 1.0e80);
         
         // Do this after as well as before to pick up terms that got updated in the call above
@@ -201,7 +198,6 @@ void incflo::FillScalarBC(int lev, MultiFab& mf)
     if(!mf.boxArray().ixType().cellCentered())
         amrex::Error("fill_mf_bc only used for cell-centered arrays!");
 
-    std::cout << "SETTING SCALAR TO 1e40 " << std::endl;
     mf.setDomainBndry(1.e20,geom[lev]);
 
     // Impose periodic BCs at domain boundaries and fine-fine copies in the interior

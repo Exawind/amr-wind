@@ -18,7 +18,6 @@ void incflo::ComputeDivTau(int lev,
     BL_PROFILE("incflo::ComputeDivTau");
     Box domain(geom[lev].Domain());
 
-    std::cout << "SETTING VEL COVERED CELLS TO 1e100 " << std::endl;
     EB_set_covered(*vel[lev], 1.0e100);
 
     // Get EB geometric info

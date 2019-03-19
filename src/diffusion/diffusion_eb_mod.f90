@@ -123,6 +123,7 @@ contains
       call amrex_allocate(vel, vlo(1), vhi(1), vlo(2), vhi(2), vlo(3), vhi(3), 1, 3)
 
       ! Put values into ghost cells so we can easy take derivatives
+      ! TODO: is this necessary? We have filled 
       call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
                             bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi)
 
@@ -316,13 +317,6 @@ contains
                   tau_x(i,j,k,1) = tau_x(i,j,k,1) - eta_w*dudx
                   tau_x(i,j,k,2) = tau_x(i,j,k,2) - eta_w*dvdx
                   tau_x(i,j,k,3) = tau_x(i,j,k,3) - eta_w*dwdx
-               end if
-
-               if (i.eq.0.and.j.eq.0.and.k.eq.0) then
-                  print *,'TAU_X(0,0,0,1) IN COMPUTE_TAU_X   ', tau_x(i,j,k,1)
-                  print *,'DUDX  AT (0,0,0) IN COMPUTE_TAU_X ', dudx 
-                  print *,'ETA_W AT (0,0,0) IN COMPUTE_TAU_X ', eta_w, eta(i,j,k), eta(i-1,j,k)
-                  stop
                end if
 
             end do
