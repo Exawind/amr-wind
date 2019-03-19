@@ -21,13 +21,12 @@ using namespace amrex;
 MacProjection::MacProjection(AmrCore* a_amrcore,
 							 int a_nghost,
 							 Vector<std::unique_ptr<EBFArrayBoxFactory>>* a_ebfactory, 
-                             int a_probtype, Real a_covered_val)
+                             int a_probtype)
 {
 	m_amrcore = a_amrcore;
 	m_nghost = a_nghost;
 	m_ebfactory = a_ebfactory;
     m_probtype = a_probtype;
-    m_covered_val = a_covered_val;
 
 	read_inputs();
 }
@@ -406,7 +405,7 @@ Real MacProjection::norm0(const Vector<std::unique_ptr<MultiFab>>& mf, int lev)
 					*(*m_ebfactory)[lev]);
 
 	MultiFab::Copy(mf_tmp, *mf[lev], 0, 0, 1, 0);
-	EB_set_covered(mf_tmp, m_covered_val);
+	EB_set_covered(mf_tmp, 0.0);
 
 	return mf_tmp.norm0(0);
 }
