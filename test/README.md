@@ -50,16 +50,17 @@ testing area expected by reg test scripts:
     cd ${REGTEST_SCRATCH}; mkdir test_data
     ```
 
-4.  Edit the config file, ${REGTEST_SCRATCH}/incflo/test/incflo-tests.ini
+4.  Edit the config file, ${REGTEST_SCRATCH}/incflo-tests.ini
 to set the AMReX and incflo scratch clone locations and desired branch/SHA.
 In that file, also set
 
      testTopDir =  ${REGTEST_SCRATCH}/test_data/incflo
 
-5. (optional) Create symbolic links 
+Example config files are available in the regression_testing repo. Hopefully we will add an incflo one here soon. 
+
+5. (optional) Create symbolic link
     ```
     ln -s ${REGTEST_SCRATCH}/regression_testing/regtest.py .
-    ln -s ${REGTEST_SCRATCH}/incflo/Test/incflo-tests.ini .
     ```
 
 6.  Generate the initial benchmark solutions for all the tests listed
