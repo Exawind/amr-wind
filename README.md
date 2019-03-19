@@ -34,8 +34,8 @@ Clone and build incflo
 ```shell
 > git clone http://github.com/AMReX-Codes/incflo.git
 > cd exec
-> make -j
-> ./incflo3d.gnu.MPI.ex inputs.double_shear_layer
+> make -j4
+> mpirun -np 4 incflo3d.gnu.MPI.ex inputs.channel_cylinder
 ```
 
 # Contributing
