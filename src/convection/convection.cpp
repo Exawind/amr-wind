@@ -122,7 +122,7 @@ void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
 {
 	BL_PROFILE("incflo::ComputeVelocitySlopes");
 
-    EB_set_covered(Sborder, 1.0e20);
+    EB_set_covered(Sborder, covered_val);
 
 	Box domain(geom[lev].Domain());
 

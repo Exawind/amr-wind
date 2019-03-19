@@ -153,7 +153,7 @@ void incflo::PostInit(int restart_flag)
     SetBCTypes();
 
     // Reset MAC projection object
-    mac_projection.reset(new MacProjection(this, nghost, &ebfactory, probtype));
+    mac_projection.reset(new MacProjection(this, nghost, &ebfactory, probtype, covered_val));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
     poisson_equation.reset(new PoissonEquation(this, &ebfactory, 

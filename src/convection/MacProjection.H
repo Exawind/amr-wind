@@ -11,7 +11,7 @@ public:
 	MacProjection(amrex::AmrCore* a_amrcore,
 				  int a_nghost,
 				  amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* a_ebfactory, 
-                  int a_probtype);
+                  int a_probtype, amrex::Real a_covered_val);
 
 	~MacProjection();
 
@@ -39,6 +39,7 @@ public:
 private:
 	int m_nghost;
     int m_probtype = 0;
+    amrex::Real m_covered_val;
 
 	amrex::AmrCore* m_amrcore;
 	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* m_ebfactory;

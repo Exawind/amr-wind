@@ -411,6 +411,7 @@ private:
 
 	// Number of ghost nodes for field arrays.
 	const int nghost = 5;
+    const Real covered_val = 1.0e40;
 
 	// These values are required when fluid sees EB -- for now
 	const int m_eb_basic_grow_cells = nghost;

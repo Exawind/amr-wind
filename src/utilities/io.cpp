@@ -383,7 +383,7 @@ void incflo::WritePlotFile() const
 			mf[lev]->setVal(1.0, dcomp, 1, 0);
 		}
 
-        EB_set_covered(*mf[lev], 0.0);
+        EB_set_covered(*mf[lev], covered_val);
 	}
 
 	// Concatenate scalar and vector var names

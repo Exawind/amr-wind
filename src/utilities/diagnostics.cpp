@@ -15,7 +15,7 @@ Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp
                     0, MFInfo(), *ebfactory[lev]);
 
 	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
+	EB_set_covered(mf_tmp, covered_val);
     if(norm_type == 0)
     {
         return mf_tmp.norm0(comp);

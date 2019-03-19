@@ -182,7 +182,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
                              domain.loVect(), domain.hiVect(),
                              &nghost, &extrap_dir_bcs, &probtype);
         }
-        EB_set_covered(*vel[lev], 1.0e80);
+        EB_set_covered(*vel[lev], covered_val);
         
         // Do this after as well as before to pick up terms that got updated in the call above
         vel[lev]->FillBoundary(geom[lev].periodicity());

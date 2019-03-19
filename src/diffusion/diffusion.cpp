@@ -18,7 +18,7 @@ void incflo::ComputeDivTau(int lev,
     BL_PROFILE("incflo::ComputeDivTau");
     Box domain(geom[lev].Domain());
 
-    EB_set_covered(*vel[lev], 1.0e100);
+    EB_set_covered(*vel[lev], covered_val);
 
     // Get EB geometric info
     Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
