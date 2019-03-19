@@ -245,6 +245,7 @@ void incflo::ApplyPredictor()
 
     UpdateDerivedQuantities();
 
+    // TODO: remove
     FillVelocityBC(new_time, 0);
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -259,13 +260,6 @@ void incflo::ApplyPredictor()
         // Add the diffusion terms (either all if explicit_diffusion == true or just
         // the off-diagonal terms if explicit_diffusion == false)
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
-
-    for (MFIter mfi(*vel[0],TilingIfNotGPU()); mfi.isValid(); ++mfi)
-    {
-       const auto& dtu_fab = divtau_old[0]->array(mfi);
-       std::cout << "DIVTAU VEL AT (0,0,0) " << dtu_fab(0,0,0) << std::endl;
-    }
-       exit(0);
 
         // Add gravitational forces
         for(int dir = 0; dir < 3; dir++)
@@ -293,17 +287,21 @@ void incflo::ApplyPredictor()
         }
     }
 
+    // TODO: remove
     FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
+        // TODO: remove
         FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
 	ApplyProjection(new_time, dt);
+
+    // Fill BCs for velocity
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 2)
@@ -402,17 +400,21 @@ void incflo::ApplyCorrector()
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
+    // TODO: remove
     FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
+        // TODO: remove
         FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
 	ApplyProjection(new_time, dt);
+
+    // Fill velocity BCs again
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 2)
