@@ -203,7 +203,7 @@ private:
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
 	// Number of ghost nodes for field arrays.
-	const int nghost = 5;
+	const int nghost = 4;
 
 	// These values are required when fluid sees EB -- for now
 	const int m_eb_basic_grow_cells = nghost;
