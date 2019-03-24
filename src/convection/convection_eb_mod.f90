@@ -21,7 +21,6 @@ contains
                                               cent, clo, chi, flags, flo, fhi, bc_ilo, bc_ihi, ng,         &
                                               domlo, domhi ) bind(C)
 
-      use eb_interpolation_mod
       use convection_mod 
 
       ! Tile bounds ( x-face centered )
@@ -96,7 +95,6 @@ contains
                                               cent, clo, chi, flags, flo, fhi, bc_jlo, bc_jhi, ng,         &
                                               domlo, domhi ) bind(C)
 
-      use  eb_interpolation_mod
       use convection_mod 
 
       ! Tile bounds ( x-face centered )
@@ -169,7 +167,6 @@ contains
                                               cent, clo, chi, flags, flo, fhi, bc_klo, bc_khi, ng,         &
                                               domlo, domhi ) bind(C)
 
-      use  eb_interpolation_mod
       use convection_mod 
 
       ! Tile bounds ( x-face centered )

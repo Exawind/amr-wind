@@ -203,7 +203,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
 	{
 	    // Compute beta coefficients ( div(beta*grad(phi)) = RHS )
-		compute_b_coeff(u, v, w, ro, lev);
+		compute_b_coeff(ro, lev);
 
 		// Set velocity bcs
 		set_velocity_bcs(lev, u, v, w, time);
@@ -328,11 +328,7 @@ void MacProjection::set_velocity_bcs(int lev,
 //
 // Values are edge-centered.
 //
-void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& u,
-									const Vector<std::unique_ptr<MultiFab>>& v,
-									const Vector<std::unique_ptr<MultiFab>>& w,
-									const Vector<std::unique_ptr<MultiFab>>& ro,
-									int lev)
+void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& ro, int lev)
 {
 	BL_PROFILE("MacProjection::compute_b_coeff");
 

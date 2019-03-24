@@ -1,5 +1,4 @@
 f90EXE_sources += get_eb_walls.f90
-f90EXE_sources += eb_interpolation_mod.f90
 
 CEXE_sources += embedded_boundaries.cpp
 CEXE_sources += eb_annulus.cpp

@@ -48,7 +48,7 @@ contains
                             do_explicit_diffusion) bind(C)
 
       use bc
-      use eb_interpolation_mod, only: interp_to_face_centroid
+      use amrex_eb_util_module, only: amrex_eb_interpolate_to_face_centroid_per_cell
       use eb_wallflux_mod,      only: compute_diff_wallflux
 
       ! Tile bounds (cell centered)
@@ -205,29 +205,29 @@ contains
 
                         call get_neighbor_cells( flags(i,j,k), nbr )
 
-                        ! interp_to_face_centroid returns the proper flux multiplied
+                        ! amrex_eb_interpolate_to_face_centroid_per_cell returns the proper flux multiplied
                         ! by the face area
-                        fxp = interp_to_face_centroid( i+1, j, k, 1, fx, fxlo, n,  &
+                        fxp = amrex_eb_interpolate_to_face_centroid_per_cell( i+1, j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fxm = interp_to_face_centroid( i  , j, k, 1, fx, fxlo, n,  &
+                        fxm = amrex_eb_interpolate_to_face_centroid_per_cell( i  , j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fyp = interp_to_face_centroid( i, j+1, k, 2, fy, fylo, n,  &
+                        fyp = amrex_eb_interpolate_to_face_centroid_per_cell( i, j+1, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fym = interp_to_face_centroid( i, j, k, 2, fy, fylo, n,  &
+                        fym = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fzp = interp_to_face_centroid( i, j, k+1, 3, fz, fzlo, n,  &
+                        fzp = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k+1, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
-                        fzm = interp_to_face_centroid( i, j, k, 3, fz, fzlo, n,  &
+                        fzm = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
-                        divc(i,j,k) = ( ( fxp - fxm ) * idx + &
-                             &          ( fyp - fym ) * idy + &
-                             &          ( fzp - fzm ) * idz ) / vfrac(i,j,k)
+                        divc(i,j,k) = ( ( fxp * afrac_x(i+1,j,k) - fxm * afrac_x(i,j,k) ) * idx + &
+                             &          ( fyp * afrac_y(i,j+1,k) - fym * afrac_y(i,j,k) ) * idy + &
+                             &          ( fzp * afrac_z(i,j,k+1) - fzm * afrac_z(i,j,k) ) * idz ) / vfrac(i,j,k)
 
                         ! Add viscous wall fluxes (compute three components only
                         ! during the first pass, i.e. for n=1

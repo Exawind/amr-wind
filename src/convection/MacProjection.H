@@ -73,11 +73,7 @@ private:
 
 	void read_inputs();
 
-	void compute_b_coeff(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& u,
-						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& v,
-						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& w,
-						 const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro,
-						 int lev);
+    void compute_b_coeff(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, int lev);
 
 	//
 	// Stuff to compute norms of EB-MultiFabs
