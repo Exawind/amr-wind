@@ -241,9 +241,6 @@ void incflo::ApplyPredictor()
 
     UpdateDerivedQuantities();
 
-    // TODO: remove
-    FillVelocityBC(new_time, 0);
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // explicit_diffusion == true:  compute the full diffusive terms here
@@ -283,15 +280,10 @@ void incflo::ApplyPredictor()
         }
     }
 
-    // TODO: remove
-    FillVelocityBC(new_time, 0);
-
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
-        // TODO: remove
-        FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
@@ -396,15 +388,11 @@ void incflo::ApplyCorrector()
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
-    // TODO: remove
-    FillVelocityBC(new_time, 0);
 
     // If doing implicit diffusion, solve here for u^*
     if(!explicit_diffusion)
     {
         diffusion_equation->solve(vel, ro, eta, dt);
-        // TODO: remove
-        FillVelocityBC(new_time, 0);
     }
 
 	// Project velocity field
