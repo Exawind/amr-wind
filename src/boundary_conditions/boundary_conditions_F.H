@@ -6,8 +6,6 @@
 extern "C"
 {
 #endif
-    void incflo_set_cyclic(int* cyc_x, int* cyc_y, int* cyc_z);
-
     void set_bc_type(const int* bc_ilo, const int* bc_ihi,
                      const int* bc_jlo, const int* bc_jhi,
                      const int* bc_klo, const int* bc_khi,
@@ -30,10 +28,6 @@ extern "C"
                   const int* bc_klo, const int* bc_khi, 
                   const int* domlo, const int* domhi, 
                   const int* ng);
-
-    void incflo_set_bc_mod(const int* pID, const int* pType, 
-                           const amrex::Real* pLo, const amrex::Real* pHi, 
-                           amrex::Real* pLoc, amrex::Real* pPg, amrex::Real* pVel);
 #ifdef __cplusplus
 }
 #endif

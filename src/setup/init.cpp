@@ -139,11 +139,21 @@ void incflo::ReadParameters()
             amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
         }
 
+        // Get periodicity, (to pass to Fortran)
+        int cyc_x = 0, cyc_y = 0, cyc_z = 0;
+        if(geom[0].isPeriodic(0)) 
+            cyc_x = 1;
+        if(geom[0].isPeriodic(1)) 
+            cyc_y = 1;
+        if(geom[0].isPeriodic(2)) 
+            cyc_z = 1;
+
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        incflo_get_data(delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
-                        &ic_u, &ic_v, &ic_w, &ic_p,
-                        &n, &tau_0, &papa_reg, &eta_0, 
-                        fluid_model.c_str(), fluid_model.size());
+        fortran_get_data(&cyc_x, &cyc_y, &cyc_z, 
+                         delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
+                         &ic_u, &ic_v, &ic_w, &ic_p,
+                         &n, &tau_0, &papa_reg, &eta_0, 
+                         fluid_model.c_str(), fluid_model.size());
 	}
 }
 
@@ -228,23 +238,6 @@ void incflo::InitFluid()
 
 void incflo::SetBCTypes()
 {
-    // Set periodicity only at level 0
-    int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-    if(geom[0].isPeriodic(0)) 
-    {
-        cyc_x = 1;
-    }
-    if(geom[0].isPeriodic(1)) 
-    {
-        cyc_y = 1;
-    }
-    if(geom[0].isPeriodic(2)) 
-    {
-        cyc_z = 1;
-    }
-    incflo_set_cyclic(&cyc_x, &cyc_y, &cyc_z);
-
-    // Set BC-types 
     for(int lev = 0; lev <= max_level; lev++)
     {
         Real dx = geom[lev].CellSize(0);

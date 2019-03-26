@@ -8,8 +8,11 @@ extern "C"
 #endif
     void set_delp_dir(int* delp_dir);
     
-    void incflo_get_data
+    void fortran_get_data
         (
+            int* cyclic_x, 
+            int* cyclic_y, 
+            int* cyclic_z, 
             amrex::Real* delp,
             amrex::Real* gravity,
             amrex::Real* ro_0,

@@ -45,21 +45,4 @@ module bc
 
 contains
 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-!                                                                      !
-! Subroutine: set_cyclic                                               !
-!                                                                      !
-! Purpose: Function to set cyclic flags.                               !
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-   subroutine set_cyclic(cyc_x, cyc_y, cyc_z) &
-      bind(C, name="incflo_set_cyclic")
-
-      integer, intent(in) :: cyc_x, cyc_y, cyc_z
-
-      cyclic_x = (cyc_x == 1)
-      cyclic_y = (cyc_y == 1)
-      cyclic_z = (cyc_z == 1)
-
-   end subroutine set_cyclic
-
 end module bc

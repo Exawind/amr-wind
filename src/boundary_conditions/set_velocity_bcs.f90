@@ -330,4 +330,3 @@ subroutine set_velocity_bcs(time, &
 
 end subroutine set_velocity_bcs
 
-! *****************************************************************

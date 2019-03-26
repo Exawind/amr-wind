@@ -1,4 +1,4 @@
-module amrex_to_incflo_module
+module incflo_to_fortran_module
 ! _________________________________________________________________
 
    use amrex_fort_module, only : rt => amrex_real
@@ -13,16 +13,19 @@ contains
 ! "constant", so that they can be accessed from f90 functions.             !
 !**************************************************************************!
 
-   subroutine incflo_get_data(delp_in, gravity_in, ro_0_in, mu_in, &
-                              ic_u_in, ic_v_in, ic_w_in, ic_p_in, &
-                              n_in, tau_0_in, papa_reg_in, eta_0_in, &
-                              fluid_model_name, fluid_model_namelength) &
-                           bind(C, name="incflo_get_data")
+   subroutine fortran_get_data(cyclic_x_in, cyclic_y_in, cyclic_z_in, &
+                               delp_in, gravity_in, ro_0_in, mu_in, &
+                               ic_u_in, ic_v_in, ic_w_in, ic_p_in, &
+                               n_in, tau_0_in, papa_reg_in, eta_0_in, &
+                               fluid_model_name, fluid_model_namelength) &
+                           bind(C, name="fortran_get_data")
 
+      use bc, only: cyclic_x, cyclic_y, cyclic_z
       use constant
 
       implicit none
 
+      real(rt),               intent(in) :: cyclic_x_in, cyclic_y_in, cyclic_z_in
       real(rt),               intent(in) :: delp_in(3)
       real(rt),               intent(in) :: gravity_in(3)
       real(rt),               intent(in) :: ro_0_in, mu_in
@@ -34,6 +37,9 @@ contains
       ! Local 
       integer :: i
 
+      cyclic_x = (cyclic_x_in == 1)
+      cyclic_y = (cyclic_y_in == 1)
+      cyclic_z = (cyclic_z_in == 1)
       delp(:) = delp_in(:)
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in
@@ -50,6 +56,6 @@ contains
       allocate(character(fluid_model_namelength) :: fluid_model)
       forall(i = 1:fluid_model_namelength) fluid_model(i:i) = fluid_model_name(i)
 
-   end subroutine incflo_get_data
+   end subroutine fortran_get_data
 
-end module amrex_to_incflo_module
+end module incflo_to_fortran_module
