@@ -13,7 +13,7 @@ contains
 ! "constant", so that they can be accessed from f90 functions.             !
 !**************************************************************************!
 
-   subroutine fortran_get_data(cyclic_x_in, cyclic_y_in, cyclic_z_in, &
+   subroutine fortran_get_data(is_cyclic_in, &
                                delp_in, gravity_in, ro_0_in, mu_in, &
                                ic_u_in, ic_v_in, ic_w_in, ic_p_in, &
                                n_in, tau_0_in, papa_reg_in, eta_0_in, &
@@ -25,7 +25,7 @@ contains
 
       implicit none
 
-      real(rt),               intent(in) :: cyclic_x_in, cyclic_y_in, cyclic_z_in
+      logical,                intent(in) :: is_cyclic_in(3)
       real(rt),               intent(in) :: delp_in(3)
       real(rt),               intent(in) :: gravity_in(3)
       real(rt),               intent(in) :: ro_0_in, mu_in
@@ -37,9 +37,9 @@ contains
       ! Local 
       integer :: i
 
-      cyclic_x = (cyclic_x_in == 1)
-      cyclic_y = (cyclic_y_in == 1)
-      cyclic_z = (cyclic_z_in == 1)
+      cyclic_x = is_cyclic_in(1)
+      cyclic_y = is_cyclic_in(2)
+      cyclic_z = is_cyclic_in(3)
       delp(:) = delp_in(:)
       gravity(:) = gravity_in(:)
       ro_0 = ro_0_in

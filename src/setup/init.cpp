@@ -139,17 +139,15 @@ void incflo::ReadParameters()
             amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
         }
 
-        // Get periodicity, (to pass to Fortran)
-        int cyc_x = 0, cyc_y = 0, cyc_z = 0;
-        if(geom[0].isPeriodic(0)) 
-            cyc_x = 1;
-        if(geom[0].isPeriodic(1)) 
-            cyc_y = 1;
-        if(geom[0].isPeriodic(2)) 
-            cyc_z = 1;
+        // Get cyclicity, (to pass to Fortran)
+        Vector<int> is_cyclic(3);
+        for(int dir = 0; dir < 3; dir++)
+        {
+            is_cyclic[dir] = geom[0].isPeriodic(dir);
+        }
 
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        fortran_get_data(&cyc_x, &cyc_y, &cyc_z, 
+        fortran_get_data(is_cyclic.dataPtr(),
                          delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
                          &ic_u, &ic_v, &ic_w, &ic_p,
                          &n, &tau_0, &papa_reg, &eta_0, 

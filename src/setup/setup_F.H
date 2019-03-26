@@ -10,9 +10,7 @@ extern "C"
     
     void fortran_get_data
         (
-            int* cyclic_x, 
-            int* cyclic_y, 
-            int* cyclic_z, 
+            int* is_cyclic, 
             amrex::Real* delp,
             amrex::Real* gravity,
             amrex::Real* ro_0,
