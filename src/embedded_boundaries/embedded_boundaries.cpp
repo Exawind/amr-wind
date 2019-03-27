@@ -44,6 +44,11 @@ void incflo::MakeEBGeometry()
 		amrex::Print() << "\n Building sphere geometry." << std::endl;
         make_eb_sphere();
 	}
+	else if(geom_type == "spherecube")
+	{
+		amrex::Print() << "\n Building spherecube geometry." << std::endl;
+        make_eb_spherecube();
+	}
 	else
 	{
 		amrex::Print() << "\n No EB geometry declared in inputs => "

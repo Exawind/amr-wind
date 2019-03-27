@@ -198,6 +198,7 @@ private:
 	void make_eb_cylinder();
 	void make_eb_regular();
 	void make_eb_sphere();
+	void make_eb_spherecube();
 
 	const EB2::Level* eb_level;
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
