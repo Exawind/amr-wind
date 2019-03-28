@@ -17,7 +17,7 @@ void incflo::make_eb_spherecube()
 
     // Build the sphere implicit function 
     EB2::SphereIF sphere(0.5, {1.8, 1.8, 2.8}, false);
-    EB2::BoxIF cube({1.9, 1.9, 2.9}, {2.5, 2.5, 3.5}, false);
+    EB2::BoxIF cube({1.85, 1.85, 2.85}, {2.5, 2.5, 3.5}, false);
     auto cubesphere = EB2::makeUnion(sphere, cube);
 
     // Generate GeometryShop
