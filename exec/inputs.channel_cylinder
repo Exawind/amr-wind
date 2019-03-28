@@ -47,6 +47,13 @@ geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   1.2 0.4 .05 # Hi corner coordinates
 geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
 
+# Add cylinder 
+incflo.geometry         = "cylinder"
+cylinder.internal_flow  = false
+cylinder.radius         = 0.05
+cylinder.direction      = 2
+cylinder.center         = 0.15   0.2   0.0
+
 # Boundary conditions
 xlo.type                =   "mi"
 xlo.velocity            =   1.  0.  0.
@@ -56,13 +63,6 @@ ylo.type                =   "nsw"
 ylo.velocity            =   0.  0.  0.
 yhi.type                =   "nsw"
 yhi.velocity            =   0.  0.  0.
-
-# Add cylinder 
-incflo.geometry         = "cylinder"
-cylinder.internal_flow  = false
-cylinder.radius         = 0.05
-cylinder.direction      = 2
-cylinder.center         = 0.15   0.2   0.0
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
