@@ -154,15 +154,15 @@ contains
          ! implicit solve instead.
          !
          tauxx = tauxx - visc * ux
-         tauxy = tauxy - visc * vx
-         tauxz = tauxz - visc * wx
+         tauxy = tauxy - visc * uy
+         tauxz = tauxz - visc * uz
 
-         tauyx = tauyx - visc * uy
+         tauyx = tauyx - visc * vx
          tauyy = tauyy - visc * vy
-         tauyz = tauyz - visc * wy
+         tauyz = tauyz - visc * vz
 
-         tauzx = tauzx - visc * uz
-         tauzy = tauzy - visc * vz
+         tauzx = tauzx - visc * wx
+         tauzy = tauzy - visc * wy
          tauzz = tauzz - visc * wz
       end if
 
