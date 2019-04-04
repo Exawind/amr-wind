@@ -24,8 +24,7 @@ contains
                                     flag,  flo, fhi,   &
                                     apx, axlo, axhi,   &
                                     apy, aylo, ayhi,   &
-                                    apz, azlo, azhi,   &
-                                    do_explicit_diffusion)
+                                    apz, azlo, azhi)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
@@ -53,11 +52,6 @@ contains
            &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  )
 
       integer(c_int),  intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-
-      ! If true  then we include all the diffusive terms in this explicit result
-      ! If false then we include all only the off-diagonal terms here -- we do this
-      !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       ! Local variable
       real(rt)   :: dxinv(3), idx, idy, idz
@@ -130,41 +124,23 @@ contains
                     (uy + vx)**2 + (vz + wy)**2 + (wx + uz)**2) 
       visc = viscosity(strain)
 
-      ! compute components of stress tensor on the wall
-      tauxx = visc * (ux + ux) 
-      tauxy = visc * (uy + vx)
-      tauxz = visc * (uz + wx)
+      ! compute components of EXPLICIT PART OF stress tensor on the wall
+      tauxx = visc * ux 
+      tauxy = visc * vx
+      tauxz = visc * wx
       
-      tauyx = tauxy
-      tauyy = visc * (vy + vy)
-      tauyz = visc * (vz + wy)
+      tauyx = visc * uy
+      tauyy = visc * vy
+      tauyz = visc * wy
       
-      tauzx = tauxz
-      tauzy = tauyz
-      tauzz = visc * (wz + wz)
+      tauzx = visc * uz
+      tauzy = visc * vz
+      tauzz = visc * wz
 
       ! Difference in area fraction across cell, used to find the divergence
       dapx = apx(i+1,j,k)-apx(i,j,k)
       dapy = apy(i,j+1,k)-apy(i,j,k)
       dapz = apz(i,j,k+1)-apz(i,j,k)
-
-      if (do_explicit_diffusion == 0) then
-         !
-         ! Subtract diagonal terms of stress tensor, to be obtained through
-         ! implicit solve instead.
-         !
-         tauxx = tauxx - visc * ux
-         tauxy = tauxy - visc * uy
-         tauxz = tauxz - visc * uz
-
-         tauyx = tauyx - visc * vx
-         tauyy = tauyy - visc * vy
-         tauyz = tauyz - visc * vz
-
-         tauzx = tauzx - visc * wx
-         tauzy = tauzy - visc * wy
-         tauzz = tauzz - visc * wz
-      end if
 
       ! Return the divergence of the stress tensor 
       divw(1) = dapx * tauxx + dapy * tauxy + dapz * tauxz

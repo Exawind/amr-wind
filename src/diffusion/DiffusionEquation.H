@@ -8,9 +8,12 @@
 //
 // Solver for the implicit part of the diffusion equation: 
 //
-// ( ro - dt div ( eta grad ) ) u* = ro u_old + dt ( - ro u grad u + div tau - grad p + ro gravity )
+// ( 1 - dt / rho * div ( eta grad ) ) u* = rhs
 //
-// Input "vel" holds the right hand side of this equation. 
+// Input "vel" holds the right hand side of this equation:
+//
+//  rhs = u + dt * ( conv + div ( eta (grad u)^T ) / rho + g - grad(p + p0) / rho )
+//
 // This is replaced by the solution of the matrix solve. 
 // Output "vel" therefore holds u*
 //

@@ -44,8 +44,7 @@ contains
                             vfrac,   vflo, vfhi, &
                             bcent,    blo,  bhi, &
                             domlo, domhi,        &
-                            dx, ng, eta,         &
-                            do_explicit_diffusion) bind(C)
+                            dx, ng, eta) bind(C)
 
       use bc
       use amrex_eb_util_module, only: amrex_eb_interpolate_to_face_centroid_per_cell
@@ -103,11 +102,6 @@ contains
       ! BC types
       integer(c_int), intent(in   ) ::  &
            & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-
-      ! If true  then we include all the diffusive terms in this explicit result
-      ! If false then we include all only the off-diagonal terms here -- we do this
-      !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in   ), optional :: do_explicit_diffusion
 
       ! Conservative div and EB stuff
       real(ar)  ::    &
@@ -241,8 +235,7 @@ contains
                                                          flags, flo, fhi,     &
                                                          afrac_x, axlo, axhi, &
                                                          afrac_y, aylo, ayhi, &
-                                                         afrac_z, azlo, azhi, &
-                                                         do_explicit_diffusion)
+                                                         afrac_z, azlo, azhi) 
                            end if
                            divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
                         end if

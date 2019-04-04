@@ -236,9 +236,6 @@ private:
 	Real cfl = 0.5;
 	Real fixed_dt = -1.;
 
-    // Whether to use the explicit diffusion or the semi-implicit one
-	int explicit_diffusion = 0;
-
     // Initial projection / iterations
     bool do_initial_proj    = true;
     int  initial_iterations = 3;

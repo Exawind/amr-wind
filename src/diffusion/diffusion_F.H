@@ -17,8 +17,7 @@ extern "C"
           const int* bc_ilo_type, const int* bc_ihi_type,
           const int* bc_jlo_type, const int* bc_jhi_type,
           const int* bc_klo_type, const int* bc_khi_type,
-          const amrex::Real* dx, const int* ng,
-          int* do_explicit_diffusion);
+          const amrex::Real* dx, const int* ng);
 
   void compute_divtau_eb (
           const int* lo, const int* hi,
@@ -39,8 +38,7 @@ extern "C"
           const int* bc_ilo_type, const int* bc_ihi_type,
           const int* bc_jlo_type, const int* bc_jhi_type,
           const int* bc_klo_type, const int* bc_khi_type,
-          const amrex::Real* dx, const int* ng,
-          int* do_explicit_diffusion);
+          const amrex::Real* dx, const int* ng);
 
   void set_diff_bc (
           int* bc_lo, int* bc_hi,

@@ -9,7 +9,8 @@
 #include <incflo.H>
 
 //
-// Divergence of stress tensor
+// Explicit part of divergence of stress tensor: 
+// div ( eta (grad u)^T )
 //
 void incflo::ComputeDivTau(int lev,
                            MultiFab& divtau_in,
@@ -60,7 +61,7 @@ void incflo::ComputeDivTau(int lev,
                                bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                                bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                                bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                               geom[lev].CellSize(), &nghost, &explicit_diffusion);
+                               geom[lev].CellSize(), &nghost);
             }
             else
             {
@@ -82,7 +83,7 @@ void incflo::ComputeDivTau(int lev,
                                   bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                                   bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                                   bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                                  geom[lev].CellSize(), &nghost, &explicit_diffusion);
+                                  geom[lev].CellSize(), &nghost);
             }
         }
    }

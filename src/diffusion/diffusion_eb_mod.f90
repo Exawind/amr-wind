@@ -33,8 +33,7 @@ contains
                                 bc_ilo, bc_ihi,      &
                                 bc_jlo, bc_jhi,      &
                                 bc_klo, bc_khi,      &
-                                dx, ng,              &
-                                do_explicit_diffusion) bind(C)
+                                dx, ng) bind(C)
 
       use diffusion_mod, only: fill_vel_diff_bc
       use divop_mod,     only: compute_divop
@@ -92,11 +91,6 @@ contains
          bc_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
          bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
-      ! If true  then we include all the diffusive terms in this explicit result
-      ! If false then we include all only the off-diagonal terms here -- we do this
-      !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
-
       ! Temporary array just to handle bc's
       integer(c_int) :: vlo(3), vhi(3)
       real(rt), dimension(:,:,:,:), pointer, contiguous :: vel
@@ -127,17 +121,29 @@ contains
       call fill_vel_diff_bc(vel_in, vinlo, vinhi, vel, lo, hi, domlo, domhi, ng, &
                             bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi)
 
-      ! tau_xx, tau_xy, tau_xz on west faces
+      ! NOTE: the stress tensor is divided into terms treated explicitly and implicitly: 
+      ! 
+      !     tau = eta ( grad u + (grad u)^T ) = tau_imp + tau_exp
+      !
+      ! where  (grad u)_ij = du_j / dx_i
+      !
+      ! Here, we are treating the explicit part, tau_exp = eta (grad u)^T
+      !
+      ! The flux vector tau_x thus holds 
+      ! the first COLUMN of tau_exp, or, equivalently, 
+      ! the first ROW    of tau_imp. 
+
+      ! tau_xx, tau_yx, tau_zx on west faces
       call compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
-                         flags, flo, fhi, lo, hi, dx, fx, nh, domlo, domhi, do_explicit_diffusion)
+                         flags, flo, fhi, lo, hi, dx, fx, nh, domlo, domhi)
 
-      ! tau_yx, tau_yy, tau_yz on south faces
+      ! tau_xy, tau_yy, tau_zy on south faces
       call compute_tau_y(vel, vlo, vhi, eta, slo, shi, &
-                         flags, flo, fhi, lo, hi, dx, fy, nh, domlo, domhi, do_explicit_diffusion)
+                         flags, flo, fhi, lo, hi, dx, fy, nh, domlo, domhi)
 
-      ! tau_zx, tau_zy, tau_zz on bottom faces
+      ! tau_xz, tau_yz, tau_zz on bottom faces
       call compute_tau_z(vel, vlo, vhi, eta, slo, shi, &
-                         flags, flo, fhi, lo, hi, dx, fz, nh, domlo, domhi, do_explicit_diffusion)
+                         flags, flo, fhi, lo, hi, dx, fz, nh, domlo, domhi)
 
       divop: block
          ! Compute div(tau) with EB algorithm
@@ -167,7 +173,7 @@ contains
                             vfrac, vflo, vfhi, &
                             bcent, blo, bhi, &
                             domlo, domhi, &
-                            dx, ng, eta, do_explicit_diffusion)
+                            dx, ng, eta)
 
       end block divop
 
@@ -204,8 +210,7 @@ contains
    !-----------------------------------------------------------------------!
    !-----------------------------------------------------------------------!
    subroutine compute_tau_x(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi, &
-                            do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_x, ng, domlo, domhi)
 
       use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
@@ -227,11 +232,7 @@ contains
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
-
       real(rt) :: dudx, dudy, dudz
-      real(rt) :: dvdx, dvdy
-      real(rt) :: dwdx,       dwdz
 
       real(rt) :: wlo, whi
       real(rt) :: idx, idy, idz
@@ -251,10 +252,10 @@ contains
          do j = lo(2)-ng, hi(2)+ng
             do i = lo(1)-ng, hi(1)+ng+1
 
+               ! du/dx
                dudx = (vel(i,j,k,1) - vel(i-1,j,k,1))*idx
-               dvdx = (vel(i,j,k,2) - vel(i-1,j,k,2))*idx
-               dwdx = (vel(i,j,k,3) - vel(i-1,j,k,3))*idx
 
+               ! du/dy
                jhip = j + get_neighbor_cells_int_single(flag(i  ,j,k),0, 1,0)
                jhim = j - get_neighbor_cells_int_single(flag(i  ,j,k),0,-1,0)
                jlop = j + get_neighbor_cells_int_single(flag(i-1,j,k),0, 1,0)
@@ -275,10 +276,7 @@ contains
                   ((vel(i  ,jhip,k,1)-vel(i  ,jhim,k,1))*whi &
                   +(vel(i-1,jlop,k,1)-vel(i-1,jlom,k,1))*wlo)
 
-               dvdy = (0.5d0*idy) * &
-                  ((vel(i  ,jhip,k,2)-vel(i  ,jhim,k,2))*whi &
-                  +(vel(i-1,jlop,k,2)-vel(i-1,jlom,k,2))*wlo)
-
+               ! du/dz
                khip = k + get_neighbor_cells_int_single(flag(i  ,j,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i  ,j,k),0,0,-1)
                klop = k + get_neighbor_cells_int_single(flag(i-1,j,k),0,0, 1)
@@ -299,25 +297,11 @@ contains
                   ((vel(i  ,j,khip,1)-vel(i  ,j,khim,1))*whi &
                   +(vel(i-1,j,klop,1)-vel(i-1,j,klom,1))*wlo)
 
-               dwdz = (0.5d0*idz) * &
-                  ((vel(i  ,j,khip,3)-vel(i  ,j,khim,3))*whi &
-                  +(vel(i-1,j,klop,3)-vel(i-1,j,klom,3))*wlo)
-
                eta_w = half * (eta(i,j,k) + eta(i-1,j,k))
 
-               tau_x(i,j,k,1) = eta_w * (dudx + dudx)
-               tau_x(i,j,k,2) = eta_w * (dudy + dvdx)
-               tau_x(i,j,k,3) = eta_w * (dudz + dwdx)
-
-               if (do_explicit_diffusion .eq. 0) then
-                  !
-                  ! Subtract diagonal terms of stress tensor, to be obtained through
-                  ! implicit solve instead.
-                  !
-                  tau_x(i,j,k,1) = tau_x(i,j,k,1) - eta_w*dudx
-                  tau_x(i,j,k,2) = tau_x(i,j,k,2) - eta_w*dvdx
-                  tau_x(i,j,k,3) = tau_x(i,j,k,3) - eta_w*dwdx
-               end if
+               tau_x(i,j,k,1) = eta_w * dudx
+               tau_x(i,j,k,2) = eta_w * dudy
+               tau_x(i,j,k,3) = eta_w * dudz
 
             end do
          end do
@@ -330,8 +314,7 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_y(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi, &
-                            do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_y, ng, domlo, domhi)
 
       use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
@@ -353,11 +336,7 @@ contains
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
-
-      real(rt) :: dudx, dudy
       real(rt) :: dvdx, dvdy, dvdz
-      real(rt) ::       dwdy, dwdz
 
       real(rt) :: wlo, whi
       real(rt) :: idx, idy, idz
@@ -377,10 +356,7 @@ contains
          do j = lo(2)-ng, hi(2)+ng+1
             do i = lo(1)-ng, hi(1)+ng
 
-               dudy = (vel(i,j,k,1) - vel(i,j-1,k,1))*idy
-               dvdy = (vel(i,j,k,2) - vel(i,j-1,k,2))*idy
-               dwdy = (vel(i,j,k,3) - vel(i,j-1,k,3))*idy
-
+               ! dv/dx
                ihip = i + get_neighbor_cells_int_single(flag(i,j  ,k), 1,0,0)
                ihim = i - get_neighbor_cells_int_single(flag(i,j  ,k),-1,0,0)
                ilop = i + get_neighbor_cells_int_single(flag(i,j-1,k), 1,0,0)
@@ -397,14 +373,14 @@ contains
                whi = weights(ihip-ihim)
                wlo = weights(ilop-ilom)
 
-               dudx = (0.5d0*idx) * &
-                  ((vel(ihip,j  ,k,1)-vel(ihim,j  ,k,1))*whi &
-                  +(vel(ilop,j-1,k,1)-vel(ilom,j-1,k,1))*wlo)
-
                dvdx = (0.5d0*idx) * &
                   ((vel(ihip,j  ,k,2)-vel(ihim,j  ,k,2))*whi &
                   +(vel(ilop,j-1,k,2)-vel(ilom,j-1,k,2))*wlo)
 
+               ! dv/dy
+               dvdy = (vel(i,j,k,2) - vel(i,j-1,k,2))*idy
+
+               ! dv/dz
                khip = k + get_neighbor_cells_int_single(flag(i,j  ,k),0,0, 1)
                khim = k - get_neighbor_cells_int_single(flag(i,j  ,k),0,0,-1)
                klop = k + get_neighbor_cells_int_single(flag(i,j-1,k),0,0, 1)
@@ -425,25 +401,11 @@ contains
                   ((vel(i,j  ,khip,2)-vel(i,j  ,khim,2))*whi &
                   +(vel(i,j-1,klop,2)-vel(i,j-1,klom,2))*wlo)
 
-               dwdz = (0.5d0*idz) * &
-                  ((vel(i,j  ,khip,3)-vel(i,j  ,khim,3))*whi &
-                  +(vel(i,j-1,klop,3)-vel(i,j-1,klom,3))*wlo)
-
                eta_s = half * (eta(i,j,k) + eta(i,j-1,k))
 
-               tau_y(i,j,k,1) = eta_s * (dudy + dvdx)
-               tau_y(i,j,k,2) = eta_s * (dvdy + dvdy)
-               tau_y(i,j,k,3) = eta_s * (dwdy + dvdz)
-
-               if (do_explicit_diffusion .eq. 0) then
-                  !
-                  ! Subtract diagonal terms of stress tensor, to be obtained through
-                  ! implicit solve instead.
-                  !
-                  tau_y(i,j,k,1) = tau_y(i,j,k,1) - eta_s * dudy
-                  tau_y(i,j,k,2) = tau_y(i,j,k,2) - eta_s * dvdy
-                  tau_y(i,j,k,3) = tau_y(i,j,k,3) - eta_s * dwdy
-               end if
+               tau_y(i,j,k,1) = eta_s * dvdx
+               tau_y(i,j,k,2) = eta_s * dvdy
+               tau_y(i,j,k,3) = eta_s * dvdz
 
             end do
          end do
@@ -457,8 +419,7 @@ contains
    !-----------------------------------------------------------------------!
 
    subroutine compute_tau_z(vel, vlo, vhi, eta, slo, shi, &
-                            flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi, & 
-                            do_explicit_diffusion)
+                            flag, fglo, fghi, lo, hi, dx, tau_z, ng, domlo, domhi)
 
       use amrex_ebcellflag_module, only: get_neighbor_cells_int_single
 
@@ -480,10 +441,6 @@ contains
 
       integer,  intent(in   ) :: ng ! Number of ghost layer to fill
 
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
-
-      real(rt) :: dudx,       dudz
-      real(rt) ::       dvdy, dvdz
       real(rt) :: dwdx, dwdy, dwdz
 
       real(rt) :: wlo, whi
@@ -504,10 +461,7 @@ contains
          do j = lo(2)-ng, hi(2)+ng
             do i = lo(1)-ng, hi(1)+ng
 
-               dudz = (vel(i,j,k,1) - vel(i,j,k-1,1))*idz
-               dvdz = (vel(i,j,k,2) - vel(i,j,k-1,2))*idz
-               dwdz = (vel(i,j,k,3) - vel(i,j,k-1,3))*idz
-
+               ! dw/dx
                ihip = i + get_neighbor_cells_int_single(flag(i,j,k  ), 1,0,0)
                ihim = i - get_neighbor_cells_int_single(flag(i,j,k  ),-1,0,0)
                ilop = i + get_neighbor_cells_int_single(flag(i,j,k-1), 1,0,0)
@@ -524,14 +478,11 @@ contains
                whi = weights(ihip-ihim)
                wlo = weights(ilop-ilom)
 
-               dudx = (0.5d0*idx) * &
-                  ((vel(ihip,j,k  ,1)-vel(ihim,j,k  ,1))*whi &
-                  +(vel(ilop,j,k-1,1)-vel(ilom,j,k-1,1))*wlo)
-
                dwdx = (0.5d0*idx) * &
                   ((vel(ihip,j,k  ,3)-vel(ihim,j,k  ,3))*whi &
                   +(vel(ilop,j,k-1,3)-vel(ilom,j,k-1,3))*wlo)
 
+               ! dw/dy
                jhip = j + get_neighbor_cells_int_single(flag(i,j,k  ),0 ,1,0)
                jhim = j - get_neighbor_cells_int_single(flag(i,j,k  ),0,-1,0)
                jlop = j + get_neighbor_cells_int_single(flag(i,j,k-1),0 ,1,0)
@@ -548,29 +499,18 @@ contains
                whi = weights(jhip-jhim)
                wlo = weights(jlop-jlom)
 
-               dvdy = (0.5d0*idy) * &
-                  ((vel(i,jhip,k  ,2)-vel(i,jhim,k  ,2))*whi &
-                  +(vel(i,jlop,k-1,2)-vel(i,jlom,k-1,2))*wlo)
-
                dwdy = (0.5d0*idy) * &
                   ((vel(i,jhip,k  ,3)-vel(i,jhim,k  ,3))*whi &
                   +(vel(i,jlop,k-1,3)-vel(i,jlom,k-1,3))*wlo)
 
+               ! dw/dz
+               dwdz = (vel(i,j,k,3) - vel(i,j,k-1,3))*idz
+
                eta_b = half * (eta(i,j,k) + eta(i,j,k-1))
 
-               tau_z(i,j,k,1) = eta_b * (dudz + dwdx)
-               tau_z(i,j,k,2) = eta_b * (dvdz + dwdy)
-               tau_z(i,j,k,3) = eta_b * (dwdz + dwdz)
-
-               if (do_explicit_diffusion .eq. 0) then
-                  !
-                  ! Subtract diagonal terms of stress tensor, to be obtained through
-                  ! implicit solve instead.
-                  !
-                  tau_z(i,j,k,1) = tau_z(i,j,k,1) - eta_b * dudz
-                  tau_z(i,j,k,2) = tau_z(i,j,k,2) - eta_b * dvdz
-                  tau_z(i,j,k,3) = tau_z(i,j,k,3) - eta_b * dwdz
-               end if
+               tau_z(i,j,k,1) = eta_b * dwdx
+               tau_z(i,j,k,2) = eta_b * dwdy
+               tau_z(i,j,k,3) = eta_b * dwdz
 
             end do
          end do

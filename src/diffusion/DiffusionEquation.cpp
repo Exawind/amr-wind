@@ -175,13 +175,13 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
 
         for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
         {
-            // Set the right hand side to equal ro
+            // Set the right hand side to equal rho
             rhs[lev]->copy(*ro[lev], 0, 0, 1, nghost, nghost);
 
             // Multiply rhs by vel(dir) to get momentum
             // Note that vel holds the updated velocity:
             //
-            //      u_old + dt ( - u grad u + div tau / ro - grad p / rho + gravity )
+            //      u_old + dt ( - u grad u + div ( eta (grad u)^T ) / rho - grad p / rho + gravity )
             //
             MultiFab::Multiply((*rhs[lev]), (*vel[lev]), dir, 0, 1, nghost);
 

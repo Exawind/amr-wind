@@ -40,7 +40,6 @@ void incflo::ReadParameters()
 		pp.query("cfl", cfl);
 		pp.query("fixed_dt", fixed_dt);
 		pp.query("steady_state_tol", steady_state_tol);
-		pp.query("explicit_diffusion", explicit_diffusion);
         pp.query("initial_iterations", initial_iterations);
         pp.query("do_initial_proj", do_initial_proj);
 
@@ -169,13 +168,10 @@ void incflo::PostInit(int restart_flag)
                                                bc_jlo, bc_jhi, 
                                                bc_klo, bc_khi, nghost));
 
-    if(!explicit_diffusion)
-    {
-        diffusion_equation.reset(new DiffusionEquation(this, &ebfactory, 
-                                                       bc_ilo, bc_ihi, 
-                                                       bc_jlo, bc_jhi, 
-                                                       bc_klo, bc_khi, nghost));
-    }
+    diffusion_equation.reset(new DiffusionEquation(this, &ebfactory, 
+                                                   bc_ilo, bc_ihi, 
+                                                   bc_jlo, bc_jhi, 
+                                                   bc_klo, bc_khi, nghost));
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
     if(!restart_flag) 

@@ -34,7 +34,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         PrintMaxValues(time);
     }
 
-    // Add the ( grad p /ro ) back to ustar (note the +dt)
+    // Add the ( grad p /ro ) back to u* (note the +dt)
     if(nstep >= 0)
     {
         for(int lev = 0; lev <= finest_level; lev++)
@@ -78,18 +78,22 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     //
     // Solve Poisson Equation:
     //
-    //                  div( 1/rho * grad(phi) ) = divu / dt
+    //                  div( 1/rho * grad(phi) ) = divu 
     //
+    // Note that 
+    //      p = phi / dt 
+    // for all steps except the initial projection, when we add phi / dt to p instead.
+    //      
     // Also outputs minus grad(phi) / rho into "fluxes"
     //
 	poisson_equation->solve(phi, fluxes, ro, divu);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // Now we correct the velocity with MINUS dt * (1/rho) * grad(phi),
+        // Now we correct the velocity with MINUS (1/rho) * grad(phi),
         MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, 3, 0);
 
-        // Multiply by rho and divide by (-dt) to get grad(phi)
+        // Multiply by rho and divide by (-dt) to get fluxes = grad(phi) / dt
         fluxes[lev]->mult(-1.0 / scaling_factor, fluxes[lev]->nGrow());
         for(int dir = 0; dir < 3; dir++)
         {

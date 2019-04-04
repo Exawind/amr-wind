@@ -196,32 +196,44 @@ void incflo::ComputeDt(int initialisation)
 }
 
 //
-// Compute predictor:
-// TODO: update documentation
+// Apply predictor:
 //
-//  1. Compute
+//  1. Use u = vel_old to compute
 //
-//     vel = vel_o + dt * (conv^n + dt * divtau^n / ro)
+//      conv    = - u grad u
+//      eta     = eta( ||strainrate|| ) 
+//      divtau  = div( eta (grad u)^T ) / rho
 //
-//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient)
+//      rhs = u + dt * ( conv + divtau )
 //
-//     vel = vel + dt * ( g - grad(p+p0)/ro)
+//  2. Add explicit forcing term i.e. gravity + lagged pressure gradient
 //
-//  3. Add implicit forcing term
+//      rhs += dt * ( g - grad(p + p0) / rho )
 //
-//     vel = vel / ( 1 + dt * f_gds/ro )
+//      Note that in order to add the pressure gradient terms divided by rho, 
+//      we convert the velocity to momentum before adding and then convert them back. 
 //
-//  4. Solve for phi
+//  3. Solve implicit diffusion equation for u* 
 //
-//     div( grad(phi) / ro ) = div( vel / dt + grad(p)/ro )
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = rhs
 //
-//  5. Compute
+//  4. Apply projection
+//     
+//     Add pressure gradient term back to u*: 
 //
-//     vel = vel -  dt * grad(phi) / ro
+//      u** = u* + dt * grad p / rho
 //
-//  6. Define
+//     Solve Poisson equation for phi:
 //
-//     p = phi
+//     div( grad(phi) / ro ) = div( u** )
+//
+//     Update pressure: 
+//
+//     p = phi / dt
+//
+//     Update velocity, now divergence free
+//
+//     vel = u** - dt * grad p / rho
 //
 void incflo::ApplyPredictor()
 {
@@ -236,22 +248,21 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
+    // Compute the explicit advective term: conv = - u dot grad(u)
     ComputeUGradU(conv_old, vel_o, cur_time);
 
+    // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // explicit_diffusion == true:  compute the full diffusive terms here
-        // explicit_diffusion == false: compute only the off-diagonal terms here
+        // compute only the off-diagonal terms here
         ComputeDivTau(lev, *divtau_old[lev], vel_o);
 
         // First add the convective term
         MultiFab::Saxpy(*vel[lev], dt, *conv_old[lev], 0, 0, 3, 0);
 
-        // Add the diffusion terms (either all if explicit_diffusion == true or just
-        // the off-diagonal terms if explicit_diffusion == false)
+        // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, 3, 0);
 
         // Add gravitational forces
@@ -281,16 +292,13 @@ void incflo::ApplyPredictor()
     }
     FillVelocityBC(new_time, 0);
 
-    // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion)
-    {
-        diffusion_equation->solve(vel, ro, eta, dt);
-    }
+    // Solve implicit diffusion equation for u*
+    diffusion_equation->solve(vel, ro, eta, dt);
 
-	// Project velocity field
+	// Project velocity field, update pressure
 	ApplyProjection(new_time, dt);
 
-    // Fill BCs for velocity
+    // Fill velocity BCs again
 	FillVelocityBC(new_time, 0);
 
     if(incflo_verbose > 2)
@@ -301,34 +309,50 @@ void incflo::ApplyPredictor()
 }
 
 //
-// Compute corrector:
+// Apply corrector:
 //
-//  1. Compute
+//  Output variables from the predictor are labelled _pred 
 //
-//     vel = vel_o + dt * (R_u^* + R_u^n) / 2 + dt * divtau*(1/ro)
+//  1. Use u = vel_pred to compute
 //
-//     where the starred variables are computed using "predictor-step"
-//     variables.
+//      conv    = - u grad u
+//      eta     = eta( ||strainrate|| ) 
+//      divtau  = div( eta (grad u)^T ) / rho
 //
-//  2. Add explicit forcing term ( AKA gravity, lagged pressure gradient )
+//      conv    = 0.5 (conv + conv_pred)
+//      eta     = 0.5 (eta + eta_pred)
+//      divtau  = 0.5 (divtau + divtau_pred)
 //
-//     vel = vel + dt * ( g - grad(p+p0)/ro)
+//     rhs = u + dt * ( conv + divtau )
 //
-//  3. Add implicit forcing term
+//  2. Add explicit forcing term i.e. gravity + lagged pressure gradient
 //
-//     vel = vel / ( 1 + dt * f_gds/ro )
+//      rhs += dt * ( g - grad(p + p0) / rho )
 //
-//  4. Solve for phi
+//      Note that in order to add the pressure gradient terms divided by rho, 
+//      we convert the velocity to momentum before adding and then convert them back. 
 //
-//     div( grad(phi) / ro ) = div(  vel / dt + grad(p)/ro )
+//  3. Solve implicit diffusion equation for u* 
 //
-//  5. Compute
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = rhs
 //
-//     vel = vel -  dt * grad(phi) / ro
+//  4. Apply projection
+//     
+//     Add pressure gradient term back to u*: 
 //
-//  6. Define
+//      u** = u* + dt * grad p / rho
 //
-//     p = phi
+//     Solve Poisson equation for phi:
+//
+//     div( grad(phi) / ro ) = div( u** )
+//
+//     Update pressure: 
+//
+//     p = phi / dt
+//
+//     Update velocity, now divergence free
+//
+//     vel = u** - dt * grad p / rho
 //
 void incflo::ApplyCorrector()
 {
@@ -343,24 +367,22 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term (NB: actually returns MINUS u grad(u) )
+    // Compute the explicit advective term: conv = - u dot grad(u)
     ComputeUGradU(conv, vel, new_time);
 
+    // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // If explicit_diffusion == true  then we compute the full diffusive terms here
-        // If explicit_diffusion == false then we compute only the off-diagonal terms here
+        // compute only the off-diagonal terms here
         ComputeDivTau(lev, *divtau[lev], vel);
 
-        // Define u = u_o + dt/2 (R_u^* + R_u^n)
+        // First add the convective terms
         MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv[lev], 0, 0, 3, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_old[lev], 0, 0, 3, 0);
 
-        // Add the diffusion terms (either all if explicit_diffusion == true or just
-        // the
-        //    off-diagonal terms if explicit_diffusion == false)
+        // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev], 0, 0, 3, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, 3, 0);
 
@@ -391,13 +413,10 @@ void incflo::ApplyCorrector()
     }
     FillVelocityBC(new_time, 0);
 
-    // If doing implicit diffusion, solve here for u^*
-    if(!explicit_diffusion)
-    {
-        diffusion_equation->solve(vel, ro, eta, dt);
-    }
+    // Solve implicit diffusion equation for u*
+    diffusion_equation->solve(vel, ro, eta, dt);
 
-	// Project velocity field
+	// Project velocity field, update pressure
 	ApplyProjection(new_time, dt);
 
     // Fill velocity BCs again

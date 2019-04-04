@@ -1,13 +1,11 @@
 !
+!  This module contains the subroutines to compute the three components of
+!  the explicit update part of the diffusion term  div(tau_exp) / ro, where
 !
-!  This module contains the subroutines to compute the three components
-!  of the diffusion term   div(tau) / ro  , where
+!      tau_exp = eta (grad u)^T
 !
-!      tau = eta ( grad(u) + grad(u)^T )
-!
-!  Author: Michele Rosso
-!
-!  Date: October 12, 2017
+!  Note that the remaining part of the stress tensor, tau_imp = eta grad u,
+!  is accounted for through the implicit solve in the DiffusionEquation class.
 !
 !
 module diffusion_mod
@@ -28,11 +26,17 @@ module diffusion_mod
 
 contains
    !
-   ! Computes  d(txx)/dx + d(txy)/dy + d(txz)/dz
+   ! Computes  
+   !  d(txx)/dx + d(txy)/dy + d(txz)/dz
+   !  d(tyx)/dx + d(tyy)/dy + d(tyz)/dz
+   !  d(tzx)/dx + d(tzy)/dy + d(tzz)/dz
    !
-   !  txx = 2 * eta * du/dx
-   !  txy =  eta * ( du/dy + dv/dx )
-   !  txz =  eta * ( du/dz + dw/dx )
+   !  where 
+   !  t = eta * (grad u)^T
+   !
+   !  txx = eta * du/dx   tyx = eta * du/dy   tzx = eta * du/dz
+   !  txy = eta * dv/dx   tyy = eta * dv/dy   tzy = eta * dv/dz
+   !  txz = eta * dw/dx   tyz = eta * dw/dy   tzz = eta * dw/dz
    !
    subroutine compute_divtau(lo, hi,                   &
                              divtau, dlo, dhi,         &
@@ -42,18 +46,13 @@ contains
                              bc_ilo_type, bc_ihi_type, &
                              bc_jlo_type, bc_jhi_type, &
                              bc_klo_type, bc_khi_type, &
-                             dx, ng, do_explicit_diffusion) bind(C)
+                             dx, ng) bind(C)
 
       ! Loops bounds (cell-centered)
       integer(c_int),  intent(in   ) :: lo(3), hi(3)
 
       ! Number of ghost cells
       integer(c_int),  intent(in   ) :: ng
-
-      ! If true  then we include all the diffusive terms in this explicit result
-      ! If false then we include all only the off-diagonal terms here -- we do this
-      !     by computing the full tensor then subtracting the diagonal terms
-      integer(c_int),  intent(in   ) :: do_explicit_diffusion
 
       ! Array bounds
       integer(c_int),  intent(in   ) :: vinlo(3), vinhi(3)
@@ -126,40 +125,32 @@ contains
                !*************************************
 
                ! X
-               txx_e = two * eta_e * ( vel(i+1,j,k,1) - vel(i  ,j,k,1) ) * idx
-               txx_w = two * eta_w * ( vel(i  ,j,k,1) - vel(i-1,j,k,1) ) * idx
+               txx_e = eta_e * ( vel(i+1,j,k,1) - vel(i  ,j,k,1) ) * idx
+               txx_w = eta_w * ( vel(i  ,j,k,1) - vel(i-1,j,k,1) ) * idx
 
                ! Y north
-               du = vel(i,j+1,k,1) - vel(i,j,k,1)
-
                dv = (  vel(i+1,j,k,2) + vel(i+1,j+1,k,2) + vel(i  ,j,k,2) + vel(i  ,j+1,k,2) &
                     &- vel(i  ,j,k,2) - vel(i  ,j+1,k,2) - vel(i-1,j,k,2) - vel(i-1,j+1,k,2) ) * q4
 
-               txy_n = eta_n * ( du*idy + dv*idx )
+               txy_n = eta_n * dv * idx
 
                ! Y south
-               du = vel(i,j,k,1) - vel(i,j-1,k,1)
-
                dv = (  vel(i+1,j-1,k,2) + vel(i+1,j,k,2) + vel(i  ,j-1,k,2) + vel(i  ,j,k,2) &
                     &- vel(i  ,j-1,k,2) - vel(i  ,j,k,2) - vel(i-1,j-1,k,2) - vel(i-1,j,k,2) ) * q4
 
-               txy_s = eta_s * ( du*idy + dv*idx )
+               txy_s = eta_s * dv * idx
 
                ! Z top
-               du = vel(i,j,k+1,1) - vel(i,j,k,1)
-
                dw = (  vel(i+1,j,k,3) + vel(i+1,j,k+1,3) + vel(i  ,j,k,3) + vel(i  ,j,k+1,3) &
                     &- vel(i  ,j,k,3) - vel(i  ,j,k+1,3) - vel(i-1,j,k,3) - vel(i-1,j,k+1,3) ) * q4
 
-               txz_t = eta_t * ( du*idz + dw*idx )
+               txz_t = eta_t * dw * idx
 
                ! Z bottom
-               du = vel(i,j,k,1) - vel(i,j,k-1,1)
-
                dw = (  vel(i+1,j,k-1,3) + vel(i+1,j,k,3) + vel(i  ,j,k-1,3) + vel(i  ,j,k,3) &
                     &- vel(i  ,j,k-1,3) - vel(i  ,j,k,3) - vel(i-1,j,k-1,3) - vel(i-1,j,k,3) ) * q4
 
-               txz_b = eta_b * ( du*idz + dw*idx )
+               txz_b = eta_b * dw * idx
 
                ! Assemble
                divtau(i,j,k,1) = ( txx_e - txx_w ) * idx  + &
@@ -173,37 +164,29 @@ contains
                du = (   vel(i+1,j  ,k,1) + vel(i+1,j+1,k,1) + vel(i,j  ,k,1) + vel(i,j+1,k,1) &
                     & - vel(i+1,j-1,k,1) - vel(i+1,j  ,k,1) - vel(i,j-1,k,1) - vel(i,j  ,k,1) ) * q4
 
-               dv = vel(i+1,j,k,2) - vel(i,j,k,2)
-
-               txy_e = eta_e * ( du*idy + dv*idx )
+               txy_e = eta_e * du * idy
 
                ! X west
                du = (   vel(i,j  ,k,1) + vel(i,j+1,k,1) + vel(i-1,j  ,k,1) + vel(i-1,j+1,k,1) &
                     & - vel(i,j-1,k,1) - vel(i,j  ,k,1) - vel(i-1,j-1,k,1) - vel(i-1,j  ,k,1) ) * q4
 
-               dv = vel(i,j,k,2) - vel(i-1,j,k,2)
-
-               txy_w = eta_w * ( du*idy + dv*idx )
+               txy_w = eta_w * du * idy
 
                ! Y
-               tyy_n = two * eta_n * ( vel(i,j+1,k,2) - vel(i,j  ,k,2) ) * idy
-               tyy_s = two * eta_s * ( vel(i,j  ,k,2) - vel(i,j-1,k,2) ) * idy
+               tyy_n = eta_n * ( vel(i,j+1,k,2) - vel(i,j  ,k,2) ) * idy
+               tyy_s = eta_s * ( vel(i,j  ,k,2) - vel(i,j-1,k,2) ) * idy
 
                ! Z top
-               dv = vel(i,j,k+1,2) - vel(i,j,k,2)
-
                dw = (   vel(i,j  ,k+1,3) + vel(i,j+1,k+1,3) + vel(i,j  ,k,3) + vel(i,j+1,k,3) &
                     & - vel(i,j-1,k+1,3) - vel(i,j  ,k+1,3) - vel(i,j-1,k,3) - vel(i,j  ,k,3) ) * q4
 
-               tyz_t = eta_t * ( dv*idz + dw*idy )
+               tyz_t = eta_t + dw * idy
 
                ! Z bottom
-               dv = vel(i,j,k,2) - vel(i,j,k-1,2)
-
                dw = (   vel(i,j  ,k,3) + vel(i,j+1,k,3) + vel(i,j  ,k-1,3) + vel(i,j+1,k-1,3) &
                     & - vel(i,j-1,k,3) - vel(i,j  ,k,3) - vel(i,j-1,k-1,3) - vel(i,j  ,k-1,3) ) * q4
 
-               tyz_b = eta_b * ( dv*idz + dw*idy )
+               tyz_b = eta_b *  dw * idy
 
                ! Assemble
                divtau(i,j,k,2) = ( txy_e - txy_w ) * idx  + &
@@ -215,61 +198,37 @@ contains
                !*************************************
 
                ! X east
-               dw = vel(i+1,j,k,3) - vel(i,j,k,3)
-
                du = (   vel(i+1,j,k  ,1) + vel(i+1,j,k+1,1) + vel(i,j,k  ,1) + vel(i,j,k+1,1) &
                     & - vel(i+1,j,k-1,1) - vel(i+1,j,k  ,1) - vel(i,j,k-1,1) - vel(i,j,k  ,1) ) * q4
 
-               txz_e = eta_e * ( du*idz + dw*idx )
+               txz_e = eta_e * du * idz
 
                ! X west
-               dw = vel(i,j,k,3) - vel(i-1,j,k,3)
-
                du = (   vel(i,j,k  ,1) + vel(i,j,k+1,1) + vel(i-1,j,k  ,1) + vel(i-1,j,k+1,1) &
                     & - vel(i,j,k-1,1) - vel(i,j,k  ,1) - vel(i-1,j,k-1,1) - vel(i-1,j,k  ,1) ) * q4
 
-               txz_w = eta_w * ( du*idz + dw*idx )
+               txz_w = eta_w * du * idz
 
                ! Y north
-               dw = vel(i,j+1,k,3) - vel(i,j,k,3)
-
                dv = (   vel(i,j,k+1,2) + vel(i,j+1,k+1,2) + vel(i,j,k  ,2) + vel(i,j+1,k  ,2) &
                     & - vel(i,j,k  ,2) - vel(i,j+1,k  ,2) - vel(i,j,k-1,2) - vel(i,j+1,k-1,2) ) * q4
 
-               tyz_n = eta_n * ( dv*idz + dw*idy )
+               tyz_n = eta_n * dv * idz
 
                ! Y south
-               dw = vel(i,j,k,3) - vel(i,j-1,k,3)
-
                dv = (   vel(i,j-1,k+1,2) + vel(i,j,k+1,2) + vel(i,j-1,k  ,2) + vel(i,j,k  ,2) &
                     & - vel(i,j-1,k  ,2) - vel(i,j,k  ,2) - vel(i,j-1,k-1,2) - vel(i,j,k-1,2) ) * q4
 
-               tyz_s = eta_s * ( dv*idz + dw*idy )
+               tyz_s = eta_s * dv * idz
 
                ! Z
-               tzz_t = two * eta_t * ( vel(i,j,k+1,3) - vel(i,j,k  ,3) ) * idz
-               tzz_b = two * eta_b * ( vel(i,j,k  ,3) - vel(i,j,k-1,3) ) * idz
+               tzz_t = eta_t * ( vel(i,j,k+1,3) - vel(i,j,k  ,3) ) * idz
+               tzz_b = eta_b * ( vel(i,j,k  ,3) - vel(i,j,k-1,3) ) * idz
 
                ! Assemble
                divtau(i,j,k,3) = ( txz_e - txz_w ) * idx  + &
                     &            ( tyz_n - tyz_s ) * idy  + &
                     &            ( tzz_t - tzz_b ) * idz
-
-               if (do_explicit_diffusion .eq. 0) then
-                  !
-                  ! Subtract diagonal terms of stress tensor, to be obtained through implicit solve
-                  ! Note that the variable names are misleading, but we want to avoid declaring new ones
-                  !
-                  do n = 1, 3
-                     txx = ( eta_e * ( vel(i+1,j,k,n) - vel(i  ,j,k,n) ) &
-                            -eta_w * ( vel(i  ,j,k,n) - vel(i-1,j,k,n) ) ) * idx * idx
-                     tyy = ( eta_n * ( vel(i,j+1,k,n) - vel(i,j  ,k,n) ) &
-                            -eta_s * ( vel(i,j  ,k,n) - vel(i,j-1,k,n) ) ) * idy * idy
-                     tzz = ( eta_t * ( vel(i,j,k+1,n) - vel(i,j,k  ,n) ) &
-                            -eta_b * ( vel(i,j,k  ,n) - vel(i,j,k-1,n) ) ) * idz * idz
-                     divtau(i,j,k,n) = divtau(i,j,k,n) - (txx + tyy + tzz)
-                  end do
-               end if
 
                !*************************************
                !         div(tau)/ro
