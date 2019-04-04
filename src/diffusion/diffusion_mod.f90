@@ -180,7 +180,7 @@ contains
                dw = (   vel(i,j  ,k+1,3) + vel(i,j+1,k+1,3) + vel(i,j  ,k,3) + vel(i,j+1,k,3) &
                     & - vel(i,j-1,k+1,3) - vel(i,j  ,k+1,3) - vel(i,j-1,k,3) - vel(i,j  ,k,3) ) * q4
 
-               tyz_t = eta_t + dw * idy
+               tyz_t = eta_t * dw * idy
 
                ! Z bottom
                dw = (   vel(i,j  ,k,3) + vel(i,j+1,k,3) + vel(i,j  ,k-1,3) + vel(i,j+1,k-1,3) &
