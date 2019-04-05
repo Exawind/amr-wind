@@ -212,10 +212,10 @@ void incflo::ReadCheckpointFile()
             if (chkscaVarsName[i] == "implicit_functions") allow_empty_mf = 1;
 
 			MultiFab mf;
-            VisMF::Read(mf, MultiFabFileFullPrefix(lev, restart_file, level_prefix,
-                                                   chkscaVarsName[i], nullptr,
-                                                   ParallelDescriptor::IOProcessorNumber(),
-                                                   allow_empty_mf));
+            VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix,
+                                                          chkscaVarsName[i]), nullptr,
+                        ParallelDescriptor::IOProcessorNumber(), allow_empty_mf);
+
             (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
 		}
 	}

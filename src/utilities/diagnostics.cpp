@@ -9,20 +9,21 @@
 Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type)
 {
     // Make copy of MF so that we can set values in covered cells to zero. 
-	MultiFab mf_tmp(mf[lev]->boxArray(),
-					mf[lev]->DistributionMap(),
-                    mf[lev]->nComp(),
-                    0, MFInfo(), *ebfactory[lev]);
+    int ncomp = 1;
+    int ngrow = 0;
+    MultiFab mf_tmp(mf[lev]->boxArray(), mf[lev]->DistributionMap(), ncomp, ngrow, 
+                    MFInfo(), *ebfactory[lev]);
 
-	MultiFab::Copy(mf_tmp, *mf[lev], comp, comp, 1, 0);
+	MultiFab::Copy(mf_tmp, *mf[lev], comp, 0, 1, 0);
 	EB_set_covered(mf_tmp, 0.0);
+
     if(norm_type == 0)
     {
-        return mf_tmp.norm0(comp);
+        return mf_tmp.norm0(0);
     }
     else if(norm_type == 1)
     {
-        return mf_tmp.norm1(comp, geom[lev].periodicity());
+        return mf_tmp.norm1(0, geom[lev].periodicity());
     }
     else
     {

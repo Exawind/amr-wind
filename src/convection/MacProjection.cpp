@@ -43,9 +43,9 @@ void MacProjection::read_inputs()
 
 	// Option to control MLMG behavior
 	pp.query("verbose", verbose);
-	pp.query("mg_verbose", m_mg_verbose);
-	pp.query("mg_rtol", m_mg_rtol);
-	pp.query("mg_atol", m_mg_atol);
+	pp.query("mg_verbose", mg_verbose);
+	pp.query("mg_rtol", mg_rtol);
+	pp.query("mg_atol", mg_atol);
 
    // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
    bottom_solver_type = "bicgstab";
@@ -235,26 +235,29 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 	MacProjector macproj(vel, beta, m_amrcore->Geom());
 
 	macproj.setDomainBC(m_lobc, m_hibc);
-	macproj.setVerbose(m_mg_verbose);
 
+    // The default bottom solver is BiCG
     if(bottom_solver_type == "smoother")
     {
-        macproj.setBottomSolver(MLMG::BottomSolver::smoother);
-    } 
-    else if(bottom_solver_type == "hypre") 
-    {
-        macproj.setBottomSolver(MLMG::BottomSolver::hypre);
+       macproj.setBottomSolver(MLMG::BottomSolver::smoother);
     }
+    else if(bottom_solver_type == "hypre")
+    {
+       macproj.setBottomSolver(MLMG::BottomSolver::hypre);
+    }
+
+    // Verbosity for MultiGrid / ConjugateGradients
+	macproj.setVerbose(mg_verbose);
 
     if (steady_state)
     {
         // Solve using m_phi as an initial guess
-        macproj.project(GetVecOfPtrs(m_phi), m_mg_rtol, m_mg_atol);
+        macproj.project(GetVecOfPtrs(m_phi), mg_rtol, mg_atol);
     }
     else
     {
         // Solve using initial guess of zero
-        macproj.project(m_mg_rtol, m_mg_atol);
+        macproj.project(mg_rtol, mg_atol);
     }
 
 	if(verbose)

@@ -106,6 +106,7 @@ void incflo::ComputeDt(int initialisation)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
+        // The functions take the min/max over uncovered cells 
         umax   = amrex::max(umax,   Norm(vel, lev, 0, 0));
         vmax   = amrex::max(vmax,   Norm(vel, lev, 1, 0));
         wmax   = amrex::max(wmax,   Norm(vel, lev, 2, 0));

@@ -63,6 +63,8 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
     //
     // where phi and rhs are nodal, and sigma is cell-centered
 	LPInfo info;
+	info.setMaxCoarseningLevel(mg_max_coarsening_level);
+
     matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
 
     matrix.setGaussSeidel(true);
@@ -90,6 +92,7 @@ void PoissonEquation::readParameters()
     pp.query("mg_max_iter", mg_max_iter);
     pp.query("mg_cg_maxiter", mg_cg_maxiter);
     pp.query("mg_max_fmg_iter", mg_max_fmg_iter);
+    pp.query("mg_max_coarsening_level", mg_max_coarsening_level);
     pp.query("mg_rtol", mg_rtol);
     pp.query("mg_atol", mg_atol);
     pp.query( "bottom_solver_type", bottom_solver_type);
