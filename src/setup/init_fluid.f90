@@ -43,6 +43,7 @@ contains
       if(probtype == 1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if(probtype == 2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if(probtype == 3) call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+      if(probtype == 4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
@@ -191,6 +192,41 @@ contains
       end do
 
    end subroutine plane_poiseuille
+
+   subroutine couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+
+      use constant,          only: zero, half, one
+      use constant,          only: ic_u
+
+      implicit none
+
+      integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
+      integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
+      integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
+
+      real(rt),         intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+
+      real(rt),         intent(in   ) :: dx, dy, dz
+
+      ! Local variables
+      integer(c_int)                  :: i, j, k
+      integer(c_int)                  :: num_cells_y
+      real(rt)                        :: y
+
+      num_cells_y = domhi(2) - domlo(2) + 1
+
+      do k = lo(3), hi(3)
+         do j = lo(2), hi(2)
+            y =  (real(j,rt) + half) / num_cells_y
+            do i = lo(1), hi(1)
+               vel(i,j,k,1) = ic_u * (y - half)
+               vel(i,j,k,2) = zero
+               vel(i,j,k,3) = zero
+            end do
+         end do
+      end do
+
+   end subroutine couette
 
 end module init_fluid_module
 
