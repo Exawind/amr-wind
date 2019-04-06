@@ -31,15 +31,14 @@ incflo.mu               =   1000.       # Dynamic viscosity coefficient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   128 128 4   # Grid cells at coarsest AMRlevel
-amr.blocking_factor     =   4           # Max AMR level in hierarchy 
+amr.n_cell              =   128 128 8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.   # Lo corner coordinates
-geometry.prob_hi        =   1.  1.  0.03125  # Hi corner coordinates
+geometry.prob_hi        =   1.  1.  0.0625 # Hi corner coordinates
 geometry.is_periodic    =   0   0   1    # Periodicity x y z (0/1)
 
 # Boundary conditions

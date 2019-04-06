@@ -34,7 +34,6 @@ incflo.papa_reg         =   0.001       # Papanastasiou regularisation parameter
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              =   64  64  8   # Grid cells at coarsest AMRlevel
-amr.blocking_factor     =   8           # Blocking factor for grids
 amr.max_level           =   0           # Max AMR level in hierarchy 
 amr.max_grid_size_x     =   1024
 amr.max_grid_size_y     =   1024
