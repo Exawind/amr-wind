@@ -10,7 +10,7 @@ void incflo::MakeEBGeometry()
 
 	/******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be one of    *
-   * box, cylinder, annulus, sphere
+   * box, cylinder, annulus, sphere, spherecube, twocylinders
    ******************************************************************************/
 
 	ParmParse pp("incflo");
@@ -33,6 +33,11 @@ void incflo::MakeEBGeometry()
 	{
 		amrex::Print() << "\n Building cylinder geometry." << std::endl;
         make_eb_cylinder();
+	}
+	else if(geom_type == "twocylinders")
+	{
+		amrex::Print() << "\n Building twocylinders geometry." << std::endl;
+        make_eb_twocylinders();
 	}
 	else if(geom_type == "annulus")
 	{

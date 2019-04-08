@@ -196,6 +196,7 @@ private:
 	void make_eb_annulus();
 	void make_eb_box();
 	void make_eb_cylinder();
+	void make_eb_twocylinders();
 	void make_eb_regular();
 	void make_eb_sphere();
 	void make_eb_spherecube();

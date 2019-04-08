@@ -7,4 +7,5 @@ CEXE_sources += eb_cylinder.cpp
 CEXE_sources += eb_regular.cpp
 CEXE_sources += eb_sphere.cpp
 CEXE_sources += eb_spherecube.cpp
+CEXE_sources += eb_twocylinders.cpp
 CEXE_sources += get_walls.cpp

@@ -51,3 +51,8 @@ exec/chk*/
 exec/movie.visit
 exec/*.vtp
 exec/*.pvtp
+test/*.ex
+test/tmp_build_dir/
+test/Backtrace.*
+test/*plt*/
+test/chk*/
