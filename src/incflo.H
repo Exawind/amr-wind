@@ -366,8 +366,6 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void make_mg_bc(int mg_bc[]);
-
     void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
     void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 

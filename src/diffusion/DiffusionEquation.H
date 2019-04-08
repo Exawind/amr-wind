@@ -69,7 +69,7 @@ private:
     // ( alpha a - beta div ( b grad ) ) phi = rhs
     //
     amrex::MLEBABecLap matrix;
-    amrex::Vector<amrex::Vector<std::unique_ptr<amrex::MultiFab>>> b;
+    amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
 

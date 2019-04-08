@@ -69,15 +69,9 @@ contains
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)+1
-               if ( ( i == domlo(1) ) .and. any(bc_ilo(j,k,1) == bc_list) ) then
-                  u(i,j,k) = vel(i-1,j,k,1)
-               else if ( ( i == domhi(1)+1 ) .and. any(bc_ihi(j,k,1) == bc_list) ) then
-                  u(i,j,k) = vel(i,j,k,1)
-               else
-                  upls     = vel(i  ,j,k,1) - half * xslopes(i  ,j,k,1)
-                  umns     = vel(i-1,j,k,1) + half * xslopes(i-1,j,k,1)
-                  u(i,j,k) = upwind_normal( umns, upls )
-               end if
+               upls     = vel(i  ,j,k,1) - half * xslopes(i  ,j,k,1)
+               umns     = vel(i-1,j,k,1) + half * xslopes(i-1,j,k,1)
+               u(i,j,k) = upwind_normal( umns, upls )
             end do
          end do
       end do
@@ -85,15 +79,9 @@ contains
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)+1
             do i = lo(1), hi(1)
-               if ( ( j == domlo(2) ) .and. any(bc_jlo(i,k,1) == bc_list) ) then
-                  v(i,j,k) = vel(i,j-1,k,2)
-               else if ( ( j == domhi(2)+1 ) .and. any(bc_jhi(i,k,1) == bc_list) ) then
-                  v(i,j,k) = vel(i,j,k,2)
-               else
-                  vpls     = vel(i,j  ,k,2) - half * yslopes(i,j,  k,2)
-                  vmns     = vel(i,j-1,k,2) + half * yslopes(i,j-1,k,2)
-                  v(i,j,k) = upwind_normal( vmns, vpls )
-               end if
+               vpls     = vel(i,j  ,k,2) - half * yslopes(i,j,  k,2)
+               vmns     = vel(i,j-1,k,2) + half * yslopes(i,j-1,k,2)
+               v(i,j,k) = upwind_normal( vmns, vpls )
             end do
          end do
       end do
@@ -101,15 +89,9 @@ contains
       do k = lo(3), hi(3)+1
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               if ( ( k == domlo(3) ) .and. any(bc_klo(i,j,1) == bc_list) ) then
-                  w(i,j,k) = vel(i,j,k-1,3)
-               else if ( ( k == domhi(3)+1 ) .and. any(bc_khi(i,j,1) == bc_list) ) then
-                  w(i,j,k) = vel(i,j,k,3)
-               else
-                  wpls     = vel(i,j,k  ,3) - half * zslopes(i,j,k  ,3)
-                  wmns     = vel(i,j,k-1,3) + half * zslopes(i,j,k-1,3)
-                  w(i,j,k) = upwind_normal( wmns, wpls )
-               end if
+               wpls     = vel(i,j,k  ,3) - half * zslopes(i,j,k  ,3)
+               wmns     = vel(i,j,k-1,3) + half * zslopes(i,j,k-1,3)
+               w(i,j,k) = upwind_normal( wmns, wpls )
             end do
          end do
       end do

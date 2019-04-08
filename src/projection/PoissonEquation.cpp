@@ -65,7 +65,7 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
 	LPInfo info;
 	info.setMaxCoarseningLevel(mg_max_coarsening_level);
 
-    matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
+    matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory), use_hypre);
 
     matrix.setGaussSeidel(true);
     matrix.setHarmonicAverage(false);
@@ -96,6 +96,7 @@ void PoissonEquation::readParameters()
     pp.query("mg_rtol", mg_rtol);
     pp.query("mg_atol", mg_atol);
     pp.query( "bottom_solver_type", bottom_solver_type);
+    pp.query( "use_hypre", use_hypre);
 }
 
 void PoissonEquation::updateInternals(AmrCore* amrcore_in, 

@@ -284,10 +284,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
 
         // Get EB geometric info
         Array<const MultiCutFab*, AMREX_SPACEDIM> areafrac;
-        Array<const MultiCutFab*, AMREX_SPACEDIM> facecent;
-
         areafrac = ebfactory[lev]->getAreaFrac();
-        facecent = ebfactory[lev]->getFaceCent();
 
     // Then compute velocity at faces
 #ifdef _OPENMP
@@ -341,10 +338,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
                                                    BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*xslopes[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
-                                                   BL_TO_FORTRAN_ANYD((*facecent[0])[mfi]),
                                                    BL_TO_FORTRAN_ANYD(flags),
-                                                   bc_ilo[lev]->dataPtr(),
-                                                   bc_ihi[lev]->dataPtr(),
                                                    &nghost,
                                                    domain.loVect(),
                                                    domain.hiVect());
@@ -354,10 +348,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
                                                    BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*yslopes[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),
-                                                   BL_TO_FORTRAN_ANYD((*facecent[1])[mfi]),
                                                    BL_TO_FORTRAN_ANYD(flags),
-                                                   bc_jlo[lev]->dataPtr(),
-                                                   bc_jhi[lev]->dataPtr(),
                                                    &nghost,
                                                    domain.loVect(),
                                                    domain.hiVect());
@@ -367,10 +358,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
                                                    BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*zslopes[lev])[mfi]),
                                                    BL_TO_FORTRAN_ANYD((*areafrac[2])[mfi]),
-                                                   BL_TO_FORTRAN_ANYD((*facecent[2])[mfi]),
                                                    BL_TO_FORTRAN_ANYD(flags),
-                                                   bc_klo[lev]->dataPtr(),
-                                                   bc_khi[lev]->dataPtr(),
                                                    &nghost,
                                                    domain.loVect(),
                                                    domain.hiVect());

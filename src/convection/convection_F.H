@@ -28,9 +28,7 @@ extern "C"
       const amrex::Real* vel   ,    const int* vello, const int* velhi, 
       const amrex::Real* slopes,    const int* slo,   const int* shi,
       const amrex::Real* areafrac,  const int* alo,   const int* ahi,
-      const amrex::Real* cent,      const int* clo,   const int* chi,
       const void*        flags,     const int* flo,   const int* fhi,
-      const int* bc_ilo_type,       const int* bc_ihi_type, 
       const int* ng, 
       const int* domlo, const int* domhi );
 
@@ -40,9 +38,7 @@ extern "C"
       const amrex::Real* vel   ,    const int* vello, const int* velhi, 
       const amrex::Real* slopes,    const int* slo,   const int* shi,
       const amrex::Real* areafrac,  const int* alo,   const int* ahi,
-      const amrex::Real* cent,      const int* clo,   const int* chi,
       const void*        flags,     const int* flo,   const int* fhi,
-      const int* bc_jlo_type,       const int* bc_jhi_type, 
       const int* ng, 
       const int* domlo, const int* domhi );
 
@@ -52,9 +48,7 @@ extern "C"
       const amrex::Real* vel   ,    const int* vello, const int* velhi, 
       const amrex::Real* slopes,    const int* slo,   const int* shi,
       const amrex::Real* areafrac,  const int* alo,   const int* ahi,
-      const amrex::Real* cent,      const int* clo,   const int* chi,
       const void*        flags,     const int* flo,   const int* fhi,
-      const int* bc_klo_type,       const int* bc_khi_type, 
       const int* ng, 
       const int* domlo, const int* domhi );   
 
