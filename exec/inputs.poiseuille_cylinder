@@ -33,27 +33,23 @@ incflo.papa_reg         =   0.001       # Papanastasiou regularisation parameter
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   96  96  16  # Grid cells at coarsest AMRlevel
-amr.blocking_factor     =   8           # Blocking factor for grids
+amr.n_cell              =   80  80  8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
-amr.max_grid_size_x     =   1024
-amr.max_grid_size_y     =   1024
-amr.max_grid_size_z     =   1024
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   3.  3.  0.5 # Hi corner coordinates
+geometry.prob_hi        =   2.5 2.5 .25 # Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
-incflo.delp             =   0.  0.  8.  # Prescribed (cyclic) pressure gradient
+incflo.delp             =   0.  0.  4.  # Prescribed (cyclic) pressure gradient
 
 incflo.geometry         =   "cylinder"  # Add cylinder
 cylinder.internal_flow  =   true        # Internal vs external flow
 cylinder.radius         =   1.          # Radius
 cylinder.direction      =   2           # Choices are {0,1,2}
-cylinder.center         =   1.5 1.5 0.  # Center
+cylinder.center         =   1.25 1.25 0. # Center
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SOLVER SETTINGS            #

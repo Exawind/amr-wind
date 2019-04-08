@@ -326,7 +326,7 @@ contains
       real(ar) :: fz(lo(1)-nh:hi(1)+nh  ,lo(2)-nh:hi(2)+nh  ,lo(3)-nh:hi(3)+nh+1,3)
 
       ! Check number of ghost cells
-      if (ng < 4) call amrex_abort( "compute_ugradu_eb(): ng must be >= 4")
+      if (ng < 5) call amrex_abort( "compute_ugradu_eb(): ng must be >= 5")
 
       !
       ! First compute the convective fluxes at the face center
