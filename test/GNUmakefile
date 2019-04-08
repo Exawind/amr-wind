@@ -6,6 +6,9 @@ USE_OMP = FALSE
 # Debug mode?
 DEBUG = FALSE
 
+# Use HYPRE solver?
+USE_HYPRE = FALSE
+
 # Profiling
 PROFILE       = FALSE
 TINY_PROFILE  = FALSE
