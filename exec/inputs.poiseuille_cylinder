@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   -1          # Max (simulated) time to evolve
-max_step                =   100         # Max number of time steps
+max_step                =   10          # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
@@ -34,17 +34,17 @@ incflo.papa_reg         =   0.001       # Papanastasiou regularisation parameter
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   160 160 16  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   160 160 8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   2.5 2.5 .25 # Hi corner coordinates
+geometry.prob_hi        =   2.5 2.5 .125 # Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
-incflo.delp             =   0.  0.  4.  # Prescribed (cyclic) pressure gradient
+incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
 
 incflo.geometry         =   "cylinder"  # Add cylinder
 cylinder.internal_flow  =   true        # Internal vs external flow

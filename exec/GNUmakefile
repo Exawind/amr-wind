@@ -24,6 +24,7 @@ TINY_PROFILE  = FALSE
 # Path to AMReX directory and incflo directories
 AMREX_HOME ?= ../../amrex
 TOP = ..
+HYPRE_DIR = ../../hypre/src/hypre
 
 # Use OS-friendly compiler
 UNAME := $(shell uname)
