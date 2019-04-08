@@ -31,7 +31,6 @@ incflo.mu               =   0.0002      # Dynamic viscosity coefficient
 #.......................................#
 amr.n_cell              =   32  32  8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   2           # Max AMR level in hierarchy 
-amr.blocking_factor     =   1 
 amr.grid_eff            =   0.75
 amr.n_error_buf         =   2
 
