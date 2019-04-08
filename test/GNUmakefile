@@ -7,7 +7,7 @@ USE_OMP = FALSE
 DEBUG = FALSE
 
 # Use HYPRE solver?
-USE_HYPRE = TRUE
+USE_HYPRE = FALSE
 
 # Profiling
 PROFILE       = FALSE
