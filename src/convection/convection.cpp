@@ -342,8 +342,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
     } // Levels
 }
 //
-// Compute the slopes of each velocity component in the
-// three directions.
+// Compute the slopes of each velocity component in all three directions.
 //
 void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
 {
@@ -386,8 +385,7 @@ void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
 			// No cut cells in tile + 1-cell witdh halo -> use non-eb routine
 			if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
 			{
-                amrex::ParallelFor(bx, ncomp,
-                      [=] (int i, int j, int k, int dir)
+                AMREX_CUDA_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, dir,
                 {
                    // X direction
                    Real du_xl = 2.0*(vel_fab(i  ,j,k,dir) - vel_fab(i-1,j,k,dir));
@@ -421,8 +419,7 @@ void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
 			{
                 const auto& flag_fab = flags.array();
 
-                amrex::ParallelFor(bx, ncomp,
-                      [=] (int i, int j, int k, int dir)
+                AMREX_CUDA_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, dir,
                 {
                     if (flag_fab(i,j,k).isCovered())
                     {
@@ -468,17 +465,83 @@ void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
                 });
 	        }
 
-            correct_slopes(BL_TO_FORTRAN_BOX(bx),
-                           BL_TO_FORTRAN_ANYD(Sborder[mfi]),
-                           (*xslopes[lev])[mfi].dataPtr(),
-                           (*yslopes[lev])[mfi].dataPtr(),
-                           BL_TO_FORTRAN_ANYD((*zslopes[lev])[mfi]),
-                           BL_TO_FORTRAN_ANYD(flags),
-                           domain.loVect(), domain.hiVect(),
-                           bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                           bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                           bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                           &nghost);
+            // TODO -- do we have domain and ilo_fab, etc on GPU???
+            // TODO -- we need to use "MINF" from the Fortran, not hard-wire this to 20
+
+            const auto& flag_fab =         flags.array();
+
+            const auto&  ilo_ifab  = bc_ilo[lev]->array();
+            const auto&  ihi_ifab  = bc_ihi[lev]->array();
+            const auto&  jlo_ifab  = bc_jlo[lev]->array();
+            const auto&  jhi_ifab  = bc_jhi[lev]->array();
+            const auto&  klo_ifab  = bc_klo[lev]->array();
+            const auto&  khi_ifab  = bc_khi[lev]->array();
+
+            AMREX_CUDA_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, dir,
+            {
+                if ( (i == domain.smallEnd(0)) && !flag_fab(i,j,k).isCovered() && ilo_ifab(i-1,j,k,0) == 20)
+                {
+                    Real du_xl = 2.0*(vel_fab(i  ,j,k,dir) - vel_fab(i-1,j,k,dir));
+                    Real du_xr = 2.0*(vel_fab(i+1,j,k,dir) - vel_fab(i  ,j,k,dir));
+                    Real du_xc = (vel_fab(i+1,j,k,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i-1,j,k,dir))/3.0;
+
+                    Real xslope = amrex::min(std::abs(du_xl),std::abs(du_xc),std::abs(du_xr));
+                    xslope            = (du_xr*du_xl > 0.0) ? xslope : 0.0;
+                    xs_fab(i,j,k,dir) = (du_xc       > 0.0) ? xslope : -xslope;
+                }
+                if ( (i == domain.bigEnd(0)) && !flag_fab(i,j,k).isCovered() && ihi_ifab(i+1,j,k,0) == 20)
+                {
+                    Real du_xl = 2.0*(vel_fab(i  ,j,k,dir) - vel_fab(i-1,j,k,dir));
+                    Real du_xr = 2.0*(vel_fab(i+1,j,k,dir) - vel_fab(i  ,j,k,dir));
+                    Real du_xc = -(vel_fab(i-1,j,k,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i+1,j,k,dir))/3.0;
+
+                    Real xslope = amrex::min(std::abs(du_xl),std::abs(du_xc),std::abs(du_xr));
+                    xslope            = (du_xr*du_xl > 0.0) ? xslope : 0.0;
+                    xs_fab(i,j,k,dir) = (du_xc       > 0.0) ? xslope : -xslope;
+                }
+
+                if ( (j == domain.smallEnd(1)) && !flag_fab(i,j,k).isCovered() && jlo_ifab(i,j-1,k,0) == 20)
+                {
+                    Real du_yl = 2.0*(vel_fab(i,j  ,k,dir) - vel_fab(i,j-1,k,dir));
+                    Real du_yr = 2.0*(vel_fab(i,j+1,k,dir) - vel_fab(i,j  ,k,dir));
+                    Real du_yc = (vel_fab(i,j+1,k,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i,j-1,k,dir))/3.0;
+
+                    Real yslope = amrex::min(std::abs(du_yl),std::abs(du_yc),std::abs(du_yr));
+                    yslope            = (du_yr*du_yl > 0.0) ? yslope : 0.0;
+                    ys_fab(i,j,k,dir) = (du_yc       > 0.0) ? yslope : -yslope;
+                }
+                if ( (j == domain.bigEnd(1)) && !flag_fab(i,j,k).isCovered() && jhi_ifab(i,j+1,k,0) == 20)
+                {
+                    Real du_yl = 2.0*(vel_fab(i,j  ,k,dir) - vel_fab(i,j-1,k,dir));
+                    Real du_yr = 2.0*(vel_fab(i,j+1,k,dir) - vel_fab(i,j  ,k,dir));
+                    Real du_yc = -(vel_fab(i,j-1,k,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i,j+1,k,dir))/3.0;
+
+                    Real yslope = amrex::min(std::abs(du_yl),std::abs(du_yc),std::abs(du_yr));
+                    yslope            = (du_yr*du_yl > 0.0) ? yslope : 0.0;
+                    ys_fab(i,j,k,dir) = (du_yc       > 0.0) ? yslope : -yslope;
+                }
+
+                if ( (k == domain.smallEnd(2)) && !flag_fab(i,j,k).isCovered() && klo_ifab(i,j,k-1,0) == 20)
+                {
+                    Real du_zl = 2.0*(vel_fab(i,j,k  ,dir) - vel_fab(i,j,k-1,dir));
+                    Real du_zr = 2.0*(vel_fab(i,j,k+1,dir) - vel_fab(i,j,k  ,dir));
+                    Real du_zc = (vel_fab(i,j,k+1,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i,j,k-1,dir))/3.0;
+
+                    Real zslope = amrex::min(std::abs(du_zl),std::abs(du_zc),std::abs(du_zr));
+                    zslope            = (du_zr*du_zl > 0.0) ? zslope : 0.0;
+                    zs_fab(i,j,k,dir) = (du_zc       > 0.0) ? zslope : -zslope;
+                }
+                if ( (k == domain.bigEnd(2)) && !flag_fab(i,j,k).isCovered() && khi_ifab(i,j,k+1,0) == 20)
+                {
+                    Real du_zl = 2.0*(vel_fab(i,j,k  ,dir) - vel_fab(i,j,k-1,dir));
+                    Real du_zr = 2.0*(vel_fab(i,j,k+1,dir) - vel_fab(i,j,k  ,dir));
+                    Real du_zc = -(vel_fab(i,j,k-1,dir)+3.0*vel_fab(i,j,k,dir)-4.0*vel_fab(i,j,k+1,dir))/3.0;
+
+                    Real zslope = amrex::min(std::abs(du_zl),std::abs(du_zc),std::abs(du_zr));
+                    zslope            = (du_zr*du_zl > 0.0) ? zslope : 0.0;
+                    zs_fab(i,j,k,dir) = (du_zc       > 0.0) ? zslope : -zslope;
+                }
+            });
 		}
 	}
 
