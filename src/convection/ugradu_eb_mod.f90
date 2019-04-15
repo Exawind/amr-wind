@@ -1,4 +1,4 @@
-module convection_eb_mod
+module ugradu_eb_mod
 
    use amrex_ebcellflag_module, only: is_covered_cell, is_single_valued_cell, get_neighbor_cells
    use amrex_error_module,      only: amrex_abort
@@ -6,190 +6,12 @@ module convection_eb_mod
    use iso_c_binding ,          only: c_int
 
    use bc,                      only: minf_, nsw_, pinf_, pout_
-   use constant,                only: zero, half, one, my_huge
+   use constant,                only: zero, half, my_huge
 
    implicit none
    private
 
 contains
-
-   !
-   ! EB x-direction MAC velocity
-   !
-   subroutine compute_velocity_at_x_faces_eb(lo, hi, u, ulo, uhi,  &
-                                             vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi, &
-                                             flags, flo, fhi, ng, &
-                                             domlo, domhi) bind(C)
-
-      use convection_mod 
-
-      ! Tile bounds ( x-face centered )
-      integer(c_int),  intent(in   ) :: lo(3),  hi(3)
-
-      ! Array Bounds
-      integer(c_int),  intent(in   ) :: slo(3), shi(3)
-      integer(c_int),  intent(in   ) :: ulo(3), uhi(3)
-      integer(c_int),  intent(in   ) :: vello(3), velhi(3)
-      integer(c_int),  intent(in   ) :: alo(3), ahi(3)
-      integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-
-      ! Domain bounds
-      integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
-
-      ! Nghost
-      integer(c_int),  intent(in   ) :: ng
-
-      ! Arrays
-      real(ar),        intent(in   ) ::                                     &
-           & vel(vello(1):velhi(1),vello(2):velhi(2),vello(3):velhi(3),3),  &
-           & slopes(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3),           &
-           & areafrac(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
-      integer(c_int),  intent(in   ) :: &
-           & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-
-      ! Staggered velocity
-      real(ar),        intent(inout) ::                    &
-           & u(ulo(1):uhi(1),ulo(2):uhi(2),ulo(3):uhi(3))
-
-      ! Local variables
-      integer(c_int)                 :: i, j, k
-      real(ar)                       :: upls, umns
-
-      ! First we compute the face centered MAC velocity
-      ! We need 1 layer of ghosts cells in y and z for interpolation (see next step)
-      do k = lo(3)-1, hi(3)+1
-         do j = lo(2)-1, hi(2)+1
-            do i = lo(1), hi(1)
-               if ( areafrac(i,j,k) > zero ) then
-                  upls     = vel(i  ,j,k,1) - half * slopes(i  ,j,k,1)
-                  umns     = vel(i-1,j,k,1) + half * slopes(i-1,j,k,1)
-                  u(i,j,k) = upwind_normal( umns, upls )
-               else
-                  u(i,j,k) = my_huge
-               end if
-            end do
-         end do
-      end do
-
-   end subroutine compute_velocity_at_x_faces_eb
-
-   !
-   ! EB y-direction MAC velocity
-   !
-   subroutine compute_velocity_at_y_faces_eb(lo, hi, v, vlo, vhi, &
-                                             vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi, &
-                                             flags, flo, fhi, ng, &
-                                             domlo, domhi) bind(C)
-
-      use convection_mod 
-
-      ! Tile bounds ( x-face centered )
-      integer(c_int),  intent(in   ) :: lo(3),  hi(3)
-
-      ! Array Bounds
-      integer(c_int),  intent(in   ) :: slo(3), shi(3)
-      integer(c_int),  intent(in   ) :: vlo(3), vhi(3)
-      integer(c_int),  intent(in   ) :: vello(3), velhi(3)
-      integer(c_int),  intent(in   ) :: alo(3), ahi(3)
-      integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-
-      ! Domain bounds
-      integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
-
-      ! Nghost
-      integer(c_int),  intent(in   ) :: ng
-
-      ! Arrays
-      real(ar),        intent(in   ) ::                                     &
-           & vel(vello(1):velhi(1),vello(2):velhi(2),vello(3):velhi(3),3),  &
-           & slopes(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3),           &
-           & areafrac(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
-      integer(c_int),  intent(in   ) :: &
-           & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-
-      ! Staggered velocity
-      real(ar),        intent(inout) ::                    &
-           & v(vlo(1):vhi(1),vlo(2):vhi(2),vlo(3):vhi(3))
-
-      ! Local variables
-      integer(c_int)                 :: i, j, k
-      real(ar)                       :: vpls, vmns
-
-      do k = lo(3)-1, hi(3)+1
-         do j = lo(2), hi(2)
-            do i = lo(1)-1, hi(1)+1
-               if ( areafrac(i,j,k) > zero ) then
-                  vpls     = vel(i,j  ,k,2) - half * slopes(i,j,  k,2)
-                  vmns     = vel(i,j-1,k,2) + half * slopes(i,j-1,k,2)
-                  v(i,j,k) = upwind_normal( vmns, vpls )
-               else
-                  v(i,j,k) = my_huge
-               end if
-            end do
-         end do
-      end do
-
-   end subroutine compute_velocity_at_y_faces_eb
-
-   !
-   ! EB z-direction MAC velocity
-   !
-   subroutine compute_velocity_at_z_faces_eb(lo, hi, w, wlo, whi,&
-                                             vel, vello, velhi, slopes, slo, shi, areafrac, alo, ahi, &
-                                             flags, flo, fhi, ng, &
-                                             domlo, domhi) bind(C)
-
-      use convection_mod 
-
-      ! Tile bounds ( x-face centered )
-      integer(c_int),  intent(in   ) :: lo(3),  hi(3)
-
-      ! Array Bounds
-      integer(c_int),  intent(in   ) :: slo(3), shi(3)
-      integer(c_int),  intent(in   ) :: wlo(3), whi(3)
-      integer(c_int),  intent(in   ) :: vello(3), velhi(3)
-      integer(c_int),  intent(in   ) :: alo(3), ahi(3)
-      integer(c_int),  intent(in   ) :: flo(3), fhi(3)
-
-      ! Domain bounds
-      integer(c_int),  intent(in   ) :: domlo(3), domhi(3)
-
-      ! Nghost
-      integer(c_int),  intent(in   ) :: ng
-
-      ! Arrays
-      real(ar),        intent(in   ) ::                                     &
-           & vel(vello(1):velhi(1),vello(2):velhi(2),vello(3):velhi(3),3),  &
-           & slopes(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3),           &
-           & areafrac(alo(1):ahi(1),alo(2):ahi(2),alo(3):ahi(3))
-      integer(c_int),  intent(in   ) :: &
-           & flags(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
-
-      ! Staggered velocity
-      real(ar),        intent(inout) ::                    &
-           & w(wlo(1):whi(1),wlo(2):whi(2),wlo(3):whi(3))
-
-      ! Local variables
-      integer(c_int)                 :: i, j, k
-      real(ar)                       :: wpls, wmns
-
-      ! First we compute the face centered MAC velocity
-      ! We need 1 layer of ghosts cells in y and z for interpolation (see next step)
-      do k = lo(3), hi(3)
-         do j = lo(2)-1, hi(2)+1
-            do i = lo(1)-1, hi(1)+1
-               if ( areafrac(i,j,k) > zero ) then
-                  wpls     = vel(i,j,k  ,3) - half * slopes(i,j,k  ,3)
-                  wmns     = vel(i,j,k-1,3) + half * slopes(i,j,k-1,3)
-                  w(i,j,k) = upwind_normal( wmns, wpls )
-               else
-                  w(i,j,k) = my_huge
-               end if
-            end do
-         end do
-      end do
-
-   end subroutine compute_velocity_at_z_faces_eb
 
    !!$************************************************
    !!$ WARNING:
@@ -443,4 +265,4 @@ contains
 
    end function upwind
 
-end module convection_eb_mod
+end module ugradu_eb_mod
