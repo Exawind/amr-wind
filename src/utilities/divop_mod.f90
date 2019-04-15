@@ -235,7 +235,8 @@ contains
                                                          flags, flo, fhi,     &
                                                          afrac_x, axlo, axhi, &
                                                          afrac_y, aylo, ayhi, &
-                                                         afrac_z, azlo, azhi) 
+                                                         afrac_z, azlo, azhi, & 
+                                                         vfrac, vflo, vfhi) 
                            end if
                            divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
                         end if

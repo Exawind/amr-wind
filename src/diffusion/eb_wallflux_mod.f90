@@ -7,7 +7,6 @@ module eb_wallflux_mod
    use constant,           only: zero, half, one, two
    use rheology_module,    only: viscosity
 
-
    implicit none
 
    private
@@ -19,12 +18,13 @@ contains
    ! We use no-slip boundary for velocities.
    !
    subroutine compute_diff_wallflux(divw, dx, i, j, k, &
-                                    vel, vlo, vhi,     &
-                                    bcent, blo, bhi,   &
-                                    flag,  flo, fhi,   &
-                                    apx, axlo, axhi,   &
-                                    apy, aylo, ayhi,   &
-                                    apz, azlo, azhi)
+                                    vel,    vlo,  vhi, &
+                                    bcent,  blo,  bhi, &
+                                    flag,   flo,  fhi, &
+                                    apx,   axlo, axhi, &
+                                    apy,   aylo, ayhi, &
+                                    apz,   azlo, azhi, &
+                                    vfrac, vflo, vfhi)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
@@ -40,6 +40,7 @@ contains
       integer(c_int), intent(in   ) :: axlo(3), axhi(3)
       integer(c_int), intent(in   ) :: aylo(3), ayhi(3)
       integer(c_int), intent(in   ) :: azlo(3), azhi(3)
+      integer(c_int), intent(in   ) :: vflo(3), vfhi(3)
       integer(c_int), intent(in   ) ::  blo(3),  bhi(3)
       integer(c_int), intent(in   ) ::  flo(3),  fhi(3)
 
@@ -49,7 +50,8 @@ contains
            & bcent( blo(1): bhi(1), blo(2): bhi(2), blo(3): bhi(3),3), &
            &   apx(axlo(1):axhi(1),axlo(2):axhi(2),axlo(3):axhi(3)  ), &
            &   apy(aylo(1):ayhi(1),aylo(2):ayhi(2),aylo(3):ayhi(3)  ), &
-           &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  )
+           &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  ), & 
+           & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)  )
 
       integer(c_int),  intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
 
@@ -62,6 +64,8 @@ contains
       real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
       real(rt)   :: phib
+      integer    :: index
+      real(rt)   :: dphidn(3)
 
       divw  = zero
       dxinv = one / dx
@@ -88,23 +92,13 @@ contains
       ! Value on wall -- here we enforce no-slip therefore 0 for all components
       phib = 0.d0
 
-      call compute_dphidn_3d(dudn, dxinv, i, j, k, &
-                             vel(:,:,:,1), vlo, vhi, &
-                             flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
-                             anrmx, anrmy, anrmz)
-
-      call compute_dphidn_3d(dvdn, dxinv, i, j, k, &
-                             vel(:,:,:,2), vlo, vhi, &
-                             flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
-                             anrmx, anrmy, anrmz)
-
-      call compute_dphidn_3d(dwdn, dxinv, i, j, k, &
-                             vel(:,:,:,3), vlo, vhi, &
-                             flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
-                             anrmx, anrmy, anrmz)
+      do index = 1, 3
+         call compute_dphidn_3d(dphidn(index), dxinv, i, j, k, &
+                                vel(:,:,:,index), vlo, vhi, &
+                                flag, flo, fhi, &
+                                bcent(i,j,k,:), phib,  &
+                                anrmx, anrmy, anrmz, vfrac(i,j,k))
+      end do
 
       !
       ! transform them to d/dx, d/dy and d/dz given transverse derivatives are zero
