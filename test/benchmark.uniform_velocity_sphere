@@ -69,3 +69,5 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #.......................................#
 incflo.verbose          =   3           # incflo_level
 mac.verbose             =   0           # MacProjector
+
+amr.plt_ccse_regtest    =   1

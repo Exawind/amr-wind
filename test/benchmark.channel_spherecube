@@ -63,3 +63,5 @@ incflo.ic_u             =   0.0         #
 incflo.ic_v             =   0.0         #
 incflo.ic_w             =   1.0         #
 incflo.ic_p             =   0.0         #
+
+amr.plt_ccse_regtest    =   1

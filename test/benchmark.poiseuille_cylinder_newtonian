@@ -59,3 +59,5 @@ cylinder.center         =   2.  2.  0.  # Center
 incflo.verbose          =   2           # incflo_level
 diffusion.verbose       =   0
 mac.verbose             =   0           # MacProjector
+
+amr.plt_ccse_regtest    =   1

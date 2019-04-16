@@ -47,3 +47,5 @@ ylo.type                =   "nsw"
 ylo.velocity            =   0.  0.  0.
 yhi.type                =   "nsw"
 yhi.velocity            =   0.  0.  1.
+
+amr.plt_ccse_regtest    =   1

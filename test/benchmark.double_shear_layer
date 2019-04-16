@@ -11,3 +11,4 @@ geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
 geometry.prob_hi        =   1.  1.  .25 #Hi corner coordinates
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 incflo.probtype         =   2
+amr.plt_ccse_regtest    =   1
