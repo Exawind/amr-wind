@@ -36,8 +36,6 @@ public:
 						  amrex::Vector<std::unique_ptr<amrex::MultiFab>>& w, 
                           amrex::Real time);
 
-    void compute_b_coeff(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, int lev);
-
 private:
 	int m_nghost;
     int m_probtype = 0;
@@ -55,7 +53,8 @@ private:
 
 	amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_divu;
 	amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_phi;
-	amrex::Vector<amrex::Vector<std::unique_ptr<amrex::MultiFab>>> m_b;
+	amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, 3>> m_b;
+	amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, 3>> m_ro;
 
 	//
 	// Stuff for linear solver

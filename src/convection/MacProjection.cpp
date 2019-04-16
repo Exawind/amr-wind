@@ -89,8 +89,9 @@ void MacProjection::update_internals()
 	if(m_divu.size() != (m_amrcore->finestLevel() + 1))
 	{
 		m_divu.resize(m_amrcore->finestLevel() + 1);
-		m_phi.resize(m_amrcore->finestLevel() + 1);
-		m_b.resize(m_amrcore->finestLevel() + 1);
+		 m_phi.resize(m_amrcore->finestLevel() + 1);
+		   m_b.resize(m_amrcore->finestLevel() + 1);
+		  m_ro.resize(m_amrcore->finestLevel() + 1);
 	}
 
 	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
@@ -102,52 +103,38 @@ void MacProjection::update_internals()
 										  m_amrcore->DistributionMap(lev)))
 		{
 
-			m_divu[lev].reset(new MultiFab(m_amrcore->boxArray(lev),
-											m_amrcore->DistributionMap(lev),
-											1,
-											m_nghost,
-											MFInfo(),
-											*((*m_ebfactory)[lev])));
+            m_divu[lev].reset(new MultiFab(m_amrcore->boxArray(lev),
+                                           m_amrcore->DistributionMap(lev), 1, m_nghost, 
+                                           MFInfo(), *((*m_ebfactory)[lev])));
 
 			m_phi[lev].reset(new MultiFab(m_amrcore->boxArray(lev),
-										  m_amrcore->DistributionMap(lev),
-										  1,
-										  m_nghost,
-										  MFInfo(),
-										  *((*m_ebfactory)[lev])));
+                                          m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                          MFInfo(), *((*m_ebfactory)[lev])));
 
             m_phi[lev]->setVal(0.);
 
 			// Staggered quantities
-			// NOTE: no ghost node for grad(phi)
-			m_b[lev].resize(3);
-
 			BoxArray x_ba = m_amrcore->boxArray(lev);
 			x_ba = x_ba.surroundingNodes(0);
-			m_b[lev][0].reset(new MultiFab(x_ba,
-										   m_amrcore->DistributionMap(lev),
-										   1,
-										   m_nghost,
-										   MFInfo(),
-										   *((*m_ebfactory)[lev])));
+             m_b[lev][0].reset(new MultiFab(x_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
+            m_ro[lev][0].reset(new MultiFab(x_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
+
 
 			BoxArray y_ba = m_amrcore->boxArray(lev);
 			y_ba = y_ba.surroundingNodes(1);
-			m_b[lev][1].reset(new MultiFab(y_ba,
-										   m_amrcore->DistributionMap(lev),
-										   1,
-										   m_nghost,
-										   MFInfo(),
-										   *((*m_ebfactory)[lev])));
+             m_b[lev][1].reset(new MultiFab(y_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
+            m_ro[lev][1].reset(new MultiFab(y_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
 
 			BoxArray z_ba = m_amrcore->boxArray(lev);
 			z_ba = z_ba.surroundingNodes(2);
-			m_b[lev][2].reset(new MultiFab(z_ba,
-										   m_amrcore->DistributionMap(lev),
-										   1,
-										   m_nghost,
-										   MFInfo(),
-										   *((*m_ebfactory)[lev])));
+             m_b[lev][2].reset(new MultiFab(z_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
+            m_ro[lev][2].reset(new MultiFab(z_ba, m_amrcore->DistributionMap(lev), 1, m_nghost,
+                                           MFInfo(), *((*m_ebfactory)[lev])));
 		};
 	}
 }
@@ -192,18 +179,20 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 
 	// Setup for solve
 	Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel;
-	Vector<Array<MultiFab const*, AMREX_SPACEDIM>> beta;
-
 	vel.resize(m_amrcore->finestLevel() + 1);
-	beta.resize(m_amrcore->finestLevel() + 1);
 
-	if(verbose)
-		Print() << " >> Before projection\n";
+    if(verbose) Print() << " >> Before projection\n";
 
 	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
 	{
 	    // Compute beta coefficients ( div(beta*grad(phi)) = RHS )
-		compute_b_coeff(ro, lev);
+        average_cellcenter_to_face(GetArrOfPtrs(m_ro[lev]), *ro[lev], m_amrcore->Geom(lev));
+
+        for(int dir = 0; dir < 3; dir++)
+        {
+            m_b[lev][dir]->setVal(1.0);
+            MultiFab::Divide(*m_b[lev][dir], *m_ro[lev][dir], 0, 0, 1, 0);
+        }
 
 		// Set velocity bcs
 		set_velocity_bcs(lev, u, v, w, time);
@@ -212,9 +201,6 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 		(vel[lev])[0] = u[lev].get();
 		(vel[lev])[1] = v[lev].get();
 		(vel[lev])[2] = w[lev].get();
-		(beta[lev])[0] = m_b[lev][0].get();
-		(beta[lev])[1] = m_b[lev][1].get();
-		(beta[lev])[2] = m_b[lev][2].get();
 
 		if(verbose)
 		{
@@ -232,7 +218,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 	//
 	// Perform MAC projection
 	//
-	MacProjector macproj(vel, beta, m_amrcore->Geom());
+	MacProjector macproj(vel, GetVecOfArrOfPtrsConst(m_b), m_amrcore->Geom());
 
 	macproj.setDomainBC(m_lobc, m_hibc);
 
@@ -322,73 +308,6 @@ void MacProjection::set_velocity_bcs(int lev,
 							 domain.hiVect(),
 							 &m_nghost, &m_probtype);
 	}
-}
-
-//
-// Computes the staggered Poisson's operator coefficients:
-//
-//      bcoeff = 1/ro
-//
-// Values are edge-centered.
-//
-void MacProjection::compute_b_coeff(const Vector<std::unique_ptr<MultiFab>>& ro, int lev)
-{
-	BL_PROFILE("MacProjection::compute_b_coeff");
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-	for(MFIter mfi(*ro[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-	{
-		// Boxes for staggered components
-		Box bx = mfi.tilebox();
-		Box ubx = mfi.tilebox(e_x);
-		Box vbx = mfi.tilebox(e_y);
-		Box wbx = mfi.tilebox(e_z);
-
-		// this is to check efficiently if this tile contains any eb stuff
-		const EBFArrayBox& div_fab = static_cast<EBFArrayBox const&>((*m_divu[lev])[mfi]);
-		const EBCellFlagFab& flags = div_fab.getEBCellFlagFab();
-
-		if(flags.getType(grow(bx, 0)) == FabType::covered)
-		{
-			m_b[lev][0]->setVal(1.2345e300, ubx, 0, 1);
-			m_b[lev][1]->setVal(1.2345e300, vbx, 0, 1);
-			m_b[lev][2]->setVal(1.2345e300, wbx, 0, 1);
-		}
-        else
-		{
-            const auto& betax_fab = (*(m_b[lev])[0]).array(mfi);
-            const auto& betay_fab = (*(m_b[lev])[1]).array(mfi);
-            const auto& betaz_fab = (*(m_b[lev])[2]).array(mfi);
-            const auto&   den_fab =  ro[lev]->array(mfi);
-
-            amrex::ParallelFor(ubx, 
-                  [=] (int i, int j, int k)
-            {
-                // X-faces
-                betax_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i-1,j,k) );
-            });
-
-            amrex::ParallelFor(vbx, 
-                  [=] (int i, int j, int k)
-            {
-                // Y-faces
-                betay_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i,j-1,k) );
-            });
-
-            amrex::ParallelFor(wbx, 
-                  [=] (int i, int j, int k)
-            {
-                // Z-faces
-                betaz_fab(i,j,k) = 2.0 / ( den_fab(i,j,k) + den_fab(i,j,k-1) );
-            });
-		}
-	}
-
-	m_b[lev][0]->FillBoundary(m_amrcore->Geom(lev).periodicity());
-	m_b[lev][1]->FillBoundary(m_amrcore->Geom(lev).periodicity());
-	m_b[lev][2]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 }
 
 //
