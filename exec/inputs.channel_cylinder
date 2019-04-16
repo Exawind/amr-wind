@@ -17,7 +17,7 @@ incflo.cfl              =   0.9         # CFL factor
 amr.plot_int            =   -1          # Steps between plot files
 amr.plot_per            =   0.05        # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
-amr.restart             =   "chk01000"  # Checkpoint to restart from 
+amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #

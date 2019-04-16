@@ -31,6 +31,49 @@ void incflo::ReadParameters()
 		pp.query("plot_file", plot_file);
 		pp.query("plot_int", plot_int);
 		pp.query("plot_per", plot_per);
+
+        // Which variables to write to plotfile
+        pltVarCount = 0;
+
+        pp.query("plt_vel",        plt_vel  );
+        pp.query("plt_gradp",      plt_gradp);
+        pp.query("plt_rho",        plt_rho  );
+        pp.query("plt_p",          plt_p    );
+        pp.query("plt_eta",        plt_eta  );
+        pp.query("plt_vort",       plt_vort );
+        pp.query("plt_strainrate", plt_strainrate);
+        pp.query("plt_divu",       plt_divu );
+        pp.query("plt_vfrac",      plt_vfrac);
+
+        // Special test for CCSE regression test. Override all individual
+        // flags and save all data to plot file.
+
+        int plt_ccse_regtest = 0;
+        pp.query("plt_regtest", plt_ccse_regtest);
+
+        if(plt_ccse_regtest != 0) 
+        {
+            plt_vel        = 1;
+            plt_gradp      = 1;
+            plt_rho        = 1;
+            plt_p          = 1;
+            plt_eta        = 1;
+            plt_vort       = 1;
+            plt_strainrate = 1;
+            plt_divu       = 1;
+            plt_vfrac      = 1;
+        }
+
+        // Count the number of variables to save.
+        if(plt_vel        == 1) pltVarCount += 3;
+        if(plt_gradp      == 1) pltVarCount += 3;
+        if(plt_rho        == 1) pltVarCount += 1;
+        if(plt_p          == 1) pltVarCount += 1;
+        if(plt_eta        == 1) pltVarCount += 1;
+        if(plt_vort       == 1) pltVarCount += 1;
+        if(plt_strainrate == 1) pltVarCount += 1;
+        if(plt_divu       == 1) pltVarCount += 1;
+        if(plt_vfrac      == 1) pltVarCount += 1;
 	}
 	{
         // Prefix incflo
@@ -147,9 +190,9 @@ void incflo::ReadParameters()
 
         // Loads constants given at runtime `inputs` file into the Fortran module "constant"
         fortran_get_data(is_cyclic.dataPtr(),
-                         delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu, 
+                         delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu,
                          &ic_u, &ic_v, &ic_w, &ic_p,
-                         &n, &tau_0, &papa_reg, &eta_0, 
+                         &n, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
 }
@@ -163,18 +206,18 @@ void incflo::PostInit(int restart_flag)
     mac_projection.reset(new MacProjection(this, nghost, &ebfactory, probtype));
     mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
-    poisson_equation.reset(new PoissonEquation(this, &ebfactory, 
-                                               bc_ilo, bc_ihi, 
-                                               bc_jlo, bc_jhi, 
+    poisson_equation.reset(new PoissonEquation(this, &ebfactory,
+                                               bc_ilo, bc_ihi,
+                                               bc_jlo, bc_jhi,
                                                bc_klo, bc_khi, nghost));
 
-    diffusion_equation.reset(new DiffusionEquation(this, &ebfactory, 
-                                                   bc_ilo, bc_ihi, 
-                                                   bc_jlo, bc_jhi, 
+    diffusion_equation.reset(new DiffusionEquation(this, &ebfactory,
+                                                   bc_ilo, bc_ihi,
+                                                   bc_jlo, bc_jhi,
                                                    bc_klo, bc_khi, nghost));
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
-    if(!restart_flag) 
+    if(!restart_flag)
     {
         InitFluid();
     }
@@ -266,7 +309,7 @@ void incflo::SetBackgroundPressure()
 	// Here we set a separate periodicity flag for p0 because when we use
 	// pressure drop (delp) boundary conditions we fill all variables *except* p0
 	// periodically
-    if(delp_dir > -1) 
+    if(delp_dir > -1)
     {
         press_per[delp_dir] = 0;
     }
@@ -314,7 +357,7 @@ void incflo::InitialIterations()
     int initialisation = 1;
 	ComputeDt(initialisation);
 
-    if(incflo_verbose) 
+    if(incflo_verbose)
     {
         amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
     }
@@ -350,7 +393,7 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("incflo::InitialProjection()");
 
-    if(incflo_verbose) 
+    if(incflo_verbose)
     {
         amrex::Print() << "Initial projection:" << std::endl;
     }
@@ -363,8 +406,8 @@ void incflo::InitialProjection()
 	Real dummy_dt = 1.0;
 	ApplyProjection(cur_time, dummy_dt);
 
-    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection() 
-    // use the correct decomposition.  
+    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection()
+    // use the correct decomposition.
     nstep = 0;
 
 

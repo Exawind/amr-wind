@@ -205,6 +205,7 @@ private:
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
 	// Number of ghost nodes for field arrays.
+    // TODO: can go back to 4 now I think
 	const int nghost = 5;
 
 	// These values are required when fluid sees EB -- for now
@@ -288,17 +289,27 @@ private:
     std::string check_file{"chk"};
     std::string restart_file{""};
 
+    // Flags for saving fluid data in plot files
+    int plt_vel         = 1;
+    int plt_gradp       = 0;
+    int plt_rho         = 0;
+    int plt_p           = 0;
+    int plt_eta         = 1;
+    int plt_vort        = 1;
+    int plt_strainrate  = 1;
+    int plt_divu        = 0;
+    int plt_vfrac       = 1;
+
+    // Total number of variables to write in plot file
+    int pltVarCount = 0;
+
+
+
 	// Vector variables to simplify IO -- the vectors are the same for plt/chk
 	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
 	Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
 
-    // Scalar variables at cell centers that need to be written to plotfile/checkfile. 
-    // "volfrac" MUST always be last without any mf associated to it!
-    Vector<const Vector<std::unique_ptr<MultiFab>>*> 
-        pltscalarVars = { &p, &ro, &eta, &strainrate, &strainrate, &vort, &divu };
-    Vector<std::string> 
-        pltscaVarsName = { "p", "ro", "eta", "strainrate", "stress", "vort", "divu", "vfrac" };
-
+    // Scalar variables at cell centers that need to be written to checkfile. 
     Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
     Vector<std::string> chkscaVarsName = {"p", "ro", "eta"};
     
