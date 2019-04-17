@@ -49,7 +49,7 @@ void incflo::ReadParameters()
         // flags and save all data to plot file.
 
         int plt_ccse_regtest = 0;
-        pp.query("plt_regtest", plt_ccse_regtest);
+        pp.query("plt_ccse_regtest", plt_ccse_regtest);
 
         if(plt_ccse_regtest != 0) 
         {
