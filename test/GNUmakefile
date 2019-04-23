@@ -96,7 +96,7 @@ VPATH_LOCATIONS   += $(ALGOIM_HOME)
 
 INCLUDE_LOCATIONS += $(BLITZ_HOME)/include
 
-DEFINES += -DUSE_ALGOIM
+DEFINES += -DAMREX_USE_ALGOIM
 
 all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
