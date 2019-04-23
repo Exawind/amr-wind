@@ -335,13 +335,13 @@ void incflo::WritePlotFile() const
         // Velocity components
         if(plt_vel == 1)
         {
-            pltscaVarsName.push_back("u");
+            pltscaVarsName.push_back("velx");
             MultiFab::Copy(*mf[lev], (*vel[lev]), 0, lc  , 1, 0);
 
-            pltscaVarsName.push_back("v");
+            pltscaVarsName.push_back("vely");
             MultiFab::Copy(*mf[lev], (*vel[lev]), 1, lc+1, 1, 0);
 
-            pltscaVarsName.push_back("w");
+            pltscaVarsName.push_back("velz");
             MultiFab::Copy(*mf[lev], (*vel[lev]), 2, lc+2, 1, 0);
 
             lc += 3;
@@ -365,7 +365,7 @@ void incflo::WritePlotFile() const
         // Density
         if(plt_rho == 1) 
         {
-            pltscaVarsName.push_back("rho");
+            pltscaVarsName.push_back("ro");
             MultiFab::Copy(*mf[lev], (*ro[lev]), 0, lc, 1, 0);
 
             lc += 1;
@@ -407,6 +407,16 @@ void incflo::WritePlotFile() const
         {
             pltscaVarsName.push_back("strainrate");
             MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, lc, 1, 0);
+
+            lc += 1;
+        }
+
+        // Magnitude of the stress tensor 
+        if(plt_stress == 1) 
+        {
+            pltscaVarsName.push_back("stress");
+            MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, lc, 1, 0);
+            MultiFab::Multiply(*mf[lev], (*eta[lev]), 0, lc, 1, 0);
 
             lc += 1;
         }

@@ -42,6 +42,7 @@ void incflo::ReadParameters()
         pp.query("plt_eta",        plt_eta  );
         pp.query("plt_vort",       plt_vort );
         pp.query("plt_strainrate", plt_strainrate);
+        pp.query("plt_stress"    , plt_stress);
         pp.query("plt_divu",       plt_divu );
         pp.query("plt_vfrac",      plt_vfrac);
 
@@ -60,6 +61,7 @@ void incflo::ReadParameters()
             plt_eta        = 1;
             plt_vort       = 1;
             plt_strainrate = 1;
+            plt_stress     = 1;
             plt_divu       = 1;
             plt_vfrac      = 1;
         }
@@ -72,6 +74,7 @@ void incflo::ReadParameters()
         if(plt_eta        == 1) pltVarCount += 1;
         if(plt_vort       == 1) pltVarCount += 1;
         if(plt_strainrate == 1) pltVarCount += 1;
+        if(plt_stress     == 1) pltVarCount += 1;
         if(plt_divu       == 1) pltVarCount += 1;
         if(plt_vfrac      == 1) pltVarCount += 1;
 	}
