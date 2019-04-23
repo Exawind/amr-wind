@@ -481,6 +481,8 @@ void incflo::WritePlotFile() const
                 lc += 1;
             }
 
+            // Zero out all the values in covered cells
+            EB_set_covered(*mf[lev], 0.0);
         }
 
         // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
