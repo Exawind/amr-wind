@@ -64,7 +64,6 @@ contains
       real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
       real(rt)   :: phib
-      integer    :: index
 
       divw  = zero
       dxinv = one / dx
