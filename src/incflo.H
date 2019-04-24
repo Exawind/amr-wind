@@ -297,7 +297,7 @@ private:
     int plt_eta         = 1;
     int plt_vort        = 1;
     int plt_strainrate  = 1;
-    int plt_stress      = 1;
+    int plt_stress      = 0;
     int plt_divu        = 0;
     int plt_vfrac       = 1;
 
