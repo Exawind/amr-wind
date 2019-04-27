@@ -64,8 +64,6 @@ contains
       real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
       real(rt)   :: phib
-      integer    :: index
-      real(rt)   :: dphidn(3)
 
       divw  = zero
       dxinv = one / dx
@@ -92,13 +90,21 @@ contains
       ! Value on wall -- here we enforce no-slip therefore 0 for all components
       phib = 0.d0
 
-      do index = 1, 3
-         call compute_dphidn_3d(dphidn(index), dxinv, i, j, k, &
-                                vel(:,:,:,index), vlo, vhi, &
-                                flag, flo, fhi, &
-                                bcent(i,j,k,:), phib,  &
-                                anrmx, anrmy, anrmz, vfrac(i,j,k))
-      end do
+      call compute_dphidn_3d(dudn, dxinv, i, j, k, &
+                             vel(:,:,:,1), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz, vfrac(i,j,k))
+      call compute_dphidn_3d(dvdn, dxinv, i, j, k, &
+                             vel(:,:,:,2), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz, vfrac(i,j,k))
+      call compute_dphidn_3d(dwdn, dxinv, i, j, k, &
+                             vel(:,:,:,3), vlo, vhi, &
+                             flag, flo, fhi, &
+                             bcent(i,j,k,:), phib,  &
+                             anrmx, anrmy, anrmz, vfrac(i,j,k))
 
       !
       ! transform them to d/dx, d/dy and d/dz given transverse derivatives are zero
