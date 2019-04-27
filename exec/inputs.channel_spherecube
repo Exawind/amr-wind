@@ -2,21 +2,23 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   -1          # Max (simulated) time to evolve
-max_step                =   100         # Max number of time steps
+max_step                =   10          # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   1.0e-07     # Use this constant dt if > 0
+incflo.fixed_dt         =   1.0e-09     # Use this constant dt if > 0
 incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   10          # Steps between plot files
+amr.plot_int            =   2000        # Steps between plot files
 amr.plot_per            =   -1          # Time between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
+amr.plot_file           =   "/rds/user/ksk38/hpc-work/channel_sphere/plt"
+amr.check_file          =   "/rds/user/ksk38/hpc-work/channel_sphere/chk"
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -28,12 +30,12 @@ incflo.ro_0             =   1.          # Reference density
 incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
 incflo.mu               =   1000.0      # Dynamic viscosity coefficient
 incflo.tau_0            = 340700.0      # Yield stress
-incflo.papa_reg         =   1.0e-1      # Regularisation parameter
+incflo.papa_reg         =   1.0e-3      # Regularisation parameter
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   64  64  96  # Grid cells at coarsest AMRlevel
+amr.n_cell              =  256 256 384  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
