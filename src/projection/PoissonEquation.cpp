@@ -65,7 +65,7 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
 	LPInfo info;
 	info.setMaxCoarseningLevel(mg_max_coarsening_level);
 
-    matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory), use_hypre);
+    matrix.define(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory));
 
     matrix.setGaussSeidel(true);
     matrix.setHarmonicAverage(false);
@@ -96,7 +96,6 @@ void PoissonEquation::readParameters()
     pp.query("mg_rtol", mg_rtol);
     pp.query("mg_atol", mg_atol);
     pp.query( "bottom_solver_type", bottom_solver_type);
-    pp.query( "use_hypre", use_hypre);
 }
 
 void PoissonEquation::updateInternals(AmrCore* amrcore_in, 
@@ -114,12 +113,28 @@ void PoissonEquation::updateInternals(AmrCore* amrcore_in,
 //
 void PoissonEquation::setSolverSettings(MLMG& solver)
 {
-    // The default bottom solver is BiCG
-    if(bottom_solver_type == "smoother")
+    // The default bottom solver is now bicgcg
+    if (bottom_solver_type == "smoother")
     {
        solver.setBottomSolver(MLMG::BottomSolver::smoother);
     }
-    else if(bottom_solver_type == "hypre")
+    else if (bottom_solver_type == "bicg")
+    {
+       solver.setBottomSolver(MLMG::BottomSolver::bicgstab);
+    }
+    else if (bottom_solver_type == "cg")
+    {
+       solver.setBottomSolver(MLMG::BottomSolver::cg);
+    }
+    else if (bottom_solver_type == "bicgcg")
+    {
+       solver.setBottomSolver(MLMG::BottomSolver::bicgcg);
+    }
+    else if (bottom_solver_type == "cgbicg")
+    {
+       solver.setBottomSolver(MLMG::BottomSolver::cgbicg);
+    }
+    else if (bottom_solver_type == "hypre")
     {
        solver.setBottomSolver(MLMG::BottomSolver::hypre);
     }

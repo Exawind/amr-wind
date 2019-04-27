@@ -65,8 +65,7 @@ private:
     int mg_max_coarsening_level = 100;
     amrex::Real mg_rtol = 1.0e-11;
     amrex::Real mg_atol = 1.0e-14;
-    std::string bottom_solver_type = "bicgstab";
-    bool use_hypre = false;
+    std::string bottom_solver_type = "bicgcg";
 };
 
 
