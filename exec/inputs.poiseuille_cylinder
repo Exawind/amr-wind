@@ -56,7 +56,6 @@ cylinder.center         =   1.25 1.25 0. # Center
 #            SOLVER SETTINGS            #
 #.......................................#
 amrex.fpe_trap_invalid  =   1           # Trap NaNs
-projection.use_hypre    =   0           # Use HYPRE solver in projection
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #

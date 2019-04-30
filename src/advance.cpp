@@ -301,12 +301,6 @@ void incflo::ApplyPredictor()
 
     // Fill velocity BCs again
 	FillVelocityBC(new_time, 0);
-
-    if(incflo_verbose > 2)
-    {
-        amrex::Print() << "After predictor step:" << std::endl;
-        PrintMaxValues(new_time);
-    }
 }
 
 //
@@ -422,12 +416,6 @@ void incflo::ApplyCorrector()
 
     // Fill velocity BCs again
 	FillVelocityBC(new_time, 0);
-
-    if(incflo_verbose > 2)
-    {
-        amrex::Print() << "After corrector step:" << std::endl;
-        PrintMaxValues(new_time);
-    }
 }
 
 //

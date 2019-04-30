@@ -47,8 +47,9 @@ void MacProjection::read_inputs()
 	pp.query("mg_rtol", mg_rtol);
 	pp.query("mg_atol", mg_atol);
 
-   // Default bottom solver is bicgstab, but alternatives are "smoother" or "hypre"
-   bottom_solver_type = "bicgstab";
+   // Default bottom solver is bicgcg, but alternatives are 
+   // "smoother", "hypre", "cg", "cgbicg", "bicgstab"
+   bottom_solver_type = "bicgcg";
    pp.query( "bottom_solver_type",  bottom_solver_type );
 }
 

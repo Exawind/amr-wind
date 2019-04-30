@@ -157,14 +157,14 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         matrix.setEBHomogDirichlet(lev, *eta[lev]);
     }
 
+    if(verbose > 0)
+    {
+        amrex::Print() << "Diffusing velocity..." << std::endl; 
+    }
+
     // Loop over the velocity components
     for(int dir = 0; dir < 3; dir++)
     {
-        if(verbose > 0)
-        {
-            amrex::Print() << "Diffusing velocity component " << dir << "...";
-        }
-
         for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
         {
             // Set the right hand side to equal rho
