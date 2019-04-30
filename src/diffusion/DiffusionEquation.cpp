@@ -140,11 +140,15 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
     // Set alpha and beta
     matrix.setScalars(1.0, dt);
 
-    // Set the spatially varying b coefficients (on faces) to equal the apparent viscosity
-    updateCoefficients(eta);
-
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
+        // Compute the spatially varying b coefficients (on faces) to equal the apparent viscosity
+        average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *eta[lev], amrcore->Geom(lev));
+        for(int dir = 0; dir < 3; dir++)
+        {
+            b[lev][dir]->FillBoundary(amrcore->Geom(lev).periodicity());
+        }
+        
         // This sets the coefficients
         matrix.setACoeffs(lev, (*ro[lev]));
         matrix.setBCoeffs(lev, GetArrOfConstPtrs(b[lev])); 
@@ -198,30 +202,6 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
             amrex::Print() << " done!" << std::endl;
         }
 
-    }
-}
-
-//
-// Computes b = eta at the faces of the scalar cells
-//
-void DiffusionEquation::updateCoefficients(const Vector<std::unique_ptr<MultiFab>>& eta)
-{
-	BL_PROFILE("DiffusionEquation::updateCoefficients");
-
-    if(verbose > 0)
-    {
-        amrex::Print() << "Updating DiffusionEquation coefficients" << std::endl;
-    }
-
-    Vector<Geometry> geom = amrcore->Geom();
-    for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
-    {
-        average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *eta[lev], geom[lev]);
-
-        for(int dir = 0; dir < 3; dir++)
-        {
-            b[lev][dir]->FillBoundary(geom[lev].periodicity());
-        }
     }
 }
 

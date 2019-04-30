@@ -54,9 +54,6 @@ public:
                amrex::Real dt);
 
 private:
-    // Update the variable coefficients in the matrix operator, called from setCurrentState()
-    void updateCoefficients(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta);
-
     // AmrCore data 
     amrex::AmrCore* amrcore;
 	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
