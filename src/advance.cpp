@@ -257,6 +257,9 @@ void incflo::ApplyPredictor()
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
+        // Save this value of eta as eta_old for use in the corrector as well
+        MultiFab::Copy(*eta_old[lev], *eta[lev], 0, 0, eta[lev]->nComp(), eta_old[lev]->nGrow());
+
         // compute only the off-diagonal terms here
         ComputeDivTau(lev, *divtau_old[lev], vel_o);
 
@@ -315,8 +318,8 @@ void incflo::ApplyPredictor()
 //      divtau  = div( eta (grad u)^T ) / rho
 //
 //      conv    = 0.5 (conv + conv_pred)
-//      eta     = 0.5 (eta + eta_pred)
 //      divtau  = 0.5 (divtau + divtau_pred)
+//      eta     = 0.5 (eta + eta_pred)
 //
 //     rhs = u + dt * ( conv + divtau )
 //
@@ -405,6 +408,9 @@ void incflo::ApplyCorrector()
         {
             MultiFab::Divide(*vel[lev], (*ro[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
+
+        // Take eta as the average of the predictor and corrector values
+        MultiFab::LinComb(*eta[lev], 0.5, *eta_old[lev], 0, 0.5, *eta[lev], 0, 0, 1, 0);
     }
     FillVelocityBC(new_time, 0);
 

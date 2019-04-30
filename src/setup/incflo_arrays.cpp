@@ -26,7 +26,9 @@ void incflo::AllocateArrays(int lev)
 
 	// Viscosity
 	eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+	eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	eta[lev]->setVal(0.);
+	eta_old[lev]->setVal(0.);
 
 	// Strain-rate magnitude
 	strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -144,12 +146,18 @@ void incflo::RegridArrays(int lev)
 	gp_new->copy(*gp[lev], 0, 0, 3, 0, nghost);
 	gp[lev] = std::move(gp_new);
 
-	// Molecular viscosity
+	// Apparent viscosity
 	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                    MFInfo(), *ebfactory[lev]));
 	eta_new->setVal(0.);
 	eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
 	eta[lev] = std::move(eta_new);
+
+	std::unique_ptr<MultiFab> eta_old_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                       MFInfo(), *ebfactory[lev]));
+	eta_old_new->setVal(0.);
+	eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
+	eta_old[lev] = std::move(eta_old_new);
 
 	// Strain-rate magnitude
 	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
@@ -171,8 +179,8 @@ void incflo::RegridArrays(int lev)
 
     std::unique_ptr<MultiFab> conv_old_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                         MFInfo(), *ebfactory[lev]));
-    conv[lev] = std::move(conv_old_new);
-    conv[lev]->setVal(0.);
+    conv_old[lev] = std::move(conv_old_new);
+    conv_old[lev]->setVal(0.);
 
     // Divergence of stress tensor terms 
     std::unique_ptr<MultiFab> divtau_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
@@ -182,8 +190,8 @@ void incflo::RegridArrays(int lev)
 
     std::unique_ptr<MultiFab> divtau_old_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                           MFInfo(), *ebfactory[lev]));
-    divtau[lev] = std::move(divtau_old_new);
-    divtau[lev]->setVal(0.);
+    divtau_old[lev] = std::move(divtau_old_new);
+    divtau_old[lev]->setVal(0.);
 
     // Slopes in x-direction
     std::unique_ptr<MultiFab> xslopes_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
@@ -283,6 +291,7 @@ void incflo::ResizeArrays()
 
     // Derived quantities: viscosity, strainrate, vorticity, div(u)
 	eta.resize(max_level + 1);
+	eta_old.resize(max_level + 1);
     strainrate.resize(max_level + 1);
 	vort.resize(max_level + 1);
 	divu.resize(max_level + 1);

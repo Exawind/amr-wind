@@ -357,6 +357,7 @@ private:
 	Vector<std::unique_ptr<MultiFab>> gp;
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
 	Vector<std::unique_ptr<MultiFab>> eta;
+    Vector<std::unique_ptr<MultiFab>> eta_old; 
 	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
 	Vector<std::unique_ptr<MultiFab>> divu;
