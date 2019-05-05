@@ -143,7 +143,7 @@ void incflo::RegridArrays(int lev)
 	std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], 3, nghost, 
                                                   MFInfo(), *ebfactory[lev]));
     gp_new->setVal(0.);
-	gp_new->copy(*gp[lev], 0, 0, 3, 0, nghost);
+	gp_new->copy(*gp[lev], 0, 0, gp[lev]->nComp(), 0, nghost);
 	gp[lev] = std::move(gp_new);
 
 	// Apparent viscosity
