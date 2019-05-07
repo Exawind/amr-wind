@@ -50,10 +50,10 @@ incflo.geometry         =   "twocylinders"
 twocylinders.internal_flow  =   false
 twocylinders.radius1        =   0.5  
 twocylinders.direction1     =   2
-twocylinders.center1        =   2.5 3.5 .0 
+twocylinders.center1        =   2.0 4.0 .0 
 twocylinders.radius2        =   0.5  
 twocylinders.direction2     =   2
-twocylinders.center2        =   3.5 2.5 .0 
+twocylinders.center2        =   4.0 2.0 .0 
 
 # Boundary conditions
 ylo.type                =   "nsw"
