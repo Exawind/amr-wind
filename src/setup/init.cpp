@@ -198,6 +198,12 @@ void incflo::ReadParameters()
                          &n, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
+    {
+        // Prefix cylinder
+		ParmParse pp("cylinder");
+        pp.query("direction", cyl_dir);
+		pp.query("speed", cyl_speed);
+    }
 }
 
 void incflo::PostInit(int restart_flag)

@@ -83,7 +83,8 @@ void incflo::ComputeDivTau(int lev,
                                   bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                                   bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                                   bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                                  geom[lev].CellSize(), &nghost);
+                                  geom[lev].CellSize(), &nghost, 
+                                  &probtype, &cyl_dir, &cyl_speed);
             }
         }
    }

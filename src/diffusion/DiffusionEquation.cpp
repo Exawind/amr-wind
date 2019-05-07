@@ -154,7 +154,9 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         matrix.setBCoeffs(lev, GetArrOfConstPtrs(b[lev])); 
 
         // This sets the coefficient on the wall and defines the wall as a homogeneous Dirichlet bc
-        matrix.setEBHomogDirichlet(lev, *eta[lev]);
+        // matrix.setEBHomogDirichlet(lev, *eta[lev]);
+        // TODO: 
+        // matrix.setEBDirichlet(lev, PRESCRIBE ANGULAR VELOCITY, *eta[lev]);
     }
 
     if(verbose > 0)

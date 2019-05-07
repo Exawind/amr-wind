@@ -213,6 +213,10 @@ private:
 	const int m_eb_volume_grow_cells = nghost;
 	const int m_eb_full_grow_cells = nghost;
 
+    // Enforce inhomogeneous velocity BC on EB (just cylinder for now)
+    int cyl_dir = 0;
+    Real cyl_speed = 0.0;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Member variables: Runtime parameters
