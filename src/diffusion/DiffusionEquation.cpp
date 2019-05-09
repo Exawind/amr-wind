@@ -152,11 +152,6 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         // This sets the coefficients
         matrix.setACoeffs(lev, (*ro[lev]));
         matrix.setBCoeffs(lev, GetArrOfConstPtrs(b[lev])); 
-
-        // This sets the coefficient on the wall and defines the wall as a homogeneous Dirichlet bc
-        // matrix.setEBHomogDirichlet(lev, *eta[lev]);
-        // TODO: 
-        // matrix.setEBDirichlet(lev, PRESCRIBE ANGULAR VELOCITY, *eta[lev]);
     }
 
     if(verbose > 0)
@@ -183,6 +178,12 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
             phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
             phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
             matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
+
+            // TODO: 
+            // This sets the coefficient on the wall and defines the wall as a Dirichlet bc with
+            // prescribed (spatially varying) value
+            // (see amrex/Src/LinearSolvers/MLMG/AMReX_MLEBABEcLap class)
+            // matrix.setEBDirichlet(lev, PRESCRIBE ANGULAR VELOCITY, *eta[lev]);
         }
 
         MLMG solver(matrix);
