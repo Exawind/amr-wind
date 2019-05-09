@@ -223,7 +223,7 @@ void incflo::PostInit(int restart_flag)
     diffusion_equation.reset(new DiffusionEquation(this, &ebfactory,
                                                    bc_ilo, bc_ihi,
                                                    bc_jlo, bc_jhi,
-                                                   bc_klo, bc_khi, nghost));
+                                                   bc_klo, bc_khi, nghost, cyl_speed));
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
     if(!restart_flag)

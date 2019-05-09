@@ -93,7 +93,7 @@ contains
       anrmy = -dapy * apnorminv
       anrmz = -dapz * apnorminv
 
-      ! Value on wall -- here we enforce no-slip therefore 0 for all components
+      ! Value on wall 
       phib = 0.d0
       ub = 0.d0
       vb = 0.d0
@@ -102,7 +102,6 @@ contains
          theta = atan2(-anrmy, -anrmx)
          ub =   cyl_speed * sin(theta)
          vb = - cyl_speed * cos(theta)
-         ! print*,theta*180/3.1415,ub,vb
       endif
 
 
@@ -121,9 +120,6 @@ contains
                              flag, flo, fhi, &
                              bcent(i,j,k,:), phib,  &
                              anrmx, anrmy, anrmz, vfrac(i,j,k))
-!      if (cyl_speed .gt. 0.d0) then
-!         print*,ub,vb,dudn,dvdn
-!      endif
 
       !
       ! transform them to d/dx, d/dy and d/dz given transverse derivatives are zero
