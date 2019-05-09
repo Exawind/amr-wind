@@ -25,7 +25,7 @@ contains
                                     apy,   aylo, ayhi, &
                                     apz,   azlo, azhi, &
                                     vfrac, vflo, vfhi, & 
-                                    probtype, cyl_dir, cyl_speed)
+                                    cyl_speed)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
@@ -57,8 +57,6 @@ contains
       integer(c_int), intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
 
       ! Rotating cylinder 
-      integer(c_int), intent(in   ) :: probtype
-      integer(c_int), intent(in   ) :: cyl_dir
       real(rt),       intent(in   ) :: cyl_speed
 
       ! Local variable
@@ -69,7 +67,7 @@ contains
       real(rt)   :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
-      real(rt)   :: phib, ub, vb, theta
+      real(rt)   :: ub, vb, wb, theta
 
       divw  = zero
       dxinv = one / dx
@@ -94,9 +92,9 @@ contains
       anrmz = -dapz * apnorminv
 
       ! Value on wall 
-      phib = 0.d0
       ub = 0.d0
       vb = 0.d0
+      wb = 0.d0
       theta = 0.d0
       if (cyl_speed > 0.d0) then
          theta = atan2(-anrmy, -anrmx)
@@ -118,7 +116,7 @@ contains
       call compute_dphidn_3d(dwdn, dxinv, i, j, k, &
                              vel(:,:,:,3), vlo, vhi, &
                              flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
+                             bcent(i,j,k,:), wb,  &
                              anrmx, anrmy, anrmz, vfrac(i,j,k))
 
       !

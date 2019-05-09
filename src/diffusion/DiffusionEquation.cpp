@@ -83,17 +83,8 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
     // Fill the Dirichlet values on the EB surface
     for(int lev = 0; lev <= max_level; lev++)
     {
-        // Get EB geometric info
-        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
-        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
-        const amrex::MultiFab*                    volfrac;
-        const amrex::MultiCutFab*                 bndrycent;
+        // Get EB normal vector
         const amrex::MultiCutFab*                 bndrynormal;
-
-        areafrac    =   (*ebfactory)[lev] -> getAreaFrac();
-        facecent    =   (*ebfactory)[lev] -> getFaceCent();
-        volfrac     = &((*ebfactory)[lev] -> getVolFrac());
-        bndrycent   = &((*ebfactory)[lev] -> getBndryCent());
         bndrynormal = &((*ebfactory)[lev] -> getBndryNormal());
 
 #ifdef _OPENMP

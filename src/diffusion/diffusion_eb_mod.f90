@@ -33,8 +33,7 @@ contains
                                 bc_ilo, bc_ihi,      &
                                 bc_jlo, bc_jhi,      &
                                 bc_klo, bc_khi,      &
-                                dx, ng,              & 
-                                probtype, cyl_dir, cyl_speed) bind(C)
+                                dx, ng, cyl_speed) bind(C)
 
       use diffusion_mod, only: fill_vel_diff_bc
       use divop_mod,     only: compute_divop
@@ -93,8 +92,6 @@ contains
          bc_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
       ! Rotating cylinder 
-      integer(c_int), intent(in   ) :: probtype
-      integer(c_int), intent(in   ) :: cyl_dir
       real(rt),       intent(in   ) :: cyl_speed
 
       ! Temporary array just to handle bc's
@@ -179,8 +176,7 @@ contains
                             vfrac, vflo, vfhi, &
                             bcent, blo, bhi, &
                             domlo, domhi, &
-                            dx, ng, eta, & 
-                            probtype, cyl_dir, cyl_speed)
+                            dx, ng, eta, cyl_speed)
 
       end block divop
 

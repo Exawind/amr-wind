@@ -201,7 +201,6 @@ void incflo::ReadParameters()
     {
         // Prefix cylinder
 		ParmParse pp("cylinder");
-        pp.query("direction", cyl_dir);
 		pp.query("speed", cyl_speed);
     }
 }
