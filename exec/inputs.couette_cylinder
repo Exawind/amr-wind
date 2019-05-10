@@ -8,7 +8,7 @@ steady_state            =   0           # Steady-state solver?
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   1.0e-7      # Use this constant dt if > 0
+incflo.fixed_dt         =   1.0e-6      # Use this constant dt if > 0
 incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -17,7 +17,9 @@ incflo.cfl              =   0.9         # CFL factor
 amr.plot_int            =   100         # Steps between plot files
 amr.plot_per            =   -1          # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
-amr.restart             =   "chk00400"  # Checkpoint to restart from 
+amr.plot_file           =   "/local/data2/public/ksk38/plt"
+amr.check_file          =   "/local/data2/public/ksk38/chk"
+amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -27,7 +29,7 @@ incflo.ro_0             =   0.27778     # Reference density
 
 incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
 incflo.mu               =   1.0         # Dynamic viscosity coefficient
-incflo.tau_0            =   300.0       # Yield stress
+incflo.tau_0            =   100.0       # Yield stress
 incflo.papa_reg         =   1.0e-3      # Regularisation parameter
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -51,19 +53,20 @@ cylinder.internal_flow  =   false
 cylinder.radius         =   0.5  
 cylinder.direction      =   2
 cylinder.center         =   3.  3.  .0 
+cylinder.speed          =   0.15
 
 # Boundary conditions
 ylo.type                =   "nsw"
-ylo.velocity            =  -0.3 0.  0.
+ylo.velocity            =  -1.5 0.  0.
 yhi.type                =   "nsw"
-yhi.velocity            =   0.3 0.  0.
+yhi.velocity            =   1.5 0.  0.
 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
 #.......................................#
 incflo.probtype         =   4           # 
-incflo.ic_u             =   0.6         #
+incflo.ic_u             =   3.0         #
 incflo.ic_v             =   0.0         #
 incflo.ic_w             =   0.0         #
 incflo.ic_p             =   0.0         #
