@@ -44,7 +44,8 @@ contains
                             vfrac,   vflo, vfhi, &
                             bcent,    blo,  bhi, &
                             domlo, domhi,        &
-                            dx, ng, eta) bind(C)
+                            dx, ng, eta,         & 
+                            cyl_speed) bind(C)
 
       use bc
       use amrex_eb_util_module, only: amrex_eb_interpolate_to_face_centroid_per_cell
@@ -109,6 +110,9 @@ contains
            & optmp(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
            &  delm(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2), &
            &  mask(lo(1)-2:hi(1)+2,lo(2)-2:hi(2)+2,lo(3)-2:hi(3)+2)
+
+      ! Rotating cylinder 
+      real(rt),       intent(in   ), optional :: cyl_speed
 
       ! Local variables
       real(ar), allocatable :: divdiff_w(:,:)
@@ -236,7 +240,8 @@ contains
                                                          afrac_x, axlo, axhi, &
                                                          afrac_y, aylo, ayhi, &
                                                          afrac_z, azlo, azhi, & 
-                                                         vfrac, vflo, vfhi) 
+                                                         vfrac, vflo, vfhi,   & 
+                                                         cyl_speed)
                            end if
                            divc(i,j,k) = divc(i,j,k) - divdiff_w(n,iwall) / (dx(n) * vfrac(i,j,k))
                         end if

@@ -22,7 +22,7 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
                                      Vector<std::unique_ptr<IArrayBox>>& bc_jhi,
                                      Vector<std::unique_ptr<IArrayBox>>& bc_klo,
                                      Vector<std::unique_ptr<IArrayBox>>& bc_khi,
-                                     int _nghost)
+                                     int _nghost, Real _cyl_speed)
 {
     // Get inputs from ParmParse
 	readParameters();
@@ -41,6 +41,9 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
     Vector<DistributionMapping> dmap = amrcore->DistributionMap();
     int max_level = amrcore->maxLevel();
 
+    // Cylinder speed
+    cyl_speed = _cyl_speed;
+
     // Whole domain
     Box domain(geom[0].Domain());
 
@@ -56,6 +59,8 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
     b.resize(max_level + 1);
     phi.resize(max_level + 1);
     rhs.resize(max_level + 1);
+    ueb.resize(max_level + 1);
+    veb.resize(max_level + 1);
     for(int lev = 0; lev <= max_level; lev++)
     {
         for(int dir = 0; dir < 3; dir++)
@@ -69,6 +74,52 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
                                     MFInfo(), *(*ebfactory)[lev]));
         rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                     MFInfo(), *(*ebfactory)[lev]));
+        ueb[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                    MFInfo(), *(*ebfactory)[lev]));
+        veb[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                    MFInfo(), *(*ebfactory)[lev]));
+    }
+
+    // Fill the Dirichlet values on the EB surface
+    for(int lev = 0; lev <= max_level; lev++)
+    {
+        // Get EB normal vector
+        const amrex::MultiCutFab*                 bndrynormal;
+        bndrynormal = &((*ebfactory)[lev] -> getBndryNormal());
+
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for(MFIter mfi(*ueb[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            // Tilebox
+            Box bx = mfi.tilebox();
+
+            // This is to check efficiently if this tile contains any eb stuff
+            const EBFArrayBox& ueb_fab = static_cast<EBFArrayBox const&>((*ueb[lev])[mfi]);
+            const EBCellFlagFab& flags = ueb_fab.getEBCellFlagFab();
+
+            if (flags.getType(bx) == FabType::covered || flags.getType(bx) == FabType::regular)
+            {
+                (*ueb[lev])[mfi].setVal(0.0, bx);
+                (*veb[lev])[mfi].setVal(0.0, bx);
+            }
+            else
+            {
+                const auto& ueb_arr = ueb[lev]->array(mfi);
+                const auto& veb_arr = veb[lev]->array(mfi);
+                const auto& nrm_fab = bndrynormal->array(mfi);
+
+                for(int i = bx.smallEnd(0); i <= bx.bigEnd(0); i++)
+                for(int j = bx.smallEnd(1); j <= bx.bigEnd(1); j++)
+                for(int k = bx.smallEnd(2); k <= bx.bigEnd(2); k++)
+                {
+                    Real theta = atan2(-nrm_fab(i,j,k,1), -nrm_fab(i,j,k,0));
+                    ueb_arr(i,j,k) =   cyl_speed * sin(theta);
+                    veb_arr(i,j,k) = - cyl_speed * cos(theta);
+                }
+            }
+        }
     }
 
 	// Define the matrix.
@@ -152,9 +203,6 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
         // This sets the coefficients
         matrix.setACoeffs(lev, (*ro[lev]));
         matrix.setBCoeffs(lev, GetArrOfConstPtrs(b[lev])); 
-
-        // This sets the coefficient on the wall and defines the wall as a homogeneous Dirichlet bc
-        matrix.setEBHomogDirichlet(lev, *eta[lev]);
     }
 
     if(verbose > 0)
@@ -181,6 +229,20 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
             phi[lev]->copy(*vel[lev], dir, 0, 1, nghost, nghost);
             phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
             matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
+
+            // This sets the coefficient on the wall and defines the wall as a Dirichlet bc
+            if(cyl_speed > 0.0 && dir == 0)
+            {
+                matrix.setEBDirichlet(lev, *ueb[lev], *eta[lev]);
+            }
+            else if(cyl_speed > 0.0 && dir == 1)
+            {
+                matrix.setEBDirichlet(lev, *veb[lev], *eta[lev]);
+            }
+            else
+            {
+                matrix.setEBHomogDirichlet(lev, *eta[lev]);
+            }
         }
 
         MLMG solver(matrix);

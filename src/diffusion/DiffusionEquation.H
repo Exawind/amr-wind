@@ -32,7 +32,7 @@ public:
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
                       amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
-                      int _nghost);
+                      int _nghost, amrex::Real cyl_speed);
 
     // Destructor
     ~DiffusionEquation();
@@ -58,6 +58,7 @@ private:
     amrex::AmrCore* amrcore;
 	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
     int nghost; 
+    amrex::Real cyl_speed = 0.0;
 
     // Internal data used in the matrix solve
     //
@@ -69,6 +70,8 @@ private:
     amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>> ueb;
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>> veb;
 
     // Boundary conditions
     int bc_lo[3], bc_hi[3];

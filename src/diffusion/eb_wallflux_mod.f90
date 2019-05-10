@@ -24,7 +24,8 @@ contains
                                     apx,   axlo, axhi, &
                                     apy,   aylo, ayhi, &
                                     apz,   azlo, azhi, &
-                                    vfrac, vflo, vfhi)
+                                    vfrac, vflo, vfhi, & 
+                                    cyl_speed)
 
       ! Wall divergence operator
       real(rt),       intent(  out) :: divw(3)
@@ -53,7 +54,10 @@ contains
            &   apz(azlo(1):azhi(1),azlo(2):azhi(2),azlo(3):azhi(3)  ), & 
            & vfrac(vflo(1):vfhi(1),vflo(2):vfhi(2),vflo(3):vfhi(3)  )
 
-      integer(c_int),  intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
+      integer(c_int), intent(in   ) :: flag(flo(1):fhi(1),flo(2):fhi(2),flo(3):fhi(3))
+
+      ! Rotating cylinder 
+      real(rt),       intent(in   ) :: cyl_speed
 
       ! Local variable
       real(rt)   :: dxinv(3), idx, idy, idz
@@ -63,7 +67,7 @@ contains
       real(rt)   :: ux, uy, uz, vx, vy, vz, wx, wy, wz
       real(rt)   :: tauxx, tauxy, tauxz, tauyx, tauyy, tauyz, tauzx, tauzy, tauzz
       real(rt)   :: strain, visc
-      real(rt)   :: phib
+      real(rt)   :: ub, vb, wb, theta
 
       divw  = zero
       dxinv = one / dx
@@ -87,23 +91,32 @@ contains
       anrmy = -dapy * apnorminv
       anrmz = -dapz * apnorminv
 
-      ! Value on wall -- here we enforce no-slip therefore 0 for all components
-      phib = 0.d0
+      ! Value on wall 
+      ub = 0.d0
+      vb = 0.d0
+      wb = 0.d0
+      theta = 0.d0
+      if (cyl_speed > 0.d0) then
+         theta = atan2(-anrmy, -anrmx)
+         ub =   cyl_speed * sin(theta)
+         vb = - cyl_speed * cos(theta)
+      endif
+
 
       call compute_dphidn_3d(dudn, dxinv, i, j, k, &
                              vel(:,:,:,1), vlo, vhi, &
                              flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
+                             bcent(i,j,k,:), ub,  &
                              anrmx, anrmy, anrmz, vfrac(i,j,k))
       call compute_dphidn_3d(dvdn, dxinv, i, j, k, &
                              vel(:,:,:,2), vlo, vhi, &
                              flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
+                             bcent(i,j,k,:), vb,  &
                              anrmx, anrmy, anrmz, vfrac(i,j,k))
       call compute_dphidn_3d(dwdn, dxinv, i, j, k, &
                              vel(:,:,:,3), vlo, vhi, &
                              flag, flo, fhi, &
-                             bcent(i,j,k,:), phib,  &
+                             bcent(i,j,k,:), wb,  &
                              anrmx, anrmy, anrmz, vfrac(i,j,k))
 
       !

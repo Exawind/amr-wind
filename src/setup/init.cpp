@@ -198,6 +198,11 @@ void incflo::ReadParameters()
                          &n, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
+    {
+        // Prefix cylinder
+		ParmParse pp("cylinder");
+		pp.query("speed", cyl_speed);
+    }
 }
 
 void incflo::PostInit(int restart_flag)
@@ -217,7 +222,7 @@ void incflo::PostInit(int restart_flag)
     diffusion_equation.reset(new DiffusionEquation(this, &ebfactory,
                                                    bc_ilo, bc_ihi,
                                                    bc_jlo, bc_jhi,
-                                                   bc_klo, bc_khi, nghost));
+                                                   bc_klo, bc_khi, nghost, cyl_speed));
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
     if(!restart_flag)
