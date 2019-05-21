@@ -47,11 +47,11 @@ void incflo::WriteHeader(
 
 		// Geometry
 		for(int i = 0; i < BL_SPACEDIM; ++i)
-			HeaderFile << Geometry::ProbLo(i) << ' ';
+			HeaderFile << Geom(0).ProbLo(i) << ' ';
 		HeaderFile << '\n';
 
 		for(int i = 0; i < BL_SPACEDIM; ++i)
-			HeaderFile << Geometry::ProbHi(i) << ' ';
+			HeaderFile << Geom(0).ProbHi(i) << ' ';
 		HeaderFile << '\n';
 
 		// BoxArray
@@ -170,7 +170,12 @@ void incflo::ReadCheckpointFile()
     }
 
     // Set up problem domain
-    Geometry::ProbDomain(RealBox(prob_lo, prob_hi));
+    RealBox rb(prob_lo, prob_hi);
+    Geometry::ResetDefaultProbDomain(rb);
+    for (int lev = 0; lev <= max_level; ++lev) {
+        SetGeometry(lev, Geometry(Geom(lev).Domain(), rb, Geom(lev).CoordInt(),
+                                  Geom(lev).isPeriodic()));
+    }
 
     for(int lev = 0; lev <= finest_level; ++lev)
     {
