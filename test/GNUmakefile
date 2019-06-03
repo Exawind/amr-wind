@@ -67,7 +67,6 @@ VPATH_LOCATIONS   += $(Blocs)
 
 #These are the directories in AMReX
 Pdirs   := Base AmrCore Boundary EB
-Pdirs   += Extern/Algoim
 
 ifeq ($(USE_HYPRE), TRUE)
 Pdirs   += Extern/HYPRE
@@ -87,16 +86,6 @@ VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/C_CellMG
 include $(AMREX_HOME)/Src/LinearSolvers/MLMG/Make.package
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/MLMG
-
-ALGOIM_HOME ?= $(TOP)/src/extern/algoim
-INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/Extern/Algoim
-INCLUDE_LOCATIONS += $(ALGOIM_HOME)/src
-VPATH_LOCATIONS   += $(AMREX_HOME)/Src/Extern/Algoim
-VPATH_LOCATIONS   += $(ALGOIM_HOME)
-
-INCLUDE_LOCATIONS += $(BLITZ_HOME)/include
-
-DEFINES += -DAMREX_USE_ALGOIM
 
 all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
