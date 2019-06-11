@@ -26,18 +26,18 @@ void set_ptr_to_incflo(incflo& incflo_for_fillpatching_in)
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 // We can't get around this so instead we create an incflo object
 //    and use that to access the quantities that aren't passed here.
-inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const int numcomp,
-                       GeometryData const& geom, const Real time_in, const BCRec* bcr, 
+inline void VelFillBox(Box const& bx, Array4<amrex::Real> const& dest, 
+                       const int dcomp, const int numcomp,
+                       GeometryData const& geom, const Real time_in, 
+                       const BCRec* bcr, 
                        const int bcomp, const int orig_comp)
 {
     if (dcomp != 0)
-    {
          amrex::Abort("Must have dcomp = 0 in VelFillBox");
-    }
+    
     if (numcomp != 3)
-    {
          amrex::Abort("Must have numcomp = 3 in VelFillBox");
-    }
+    
 
     const Box& domain = geom.Domain();
 
@@ -52,10 +52,8 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
        }
        lev++;
     }
-    if(lev == 20)
-    {
+    if (lev == 20)
         amrex::Abort("Reached lev = 20 in VelFillBox...");
-    }
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
     //    at the faces (not the ghost cell center)
@@ -74,8 +72,10 @@ inline void VelFillBox(Box const& bx, FArrayBox& dest, const int dcomp, const in
     int nghost = incflo_for_fillpatching->get_nghost();
     int probtype = incflo_for_fillpatching->get_probtype();
 
+    FArrayBox dest_fab(dest);
+
     set_velocity_bcs(&time, 
-                     BL_TO_FORTRAN_ANYD(dest), 
+                     dest_fab.dataPtr(), dest_fab.loVect(), dest_fab.hiVect(),
                      bc_ilo_ptr, bc_ihi_ptr, 
                      bc_jlo_ptr, bc_jhi_ptr, 
                      bc_klo_ptr, bc_khi_ptr, 
