@@ -172,6 +172,7 @@ private:
 	void ComputeStrainrate();
 	void ComputeVorticity();
 	void ComputeViscosity();
+    double ComputeDragForce();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

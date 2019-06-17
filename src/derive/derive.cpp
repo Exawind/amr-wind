@@ -168,3 +168,70 @@ void incflo::ComputeVorticity()
         }
     }
 }
+
+double incflo::ComputeDragForce()
+{
+	BL_PROFILE("incflo::ComputeDragForce");
+
+    Real drag = 0.0;
+
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        Box domain(geom[lev].Domain());
+        
+        // Get EB geometric info
+        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
+        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
+        const amrex::MultiFab*                    volfrac;
+        const amrex::MultiCutFab*                 bndrycent;
+        const amrex::MultiCutFab*                 bndryarea;
+
+        areafrac  =   ebfactory[lev] -> getAreaFrac();
+        facecent  =   ebfactory[lev] -> getFaceCent();
+        volfrac   = &(ebfactory[lev] -> getVolFrac());
+        bndrycent = &(ebfactory[lev] -> getBndryCent());
+        bndryarea = &(ebfactory[lev] -> getBndryArea());
+
+        Real dx = geom[lev].CellSize()[0];
+        Real dy = geom[lev].CellSize()[1];
+        Real dz = geom[lev].CellSize()[2];
+
+        // State with ghost cells
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
+                         MFInfo(), *ebfactory[lev]);
+        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
+    
+        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
+        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+
+    #ifdef _OPENMP
+    #pragma omp parallel if (Gpu::notInLaunchRegion())
+    #endif
+        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            // Tilebox
+            Box bx = mfi.tilebox();
+
+            // This is to check efficiently if this tile contains any eb stuff
+            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
+            const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
+
+            if (flags.getType(bx) == FabType::singlevalued)
+            {
+                const auto& vel_arr = Sborder.array(mfi);
+                const auto& eta_arr = eta[lev]->array(mfi);
+                const auto& p_arr = p[lev]->array(mfi);
+                const auto& bndryarea_arr = bndryarea.array();
+
+                for(int i = bx.smallEnd(0); i <= bx.bigEnd(0); i++)
+                for(int j = bx.smallEnd(1); j <= bx.bigEnd(1); j++)
+                for(int k = bx.smallEnd(2); k <= bx.bigEnd(2); k++)
+                {
+                    Real p_contrib = p_arr(i,j,k) * bndryarea_arr(i,j,k);
+                    // Multiply by dx or dx^2 ? 
+                    drag += p_contrib;
+                }
+            }
+        }
+    }
+}

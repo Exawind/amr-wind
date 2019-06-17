@@ -63,6 +63,8 @@ void incflo::Advance()
     {
         amrex::Print() << "End of time step: " << std::endl;
         PrintMaxValues(cur_time + dt);
+        Real F = ComputeDragForce();
+        amrex::Print() << "Drag force = " << F << std::endl; 
     }
 
     // Stop timing current time step
