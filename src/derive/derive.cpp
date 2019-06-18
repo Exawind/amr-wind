@@ -118,9 +118,9 @@ void incflo::ComputeVorticity()
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
 
-    #ifdef _OPENMP
-    #pragma omp parallel if (Gpu::notInLaunchRegion())
-    #endif
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
         for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
@@ -193,8 +193,6 @@ double incflo::ComputeDragForce()
         bndryarea = &(ebfactory[lev] -> getBndryArea());
 
         Real dx = geom[lev].CellSize()[0];
-        Real dy = geom[lev].CellSize()[1];
-        Real dz = geom[lev].CellSize()[2];
 
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
@@ -204,9 +202,9 @@ double incflo::ComputeDragForce()
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
 
-    #ifdef _OPENMP
-    #pragma omp parallel if (Gpu::notInLaunchRegion())
-    #endif
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
         for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
@@ -221,17 +219,23 @@ double incflo::ComputeDragForce()
                 const auto& vel_arr = Sborder.array(mfi);
                 const auto& eta_arr = eta[lev]->array(mfi);
                 const auto& p_arr = p[lev]->array(mfi);
-                const auto& bndryarea_arr = bndryarea.array();
+                const auto& bndryarea_arr = bndryarea->array(mfi);
 
                 for(int i = bx.smallEnd(0); i <= bx.bigEnd(0); i++)
                 for(int j = bx.smallEnd(1); j <= bx.bigEnd(1); j++)
                 for(int k = bx.smallEnd(2); k <= bx.bigEnd(2); k++)
                 {
-                    Real p_contrib = p_arr(i,j,k) * bndryarea_arr(i,j,k);
+                    Real p_contrib = p_arr(i,j,k) * bndryarea_arr(i,j,k) * dx * dx;
                     // Multiply by dx or dx^2 ? 
                     drag += p_contrib;
+                    // amrex::Print() 
+                    //     << "p: " << p_arr(i,j,k) 
+                    //     << ", A: " << bndryarea_arr(i,j,k) 
+                    //     << ", sum(drag): " << drag << std::endl; 
                 }
             }
         }
     }
+
+    return drag;
 }

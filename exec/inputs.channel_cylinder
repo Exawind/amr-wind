@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   5.          # Max (simulated) time to evolve
+stop_time               =   1.          # Max (simulated) time to evolve
 max_step                =   -1          # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
@@ -31,7 +31,7 @@ incflo.mu               =   0.001       # Dynamic viscosity coefficient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   96  32  8   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   128  32  8  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 amr.grid_eff            =   0.7 
 amr.n_error_buf         =   8
@@ -42,20 +42,20 @@ amr.max_grid_size_z     =   1024
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   1.2 0.4 0.1 # Hi corner coordinates
-geometry.is_periodic    =   0   0   1   # Periodicity x y z (0/1)
+geometry.prob_lo        =   0.  0.   0.  # Lo corner coordinates
+geometry.prob_hi        =   1.64 0.41 0.1025 # Hi corner coordinates
+geometry.is_periodic    =   0   0    1   # Periodicity x y z (0/1)
 
 # Add cylinder 
 incflo.geometry         =   "cylinder"
 cylinder.internal_flow  =   false
 cylinder.radius         =   0.05
 cylinder.direction      =   2
-cylinder.center         =   .15 .2  0.
+cylinder.center         =   .2  .2  0.
 
 # Boundary conditions
 xlo.type                =   "mi"
-xlo.velocity            =   1.  0.  0.
+xlo.velocity            =   0.2 0.  0.
 xhi.type                =   "po"
 xhi.pressure            =   0.0
 ylo.type                =   "nsw"
@@ -67,7 +67,7 @@ yhi.velocity            =   0.  0.  0.
 #           INITIAL CONDITIONS          #
 #.......................................#
 incflo.probtype         =   3
-incflo.ic_u             =   1.0         #
+incflo.ic_u             =   0.2         #
 incflo.ic_v             =   0.0         #
 incflo.ic_w             =   0.0         #
 incflo.ic_p             =   0.0         #
