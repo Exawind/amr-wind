@@ -174,6 +174,7 @@ double incflo::ComputeDragForce()
 	BL_PROFILE("incflo::ComputeDragForce");
 
     Real drag = 0.0;
+    return drag; 
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
