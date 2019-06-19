@@ -173,66 +173,110 @@ double incflo::ComputeDragForce()
 {
 	BL_PROFILE("incflo::ComputeDragForce");
 
+    // Force to be computed
     Real drag = 0.0;
-    return drag; 
+
+    // Coefficients for one-sided difference estimation
+    Real c0 = -1.5;
+    Real c1 = 2.0; 
+    Real c2 = -0.5;
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
+        Real dx = geom[lev].CellSize()[0];
         
         // Get EB geometric info
-        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
-        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
-        const amrex::MultiFab*                    volfrac;
-        const amrex::MultiCutFab*                 bndrycent;
-        const amrex::MultiCutFab*                 bndryarea;
-
-        areafrac  =   ebfactory[lev] -> getAreaFrac();
-        facecent  =   ebfactory[lev] -> getFaceCent();
-        volfrac   = &(ebfactory[lev] -> getVolFrac());
-        bndrycent = &(ebfactory[lev] -> getBndryCent());
-        bndryarea = &(ebfactory[lev] -> getBndryArea());
-
-        Real dx = geom[lev].CellSize()[0];
-
-        // State with ghost cells
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
-                         MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
-    
-        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
-        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+        const amrex::MultiCutFab* bndryarea;
+        const amrex::MultiCutFab* bndrynorm;
+        bndryarea = &(ebfactory[lev]->getBndryArea());
+        bndrynorm = &(ebfactory[lev]->getBndryNormal());
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel for reduction(+:drag) if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*vel[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
 
             // This is to check efficiently if this tile contains any eb stuff
-            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
+            const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
             if (flags.getType(bx) == FabType::singlevalued)
             {
-                const auto& vel_arr = Sborder.array(mfi);
+                const auto& vel_arr = vel[lev]->array(mfi);
                 const auto& eta_arr = eta[lev]->array(mfi);
                 const auto& p_arr = p[lev]->array(mfi);
                 const auto& bndryarea_arr = bndryarea->array(mfi);
+                const auto& bndrynorm_arr = bndrynorm->array(mfi);
+                const auto& flag_arr = flags.array();
 
                 for(int i = bx.smallEnd(0); i <= bx.bigEnd(0); i++)
                 for(int j = bx.smallEnd(1); j <= bx.bigEnd(1); j++)
                 for(int k = bx.smallEnd(2); k <= bx.bigEnd(2); k++)
                 {
-                    Real p_contrib = p_arr(i,j,k) * bndryarea_arr(i,j,k) * dx * dx;
-                    // Multiply by dx or dx^2 ? 
-                    drag += p_contrib;
-                    // amrex::Print() 
-                    //     << "p: " << p_arr(i,j,k) 
-                    //     << ", A: " << bndryarea_arr(i,j,k) 
-                    //     << ", sum(drag): " << drag << std::endl; 
+                    if(flag_arr(i,j,k).isSingleValued())
+                    {
+                        Real area = bndryarea_arr(i,j,k);
+                        Real nx = bndrynorm_arr(i,j,k,0);
+                        Real ny = bndrynorm_arr(i,j,k,1);
+                        Real nz = bndrynorm_arr(i,j,k,2);
+
+                        Real ux, vx, wx, uy, uz;
+
+                        if(flag_arr(i+1,j,k).isCovered())
+                        {
+                            ux = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i-1,j,k,0) + c2 * vel_arr(i-2,j,k,0)) / dx;
+                            vx = - (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i-1,j,k,1) + c2 * vel_arr(i-2,j,k,1)) / dx;
+                            wx = - (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i-1,j,k,2) + c2 * vel_arr(i-2,j,k,2)) / dx;
+                        }
+                        else if(flag_arr(i-1,j,k).isCovered())
+                        {
+                            ux = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i+1,j,k,0) + c2 * vel_arr(i+2,j,k,0)) / dx;
+                            vx = (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i+1,j,k,1) + c2 * vel_arr(i+2,j,k,1)) / dx;
+                            wx = (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i+1,j,k,2) + c2 * vel_arr(i+2,j,k,2)) / dx;
+                        }
+                        else
+                        {
+                            ux = 0.5 * (vel_arr(i+1,j,k,0) - vel_arr(i-1,j,k,0)) / dx;
+                            vx = 0.5 * (vel_arr(i+1,j,k,1) - vel_arr(i-1,j,k,1)) / dx;
+                            wx = 0.5 * (vel_arr(i+1,j,k,2) - vel_arr(i-1,j,k,2)) / dx;
+                        }
+
+                        if(flag_arr(i,j+1,k).isCovered())
+                        {
+                            uy = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j-1,k,0) + c2 * vel_arr(i,j-2,k,0)) / dx;
+                        }
+                        else if(flag_arr(i,j-1,k).isCovered())
+                        {
+                            uy = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j+1,k,0) + c2 * vel_arr(i,j+2,k,0)) / dx;
+                        }
+                        else
+                        {
+                            uy = 0.5 * (vel_arr(i,j+1,k,0) - vel_arr(i,j-1,k,0)) / dx;
+                        }
+
+                        if(flag_arr(i,j,k+1).isCovered())
+                        {
+                            uz = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j,k-1,0) + c2 * vel_arr(i,j,k-2,0)) / dx;
+                        }
+                        else if(flag_arr(i,j,k-1).isCovered())
+                        {
+                            uz = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j,k+1,0) + c2 * vel_arr(i,j,k+2,0)) / dx;
+                        }
+                        else
+                        {
+                            uz = 0.5 * (vel_arr(i,j,k+1,0) - vel_arr(i,j,k-1,0)) / dx;
+                        }
+
+                        Real p_contrib = p_arr(i,j,k) * nx;
+                        Real tau_contrib = - eta_arr(i,j,k) * 
+                            ( (ux + ux) * nx + (vx + uy) * ny + (wx + uz) * nz );
+
+                        drag += (p_contrib + tau_contrib) * area * dx * dx;
+                    }
                 }
             }
         }
