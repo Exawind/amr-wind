@@ -169,12 +169,9 @@ void incflo::ComputeVorticity()
     }
 }
 
-double incflo::ComputeDragForce()
+void incflo::ComputeDrag()
 {
-	BL_PROFILE("incflo::ComputeDragForce");
-
-    // Force to be computed
-    Real drag = 0.0;
+	BL_PROFILE("incflo::ComputeDrag");
 
     // Coefficients for one-sided difference estimation
     Real c0 = -1.5;
@@ -206,6 +203,7 @@ double incflo::ComputeDragForce()
 
             if (flags.getType(bx) == FabType::singlevalued)
             {
+                const auto& drag_arr = drag[lev]->array(mfi);
                 const auto& vel_arr = vel[lev]->array(mfi);
                 const auto& eta_arr = eta[lev]->array(mfi);
                 const auto& p_arr = p[lev]->array(mfi);
@@ -272,15 +270,20 @@ double incflo::ComputeDragForce()
                         }
 
                         Real p_contrib = p_arr(i,j,k) * nx;
-                        Real tau_contrib = - eta_arr(i,j,k) * 
-                            ( (ux + ux) * nx + (vx + uy) * ny + (wx + uz) * nz );
+                        Real tau_contrib = - eta_arr(i,j,k) * ( (ux + ux) * nx + (vx + uy) * ny + (wx + uz) * nz );
 
-                        drag += (p_contrib + tau_contrib) * area * dx * dx;
+                        drag_arr(i,j,k) = (p_contrib + tau_contrib) * area * dx * dx;
+                    }
+                    else
+                    {
+                        drag_arr(i,j,k) = 0.0;
                     }
                 }
             }
+            else
+            {
+                (*drag[lev])[mfi].setVal(0.0, bx);
+            }
         }
     }
-
-    return drag;
 }
