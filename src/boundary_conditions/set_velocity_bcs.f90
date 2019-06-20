@@ -50,7 +50,7 @@ subroutine set_velocity_bcs(time, &
    real    :: c0, c1, c2
 
    ! Used for probtype = 3 (channel_cylinder with Poiseuille plane inflow BC)
-   real    :: y
+   real    :: x
 
    ! Coefficients for linear extrapolation to ghost cells
    c0 = two 
@@ -91,11 +91,6 @@ subroutine set_velocity_bcs(time, &
                vel(ulo(1):domlo(1)-1,j,k,1) =  bc_u(bcv)
                vel(ulo(1):domlo(1)-1,j,k,2) =  zero
                vel(ulo(1):domlo(1)-1,j,k,3) =  zero
-
-               if(probtype == 3) then
-                  y = (real(j,ar) + half) / (domhi(2) - domlo(2) + 1)
-                  vel(ulo(1):domlo(1)-1,j,k,1) =  6.0 * bc_u(bcv) * y * (one - y)
-               endif
 
             case ( nsw_)
 
@@ -264,6 +259,11 @@ subroutine set_velocity_bcs(time, &
                vel(i,j,ulo(3):domlo(3)-1,1) = zero
                vel(i,j,ulo(3):domlo(3)-1,2) = zero
                vel(i,j,ulo(3):domlo(3)-1,3) = bc_w(bcv)
+
+               if(probtype == 3) then
+                  x = (real(i,ar) + half) / (domhi(1) - domlo(1) + 1)
+                  vel(i,j,ulo(3):domlo(3)-1,3) =  6.0 * bc_w(bcv) * x * (one - x)
+               endif
 
             case ( nsw_ )
 

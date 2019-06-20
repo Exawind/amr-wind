@@ -222,56 +222,58 @@ void incflo::ComputeDrag()
                         Real ny = bndrynorm_arr(i,j,k,1);
                         Real nz = bndrynorm_arr(i,j,k,2);
 
-                        Real ux, vx, wx, uy, uz;
-
-                        if(flag_arr(i+1,j,k).isCovered())
-                        {
-                            ux = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i-1,j,k,0) + c2 * vel_arr(i-2,j,k,0)) / dx;
-                            vx = - (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i-1,j,k,1) + c2 * vel_arr(i-2,j,k,1)) / dx;
-                            wx = - (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i-1,j,k,2) + c2 * vel_arr(i-2,j,k,2)) / dx;
-                        }
-                        else if(flag_arr(i-1,j,k).isCovered())
-                        {
-                            ux = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i+1,j,k,0) + c2 * vel_arr(i+2,j,k,0)) / dx;
-                            vx = (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i+1,j,k,1) + c2 * vel_arr(i+2,j,k,1)) / dx;
-                            wx = (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i+1,j,k,2) + c2 * vel_arr(i+2,j,k,2)) / dx;
-                        }
-                        else
-                        {
-                            ux = 0.5 * (vel_arr(i+1,j,k,0) - vel_arr(i-1,j,k,0)) / dx;
-                            vx = 0.5 * (vel_arr(i+1,j,k,1) - vel_arr(i-1,j,k,1)) / dx;
-                            wx = 0.5 * (vel_arr(i+1,j,k,2) - vel_arr(i-1,j,k,2)) / dx;
-                        }
-
-                        if(flag_arr(i,j+1,k).isCovered())
-                        {
-                            uy = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j-1,k,0) + c2 * vel_arr(i,j-2,k,0)) / dx;
-                        }
-                        else if(flag_arr(i,j-1,k).isCovered())
-                        {
-                            uy = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j+1,k,0) + c2 * vel_arr(i,j+2,k,0)) / dx;
-                        }
-                        else
-                        {
-                            uy = 0.5 * (vel_arr(i,j+1,k,0) - vel_arr(i,j-1,k,0)) / dx;
-                        }
+                        Real uz, vz, wx, wy, wz;
 
                         if(flag_arr(i,j,k+1).isCovered())
                         {
                             uz = - (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j,k-1,0) + c2 * vel_arr(i,j,k-2,0)) / dx;
+                            vz = - (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i,j,k-1,1) + c2 * vel_arr(i,j,k-2,1)) / dx;
+                            wz = - (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i,j,k-1,2) + c2 * vel_arr(i,j,k-2,2)) / dx;
                         }
                         else if(flag_arr(i,j,k-1).isCovered())
                         {
                             uz = (c0 * vel_arr(i,j,k,0) + c1 * vel_arr(i,j,k+1,0) + c2 * vel_arr(i,j,k+2,0)) / dx;
+                            vz = (c0 * vel_arr(i,j,k,1) + c1 * vel_arr(i,j,k+1,1) + c2 * vel_arr(i,j,k+2,1)) / dx;
+                            wz = (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i,j,k+1,2) + c2 * vel_arr(i,j,k+2,2)) / dx;
                         }
                         else
                         {
                             uz = 0.5 * (vel_arr(i,j,k+1,0) - vel_arr(i,j,k-1,0)) / dx;
+                            vz = 0.5 * (vel_arr(i,j,k+1,1) - vel_arr(i,j,k-1,1)) / dx;
+                            wz = 0.5 * (vel_arr(i,j,k+1,2) - vel_arr(i,j,k-1,2)) / dx;
                         }
 
-                        Real p_contrib = p_arr(i,j,k) * nx;
-                        Real tau_contrib = - eta_arr(i,j,k) * ( (ux + ux) * nx + (vx + uy) * ny + (wx + uz) * nz );
+                        if(flag_arr(i,j+1,k).isCovered())
+                        {
+                            wy = - (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i,j-1,k,2) + c2 * vel_arr(i,j-2,k,2)) / dx;
+                        }
+                        else if(flag_arr(i,j-1,k).isCovered())
+                        {
+                            wy = (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i,j+1,k,2) + c2 * vel_arr(i,j+2,k,2)) / dx;
+                        }
+                        else
+                        {
+                            wy = 0.5 * (vel_arr(i,j+1,k,2) - vel_arr(i,j-1,k,2)) / dx;
+                        }
 
+                        if(flag_arr(i+1,j,k).isCovered())
+                        {
+                            wx = - (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i-1,j,k,2) + c2 * vel_arr(i-2,j,k,2)) / dx;
+                        }
+                        else if(flag_arr(i-1,j,k).isCovered())
+                        {
+                            wx = (c0 * vel_arr(i,j,k,2) + c1 * vel_arr(i+1,j,k,2) + c2 * vel_arr(i+2,j,k,2)) / dx;
+                        }
+                        else
+                        {
+                            wx = 0.5 * (vel_arr(i+1,j,k,2) - vel_arr(i-1,j,k,2)) / dx;
+                        }
+
+                        Real p_contrib = p_arr(i,j,k) * nz;
+                        Real tau_contrib = - eta_arr(i,j,k) * ( (uz + wx) * nx + (vz + wy) * ny + (wz + wz) * nz );
+
+                        // TODO: Get values on EB centroid, 
+                        //       not the default CC and nodal values
                         drag_arr(i,j,k) = (p_contrib + tau_contrib) * area * dx * dx;
                     }
                     else
