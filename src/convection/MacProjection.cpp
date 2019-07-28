@@ -172,21 +172,21 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 {
     BL_PROFILE("MacProjection::apply_projection()");
 
-	if(verbose)
-		Print() << "MAC Projection:\n";
+    if (verbose)
+	Print() << "MAC Projection:\n";
 
-	// Check that everything is consistent with amrcore
-	update_internals();
+    // Check that everything is consistent with amrcore
+    update_internals();
 
-	// Setup for solve
-	Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel;
-	vel.resize(m_amrcore->finestLevel() + 1);
+    // Setup for solve
+    Vector<Array<MultiFab*, AMREX_SPACEDIM>> vel;
+    vel.resize(m_amrcore->finestLevel() + 1);
 
     if(verbose) Print() << " >> Before projection\n";
 
-	for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
-	{
-	    // Compute beta coefficients ( div(beta*grad(phi)) = RHS )
+    for(int lev = 0; lev <= m_amrcore->finestLevel(); ++lev)
+    {
+        // Compute beta coefficients ( div(beta*grad(phi)) = RHS )
         average_cellcenter_to_face(GetArrOfPtrs(m_ro[lev]), *ro[lev], m_amrcore->Geom(lev));
 
         for(int dir = 0; dir < 3; dir++)
@@ -195,33 +195,39 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
             MultiFab::Divide(*m_b[lev][dir], *m_ro[lev][dir], 0, 0, 1, 0);
         }
 
-		// Set velocity bcs
-		set_velocity_bcs(lev, u, v, w, time);
+	// Set velocity bcs
+	set_velocity_bcs(lev, u, v, w, time);
 
-		// Store in temporaries
-		(vel[lev])[0] = u[lev].get();
-		(vel[lev])[1] = v[lev].get();
-		(vel[lev])[2] = w[lev].get();
+	// Store in temporaries
+	(vel[lev])[0] = u[lev].get();
+	(vel[lev])[1] = v[lev].get();
+	(vel[lev])[2] = w[lev].get();
 
-		if(verbose)
-		{
+	if(verbose)
+	{
             // Fill boundaries before printing div(u) 
             for(int i = 0; i < 3; i++)
                 (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 
-			EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
+		EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
 
-			Print() << "  * On level " << lev << " max(abs(divu)) = " << norm0(m_divu, lev)
-					<< "\n";
+		Print() << "  * On level " << lev << " max(abs(divu)) = " << norm0(m_divu, lev)
+				<< "\n";
         }
     }
 
-	//
-	// Perform MAC projection
-	//
-	MacProjector macproj(vel, GetVecOfArrOfPtrsConst(m_b), m_amrcore->Geom());
+    //
+    // If we want to set max_coarsening_level we have to send it in to the constructor
+    //
+    LPInfo lp_info;
+    // lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
 
-	macproj.setDomainBC(m_lobc, m_hibc);
+    //
+    // Perform MAC projection
+    //
+    MacProjector macproj(vel, GetVecOfArrOfPtrsConst(m_b), m_amrcore->Geom(), lp_info);
+
+    macproj.setDomainBC(m_lobc, m_hibc);
 
     // The default bottom solver is BiCG
     if(bottom_solver_type == "smoother")
