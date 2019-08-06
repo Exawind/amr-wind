@@ -100,6 +100,19 @@ void incflo::ComputeStrainrate()
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
                 {
+                /*
+                    Real ux_old = (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx / 2.0;
+                    Real vx_old = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx / 2.0;
+                    Real wx_old = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx / 2.0;
+
+                    Real uy_old = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy / 2.0;
+                    Real vy_old = (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy / 2.0;
+                    Real wy_old = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy / 2.0;
+
+                    Real uz_old = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz / 2.0;
+                    Real vz_old = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz / 2.0;
+                    Real wz_old = (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz / 2.0;
+                    */
                     Real ux = (umac_fab(i+1,j,k) - umac_fab(i,j,k)) * idx;
                     Real vx = (vmac_fab(i+1,j,k) + vmac_fab(i+1,j+1,k) 
                            - (vmac_fab(i-1,j,k) + vmac_fab(i-1,j+1,k))) * idx / 4.0;
@@ -117,18 +130,6 @@ void incflo::ComputeStrainrate()
                     Real vz = (vmac_fab(i,j,k+1) + vmac_fab(i,j+1,k+1) 
                            - (vmac_fab(i,j,k-1) + vmac_fab(i,j+1,k-1))) * idz / 4.0;
                     Real wz = (wmac_fab(i,j,k+1) - wmac_fab(i,j,k)) * idz;
-
-                    Real ux_old = (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx / 2.0;
-                    Real vx_old = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx / 2.0;
-                    Real wx_old = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx / 2.0;
-
-                    Real uy_old = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy / 2.0;
-                    Real vy_old = (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy / 2.0;
-                    Real wy_old = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy / 2.0;
-
-                    Real uz_old = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz / 2.0;
-                    Real vz_old = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz / 2.0;
-                    Real wz_old = (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz / 2.0;
 
                     sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2) 
                             + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
