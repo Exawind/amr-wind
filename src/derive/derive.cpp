@@ -68,32 +68,80 @@ void incflo::ComputeStrainrate()
         {
             // Tilebox
             Box bx = mfi.tilebox();
+            Box ubx = mfi.tilebox(e_x);
+            Box vbx = mfi.tilebox(e_y);
+            Box wbx = mfi.tilebox(e_z);
+
+            Real idx = 1.0 / geom[lev].CellSize()[0];
+            Real idy = 1.0 / geom[lev].CellSize()[1];
+            Real idz = 1.0 / geom[lev].CellSize()[2];
 
             // This is to check efficiently if this tile contains any eb stuff
             const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
-            if (flags.getType(bx) == FabType::covered)
+            // Cell-centered velocity
+            const auto& ccvel_fab = vel[lev]->array(mfi);
+
+            // Cell-centred strain-rate magnitude
+            const auto& sr_fab = strainrate[lev]->array(mfi);
+
+            // Face-centered velocity components
+            const auto& umac_fab = (m_u_mac[lev])->array(mfi);
+            const auto& vmac_fab = (m_v_mac[lev])->array(mfi);
+            const auto& wmac_fab = (m_w_mac[lev])->array(mfi);
+
+            if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
             {
                 (*strainrate[lev])[mfi].setVal(1.2345e200, bx);
             }
+            else if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
+            {
+                // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
+                AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+                {
+                    Real ux = (umac_fab(i+1,j,k) - umac_fab(i,j,k)) * idx;
+                    Real vx = (vmac_fab(i+1,j,k) + vmac_fab(i+1,j+1,k) 
+                           - (vmac_fab(i-1,j,k) + vmac_fab(i-1,j+1,k))) * idx / 4.0;
+                    Real wx = (wmac_fab(i+1,j,k) + wmac_fab(i+1,j,k+1) 
+                           - (wmac_fab(i-1,j,k) + wmac_fab(i-1,j,k+1))) * idx / 4.0;
+
+                    Real uy = (umac_fab(i,j+1,k) + umac_fab(i+1,j+1,k) 
+                           - (umac_fab(i,j-1,k) + umac_fab(i+1,j-1,k))) * idy / 4.0;
+                    Real vy = (vmac_fab(i,j+1,k) - vmac_fab(i,j,k)) * idy;
+                    Real wy = (wmac_fab(i,j+1,k) + wmac_fab(i,j+1,k+1) 
+                           - (wmac_fab(i,j-1,k) + wmac_fab(i,j-1,k+1))) * idy / 4.0;
+
+                    Real uz = (umac_fab(i,j,k+1) + umac_fab(i+1,j,k+1) 
+                           - (umac_fab(i,j,k-1) + umac_fab(i+1,j,k-1))) * idz / 4.0;
+                    Real vz = (vmac_fab(i,j,k+1) + vmac_fab(i,j+1,k+1) 
+                           - (vmac_fab(i,j,k-1) + vmac_fab(i,j+1,k-1))) * idz / 4.0;
+                    Real wz = (wmac_fab(i,j,k+1) - wmac_fab(i,j,k)) * idz;
+
+                    Real ux_old = (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx / 2.0;
+                    Real vx_old = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx / 2.0;
+                    Real wx_old = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx / 2.0;
+
+                    Real uy_old = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy / 2.0;
+                    Real vy_old = (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy / 2.0;
+                    Real wy_old = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy / 2.0;
+
+                    Real uz_old = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz / 2.0;
+                    Real vz_old = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz / 2.0;
+                    Real wz_old = (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz / 2.0;
+
+                    sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2) 
+                            + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
+                });
+            }
             else
             {
-                if(flags.getType(amrex::grow(bx, 0)) == FabType::regular)
-                {
-                    compute_strainrate(BL_TO_FORTRAN_BOX(bx),
-                                       BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
-                                       BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                                       geom[lev].CellSize());
-                }
-                else
-                {
-                    compute_strainrate_eb(BL_TO_FORTRAN_BOX(bx),
-                                          BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
-                                          BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                                          BL_TO_FORTRAN_ANYD(flags),
-                                          geom[lev].CellSize());
-                }
+                amrex::Print() << "hehe" << std::endl; 
+                compute_strainrate_eb(BL_TO_FORTRAN_BOX(bx),
+                                      BL_TO_FORTRAN_ANYD((*strainrate[lev])[mfi]),
+                                      BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
+                                      BL_TO_FORTRAN_ANYD(flags),
+                                      geom[lev].CellSize());
             }
         }
     }
