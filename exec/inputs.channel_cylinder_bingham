@@ -8,15 +8,15 @@ steady_state            =   0           # Steady-state solver?
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   1.3e-6      # Use this constant dt if > 0
+incflo.fixed_dt         =   3.2e-7      # Use this constant dt if > 0
 incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   100         # Steps between plot files
+amr.plot_int            =   -1          # Steps between plot files
 amr.plot_per            =   -1          # Time between plot files
-amr.check_int           =   -1          # Steps between checkpoint files
+amr.check_int           =   1000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -33,14 +33,14 @@ incflo.papa_reg         =   1.0e-3      # Regularisation parameter
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   32  8   48  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   64  8   96  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0. # Lo corner coordinates
-geometry.prob_hi        =   4.  1.  6. # Hi corner coordinates
+geometry.prob_hi        =   4.  .5  6. # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
@@ -58,7 +58,7 @@ incflo.geometry         =   "cylinder"
 cylinder.internal_flow  =   false
 cylinder.radius         =   0.5  
 cylinder.direction      =   1    
-cylinder.center         =   2.  0.    4.
+cylinder.center         =   2.  0.    3.
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
