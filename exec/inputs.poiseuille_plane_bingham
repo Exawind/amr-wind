@@ -1,22 +1,22 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   1.          # Max (simulated) time to evolve
-max_step                =   -1          # Max number of time steps
+stop_time               =   -1          # Max (simulated) time to evolve
+max_step                =   1000        # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.001       # Use this constant dt if > 0
-incflo.cfl              =   9000.       # CFL factor
+incflo.fixed_dt         =   0.01      # Use this constant dt if > 0
+incflo.cfl              =   0.9         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   -1          # Steps between plot files
-amr.plot_per            =   0.1         # Steps between plot files
-amr.check_int           =   -1          # Steps between checkpoint files
+amr.plot_int            =   10000       # Steps between plot files
+amr.plot_per            =   -1          # Time between plot files
+amr.check_int           =   10000       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -27,23 +27,23 @@ incflo.ro_0             =   1.          # Reference density
 
 incflo.fluid_model      =   "bingham"   # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
-incflo.tau_0            =   1.          # Dynamic viscosity coefficient
-incflo.papa_reg         =   1.0e-3      # Dynamic viscosity coefficient
+incflo.tau_0            =   0.625       # Dynamic viscosity coefficient
+incflo.papa_reg         =   1.0e-2      # Dynamic viscosity coefficient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   32  32  16  # Grid cells at coarsest AMRlevel
+amr.n_cell              =   16  16  8   # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   2.  2.  1.  # Hi corner coordinates
+geometry.prob_hi        =   2.  2.  1.   # Hi corner coordinates
 geometry.is_periodic    =   1   0   1   # Periodicity x y z (0/1)
 
-incflo.delp             =   0.  0.  2.  # Prescribed (cyclic) pressure gradient
+incflo.delp             =   0.  0.  3.125 # Prescribed (cyclic) pressure difference
 
 # Boundary conditions
 ylo.type                =   "nsw"

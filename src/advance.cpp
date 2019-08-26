@@ -63,6 +63,11 @@ void incflo::Advance()
     {
         amrex::Print() << "End of time step: " << std::endl;
         PrintMaxValues(cur_time + dt);
+        if(probtype == 3 or probtype == 5)
+        {
+            ComputeDrag();
+            amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl; 
+        }
     }
 
     // Stop timing current time step

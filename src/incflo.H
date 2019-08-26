@@ -172,6 +172,7 @@ private:
 	void ComputeStrainrate();
 	void ComputeVorticity();
 	void ComputeViscosity();
+    void ComputeDrag();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -363,6 +364,7 @@ private:
     Vector<std::unique_ptr<MultiFab>> eta_old; 
 	Vector<std::unique_ptr<MultiFab>> strainrate;
 	Vector<std::unique_ptr<MultiFab>> vort;
+	Vector<std::unique_ptr<MultiFab>> drag;
 	Vector<std::unique_ptr<MultiFab>> divu;
     // Helper variables 
     Vector<std::unique_ptr<MultiFab>> conv; 

@@ -73,7 +73,7 @@ contains
    real(rt) function expterm(nu)
       real(rt), intent(in) :: nu
       ! Avoid overflow 
-      if (nu .lt. 1.0e-14) then 
+      if (nu .lt. 1.0e-9) then 
          expterm = one - half * nu + nu**2 / 6.0d0 - nu**3 / 24.0d0
       else
          expterm = (one - exp(-nu)) / nu

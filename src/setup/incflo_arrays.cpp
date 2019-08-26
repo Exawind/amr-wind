@@ -38,6 +38,10 @@ void incflo::AllocateArrays(int lev)
 	vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
 	vort[lev]->setVal(0.);
 
+	// Drag
+	drag[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+	drag[lev]->setVal(0.);
+
     // Convective terms for diffusion equation
     conv[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
     conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo(), *ebfactory[lev]));
@@ -171,6 +175,12 @@ void incflo::RegridArrays(int lev)
 	vort[lev] = std::move(vort_new);
 	vort[lev]->setVal(0.);
 
+	// Drag
+	std::unique_ptr<MultiFab> drag_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+                                                    MFInfo(), *ebfactory[lev]));
+	drag[lev] = std::move(drag_new);
+	drag[lev]->setVal(0.);
+
     // Convective terms
     std::unique_ptr<MultiFab> conv_new(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                                     MFInfo(), *ebfactory[lev]));
@@ -294,6 +304,7 @@ void incflo::ResizeArrays()
 	eta_old.resize(max_level + 1);
     strainrate.resize(max_level + 1);
 	vort.resize(max_level + 1);
+	drag.resize(max_level + 1);
 	divu.resize(max_level + 1);
 
     // Convective terms u grad u 
