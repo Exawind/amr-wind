@@ -48,7 +48,6 @@ contains
                             cyl_speed) bind(C)
 
       use bc
-      use amrex_eb_util_module, only: amrex_eb_interpolate_to_face_centroid_per_cell
       use eb_wallflux_mod,      only: compute_diff_wallflux
 
       ! Tile bounds (cell centered)
@@ -203,24 +202,24 @@ contains
 
                         call get_neighbor_cells( flags(i,j,k), nbr )
 
-                        ! amrex_eb_interpolate_to_face_centroid_per_cell returns the proper flux multiplied
+                        ! eb_interpolate_to_face_centroid_per_cell returns the proper flux multiplied
                         ! by the face area
-                        fxp = amrex_eb_interpolate_to_face_centroid_per_cell( i+1, j, k, 1, fx, fxlo, n,  &
+                        fxp = eb_interpolate_to_face_centroid_per_cell( i+1, j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fxm = amrex_eb_interpolate_to_face_centroid_per_cell( i  , j, k, 1, fx, fxlo, n,  &
+                        fxm = eb_interpolate_to_face_centroid_per_cell( i  , j, k, 1, fx, fxlo, n,  &
                              & afrac_x, axlo, cent_x, cxlo, nbr )
 
-                        fyp = amrex_eb_interpolate_to_face_centroid_per_cell( i, j+1, k, 2, fy, fylo, n,  &
+                        fyp = eb_interpolate_to_face_centroid_per_cell( i, j+1, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fym = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k, 2, fy, fylo, n,  &
+                        fym = eb_interpolate_to_face_centroid_per_cell( i, j, k, 2, fy, fylo, n,  &
                              & afrac_y, aylo, cent_y, cylo, nbr )
 
-                        fzp = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k+1, 3, fz, fzlo, n,  &
+                        fzp = eb_interpolate_to_face_centroid_per_cell( i, j, k+1, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
-                        fzm = amrex_eb_interpolate_to_face_centroid_per_cell( i, j, k, 3, fz, fzlo, n,  &
+                        fzm = eb_interpolate_to_face_centroid_per_cell( i, j, k, 3, fz, fzlo, n,  &
                              & afrac_z, azlo, cent_z, czlo, nbr )
 
                         divc(i,j,k) = ( ( fxp * afrac_x(i+1,j,k) - fxm * afrac_x(i,j,k) ) * idx + &
@@ -365,5 +364,176 @@ contains
       if (is_dirichlet) deallocate(divdiff_w)
 
    end subroutine compute_divop
+
+   !
+   ! Returns flux at face centroid in direction dir for just cell (i,j,k) --
+   !         note nbr is passed in
+   !
+   function eb_interpolate_to_face_centroid_per_cell ( i, j, k, dir, var, vlo,  n,  &
+        afrac, alo, cent, clo, nbr )  result(ivar)
+
+      use amrex_ebcellflag_module, only: is_covered_cell
+      use amrex_error_module,      only: amrex_abort
+
+      ! Face indices: these must be consistent with a staggered indexing
+      ! and therefore consistent with the value of dir
+      integer,  intent(in   ) :: i, j, k
+
+      ! Direction of staggering (1=x, 2=y, 3=z): this specify how (i,j,k) must
+      ! be interpreted, i.e. which staggered numbering the indexing refer to
+      integer,  intent(in   ) :: dir
+
+      ! The component to interpolate
+      integer,  intent(in   ) :: n
+
+      ! Array Bounds ( only start index )
+      integer,  intent(in   ) :: vlo(3), alo(3), clo(3)
+
+      ! Arrays
+      real(ar), intent(in   ) ::           &
+           &   var(vlo(1):, vlo(2):, vlo(3):,1:), &
+           & afrac(alo(1):, alo(2):, alo(3):),    &
+           &  cent(clo(1):, clo(2):, clo(3):,1:)
+
+      ! Neighbors information
+      integer,  intent(in   ) :: nbr(-1:1,-1:1,-1:1)
+
+      ! Output: the interpolated value
+      real(ar)               :: ivar
+
+      ! Local variables
+      real(ar)               :: fracx, fracy, fracz
+
+      select case ( dir )
+      case(1) ! >>>>>>>>>>>>>>>>>>>>>>  X-face <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !
+
+         if ( afrac(i,j,k) == zero ) then
+            ivar = zero
+         else if ( afrac(i,j,k) == one ) then
+            ivar = var(i,j,k,n)
+         else
+            if ( cent(i,j,k,1) < zero ) then
+               fracy = - cent(i,j,k,1) * nbr(0,-1,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracz = - cent(i,j,k,2) * nbr(0,0,-1)
+                  ivar = (one-fracz) * (     fracy * var(i,j-1,k  ,n)  + &
+                       &               (one-fracy) * var(i,j  ,k  ,n)) + &
+                       &       fracz * (     fracy * var(i,j-1,k-1,n)  + &
+                       &               (one-fracy) * var(i,j  ,k-1,n))
+               else
+                  fracz =  cent(i,j,k,2) * nbr(0,0,1)
+                  ivar = (one-fracz) * (     fracy * var(i,j-1,k  ,n)  + &
+                       &               (one-fracy) * var(i,j  ,k  ,n)) + &
+                       &       fracz * (     fracy * var(i,j-1,k+1,n)  + &
+                       &               (one-fracy) * var(i,j  ,k+1,n))
+               endif
+            else
+               fracy = cent(i,j,k,1) * nbr(0,1,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracz = - cent(i,j,k,2) * nbr(0,0,-1)
+                  ivar = (one-fracz) * (     fracy * var(i,j+1,k  ,n)  + &
+                       &               (one-fracy) * var(i,j  ,k  ,n)) + &
+                       &       fracz * (     fracy * var(i,j+1,k-1,n)  + &
+                       &               (one-fracy) * var(i,j  ,k-1,n))
+               else
+                  fracz =  cent(i,j,k,2) * nbr(0,0,1)
+                  ivar= (one-fracz) * (     fracy * var(i,j+1,k  ,n)  + &
+                       &              (one-fracy) * var(i,j  ,k  ,n)) + &
+                       &      fracz * (     fracy * var(i,j+1,k+1,n)  + &
+                       &              (one-fracy) * var(i,j  ,k+1,n))
+               endif
+            end if
+         end if
+
+
+      case(2)  ! >>>>>>>>>>>>>>>>>>>>>>  Y-face <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !
+
+         if ( afrac(i,j,k) == zero ) then
+            ivar = zero
+         else if ( afrac(i,j,k) == one ) then
+            ivar = var(i,j,k,n)
+         else
+            if ( cent(i,j,k,1) < zero ) then
+               fracx = - cent(i,j,k,1) * nbr(-1,0,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracz = - cent(i,j,k,2) * nbr(0,0,-1)
+                  ivar = (one-fracz) * (     fracx * var(i-1,j,k  ,n)  + &
+                       &               (one-fracx) * var(i  ,j,k  ,n)) + &
+                       &       fracz * (     fracx * var(i-1,j,k-1,n)  + &
+                       &               (one-fracx) * var(i  ,j,k-1,n))
+               else
+                  fracz =  cent(i,j,k,2) * nbr(0,0,1)
+                  ivar = (one-fracz) * (     fracx * var(i-1,j,k  ,n)  + &
+                       &               (one-fracx) * var(i  ,j,k  ,n)) + &
+                       &       fracz * (     fracx * var(i-1,j,k+1,n)  + &
+                       &               (one-fracx) * var(i  ,j,k+1,n))
+               endif
+            else
+               fracx = cent(i,j,k,1) * nbr(1,0,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracz = - cent(i,j,k,2) * nbr(0,0,-1)
+                  ivar = (one-fracz) * (     fracx * var(i+1,j,k  ,n)  + &
+                       &               (one-fracx) * var(i  ,j,k  ,n)) + &
+                       &       fracz * (     fracx * var(i+1,j,k-1,n)  + &
+                       &               (one-fracx) * var(i  ,j,k-1,n))
+               else
+                  fracz =  cent(i,j,k,2) * nbr(0,0,1)
+                  ivar = (one-fracz) * (     fracx * var(i+1,j,k  ,n)  + &
+                       &               (one-fracx) * var(i  ,j,k  ,n)) + &
+                       &       fracz * (     fracx * var(i+1,j,k+1,n)  + &
+                       &               (one-fracx) * var(i  ,j,k+1,n))
+               endif
+            end if
+         end if
+
+
+      case(3) ! >>>>>>>>>>>>>>>>>>>>>>  Z-face <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !
+
+         if ( afrac(i,j,k) == zero ) then
+            ivar = zero
+         else if ( afrac(i,j,k) == one ) then
+            ivar = var(i,j,k,n)
+         else
+            if ( cent(i,j,k,1) < zero ) then
+               fracx = - cent(i,j,k,1) * nbr(-1,0,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracy = - cent(i,j,k,2) * nbr(0,-1,0)
+                  ivar = (one-fracy) * (     fracx * var(i-1,j  ,k,n)  + &
+                       &               (one-fracx) * var(i  ,j  ,k,n)) + &
+                       &       fracy * (     fracx * var(i-1,j-1,k,n)  + &
+                       &               (one-fracx) * var(i  ,j-1,k,n))
+               else
+                  fracy =  cent(i,j,k,2) * nbr(0,1,0)
+                  ivar = (one-fracy) * (     fracx * var(i-1,j  ,k,n)  + &
+                       &               (one-fracx) * var(i  ,j  ,k,n)) + &
+                       &       fracy * (     fracx * var(i-1,j+1,k,n)  + &
+                       &               (one-fracx) * var(i  ,j+1,k,n))
+               endif
+            else
+               fracx = cent(i,j,k,1) * nbr(1,0,0)
+               if ( cent(i,j,k,2) <= zero ) then
+                  fracy = - cent(i,j,k,2) * nbr(0,-1,0)
+                  ivar = (one-fracy) * (     fracx * var(i+1,j  ,k,n)  + &
+                       &               (one-fracx) * var(i  ,j  ,k,n)) + &
+                       &       fracy * (     fracx * var(i+1,j-1,k,n)  + &
+                       &               (one-fracx) * var(i  ,j-1,k,n))
+               else
+                  fracy =  cent(i,j,k,2) * nbr(0,1,0)
+                  ivar = (one-fracy) * (     fracx * var(i+1,j  ,k,n)  + &
+                       &               (one-fracx) * var(i  ,j  ,k,n)) + &
+                       &       fracy * (     fracx * var(i+1,j+1,k,n)  + &
+                       &               (one-fracx) * var(i  ,j+1,k,n))
+               endif
+            end if
+         end if
+
+      case default
+
+         call amrex_abort( "interpolate_to_face_centroid(): value of 'dir'"&
+              //" is invalid. Must be either 1,2, or 3")
+
+      end select
+
+   end function eb_interpolate_to_face_centroid_per_cell
 
 end module divop_mod
