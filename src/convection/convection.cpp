@@ -51,7 +51,7 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
                 // If tile is completely covered by EB geometry, set slopes
                 // value to some very large number so we know if
                 // we accidentaly use these covered slopes later in calculations
-                conv_in[lev]->setVal(1.2345e300, bx, 0, 3);
+                conv_in[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
             }
             else
             {
@@ -67,16 +67,14 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
                                    (*xslopes[lev])[mfi].dataPtr(),
                                    (*yslopes[lev])[mfi].dataPtr(),
                                    BL_TO_FORTRAN_ANYD((*zslopes[lev])[mfi]),
-                                   domain.loVect(),
-                                   domain.hiVect(),
+                                   domain.loVect(), domain.hiVect(),
                                    bc_ilo[lev]->dataPtr(),
                                    bc_ihi[lev]->dataPtr(),
                                    bc_jlo[lev]->dataPtr(),
                                    bc_jhi[lev]->dataPtr(),
                                    bc_klo[lev]->dataPtr(),
                                    bc_khi[lev]->dataPtr(),
-                                   geom[lev].CellSize(),
-                                   &nghost);
+                                   geom[lev].CellSize(), &nghost);
                 }
                 else
                 {
@@ -370,9 +368,9 @@ void incflo::ComputeVelocitySlopes(int lev, MultiFab& Sborder)
 			// If tile is completely covered by EB geometry, set slopes
 			// value to some very large number so we know if
 			// we accidentaly use these covered slopes later in calculations
-			xslopes[lev]->setVal(1.2345e300, bx, 0, 3);
-			yslopes[lev]->setVal(1.2345e300, bx, 0, 3);
-			zslopes[lev]->setVal(1.2345e300, bx, 0, 3);
+			xslopes[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
+			yslopes[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
+			zslopes[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
 		}
 		else
 		{

@@ -40,15 +40,15 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         for(int lev = 0; lev <= finest_level; lev++)
         {
             // Convert velocities to momenta
-            for(int dir = 0; dir < 3; dir++)
+            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             {
                 MultiFab::Multiply(*vel[lev], *ro[lev], 0, dir, 1, vel[lev]->nGrow());
             }
 
-            MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, 3, vel[lev]->nGrow());
+            MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
 
             // Convert momenta back to velocities
-            for(int dir = 0; dir < 3; dir++)
+            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             {
                 MultiFab::Divide(*vel[lev], *ro[lev], 0, dir, 1, vel[lev]->nGrow());
             }
@@ -91,11 +91,11 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // Now we correct the velocity with MINUS (1/rho) * grad(phi),
-        MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, 3, 0);
+        MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Multiply by rho and divide by (-dt) to get fluxes = grad(phi) / dt
         fluxes[lev]->mult(-1.0 / scaling_factor, fluxes[lev]->nGrow());
-        for(int dir = 0; dir < 3; dir++)
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
             MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, dir, 1, fluxes[lev]->nGrow());
         }
@@ -107,13 +107,13 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         {
             // p := phi
             MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Copy(*gp[lev], *fluxes[lev], 0, 0, 3, fluxes[lev]->nGrow());
+            MultiFab::Copy(*gp[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, fluxes[lev]->nGrow());
         }
         else
         {
             // p := p + phi
             MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Add(*gp[lev], *fluxes[lev], 0, 0, 3, fluxes[lev]->nGrow());
+            MultiFab::Add(*gp[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, fluxes[lev]->nGrow());
         }
     }
 

@@ -67,8 +67,8 @@ void incflo::ReadParameters()
         }
 
         // Count the number of variables to save.
-        if(plt_vel        == 1) pltVarCount += 3;
-        if(plt_gradp      == 1) pltVarCount += 3;
+        if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
+        if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
         if(plt_rho        == 1) pltVarCount += 1;
         if(plt_p          == 1) pltVarCount += 1;
         if(plt_eta        == 1) pltVarCount += 1;
@@ -90,8 +90,8 @@ void incflo::ReadParameters()
         pp.query("do_initial_proj", do_initial_proj);
 
         // Physics
-		pp.queryarr("delp", delp, 0, 3);
-		pp.queryarr("gravity", gravity, 0, 3);
+		pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
+		pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
         pp.query("ro_0", ro_0);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
@@ -185,8 +185,8 @@ void incflo::ReadParameters()
         }
 
         // Get cyclicity, (to pass to Fortran)
-        Vector<int> is_cyclic(3);
-        for(int dir = 0; dir < 3; dir++)
+        Vector<int> is_cyclic(AMREX_SPACEDIM);
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
             is_cyclic[dir] = geom[0].isPeriodic(dir);
         }

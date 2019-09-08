@@ -12,8 +12,8 @@ incflo::incflo()
     // Read inputs file using ParmParse
     ReadParameters();
 
-	// Initialize memory for data-array internals
-	ResizeArrays();
+    // Initialize memory for data-array internals
+    ResizeArrays();
 
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
@@ -26,7 +26,7 @@ void incflo::InitData()
 {
     BL_PROFILE("incflo::InitData()");
 
-	// Either init from scratch or from the checkpoint file
+    // Either init from scratch or from the checkpoint file
     // In both cases, we call MakeNewLevelFromScratch():
     // - Set BA and DM 
     // - Allocate arrays for level
@@ -143,7 +143,7 @@ void incflo::Evolve()
     BL_PROFILE("incflo::Evolve()");
 
     bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (cur_time > stop_time)) ||
-						  ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
+   					     ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
 
     while(!do_not_evolve)
     {
@@ -319,6 +319,6 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
-    amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, 3, rr);
-    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, 3, rr);
+    amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, AMREX_SPACEDIM, rr);
+    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
 }

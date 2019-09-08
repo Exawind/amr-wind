@@ -68,19 +68,27 @@ void MacProjection::set_bcs(Vector<std::unique_ptr<IArrayBox>>& a_bc_ilo,
 	m_bc_klo = &a_bc_klo;
 	m_bc_khi = &a_bc_khi;
 
-	int bc_lo[3], bc_hi[3];
+	int bc_lo[AMREX_SPACEDIM], bc_hi[AMREX_SPACEDIM];
     int lev = 0;
 	Box domain(m_amrcore->Geom(0).Domain());
 
     set_ppe_bc(bc_lo, bc_hi,
                domain.loVect(), domain.hiVect(),
                &m_nghost,
+#if (AMREX_SPACEDIM == 2)
+               (*m_bc_ilo)[lev]->dataPtr(), (*m_bc_ihi)[lev]->dataPtr(),
+               (*m_bc_jlo)[lev]->dataPtr(), (*m_bc_jhi)[lev]->dataPtr());
+
+    m_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1]};
+    m_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1]};
+#elif (AMREX_SPACEDIM == 3)
                (*m_bc_ilo)[lev]->dataPtr(), (*m_bc_ihi)[lev]->dataPtr(),
                (*m_bc_jlo)[lev]->dataPtr(), (*m_bc_jhi)[lev]->dataPtr(),
                (*m_bc_klo)[lev]->dataPtr(), (*m_bc_khi)[lev]->dataPtr());
 
     m_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     m_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+#endif
 }
 
 // redefine working arrays if amrcore has changed
@@ -189,7 +197,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
         // Compute beta coefficients ( div(beta*grad(phi)) = RHS )
         average_cellcenter_to_face(GetArrOfPtrs(m_ro[lev]), *ro[lev], m_amrcore->Geom(lev));
 
-        for(int dir = 0; dir < 3; dir++)
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
             m_b[lev][dir]->setVal(1.0);
             MultiFab::Divide(*m_b[lev][dir], *m_ro[lev][dir], 0, 0, 1, 0);
@@ -206,7 +214,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 	if(verbose)
 	{
             // Fill boundaries before printing div(u) 
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < AMREX_SPACEDIM; i++)
                 (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 
 		EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));
@@ -261,7 +269,7 @@ void MacProjection::apply_projection(Vector<std::unique_ptr<MultiFab>>& u,
 		if(verbose)
 		{
             // Fill boundaries before printing div(u) 
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < AMREX_SPACEDIM; i++)
                 (vel[lev])[i]->FillBoundary(m_amrcore->Geom(lev).periodicity());
 
 			EB_computeDivergence(*m_divu[lev], GetArrOfConstPtrs(vel[lev]), m_amrcore->Geom(lev));

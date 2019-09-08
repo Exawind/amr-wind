@@ -46,7 +46,7 @@ void incflo::ComputeDivTau(int lev,
 
         if (flags.getType(bx) == FabType::covered)
         {
-            divtau_in[mfi].setVal(1.2345e200, bx, 0, 3);
+            divtau_in[mfi].setVal(1.2345e200, bx, 0, AMREX_SPACEDIM);
         }
         else
         {

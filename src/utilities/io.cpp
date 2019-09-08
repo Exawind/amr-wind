@@ -200,11 +200,11 @@ void incflo::ReadCheckpointFile()
 		// Read velocity and pressure gradients
 		MultiFab mf_vel;
 		VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
-        vel[lev]->copy(mf_vel, 0, 0, 3, 0, 0);
+        vel[lev]->copy(mf_vel, 0, 0, AMREX_SPACEDIM, 0, 0);
 
 		MultiFab mf_gp;
 		VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
-        gp[lev]->copy(mf_gp, 0, 0, 3, 0, 0);
+        gp[lev]->copy(mf_gp, 0, 0, AMREX_SPACEDIM, 0, 0);
 
 		// Read scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)
@@ -397,7 +397,7 @@ void incflo::WritePlotFile() const
                 MultiFab::Copy(*mf[lev], (*vel[lev]), 1, lc+1, 1, 0);
                 MultiFab::Copy(*mf[lev], (*vel[lev]), 2, lc+2, 1, 0);
 
-                lc += 3;
+                lc += AMREX_SPACEDIM;
             }
 
             // Pressure gradient components
@@ -407,7 +407,7 @@ void incflo::WritePlotFile() const
                 MultiFab::Copy(*mf[lev], (*gp[lev]), 1, lc+1, 1, 0);
                 MultiFab::Copy(*mf[lev], (*gp[lev]), 2, lc+2, 1, 0);
     
-                lc += 3;
+                lc += AMREX_SPACEDIM;
             }
 
             // Density

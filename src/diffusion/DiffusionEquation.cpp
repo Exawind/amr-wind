@@ -63,7 +63,7 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
     veb.resize(max_level + 1);
     for(int lev = 0; lev <= max_level; lev++)
     {
-        for(int dir = 0; dir < 3; dir++)
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
             BoxArray edge_ba = grids[lev];
             edge_ba.surroundingNodes(dir);
@@ -195,7 +195,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
     {
         // Compute the spatially varying b coefficients (on faces) to equal the apparent viscosity
         average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *eta[lev], amrcore->Geom(lev));
-        for(int dir = 0; dir < 3; dir++)
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
             b[lev][dir]->FillBoundary(amrcore->Geom(lev).periodicity());
         }
@@ -211,7 +211,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel,
     }
 
     // Loop over the velocity components
-    for(int dir = 0; dir < 3; dir++)
+    for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
     {
         for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
         {

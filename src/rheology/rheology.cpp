@@ -24,10 +24,16 @@ void incflo::ComputeViscosity()
 
             for(int i = bx.smallEnd(0); i<= bx.bigEnd(0); i++)
             for(int j = bx.smallEnd(1); j<= bx.bigEnd(1); j++)
+#if (AMREX_SPACEDIM == 2)
+            {
+                viscosity_arr(i,j) = viscosity(strainrate_arr(i,j));
+            }
+#elif (AMREX_SPACEDIM == 3)
             for(int k = bx.smallEnd(2); k<= bx.bigEnd(2); k++)
             {
                 viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
             }
+#endif
         }
     }
 }

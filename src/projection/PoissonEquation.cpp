@@ -43,7 +43,7 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
     // The boundary conditions need only be set at level 0
     set_ppe_bc(bc_lo, bc_hi,
                domain.loVect(), domain.hiVect(),
-			   &nghost,
+  	       &nghost,
                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
