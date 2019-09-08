@@ -1,11 +1,25 @@
 #include <incflo.H>
+#include <AMReX_buildInfo.H>
 
 // TODO: find better way of making the fillpatch stuff work
 void set_ptr_to_incflo(incflo& my_incflo);
+ 
+void writeBuildInfo();
 
 int main(int argc, char* argv[])
 {
-	amrex::Initialize(argc, argv);
+
+    // check to see if it contains --describe
+    if (argc >= 2) {
+        for (auto i = 1; i < argc; i++) {
+            if (std::string(argv[i]) == "--describe") {
+                writeBuildInfo();
+                return 0;
+            }
+        }
+    }
+
+    amrex::Initialize(argc, argv);
     { /* These braces are necessary to ensure amrex::Finalize() can be called without explicitly
         deleting all the incflo member MultiFabs */
 
@@ -13,6 +27,10 @@ int main(int argc, char* argv[])
 
     // Issue an error if input file is not given 
     if(argc < 2) amrex::Abort("Input file must be given as command-line argument.");
+
+    // Write out the incflo git hash (the AMReX git hash is already written)
+    const char* githash_incflo = buildInfoGetGitHash(1);
+    amrex::Print() << "incflo git hash: " << githash_incflo << "\n";
 
     // Start timing the program
     Real start_time = ParallelDescriptor::second();
