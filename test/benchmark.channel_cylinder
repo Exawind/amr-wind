@@ -47,14 +47,14 @@ geometry.prob_hi        =   0.4 0.1 1.2 # Hi corner coordinates
 geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
-xlo.type                =   "mi"
-xlo.velocity            =   0.  0.  1.
-xhi.type                =   "po"
-xhi.pressure            =   0.0
-ylo.type                =   "nsw"
-ylo.velocity            =   0.  0.  0.
-yhi.type                =   "nsw"
-yhi.velocity            =   0.  0.  0.
+xlo.type                =   "nsw"
+xlo.velocity            =   0.  0.  0.
+xhi.type                =   "nsw"
+xhi.velocity            =   0.  0.  0.
+zlo.type                =   "mi"
+zlo.velocity            =   0.  0.  1.
+zhi.type                =   "po"
+zhi.pressure            =   0.0
 
 # Add cylinder 
 incflo.geometry         = "cylinder"
