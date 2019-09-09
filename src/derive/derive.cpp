@@ -101,18 +101,19 @@ void incflo::ComputeStrainrate()
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
                 {
-                    ux = (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
-                    vx = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                    wx = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                    ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
+                    vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                    wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                    uy = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                    vy = (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
-                    wy = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                    uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                    vy = 0.5 * (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
+                    wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                    uz = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                    vz = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
-                    wz = (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
+                    uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                    vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                    wz = 0.5 * (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
 
+                    // Include the factor half here rather than in each of the above
                     sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2) 
                             + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
                 });
@@ -237,17 +238,17 @@ void incflo::ComputeStrainrate()
                         }
                         else
                         {
-                            ux = (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
-                            vx = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                            wx = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                            ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
+                            vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                            wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                            uy = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                            vy = (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
-                            wy = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                            uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                            vy = 0.5 * (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
+                            wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                            uz = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                            vz = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
-                            wz = (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
+                            uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                            vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                            wz = 0.5 * (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
                         }
                         sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2)
                                 + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
@@ -307,14 +308,14 @@ void incflo::ComputeVorticity()
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
                 {
-                    vx = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                    wx = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                    vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                    wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                    uy = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                    wy = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                    uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                    wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                    uz = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                    vz = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                    uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                    vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
 
                     vort_fab(i,j,k) = sqrt( pow(wy - vz, 2) + pow(uz - wx, 2) + pow(vx - uy, 2));
                 });
@@ -418,14 +419,14 @@ void incflo::ComputeVorticity()
                         }
                         else
                         {
-                            vx = (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                            wx = (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                            vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                            wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                            uy = (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                            wy = (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                            uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                            wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                            uz = (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                            vz = (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                            uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                            vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
                         }
                         vort_fab(i,j,k) = sqrt(pow(wy-vz,2) + pow(uz-wx,2) + pow(vx-uy,2));
                     }
