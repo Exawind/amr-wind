@@ -160,7 +160,7 @@ contains
 
    subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
-      use constant, only: ic_w
+      use constant, only: ic_u
 
       implicit none
 
@@ -173,18 +173,18 @@ contains
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      integer(c_int)                  :: num_cells_x
-      real(rt)                        :: x
+      integer(c_int)                  :: num_cells_y
+      real(rt)                        :: y
 
-      num_cells_x = domhi(1) - domlo(1) + 1
+      num_cells_y = domhi(2) - domlo(2) + 1
 
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               x =  (real(i,rt) + 0.5) / num_cells_x
-               vel(i,j,k,1) = 0.0
+               y =  (real(j,rt) + 0.5) / num_cells_y
+               vel(i,j,k,1) = 6.0 * ic_u * y * (1.0 - y)
                vel(i,j,k,2) = 0.0
-               vel(i,j,k,3) = 6.0 * ic_w * x * (1.0 - x)
+               vel(i,j,k,3) = 0.0
             end do
          end do
       end do

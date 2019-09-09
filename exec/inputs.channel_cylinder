@@ -32,40 +32,40 @@ incflo.mu               =   0.001       # Dynamic viscosity coefficient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   32  16  128 # Grid cells at coarsest AMRlevel
+amr.n_cell              =   128 32  16  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
 geometry.prob_lo        =   0.  0.   0.  # Lo corner coordinates
-geometry.prob_hi        =   .41 .205 1.64 # Hi corner coordinates
-geometry.is_periodic    =   0   1    0   # Periodicity x y z (0/1)
+geometry.prob_hi        =   1.64 .41 .205 # Hi corner coordinates
+geometry.is_periodic    =   0   0    1   # Periodicity x y z (0/1)
 
 # Add cylinder 
 incflo.geometry         =   "cylinder"
 cylinder.internal_flow  =   false
 cylinder.radius         =   0.05
-cylinder.direction      =   1
-cylinder.center         =   .2  0.  .2 
+cylinder.direction      =   2
+cylinder.center         =   .2  .2  0. 
 
 # Boundary conditions
-zlo.type                =   "mi"
-zlo.velocity            =   0.  0.  0.2
-zhi.type                =   "po"
-zhi.pressure            =   0.0
-xlo.type                =   "nsw"
-xlo.velocity            =   0.  0.  0.
-xhi.type                =   "nsw"
-xhi.velocity            =   0.  0.  0.
+xlo.type                =   "mi"
+xlo.velocity            =   0.2 0.  0. 
+xhi.type                =   "po"
+xhi.pressure            =   0.0
+ylo.type                =   "nsw"
+ylo.velocity            =   0.  0.  0.
+yhi.type                =   "nsw"
+yhi.velocity            =   0.  0.  0.
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
 #.......................................#
 incflo.probtype         =   3
-incflo.ic_u             =   0.0         #
+incflo.ic_u             =   0.2         #
 incflo.ic_v             =   0.0         #
-incflo.ic_w             =   0.2         #
+incflo.ic_w             =   0.0         #
 incflo.ic_p             =   0.0         #
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
