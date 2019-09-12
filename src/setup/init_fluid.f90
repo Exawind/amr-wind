@@ -180,7 +180,6 @@ contains
 
       if (probtype .eq. 31) then
 
-         print *,'SETTING X-VEL ', ic_u
          num_cells = domhi(2) - domlo(2) + 1
 
          do k = lo(3), hi(3)
@@ -196,7 +195,6 @@ contains
 
       else if (probtype .eq. 32) then
 
-         print *,'SETTING Y-VEL '
          num_cells = domhi(3) - domlo(3) + 1
 
          do k = lo(3), hi(3)
@@ -214,7 +212,6 @@ contains
 
          num_cells = domhi(1) - domlo(1) + 1
 
-         print *,'SETTING Z-VEL '
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
