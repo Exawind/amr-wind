@@ -1,3 +1,4 @@
+#include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
@@ -401,29 +402,39 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("incflo::InitialProjection()");
 
-    if(incflo_verbose)
+    Real time = 0.0;
+
+    if (incflo_verbose)
     {
         amrex::Print() << "Initial projection:" << std::endl;
+        PrintMaxValues(time);
     }
 
-	// Need to add this call here so that the MACProjection internal arrays
-	//  are allocated so that the cell-centered projection can use the MAC
-	//  data structures and set_velocity_bcs routine
-	mac_projection->update_internals();
+    print_state(*divu[0],{0,0,0});
 
-	Real dummy_dt = 1.0;
-	ApplyProjection(cur_time, dummy_dt);
+    // Need to add this call here so that the MACProjection internal arrays
+    //  are allocated so that the cell-centered projection can use the MAC
+    //  data structures and set_velocity_bcs routine
+    mac_projection->update_internals();
+
+    Real dummy_dt = 1.0;
+    ApplyProjection(cur_time, dummy_dt);
 
     // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection()
     // use the correct decomposition.
     nstep = 0;
 
-
-	// We set p and gp back to zero (p0 may still be still non-zero)
-    for(int lev = 0; lev <= finest_level; lev++)
+    // We set p and gp back to zero (p0 may still be still non-zero)
+    for (int lev = 0; lev <= finest_level; lev++)
     {
         p[lev]->setVal(0.0);
         gp[lev]->setVal(0.0);
+    }
+
+    if (incflo_verbose)
+    {
+        amrex::Print() << "After initial projection:" << std::endl;
+        PrintMaxValues(time);
     }
 }
 

@@ -40,10 +40,11 @@ contains
       vel(:,:,:,2) = ic_v
       vel(:,:,:,3) = ic_w
       
-      if(probtype == 1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if(probtype == 2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if(probtype == 3) call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
-      if(probtype == 4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype == 1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype == 2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype == 31 .or. probtype == 32 .or. probtype == 33)  &
+         call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+      if (probtype == 4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
@@ -158,36 +159,77 @@ contains
 
    end subroutine double_shear_layer
 
-   subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+   subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
 
-      use constant, only: ic_w
+      use constant, only: ic_u, ic_v, ic_w
 
       implicit none
 
       integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
       integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
       integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
+      integer(c_int),   intent(in   ) :: probtype
 
       real(rt),         intent(in   ) :: dx, dy, dz
       real(rt),         intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      integer(c_int)                  :: num_cells_x
-      real(rt)                        :: x
+      integer(c_int)                  :: num_cells
+      real(rt)                        :: x, y, z
 
-      num_cells_x = domhi(1) - domlo(1) + 1
+      if (probtype .eq. 31) then
 
-      do k = lo(3), hi(3)
+         print *,'SETTING X-VEL ', ic_u
+         num_cells = domhi(2) - domlo(2) + 1
+
+         do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               x =  (real(i,rt) + 0.5) / num_cells_x
+               y =  (real(j,rt) + 0.5) / num_cells
+               vel(i,j,k,1) = 6.0 * ic_u * y * (1.0 - y)
+               vel(i,j,k,2) = 0.0
+               vel(i,j,k,3) = 0.0
+            end do
+         end do
+         end do
+
+      else if (probtype .eq. 32) then
+
+         print *,'SETTING Y-VEL '
+         num_cells = domhi(3) - domlo(3) + 1
+
+         do k = lo(3), hi(3)
+         do j = lo(2), hi(2)
+            do i = lo(1), hi(1)
+               z =  (real(k,rt) + 0.5) / num_cells
+               vel(i,j,k,1) = 0.0
+               vel(i,j,k,2) = 6.0 * ic_v * z * (1.0 - z)
+               vel(i,j,k,3) = 0.0
+            end do
+         end do
+         end do
+
+      else if (probtype .eq. 33) then
+
+         num_cells = domhi(1) - domlo(1) + 1
+
+         print *,'SETTING Z-VEL '
+         do k = lo(3), hi(3)
+         do j = lo(2), hi(2)
+            do i = lo(1), hi(1)
+               x =  (real(i,rt) + 0.5) / num_cells
                vel(i,j,k,1) = 0.0
                vel(i,j,k,2) = 0.0
                vel(i,j,k,3) = 6.0 * ic_w * x * (1.0 - x)
             end do
          end do
-      end do
+         end do
+
+      else 
+          print *,'Dont know this probtype in plane_poiseuille: ', probtype
+          stop
+      end if
 
    end subroutine plane_poiseuille
 

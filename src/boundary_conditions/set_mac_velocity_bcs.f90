@@ -58,8 +58,8 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
    integer  :: bcv, i, j, k
    integer  :: nlft, nrgt, nbot, ntop, nup, ndwn
    
-   ! Used for protype = 3, channel_cylinder with Poiseuille plane inflow BCs
-   real(ar) :: x
+   ! Used for probtype = {31,32,33}, channel_cylinder with Poiseuille plane inflow BCs
+   real(ar) :: x, y, z
 
    nlft = max(0,domlo(1)-slo(1))
    nbot = max(0,domlo(2)-slo(2))
@@ -88,6 +88,11 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
                u(ulo(1):domlo(1)  ,j,k) = bc_u(bcv)
                v(vlo(1):domlo(1)-1,j,k) = 0.0d0
                w(wlo(1):domlo(1)-1,j,k) = 0.0d0
+
+               if(probtype == 31) then
+                  y = (real(j,ar) + half) / (domhi(2) - domlo(2) + 1)
+                  u(ulo(1):domlo(1),j,k) = 6.0 * bc_u(bcv) * y * (one - y)
+               endif
 
             case ( nsw_)
 
@@ -155,6 +160,11 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
                v(i,vlo(2):domlo(2)  ,k) = bc_v(bcv)
                w(i,wlo(2):domlo(2)-1,k) = 0.0d0
 
+               if(probtype == 32) then
+                  z = (real(k,ar) + half) / (domhi(3) - domlo(3) + 1)
+                  v(i,vlo(2):domlo(2)  ,k) = 6.0 * bc_v(bcv) * z * (one - z)
+               endif
+
             case ( nsw_ )
 
                u(i,ulo(2):domlo(2)-1,k) = -u(i,domlo(2),k)
@@ -220,7 +230,7 @@ subroutine set_mac_velocity_bcs(time, slo, shi, &
                v(i,j,vlo(3):domlo(3)-1) = 0.0d0
                w(i,j,wlo(3):domlo(3)  ) = bc_w(bcv)
 
-               if(probtype == 3) then
+               if(probtype == 33) then
                   x = (real(i,ar) + half) / (domhi(1) - domlo(1) + 1)
                   w(i,j,wlo(3):domlo(3)) = 6 * bc_w(bcv) * x * (one - x)
                endif

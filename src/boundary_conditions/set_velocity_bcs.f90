@@ -49,8 +49,8 @@ subroutine set_velocity_bcs(time, &
    integer :: nlft, nrgt, nbot, ntop, nup, ndwn
    real    :: c0, c1, c2
 
-   ! Used for probtype = 3 (channel_cylinder with Poiseuille plane inflow BC)
-   real    :: x
+   ! Used for probtype = {31,32,33} (channel_cylinder with Poiseuille plane inflow BC)
+   real    :: x, y, z
 
    ! Coefficients for linear extrapolation to ghost cells
    c0 = two 
@@ -71,6 +71,9 @@ subroutine set_velocity_bcs(time, &
    ntop = max(0,uhi(2)-domhi(2))
    nup  = max(0,uhi(3)-domhi(3))
 
+! *******************************************************************
+! First do just the pinf, pout and minf
+! *******************************************************************
 
    if (nlft .gt. 0) then
       do k = ulo(3), uhi(3)
@@ -91,6 +94,174 @@ subroutine set_velocity_bcs(time, &
                vel(ulo(1):domlo(1)-1,j,k,1) =  bc_u(bcv)
                vel(ulo(1):domlo(1)-1,j,k,2) =  zero
                vel(ulo(1):domlo(1)-1,j,k,3) =  zero
+
+               if (probtype == 31) then
+                  y = (real(j,ar) + half) / (domhi(2) - domlo(2) + 1)
+                  vel(ulo(1):domlo(1)-1,j,k,1) =  6.0 * bc_u(bcv) * y * (one - y)
+               endif
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nrgt .gt. 0) then
+
+      do k = ulo(3),uhi(3)
+         do j = ulo(2),uhi(2)
+
+            bcv = bct_ihi(j,k,2)
+
+            select case ( bct_ihi(j,k,1) )
+
+            case ( pinf_, pout_ )
+
+               vel(domhi(1)+1:uhi(1),j,k,1) =    vel(domhi(1),j,k,1)
+               vel(domhi(1)+1:uhi(1),j,k,2) =    vel(domhi(1),j,k,2)
+               vel(domhi(1)+1:uhi(1),j,k,3) =    vel(domhi(1),j,k,3)
+
+            case ( minf_ )
+
+               vel(domhi(1)+1:uhi(1),j,k,1) = bc_u(bcv)
+               vel(domhi(1)+1:uhi(1),j,k,2) = zero
+               vel(domhi(1)+1:uhi(1),j,k,3) = zero
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nbot .gt. 0) then
+
+      do k = ulo(3), uhi(3)
+         do i = ulo(1), uhi(1)
+
+            bcv = bct_jlo(i,k,2)
+
+            select case ( bct_jlo(i,k,1) )
+
+            case ( pinf_, pout_)
+
+               vel(i,ulo(2):domlo(2)-1,k,1) =      vel(i,domlo(2),k,1)
+               vel(i,ulo(2):domlo(2)-1,k,2) =      vel(i,domlo(2),k,2)
+               vel(i,ulo(2):domlo(2)-1,k,3) =      vel(i,domlo(2),k,3)
+
+            case ( minf_ )
+
+               vel(i,ulo(2):domlo(2)-1,k,1) = zero
+               vel(i,ulo(2):domlo(2)-1,k,2) = bc_v(bcv)
+               vel(i,ulo(2):domlo(2)-1,k,3) = zero
+
+               if (probtype == 32) then
+                  z = (real(k,ar) + half) / (domhi(3) - domlo(3) + 1)
+                  vel(i,ulo(2):domlo(2)-1,k,2) =  6.0 * bc_v(bcv) * z * (one - z)
+               endif
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (ntop .gt. 0) then
+
+      do k = ulo(3), uhi(3)
+         do i = ulo(1), uhi(1)
+
+            bcv = bct_jhi(i,k,2)
+
+            select case ( bct_jhi(i,k,1) )
+
+            case ( pinf_, pout_ )
+
+               vel(i,domhi(2)+1:uhi(2),k,1) =      vel(i,domhi(2),k,1)
+               vel(i,domhi(2)+1:uhi(2),k,2) =      vel(i,domhi(2),k,2)
+               vel(i,domhi(2)+1:uhi(2),k,3) =      vel(i,domhi(2),k,3)
+
+            case ( minf_)
+
+               vel(i,domhi(2)+1:uhi(2),k,1) = zero
+               vel(i,domhi(2)+1:uhi(2),k,2) = bc_v(bcv)
+               vel(i,domhi(2)+1:uhi(2),k,3) = zero
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (ndwn .gt. 0) then
+
+      do j = ulo(2), uhi(2)
+         do i = ulo(1), uhi(1)
+
+            bcv = bct_klo(i,j,2)
+
+            select case (bct_klo(i,j,1))
+
+            case ( pinf_, pout_ )
+
+               vel(i,j,ulo(3):domlo(3)-1,1) = vel(i,j,domlo(3),1)
+               vel(i,j,ulo(3):domlo(3)-1,2) = vel(i,j,domlo(3),2)
+               vel(i,j,ulo(3):domlo(3)-1,3) = vel(i,j,domlo(3),3)
+
+            case ( minf_ )
+
+               vel(i,j,ulo(3):domlo(3)-1,1) = zero
+               vel(i,j,ulo(3):domlo(3)-1,2) = zero
+               vel(i,j,ulo(3):domlo(3)-1,3) = bc_w(bcv)
+
+               if (probtype == 33) then
+                  x = (real(i,ar) + half) / (domhi(1) - domlo(1) + 1)
+                  vel(i,j,ulo(3):domlo(3)-1,3) =  6.0 * bc_w(bcv) * x * (one - x)
+               endif
+
+            end select
+
+         end do
+      end do
+   endif
+
+   if (nup .gt. 0) then
+
+      do j = ulo(2), uhi(2)
+         do i = ulo(1), uhi(1)
+
+            bcv = bct_khi(i,j,2)
+
+            select case ( bct_khi(i,j,1) )
+
+            case ( pinf_, pout_ )
+
+               vel(i,j,domhi(3)+1:uhi(3),1) = vel(i,j,domhi(3),1)
+               vel(i,j,domhi(3)+1:uhi(3),2) = vel(i,j,domhi(3),2)
+               vel(i,j,domhi(3)+1:uhi(3),3) = vel(i,j,domhi(3),3)
+
+            case ( minf_ )
+
+               vel(i,j,domhi(3)+1:uhi(3),1) = zero
+               vel(i,j,domhi(3)+1:uhi(3),2) = zero
+               vel(i,j,domhi(3)+1:uhi(3),3) = bc_w(bcv)
+
+            end select
+
+         end do
+      end do
+   endif
+
+! *******************************************************************
+! Do this section next to make sure nsw over-rides any previous minf
+! *******************************************************************
+
+   if (nlft .gt. 0) then
+      do k = ulo(3), uhi(3)
+         do j = ulo(2), uhi(2)
+
+            bcv = bct_ilo(j,k,2)
+
+            select case (bct_ilo(j,k,1))
 
             case ( nsw_)
 
@@ -122,18 +293,6 @@ subroutine set_velocity_bcs(time, &
 
             select case ( bct_ihi(j,k,1) )
 
-            case ( pinf_, pout_ )
-
-               vel(domhi(1)+1:uhi(1),j,k,1) =    vel(domhi(1),j,k,1)
-               vel(domhi(1)+1:uhi(1),j,k,2) =    vel(domhi(1),j,k,2)
-               vel(domhi(1)+1:uhi(1),j,k,3) =    vel(domhi(1),j,k,3)
-
-            case ( minf_ )
-
-               vel(domhi(1)+1:uhi(1),j,k,1) = bc_u(bcv)
-               vel(domhi(1)+1:uhi(1),j,k,2) = zero
-               vel(domhi(1)+1:uhi(1),j,k,3) = zero
-
             case ( nsw_ )
 
                vel(domhi(1)+1:uhi(1),j,k,1) = zero
@@ -163,18 +322,6 @@ subroutine set_velocity_bcs(time, &
             bcv = bct_jlo(i,k,2)
 
             select case ( bct_jlo(i,k,1) )
-
-            case ( pinf_, pout_)
-
-               vel(i,ulo(2):domlo(2)-1,k,1) =      vel(i,domlo(2),k,1)
-               vel(i,ulo(2):domlo(2)-1,k,2) =      vel(i,domlo(2),k,2)
-               vel(i,ulo(2):domlo(2)-1,k,3) =      vel(i,domlo(2),k,3)
-
-            case ( minf_ )
-
-               vel(i,ulo(2):domlo(2)-1,k,1) = zero
-               vel(i,ulo(2):domlo(2)-1,k,2) = bc_v(bcv)
-               vel(i,ulo(2):domlo(2)-1,k,3) = zero
 
             case ( nsw_ )
 
@@ -206,18 +353,6 @@ subroutine set_velocity_bcs(time, &
 
             select case ( bct_jhi(i,k,1) )
 
-            case ( pinf_, pout_ )
-
-               vel(i,domhi(2)+1:uhi(2),k,1) =      vel(i,domhi(2),k,1)
-               vel(i,domhi(2)+1:uhi(2),k,2) =      vel(i,domhi(2),k,2)
-               vel(i,domhi(2)+1:uhi(2),k,3) =      vel(i,domhi(2),k,3)
-
-            case ( minf_)
-
-               vel(i,domhi(2)+1:uhi(2),k,1) = zero
-               vel(i,domhi(2)+1:uhi(2),k,2) = bc_v(bcv)
-               vel(i,domhi(2)+1:uhi(2),k,3) = zero
-
             case ( nsw_)
 
                vel(i,domhi(2)+1:uhi(2),k,1) = bc_u(bcv)
@@ -248,23 +383,6 @@ subroutine set_velocity_bcs(time, &
 
             select case (bct_klo(i,j,1))
 
-            case ( pinf_, pout_ )
-
-               vel(i,j,ulo(3):domlo(3)-1,1) = vel(i,j,domlo(3),1)
-               vel(i,j,ulo(3):domlo(3)-1,2) = vel(i,j,domlo(3),2)
-               vel(i,j,ulo(3):domlo(3)-1,3) = vel(i,j,domlo(3),3)
-
-            case ( minf_ )
-
-               vel(i,j,ulo(3):domlo(3)-1,1) = zero
-               vel(i,j,ulo(3):domlo(3)-1,2) = zero
-               vel(i,j,ulo(3):domlo(3)-1,3) = bc_w(bcv)
-
-               if(probtype == 3) then
-                  x = (real(i,ar) + half) / (domhi(1) - domlo(1) + 1)
-                  vel(i,j,ulo(3):domlo(3)-1,3) =  6.0 * bc_w(bcv) * x * (one - x)
-               endif
-
             case ( nsw_ )
 
                vel(i,j,ulo(3):domlo(3)-1,1) = bc_u(bcv)
@@ -294,18 +412,6 @@ subroutine set_velocity_bcs(time, &
             bcv = bct_khi(i,j,2)
 
             select case ( bct_khi(i,j,1) )
-
-            case ( pinf_, pout_ )
-
-               vel(i,j,domhi(3)+1:uhi(3),1) = vel(i,j,domhi(3),1)
-               vel(i,j,domhi(3)+1:uhi(3),2) = vel(i,j,domhi(3),2)
-               vel(i,j,domhi(3)+1:uhi(3),3) = vel(i,j,domhi(3),3)
-
-            case ( minf_ )
-
-               vel(i,j,domhi(3)+1:uhi(3),1) = zero
-               vel(i,j,domhi(3)+1:uhi(3),2) = zero
-               vel(i,j,domhi(3)+1:uhi(3),3) = bc_w(bcv)
 
             case ( nsw_ )
 
