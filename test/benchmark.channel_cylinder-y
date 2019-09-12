@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 stop_time               =   0.2         # Max (simulated) time to evolve
-max_step                =   1           # Max number of time steps
+max_step                =  -1           # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -77,6 +77,6 @@ incflo.ic_p             =   0.0         #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
 mac.verbose             =   0           # MacProjector
-projection.mg_verbose   = 1
+projection.mg_verbose   =   0           # Nodal projection
 
 amr.plt_ccse_regtest    =   1
