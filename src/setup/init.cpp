@@ -12,26 +12,27 @@ void incflo::ReadParameters()
 {
     {
         // Variables without prefix in inputs file
-		ParmParse pp;
+	ParmParse pp;
 
-		pp.query("stop_time", stop_time);
-		pp.query("max_step", max_step);
-		pp.query("steady_state", steady_state);
+	pp.query("stop_time", stop_time);
+	pp.query("max_step", max_step);
+	pp.query("steady_state", steady_state);
     }
-	{
-        // Prefix amr
-		ParmParse pp("amr");
 
-		pp.query("regrid_int", regrid_int);
+    {
+     // Prefix amr
+ 	ParmParse pp("amr");
+
+	pp.query("regrid_int", regrid_int);
         pp.query("refine_cutcells", refine_cutcells);
 
-		pp.query("check_file", check_file);
-		pp.query("check_int", check_int);
-		pp.query("restart", restart_file);
+	pp.query("check_file", check_file);
+	pp.query("check_int", check_int);
+	pp.query("restart", restart_file);
 
-		pp.query("plot_file", plot_file);
-		pp.query("plot_int", plot_int);
-		pp.query("plot_per", plot_per);
+	pp.query("plot_file", plot_file);
+	pp.query("plot_int", plot_int);
+	pp.query("plot_per", plot_per);
 
         // Which variables to write to plotfile
         pltVarCount = 0;

@@ -67,6 +67,16 @@ void incflo::InitData()
         WritePlotFile();
         last_plt = 0;
     }
+
+    ParmParse pp("incflo");
+    bool write_eb_surface = 0;
+    pp.query("write_eb_surface", write_eb_surface);
+
+    if (write_eb_surface)
+    {
+       amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
+       WriteMyEBSurface();
+    }
 }
 
 BoxArray incflo::MakeBaseGrids () const

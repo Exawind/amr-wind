@@ -46,6 +46,8 @@ public:
     BoxArray MakeBaseGrids () const;
     void ChopGrids (const Box& domain, BoxArray& ba, int target_size) const;
 
+    void WriteMyEBSurface();
+
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
 
@@ -201,6 +203,7 @@ private:
 	void make_eb_regular();
 	void make_eb_sphere();
 	void make_eb_spherecube();
+	void make_eb_tuscan();
 
 	const EB2::Level* eb_level;
 	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;

@@ -4,7 +4,6 @@
 #include <AMReX_Box.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_MultiFab.H>
-#include <AMReX_ParmParse.H>
 #include <AMReX_VisMF.H>
 
 #include <incflo.H>
