@@ -24,14 +24,16 @@ void incflo::make_eb_tuscan()
   Array<Real,3> point{0.0, 0.0, 0.0};
   Array<Real,3> normal{0.0, 0.0, 0.0};
 
+  Real zlen = 0.2;
+
   xlo = 0.125;
   xhi = 0.875;
 
   ylo = xlo;
   yhi = xhi;
 
-  zlo = 0.3125;
-  zhi = 0.6875;
+  zlo = zlen;
+  zhi = 1.0 - zlen;
 
   xlen = xhi-xlo;
   ylen = yhi-ylo;
@@ -74,11 +76,13 @@ void incflo::make_eb_tuscan()
    * Build the center box connector                                           *
    ***************************************************************************/
 
-  xlo = xlo + 0.25*xlen;
-  xhi = xhi - 0.25*xlen;
+  Real middle_frac = 0.375;
 
-  ylo = ylo + 0.25*ylen;
-  yhi = yhi - 0.25*ylen;
+  xlo = xlo + middle_frac*xlen;
+  xhi = xhi - middle_frac*xlen;
+
+  ylo = ylo + middle_frac*ylen;
+  yhi = yhi - middle_frac*ylen;
 
   point  = {xmid,  ylo,  0.0};
   normal = { 0.0,  1.0,  0.0};

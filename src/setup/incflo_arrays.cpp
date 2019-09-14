@@ -8,9 +8,17 @@ void incflo::AllocateArrays(int lev)
     // Cell-based arrays
     // ********************************************************************************
 
-    // Gas density
+    // Density
     ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     ro[lev]->setVal(0.);
+
+    // Tracer
+    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    tracer[lev]->setVal(0.);
+
+    // Old tracer
+    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    tracer_o[lev]->setVal(0.);
 
     // Current velocity
     vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
@@ -122,64 +130,76 @@ void incflo::RegridArrays(int lev)
     // FillBoundary().
     //
 
-	// Gas density
-	std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+   // Density
+   std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
                                                   MFInfo(), *ebfactory[lev]));
-	ro_new->setVal(0.0);
-	ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
-	ro[lev] = std::move(ro_new);
+   ro_new->setVal(0.0);
+   ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
+   ro[lev] = std::move(ro_new);
 
-	// Gas velocity
-	std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
+   // Tracer
+   std::unique_ptr<MultiFab> tracer_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+   tracer_new->setVal(0.0);
+   tracer_new->copy(*tracer[lev], 0, 0, 1, 0, nghost);
+   tracer[lev] = std::move(tracer_new);
+
+   // Old Tracer
+   std::unique_ptr<MultiFab> tracer_o_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+   tracer_o_new->setVal(0.0);
+   tracer_o_new->copy(*tracer_o[lev], 0, 0, 1, 0, nghost);
+   tracer_o[lev] = std::move(tracer_o_new);
+
+   // Gas velocity
+   std::unique_ptr<MultiFab> vel_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
                                                    MFInfo(), *ebfactory[lev]));
-	vel_new->setVal(0.);
-	vel_new->copy(*vel[lev], 0, 0, vel[lev]->nComp(), 0, nghost);
-	vel[lev] = std::move(vel_new);
+   vel_new->setVal(0.);
+   vel_new->copy(*vel[lev], 0, 0, vel[lev]->nComp(), 0, nghost);
+   vel[lev] = std::move(vel_new);
 
-	// Old gas velocity
+    // Old gas velocity
     std::unique_ptr<MultiFab> vel_o_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
                                                      MFInfo(), *ebfactory[lev]));
-	vel_o_new->setVal(0.);
-	vel_o_new->copy(*vel_o[lev], 0, 0, vel_o[lev]->nComp(), 0, nghost);
-	vel_o[lev] = std::move(vel_o_new);
+    vel_o_new->setVal(0.);
+    vel_o_new->copy(*vel_o[lev], 0, 0, vel_o[lev]->nComp(), 0, nghost);
+    vel_o[lev] = std::move(vel_o_new);
 
-	// Pressure gradients
-	std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
+    // Pressure gradients
+    std::unique_ptr<MultiFab> gp_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
                                                   MFInfo(), *ebfactory[lev]));
     gp_new->setVal(0.);
-	gp_new->copy(*gp[lev], 0, 0, gp[lev]->nComp(), 0, nghost);
-	gp[lev] = std::move(gp_new);
+    gp_new->copy(*gp[lev], 0, 0, gp[lev]->nComp(), 0, nghost);
+    gp[lev] = std::move(gp_new);
 
-	// Apparent viscosity
-	std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+    // Apparent viscosity
+    std::unique_ptr<MultiFab> eta_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                    MFInfo(), *ebfactory[lev]));
-	eta_new->setVal(0.);
-	eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
-	eta[lev] = std::move(eta_new);
+    eta_new->setVal(0.);
+    eta_new->copy(*eta[lev], 0, 0, 1, 0, nghost);
+    eta[lev] = std::move(eta_new);
 
-	std::unique_ptr<MultiFab> eta_old_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+    std::unique_ptr<MultiFab> eta_old_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                        MFInfo(), *ebfactory[lev]));
-	eta_old_new->setVal(0.);
-	eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
-	eta_old[lev] = std::move(eta_old_new);
+    eta_old_new->setVal(0.);
+    eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
+    eta_old[lev] = std::move(eta_old_new);
 
-	// Strain-rate magnitude
-	std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+    // Strain-rate magnitude
+    std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                           MFInfo(), *ebfactory[lev]));
-	strainrate[lev] = std::move(strainrate_new);
-	strainrate[lev]->setVal(0.);
+    strainrate[lev] = std::move(strainrate_new);
+    strainrate[lev]->setVal(0.);
 
-	// Vorticity
-	std::unique_ptr<MultiFab> vort_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+    // Vorticity
+    std::unique_ptr<MultiFab> vort_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                     MFInfo(), *ebfactory[lev]));
-	vort[lev] = std::move(vort_new);
-	vort[lev]->setVal(0.);
+    vort[lev] = std::move(vort_new);
+    vort[lev]->setVal(0.);
 
-	// Drag
-	std::unique_ptr<MultiFab> drag_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+    // Drag
+    std::unique_ptr<MultiFab> drag_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                     MFInfo(), *ebfactory[lev]));
-	drag[lev] = std::move(drag_new);
-	drag[lev]->setVal(0.);
+    drag[lev] = std::move(drag_new);
+    drag[lev]->setVal(0.);
 
     // Convective terms
     std::unique_ptr<MultiFab> conv_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
@@ -286,26 +306,30 @@ void incflo::ResizeArrays()
     t_old.resize(max_level + 1);
 
     // Density 
-	ro.resize(max_level + 1);
+    ro.resize(max_level + 1);
 
-	// Current (vel) and old (vel_o) velocities
-	vel.resize(max_level + 1);
-	vel_o.resize(max_level + 1);
+    // Tracer 
+    tracer.resize(max_level + 1);
+    tracer_o.resize(max_level + 1);
+
+    // Current (vel) and old (vel_o) velocities
+    vel.resize(max_level + 1);
+    vel_o.resize(max_level + 1);
 
     // Pressure
-	p.resize(max_level + 1);
-	p0.resize(max_level + 1);
+    p.resize(max_level + 1);
+    p0.resize(max_level + 1);
 
-	// Pressure gradients
-	gp.resize(max_level + 1);
+    // Pressure gradients
+    gp.resize(max_level + 1);
 
     // Derived quantities: viscosity, strainrate, vorticity, div(u)
-	eta.resize(max_level + 1);
-	eta_old.resize(max_level + 1);
+    eta.resize(max_level + 1);
+    eta_old.resize(max_level + 1);
     strainrate.resize(max_level + 1);
-	vort.resize(max_level + 1);
-	drag.resize(max_level + 1);
-	divu.resize(max_level + 1);
+    vort.resize(max_level + 1);
+    drag.resize(max_level + 1);
+    divu.resize(max_level + 1);
 
     // Convective terms u grad u 
     conv.resize(max_level + 1);
@@ -313,26 +337,26 @@ void incflo::ResizeArrays()
     divtau.resize(max_level + 1);
     divtau_old.resize(max_level + 1);
 
-	// MAC velocities used for defining convective term
-	m_u_mac.resize(max_level + 1);
-	m_v_mac.resize(max_level + 1);
-	m_w_mac.resize(max_level + 1);
+    // MAC velocities used for defining convective term
+    m_u_mac.resize(max_level + 1);
+    m_v_mac.resize(max_level + 1);
+    m_w_mac.resize(max_level + 1);
 
     // Slopes used for upwinding convective terms
-	xslopes.resize(max_level + 1);
-	yslopes.resize(max_level + 1);
-	zslopes.resize(max_level + 1);
+    xslopes.resize(max_level + 1);
+    yslopes.resize(max_level + 1);
+    zslopes.resize(max_level + 1);
 
     // BCs
-	bc_ilo.resize(max_level + 1);
-	bc_ihi.resize(max_level + 1);
-	bc_jlo.resize(max_level + 1);
-	bc_jhi.resize(max_level + 1);
-	bc_klo.resize(max_level + 1);
-	bc_khi.resize(max_level + 1);
+    bc_ilo.resize(max_level + 1);
+    bc_ihi.resize(max_level + 1);
+    bc_jlo.resize(max_level + 1);
+    bc_jhi.resize(max_level + 1);
+    bc_klo.resize(max_level + 1);
+    bc_khi.resize(max_level + 1);
 
-	// EB factory
-	ebfactory.resize(max_level + 1);
+    // EB factory
+    ebfactory.resize(max_level + 1);
 }
 
 void incflo::MakeBCArrays()

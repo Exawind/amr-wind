@@ -15,7 +15,7 @@
 #include <DiffusionEquation.H>
 #include <MacProjection.H>
 #include <PoissonEquation.H>
-
+#include <incflo_bclist.H>
 
 class incflo : public AmrCore
 {
@@ -150,10 +150,36 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
-					   Vector<std::unique_ptr<MultiFab>>& vel, 
-                       Real time);
+			   Vector<std::unique_ptr<MultiFab>>& vel, 
+			   Vector<std::unique_ptr<MultiFab>>& tracer, 
+                           Real time);
 	void ComputeVelocitySlopes(int lev, MultiFab& Sborder);
 	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
+
+        void incflo_compute_ugradu(Box& bx,
+                                   Vector< std::unique_ptr<MultiFab> >& conv,
+                                   Vector< std::unique_ptr<MultiFab> >& vel,
+                                   Vector< std::unique_ptr<MultiFab> >& u_mac,
+                                   Vector< std::unique_ptr<MultiFab> >& v_mac,
+                                   Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                   MFIter* mfi,
+                                   Box& domain,
+                                   const int lev);
+
+       void incflo_compute_ugradu_eb(Box& bx,
+                                     Vector< std::unique_ptr<MultiFab> >& conv,
+                                     Vector< std::unique_ptr<MultiFab> >& vel,
+                                     Vector< std::unique_ptr<MultiFab> >& u_mac,
+                                     Vector< std::unique_ptr<MultiFab> >& v_mac,
+                                     Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                     MFIter* mfi,
+                                     Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
+                                     Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
+                                     const amrex::MultiFab* volfrac,
+                                     const amrex::MultiCutFab* bndrycent,
+                                     Box& domain,
+                                     const EBCellFlagFab& flags,
+                                     const int lev);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -170,10 +196,10 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void UpdateDerivedQuantities();
-	void ComputeDivU(Real time);
-	void ComputeStrainrate();
-	void ComputeVorticity();
-	void ComputeViscosity();
+    void ComputeDivU(Real time);
+    void ComputeStrainrate();
+    void ComputeVorticity();
+    void ComputeViscosity();
     void ComputeDrag();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,8 +208,8 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void FillScalarBC();
-	void FillVelocityBC(Real time, int extrap_dir_bcs);
+    void FillScalarBC(Real time, int extrap_dir_bcs);
+    void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -194,28 +220,27 @@ private:
 	void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
-	std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
+    std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
 
-	void make_eb_annulus();
-	void make_eb_box();
-	void make_eb_cylinder();
-	void make_eb_twocylinders();
-	void make_eb_regular();
-	void make_eb_sphere();
-	void make_eb_spherecube();
-	void make_eb_tuscan();
+    void make_eb_annulus();
+    void make_eb_box();
+    void make_eb_cylinder();
+    void make_eb_twocylinders();
+    void make_eb_regular();
+    void make_eb_sphere();
+    void make_eb_spherecube();
+    void make_eb_tuscan();
 
-	const EB2::Level* eb_level;
-	Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+    const EB2::Level* eb_level;
+    Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
-	// Number of ghost nodes for field arrays.
-    // TODO: can go back to 4 now I think
-	const int nghost = 5;
+    // Number of ghost nodes for field arrays.
+    const int nghost = 4;
 
-	// These values are required when fluid sees EB -- for now
-	const int m_eb_basic_grow_cells = nghost;
-	const int m_eb_volume_grow_cells = nghost;
-	const int m_eb_full_grow_cells = nghost;
+    // These values are required when fluid sees EB -- for now
+    const int m_eb_basic_grow_cells = nghost;
+    const int m_eb_volume_grow_cells = nghost;
+    const int m_eb_full_grow_cells = nghost;
 
     // Enforce inhomogeneous velocity BC on EB (just cylinder for now)
     Real cyl_speed = 0.0;
@@ -230,28 +255,30 @@ private:
     int incflo_verbose = 0;
 
     // Time and time step counters
-	Real cur_time = 0.0;
-	Real dt = -1.0;
-	int nstep = -1;
+    Real cur_time = 0.0;
+    Real dt = -1.0;
+    int nstep = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step 
     // OR steady_state = true AND steady_state_tol is reached
     Real stop_time = -1.0;
     int max_step = -1;
     bool steady_state = false;
-	Real steady_state_tol = 1.0e-5;
+    Real steady_state_tol = 1.0e-5;
 
-	// Options to control time stepping
-	Real cfl = 0.5;
-	Real fixed_dt = -1.;
+    // Options to control time stepping
+    Real cfl = 0.5;
+    Real fixed_dt = -1.;
 
     // Initial projection / iterations
     bool do_initial_proj    = true;
     int  initial_iterations = 3;
 
     // AMR / refinement settings 
-	int refine_cutcells = 1;
+    int refine_cutcells = 1;
     int regrid_int = -1;
+
+     BCList bc_list;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -259,11 +286,13 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	Periodicity p0_periodicity;
+    Periodicity p0_periodicity;
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
+
+    bool advance_tracer = 1;
 
     // Fluid properties
     std::string fluid_model;
@@ -311,15 +340,13 @@ private:
     // Total number of variables to write in plot file
     int pltVarCount = 0;
 
-
-
-	// Vector variables to simplify IO -- the vectors are the same for plt/chk
-	Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
-	Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
+    // Vector variables to simplify IO -- the vectors are the same for plt/chk
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
+    Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
 
     // Scalar variables at cell centers that need to be written to checkfile. 
     Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
-    Vector<std::string> chkscaVarsName = {"p", "ro", "eta"};
+    Vector<std::string> chkscaVarsName = {"p", "ro", "tracer", "eta"};
     
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -328,10 +355,10 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     Real Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type);
-	void PrintMaxValues(Real time);
-	void PrintMaxVel(int lev);
-	void PrintMaxGp(int lev);
-	void CheckForNans(int lev);
+    void PrintMaxValues(Real time);
+    void PrintMaxVel(int lev);
+    void PrintMaxGp(int lev);
+    void CheckForNans(int lev);
 
     const Real covered_val = 1.0e40;
     const Real boundary_val = 1.0e80;
@@ -343,43 +370,49 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Instances of self-written classes for MAC projection, diffusion + Poisson equations 
-	std::unique_ptr<MacProjection> mac_projection;
-	std::unique_ptr<DiffusionEquation> diffusion_equation;
-	std::unique_ptr<PoissonEquation> poisson_equation;
+    std::unique_ptr<MacProjection> mac_projection;
+    std::unique_ptr<DiffusionEquation> diffusion_equation;
+    std::unique_ptr<PoissonEquation> poisson_equation;
 
     // Boundary conditions
-	Vector<std::unique_ptr<IArrayBox>> bc_ilo;
-	Vector<std::unique_ptr<IArrayBox>> bc_ihi;
-	Vector<std::unique_ptr<IArrayBox>> bc_jlo;
-	Vector<std::unique_ptr<IArrayBox>> bc_jhi;
-	Vector<std::unique_ptr<IArrayBox>> bc_klo;
-	Vector<std::unique_ptr<IArrayBox>> bc_khi;
+    Vector<std::unique_ptr<IArrayBox>> bc_ilo;
+    Vector<std::unique_ptr<IArrayBox>> bc_ihi;
+    Vector<std::unique_ptr<IArrayBox>> bc_jlo;
+    Vector<std::unique_ptr<IArrayBox>> bc_jhi;
+    Vector<std::unique_ptr<IArrayBox>> bc_klo;
+    Vector<std::unique_ptr<IArrayBox>> bc_khi;
 
     // Primary variables
-	Vector<std::unique_ptr<MultiFab>> ro;
-	Vector<std::unique_ptr<MultiFab>> vel;
-	Vector<std::unique_ptr<MultiFab>> vel_o;
-	Vector<std::unique_ptr<MultiFab>> p;
-	Vector<std::unique_ptr<MultiFab>> p0;
-	Vector<std::unique_ptr<MultiFab>> gp;
+    Vector<std::unique_ptr<MultiFab>> ro;
+    Vector<std::unique_ptr<MultiFab>> tracer;
+    Vector<std::unique_ptr<MultiFab>> tracer_o;
+    Vector<std::unique_ptr<MultiFab>> vel;
+    Vector<std::unique_ptr<MultiFab>> vel_o;
+    Vector<std::unique_ptr<MultiFab>> p;
+    Vector<std::unique_ptr<MultiFab>> p0;
+    Vector<std::unique_ptr<MultiFab>> gp;
+
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
-	Vector<std::unique_ptr<MultiFab>> eta;
+    Vector<std::unique_ptr<MultiFab>> eta;
     Vector<std::unique_ptr<MultiFab>> eta_old; 
-	Vector<std::unique_ptr<MultiFab>> strainrate;
-	Vector<std::unique_ptr<MultiFab>> vort;
-	Vector<std::unique_ptr<MultiFab>> drag;
-	Vector<std::unique_ptr<MultiFab>> divu;
+    Vector<std::unique_ptr<MultiFab>> strainrate;
+    Vector<std::unique_ptr<MultiFab>> vort;
+    Vector<std::unique_ptr<MultiFab>> drag;
+    Vector<std::unique_ptr<MultiFab>> divu;
+
     // Helper variables 
     Vector<std::unique_ptr<MultiFab>> conv; 
     Vector<std::unique_ptr<MultiFab>> conv_old; 
     Vector<std::unique_ptr<MultiFab>> divtau; 
     Vector<std::unique_ptr<MultiFab>> divtau_old; 
-	Vector<std::unique_ptr<MultiFab>> xslopes;
-	Vector<std::unique_ptr<MultiFab>> yslopes;
-	Vector<std::unique_ptr<MultiFab>> zslopes;
-	Vector<std::unique_ptr<MultiFab>> m_u_mac;
-	Vector<std::unique_ptr<MultiFab>> m_v_mac;
-	Vector<std::unique_ptr<MultiFab>> m_w_mac;
+
+    Vector<std::unique_ptr<MultiFab>> xslopes;
+    Vector<std::unique_ptr<MultiFab>> yslopes;
+    Vector<std::unique_ptr<MultiFab>> zslopes;
+
+    Vector<std::unique_ptr<MultiFab>> m_u_mac;
+    Vector<std::unique_ptr<MultiFab>> m_v_mac;
+    Vector<std::unique_ptr<MultiFab>> m_w_mac;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -390,15 +423,15 @@ private:
     void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
     void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
-	void AverageDown();
-	void AverageDownTo(int crse_lev);
+    void AverageDown();
+    void AverageDownTo(int crse_lev);
 
-	void AllocateArrays(int lev);
-	void RegridArrays(int lev);
+    void AllocateArrays(int lev);
+    void RegridArrays(int lev);
     void MakeBCArrays();
 
-     Vector<Real> t_old;
-     Vector<Real> t_new;
+    Vector<Real> t_old;
+    Vector<Real> t_new;
 };
 
 #endif

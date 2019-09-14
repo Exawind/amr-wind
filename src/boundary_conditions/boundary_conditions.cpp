@@ -190,7 +190,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     }
 }
 
-void incflo::FillScalarBC()
+void incflo::FillScalarBC(Real time, int extrap_dir_bcs)
 {
     BL_PROFILE("incflo:FillScalarBC()");
 

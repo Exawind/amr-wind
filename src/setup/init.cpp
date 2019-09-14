@@ -82,7 +82,7 @@ void incflo::ReadParameters()
 	}
 	{
         // Prefix incflo
-		ParmParse pp("incflo");
+	ParmParse pp("incflo");
 
         pp.query("verbose", incflo_verbose);
 		pp.query("cfl", cfl);
@@ -92,9 +92,10 @@ void incflo::ReadParameters()
         pp.query("do_initial_proj", do_initial_proj);
 
         // Physics
-		pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
-		pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
+	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
+	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
         pp.query("ro_0", ro_0);
+        pp.query("advance_tracer", advance_tracer);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
@@ -236,7 +237,7 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    FillScalarBC();
+    FillScalarBC(cur_time, 0);
     FillVelocityBC(cur_time, 0);
 
     // Project the initial velocity field to make it divergence free
@@ -373,7 +374,7 @@ void incflo::InitialIterations()
     }
 
     // Fill ghost cells
-    FillScalarBC();
+    FillScalarBC(cur_time, 0);
     FillVelocityBC(cur_time, 0);
 
     // Copy vel into vel_o

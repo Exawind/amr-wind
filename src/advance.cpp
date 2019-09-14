@@ -26,7 +26,7 @@ void incflo::Advance()
     }
 
     // Fill ghost nodes and reimpose boundary conditions
-    FillScalarBC();
+    FillScalarBC(cur_time, 0);
     FillVelocityBC(cur_time, 0);
 
     // Compute time step size
@@ -51,7 +51,8 @@ void incflo::Advance()
     // Backup velocity to old
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
+        MultiFab::Copy   (*vel_o[lev],    *vel[lev], 0, 0,    vel[lev]->nComp(),    vel_o[lev]->nGrow());
+        MultiFab::Copy(*tracer_o[lev], *tracer[lev], 0, 0, tracer[lev]->nComp(), tracer_o[lev]->nGrow());
     }
 
     ApplyPredictor();
@@ -133,8 +134,8 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term: conv = - u dot grad(u)
-    ComputeUGradU(conv_old, vel_o, cur_time);
+    // Compute the explicit advective term for velocity and tracers: conv_old  = - u dot grad(u)
+    ComputeUGradU(conv_old, vel_o, tracer_o, cur_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -147,8 +148,12 @@ void incflo::ApplyPredictor()
         // compute only the off-diagonal terms here
         ComputeDivTau(lev, *divtau_old[lev], vel_o);
 
-        // First add the convective term
+        // First add the convective term to the velocity
         MultiFab::Saxpy(*vel[lev], dt, *conv_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+
+        //   Now add the convective term to the tracer
+        int tracer_comp = AMREX_SPACEDIM;
+        MultiFab::Saxpy(*tracer[lev], dt, *conv_old[lev], tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
@@ -179,6 +184,7 @@ void incflo::ApplyPredictor()
         }
     }
     FillVelocityBC(new_time, 0);
+    FillScalarBC(new_time, 0);
 
     // Solve implicit diffusion equation for u*
     diffusion_equation->solve(vel, ro, eta, dt);
@@ -249,8 +255,8 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term: conv = - u dot grad(u)
-    ComputeUGradU(conv, vel, new_time);
+    // Compute the explicit advective term: conv = - u dot grad(u) in first spots, -u dot grad(t) in last spot
+    ComputeUGradU(conv, vel, tracer, new_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -260,9 +266,14 @@ void incflo::ApplyCorrector()
         // compute only the off-diagonal terms here
         ComputeDivTau(lev, *divtau[lev], vel);
 
-        // First add the convective terms
+        // First add the convective terms to velocity
         MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv[lev], 0, 0, AMREX_SPACEDIM, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+
+        //   Now add the convective terms to tracer
+        int tracer_comp = AMREX_SPACEDIM;
+        MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv[lev], tracer_comp, 0, 1, 0);
+        MultiFab::Saxpy(*tracer[lev], dt / 2.0, *conv_old[lev], tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev], 0, 0, AMREX_SPACEDIM, 0);
@@ -297,6 +308,7 @@ void incflo::ApplyCorrector()
         MultiFab::LinComb(*eta[lev], 0.5, *eta_old[lev], 0, 0.5, *eta[lev], 0, 0, 1, 0);
     }
     FillVelocityBC(new_time, 0);
+    FillScalarBC(new_time, 0);
 
     // Solve implicit diffusion equation for u*
     diffusion_equation->solve(vel, ro, eta, dt);
@@ -305,7 +317,7 @@ void incflo::ApplyCorrector()
     ApplyProjection(new_time, dt);
 
     // Fill velocity BCs again
-	FillVelocityBC(new_time, 0);
+    FillVelocityBC(new_time, 0);
 }
 
 //
