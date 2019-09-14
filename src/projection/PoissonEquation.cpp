@@ -160,15 +160,15 @@ void PoissonEquation::setSolverSettings(MLMG& solver)
 // We output grad(phi) / rho into "fluxes"
 //
 void PoissonEquation::solve(Vector<std::unique_ptr<MultiFab>>& phi,
-			                Vector<std::unique_ptr<MultiFab>>& fluxes,
-                            const Vector<std::unique_ptr<MultiFab>>& ro, 
+	                    Vector<std::unique_ptr<MultiFab>>& fluxes,
+                            const Vector<std::unique_ptr<MultiFab>>& rho, 
                             const Vector<std::unique_ptr<MultiFab>>& divu)
 {
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
         // Set the coefficients to equal 1 / ro 
         sigma[lev]->setVal(1.0);
-        MultiFab::Divide(*sigma[lev], *ro[lev], 0, 0, 1, nghost);
+        MultiFab::Divide(*sigma[lev], *rho[lev], 0, 0, 1, nghost);
         matrix.setSigma(lev, *sigma[lev]);
 
         // By this point we must have filled the Dirichlet values of phi in ghost cells
@@ -176,11 +176,11 @@ void PoissonEquation::solve(Vector<std::unique_ptr<MultiFab>>& phi,
     }
 
     // Set up the solver
-	MLMG solver(matrix);
+    MLMG solver(matrix);
     setSolverSettings(solver);
 
     // Solve!
-	solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(divu), mg_rtol, mg_atol);
+    solver.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(divu), mg_rtol, mg_atol);
 
     // Get fluxes (grad(phi) / rho)
     solver.getFluxes(amrex::GetVecOfPtrs(fluxes));

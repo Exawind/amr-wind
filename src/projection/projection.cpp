@@ -59,10 +59,12 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     ComputeDivU(time);
 
     // Declare, resize, reset and initialize MultiFabs to hold the solution of the Poisson solve
-	Vector<std::unique_ptr<MultiFab>> phi;
-	Vector<std::unique_ptr<MultiFab>> fluxes;
+    Vector<std::unique_ptr<MultiFab>> phi;
+    Vector<std::unique_ptr<MultiFab>> fluxes;
+
     phi.resize(finest_level + 1);
     fluxes.resize(finest_level + 1);
+
     for(int lev = 0; lev <= finest_level; lev++)
     {
         const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
@@ -86,7 +88,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     //      
     // Also outputs minus grad(phi) / rho into "fluxes"
     //
-	poisson_equation->solve(phi, fluxes, density, divu);
+    poisson_equation->solve(phi, fluxes, density, divu);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
