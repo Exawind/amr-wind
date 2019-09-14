@@ -9,6 +9,7 @@ void
 compute_divop_conv(
               Box& bx,
               MultiFab& divergence,
+              int conv_comp, int ncomp,
               MFIter* mfi,
               FArrayBox& fx,
               FArrayBox& fy,

@@ -3,7 +3,7 @@ module rheology_module
    use amrex_error_module, only: amrex_abort
    use amrex_fort_module, only : rt => amrex_real
    use constant, only: half, one
-   use constant, only: mu, n, tau_0, eta_0, papa_reg, fluid_model
+   use constant, only: mu, n_flow, tau_0, eta_0, papa_reg, fluid_model
 
    implicit none
 
@@ -25,7 +25,7 @@ contains
          ! Power-law fluid: 
          !
          ! eta = mu dot(gamma)^(n-1)
-         viscosity = mu * sr**(n - one)
+         viscosity = mu * sr**(n_flow - one)
 
       else if (fluid_model == "bingham") then 
 
@@ -42,7 +42,7 @@ contains
          ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-dot(gamma) / eps)) / dot(gamma)
          
          nu = sr / papa_reg
-         viscosity = (mu * sr**n + tau_0) * expterm(nu) / papa_reg
+         viscosity = (mu * sr**n_flow + tau_0) * expterm(nu) / papa_reg
 
       else if (fluid_model == "smd") then
 
@@ -51,7 +51,7 @@ contains
          ! eta = (mu dot(gamma)^n + tau_0) (1 - exp(-eta_0 dot(gamma) / tau_0)) / dot(gamma)
          
          nu = eta_0 * sr / tau_0
-         viscosity = (mu * sr**n + tau_0) * expterm(nu) * eta_0 / tau_0
+         viscosity = (mu * sr**n_flow + tau_0) * expterm(nu) * eta_0 / tau_0
 
       else
 

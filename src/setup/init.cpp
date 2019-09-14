@@ -122,14 +122,14 @@ void incflo::ReadParameters()
         }
         else if(fluid_model == "powerlaw")
         {
-            pp.query("n", n);
-            AMREX_ALWAYS_ASSERT(n > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0,
+            pp.query("n", n_0);
+            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n_0 != 1.0,
                     "No point in using power-law rheology with n = 1");
 
             amrex::Print() << "Power-law fluid with"
                            << " mu = " << mu
-                           << ", n = " << n <<  std::endl;
+                           << ", n = " << n_0 <<  std::endl;
         }
         else if(fluid_model == "bingham")
         {
@@ -148,9 +148,9 @@ void incflo::ReadParameters()
         }
         else if(fluid_model == "hb")
         {
-            pp.query("n", n);
-            AMREX_ALWAYS_ASSERT(n > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n != 1.0,
+            pp.query("n", n_0);
+            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
+            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n_0 != 1.0,
                     "No point in using Herschel-Bulkley rheology with n = 1");
 
             pp.query("tau_0", tau_0);
@@ -163,14 +163,14 @@ void incflo::ReadParameters()
 
             amrex::Print() << "Herschel-Bulkley fluid with"
                            << " mu = " << mu
-                           << ", n = " << n
+                           << ", n = " << n_0
                            << ", tau_0 = " << tau_0
                            << ", papa_reg = " << papa_reg << std::endl;
         }
         else if(fluid_model == "smd")
         {
-            pp.query("n", n);
-            AMREX_ALWAYS_ASSERT(n > 0.0);
+            pp.query("n", n_0);
+            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
 
             pp.query("tau_0", tau_0);
             AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
@@ -181,7 +181,7 @@ void incflo::ReadParameters()
 
             amrex::Print() << "de Souza Mendes-Dutra fluid with"
                            << " mu = " << mu
-                           << ", n = " << n
+                           << ", n = " << n_0
                            << ", tau_0 = " << tau_0
                            << ", eta_0 = " << eta_0 << std::endl;
         }
@@ -201,7 +201,7 @@ void incflo::ReadParameters()
         fortran_get_data(is_cyclic.dataPtr(),
                          delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu,
                          &ic_u, &ic_v, &ic_w, &ic_p,
-                         &n, &tau_0, &papa_reg, &eta_0,
+                         &n_0, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
     {
@@ -418,8 +418,6 @@ void incflo::InitialProjection()
         amrex::Print() << "Initial projection:" << std::endl;
         PrintMaxValues(time);
     }
-
-    print_state(*divu[0],{0,0,0});
 
     // Need to add this call here so that the MACProjection internal arrays
     //  are allocated so that the cell-centered projection can use the MAC

@@ -63,6 +63,8 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
     // Do projection on all AMR-level_ins in one shot
     mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, density_in, time, steady_state);
 
+    int slopes_comp; int conv_comp; int state_comp; int num_comp; 
+
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
@@ -79,7 +81,7 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
         bndrycent = &(ebfactory[lev] -> getBndryCent());
 
        // Compute slopes of density and tracer
-       int slopes_comp = 0;
+       slopes_comp = 0;
        ComputeSlopes(lev, *density[lev], xslopes_s, yslopes_s, zslopes_s, slopes_comp);
 
        slopes_comp = 1;
@@ -110,36 +112,36 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
                 // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
                 if(flags.getType(amrex::grow(bx, nghost)) == FabType::regular)
                 {
-                    int conv_comp = 0; int state_comp = 0; int num_comp = 3; int slopes_comp = 0;
+                    conv_comp = 0; state_comp = 0; num_comp = 3; slopes_comp = 0;
                     incflo_compute_ugradu(bx, conv_u_in, conv_comp,  vel_in, state_comp, num_comp, 
                                           xslopes_u, yslopes_u, zslopes_u, slopes_comp, 
                                           m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
 
-                        conv_comp = 0;     state_comp = 0;     num_comp = 1;   slopes_comp = 0;
+                    conv_comp = 0; state_comp = 0; num_comp = 1; slopes_comp = 0;
                     incflo_compute_ugradu(bx, conv_s_in, conv_comp,  density_in, state_comp, num_comp, 
                                           xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                           m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
 
-                        conv_comp = 1;     state_comp = 0;     num_comp = 1;   slopes_comp = 1;
+                    conv_comp = 1; state_comp = 0; num_comp = 1; slopes_comp = 1;
                     incflo_compute_ugradu(bx, conv_s_in, conv_comp,  tracer_in, state_comp, num_comp, 
                                           xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                           m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
                 }
                 else
                 {
-                    int conv_comp = 0; int state_comp = 0; int num_comp = 3; int slopes_comp = 0;
+                    conv_comp = 0; state_comp = 0; num_comp = 3; slopes_comp = 0;
                     incflo_compute_ugradu_eb(bx, conv_u_in, conv_comp, vel_in, state_comp, num_comp,
                                              xslopes_u, yslopes_u, zslopes_u, slopes_comp, 
                                              m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
                                              volfrac, bndrycent, domain, flags, lev, false);
 
-                        conv_comp = 0;     state_comp = 0;     num_comp = 1;     slopes_comp = 0;
+                    conv_comp = 0; state_comp = 0; num_comp = 1; slopes_comp = 0;
                     incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, density_in, state_comp, num_comp,
                                              xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                              m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
                                              volfrac, bndrycent, domain, flags, lev, true);
 
-                        conv_comp = 1;     state_comp = 0;     num_comp = 1;     slopes_comp = 1;
+                    conv_comp = 1; state_comp = 0; num_comp = 1; slopes_comp = 1;
                     incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, tracer_in, state_comp, num_comp,
                                              xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                              m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
@@ -533,7 +535,7 @@ incflo::incflo_compute_ugradu_eb(Box& bx,
   const int cyclic_z = geom[0].isPeriodic(2) ? 1 : 0;
 
   // Compute div(tau) with EB algorithm
-  compute_divop_conv(bx, *conv_in[lev], mfi, fxfab, fyfab, fzfab, 
+  compute_divop_conv(bx, *conv_in[lev], conv_comp, ncomp, mfi, fxfab, fyfab, fzfab, 
                      areafrac, facecent, flags, volfrac, bndrycent, domain,
                      cyclic_x, cyclic_y, cyclic_z, dx);
 

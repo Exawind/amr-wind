@@ -7,7 +7,7 @@
 #include <param_mod_F.H>
 
 //
-// Compute the slopes of each velocity component in all three directions.
+// Compute the slopes of Sborder (velocity, density or tracer)
 //
 void incflo::ComputeSlopes(int lev, MultiFab& Sborder, 
                            Vector<std::unique_ptr<MultiFab>>& xslopes_in,
@@ -20,6 +20,8 @@ void incflo::ComputeSlopes(int lev, MultiFab& Sborder,
     EB_set_covered(Sborder, covered_val);
 
     Box domain(geom[lev].Domain());
+
+    int ncomp = Sborder.nComp(); 
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -38,9 +40,9 @@ void incflo::ComputeSlopes(int lev, MultiFab& Sborder,
 		// If tile is completely covered by EB geometry, set slopes
 		// value to some very large number so we know if
 		// we accidentaly use these covered slopes later in calculations
-		xslopes_in[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
-		yslopes_in[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
-		zslopes_in[lev]->setVal(1.2345e300, bx, 0, AMREX_SPACEDIM);
+		xslopes_in[lev]->setVal(1.2345e300, bx, slopes_comp, ncomp);
+		yslopes_in[lev]->setVal(1.2345e300, bx, slopes_comp, ncomp);
+		zslopes_in[lev]->setVal(1.2345e300, bx, slopes_comp, ncomp);
 	}
 	else
 	{
@@ -48,8 +50,6 @@ void incflo::ComputeSlopes(int lev, MultiFab& Sborder,
                 const auto&   xs_fab = xslopes_in[lev]->array(mfi);
                 const auto&   ys_fab = yslopes_in[lev]->array(mfi);
                 const auto&   zs_fab = zslopes_in[lev]->array(mfi);
-
-                int ncomp = Sborder.nComp();
 
         	// No cut cells in tile + 1-cell witdh halo -> use non-eb routine
 		if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)

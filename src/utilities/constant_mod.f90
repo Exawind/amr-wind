@@ -16,7 +16,7 @@ module constant
    real(rt) :: mu
 
 ! Flow index
-   real(rt) :: n
+   real(rt) :: n_flow
 
 ! Yield stress
    real(rt) :: tau_0

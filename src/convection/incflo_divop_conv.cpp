@@ -333,6 +333,7 @@ void
 compute_divop_conv(
               Box& bx,
               MultiFab& conv,
+              int conv_comp, int ncomp,
               MFIter* mfi,
               FArrayBox& fxfab,
               FArrayBox& fyfab,
@@ -411,7 +412,6 @@ compute_divop_conv(
   //
   // We use the EB algorithm to compute the divergence at cell centers
   //
-  int ncomp = conv.nComp();
   for(unsigned int n(0); n < ncomp; ++n)
   {
     //
@@ -475,10 +475,9 @@ compute_divop_conv(
     //
     AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
     {
-      divergence(i,j,k,n) = divc(i,j,k) + optmp(i,j,k);
+      divergence(i,j,k,conv_comp+n) = divc(i,j,k) + optmp(i,j,k);
     });
 
   Gpu::streamSynchronize();
-
   }
 }

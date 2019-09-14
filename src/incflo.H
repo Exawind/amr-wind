@@ -322,7 +322,7 @@ private:
     // Fluid properties
     std::string fluid_model;
     Real mu = 1.0;
-    Real n = 0.0;
+    Real n_0 = 0.0;
     Real tau_0 = 0.0;
     Real papa_reg = 0.0;
     Real eta_0 = 0.0;

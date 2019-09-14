@@ -85,7 +85,7 @@ contains
       integer(c_int) :: vlo(3), vhi(3)
       real(rt), dimension(:,:,:,:), pointer, contiguous :: vel
 
-      integer(c_int)                 :: i, j, k, n
+      integer(c_int)                 :: i, j, k
       real(rt)                       :: idx, idy, idz
       real(rt)                       :: du, dv, dw
 

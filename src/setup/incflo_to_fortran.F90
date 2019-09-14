@@ -48,7 +48,7 @@ contains
       ic_v = ic_v_in
       ic_w = ic_w_in
       ic_p = ic_p_in
-      n = n_in
+      n_flow = n_in
       tau_0 = tau_0_in
       papa_reg = papa_reg_in
       eta_0 = eta_0_in
