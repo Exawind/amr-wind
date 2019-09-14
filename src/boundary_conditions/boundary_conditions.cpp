@@ -2,6 +2,7 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_BLassert.H>
 #include <AMReX_Box.H>
+#include <AMReX_MultiFabUtil.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_FillPatchUtil.H>
 #include <AMReX_MultiFab.H>
@@ -190,7 +191,7 @@ void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
     }
 }
 
-void incflo::FillScalarBC(Real time, int extrap_dir_bcs)
+void incflo::FillScalarBC()
 {
     BL_PROFILE("incflo:FillScalarBC()");
 
@@ -199,21 +200,31 @@ void incflo::FillScalarBC(Real time, int extrap_dir_bcs)
         Box domain(geom[lev].Domain());
         
         // Hack so that ghost cells are not undefined
-         ro[lev]->setDomainBndry(boundary_val, geom[lev]);
+        density[lev]->setDomainBndry(boundary_val, geom[lev]);
+        tracer[lev]->setDomainBndry(boundary_val, geom[lev]);
         eta[lev]->setDomainBndry(boundary_val, geom[lev]);
 
         // Impose periodic BCs at domain boundaries and fine-fine copies in the interior
-         ro[lev]->FillBoundary(geom[lev].periodicity());
+        density[lev]->FillBoundary(geom[lev].periodicity());
+        tracer[lev]->FillBoundary(geom[lev].periodicity());
         eta[lev]->FillBoundary(geom[lev].periodicity());
 
         // Fill all cell-centered arrays with first-order extrapolation at domain boundaries
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(*ro[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*density[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Density
-            fill_bc0(BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+            fill_bc0(BL_TO_FORTRAN_ANYD((*density[lev])[mfi]),
+                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
+                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
+                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
+                     domain.loVect(), domain.hiVect(),
+                     &nghost);
+
+            // Tracer
+            fill_bc0(BL_TO_FORTRAN_ANYD((*tracer[lev])[mfi]),
                      bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                      bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                      bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),

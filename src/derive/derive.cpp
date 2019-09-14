@@ -13,6 +13,9 @@ void incflo::UpdateDerivedQuantities()
     ComputeStrainrate();
     ComputeViscosity();
     ComputeVorticity();
+
+    // We have just updated eta in ComputeViscosity; make sure to fill the bc's here
+    FillScalarBC();
 }
 
 void incflo::ComputeDivU(Real time)

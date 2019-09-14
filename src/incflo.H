@@ -151,6 +151,7 @@ private:
 
 	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
 			   Vector<std::unique_ptr<MultiFab>>& vel, 
+			   Vector<std::unique_ptr<MultiFab>>& density, 
 			   Vector<std::unique_ptr<MultiFab>>& tracer, 
                            Real time);
 	void ComputeVelocitySlopes(int lev, MultiFab& Sborder);
@@ -187,7 +188,8 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel);
+    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel,
+                       Vector<std::unique_ptr<MultiFab>>& density);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -208,7 +210,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void FillScalarBC(Real time, int extrap_dir_bcs);
+    void FillScalarBC();
     void FillVelocityBC(Real time, int extrap_dir_bcs);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,6 +331,7 @@ private:
     int plt_vel         = 1;
     int plt_gradp       = 0;
     int plt_rho         = 0;
+    int plt_tracer      = 0;
     int plt_p           = 0;
     int plt_eta         = 1;
     int plt_vort        = 1;
@@ -345,8 +348,8 @@ private:
     Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
 
     // Scalar variables at cell centers that need to be written to checkfile. 
-    Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &ro, &eta};
-    Vector<std::string> chkscaVarsName = {"p", "ro", "tracer", "eta"};
+    Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &density, &tracer, &eta};
+    Vector<std::string> chkscaVarsName = {"p", "density", "tracer", "eta"};
     
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -383,7 +386,8 @@ private:
     Vector<std::unique_ptr<IArrayBox>> bc_khi;
 
     // Primary variables
-    Vector<std::unique_ptr<MultiFab>> ro;
+    Vector<std::unique_ptr<MultiFab>> density;
+    Vector<std::unique_ptr<MultiFab>> density_o;
     Vector<std::unique_ptr<MultiFab>> tracer;
     Vector<std::unique_ptr<MultiFab>> tracer_o;
     Vector<std::unique_ptr<MultiFab>> vel;

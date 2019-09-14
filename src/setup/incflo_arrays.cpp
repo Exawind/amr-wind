@@ -9,8 +9,12 @@ void incflo::AllocateArrays(int lev)
     // ********************************************************************************
 
     // Density
-    ro[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    ro[lev]->setVal(0.);
+    density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    density[lev]->setVal(0.);
+
+    // Old density
+    density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    density_o[lev]->setVal(0.);
 
     // Tracer
     tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -50,9 +54,9 @@ void incflo::AllocateArrays(int lev)
     drag[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     drag[lev]->setVal(0.);
 
-    // Convective terms for diffusion equation
-    conv[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
-    conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
+    // Convective terms for velocity, density and tracer -- in that order
+    conv[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM+2, 0, MFInfo(), *ebfactory[lev]));
+    conv_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM+2, 0, MFInfo(), *ebfactory[lev]));
     conv[lev]->setVal(0.);
     conv_old[lev]->setVal(0.);
 
@@ -131,11 +135,18 @@ void incflo::RegridArrays(int lev)
     //
 
    // Density
-   std::unique_ptr<MultiFab> ro_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
-                                                  MFInfo(), *ebfactory[lev]));
-   ro_new->setVal(0.0);
-   ro_new->copy(*ro[lev], 0, 0, 1, 0, nghost);
-   ro[lev] = std::move(ro_new);
+   std::unique_ptr<MultiFab> density_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+                                                      MFInfo(), *ebfactory[lev]));
+   density_new->setVal(0.0);
+   density_new->copy(*density[lev], 0, 0, 1, 0, nghost);
+   density[lev] = std::move(density_new);
+
+   // Old Density
+   std::unique_ptr<MultiFab> density_o_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
+                                                        MFInfo(), *ebfactory[lev]));
+   density_o_new->setVal(0.0);
+   density_o_new->copy(*density_o[lev], 0, 0, 1, 0, nghost);
+   density_o[lev] = std::move(density_o_new);
 
    // Tracer
    std::unique_ptr<MultiFab> tracer_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -202,12 +213,12 @@ void incflo::RegridArrays(int lev)
     drag[lev]->setVal(0.);
 
     // Convective terms
-    std::unique_ptr<MultiFab> conv_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
+    std::unique_ptr<MultiFab> conv_new(new MultiFab(grids[lev], dmap[lev], conv[lev]->nComp(), nghost,
                                                     MFInfo(), *ebfactory[lev]));
     conv[lev] = std::move(conv_new);
     conv[lev]->setVal(0.);
 
-    std::unique_ptr<MultiFab> conv_old_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
+    std::unique_ptr<MultiFab> conv_old_new(new MultiFab(grids[lev], dmap[lev], conv_old[lev]->nComp(), nghost,
                                                         MFInfo(), *ebfactory[lev]));
     conv_old[lev] = std::move(conv_old_new);
     conv_old[lev]->setVal(0.);
@@ -306,7 +317,8 @@ void incflo::ResizeArrays()
     t_old.resize(max_level + 1);
 
     // Density 
-    ro.resize(max_level + 1);
+    density.resize(max_level + 1);
+    density_o.resize(max_level + 1);
 
     // Tracer 
     tracer.resize(max_level + 1);

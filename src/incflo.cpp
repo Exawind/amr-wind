@@ -214,7 +214,7 @@ void incflo::ErrorEst(int lev,
     const char   tagval = TagBox::SET;
     const char clearval = TagBox::CLEAR;
 
-    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(ro[lev]->Factory());
+    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(density[lev]->Factory());
     auto const& flags = factory.getMultiEBCellFlagFab();
 
     const Real* dx      = geom[lev].CellSize();
@@ -223,7 +223,7 @@ void incflo::ErrorEst(int lev,
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-    for (MFIter mfi(*ro[lev],true); mfi.isValid(); ++mfi)
+    for (MFIter mfi(*density[lev],true); mfi.isValid(); ++mfi)
     {
         const Box& bx  = mfi.tilebox();
         const auto& flag = flags[mfi];
@@ -245,7 +245,7 @@ void incflo::ErrorEst(int lev,
     // Refine on cut cells
     if (refine_cutcells) 
     {
-        amrex::TagCutCells(tags, *ro[lev]);
+        amrex::TagCutCells(tags, *density[lev]);
     }
 }
 
@@ -325,7 +325,7 @@ void incflo::AverageDownTo(int crse_lev)
     BL_PROFILE("incflo::AverageDownTo()");
 
     IntVect rr = refRatio(crse_lev);
-    amrex::EB_average_down(*ro[crse_lev+1],         *ro[crse_lev],         0, 1, rr);
+    amrex::EB_average_down(*density[crse_lev+1],         *density[crse_lev],         0, 1, rr);
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);

@@ -350,7 +350,11 @@ void incflo::WritePlotFile() const
 
         // Density
         if(plt_rho == 1) 
-            pltscaVarsName.push_back("ro");
+            pltscaVarsName.push_back("density");
+
+        // Tracer
+        if(plt_tracer == 1) 
+            pltscaVarsName.push_back("tracer");
 
         // Pressure
         if(plt_p == 1)
@@ -413,7 +417,15 @@ void incflo::WritePlotFile() const
             // Density
             if(plt_rho == 1) 
             {
-                MultiFab::Copy(*mf[lev], (*ro[lev]), 0, lc, 1, 0);
+                MultiFab::Copy(*mf[lev], (*density[lev]), 0, lc, 1, 0);
+    
+                lc += 1;
+            }
+
+            // Tracer
+            if(plt_tracer == 1) 
+            {
+                MultiFab::Copy(*mf[lev], (*tracer[lev]), 0, lc, 1, 0);
     
                 lc += 1;
             }

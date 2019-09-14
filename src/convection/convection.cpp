@@ -50,6 +50,7 @@ using namespace ugradu_aux;
 //
 void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
                            Vector<std::unique_ptr<MultiFab>>& vel_in,
+                           Vector<std::unique_ptr<MultiFab>>& density_in,
                            Vector<std::unique_ptr<MultiFab>>& tracer_in,
                            Real time)
 {
@@ -59,7 +60,7 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
     ComputeVelocityAtFaces(vel_in, time);
 
     // Do projection on all AMR-level_ins in one shot
-    mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, ro, time, steady_state);
+    mac_projection->apply_projection(m_u_mac, m_v_mac, m_w_mac, density_in, time, steady_state);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -102,6 +103,8 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
                 {
                     incflo_compute_ugradu(bx, conv_in, vel_in, m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev);
 
+//                  incflo_compute_ugradu(bx, conv_in, density_in, m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev);
+
 //                  if (advance_tracer)
 //                     incflo_compute_ugradu(bx, conv_in, tracer_in, m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev);
                 }
@@ -111,6 +114,9 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_in,
                     incflo_compute_ugradu_eb(bx, conv_in, vel_in, m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
                                              volfrac, bndrycent, domain, flags, lev);
 
+//                   incflo_compute_ugradu_eb(bx, conv_in, density_in, m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
+//                                            volfrac, bndrycent, domain, flags, lev);
+ 
 //                  if (advance_tracer)
 //                     incflo_compute_ugradu_eb(bx, conv_in, tracer_in, m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
 //                                              volfrac, bndrycent, domain, flags, lev);

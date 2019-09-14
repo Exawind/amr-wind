@@ -37,16 +37,17 @@ void incflo::ReadParameters()
         // Which variables to write to plotfile
         pltVarCount = 0;
 
-        pp.query("plt_vel",        plt_vel  );
-        pp.query("plt_gradp",      plt_gradp);
-        pp.query("plt_rho",        plt_rho  );
-        pp.query("plt_p",          plt_p    );
-        pp.query("plt_eta",        plt_eta  );
-        pp.query("plt_vort",       plt_vort );
+        pp.query("plt_vel",        plt_vel   );
+        pp.query("plt_gradp",      plt_gradp );
+        pp.query("plt_rho",        plt_rho   );
+        pp.query("plt_tracer",     plt_tracer);
+        pp.query("plt_p",          plt_p     );
+        pp.query("plt_eta",        plt_eta   );
+        pp.query("plt_vort",       plt_vort  );
         pp.query("plt_strainrate", plt_strainrate);
         pp.query("plt_stress"    , plt_stress);
-        pp.query("plt_divu",       plt_divu );
-        pp.query("plt_vfrac",      plt_vfrac);
+        pp.query("plt_divu",       plt_divu  );
+        pp.query("plt_vfrac",      plt_vfrac );
 
         // Special test for CCSE regression test. Override all individual
         // flags and save all data to plot file.
@@ -59,6 +60,7 @@ void incflo::ReadParameters()
             plt_vel        = 1;
             plt_gradp      = 1;
             plt_rho        = 1;
+            plt_tracer     = 1;
             plt_p          = 1;
             plt_eta        = 1;
             plt_vort       = 1;
@@ -72,6 +74,7 @@ void incflo::ReadParameters()
         if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
         if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
         if(plt_rho        == 1) pltVarCount += 1;
+        if(plt_tracer     == 1) pltVarCount += 1;
         if(plt_p          == 1) pltVarCount += 1;
         if(plt_eta        == 1) pltVarCount += 1;
         if(plt_vort       == 1) pltVarCount += 1;
@@ -237,7 +240,7 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    FillScalarBC(cur_time, 0);
+    FillScalarBC();
     FillVelocityBC(cur_time, 0);
 
     // Project the initial velocity field to make it divergence free
@@ -267,20 +270,24 @@ void incflo::InitFluid()
 
         // We deliberately don't tile this loop since we will be looping
         //    over bc's on faces and it makes more sense to do this one grid at a time
-        for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*density[lev], false); mfi.isValid(); ++mfi)
         {
             const Box& bx = mfi.validbox();
-            const Box& sbx = (*ro[lev])[mfi].box();
+            const Box& sbx = (*density[lev])[mfi].box();
             init_fluid(sbx.loVect(), sbx.hiVect(),
                        bx.loVect(), bx.hiVect(),
                        domain.loVect(), domain.hiVect(),
-                       (*ro[lev])[mfi].dataPtr(),
+                       (*density[lev])[mfi].dataPtr(),
                        (*p[lev])[mfi].dataPtr(),
                        (*vel[lev])[mfi].dataPtr(),
                        (*eta[lev])[mfi].dataPtr(),
                        &dx, &dy, &dz,
                        &xlen, &ylen, &zlen, &probtype);
         }
+
+        MultiFab::Copy(    *vel_o[lev],     *vel[lev], 0, 0,     vel[lev]->nComp(),     vel_o[lev]->nGrow());
+        MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
+        MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
     }
 }
 
@@ -336,7 +343,7 @@ void incflo::SetBackgroundPressure()
 
         // We deliberately don't tile this loop since we will be looping
         //    over bc's on faces and it makes more sense to do this one grid at a time
-        for(MFIter mfi(*ro[lev], false); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*density[lev], false); mfi.isValid(); ++mfi)
         {
             const Box& bx = mfi.validbox();
 
@@ -374,7 +381,7 @@ void incflo::InitialIterations()
     }
 
     // Fill ghost cells
-    FillScalarBC(cur_time, 0);
+    FillScalarBC();
     FillVelocityBC(cur_time, 0);
 
     // Copy vel into vel_o

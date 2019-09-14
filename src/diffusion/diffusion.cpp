@@ -14,7 +14,8 @@
 //
 void incflo::ComputeDivTau(int lev,
                            MultiFab& divtau_in,
-                           Vector<std::unique_ptr<MultiFab>>& vel_in)
+                           Vector<std::unique_ptr<MultiFab>>& vel_in,
+                           Vector<std::unique_ptr<MultiFab>>& density_in)
 {
     BL_PROFILE("incflo::ComputeDivTau");
     Box domain(geom[lev].Domain());
@@ -56,7 +57,7 @@ void incflo::ComputeDivTau(int lev,
                                BL_TO_FORTRAN_ANYD(divtau_in[mfi]),
                                BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                (*eta[lev])[mfi].dataPtr(),
-                               BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                               BL_TO_FORTRAN_ANYD((*density_in[lev])[mfi]),
                                domain.loVect (), domain.hiVect (),
                                bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                                bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
@@ -69,7 +70,7 @@ void incflo::ComputeDivTau(int lev,
                                   BL_TO_FORTRAN_ANYD(divtau_in[mfi]),
                                   BL_TO_FORTRAN_ANYD((*vel_in[lev])[mfi]),
                                   (*eta[lev])[mfi].dataPtr(),
-                                  BL_TO_FORTRAN_ANYD((*ro[lev])[mfi]),
+                                  BL_TO_FORTRAN_ANYD((*density_in[lev])[mfi]),
                                   BL_TO_FORTRAN_ANYD(flags),
                                   BL_TO_FORTRAN_ANYD((*areafrac[0])[mfi]),
                                   BL_TO_FORTRAN_ANYD((*areafrac[1])[mfi]),

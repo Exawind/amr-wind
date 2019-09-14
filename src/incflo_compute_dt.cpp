@@ -16,7 +16,7 @@ using namespace std;
 //
 // C = max(|U|)/dx + max(|V|)/dy + max(|W|)/dz    --> Convection
 //
-// V = 2 * max(eta/ro) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
+// V = 2 * max(eta/rho) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
 //
 // Fx, Fy, Fz = net acceleration due to external forces
 //
@@ -30,17 +30,17 @@ void incflo::ComputeDt(int initialisation)
 	Real umax = 0.0;
 	Real vmax = 0.0;
 	Real wmax = 0.0;
-	Real romin = 1.e20;
+	Real rhomin = 1.e20;
 	Real etamax = 0.0;
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // The functions take the min/max over uncovered cells 
-        umax   = amrex::max(umax,   Norm(vel, lev, 0, 0));
-        vmax   = amrex::max(vmax,   Norm(vel, lev, 1, 0));
-        wmax   = amrex::max(wmax,   Norm(vel, lev, 2, 0));
-        romin  = amrex::min(romin,  Norm( ro, lev, 0, 0));
-        etamax = amrex::max(etamax, Norm(eta, lev, 0, 0));
+        umax    = amrex::max(umax,   Norm(vel    , lev, 0, 0));
+        vmax    = amrex::max(vmax,   Norm(vel    , lev, 1, 0));
+        wmax    = amrex::max(wmax,   Norm(vel    , lev, 2, 0));
+        rhomin  = amrex::min(rhomin, Norm(density, lev, 0, 0));
+        etamax  = amrex::max(etamax, Norm(eta    , lev, 0, 0));
     }
 
     const Real* dx = geom[finest_level].CellSize();
@@ -52,7 +52,7 @@ void incflo::ComputeDt(int initialisation)
     Real conv_cfl = std::max(std::max(umax * idx, vmax * idy), wmax * idz);
 
     // Viscous term
-    Real diff_cfl = 2.0 * etamax / romin * (idx * idx + idy * idy + idz * idz);
+    Real diff_cfl = 2.0 * etamax / rhomin * (idx * idx + idy * idy + idz * idz);
 
     // Forcing term
     Real forc_cfl = std::abs(gravity[0] - std::abs(gp0[0])) * idx

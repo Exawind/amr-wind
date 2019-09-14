@@ -72,7 +72,7 @@ void incflo::PrintMaxGp(int lev)
 
 void incflo::CheckForNans(int lev)
 {
-	bool ro_has_nans = ro[lev]->contains_nan(0);
+	bool ro_has_nans = density[lev]->contains_nan(0);
 	bool ug_has_nans = vel[lev]->contains_nan(0);
 	bool vg_has_nans = vel[lev]->contains_nan(1);
 	bool wg_has_nans = vel[lev]->contains_nan(2);

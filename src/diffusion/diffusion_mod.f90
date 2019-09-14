@@ -89,7 +89,6 @@ contains
       real(rt)                       :: idx, idy, idz
       real(rt)                       :: du, dv, dw
 
-      real(rt)  :: txx, tyy, tzz
       real(rt)  :: eta_e, eta_w, eta_n, eta_s, eta_t, eta_b
       real(rt)  :: txx_e, txx_w, txy_n, txy_s, txz_t, txz_b
       real(rt)  :: txy_e, txy_w, tyy_n, tyy_s, tyz_t, tyz_b

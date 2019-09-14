@@ -42,7 +42,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
             // Convert velocities to momenta
             for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             {
-                MultiFab::Multiply(*vel[lev], *ro[lev], 0, dir, 1, vel[lev]->nGrow());
+                MultiFab::Multiply(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
             }
 
             MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
@@ -50,7 +50,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
             // Convert momenta back to velocities
             for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             {
-                MultiFab::Divide(*vel[lev], *ro[lev], 0, dir, 1, vel[lev]->nGrow());
+                MultiFab::Divide(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
             }
         }
     }
@@ -86,7 +86,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     //      
     // Also outputs minus grad(phi) / rho into "fluxes"
     //
-	poisson_equation->solve(phi, fluxes, ro, divu);
+	poisson_equation->solve(phi, fluxes, density, divu);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -97,7 +97,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         fluxes[lev]->mult(-1.0 / scaling_factor, fluxes[lev]->nGrow());
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
-            MultiFab::Multiply(*fluxes[lev], (*ro[lev]), 0, dir, 1, fluxes[lev]->nGrow());
+            MultiFab::Multiply(*fluxes[lev], (*density[lev]), 0, dir, 1, fluxes[lev]->nGrow());
         }
 
         // phi currently holds dt * phi so we divide by dt 
