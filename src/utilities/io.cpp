@@ -350,7 +350,7 @@ void incflo::WritePlotFile() const
 
         // Density
         if(plt_rho == 1) 
-            pltscaVarsName.push_back("density");
+            pltscaVarsName.push_back("ro");
 
         // Tracer
         if(plt_tracer == 1) 

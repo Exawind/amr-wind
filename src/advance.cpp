@@ -88,7 +88,8 @@ void incflo::Advance()
 //
 //  1. Use u = vel_old to compute
 //
-//      conv    = - u grad u
+//      conv_u  = - u grad u
+//      conv_s  = {- div( u rho ), - u grad s} for density and tracer
 //      eta     = eta( ||strainrate|| ) 
 //      divtau  = div( eta (grad u)^T ) / rho
 //
@@ -136,8 +137,8 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term for velocity and tracers: conv_old  = - u dot grad(u)
-    ComputeUGradU(conv_old, vel_o, density_o, tracer_o, cur_time);
+    // Compute the explicit advective terms for velocity and tracers
+    ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -151,13 +152,12 @@ void incflo::ApplyPredictor()
         ComputeDivTau(lev, *divtau_old[lev], vel_o, density_o);
 
         // First add the convective term to the velocity
-        MultiFab::Saxpy(*vel[lev], dt, *conv_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective term to the density and tracer
-        // int density_comp = AMREX_SPACEDIM;
-        // MultiFab::Saxpy(*density[lev], dt, *conv_old[lev], density_comp, 0, 1, 0);
-        // int tracer_comp = AMREX_SPACEDIM+1;
-        // MultiFab::Saxpy(*tracer[lev], dt, *conv_old[lev], tracer_comp, 0, 1, 0);
+        int density_comp = 0; int tracer_comp = 1;
+        MultiFab::Saxpy(*density[lev], dt, *conv_s_old[lev], density_comp, 0, 1, 0);
+        MultiFab::Saxpy( *tracer[lev], dt, *conv_s_old[lev],  tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
@@ -207,11 +207,13 @@ void incflo::ApplyPredictor()
 //
 //  1. Use u = vel_pred to compute
 //
-//      conv    = - u grad u
+//      conv_u  = - u grad u
+//      conv_s  = {- div( u rho ), - u grad s} for density and tracer
 //      eta     = eta( ||strainrate|| ) 
 //      divtau  = div( eta (grad u)^T ) / rho
 //
-//      conv    = 0.5 (conv + conv_pred)
+//      conv_u  = 0.5 (conv_u + conv_u_pred)
+//      conv_s  = 0.5 (conv_s + conv_s_pred)
 //      divtau  = 0.5 (divtau + divtau_pred)
 //      eta     = 0.5 (eta + eta_pred)
 //
@@ -260,7 +262,7 @@ void incflo::ApplyCorrector()
     }
 
     // Compute the explicit advective term: conv = - u dot grad(u) in first spots, -u dot grad(t) in last spot
-    ComputeUGradU(conv, vel, density, tracer, new_time);
+    ComputeUGradU(conv_u, vel, conv_s, density, tracer, new_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -271,18 +273,18 @@ void incflo::ApplyCorrector()
         ComputeDivTau(lev, *divtau[lev], vel, density);
 
         // First add the convective terms to velocity
-        MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv[lev], 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv_u[lev], 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective terms to density
-        // int density_comp = AMREX_SPACEDIM;
-        //MultiFab::LinComb(*density[lev], 1.0, *density_o[lev], 0, dt / 2.0, *conv[lev], density_comp, 0, 1, 0);
-        //MultiFab::Saxpy(*density[lev], dt / 2.0, *conv_old[lev], density_comp, 0, 1, 0);
+        int density_comp = 0;
+        MultiFab::LinComb(*density[lev], 1.0, *density_o[lev], 0, dt / 2.0, *conv_s[lev], density_comp, 0, 1, 0);
+        MultiFab::Saxpy(*density[lev], dt / 2.0, *conv_s_old[lev], density_comp, 0, 1, 0);
 
         //   Now add the convective terms to tracer
-        //int tracer_comp = density_comp+1;
-        //MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv[lev], tracer_comp, 0, 1, 0);
-        //MultiFab::Saxpy(*tracer[lev], dt / 2.0, *conv_old[lev], tracer_comp, 0, 1, 0);
+        int tracer_comp = density_comp+1;
+        MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv_s[lev], tracer_comp, 0, 1, 0);
+        MultiFab::Saxpy(*tracer[lev], dt / 2.0, *conv_s_old[lev], tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev]    , 0, 0, AMREX_SPACEDIM, 0);

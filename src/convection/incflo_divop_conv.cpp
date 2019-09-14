@@ -411,7 +411,8 @@ compute_divop_conv(
   //
   // We use the EB algorithm to compute the divergence at cell centers
   //
-  for(unsigned int n(0); n < 3; ++n)
+  int ncomp = conv.nComp();
+  for(unsigned int n(0); n < ncomp; ++n)
   {
     //
     // Step 1: compute conservative divergence on stencil (lo-2,hi-2)

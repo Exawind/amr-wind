@@ -149,27 +149,49 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv,
+	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u,
 			   Vector<std::unique_ptr<MultiFab>>& vel, 
+			   Vector<std::unique_ptr<MultiFab>>& conv_s,
 			   Vector<std::unique_ptr<MultiFab>>& density, 
 			   Vector<std::unique_ptr<MultiFab>>& tracer, 
                            Real time);
-	void ComputeVelocitySlopes(int lev, MultiFab& Sborder);
+
+	void ComputeSlopes(int lev, MultiFab& Sborder, 
+			   Vector<std::unique_ptr<MultiFab>>& xslopes,
+			   Vector<std::unique_ptr<MultiFab>>& yslopes,
+			   Vector<std::unique_ptr<MultiFab>>& zslopes,
+                           int slopes_comp);
+
 	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
 
         void incflo_compute_ugradu(Box& bx,
                                    Vector< std::unique_ptr<MultiFab> >& conv,
-                                   Vector< std::unique_ptr<MultiFab> >& vel,
+                                   const int conv_comp,
+                                   Vector< std::unique_ptr<MultiFab> >& state,
+                                   const int state_comp,
+                                   const int n_comp,
+                                   Vector< std::unique_ptr<MultiFab> >& xslopes,
+                                   Vector< std::unique_ptr<MultiFab> >& yslopes,
+                                   Vector< std::unique_ptr<MultiFab> >& zslopes,
+                                   const int slopes_comp,
                                    Vector< std::unique_ptr<MultiFab> >& u_mac,
                                    Vector< std::unique_ptr<MultiFab> >& v_mac,
                                    Vector< std::unique_ptr<MultiFab> >& w_mac,
                                    MFIter* mfi,
                                    Box& domain,
-                                   const int lev);
+                                   const int lev,
+                                   const bool is_conservative);
 
        void incflo_compute_ugradu_eb(Box& bx,
                                      Vector< std::unique_ptr<MultiFab> >& conv,
-                                     Vector< std::unique_ptr<MultiFab> >& vel,
+                                     const int conv_comp,
+                                     Vector< std::unique_ptr<MultiFab> >& state,
+                                     const int state_comp,
+                                     const int n_comp,
+                                     Vector< std::unique_ptr<MultiFab> >& xslopes,
+                                     Vector< std::unique_ptr<MultiFab> >& yslopes,
+                                     Vector< std::unique_ptr<MultiFab> >& zslopes,
+                                     const int slopes_comp,
                                      Vector< std::unique_ptr<MultiFab> >& u_mac,
                                      Vector< std::unique_ptr<MultiFab> >& v_mac,
                                      Vector< std::unique_ptr<MultiFab> >& w_mac,
@@ -180,7 +202,8 @@ private:
                                      const amrex::MultiCutFab* bndrycent,
                                      Box& domain,
                                      const EBCellFlagFab& flags,
-                                     const int lev);
+                                     const int lev,
+                                     const bool is_conservative);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -405,14 +428,20 @@ private:
     Vector<std::unique_ptr<MultiFab>> divu;
 
     // Helper variables 
-    Vector<std::unique_ptr<MultiFab>> conv; 
-    Vector<std::unique_ptr<MultiFab>> conv_old; 
+    Vector<std::unique_ptr<MultiFab>> conv_u; 
+    Vector<std::unique_ptr<MultiFab>> conv_u_old; 
+    Vector<std::unique_ptr<MultiFab>> conv_s; 
+    Vector<std::unique_ptr<MultiFab>> conv_s_old; 
     Vector<std::unique_ptr<MultiFab>> divtau; 
     Vector<std::unique_ptr<MultiFab>> divtau_old; 
 
-    Vector<std::unique_ptr<MultiFab>> xslopes;
-    Vector<std::unique_ptr<MultiFab>> yslopes;
-    Vector<std::unique_ptr<MultiFab>> zslopes;
+    Vector<std::unique_ptr<MultiFab>> xslopes_u;
+    Vector<std::unique_ptr<MultiFab>> yslopes_u;
+    Vector<std::unique_ptr<MultiFab>> zslopes_u;
+
+    Vector<std::unique_ptr<MultiFab>> xslopes_s;
+    Vector<std::unique_ptr<MultiFab>> yslopes_s;
+    Vector<std::unique_ptr<MultiFab>> zslopes_s;
 
     Vector<std::unique_ptr<MultiFab>> m_u_mac;
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
