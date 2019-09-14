@@ -161,10 +161,10 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
 //
 void
 incflo::incflo_compute_ugradu(Box& bx,
-                              Vector< std::unique_ptr<MultiFab> >& conv, 
-                              int conv_comp,
+                              Vector< std::unique_ptr<MultiFab> >& conv_in, 
+                              const int conv_comp,
                               Vector< std::unique_ptr<MultiFab> >& state_in,
-                              int state_comp, int ncomp,
+                              const int state_comp, const int ncomp,
                               Vector< std::unique_ptr<MultiFab> >& xslopes_in,
                               Vector< std::unique_ptr<MultiFab> >& yslopes_in,
                               Vector< std::unique_ptr<MultiFab> >& zslopes_in,
@@ -181,7 +181,7 @@ incflo::incflo_compute_ugradu(Box& bx,
   const amrex::Dim3 dom_low = amrex::lbound(domain);
   const amrex::Dim3 dom_high = amrex::ubound(domain);
 
-  Array4<Real> const& ugradu =     conv[lev]->array(*mfi); 
+  Array4<Real> const& ugradu =  conv_in[lev]->array(*mfi); 
   Array4<Real> const& state  = state_in[lev]->array(*mfi);
   
   Array4<Real> const& u = u_mac[lev]->array(*mfi);
@@ -455,7 +455,7 @@ incflo::incflo_compute_ugradu_eb(Box& bx,
     else {
       u_face = my_huge; 
     }
-    fx(i,j,k,state_comp+n) = u(i,j,k) * u_face;
+    fx(i,j,k,n) = u(i,j,k) * u_face;
   });
 
   //
@@ -542,7 +542,7 @@ incflo::incflo_compute_ugradu_eb(Box& bx,
   AMREX_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, n,
   {
     const Real coefficient(-1.);
-    ugradu(i,j,k,state_comp+n) *= coefficient; 
+    ugradu(i,j,k,conv_comp+n) *= coefficient; 
   });
 
 #ifdef AMREX_USE_CUDA
