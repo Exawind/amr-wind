@@ -1,4 +1,3 @@
-#include <AMReX_MultiFabUtil.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
@@ -98,7 +97,8 @@ void incflo::ReadParameters()
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
 	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
         pp.query("ro_0", ro_0);
-        pp.query("advance_tracer", advance_tracer);
+        pp.query("advect_density", advect_density);
+        pp.query("advect_tracer" , advect_tracer);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
@@ -277,9 +277,10 @@ void incflo::InitFluid()
             init_fluid(sbx.loVect(), sbx.hiVect(),
                        bx.loVect(), bx.hiVect(),
                        domain.loVect(), domain.hiVect(),
-                       (*density[lev])[mfi].dataPtr(),
                        (*p[lev])[mfi].dataPtr(),
                        (*vel[lev])[mfi].dataPtr(),
+                       (*density[lev])[mfi].dataPtr(),
+                       (*tracer[lev])[mfi].dataPtr(),
                        (*eta[lev])[mfi].dataPtr(),
                        &dx, &dy, &dz,
                        &xlen, &ylen, &zlen, &probtype);
@@ -390,20 +391,21 @@ void incflo::InitialIterations()
         MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
     }
 
-	for(int iter = 0; iter < initial_iterations; ++iter)
-	{
+    for (int iter = 0; iter < initial_iterations; ++iter)
+    {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-		ApplyPredictor();
+ 	ApplyPredictor();
 
-        for(int lev = 0; lev <= finest_level; lev++)
+        for (int lev = 0; lev <= finest_level; lev++)
         {
             // Replace vel by the original values
             MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
         }
+
         // Reset the boundary values (necessary if they are time-dependent)
         FillVelocityBC(cur_time, 0);
-	}
+    }
 }
 
 // Project velocity field to make sure initial velocity is divergence-free

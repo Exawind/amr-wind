@@ -1,5 +1,3 @@
-#include <AMReX_EBMultiFabUtil.H>
-
 #include <incflo.H>
 #include <mac_F.H>
 #include <convection_F.H>
@@ -56,6 +54,36 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
                            Real time)
 {
     BL_PROFILE("incflo::ComputeUGradU");
+
+    // First do FillPatch of {velocity, density, tracer} so we know the ghost cells of 
+    // these arrays are all filled
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        // State with ghost cells
+        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost,
+                          MFInfo(), *ebfactory[lev]);
+        FillPatchVel(lev, time, Sborder_u, 0, Sborder_u.nComp());
+
+        // Copy each FAB back from Sborder_u into the vel array, complete with filled ghost cells
+        MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow());
+
+        if (advect_density || advect_tracer)
+        {
+            MultiFab Sborder_s(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]);
+    
+            if (advect_density)
+            {
+               FillPatchDensity(lev, time, Sborder_s, 0, 1);
+               MultiFab::Copy (*density_in[lev], Sborder_s, 0, 0, 1, density_in[lev]->nGrow());
+            }
+    
+            if (advect_tracer)
+            {
+               FillPatchTracer(lev, time, Sborder_s, 0, 1);
+               MultiFab::Copy (*tracer_in[lev], Sborder_s, 0, 0, 1, tracer_in[lev]->nGrow());
+            }
+        }
+    }
 
     // Extrapolate velocity field to cell faces (velocity slopes are computed in this call)
     ComputeVelocityAtFaces(vel_in, time);
@@ -136,23 +164,39 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
                                              volfrac, bndrycent, domain, flags, lev, false);
 
                     conv_comp = 0; state_comp = 0; num_comp = 1; slopes_comp = 0;
-                    incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, density_in, state_comp, num_comp,
-                                             xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
-                                             m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
-                                             volfrac, bndrycent, domain, flags, lev, true);
+                    if (advect_density)
+                    {
+                       incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, density_in, state_comp, num_comp,
+                                                xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
+                                                m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
+                                                volfrac, bndrycent, domain, flags, lev, true);
+                    } else {
+                       conv_s_in[lev]->setVal(0.,conv_comp,1,conv_s_in[lev]->nGrow());
+                    }
 
                     conv_comp = 1; state_comp = 0; num_comp = 1; slopes_comp = 1;
-                    incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, tracer_in, state_comp, num_comp,
-                                             xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
-                                             m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
-                                             volfrac, bndrycent, domain, flags, lev, false);
+                    if (advect_tracer)
+                    {
+
+                       // Convert tracer to (rho * tracer) so we can use conservative update
+                       MultiFab::Multiply(*tracer[lev],*density[lev],0,0,1,tracer[lev]->nGrow());
+
+                       incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, tracer_in, state_comp, num_comp,
+                                                xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
+                                                m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
+                                                volfrac, bndrycent, domain, flags, lev, true);
+
+                       // Convert (rho * tracer) back to tracer
+                       MultiFab::Divide(*tracer[lev],*density[lev],0,0,1,tracer[lev]->nGrow());
+
+                    } else {
+                       conv_s_in[lev]->setVal(0.,conv_comp,1,conv_s_in[lev]->nGrow());
+                    }
 
                 }
             }
         }
 
-       // HACK HACK HACK 
-       conv_s_in[lev]->setVal(0.);
     }
 }
 

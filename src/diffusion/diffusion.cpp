@@ -1,6 +1,5 @@
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_Box.H>
-#include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_VisMF.H>

@@ -1,5 +1,4 @@
 #include <AMReX_AmrCore.H>
-#include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo.H>
 

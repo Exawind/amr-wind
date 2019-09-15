@@ -100,7 +100,7 @@ contains
 
    end subroutine set_bc_type
 
-subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
+subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra) &
      bind(C,name='set_bc_mod')
 
   use bc
@@ -108,7 +108,7 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
   implicit none
 
   integer(c_int), intent(in   ) :: pid, ptype
-  real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3)
+  real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3), pden, ptra
 
   real(rt), parameter :: offset = 1.0d-15
 
@@ -164,7 +164,6 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
 
   end select
 
-
   select case(ptype)
 
   case(MINF_)
@@ -176,6 +175,9 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
      bc_u(pid) = pvel(1);
      bc_v(pid) = pvel(2);
      bc_w(pid) = pvel(3);
+
+     bc_r(pid) = pden;
+     bc_t(pid) = ptra;
 
      bc_defined(pid) = .true.
 
@@ -204,9 +206,9 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel) &
      bc_w(pid) = pvel(3)
 
      select case(pid)
-     case(1,2); bc_u(pid) = 0.0d0;
-     case(3,4); bc_v(pid) = 0.0d0;
-     case(5,6); bc_w(pid) = 0.0d0;
+        case(1,2); bc_u(pid) = 0.0d0;
+        case(3,4); bc_v(pid) = 0.0d0;
+        case(5,6); bc_w(pid) = 0.0d0;
      end select
 
      bc_defined(pid) = .true.

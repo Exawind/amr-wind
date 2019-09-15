@@ -1,6 +1,5 @@
-#include <AMReX_EBFArrayBox.H>
-#include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_MultiFabUtil.H>
+#include <AMReX_EBFArrayBox.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
 

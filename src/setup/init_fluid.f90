@@ -10,7 +10,7 @@ contains
 !                                                                      !
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
-                         domlo, domhi, ro, p, vel, eta, & 
+                         domlo, domhi, p, vel, density, tracer, eta, & 
                          dx, dy, dz, xlength, ylength, zlength, probtype) &
       bind(C, name="init_fluid")
 
@@ -24,21 +24,24 @@ contains
       integer(c_int), intent(in   ) :: slo(3), shi(3)
       integer(c_int), intent(in   ) :: domlo(3),domhi(3)
 
-      real(rt), intent(inout) ::  ro(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
-      real(rt), intent(inout) ::   p(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
-      real(rt), intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),3)
-      real(rt), intent(inout) :: eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) ::       p(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
+      real(rt), intent(inout) ::     vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),3)
+      real(rt), intent(inout) :: density(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+      real(rt), intent(inout) ::  tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+      real(rt), intent(inout) ::     eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
 
       real(rt), intent(in   ) :: dx, dy, dz
       real(rt), intent(in   ) :: xlength, ylength, zlength
       integer,  intent(in   ) :: probtype
 
       ! Set the initial fluid density and viscosity
-      ro  = ro_0
-      eta = mu
       vel(:,:,:,1) = ic_u
       vel(:,:,:,2) = ic_v
       vel(:,:,:,3) = ic_w
+
+      density = ro_0
+      tracer  = 1.0
+      eta     = mu
       
       if (probtype == 1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype == 2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)

@@ -14,6 +14,22 @@ extern "C"
                      amrex::Real* xlen, amrex::Real* ylen, amrex::Real* zlen,
                      const int* ng);
 
+    void set_density_bcs(amrex::Real* time, 
+                         amrex::Real* vel, const int* ulo, const int* uhi,
+                         const int* bc_ilo, const int* bc_ihi,
+                         const int* bc_jlo, const int* bc_jhi,
+                         const int* bc_klo, const int* bc_khi,
+                         const int* domlo , const int* domhi,
+                         const int* ng, const int* extrap_dir_bcs, const int* probtype);
+
+    void set_tracer_bcs(amrex::Real* time, 
+                        amrex::Real* vel, const int* ulo, const int* uhi,
+                        const int* bc_ilo, const int* bc_ihi,
+                        const int* bc_jlo, const int* bc_jhi,
+                        const int* bc_klo, const int* bc_khi,
+                        const int* domlo , const int* domhi,
+                        const int* ng, const int* extrap_dir_bcs, const int* probtype);
+
     void set_velocity_bcs(amrex::Real* time, 
                           amrex::Real* vel, const int* ulo, const int* uhi,
                           const int* bc_ilo, const int* bc_ihi,

@@ -1,5 +1,4 @@
 #include <AMReX_Box.H>
-#include <AMReX_EBMultiFabUtil.H>
 
 #include <incflo.H>
 #include <derive_F.H>

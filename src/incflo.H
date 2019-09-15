@@ -1,6 +1,8 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
+#include <AMReX_MultiFabUtil.H>
+#include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
@@ -317,7 +319,8 @@ private:
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
-    bool advance_tracer = 1;
+    bool advect_density = false;
+    bool advect_tracer  = false;
 
     // Fluid properties
     std::string fluid_model;
@@ -455,6 +458,12 @@ private:
 
     void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
     void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+
+    void FillPatchDensity(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
+    void GetDataDensity(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+
+    void FillPatchTracer(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
+    void GetDataTracer(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
     void AverageDown();
     void AverageDownTo(int crse_lev);

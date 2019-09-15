@@ -1,5 +1,3 @@
-#include <AMReX_EBMultiFabUtil.H>
-
 #include <incflo.H>
 #include <param_mod_F.H>
 
@@ -11,17 +9,9 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
     {
         Box domain(geom[lev].Domain());
 
-        // State with ghost cells
-        MultiFab Sborder(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost,
-                         MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, time, Sborder, 0, Sborder.nComp());
-
         // Compute the slopes
         int slopes_comp = 0;
-        ComputeSlopes(lev, Sborder, xslopes_u, yslopes_u, zslopes_u, slopes_comp);
-
-        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
-        MultiFab::Copy (*vel_in[lev], Sborder, 0, 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow());
+        ComputeSlopes(lev, *vel_in[lev], xslopes_u, yslopes_u, zslopes_u, slopes_comp);
 
         // Get EB geometric info
         Array<const MultiCutFab*, AMREX_SPACEDIM> areafrac;
@@ -31,7 +21,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*vel_in[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
@@ -40,7 +30,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
             Box wbx = mfi.tilebox(e_z);
 
             // this is to check efficiently if this tile contains any eb stuff
-            const EBFArrayBox& vel_in_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
+            const EBFArrayBox& vel_in_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
             const EBCellFlagFab& flags = vel_in_fab.getEBCellFlagFab();
 
             Real small_vel = 1.e-10;

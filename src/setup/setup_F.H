@@ -44,7 +44,9 @@ extern "C"
             const amrex::Real* pLo, const amrex::Real* pHi,
             amrex::Real* pLoc,
             amrex::Real* pPg,
-            amrex::Real* pVel
+            amrex::Real* pVel,
+            amrex::Real* pDen,
+            amrex::Real* pTra
         );
 
     void init_fluid
@@ -52,9 +54,10 @@ extern "C"
             const int* slo, const int* shi,
             const int*  lo, const int*  hi,
             const int* domlo, const int* domhi,
-            amrex::Real* ro, 
             amrex::Real* p, 
             amrex::Real* vel,
+            amrex::Real* density,
+            amrex::Real* tracer,
             amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
             amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength, 

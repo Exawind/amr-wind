@@ -9,7 +9,7 @@ module bc
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int
 
-   use constant, only: dim_bc, undefined, zero
+   use constant, only: dim_bc, undefined, zero, one
 
    ! Type of boundary:
    character(len=16) :: bc_type(dim_bc)
@@ -32,6 +32,12 @@ module bc
    real(rt) :: bc_u(1:dim_bc) = zero
    real(rt) :: bc_v(1:dim_bc) = zero
    real(rt) :: bc_w(1:dim_bc) = zero
+
+   ! Density at a specified boundary
+   real(rt) :: bc_r(1:dim_bc) = one
+
+   ! Tracer at a specified boundary
+   real(rt) :: bc_t(1:dim_bc) = one
 
    ! Character variable to determine the flow plane of a flow cell
    character :: bc_plane(dim_bc)
