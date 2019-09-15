@@ -16,13 +16,13 @@ void incflo::AllocateArrays(int lev)
     density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     density_o[lev]->setVal(0.);
 
-    // Current Tracer; default to 1
+    // Current Tracer; default to 0
     tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    tracer[lev]->setVal(1.);
+    tracer[lev]->setVal(0.);
 
-    // Old tracer; default to 1
+    // Old tracer; default to 0
     tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    tracer_o[lev]->setVal(1.);
+    tracer_o[lev]->setVal(0.);
 
     // Current Velocity
     vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));

@@ -40,14 +40,15 @@ contains
       vel(:,:,:,3) = ic_w
 
       density = ro_0
-      tracer  = 1.0
+      tracer  = 0.0
       eta     = mu
       
-      if (probtype == 1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if (probtype == 2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype == 1)  call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype == 2)  call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype == 31 .or. probtype == 32 .or. probtype == 33)  &
-         call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
-      if (probtype == 4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+                          call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+      if (probtype == 4)  call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
@@ -267,6 +268,51 @@ contains
       end do
 
    end subroutine couette
+
+   subroutine tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+
+      use constant,          only: zero, half, one
+      use constant,          only: ic_u
+
+      implicit none
+
+      integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
+      integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
+      integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
+
+      real(rt),         intent(inout) ::     vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+      real(rt),         intent(inout) :: density(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+      real(rt),         intent(inout) ::  tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+
+      real(rt),         intent(in   ) :: dx, dy, dz
+
+      ! Local variables
+      integer(c_int)                  :: i, j, k
+      integer(c_int)                  :: num_cells_x
+      real(rt)                        :: pert
+
+      num_cells_x = domhi(1) - domlo(1) + 1
+
+      pert = 0.01 
+
+      ! Start the flow at rest
+      vel = 0.d0
+
+      do k = lo(3), hi(3)
+         do j = lo(2), hi(2)
+            do i = lo(1), hi(1)
+               if (i .le. num_cells_x / 2) then
+                  density(i,j,k) = one
+                  tracer (i,j,k) = one
+               else
+                  density(i,j,k) = one
+                  tracer (i,j,k) = one + pert
+               endif 
+            end do
+         end do
+      end do
+
+   end subroutine tuscan
 
 end module init_fluid_module
 
