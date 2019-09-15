@@ -12,7 +12,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
         Box domain(geom[lev].Domain());
 
         // State with ghost cells
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost,
+        MultiFab Sborder(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost,
                          MFInfo(), *ebfactory[lev]);
         FillPatchVel(lev, time, Sborder, 0, Sborder.nComp());
 
@@ -47,7 +47,7 @@ void incflo::ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel_in, R
             Real  huge_vel = 1.e100;
 
             // Cell-centered velocity
-            const auto& ccvel_fab = vel[lev]->array(mfi);
+            const auto& ccvel_fab = vel_in[lev]->array(mfi);
 
             // Cell-centered slopes
             const auto& xslopes_fab = (xslopes_u[lev])->array(mfi);
