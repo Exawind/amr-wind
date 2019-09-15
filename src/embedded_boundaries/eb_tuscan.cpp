@@ -1,4 +1,5 @@
 #include <AMReX_EB2.H>
+#include <AMReX_EB2_IF_Complement.H>
 #include <AMReX_EB2_IF_Union.H>
 #include <AMReX_ParmParse.H>
 
@@ -112,7 +113,8 @@ void incflo::make_eb_tuscan()
   //    *                                                                          *
   //    ***************************************************************************/
 
-    auto gshop = EB2::makeShop(boxes);
+    auto boxes_inside = EB2::makeComplement(boxes);
+    auto gshop        = EB2::makeShop(boxes_inside);
 
     // Build index space
     int max_level_here = 0;
