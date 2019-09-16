@@ -77,7 +77,7 @@ void incflo::make_eb_tuscan()
    * Build the center box connector                                           *
    ***************************************************************************/
 
-  Real middle_frac = 0.375;
+  Real middle_frac = 0.25;
 
   xlo = xlo + middle_frac*xlen;
   xhi = xhi - middle_frac*xlen;

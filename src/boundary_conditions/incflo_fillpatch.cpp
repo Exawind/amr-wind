@@ -386,18 +386,18 @@ incflo::GetDataTracer(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>&
 
     if (time > t_new[lev] - teps && time < t_new[lev] + teps)
     {
-        data.push_back(density[lev].get());
+        data.push_back(tracer[lev].get());
         datatime.push_back(t_new[lev]);
     }
     else if (time > t_old[lev] - teps && time < t_old[lev] + teps)
     {
-        data.push_back(density_o[lev].get());
+        data.push_back(tracer_o[lev].get());
         datatime.push_back(t_old[lev]);
     }
     else
     {
-        data.push_back(density_o[lev].get());
-        data.push_back(density[lev].get());
+        data.push_back(tracer_o[lev].get());
+        data.push_back(tracer[lev].get());
         datatime.push_back(t_old[lev]);
         datatime.push_back(t_new[lev]);
     }

@@ -288,25 +288,25 @@ contains
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      integer(c_int)                  :: num_cells_x
+      integer(c_int)                  :: num_cells
       real(rt)                        :: pert
 
-      num_cells_x = domhi(1) - domlo(1) + 1
+      num_cells = domhi(3) - domlo(3) + 1
 
-      pert = 0.01 
+      pert = 0.01d0
 
       ! Start the flow at rest
-      vel = 0.d0
+      vel = zero
 
       do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               if (i .le. num_cells_x / 2) then
+               if (k .le. num_cells/2) then
                   density(i,j,k) = one
-                  tracer (i,j,k) = one
+                  tracer (i,j,k) = zero
                else
                   density(i,j,k) = one
-                  tracer (i,j,k) = one + pert
+                  tracer (i,j,k) = zero + pert
                endif 
             end do
          end do

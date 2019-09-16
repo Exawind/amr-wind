@@ -161,9 +161,13 @@ void incflo::ApplyPredictor()
         MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+        if (probtype == 11)
         {
-            (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
+           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
+        } else {
+           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+               (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
         }
 
         // Convert velocities to momenta
@@ -289,8 +293,12 @@ void incflo::ApplyCorrector()
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+        if (probtype == 11)
         {
+           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
+        } else {
+           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
         }
 

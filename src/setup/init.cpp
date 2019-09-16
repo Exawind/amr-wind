@@ -364,6 +364,13 @@ void incflo::SetBackgroundPressure()
         }
         p0[lev]->FillBoundary(p0_periodicity);
     }
+
+    if (probtype == 11) 
+    {
+       gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
+       for(int lev = 0; lev <= max_level; lev++)
+          p0[lev]->setVal(0.);          
+    }
 }
 
 //
