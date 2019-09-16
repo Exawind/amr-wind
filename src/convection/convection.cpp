@@ -108,12 +108,27 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
         volfrac   = &(ebfactory[lev] -> getVolFrac());
         bndrycent = &(ebfactory[lev] -> getBndryCent());
 
-       // Compute slopes of density and tracer
-       slopes_comp = 0;
-       ComputeSlopes(lev, *density[lev], xslopes_s, yslopes_s, zslopes_s, slopes_comp);
+        if (advect_tracer)
+        {
+            // Convert tracer to (rho * tracer) so we can use conservative update
+            MultiFab::Multiply(*tracer_in[lev],*density_in[lev],0,0,1,tracer_in[lev]->nGrow());
+        }
 
-       slopes_comp = 1;
-       ComputeSlopes(lev,  *tracer[lev], xslopes_s, yslopes_s, zslopes_s, slopes_comp);
+        // Compute slopes of density and tracer
+        if (advect_density)
+        {
+           slopes_comp = 0;
+           ComputeSlopes(lev, *density_in[lev], xslopes_s, yslopes_s, zslopes_s, slopes_comp);
+        }
+
+        if (advect_tracer)
+        {
+           slopes_comp = 1;
+           ComputeSlopes(lev,  *tracer_in[lev], xslopes_s, yslopes_s, zslopes_s, slopes_comp);
+        }
+
+        // Initialize conv_s to 0 for both density and tracer
+        conv_s_in[lev]->setVal(0.,0,2,conv_s_in[lev]->nGrow());
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -146,14 +161,16 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
                                           m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
 
                     conv_comp = 0; state_comp = 0; num_comp = 1; slopes_comp = 0;
-                    incflo_compute_ugradu(bx, conv_s_in, conv_comp,  density_in, state_comp, num_comp, 
-                                          xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
-                                          m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
+                    if (advect_density)
+                       incflo_compute_ugradu(bx, conv_s_in, conv_comp,  density_in, state_comp, num_comp, 
+                                             xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
+                                             m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, true);
 
                     conv_comp = 1; state_comp = 0; num_comp = 1; slopes_comp = 1;
-                    incflo_compute_ugradu(bx, conv_s_in, conv_comp,  tracer_in, state_comp, num_comp, 
-                                          xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
-                                          m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, false);
+                    if (advect_tracer)
+                       incflo_compute_ugradu(bx, conv_s_in, conv_comp,  tracer_in, state_comp, num_comp, 
+                                             xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
+                                             m_u_mac, m_v_mac, m_w_mac, &mfi, domain, lev, true);
                 }
                 else
                 {
@@ -165,39 +182,27 @@ void incflo::ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u_in,
 
                     conv_comp = 0; state_comp = 0; num_comp = 1; slopes_comp = 0;
                     if (advect_density)
-                    {
                        incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, density_in, state_comp, num_comp,
                                                 xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                                 m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
                                                 volfrac, bndrycent, domain, flags, lev, true);
-                    } else {
-                       conv_s_in[lev]->setVal(0.,conv_comp,1,conv_s_in[lev]->nGrow());
-                    }
 
                     conv_comp = 1; state_comp = 0; num_comp = 1; slopes_comp = 1;
                     if (advect_tracer)
-                    {
-
-                       // Convert tracer to (rho * tracer) so we can use conservative update
-                       MultiFab::Multiply(*tracer[lev],*density[lev],0,0,1,tracer[lev]->nGrow());
-
                        incflo_compute_ugradu_eb(bx, conv_s_in, conv_comp, tracer_in, state_comp, num_comp,
                                                 xslopes_s, yslopes_s, zslopes_s, slopes_comp, 
                                                 m_u_mac, m_v_mac, m_w_mac, &mfi, areafrac, facecent,
                                                 volfrac, bndrycent, domain, flags, lev, true);
-
-                       // Convert (rho * tracer) back to tracer
-                       MultiFab::Divide(*tracer[lev],*density[lev],0,0,1,tracer[lev]->nGrow());
-
-                    } else {
-                       conv_s_in[lev]->setVal(0.,conv_comp,1,conv_s_in[lev]->nGrow());
-                    }
-
                 }
             }
-        }
+        } // MFIter
 
-    }
+        if (advect_tracer)
+        {
+           // Convert (rho * tracer) back to tracer
+           MultiFab::Divide(*tracer_in[lev],*density_in[lev],0,0,1,tracer_in[lev]->nGrow());
+        }
+    } // lev
 }
 
 //
