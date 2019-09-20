@@ -2,7 +2,6 @@ module eb_wallflux_mod
 
    use amrex_fort_module,  only: rt=>amrex_real, c_int
    use amrex_error_module, only: amrex_abort
-   use amrex_mlebabeclap_3d_module
 
    use constant,           only: zero, half, one, two
    use rheology_module,    only: viscosity
@@ -161,5 +160,81 @@ contains
       divw(3) = dapx * tauzx + dapy * tauzy + dapz * tauzz
 
    end subroutine compute_diff_wallflux
+
+   subroutine compute_dphidn_3d (dphidn, dxinv, i, j, k, &
+        phi,  p_lo, p_hi,     &
+        flag,  flo,  fhi,     &
+        bct, phib, anrmx, anrmy, anrmz, vf)
+
+      ! Cell indices
+      integer(c_int), intent(in   ) :: i, j, k
+
+      ! Grid spacing
+      real(rt),       intent(in   ) :: dxinv(3)
+
+      ! Array bounds
+      integer(c_int), intent(in   ) :: p_lo(3), p_hi(3)
+      integer(c_int), intent(in   ) ::  flo(3),  fhi(3)
+
+      ! Arrays
+      real(rt),  intent(in   ) ::                            &
+           & phi(p_lo(1):p_hi(1),p_lo(2):p_hi(2),p_lo(3):p_hi(3))
+      integer(c_int), intent(in   ) :: flag( flo(1): fhi(1), flo(2): fhi(2), flo(3): fhi(3)) 
+
+      real(rt),  intent(in   ) :: bct(3), phib
+      real(rt),  intent(in   ) :: anrmx, anrmy, anrmz, vf
+
+      real(rt),        intent(  out) :: dphidn
+
+      ! Local variable
+      real(rt) :: bctx, bcty, bctz
+      real(rt) :: phig, gx, gy, gz, dg, dx_eb, gxy, gxz, gyz, gxyz
+      real(rt) :: sx, sy, sz
+      integer(c_int)          :: ii, jj, kk
+
+      bctx = bct(1)
+      bcty = bct(2)
+      bctz = bct(3)
+
+      dx_eb = get_dx_eb(vf)
+
+      dg = dx_eb / max(abs(anrmx),abs(anrmy),abs(anrmz))
+      gx = bctx - dg*anrmx
+      gy = bcty - dg*anrmy
+      gz = bctz - dg*anrmz
+      sx =  sign(one,anrmx)
+      sy =  sign(one,anrmy)
+      sz =  sign(one,anrmz)
+      ii = i - int(sx)
+      jj = j - int(sy)
+      kk = k - int(sz)
+
+      gx = sx*gx
+      gy = sy*gy
+      gz = sz*gz
+      gxy = gx*gy
+      gxz = gx*gz
+      gyz = gy*gz
+      gxyz = gx*gy*gz
+      phig = (one+gx+gy+gz+gxy+gxz+gyz+gxyz) * phi(i ,j ,k ) &
+           + (-gz - gxz - gyz - gxyz)        * phi(i ,j ,kk) &
+           + (-gy - gxy - gyz - gxyz)        * phi(i ,jj,k ) &
+           + (gyz + gxyz)                    * phi(i ,jj,kk) &
+           + (-gx - gxy - gxz - gxyz)        * phi(ii,j ,k ) &
+           + (gxz + gxyz)                    * phi(ii,j ,kk) &
+           + (gxy + gxyz)                    * phi(ii,jj,k ) &
+           + (-gxyz)                         * phi(ii,jj,kk)
+
+      dphidn = (phib-phig)/dg
+
+    contains
+
+      elemental function get_dx_eb (kappa)
+        real(rt), intent(in) :: kappa
+        real(rt) :: get_dx_eb
+        get_dx_eb = max(0.3_rt, (kappa*kappa-0.25_rt)/(2._rt*kappa))
+      end function get_dx_eb
+
+  end subroutine compute_dphidn_3d
 
 end module eb_wallflux_mod
