@@ -47,7 +47,7 @@ inline void DensityFillBox(Box const& bx, Array4<amrex::Real> const& dest,
        lev++;
     }
     if (lev == 20)
-        amrex::Abort("Reached lev = 20 in VelFillBox...");
+        amrex::Abort("Reached lev = 20 in DensityFillBox...");
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
     //    at the faces (not the ghost cell center)
@@ -103,7 +103,7 @@ inline void TracerFillBox(Box const& bx, Array4<amrex::Real> const& dest,
        lev++;
     }
     if (lev == 20)
-        amrex::Abort("Reached lev = 20 in VelFillBox...");
+        amrex::Abort("Reached lev = 20 in TracerFillBox...");
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
     //    at the faces (not the ghost cell center)

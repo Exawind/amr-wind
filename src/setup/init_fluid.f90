@@ -189,10 +189,10 @@ contains
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               y =  (real(j,rt) + 0.5) / num_cells
-               vel(i,j,k,1) = 6.0 * ic_u * y * (1.0 - y)
-               vel(i,j,k,2) = 0.0
-               vel(i,j,k,3) = 0.0
+               y =  (real(j,rt) + 0.5d0) / dble(num_cells)
+               vel(i,j,k,1) = 6.0d0 * ic_u * y * (1.0d0 - y)
+               vel(i,j,k,2) = 0.0d0
+               vel(i,j,k,3) = 0.0d0
             end do
          end do
          end do
@@ -204,10 +204,10 @@ contains
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               z =  (real(k,rt) + 0.5) / num_cells
-               vel(i,j,k,1) = 0.0
-               vel(i,j,k,2) = 6.0 * ic_v * z * (1.0 - z)
-               vel(i,j,k,3) = 0.0
+               z =  (real(k,rt) + 0.5d0) / dble(num_cells)
+               vel(i,j,k,1) = 0.0d0
+               vel(i,j,k,2) = 6.0d0 * ic_v * z * (1.0d0 - z)
+               vel(i,j,k,3) = 0.0d0
             end do
          end do
          end do
@@ -219,10 +219,10 @@ contains
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
-               x =  (real(i,rt) + 0.5) / num_cells
-               vel(i,j,k,1) = 0.0
-               vel(i,j,k,2) = 0.0
-               vel(i,j,k,3) = 6.0 * ic_w * x * (1.0 - x)
+               x =  (real(i,rt) + 0.5d0) / dble(num_cells)
+               vel(i,j,k,1) = 0.0d0
+               vel(i,j,k,2) = 0.0d0
+               vel(i,j,k,3) = 6.0d0 * ic_w * x * (1.0d0 - x)
             end do
          end do
          end do
