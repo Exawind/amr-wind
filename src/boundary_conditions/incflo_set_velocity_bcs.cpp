@@ -219,7 +219,7 @@ incflo::set_velocity_bcs(Real* time,
            vel(i,j,k,n) = p_bc_v[bcv];
            if (probtype == 32)
            {
-               Real z = (j + 0.5) / (dom_hi[2] - dom_lo[2] + 1);
+               Real z = (k + 0.5) / (dom_hi[2] - dom_lo[2] + 1);
                vel(i,j,k,n) =  6.0 * p_bc_v[bcv] * z * (1.0 - z);
            }
         }
