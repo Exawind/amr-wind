@@ -10,41 +10,6 @@
 #include <boundary_conditions_F.H>
 #include <setup_F.H>
 
-//
-// Fill the BCs for velocity only
-//
-void incflo::FillVelocityBC(Real time, int extrap_dir_bcs)
-{
-    BL_PROFILE("incflo::FillVelocityBC()");
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        Box domain(geom[lev].Domain());
-
-        // Hack so that ghost cells are not undefined
-        vel[lev]->setDomainBndry(boundary_val, geom[lev]);
-
-        vel[lev]->FillBoundary(geom[lev].periodicity());
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for(MFIter mfi(*vel[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            set_velocity_bcs(&time, 
-                             BL_TO_FORTRAN_ANYD((*vel[lev])[mfi]),
-                             bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                             bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                             bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                             domain.loVect(), domain.hiVect(),
-                             &nghost, &extrap_dir_bcs, &probtype);
-        }
-        EB_set_covered(*vel[lev], covered_val);
-        
-        // Do this after as well as before to pick up terms that got updated in the call above
-        vel[lev]->FillBoundary(geom[lev].periodicity());
-    }
-}
-
 void incflo::FillScalarBC()
 {
     BL_PROFILE("incflo:FillScalarBC()");

@@ -241,7 +241,7 @@ void incflo::PostInit(int restart_flag)
 
     // Fill boundaries
     FillScalarBC();
-    FillVelocityBC(cur_time, 0);
+    incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
@@ -390,7 +390,7 @@ void incflo::InitialIterations()
 
     // Fill ghost cells
     FillScalarBC();
-    FillVelocityBC(cur_time, 0);
+    incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
@@ -411,7 +411,7 @@ void incflo::InitialIterations()
         }
 
         // Reset the boundary values (necessary if they are time-dependent)
-        FillVelocityBC(cur_time, 0);
+        incflo_set_velocity_bcs(cur_time, vel, 0);
     }
 }
 

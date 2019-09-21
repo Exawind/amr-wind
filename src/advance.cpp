@@ -26,7 +26,7 @@ void incflo::Advance()
 
     // Fill ghost nodes and reimpose boundary conditions
     FillScalarBC();
-    FillVelocityBC(cur_time, 0);
+    incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Compute time step size
     int initialisation = 0;
@@ -135,6 +135,8 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
+    incflo_set_velocity_bcs(cur_time, vel_o, 0);
+
     // Compute the explicit advective terms for velocity and tracers
     ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
 
@@ -189,7 +191,7 @@ void incflo::ApplyPredictor()
             MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
-    FillVelocityBC(new_time, 0);
+    incflo_set_velocity_bcs(new_time, vel, 0);
     FillScalarBC();
 
     // Solve implicit diffusion equation for u*
@@ -199,7 +201,7 @@ void incflo::ApplyPredictor()
     ApplyProjection(new_time, dt);
 
     // Fill velocity BCs again
-    FillVelocityBC(new_time, 0);
+    incflo_set_velocity_bcs(new_time, vel, 0);
 }
 
 //
@@ -325,7 +327,7 @@ void incflo::ApplyCorrector()
         MultiFab::LinComb(*eta[lev], 0.5, *eta_old[lev], 0, 0.5, *eta[lev], 0, 0, 1, 0);
     }
 
-    FillVelocityBC(new_time, 0);
+    incflo_set_velocity_bcs(new_time, vel, 0);
     FillScalarBC();
 
     // Solve implicit diffusion equation for u*
@@ -335,7 +337,7 @@ void incflo::ApplyCorrector()
     ApplyProjection(new_time, dt);
 
     // Fill velocity BCs again
-    FillVelocityBC(new_time, 0);
+    incflo_set_velocity_bcs(new_time, vel, 0);
 }
 
 //
@@ -359,7 +361,7 @@ bool incflo::SteadyStateReached()
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    FillVelocityBC(cur_time, 0);
+    incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Use temporaries to store the difference between current and previous solution
 	Vector<std::unique_ptr<MultiFab>> diff_vel;

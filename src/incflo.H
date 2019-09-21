@@ -101,7 +101,24 @@ public:
     int get_probtype(){ return probtype; }
     void GetInputBCs();
 
+    void incflo_set_velocity_bcs (Real time,
+                                  Vector< std::unique_ptr<MultiFab> >& vel,
+                                  int extrap_dir_bcs);
+
+    void set_velocity_bcs(Real* time,
+                          const int lev,
+                          FArrayBox& vel_fab,
+                          const Box& domain,
+                          const int* extrap_dir_bcs);
+
 private:
+
+    amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
+    amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
+    amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
+    amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
+    amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Initialization

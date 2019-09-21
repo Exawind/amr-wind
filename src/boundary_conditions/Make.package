@@ -3,7 +3,9 @@ f90EXE_sources += fill_bc0.f90
 f90EXE_sources += set_mac_velocity_bcs.f90
 f90EXE_sources += set_density_bcs.f90
 f90EXE_sources += set_tracer_bcs.f90
-f90EXE_sources += set_velocity_bcs.f90
+
+F90EXE_headers += bc_mod_F.H
 
 CEXE_sources += boundary_conditions.cpp
 CEXE_sources += incflo_fillpatch.cpp
+CEXE_sources += incflo_set_velocity_bcs.cpp

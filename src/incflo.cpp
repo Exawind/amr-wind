@@ -2,11 +2,17 @@
 
 #include <incflo.H>
 #include <derive_F.H>
+#include <param_mod_F.H>
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
 incflo::incflo()
+  : m_bc_u(get_dim_bc()+1, 0)
+  , m_bc_v(get_dim_bc()+1, 0)
+  , m_bc_w(get_dim_bc()+1, 0)
+  , m_bc_t(get_dim_bc()+1, 0)
+  , m_bc_p(get_dim_bc()+1, 0)
 {
     // Read inputs file using ParmParse
     ReadParameters();

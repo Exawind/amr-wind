@@ -167,7 +167,7 @@ inline void VelFillBox(Box const& bx, Array4<amrex::Real> const& dest,
         amrex::Abort("Reached lev = 20 in VelFillBox...");
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
-    //    at the faces (not the ghost cell center)
+    //    at the ghost cell center
     int extrap_dir_bcs = 1;
 
     // We only do this to make it not const
@@ -180,18 +180,9 @@ inline void VelFillBox(Box const& bx, Array4<amrex::Real> const& dest,
     const int* bc_klo_ptr = incflo_for_fillpatching->get_bc_klo_ptr(lev);
     const int* bc_khi_ptr = incflo_for_fillpatching->get_bc_khi_ptr(lev);
 
-    int nghost = incflo_for_fillpatching->get_nghost();
-    int probtype = incflo_for_fillpatching->get_probtype();
-
     FArrayBox dest_fab(dest);
 
-    set_velocity_bcs(&time, 
-                     dest_fab.dataPtr(), dest_fab.loVect(), dest_fab.hiVect(),
-                     bc_ilo_ptr, bc_ihi_ptr, 
-                     bc_jlo_ptr, bc_jhi_ptr, 
-                     bc_klo_ptr, bc_khi_ptr, 
-                     domain.loVect(), domain.hiVect(),
-                     &nghost, &extrap_dir_bcs, &probtype);
+    incflo_for_fillpatching->set_velocity_bcs (&time, lev, dest_fab, domain, &extrap_dir_bcs);
 }
 
 // Compute a new multifab by copying array from valid region and filling ghost cells

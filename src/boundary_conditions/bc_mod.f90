@@ -7,7 +7,7 @@
 module bc
 
    use amrex_fort_module, only : rt => amrex_real
-   use iso_c_binding , only: c_int
+   use iso_c_binding , only: c_int, c_char, c_null_char
 
    use constant, only: dim_bc, undefined, zero, one
 
@@ -50,5 +50,95 @@ module bc
    integer, parameter :: nsw_       = 100 ! wall with no-slip b.c.
 
 contains
+
+!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
+!                                                                      !
+! Subroutines: getters                                                 !
+!                                                                      !
+! Purpose: Getters for the boundary conditions values                  !
+!                                                                      !
+!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
+  integer(c_int) function get_bc_defined(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    if(bc_defined(pID)) then
+      get_bc_defined = 1
+    else
+      get_bc_defined = 0
+    endif
+    return
+  end function get_bc_defined
+
+  subroutine get_bc_type(pID, c_string) bind(C)
+    integer(c_int), intent(in) :: pID
+    character(len=1, kind=c_char), intent(inout) :: c_string(16)
+    integer :: N,I
+    N = len_trim(BC_Type(pID))
+    do I=1,N
+      c_string(I) = BC_Type(pID)(I:I)
+    enddo
+    c_string(N+1) = c_null_char
+  end subroutine get_bc_type
+
+  real(rt) function get_bc_u(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_u = bc_u(pID)
+    return
+  end function get_bc_u
+
+  real(rt) function get_bc_v(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_v = bc_v(pID)
+    return
+  end function get_bc_v
+
+  real(rt) function get_bc_w(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_w = bc_w(pID)
+    return
+  end function get_bc_w
+
+  real(rt) function get_bc_t(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_t = bc_t(pID)
+    return
+  end function get_bc_t
+
+  real(rt) function get_bc_p(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_p = bc_p(pID)
+    return
+  end function get_bc_p
+  
+  integer(c_int) function get_minf() bind(C)
+    get_minf = minf_
+    return
+  end function get_minf
+
+  integer(c_int) function get_pinf() bind(C)
+    get_pinf = pinf_
+    return
+  end function get_pinf
+
+  integer(c_int) function get_pout() bind(C)
+    get_pout = pout_
+    return
+  end function get_pout
+
+  subroutine get_domain_bc (domain_bc_out) bind(C)
+    integer(c_int), intent(out)  :: domain_bc_out(6)
+    integer :: bcv
+    ! Default is that we reflect particles off domain boundaries if not periodic
+    domain_bc_out(1:6) = 1
+    if (cyclic_x) domain_bc_out(1:2) = 0
+    if (cyclic_y) domain_bc_out(3:4) = 0
+    if (cyclic_z) domain_bc_out(5:6) = 0
+
+    do bcv = 1,6
+       select case (trim(bc_type(bcv)))
+         case ('P_OUTFLOW','PO')
+            domain_bc_out(bcv) = 0
+       end select
+    end do
+  end subroutine get_domain_bc
 
 end module bc
