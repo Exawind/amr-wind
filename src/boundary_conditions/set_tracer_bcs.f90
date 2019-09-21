@@ -47,21 +47,9 @@ subroutine set_tracer_bcs(time, &
    ! Local variables
    integer :: bcv, i, j, k
    integer :: nlft, nrgt, nbot, ntop, nup, ndwn
-   real    :: c0, c1, c2
 
    ! Used for probtype = {31,32,33} (channel_cylinder with Poiseuille plane inflow BC)
    real    :: x, y, z
-
-   ! Coefficients for linear extrapolation to ghost cells
-   c0 = two 
-   c1 = -one 
-   c2 = zero 
-
-   ! Coefficients for quadratic extrapolation to ghost cells
-   ! (Comment to stay linear)
-   c0 = 8.0d0 / 3.0d0
-   c1 = -2.0d0
-   c2 = 1.0d0 / 3.0d0
 
    nlft = max(0,domlo(1)-tlo(1))
    nbot = max(0,domlo(2)-tlo(2))
