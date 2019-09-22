@@ -80,8 +80,6 @@
 
       end if
 
-      print *,'CYCLIC ',cyclic_x, cyclic_y, cyclic_z
-
       !
       ! BC -- Z direction
       !
