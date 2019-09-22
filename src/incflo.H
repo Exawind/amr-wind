@@ -113,11 +113,11 @@ public:
 
 private:
 
-    amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
-    amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
-    amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
-    amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
-    amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -230,8 +230,10 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ComputeDivTau(int lev, MultiFab& divtau, Vector<std::unique_ptr<MultiFab>>& vel,
-                       Vector<std::unique_ptr<MultiFab>>& density);
+    void ComputeDivTau(      Vector<std::unique_ptr<MultiFab>>& divtau,
+                             Vector<std::unique_ptr<MultiFab>>& vel,
+                       const Vector<std::unique_ptr<MultiFab>>& density,
+                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -338,6 +340,8 @@ private:
 
     bool advect_density = false;
     bool advect_tracer  = false;
+
+    bool explicit_diffusion  = false;
 
     // Fluid properties
     std::string fluid_model;

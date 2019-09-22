@@ -3,7 +3,7 @@
 
 #include <AMReX_AmrCore.H>
 #include <AMReX_MLMG.H>
-#include <AMReX_MLEBABecLap.H>
+#include <AMReX_MLEBTensorOp.H>
 
 //
 // Solver for the implicit part of the diffusion equation: 
@@ -56,7 +56,7 @@ public:
 private:
     // AmrCore data 
     amrex::AmrCore* amrcore;
-	amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
+    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
     int nghost; 
     amrex::Real cyl_speed = 0.0;
 
@@ -66,26 +66,25 @@ private:
     //
     // ( alpha a - beta div ( b grad ) ) phi = rhs
     //
-    amrex::MLEBABecLap matrix;
+    amrex::MLEBTensorOp matrix;
     amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> ueb;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> veb;
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>> vel_eb;
 
     // Boundary conditions
     int bc_lo[3], bc_hi[3];
 
     // DiffusionEquation verbosity
-	int verbose = 0;
+    int verbose = 0;
 
-	// Options to control MLMG behavior
-	int mg_verbose = 0;
-	int mg_cg_verbose = 0;
-	int mg_max_iter = 100;
-	int mg_cg_maxiter = 100;
-	int mg_max_fmg_iter = 0;
-	int mg_max_coarsening_level = 100;
+    // Options to control MLMG behavior
+    int mg_verbose = 0;
+    int mg_cg_verbose = 0;
+    int mg_max_iter = 100;
+    int mg_cg_maxiter = 100;
+    int mg_max_fmg_iter = 0;
+    int mg_max_coarsening_level = 100;
     amrex::Real mg_rtol = 1.0e-11;
     amrex::Real mg_atol = 1.0e-14;
     std::string bottom_solver_type = "bicgstab";

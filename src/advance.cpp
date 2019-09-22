@@ -129,16 +129,16 @@ void incflo::ApplyPredictor()
     // We use the new ime value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
+    incflo_set_velocity_bcs(cur_time, vel_o, 0);
+
     if(incflo_verbose > 2)
     {
         amrex::Print() << "Before predictor step:" << std::endl;
         PrintMaxValues(new_time);
     }
 
-    incflo_set_velocity_bcs(cur_time, vel_o, 0);
-
     // Compute the explicit advective terms for velocity and tracers
-    ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
+    // ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -147,12 +147,16 @@ void incflo::ApplyPredictor()
     {
         // Save this value of eta as eta_old for use in the corrector as well
         MultiFab::Copy(*eta_old[lev], *eta[lev], 0, 0, eta[lev]->nComp(), eta_old[lev]->nGrow());
+    }
 
-        // compute only the off-diagonal terms here
-        ComputeDivTau(lev, *divtau_old[lev], vel_o, density_o);
+    // Compute explicit diffusion if used
+    if (explicit_diffusion)
+       ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
 
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
         // First add the convective term to the velocity
-        MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        // MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective term to the density and tracer
         int density_comp = 0; int tracer_comp = 1;
@@ -195,7 +199,8 @@ void incflo::ApplyPredictor()
     FillScalarBC();
 
     // Solve implicit diffusion equation for u*
-    diffusion_equation->solve(vel, density, eta, dt);
+    if (!explicit_diffusion)
+       diffusion_equation->solve(vel, density, eta, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
@@ -271,11 +276,12 @@ void incflo::ApplyCorrector()
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
 
+    // Compute explicit diffusion if used
+    if (explicit_diffusion)
+       ComputeDivTau(divtau, vel, density, eta);
+
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // compute only the off-diagonal terms here
-        ComputeDivTau(lev, *divtau[lev], vel, density);
-
         // First add the convective terms to velocity
         MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv_u[lev], 0, 0, AMREX_SPACEDIM, 0);
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
@@ -331,7 +337,8 @@ void incflo::ApplyCorrector()
     FillScalarBC();
 
     // Solve implicit diffusion equation for u*
-    diffusion_equation->solve(vel, density, eta, dt);
+    if (!explicit_diffusion)
+       diffusion_equation->solve(vel, density, eta, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
