@@ -137,8 +137,9 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective terms for velocity and tracers
-    // ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
+    // Compute the explicit advective terms: conv_u = -u dot grad(u) 
+    //                                       conv_s = -u dot grad(rho) in first component, -u dot grad(tracer) in second component
+    ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -152,11 +153,14 @@ void incflo::ApplyPredictor()
     // Compute explicit diffusion if used
     if (explicit_diffusion)
        ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
+    else
+       for (int lev = 0; lev <= finest_level; lev++)
+          divtau_old[lev]->setVal(0.);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
         // First add the convective term to the velocity
-        // MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective term to the density and tracer
         int density_comp = 0; int tracer_comp = 1;
@@ -164,7 +168,8 @@ void incflo::ApplyPredictor()
         MultiFab::Saxpy( *tracer[lev], dt, *conv_s_old[lev],  tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
-        MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        if (explicit_diffusion)
+            MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
         if (probtype == 11)
@@ -270,15 +275,20 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective term: conv = - u dot grad(u) in first spots, -u dot grad(t) in last spot
+    // Compute the explicit advective terms: conv_u = -u dot grad(u) 
+    //                                       conv_s = -u dot grad(rho) in first component, -u dot grad(tracer) in second component
     ComputeUGradU(conv_u, vel, conv_s, density, tracer, new_time);
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
 
-    // Compute explicit diffusion if used
+    // Compute explicit diffusion if used -- note that even though we call this "explicit",
+    //   the diffusion term does end up being time-centered so formally second-order
     if (explicit_diffusion)
        ComputeDivTau(divtau, vel, density, eta);
+    else
+       for (int lev = 0; lev <= finest_level; lev++)
+          divtau[lev]->setVal(0.);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -297,8 +307,11 @@ void incflo::ApplyCorrector()
         MultiFab::Saxpy(*tracer[lev], dt / 2.0, *conv_s_old[lev], tracer_comp, 0, 1, 0);
 
         // Add the viscous terms         
-        MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev]    , 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        if (explicit_diffusion)
+        {
+            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev]    , 0, 0, AMREX_SPACEDIM, 0);
+            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        }
 
         // Add gravitational forces
         if (probtype == 11)
