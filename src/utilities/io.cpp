@@ -79,21 +79,19 @@ void incflo::WriteCheckPointFile() const
 	{
 
 		// This writes all three velocity components
-		VisMF::Write(
-			(*vel[lev]),
-			amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[0]));
+		VisMF::Write((*vel[lev]),
+			     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[0]));
 
 		// This writes all three pressure gradient components
-		VisMF::Write(
-			(*gp[lev]),
-			amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[3]));
+		VisMF::Write((*gp[lev]),
+			      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[3]));
 
 		// Write scalar variables
 		for(int i = 0; i < chkscalarVars.size(); i++)
 		{
-			VisMF::Write(*((*chkscalarVars[i])[lev]),
-						 amrex::MultiFabFileFullPrefix(
-							 lev, checkpointname, level_prefix, chkscaVarsName[i]));
+		   VisMF::Write(*((*chkscalarVars[i])[lev]),
+				 amrex::MultiFabFileFullPrefix(
+				 lev, checkpointname, level_prefix, chkscaVarsName[i]));
 		}
 	}
 }
@@ -195,32 +193,32 @@ void incflo::ReadCheckpointFile()
 	// Load the field data
 	for(int lev = 0; lev <= finest_level; ++lev)
 	{
-		// Read velocity and pressure gradients
-		MultiFab mf_vel;
-		VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
-        vel[lev]->copy(mf_vel, 0, 0, AMREX_SPACEDIM, 0, 0);
+	    // Read velocity and pressure gradients
+	    MultiFab mf_vel;
+	    VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
+            MultiFab::Copy((*vel[lev]), mf_vel, 0, 0, AMREX_SPACEDIM, 0);
 
-		MultiFab mf_gp;
-		VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
-        gp[lev]->copy(mf_gp, 0, 0, AMREX_SPACEDIM, 0, 0);
+	    MultiFab mf_gp;
+	    VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
+            MultiFab::Copy((*gp[lev]), mf_gp, 0, 0, AMREX_SPACEDIM, 0);
 
-		// Read scalar variables
-		for(int i = 0; i < chkscalarVars.size(); i++)
-		{
-            // If we have created the walls using the domain boundary conditions and not
-            //    by creating them from implicit functions, then the implicit_functions mf
-            //    will be empty.  We don't want to fail when reading so we allow the code
-            //    to read it in an empty multifab just for this one.
-            int allow_empty_mf = 0;
-            if (chkscaVarsName[i] == "implicit_functions") allow_empty_mf = 1;
+	    // Read scalar variables
+	    for (int i = 0; i < chkscalarVars.size(); i++)
+	    {
+                // If we have created the walls using the domain boundary conditions and not
+                //    by creating them from implicit functions, then the implicit_functions mf
+                //    will be empty.  We don't want to fail when reading so we allow the code
+                //    to read it in an empty multifab just for this one.
+                int allow_empty_mf = 0;
+                if (chkscaVarsName[i] == "implicit_functions") allow_empty_mf = 1;
 
-			MultiFab mf;
-            VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix,
-                                                          chkscaVarsName[i]), nullptr,
-                        ParallelDescriptor::IOProcessorNumber(), allow_empty_mf);
-
-            (*chkscalarVars[i])[lev]->copy(mf, 0, 0, 1, 0, 0);
-		}
+                MultiFab mf;
+                VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix,
+                                                              chkscaVarsName[i]), nullptr,
+                                                              ParallelDescriptor::IOProcessorNumber(), 
+                                                              allow_empty_mf);
+                MultiFab::Copy(*((*chkscalarVars[i])[lev]), mf, 0, 0, 1, 0);
+	    }
 	}
 
 	amrex::Print() << "Restart complete" << std::endl;

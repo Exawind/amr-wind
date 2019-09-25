@@ -69,8 +69,11 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
         }
         phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 1,
                                     MFInfo(), *(*ebfactory)[lev]));
-        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 1,
+
+        // No ghost cells needed for rhs
+        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0,
                                     MFInfo(), *(*ebfactory)[lev]));
+
         vel_eb[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                        MFInfo(), *(*ebfactory)[lev]));
     }
@@ -123,7 +126,7 @@ DiffusionEquation::DiffusionEquation(AmrCore* _amrcore,
     // It is essential that we set MaxOrder to 2 if we want to use the standard
     // phi(i)-phi(i-1) approximation for the gradient at Dirichlet boundaries.
     // The solver's default order is 3 and this uses three points for the gradient.
-    matrix.setMaxOrder(2);
+    matrix.setMaxOrder(3);
 
     // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
     matrix.setDomainBC({(LinOpBCType) bc_lo[0], (LinOpBCType) bc_lo[1], (LinOpBCType) bc_lo[2]},
@@ -205,7 +208,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel_in,
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
         // Set the right hand side to equal rho
-        rhs[lev]->copy(*vel_in[lev], 0, 0, 3, 1, 1);
+        MultiFab::Copy((*rhs[lev]),(*vel_in[lev]), 0, 0, AMREX_SPACEDIM, 0);
 
         // Multiply rhs by rho to get momentum
         // Note that vel holds the updated velocity:
@@ -216,7 +219,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel_in,
            MultiFab::Multiply((*rhs[lev]), (*ro_in[lev]), 0, i, 1, rhs[lev]->nGrow());
 
         // By this point we must have filled the Dirichlet values of phi stored in ghost cells
-        phi[lev]->copy(*vel_in[lev], 0, 0, 3, 1, 1);
+        MultiFab::Copy(*phi[lev],*vel_in[lev], 0, 0, AMREX_SPACEDIM, 1);
         phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
         matrix.setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
 
@@ -248,7 +251,7 @@ void DiffusionEquation::solve(Vector<std::unique_ptr<MultiFab>>& vel_in,
     for(int lev = 0; lev <= amrcore->finestLevel(); lev++)
     {
         phi[lev]->FillBoundary(amrcore->Geom(lev).periodicity());
-        vel_in[lev]->copy(*phi[lev], 0, 0, 3, 1, 1);
+        MultiFab::Copy(*vel_in[lev], *phi[lev], 0, 0, AMREX_SPACEDIM, 1);
     }
 
     if(verbose > 0)
