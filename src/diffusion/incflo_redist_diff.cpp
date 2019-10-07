@@ -28,10 +28,6 @@ step2(const Box& grown1_bx,
 
   Array4<const EBCellFlag> const& flags = flags_fab.array();
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
   AMREX_HOST_DEVICE_FOR_3D(grown1_bx, i, j, k,
   {
     if(flags(i,j,k).isSingleValued())
@@ -61,10 +57,7 @@ step2(const Box& grown1_bx,
       delm(i,j,k) = 0;
   });
 
-
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }
 
 void
@@ -118,9 +111,7 @@ step3(const Box& grown1_bx,
     }
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }
 
 } // end namespace redist_diff_aux
@@ -179,8 +170,6 @@ compute_redist_diff(Box& bx,
     // Set this to zero here
     optmp_fbx.setVal(0.0);
  
-    Gpu::streamSynchronize();
-
     //
     // Step 2: compute delta M (mass gain or loss) on (lo-1,lo+1)
     //
@@ -199,8 +188,7 @@ compute_redist_diff(Box& bx,
     {
       divergence(i,j,k,n) = divc(i,j,k,n) + optmp(i,j,k);
     });
-
-  Gpu::streamSynchronize();
-
   }
+
+  Gpu::synchronize();
 }

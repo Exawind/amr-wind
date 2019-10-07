@@ -388,9 +388,7 @@ incflo::incflo_compute_ugradu(Box& bx,
     ugradu(i,j,k,conv_comp+n) *= coefficient; 
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }
 
 //
@@ -575,10 +573,6 @@ incflo::incflo_compute_ugradu_eb(Box& bx,
     fz(i,j,k,n) = w(i,j,k) * w_face;
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
   const int cyclic_x = geom[0].isPeriodic(0) ? 1 : 0;
   const int cyclic_y = geom[0].isPeriodic(1) ? 1 : 0;
   const int cyclic_z = geom[0].isPeriodic(2) ? 1 : 0;
@@ -594,7 +588,5 @@ incflo::incflo_compute_ugradu_eb(Box& bx,
     ugradu(i,j,k,conv_comp+n) *= coefficient; 
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }

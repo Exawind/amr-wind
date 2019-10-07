@@ -199,10 +199,6 @@ incflo::set_velocity_bcs(Real* time,
     });
   }
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
   if (nbot > 0)
   {
     AMREX_HOST_DEVICE_FOR_4D(bx_xz_lo_3D, 3, i, j, k, n,
@@ -250,10 +246,6 @@ incflo::set_velocity_bcs(Real* time,
     });
   }
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
   if (ndwn > 0)
   {
     AMREX_HOST_DEVICE_FOR_4D(bx_xy_lo_3D, 3, i, j, k, n,
@@ -299,10 +291,6 @@ incflo::set_velocity_bcs(Real* time,
     });
   }
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
 /* *******************************************************************
    Do this section next to make sure nsw over-rides any previous minf
    ****************************************************************** */
@@ -323,11 +311,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-      Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_yz_lo_2D, 3, i, j, k, n,
       {
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
@@ -355,11 +338,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-      Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_yz_hi_2D, 3, i, j, k, n,
       {
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
@@ -369,10 +347,6 @@ incflo::set_velocity_bcs(Real* time,
       });
     }
   }
-
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
 
   if (nbot > 0)
   {
@@ -390,11 +364,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-      Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_xz_lo_2D, 3, i, j, k, n,
       {
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
@@ -421,11 +390,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-        Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_xz_hi_2D, 3, i, j, k, n,
       {
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
@@ -435,10 +399,6 @@ incflo::set_velocity_bcs(Real* time,
       });
     }
   }
-
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
 
   if (ndwn > 0)
   {
@@ -456,11 +416,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-      Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_xy_lo_2D, 3, i, j, k, n,
       {
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -487,11 +442,6 @@ incflo::set_velocity_bcs(Real* time,
 
     if(*extrap_dir_bcs > 0)
     {
-
-#ifdef AMREX_USE_CUDA
-      Gpu::Device::synchronize();
-#endif
-
       AMREX_HOST_DEVICE_FOR_4D(bx_xy_hi_2D, 3, i, j, k, n,
       {
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);
@@ -502,7 +452,5 @@ incflo::set_velocity_bcs(Real* time,
     }
   }
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }

@@ -230,10 +230,6 @@ step2(const Box& grown1_bx,
     optmp(i,j,k) = 0;
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
-
   AMREX_HOST_DEVICE_FOR_3D(grown1_bx, i, j, k,
   {
     if(flags(i,j,k).isSingleValued())
@@ -263,9 +259,7 @@ step2(const Box& grown1_bx,
       delm(i,j,k) = 0;
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }
 
 void
@@ -320,9 +314,7 @@ step3(const Box& grown1_bx,
     }
   });
 
-#ifdef AMREX_USE_CUDA
-  Gpu::Device::synchronize();
-#endif
+  Gpu::synchronize();
 }
 
 } // end namespace divop_conv_aux
@@ -456,8 +448,6 @@ compute_divop_conv(
       }
     });
 
-    Gpu::streamSynchronize();
-
     //
     // Step 2: compute delta M (mass gain or loss) on (lo-1,lo+1)
     //
@@ -478,6 +468,8 @@ compute_divop_conv(
       divergence(i,j,k,conv_comp+n) = divc(i,j,k) + optmp(i,j,k);
     });
 
-  Gpu::streamSynchronize();
   }
+
+  Gpu::synchronize();
+
 }

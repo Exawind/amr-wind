@@ -127,11 +127,10 @@ void incflo::ComputeSlopes(int lev, MultiFab& Sborder,
                         zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                     }
                 });
+            Gpu::synchronize();
+
 	    } // end of cut cell region
 
-#ifdef AMREX_USE_CUDA
-    Gpu::Device::synchronize();
-#endif
 
             // TODO -- do we have domain and ilo_fab, etc on GPU???
 
@@ -211,12 +210,11 @@ void incflo::ComputeSlopes(int lev, MultiFab& Sborder,
                     zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                 }
             });
+
+        Gpu::synchronize();
+
 	} // not covered
     } // MFIter
-
-#ifdef AMREX_USE_CUDA
-    Gpu::Device::synchronize();
-#endif
 
     xslopes_in[lev]->FillBoundary(geom[lev].periodicity());
     yslopes_in[lev]->FillBoundary(geom[lev].periodicity());
