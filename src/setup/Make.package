@@ -3,6 +3,7 @@ f90EXE_sources += init_fluid.f90
 f90EXE_sources += set_bc_type.f90 
 f90EXE_sources += set_delp_dir.f90
 f90EXE_sources += set_p0.f90 
+f90EXE_sources += set_ppe_bcs.f90 
 
 CEXE_sources += incflo_arrays.cpp
 CEXE_sources += init.cpp

@@ -6,8 +6,7 @@
 #include <AMReX_VisMF.H>
 
 #include <incflo.H>
-#include <mac_F.H>
-#include <projection_F.H>
+#include <incflo_proj_F.H>
 #include <setup_F.H>
 
 #include <limits>
@@ -137,9 +136,8 @@ void incflo::ApplyPredictor()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective terms: conv_u = -u dot grad(u) 
-    //                                       conv_s = -u dot grad(rho) in first component, -u dot grad(tracer) in second component
-    ComputeUGradU(conv_u_old, vel_o, conv_s_old, density_o, tracer_o, cur_time);
+    // Compute the explicit advective terms R_u^n and R_s^n
+    incflo_compute_convective_term( conv_u_old, conv_s_old, vel_o, density_o, tracer_o, cur_time );
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -275,9 +273,8 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective terms: conv_u = -u dot grad(u) 
-    //                                       conv_s = -u dot grad(rho) in first component, -u dot grad(tracer) in second component
-    ComputeUGradU(conv_u, vel, conv_s, density, tracer, new_time);
+    // Compute the explicit advective terms R_u^* and R_s^*
+    incflo_compute_convective_term( conv_u, conv_s, vel, density, tracer, new_time );
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();

@@ -15,7 +15,6 @@
 
 #include <eb_if.H>
 #include <DiffusionEquation.H>
-#include <MacProjection.H>
 #include <PoissonEquation.H>
 #include <incflo_bclist.H>
 
@@ -105,17 +104,35 @@ public:
                                   Vector< std::unique_ptr<MultiFab> >& vel,
                                   int extrap_dir_bcs);
 
-    void set_velocity_bcs(Real* time,
+    void set_velocity_bcs(Real time,
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
                           const int* extrap_dir_bcs);
 
+    void incflo_set_scalar_bcs (Real time,
+                                Vector< std::unique_ptr<MultiFab> >& density,
+                                Vector< std::unique_ptr<MultiFab> >& trac);
+
+    void set_scalar_bcs(Real time,
+                        const int lev,
+                        FArrayBox& scal_fab,
+                        const int comp,
+                        const Box& domain);
+
 private:
+
+     static int nlev;
+
+     // Unit vectors in Cartesian space
+     static IntVect e_x;
+     static IntVect e_y;
+     static IntVect e_z;
 
      amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
      amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
      amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
+     amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
      amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
      amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
 
@@ -149,6 +166,10 @@ private:
     Real ic_w = 0.0;
     Real ic_p = 0.0;
 
+    // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_lobc;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_hibc;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Simulate!
@@ -168,61 +189,103 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void ComputeUGradU(Vector<std::unique_ptr<MultiFab>>& conv_u,
-			   Vector<std::unique_ptr<MultiFab>>& vel, 
-			   Vector<std::unique_ptr<MultiFab>>& conv_s,
-			   Vector<std::unique_ptr<MultiFab>>& density, 
-			   Vector<std::unique_ptr<MultiFab>>& tracer, 
-                           Real time);
+     void incflo_compute_convective_term(Vector< std::unique_ptr<MultiFab> >& conv_u,
+                                         Vector< std::unique_ptr<MultiFab> >& conv_s,
+                                         Vector< std::unique_ptr<MultiFab> >& vel,
+                                         Vector< std::unique_ptr<MultiFab> >& density_in,
+                                         Vector< std::unique_ptr<MultiFab> >& tracer_in,
+                                         Real time);
 
-	void ComputeSlopes(int lev, MultiFab& Sborder, 
-			   Vector<std::unique_ptr<MultiFab>>& xslopes,
-			   Vector<std::unique_ptr<MultiFab>>& yslopes,
-			   Vector<std::unique_ptr<MultiFab>>& zslopes,
-                           int slopes_comp);
+    void incflo_predict_vels_on_faces(int lev, Real time,
+                                      Vector< std::unique_ptr<MultiFab> >& vel);
 
-	void ComputeVelocityAtFaces(Vector<std::unique_ptr<MultiFab>>& vel, Real time);
+    void apply_MAC_projection ( Vector< std::unique_ptr<MultiFab> >& u_mac,
+                                Vector< std::unique_ptr<MultiFab> >& v_mac,
+                                Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                Vector< std::unique_ptr<MultiFab> >& density,
+                                Real time);
 
-        void incflo_compute_ugradu(Box& bx,
-                                   Vector< std::unique_ptr<MultiFab> >& conv,
-                                   const int conv_comp,
-                                   Vector< std::unique_ptr<MultiFab> >& state,
-                                   const int state_comp,
-                                   const int n_comp,
-                                   Vector< std::unique_ptr<MultiFab> >& xslopes,
-                                   Vector< std::unique_ptr<MultiFab> >& yslopes,
-                                   Vector< std::unique_ptr<MultiFab> >& zslopes,
-                                   const int slopes_comp,
-                                   Vector< std::unique_ptr<MultiFab> >& u_mac,
-                                   Vector< std::unique_ptr<MultiFab> >& v_mac,
-                                   Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                   MFIter* mfi,
-                                   Box& domain,
-                                   const int lev,
-                                   const bool is_conservative);
+    void incflo_compute_slopes(int lev, Real time, MultiFab& Sborder,
+                               Vector<std::unique_ptr<MultiFab>>& xslopes_in,
+                               Vector<std::unique_ptr<MultiFab>>& yslopes_in,
+                               Vector<std::unique_ptr<MultiFab>>& zslopes_in,
+                               int slopes_comp);
 
-       void incflo_compute_ugradu_eb(Box& bx,
-                                     Vector< std::unique_ptr<MultiFab> >& conv,
-                                     const int conv_comp,
-                                     Vector< std::unique_ptr<MultiFab> >& state,
-                                     const int state_comp,
-                                     const int n_comp,
-                                     Vector< std::unique_ptr<MultiFab> >& xslopes,
-                                     Vector< std::unique_ptr<MultiFab> >& yslopes,
-                                     Vector< std::unique_ptr<MultiFab> >& zslopes,
-                                     const int slopes_comp,
-                                     Vector< std::unique_ptr<MultiFab> >& u_mac,
-                                     Vector< std::unique_ptr<MultiFab> >& v_mac,
-                                     Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                     MFIter* mfi,
-                                     Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
-                                     Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
-                                     const amrex::MultiFab* volfrac,
-                                     const amrex::MultiCutFab* bndrycent,
-                                     Box& domain,
-                                     const EBCellFlagFab& flags,
-                                     const int lev,
-                                     const bool is_conservative);
+    void set_MAC_velocity_bcs (int lev,
+                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac,
+                               Real time);
+
+    void incflo_compute_fluxes(const int lev,
+                               Vector< std::unique_ptr<MultiFab> >& a_fx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fy,
+                               Vector< std::unique_ptr<MultiFab> >& a_fz,
+                               Vector< std::unique_ptr<MultiFab> >& state,
+                               const int state_comp, const int n_comp,
+                               Vector< std::unique_ptr<MultiFab> >& xslopes,
+                               Vector< std::unique_ptr<MultiFab> >& yslopes,
+                               Vector< std::unique_ptr<MultiFab> >& zslopes,
+                               const int slopes_comp,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac);
+
+    void incflo_compute_ugradu(const int lev, Box& bx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fy,
+                               Vector< std::unique_ptr<MultiFab> >& a_fz,
+                               Vector< std::unique_ptr<MultiFab> >& state,
+                               const int state_comp, const int n_comp,
+                               Vector< std::unique_ptr<MultiFab> >& xslopes,
+                               Vector< std::unique_ptr<MultiFab> >& yslopes,
+                               Vector< std::unique_ptr<MultiFab> >& zslopes,
+                               const int slopes_comp,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac,
+                               MFIter* mfi, Box& domain);
+  
+    void incflo_compute_ugradu_eb(const int lev, Box& bx,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fx,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fy,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fz,
+                                  Vector< std::unique_ptr<MultiFab> >& state,
+                                  const int state_comp, const int n_comp,
+                                  Vector< std::unique_ptr<MultiFab> >& xslopes,
+                                  Vector< std::unique_ptr<MultiFab> >& yslopes,
+                                  Vector< std::unique_ptr<MultiFab> >& zslopes,
+                                  const int slopes_comp,
+                                  Vector< std::unique_ptr<MultiFab> >& u_mac,
+                                  Vector< std::unique_ptr<MultiFab> >& v_mac,
+                                  Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                  MFIter* mfi,
+                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
+                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
+                                  const amrex::MultiFab* volfrac,
+                                  const amrex::MultiCutFab* bndrycent,
+                                  const amrex::iMultiFab* cc_mask,
+                                  Box& domain, const EBCellFlagFab& flags);
+
+     void incflo_redistribute( int lev,
+                               MultiFab& conv_tmp_in,
+                               Vector< std::unique_ptr<MultiFab> >& conv_out,
+                               int conv_comp, int ncomp);
+
+     // Verbosity
+     int  mac_mg_verbose = 0;
+     int  mac_mg_cg_verbose = 0;
+
+     // Control MLMG behavior
+     int  mac_mg_maxiter = 200;
+     int  mac_mg_cg_maxiter = 200;
+     Real mac_mg_rtol = 1.0e-11;
+     Real mac_mg_atol = 1.0e-14;
+     std::string mac_bottom_solver_type;
+
+     // Max coarsening level
+     int  mac_mg_max_coarsening_level = 100;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -420,7 +483,6 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Instances of self-written classes for MAC projection, diffusion + Poisson equations 
-    std::unique_ptr<MacProjection> mac_projection;
     std::unique_ptr<DiffusionEquation> diffusion_equation;
     std::unique_ptr<PoissonEquation> poisson_equation;
 
@@ -477,14 +539,11 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void FillPatchVel(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
-    void GetDataVel(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+    void FillPatchVel   (int lev, Real time, MultiFab& mf, int icomp, int ncomp);
+    void FillPatchScalar(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
 
-    void FillPatchDensity(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
-    void GetDataDensity(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
-
-    void FillPatchTracer(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
-    void GetDataTracer(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+    void GetDataVel     (int lev, Real time, Vector<MultiFab*>& data,            Vector<Real>& datatime);
+    void GetDataScalar  (int lev, Real time, Vector<MultiFab*>& data, int icomp, Vector<Real>& datatime);
 
     void AverageDown();
     void AverageDownTo(int crse_lev);

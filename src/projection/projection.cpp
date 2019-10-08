@@ -2,8 +2,6 @@
 #include <AMReX_Box.H>
 
 #include <incflo.H>
-#include <mac_F.H>
-#include <projection_F.H>
 
 //
 // Computes the following decomposition:

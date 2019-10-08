@@ -1,9 +1,9 @@
-CEXE_sources += convection.cpp
-CEXE_sources += incflo_compute_velocity_at_faces.cpp
+CEXE_sources += incflo_compute_convective_term.cpp
+CEXE_sources += incflo_compute_fluxes.cpp
 CEXE_sources += incflo_divop_conv.cpp
+CEXE_sources += incflo_MAC_projection.cpp 
+CEXE_sources += incflo_predict_vels_on_faces.cpp
+CEXE_sources += incflo_set_mac_velocity_bcs.cpp
 CEXE_sources += incflo_slopes.cpp
-CEXE_sources += MacProjection.cpp
 
 CEXE_headers += incflo_divop_conv.hpp
-
-

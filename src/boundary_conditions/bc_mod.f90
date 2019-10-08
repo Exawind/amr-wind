@@ -97,6 +97,12 @@ contains
     return
   end function get_bc_w
 
+  real(rt) function get_bc_r(pID) bind(C)
+    integer(c_int), intent(in) :: pID
+    get_bc_r = bc_r(pID)
+    return
+  end function get_bc_r
+
   real(rt) function get_bc_t(pID) bind(C)
     integer(c_int), intent(in) :: pID
     get_bc_t = bc_t(pID)

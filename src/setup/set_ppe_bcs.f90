@@ -1,33 +1,23 @@
-!
-!
-!  This module contains the subroutines to perform some of the steps of the
-!  projection method.
-!
-!
-module projection_mod
 
-   use amrex_fort_module, only: ar => amrex_real
-   use iso_c_binding,     only: c_int
-
-   use constant,          only: zero, half, one
-
-   implicit none
-   private
-
-contains
    !
    ! Set the boundary condition for Pressure Poisson Equation (PPE)
    !
    ! MLMG expects the BC type to be the uniform on each domain wall.
-   ! Since incflo allows for BC patches on each wall, we first check that
+   ! Since mfix allows for BC patches on each wall, we first check that
    ! the user-provided BCs are uniform, and then return a single BC type for
    ! each domain wall.
    !
-   subroutine set_ppe_bc ( bc_lo, bc_hi, domlo, domhi, ng, bct_ilo, bct_ihi, &
-        & bct_jlo, bct_jhi, bct_klo, bct_khi)  bind(C)
+   subroutine set_ppe_bcs ( bc_lo, bc_hi, domlo, domhi, ng,  &
+                            bct_ilo, bct_ihi, bct_jlo, bct_jhi, bct_klo, bct_khi)  bind(C)
+
+      use amrex_fort_module, only: ar => amrex_real
+      use iso_c_binding ,    only: c_int
+      use param,             only: zero, half, one
 
       use amrex_lo_bctypes_module
       use bc
+
+      implicit none
 
       ! Array of global BC types
       integer(c_int), intent(  out) :: bc_lo(3), bc_hi(3)
@@ -74,6 +64,7 @@ contains
          end if
 
       end if
+
 
       !
       ! BC -- Y direction
@@ -145,6 +136,4 @@ contains
 
       end function get_bc_face
 
-   end subroutine set_ppe_bc
-
-end module projection_mod
+   end subroutine set_ppe_bcs

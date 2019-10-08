@@ -82,6 +82,7 @@ void incflo::ReadParameters()
         if(plt_divu       == 1) pltVarCount += 1;
         if(plt_vfrac      == 1) pltVarCount += 1;
 	}
+
 	{
         // Prefix incflo
 	ParmParse pp("incflo");
@@ -204,6 +205,18 @@ void incflo::ReadParameters()
                          &n_0, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
+
+	{
+        ParmParse pp_mac("mac");
+        pp_mac.query( "mg_verbose"   , mac_mg_verbose );
+        pp_mac.query( "mg_cg_verbose", mac_mg_cg_verbose );
+        pp_mac.query( "mg_rtol"      , mac_mg_rtol );
+        pp_mac.query( "mg_atol"      , mac_mg_atol );
+        pp_mac.query( "mg_maxiter"   , mac_mg_maxiter );
+        pp_mac.query( "mg_cg_maxiter", mac_mg_cg_maxiter );
+        pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level );
+	}
+
     {
         // Prefix cylinder
 		ParmParse pp("cylinder");
@@ -215,10 +228,6 @@ void incflo::PostInit(int restart_flag)
 {
     // Set the BC types on domain boundary
     SetBCTypes();
-
-    // Reset MAC projection object
-    mac_projection.reset(new MacProjection(this, nghost, &ebfactory, probtype));
-    mac_projection->set_bcs(bc_ilo, bc_ihi, bc_jlo, bc_jhi, bc_klo, bc_khi);
 
     poisson_equation.reset(new PoissonEquation(this, &ebfactory,
                                                bc_ilo, bc_ihi,
@@ -427,11 +436,6 @@ void incflo::InitialProjection()
         amrex::Print() << "Initial projection:" << std::endl;
         PrintMaxValues(time);
     }
-
-    // Need to add this call here so that the MACProjection internal arrays
-    //  are allocated so that the cell-centered projection can use the MAC
-    //  data structures and set_velocity_bcs routine
-    mac_projection->update_internals();
 
     Real dummy_dt = 1.0;
     ApplyProjection(cur_time, dummy_dt);

@@ -2,7 +2,7 @@
 #include <AMReX_Vector.H>
 
 #include <PoissonEquation.H>
-#include <projection_F.H>
+#include <incflo_proj_F.H>
 
 using namespace amrex;
 
@@ -41,12 +41,12 @@ PoissonEquation::PoissonEquation(AmrCore* _amrcore,
     Box domain(geom[0].Domain());
 
     // The boundary conditions need only be set at level 0
-    set_ppe_bc(bc_lo, bc_hi,
-               domain.loVect(), domain.hiVect(),
-  	       &nghost,
-               bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-               bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-               bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+    set_ppe_bcs(bc_lo, bc_hi,
+                domain.loVect(), domain.hiVect(),
+  	        &nghost,
+                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
 
     // Resize and reset sigma
     sigma.resize(max_level + 1);

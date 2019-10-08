@@ -1,8 +1,17 @@
-#include <AMReX_EBAmrUtil.H>
 
 #include <incflo.H>
 #include <derive_F.H>
 #include <param_mod_F.H>
+
+// Need this for TagCutCells
+#include <AMReX_EBAmrUtil.H>
+
+// Define unit vectors for easily convert indices
+amrex::IntVect incflo::e_x(1,0,0);
+amrex::IntVect incflo::e_y(0,1,0);
+amrex::IntVect incflo::e_z(0,0,1);
+
+int incflo::nlev = 1;
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
@@ -11,9 +20,23 @@ incflo::incflo()
   : m_bc_u(get_dim_bc()+1, 0)
   , m_bc_v(get_dim_bc()+1, 0)
   , m_bc_w(get_dim_bc()+1, 0)
+  , m_bc_r(get_dim_bc()+1, 0)
   , m_bc_t(get_dim_bc()+1, 0)
   , m_bc_p(get_dim_bc()+1, 0)
 {
+    // NOTE: Geometry on all levels has just been defined in the AmrCore
+    // constructor. No valid BoxArray and DistributionMapping have been defined.
+    // But the arrays for them have been resized.
+
+    /****************************************************************************
+     *                                                                          *
+     * Set max number of levels (nlevs)                                         *
+     *                                                                          *
+     ***************************************************************************/
+
+    nlev = maxLevel() + 1;
+    amrex::Print() << "Number of levels: " << nlev << std::endl;
+
     // Read inputs file using ParmParse
     ReadParameters();
 
