@@ -190,7 +190,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
         if (bct == minf) w(i,j,k) = p_bc_w[bcv];
         if (bct ==  nsw) w(i,j,k) = 0.;
 
-        if (probtype == 32) 
+        if (probtype == 33) 
         {
            Real x = (i+0.5) / (dom_hi[0] - dom_lo[0] + 1);
            w(i,j,k) = 6.0 * p_bc_w[bcv] * x * (1.0 - x);
