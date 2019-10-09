@@ -109,7 +109,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
                               geom[lev], already_on_centroid);
 
          Print() << "  * On level "<< lev
-                 << " max(abs(diveu)) = " << Norm(mac_rhs,lev,0,0) << "\n";
+                 << " max(abs(divu)) = " << Norm(mac_rhs,lev,0,0) << "\n";
       }  
    }
 
@@ -198,7 +198,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
                               geom[lev], already_on_centroid);
 
          Print() << "  * On level "<< lev
-                 << " max(abs(diveu)) = " << Norm(mac_rhs,lev,0,0) << "\n";
+                 << " max(abs(divu)) = " << Norm(mac_rhs,lev,0,0) << "\n";
       } 
 
       // Set bcs on u_mac
