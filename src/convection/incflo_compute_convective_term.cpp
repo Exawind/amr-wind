@@ -197,17 +197,17 @@ incflo::incflo_redistribute( int lev,
 
           if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
           {
-                 // If tile is completely covered by EB geometry, set slopes
-             // value to some very large number so we know if
-             // we accidentally use these covered slopes later in calculations
-             (*conv_out[lev])[mfi].setVal( get_my_huge(), bx, conv_comp, ncomp);
+              // If tile is completely covered by EB geometry, 
+              // set term to some very large number so we know if
+              // we accidentally use these later in calculations
+              (*conv_out[lev])[mfi].setVal( get_my_huge(), bx, conv_comp, ncomp);
           }
           else
           {
              // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
              if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
              {
-                (*conv_out[lev])[mfi].copy(conv_tmp_in[mfi],conv_comp,0,ncomp);
+                (*conv_out[lev])[mfi].copy(conv_tmp_in[mfi],bx,0,bx,conv_comp,ncomp);
              }
              else
              {
