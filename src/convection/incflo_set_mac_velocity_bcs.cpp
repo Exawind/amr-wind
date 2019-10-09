@@ -128,7 +128,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nlft > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(ulo_bx_yz, i, j, k,
+      AMREX_FOR_3D(ulo_bx_yz, i, j, k,
       {
         const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
@@ -145,7 +145,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nrgt > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(uhi_bx_yz, i, j, k,
+      AMREX_FOR_3D(uhi_bx_yz, i, j, k,
       {
         const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
@@ -156,7 +156,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nbot > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(vlo_bx_xz, i, j, k,
+      AMREX_FOR_3D(vlo_bx_xz, i, j, k,
       {
         const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
@@ -172,7 +172,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (ntop > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(vhi_bx_xz, i, j, k,
+      AMREX_FOR_3D(vhi_bx_xz, i, j, k,
       {
         const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
@@ -183,7 +183,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (ndwn > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(wlo_bx_xy, i, j, k,
+      AMREX_FOR_3D(wlo_bx_xy, i, j, k,
       {
         const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -200,7 +200,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nup > 0)
     {
-      AMREX_HOST_DEVICE_FOR_3D(whi_bx_xy, i, j, k,
+      AMREX_FOR_3D(whi_bx_xy, i, j, k,
       {
         const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);
@@ -209,6 +209,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
       });
     }
 
-    Gpu::streamSynchronize();
+    // NOTE: here we do not need host-device synchronization since it is already
+    // included in the MFIter destructor
   }
 }

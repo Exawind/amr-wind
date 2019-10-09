@@ -94,7 +94,7 @@ void incflo::ComputeStrainrate()
             else if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-                AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+                AMREX_FOR_3D(bx, i, j, k,
                 {
                     ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
                     vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
@@ -121,7 +121,7 @@ void incflo::ComputeStrainrate()
                 Real c1 = 2.0;
                 Real c2 = -0.5;
 
-                AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+                AMREX_FOR_3D(bx, i, j, k,
                 {
                     if (flag_fab(i,j,k).isCovered())
                     {
@@ -249,6 +249,8 @@ void incflo::ComputeStrainrate()
                                 + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
                     }
                 });
+
+                Gpu::synchronize();
             }
         }
     }
@@ -301,7 +303,7 @@ void incflo::ComputeVorticity()
             else if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-                AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+                AMREX_FOR_3D(bx, i, j, k,
                 {
                     vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
                     wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
@@ -323,7 +325,7 @@ void incflo::ComputeVorticity()
                 Real c1 = 2.0;
                 Real c2 = -0.5;
 
-                AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+                AMREX_FOR_3D(bx, i, j, k,
                 {
                     if (flag_fab(i,j,k).isCovered())
                     {
@@ -426,6 +428,8 @@ void incflo::ComputeVorticity()
                         vort_fab(i,j,k) = sqrt(pow(wy-vz,2) + pow(uz-wx,2) + pow(vx-uy,2));
                     }
                 });
+
+                Gpu::synchronize();
             } // Cut cells
         } // MFIter
     } // Loop over levels
