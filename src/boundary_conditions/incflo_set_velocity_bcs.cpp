@@ -4,7 +4,7 @@
 #include <bc_mod_F.H>
 
 //              
-//  These subroutines set the BCs for the velocity components only.
+//  These subroutines set the BCs for the vel_arr components only.
 //
 
 void
@@ -47,7 +47,7 @@ incflo::set_velocity_bcs(Real time,
   IntVect dom_lo(domain.loVect());
   IntVect dom_hi(domain.hiVect());
 
-  Array4<Real> const& vel = vel_fab.array();
+  Array4<Real> const& vel_arr = vel_fab.array();
 
   IntVect vel_lo(vel_fab.loVect());
   IntVect vel_hi(vel_fab.hiVect());
@@ -163,20 +163,20 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(dom_lo[0],j,k,n);
+        vel_arr(i,j,k,n) = vel_arr(dom_lo[0],j,k,n);
 
       } else if(bct == minf) {
         if (n == 0)
         {
-           vel(i,j,k,n) = p_bc_u[bcv];
+           vel_arr(i,j,k,n) = p_bc_u[bcv];
            if (probtype == 31)
            {
                Real y = (j + 0.5) / (dom_hi[1] - dom_lo[1] + 1);
-               vel(i,j,k,n) =  6.0 * p_bc_u[bcv] * y * (1.0 - y);
+               vel_arr(i,j,k,n) =  6.0 * p_bc_u[bcv] * y * (1.0 - y);
            }
         }
         else
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
       }
     });
   }
@@ -189,13 +189,13 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(dom_hi[0],j,k,n);
+        vel_arr(i,j,k,n) = vel_arr(dom_hi[0],j,k,n);
       } else if(bct == minf)
       {
         if(n == 0)
-          vel(i,j,k,n) = p_bc_u[bcv];
+          vel_arr(i,j,k,n) = p_bc_u[bcv];
         else
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
       }
     });
   }
@@ -208,21 +208,21 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(i,dom_lo[1],k,n);
+        vel_arr(i,j,k,n) = vel_arr(i,dom_lo[1],k,n);
       } else if(bct == minf)
       {
         if(n == 1)
         {
-           vel(i,j,k,n) = p_bc_v[bcv];
+           vel_arr(i,j,k,n) = p_bc_v[bcv];
            if (probtype == 32)
            {
                Real z = (k + 0.5) / (dom_hi[2] - dom_lo[2] + 1);
-               vel(i,j,k,n) =  6.0 * p_bc_v[bcv] * z * (1.0 - z);
+               vel_arr(i,j,k,n) =  6.0 * p_bc_v[bcv] * z * (1.0 - z);
            }
         }
         else
         {
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
         }
       }
     });
@@ -236,13 +236,13 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(i,dom_hi[1],k,n);
+        vel_arr(i,j,k,n) = vel_arr(i,dom_hi[1],k,n);
       } else if(bct == minf)
       {
         if(n == 1)
-          vel(i,j,k,n) = p_bc_v[bcv];
+          vel_arr(i,j,k,n) = p_bc_v[bcv];
         else
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
       }
     });
   }
@@ -255,20 +255,20 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(i,j,dom_lo[2],n);
+        vel_arr(i,j,k,n) = vel_arr(i,j,dom_lo[2],n);
       } else if(bct == minf)
       {
         if(n == 2)
         {
-           vel(i,j,k,n) = p_bc_w[bcv];
+           vel_arr(i,j,k,n) = p_bc_w[bcv];
            if (probtype == 33)
            {
                Real x = (i + 0.5) / (dom_hi[0] - dom_lo[0] + 1);
-               vel(i,j,k,n) =  6.0 * p_bc_w[bcv] * x * (1.0 - x);
+               vel_arr(i,j,k,n) =  6.0 * p_bc_w[bcv] * x * (1.0 - x);
            }
         }
         else
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
       }
     });
   }
@@ -281,13 +281,13 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
       if((bct == pinf) or (bct == pout)) {
-        vel(i,j,k,n) = vel(i,j,dom_hi[2],n);
+        vel_arr(i,j,k,n) = vel_arr(i,j,dom_hi[2],n);
       } else if(bct == minf)
       {
         if(n == 2)
-          vel(i,j,k,n) = p_bc_w[bcv];
+          vel_arr(i,j,k,n) = p_bc_w[bcv];
         else
-          vel(i,j,k,n) = 0;
+          vel_arr(i,j,k,n) = 0;
       }
     });
   }
@@ -304,9 +304,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
       if(bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = 0.;
-        if (n == 1) vel(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel(i,j,k,n) = p_bc_w[bcv];
+        if (n == 0) vel_arr(i,j,k,n) = 0.;
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
+        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
     });
 
@@ -317,7 +317,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i+1,j,k,n) + c2*vel(i+2,j,k,n)) / 3.0;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i+1,j,k,n) + c2*vel_arr(i+2,j,k,n)) / 3.0;
 
       });
     }
@@ -331,9 +331,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
       if(bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = 0.;
-        if (n == 1) vel(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel(i,j,k,n) = p_bc_w[bcv];
+        if (n == 0) vel_arr(i,j,k,n) = 0.;
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
+        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
     });
 
@@ -344,7 +344,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i-1,j,k,n) + c2*vel(i-2,j,k,n)) / 3.0;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i-1,j,k,n) + c2*vel_arr(i-2,j,k,n)) / 3.0;
       });
     }
   }
@@ -357,9 +357,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel(i,j,k,n) = 0.;
-        if (n == 2) vel(i,j,k,n) = p_bc_w[bcv];
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 1) vel_arr(i,j,k,n) = 0.;
+        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
     });
 
@@ -370,7 +370,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i,j+1,k,n) + c2*vel(i,j+2,k,n)) / 3.0;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j+1,k,n) + c2*vel_arr(i,j+2,k,n)) / 3.0;
       });
     }
   }
@@ -383,9 +383,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel(i,j,k,n) = 0.;
-        if (n == 2) vel(i,j,k,n) = p_bc_w[bcv];
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 1) vel_arr(i,j,k,n) = 0.;
+        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
     });
 
@@ -396,7 +396,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i,j-1,k,n) + c2*vel(i,j-2,k,n)) / 3.0 ;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j-1,k,n) + c2*vel_arr(i,j-2,k,n)) / 3.0 ;
       });
     }
   }
@@ -409,9 +409,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel(i,j,k,n) = p_bc_v[bcv]; 
-        if (n == 2) vel(i,j,k,n) = 0.;
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv]; 
+        if (n == 2) vel_arr(i,j,k,n) = 0.;
       }
     });
 
@@ -422,7 +422,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i,j,k+1,n) + c2*vel(i,j,k+2,n)) / 3.0 ;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j,k+1,n) + c2*vel_arr(i,j,k+2,n)) / 3.0 ;
       });
     }
   }
@@ -435,9 +435,9 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel(i,j,k,n) = p_bc_v[bcv]; 
-        if (n == 2) vel(i,j,k,n) = 0.;
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv]; 
+        if (n == 2) vel_arr(i,j,k,n) = 0.;
       }
     });
 
@@ -448,7 +448,7 @@ incflo::set_velocity_bcs(Real time,
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
         if(bct == minf || bct == nsw)
-          vel(i,j,k,n) = (c0*vel(i,j,k,n) + c1*vel(i,j,k-1,n) + c2*vel(i,j,k-2,n)) / 3.0;
+          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j,k-1,n) + c2*vel_arr(i,j,k-2,n)) / 3.0;
       });
     }
   }

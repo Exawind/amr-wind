@@ -119,9 +119,12 @@ incflo::incflo_compute_fluxes(int lev,
 
             if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
             {
-                 a_fx[lev]->setVal(covered_val);
-                 a_fy[lev]->setVal(covered_val);
-                 a_fz[lev]->setVal(covered_val);
+                 const Box ubx = amrex::surroundingNodes(bx,0);
+                 const Box vbx = amrex::surroundingNodes(bx,1);
+                 const Box wbx = amrex::surroundingNodes(bx,2);
+                 a_fx[lev]->setVal(covered_val, ubx, 0, ncomp);
+                 a_fy[lev]->setVal(covered_val, vbx, 0, ncomp);
+                 a_fz[lev]->setVal(covered_val, wbx, 0, ncomp);
             }
             else
             {

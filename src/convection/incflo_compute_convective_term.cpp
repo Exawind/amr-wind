@@ -182,11 +182,8 @@ incflo::incflo_redistribute( int lev,
     EB_set_covered(conv_tmp_in, covered_val);
     conv_tmp_in.FillBoundary(geom[lev].periodicity());
 
-    // Get EB geometric info
-    // Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac; SET_BUT_NEVER_USED
     const amrex::MultiFab*                    volfrac;
 
-    //areafrac  =   ebfactory[lev] -> getAreaFrac();
     volfrac   = &(ebfactory[lev] -> getVolFrac());
 
     for (MFIter mfi(*conv_out[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
