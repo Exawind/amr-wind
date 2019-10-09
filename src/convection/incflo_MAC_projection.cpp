@@ -73,11 +73,13 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    {
       density_in[lev]->FillBoundary(geom[lev].periodicity());
 
+      // We make these with no ghost cells
       rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
       rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
       rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
 
-      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo(),*ebfactory[lev]));
+      // This doesn't need ghost cells either
+      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
       mac_rhs[lev] -> setVal(0.);
 
       mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo(),*ebfactory[lev]));

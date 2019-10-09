@@ -232,12 +232,12 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        // ****************************************************************************
        // Make sure to fill face-centered values outside our grid before interpolating
        // ****************************************************************************
-       upls.FillBoundary();
-       umns.FillBoundary();
-       vpls.FillBoundary();
-       vmns.FillBoundary();
-       wpls.FillBoundary();
-       wmns.FillBoundary();
+       upls.FillBoundary(geom[lev].periodicity());
+       umns.FillBoundary(geom[lev].periodicity());
+       vpls.FillBoundary(geom[lev].periodicity());
+       vmns.FillBoundary(geom[lev].periodicity());
+       wpls.FillBoundary(geom[lev].periodicity());
+       wmns.FillBoundary(geom[lev].periodicity());
 
        // ****************************************************************************
        // Do interpolation to centroids -- only for cut cells
