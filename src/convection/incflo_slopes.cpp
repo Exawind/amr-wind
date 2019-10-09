@@ -50,7 +50,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
            if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
            {
 
-               AMREX_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, n,
+               AMREX_FOR_4D(bx, ncomp, i, j, k, n,
                {
                    // X direction
                    Real du_xl = 2.0*(state_fab(i  ,j,k,n) - state_fab(i-1,j,k,n));
@@ -79,12 +79,14 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    zslope          = (du_zr*du_zl > 0.0) ? zslope : 0.0;
                    zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                });
+
+               Gpu::synchronize();
            }
            else
            {
                const auto& flag_fab =         flags.array();
 
-               AMREX_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, n,
+               AMREX_FOR_4D(bx, ncomp, i, j, k, n,
                {
                    if (flag_fab(i,j,k).isCovered())
                    {
@@ -129,11 +131,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    }
                });
 
-               Gpu::streamSynchronize();
-
+               Gpu::synchronize();
            } // end of cut cell region
-
-           // TODO -- do we have domain and ilo_fab, etc on GPU???
 
            const int minf = bc_list.get_minf();
 
@@ -146,7 +145,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
            const auto&  klo_ifab  = bc_klo[lev]->array();
            const auto&  khi_ifab  = bc_khi[lev]->array();
 
-           AMREX_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, n,
+           AMREX_FOR_4D(bx, ncomp, i, j, k, n,
            {
                if ( (i == domain.smallEnd(0)) && !flag_fab(i,j,k).isCovered() && ilo_ifab(i-1,j,k,0) == minf)
                {
@@ -212,7 +211,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                }
            });
            
-           Gpu::streamSynchronize();
+           Gpu::synchronize();
 
         } // not covered
     } // MFIter

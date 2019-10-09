@@ -29,14 +29,14 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                    for (const auto& is : isects)
                    {
                        const Box& b = is.second-iv;
-                       AMREX_HOST_DEVICE_PARALLEL_FOR_3D ( b, i, j, k,
+                       AMREX_FOR_3D ( b, i, j, k,
                        {
                            fab(i,j,k) = 1;
                        });
                    }
                }
-
-               Gpu::streamSynchronize();
+               // NOTE: here we do not need host-device synchronization since it
+               // is already included in the MFIter destructor
            }
        }
 
@@ -120,7 +120,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& wmns_fab = wmns.array(mfi);
 
              // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-             AMREX_HOST_DEVICE_FOR_3D(ubx, i, j, k, 
+             AMREX_FOR_3D(ubx, i, j, k, 
              {
                  // X-faces
                  upls_fab(i,j,k) = ccvel_fab(i  ,j,k,0) - 0.5 * xslopes_fab(i  ,j,k,0);
@@ -136,7 +136,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_HOST_DEVICE_FOR_3D(vbx, i, j, k,
+             AMREX_FOR_3D(vbx, i, j, k,
              {
                  // Y-faces
                  vpls_fab(i,j,k) = ccvel_fab(i,j  ,k,1) - 0.5 * yslopes_fab(i,j  ,k,1);
@@ -152,7 +152,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_HOST_DEVICE_FOR_3D(wbx, i, j, k,
+             AMREX_FOR_3D(wbx, i, j, k,
              {
                  // Z-faces
                  wpls_fab(i,j,k) = ccvel_fab(i,j,k  ,2) - 0.5 * zslopes_fab(i,j,k  ,2);
@@ -168,7 +168,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
              
-             Gpu::streamSynchronize();
+             Gpu::synchronize();
 
           // Cut cells in this FAB
           } else {
@@ -194,7 +194,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& apz_fab = areafrac[2]->array(mfi);
 
              // This FAB has cut cells
-             AMREX_HOST_DEVICE_FOR_3D(ubx_grown, i, j, k, 
+             AMREX_FOR_3D(ubx_grown, i, j, k, 
              {
                  // X-faces
                  if (apx_fab(i,j,k) > 0.0)
@@ -205,7 +205,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              });
 
 
-             AMREX_HOST_DEVICE_FOR_3D(vbx_grown, i, j, k,
+             AMREX_FOR_3D(vbx_grown, i, j, k,
              {
                  // Y-faces
                  if (apy_fab(i,j,k) > 0.0)
@@ -215,7 +215,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_HOST_DEVICE_FOR_3D(wbx_grown, i, j, k,
+             AMREX_FOR_3D(wbx_grown, i, j, k,
              {
                  // Z-faces
                  if (apz_fab(i,j,k) > 0.0) {
@@ -224,7 +224,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             Gpu::streamSynchronize();
+             Gpu::synchronize();
 
           } // Cut cells
        } // MFIter
@@ -286,7 +286,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              const auto& ccm_fab = cc_mask.const_array(mfi);
 
-             AMREX_HOST_DEVICE_FOR_3D(ubx, i, j, k, 
+             AMREX_FOR_3D(ubx, i, j, k, 
              {
                 if (apx_fab(i,j,k) == 0.0)
 
@@ -334,7 +334,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              });
 
-             AMREX_HOST_DEVICE_FOR_3D(vbx, i, j, k,
+             AMREX_FOR_3D(vbx, i, j, k,
              {
                 if (apy_fab(i,j,k) == 0.0) {
 
@@ -381,7 +381,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_HOST_DEVICE_FOR_3D(wbx, i, j, k,
+             AMREX_FOR_3D(wbx, i, j, k,
              {
                 if (apz_fab(i,j,k) == 0.0)
 
@@ -428,7 +428,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             Gpu::streamSynchronize();
+             Gpu::synchronize();
 
           } // Cut cells
        } // MFIter

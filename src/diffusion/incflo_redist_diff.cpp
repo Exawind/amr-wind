@@ -28,7 +28,7 @@ step2(const Box& grown1_bx,
 
   Array4<const EBCellFlag> const& flags = flags_fab.array();
 
-  AMREX_HOST_DEVICE_FOR_3D(grown1_bx, i, j, k,
+  AMREX_FOR_3D(grown1_bx, i, j, k,
   {
     if(flags(i,j,k).isSingleValued())
     {
@@ -78,7 +78,7 @@ step3(const Box& grown1_bx,
 
   Array4<const EBCellFlag> const& flags = flags_fab.array();
 
-  AMREX_HOST_DEVICE_FOR_3D(grown1_bx, i, j, k,
+  AMREX_FOR_3D(grown1_bx, i, j, k,
   {
     if(flags(i,j,k).isSingleValued())
     {
@@ -152,7 +152,7 @@ compute_redist_diff(Box& bx,
   // periodic
   // It is set to 1 when a cell can be used in computations, 0 otherwise
   //
-  AMREX_HOST_DEVICE_FOR_3D(grown2_bx, i, j, k,
+  AMREX_FOR_3D(grown2_bx, i, j, k,
   {
     if(((not cyclic_x) and (i < dom_low.x or i > dom_high.x)) or
        ((not cyclic_y) and (j < dom_low.y or j > dom_high.y)) or
@@ -184,7 +184,7 @@ compute_redist_diff(Box& bx,
     //
     // Resume the correct sign, AKA return the negative
     //
-    AMREX_HOST_DEVICE_FOR_3D(bx, i, j, k,
+    AMREX_FOR_3D(bx, i, j, k,
     {
       divergence(i,j,k,n) = divc(i,j,k,n) + optmp(i,j,k);
     });

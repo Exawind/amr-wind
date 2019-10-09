@@ -169,8 +169,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         conv_s_in[lev] -> mult(-1.0);
 
     } // lev
-  
-  Gpu::streamSynchronize();
 }
 
 void

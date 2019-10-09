@@ -28,12 +28,12 @@ step2(const Box& grown1_bx,
   Array4<Real> const& divc = divc_fbx.array();
   Array4<Real> const& mask = mask_fbx.array();
 
-  AMREX_HOST_DEVICE_FOR_4D(grown2_bx, ncomp, i, j, k, n,
+  AMREX_FOR_4D(grown2_bx, ncomp, i, j, k, n,
   {
     optmp(i,j,k,n) = 0;
   });
 
-  AMREX_HOST_DEVICE_FOR_4D(grown1_bx, ncomp, i, j, k, n,
+  AMREX_FOR_4D(grown1_bx, ncomp, i, j, k, n,
   {
     if(flags(i,j,k).isSingleValued())
     {
@@ -61,7 +61,7 @@ step2(const Box& grown1_bx,
       delm(i,j,k,n) = 0;
   });
 
-  AMREX_HOST_DEVICE_FOR_4D(grown1_bx, ncomp, i, j, k, n,
+  AMREX_FOR_4D(grown1_bx, ncomp, i, j, k, n,
   {
     if(flags(i,j,k).isSingleValued())
     {
@@ -94,7 +94,7 @@ step2(const Box& grown1_bx,
     }
   });
 
-  Gpu::streamSynchronize();
+  Gpu::synchronize();
 }
 
 } // end namespace divop_conv_aux
@@ -145,7 +145,7 @@ incflo_apply_eb_redistribution ( Box& bx,
   // periodic
   // It is set to 1 when a cell can be used in computations, 0 otherwise
   //
-  AMREX_HOST_DEVICE_FOR_3D(grown2_bx, i, j, k,
+  AMREX_FOR_3D(grown2_bx, i, j, k,
   {
     if(((not cyclic_x) and (i < dom_low.x or i > dom_high.x)) or
        ((not cyclic_y) and (j < dom_low.y or j > dom_high.y)) or
@@ -166,10 +166,10 @@ incflo_apply_eb_redistribution ( Box& bx,
   //
   Array4<Real> const& divcarr = divc.array(*mfi);
 
-  AMREX_HOST_DEVICE_FOR_4D(bx, ncomp, i, j, k, n, 
+  AMREX_FOR_4D(bx, ncomp, i, j, k, n, 
   {
      divergence(i,j,k,icomp+n) = divcarr(i,j,k,n) + optmp(i,j,k,n);
   });
 
-  Gpu::streamSynchronize();
+  Gpu::synchronize();
 }
