@@ -93,8 +93,8 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
 
     int direction = 0;
     Real mi_pressure = -1.0;
-    Real mi_density =  1.0;
-    Real mi_tracer =  1.0;
+    Real mi_density  =  1.0;
+    Real mi_tracer   =  1.0;
     Vector<Real> mi_velocity(3, 0.0);
     Real location = domloc;
 

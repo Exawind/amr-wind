@@ -29,11 +29,8 @@ incflo::incflo_set_scalar_bcs (Real time,
            set_scalar_bcs(time, lev, (*tracer_in[lev])[mfi], 1, domain);
      }
 
-     if (advect_density)
-     {
-        density_in[lev] -> FillBoundary (geom[lev].periodicity());
-        EB_set_covered(*density_in[lev], 0, density_in[lev]->nComp(), density_in[lev]->nGrow(), covered_val);
-     }
+     density_in[lev] -> FillBoundary (geom[lev].periodicity());
+     EB_set_covered(*density_in[lev], 0, density_in[lev]->nComp(), density_in[lev]->nGrow(), covered_val);
 
      if (advect_tracer)
      {
@@ -132,18 +129,10 @@ incflo::set_scalar_bcs(Real time,
   const Box bx_xy_lo_3D(scal_lo, bx_xy_lo_hi_3D);
   const Box bx_xy_hi_3D(bx_xy_hi_lo_3D, scal_hi);
 
-  const Real undefined = get_undefined();
-
   const int minf = bc_list.get_minf();
   const int  nsw = bc_list.get_nsw();
   const int pinf = bc_list.get_pinf();
   const int pout = bc_list.get_pout();
-
-  for(unsigned i(1); i <= 6; ++i)
-  {
-    m_bc_r[i] = get_bc_r(i);
-    m_bc_t[i] = get_bc_t(i);
-  }
 
   amrex::Real* p_bc_s;
 
@@ -164,7 +153,7 @@ incflo::set_scalar_bcs(Real time,
       {
         scal_arr(i,j,k) = scal_arr(dom_lo[0],j,k);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -182,7 +171,7 @@ incflo::set_scalar_bcs(Real time,
       {
          scal_arr(i,j,k) = scal_arr(dom_hi[0],j,k);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -200,7 +189,7 @@ incflo::set_scalar_bcs(Real time,
       {
          scal_arr(i,j,k) = scal_arr(i,dom_lo[1],k);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -218,7 +207,7 @@ incflo::set_scalar_bcs(Real time,
       {
          scal_arr(i,j,k) = scal_arr(i,dom_hi[1],k);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -236,7 +225,7 @@ incflo::set_scalar_bcs(Real time,
       {
          scal_arr(i,j,k) = scal_arr(i,j,dom_lo[2]);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -254,7 +243,7 @@ incflo::set_scalar_bcs(Real time,
       {
          scal_arr(i,j,k) = scal_arr(i,j,dom_hi[2]);
       }
-      else if(bct == minf && bct == nsw)
+      else if(bct == minf || bct == nsw)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
