@@ -474,7 +474,7 @@ void incflo::WritePlotFile() const
             // Divergence of velocity field
             if(plt_divu == 1) 
             {
-                MultiFab::Copy(*mf[lev], (*divu[lev]), 0, lc, 1, 0);
+                amrex::average_node_to_cellcenter(*mf[lev], lc, (*divu[lev]), 0, 1);
     
                 lc += 1;
             }
