@@ -2,6 +2,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo.H>
+#include <NodalProjection.H>
 
 //
 // Computes the following decomposition:
@@ -53,67 +54,63 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         }
     }
 
-    // Make sure div(u) is up to date
-    ComputeDivU(time);
+    nodal_projector -> project(vel, density, time, scaling_factor);
 
-    // Declare, resize, reset and initialize MultiFabs to hold the solution of the Poisson solve
-    Vector<std::unique_ptr<MultiFab>> phi;
-    Vector<std::unique_ptr<MultiFab>> fluxes;
+    // Get phi and fluxes
+    Vector< const amrex::MultiFab* >  phi(nlev);
+    Vector< const amrex::MultiFab* >  gradphi(nlev);
 
-    phi.resize(finest_level + 1);
-    fluxes.resize(finest_level + 1);
+    phi     = nodal_projector -> getPhi();
+    gradphi = nodal_projector -> getGradPhi();
+
+    // // Make sure div(u) is up to date
+    // ComputeDivU(time);
+
+    // // Declare, resize, reset and initialize MultiFabs to hold the solution of the Poisson solve
+    // Vector<std::unique_ptr<MultiFab>> phi;
+    // Vector<std::unique_ptr<MultiFab>> fluxes;
+
+    // phi.resize(finest_level + 1);
+    // fluxes.resize(finest_level + 1);
+
+    // for(int lev = 0; lev <= finest_level; lev++)
+    // {
+    //     const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
+    //     phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    //     phi[lev]->setVal(0.0);
+    //     fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(),
+    //                                    vel[lev]->DistributionMap(),
+    //                                    vel[lev]->nComp(), 1,
+    //                                    MFInfo(), *ebfactory[lev]));
+    //     fluxes[lev]->setVal(1.0e200);
+    // }
+
+    // //
+    // // Solve Poisson Equation:
+    // //
+    // //                  div( 1/rho * grad(phi) ) = divu
+    // //
+    // // Note that
+    // //      p = phi / dt
+    // // for all steps except the initial projection, when we add phi / dt to p instead.
+    // //
+    // // Also outputs minus grad(phi) / rho into "fluxes"
+    // //
+    // poisson_equation->solve(phi, fluxes, density, divu);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
-        phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-        phi[lev]->setVal(0.0);
-        fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(),
-                                       vel[lev]->DistributionMap(),
-                                       vel[lev]->nComp(), 1,
-                                       MFInfo(), *ebfactory[lev]));
-        fluxes[lev]->setVal(1.0e200);
-    }
-
-    //
-    // Solve Poisson Equation:
-    //
-    //                  div( 1/rho * grad(phi) ) = divu 
-    //
-    // Note that 
-    //      p = phi / dt 
-    // for all steps except the initial projection, when we add phi / dt to p instead.
-    //      
-    // Also outputs minus grad(phi) / rho into "fluxes"
-    //
-    poisson_equation->solve(phi, fluxes, density, divu);
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        // Now we correct the velocity with MINUS (1/rho) * grad(phi),
-        MultiFab::Add(*vel[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, 0);
-
-        // Multiply by rho and divide by (-dt) to get fluxes = grad(phi) / dt
-        fluxes[lev]->mult(-1.0 / scaling_factor, fluxes[lev]->nGrow());
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
-            MultiFab::Multiply(*fluxes[lev], (*density[lev]), 0, dir, 1, fluxes[lev]->nGrow());
-        }
-
-        // phi currently holds dt * phi so we divide by dt 
-        phi[lev]->mult(1.0 / scaling_factor, phi[lev]->nGrow());
-
         if(nstep >= 0)
         {
             // p := phi
             MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Copy(*gp[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, fluxes[lev]->nGrow());
+            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
         }
         else
         {
             // p := p + phi
             MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Add(*gp[lev], *fluxes[lev], 0, 0, AMREX_SPACEDIM, fluxes[lev]->nGrow());
+            MultiFab::Add(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
         }
     }
 
@@ -121,7 +118,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
 
     if(incflo_verbose > 2)
     {
-        amrex::Print() << "After projection: " << std::endl; 
+        amrex::Print() << "After projection: " << std::endl;
         PrintMaxValues(time);
     }
 }

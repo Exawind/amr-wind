@@ -3,14 +3,14 @@
 #include <bc_mod_F.H>
 #include <bc_mod_F.H>
 
-//              
+//
 //  These subroutines set the BCs for the vel_arr components only.
 //
 
 void
-incflo::incflo_set_velocity_bcs (Real time, 
+incflo::incflo_set_velocity_bcs (Real time,
                                  Vector< std::unique_ptr<MultiFab> > & vel_in,
-                                 int extrap_dir_bcs) 
+                                 int extrap_dir_bcs) const
 {
   BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
@@ -42,7 +42,7 @@ incflo::set_velocity_bcs(Real time,
                          const int lev,
                          FArrayBox& vel_fab,
                          const Box& domain,
-                         const int* extrap_dir_bcs)
+                         const int* extrap_dir_bcs) const
 {
   IntVect dom_lo(domain.loVect());
   IntVect dom_hi(domain.hiVect());
@@ -140,9 +140,9 @@ incflo::set_velocity_bcs(Real time,
   const int pout = bc_list.get_pout();
   const int  nsw = bc_list.get_nsw();
 
-  amrex::Real* p_bc_u = m_bc_u.data();
-  amrex::Real* p_bc_v = m_bc_v.data();
-  amrex::Real* p_bc_w = m_bc_w.data();
+  const amrex::Real* p_bc_u = m_bc_u.data();
+  const amrex::Real* p_bc_v = m_bc_v.data();
+  const amrex::Real* p_bc_w = m_bc_w.data();
 
   // Coefficients for linear extrapolation to ghost cells -- divide by 3 below
   Real c0 =  6.0;
@@ -357,7 +357,7 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
         if (n == 1) vel_arr(i,j,k,n) = 0.;
         if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
@@ -383,7 +383,7 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
         if (n == 1) vel_arr(i,j,k,n) = 0.;
         if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
       }
@@ -409,8 +409,8 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv]; 
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
         if (n == 2) vel_arr(i,j,k,n) = 0.;
       }
     });
@@ -435,8 +435,8 @@ incflo::set_velocity_bcs(Real time,
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv]; 
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv]; 
+        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
+        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
         if (n == 2) vel_arr(i,j,k,n) = 0.;
       }
     });

@@ -6,6 +6,9 @@
 // Need this for TagCutCells
 #include <AMReX_EBAmrUtil.H>
 
+// Need this for nodal projection
+#include <NodalProjection.H>
+
 // Define unit vectors for easily convert indices
 amrex::IntVect incflo::e_x(1,0,0);
 amrex::IntVect incflo::e_y(0,1,0);
@@ -56,28 +59,31 @@ void incflo::InitData()
 
     // Either init from scratch or from the checkpoint file
     // In both cases, we call MakeNewLevelFromScratch():
-    // - Set BA and DM 
+    // - Set BA and DM
     // - Allocate arrays for level
-	int restart_flag = 0;
-	if(restart_file.empty())
-	{
+    int restart_flag = 0;
+    if(restart_file.empty())
+    {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
         SetIterateToFalse();
-        
+
         // This tells the Cluster routine to use the new chopping routine which
         // rejects cuts if they don't improve the efficiency
         SetUseNewChop();
 
         // This is an AmrCore member function which recursively makes new levels
         InitFromScratch(cur_time);
-	}
-	else
-	{
-        // Read starting configuration from chk file. 
-		ReadCheckpointFile();
-		restart_flag = 1;
-	}
+    }
+    else
+    {
+        // Read starting configuration from chk file.
+        ReadCheckpointFile();
+        restart_flag = 1;
+    }
+
+    // Init nodal solver
+    nodal_projector.reset(new NodalProjection(this));
 
     // Post-initialisation step
     // - Set BC types
@@ -86,7 +92,7 @@ void incflo::InitData()
     // - Apply initial conditions
     // - Project initial velocity to make divergence free
     // - Perform dummy iterations to find pressure distribution
-	PostInit(restart_flag);
+    PostInit(restart_flag);
 
     // Plot initial distribution
     if((plot_int > 0 || plot_per > 0) && !restart_flag)
@@ -102,8 +108,8 @@ void incflo::InitData()
 
     if (write_eb_surface)
     {
-       amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
-       WriteMyEBSurface();
+        amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
+        WriteMyEBSurface();
     }
 }
 
@@ -261,9 +267,9 @@ void incflo::ErrorEst(int lev,
             TagBox&     tagfab  = tags[mfi];
 
             // tag cells for refinement
-            state_error(BL_TO_FORTRAN_BOX(bx), 
+            state_error(BL_TO_FORTRAN_BOX(bx),
                         BL_TO_FORTRAN_ANYD(tagfab),
-                        BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]), 
+                        BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
                         &tagval, &clearval,
                         AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
         }
@@ -271,7 +277,7 @@ void incflo::ErrorEst(int lev,
 
     refine_cutcells = true;
     // Refine on cut cells
-    if (refine_cutcells) 
+    if (refine_cutcells)
     {
         amrex::TagCutCells(tags, *density[lev]);
     }

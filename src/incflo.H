@@ -18,20 +18,22 @@
 #include <PoissonEquation.H>
 #include <incflo_bclist.H>
 
+class NodalProjection;
+
 class incflo : public AmrCore
 {
 public:
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Public member functions are defined directly in incflo.cpp.
-    // They include the functions called directly in main.cpp, 
-    // and the 5 pure virtual functions in the AmrCore class, which must be implemented. 
+    // They include the functions called directly in main.cpp,
+    // and the 5 pure virtual functions in the AmrCore class, which must be implemented.
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Functions called directly in main() 
+    // Functions called directly in main()
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,24 +65,24 @@ public:
 
     // Make a new level from scratch using provided BoxArray and DistributionMapping
     // Only used during initialization
-    void MakeNewLevelFromScratch(int lev, Real time, 
-                                 const BoxArray& new_grids, 
+    void MakeNewLevelFromScratch(int lev, Real time,
+                                 const BoxArray& new_grids,
                                  const DistributionMapping& new_dmap) override;
 
-    // Make a new level using provided BoxArray and DistributionMapping, 
+    // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
-    void MakeNewLevelFromCoarse(int lev, Real time, 
-                                const BoxArray& ba, 
+    void MakeNewLevelFromCoarse(int lev, Real time,
+                                const BoxArray& ba,
                                 const DistributionMapping& dm) override;
 
-    // Remake an existing level using provided BoxArray and DistributionMapping, 
+    // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
-    void RemakeLevel(int lev, Real time, 
-                             const BoxArray& ba, 
+    void RemakeLevel(int lev, Real time,
+                             const BoxArray& ba,
                              const DistributionMapping& dm) override;
 
     // Delete level data
-    void ClearLevel(int lev) override; 
+    void ClearLevel(int lev) override;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -102,13 +104,13 @@ public:
 
     void incflo_set_velocity_bcs (Real time,
                                   Vector< std::unique_ptr<MultiFab> >& vel,
-                                  int extrap_dir_bcs);
+                                  int extrap_dir_bcs) const;
 
     void set_velocity_bcs(Real time,
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
-                          const int* extrap_dir_bcs);
+                          const int* extrap_dir_bcs) const;
 
     void incflo_set_scalar_bcs (Real time,
                                 Vector< std::unique_ptr<MultiFab> >& density,
@@ -129,19 +131,19 @@ private:
      static IntVect e_y;
      static IntVect e_z;
 
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
-     amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
+     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Initialization
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Set boundary conditions from inputs file
     void SetInputBCs(const std::string bcID, const int index, const int cyclic, const Real domloc);
 
@@ -246,7 +248,7 @@ private:
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
                                MFIter* mfi, Box& domain);
-  
+
     void incflo_compute_ugradu_eb(const int lev, Box& bx,
                                   Vector< std::unique_ptr<MultiFab> >& a_fx,
                                   Vector< std::unique_ptr<MultiFab> >& a_fy,
@@ -286,6 +288,14 @@ private:
 
      // Max coarsening level
      int  mac_mg_max_coarsening_level = 100;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Nodal Projection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    friend class NodalProjection;
+    std::unique_ptr<NodalProjection> nodal_projector;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -360,7 +370,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Be verbose? 
+    // Be verbose?
     int incflo_verbose = 0;
 
     // Time and time step counters
@@ -368,7 +378,7 @@ private:
     Real dt = -1.0;
     int nstep = -1;
 
-    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step 
+    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
     // OR steady_state = true AND steady_state_tol is reached
     Real stop_time = -1.0;
     int max_step = -1;
@@ -383,7 +393,7 @@ private:
     bool do_initial_proj    = true;
     int  initial_iterations = 3;
 
-    // AMR / refinement settings 
+    // AMR / refinement settings
     int refine_cutcells = 1;
     int regrid_int = -1;
 
@@ -457,10 +467,10 @@ private:
     Vector<const Vector<std::unique_ptr<MultiFab>>*> vectorVars;
     Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
 
-    // Scalar variables at cell centers that need to be written to checkfile. 
+    // Scalar variables at cell centers that need to be written to checkfile.
     Vector<const Vector<std::unique_ptr<MultiFab>>*> chkscalarVars = {&p, &density, &tracer, &eta};
     Vector<std::string> chkscaVarsName = {"p", "density", "tracer", "eta"};
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Diagnostics
@@ -482,7 +492,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Instances of self-written classes for MAC projection, diffusion + Poisson equations 
+    // Instances of self-written classes for MAC projection, diffusion + Poisson equations
     std::unique_ptr<DiffusionEquation> diffusion_equation;
     std::unique_ptr<PoissonEquation> poisson_equation;
 
@@ -507,19 +517,19 @@ private:
 
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
     Vector<std::unique_ptr<MultiFab>> eta;
-    Vector<std::unique_ptr<MultiFab>> eta_old; 
+    Vector<std::unique_ptr<MultiFab>> eta_old;
     Vector<std::unique_ptr<MultiFab>> strainrate;
     Vector<std::unique_ptr<MultiFab>> vort;
     Vector<std::unique_ptr<MultiFab>> drag;
     Vector<std::unique_ptr<MultiFab>> divu;
 
-    // Helper variables 
-    Vector<std::unique_ptr<MultiFab>> conv_u; 
-    Vector<std::unique_ptr<MultiFab>> conv_u_old; 
-    Vector<std::unique_ptr<MultiFab>> conv_s; 
-    Vector<std::unique_ptr<MultiFab>> conv_s_old; 
-    Vector<std::unique_ptr<MultiFab>> divtau; 
-    Vector<std::unique_ptr<MultiFab>> divtau_old; 
+    // Helper variables
+    Vector<std::unique_ptr<MultiFab>> conv_u;
+    Vector<std::unique_ptr<MultiFab>> conv_u_old;
+    Vector<std::unique_ptr<MultiFab>> conv_s;
+    Vector<std::unique_ptr<MultiFab>> conv_s_old;
+    Vector<std::unique_ptr<MultiFab>> divtau;
+    Vector<std::unique_ptr<MultiFab>> divtau_old;
 
     Vector<std::unique_ptr<MultiFab>> xslopes_u;
     Vector<std::unique_ptr<MultiFab>> yslopes_u;
