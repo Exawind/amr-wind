@@ -7,42 +7,36 @@
 //
 Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type)
 {
-    // Make copy of MF so that we can set values in covered cells to zero. 
-    int ncomp = 1;
-    int ngrow = 0;
-    MultiFab mf_tmp(mf[lev]->boxArray(), mf[lev]->DistributionMap(), ncomp, ngrow, 
-                    MFInfo(), *ebfactory[lev]);
 
-	MultiFab::Copy(mf_tmp, *mf[lev], comp, 0, 1, 0);
-	EB_set_covered(mf_tmp, 0.0);
+    int ngrow(0);
 
     if(norm_type == 0)
     {
-        return mf_tmp.norm0(0);
+        return mf[lev]->norm0(comp,ngrow,false,true);
     }
     else if(norm_type == 1)
     {
-        return mf_tmp.norm1(0, geom[lev].periodicity());
+        return mf[lev]->norm1(comp,geom[lev].periodicity(),true);
     }
     else
     {
-        amrex::Print() << "Warning: called incflo::Norm() with norm_type not in {0,1}" << std::endl; 
+        amrex::Print() << "Warning: called incflo::Norm() with norm_type not in {0,1}" << std::endl;
         return -1.0;
     }
 }
 
-// 
+//
 // Print maximum values (useful for tracking evolution)
 void incflo::PrintMaxValues(Real time)
 {
         ComputeDivU(time);
         for(int lev = 0; lev <= finest_level; lev++)
         {
-            amrex::Print() << "Level " << lev << std::endl; 
+            amrex::Print() << "Level " << lev << std::endl;
             PrintMaxVel(lev);
             PrintMaxGp(lev);
         }
-        amrex::Print() << std::endl; 
+        amrex::Print() << std::endl;
 }
 
 //
@@ -53,7 +47,7 @@ void incflo::PrintMaxVel(int lev)
 	amrex::Print() << "max(abs(u/v/w/divu))  = "
                    << Norm(vel, lev, 0, 0) << "  "
 				   << Norm(vel, lev, 1, 0) << "  "
-                   << Norm(vel, lev, 2, 0) << "  " 
+                   << Norm(vel, lev, 2, 0) << "  "
                    << Norm(divu, lev, 0, 0) << "  " << std::endl;
 }
 
