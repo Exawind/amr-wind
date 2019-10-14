@@ -54,7 +54,7 @@ void incflo::ReadParameters()
         int plt_ccse_regtest = 0;
         pp.query("plt_ccse_regtest", plt_ccse_regtest);
 
-        if(plt_ccse_regtest != 0) 
+        if(plt_ccse_regtest != 0)
         {
             plt_vel        = 1;
             plt_gradp      = 1;
@@ -229,11 +229,6 @@ void incflo::PostInit(int restart_flag)
     // Set the BC types on domain boundary
     SetBCTypes();
 
-    poisson_equation.reset(new PoissonEquation(this, &ebfactory,
-                                               bc_ilo, bc_ihi,
-                                               bc_jlo, bc_jhi,
-                                               bc_klo, bc_khi, nghost));
-
     diffusion_equation.reset(new DiffusionEquation(this, &ebfactory,
                                                    bc_ilo, bc_ihi,
                                                    bc_jlo, bc_jhi,
@@ -374,11 +369,11 @@ void incflo::SetBackgroundPressure()
         p0[lev]->FillBoundary(p0_periodicity);
     }
 
-    if (probtype == 11) 
+    if (probtype == 11)
     {
        gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
        for(int lev = 0; lev <= max_level; lev++)
-          p0[lev]->setVal(0.);          
+          p0[lev]->setVal(0.);
     }
 }
 
@@ -457,5 +452,3 @@ void incflo::InitialProjection()
         PrintMaxValues(time);
     }
 }
-
-

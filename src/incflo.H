@@ -15,7 +15,6 @@
 
 #include <eb_if.H>
 #include <DiffusionEquation.H>
-#include <PoissonEquation.H>
 #include <incflo_bclist.H>
 
 class NodalProjection;
@@ -494,7 +493,6 @@ private:
 
     // Instances of self-written classes for MAC projection, diffusion + Poisson equations
     std::unique_ptr<DiffusionEquation> diffusion_equation;
-    std::unique_ptr<PoissonEquation> poisson_equation;
 
     // Boundary conditions
     Vector<std::unique_ptr<IArrayBox>> bc_ilo;

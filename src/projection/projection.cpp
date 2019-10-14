@@ -63,40 +63,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     phi     = nodal_projector -> getPhi();
     gradphi = nodal_projector -> getGradPhi();
 
-    // // Make sure div(u) is up to date
-    // ComputeDivU(time);
-
-    // // Declare, resize, reset and initialize MultiFabs to hold the solution of the Poisson solve
-    // Vector<std::unique_ptr<MultiFab>> phi;
-    // Vector<std::unique_ptr<MultiFab>> fluxes;
-
-    // phi.resize(finest_level + 1);
-    // fluxes.resize(finest_level + 1);
-
-    // for(int lev = 0; lev <= finest_level; lev++)
-    // {
-    //     const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
-    //     phi[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
-    //     phi[lev]->setVal(0.0);
-    //     fluxes[lev].reset(new MultiFab(vel[lev]->boxArray(),
-    //                                    vel[lev]->DistributionMap(),
-    //                                    vel[lev]->nComp(), 1,
-    //                                    MFInfo(), *ebfactory[lev]));
-    //     fluxes[lev]->setVal(1.0e200);
-    // }
-
-    // //
-    // // Solve Poisson Equation:
-    // //
-    // //                  div( 1/rho * grad(phi) ) = divu
-    // //
-    // // Note that
-    // //      p = phi / dt
-    // // for all steps except the initial projection, when we add phi / dt to p instead.
-    // //
-    // // Also outputs minus grad(phi) / rho into "fluxes"
-    // //
-    // poisson_equation->solve(phi, fluxes, density, divu);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {

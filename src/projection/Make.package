@@ -1,4 +1,3 @@
-CEXE_sources += PoissonEquation.cpp
 CEXE_sources += projection.cpp
 
 CEXE_sources += NodalProjection.cpp
