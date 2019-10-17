@@ -448,13 +448,13 @@ private:
 
     // Flags for saving fluid data in plot files
     int plt_vel         = 1;
-    int plt_gradp       = 0;
-    int plt_rho         = 0;
-    int plt_tracer      = 0;
+    int plt_gradp       = 1;
+    int plt_rho         = 1;
+    int plt_tracer      = 1;
     int plt_p           = 0;
-    int plt_eta         = 1;
+    int plt_eta         = 0;
     int plt_vort        = 1;
-    int plt_strainrate  = 1;
+    int plt_strainrate  = 0;
     int plt_stress      = 0;
     int plt_divu        = 0;
     int plt_vfrac       = 1;
