@@ -209,7 +209,7 @@ incflo::incflo_redistribute ( int lev,
             // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
             if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
             {
-                conv_out[mfi].copy(conv_tmp_in[mfi],conv_comp,0,ncomp);
+                conv_out[mfi].copy(conv_tmp_in[mfi],bx,0,bx,conv_comp,ncomp);
             }
             else
             {
