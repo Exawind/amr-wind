@@ -79,13 +79,13 @@ include $(Ppack)
 INCLUDE_LOCATIONS += $(Plocs)
 VPATH_LOCATIONS   += $(Plocs)
 
-include $(AMREX_HOME)/Src/LinearSolvers/C_CellMG/Make.package
-INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/C_CellMG
-VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/C_CellMG
-
 include $(AMREX_HOME)/Src/LinearSolvers/MLMG/Make.package
 INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/MLMG
 VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/MLMG
+
+include $(AMREX_HOME)/Src/LinearSolvers/Projections/Make.package
+INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/Projections
+VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/Projections
 
 all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
