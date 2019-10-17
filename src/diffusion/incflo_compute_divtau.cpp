@@ -1,4 +1,3 @@
-#include <incflo_redist_diff.hpp>
 #include <diffusion_F.H>
 #include <incflo.H>
 #include <AMReX_BC_TYPES.H>
@@ -70,11 +69,11 @@ incflo::ComputeDivTau (       Vector< std::unique_ptr<MultiFab> >& divtau,
    ebtensorop.setDomainBC ( {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
                             {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]} );
 
-   // Return div (mu grad)) phi 
+   // Return div (mu grad)) phi
    ebtensorop.setScalars(0.0, -1.0);
 
    amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
-   b.resize(max_level + 1); 
+   b.resize(max_level + 1);
 
    // Compute the coefficients
    for (int lev = 0; lev < nlev; lev++)
@@ -104,46 +103,7 @@ incflo::ComputeDivTau (       Vector< std::unique_ptr<MultiFab> >& divtau,
 
    for (int lev = 0; lev < nlev; lev++)
    {
-      divtau_aux[lev]->FillBoundary(geom[lev].periodicity());
-      MultiFab::Copy(*divtau[lev],*divtau_aux[lev],0,0,3,0);
-   }
-
-   const amrex::MultiFab* volfrac;
-
-   const int cyclic_x = geom[0].isPeriodic(0) ? 1 : 0;
-   const int cyclic_y = geom[0].isPeriodic(1) ? 1 : 0;
-   const int cyclic_z = geom[0].isPeriodic(2) ? 1 : 0;
-
-   for (int lev = 0; lev < nlev; lev++)
-   {
-
-      volfrac   = &(ebfactory[lev] -> getVolFrac());
-      const Real* dx = geom[lev].CellSize();
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-      for (MFIter mfi(*divtau[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) 
-      {
-         // Tilebox
-         Box bx = mfi.tilebox ();
-
-         // this is to check efficiently if this tile contains any eb stuff
-         const EBFArrayBox&  vel_fab    = static_cast<EBFArrayBox const&>((*vel[lev])[mfi]);
-         const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
-   
-         if (flags.getType(bx) != FabType::covered)
-         {
-            if (flags.getType(amrex::grow(bx,nghost)) != FabType::regular)
-            {
-
-                // Do redistribution at EB boundaries
-                compute_redist_diff(
-                   bx, *divtau[lev], *divtau_aux[lev], &mfi, flags,
-                   volfrac, cyclic_x, cyclic_y, cyclic_z, domain, dx);
-            }
-         }
-      }
+       incflo_redistribute( lev, *divtau_aux[lev], *divtau[lev], 0, AMREX_SPACEDIM );
 
       // Divide by density
       for (int n = 0; n < 3; n++)

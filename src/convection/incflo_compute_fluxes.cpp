@@ -1,5 +1,4 @@
 #include <incflo.H>
-#include <incflo_divop_conv.hpp>
 #include <param_mod_F.H>
 
 #include <AMReX_REAL.H>
@@ -48,11 +47,11 @@ using namespace ugradu_aux;
 //
 // Compute the three components of the convection term
 //
-void 
+void
 incflo::incflo_compute_fluxes(int lev,
-                          Vector< std::unique_ptr<MultiFab> >& a_fx, 
-                          Vector< std::unique_ptr<MultiFab> >& a_fy, 
-                          Vector< std::unique_ptr<MultiFab> >& a_fz, 
+                          Vector< std::unique_ptr<MultiFab> >& a_fx,
+                          Vector< std::unique_ptr<MultiFab> >& a_fy,
+                          Vector< std::unique_ptr<MultiFab> >& a_fz,
                           Vector< std::unique_ptr<MultiFab> >& state_in,
                           const int state_comp, const int ncomp,
                           Vector< std::unique_ptr<MultiFab> >& xslopes_in,
@@ -89,7 +88,7 @@ incflo::incflo_compute_fluxes(int lev,
            for (MFIter mfi(cc_mask); mfi.isValid(); ++mfi)
            {
                Array4<int> const& fab = cc_mask.array(mfi);
-               
+
                const Box& bx = mfi.fabbox();
                for (const auto& iv : pshifts)
                {
@@ -148,9 +147,9 @@ incflo::incflo_compute_fluxes(int lev,
 
 void
 incflo::incflo_compute_ugradu( const int lev, Box& bx,
-                           Vector< std::unique_ptr<MultiFab> >& a_fx, 
-                           Vector< std::unique_ptr<MultiFab> >& a_fy, 
-                           Vector< std::unique_ptr<MultiFab> >& a_fz, 
+                           Vector< std::unique_ptr<MultiFab> >& a_fx,
+                           Vector< std::unique_ptr<MultiFab> >& a_fy,
+                           Vector< std::unique_ptr<MultiFab> >& a_fz,
                            Vector< std::unique_ptr<MultiFab> >& state_in,
                            const int state_comp, const int ncomp,
                            Vector< std::unique_ptr<MultiFab> >& xslopes_in,
@@ -164,9 +163,9 @@ incflo::incflo_compute_ugradu( const int lev, Box& bx,
 {
   const amrex::Dim3 dom_low = amrex::lbound(domain);
   const amrex::Dim3 dom_high = amrex::ubound(domain);
-  
+
   Array4<Real> const& state     = state_in[lev]->array(*mfi);
-  
+
   Array4<Real> const& u = u_mac[lev]->array(*mfi);
   Array4<Real> const& v = v_mac[lev]->array(*mfi);
   Array4<Real> const& w = w_mac[lev]->array(*mfi);
@@ -294,9 +293,9 @@ incflo::incflo_compute_ugradu( const int lev, Box& bx,
 //
 void
 incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
-                             Vector< std::unique_ptr<MultiFab> >& a_fx, 
-                             Vector< std::unique_ptr<MultiFab> >& a_fy, 
-                             Vector< std::unique_ptr<MultiFab> >& a_fz, 
+                             Vector< std::unique_ptr<MultiFab> >& a_fx,
+                             Vector< std::unique_ptr<MultiFab> >& a_fy,
+                             Vector< std::unique_ptr<MultiFab> >& a_fz,
                              Vector< std::unique_ptr<MultiFab> >& state_in,
                              const int state_comp, const int ncomp,
                              Vector< std::unique_ptr<MultiFab> >& xslopes_in,
@@ -349,7 +348,7 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
   const Box ubx_grown = amrex::surroundingNodes(amrex::grow(bx,1),0);
   const Box vbx_grown = amrex::surroundingNodes(amrex::grow(bx,1),1);
   const Box wbx_grown = amrex::surroundingNodes(amrex::grow(bx,1),2);
-  
+
   FArrayBox s_on_x_face(ubx_grown, ncomp);
   FArrayBox s_on_y_face(vbx_grown, ncomp);
   FArrayBox s_on_z_face(wbx_grown, ncomp);
@@ -402,7 +401,7 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
         sx(i,j,k,n) = upwind( umns, upls, u(i,j,k) );
       }
     } else {
-        sx(i,j,k,n) = my_huge; 
+        sx(i,j,k,n) = my_huge;
     }
   });
 
@@ -414,14 +413,14 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
 
        Real fracy = (ccm_fab(i-1,jj,k) || ccm_fab(i,jj,k)) ? std::abs(fcx_fab(i,j,k,0)) : 0.0;
        Real fracz = (ccm_fab(i-1,j,kk) || ccm_fab(i,j,kk)) ? std::abs(fcx_fab(i,j,k,1)) : 0.0;
-   
+
        Real s_on_x_centroid = (1.0-fracy)*(1.0-fracz)*sx(i, j,k ,n)+
                                    fracy *(1.0-fracz)*sx(i,jj,k ,n)+
                                    fracz *(1.0-fracy)*sx(i, j,kk,n)+
                                    fracy *     fracz *sx(i,jj,kk,n);
-   
+
        fx(i,j,k,n) = u(i,j,k) * s_on_x_centroid;
-    } else 
+    } else
        fx(i,j,k,n) = my_huge;
   });
 
@@ -465,15 +464,15 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
 
        Real fracx = (ccm_fab(ii,j-1,k) || ccm_fab(ii,j,k)) ? std::abs(fcy_fab(i,j,k,0)) : 0.0;
        Real fracz = (ccm_fab(i,j-1,kk) || ccm_fab(i,j,kk)) ? std::abs(fcy_fab(i,j,k,1)) : 0.0;
-   
+
        Real s_on_y_centroid = (1.0-fracx)*(1.0-fracz)*sy(i ,j,k ,n)+
                                    fracx *(1.0-fracz)*sy(ii,j,k ,n)+
                                    fracz *(1.0-fracx)*sy(i ,j,kk,n)+
                                    fracx *     fracz *sy(ii,j,kk,n);
        fy(i,j,k,n) = v(i,j,k) * s_on_y_centroid;
-    } else 
+    } else
        fy(i,j,k,n) = my_huge;
-    
+
   });
 
   //
@@ -523,7 +522,7 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
                                    fracx *     fracy *sz(ii,jj,k,n);
 
        fz(i,j,k,n) = w(i,j,k) * s_on_z_centroid;
-    } else 
+    } else
        fz(i,j,k,n) = my_huge;
   });
 
