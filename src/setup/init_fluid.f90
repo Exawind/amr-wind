@@ -187,11 +187,11 @@ contains
 
          num_cells = domhi(2) - domlo(2) + 1
 
-         if (ntrac .ne. 3) then
-            print *,"ntrac here is ", ntrac
-            print *,"probtype = 31 is supposed to have 3 tracers!"
-            stop
-         end if
+!        if (ntrac .ne. 3) then
+!           print *,"ntrac here is ", ntrac
+!           print *,"probtype = 31 is supposed to have 3 tracers!"
+!           stop
+!        end if
 
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
@@ -201,12 +201,12 @@ contains
                vel(i,j,k,1) = 6.0d0 * ic_u * y * (1.0d0 - y)
                vel(i,j,k,2) = 0.0d0
                vel(i,j,k,3) = 0.0d0
-               tracer(i,j,k,1:3) = 0.0d0
-               if (i .le. domhi(1)/4) &
+               tracer(i,j,k,1:ntrac) = 0.0d0
+               if (ntrac .gt. 0 .and. i .le. domhi(1)/4) &
                   tracer(i,j,k,1) = 1.d0
-               if (i .le. domhi(1)/2) &
+               if (ntrac .gt. 1 .and. i .le. domhi(1)/2) &
                   tracer(i,j,k,2) = 2.d0
-               if (i .le. 3*domhi(1)/4) &
+               if (ntrac .gt. 2 .and. i .le. 3*domhi(1)/4) &
                   tracer(i,j,k,3) = 3.d0
             end do
          end do
