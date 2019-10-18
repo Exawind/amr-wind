@@ -64,6 +64,10 @@ incflo::incflo_compute_fluxes(int lev,
 {
         Box domain(geom[lev].Domain());
 
+        a_fx[lev]->setVal(covered_val);
+        a_fy[lev]->setVal(covered_val);
+        a_fz[lev]->setVal(covered_val);
+
         // Get EB geometric info
         Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
         Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;

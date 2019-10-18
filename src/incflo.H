@@ -105,25 +105,34 @@ public:
                                   Vector< std::unique_ptr<MultiFab> >& vel,
                                   int extrap_dir_bcs) const;
 
+    void incflo_set_density_bcs (Real time,
+                                 Vector< std::unique_ptr<MultiFab> >& density);
+
+    void incflo_set_tracer_bcs (Real time,
+                                Vector< std::unique_ptr<MultiFab> >& trac);
+
+    void set_density_bcs(Real time,
+                         const int lev,
+                         FArrayBox& scal_fab,
+                         const Box& domain);
+
+    void set_tracer_bcs(Real time,
+                        const int lev,
+                        FArrayBox& scal_fab,
+                        const int comp,
+                        const int ncomp,
+                        const Box& domain);
+
     void set_velocity_bcs(Real time,
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
                           const int* extrap_dir_bcs) const;
 
-    void incflo_set_scalar_bcs (Real time,
-                                Vector< std::unique_ptr<MultiFab> >& density,
-                                Vector< std::unique_ptr<MultiFab> >& trac);
-
-    void set_scalar_bcs(Real time,
-                        const int lev,
-                        FArrayBox& scal_fab,
-                        const int comp,
-                        const Box& domain);
-
 private:
 
      static int nlev;
+     static int ntrac;
 
      // Unit vectors in Cartesian space
      static IntVect e_x;
@@ -191,7 +200,8 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
      void incflo_compute_convective_term(Vector< std::unique_ptr<MultiFab> >& conv_u,
-                                         Vector< std::unique_ptr<MultiFab> >& conv_s,
+                                         Vector< std::unique_ptr<MultiFab> >& conv_r,
+                                         Vector< std::unique_ptr<MultiFab> >& conv_t,
                                          Vector< std::unique_ptr<MultiFab> >& vel,
                                          Vector< std::unique_ptr<MultiFab> >& density_in,
                                          Vector< std::unique_ptr<MultiFab> >& tracer_in,
@@ -210,7 +220,7 @@ private:
                                Vector<std::unique_ptr<MultiFab>>& xslopes_in,
                                Vector<std::unique_ptr<MultiFab>>& yslopes_in,
                                Vector<std::unique_ptr<MultiFab>>& zslopes_in,
-                               int slopes_comp);
+                               int slopes_comp, int ncomp);
 
     void set_MAC_velocity_bcs (int lev,
                                Vector< std::unique_ptr<MultiFab> >& mac_rhs,
@@ -232,6 +242,12 @@ private:
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac);
+
+     void incflo_divergence_plus_redist(const int lev, Vector< std::unique_ptr<MultiFab> >& conv,
+                                        Vector< std::unique_ptr<MultiFab> >& fx,
+                                        Vector< std::unique_ptr<MultiFab> >& fy,
+                                        Vector< std::unique_ptr<MultiFab> >& fz,
+                                        int num_comp);
 
     void incflo_compute_ugradu(const int lev, Box& bx,
                                Vector< std::unique_ptr<MultiFab> >& a_fx,
@@ -268,11 +284,6 @@ private:
                                   const amrex::MultiCutFab* bndrycent,
                                   const amrex::iMultiFab* cc_mask,
                                   Box& domain, const EBCellFlagFab& flags);
-
-     void incflo_redistribute( int lev,
-                               MultiFab& conv_tmp_in,
-                               Vector< std::unique_ptr<MultiFab> >& conv_out,
-                               int conv_comp, int ncomp);
 
      // Verbosity
      int  mac_mg_verbose = 0;
@@ -322,20 +333,11 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Boundary conditions
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void FillScalarBC();
-    void FillVelocityBC(Real time, int extrap_dir_bcs);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
     // Embedded Boundaries
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	void MakeEBGeometry();
+    void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
     std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
@@ -485,7 +487,6 @@ private:
     const Real covered_val = 1.0e40;
     const Real boundary_val = 1.0e80;
 
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Redistribution
@@ -533,8 +534,10 @@ private:
     // Helper variables
     Vector<std::unique_ptr<MultiFab>> conv_u;
     Vector<std::unique_ptr<MultiFab>> conv_u_old;
-    Vector<std::unique_ptr<MultiFab>> conv_s;
-    Vector<std::unique_ptr<MultiFab>> conv_s_old;
+    Vector<std::unique_ptr<MultiFab>> conv_r;
+    Vector<std::unique_ptr<MultiFab>> conv_r_old;
+    Vector<std::unique_ptr<MultiFab>> conv_t;
+    Vector<std::unique_ptr<MultiFab>> conv_t_old;
     Vector<std::unique_ptr<MultiFab>> divtau;
     Vector<std::unique_ptr<MultiFab>> divtau_old;
 
@@ -542,9 +545,13 @@ private:
     Vector<std::unique_ptr<MultiFab>> yslopes_u;
     Vector<std::unique_ptr<MultiFab>> zslopes_u;
 
-    Vector<std::unique_ptr<MultiFab>> xslopes_s;
-    Vector<std::unique_ptr<MultiFab>> yslopes_s;
-    Vector<std::unique_ptr<MultiFab>> zslopes_s;
+    Vector<std::unique_ptr<MultiFab>> xslopes_r;
+    Vector<std::unique_ptr<MultiFab>> yslopes_r;
+    Vector<std::unique_ptr<MultiFab>> zslopes_r;
+
+    Vector<std::unique_ptr<MultiFab>> xslopes_t;
+    Vector<std::unique_ptr<MultiFab>> yslopes_t;
+    Vector<std::unique_ptr<MultiFab>> zslopes_t;
 
     Vector<std::unique_ptr<MultiFab>> m_u_mac;
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
@@ -556,11 +563,13 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void FillPatchVel   (int lev, Real time, MultiFab& mf, int icomp, int ncomp);
-    void FillPatchScalar(int lev, Real time, MultiFab& mf, int icomp, int ncomp);
+    void FillPatchVel    (int lev, Real time, MultiFab& mf);
+    void FillPatchDensity(int lev, Real time, MultiFab& mf);
+    void FillPatchScalar (int lev, Real time, MultiFab& mf);
 
-    void GetDataVel     (int lev, Real time, Vector<MultiFab*>& data,            Vector<Real>& datatime);
-    void GetDataScalar  (int lev, Real time, Vector<MultiFab*>& data, int icomp, Vector<Real>& datatime);
+    void GetDataVel    (int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+    void GetDataDensity(int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
+    void GetDataScalar (int lev, Real time, Vector<MultiFab*>& data, Vector<Real>& datatime);
 
     void AverageDown();
     void AverageDownTo(int crse_lev);

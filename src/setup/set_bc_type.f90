@@ -100,15 +100,15 @@ contains
 
    end subroutine set_bc_type
 
-subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra) &
+subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra, ntrac) &
      bind(C,name='set_bc_mod')
 
   use bc
 
   implicit none
 
-  integer(c_int), intent(in   ) :: pid, ptype
-  real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3), pden, ptra
+  integer(c_int), intent(in   ) :: pid, ptype, ntrac 
+  real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3), pden, ptra(ntrac)
 
   real(rt), parameter :: offset = 1.0d-15
 
@@ -177,7 +177,7 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra) &
      bc_w(pid) = pvel(3);
 
      bc_r(pid) = pden;
-     bc_t(pid) = ptra;
+     bc_t(pid) = ptra(1);
 
      bc_defined(pid) = .true.
 

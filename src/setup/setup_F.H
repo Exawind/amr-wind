@@ -20,6 +20,7 @@ extern "C"
             amrex::Real* ic_w,
             amrex::Real* ic_p,
             amrex::Real* n,
+            const int* ntrac,
             amrex::Real* tau_0,
             amrex::Real* papa_reg,
             amrex::Real* eta_0,
@@ -46,7 +47,8 @@ extern "C"
             amrex::Real* pPg,
             amrex::Real* pVel,
             amrex::Real* pDen,
-            amrex::Real* pTra
+            amrex::Real* pTra,
+            const int* ntrac 
         );
 
     void init_fluid

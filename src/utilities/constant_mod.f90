@@ -18,6 +18,9 @@ module constant
 ! Flow index
    real(rt) :: n_flow
 
+! Number of tracers
+   integer :: ntrac
+
 ! Yield stress
    real(rt) :: tau_0
 

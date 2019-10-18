@@ -14,7 +14,8 @@ amrex::IntVect incflo::e_x(1,0,0);
 amrex::IntVect incflo::e_y(0,1,0);
 amrex::IntVect incflo::e_z(0,0,1);
 
-int incflo::nlev = 1;
+int incflo::nlev  = 1;
+int incflo::ntrac = 1;
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
@@ -36,9 +37,11 @@ incflo::incflo()
      * Set max number of levels (nlevs)                                         *
      *                                                                          *
      ***************************************************************************/
-
     nlev = maxLevel() + 1;
     amrex::Print() << "Number of levels: " << nlev << std::endl;
+
+    // Set default number of tracers
+    ntrac = 3;
 
     // Read inputs file using ParmParse
     ReadParameters();

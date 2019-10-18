@@ -348,9 +348,18 @@ void incflo::WritePlotFile() const
         if(plt_rho == 1) 
             pltscaVarsName.push_back("density");
 
-        // Tracer
+        // Tracers
         if(plt_tracer == 1) 
-            pltscaVarsName.push_back("tracer");
+        {
+            pltscaVarsName.push_back("tracer0");
+            if (ntrac > 1)
+               pltscaVarsName.push_back("tracer1");
+            if (ntrac > 2)
+               pltscaVarsName.push_back("tracer2");
+            if (ntrac > 3)
+               amrex::Error("Haven't made names for ntrac > 3 yet");
+        }
+
 
         // Pressure
         if(plt_p == 1)
@@ -421,9 +430,9 @@ void incflo::WritePlotFile() const
             // Tracer
             if(plt_tracer == 1) 
             {
-                MultiFab::Copy(*mf[lev], (*tracer[lev]), 0, lc, 1, 0);
+                MultiFab::Copy(*mf[lev], (*tracer[lev]), 0, lc, tracer[lev]->nComp(), 0);
     
-                lc += 1;
+                lc += tracer[lev]->nComp();
             }
 
             // Pressure

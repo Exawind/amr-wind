@@ -49,7 +49,6 @@ void writeBuildInfo ()
 
   const char* githash1 = buildInfoGetGitHash(1);
   const char* githash2 = buildInfoGetGitHash(2);
-  const char* githash3 = buildInfoGetGitHash(3);
   if (strlen(githash1) > 0) {
     std::cout << "Incflo       git describe: " << githash1 << "\n";
 

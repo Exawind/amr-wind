@@ -74,8 +74,9 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        // ****************************************************************************
        // First compute the slopes
        // ****************************************************************************
-       int slopes_comp = 0;
-       incflo_compute_slopes(lev, time, *vel_in[lev], xslopes_u, yslopes_u, zslopes_u, slopes_comp);
+       int slopes_comp = 0; int num_comp = 3;
+       incflo_compute_slopes(lev, time, *vel_in[lev], xslopes_u, yslopes_u, zslopes_u, 
+                             slopes_comp, num_comp);
 
        // ****************************************************************************
        // Then predict to face centers

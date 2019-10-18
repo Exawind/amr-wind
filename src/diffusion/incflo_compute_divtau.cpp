@@ -13,14 +13,14 @@
 // Computation of divtau
 //
 void
-incflo::ComputeDivTau (       Vector< std::unique_ptr<MultiFab> >& divtau,
+incflo::ComputeDivTau (       Vector< std::unique_ptr<MultiFab> >& divtau_out,
                               Vector< std::unique_ptr<MultiFab> >& vel_in,
                         const Vector< std::unique_ptr<MultiFab> >& ro_in,
                         const Vector< std::unique_ptr<MultiFab> >& eta_in)
 {
    BL_PROFILE("incflo::ComputeDivTau");
 
-   int nlev = divtau.size();
+   int nlev = divtau_out.size();
 
    Vector<std::unique_ptr<MultiFab> > divtau_aux(nlev);
    for (int lev = 0; lev < nlev; lev++)
@@ -103,10 +103,10 @@ incflo::ComputeDivTau (       Vector< std::unique_ptr<MultiFab> >& divtau,
 
    for (int lev = 0; lev < nlev; lev++)
    {
-       incflo_redistribute( lev, *divtau_aux[lev], *divtau[lev], 0, AMREX_SPACEDIM );
+       incflo_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, AMREX_SPACEDIM );
 
       // Divide by density
       for (int n = 0; n < 3; n++)
-          MultiFab::Divide( *divtau[lev], *ro_in[lev], 0, n, 1, 0 );
+          MultiFab::Divide( *divtau_out[lev], *ro_in[lev], 0, n, 1, 0 );
    }
 }

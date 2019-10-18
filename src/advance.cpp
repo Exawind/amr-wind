@@ -24,7 +24,10 @@ void incflo::Advance()
     }
 
     // Fill ghost nodes and reimpose boundary conditions
-    FillScalarBC();
+    if (advect_density)
+       incflo_set_density_bcs(cur_time, density);
+    if (advect_tracer)
+       incflo_set_tracer_bcs(cur_time, tracer);
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Compute time step size
@@ -86,7 +89,8 @@ void incflo::Advance()
 //  1. Use u = vel_old to compute
 //
 //      conv_u  = - u grad u
-//      conv_s  = {- div( u rho ), - u grad s} for density and tracer
+//      conv_r  = - div( u rho  )
+//      conv_t  = - div( u trac )
 //      eta     = eta( ||strainrate|| ) 
 //      divtau  = div( eta (grad u)^T ) / rho
 //
@@ -137,7 +141,7 @@ void incflo::ApplyPredictor()
     }
 
     // Compute the explicit advective terms R_u^n and R_s^n
-    incflo_compute_convective_term( conv_u_old, conv_s_old, vel_o, density_o, tracer_o, cur_time );
+    incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_o, density_o, tracer_o, cur_time );
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -161,9 +165,10 @@ void incflo::ApplyPredictor()
         MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective term to the density and tracer
-        int density_comp = 0; int tracer_comp = 1;
-        MultiFab::Saxpy(*density[lev], dt, *conv_s_old[lev], density_comp, 0, 1, 0);
-        MultiFab::Saxpy( *tracer[lev], dt, *conv_s_old[lev],  tracer_comp, 0, 1, 0);
+        if (advect_density)
+           MultiFab::Saxpy(*density[lev], dt, *conv_r_old[lev], 0, 0,      1, 0);
+        if (advect_tracer)
+           MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
 
         // Add the viscous terms         
         if (explicit_diffusion)
@@ -172,6 +177,8 @@ void incflo::ApplyPredictor()
         // Add gravitational forces
         if (probtype == 11)
         {
+           // This uses a Boussinesq approximation where the buoyancy depends on tracer
+           //      rather than density
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
               MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
         } else {
@@ -198,8 +205,11 @@ void incflo::ApplyPredictor()
             MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
+    if (advect_density)
+       incflo_set_density_bcs(new_time, density);
+    if (advect_tracer)
+       incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel, 0);
-    FillScalarBC();
 
     // Solve implicit diffusion equation for u*
     if (!explicit_diffusion)
@@ -220,12 +230,14 @@ void incflo::ApplyPredictor()
 //  1. Use u = vel_pred to compute
 //
 //      conv_u  = - u grad u
-//      conv_s  = {- div( u rho ), - u grad s} for density and tracer
+//      conv_r  = - u grad rho
+//      conv_t  = - u grad trac
 //      eta     = eta( ||strainrate|| ) 
 //      divtau  = div( eta (grad u)^T ) / rho
 //
 //      conv_u  = 0.5 (conv_u + conv_u_pred)
-//      conv_s  = 0.5 (conv_s + conv_s_pred)
+//      conv_r  = 0.5 (conv_r + conv_r_pred)
+//      conv_t  = 0.5 (conv_t + conv_t_pred)
 //      divtau  = 0.5 (divtau + divtau_pred)
 //      eta     = 0.5 (eta + eta_pred)
 //
@@ -274,7 +286,7 @@ void incflo::ApplyCorrector()
     }
 
     // Compute the explicit advective terms R_u^* and R_s^*
-    incflo_compute_convective_term( conv_u, conv_s, vel, density, tracer, new_time );
+    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
 
     // Update the derived quantities, notably strain-rate tensor and viscosity
     UpdateDerivedQuantities();
@@ -294,14 +306,12 @@ void incflo::ApplyCorrector()
         MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         //   Now add the convective terms to density
-        int density_comp = 0;
-        MultiFab::LinComb(*density[lev], 1.0, *density_o[lev], 0, dt / 2.0, *conv_s[lev], density_comp, 0, 1, 0);
-        MultiFab::Saxpy(*density[lev], dt / 2.0, *conv_s_old[lev], density_comp, 0, 1, 0);
+        MultiFab::LinComb(*density[lev], 1.0, *density_o[lev], 0, dt / 2.0, *conv_r[lev], 0, 0, 1, 0);
+        MultiFab::Saxpy(*density[lev], dt / 2.0, *conv_r_old[lev], 0, 0, 1, 0);
 
         //   Now add the convective terms to tracer
-        int tracer_comp = density_comp+1;
-        MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv_s[lev], tracer_comp, 0, 1, 0);
-        MultiFab::Saxpy(*tracer[lev], dt / 2.0, *conv_s_old[lev], tracer_comp, 0, 1, 0);
+        MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv_t[lev]    , 0, 0, tracer[lev]->nComp(), 0);
+        MultiFab::Saxpy(  *tracer[lev], dt / 2.0                        , *conv_t_old[lev], 0, 0, tracer[lev]->nComp(), 0);
 
         // Add the viscous terms         
         if (explicit_diffusion)
@@ -313,6 +323,8 @@ void incflo::ApplyCorrector()
         // Add gravitational forces
         if (probtype == 11)
         {
+           // This uses a Boussinesq approximation where the buoyancy depends on tracer
+           //      rather than density
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
               MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
         } else {
@@ -343,8 +355,11 @@ void incflo::ApplyCorrector()
         MultiFab::LinComb(*eta[lev], 0.5, *eta_old[lev], 0, 0.5, *eta[lev], 0, 0, 1, 0);
     }
 
+    if (advect_density)
+       incflo_set_density_bcs(new_time, density);
+    if (advect_tracer)
+       incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel, 0);
-    FillScalarBC();
 
     // Solve implicit diffusion equation for u*
     if (!explicit_diffusion)

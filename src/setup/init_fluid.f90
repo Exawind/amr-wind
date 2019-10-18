@@ -15,7 +15,7 @@ contains
       bind(C, name="init_fluid")
 
       use constant, only: ro_0, mu
-      use constant, only: ic_u, ic_v, ic_w
+      use constant, only: ic_u, ic_v, ic_w, ntrac
 
       implicit none
 
@@ -27,7 +27,7 @@ contains
       real(rt), intent(inout) ::       p(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
       real(rt), intent(inout) ::     vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),3)
       real(rt), intent(inout) :: density(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
-      real(rt), intent(inout) ::  tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+      real(rt), intent(inout) ::  tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3),ntrac)
       real(rt), intent(inout) ::     eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
 
       real(rt), intent(in   ) :: dx, dy, dz
@@ -46,7 +46,7 @@ contains
       if (probtype == 1)  call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype == 2)  call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype == 31 .or. probtype == 32 .or. probtype == 33)  &
-                          call plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+                          call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype == 4)  call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
       if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
@@ -163,9 +163,9 @@ contains
 
    end subroutine double_shear_layer
 
-   subroutine plane_poiseuille(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+   subroutine plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
 
-      use constant, only: ic_u, ic_v, ic_w
+      use constant, only: ic_u, ic_v, ic_w, ntrac
 
       implicit none
 
@@ -175,7 +175,8 @@ contains
       integer(c_int),   intent(in   ) :: probtype
 
       real(rt),         intent(in   ) :: dx, dy, dz
-      real(rt),         intent(inout) :: vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+      real(rt),         intent(inout) ::    vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+      real(rt),         intent(inout) :: tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), ntrac)
 
       ! Local variables
       integer(c_int)                  :: i, j, k
@@ -186,13 +187,27 @@ contains
 
          num_cells = domhi(2) - domlo(2) + 1
 
+         if (ntrac .ne. 3) then
+            print *,"ntrac here is ", ntrac
+            print *,"probtype = 31 is supposed to have 3 tracers!"
+            stop
+         end if
+
          do k = lo(3), hi(3)
          do j = lo(2), hi(2)
             do i = lo(1), hi(1)
                y =  (real(j,rt) + 0.5d0) / dble(num_cells)
+               x =  (real(i,rt) + 0.5d0) / dble(num_cells)
                vel(i,j,k,1) = 6.0d0 * ic_u * y * (1.0d0 - y)
                vel(i,j,k,2) = 0.0d0
                vel(i,j,k,3) = 0.0d0
+               tracer(i,j,k,1:3) = 0.0d0
+               if (i .le. domhi(1)/4) &
+                  tracer(i,j,k,1) = 1.d0
+               if (i .le. domhi(1)/2) &
+                  tracer(i,j,k,2) = 2.d0
+               if (i .le. 3*domhi(1)/4) &
+                  tracer(i,j,k,3) = 3.d0
             end do
          end do
          end do

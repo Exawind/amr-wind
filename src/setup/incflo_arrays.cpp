@@ -17,11 +17,11 @@ void incflo::AllocateArrays(int lev)
     density_o[lev]->setVal(0.);
 
     // Current Tracer; default to 0
-    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
     tracer[lev]->setVal(0.);
 
     // Old tracer; default to 0
-    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
     tracer_o[lev]->setVal(0.);
 
     // Current Velocity
@@ -60,17 +60,25 @@ void incflo::AllocateArrays(int lev)
     conv_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
     conv_u[lev]->setVal(0.);
 
-    // Convective terms for density and tracer
-    conv_s[lev].reset(new MultiFab(grids[lev], dmap[lev], 2, 0, MFInfo(), *ebfactory[lev]));
-    conv_s[lev]->setVal(0.);
+    // Convective terms for density 
+    conv_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+    conv_r[lev]->setVal(0.);
+
+    // Convective terms for tracers
+    conv_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    conv_t[lev]->setVal(0.);
 
     // Old Convective terms for velocity
     conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM+2, 0, MFInfo(), *ebfactory[lev]));
     conv_u_old[lev]->setVal(0.);
 
-    // Convective terms for density and tracer
-    conv_s_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 2, 0, MFInfo(), *ebfactory[lev]));
-    conv_s_old[lev]->setVal(0.);
+    // Convective terms for density
+    conv_r_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+    conv_r_old[lev]->setVal(0.);
+
+    // Convective terms for tracers
+    conv_t_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    conv_t_old[lev]->setVal(0.);
 
     // Divergence of stress tensor terms for diffusion equation
     divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
@@ -81,20 +89,26 @@ void incflo::AllocateArrays(int lev)
     // Slopes in x-direction
     xslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
     xslopes_u[lev]->setVal(0.);
-    xslopes_s[lev].reset(new MultiFab(grids[lev], dmap[lev],              2, nghost, MFInfo(), *ebfactory[lev]));
-    xslopes_s[lev]->setVal(0.);
+    xslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    xslopes_r[lev]->setVal(0.);
+    xslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    xslopes_t[lev]->setVal(0.);
 
     // Slopes in y-direction
     yslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
     yslopes_u[lev]->setVal(0.);
-    yslopes_s[lev].reset(new MultiFab(grids[lev], dmap[lev],              2, nghost, MFInfo(), *ebfactory[lev]));
-    yslopes_s[lev]->setVal(0.);
+    yslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    yslopes_r[lev]->setVal(0.);
+    yslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    yslopes_t[lev]->setVal(0.);
 
     // Slopes in z-direction
     zslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
     zslopes_u[lev]->setVal(0.);
-    zslopes_s[lev].reset(new MultiFab(grids[lev], dmap[lev],              2, nghost, MFInfo(), *ebfactory[lev]));
-    zslopes_s[lev]->setVal(0.);
+    zslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    zslopes_r[lev]->setVal(0.);
+    zslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    zslopes_t[lev]->setVal(0.);
 
     // ********************************************************************************
     // Node-based arrays
@@ -167,15 +181,15 @@ void incflo::RegridArrays(int lev)
    density_o[lev] = std::move(density_o_new);
 
    // Tracer
-   std::unique_ptr<MultiFab> tracer_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+   std::unique_ptr<MultiFab> tracer_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
    tracer_new->setVal(0.0);
-   tracer_new->copy(*tracer[lev], 0, 0, 1, 0, nghost);
+   tracer_new->copy(*tracer[lev], 0, 0, ntrac, 0, nghost);
    tracer[lev] = std::move(tracer_new);
 
    // Old Tracer
-   std::unique_ptr<MultiFab> tracer_o_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+   std::unique_ptr<MultiFab> tracer_o_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
    tracer_o_new->setVal(0.0);
-   tracer_o_new->copy(*tracer_o[lev], 0, 0, 1, 0, nghost);
+   tracer_o_new->copy(*tracer_o[lev], 0, 0, ntrac, 0, nghost);
    tracer_o[lev] = std::move(tracer_o_new);
 
    // Gas velocity
@@ -212,25 +226,33 @@ void incflo::RegridArrays(int lev)
     eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
     eta_old[lev] = std::move(eta_old_new);
 
+    // ***************************
     // Strain-rate magnitude
+    // ***************************
     std::unique_ptr<MultiFab> strainrate_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                           MFInfo(), *ebfactory[lev]));
     strainrate[lev] = std::move(strainrate_new);
     strainrate[lev]->setVal(0.);
 
+    // ***************************
     // Vorticity
+    // ***************************
     std::unique_ptr<MultiFab> vort_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                     MFInfo(), *ebfactory[lev]));
     vort[lev] = std::move(vort_new);
     vort[lev]->setVal(0.);
 
+    // ***************************
     // Drag
+    // ***************************
     std::unique_ptr<MultiFab> drag_new(new MultiFab(grids[lev], dmap[lev], 1, nghost,
                                                     MFInfo(), *ebfactory[lev]));
     drag[lev] = std::move(drag_new);
     drag[lev]->setVal(0.);
 
-    // Convective terms
+    // ***************************
+    // Convective terms for velocity
+    // ***************************
     std::unique_ptr<MultiFab> conv_u_new(new MultiFab(grids[lev], dmap[lev], conv_u[lev]->nComp(), nghost,
                                                       MFInfo(), *ebfactory[lev]));
     conv_u[lev] = std::move(conv_u_new);
@@ -241,17 +263,35 @@ void incflo::RegridArrays(int lev)
     conv_u_old[lev] = std::move(conv_u_old_new);
     conv_u_old[lev]->setVal(0.);
 
-    std::unique_ptr<MultiFab> conv_s_new(new MultiFab(grids[lev], dmap[lev], conv_s[lev]->nComp(), nghost,
+    // ***************************
+    // Convective terms for density
+    // ***************************
+    std::unique_ptr<MultiFab> conv_r_new(new MultiFab(grids[lev], dmap[lev], conv_r[lev]->nComp(), nghost,
                                                       MFInfo(), *ebfactory[lev]));
-    conv_s[lev] = std::move(conv_s_new);
-    conv_s[lev]->setVal(0.);
+    conv_r[lev] = std::move(conv_r_new);
+    conv_r[lev]->setVal(0.);
 
-    std::unique_ptr<MultiFab> conv_s_old_new(new MultiFab(grids[lev], dmap[lev], conv_s_old[lev]->nComp(), nghost,
+    std::unique_ptr<MultiFab> conv_r_old_new(new MultiFab(grids[lev], dmap[lev], conv_r_old[lev]->nComp(), nghost,
                                                         MFInfo(), *ebfactory[lev]));
-    conv_s_old[lev] = std::move(conv_s_old_new);
-    conv_s_old[lev]->setVal(0.);
+    conv_r_old[lev] = std::move(conv_r_old_new);
+    conv_r_old[lev]->setVal(0.);
 
+    // ***************************
+    // Convective terms for tracer
+    // ***************************
+    std::unique_ptr<MultiFab> conv_t_new(new MultiFab(grids[lev], dmap[lev], conv_t[lev]->nComp(), nghost,
+                                                      MFInfo(), *ebfactory[lev]));
+    conv_t[lev] = std::move(conv_t_new);
+    conv_t[lev]->setVal(0.);
+
+    std::unique_ptr<MultiFab> conv_t_old_new(new MultiFab(grids[lev], dmap[lev], conv_t_old[lev]->nComp(), nghost,
+                                                        MFInfo(), *ebfactory[lev]));
+    conv_t_old[lev] = std::move(conv_t_old_new);
+    conv_t_old[lev]->setVal(0.);
+
+    // ***************************
     // Divergence of stress tensor terms 
+    // ***************************
     std::unique_ptr<MultiFab> divtau_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost,
                                                       MFInfo(), *ebfactory[lev]));
     divtau[lev] = std::move(divtau_new);
@@ -262,38 +302,59 @@ void incflo::RegridArrays(int lev)
     divtau_old[lev] = std::move(divtau_old_new);
     divtau_old[lev]->setVal(0.);
 
+    // ***************************
     // Slopes in x-direction
+    // ***************************
     std::unique_ptr<MultiFab> xslopes_u_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
                                                          MFInfo(), *ebfactory[lev]));
     xslopes_u[lev] = std::move(xslopes_u_new);
     xslopes_u[lev] -> setVal(0.);
 
-    std::unique_ptr<MultiFab> xslopes_s_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
+    std::unique_ptr<MultiFab> xslopes_r_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
                                                          MFInfo(), *ebfactory[lev]));
-    xslopes_s[lev] = std::move(xslopes_s_new);
-    xslopes_s[lev] -> setVal(0.);
+    xslopes_r[lev] = std::move(xslopes_r_new);
+    xslopes_r[lev] -> setVal(0.);
 
+    std::unique_ptr<MultiFab> xslopes_t_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, 
+                                                         MFInfo(), *ebfactory[lev]));
+    xslopes_t[lev] = std::move(xslopes_t_new);
+    xslopes_t[lev] -> setVal(0.);
+
+    // ***************************
     // Slopes in y-direction
+    // ***************************
     std::unique_ptr<MultiFab> yslopes_u_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
                                                        MFInfo(), *ebfactory[lev]));
     yslopes_u[lev] = std::move(yslopes_u_new);
     yslopes_u[lev] -> setVal(0.);
 
-    std::unique_ptr<MultiFab> yslopes_s_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
+    std::unique_ptr<MultiFab> yslopes_r_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
                                                        MFInfo(), *ebfactory[lev]));
-    yslopes_s[lev] = std::move(yslopes_s_new);
-    yslopes_s[lev] -> setVal(0.);
+    yslopes_r[lev] = std::move(yslopes_r_new);
+    yslopes_r[lev] -> setVal(0.);
 
+    std::unique_ptr<MultiFab> yslopes_t_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, 
+                                                       MFInfo(), *ebfactory[lev]));
+    yslopes_t[lev] = std::move(yslopes_t_new);
+    yslopes_t[lev] -> setVal(0.);
+
+    // ***************************
     // Slopes in z-direction
+    // ***************************
     std::unique_ptr<MultiFab> zslopes_u_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
                                                        MFInfo(), *ebfactory[lev]));
     zslopes_u[lev] = std::move(zslopes_u_new);
     zslopes_u[lev] -> setVal(0.);
 
-    std::unique_ptr<MultiFab> zslopes_s_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
+    std::unique_ptr<MultiFab> zslopes_r_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
                                                        MFInfo(), *ebfactory[lev]));
-    zslopes_s[lev] = std::move(zslopes_s_new);
-    zslopes_s[lev] -> setVal(0.);
+    zslopes_r[lev] = std::move(zslopes_r_new);
+    zslopes_r[lev] -> setVal(0.);
+
+    std::unique_ptr<MultiFab> zslopes_t_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, 
+                                                       MFInfo(), *ebfactory[lev]));
+    zslopes_t[lev] = std::move(zslopes_t_new);
+    zslopes_t[lev] -> setVal(0.);
 
     /****************************************************************************
     * Node-based Arrays                                                        *
@@ -389,8 +450,10 @@ void incflo::ResizeArrays()
     // Convective terms u grad u 
     conv_u.resize(max_level + 1);
     conv_u_old.resize(max_level + 1);
-    conv_s.resize(max_level + 1);
-    conv_s_old.resize(max_level + 1);
+    conv_r.resize(max_level + 1);
+    conv_r_old.resize(max_level + 1);
+    conv_t.resize(max_level + 1);
+    conv_t_old.resize(max_level + 1);
     divtau.resize(max_level + 1);
     divtau_old.resize(max_level + 1);
 
@@ -403,9 +466,12 @@ void incflo::ResizeArrays()
     xslopes_u.resize(max_level + 1);
     yslopes_u.resize(max_level + 1);
     zslopes_u.resize(max_level + 1);
-    xslopes_s.resize(max_level + 1);
-    yslopes_s.resize(max_level + 1);
-    zslopes_s.resize(max_level + 1);
+    xslopes_r.resize(max_level + 1);
+    yslopes_r.resize(max_level + 1);
+    zslopes_r.resize(max_level + 1);
+    xslopes_t.resize(max_level + 1);
+    yslopes_t.resize(max_level + 1);
+    zslopes_t.resize(max_level + 1);
 
     // BCs
     bc_ilo.resize(max_level + 1);

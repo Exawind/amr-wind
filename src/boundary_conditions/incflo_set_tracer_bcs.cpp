@@ -8,32 +8,23 @@ using namespace amrex;
 // Set the BCs for all the variables EXCEPT pressure or velocity.
 //
 void
-incflo::incflo_set_scalar_bcs (Real time,
-                               Vector< std::unique_ptr<MultiFab> > & density_in,
+incflo::incflo_set_tracer_bcs (Real time,
                                Vector< std::unique_ptr<MultiFab> > & tracer_in)
 {
-  BL_PROFILE("incflo::incflo_set_scalar_bcs()");
+  BL_PROFILE("incflo::incflo_set_tracer_bcs()");
 
-  for (int lev = 0; lev < nlev; lev++)
+  if (advect_tracer)
   {
-     Box domain(geom[lev].Domain());
+     for (int lev = 0; lev < nlev; lev++)
+     {
+        Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-     for (MFIter mfi(*density_in[lev], true); mfi.isValid(); ++mfi)
-     {
-        set_scalar_bcs(time, lev, (*density_in[lev])[mfi], 0, domain);
+        for (MFIter mfi(*tracer_in[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
+           set_tracer_bcs(time, lev, (*tracer_in[lev])[mfi], 0, tracer_in[lev]->nComp(), domain);
 
-        if (advect_tracer)
-           set_scalar_bcs(time, lev, (*tracer_in[lev])[mfi], 1, domain);
-     }
-
-     density_in[lev] -> FillBoundary (geom[lev].periodicity());
-     EB_set_covered(*density_in[lev], 0, density_in[lev]->nComp(), density_in[lev]->nGrow(), covered_val);
-
-     if (advect_tracer)
-     {
         tracer_in[lev] -> FillBoundary (geom[lev].periodicity());
         EB_set_covered(*tracer_in[lev], 0, tracer_in[lev]->nComp(), tracer_in[lev]->nGrow(), covered_val);
      }
@@ -41,10 +32,11 @@ incflo::incflo_set_scalar_bcs (Real time,
 }
 
 void 
-incflo::set_scalar_bcs(Real time,
+incflo::set_tracer_bcs(Real time,
                        const int lev,
                        FArrayBox& scal_fab,
-                       int comp,
+                       int bc_comp,
+                       int ncomp,
                        const Box& domain)
 
 {
@@ -136,11 +128,7 @@ incflo::set_scalar_bcs(Real time,
 
   amrex::Real* p_bc_s;
 
-  if (comp == 0) {
-     p_bc_s = m_bc_r.data();
-  } else if (comp == 0) {
-     p_bc_s = m_bc_t.data();
-  }
+  p_bc_s = m_bc_t.data();
 
   if (nlft > 0)
   {

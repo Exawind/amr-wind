@@ -14,7 +14,8 @@ void incflo::UpdateDerivedQuantities()
     ComputeVorticity();
 
     // We have just updated eta in ComputeViscosity; make sure to fill the bc's here
-    FillScalarBC();
+    incflo_set_density_bcs(cur_time, density);
+    incflo_set_tracer_bcs(cur_time , tracer);
 }
 
 void incflo::ComputeDivU(Real time)
@@ -64,7 +65,7 @@ void incflo::ComputeStrainrate()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
+        FillPatchVel(lev, cur_time, Sborder);
     
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy(*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
@@ -273,7 +274,7 @@ void incflo::ComputeVorticity()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder, 0, Sborder.nComp());
+        FillPatchVel(lev, cur_time, Sborder);
     
         // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());

@@ -68,19 +68,6 @@ void incflo::ReadParameters()
             plt_divu       = 1;
             plt_vfrac      = 1;
         }
-
-        // Count the number of variables to save.
-        if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
-        if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
-        if(plt_rho        == 1) pltVarCount += 1;
-        if(plt_tracer     == 1) pltVarCount += 1;
-        if(plt_p          == 1) pltVarCount += 1;
-        if(plt_eta        == 1) pltVarCount += 1;
-        if(plt_vort       == 1) pltVarCount += 1;
-        if(plt_strainrate == 1) pltVarCount += 1;
-        if(plt_stress     == 1) pltVarCount += 1;
-        if(plt_divu       == 1) pltVarCount += 1;
-        if(plt_vfrac      == 1) pltVarCount += 1;
 	}
 
 	{
@@ -98,6 +85,7 @@ void incflo::ReadParameters()
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
 	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
         pp.query("ro_0", ro_0);
+        pp.query("ntrac", ntrac);
         pp.query("advect_density", advect_density);
         pp.query("advect_tracer" , advect_tracer);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
@@ -202,7 +190,7 @@ void incflo::ReadParameters()
         fortran_get_data(is_cyclic.dataPtr(),
                          delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu,
                          &ic_u, &ic_v, &ic_w, &ic_p,
-                         &n_0, &tau_0, &papa_reg, &eta_0,
+                         &n_0, &ntrac, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
 	}
 
@@ -222,6 +210,19 @@ void incflo::ReadParameters()
 		ParmParse pp("cylinder");
 		pp.query("speed", cyl_speed);
     }
+
+    // Count the number of variables to save.
+    if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
+    if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
+    if(plt_rho        == 1) pltVarCount += 1;
+    if(plt_tracer     == 1) pltVarCount += ntrac;
+    if(plt_p          == 1) pltVarCount += 1;
+    if(plt_eta        == 1) pltVarCount += 1;
+    if(plt_vort       == 1) pltVarCount += 1;
+    if(plt_strainrate == 1) pltVarCount += 1;
+    if(plt_stress     == 1) pltVarCount += 1;
+    if(plt_divu       == 1) pltVarCount += 1;
+    if(plt_vfrac      == 1) pltVarCount += 1;
 }
 
 void incflo::PostInit(int restart_flag)
@@ -244,7 +245,10 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    FillScalarBC();
+    incflo_set_density_bcs(cur_time, density);
+    incflo_set_tracer_bcs (cur_time, tracer);
+    incflo_set_density_bcs(cur_time, density_o);
+    incflo_set_tracer_bcs (cur_time, tracer_o);
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Project the initial velocity field to make it divergence free
@@ -393,7 +397,8 @@ void incflo::InitialIterations()
     }
 
     // Fill ghost cells
-    FillScalarBC();
+    incflo_set_density_bcs(cur_time, density);
+    incflo_set_tracer_bcs(cur_time, tracer);
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Copy vel into vel_o

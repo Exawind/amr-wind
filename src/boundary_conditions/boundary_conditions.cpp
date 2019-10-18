@@ -10,57 +10,6 @@
 #include <boundary_conditions_F.H>
 #include <setup_F.H>
 
-void incflo::FillScalarBC()
-{
-    BL_PROFILE("incflo:FillScalarBC()");
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        Box domain(geom[lev].Domain());
-        
-        // Hack so that ghost cells are not undefined
-        density[lev]->setDomainBndry(boundary_val, geom[lev]);
-        tracer[lev]->setDomainBndry(boundary_val, geom[lev]);
-        eta[lev]->setDomainBndry(boundary_val, geom[lev]);
-
-        // Impose periodic BCs at domain boundaries and fine-fine copies in the interior
-        density[lev]->FillBoundary(geom[lev].periodicity());
-        tracer[lev]->FillBoundary(geom[lev].periodicity());
-        eta[lev]->FillBoundary(geom[lev].periodicity());
-
-        // Fill all cell-centered arrays with first-order extrapolation at domain boundaries
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for(MFIter mfi(*density[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            // Density
-            fill_bc0(BL_TO_FORTRAN_ANYD((*density[lev])[mfi]),
-                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                     domain.loVect(), domain.hiVect(),
-                     &nghost);
-
-            // Tracer
-            fill_bc0(BL_TO_FORTRAN_ANYD((*tracer[lev])[mfi]),
-                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                     domain.loVect(), domain.hiVect(),
-                     &nghost);
-
-            // Viscosity
-            fill_bc0(BL_TO_FORTRAN_ANYD((*eta[lev])[mfi]),
-                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                     domain.loVect(), domain.hiVect(),
-                     &nghost);
-        }
-    }
-}
-
 void incflo::GetInputBCs()
 {
     // Extracts all walls from the inputs file
@@ -94,8 +43,8 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
     int direction = 0;
     Real mi_pressure = -1.0;
     Real mi_density  =  1.0;
-    Real mi_tracer   =  1.0;
     Vector<Real> mi_velocity(3, 0.0);
+    Vector<Real> mi_tracer(ntrac, 0.0);
     Real location = domloc;
 
     std::string bc_type = "null";
@@ -132,7 +81,7 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
       pp.getarr("velocity", mi_velocity, 0, 3);
 
       pp.query("density", mi_density);
-      pp.query("tracer", mi_tracer);
+      pp.queryarr("tracer", mi_tracer, 0, ntrac);
 
     } else if (bc_type == "no_slip_wall"    || bc_type == "nsw" ||
                bc_type == "NO_SLIP_WALL"    || bc_type == "NSW" ) {
@@ -155,6 +104,6 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
     const Real* phi = geom[0].ProbHi();
 
     set_bc_mod(&index, &itype, plo, phi,
-               &location, &mi_pressure, &mi_velocity[0], &mi_density, &mi_tracer);
+               &location, &mi_pressure, &mi_velocity[0], &mi_density, &mi_tracer[0], &ntrac);
 
 }

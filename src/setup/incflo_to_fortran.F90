@@ -16,7 +16,7 @@ contains
    subroutine fortran_get_data(is_cyclic_in, &
                                delp_in, gravity_in, ro_0_in, mu_in, &
                                ic_u_in, ic_v_in, ic_w_in, ic_p_in, &
-                               n_in, tau_0_in, papa_reg_in, eta_0_in, &
+                               n_in, ntrac_in, tau_0_in, papa_reg_in, eta_0_in, &
                                fluid_model_name, fluid_model_namelength) &
                            bind(C, name="fortran_get_data")
 
@@ -26,6 +26,7 @@ contains
       implicit none
 
       logical,                intent(in) :: is_cyclic_in(3)
+      integer,                intent(in) :: ntrac_in
       real(rt),               intent(in) :: delp_in(3)
       real(rt),               intent(in) :: gravity_in(3)
       real(rt),               intent(in) :: ro_0_in, mu_in
@@ -49,10 +50,11 @@ contains
       ic_w = ic_w_in
       ic_p = ic_p_in
       n_flow = n_in
+      ntrac  = ntrac_in
       tau_0 = tau_0_in
       papa_reg = papa_reg_in
       eta_0 = eta_0_in
-      
+
       allocate(character(fluid_model_namelength) :: fluid_model)
       forall(i = 1:fluid_model_namelength) fluid_model(i:i) = fluid_model_name(i)
 

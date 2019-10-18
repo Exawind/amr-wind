@@ -5,7 +5,6 @@
 
 namespace eb_redistribute {
 
-
 void
 apply_eb_redistribution ( Box& bx,
                           MultiFab& div_mf,
