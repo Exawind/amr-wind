@@ -69,7 +69,7 @@ void incflo::AllocateArrays(int lev)
     conv_t[lev]->setVal(0.);
 
     // Old Convective terms for velocity
-    conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM+2, 0, MFInfo(), *ebfactory[lev]));
+    conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
     conv_u_old[lev]->setVal(0.);
 
     // Convective terms for density
