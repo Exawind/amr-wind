@@ -394,6 +394,9 @@ private:
     bool do_initial_proj    = true;
     int  initial_iterations = 3;
 
+    // Use Boussinesq approximation for buoyancy?
+    bool use_boussinesq = false;
+
     // AMR / refinement settings
     int refine_cutcells = 1;
     int regrid_int = -1;

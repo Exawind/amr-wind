@@ -175,9 +175,9 @@ void incflo::ApplyPredictor()
             MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
-        if (probtype == 11)
+        if (use_boussinesq)
         {
-           // This uses a Boussinesq approximation where the buoyancy depends on tracer
+           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
            //      rather than density
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
               MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
@@ -321,7 +321,7 @@ void incflo::ApplyCorrector()
         }
 
         // Add gravitational forces
-        if (probtype == 11)
+        if (use_boussinesq)
         {
            // This uses a Boussinesq approximation where the buoyancy depends on tracer
            //      rather than density
