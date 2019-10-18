@@ -40,9 +40,6 @@ incflo::incflo()
     nlev = maxLevel() + 1;
     amrex::Print() << "Number of levels: " << nlev << std::endl;
 
-    // Set default number of tracers
-    ntrac = 3;
-
     // Read inputs file using ParmParse
     ReadParameters();
 
