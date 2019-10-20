@@ -144,8 +144,7 @@ void incflo::ApplyPredictor()
     incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_o, density_o, tracer_o, cur_time );
 
     // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
-    // We shouldn't need to do this again because the cur_time velocity is vel_o which hasn't changed
-    // ComputeViscosity();
+    ComputeViscosity();
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -290,7 +289,8 @@ void incflo::ApplyCorrector()
     incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
 
     // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
-    ComputeViscosity();
+    // We shouldn't need to do this again because the cur_time velocity is vel_o which hasn't changed
+    // ComputeViscosity();
 
     // Compute explicit diffusion if used -- note that even though we call this "explicit",
     //   the diffusion term does end up being time-centered so formally second-order
