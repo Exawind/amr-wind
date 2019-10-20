@@ -43,11 +43,12 @@ contains
       tracer  = 0.0
       eta     = mu
       
-      if (probtype == 1)  call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if (probtype == 2)  call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if (probtype == 31 .or. probtype == 32 .or. probtype == 33)  &
-                          call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
-      if (probtype == 4)  call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype ==  1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype ==  2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype == 31) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+      if (probtype == 32) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+      if (probtype == 33) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
+      if (probtype ==  4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
       if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid

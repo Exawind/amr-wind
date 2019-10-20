@@ -324,7 +324,6 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void UpdateDerivedQuantities();
     void ComputeDivU(Real time);
     void ComputeStrainrate();
     void ComputeVorticity();
@@ -415,7 +414,7 @@ private:
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
     Real ro_0 = 1.0;
 
-    bool advect_density = false;
+    bool constant_density = true;
     bool advect_tracer  = false;
 
     bool explicit_diffusion  = false;
@@ -437,7 +436,7 @@ private:
     void WriteHeader(const std::string& name, bool is_checkpoint) const;
 	void WriteJobInfo(const std::string& dir) const;
     void WriteCheckPointFile() const;
-    void WritePlotFile() const;
+    void WritePlotFile();
     void ReadCheckpointFile();
 
     // Member variables for I/O

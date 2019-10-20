@@ -97,7 +97,6 @@ void incflo::InitData()
     // Plot initial distribution
     if((plot_int > 0 || plot_per > 0) && !restart_flag)
     {
-        UpdateDerivedQuantities();
         WritePlotFile();
         last_plt = 0;
     }
@@ -211,7 +210,6 @@ void incflo::Evolve()
         if((plot_int > 0 && (nstep % plot_int == 0)) ||
            (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-12)))
         {
-            UpdateDerivedQuantities();
             WritePlotFile();
             last_plt = nstep;
         }
@@ -228,12 +226,8 @@ void incflo::Evolve()
     }
 
 	// Output at the final time
-    if(check_int > 0 && nstep != last_chk) WriteCheckPointFile();
-    if((plot_int > 0 || plot_per > 0) && nstep != last_plt)
-    {
-        UpdateDerivedQuantities();
-        WritePlotFile();
-    }
+    if(check_int > 0                  && nstep != last_chk) WriteCheckPointFile();
+    if((plot_int > 0 || plot_per > 0) && nstep != last_plt) WritePlotFile();
 }
 
 // tag cells for refinement
@@ -248,7 +242,7 @@ void incflo::ErrorEst(int lev,
     const char   tagval = TagBox::SET;
     const char clearval = TagBox::CLEAR;
 
-    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(density[lev]->Factory());
+    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(vel[lev]->Factory());
     auto const& flags = factory.getMultiEBCellFlagFab();
 
     const Real* dx      = geom[lev].CellSize();
@@ -257,7 +251,7 @@ void incflo::ErrorEst(int lev,
 #ifdef _OPENMP
 #pragma omp parallel
 #endif
-    for (MFIter mfi(*density[lev],true); mfi.isValid(); ++mfi)
+    for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
     {
         const Box& bx  = mfi.tilebox();
         const auto& flag = flags[mfi];
@@ -279,7 +273,8 @@ void incflo::ErrorEst(int lev,
     // Refine on cut cells
     if (refine_cutcells)
     {
-        amrex::TagCutCells(tags, *density[lev]);
+        const MultiFab* volfrac = &(ebfactory[lev] -> getVolFrac());
+        amrex::TagCutCells(tags, *volfrac);
     }
 }
 
@@ -359,10 +354,17 @@ void incflo::AverageDownTo(int crse_lev)
     BL_PROFILE("incflo::AverageDownTo()");
 
     IntVect rr = refRatio(crse_lev);
-    amrex::EB_average_down(*density[crse_lev+1],         *density[crse_lev],         0, 1, rr);
+
+    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
+    amrex::EB_average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
+
+    if (!constant_density)
+       amrex::EB_average_down(*density[crse_lev+1], *density[crse_lev],    0, 1, rr);
+
+    if (advect_tracer)
+       amrex::EB_average_down(*tracer[crse_lev+1],  *tracer[crse_lev],     0, ntrac, rr);
+
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
-    amrex::EB_average_down(*gp[crse_lev+1],         *gp[crse_lev],         0, AMREX_SPACEDIM, rr);
-    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
 }

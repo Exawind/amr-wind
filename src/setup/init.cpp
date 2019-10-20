@@ -86,7 +86,7 @@ void incflo::ReadParameters()
 	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
         pp.query("ro_0", ro_0);
         pp.query("ntrac", ntrac);
-        pp.query("advect_density", advect_density);
+        pp.query("constant_density", constant_density);
         pp.query("advect_tracer" , advect_tracer);
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 

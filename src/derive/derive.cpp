@@ -4,20 +4,6 @@
 #include <derive_F.H>
 #include <incflo_proj_F.H>
 
-void incflo::UpdateDerivedQuantities()
-{
-    BL_PROFILE("incflo::UpdateDerivedQuantities()");
-
-    ComputeDivU(cur_time);
-    ComputeStrainrate();
-    ComputeViscosity();
-    ComputeVorticity();
-
-    // We have just updated eta in ComputeViscosity; make sure to fill the bc's here
-    incflo_set_density_bcs(cur_time, density);
-    incflo_set_tracer_bcs(cur_time , tracer);
-}
-
 void incflo::ComputeDivU(Real time)
 {
     int extrap_dir_bcs = 0;
@@ -85,7 +71,7 @@ void incflo::ComputeStrainrate()
             // Cell-centered velocity
             const auto& ccvel_fab = vel[lev]->array(mfi);
 
-            // Cell-centred strain-rate magnitude
+            // Cell-centered strain-rate magnitude
             const auto& sr_fab = strainrate[lev]->array(mfi);
 
             if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
@@ -294,7 +280,7 @@ void incflo::ComputeVorticity()
             // Cell-centered velocity
             const auto& ccvel_fab = vel[lev]->array(mfi);
 
-            // Cell-centred strain-rate magnitude
+            // Cell-centered strain-rate magnitude
             const auto& vort_fab = vort[lev]->array(mfi);
 
             if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)

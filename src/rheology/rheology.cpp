@@ -8,8 +8,18 @@ void incflo::ComputeViscosity()
 {
     BL_PROFILE("incflo::ComputeViscosity");
 
-    for(int lev = 0; lev <= finest_level; lev++)
+    if (fluid_model == "newtonian")
     {
+       for(int lev = 0; lev <= finest_level; lev++)
+          eta[lev]->setVal(mu,0,1,eta[lev]->nGrow());
+
+    } else {
+
+      // Only compute strain rate if we're going to use it
+      ComputeStrainrate();
+
+      for(int lev = 0; lev <= finest_level; lev++)
+      {
         Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
@@ -45,5 +55,6 @@ void incflo::ComputeViscosity()
         }
 
         eta[lev]->FillBoundary(geom[lev].periodicity());
+      }
     }
 }
