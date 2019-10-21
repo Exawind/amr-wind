@@ -198,22 +198,19 @@ void incflo::ApplyPredictor()
 
         // Convert velocities to momenta
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
             MultiFab::Multiply(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
-        }
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
-            (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
-        }
+
+        // Add (-dt grad p0 to momenta if not Boussinesq)
+        if (!use_boussinesq)
+            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+                (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
             MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
-        }
     }
 
     if (!constant_density)
@@ -375,10 +372,11 @@ void incflo::ApplyCorrector()
 
         // Add (-dt grad p to momenta)
         MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
-            (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
-        }
+
+        // Add (-dt grad p0 to momenta if not Boussinesq)
+        if (!use_boussinesq)
+            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+                (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
 
         // Convert momenta back to velocities
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
