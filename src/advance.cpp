@@ -91,10 +91,15 @@ void incflo::Advance()
 //      conv_u  = - u grad u
 //      conv_r  = - div( u rho  )
 //      conv_t  = - div( u trac )
-//      eta     = visosity
-//      divtau  = div( eta ( (grad u) + (grad u)^T ) ) / rho
+//      eta_old     = visosity at cur_time
+//      if (m_diff_type == DiffusionType::Explicit)
+//         divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho
+//         rhs = u + dt * ( conv + divtau_old )
+//      else
+//         divtau_old  = 0.0 
+//         rhs = u + dt * conv 
 //
-//      rhs = u + dt * ( conv + divtau )
+//      eta     = eta at new_time 
 //
 //  2. Add explicit forcing term i.e. gravity + lagged pressure gradient
 //
@@ -103,9 +108,17 @@ void incflo::Advance()
 //      Note that in order to add the pressure gradient terms divided by rho, 
 //      we convert the velocity to momentum before adding and then convert them back. 
 //
-//  3. Solve implicit diffusion equation for u* 
+//  3. A. If (m_diff_type == DiffusionType::Implicit)
+//        solve implicit diffusion equation for u* 
 //
-//     ( 1 - dt / rho * div ( eta grad ) ) u* = rhs
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u 
+//                                                  + dt * ( g - grad(p + p0) / rho )
+// 
+//     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
+//        solve semi-implicit diffusion equation for u* 
+//
+//     ( 1 - (dt/2) / rho * div ( eta_old grad ) ) u* = u^n + dt * conv_u + (dt/2) / rho * div (eta_old grad) u^n
+//                                                          + dt * ( g - grad(p + p0) / rho )
 //
 //  4. Apply projection
 //     
@@ -202,19 +215,19 @@ void incflo::ApplyPredictor()
             MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
     }
+
     if (!constant_density)
        incflo_set_density_bcs(new_time, density);
     if (advect_tracer)
        incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel, 0);
 
-    // Solve diffusion equation for u* but still using eta at old time
+    // Solve diffusion equation for u* but using eta_old at old time
+    // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
        diffusion_equation->solve(vel, density, eta_old, 0.5*dt);
     else if (m_diff_type == DiffusionType::Implicit)
-    {
        diffusion_equation->solve(vel, density, eta_old, dt);
-    }
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
@@ -230,7 +243,7 @@ void incflo::ApplyPredictor()
 //
 //  1. Use u = vel_pred to compute
 //
-//      conv_u  = - u grad u
+//      conv_u  = - u grad u 
 //      conv_r  = - u grad rho
 //      conv_t  = - u grad trac
 //      eta     = viscosity
@@ -239,8 +252,11 @@ void incflo::ApplyPredictor()
 //      conv_u  = 0.5 (conv_u + conv_u_pred)
 //      conv_r  = 0.5 (conv_r + conv_r_pred)
 //      conv_t  = 0.5 (conv_t + conv_t_pred)
-//      divtau  = 0.5 (divtau + divtau_pred)
-//      eta     = 0.5 (eta + eta_pred)
+//      if (m_diff_type == DiffusionType::Explicit)
+//         divtau  = divtau at new_time using (*) state
+//      else
+//         divtau  = 0.0 
+//      eta     = eta at new_time 
 //
 //     rhs = u + dt * ( conv + divtau )
 //
@@ -251,9 +267,17 @@ void incflo::ApplyPredictor()
 //      Note that in order to add the pressure gradient terms divided by rho, 
 //      we convert the velocity to momentum before adding and then convert them back. 
 //
-//  3. Solve implicit diffusion equation for u* 
+//  3. A. If (m_diff_type == DiffusionType::Implicit)
+//        solve implicit diffusion equation for u* 
 //
-//     ( 1 - dt / rho * div ( eta grad ) ) u* = rhs
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u 
+//                                                  + dt * ( g - grad(p + p0) / rho )
+// 
+//     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
+//        solve semi-implicit diffusion equation for u* 
+//
+//     ( 1 - (dt/2) / rho * div ( eta grad ) ) u* = u^n + dt * conv_u + (dt/2) / rho * div (eta_old grad) u^n
+//                                                      + dt * ( g - grad(p + p0) / rho )
 //
 //  4. Apply projection
 //     
@@ -286,9 +310,6 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Compute the explicit advective terms R_u^* and R_s^*
-    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
-
     // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "new_time",
     //                           which is currently u*)
     // We need this eta whether explicit, implicit or Crank-Nicolson
@@ -296,12 +317,15 @@ void incflo::ApplyCorrector()
 
     // Compute explicit diffusion if used -- note that even though we call this "explicit",
     //   the diffusion term does end up being time-centered so formally second-order
-    if (m_diff_type == DiffusionType::Explicit ||
-        m_diff_type == DiffusionType::Crank_Nicolson)
+    //   Now divtau is the diffusion term computed from u*
+    if (m_diff_type == DiffusionType::Explicit)
        ComputeDivTau(divtau, vel, density, eta);
     else 
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
+
+    // Compute the explicit advective terms R_u^* and R_s^*
+    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -373,7 +397,7 @@ void incflo::ApplyCorrector()
     if (m_diff_type == DiffusionType::Crank_Nicolson)
        diffusion_equation->solve(vel, density, eta, 0.5*dt);
     else if (m_diff_type == DiffusionType::Implicit)
-       diffusion_equation->solve(vel, density, eta_old, dt);
+       diffusion_equation->solve(vel, density, eta, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
