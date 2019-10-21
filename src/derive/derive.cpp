@@ -4,10 +4,10 @@
 #include <derive_F.H>
 #include <incflo_proj_F.H>
 
-void incflo::ComputeDivU(Real time)
+void incflo::ComputeDivU(Real time_in)
 {
     int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
+    incflo_set_velocity_bcs(time_in, vel, extrap_dir_bcs);
 
     // Define the operator in order to compute the multi-level divergence
     //
@@ -34,7 +34,7 @@ void incflo::ComputeDivU(Real time)
     matrix.compDivergence(GetVecOfPtrs(divu), GetVecOfPtrs(vel)); 
 }
 
-void incflo::ComputeStrainrate()
+void incflo::ComputeStrainrate(Real time_in)
 {
     BL_PROFILE("incflo::ComputeStrainrate");
 
@@ -51,15 +51,12 @@ void incflo::ComputeStrainrate()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder);
-    
-        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
-        MultiFab::Copy(*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+        FillPatchVel(lev, time_in, Sborder);
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();
@@ -69,7 +66,7 @@ void incflo::ComputeStrainrate()
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
             // Cell-centered velocity
-            const auto& ccvel_fab = vel[lev]->array(mfi);
+            const auto& ccvel_fab = Sborder.array(mfi);
 
             // Cell-centered strain-rate magnitude
             const auto& sr_fab = strainrate[lev]->array(mfi);
@@ -243,7 +240,7 @@ void incflo::ComputeStrainrate()
     }
 }
 
-void incflo::ComputeVorticity()
+void incflo::ComputeVorticity(Real time_in)
 {
 	BL_PROFILE("incflo::ComputeVorticity");
 
@@ -260,10 +257,7 @@ void incflo::ComputeVorticity()
         // State with ghost cells
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, 
                          MFInfo(), *ebfactory[lev]);
-        FillPatchVel(lev, cur_time, Sborder);
-    
-        // Copy each FAB back from Sborder into the vel array, complete with filled ghost cells
-        MultiFab::Copy (*vel[lev], Sborder, 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+        FillPatchVel(lev, time_in, Sborder);
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -278,7 +272,7 @@ void incflo::ComputeVorticity()
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
 
             // Cell-centered velocity
-            const auto& ccvel_fab = vel[lev]->array(mfi);
+            const auto& ccvel_fab = Sborder.array(mfi);
 
             // Cell-centered strain-rate magnitude
             const auto& vort_fab = vort[lev]->array(mfi);

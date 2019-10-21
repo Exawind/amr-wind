@@ -129,7 +129,7 @@ void incflo::ApplyPredictor()
 {
     BL_PROFILE("incflo::ApplyPredictor");
 
-    // We use the new ime value for things computed on the "*" state
+    // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
 
     incflo_set_velocity_bcs(cur_time, vel_o, 0);
@@ -143,17 +143,12 @@ void incflo::ApplyPredictor()
     // Compute the explicit advective terms R_u^n and R_s^n
     incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_o, density_o, tracer_o, cur_time );
 
-    // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
-    ComputeViscosity();
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        // Save this value of eta as eta_old for use in the corrector as well
-        MultiFab::Copy(*eta_old[lev], *eta[lev], 0, 0, eta[lev]->nComp(), eta_old[lev]->nGrow());
-    }
+    // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
+    ComputeViscosity(eta_old, cur_time);
 
     // Compute explicit diffusion if used
-    if (explicit_diffusion)
+    if (m_diff_type == DiffusionType::Explicit ||
+        m_diff_type == DiffusionType::Crank_Nicolson)
        ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
     else
        for (int lev = 0; lev <= finest_level; lev++)
@@ -171,8 +166,10 @@ void incflo::ApplyPredictor()
            MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
 
         // Add the viscous terms         
-        if (explicit_diffusion)
+        if (m_diff_type == DiffusionType::Explicit) 
             MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        else if (m_diff_type == DiffusionType::Crank_Nicolson)
+            MultiFab::Saxpy(*vel[lev], 0.5*dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
         if (use_boussinesq)
@@ -211,9 +208,13 @@ void incflo::ApplyPredictor()
        incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel, 0);
 
-    // Solve implicit diffusion equation for u*
-    if (!explicit_diffusion)
-       diffusion_equation->solve(vel, density, eta, dt);
+    // Solve diffusion equation for u* but still using eta at old time
+    if (m_diff_type == DiffusionType::Crank_Nicolson)
+       diffusion_equation->solve(vel, density, eta_old, 0.5*dt);
+    else if (m_diff_type == DiffusionType::Implicit)
+    {
+       diffusion_equation->solve(vel, density, eta_old, dt);
+    }
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
@@ -274,7 +275,7 @@ void incflo::ApplyPredictor()
 //
 void incflo::ApplyCorrector()
 {
-	BL_PROFILE("incflo::ApplyCorrector");
+    BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
@@ -288,15 +289,17 @@ void incflo::ApplyCorrector()
     // Compute the explicit advective terms R_u^* and R_s^*
     incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
 
-    // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
-    // We shouldn't need to do this again because the cur_time velocity is vel_o which hasn't changed
-    // ComputeViscosity();
+    // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "new_time",
+    //                           which is currently u*)
+    // We need this eta whether explicit, implicit or Crank-Nicolson
+    ComputeViscosity(eta, new_time);
 
     // Compute explicit diffusion if used -- note that even though we call this "explicit",
     //   the diffusion term does end up being time-centered so formally second-order
-    if (explicit_diffusion)
+    if (m_diff_type == DiffusionType::Explicit ||
+        m_diff_type == DiffusionType::Crank_Nicolson)
        ComputeDivTau(divtau, vel, density, eta);
-    else
+    else 
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
 
@@ -321,11 +324,12 @@ void incflo::ApplyCorrector()
         }
 
         // Add the viscous terms         
-        if (explicit_diffusion)
+        if (m_diff_type == DiffusionType::Explicit)
         {
-            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau[lev]    , 0, 0, AMREX_SPACEDIM, 0);
             MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-        }
+            MultiFab::Saxpy(*vel[lev], dt / 2.0,     *divtau[lev], 0, 0, AMREX_SPACEDIM, 0);
+        } else if (m_diff_type == DiffusionType::Crank_Nicolson)
+            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
         if (use_boussinesq)
@@ -357,9 +361,6 @@ void incflo::ApplyCorrector()
         {
             MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
         }
-
-        // Take eta as the average of the predictor and corrector values
-        MultiFab::LinComb(*eta[lev], 0.5, *eta_old[lev], 0, 0.5, *eta[lev], 0, 0, 1, 0);
     }
 
     if (!constant_density)
@@ -369,8 +370,10 @@ void incflo::ApplyCorrector()
     incflo_set_velocity_bcs(new_time, vel, 0);
 
     // Solve implicit diffusion equation for u*
-    if (!explicit_diffusion)
-       diffusion_equation->solve(vel, density, eta, dt);
+    if (m_diff_type == DiffusionType::Crank_Nicolson)
+       diffusion_equation->solve(vel, density, eta, 0.5*dt);
+    else if (m_diff_type == DiffusionType::Implicit)
+       diffusion_equation->solve(vel, density, eta_old, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);

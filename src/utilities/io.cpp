@@ -316,13 +316,13 @@ void incflo::WritePlotFile()
 	BL_PROFILE("incflo::WritePlotFile()");
 
         if (plt_divu      ) ComputeDivU(cur_time);
-        if (plt_strainrate) ComputeStrainrate();
-        if (plt_eta       ) ComputeViscosity();
-        if (plt_vort      ) ComputeVorticity();
+        if (plt_strainrate) ComputeStrainrate(cur_time);
+        if (plt_eta       ) ComputeViscosity(eta,cur_time);
+        if (plt_vort      ) ComputeVorticity(cur_time);
 
 	const std::string& plotfilename = amrex::Concatenate(plot_file, nstep);
 
-	amrex::Print() << "  Writing plotfile " << plotfilename << std::endl;
+	amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << cur_time << std::endl;
 
 	const int ngrow = 0;
 

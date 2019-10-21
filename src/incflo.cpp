@@ -17,6 +17,8 @@ amrex::IntVect incflo::e_z(0,0,1);
 int incflo::nlev  = 1;
 int incflo::ntrac = 1;
 
+DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
+
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.

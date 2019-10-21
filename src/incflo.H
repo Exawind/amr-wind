@@ -19,6 +19,14 @@
 
 class NodalProjection;
 
+enum DiffusionType
+{
+    Invalid=-1,
+    Explicit,
+    Crank_Nicolson,
+    Implicit 
+};
+
 class incflo : public AmrCore
 {
 public:
@@ -313,6 +321,13 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    static DiffusionType m_diff_type;
+
+    void ComputeStrainrate(Real time_in);
+
+    void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
+                           const Real time_in);
+
     void ComputeDivTau(      Vector<std::unique_ptr<MultiFab>>& divtau,
                              Vector<std::unique_ptr<MultiFab>>& vel,
                        const Vector<std::unique_ptr<MultiFab>>& density,
@@ -325,9 +340,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeDivU(Real time);
-    void ComputeStrainrate();
-    void ComputeVorticity();
-    void ComputeViscosity();
+    void ComputeVorticity(Real time_in);
     void ComputeDrag();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -416,8 +429,6 @@ private:
 
     bool constant_density = true;
     bool advect_tracer  = false;
-
-    bool explicit_diffusion  = false;
 
     // Fluid properties
     std::string fluid_model;
