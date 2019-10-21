@@ -1,5 +1,6 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_EBFArrayBox.H>
+#include <AMReX_EB_utils.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
 
@@ -8,9 +9,6 @@
 #include <constants.H>
 
 using namespace amrex;
-
-void single_level_redistribute ( int lev, MultiFab& conv_tmp_in, MultiFab& conv_out,
-                                 int conv_comp, int ncomp, const Vector<Geometry>& geom);
 
 //
 // Constructor:
@@ -338,7 +336,7 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
  
     for(int lev = 0; lev <= max_level; lev++)
     {
-       single_level_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, AMREX_SPACEDIM, geom);
+       amrex::single_level_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, AMREX_SPACEDIM, geom);
  
        // Divide by density
        for (int n = 0; n < 3; n++)

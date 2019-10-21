@@ -6,8 +6,7 @@
 #include <AMReX_SPACE.H>
 #include <AMReX_Array.H>
 
-void single_level_redistribute ( int lev, MultiFab& conv_tmp_in, MultiFab& conv_out,
-                                 int conv_comp, int ncomp, const Vector<Geometry>& geom);
+#include <AMReX_EB_utils.H>
 
 //
 // Compute the three components of the convection term
@@ -182,7 +181,7 @@ incflo::incflo_divergence_plus_redist(const int lev,
 
     EB_computeDivergence(conv_tmp, GetArrOfConstPtrs(fluxes), geom[lev], already_on_centroids);
 
-    single_level_redistribute( lev, conv_tmp, *conv_in[lev], 0, num_comp, geom);
+    amrex::single_level_redistribute( lev, conv_tmp, *conv_in[lev], 0, num_comp, geom);
 }
 
 
