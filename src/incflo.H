@@ -14,7 +14,7 @@
 #include <AMReX_iMultiFab.H>
 
 #include <eb_if.H>
-#include <DiffusionEquation.H>
+#include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
 class NodalProjection;
@@ -328,11 +328,6 @@ private:
     void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
                            const Real time_in);
 
-    void ComputeDivTau(      Vector<std::unique_ptr<MultiFab>>& divtau,
-                             Vector<std::unique_ptr<MultiFab>>& vel,
-                       const Vector<std::unique_ptr<MultiFab>>& density,
-                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta);
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Derived quantities
@@ -502,20 +497,12 @@ private:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Redistribution
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    void incflo_redistribute ( int lev, MultiFab& conv_tmp_in, MultiFab& conv_out,
-                               int conv_comp, int ncomp );
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
     // Member variables: Data containers
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Instances of self-written classes for MAC projection, diffusion + Poisson equations
-    std::unique_ptr<DiffusionEquation> diffusion_equation;
+    std::unique_ptr<DiffusionOp> diffusion_op;
 
     // Boundary conditions
     Vector<std::unique_ptr<IArrayBox>> bc_ilo;

@@ -20,22 +20,22 @@
 // Note: we actually solve the above equation multiplied by the density ro.
 //
 
-class DiffusionEquation
+class DiffusionOp
 {
 public: 
     // Constructor, with initialisation
-    DiffusionEquation(amrex::AmrCore* _amrcore, 
-                      amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ilo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ihi, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jlo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
-                      amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
-                      int _nghost, amrex::Real cyl_speed);
+    DiffusionOp(amrex::AmrCore* _amrcore, 
+                amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ilo, 
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ihi, 
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jlo, 
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
+                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
+                int _nghost, amrex::Real cyl_speed);
 
     // Destructor
-    ~DiffusionEquation();
+    ~DiffusionOp();
 
     // Read input from ParmParse (solver settings)
     void readParameters();
@@ -52,6 +52,12 @@ public:
                const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
                const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta, 
                amrex::Real dt);
+
+    void ComputeDivTau(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
+                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel_in,
+                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
+                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta_in);
+
 
 private:
     // AmrCore data 
@@ -75,7 +81,7 @@ private:
     // Boundary conditions
     int bc_lo[3], bc_hi[3];
 
-    // DiffusionEquation verbosity
+    // DiffusionOp verbosity
     int verbose = 0;
 
     // Options to control MLMG behavior

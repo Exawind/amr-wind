@@ -1,6 +1,5 @@
-CEXE_sources += incflo_compute_divtau.cpp
-CEXE_sources += DiffusionEquation.cpp
-CEXE_headers += DiffusionEquation.H
+CEXE_sources += DiffusionOp.cpp
+CEXE_headers += DiffusionOp.H
 
 f90EXE_headers += diffusion_F.H
 f90EXE_sources += set_diff_bcs.f90

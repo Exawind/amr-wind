@@ -230,10 +230,10 @@ void incflo::PostInit(int restart_flag)
     // Set the BC types on domain boundary
     SetBCTypes();
 
-    diffusion_equation.reset(new DiffusionEquation(this, &ebfactory,
-                                                   bc_ilo, bc_ihi,
-                                                   bc_jlo, bc_jhi,
-                                                   bc_klo, bc_khi, nghost, cyl_speed));
+    diffusion_op.reset(new DiffusionOp(this, &ebfactory,
+                                       bc_ilo, bc_ihi,
+                                       bc_jlo, bc_jhi,
+                                       bc_klo, bc_khi, nghost, cyl_speed));
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
     if(!restart_flag)

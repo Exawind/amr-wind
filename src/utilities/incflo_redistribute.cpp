@@ -20,7 +20,6 @@ apply_eb_redistribution ( Box& bx,
                           const int cyclic_z,
                           const Real* dx)
 {
-
     //
     // Check that grid is uniform
     //
@@ -165,50 +164,48 @@ apply_eb_redistribution ( Box& bx,
 
     Gpu::synchronize();
 }
-
-
 } // end namespace eb_redistribute
 
 using namespace eb_redistribute;
 
 void
-incflo::incflo_redistribute ( int lev,
-                              MultiFab& conv_tmp_in,
-                              MultiFab& conv_out,
-                              int conv_comp,
-                              int ncomp )
+single_level_redistribute ( int lev, MultiFab& div_tmp_in, MultiFab& div_out,
+                            int div_comp, int ncomp, const Vector<Geometry>& geom)
 {
     Box domain(geom[lev].Domain());
 
-    EB_set_covered(conv_tmp_in, covered_val);
-    conv_tmp_in.FillBoundary(geom[lev].periodicity());
+    const Real covered_val = 1.0e40;
+    EB_set_covered(div_tmp_in, covered_val);
+    div_tmp_in.FillBoundary(geom[lev].periodicity());
 
     // Get EB geometric info
-    const amrex::MultiFab*   volfrac;
-    volfrac   = &(ebfactory[lev] -> getVolFrac());
+    const auto& my_ebfactory = dynamic_cast<EBFArrayBoxFactory const&>(div_out.Factory());
+    const MultiFab* volfrac   = &(my_ebfactory. getVolFrac());
+ 
+    int nghost = div_tmp_in.nGrow();
 
-    for (MFIter mfi(conv_out,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    for (MFIter mfi(div_out,TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
         // Tilebox
         Box bx = mfi.tilebox ();
 
         // this is to check efficiently if this tile contains any eb stuff
-        const EBFArrayBox&  conv_fab = static_cast<EBFArrayBox const&>(conv_out[mfi]);
-        const EBCellFlagFab&  flags = conv_fab.getEBCellFlagFab();
+        const EBFArrayBox&  div_fab = static_cast<EBFArrayBox const&>(div_out[mfi]);
+        const EBCellFlagFab&  flags = div_fab.getEBCellFlagFab();
 
         if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
         {
             // If tile is completely covered by EB geometry, set slopes
             // value to some very large number so we know if
             // we accidentally use these covered slopes later in calculations
-            conv_out[mfi].setVal(get_my_huge(), bx, conv_comp, ncomp);
+            div_out[mfi].setVal(get_my_huge(), bx, div_comp, ncomp);
         }
         else
         {
             // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
             if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
             {
-                conv_out[mfi].copy(conv_tmp_in[mfi],bx,0,bx,conv_comp,ncomp);
+                div_out[mfi].copy(div_tmp_in[mfi],bx,0,bx,div_comp,ncomp);
             }
             else
             {
@@ -217,8 +214,8 @@ incflo::incflo_redistribute ( int lev,
                 const int cyclic_z = geom[0].isPeriodic(2) ? 1 : 0;
 
                 // Compute div(tau) with EB algorithm
-                apply_eb_redistribution(bx, conv_out, conv_tmp_in, &mfi,
-                                        conv_comp, ncomp, flags, volfrac, domain,
+                apply_eb_redistribution(bx, div_out, div_tmp_in, &mfi,
+                                        div_comp, ncomp, flags, volfrac, domain,
                                         cyclic_x, cyclic_y, cyclic_z,
                                         geom[lev].CellSize());
 

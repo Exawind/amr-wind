@@ -162,10 +162,14 @@ void incflo::ApplyPredictor()
     // Compute explicit diffusion if used
     if (m_diff_type == DiffusionType::Explicit ||
         m_diff_type == DiffusionType::Crank_Nicolson)
-       ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
-    else
+    {
+       int extrap_dir_bcs = 0;
+       incflo_set_velocity_bcs (cur_time, vel_o, extrap_dir_bcs);
+       diffusion_op->ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
+    } else {
        for (int lev = 0; lev <= finest_level; lev++)
           divtau_old[lev]->setVal(0.);
+    }
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -222,9 +226,9 @@ void incflo::ApplyPredictor()
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
-       diffusion_equation->solve(vel, density, eta_old, 0.5*dt);
+       diffusion_op->solve(vel, density, eta_old, 0.5*dt);
     else if (m_diff_type == DiffusionType::Implicit)
-       diffusion_equation->solve(vel, density, eta_old, dt);
+       diffusion_op->solve(vel, density, eta_old, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
@@ -316,10 +320,14 @@ void incflo::ApplyCorrector()
     //   the diffusion term does end up being time-centered so formally second-order
     //   Now divtau is the diffusion term computed from u*
     if (m_diff_type == DiffusionType::Explicit)
-       ComputeDivTau(divtau, vel, density, eta);
-    else 
+    {
+       int extrap_dir_bcs = 0;
+       incflo_set_velocity_bcs (new_time, vel, extrap_dir_bcs);
+       diffusion_op->ComputeDivTau(divtau, vel, density, eta);
+    } else {
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
+    }
 
     // Compute the explicit advective terms R_u^* and R_s^*
     incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
@@ -393,9 +401,9 @@ void incflo::ApplyCorrector()
 
     // Solve implicit diffusion equation for u*
     if (m_diff_type == DiffusionType::Crank_Nicolson)
-       diffusion_equation->solve(vel, density, eta, 0.5*dt);
+       diffusion_op->solve(vel, density, eta, 0.5*dt);
     else if (m_diff_type == DiffusionType::Implicit)
-       diffusion_equation->solve(vel, density, eta, dt);
+       diffusion_op->solve(vel, density, eta, dt);
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
