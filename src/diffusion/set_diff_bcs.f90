@@ -2,7 +2,7 @@
    ! Set the boundary condition for diffusion solve
    !
    ! MLMG expects the BC type to be the uniform on each domain wall.
-   ! Since incflo allows for BC patches on each wall, we first check that
+   ! Since here we allow for BC patches on each wall, we first check that
    ! the user-provided BCs are uniform, and then return a single BC type for
    ! each domain wall.
    !

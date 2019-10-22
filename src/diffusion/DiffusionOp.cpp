@@ -167,10 +167,10 @@ void DiffusionOp::updateInternals(AmrCore* amrcore_in,
 //
 // Solve the matrix equation
 //
-void DiffusionOp::solve(Vector<std::unique_ptr<MultiFab>>& vel_in,
-                              const Vector<std::unique_ptr<MultiFab>>& ro_in,
-                              const Vector<std::unique_ptr<MultiFab>>& eta_in,
-                              Real dt)
+void DiffusionOp::solve(      Vector<std::unique_ptr<MultiFab>>& vel_in,
+                        const Vector<std::unique_ptr<MultiFab>>& ro_in,
+                        const Vector<std::unique_ptr<MultiFab>>& eta_in,
+                        Real dt)
 {
     BL_PROFILE("DiffusionOp::solve");
 
