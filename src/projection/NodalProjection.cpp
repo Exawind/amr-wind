@@ -32,24 +32,23 @@ NodalProjection::NodalProjection(const incflo* a_incflo,
 //
 // Perform projection:
 //
-//     vel = vel - grad(phi)/ro
+//     vel = vel - sigma*grad(phi)
 //
 //  where phi is the solution of
 //
-//   div( sigma * grad(phi) ) = div(vel)
+//   div( sigma * grad(phi) ) = div(vel) + S_cc + S_nd
 //
-//  ro and vel are cell-centered
+//  where vel, sigma, S_cc are cell-centered variables
+//  and phi and S_nd are nodal variables
 //
-//  sigma = 1/ro is cell-centered as well
-//
-//  phi is node-centered
-//
-// If a_scale_factor is passed in, phi is return as phi/a_scale_factor
+//  grad(phi) is node-centered.
 //
 void
 NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                          const Vector< std::unique_ptr< amrex::MultiFab > >& a_ro,
-                                Real a_scale_factor )
+                          const Vector< std::unique_ptr< amrex::MultiFab > >& a_sigma,
+                          const Vector< std::unique_ptr< amrex::MultiFab > >& a_S_cc,
+                          const Vector< std::unique_ptr< amrex::MultiFab > >& a_S_nd )
+
 {
     AMREX_ALWAYS_ASSERT(m_ok);
     BL_PROFILE("NodalProjection::project");
@@ -60,22 +59,16 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
     setup();
 
     // Compute RHS
-    computeRHS(a_vel);
+    m_matrix -> compRHS( GetVecOfPtrs(m_rhs),  GetVecOfPtrs(a_vel), GetVecOfConstPtrs(a_S_cc),
+                         GetVecOfPtrs(a_S_nd) );
 
     // Print diagnostics
     amrex::Print() << " >> Before projection:" << std::endl;
     printInfo();
 
-    // Compute and set matrix coefficients
-    for (int lev(0); lev < a_ro.size(); ++lev)
-    {
-        // Compute the PPE coefficients = (1.0 / ro)
-        m_sigma[lev] -> setVal(a_scale_factor);
-        MultiFab::Divide(*m_sigma[lev],*a_ro[lev],0,0,1,0);
-
-        // Set matrix coefficients
-        m_matrix -> setSigma(lev, *m_sigma[lev]);
-    }
+    // Set matrix coefficients
+    for (int lev(0); lev < a_sigma.size(); ++lev)
+        m_matrix -> setSigma(lev, *a_sigma[lev]);
 
     // Solve
     m_solver -> solve( GetVecOfPtrs(m_phi), GetVecOfConstPtrs(m_rhs), m_mg_rtol, m_mg_atol );
@@ -92,7 +85,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
         // set m_fluxes = -fluxes/sigma = grad(phi)
         m_fluxes[lev] -> mult(- 1.0, m_fluxes[lev]->nGrow() );
         for (int n(0); n < AMREX_SPACEDIM; ++n)
-            MultiFab::Divide(*m_fluxes[lev], *m_sigma[lev], 0, n, 1, m_fluxes[lev]->nGrow() );
+            MultiFab::Divide(*m_fluxes[lev], *a_sigma[lev], 0, n, 1, m_fluxes[lev]->nGrow() );
 
         // Fill boundaries and apply scale factor to phi
         m_phi[lev] -> FillBoundary( m_incflo -> geom[lev].periodicity());
@@ -100,7 +93,8 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
     }
 
     // Compute RHS -- this is only needed to print out post projection values
-    computeRHS(a_vel);
+    m_matrix -> compRHS( GetVecOfPtrs(m_rhs),  GetVecOfPtrs(a_vel), GetVecOfConstPtrs(a_S_cc),
+                         GetVecOfPtrs(a_S_nd) );
 
     // Print diagnostics
     amrex::Print() << " >> After projection:" << std::endl;
@@ -144,7 +138,6 @@ NodalProjection::setup ()
     if ( nlev != m_phi.size() )
     {
         m_phi.resize(nlev);
-        m_sigma.resize(nlev);
         m_fluxes.resize(nlev);
         m_rhs.resize(nlev);
     }
@@ -167,7 +160,6 @@ NodalProjection::setup ()
         {
             // Cell-centered data
             m_fluxes[lev].reset(new MultiFab(ba, dm, 3, nghost, MFInfo(), eb));
-            m_sigma[lev].reset(new MultiFab(ba, dm, 1, nghost, MFInfo(), eb));
 
             // Node-centered data
             const auto& ba_nd = amrex::convert(ba, IntVect{1,1,1});

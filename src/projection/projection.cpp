@@ -58,8 +58,17 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     int extrap_dir_bcs(0);
     incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
 
+    // Create sigma
+    Vector< std::unique_ptr< amrex::MultiFab > >  sigma(nlev);
+    for (int lev(0); lev < nlev; ++lev )
+    {
+        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]));
+        sigma[lev] -> setVal(scaling_factor);
+        MultiFab::Divide(*sigma[lev],*density[lev],0,0,1,0);
+    }
 
-    nodal_projector -> project(vel, density, scaling_factor);
+    // Perform projection
+    nodal_projector -> project(vel, sigma);
 
     // Get phi and fluxes
     Vector< const amrex::MultiFab* >  phi(nlev);
