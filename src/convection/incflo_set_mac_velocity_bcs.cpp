@@ -135,7 +135,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
         if (bct == minf) u(i,j,k) = p_bc_u[bcv];
         if (bct ==  nsw) u(i,j,k) = 0.;
 
-        if (probtype == 31) 
+        if (bct == minf && probtype == 31) 
         {
            Real y = (j+0.5) / (dom_hi[1] - dom_lo[1] + 1);
            u(i,j,k) = 6.0 * p_bc_u[bcv] * y * (1.0 - y);
@@ -162,7 +162,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
         if (bct == minf) v(i,j,k) = p_bc_v[bcv];
         if (bct ==  nsw) v(i,j,k) = 0.;
-        if (probtype == 32) 
+
+        if (bct == minf && probtype == 32) 
         {
            Real z = (k+0.5) / (dom_hi[2] - dom_lo[2] + 1);
            v(i,j,k) = 6.0 * p_bc_v[bcv] * z * (1.0 - z);
@@ -190,7 +191,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
         if (bct == minf) w(i,j,k) = p_bc_w[bcv];
         if (bct ==  nsw) w(i,j,k) = 0.;
 
-        if (probtype == 33) 
+        if (bct == minf && probtype == 33) 
         {
            Real x = (i+0.5) / (dom_hi[0] - dom_lo[0] + 1);
            w(i,j,k) = 6.0 * p_bc_w[bcv] * x * (1.0 - x);

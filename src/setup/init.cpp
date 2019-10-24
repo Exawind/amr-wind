@@ -287,6 +287,11 @@ void incflo::InitFluid()
                        &xlen, &ylen, &zlen, &probtype);
         }
 
+        // Make sure to set periodic bc's
+            vel[lev]->FillBoundary(geom[lev].periodicity());
+        density[lev]->FillBoundary(geom[lev].periodicity());
+         tracer[lev]->FillBoundary(geom[lev].periodicity());
+
         MultiFab::Copy(    *vel_o[lev],     *vel[lev], 0, 0,     vel[lev]->nComp(),     vel_o[lev]->nGrow());
         MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
         MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
