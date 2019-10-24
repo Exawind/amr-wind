@@ -4,36 +4,6 @@
 #include <derive_F.H>
 #include <incflo_proj_F.H>
 
-void incflo::ComputeDivU(Real time_in)
-{
-    int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(time_in, vel, extrap_dir_bcs);
-
-    // Define the operator in order to compute the multi-level divergence
-    //
-    //        (del dot b sigma grad)) phi
-    //
-    LPInfo info;
-    MLNodeLaplacian matrix(geom, grids, dmap, info, amrex::GetVecOfConstPtrs(ebfactory));
-
-    // Set domain BCs for Poisson's solver
-    // The domain BCs refer to level 0 only
-    int bc_lo[AMREX_SPACEDIM], bc_hi[AMREX_SPACEDIM];
-    Box domain(geom[0].Domain());
-
-    set_ppe_bcs(bc_lo, bc_hi,
-                domain.loVect(), domain.hiVect(),
-                &nghost,
-                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
-
-    matrix.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-                       {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
-
-    matrix.compDivergence(GetVecOfPtrs(divu), GetVecOfPtrs(vel)); 
-}
-
 void incflo::ComputeStrainrate(Real time_in)
 {
     BL_PROFILE("incflo::ComputeStrainrate");

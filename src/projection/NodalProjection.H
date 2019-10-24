@@ -29,6 +29,9 @@ public:
 
     Vector< const amrex::MultiFab* > getGradPhi () const {return GetVecOfConstPtrs(m_fluxes);};
 
+    // We need this to be public so we can call it for putting divu in plotfiles, for example
+    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+                      Real a_time );
 
 private:
 
@@ -81,9 +84,6 @@ private:
 
 
     void readParameters ();
-
-    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                      Real a_time );
 
     void printInfo ();
 

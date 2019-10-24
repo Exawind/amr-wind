@@ -344,7 +344,6 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ComputeDivU(Real time);
     void ComputeVorticity(Real time_in);
     void ComputeDrag();
 

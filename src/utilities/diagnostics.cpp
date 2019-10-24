@@ -1,6 +1,7 @@
 #include <AMReX_AmrCore.H>
 
 #include <incflo.H>
+#include <NodalProjection.H>
 
 //
 // Subroutine to compute norm of EB multifab
@@ -29,7 +30,7 @@ Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp
 // Print maximum values (useful for tracking evolution)
 void incflo::PrintMaxValues(Real time)
 {
-    ComputeDivU(time);
+    nodal_projector->ComputeRHS(vel,time);
     for(int lev = 0; lev <= finest_level; lev++)
     {
         amrex::Print() << "Level " << lev << std::endl;

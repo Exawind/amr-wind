@@ -261,7 +261,6 @@ NodalProjection::computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_ve
 
     // Compute div(eu)
     m_matrix -> compRHS( GetVecOfPtrs(m_rhs),  GetVecOfPtrs(a_vel), {}, {} );
-
 }
 
 
