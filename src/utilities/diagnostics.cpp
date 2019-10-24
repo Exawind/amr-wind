@@ -30,7 +30,7 @@ Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp
 // Print maximum values (useful for tracking evolution)
 void incflo::PrintMaxValues(Real time)
 {
-    nodal_projector->ComputeRHS(vel,time);
+    nodal_projector->computeRHS(vel,time);
     for(int lev = 0; lev <= finest_level; lev++)
     {
         amrex::Print() << "Level " << lev << std::endl;
