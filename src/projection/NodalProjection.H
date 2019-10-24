@@ -18,8 +18,7 @@ public:
     // Destructor
     NodalProjection () {};
 
-    void setup (const incflo* a_incflo,
-                Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory);
+    void setup ();
 
     void project (       Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                    const Vector< std::unique_ptr< amrex::MultiFab > >& a_ro,
