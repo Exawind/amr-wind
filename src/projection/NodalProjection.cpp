@@ -49,7 +49,7 @@ NodalProjection::NodalProjection(const incflo* a_incflo,
 void
 NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                           const Vector< std::unique_ptr< amrex::MultiFab > >& a_ro,
-                                Real a_time, Real a_scale_factor )
+                                Real a_scale_factor )
 {
     AMREX_ALWAYS_ASSERT(m_ok);
     BL_PROFILE("NodalProjection::project");
@@ -61,7 +61,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
         m_phi[lev] -> setVal(0.0);
 
     // Compute RHS
-    computeRHS(a_vel, a_time);
+    computeRHS(a_vel);
 
     // Print diagnostics
     amrex::Print() << " >> Before projection:" << std::endl;
@@ -104,7 +104,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
     }
 
     // Compute RHS -- this is only needed to print out post projection values
-    computeRHS(a_vel, a_time);
+    computeRHS(a_vel);
 
     // Print diagnostics
         amrex::Print() << " >> After projection:" << std::endl;
@@ -252,7 +252,7 @@ NodalProjection::setup(const incflo* a_incflo,
 void
 NodalProjection::getDivU (Vector< std::unique_ptr< amrex::MultiFab > >& divu,
                           Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                          Real a_time ) 
+                          Real a_time )
 {
     AMREX_ALWAYS_ASSERT(m_ok);
     m_matrix -> compDivergence( GetVecOfPtrs(divu),  GetVecOfPtrs(a_vel));
@@ -263,14 +263,10 @@ NodalProjection::getDivU (Vector< std::unique_ptr< amrex::MultiFab > >& divu,
 //
 
 void
-NodalProjection::computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                              Real a_time )
+NodalProjection::computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel )
 {
     AMREX_ALWAYS_ASSERT(m_ok);
     BL_PROFILE("NodalProjection::computeRHS");
-
-    int extrap_dir_bcs(0);
-    m_incflo -> incflo_set_velocity_bcs(a_time, a_vel, extrap_dir_bcs);
 
     // Compute div(eu)
     m_matrix -> compRHS( GetVecOfPtrs(m_rhs),  GetVecOfPtrs(a_vel), {}, {} );

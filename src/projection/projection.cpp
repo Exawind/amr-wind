@@ -54,7 +54,12 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         }
     }
 
-    nodal_projector -> project(vel, density, time, scaling_factor);
+    // Set velocity BCs before projection
+    int extrap_dir_bcs(0);
+    incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
+
+
+    nodal_projector -> project(vel, density, scaling_factor);
 
     // Get phi and fluxes
     Vector< const amrex::MultiFab* >  phi(nlev);

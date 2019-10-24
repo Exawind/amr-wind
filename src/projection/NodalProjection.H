@@ -23,7 +23,7 @@ public:
 
     void project (       Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                    const Vector< std::unique_ptr< amrex::MultiFab > >& a_ro,
-                         Real a_time, Real a_scale_factor = 1.0 );
+                         Real a_scale_factor = 1.0 );
 
     Vector< const amrex::MultiFab* > getPhi () const {return GetVecOfConstPtrs(m_phi);};
     Vector< const amrex::MultiFab* > getGradPhi () const {return GetVecOfConstPtrs(m_fluxes);};
@@ -81,8 +81,7 @@ private:
     // Solver
     std::unique_ptr< amrex::MLMG > m_solver;
 
-    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                      Real a_time );
+    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel );
 
     void readParameters ();
 
