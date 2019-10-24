@@ -333,6 +333,8 @@ private:
 
     static DiffusionType m_diff_type;
 
+    void ComputeDivU(Real time_in);
+
     void ComputeStrainrate(Real time_in);
 
     void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,

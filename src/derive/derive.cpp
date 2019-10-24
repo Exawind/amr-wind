@@ -3,6 +3,15 @@
 #include <incflo.H>
 #include <derive_F.H>
 #include <incflo_proj_F.H>
+#include <NodalProjection.H>
+
+void incflo::ComputeDivU(Real time_in)
+{
+    int extrap_dir_bcs = 0;
+    incflo_set_velocity_bcs(time_in, vel, extrap_dir_bcs);
+
+    nodal_projector->getDivU(divu,vel,time_in);
+}
 
 void incflo::ComputeStrainrate(Real time_in)
 {

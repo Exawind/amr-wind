@@ -1,7 +1,6 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_buildInfo.H>
-#include <NodalProjection.H>
 
 #include <incflo.H>
 
@@ -316,7 +315,7 @@ void incflo::WritePlotFile()
 {
 	BL_PROFILE("incflo::WritePlotFile()");
 
-        if (plt_divu      ) nodal_projector->computeRHS (vel,cur_time);
+        if (plt_divu      ) ComputeDivU(cur_time);
         if (plt_strainrate) ComputeStrainrate(cur_time);
         if (plt_eta       ) ComputeViscosity(eta,cur_time);
         if (plt_vort      ) ComputeVorticity(cur_time);
@@ -489,7 +488,6 @@ void incflo::WritePlotFile()
             if(plt_divu == 1) 
             {
                 amrex::average_node_to_cellcenter(*mf[lev], lc, (*divu[lev]), 0, 1);
-    
                 lc += 1;
             }
 

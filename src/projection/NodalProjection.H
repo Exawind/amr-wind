@@ -26,12 +26,11 @@ public:
                          Real a_time, Real a_scale_factor = 1.0 );
 
     Vector< const amrex::MultiFab* > getPhi () const {return GetVecOfConstPtrs(m_phi);};
-
     Vector< const amrex::MultiFab* > getGradPhi () const {return GetVecOfConstPtrs(m_fluxes);};
 
-    // We need this to be public so we can call it for putting divu in plotfiles, for example
-    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                      Real a_time );
+    void getDivU ( Vector< std::unique_ptr< amrex::MultiFab > >& divu,
+                   Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+                   Real a_time );
 
 private:
 
@@ -82,6 +81,8 @@ private:
     // Solver
     std::unique_ptr< amrex::MLMG > m_solver;
 
+    void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+                      Real a_time );
 
     void readParameters ();
 

@@ -247,8 +247,21 @@ NodalProjection::setup(const incflo* a_incflo,
 }
 
 //
-// Compute RHS: div(u)
+// Return DivU for diagnostics
 //
+void
+NodalProjection::getDivU (Vector< std::unique_ptr< amrex::MultiFab > >& divu,
+                          Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+                          Real a_time ) 
+{
+    AMREX_ALWAYS_ASSERT(m_ok);
+    m_matrix -> compDivergence( GetVecOfPtrs(divu),  GetVecOfPtrs(a_vel));
+}
+
+//
+// Compute RHS: div(u) (later this may have a specified S as in div(u) = S)
+//
+
 void
 NodalProjection::computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                               Real a_time )
