@@ -26,23 +26,19 @@ public:
     // Constructor, with initialisation
     DiffusionOp(amrex::AmrCore* _amrcore, 
                 amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ilo, 
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_ihi, 
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jlo, 
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_jhi, 
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_klo, 
-                amrex::Vector<std::unique_ptr<amrex::IArrayBox>>& bc_khi,
-                int _nghost, amrex::Real cyl_speed);
+                std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_lo,
+                std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_hi,
+                int _nghost);
 
     // Destructor
     ~DiffusionOp();
 
+    // Actually do the setup work here
+    void setup(amrex::AmrCore* _amrcore, 
+               amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory);
+
     // Read input from ParmParse (solver settings)
     void readParameters();
-
-    // Update internals if AmrCore changes (e.g. after regrid)
-    void updateInternals(amrex::AmrCore* amrcore_in, 
-                         amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory_in);
 
     // Set user-supplied solver settings (must be done every time step)
     void setSolverSettings(amrex::MLMG& solver);
@@ -50,21 +46,30 @@ public:
     // Solve the diffusion equation, update vel
     void solve(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
                const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta, 
+               const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu, 
                amrex::Real dt);
 
     void ComputeDivTau(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel_in,
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
-                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta_in);
-
+                       const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu_in);
 
 private:
+
     // AmrCore data 
     amrex::AmrCore* amrcore;
     amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
-    int nghost; 
-    amrex::Real cyl_speed = 0.0;
+
+    amrex::Vector<amrex::Geometry> geom;
+    amrex::Vector<amrex::BoxArray> grids;          
+    amrex::Vector<amrex::DistributionMapping> dmap;
+
+    int max_level;
+    int nghost = 0; 
+
+    // Boundary conditions
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_bc_lo;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_bc_hi;
 
     // Internal data used in the matrix solve
     //
@@ -72,14 +77,12 @@ private:
     //
     // ( alpha a - beta div ( b grad ) ) phi = rhs
     //
-    amrex::MLEBTensorOp matrix;
+    std::unique_ptr<amrex::MLEBTensorOp> matrix;
+
     amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> rhs;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> vel_eb;
-
-    // Boundary conditions
-    int bc_lo[3], bc_hi[3];
 
     // DiffusionOp verbosity
     int verbose = 0;

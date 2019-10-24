@@ -199,7 +199,11 @@ void incflo::Evolve()
             for (int lev = 0; lev < max_level; ++lev)
             {
                 // regrid is a member function of AmrCore
-                if (nstep % regrid_int == 0) regrid(lev, time);
+                if (nstep % regrid_int == 0) 
+                {
+                    regrid(lev, time);
+                    incflo_setup_solvers();
+                }
             }
         }*/
 

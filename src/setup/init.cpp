@@ -6,6 +6,7 @@
 #include <boundary_conditions_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
+#include <diffusion_F.H>
 
 void incflo::ReadParameters()
 {
@@ -192,9 +193,9 @@ void incflo::ReadParameters()
                          &ic_u, &ic_v, &ic_w, &ic_p,
                          &n_0, &ntrac, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
-	}
+    }
 
-	{
+    {
         ParmParse pp_mac("mac");
         pp_mac.query( "mg_verbose"   , mac_mg_verbose );
         pp_mac.query( "mg_cg_verbose", mac_mg_cg_verbose );
@@ -203,12 +204,6 @@ void incflo::ReadParameters()
         pp_mac.query( "mg_maxiter"   , mac_mg_maxiter );
         pp_mac.query( "mg_cg_maxiter", mac_mg_cg_maxiter );
         pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level );
-	}
-
-    {
-        // Prefix cylinder
-		ParmParse pp("cylinder");
-		pp.query("speed", cyl_speed);
     }
 
     // Count the number of variables to save.
@@ -230,10 +225,9 @@ void incflo::PostInit(int restart_flag)
     // Set the BC types on domain boundary
     SetBCTypes();
 
-    diffusion_op.reset(new DiffusionOp(this, &ebfactory,
-                                       bc_ilo, bc_ihi,
-                                       bc_jlo, bc_jhi,
-                                       bc_klo, bc_khi, nghost, cyl_speed));
+    // Init nodal and diffusion solvers (for now only diffusion)
+    // (Note we must do this *after* setting the bc types above)
+    incflo_init_solvers();
 
     // Initial fluid arrays: pressure, velocity, density, viscosity
     if(!restart_flag)

@@ -91,6 +91,10 @@ public:
     // Delete level data
     void ClearLevel(int lev) override;
 
+    // Set up nodal and diffusion solvers
+    void incflo_init_solvers();
+    void incflo_setup_solvers();
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Some getters (TODO: find better way to do fillpatching)
@@ -184,9 +188,13 @@ private:
     Real ic_w = 0.0;
     Real ic_p = 0.0;
 
-    // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for projections
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_lobc;
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_hibc;
+
+    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for diffusion solves
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  diff_lobc;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  diff_hibc;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -368,9 +376,6 @@ private:
     const int m_eb_basic_grow_cells = nghost;
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
-
-    // Enforce inhomogeneous velocity BC on EB (just cylinder for now)
-    Real cyl_speed = 0.0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
