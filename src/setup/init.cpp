@@ -6,7 +6,6 @@
 #include <boundary_conditions_F.H>
 #include <embedded_boundaries_F.H>
 #include <setup_F.H>
-#include <diffusion_F.H>
 
 void incflo::ReadParameters()
 {

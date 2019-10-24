@@ -84,11 +84,9 @@ void incflo::InitData()
         restart_flag = 1;
     }
 
-    // Init nodal solver
-    nodal_projector.reset(new NodalProjection(this));
-
     // Post-initialisation step
     // - Set BC types
+    // - Initialize diffusive and projection operators
     // - Fill boundaries
     // - Create instance of MAC projection class
     // - Apply initial conditions

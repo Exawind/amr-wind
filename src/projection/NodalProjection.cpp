@@ -2,13 +2,31 @@
 #include <AMReX.H>
 #include <incflo.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <incflo_proj_F.H>
 
-void
-NodalProjection::define (const incflo* a_incflo)
+//
+// Constructor:
+// We set up everything which doesn't change between timesteps here
+//
+NodalProjection::NodalProjection(const incflo* a_incflo,
+                                 Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory,
+                                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_lo,
+                                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_hi)
 {
+    if (m_verbose > 0)
+        amrex::Print() << "Constructing NodalProjection class" << std::endl;
+
     m_incflo = a_incflo;
+
+    m_bc_lo = a_bc_lo;
+    m_bc_hi = a_bc_hi;
+
     m_ok     = true;
+
+    // Get inputs from ParmParse
+    readParameters();
+
+    // Actually do the setup work here
+    setup(a_incflo, _ebfactory);
 }
 
 //
@@ -38,8 +56,9 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
 
     amrex::Print() << "Nodal Projection:" << std::endl;
 
-    // Setup object for projection and initialize value sof internals
-    setup();
+    // Re-initialize phi before each projection
+    for (int lev(0); lev < m_phi.size(); ++lev)
+        m_phi[lev] -> setVal(0.0);
 
     // Compute RHS
     computeRHS(a_vel, a_time);
@@ -79,7 +98,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
             MultiFab::Multiply(*m_fluxes[lev], *a_ro[lev], 0, n, 1, m_fluxes[lev]->nGrow() );
 
         // Fill boundaries and apply scale factor to phi
-        m_phi[lev] -> FillBoundary( m_incflo -> geom[lev].periodicity() );
+        m_phi[lev] -> FillBoundary( geom[lev].periodicity());
         m_phi[lev] -> mult(1.0/a_scale_factor, m_fluxes[lev] -> nGrow());
 
     }
@@ -99,7 +118,8 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
 void
 NodalProjection::readParameters ()
 {
-    ParmParse pp("mfix");
+    ParmParse pp("projection");
+    pp.query( "verbose"                , m_verbose );
     pp.query( "mg_verbose"             , m_mg_verbose );
     pp.query( "mg_cg_verbose"          , m_mg_cg_verbose );
     pp.query( "mg_maxiter"             , m_mg_maxiter );
@@ -115,15 +135,24 @@ NodalProjection::readParameters ()
 // Setup object before solve
 //
 void
-NodalProjection::setup ()
+NodalProjection::setup(const incflo* a_incflo,
+                       Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory)
 {
     BL_PROFILE("NodalProjection::setup");
     AMREX_ALWAYS_ASSERT(m_ok);
 
-    readParameters();
+    // The incflo may change when we regrid so let's reset it here
+    m_incflo = a_incflo;
+
+    // The ebfactory changes when we regrid so we must pass it in here.
+    ebfactory = _ebfactory;
+
+    geom  = m_incflo->Geom();
+    grids = m_incflo->boxArray();
+    dmap  = m_incflo->DistributionMap();
 
     // Set number of levels
-    int nlev( m_incflo -> grids.size() );
+    int nlev( grids.size() );
 
     // Resize member data if necessary
     if ( nlev != m_phi.size() )
@@ -142,64 +171,39 @@ NodalProjection::setup ()
 
     for (int lev(0); lev < nlev; ++lev )
     {
-        const auto& ba = m_incflo -> grids[lev];
-        const auto& dm = m_incflo -> dmap[lev];
         const auto& eb = *(m_incflo -> ebfactory[lev]);
 
         if ( (m_phi[lev] == nullptr)                 ||
-             (m_phi[lev] -> boxArray()        != ba) ||
-             (m_phi[lev] -> DistributionMap() != dm)  )
+             (m_phi[lev] -> boxArray()        != grids[lev]) ||
+             (m_phi[lev] -> DistributionMap() != dmap[lev])  )
         {
             // Cell-centered data
-            m_fluxes[lev].reset(new MultiFab(ba, dm, 3, nghost, MFInfo(), eb));
-            m_sigma[lev].reset(new MultiFab(ba, dm, 1, nghost, MFInfo(), eb));
+            m_fluxes[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo(), eb));
+             m_sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), eb));
 
             // Node-centered data
-            const auto& ba_nd = amrex::convert(ba, IntVect{1,1,1});
-            m_phi[lev].reset(new MultiFab(ba_nd, dm, 1, nghost, MFInfo(), eb));
-            m_rhs[lev].reset(new MultiFab(ba_nd, dm, 1, nghost, MFInfo(), eb));
+            const auto& ba_nd = amrex::convert(grids[lev], IntVect{1,1,1});
+            m_phi[lev].reset(new MultiFab(ba_nd, dmap[lev], 1, nghost, MFInfo(), eb));
+            m_rhs[lev].reset(new MultiFab(ba_nd, dmap[lev], 1, nghost, MFInfo(), eb));
 
             need_regrid = true;
         }
-
     }
 
     // Setup matrix and solver
     if ( (m_matrix == nullptr) || need_regrid )
     {
-
-        // Setup boundary conditions
-        Box domain(m_incflo -> geom[0].Domain());
-        int bc_lo[3], bc_hi[3];
-        set_ppe_bcs(bc_lo, bc_hi,
-                    domain.loVect(), domain.hiVect(),
-                    &nghost,
-                    m_incflo -> bc_ilo[0]->dataPtr(),
-                    m_incflo -> bc_ihi[0]->dataPtr(),
-                    m_incflo -> bc_jlo[0]->dataPtr(),
-                    m_incflo -> bc_jhi[0]->dataPtr(),
-                    m_incflo -> bc_klo[0]->dataPtr(),
-                    m_incflo -> bc_khi[0]->dataPtr());
-
-
         //
         // Setup Matrix
         //
         LPInfo                       info;
         info.setMaxCoarseningLevel(m_mg_max_coarsening_level);
-        m_matrix.reset(new MLNodeLaplacian(m_incflo->geom, m_incflo->grids,
-                                           m_incflo->dmap, info,
+        m_matrix.reset(new MLNodeLaplacian(geom, grids, dmap, info,
                                            GetVecOfConstPtrs(m_incflo->ebfactory)));
 
         m_matrix->setGaussSeidel(true);
         m_matrix->setHarmonicAverage(false);
-
-        m_matrix->setDomainBC(
-            {(LinOpBCType) bc_lo[0], (LinOpBCType) bc_lo[1], (LinOpBCType) bc_lo[2]},
-            {(LinOpBCType) bc_hi[0], (LinOpBCType) bc_hi[1], (LinOpBCType) bc_hi[2]}
-            );
-
-
+        m_matrix->setDomainBC(m_bc_lo, m_bc_hi);
 
         //
         // Setup solver
@@ -239,21 +243,8 @@ NodalProjection::setup ()
             amrex::Abort("AMReX was not built with HYPRE support");
 #endif
         }
-
     }
-
-    // Initialize all variables
-    for (int lev(0); lev < nlev; ++lev)
-    {
-        m_phi[lev] -> setVal(0.0);
-        m_fluxes[lev] -> setVal(0.0);
-        m_sigma[lev] -> setVal(1.0);
-        m_rhs[lev] ->  setVal(0.0);
-    }
-
 }
-
-
 
 //
 // Compute RHS: div(u)

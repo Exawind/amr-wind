@@ -25,16 +25,16 @@
 //
 void incflo::ApplyProjection(Real time, Real scaling_factor)
 {
-	BL_PROFILE("incflo::ApplyProjection");
+    BL_PROFILE("incflo::ApplyProjection");
 
-    if(incflo_verbose > 2)
+    if (incflo_verbose > 2)
     {
         amrex::Print() << "Before projection:" << std::endl;
         PrintMaxValues(time);
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
-    if(nstep >= 0)
+    if (nstep >= 0)
     {
         for(int lev = 0; lev <= finest_level; lev++)
         {

@@ -329,6 +329,8 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    std::unique_ptr<DiffusionOp> diffusion_op;
+
     static DiffusionType m_diff_type;
 
     void ComputeStrainrate(Real time_in);
@@ -505,9 +507,6 @@ private:
     // Member variables: Data containers
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Instances of self-written classes for MAC projection, diffusion + Poisson equations
-    std::unique_ptr<DiffusionOp> diffusion_op;
 
     // Boundary conditions
     Vector<std::unique_ptr<IArrayBox>> bc_ilo;

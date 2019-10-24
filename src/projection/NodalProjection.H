@@ -9,10 +9,17 @@ class NodalProjection
 
 public:
 
-    NodalProjection () {};
-    NodalProjection (const incflo* a_incflo): m_incflo(a_incflo), m_ok(true) {};
+    // Constructor
+    NodalProjection (const incflo* a_incflo,
+                     Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory,
+                     std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_lo,
+                     std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_hi);
 
-    void define ( const incflo* a_inclfo );
+    // Destructor
+    NodalProjection () {};
+
+    void setup (const incflo* a_incflo,
+                Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory);
 
     void project (       Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                    const Vector< std::unique_ptr< amrex::MultiFab > >& a_ro,
@@ -28,6 +35,7 @@ private:
     bool m_ok = false;
 
     // Verbosity
+    int  m_verbose = 0;
     int  m_mg_verbose = 0;
     int  m_mg_cg_verbose = 0;
 
@@ -47,6 +55,16 @@ private:
     // amrcore and ebfactory to the constructor
     const incflo* m_incflo;
 
+    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
+
+    amrex::Vector<amrex::Geometry> geom;
+    amrex::Vector<amrex::BoxArray> grids;
+    amrex::Vector<amrex::DistributionMapping> dmap;
+
+    // Boundary conditions
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_bc_lo;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_bc_hi;
+
     // Cell-centered data
     Vector< std::unique_ptr< amrex::MultiFab > >  m_fluxes;
     Vector< std::unique_ptr< amrex::MultiFab > >  m_sigma;
@@ -63,8 +81,6 @@ private:
 
 
     void readParameters ();
-
-    void setup ();
 
     void computeRHS ( Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                       Real a_time );
