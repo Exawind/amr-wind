@@ -41,6 +41,10 @@ void incflo::InitData()
 {
     BL_PROFILE("incflo::InitData()");
 
+    // Set the BC types on domain boundary
+    // We are assuming checkpoint doesn't have anything that would change BCs.
+    SetBCTypes();
+
     // Either init from scratch or from the checkpoint file
     // In both cases, we call MakeNewLevelFromScratch():
     // - Set BA and DM
@@ -50,7 +54,7 @@ void incflo::InitData()
     {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
-        SetIterateToFalse();
+        // SetIterateToFalse();
 
         // This tells the Cluster routine to use the new chopping routine which
         // rejects cuts if they don't improve the efficiency
@@ -63,11 +67,11 @@ void incflo::InitData()
     {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
+        SetBCTypes();
         restart_flag = 1;
     }
 
     // Post-initialisation step
-    // - Set BC types
     // - Initialize diffusive and projection operators
     // - Fill boundaries
     // - Create instance of MAC projection class
@@ -211,10 +215,10 @@ void incflo::MakeNewLevelFromScratch(int lev,
         amrex::Print() << "with BoxArray " << new_grids << std::endl;
     }
 
-	SetBoxArray(lev, new_grids);
-	SetDistributionMap(lev, new_dmap);
+    SetBoxArray(lev, new_grids);
+    SetDistributionMap(lev, new_dmap);
 
-	// Allocate the fluid data, NOTE: this depends on the ebfactories.
+    // Allocate the fluid data, NOTE: this depends on the ebfactories.
     AllocateArrays(lev);
 }
 

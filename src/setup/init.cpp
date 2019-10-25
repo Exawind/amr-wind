@@ -235,9 +235,6 @@ void incflo::ReadParameters()
 
 void incflo::PostInit(int restart_flag)
 {
-    // Set the BC types on domain boundary
-    SetBCTypes();
-
     // Init nodal and diffusion solvers (for now only diffusion)
     // (Note we must do this *after* setting the bc types above)
     incflo_init_solvers();

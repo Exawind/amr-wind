@@ -83,31 +83,17 @@ bool incflo::UpdateEBFactory(int a_lev)
 
     bool is_updated = false;
 
-    EBSupport m_eb_support_level = EBSupport::full;
-    if ( ebfactory[a_lev].get() == nullptr )
+    EBSupport eb_support_level = EBSupport::full;
+    if ( ebfactory[a_lev] == nullptr
+         or ebfactory[a_lev]->DistributionMap() != dm
+         or ebfactory[a_lev]->boxArray() != ba )
     {
         ebfactory[a_lev].reset(new EBFArrayBoxFactory(ebis_level, geom[a_lev], ba, dm,
                                                       {m_eb_basic_grow_cells,
                                                        m_eb_volume_grow_cells,
                                                        m_eb_full_grow_cells},
-                                                       m_eb_support_level));
+                                                       eb_support_level));
         is_updated = true;
-    }
-    else
-    {
-        const DistributionMapping&  eb_dm = ebfactory[a_lev]->DistributionMap();
-        const BoxArray&             eb_ba = ebfactory[a_lev]->boxArray();
-
-        if ( (dm != eb_dm) || (ba != eb_ba) )
-        {
-
-            ebfactory[a_lev].reset(new EBFArrayBoxFactory(ebis_level, geom[a_lev], ba, dm,
-                                                          {m_eb_basic_grow_cells,
-                                                           m_eb_volume_grow_cells,
-                                                           m_eb_full_grow_cells}, 
-                                                           m_eb_support_level));
-            is_updated = true;
-        }
     }
 
     return is_updated;

@@ -16,13 +16,15 @@ void incflo::AllocateArrays(int lev)
     density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     density_o[lev]->setVal(0.);
 
-    // Current Tracer; default to 0
-    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
-    tracer[lev]->setVal(0.);
+    if (ntrac > 0) {
+        // Current Tracer; default to 0
+        tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+        tracer[lev]->setVal(0.);
 
-    // Old tracer; default to 0
-    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
-    tracer_o[lev]->setVal(0.);
+        // Old tracer; default to 0
+        tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+        tracer_o[lev]->setVal(0.);
+    }
 
     // Current Velocity
     vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
@@ -148,7 +150,7 @@ void incflo::AllocateArrays(int lev)
     m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     m_v_mac[lev]->setVal(0.);
 
-    // Create a BoxArray on y-faces.
+    // Create a BoxArray on z-faces.
     BoxArray z_edge_ba = grids[lev];
     z_edge_ba.surroundingNodes(2);
     m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
