@@ -1,9 +1,6 @@
 #include <incflo.H>
 #include <AMReX_buildInfo.H>
 
-// TODO: find better way of making the fillpatch stuff work
-void set_ptr_to_incflo(incflo& my_incflo);
- 
 void writeBuildInfo();
 
 int main(int argc, char* argv[])
@@ -40,9 +37,6 @@ int main(int argc, char* argv[])
 
         // Get boundary conditions from inputs file
         my_incflo.GetInputBCs();
-
-        // Set global static pointer to incflo object. Used by fillpatch utility
-        set_ptr_to_incflo(my_incflo);
 
         // Initialize data, parameters, arrays and derived internals
         my_incflo.InitData();

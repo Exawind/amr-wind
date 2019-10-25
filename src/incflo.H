@@ -95,13 +95,6 @@ public:
     void incflo_init_solvers();
     void incflo_setup_solvers();
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Some getters (TODO: find better way to do fillpatching)
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    const Geometry get_geom_ref(int lev){ return geom[lev]; }
-
     const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
     const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
     const int* get_bc_jlo_ptr(int lev){ return bc_jlo[lev]->dataPtr(); }

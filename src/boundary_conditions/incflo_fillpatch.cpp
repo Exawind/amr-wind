@@ -5,19 +5,12 @@
 
 namespace
 {
-  incflo* incflo_for_fillpatching;
+    incflo* my_incflo = nullptr;
 }
 
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
-void set_ptr_to_incflo(incflo& incflo_for_fillpatching_in)
-{
-   incflo_for_fillpatching = &incflo_for_fillpatching_in;
-}
-
-// This interface must match the definition of the interface for
-//    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
-inline
+static
 void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
                  const int dcomp, const int ncomp,
                  GeometryData const& geom, const Real time_in,
@@ -30,18 +23,7 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
          amrex::Abort("Must have ncomp = 3 in VelFillBox");
 
     const Box& domain = geom.Domain();
-
-    // This is a bit hack-y but does get us the right level
-    int lev = 0;
-    for (int ilev = 0; ilev < 10; ilev++)
-    {
-       const Geometry& lev_geom = incflo_for_fillpatching->get_geom_ref(ilev);
-       if (domain.length()[0] == (lev_geom.Domain()).length()[0])
-       {
-         lev = ilev;
-         break;
-       }
-    }
+    int lev = my_incflo->GetLevel(domain);
 
     // We are hard-wiring this fillpatch routine to define the Dirichlet values
     //    at the faces (not the ghost cell center)
@@ -52,12 +34,12 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 
     FArrayBox dest_fab(dest);
 
-    incflo_for_fillpatching->set_velocity_bcs (time, lev, dest_fab, domain, &extrap_dir_bcs);
+    my_incflo->set_velocity_bcs (time, lev, dest_fab, domain, &extrap_dir_bcs);
 }
 
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
-inline
+static
 void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
                      const int dcomp, const int ncomp,
                      GeometryData const& geom, const Real time_in,
@@ -70,30 +52,19 @@ void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
          amrex::Abort("Must have ncomp = 1 in DensityFillBox");
 
     const Box& domain = geom.Domain();
-
-    // This is a bit hack-y but does get us the right level
-    int lev = 0;
-    for (int ilev = 0; ilev < 10; ilev++)
-    {
-       const Geometry& lev_geom = incflo_for_fillpatching->get_geom_ref(ilev);
-       if (domain.length()[0] == (lev_geom.Domain()).length()[0])
-       {
-         lev = ilev;
-         break;
-       }
-    }
+    int lev = my_incflo->GetLevel(domain);
 
     // We only do this to make it not const
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
 
-    incflo_for_fillpatching->set_density_bcs (time, lev, dest_fab, domain);
+    my_incflo->set_density_bcs (time, lev, dest_fab, domain);
 }
 
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
-inline
+static
 void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
                     const int dcomp, const int ncomp,
                     GeometryData const& geom, const Real time_in,
@@ -104,25 +75,14 @@ void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
          amrex::Abort("Must have dcomp = 0 in ScalaryFillBox");
 
     const Box& domain = geom.Domain();
-
-    // This is a bit hack-y but does get us the right level
-    int lev = 0;
-    for (int ilev = 0; ilev < 10; ilev++)
-    {
-       const Geometry& lev_geom = incflo_for_fillpatching->get_geom_ref(ilev);
-       if (domain.length()[0] == (lev_geom.Domain()).length()[0])
-       {
-         lev = ilev;
-         break;
-       }
-    }
+    int lev = my_incflo->GetLevel(domain);
 
     // We only do this to make it not const
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
 
-    incflo_for_fillpatching->set_tracer_bcs (time, lev, dest_fab, dcomp, ncomp, domain);
+    my_incflo->set_tracer_bcs (time, lev, dest_fab, dcomp, ncomp, domain);
 }
 
 // Compute a new multifab by copying array from valid region and filling ghost cells
@@ -130,6 +90,8 @@ void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 void
 incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
 {
+    if (my_incflo == nullptr) my_incflo = this;
+
     // Hack so that ghost cells are not undefined
     mf.setVal(covered_val);
 
@@ -172,6 +134,8 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
 void
 incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
 {
+    if (my_incflo == nullptr) my_incflo = this;
+
     // Hack so that ghost cells are not undefined
     mf.setVal(covered_val);
 
@@ -216,6 +180,8 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
 void
 incflo::FillPatchScalar (int lev, Real time, MultiFab& mf) 
 {
+    if (my_incflo == nullptr) my_incflo = this;
+
     // Hack so that ghost cells are not undefined
     mf.setVal(covered_val);
 
