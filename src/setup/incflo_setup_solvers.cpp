@@ -2,9 +2,6 @@
 #include <diffusion_F.H>
 #include <incflo.H>
 
-#include <NodalProjector.H>
-#include <DiffusionOp.H>
-
 void
 incflo::incflo_init_solvers ()
 {

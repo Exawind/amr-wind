@@ -12,12 +12,12 @@
 #include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_PhysBCFunct.H>
 #include <AMReX_iMultiFab.H>
+#include <AMReX_NodalProjector.H>
 
 #include <eb_if.H>
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
-#include <NodalProjector.H>
 
 enum DiffusionType
 {

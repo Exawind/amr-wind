@@ -6,9 +6,6 @@
 // Need this for TagCutCells
 #include <AMReX_EBAmrUtil.H>
 
-// Need this for nodal projection
-#include <NodalProjector.H>
-
 // Define unit vectors for easily convert indices
 amrex::IntVect incflo::e_x(1,0,0);
 amrex::IntVect incflo::e_y(0,1,0);

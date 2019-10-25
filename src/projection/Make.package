@@ -1,4 +1,1 @@
-CEXE_sources += projection.cpp
-
-CEXE_sources += NodalProjector.cpp
-CEXE_headers += NodalProjector.H
+CEXE_sources += incflo_apply_nodal_projection.cpp

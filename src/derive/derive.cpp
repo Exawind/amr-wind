@@ -3,7 +3,6 @@
 #include <incflo.H>
 #include <derive_F.H>
 #include <incflo_proj_F.H>
-#include <NodalProjector.H>
 
 void incflo::ComputeDivU(Real time_in)
 {
