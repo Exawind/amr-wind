@@ -9,11 +9,6 @@
 
 using namespace amrex;
 
-// Define unit vectors to easily convert indices
-extern const amrex::IntVect e_x;
-extern const amrex::IntVect e_y;
-extern const amrex::IntVect e_z;
-
 //
 // Constructor:
 // We set up everything which doesn't change between timesteps here

@@ -227,11 +227,6 @@ private:
 
      int ntrac = 1;
 
-     // Unit vectors in Cartesian space
-     static IntVect e_x;
-     static IntVect e_y;
-     static IntVect e_z;
-
      mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
      mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
      mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
