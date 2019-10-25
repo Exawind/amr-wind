@@ -68,16 +68,16 @@ void incflo::ReadParameters()
             plt_divu       = 1;
             plt_vfrac      = 1;
         }
-	}
+    }
 
-	{
+    {
         // Prefix incflo
 	ParmParse pp("incflo");
 
         pp.query("verbose", incflo_verbose);
-		pp.query("cfl", cfl);
-		pp.query("fixed_dt", fixed_dt);
-		pp.query("steady_state_tol", steady_state_tol);
+        pp.query("cfl", cfl);
+        pp.query("fixed_dt", fixed_dt);
+        pp.query("steady_state_tol", steady_state_tol);
         pp.query("initial_iterations", initial_iterations);
         pp.query("do_initial_proj", do_initial_proj);
 

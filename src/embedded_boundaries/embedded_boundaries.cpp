@@ -29,37 +29,37 @@ void incflo::MakeEBGeometry()
 	amrex::Print() << "\n Building box geometry." << std::endl;
         make_eb_box();
     }
-	else if(geom_type == "cylinder")
+    else if(geom_type == "cylinder")
     {
 	amrex::Print() << "\n Building cylinder geometry." << std::endl;
         make_eb_cylinder();
     }
-	else if(geom_type == "twocylinders")
+    else if(geom_type == "twocylinders")
     {
 	amrex::Print() << "\n Building twocylinders geometry." << std::endl;
         make_eb_twocylinders();
     }
-	else if(geom_type == "annulus")
+    else if(geom_type == "annulus")
     {
 	amrex::Print() << "\n Building annulus geometry." << std::endl;
         make_eb_annulus();
     }
-	else if(geom_type == "sphere")
+    else if(geom_type == "sphere")
     {
 	amrex::Print() << "\n Building sphere geometry." << std::endl;
         make_eb_sphere();
     }
-	else if(geom_type == "spherecube")
+    else if(geom_type == "spherecube")
     {
 	amrex::Print() << "\n Building spherecube geometry." << std::endl;
         make_eb_spherecube();
     }
-	else if(geom_type == "tuscan")
+    else if(geom_type == "tuscan")
     {
 	amrex::Print() << "\n Building tuscan geometry." << std::endl;
         make_eb_tuscan();
     }
-	else
+    else
     {
 	amrex::Print() << "\n No EB geometry declared in inputs => "
 	               << " Will read walls from incflo.dat only." << std::endl;
