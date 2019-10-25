@@ -192,9 +192,13 @@ private:
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_lobc;
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_hibc;
 
-    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for diffusion solves
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  diff_lobc;
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  diff_hibc;
+    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for velocity diffusion solves
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  vel_diff_lobc;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  vel_diff_hibc;
+
+    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for scalar diffusion solves
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  scal_diff_lobc;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  scal_diff_hibc;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -428,6 +432,7 @@ private:
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
+    Vector<Real> mu_s;
     Real ro_0 = 1.0;
 
     bool constant_density = true;
@@ -543,8 +548,12 @@ private:
     Vector<std::unique_ptr<MultiFab>> conv_r_old;
     Vector<std::unique_ptr<MultiFab>> conv_t;
     Vector<std::unique_ptr<MultiFab>> conv_t_old;
+
     Vector<std::unique_ptr<MultiFab>> divtau;
     Vector<std::unique_ptr<MultiFab>> divtau_old;
+
+    Vector<std::unique_ptr<MultiFab>> laps;
+    Vector<std::unique_ptr<MultiFab>> laps_old;
 
     Vector<std::unique_ptr<MultiFab>> xslopes_u;
     Vector<std::unique_ptr<MultiFab>> yslopes_u;

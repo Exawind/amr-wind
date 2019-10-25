@@ -80,11 +80,17 @@ void incflo::AllocateArrays(int lev)
     conv_t_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
     conv_t_old[lev]->setVal(0.);
 
-    // Divergence of stress tensor terms for diffusion equation
+    // Divergence of stress tensor terms
     divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
     divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
     divtau[lev]->setVal(0.);
     divtau_old[lev]->setVal(0.);
+
+    // Scalar diffusion terms
+    laps[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    laps_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    laps[lev]->setVal(0.);
+    laps_old[lev]->setVal(0.);
 
     // Slopes in x-direction
     xslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
@@ -303,6 +309,19 @@ void incflo::RegridArrays(int lev)
     divtau_old[lev]->setVal(0.);
 
     // ***************************
+    // Scalar diffusion terms 
+    // ***************************
+    std::unique_ptr<MultiFab> laps_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost,
+                                                    MFInfo(), *ebfactory[lev]));
+    laps[lev] = std::move(laps_new);
+    laps[lev]->setVal(0.);
+
+    std::unique_ptr<MultiFab> laps_old_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost,
+                                                        MFInfo(), *ebfactory[lev]));
+    laps_old[lev] = std::move(laps_old_new);
+    laps_old[lev]->setVal(0.);
+
+    // ***************************
     // Slopes in x-direction
     // ***************************
     std::unique_ptr<MultiFab> xslopes_u_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, 
@@ -454,8 +473,12 @@ void incflo::ResizeArrays()
     conv_r_old.resize(max_level + 1);
     conv_t.resize(max_level + 1);
     conv_t_old.resize(max_level + 1);
+
     divtau.resize(max_level + 1);
     divtau_old.resize(max_level + 1);
+
+    laps.resize(max_level + 1);
+    laps_old.resize(max_level + 1);
 
     // MAC velocities used for defining convective term
     m_u_mac.resize(max_level + 1);

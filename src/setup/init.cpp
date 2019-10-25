@@ -84,10 +84,11 @@ void incflo::ReadParameters()
         // Physics
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
 	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
-        pp.query("ro_0", ro_0);
-        pp.query("ntrac", ntrac);
+
         pp.query("constant_density", constant_density);
+
         pp.query("advect_tracer" , advect_tracer);
+
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
@@ -97,8 +98,21 @@ void incflo::ReadParameters()
         pp.query("ic_w", ic_w);
         pp.query("ic_p", ic_p);
 
-        // Fluid properties
+        // Viscosity (if constant)
         pp.query("mu", mu);
+
+        pp.query("ro_0", ro_0);
+        pp.query("ntrac", ntrac);
+
+        // Scalar diffusion coefficients
+        mu_s.resize(ntrac);
+        for (int i = 0; i < ntrac; i++) mu_s[i] = 0.;
+        pp.queryarr("mu_s", mu_s, 0, ntrac );
+
+        amrex::Print() << "Scalar diffusion coefficients " << std::endl;
+        for (int i = 0; i < ntrac; i++)
+           amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
+
         AMREX_ALWAYS_ASSERT(mu > 0.0);
 
         // TODO: Make a rheology class
@@ -415,12 +429,16 @@ void incflo::InitialIterations()
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            // Replace vel by the original values
-            MultiFab::Copy(*vel[lev], *vel_o[lev], 0, 0, vel[lev]->nComp(), vel[lev]->nGrow());
+            // Replace vel, density, tracer  by the original values
+            MultiFab::Copy(*    vel[lev],     *vel_o[lev], 0, 0,     vel[lev]->nComp(),     vel[lev]->nGrow());
+            MultiFab::Copy(*density[lev], *density_o[lev], 0, 0, density[lev]->nComp(), density[lev]->nGrow());
+            MultiFab::Copy( *tracer[lev],  *tracer_o[lev], 0, 0,  tracer[lev]->nComp(),  tracer[lev]->nGrow());
         }
 
         // Reset the boundary values (necessary if they are time-dependent)
-        incflo_set_velocity_bcs(cur_time, vel, 0);
+        incflo_set_velocity_bcs(cur_time, vel    , 0);
+        incflo_set_density_bcs (cur_time, density);
+        incflo_set_tracer_bcs  (cur_time, tracer );
     }
 }
 

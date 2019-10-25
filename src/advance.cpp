@@ -165,10 +165,14 @@ void incflo::ApplyPredictor()
     {
        int extrap_dir_bcs = 0;
        incflo_set_velocity_bcs (cur_time, vel_o, extrap_dir_bcs);
-       diffusion_op->ComputeDivTau(divtau_old, vel_o, density_o, eta_old);
+       diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
+       diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, eta_old);
     } else {
        for (int lev = 0; lev <= finest_level; lev++)
+       {
           divtau_old[lev]->setVal(0.);
+            laps_old[lev]->setVal(0.);
+       }
     }
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -178,9 +182,19 @@ void incflo::ApplyPredictor()
 
         //   Now add the convective term to the density and tracer
         if (!constant_density)
-           MultiFab::Saxpy(*density[lev], dt, *conv_r_old[lev], 0, 0,      1, 0);
+            MultiFab::Saxpy(*density[lev], dt, *conv_r_old[lev], 0, 0,      1, 0);
+
         if (advect_tracer)
-           MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
+        {
+            MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
+            for (int i = 0; i < ntrac; i++)
+            {
+                if (m_diff_type == DiffusionType::Explicit) 
+                    MultiFab::Saxpy(*tracer[lev],     dt, *laps_old[lev], i, i, 1, 0);
+                else if (m_diff_type == DiffusionType::Crank_Nicolson)
+                    MultiFab::Saxpy(*tracer[lev], 0.5*dt, *laps_old[lev], i, i, 1, 0);
+            }
+        }
 
         // Add the viscous terms         
         if (m_diff_type == DiffusionType::Explicit) 
@@ -218,17 +232,25 @@ void incflo::ApplyPredictor()
     }
 
     if (!constant_density)
-       incflo_set_density_bcs(new_time, density);
+        incflo_set_density_bcs(new_time, density);
     if (advect_tracer)
-       incflo_set_tracer_bcs(new_time, tracer);
+        incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel, 0);
 
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
-       diffusion_op->solve(vel, density, eta_old, 0.5*dt);
+    {
+        diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
+        if (advect_tracer)
+            diffusion_op->diffuse_scalar  (tracer, density, eta_old, 0.5*dt);
+    }
     else if (m_diff_type == DiffusionType::Implicit)
-       diffusion_op->solve(vel, density, eta_old, dt);
+    {
+        diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
+        if (advect_tracer)
+            diffusion_op->diffuse_scalar  (tracer, density, eta_old, dt);
+    }
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);
@@ -323,7 +345,8 @@ void incflo::ApplyCorrector()
     {
        int extrap_dir_bcs = 0;
        incflo_set_velocity_bcs (new_time, vel, extrap_dir_bcs);
-       diffusion_op->ComputeDivTau(divtau, vel, density, eta);
+       diffusion_op->ComputeDivTau(divtau, vel   , density, eta);
+       diffusion_op->ComputeLapS  (laps,   tracer, density, eta);
     } else {
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
@@ -350,6 +373,13 @@ void incflo::ApplyCorrector()
         {
            MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv_t[lev]    , 0, 0, tracer[lev]->nComp(), 0);
            MultiFab::Saxpy(  *tracer[lev], dt / 2.0                        , *conv_t_old[lev], 0, 0, tracer[lev]->nComp(), 0);
+
+           if (m_diff_type == DiffusionType::Explicit)
+           {
+               MultiFab::Saxpy(*tracer[lev], dt / 2.0, *laps_old[lev], 0, 0, ntrac, 0);
+               MultiFab::Saxpy(*tracer[lev], dt / 2.0,     *laps[lev], 0, 0, ntrac, 0);
+           } else if (m_diff_type == DiffusionType::Crank_Nicolson)
+               MultiFab::Saxpy(*tracer[lev], dt / 2.0, *laps_old[lev], 0, 0, ntrac, 0);
         }
 
         // Add the viscous terms         
@@ -401,9 +431,15 @@ void incflo::ApplyCorrector()
 
     // Solve implicit diffusion equation for u*
     if (m_diff_type == DiffusionType::Crank_Nicolson)
-       diffusion_op->solve(vel, density, eta, 0.5*dt);
+    {
+       diffusion_op->diffuse_velocity(vel   , density, eta, 0.5*dt);
+       diffusion_op->diffuse_scalar  (tracer, density, eta, 0.5*dt);
+    }
     else if (m_diff_type == DiffusionType::Implicit)
-       diffusion_op->solve(vel, density, eta, dt);
+    {
+       diffusion_op->diffuse_velocity(vel   , density, eta, dt);
+       diffusion_op->diffuse_scalar  (tracer, density, eta, dt);
+    }
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt);

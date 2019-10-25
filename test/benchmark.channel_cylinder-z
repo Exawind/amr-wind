@@ -28,6 +28,10 @@ incflo.ro_0             =   1.          # Reference density
 incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
 incflo.mu               =   0.001       # Dynamic viscosity coefficient
 
+incflo.ntrac            =   1           # Number of tracers
+incflo.advect_tracer    =   1           # Should we update them?
+incflo.mu_s             =   0.001       # Scalar diffusion coefficient
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
@@ -53,6 +57,7 @@ xhi.type                =   "nsw"
 xhi.velocity            =   0.  0.  0.
 zlo.type                =   "mi"
 zlo.velocity            =   0.  0.  1.
+zlo.tracer              =   1.
 zhi.type                =   "po"
 zhi.pressure            =   0.0
 
@@ -75,8 +80,10 @@ incflo.ic_p             =   0.0         #
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   2           # incflo_level
+incflo.verbose          =   1           # incflo itself
 mac.verbose             =   0           # MacProjector
+diffusion.verbose       =   0           # Diffusion operator
 projection.mg_verbose   =   0           # Nodal projection
 
 amr.plt_ccse_regtest    =   1
+
