@@ -41,7 +41,6 @@ DIM = 3
 
 EBASE     ?= incflo
 
-USE_MG        = TRUE
 USE_EB        = TRUE
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
