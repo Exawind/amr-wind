@@ -344,7 +344,7 @@ private:
 
     std::unique_ptr<DiffusionOp> diffusion_op;
 
-    static DiffusionType m_diff_type;
+    DiffusionType m_diff_type = DiffusionType::Implicit;
 
     void ComputeDivU(Real time_in);
 

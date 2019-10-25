@@ -6,8 +6,6 @@
 // Need this for TagCutCells
 #include <AMReX_EBAmrUtil.H>
 
-DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
-
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
