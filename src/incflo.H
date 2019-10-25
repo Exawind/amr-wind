@@ -141,6 +141,97 @@ public:
                           const Box& domain,
                           const int* extrap_dir_bcs) const;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Diffusion
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void ComputeStrainrate(Real time_in);
+
+    void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
+                           const Real time_in);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Derived quantities
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void ComputeVorticity(Real time_in);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Convection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void incflo_predict_vels_on_faces(int lev, Real time,
+                                      Vector< std::unique_ptr<MultiFab> >& vel);
+
+    void incflo_compute_slopes(int lev, Real time, MultiFab& Sborder,
+                               Vector<std::unique_ptr<MultiFab>>& xslopes_in,
+                               Vector<std::unique_ptr<MultiFab>>& yslopes_in,
+                               Vector<std::unique_ptr<MultiFab>>& zslopes_in,
+                               int slopes_comp, int ncomp);
+
+    void set_MAC_velocity_bcs (int lev,
+                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac,
+                               Real time);
+
+    void incflo_compute_fluxes(const int lev,
+                               Vector< std::unique_ptr<MultiFab> >& a_fx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fy,
+                               Vector< std::unique_ptr<MultiFab> >& a_fz,
+                               Vector< std::unique_ptr<MultiFab> >& state,
+                               const int state_comp, const int n_comp,
+                               Vector< std::unique_ptr<MultiFab> >& xslopes,
+                               Vector< std::unique_ptr<MultiFab> >& yslopes,
+                               Vector< std::unique_ptr<MultiFab> >& zslopes,
+                               const int slopes_comp,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac);
+
+    void incflo_compute_ugradu(const int lev, Box& bx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fx,
+                               Vector< std::unique_ptr<MultiFab> >& a_fy,
+                               Vector< std::unique_ptr<MultiFab> >& a_fz,
+                               Vector< std::unique_ptr<MultiFab> >& state,
+                               const int state_comp, const int n_comp,
+                               Vector< std::unique_ptr<MultiFab> >& xslopes,
+                               Vector< std::unique_ptr<MultiFab> >& yslopes,
+                               Vector< std::unique_ptr<MultiFab> >& zslopes,
+                               const int slopes_comp,
+                               Vector< std::unique_ptr<MultiFab> >& u_mac,
+                               Vector< std::unique_ptr<MultiFab> >& v_mac,
+                               Vector< std::unique_ptr<MultiFab> >& w_mac,
+                               MFIter* mfi, Box& domain);
+
+    void incflo_compute_ugradu_eb(const int lev, Box& bx,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fx,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fy,
+                                  Vector< std::unique_ptr<MultiFab> >& a_fz,
+                                  Vector< std::unique_ptr<MultiFab> >& state,
+                                  const int state_comp, const int n_comp,
+                                  Vector< std::unique_ptr<MultiFab> >& xslopes,
+                                  Vector< std::unique_ptr<MultiFab> >& yslopes,
+                                  Vector< std::unique_ptr<MultiFab> >& zslopes,
+                                  const int slopes_comp,
+                                  Vector< std::unique_ptr<MultiFab> >& u_mac,
+                                  Vector< std::unique_ptr<MultiFab> >& v_mac,
+                                  Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                  MFIter* mfi,
+                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
+                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
+                                  const amrex::MultiFab* volfrac,
+                                  const amrex::MultiCutFab* bndrycent,
+                                  const amrex::iMultiFab* cc_mask,
+                                  Box& domain, const EBCellFlagFab& flags);
+
 private:
 
      static int nlev;
@@ -223,83 +314,17 @@ private:
                                          Vector< std::unique_ptr<MultiFab> >& tracer_in,
                                          Real time);
 
-    void incflo_predict_vels_on_faces(int lev, Real time,
-                                      Vector< std::unique_ptr<MultiFab> >& vel);
-
     void apply_MAC_projection ( Vector< std::unique_ptr<MultiFab> >& u_mac,
                                 Vector< std::unique_ptr<MultiFab> >& v_mac,
                                 Vector< std::unique_ptr<MultiFab> >& w_mac,
                                 Vector< std::unique_ptr<MultiFab> >& density,
                                 Real time);
 
-    void incflo_compute_slopes(int lev, Real time, MultiFab& Sborder,
-                               Vector<std::unique_ptr<MultiFab>>& xslopes_in,
-                               Vector<std::unique_ptr<MultiFab>>& yslopes_in,
-                               Vector<std::unique_ptr<MultiFab>>& zslopes_in,
-                               int slopes_comp, int ncomp);
-
-    void set_MAC_velocity_bcs (int lev,
-                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
-                               Vector< std::unique_ptr<MultiFab> >& u_mac,
-                               Vector< std::unique_ptr<MultiFab> >& v_mac,
-                               Vector< std::unique_ptr<MultiFab> >& w_mac,
-                               Real time);
-
-    void incflo_compute_fluxes(const int lev,
-                               Vector< std::unique_ptr<MultiFab> >& a_fx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fy,
-                               Vector< std::unique_ptr<MultiFab> >& a_fz,
-                               Vector< std::unique_ptr<MultiFab> >& state,
-                               const int state_comp, const int n_comp,
-                               Vector< std::unique_ptr<MultiFab> >& xslopes,
-                               Vector< std::unique_ptr<MultiFab> >& yslopes,
-                               Vector< std::unique_ptr<MultiFab> >& zslopes,
-                               const int slopes_comp,
-                               Vector< std::unique_ptr<MultiFab> >& u_mac,
-                               Vector< std::unique_ptr<MultiFab> >& v_mac,
-                               Vector< std::unique_ptr<MultiFab> >& w_mac);
-
      void incflo_divergence_plus_redist(const int lev, Vector< std::unique_ptr<MultiFab> >& conv,
                                         Vector< std::unique_ptr<MultiFab> >& fx,
                                         Vector< std::unique_ptr<MultiFab> >& fy,
                                         Vector< std::unique_ptr<MultiFab> >& fz,
                                         int num_comp);
-
-    void incflo_compute_ugradu(const int lev, Box& bx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fy,
-                               Vector< std::unique_ptr<MultiFab> >& a_fz,
-                               Vector< std::unique_ptr<MultiFab> >& state,
-                               const int state_comp, const int n_comp,
-                               Vector< std::unique_ptr<MultiFab> >& xslopes,
-                               Vector< std::unique_ptr<MultiFab> >& yslopes,
-                               Vector< std::unique_ptr<MultiFab> >& zslopes,
-                               const int slopes_comp,
-                               Vector< std::unique_ptr<MultiFab> >& u_mac,
-                               Vector< std::unique_ptr<MultiFab> >& v_mac,
-                               Vector< std::unique_ptr<MultiFab> >& w_mac,
-                               MFIter* mfi, Box& domain);
-
-    void incflo_compute_ugradu_eb(const int lev, Box& bx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fy,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fz,
-                                  Vector< std::unique_ptr<MultiFab> >& state,
-                                  const int state_comp, const int n_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& xslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& yslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& zslopes,
-                                  const int slopes_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& u_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& v_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                  MFIter* mfi,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
-                                  const amrex::MultiFab* volfrac,
-                                  const amrex::MultiCutFab* bndrycent,
-                                  const amrex::iMultiFab* cc_mask,
-                                  Box& domain, const EBCellFlagFab& flags);
 
      // Verbosity
      int  mac_mg_verbose = 0;
@@ -335,18 +360,12 @@ private:
 
     void ComputeDivU(Real time_in);
 
-    void ComputeStrainrate(Real time_in);
-
-    void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
-                           const Real time_in);
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Derived quantities
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void ComputeVorticity(Real time_in);
     void ComputeDrag();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
