@@ -6,7 +6,15 @@
 extern "C"
 {
 #endif
-  void set_diff_bc (
+  void set_vel_diff_bc (
+          int* bc_lo, int* bc_hi,
+          const int* domlo, const int* domhi,
+          const int* ng,
+          const int* bct_ilo, const int* bct_ihi,
+          const int* bct_jlo, const int* bct_jhi,
+          const int* bct_klo, const int* bct_khi);
+
+  void set_scal_diff_bc (
           int* bc_lo, int* bc_hi,
           const int* domlo, const int* domhi,
           const int* ng,

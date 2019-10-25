@@ -32,17 +32,32 @@ incflo::incflo_init_solvers ()
     //
     // Now the diffusion solver
     //
-    set_diff_bc( bc_lo, bc_hi,
-                 domain.loVect(), domain.hiVect(),
-                 &nghost,
-                 bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-                 bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-                 bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+    set_vel_diff_bc( bc_lo, bc_hi,
+                    domain.loVect(), domain.hiVect(),
+                    &nghost,
+                    bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+                    bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+                    bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
 
-    diff_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
-    diff_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
-    diffusion_op.reset(new DiffusionOp(this, &ebfactory, diff_lobc, diff_hibc, nghost));
+    vel_diff_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
+    vel_diff_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+
+    //
+    // Now the diffusion solver
+    //
+    set_scal_diff_bc( bc_lo, bc_hi,
+                     domain.loVect(), domain.hiVect(),
+                     &nghost,
+                     bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+                     bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+                     bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+
+    scal_diff_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
+    scal_diff_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+
+    diffusion_op.reset(new DiffusionOp(this, &ebfactory, vel_diff_lobc,  vel_diff_hibc,
+                                                        scal_diff_lobc, scal_diff_hibc, nghost));
 }
 
 void
@@ -69,18 +84,10 @@ incflo::incflo_setup_solvers ()
     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
                                              GetVecOfConstPtrs(ebfactory)));
 
+
     //
     // Now the diffusion solver
     //
-    set_diff_bc( bc_lo, bc_hi,
-                 domain.loVect(), domain.hiVect(),
-                 &nghost,
-                 bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-                 bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-                 bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
-
-    diff_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
-    diff_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
     diffusion_op->setup(this, &ebfactory);
 }

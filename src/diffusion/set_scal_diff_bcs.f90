@@ -6,7 +6,7 @@
    ! the user-provided BCs are uniform, and then return a single BC type for
    ! each domain wall.
    !
-   subroutine set_diff_bc ( bc_lo, bc_hi, domlo, domhi, ng, bct_ilo, bct_ihi, &
+   subroutine set_scal_diff_bc ( bc_lo, bc_hi, domlo, domhi, ng, bct_ilo, bct_ihi, &
         & bct_jlo, bct_jhi, bct_klo, bct_khi)  bind(C)
 
       use amrex_lo_bctypes_module
@@ -31,10 +31,10 @@
       integer(c_int)                :: bc_face
 
       !
-      ! By default, all the BCs are Dirichlet
+      ! By default, all the BCs are Neumann
       !
-      bc_lo    = amrex_lo_dirichlet
-      bc_hi    = amrex_lo_dirichlet
+      bc_lo    = amrex_lo_neumann
+      bc_hi    = amrex_lo_neumann
 
       !
       ! BC -- X direction
@@ -42,20 +42,6 @@
       if ( cyclic_x ) then
          bc_lo(1) = amrex_lo_periodic
          bc_hi(1) = amrex_lo_periodic
-      else
-
-         ! X at domlo(1)
-         bc_face = get_bc_face(bct_ilo, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_lo(1) = amrex_lo_neumann
-         end if
-
-         ! X at domhi(1)
-         bc_face = get_bc_face(bct_ihi, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_hi(1) = amrex_lo_neumann
-         end if
-
       end if
 
       !
@@ -64,20 +50,6 @@
       if ( cyclic_y ) then
          bc_lo(2) = amrex_lo_periodic
          bc_hi(2) = amrex_lo_periodic
-      else
-
-         ! Y at domlo(2)
-         bc_face = get_bc_face(bct_jlo, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_lo(2) = amrex_lo_neumann
-         end if
-
-         ! Y at domhi(2)
-         bc_face = get_bc_face(bct_jhi, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_hi(2) = amrex_lo_neumann
-         end if
-
       end if
 
       !
@@ -86,20 +58,6 @@
       if ( cyclic_z ) then
          bc_lo(3) = amrex_lo_periodic
          bc_hi(3) = amrex_lo_periodic
-      else
-
-         ! Z at domlo(3)
-         bc_face = get_bc_face(bct_klo, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_lo(3) = amrex_lo_neumann
-         end if
-
-         ! Z at domhi(3)
-         bc_face = get_bc_face(bct_khi, ng)
-         if ( (bc_face == pinf_) .or. (bc_face == pout_) ) then
-            bc_hi(3) = amrex_lo_neumann
-         end if
-
       end if
 
    contains
@@ -128,5 +86,4 @@
 
       end function get_bc_face
 
-   end subroutine set_diff_bc
-
+   end subroutine set_scal_diff_bc

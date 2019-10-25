@@ -17,9 +17,6 @@ void incflo::ComputeStrainrate(Real time_in)
 {
     BL_PROFILE("incflo::ComputeStrainrate");
 
-    // Declare components of velocity gradient
-    Real ux, uy, uz, vx, vy, vz, wx, wy, wz;
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
@@ -59,17 +56,17 @@ void incflo::ComputeStrainrate(Real time_in)
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_FOR_3D(bx, i, j, k,
                 {
-                    ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
-                    vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                    wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                    Real ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
+                    Real vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                    Real wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                    uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                    vy = 0.5 * (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
-                    wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                    Real uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                    Real vy = 0.5 * (ccvel_fab(i,j+1,k,1) - ccvel_fab(i,j-1,k,1)) * idy;
+                    Real wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                    uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                    vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
-                    wz = 0.5 * (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
+                    Real uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                    Real vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                    Real wz = 0.5 * (ccvel_fab(i,j,k+1,2) - ccvel_fab(i,j,k-1,2)) * idz;
 
                     // Include the factor half here rather than in each of the above
                     sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2)
@@ -93,6 +90,10 @@ void incflo::ComputeStrainrate(Real time_in)
                     }
                     else
                     {
+                        Real ux(0); Real vx(0); Real wx(0);
+                        Real uy(0); Real vy(0); Real wy(0);
+                        Real uz(0); Real vz(0); Real wz(0);
+
                         if (flag_fab(i,j,k).isSingleValued())
                         {
                             // Need to check if there are covered cells in neighbours --
@@ -223,9 +224,6 @@ void incflo::ComputeVorticity(Real time_in)
 {
 	BL_PROFILE("incflo::ComputeVorticity");
 
-    // Declare components of velocity gradient
-    Real uy, uz, vx, vz, wx, wy;
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
@@ -265,14 +263,14 @@ void incflo::ComputeVorticity(Real time_in)
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_FOR_3D(bx, i, j, k,
                 {
-                    vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
-                    wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
+                    Real vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
+                    Real wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
 
-                    uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
-                    wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
+                    Real uy = 0.5 * (ccvel_fab(i,j+1,k,0) - ccvel_fab(i,j-1,k,0)) * idy;
+                    Real wy = 0.5 * (ccvel_fab(i,j+1,k,2) - ccvel_fab(i,j-1,k,2)) * idy;
 
-                    uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
-                    vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
+                    Real uz = 0.5 * (ccvel_fab(i,j,k+1,0) - ccvel_fab(i,j,k-1,0)) * idz;
+                    Real vz = 0.5 * (ccvel_fab(i,j,k+1,1) - ccvel_fab(i,j,k-1,1)) * idz;
 
                     vort_fab(i,j,k) = sqrt( pow(wy - vz, 2) + pow(uz - wx, 2) + pow(vx - uy, 2));
                 });
@@ -294,6 +292,10 @@ void incflo::ComputeVorticity(Real time_in)
                     }
                     else
                     {
+                        Real vx(0); Real wx(0);
+                        Real uy(0); Real wy(0);
+                        Real uz(0); Real vz(0);
+
                         if (flag_fab(i,j,k).isSingleValued())
                         {
                             // Need to check if there are covered cells in neighbours --

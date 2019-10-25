@@ -6,6 +6,7 @@
 extern "C"
 {
 #endif
+  AMREX_GPU_HOST_DEVICE
     amrex::Real viscosity(amrex::Real sr);
 #ifdef __cplusplus
 }

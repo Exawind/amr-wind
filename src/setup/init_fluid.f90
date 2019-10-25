@@ -72,7 +72,7 @@ contains
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      real(rt)                        :: x, y, z
+      real(rt)                        :: x, y
       real(rt)                        :: twopi = 8.0_rt * atan(one)
 
       ! x-direction
@@ -203,7 +203,7 @@ contains
                vel(i,j,k,2) = 0.0d0
                vel(i,j,k,3) = 0.0d0
                tracer(i,j,k,1:ntrac) = 0.0d0
-               if (ntrac .gt. 0 .and. i .le. domhi(1)/4) &
+               if (ntrac .gt. 0 .and. i .le. domhi(1)/8) &
                   tracer(i,j,k,1) = 1.d0
                if (ntrac .gt. 1 .and. i .le. domhi(1)/2) &
                   tracer(i,j,k,2) = 2.d0
@@ -224,6 +224,13 @@ contains
                vel(i,j,k,1) = 0.0d0
                vel(i,j,k,2) = 6.0d0 * ic_v * z * (1.0d0 - z)
                vel(i,j,k,3) = 0.0d0
+               tracer(i,j,k,1:ntrac) = 0.0d0
+               if (ntrac .gt. 0 .and. j .le. domhi(2)/8) &
+                  tracer(i,j,k,1) = 1.d0
+               if (ntrac .gt. 1 .and. j .le. domhi(2)/2) &
+                  tracer(i,j,k,2) = 2.d0
+               if (ntrac .gt. 2 .and. j .le. 3*domhi(2)/4) &
+                  tracer(i,j,k,3) = 3.d0
             end do
          end do
          end do
@@ -239,6 +246,13 @@ contains
                vel(i,j,k,1) = 0.0d0
                vel(i,j,k,2) = 0.0d0
                vel(i,j,k,3) = 6.0d0 * ic_w * x * (1.0d0 - x)
+               tracer(i,j,k,1:ntrac) = 0.0d0
+               if (ntrac .gt. 0 .and. k .le. domhi(3)/8) &
+                  tracer(i,j,k,1) = 1.d0
+               if (ntrac .gt. 1 .and. k .le. domhi(3)/2) &
+                  tracer(i,j,k,2) = 2.d0
+               if (ntrac .gt. 2 .and. k .le. 3*domhi(3)/4) &
+                  tracer(i,j,k,3) = 3.d0
             end do
          end do
          end do
@@ -288,7 +302,6 @@ contains
    subroutine tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
       use constant,          only: zero, half, one
-      use constant,          only: ic_u
 
       implicit none
 
