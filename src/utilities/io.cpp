@@ -12,8 +12,7 @@ void GotoNextLine(std::istream& is)
 	is.ignore(bl_ignore_max, '\n');
 }
 
-void incflo::WriteHeader(
-	const std::string& name, bool is_checkpoint) const
+void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 {
 	if(ParallelDescriptor::IOProcessor())
 	{
@@ -98,14 +97,14 @@ void incflo::WriteCheckPointFile() const
 
 void incflo::ReadCheckpointFile()
 {
-	BL_PROFILE("incflo::ReadCheckpointFile()");
+    BL_PROFILE("incflo::ReadCheckpointFile()");
 
-	amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
+    amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
 
-	Real prob_lo[BL_SPACEDIM];
-	Real prob_hi[BL_SPACEDIM];
+    Real prob_lo[BL_SPACEDIM];
+    Real prob_hi[BL_SPACEDIM];
 
-	/***************************************************************************
+    /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
      *              allocate incflo memory (incflo::AllocateArrays)            *
      *              (by calling MakeNewLevelFromScratch)

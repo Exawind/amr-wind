@@ -13,15 +13,16 @@ incflo::incflo_set_density_bcs (Real time,
 {
   BL_PROFILE("incflo::incflo_set_density_bcs()");
 
-  for (int lev = 0; lev < nlev; lev++)
+  for (int lev = 0; lev <= finest_level; lev++)
   {
      Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-     for (MFIter mfi(*density_in[lev], true); mfi.isValid(); ++mfi)
-        set_density_bcs(time, lev, (*density_in[lev])[mfi], domain);
+     for (MFIter mfi(*density_in[lev], true); mfi.isValid(); ++mfi) {
+         set_density_bcs(time, lev, (*density_in[lev])[mfi], domain);
+     }
 
      density_in[lev] -> FillBoundary (geom[lev].periodicity());
      EB_set_covered(*density_in[lev], 0, density_in[lev]->nComp(), density_in[lev]->nGrow(), covered_val);

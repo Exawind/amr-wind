@@ -27,9 +27,9 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
     Vector< std::unique_ptr<MultiFab> > fy;
     Vector< std::unique_ptr<MultiFab> > fz;
 
-    fx.resize(nlev);
-    fy.resize(nlev);
-    fz.resize(nlev);
+    fx.resize(finest_level+1);
+    fy.resize(finest_level+1);
+    fz.resize(finest_level+1);
 
     int num_comp;
 
@@ -75,7 +75,7 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
     int flux_ngrow = 2;
 
-    for (int lev=0; lev < nlev; ++lev)
+    for (int lev=0; lev <= finest_level; ++lev)
     {
         if (advect_tracer)
         {

@@ -225,7 +225,6 @@ public:
 
 private:
 
-     static int nlev;
      static int ntrac;
 
      // Unit vectors in Cartesian space
@@ -253,14 +252,14 @@ private:
     void ReadParameters();
 
     // Resize arrays to fit (up to) max_level + 1 AMR levels
-	void ResizeArrays();
+    void ResizeArrays();
 
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
-	void PostInit(int restart_flag);
-	void SetBCTypes();
+    void PostInit(int restart_flag);
+    void SetBCTypes();
     void InitFluid();
-	void SetBackgroundPressure();
-	void InitialProjection();
+    void SetBackgroundPressure();
+    void InitialProjection();
     void InitialIterations();
 
     // Member variables for initial conditions
@@ -290,9 +289,9 @@ private:
 
     void Advance();
     void ComputeDt(int initialisation);
-	bool SteadyStateReached();
-	void ApplyPredictor();
-	void ApplyCorrector();
+    bool SteadyStateReached();
+    void ApplyPredictor();
+    void ApplyCorrector();
     void ApplyProjection(Real time, Real scaling_factor);
 
     //////////////////////////////////////////////////////////////////////////////////////////////

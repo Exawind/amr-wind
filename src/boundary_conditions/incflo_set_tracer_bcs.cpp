@@ -15,15 +15,16 @@ incflo::incflo_set_tracer_bcs (Real time,
 
   if (advect_tracer)
   {
-     for (int lev = 0; lev < nlev; lev++)
+     for (int lev = 0; lev <= finest_level; lev++)
      {
         Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(*tracer_in[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-           set_tracer_bcs(time, lev, (*tracer_in[lev])[mfi], 0, tracer_in[lev]->nComp(), domain);
+        for (MFIter mfi(*tracer_in[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+            set_tracer_bcs(time, lev, (*tracer_in[lev])[mfi], 0, tracer_in[lev]->nComp(), domain);
+        }
 
         tracer_in[lev] -> FillBoundary (geom[lev].periodicity());
         EB_set_covered(*tracer_in[lev], 0, tracer_in[lev]->nComp(), tracer_in[lev]->nGrow(), covered_val);

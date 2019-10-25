@@ -81,7 +81,6 @@ private:
     amrex::Vector<amrex::BoxArray> grids;          
     amrex::Vector<amrex::DistributionMapping> dmap;
 
-    int max_level;
     int nghost = 0; 
 
     // Boundary conditions

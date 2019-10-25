@@ -11,7 +11,6 @@ amrex::IntVect incflo::e_x(1,0,0);
 amrex::IntVect incflo::e_y(0,1,0);
 amrex::IntVect incflo::e_z(0,0,1);
 
-int incflo::nlev  = 1;
 int incflo::ntrac = 1;
 
 DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
@@ -30,14 +29,6 @@ incflo::incflo()
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
-
-    /****************************************************************************
-     *                                                                          *
-     * Set max number of levels (nlevs)                                         *
-     *                                                                          *
-     ***************************************************************************/
-    nlev = maxLevel() + 1;
-    amrex::Print() << "Number of levels: " << nlev << std::endl;
 
     // Read inputs file using ParmParse
     ReadParameters();
@@ -118,20 +109,20 @@ void incflo::Evolve()
 
     while(!do_not_evolve)
     {
-        // TODO: Necessary for dynamic meshing
-        /* if (regrid_int > 0)
-        {
-            // Make sure we don't regrid on max_level
-            for (int lev = 0; lev < max_level; ++lev)
-            {
-                // regrid is a member function of AmrCore
-                if (nstep % regrid_int == 0)
-                {
-                    regrid(lev, time);
-                    incflo_setup_solvers();
-                }
-            }
-        }*/
+        // // TODO: Necessary for dynamic meshing
+        // /* if (regrid_int > 0)
+        // {
+        //     // Make sure we don't regrid on max_level
+        //     for (int lev = 0; lev < max_level; ++lev)
+        //     {
+        //         // regrid is a member function of AmrCore
+        //         if (nstep % regrid_int == 0)
+        //         {
+        //             regrid(lev, time);
+        //             incflo_setup_solvers();
+        //         }
+        //     }
+        // }*/
 
         // Advance to time t + dt
         Advance();

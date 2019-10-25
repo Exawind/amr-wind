@@ -271,11 +271,11 @@ void incflo::PostInit(int restart_flag)
 
 void incflo::InitFluid()
 {
-	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
+    Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
+    Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
+    Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
 
-    for(int lev = 0; lev <= max_level; lev++)
+    for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
 
@@ -334,12 +334,12 @@ void incflo::SetBCTypes()
 
 void incflo::SetBackgroundPressure()
 {
-	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
+    Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
+    Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
+    Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
 
-	int delp_dir;
-	set_delp_dir(&delp_dir);
+    int delp_dir;
+    set_delp_dir(&delp_dir);
 
     IntVect press_per = IntVect(geom[0].isPeriodic(0),
                                 geom[0].isPeriodic(1),
