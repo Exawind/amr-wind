@@ -37,9 +37,10 @@ public:
     amrex::Vector< const amrex::MultiFab* > getPhi ()     const {return GetVecOfConstPtrs(m_phi);};
     amrex::Vector< const amrex::MultiFab* > getGradPhi () const {return GetVecOfConstPtrs(m_fluxes);};
 
-    void getDivU ( amrex::Vector< std::unique_ptr< amrex::MultiFab > >& divu,
-                   amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
-                   amrex::Real a_time );
+    void computeRHS (  amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_rhs,
+                       const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+                       const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_S_cc = {},
+                       const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_S_nd = {} );
 
 private:
 
@@ -83,8 +84,6 @@ private:
 
     // Solver
     std::unique_ptr< amrex::MLMG > m_solver;
-
-    void computeRHS ( amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_vel );
 
     void readParameters ();
 
