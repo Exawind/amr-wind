@@ -1,33 +1,70 @@
 #include <NodalProjection.H>
-#include <AMReX.H>
-#include <incflo.H>
-#include <AMReX_EBMultiFabUtil.H>
+#include <AMReX_Vector.H>
+#include <AMReX_MultiFab.H>
+#include <AMReX_MLNodeLaplacian.H>
+#include <AMReX_MLMG.H>
+#include <AMReX_ParmParse.H>
 
-//
-// Constructor:
-// We set up everything which doesn't change between timesteps here
-//
-NodalProjection::NodalProjection(const incflo* a_incflo,
-                                 Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory,
-                                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_lo,
-                                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_bc_hi)
+using namespace amrex;
+
+NodalProjection::NodalProjection ( const amrex::Vector<amrex::Geometry>&             a_geom,
+                                   const amrex::Vector<amrex::BoxArray>&             a_grids,
+                                   const amrex::Vector<amrex::DistributionMapping>&  a_dmap,
+                                   std::array<amrex::LinOpBCType,AMREX_SPACEDIM>     a_bc_lo,
+                                   std::array<amrex::LinOpBCType,AMREX_SPACEDIM>     a_bc_hi,
+                                   amrex::Vector<amrex::EBFArrayBoxFactory const *>  a_ebfactory )
 {
-    if (m_verbose > 0)
-        amrex::Print() << "Constructing NodalProjection class" << std::endl;
+    define(a_geom, a_grids, a_dmap, a_bc_lo, a_bc_hi, a_ebfactory);
+}
 
-    m_incflo = a_incflo;
 
-    m_bc_lo = a_bc_lo;
-    m_bc_hi = a_bc_hi;
+void
+NodalProjection::define ( const  amrex::Vector<amrex::Geometry>&                    a_geom,
+                          const  amrex::Vector<amrex::BoxArray>&                    a_grids,
+                          const  amrex::Vector<amrex::DistributionMapping>&         a_dmap,
+                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM>             a_bc_lo,
+                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM>             a_bc_hi,
+                          amrex::Vector<amrex::EBFArrayBoxFactory const *>          a_ebfactory )
+{
 
-    m_ok     = true;
+    m_geom      = a_geom;
+    m_grids     = a_grids;
+    m_dmap      = a_dmap;
+    m_bc_lo     = a_bc_lo;
+    m_bc_hi     = a_bc_hi;
+    m_ebfactory = a_ebfactory;
+
+    int nlev( m_grids.size() );
+
+    // Resize member data
+    m_phi.resize(nlev);
+    m_fluxes.resize(nlev);
+    m_rhs.resize(nlev);
+
+    // Allocate member data
+    int ng(1);      // We use 1 ghost node only -- it should be enough
+
+    for (int lev(0); lev < nlev; ++lev )
+    {
+        // Cell-centered data
+        m_fluxes[lev].reset(new MultiFab(m_grids[lev], m_dmap[lev], 3, ng, MFInfo(), *m_ebfactory[lev]));
+
+        // Node-centered data
+        const auto& ba_nd = amrex::convert(m_grids[lev], IntVect{1,1,1});
+        m_phi[lev].reset(new MultiFab(ba_nd, m_dmap[lev], 1, ng, MFInfo(), *m_ebfactory[lev]));
+        m_rhs[lev].reset(new MultiFab(ba_nd, m_dmap[lev], 1, ng, MFInfo(), *m_ebfactory[lev]));
+    }
 
     // Get inputs from ParmParse
     readParameters();
 
-    // Actually do the setup work here
+    // object is ready
+    m_ok = true;
+
+    // First setup
     setup();
 }
+
 
 //
 // Perform projection:
@@ -88,7 +125,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
             MultiFab::Divide(*m_fluxes[lev], *a_sigma[lev], 0, n, 1, m_fluxes[lev]->nGrow() );
 
         // Fill boundaries and apply scale factor to phi
-        m_phi[lev] -> FillBoundary( m_incflo -> geom[lev].periodicity());
+        m_phi[lev] -> FillBoundary( m_geom[lev].periodicity());
 
     }
 
@@ -131,55 +168,20 @@ NodalProjection::setup ()
     BL_PROFILE("NodalProjection::setup");
     AMREX_ALWAYS_ASSERT(m_ok);
 
-    // Set number of levels
-    int nlev( m_incflo -> grids.size() );
-
-    // Resize member data if necessary
-    if ( nlev != m_phi.size() )
+    // Initialize all variables
+    for (int lev(0); lev < m_phi.size(); ++lev)
     {
-        m_phi.resize(nlev);
-        m_fluxes.resize(nlev);
-        m_rhs.resize(nlev);
+        m_phi[lev] -> setVal(0.0);
+        m_fluxes[lev] -> setVal(0.0);
+        m_rhs[lev] ->  setVal(0.0);
     }
-
-    // Regrid if necessary
-    int nghost(1);      // We use 1 ghost node only -- it should be enough
-
-    bool need_regrid(false);  // if BA and DM changed on any level, we need
-                              // to update the matrix and the solver as well
-
-    for (int lev(0); lev < nlev; ++lev )
-    {
-        const auto& ba = m_incflo -> grids[lev];
-        const auto& dm = m_incflo -> dmap[lev];
-        const auto& eb = *(m_incflo -> ebfactory[lev]);
-
-        if ( (m_fluxes[lev] == nullptr)                 ||
-             (m_fluxes[lev] -> boxArray()        != ba) ||
-             (m_fluxes[lev] -> DistributionMap() != dm)  )
-        {
-            // Cell-centered data
-            m_fluxes[lev].reset(new MultiFab(ba, dm, 3, nghost, MFInfo(), eb));
-
-            // Node-centered data
-            const auto& ba_nd = amrex::convert(ba, IntVect{1,1,1});
-            m_phi[lev].reset(new MultiFab(ba_nd, dm, 1, nghost, MFInfo(), eb));
-            m_rhs[lev].reset(new MultiFab(ba_nd, dm, 1, nghost, MFInfo(), eb));
-
-            need_regrid = true;
-        }
-
-    }
-
 
     //
     // Setup Matrix
     //
     LPInfo                       info;
     info.setMaxCoarseningLevel(m_mg_max_coarsening_level);
-    m_matrix.reset(new MLNodeLaplacian(m_incflo->geom, m_incflo->grids,
-                                       m_incflo->dmap, info,
-                                       GetVecOfConstPtrs(m_incflo->ebfactory)));
+    m_matrix.reset(new MLNodeLaplacian(m_geom, m_grids, m_dmap, info, m_ebfactory));
 
     m_matrix->setGaussSeidel(true);
     m_matrix->setHarmonicAverage(false);
@@ -224,16 +226,8 @@ NodalProjection::setup ()
 #endif
     }
 
-
-    // Initialize all variables
-    for (int lev(0); lev < nlev; ++lev)
-    {
-        m_phi[lev] -> setVal(0.0);
-        m_fluxes[lev] -> setVal(0.0);
-        m_rhs[lev] ->  setVal(0.0);
-    }
-
 }
+
 
 //
 // Return DivU for diagnostics

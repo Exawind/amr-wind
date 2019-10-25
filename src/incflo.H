@@ -17,14 +17,14 @@
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
-class NodalProjection;
+#include <NodalProjection.H>
 
 enum DiffusionType
 {
     Invalid=-1,
     Explicit,
     Crank_Nicolson,
-    Implicit 
+    Implicit
 };
 
 class incflo : public AmrCore
@@ -320,7 +320,6 @@ private:
     // Nodal Projection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    friend class NodalProjection;
     std::unique_ptr<NodalProjection> nodal_projector;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
