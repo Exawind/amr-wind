@@ -48,8 +48,8 @@ public:
     //  - reads in parameters from inputs file
     //  - sizes multilevel arrays and datastructures
     //  - makes EB geometry
-	incflo();
-	~incflo();
+    incflo();
+    virtual ~incflo();
 
     // Initialize multilevel AMR data
     void InitData();
@@ -72,24 +72,24 @@ public:
 
     // Make a new level from scratch using provided BoxArray and DistributionMapping
     // Only used during initialization
-    void MakeNewLevelFromScratch(int lev, Real time,
-                                 const BoxArray& new_grids,
-                                 const DistributionMapping& new_dmap) override;
+    virtual void MakeNewLevelFromScratch(int lev, Real time,
+                                         const BoxArray& new_grids,
+                                         const DistributionMapping& new_dmap) override;
 
     // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
-    void MakeNewLevelFromCoarse(int lev, Real time,
-                                const BoxArray& ba,
-                                const DistributionMapping& dm) override;
+    virtual void MakeNewLevelFromCoarse(int lev, Real time,
+                                        const BoxArray& ba,
+                                        const DistributionMapping& dm) override;
 
     // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
-    void RemakeLevel(int lev, Real time,
+    virtual void RemakeLevel(int lev, Real time,
                              const BoxArray& ba,
                              const DistributionMapping& dm) override;
 
     // Delete level data
-    void ClearLevel(int lev) override;
+    virtual void ClearLevel(int lev) override;
 
     // Set up nodal and diffusion solvers
     void incflo_init_solvers();
