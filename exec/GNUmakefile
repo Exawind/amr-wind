@@ -66,26 +66,15 @@ INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
 #These are the directories in AMReX
-Pdirs   := Base AmrCore Boundary EB
+Pdirs   := Base AmrCore Boundary EB LinearSolvers/MLMG LinearSolvers/Projections
 
 ifeq ($(USE_HYPRE), TRUE)
 Pdirs   += Extern/HYPRE
 endif
 
 Ppack	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir)/Make.package)
-Plocs	+= $(foreach dir, $(Pdirs), $(AMREX_HOME)/Src/$(dir))
 
 include $(Ppack)
-INCLUDE_LOCATIONS += $(Plocs)
-VPATH_LOCATIONS   += $(Plocs)
-
-include $(AMREX_HOME)/Src/LinearSolvers/MLMG/Make.package
-INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/MLMG
-VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/MLMG
-
-include $(AMREX_HOME)/Src/LinearSolvers/Projections/Make.package
-INCLUDE_LOCATIONS += $(AMREX_HOME)/Src/LinearSolvers/Projections
-VPATH_LOCATIONS   += $(AMREX_HOME)/Src/LinearSolvers/Projections
 
 all: $(executable)
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
@@ -93,7 +82,8 @@ all: $(executable)
 
 # job_info support
 CEXE_sources += AMReX_buildInfo.cpp
-CEXE_headers += $(AMREX_HOME)/Tools/C_scripts/AMReX_buildInfo.H
+CEXE_headers += AMReX_buildInfo.H
+VPATH_LOCATIONS   +=  $(AMREX_HOME)/Tools/C_scripts
 INCLUDE_LOCATIONS +=  $(AMREX_HOME)/Tools/C_scripts
 
 AMReX_buildInfo.cpp:
@@ -104,15 +94,6 @@ AMReX_buildInfo.cpp:
           --F_comp_name "$(F90)" --F_flags "$(F90FLAGS)" \
           --link_flags "$(LDFLAGS)" --libraries "$(libraries)" \
           --GIT "$(TOP) $(AMREX_HOME)"
-
-vpath %.c   . $(VPATH_LOCATIONS)
-vpath %.cpp . $(VPATH_LOCATIONS)
-vpath %.h   . $(VPATH_LOCATIONS)
-vpath %.H   . $(VPATH_LOCATIONS)
-vpath %.F   . $(VPATH_LOCATIONS)
-vpath %.f90 . $(VPATH_LOCATIONS)
-vpath %.f   . $(VPATH_LOCATIONS)
-vpath %.fi  . $(VPATH_LOCATIONS)
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.rules
 
