@@ -35,7 +35,6 @@
       !
       bc_lo    = amrex_lo_neumann
       bc_hi    = amrex_lo_neumann
-      print *,'SETTING BC TO NEUMANN ', bc_lo(1), bc_lo(2), bc_lo(3)
 
       !
       ! BC -- X direction
@@ -60,8 +59,6 @@
          bc_lo(3) = amrex_lo_periodic
          bc_hi(3) = amrex_lo_periodic
       end if
-
-      print *,'AFTER SETTING BC TO PERIODIC ', bc_lo(1), bc_lo(2), bc_lo(3)
 
    contains
 
