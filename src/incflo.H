@@ -376,7 +376,6 @@ private:
     void make_eb_spherecube();
     void make_eb_tuscan();
 
-    const EB2::Level* eb_level;
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
     // Number of ghost nodes for field arrays.
