@@ -11,8 +11,6 @@ amrex::IntVect incflo::e_x(1,0,0);
 amrex::IntVect incflo::e_y(0,1,0);
 amrex::IntVect incflo::e_z(0,0,1);
 
-int incflo::ntrac = 1;
-
 DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
 
 // Constructor

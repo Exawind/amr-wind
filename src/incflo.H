@@ -225,7 +225,7 @@ public:
 
 private:
 
-     static int ntrac;
+     int ntrac = 1;
 
      // Unit vectors in Cartesian space
      static IntVect e_x;
@@ -428,7 +428,7 @@ private:
     int refine_cutcells = 1;
     int regrid_int = -1;
 
-     BCList bc_list;
+    BCList bc_list;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -461,7 +461,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void WriteHeader(const std::string& name, bool is_checkpoint) const;
-	void WriteJobInfo(const std::string& dir) const;
+    void WriteJobInfo(const std::string& dir) const;
     void WriteCheckPointFile() const;
     void WritePlotFile();
     void ReadCheckpointFile();
