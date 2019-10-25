@@ -30,6 +30,9 @@ incflo::incflo()
     // This needs is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
+
+    // Get boundary conditions from inputs file
+    GetInputBCs();
 }
 
 incflo::~incflo(){};

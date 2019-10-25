@@ -35,9 +35,6 @@ int main(int argc, char* argv[])
         // Default constructor. Note inheritance: incflo : AmrCore : AmrMesh. 
         incflo my_incflo;
 
-        // Get boundary conditions from inputs file
-        my_incflo.GetInputBCs();
-
         // Initialize data, parameters, arrays and derived internals
         my_incflo.InitData();
 

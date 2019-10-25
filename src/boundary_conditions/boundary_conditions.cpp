@@ -29,7 +29,7 @@ void incflo::GetInputBCs()
 }
 
 void incflo::SetInputBCs(const std::string bcID, const int index,
-                           const int cyclic, const Real domloc) 
+                         const int cyclic, const Real domloc)
 {
     const int und_  =   0;
     const int pinf_ =  10;
