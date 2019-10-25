@@ -19,9 +19,9 @@
 #include <incflo_bclist.H>
 
 
-enum DiffusionType
+enum struct DiffusionType
 {
-    Invalid=-1,
+    Invalid,
     Explicit,
     Crank_Nicolson,
     Implicit
