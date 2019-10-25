@@ -17,7 +17,7 @@
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
-#include <NodalProjection.H>
+#include <NodalProjector.H>
 
 enum DiffusionType
 {
@@ -320,7 +320,7 @@ private:
     // Nodal Projection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    std::unique_ptr<NodalProjection> nodal_projector;
+    std::unique_ptr<NodalProjector> nodal_projector;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

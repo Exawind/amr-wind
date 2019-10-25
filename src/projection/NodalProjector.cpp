@@ -1,4 +1,4 @@
-#include <NodalProjection.H>
+#include <NodalProjector.H>
 #include <AMReX_Vector.H>
 #include <AMReX_MultiFab.H>
 #include <AMReX_MLNodeLaplacian.H>
@@ -7,7 +7,7 @@
 
 using namespace amrex;
 
-NodalProjection::NodalProjection ( const amrex::Vector<amrex::Geometry>&             a_geom,
+NodalProjector::NodalProjector ( const amrex::Vector<amrex::Geometry>&             a_geom,
                                    const amrex::Vector<amrex::BoxArray>&             a_grids,
                                    const amrex::Vector<amrex::DistributionMapping>&  a_dmap,
                                    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>     a_bc_lo,
@@ -19,7 +19,7 @@ NodalProjection::NodalProjection ( const amrex::Vector<amrex::Geometry>&        
 
 
 void
-NodalProjection::define ( const  amrex::Vector<amrex::Geometry>&                    a_geom,
+NodalProjector::define ( const  amrex::Vector<amrex::Geometry>&                    a_geom,
                           const  amrex::Vector<amrex::BoxArray>&                    a_grids,
                           const  amrex::Vector<amrex::DistributionMapping>&         a_dmap,
                           std::array<amrex::LinOpBCType,AMREX_SPACEDIM>             a_bc_lo,
@@ -81,14 +81,14 @@ NodalProjection::define ( const  amrex::Vector<amrex::Geometry>&                
 //  grad(phi) is node-centered.
 //
 void
-NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
+NodalProjector::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                           const Vector< std::unique_ptr< amrex::MultiFab > >& a_sigma,
                           const Vector< std::unique_ptr< amrex::MultiFab > >& a_S_cc,
                           const Vector< std::unique_ptr< amrex::MultiFab > >& a_S_nd )
 
 {
     AMREX_ALWAYS_ASSERT(m_ok);
-    BL_PROFILE("NodalProjection::project");
+    BL_PROFILE("NodalProjector::project");
 
     amrex::Print() << "Nodal Projection:" << std::endl;
 
@@ -141,7 +141,7 @@ NodalProjection::project (      Vector< std::unique_ptr< amrex::MultiFab > >& a_
 // Read from input file
 //
 void
-NodalProjection::readParameters ()
+NodalProjector::readParameters ()
 {
     ParmParse pp("projection");
     pp.query( "verbose"                , m_verbose );
@@ -161,9 +161,9 @@ NodalProjection::readParameters ()
 // Setup object before solve
 //
 void
-NodalProjection::setup ()
+NodalProjector::setup ()
 {
-    BL_PROFILE("NodalProjection::setup");
+    BL_PROFILE("NodalProjector::setup");
     AMREX_ALWAYS_ASSERT(m_ok);
 
     // Initialize all variables
@@ -232,13 +232,13 @@ NodalProjection::setup ()
 //
 
 void
-NodalProjection::computeRHS (  amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_rhs,
+NodalProjector::computeRHS (  amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_rhs,
                                const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_vel,
                                const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_S_cc,
                                const amrex::Vector< std::unique_ptr< amrex::MultiFab > >& a_S_nd )
 {
     AMREX_ALWAYS_ASSERT(m_ok);
-    BL_PROFILE("NodalProjection::computeRHS");
+    BL_PROFILE("NodalProjector::computeRHS");
 
     m_matrix -> compRHS( GetVecOfPtrs(a_rhs),  GetVecOfPtrs(a_vel), GetVecOfConstPtrs(a_S_cc),
                          GetVecOfPtrs(a_S_nd) );
@@ -246,7 +246,7 @@ NodalProjection::computeRHS (  amrex::Vector< std::unique_ptr< amrex::MultiFab >
 
 
 void
-NodalProjection::printInfo ()
+NodalProjector::printInfo ()
 {
     for (int lev(0); lev < m_rhs.size(); ++lev)
     {

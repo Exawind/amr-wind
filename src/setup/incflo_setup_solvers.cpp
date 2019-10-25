@@ -2,7 +2,7 @@
 #include <diffusion_F.H>
 #include <incflo.H>
 
-#include <NodalProjection.H>
+#include <NodalProjector.H>
 #include <DiffusionOp.H>
 
 void
@@ -26,8 +26,8 @@ incflo::incflo_init_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
-    nodal_projector.reset(new NodalProjection(geom, grids, dmap, ppe_lobc, ppe_hibc,
-                                              GetVecOfConstPtrs(ebfactory)));
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
+                                             GetVecOfConstPtrs(ebfactory)));
 
     //
     // Now the diffusion solver
@@ -66,8 +66,8 @@ incflo::incflo_setup_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
-    nodal_projector.reset(new NodalProjection(geom, grids, dmap, ppe_lobc, ppe_hibc,
-                                              GetVecOfConstPtrs(ebfactory)));
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
+                                             GetVecOfConstPtrs(ebfactory)));
 
     //
     // Now the diffusion solver

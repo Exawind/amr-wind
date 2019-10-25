@@ -2,7 +2,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo.H>
-#include <NodalProjection.H>
+#include <NodalProjector.H>
 
 //
 // Computes the following decomposition:

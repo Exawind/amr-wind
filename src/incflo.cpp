@@ -7,7 +7,7 @@
 #include <AMReX_EBAmrUtil.H>
 
 // Need this for nodal projection
-#include <NodalProjection.H>
+#include <NodalProjector.H>
 
 // Define unit vectors for easily convert indices
 amrex::IntVect incflo::e_x(1,0,0);
@@ -197,7 +197,7 @@ void incflo::Evolve()
             for (int lev = 0; lev < max_level; ++lev)
             {
                 // regrid is a member function of AmrCore
-                if (nstep % regrid_int == 0) 
+                if (nstep % regrid_int == 0)
                 {
                     regrid(lev, time);
                     incflo_setup_solvers();

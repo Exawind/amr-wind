@@ -7,15 +7,15 @@
 #include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_MLMG.H>
 
-class NodalProjection
+class NodalProjector
 {
 
 public:
 
 
-    NodalProjection () {};
+    NodalProjector () {};
 
-    NodalProjection ( const amrex::Vector<amrex::Geometry>&             a_geom,
+    NodalProjector ( const amrex::Vector<amrex::Geometry>&              a_geom,
                       const amrex::Vector<amrex::BoxArray>&             a_grids,
                       const amrex::Vector<amrex::DistributionMapping>&  a_dmap,
                       std::array<amrex::LinOpBCType,AMREX_SPACEDIM>     a_bc_lo,

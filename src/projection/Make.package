@@ -1,4 +1,4 @@
 CEXE_sources += projection.cpp
 
-CEXE_sources += NodalProjection.cpp
-CEXE_headers += NodalProjection.H
+CEXE_sources += NodalProjector.cpp
+CEXE_headers += NodalProjector.H

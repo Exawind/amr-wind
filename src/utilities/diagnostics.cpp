@@ -1,7 +1,6 @@
 #include <AMReX_AmrCore.H>
 
 #include <incflo.H>
-#include <NodalProjection.H>
 
 //
 // Subroutine to compute norm of EB multifab
