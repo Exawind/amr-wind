@@ -53,8 +53,6 @@ public:
 
     // Initialize multilevel AMR data
     void InitData();
-    BoxArray MakeBaseGrids () const;
-    void ChopGrids (const Box& domain, BoxArray& ba, int target_size) const;
 
     void WriteMyEBSurface();
 
