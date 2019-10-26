@@ -19,7 +19,7 @@ void incflo::ReadParameters()
     }
 
     {
-     // Prefix amr
+        // Prefix amr
  	ParmParse pp("amr");
 
 	pp.query("regrid_int", regrid_int);

@@ -23,8 +23,14 @@ incflo::incflo_init_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
-    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
-                                             GetVecOfConstPtrs(ebfactory)));
+    Vector<Geometry> lgeom {geom.begin(), geom.begin()+finest_level+1};
+    Vector<BoxArray> lgrids{grids.begin(), grids.begin()+finest_level+1};
+    Vector<DistributionMapping> ldmap{dmap.begin(), dmap.begin()+finest_level+1};
+    Vector<EBFArrayBoxFactory const*> fact = GetVecOfConstPtrs(ebfactory);
+    Vector<EBFArrayBoxFactory const*> lfact{fact.begin(), fact.begin()+finest_level+1};
+
+    nodal_projector.reset(new NodalProjector(lgeom, lgrids, ldmap, ppe_lobc, ppe_hibc,
+                                             lfact));
 
     //
     // Now the diffusion solver
