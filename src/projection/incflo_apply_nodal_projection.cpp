@@ -67,7 +67,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     }
 
     // Perform projection
-    nodal_projector -> project(vel, sigma);
+    nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
 
     // Get phi and fluxes
     Vector< const amrex::MultiFab* >  phi(nlev);

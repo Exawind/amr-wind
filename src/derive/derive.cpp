@@ -9,7 +9,7 @@ void incflo::ComputeDivU(Real time_in)
     int extrap_dir_bcs = 0;
     incflo_set_velocity_bcs(time_in, vel, extrap_dir_bcs);
 
-    nodal_projector->computeRHS(divu,vel);
+    nodal_projector->computeRHS(GetVecOfPtrs(divu),GetVecOfPtrs(vel));
 }
 
 void incflo::ComputeStrainrate(Real time_in)
