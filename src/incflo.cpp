@@ -203,6 +203,12 @@ void incflo::Evolve()
                     regrid(lev, time);
                     incflo_setup_solvers();
                 }
+         
+            }
+         
+            if (nstep % regrid_int == 0)
+            {
+              setup_level_mask();
             }
          
         }*/

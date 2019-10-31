@@ -273,6 +273,7 @@ private:
 	void SetBackgroundPressure();
 	void InitialProjection();
     void InitialIterations();
+    void setup_level_mask();
 
     // Member variables for initial conditions
     int probtype = 0;
