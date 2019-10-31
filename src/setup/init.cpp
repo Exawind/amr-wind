@@ -33,6 +33,8 @@ void incflo::ReadParameters()
 	pp.query("plot_int", plot_int);
 	pp.query("plot_per", plot_per);
 
+    pp.query("KE_int", KE_int);
+
         // Which variables to write to plotfile
         pltVarCount = 0;
 
@@ -247,7 +249,7 @@ void incflo::PostInit(int restart_flag)
     {
         InitFluid();
     }
-
+    
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 

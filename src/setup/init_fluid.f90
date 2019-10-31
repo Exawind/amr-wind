@@ -45,6 +45,7 @@ contains
       
       if (probtype ==  1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype ==  2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype ==  3) call taylor_green3d(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype == 31) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype == 32) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype == 33) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
@@ -89,6 +90,42 @@ contains
       end do
 
    end subroutine taylor_green
+
+    subroutine taylor_green3d(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+
+       use constant, only: zero, half, one
+
+       implicit none
+
+       ! Array bounds
+       integer(c_int), intent(in   ) :: lo(3), hi(3)
+       integer(c_int), intent(in   ) :: domlo(3)
+       integer(c_int), intent(in   ) :: slo(3), shi(3)
+
+       ! Arrays
+       real(rt),       intent(inout) :: vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+
+       real(rt),       intent(in   ) :: dx, dy, dz
+
+       ! Local variables
+       integer(c_int)                  :: i, j, k
+       real(rt)                        :: x, y, z
+       real(rt)                        :: twopi = 8.0_rt * atan(one)
+
+       do j = lo(2), hi(2)
+          y =  ( real(j,rt) + half ) * dy
+          do i = lo(1), hi(1)
+             x =  ( real(i,rt) + half ) * dx
+             do k = lo(3), hi(3)
+                z =  ( real(k,rt) + half ) * dz
+                vel(i,j,k,1) =  sin(twopi * x) * cos(twopi * y) * cos(twopi * z)
+                vel(i,j,k,2) = -cos(twopi * x) * sin(twopi * y) * cos(twopi * z)
+                vel(i,j,k,3) = zero
+             end do
+          end do
+       end do
+
+    end subroutine taylor_green3d
 
    subroutine double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
 
