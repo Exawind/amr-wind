@@ -8,12 +8,9 @@ void incflo::AllocateArrays(int lev)
     // Cell-based arrays
     // ********************************************************************************
 
-    if(lev < finest_level){
-        level_mask[lev].reset(new iMultiFab(makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0)));
-    } else {
-        level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
-        level_mask[lev]->setVal(1);
-    }
+    // Level Mask = 1 if not covered by a finer patch, else 0
+    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
+    level_mask[lev]->setVal(1);
     
     // Current Density
     density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -179,12 +176,9 @@ void incflo::RegridArrays(int lev)
     // FillBoundary().
     //
 
-    if(lev < finest_level){
-        level_mask[lev].reset(new iMultiFab(makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0)));
-    } else {
-        level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
-        level_mask[lev]->setVal(1);
-    }
+    // Level Mask = 1 if not covered by a finer patch, else 0
+    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
+    level_mask[lev]->setVal(1);
     
    // Density
    std::unique_ptr<MultiFab> density_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 

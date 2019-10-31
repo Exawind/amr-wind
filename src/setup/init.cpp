@@ -260,6 +260,8 @@ void incflo::PostInit(int restart_flag)
     incflo_set_tracer_bcs (cur_time, tracer_o);
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
+    setup_level_mask();
+    
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
@@ -268,6 +270,15 @@ void incflo::PostInit(int restart_flag)
             InitialProjection();
         if (initial_iterations > 0)
             InitialIterations();
+    }
+}
+
+void incflo::setup_level_mask(){
+
+     BL_PROFILE("incflo::setup_level_mask");
+
+     for(int lev=0;lev<finest_level;++lev) {
+        *level_mask[lev] = makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0);
     }
 }
 
