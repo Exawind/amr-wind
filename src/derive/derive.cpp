@@ -212,8 +212,6 @@ void incflo::ComputeStrainrate(Real time_in)
                                 + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
                     }
                 });
-
-                Gpu::synchronize();
             }
         }
     }
@@ -432,8 +430,6 @@ void incflo::ComputeVorticity(Real time_in)
                         vort_fab(i,j,k) = sqrt(pow(wy-vz,2) + pow(uz-wx,2) + pow(vx-uy,2));
                     }
                 });
-
-                Gpu::synchronize();
             } // Cut cells
         } // MFIter
     } // Loop over levels

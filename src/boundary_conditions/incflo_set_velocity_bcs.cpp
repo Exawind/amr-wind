@@ -452,6 +452,4 @@ incflo::set_velocity_bcs(Real time,
       });
     }
   }
-
-  Gpu::synchronize();
 }

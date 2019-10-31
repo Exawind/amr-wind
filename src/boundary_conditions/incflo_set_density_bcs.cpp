@@ -232,6 +232,4 @@ incflo::set_density_bcs(Real time,
       }
     });
   }
-
-  Gpu::synchronize();
 }
