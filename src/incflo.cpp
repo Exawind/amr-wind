@@ -4,7 +4,9 @@
 #include <param_mod_F.H>
 
 // Need this for TagCutCells
+#ifdef AMREX_USE_EB
 #include <AMReX_EBAmrUtil.H>
+#endif
 
 // Define unit vectors for easily convert indices
 amrex::IntVect incflo::e_x(1,0,0);
@@ -45,9 +47,14 @@ incflo::incflo()
     // Initialize memory for data-array internals
     ResizeArrays();
 
-    // This needs is needed before initializing level MultiFabs: ebfactories should
+    // Allocate the arrays for each face that will hold the bcs
+    MakeBCArrays();
+
+#ifdef AMREX_USE_EB
+    // This is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
+#endif
 }
 
 incflo::~incflo(){};
@@ -102,11 +109,13 @@ void incflo::InitData()
     bool write_eb_surface = 0;
     pp.query("write_eb_surface", write_eb_surface);
 
+#ifdef AMREX_USE_EB
     if (write_eb_surface)
     {
         amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
         WriteMyEBSurface();
     }
+#endif
 }
 
 BoxArray incflo::MakeBaseGrids () const
@@ -243,8 +252,10 @@ void incflo::ErrorEst(int lev,
     const char   tagval = TagBox::SET;
     const char clearval = TagBox::CLEAR;
 
+#ifdef AMREX_USE_EB
     auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(vel[lev]->Factory());
     auto const& flags = factory.getMultiEBCellFlagFab();
+#endif
 
     const Real* dx      = geom[lev].CellSize();
     const Real* prob_lo = geom[lev].ProbLo();
@@ -254,6 +265,7 @@ void incflo::ErrorEst(int lev,
 #endif
     for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
     {
+#ifdef AMREX_USE_EB
         const Box& bx  = mfi.tilebox();
         const auto& flag = flags[mfi];
         const FabType typ = flag.getType(bx);
@@ -268,8 +280,19 @@ void incflo::ErrorEst(int lev,
                         &tagval, &clearval,
                         AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
         }
+#else
+            TagBox&     tagfab  = tags[mfi];
+
+            // tag cells for refinement
+//          state_error(BL_TO_FORTRAN_BOX(bx),
+//                      BL_TO_FORTRAN_ANYD(tagfab),
+//                      BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
+//                      &tagval, &clearval,
+//                      AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
+#endif
     }
 
+#ifdef AMREX_USE_EB
     refine_cutcells = true;
     // Refine on cut cells
     if (refine_cutcells)
@@ -277,6 +300,7 @@ void incflo::ErrorEst(int lev,
         const MultiFab* volfrac = &(ebfactory[lev] -> getVolFrac());
         amrex::TagCutCells(tags, *vel[lev]);
     }
+#endif
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
@@ -356,6 +380,7 @@ void incflo::AverageDownTo(int crse_lev)
 
     IntVect rr = refRatio(crse_lev);
 
+#ifdef AMREX_USE_EB
     amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
     amrex::EB_average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
 
@@ -368,4 +393,18 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
+#else
+    amrex::average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
+    amrex::average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
+
+    if (!constant_density)
+       amrex::average_down(*density[crse_lev+1], *density[crse_lev],    0, 1, rr);
+
+    if (advect_tracer)
+       amrex::average_down(*tracer[crse_lev+1],  *tracer[crse_lev],     0, ntrac, rr);
+
+    amrex::average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
+    amrex::average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
+    amrex::average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
+#endif
 }

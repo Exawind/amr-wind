@@ -40,12 +40,14 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
            }
        }
 
+#ifdef AMREX_USE_EB
        // Get EB geometric info
        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
 
        areafrac  =   ebfactory[lev] -> getAreaFrac();
        facecent  =   ebfactory[lev] -> getFaceCent();
+#endif
 
        Real small_vel = 1.e-10;
        Real  huge_vel = 1.e100;
@@ -54,6 +56,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        // We will store the left and right states in arrays for interpolation
        // ****************************************************************************
 
+#ifdef AMREX_USE_EB
        MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
        MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
 
@@ -70,6 +73,16 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        vmns.setVal(covered_val);
        wpls.setVal(covered_val);
        wmns.setVal(covered_val);
+#else
+       MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+
+       MultiFab vpls(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab vmns(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+
+       MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+#endif
 
        // ****************************************************************************
        // First compute the slopes
@@ -94,6 +107,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           Box vbx_grown = mfi.growntilebox(e_y);
           Box wbx_grown = mfi.growntilebox(e_z);
 
+#ifdef AMREX_USE_EB
+          MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
           const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
           const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
 
@@ -107,6 +122,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           // No cut cells in this FAB
           else if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
           {
+#endif
              // Cell-centered velocity
              const auto& ccvel_fab = vel_in[lev]->array(mfi);
 
@@ -179,6 +195,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              
              Gpu::synchronize();
 
+#ifdef AMREX_USE_EB
           // Cut cells in this FAB
           } else {
 
@@ -236,6 +253,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              Gpu::synchronize();
 
           } // Cut cells
+#endif
        } // MFIter
 
        // ****************************************************************************
@@ -248,6 +266,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        wpls.FillBoundary(geom[lev].periodicity());
        wmns.FillBoundary(geom[lev].periodicity());
 
+#ifdef AMREX_USE_EB
        // ****************************************************************************
        // Do interpolation to centroids -- only for cut cells
        // ****************************************************************************
@@ -441,4 +460,5 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
           } // Cut cells
        } // MFIter
+#endif
 }

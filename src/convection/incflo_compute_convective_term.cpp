@@ -6,7 +6,9 @@
 #include <AMReX_SPACE.H>
 #include <AMReX_Array.H>
 
+#ifdef AMREX_USE_EB
 #include <AMReX_EB_utils.H>
+#endif
 
 //
 // Compute the three components of the convection term
@@ -38,8 +40,11 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
     for (int lev = 0; lev <= finest_level; lev++)
     {
         // State with ghost cells
-        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost,
-                           MFInfo(), *ebfactory[lev]);
+#ifdef AMREX_USE_EB
+        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
+#else
+        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost, MFInfo());
+#endif
         FillPatchVel(lev, time, Sborder_u);
 
         // Copy each FAB back from Sborder_u into the vel array, complete with filled ghost cells
@@ -47,14 +52,22 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
         if (!constant_density)
         {
+#ifdef AMREX_USE_EB
            MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
+#else
+           MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
+#endif
            FillPatchDensity(lev, time, Sborder_r);
            MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
         }
 
         if (advect_tracer)
         {
+#ifdef AMREX_USE_EB
            MultiFab Sborder_s(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]);
+#else
+           MultiFab Sborder_s(grids[lev], dmap[lev], ntrac, nghost, MFInfo());
+#endif
            FillPatchScalar(lev, time, Sborder_s);
            MultiFab::Copy (*tracer_in[lev], Sborder_s, 0, 0, tracer_in[lev]->nComp(), tracer_in[lev]->nGrow());
         }
@@ -89,9 +102,15 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // **************************************************
         num_comp = 3; 
  
+#ifdef AMREX_USE_EB
         fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
         fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
         fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
+#else
+        fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+        fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+        fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+#endif
 
         incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, num_comp,
                             xslopes_u, yslopes_u, zslopes_u, 0,
@@ -110,9 +129,15 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
             incflo_compute_slopes(lev, time, *density_in[lev], xslopes_r, yslopes_r, zslopes_r, 0, num_comp);
  
+#ifdef AMREX_USE_EB
             fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
+#else
+            fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+            fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+            fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+#endif
 
             incflo_compute_fluxes(lev, fx, fy, fz, density_in, 0, num_comp,
                                 xslopes_r, yslopes_r, zslopes_r, 0,
@@ -133,9 +158,15 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
             incflo_compute_slopes(lev, time, *tracer_in[lev], xslopes_t, yslopes_t, zslopes_t, 0, num_comp);
  
+#ifdef AMREX_USE_EB
             fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),*ebfactory[lev]));
+#else
+            fx[lev].reset(new MultiFab(m_u_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+            fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+            fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo()));
+#endif
 
             incflo_compute_fluxes(lev, fx, fy, fz, tracer_in, 0, num_comp,
                                 xslopes_t, yslopes_t, zslopes_t, 0,
@@ -168,7 +199,11 @@ incflo::incflo_divergence_plus_redist(const int lev,
                                       int num_comp)
 {
     // Note conv_tmp needs two ghost cells for the redistribution step.
+#ifdef AMREX_USE_EB
     MultiFab conv_tmp(grids[lev], dmap[lev], num_comp, 2, MFInfo(), *ebfactory[lev]);
+#else
+    MultiFab conv_tmp(grids[lev], dmap[lev], num_comp, 2, MFInfo());
+#endif
     conv_tmp.setVal(0.);
 
     Array<MultiFab*,AMREX_SPACEDIM> fluxes;
@@ -177,11 +212,14 @@ incflo::incflo_divergence_plus_redist(const int lev,
     fluxes[1] = fy[lev].get();
     fluxes[2] = fz[lev].get();
 
+#ifdef AMREX_USE_EB
     bool already_on_centroids = true;
-
     EB_computeDivergence(conv_tmp, GetArrOfConstPtrs(fluxes), geom[lev], already_on_centroids);
-
     amrex::single_level_redistribute( lev, conv_tmp, *conv_in[lev], 0, num_comp, geom);
+#else
+    computeDivergence(*conv_in[lev], GetArrOfConstPtrs(fluxes), geom[lev]);
+#endif
+
 }
 
 

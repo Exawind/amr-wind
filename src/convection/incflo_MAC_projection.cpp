@@ -2,7 +2,10 @@
 #include <AMReX_BLFort.H>
 #include <AMReX_SPACE.H>
 
+#ifdef AMREX_USE_EB
 #include <AMReX_EBFArrayBox.H>
+#endif
+
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
 
@@ -44,7 +47,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
 {
    BL_PROFILE("incflo::apply_MAC_projection()");
 
-   if (incflo_verbose)
+   if (incflo_verbose > 0)
       Print() << "MAC Projection:\n";
 
    // Check that everything is consistent with amrcore
@@ -54,7 +57,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    Vector<Array<MultiFab*,AMREX_SPACEDIM> > mac_vel;
    mac_vel.resize(finest_level+1);
 
-   if (incflo_verbose)
+   if (incflo_verbose > 0)
       Print() << " >> Before projection\n" ; 
 
    // This will hold (1/rho) on faces
@@ -74,15 +77,25 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
       density_in[lev]->FillBoundary(geom[lev].periodicity());
 
       // We make these with no ghost cells
+#ifdef AMREX_USE_EB
       rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
       rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
       rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
 
       // This doesn't need ghost cells either
       mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
-      mac_rhs[lev] -> setVal(0.);
-
       mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo(),*ebfactory[lev]));
+#else
+      rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
+      rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
+      rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
+
+      // This doesn't need ghost cells either
+      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo()));
+      mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo()));
+#endif
+
+      mac_rhs[lev] -> setVal(0.);
       mac_phi[lev] -> setVal(0.);
 
       // Define ep and rho on faces
@@ -101,16 +114,21 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
       for (int i=0; i<AMREX_SPACEDIM; ++i)
          (mac_vel[lev])[i]->FillBoundary( geom[lev].periodicity() );
       
-      // if (incflo_verbose)
+      // if (incflo_verbose > 0)
       {
+#ifdef AMREX_USE_EB
          bool already_on_centroid = true;
          EB_computeDivergence(*mac_rhs[lev],
                               GetArrOfConstPtrs(mac_vel[lev]),
                               geom[lev], already_on_centroid);
-
+#else
+         computeDivergence(*mac_rhs[lev],
+                           GetArrOfConstPtrs(mac_vel[lev]),
+                           geom[lev]);
+#endif
          Print() << "  * On level "<< lev
                  << " max(abs(divu)) = " << Norm(mac_rhs,lev,0,0) << "\n";
-      }  
+      }
    }
 
    //
@@ -181,21 +199,27 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
        macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
    }
 
-   if (incflo_verbose)
+   if (incflo_verbose > 0)
       Print() << " >> After projection\n" ; 
 
    for ( int lev=0; lev <= finest_level ; ++lev )
    {   
-      if (incflo_verbose)
+      if (incflo_verbose > 0)
       {
          mac_vel[lev][0]->FillBoundary( geom[lev].periodicity() );
          mac_vel[lev][1]->FillBoundary( geom[lev].periodicity() );
          mac_vel[lev][2]->FillBoundary( geom[lev].periodicity() );
          
+#ifdef AMREX_USE_EB
          bool already_on_centroid = true;
          EB_computeDivergence(*mac_rhs[lev],
                               GetArrOfConstPtrs(mac_vel[lev]),
                               geom[lev], already_on_centroid);
+#else
+         computeDivergence(*mac_rhs[lev],
+                           GetArrOfConstPtrs(mac_vel[lev]),
+                           geom[lev]);
+#endif
 
          Print() << "  * On level "<< lev
                  << " max(abs(divu)) = " << Norm(mac_rhs,lev,0,0) << "\n";

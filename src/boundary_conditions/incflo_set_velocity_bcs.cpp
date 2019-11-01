@@ -1,6 +1,8 @@
+#ifdef AMREX_USE_EB
 #include <AMReX_EBMultiFabUtil.H>
+#endif
+
 #include <incflo.H>
-#include <bc_mod_F.H>
 #include <bc_mod_F.H>
 
 //
@@ -30,7 +32,9 @@ incflo::incflo_set_velocity_bcs (Real time,
      for (MFIter mfi(*vel_in[lev], true); mfi.isValid(); ++mfi)
         set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, &extrap_dir_bcs);
 
+#ifdef AMREX_USE_EB
      EB_set_covered(*vel_in[lev], 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow(), covered_val);
+#endif
 
      // Do this after as well as before to pick up terms that got updated in the call above
      vel_in[lev] -> FillBoundary (geom[lev].periodicity());

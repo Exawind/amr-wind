@@ -12,7 +12,9 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
 {
     BL_PROFILE("incflo::incflo_compute_slopes");
 
+#ifdef AMREX_USE_EB
     EB_set_covered(Sborder, 0, Sborder.nComp(), 1, covered_val);
+#endif
 
     Box domain(geom[lev].Domain());
 
@@ -24,6 +26,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
        // Tilebox
        Box bx = mfi.tilebox ();
 
+#ifdef AMREX_USE_EB
        // This is to check efficiently if this tile contains any eb stuff
        const EBFArrayBox&  Sborder_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
        const EBCellFlagFab&  flags = Sborder_fab.getEBCellFlagFab();
@@ -38,16 +41,18 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
            (*zslopes_in[lev])[mfi].setVal( 1.2345e300, bx, slopes_comp, ncomp);
        }
        else
+#endif
        {
            const auto& state_fab =      Sborder.array(mfi);
            const auto&  xs_fab = xslopes_in[lev]->array(mfi);
            const auto&  ys_fab = yslopes_in[lev]->array(mfi);
            const auto&  zs_fab = zslopes_in[lev]->array(mfi);
 
+#ifdef AMREX_USE_EB
            // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
            if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
+#endif
            {
-
                AMREX_FOR_4D(bx, ncomp, i, j, k, n,
                {
                    // X direction
@@ -80,6 +85,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
 
                Gpu::synchronize();
            }
+#ifdef AMREX_USE_EB
            else
            {
                const auto& flag_fab =         flags.array();
@@ -132,9 +138,9 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                Gpu::synchronize();
            } // end of cut cell region
 
-           const int minf = bc_list.get_minf();
-
            const auto& flag_fab =         flags.array();
+#endif
+           const int minf = bc_list.get_minf();
 
            const auto&  ilo_ifab  = bc_ilo[lev]->array();
            const auto&  ihi_ifab  = bc_ihi[lev]->array();
@@ -145,7 +151,11 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
 
            AMREX_FOR_4D(bx, ncomp, i, j, k, n,
            {
+#ifdef AMREX_USE_EB
                if ( (i == domain.smallEnd(0)) && !flag_fab(i,j,k).isCovered() && ilo_ifab(i-1,j,k,0) == minf)
+#else
+               if ( (i == domain.smallEnd(0)) &&                                 ilo_ifab(i-1,j,k,0) == minf)
+#endif
                {
                    Real du_xl = 2.0*(state_fab(i  ,j,k,n) - state_fab(i-1,j,k,n));
                    Real du_xr = 2.0*(state_fab(i+1,j,k,n) - state_fab(i  ,j,k,n));
@@ -155,7 +165,12 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    xslope          = (du_xr*du_xl > 0.0) ? xslope : 0.0;
                    xs_fab(i,j,k,slopes_comp+n) = (du_xc       > 0.0) ? xslope : -xslope;
                }
+
+#ifdef AMREX_USE_EB
                if ( (i == domain.bigEnd(0)) && !flag_fab(i,j,k).isCovered() && ihi_ifab(i+1,j,k,0) == minf)
+#else
+               if ( (i == domain.bigEnd(0)) &&                                 ihi_ifab(i+1,j,k,0) == minf)
+#endif
                {
                    Real du_xl = 2.0*(state_fab(i  ,j,k,n) - state_fab(i-1,j,k,n));
                    Real du_xr = 2.0*(state_fab(i+1,j,k,n) - state_fab(i  ,j,k,n));
@@ -166,7 +181,11 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    xs_fab(i,j,k,slopes_comp+n) = (du_xc       > 0.0) ? xslope : -xslope;
                }
 
+#ifdef AMREX_USE_EB
                if ( (j == domain.smallEnd(1)) && !flag_fab(i,j,k).isCovered() && jlo_ifab(i,j-1,k,0) == minf)
+#else
+               if ( (j == domain.smallEnd(1)) &&                                 jlo_ifab(i,j-1,k,0) == minf)
+#endif
                {
                    Real du_yl = 2.0*(state_fab(i,j  ,k,n) - state_fab(i,j-1,k,n));
                    Real du_yr = 2.0*(state_fab(i,j+1,k,n) - state_fab(i,j  ,k,n));
@@ -176,7 +195,12 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    yslope          = (du_yr*du_yl > 0.0) ? yslope : 0.0;
                    ys_fab(i,j,k,slopes_comp+n) = (du_yc       > 0.0) ? yslope : -yslope;
                }
+
+#ifdef AMREX_USE_EB
                if ( (j == domain.bigEnd(1)) && !flag_fab(i,j,k).isCovered() && jhi_ifab(i,j+1,k,0) == minf)
+#else
+               if ( (j == domain.bigEnd(1)) &&                                 jhi_ifab(i,j+1,k,0) == minf)
+#endif
                {
                    Real du_yl = 2.0*(state_fab(i,j  ,k,n) - state_fab(i,j-1,k,n));
                    Real du_yr = 2.0*(state_fab(i,j+1,k,n) - state_fab(i,j  ,k,n));
@@ -187,7 +211,11 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    ys_fab(i,j,k,slopes_comp+n) = (du_yc       > 0.0) ? yslope : -yslope;
                }
 
+#ifdef AMREX_USE_EB
                if ( (k == domain.smallEnd(2)) && !flag_fab(i,j,k).isCovered() && klo_ifab(i,j,k-1,0) == minf)
+#else
+               if ( (k == domain.smallEnd(2)) &&                                 klo_ifab(i,j,k-1,0) == minf)
+#endif
                {
                    Real du_zl = 2.0*(state_fab(i,j,k  ,n) - state_fab(i,j,k-1,n));
                    Real du_zr = 2.0*(state_fab(i,j,k+1,n) - state_fab(i,j,k  ,n));
@@ -197,7 +225,11 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    zslope          = (du_zr*du_zl > 0.0) ? zslope : 0.0;
                    zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                }
+#ifdef AMREX_USE_EB
                if ( (k == domain.bigEnd(2)) && !flag_fab(i,j,k).isCovered() && khi_ifab(i,j,k+1,0) == minf)
+#else
+               if ( (k == domain.bigEnd(2)) &&                                 khi_ifab(i,j,k+1,0) == minf)
+#endif
                {
                    Real du_zl = 2.0*(state_fab(i,j,k  ,n) - state_fab(i,j,k-1,n));
                    Real du_zr = 2.0*(state_fab(i,j,k+1,n) - state_fab(i,j,k  ,n));

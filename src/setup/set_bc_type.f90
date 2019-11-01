@@ -5,13 +5,6 @@ module set_bc_type_module
 
 contains
 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
-!                                                                      C
-!  Subroutine: set_bc_type                                             C
-!                                                                      C
-!  Author: J. Musser                                  Date: 05-FEB-17  C
-!                                                                      C
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
    subroutine set_bc_type(bc_ilo_type, bc_ihi_type, &
                           bc_jlo_type, bc_jhi_type, &
                           bc_klo_type, bc_khi_type, &

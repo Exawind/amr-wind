@@ -6,9 +6,7 @@
 
 void incflo::MakeEBGeometry()
 {
-    MakeBCArrays();
-
-	/******************************************************************************
+   /******************************************************************************
    * incflo.geometry=<string> specifies the EB geometry. <string> can be one of    *
    * box, cylinder, annulus, sphere, spherecube, twocylinders
    ******************************************************************************/
@@ -18,7 +16,7 @@ void incflo::MakeEBGeometry()
     std::string geom_type;
     pp.query("geometry", geom_type);
 
-	/******************************************************************************
+   /******************************************************************************
    *                                                                            *
    *  CONSTRUCT EB                                                              *
    *                                                                            *

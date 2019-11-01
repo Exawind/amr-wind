@@ -61,7 +61,11 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     Vector< std::unique_ptr< amrex::MultiFab > >  sigma(nlev);
     for (int lev(0); lev < nlev; ++lev )
     {
+#ifdef AMREX_USE_EB
         sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]));
+#else
+        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo()));
+#endif
         sigma[lev] -> setVal(scaling_factor);
         MultiFab::Divide(*sigma[lev],*density[lev],0,0,1,0);
     }

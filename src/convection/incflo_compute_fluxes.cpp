@@ -64,6 +64,7 @@ incflo::incflo_compute_fluxes(int lev,
 {
         Box domain(geom[lev].Domain());
 
+#ifdef AMREX_USE_EB
         a_fx[lev]->setVal(covered_val);
         a_fy[lev]->setVal(covered_val);
         a_fz[lev]->setVal(covered_val);
@@ -78,6 +79,7 @@ incflo::incflo_compute_fluxes(int lev,
         facecent  =   ebfactory[lev] -> getFaceCent();
         volfrac   = &(ebfactory[lev] -> getVolFrac());
         bndrycent = &(ebfactory[lev] -> getBndryCent());
+#endif
 
         // Create cc_mask
         iMultiFab cc_mask(grids[lev], dmap[lev], 1, 1);
@@ -116,6 +118,7 @@ incflo::incflo_compute_fluxes(int lev,
             // Tilebox
             Box bx = mfi.tilebox ();
 
+#ifdef AMREX_USE_EB
             // this is to check efficiently if this tile contains any eb stuff
             const EBFArrayBox&  state_fab = static_cast<EBFArrayBox const&>((*state_in[lev])[mfi]);
             const EBCellFlagFab&  flags = state_fab.getEBCellFlagFab();
@@ -146,7 +149,12 @@ incflo::incflo_compute_fluxes(int lev,
                                            volfrac, bndrycent, &cc_mask, domain, flags);
                 }
             }
-        } // MFIter
+#else
+                    incflo_compute_ugradu(lev, bx, a_fx, a_fy, a_fz, state_in, state_comp, ncomp,
+                                        xslopes_in, yslopes_in, zslopes_in, slopes_comp,
+                                        u_mac, v_mac, w_mac, &mfi, domain);
+#endif
+        }// MFIter
 }
 
 void
@@ -291,6 +299,7 @@ incflo::incflo_compute_ugradu( const int lev, Box& bx,
 }
 
 
+#ifdef AMREX_USE_EB
 //
 // Compute the three components of the convection term when we have embedded
 // boundaries
@@ -532,3 +541,4 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
 
   Gpu::synchronize();
 }
+#endif

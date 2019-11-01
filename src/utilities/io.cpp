@@ -399,7 +399,11 @@ void incflo::WritePlotFile()
 	{
             // Multifab to hold all the variables -- there can be only one!!!!
     	    const int ncomp = pltVarCount;
+#ifdef AMREX_USE_EB
 	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo(), *ebfactory[lev]));
+#else
+	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo()));
+#endif
 
             int lc = 0;
 
@@ -494,11 +498,13 @@ void incflo::WritePlotFile()
             // Cut cell volume fractino
             if(plt_vfrac == 1) 
             {
+#ifdef AMREX_USE_EB
                 if (ebfactory[lev]) 
                 {
                     MultiFab::Copy(*mf[lev], ebfactory[lev]->getVolFrac(), 0, lc, 1, 0);
                 }
                 else
+#endif
                 {
                     mf[lev]->setVal(1.0, lc, 1.0);
                 }
@@ -506,8 +512,10 @@ void incflo::WritePlotFile()
                 lc += 1;
             }
 
+#ifdef AMREX_USE_EB
             // Zero out all the values in covered cells
             EB_set_covered(*mf[lev], 0.0);
+#endif
         }
 
         // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 

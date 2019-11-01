@@ -23,8 +23,12 @@ incflo::incflo_init_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
+#ifdef AMREX_USE_EB
     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
                                              GetVecOfConstPtrs(ebfactory)));
+#else
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc));
+#endif
 
     //
     // Now the diffusion solver
@@ -53,8 +57,13 @@ incflo::incflo_init_solvers ()
     scal_diff_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     scal_diff_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
+#ifdef AMREX_USE_EB
     diffusion_op.reset(new DiffusionOp(this, &ebfactory, vel_diff_lobc,  vel_diff_hibc,
                                                         scal_diff_lobc, scal_diff_hibc, nghost));
+#else
+    diffusion_op.reset(new DiffusionOp(this,             vel_diff_lobc,  vel_diff_hibc,
+                                                        scal_diff_lobc, scal_diff_hibc, nghost));
+#endif
 }
 
 void
@@ -78,13 +87,21 @@ incflo::incflo_setup_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
+#ifdef AMREX_USE_EB
     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
                                              GetVecOfConstPtrs(ebfactory)));
+#else
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc));
+#endif
 
 
     //
     // Now the diffusion solver
     //
 
+#ifdef AMREX_USE_EB
     diffusion_op->setup(this, &ebfactory);
+#else
+    diffusion_op->setup(this);
+#endif
 }

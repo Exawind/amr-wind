@@ -4,8 +4,11 @@
 
 #include <incflo.H>
 #include <boundary_conditions_F.H>
-#include <embedded_boundaries_F.H>
 #include <setup_F.H>
+
+#ifdef AMREX_USE_EB
+#include <embedded_boundaries_F.H>
+#endif
 
 void incflo::ReadParameters()
 {
@@ -23,7 +26,9 @@ void incflo::ReadParameters()
  	ParmParse pp("amr");
 
 	pp.query("regrid_int", regrid_int);
+#ifdef AMREX_USE_EB
         pp.query("refine_cutcells", refine_cutcells);
+#endif
 
 	pp.query("check_file", check_file);
 	pp.query("check_int", check_int);

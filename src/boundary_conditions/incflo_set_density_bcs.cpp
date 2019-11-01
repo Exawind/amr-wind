@@ -24,7 +24,9 @@ incflo::incflo_set_density_bcs (Real time,
         set_density_bcs(time, lev, (*density_in[lev])[mfi], domain);
 
      density_in[lev] -> FillBoundary (geom[lev].periodicity());
+#ifdef AMREX_USE_EB
      EB_set_covered(*density_in[lev], 0, density_in[lev]->nComp(), density_in[lev]->nGrow(), covered_val);
+#endif
   }
 }
 

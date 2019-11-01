@@ -24,8 +24,11 @@ void incflo::ComputeStrainrate(Real time_in)
         Real idz = 1.0 / geom[lev].CellSize()[2];
 
         // State with ghost cells
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost,
-                         MFInfo(), *ebfactory[lev]);
+#ifdef AMREX_USE_EB
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
+#else
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo());
+#endif
         FillPatchVel(lev, time_in, Sborder);
 
 #ifdef _OPENMP
@@ -36,9 +39,11 @@ void incflo::ComputeStrainrate(Real time_in)
             // Tilebox
             Box bx = mfi.tilebox();
 
+#ifdef AMREX_USE_EB
             // This is to check efficiently if this tile contains any eb stuff
             const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
+#endif
 
             // Cell-centered velocity
             const auto& ccvel_fab = Sborder.array(mfi);
@@ -46,11 +51,9 @@ void incflo::ComputeStrainrate(Real time_in)
             // Cell-centered strain-rate magnitude
             const auto& sr_fab = strainrate[lev]->array(mfi);
 
-            if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
-            {
-                (*strainrate[lev])[mfi].setVal(1.2345e200, bx);
-            }
-            else if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
+#ifdef AMREX_USE_EB
+            if (flags.getType(amrex::grow(bx, 1)) == FabType::regular)
+#endif
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_FOR_3D(bx, i, j, k,
@@ -71,6 +74,11 @@ void incflo::ComputeStrainrate(Real time_in)
                     sr_fab(i,j,k) = sqrt(2.0 * pow(ux, 2) + 2.0 * pow(vy, 2) + 2.0 * pow(wz, 2)
                             + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
                 });
+            }
+#ifdef AMREX_USE_EB
+            else if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
+            {
+                (*strainrate[lev])[mfi].setVal(1.2345e200, bx);
             }
             else
             {
@@ -215,8 +223,9 @@ void incflo::ComputeStrainrate(Real time_in)
 
                 Gpu::synchronize();
             }
-        }
-    }
+#endif
+        } // MFIter
+    } // lev
 }
 
 void incflo::ComputeVorticity(Real time_in)
@@ -231,8 +240,11 @@ void incflo::ComputeVorticity(Real time_in)
         Real idz = 1.0 / geom[lev].CellSize()[2];
 
         // State with ghost cells
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost,
-                         MFInfo(), *ebfactory[lev]);
+#ifdef AMREX_USE_EB
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
+#else
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo());
+#endif
         FillPatchVel(lev, time_in, Sborder);
 
 #ifdef _OPENMP
@@ -243,9 +255,11 @@ void incflo::ComputeVorticity(Real time_in)
             // Tilebox
             Box bx = mfi.tilebox();
 
+#ifdef AMREX_USE_EB
             // This is to check efficiently if this tile contains any eb stuff
             const EBFArrayBox& vel_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
             const EBCellFlagFab& flags = vel_fab.getEBCellFlagFab();
+#endif
 
             // Cell-centered velocity
             const auto& ccvel_fab = Sborder.array(mfi);
@@ -253,11 +267,9 @@ void incflo::ComputeVorticity(Real time_in)
             // Cell-centered strain-rate magnitude
             const auto& vort_fab = vort[lev]->array(mfi);
 
-            if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
-            {
-                (*vort[lev])[mfi].setVal(1.2345e200, bx);
-            }
-            else if(flags.getType(amrex::grow(bx, 1)) == FabType::regular)
+#ifdef AMREX_USE_EB
+            if (flags.getType(amrex::grow(bx, 1)) == FabType::regular)
+#endif
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
                 AMREX_FOR_3D(bx, i, j, k,
@@ -273,6 +285,11 @@ void incflo::ComputeVorticity(Real time_in)
 
                     vort_fab(i,j,k) = sqrt( pow(wy - vz, 2) + pow(uz - wx, 2) + pow(vx - uy, 2));
                 });
+            }
+#ifdef AMREX_USE_EB
+            else if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
+            {
+                (*vort[lev])[mfi].setVal(1.2345e200, bx);
             }
             else
             {
@@ -392,6 +409,7 @@ void incflo::ComputeVorticity(Real time_in)
 
                 Gpu::synchronize();
             } // Cut cells
+#endif
         } // MFIter
     } // Loop over levels
 }
@@ -410,6 +428,10 @@ void incflo::ComputeDrag()
         Box domain(geom[lev].Domain());
         Real dx = geom[lev].CellSize()[0];
 
+#ifndef AMREX_USE_EB
+        drag[lev]->setVal(0.0);
+
+#else
         // Get EB geometric info
         const amrex::MultiCutFab* bndryarea;
         const amrex::MultiCutFab* bndrynorm;
@@ -513,6 +535,7 @@ void incflo::ComputeDrag()
             {
                 (*drag[lev])[mfi].setVal(0.0, bx);
             }
-        }
+        } // MFIter
+#endif
     }
 }

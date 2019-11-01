@@ -472,11 +472,15 @@ bool incflo::SteadyStateReached()
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
     // Use temporaries to store the difference between current and previous solution
-	Vector<std::unique_ptr<MultiFab>> diff_vel;
+    Vector<std::unique_ptr<MultiFab>> diff_vel;
     diff_vel.resize(finest_level + 1);
     for(int lev = 0; lev <= finest_level; lev++)
     {
+#ifdef AMREX_USE_EB
         diff_vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
+#else
+        diff_vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo()));
+#endif
         MultiFab::LinComb(*diff_vel[lev], 1.0, *vel[lev], 0, -1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         Real max_change = 0.0;

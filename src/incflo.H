@@ -1,23 +1,29 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
+#include <AMReX_AmrCore.H>
+#include <AMReX_MultiFab.H>
 #include <AMReX_MultiFabUtil.H>
+#include <AMReX_MLCellABecLap.H>
+#include <AMReX_MLNodeLaplacian.H>
+#include <AMReX_ParmParse.H>
+#include <AMReX_PhysBCFunct.H>
+#include <AMReX_iMultiFab.H>
+#include <AMReX_NodalProjector.H>
+
+#ifdef AMREX_USE_EB
+#include <AMReX_MLEBABecLap.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
-#include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLNodeLaplacian.H>
-#include <AMReX_PhysBCFunct.H>
-#include <AMReX_iMultiFab.H>
-#include <AMReX_NodalProjector.H>
-
 #include <eb_if.H>
+#endif
+
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
-
 
 enum DiffusionType
 {
@@ -26,6 +32,8 @@ enum DiffusionType
     Crank_Nicolson,
     Implicit
 };
+
+using namespace amrex;
 
 class incflo : public AmrCore
 {
@@ -47,7 +55,7 @@ public:
     // Constructor
     //  - reads in parameters from inputs file
     //  - sizes multilevel arrays and datastructures
-    //  - makes EB geometry
+    //  - makes EB geometry if AMREX_USE_EB = TRUE
 	incflo();
 	~incflo();
 
@@ -56,7 +64,9 @@ public:
     BoxArray MakeBaseGrids () const;
     void ChopGrids (const Box& domain, BoxArray& ba, int target_size) const;
 
+#ifdef AMREX_USE_EB
     void WriteMyEBSurface();
+#endif
 
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
@@ -211,6 +221,7 @@ public:
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
                                MFIter* mfi, Box& domain);
 
+#ifdef AMREX_USE_EB
     void incflo_compute_ugradu_eb(const int lev, Box& bx,
                                   Vector< std::unique_ptr<MultiFab> >& a_fx,
                                   Vector< std::unique_ptr<MultiFab> >& a_fy,
@@ -231,6 +242,7 @@ public:
                                   const amrex::MultiCutFab* bndrycent,
                                   const amrex::iMultiFab* cc_mask,
                                   Box& domain, const EBCellFlagFab& flags);
+#endif
 
 private:
 
@@ -303,6 +315,9 @@ private:
 	void ApplyPredictor();
 	void ApplyCorrector();
     void ApplyProjection(Real time, Real scaling_factor);
+
+    // Number of ghost nodes for field arrays.
+    const int nghost = 4;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -377,6 +392,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef AMREX_USE_EB
     void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
@@ -394,13 +410,11 @@ private:
     const EB2::Level* eb_level;
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
-    // Number of ghost nodes for field arrays.
-    const int nghost = 4;
-
     // These values are required when fluid sees EB -- for now
     const int m_eb_basic_grow_cells = nghost;
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
