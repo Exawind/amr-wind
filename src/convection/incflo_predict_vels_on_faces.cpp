@@ -63,14 +63,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
        MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
        MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
-
-       // We need this just to avoid FPE (eg for outflow faces)
-       upls.setVal(covered_val);
-       umns.setVal(covered_val);
-       vpls.setVal(covered_val);
-       vmns.setVal(covered_val);
-       wpls.setVal(covered_val);
-       wmns.setVal(covered_val);
 #else
        MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
        MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
@@ -81,6 +73,14 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
        MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
 #endif
+
+       // We need this just to avoid FPE (eg for outflow faces)
+       upls.setVal(covered_val);
+       umns.setVal(covered_val);
+       vpls.setVal(covered_val);
+       vmns.setVal(covered_val);
+       wpls.setVal(covered_val);
+       wmns.setVal(covered_val);
 
        // ****************************************************************************
        // First compute the slopes
@@ -106,7 +106,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           Box wbx_grown = mfi.growntilebox(e_z);
 
 #ifdef AMREX_USE_EB
-          MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
           const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
           const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
 

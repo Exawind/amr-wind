@@ -411,12 +411,19 @@ private:
     void make_eb_tuscan();
 
     const EB2::Level* eb_level;
-    Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 
     // These values are required when fluid sees EB -- for now
     const int m_eb_basic_grow_cells = nghost;
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
+#endif
+ 
+#if 0
+    // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
+    //    but otherwise it will just be a FabFactory that doesn't know anything about EB
+    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
+#else
+    Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
