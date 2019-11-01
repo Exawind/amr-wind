@@ -104,6 +104,10 @@ void incflo::InitData()
         WritePlotFile();
         last_plt = 0;
     }
+    if(KE_int > 0 && !restart_flag)
+    {
+        amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
+    }
 
     ParmParse pp("incflo");
     bool write_eb_surface = 0;
@@ -208,7 +212,14 @@ void incflo::Evolve()
                     regrid(lev, time);
                     incflo_setup_solvers();
                 }
+         
             }
+         
+            if (nstep % regrid_int == 0)
+            {
+              setup_level_mask();
+            }
+         
         }*/
 
         // Advance to time t + dt
@@ -227,6 +238,11 @@ void incflo::Evolve()
         {
             WriteCheckPointFile();
             last_chk = nstep;
+        }
+        
+        if(KE_int > 0 && (nstep % KE_int == 0))
+        {
+            amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
         }
 
         // Mechanism to terminate incflo normally.

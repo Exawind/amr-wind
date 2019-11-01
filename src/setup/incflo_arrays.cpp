@@ -11,6 +11,10 @@ void incflo::AllocateArrays(int lev)
     // ********************************************************************************
 
 #ifdef AMREX_USE_EB
+    // Level Mask = 1 if not covered by a finer patch, else 0
+    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
+    level_mask[lev]->setVal(1);
+    
     // Current Density
     density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     density[lev]->setVal(0.);
@@ -156,7 +160,13 @@ void incflo::AllocateArrays(int lev)
     z_edge_ba.surroundingNodes(2);
     m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     m_w_mac[lev]->setVal(0.);
+
 #else
+
+    // Level Mask = 1 if not covered by a finer patch, else 0
+    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo()));
+    level_mask[lev]->setVal(1);
+    
     // Current Density
     density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
     density[lev]->setVal(0.);
@@ -323,6 +333,10 @@ void incflo::RegridArrays(int lev)
    // FillBoundary().
    //
 
+    // Level Mask = 1 if not covered by a finer patch, else 0
+    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
+    level_mask[lev]->setVal(1);
+    
    // Density
    std::unique_ptr<MultiFab> density_new(new MultiFab(grids[lev], dmap[lev], 1, nghost, 
                                                       MFInfo(), *ebfactory[lev]));
@@ -915,6 +929,8 @@ void incflo::ResizeArrays()
     // EB factory
     ebfactory.resize(max_level + 1);
 #endif
+    
+    level_mask.resize(max_level + 1);
 }
 
 void incflo::MakeBCArrays()

@@ -169,6 +169,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeVorticity(Real time_in);
+    double ComputeKineticEnergy();
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -276,13 +278,14 @@ private:
     // Resize arrays to fit (up to) max_level + 1 AMR levels
 	void ResizeArrays();
 
-    // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
+    // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations, level_mask
 	void PostInit(int restart_flag);
 	void SetBCTypes();
     void InitFluid();
 	void SetBackgroundPressure();
 	void InitialProjection();
     void InitialIterations();
+    void setup_level_mask();
 
     // Member variables for initial conditions
     int probtype = 0;
@@ -385,7 +388,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeDrag();
-
+    
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Embedded Boundaries
@@ -498,6 +501,7 @@ private:
 
     int check_int = -1;
     int last_chk = -1;
+    int KE_int = -1;
     std::string check_file{"chk"};
     std::string restart_file{""};
 
@@ -602,6 +606,10 @@ private:
     Vector<std::unique_ptr<MultiFab>> m_u_mac;
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
     Vector<std::unique_ptr<MultiFab>> m_w_mac;
+    
+    // integer MultiFab specifying if a finer level exists above
+    // value is 1 if a finer level is not above and 0 otherwise
+    Vector<std::unique_ptr<iMultiFab>> level_mask;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

@@ -210,7 +210,5 @@ incflo::set_MAC_velocity_bcs ( int lev,
       });
     }
 
-    // NOTE: here we do not need host-device synchronization since it is already
-    // included in the MFIter destructor
   }
 }

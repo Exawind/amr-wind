@@ -108,8 +108,6 @@ incflo::incflo_compute_fluxes(int lev,
                        });
                    }
                }
-               // NOTE: here we do not need host-device synchronization since it
-               // is already included in the MFIter destructor
            }
         }
 
@@ -294,8 +292,6 @@ incflo::incflo_compute_ugradu( const int lev, Box& bx,
     }
     fz(i,j,k,n) = w(i,j,k) * state_b;
   });
-
-  Gpu::synchronize();
 }
 
 
@@ -538,7 +534,5 @@ incflo::incflo_compute_ugradu_eb(const int lev, Box& bx,
     } else
        fz(i,j,k,n) = my_huge;
   });
-
-  Gpu::synchronize();
 }
 #endif

@@ -220,12 +220,53 @@ void incflo::ComputeStrainrate(Real time_in)
                                 + pow(uy + vx, 2) + pow(vz + wy, 2) + pow(wx + uz, 2));
                     }
                 });
-
-                Gpu::synchronize();
             }
 #endif
         } // MFIter
     } // lev
+}
+
+
+Real incflo::ComputeKineticEnergy()
+{
+    BL_PROFILE("incflo::ComputeKineticEnergy");
+
+    // integrated total Kinetic energy
+    Real KE = 0.0;
+
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        Real cell_vol = geom[lev].CellSize()[0]*geom[lev].CellSize()[1]*geom[lev].CellSize()[2];
+
+        KE += amrex::ReduceSum(*density[lev],*vel[lev],*level_mask[lev],0,
+        [=] AMREX_GPU_HOST_DEVICE (Box const& bx,
+                                   Array4<Real const> const& den_arr,
+                                   Array4<Real const> const& vel_arr,
+                                   Array4<int const>  const& mask_arr) -> Real
+        {
+            Real KE_Fab = 0.0;
+
+            amrex::Loop(bx, [=,&KE_Fab] (int i, int j, int k) noexcept
+            {
+                KE_Fab += cell_vol*mask_arr(i,j,k)*den_arr(i,j,k)*( vel_arr(i,j,k,0)*vel_arr(i,j,k,0)
+                                                                   +vel_arr(i,j,k,1)*vel_arr(i,j,k,1)
+                                                                   +vel_arr(i,j,k,2)*vel_arr(i,j,k,2));
+
+            });
+            return KE_Fab;
+            
+        });
+    }
+    
+    // total volume of grid on level 0
+    Real total_vol = geom[0].ProbDomain().volume();
+    
+    KE *= 0.5/total_vol/ro_0;
+
+    ParallelDescriptor::ReduceRealSum(KE);
+
+    return KE;
+    
 }
 
 void incflo::ComputeVorticity(Real time_in)
@@ -406,8 +447,6 @@ void incflo::ComputeVorticity(Real time_in)
                         vort_fab(i,j,k) = sqrt(pow(wy-vz,2) + pow(uz-wx,2) + pow(vx-uy,2));
                     }
                 });
-
-                Gpu::synchronize();
             } // Cut cells
 #endif
         } // MFIter

@@ -35,8 +35,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                        });
                    }
                }
-               // NOTE: here we do not need host-device synchronization since it
-               // is already included in the MFIter destructor
            }
        }
 
@@ -193,8 +191,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
              
-             Gpu::synchronize();
-
 #ifdef AMREX_USE_EB
           // Cut cells in this FAB
           } else {
@@ -249,8 +245,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                     wmns_fab(i,j,k) = ccvel_fab(i,j,k-1,2) + 0.5 * zslopes_fab(i,j,k-1,2);
                  }
              });
-
-             Gpu::synchronize();
 
           } // Cut cells
 #endif
@@ -455,8 +449,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                     }
                  }
              });
-
-             Gpu::synchronize();
 
           } // Cut cells
        } // MFIter
