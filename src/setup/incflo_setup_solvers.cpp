@@ -23,11 +23,14 @@ incflo::incflo_init_solvers ()
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
+    LPInfo info;
+    info.setMaxCoarseningLevel(100);
+
 #ifdef AMREX_USE_EB
     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
-                                             GetVecOfConstPtrs(ebfactory)));
+                                             GetVecOfConstPtrs(ebfactory), info));
 #else
-    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc));
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc, info));
 #endif
 
     //
@@ -86,12 +89,14 @@ incflo::incflo_setup_solvers ()
 
     ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
     ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+    LPInfo info;
+    info.setMaxCoarseningLevel(100);
 
 #ifdef AMREX_USE_EB
     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
-                                             GetVecOfConstPtrs(ebfactory)));
+                                             GetVecOfConstPtrs(ebfactory), info));
 #else
-    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc));
+    nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc, info));
 #endif
 
 
