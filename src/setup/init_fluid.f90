@@ -403,7 +403,7 @@ contains
       pi = 4.0_rt * atan(one)
 
       do k = lo(3), hi(3)
-         z = zlo + dz*(real(k,rt) + 0.5d0) - 1.0d0
+         z = zlo + dz*(real(k,rt) + 0.5d0) 
          do j = lo(2), hi(2)
             y = ylo + dy*(real(j,rt) + 0.5d0)
             do i = lo(1), hi(1)
