@@ -62,7 +62,7 @@ extern "C"
             amrex::Real* tracer,
             amrex::Real* eta, 
             amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength, 
+            amrex::Real* xlo, amrex::Real* ylo, amrex::Real* zlo,
             const int* probtype
         );
     
