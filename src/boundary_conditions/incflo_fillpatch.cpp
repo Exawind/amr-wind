@@ -51,6 +51,7 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
     incflo_for_fillpatching->set_velocity_bcs (time, lev, dest_fab, domain, &extrap_dir_bcs);
 }
@@ -87,6 +88,7 @@ void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
     incflo_for_fillpatching->set_density_bcs (time, lev, dest_fab, domain);
 }
@@ -121,6 +123,7 @@ void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
     incflo_for_fillpatching->set_tracer_bcs (time, lev, dest_fab, dcomp, ncomp, domain);
 }
@@ -145,6 +148,8 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
         CpuBndryFuncFab bfunc(VelFillBox);
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, 3, geom[lev], physbc, 0);
+
+        Gpu::synchronize();
     }
     else
     {
@@ -164,6 +169,7 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
 
+        Gpu::synchronize();
     }
 }
 
@@ -188,6 +194,8 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
         CpuBndryFuncFab bfunc(DensityFillBox);
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, 1, geom[lev], physbc, 0);
+
+        Gpu::synchronize();
     }
     else
     {
@@ -207,6 +215,7 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
 
+        Gpu::synchronize();
     }
 }
 
@@ -233,6 +242,8 @@ incflo::FillPatchScalar (int lev, Real time, MultiFab& mf)
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, ntrac, 
                                     geom[lev], physbc, 0);
+
+        Gpu::synchronize();
     }
     else
     {
@@ -252,6 +263,7 @@ incflo::FillPatchScalar (int lev, Real time, MultiFab& mf)
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
 
+        Gpu::synchronize();
     }
 }
 
