@@ -418,11 +418,12 @@ private:
     const int m_eb_full_grow_cells = nghost;
 #endif
  
-#if 0
+//#if 0
     // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
     //    but otherwise it will just be a FabFactory that doesn't know anything about EB
-    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
-#else
+    // Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
+//#else
+#ifdef AMREX_USE_EB
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
 
