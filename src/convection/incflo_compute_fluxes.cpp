@@ -125,27 +125,27 @@ incflo::incflo_compute_fluxes(int lev,
                 if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
                 {
                     incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                (*state_in[lev])[mfi], state_comp, ncomp,
-                                                (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
+                                                 (*state_in[lev])[mfi], state_comp, ncomp,
+                                                 (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                 (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
 
                 }
                 else
                 {
                     incflo_compute_eb_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                   (*state_in[lev])[mfi], state_comp, ncomp,
-                                                   (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                   ( *u_mac[lev])[mfi], ( *v_mac[lev])[mfi], ( *w_mac[lev])[mfi],
-                                                   (*areafrac[0])[mfi], (*areafrac[1])[mfi], (*areafrac[2])[mfi],
-                                                  (*facecent[0])[mfi], (*facecent[1])[mfi], (*facecent[2])[mfi],
-                                                  (*volfrac)[mfi], (*bndrycent)[mfi], cc_mask[mfi], flags);
+                                                    (*state_in[lev])[mfi], state_comp, ncomp,
+                                                    (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                    ( *u_mac[lev])[mfi], ( *v_mac[lev])[mfi], ( *w_mac[lev])[mfi],
+                                                    (*areafrac[0])[mfi], (*areafrac[1])[mfi], (*areafrac[2])[mfi],
+                                                    (*facecent[0])[mfi], (*facecent[1])[mfi], (*facecent[2])[mfi],
+                                                    (*volfrac)[mfi], (*bndrycent)[mfi], cc_mask[mfi], flags);
                       }
             }
 #else
                     incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                (*state_in[lev])[mfi], state_comp, ncomp,
-                                                (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
+                                                 (*state_in[lev])[mfi], state_comp, ncomp,
+                                                 (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                 (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
 #endif
         }// MFIter
 }
@@ -203,7 +203,6 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
   AMREX_FOR_4D(ubx, ncomp, i, j, k, n,
   {
     Real state_w(0)  ;
-    //Real state_e(0); DECLARED_BUT_NEVER_REFERENCED
     Real state_mns(0); Real state_pls(0);
 
     //
@@ -233,7 +232,6 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
   AMREX_FOR_4D(vbx, ncomp, i, j, k, n,
   {
     Real state_s(0)  ;
-    //Real state_n(0); DECLARED_BUT_NEVER_REFERENCED
     Real state_mns(0); Real state_pls(0);
 
     //
@@ -263,7 +261,6 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
   AMREX_FOR_4D(wbx, ncomp, i, j, k, n,
   {
     Real state_b(0)  ;
-    // Real state_t(0); DECLARED_BUT_NEVER_REFERENCED
     Real state_mns(0); Real state_pls(0);
     //
     // Bottom face
@@ -436,8 +433,9 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
                                    fracy *     fracz *sx(i,jj,kk,n);
 
        fx(i,j,k,n) = u(i,j,k) * s_on_x_centroid;
-    } else
+    } else {
        fx(i,j,k,n) = my_huge;
+    }
   });
 
   //

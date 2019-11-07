@@ -188,7 +188,6 @@ public:
                                int slopes_comp, int ncomp);
 
     void set_MAC_velocity_bcs (int lev,
-                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,

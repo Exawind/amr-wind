@@ -113,8 +113,8 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 #endif
 
         incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, num_comp,
-                            xslopes_u, yslopes_u, zslopes_u, 0,
-                            m_u_mac, m_v_mac, m_w_mac);
+                              xslopes_u, yslopes_u, zslopes_u, 0,
+                              m_u_mac, m_v_mac, m_w_mac);
 
         incflo_divergence_plus_redist(lev, conv_u_in, fx, fy, fz, num_comp);
 

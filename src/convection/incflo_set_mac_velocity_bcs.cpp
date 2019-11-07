@@ -7,7 +7,6 @@
 // 
 void
 incflo::set_MAC_velocity_bcs ( int lev,
-                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
@@ -24,7 +23,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-  for (MFIter mfi((*mac_rhs[lev]), false); mfi.isValid(); ++mfi)
+  for (MFIter mfi((*vel[lev]), false); mfi.isValid(); ++mfi) // Note we only use vel to define the right MFIter
   {
     const Box& ubx = (*u_mac[lev])[mfi].box();
     IntVect ubx_lo(ubx.loVect());

@@ -3,7 +3,6 @@
 void
 incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                                        Vector< std::unique_ptr<MultiFab> >& vel_in)
-
 {
     BL_PROFILE("incflo::incflo_predict_vels_on_faces");
 
@@ -463,4 +462,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           } // Cut cells
        } // MFIter
 #endif
+
+       // Set bcs on u_mac
+       set_MAC_velocity_bcs( lev, m_u_mac, m_v_mac, m_w_mac, time );
 }
