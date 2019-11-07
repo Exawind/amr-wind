@@ -11,7 +11,7 @@ contains
 !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!
    subroutine init_fluid(slo, shi, lo, hi, &
                          domlo, domhi, p, vel, density, tracer, eta, & 
-                         dx, dy, dz, xlength, ylength, zlength, probtype) &
+                         dx, dy, dz, xlo, ylo, zlo, probtype) &
       bind(C, name="init_fluid")
 
       use constant, only: ro_0, mu
@@ -31,7 +31,7 @@ contains
       real(rt), intent(inout) ::     eta(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3)  )
 
       real(rt), intent(in   ) :: dx, dy, dz
-      real(rt), intent(in   ) :: xlength, ylength, zlength
+      real(rt), intent(in   ) :: xlo,ylo,zlo
       integer,  intent(in   ) :: probtype
 
       ! Set the initial fluid density and viscosity
@@ -51,6 +51,7 @@ contains
       if (probtype == 33) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype ==  4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
       if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype == 34) call channel_flow(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, xlo, ylo, zlo)
 
    end subroutine init_fluid
 
@@ -379,6 +380,50 @@ contains
       end do
 
    end subroutine tuscan
+
+   subroutine channel_flow(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, xlo, ylo, zlo)
+
+      use constant, only: ic_u, ic_v, ic_w, ntrac,one
+
+      implicit none
+
+      integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
+      integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
+      integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
+
+      real(rt),         intent(in   ) :: dx, dy, dz, xlo, ylo, zlo
+      real(rt),         intent(inout) ::    vel(slo(1):shi(1), slo(2):shi(2),slo(3):shi(3), 3)
+      real(rt),         intent(inout) :: tracer(slo(1):shi(1), slo(2):shi(2),slo(3):shi(3), ntrac)
+
+      ! Local variables
+      integer(c_int)                  :: i, j, k
+      integer(c_int)                  :: num_cells, num_cells_x, num_cells_y,num_cells_z
+      real(rt)                        :: x, y, z, yval, zval, pi
+
+      pi = 4.0_rt * atan(one)
+
+      do k = lo(3), hi(3)
+         z = zlo + dz*(real(k,rt) + 0.5d0) 
+         do j = lo(2), hi(2)
+            y = ylo + dy*(real(j,rt) + 0.5d0)
+            do i = lo(1), hi(1)
+               x = xlo + dx*(real(i,rt) + 0.5d0)
+
+               vel(i,j,k,1) = 8.0d0*(5.0d0*(1.0d0-z**4)/4.0d0 + 0.3d0*cos(5.0d0*pi*y)*exp(0.5-32.4*(1.0d0-abs(z))**2)*(1.0d0-abs(z)))
+               vel(i,j,k,2) = 8.0d0*21.6d0*sin(4.0d0*pi*x)*exp(-32.4d0*(1.0d0-abs(z))**2)*(1.0d0-abs(z))
+               vel(i,j,k,3) = 0.0d0
+               tracer(i,j,k,1:ntrac) = 0.0d0
+               if (ntrac .gt. 0 .and. i .le. domhi(1)/4) &
+                  tracer(i,j,k,1) = 1.d0
+               if (ntrac .gt. 1 .and. i .le. domhi(1)/2) &
+                  tracer(i,j,k,2) = 2.d0
+               if (ntrac .gt. 2 .and. i .le. 3*domhi(1)/4) &
+                  tracer(i,j,k,3) = 3.d0
+            end do
+         end do
+      end do
+
+   end subroutine channel_flow
 
 end module init_fluid_module
 

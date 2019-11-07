@@ -289,9 +289,9 @@ void incflo::setup_level_mask(){
 
 void incflo::InitFluid()
 {
-	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
+	Real xlo = geom[0].ProbLo(0);
+	Real ylo = geom[0].ProbLo(1);
+	Real zlo = geom[0].ProbLo(2);
 
     for(int lev = 0; lev <= max_level; lev++)
     {
@@ -316,7 +316,7 @@ void incflo::InitFluid()
                        (*tracer[lev])[mfi].dataPtr(),
                        (*eta[lev])[mfi].dataPtr(),
                        &dx, &dy, &dz,
-                       &xlen, &ylen, &zlen, &probtype);
+                       &xlo, &ylo, &zlo, &probtype);
         }
 
         // Make sure to set periodic bc's
