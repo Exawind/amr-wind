@@ -1,10 +1,10 @@
-set(amr_wind_unit_test_exe_name "amr-wind-unit-tests")
+add_executable(${amr_wind_unit_test_exe_name} "")
 
 target_sources(${amr_wind_unit_test_exe_name}
    PRIVATE
       #C++
-      unit-tests-3d.C
-      unit-test-3d-1.C
+      unit_tests_3d.C
+      unit_test_3d_1.C
    )
 
 # Set library suffixes for EB enabled
@@ -57,6 +57,11 @@ if(AMR_WIND_ENABLE_MPI)
   target_compile_definitions(${amr_wind_unit_test_exe_name} PRIVATE AMREX_USE_MPI)
 endif()
 
+#Link our unit test executable with GoogleTest
+#target_link_libraries(${utest_exe_name} PRIVATE GTest::GTest GTest::Main)
+target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest gtest_main)
+target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/submods/googletest/googletest/include)
+
 #Keep our Fortran module files confined to a unique directory for each executable 
 set_target_properties(${amr_wind_unit_test_exe_name} PROPERTIES Fortran_MODULE_DIRECTORY
                      "${CMAKE_BINARY_DIR}/fortran_modules/${amr_wind_unit_test_exe_name}_fortran_modules")
@@ -84,7 +89,7 @@ add_dependencies(${amr_wind_unit_test_exe_name} generate_build_info_${amr_wind_u
 #Add generated source files
 target_sources(${amr_wind_unit_test_exe_name}
    PRIVATE
-      ${CMAKE_BINARY_DIR}/generated_files/${amr_wind_unit_test_exe_name}_generated_files/AMReX_buildInfo.cpp
+      ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
 )
  
 #Define what we want to be installed during a make install 

@@ -1,7 +1,3 @@
-# Include files with functions we would like to call
-include(${CMAKE_SOURCE_DIR}/cmake/build_unit_test.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/build_amr_wind.cmake)
-
 # Set location of gold files according to system/compiler/compiler_version
 set(FCOMPARE_GOLD_FILES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/AMRWindGoldFiles/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
 
@@ -70,7 +66,7 @@ function(add_test_r TEST_NAME NP)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1 amr.probin_file=${TEST_NAME}.probin")
+    set(RUNTIME_OPTIONS "max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
@@ -80,9 +76,9 @@ function(add_test_r TEST_NAME NP)
       set(FEXTREMA_COMMAND "&& ${FEXTREMA} ${PLOT_TEST} > ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext && ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_files/fextrema_compare.py -f ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext -g ${CURRENT_TEST_SOURCE_DIR}/${TEST_NAME}.ext.gold -t ${TOLERANCE}")
     endif()
     # Place the exe in the correct working directory
-    set_target_properties(amr-wind-${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/")
+    #set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/")
     # Add test and actual test commands to CTest database
-    add_test(${TEST_NAME} sh -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS} ${CURRENT_TEST_BINARY_DIR}/amr-wind-${TEST_NAME} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FEXTREMA_COMMAND} ${FCOMPARE_COMMAND}")
+    add_test(${TEST_NAME} sh -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FEXTREMA_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 1500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
 endfunction(add_test_r)
@@ -94,12 +90,10 @@ function(add_test_u TEST_NAME NP)
     set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
-    # Build exe for test
-    build_unit_test(${TEST_NAME} ${CURRENT_TEST_SOURCE_DIR}/exe_options.cmake)
     # Place the exe in the correct working directory
-    set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/")
+    #set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/")
     # Add test and commands to CTest database
-    add_test(${TEST_NAME} sh -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}")
+    add_test(${TEST_NAME} sh -c "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS} ${CURRENT_TEST_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "unit")
 endfunction(add_test_u)
@@ -107,7 +101,7 @@ endfunction(add_test_u)
 #=============================================================================
 # Regression tests
 #=============================================================================
-add_test_r(test-1 4)
+add_test_r(test_1 4)
 
 #=============================================================================
 # Verification tests
@@ -116,5 +110,5 @@ add_test_r(test-1 4)
 #=============================================================================
 # Unit tests
 #=============================================================================
-add_test_u(unit-tests 1)
+add_test_u(unit_tests 1)
 

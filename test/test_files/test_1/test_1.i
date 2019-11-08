@@ -9,7 +9,7 @@ steady_state            =   0           # Steady-state solver?
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1          # Use this constant dt if > 0
-incflo.cfl              =   0.9         # CFL factor
+incflo.cfl              =   0.49         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #

@@ -99,6 +99,8 @@ set(GENERATED_FILES_DIR ${CMAKE_BINARY_DIR}/generated_files/${amr_wind_exe_name}
 file(MAKE_DIRECTORY ${GENERATED_FILES_DIR})
 
 set(amr_wind_exe_name "amr_wind")
+set(amr_wind_unit_test_exe_name "amr_wind_unit_tests")
+
 build_amrex()
 add_executable(${amr_wind_exe_name} "")
 add_subdirectory(src)

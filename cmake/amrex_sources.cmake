@@ -1,15 +1,4 @@
 function(get_amrex_sources)
-   #set(AMREX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/submods/amrex/Src/Amr")
-   #add_sources(GlobalSourceList
-   #  ${AMREX_SOURCE_DIR}/AMReX_Amr.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_AmrLevel.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_Derive.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_StateData.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_StateDescriptor.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_AuxBoundaryData.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_Extrapolater.cpp
-   #  ${AMREX_SOURCE_DIR}/AMReX_extrapolater_${AMREX_DIM}d.f90
-   #)
    set(AMREX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/submods/amrex/Src/AmrCore")
    add_sources(GlobalSourceList
      ${AMREX_SOURCE_DIR}/AMReX_AmrCore.cpp
@@ -104,46 +93,6 @@ function(get_amrex_sources)
      ${AMREX_SOURCE_DIR}/AMReX_BLProfiler.cpp
      ${AMREX_SOURCE_DIR}/AMReX_BLBackTrace.cpp
    )
-   #set(AMREX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/submods/amrex/Src/F_Interfaces/AmrCore")
-   #add_sources(GlobalSourceList
-   #   ${AMREX_SOURCE_DIR}/AMReX_FAmrCore.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_amr_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_amrcore_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_amrcore_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_fillpatch_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_fillpatch_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_fluxregister_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_fluxregister_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_interpolater_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_tagbox_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_tagbox_mod.F90
-   #)
-   #set(AMREX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/submods/amrex/Src/F_Interfaces/Base")
-   #add_sources(GlobalSourceList
-   #   ${AMREX_SOURCE_DIR}/AMReX_FPhysBC.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_base_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_box_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_box_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_boxarray_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_boxarray_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_distromap_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_distromap_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_fab_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_geometry_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_geometry_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_init_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_init_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_multifab_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_multifab_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_multifabutil_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_multifabutil_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_parallel_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_physbc_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_physbc_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_plotfile_fi.cpp
-   #   ${AMREX_SOURCE_DIR}/AMReX_plotfile_mod.F90
-   #   ${AMREX_SOURCE_DIR}/AMReX_vismf_fi.cpp
-   #)
    if(AMREX_ENABLE_EB)
      set(AMREX_SOURCE_DIR "${CMAKE_SOURCE_DIR}/submods/amrex/Src/EB")
      add_sources(GlobalSourceList
