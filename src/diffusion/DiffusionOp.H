@@ -68,8 +68,7 @@ public:
     // Scalar diffusion 
     void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu, 
-                        amrex::Real dt);
+                        const amrex::Vector<amrex::Real> mu_s, amrex::Real dt);
 
     // Tensor viscous term 
     void ComputeDivTau(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
@@ -77,11 +76,11 @@ public:
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu_in);
 
-    // Tensor viscous term 
-    void ComputeLapS(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
+    // Scalar diffusive term
+    void ComputeLapS(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& laps_out,
                      const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel_in,
                      const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
-                     const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu_in);
+                     const amrex::Vector<amrex::Real> mu_s);
 
 private:
 
