@@ -314,7 +314,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Advance();
-    void ComputeDt(int initialisation);
+    void ComputeDt(int initialisation, bool explicit_diffusion);
 	bool SteadyStateReached();
 	void ApplyPredictor();
 	void ApplyCorrector();
@@ -422,8 +422,12 @@ private:
 #if 0
     // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
     //    but otherwise it will just be a FabFactory that doesn't know anything about EB
-    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
+    //    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
 #else
+    //  Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+#endif
+
+#ifdef AMREX_USE_EB
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
 

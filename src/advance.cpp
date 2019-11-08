@@ -32,7 +32,8 @@ void incflo::Advance()
 
     // Compute time step size
     int initialisation = 0;
-    ComputeDt(initialisation);
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
+    ComputeDt(initialisation, explicit_diffusion);
 
     // Set new and old time to correctly use in fillpatching
     for(int lev = 0; lev <= finest_level; lev++)
