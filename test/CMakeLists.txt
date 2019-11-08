@@ -15,3 +15,5 @@ set_target_properties(gtest PROPERTIES FOLDER Submodules)
 set_target_properties(gtest_main PROPERTIES FOLDER Submodules)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CTestList.cmake)
+
+add_subdirectory(test_files)
