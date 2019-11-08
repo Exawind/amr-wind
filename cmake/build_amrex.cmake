@@ -25,17 +25,10 @@ function(build_amrex_library AMREX_DIM AMREX_ENABLE_EB)
   #AMReX definitions
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE BL_SPACEDIM=${AMREX_DIM})
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE BL_FORT_USE_UNDERSCORE)
-  #target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE BL_USE_F_BASELIB)
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE AMREX_SPACEDIM=${AMREX_DIM})
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE AMREX_FORT_USE_UNDERSCORE)
-  #target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE AMREX_USE_F_BASELIB)
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:BL_LANG_FORT>)
   target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE $<$<COMPILE_LANGUAGE:Fortran>:AMREX_LANG_FORT>)
-
-  # CMake BUILD_TYPE should already define this for us
-  #if(${CMAKE_BUILD_TYPE} MATCHES "Release")
-  #  target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE NDEBUG)
-  #endif()
 
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     target_compile_definitions(amrex${AMREX_DIM}d${EB} PRIVATE BL_Darwin)
