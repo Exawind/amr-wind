@@ -111,6 +111,9 @@ void incflo::ReadParameters()
         pp.query("ro_0", ro_0);
         pp.query("ntrac", ntrac);
 
+        if (ntrac < 1)
+            amrex::Abort("We currently require at least one tracer");
+
         // Scalar diffusion coefficients
         mu_s.resize(ntrac);
         for (int i = 0; i < ntrac; i++) mu_s[i] = 0.;

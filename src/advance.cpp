@@ -166,7 +166,8 @@ void incflo::ApplyPredictor()
        int extrap_dir_bcs = 0;
        incflo_set_velocity_bcs (cur_time, vel_o, extrap_dir_bcs);
        diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
-       diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, eta_old);
+
+       diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
     } else {
        for (int lev = 0; lev <= finest_level; lev++)
        {
@@ -243,13 +244,13 @@ void incflo::ApplyPredictor()
     {
         diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
         if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, eta_old, 0.5*dt);
+            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*dt);
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
         diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
         if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, eta_old, dt);
+            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
     }
 
     // Project velocity field, update pressure
@@ -346,7 +347,7 @@ void incflo::ApplyCorrector()
        int extrap_dir_bcs = 0;
        incflo_set_velocity_bcs (new_time, vel, extrap_dir_bcs);
        diffusion_op->ComputeDivTau(divtau, vel   , density, eta);
-       diffusion_op->ComputeLapS  (laps,   tracer, density, eta);
+       diffusion_op->ComputeLapS  (laps,   tracer, density, mu_s);
     } else {
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
@@ -432,13 +433,13 @@ void incflo::ApplyCorrector()
     // Solve implicit diffusion equation for u*
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
-       diffusion_op->diffuse_velocity(vel   , density, eta, 0.5*dt);
-       diffusion_op->diffuse_scalar  (tracer, density, eta, 0.5*dt);
+       diffusion_op->diffuse_velocity(vel   , density, eta,  0.5*dt);
+       diffusion_op->diffuse_scalar  (tracer, density, mu_s, 0.5*dt);
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
-       diffusion_op->diffuse_velocity(vel   , density, eta, dt);
-       diffusion_op->diffuse_scalar  (tracer, density, eta, dt);
+       diffusion_op->diffuse_velocity(vel   , density, eta,  dt);
+       diffusion_op->diffuse_scalar  (tracer, density, mu_s, dt);
     }
 
     // Project velocity field, update pressure

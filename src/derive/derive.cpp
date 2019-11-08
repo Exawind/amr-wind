@@ -31,6 +31,8 @@ void incflo::ComputeStrainrate(Real time_in)
 #endif
         FillPatchVel(lev, time_in, Sborder);
 
+        strainrate[lev]->setVal(1.2345e200);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -76,11 +78,7 @@ void incflo::ComputeStrainrate(Real time_in)
                 });
             }
 #ifdef AMREX_USE_EB
-            else if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
-            {
-                (*strainrate[lev])[mfi].setVal(1.2345e200, bx);
-            }
-            else
+            else if (flags.getType(amrex::grow(bx, 0)) != FabType::covered)
             {
                 // Cut cells present -> use EB routine!
                 const auto& flag_fab = flags.array();
@@ -288,6 +286,8 @@ void incflo::ComputeVorticity(Real time_in)
 #endif
         FillPatchVel(lev, time_in, Sborder);
 
+        vort[lev]->setVal(1.2345e200);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -328,11 +328,7 @@ void incflo::ComputeVorticity(Real time_in)
                 });
             }
 #ifdef AMREX_USE_EB
-            else if (flags.getType(amrex::grow(bx, 0)) == FabType::covered)
-            {
-                (*vort[lev])[mfi].setVal(1.2345e200, bx);
-            }
-            else
+            else if (flags.getType(amrex::grow(bx, 0)) != FabType::covered)
             {
                 // Cut cells present -> use EB routine!
                 const auto& flag_fab = flags.array();
@@ -467,10 +463,9 @@ void incflo::ComputeDrag()
         Box domain(geom[lev].Domain());
         Real dx = geom[lev].CellSize()[0];
 
-#ifndef AMREX_USE_EB
         drag[lev]->setVal(0.0);
 
-#else
+#ifdef AMREX_USE_EB
         // Get EB geometric info
         const amrex::MultiCutFab* bndryarea;
         const amrex::MultiCutFab* bndrynorm;
@@ -569,10 +564,6 @@ void incflo::ComputeDrag()
                         drag_arr(i,j,k) = 0.0;
                     }
                 }
-            }
-            else
-            {
-                (*drag[lev])[mfi].setVal(0.0, bx);
             }
         } // MFIter
 #endif

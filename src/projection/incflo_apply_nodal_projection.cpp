@@ -104,4 +104,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
         amrex::Print() << "After projection: " << std::endl;
         PrintMaxValues(time);
     }
+
+    Gpu::synchronize();
 }

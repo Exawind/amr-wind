@@ -50,6 +50,11 @@ void incflo::PrintMaxVel(int lev)
 		   << Norm(vel , lev, 1, 0) << "  "
                    << Norm(vel , lev, 2, 0) << "  "
                    << Norm(divu, lev, 0, 0) << "  " << std::endl;
+    if (ntrac > 0)
+    {
+       for (int i = 0; i < ntrac; i++)
+          amrex::Print() << "max tracer" << i << " = " << Norm(tracer,lev,i,0) << std::endl;;
+    }
 }
 
 //
