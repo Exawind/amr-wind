@@ -50,16 +50,13 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Copy each FAB back from Sborder_u into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow());
 
-        if (!constant_density)
-        {
 #ifdef AMREX_USE_EB
-           MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
 #else
-           MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
 #endif
-           FillPatchDensity(lev, time, Sborder_r);
-           MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
-        }
+        FillPatchDensity(lev, time, Sborder_r);
+        MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
 
         if (advect_tracer)
         {
@@ -80,6 +77,8 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    arrays returned from this call are on face CENTROIDS
         incflo_predict_vels_on_faces(lev, time, vel_in);
+
+        Gpu::synchronize();
     }
 
     // Do projection on all AMR levels in one shot -- note that the {u_mac, v_mac, w_mac}
@@ -113,8 +112,8 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 #endif
 
         incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, num_comp,
-                            xslopes_u, yslopes_u, zslopes_u, 0,
-                            m_u_mac, m_v_mac, m_w_mac);
+                              xslopes_u, yslopes_u, zslopes_u, 0,
+                              m_u_mac, m_v_mac, m_w_mac);
 
         incflo_divergence_plus_redist(lev, conv_u_in, fx, fy, fz, num_comp);
 
@@ -187,6 +186,7 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         conv_r_in[lev] -> mult(-1.0);
         conv_t_in[lev] -> mult(-1.0);
 
+        Gpu::synchronize();
     } // lev
 }
 
@@ -220,6 +220,7 @@ incflo::incflo_divergence_plus_redist(const int lev,
     computeDivergence(*conv_in[lev], GetArrOfConstPtrs(fluxes), geom[lev]);
 #endif
 
+    Gpu::synchronize();
 }
 
 

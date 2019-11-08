@@ -82,11 +82,15 @@ void incflo::ReadParameters()
 	ParmParse pp("incflo");
 
         pp.query("verbose", incflo_verbose);
-		pp.query("cfl", cfl);
-		pp.query("fixed_dt", fixed_dt);
-		pp.query("steady_state_tol", steady_state_tol);
+
+	pp.query("steady_state_tol", steady_state_tol);
         pp.query("initial_iterations", initial_iterations);
         pp.query("do_initial_proj", do_initial_proj);
+
+	pp.query("fixed_dt", fixed_dt);
+	pp.query("cfl", cfl);
+        if (cfl > 0.5)
+            amrex::Abort("We currently require cfl <= 0.5 with the current advection scheme");
 
         // Physics
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
@@ -110,6 +114,9 @@ void incflo::ReadParameters()
 
         pp.query("ro_0", ro_0);
         pp.query("ntrac", ntrac);
+
+        if (ntrac < 1)
+            amrex::Abort("We currently require at least one tracer");
 
         // Scalar diffusion coefficients
         mu_s.resize(ntrac);
@@ -421,7 +428,8 @@ void incflo::InitialIterations()
     BL_PROFILE("incflo::InitialIterations()");
 
     int initialisation = 1;
-	ComputeDt(initialisation);
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
+    ComputeDt(initialisation, explicit_diffusion);
 
     if(incflo_verbose)
     {

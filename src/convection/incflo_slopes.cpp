@@ -18,6 +18,18 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
 
     Box domain(geom[lev].Domain());
 
+    // We initialize slopes to zero in the grown domain ... this is essential
+    //    to handle the up-winding at outflow faces
+    xslopes_in[lev]->setVal(0.0, slopes_comp, ncomp, xslopes_in[lev]->nGrow());
+    yslopes_in[lev]->setVal(0.0, slopes_comp, ncomp, yslopes_in[lev]->nGrow());
+    zslopes_in[lev]->setVal(0.0, slopes_comp, ncomp, zslopes_in[lev]->nGrow());
+
+    // ... then set them to this large number in the interior in order to be sure
+    //     that no "bad" values go unnoticed
+    xslopes_in[lev]->setVal(1.2345e300, slopes_comp, ncomp, 0);
+    yslopes_in[lev]->setVal(1.2345e300, slopes_comp, ncomp, 0);
+    zslopes_in[lev]->setVal(1.2345e300, slopes_comp, ncomp, 0);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -31,16 +43,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
        const EBFArrayBox&  Sborder_fab = static_cast<EBFArrayBox const&>(Sborder[mfi]);
        const EBCellFlagFab&  flags = Sborder_fab.getEBCellFlagFab();
 
-       if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
-       {
-           // If tile is completely covered by EB geometry, set slopes
-           // value to some very large number so we know if
-           // we accidentally use these covered slopes later in calculations
-           (*xslopes_in[lev])[mfi].setVal( 1.2345e300, bx, slopes_comp, ncomp);
-           (*yslopes_in[lev])[mfi].setVal( 1.2345e300, bx, slopes_comp, ncomp);
-           (*zslopes_in[lev])[mfi].setVal( 1.2345e300, bx, slopes_comp, ncomp);
-       }
-       else
+       if (flags.getType(amrex::grow(bx,0)) != FabType::covered )
 #endif
        {
            const auto& state_fab =      Sborder.array(mfi);

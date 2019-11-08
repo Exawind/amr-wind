@@ -131,6 +131,8 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
       }
    }
 
+   Gpu::synchronize();
+
    //
    // If we want to set max_coarsening_level we have to send it in to the constructor
    //
@@ -226,10 +228,11 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
       } 
 
       // Set bcs on u_mac
-      set_MAC_velocity_bcs( lev, mac_rhs, u_mac, v_mac, w_mac, time );
+      set_MAC_velocity_bcs( lev, u_mac, v_mac, w_mac, time );
 
       u_mac[lev]->FillBoundary(geom[lev].periodicity());
       v_mac[lev]->FillBoundary(geom[lev].periodicity());
       w_mac[lev]->FillBoundary(geom[lev].periodicity());
    }
+   Gpu::synchronize();
 }

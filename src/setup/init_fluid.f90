@@ -42,6 +42,8 @@ contains
       density = ro_0
       tracer  = 0.0
       eta     = mu
+
+      if (probtype ==  5) call tracer_advection(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo)
       
       if (probtype ==  1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype ==  2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
@@ -54,6 +56,43 @@ contains
       if (probtype == 34) call channel_flow(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, xlo, ylo, zlo)
 
    end subroutine init_fluid
+
+   subroutine tracer_advection(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo)
+
+      use constant, only: zero, half, one
+
+      implicit none
+
+      ! Array bounds
+      integer(c_int), intent(in   ) :: lo(3), hi(3)
+      integer(c_int), intent(in   ) :: domlo(3)
+      integer(c_int), intent(in   ) :: slo(3), shi(3)
+
+      ! Arrays
+      real(rt),       intent(inout) ::    vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+      real(rt),       intent(inout) :: tracer(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
+
+      real(rt),       intent(in   ) :: dx, dy, dz
+
+
+      ! Local variables
+      integer(c_int)                  :: i, j, k
+      real(rt)                        :: x, y
+      real(rt)                        :: twopi = 8.0_rt * atan(one)
+
+      ! x-direction
+      do j = lo(2), hi(2)
+         y =  ( real(j,rt) + half ) * dy
+         do i = lo(1), hi(1)
+            x =  ( real(i,rt) + half ) * dx
+            do k = lo(3), hi(3)
+               tracer(i,j,k,:) = 1.d0  
+               if (i.eq.20 .and. j.eq.20 .and. k.eq.20) tracer(i,j,k,1) = 1.2d0  
+            end do
+         end do
+      end do
+
+   end subroutine tracer_advection
 
    subroutine taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
 

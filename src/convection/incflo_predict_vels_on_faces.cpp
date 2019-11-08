@@ -3,7 +3,6 @@
 void
 incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                                        Vector< std::unique_ptr<MultiFab> >& vel_in)
-
 {
     BL_PROFILE("incflo::incflo_predict_vels_on_faces");
 
@@ -111,9 +110,20 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
           if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
           {
-             (*m_u_mac[lev])[mfi].setVal( 1.2345e300, ubx, 0, 1);
-             (*m_v_mac[lev])[mfi].setVal( 1.2345e300, vbx, 0, 1);
-             (*m_w_mac[lev])[mfi].setVal( 1.2345e300, wbx, 0, 1);
+             Real val = 1.2345e300;
+             const auto& umac_array = (*m_u_mac[lev])[mfi].array();
+             const auto& vmac_array = (*m_v_mac[lev])[mfi].array();
+             const auto& wmac_array = (*m_w_mac[lev])[mfi].array();
+ 
+             AMREX_FOR_3D(ubx, i, j, k, { umac_array(i,j,k) = val; });
+             AMREX_FOR_3D(vbx, i, j, k, { vmac_array(i,j,k) = val; });
+             AMREX_FOR_3D(wbx, i, j, k, { wmac_array(i,j,k) = val; });
+ 
+             Gpu::synchronize();
+
+//           (*m_u_mac[lev])[mfi].setVal( 1.2345e300, ubx, 0, 1);
+//           (*m_v_mac[lev])[mfi].setVal( 1.2345e300, vbx, 0, 1);
+//           (*m_w_mac[lev])[mfi].setVal( 1.2345e300, wbx, 0, 1);
           }
   
           // No cut cells in this FAB
@@ -452,4 +462,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           } // Cut cells
        } // MFIter
 #endif
+
+       // Set bcs on u_mac
+       set_MAC_velocity_bcs( lev, m_u_mac, m_v_mac, m_w_mac, time );
 }

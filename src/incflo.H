@@ -188,7 +188,6 @@ public:
                                int slopes_comp, int ncomp);
 
     void set_MAC_velocity_bcs (int lev,
-                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
@@ -208,42 +207,44 @@ public:
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac);
 
-    void incflo_compute_ugradu(const int lev, Box& bx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fy,
-                               Vector< std::unique_ptr<MultiFab> >& a_fz,
-                               Vector< std::unique_ptr<MultiFab> >& state,
-                               const int state_comp, const int n_comp,
-                               Vector< std::unique_ptr<MultiFab> >& xslopes,
-                               Vector< std::unique_ptr<MultiFab> >& yslopes,
-                               Vector< std::unique_ptr<MultiFab> >& zslopes,
-                               const int slopes_comp,
-                               Vector< std::unique_ptr<MultiFab> >& u_mac,
-                               Vector< std::unique_ptr<MultiFab> >& v_mac,
-                               Vector< std::unique_ptr<MultiFab> >& w_mac,
-                               MFIter* mfi, Box& domain);
+    void incflo_compute_fluxes_on_box(const int lev, Box& bx,
+                                      FArrayBox& a_fx,
+                                      FArrayBox& a_fy,
+                                      FArrayBox& a_fz,
+                                      const FArrayBox& state,
+                                      const int state_comp, const int n_comp,
+                                      const FArrayBox& xslopes,
+                                      const FArrayBox& yslopes,
+                                      const FArrayBox& zslopes,
+                                      const int slopes_comp,
+                                      const FArrayBox& u_mac,
+                                      const FArrayBox& v_mac,
+                                      const FArrayBox& w_mac);
 
 #ifdef AMREX_USE_EB
-    void incflo_compute_ugradu_eb(const int lev, Box& bx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fy,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fz,
-                                  Vector< std::unique_ptr<MultiFab> >& state,
-                                  const int state_comp, const int n_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& xslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& yslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& zslopes,
-                                  const int slopes_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& u_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& v_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                  MFIter* mfi,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
-                                  const amrex::MultiFab* volfrac,
-                                  const amrex::MultiCutFab* bndrycent,
-                                  const amrex::iMultiFab* cc_mask,
-                                  Box& domain, const EBCellFlagFab& flags);
+    void incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
+                                         FArrayBox& a_fx,
+                                         FArrayBox& a_fy,
+                                         FArrayBox& a_fz,
+                                         const FArrayBox& state,
+                                         const int state_comp, const int n_comp,
+                                         const FArrayBox& xslopes,
+                                         const FArrayBox& yslopes,
+                                         const FArrayBox& zslopes,
+                                         const int slopes_comp,
+                                         const FArrayBox& ep_u_mac,
+                                         const FArrayBox& ep_v_mac,
+                                         const FArrayBox& ep_w_mac,
+                                         const FArrayBox& ax,
+                                         const FArrayBox& ay,
+                                         const FArrayBox& az,
+                                         const FArrayBox& fc_x,
+                                         const FArrayBox& fc_y,
+                                         const FArrayBox& fc_z,
+                                         const FArrayBox& volfrac,
+                                         const FArrayBox& bndrycent,
+                                         const IArrayBox& cc_mask,
+                                         const EBCellFlagFab& flags);
 #endif
 
 private:
@@ -313,7 +314,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Advance();
-    void ComputeDt(int initialisation);
+    void ComputeDt(int initialisation, bool explicit_diffusion);
 	bool SteadyStateReached();
 	void ApplyPredictor();
 	void ApplyCorrector();
@@ -418,11 +419,6 @@ private:
     const int m_eb_full_grow_cells = nghost;
 #endif
  
-//#if 0
-    // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
-    //    but otherwise it will just be a FabFactory that doesn't know anything about EB
-    // Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
-//#else
 #ifdef AMREX_USE_EB
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
