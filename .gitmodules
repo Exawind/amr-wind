@@ -1,3 +1,6 @@
 [submodule "submods/amrex"]
 	path = submods/amrex
 	url = https://github.com/AMReX-Codes/amrex.git
+[submodule "test/googletest"]
+	path = test/googletest
+	url = https://github.com/google/googletest.git
