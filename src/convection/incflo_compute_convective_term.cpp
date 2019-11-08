@@ -50,16 +50,13 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Copy each FAB back from Sborder_u into the vel array, complete with filled ghost cells
         MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow());
 
-        if (!constant_density)
-        {
 #ifdef AMREX_USE_EB
-           MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
 #else
-           MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
 #endif
-           FillPatchDensity(lev, time, Sborder_r);
-           MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
-        }
+        FillPatchDensity(lev, time, Sborder_r);
+        MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
 
         if (advect_tracer)
         {

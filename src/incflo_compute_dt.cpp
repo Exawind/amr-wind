@@ -22,7 +22,7 @@ using namespace std;
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::ComputeDt(int initialisation)
+void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
 {
 	BL_PROFILE("incflo::ComputeDt");
 
@@ -52,7 +52,9 @@ void incflo::ComputeDt(int initialisation)
     Real conv_cfl = std::max(std::max(umax * idx, vmax * idy), wmax * idz);
 
     // Viscous term
-    Real diff_cfl = 2.0 * etamax / rhomin * (idx * idx + idy * idy + idz * idz);
+    Real diff_cfl = 0;
+    if (explicit_diffusion) 
+         diff_cfl = 2.0 * etamax / rhomin * (idx * idx + idy * idy + idz * idz);
 
     // Forcing term
     Real forc_cfl = std::abs(gravity[0] - std::abs(gp0[0])) * idx
