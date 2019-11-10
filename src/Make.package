@@ -1,5 +1,5 @@
-CEXE_sources += advance.cpp
 CEXE_sources += incflo.cpp
+CEXE_sources += incflo_advance.cpp
 CEXE_sources += incflo_compute_dt.cpp
 CEXE_sources += main.cpp
 

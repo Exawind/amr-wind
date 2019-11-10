@@ -1,7 +1,8 @@
 
 # Parallelisation options
-USE_MPI = TRUE
-USE_OMP = FALSE
+USE_MPI  = TRUE
+USE_OMP  = FALSE
+USE_CUDA = FALSE
 
 # Debug mode?
 DEBUG = FALSE
@@ -13,13 +14,11 @@ USE_HYPRE = FALSE
 PROFILE       = FALSE
 TINY_PROFILE  = FALSE
 
-
-
-########################################################################\
-# 																		#
-# Below are settings which we probably don't want to change very often. #
-# 																		#
-########################################################################/
+########################################################################
+# 	
+# Below are settings which we probably don't want to change very often. 
+# 								
+########################################################################
 
 # Path to AMReX directory and incflo directories
 AMREX_HOME ?= ../../amrex

@@ -275,16 +275,18 @@ private:
 
     // Read inputs file using ParmParse
     void ReadParameters();
+    void ReadIOParameters();
+    void ReadRheologyParameters();
 
     // Resize arrays to fit (up to) max_level + 1 AMR levels
-	void ResizeArrays();
+    void ResizeArrays();
 
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations, level_mask
-	void PostInit(int restart_flag);
-	void SetBCTypes();
+    void PostInit(int restart_flag);
+    void SetBCTypes();
     void InitFluid();
-	void SetBackgroundPressure();
-	void InitialProjection();
+    void SetBackgroundPressure();
+    void InitialProjection();
     void InitialIterations();
     void setup_level_mask();
 
@@ -479,11 +481,16 @@ private:
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
+
+    // Scalar diffusive coefficient
     Vector<Real> mu_s;
+
+    // Density (if constant)
     Real ro_0 = 1.0;
 
     bool constant_density = true;
-    bool advect_tracer  = false;
+    bool advect_tracer    = false;
+    bool use_godunov      = false;
 
     // Fluid properties
     std::string fluid_model;
