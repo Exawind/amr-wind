@@ -291,25 +291,24 @@ void incflo::SetBCTypes()
 
 void incflo::SetBackgroundPressure()
 {
-	Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-	Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-	Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
+    Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
+    Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
+    Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
 
-	int delp_dir;
-	set_delp_dir(&delp_dir);
+    int delp_dir;
+    set_delp_dir(&delp_dir);
 
     IntVect press_per = IntVect(geom[0].isPeriodic(0),
                                 geom[0].isPeriodic(1),
                                 geom[0].isPeriodic(2));
 
-	// Here we set a separate periodicity flag for p0 because when we use
-	// pressure drop (delp) boundary conditions we fill all variables *except* p0
-	// periodically
+    // Here we set a separate periodicity flag for p0 because when we use
+    // pressure drop (delp) boundary conditions we fill all variables *except* p0
+    // periodically
     if(delp_dir > -1)
-    {
         press_per[delp_dir] = 0;
-    }
-	p0_periodicity = Periodicity(press_per);
+
+    p0_periodicity = Periodicity(press_per);
 
     for(int lev = 0; lev <= max_level; lev++)
     {
