@@ -1,10 +1,4 @@
 #include <incflo.H>
-#include <param_mod_F.H>
-
-#include <AMReX_REAL.H>
-#include <AMReX_BLFort.H>
-#include <AMReX_SPACE.H>
-#include <AMReX_Array.H>
 
 #ifdef AMREX_USE_EB
 #include <AMReX_EB_utils.H>

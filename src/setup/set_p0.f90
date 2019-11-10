@@ -12,7 +12,7 @@ subroutine set_p0(lo, hi, domlo, domhi, &
                   bct_ilo, bct_ihi, bct_jlo, bct_jhi, &
                   bct_klo, bct_khi, ng ) bind(C, name="set_p0")
 
-   use bc,       only: dim_bc, bc_type, bc_p, bc_defined
+   use bc,       only: bc_type, bc_p, bc_defined
    use bc,       only: pinf_, pout_, minf_
    use constant, only: delp, gravity, ro_0, ic_p
    use constant, only: zero, undefined, is_defined
@@ -46,7 +46,7 @@ subroutine set_p0(lo, hi, domlo, domhi, &
 !-----------------------------------------------
    ! indices
    integer :: i, j, k, ibc, jbc, kbc
-   integer :: icv, bcv, bcv_lo, bcv_hi
+   integer :: bcv, bcv_lo, bcv_hi
    integer :: nlft, nbot, ndwn, nrgt, ntop, nup
    integer :: delp_dir
 
@@ -239,10 +239,10 @@ end if
 
    ! Search for an outflow boundary condition where pressure is specified
    pj = undefined
-   do icv = 1, dim_bc
-      if (bc_defined(icv)) then
-         if(bc_type(icv)=='P_OUTFLOW' .or. bc_type(icv)=='PO') &
-            pj = bc_p(icv)
+   do bcv = 1, 6
+      if (bc_defined(bcv)) then
+         if(bc_type(bcv)=='P_OUTFLOW' .or. bc_type(bcv)=='PO') &
+            pj = bc_p(bcv)
       endif
    enddo
 

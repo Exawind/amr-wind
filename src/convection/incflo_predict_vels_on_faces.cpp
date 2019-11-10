@@ -47,7 +47,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 #endif
 
        Real small_vel = 1.e-10;
-       Real  huge_vel = 1.e100;
+       Real  huge_vel = 1.2345e300;
 
        // ****************************************************************************
        // We will store the left and right states in arrays for interpolation

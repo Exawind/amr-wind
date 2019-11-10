@@ -4,7 +4,4 @@ CEXE_sources += incflo_compute_dt.cpp
 CEXE_sources += main.cpp
 
 CEXE_headers += incflo_bclist.H
-CEXE_headers += param_mod_F.H
 CEXE_headers += incflo_proj_F.H
-
-f90EXE_sources += param_mod.f90

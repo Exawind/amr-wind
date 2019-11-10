@@ -1,5 +1,4 @@
 #include <incflo.H>
-#include <param_mod_F.H>
 
 namespace ugradu_aux {
 
@@ -380,7 +379,7 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   const GpuArray<int, 3> bc_types =
     {bc_list.get_minf(), bc_list.get_pinf(), bc_list.get_pout()};
 
-  const Real my_huge = get_my_huge();
+  const Real my_huge = 1.2345e300;
   //
   // First compute the convective fluxes at the face center
   // Do this on ALL faces on the tile, i.e. INCLUDE as many ghost faces as
