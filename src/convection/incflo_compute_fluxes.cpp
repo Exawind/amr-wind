@@ -120,8 +120,8 @@ incflo::incflo_compute_fluxes(int lev,
 
             if (flags.getType(amrex::grow(bx,0)) != FabType::covered )
             {
-                // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
-                if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
+                // No cut cells in tile + 1 halo -> use non-eb routine
+                if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
                 {
                     incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
                                                  (*state_in[lev])[mfi], state_comp, ncomp,
