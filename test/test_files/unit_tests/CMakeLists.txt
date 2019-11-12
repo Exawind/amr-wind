@@ -1,4 +1,3 @@
-set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 add_executable(${amr_wind_unit_test_exe_name} "")
 add_dependencies(${amr_wind_unit_test_exe_name} generate_build_info_${amr_wind_exe_name})
 

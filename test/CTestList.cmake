@@ -56,7 +56,7 @@ function(add_test_r TEST_NAME NP)
       set(FCOMPARE ${CMAKE_BINARY_DIR}/fcompare)
     endif()
     # Find fextrema
-    if(TEST_WITH_FEXTREMA)
+    if(AMR_WIND_TEST_WITH_FEXTREMA)
       set(FEXTREMA ${CMAKE_BINARY_DIR}/fextrema)
     endif()
     # Make working directory for test
@@ -72,7 +72,7 @@ function(add_test_r TEST_NAME NP)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     # Use fextrema to test diffs in plots against gold files
-    if(TEST_WITH_FEXTREMA)
+    if(AMR_WIND_TEST_WITH_FEXTREMA)
       set(FEXTREMA_COMMAND "&& ${FEXTREMA} ${PLOT_TEST} > ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext && ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_files/fextrema_compare.py -f ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext -g ${CURRENT_TEST_SOURCE_DIR}/${TEST_NAME}.ext.gold -t ${TOLERANCE}")
     endif()
     # Add test and actual test commands to CTest database

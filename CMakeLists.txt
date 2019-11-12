@@ -11,15 +11,15 @@ include(CMakePackageConfigHelpers)
 option(AMR_WIND_ENABLE_DOCUMENTATION "Build documentation" OFF)
 option(AMR_WIND_ENABLE_SPHINX_API_DOCS "Link Doxygen API docs to Sphinx" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" OFF)
+option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
+option(AMR_WIND_ENABLE_FEXTREMA "Enable building fextrema when not testing" OFF)
 
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
-option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
-option(AMR_WIND_ENABLE_FEXTREMA "Enable building fextrema when not testing" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_TEST_WITH_FEXTREMA "Check test plots against maxima and minima files" OFF)
 
-#Options for the executable in a single build dir
+#Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 
@@ -27,16 +27,6 @@ option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-#Build plot tools if testing enabled
-if(AMR_WIND_ENABLE_TESTS)
-  if(AMR_WIND_TEST_WITH_FCOMPARE)
-    set(AMR_WIND_ENABLE_FCOMPARE ON)
-  endif()
-  if(AMR_WIND_TEST_WITH_FEXTREMA)
-    set(AMR_WIND_ENABLE_FEXTREMA ON)
-  endif()
-endif()
 
 ########################### AMReX #####################################
 add_subdirectory(submods/amrex)
@@ -77,8 +67,11 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
-#Create targets
+#Create target names
 set(amr_wind_exe_name "amr_wind")
+set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
+
+#Create main target executable
 add_executable(${amr_wind_exe_name} "")
 
 #Keep our Fortran module files confined to a unique directory for each executable 
