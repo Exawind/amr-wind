@@ -54,6 +54,7 @@ if(AMR_WIND_ENABLE_MPI)
 endif()
 
 # General information about machine, compiler, and build type
+message(STATUS "AMR-Wind Information:")
 message(STATUS "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 message(STATUS "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
@@ -78,7 +79,6 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 
 #Create targets
 set(amr_wind_exe_name "amr_wind")
-set(amr_wind_unit_test_exe_name "amr_wind_unit_tests")
 add_executable(${amr_wind_exe_name} "")
 
 #Keep our Fortran module files confined to a unique directory for each executable 
@@ -99,7 +99,6 @@ add_custom_target(generate_build_info_${amr_wind_exe_name} ALL
    WORKING_DIRECTORY ${GENERATED_FILES_DIR} BYPRODUCTS ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
    COMMENT "Generating AMReX_buildInfo.cpp"
 )                  
-set_property(SOURCE ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp PROPERTY GENERATED 1)
   
 #Set the dependencies on targets so the generated source code files are there before we try to build the executable 
 add_dependencies(${amr_wind_exe_name} generate_build_info_${amr_wind_exe_name})

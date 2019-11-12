@@ -14,6 +14,7 @@ target_sources(${amr_wind_exe_name}
    )
 
 #Add generated source files
+set_property(SOURCE ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp PROPERTY GENERATED 1)
 target_sources(${amr_wind_exe_name}
    PRIVATE
       ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
