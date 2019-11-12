@@ -65,7 +65,7 @@ install:
 before_script:
   # have CMake to generate build files
   - cd "${TRAVIS_BUILD_DIR}"
-  - mkdir build && cd build
+  - mkdir travis_build && cd travis_build
   - cmake -DCMAKE_INSTALL_PREFIX:PATH=./install -DCMAKE_BUILD_TYPE:STRING=$BUILD_TYPE -DAMR_WIND_ENABLE_MPI:BOOL=ON -DCMAKE_CXX_COMPILER:STRING=$MPI_CXX_COMPILER -DCMAKE_C_COMPILER:STRING=$MPI_C_COMPILER -DCMAKE_Fortran_COMPILER:STRING=$MPI_Fortran_COMPILER -DAMR_WIND_ENABLE_TESTS:BOOL=ON -DAMR_WIND_TEST_WITH_FEXTREMA:BOOL=ON ..
 
 script:
