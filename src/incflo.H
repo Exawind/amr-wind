@@ -257,12 +257,12 @@ private:
      static IntVect e_y;
      static IntVect e_z;
 
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -391,7 +391,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeDrag();
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Embedded Boundaries
@@ -420,7 +420,7 @@ private:
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
 #endif
- 
+
 #if 0
     // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
     //    but otherwise it will just be a FabFactory that doesn't know anything about EB
@@ -625,7 +625,7 @@ private:
     Vector<std::unique_ptr<MultiFab>> m_u_mac;
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
     Vector<std::unique_ptr<MultiFab>> m_w_mac;
-    
+
     // integer MultiFab specifying if a finer level exists above
     // value is 1 if a finer level is not above and 0 otherwise
     Vector<std::unique_ptr<iMultiFab>> level_mask;
