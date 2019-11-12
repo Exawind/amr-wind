@@ -14,6 +14,7 @@ mark_as_advanced(
 set_target_properties(gtest PROPERTIES FOLDER Submodules)
 set_target_properties(gtest_main PROPERTIES FOLDER Submodules)
 
+add_subdirectory(test_files)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/CTestList.cmake)
 
-add_subdirectory(test_files)
