@@ -74,32 +74,14 @@ incflo::incflo_compute_fluxes(int lev,
         // Create cc_mask
         iMultiFab cc_mask(grids[lev], dmap[lev], 1, 1);
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-       {
-           std::vector< std::pair<int,Box> > isects;
-           const std::vector<IntVect>& pshifts = geom[lev].periodicity().shiftIntVect();
-           const BoxArray& ba = cc_mask.boxArray();
-           for (MFIter mfi(cc_mask); mfi.isValid(); ++mfi)
-           {
-               Array4<int> const& fab = cc_mask.array(mfi);
+        const int covered_value = 1;
+        const int notcovered_value = 0;
+        const int physical_boundaries_value = 0;
+        const int interior_value = 1;
 
-               const Box& bx = mfi.fabbox();
-               for (const auto& iv : pshifts)
-               {
-                   ba.intersections(bx+iv, isects);
-                   for (const auto& is : isects)
-                   {
-                       const Box& b = is.second-iv;
-                       AMREX_FOR_3D ( b, i, j, k,
-                       {
-                           fab(i,j,k) = 1;
-                       });
-                   }
-               }
-           }
-        }
+        cc_mask.BuildMask(geom[lev].Domain(), geom[lev].periodicity(),
+            covered_value, notcovered_value,
+            physical_boundaries_value, interior_value);
 
 #ifdef AMREX_USE_EB
         // We do this here to avoid any confusion about the FAB setVal.
