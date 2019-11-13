@@ -119,8 +119,6 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              AMREX_FOR_3D(vbx, i, j, k, { vmac_array(i,j,k) = val; });
              AMREX_FOR_3D(wbx, i, j, k, { wmac_array(i,j,k) = val; });
  
-             Gpu::synchronize();
-
 //           (*m_u_mac[lev])[mfi].setVal( 1.2345e300, ubx, 0, 1);
 //           (*m_v_mac[lev])[mfi].setVal( 1.2345e300, vbx, 0, 1);
 //           (*m_w_mac[lev])[mfi].setVal( 1.2345e300, wbx, 0, 1);

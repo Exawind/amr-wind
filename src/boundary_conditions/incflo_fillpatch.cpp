@@ -148,8 +148,6 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
         CpuBndryFuncFab bfunc(VelFillBox);
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, 3, geom[lev], physbc, 0);
-
-        Gpu::synchronize();
     }
     else
     {
@@ -168,8 +166,6 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
                                   0, 0, 3, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
-        Gpu::synchronize();
     }
 }
 
@@ -194,8 +190,6 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
         CpuBndryFuncFab bfunc(DensityFillBox);
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, 1, geom[lev], physbc, 0);
-
-        Gpu::synchronize();
     }
     else
     {
@@ -214,8 +208,6 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
                                   0, 0, 1, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
-        Gpu::synchronize();
     }
 }
 
@@ -242,8 +234,6 @@ incflo::FillPatchScalar (int lev, Real time, MultiFab& mf)
         PhysBCFunct<CpuBndryFuncFab> physbc(geom[lev], bcs, bfunc);
         amrex::FillPatchSingleLevel(mf, time, smf, stime, 0, 0, ntrac, 
                                     geom[lev], physbc, 0);
-
-        Gpu::synchronize();
     }
     else
     {
@@ -262,8 +252,6 @@ incflo::FillPatchScalar (int lev, Real time, MultiFab& mf)
                                   0, 0, ntrac, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
-        Gpu::synchronize();
     }
 }
 
