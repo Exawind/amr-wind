@@ -129,7 +129,9 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nlft > 0)
     {
-      AMREX_FOR_3D(ulo_bx_yz, i, j, k,
+      amrex::ParallelFor(ulo_bx_yz,
+        [bct_ilo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+
       {
         const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
@@ -146,7 +148,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nrgt > 0)
     {
-      AMREX_FOR_3D(uhi_bx_yz, i, j, k,
+      amrex::ParallelFor(uhi_bx_yz,
+        [bct_ihi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
@@ -157,7 +160,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nbot > 0)
     {
-      AMREX_FOR_3D(vlo_bx_xz, i, j, k,
+      amrex::ParallelFor(vlo_bx_xz,
+        [bct_jlo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
@@ -174,7 +178,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (ntop > 0)
     {
-      AMREX_FOR_3D(vhi_bx_xz, i, j, k,
+      amrex::ParallelFor(vhi_bx_xz,
+        [bct_jhi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
@@ -185,7 +190,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (ndwn > 0)
     {
-      AMREX_FOR_3D(wlo_bx_xy, i, j, k,
+      amrex::ParallelFor(wlo_bx_xy,
+        [bct_klo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -202,7 +208,8 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     if (nup > 0)
     {
-      AMREX_FOR_3D(whi_bx_xy, i, j, k,
+      amrex::ParallelFor(whi_bx_xy,
+        [bct_khi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);

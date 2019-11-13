@@ -152,7 +152,9 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& wmns_fab = wmns.array(mfi);
 
              // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-             AMREX_FOR_3D(ubx, i, j, k, 
+
+             amrex::ParallelFor(ubx,[small_vel,ccvel_fab,xslopes_fab,upls_fab,umns_fab,umac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // X-faces
                  upls_fab(i,j,k) = ccvel_fab(i  ,j,k,0) - 0.5 * xslopes_fab(i  ,j,k,0);
@@ -168,7 +170,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(vbx, i, j, k,
+             amrex::ParallelFor(vbx,[small_vel,ccvel_fab,yslopes_fab,vpls_fab,vmns_fab,vmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Y-faces
                  vpls_fab(i,j,k) = ccvel_fab(i,j  ,k,1) - 0.5 * yslopes_fab(i,j  ,k,1);
@@ -184,7 +187,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx, i, j, k,
+             amrex::ParallelFor(wbx,[small_vel,ccvel_fab,zslopes_fab,wpls_fab,wmns_fab,wmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Z-faces
                  wpls_fab(i,j,k) = ccvel_fab(i,j,k  ,2) - 0.5 * zslopes_fab(i,j,k  ,2);
@@ -225,7 +229,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& apz_fab = areafrac[2]->array(mfi);
 
              // This FAB has cut cells
-             AMREX_FOR_3D(ubx_grown, i, j, k, 
+             amrex::ParallelFor(ubx_grown, [apx_fab,upls_fab,umns_fab,ccvel_fab,xslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // X-faces
                  if (apx_fab(i,j,k) > 0.0)
@@ -236,7 +241,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              });
 
 
-             AMREX_FOR_3D(vbx_grown, i, j, k,
+             amrex::ParallelFor(vbx_grown, [apy_fab,vpls_fab,vmns_fab,ccvel_fab,yslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Y-faces
                  if (apy_fab(i,j,k) > 0.0)
@@ -246,7 +252,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx_grown, i, j, k,
+             amrex::ParallelFor(wbx_grown, [apz_fab,wpls_fab,wmns_fab,ccvel_fab,zslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Z-faces
                  if (apz_fab(i,j,k) > 0.0) {
@@ -317,7 +324,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              const auto& ccm_fab = cc_mask.const_array(mfi);
 
-             AMREX_FOR_3D(ubx, i, j, k, 
+             amrex::ParallelFor(ubx,[small_vel,huge_vel,apx_fab,ccm_fab,fcx_fab,upls_fab,umns_fab,umac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apx_fab(i,j,k) == 0.0)
 
@@ -365,7 +373,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              });
 
-             AMREX_FOR_3D(vbx, i, j, k,
+             amrex::ParallelFor(vbx,[small_vel,huge_vel,apy_fab,ccm_fab,fcy_fab,vpls_fab,vmns_fab,vmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apy_fab(i,j,k) == 0.0) {
 
@@ -412,7 +421,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx, i, j, k,
+             amrex::ParallelFor(wbx,[small_vel,huge_vel,apz_fab,ccm_fab,fcz_fab,wpls_fab,wmns_fab,wmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apz_fab(i,j,k) == 0.0)
 
