@@ -53,7 +53,7 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     FArrayBox dest_fab(dest);
     Elixir eli_dest_fab = dest_fab.elixir();
 
-    incflo_for_fillpatching->set_velocity_bcs (time, lev, dest_fab, domain, &extrap_dir_bcs);
+    incflo_for_fillpatching->set_velocity_bcs (time, lev, dest_fab, domain, extrap_dir_bcs);
 }
 
 // This interface must match the definition of the interface for

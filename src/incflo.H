@@ -149,7 +149,7 @@ public:
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
-                          const int* extrap_dir_bcs) const;
+                          const int extrap_dir_bcs) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

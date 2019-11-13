@@ -29,8 +29,9 @@ incflo::incflo_set_velocity_bcs (Real time,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-     for (MFIter mfi(*vel_in[lev], true); mfi.isValid(); ++mfi)
-        set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, &extrap_dir_bcs);
+     for (MFIter mfi(*vel_in[lev]); mfi.isValid(); ++mfi) {
+         set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, extrap_dir_bcs);
+     }
 
 #ifdef AMREX_USE_EB
      EB_set_covered(*vel_in[lev], 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow(), covered_val);
@@ -46,8 +47,10 @@ incflo::set_velocity_bcs(Real time,
                          const int lev,
                          FArrayBox& vel_fab,
                          const Box& domain,
-                         const int* extrap_dir_bcs) const
+                         const int extrap_dir_bcs) const
 {
+  auto lprobtype = probtype;
+
   IntVect dom_lo(domain.loVect());
   IntVect dom_hi(domain.hiVect());
 
@@ -173,7 +176,7 @@ incflo::set_velocity_bcs(Real time,
         if (n == 0)
         {
            vel_arr(i,j,k,n) = p_bc_u[bcv];
-           if (probtype == 31)
+           if (lprobtype == 31)
            {
                Real y = (j + 0.5) / (dom_hi[1] - dom_lo[1] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_u[bcv] * y * (1.0 - y);
@@ -218,7 +221,7 @@ incflo::set_velocity_bcs(Real time,
         if(n == 1)
         {
            vel_arr(i,j,k,n) = p_bc_v[bcv];
-           if (probtype == 32)
+           if (lprobtype == 32)
            {
                Real z = (k + 0.5) / (dom_hi[2] - dom_lo[2] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_v[bcv] * z * (1.0 - z);
@@ -265,7 +268,7 @@ incflo::set_velocity_bcs(Real time,
         if(n == 2)
         {
            vel_arr(i,j,k,n) = p_bc_w[bcv];
-           if (probtype == 33)
+           if (lprobtype == 33)
            {
                Real x = (i + 0.5) / (dom_hi[0] - dom_lo[0] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_w[bcv] * x * (1.0 - x);
@@ -314,7 +317,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_yz_lo_2D, 3, i, j, k, n,
       {
@@ -341,7 +344,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_yz_hi_2D, 3, i, j, k, n,
       {
@@ -367,7 +370,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_xz_lo_2D, 3, i, j, k, n,
       {
@@ -393,7 +396,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_xz_hi_2D, 3, i, j, k, n,
       {
@@ -419,7 +422,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_xy_lo_2D, 3, i, j, k, n,
       {
@@ -445,7 +448,7 @@ incflo::set_velocity_bcs(Real time,
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
       AMREX_FOR_4D(bx_xy_hi_2D, 3, i, j, k, n,
       {
