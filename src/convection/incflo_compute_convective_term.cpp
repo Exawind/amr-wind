@@ -71,8 +71,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    arrays returned from this call are on face CENTROIDS
         incflo_predict_vels_on_faces(lev, time, vel_in);
-
-        Gpu::synchronize();
     }
 
     // Do projection on all AMR levels in one shot -- note that the {u_mac, v_mac, w_mac}
@@ -179,8 +177,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         conv_u_in[lev] -> mult(-1.0);
         conv_r_in[lev] -> mult(-1.0);
         conv_t_in[lev] -> mult(-1.0);
-
-        Gpu::synchronize();
     } // lev
 }
 
@@ -213,8 +209,6 @@ incflo::incflo_divergence_plus_redist(const int lev,
 #else
     computeDivergence(*conv_in[lev], GetArrOfConstPtrs(fluxes), geom[lev]);
 #endif
-
-    Gpu::synchronize();
 }
 
 
