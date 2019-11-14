@@ -462,7 +462,7 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
     }
   });
 
-  amrex::ParallelFor(wbx,ncomp, [my_huge,fcy_fab,ccm_fab,areafrac_y,sy,v,fy] 
+  amrex::ParallelFor(vbx,ncomp, [my_huge,fcy_fab,ccm_fab,areafrac_y,sy,v,fy] 
     AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     if ( areafrac_y(i,j,k) > 0 ) {
