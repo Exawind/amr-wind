@@ -525,8 +525,12 @@ private:
     std::string restart_file{""};
 
     // Flags for saving fluid data in plot files
-    int plt_vel         = 1;
-    int plt_gradp       = 1;
+    int plt_velx        = 1;
+    int plt_vely        = 1;
+    int plt_velz        = 1;
+    int plt_gpx         = 1;
+    int plt_gpy         = 1;
+    int plt_gpz         = 1;
     int plt_rho         = 1;
     int plt_tracer      = 1;
     int plt_p           = 0;

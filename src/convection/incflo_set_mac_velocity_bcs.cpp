@@ -131,7 +131,6 @@ incflo::set_MAC_velocity_bcs ( int lev,
     {
       amrex::ParallelFor(ulo_bx_yz,
         [bct_ilo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-
       {
         const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);

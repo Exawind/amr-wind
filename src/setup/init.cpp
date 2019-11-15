@@ -132,8 +132,14 @@ void incflo::ReadIOParameters()
     // Which variables to write to plotfile
     pltVarCount = 0;
 
-    pp.query("plt_vel",        plt_vel   );
-    pp.query("plt_gradp",      plt_gradp );
+    pp.query("plt_velx",       plt_velx  );
+    pp.query("plt_vely",       plt_vely  );
+    pp.query("plt_velz",       plt_velz  );
+
+    pp.query("plt_gpx",        plt_gpx );
+    pp.query("plt_gpy",        plt_gpy );
+    pp.query("plt_gpz",        plt_gpz );
+
     pp.query("plt_rho",        plt_rho   );
     pp.query("plt_tracer",     plt_tracer);
     pp.query("plt_p",          plt_p     );
@@ -152,22 +158,30 @@ void incflo::ReadIOParameters()
 
     if(plt_ccse_regtest != 0)
     {
-        plt_vel        = 1;
-        plt_gradp      = 1;
+        plt_velx       = 1;
+        plt_vely       = 1;
+        plt_velz       = 1;
+        plt_gpx        = 1;
+        plt_gpy        = 1;
+        plt_gpz        = 1;
         plt_rho        = 1;
         plt_tracer     = 1;
-        plt_p          = 1;
-        plt_eta        = 1;
-        plt_vort       = 1;
-        plt_strainrate = 1;
-        plt_stress     = 1;
-        plt_divu       = 1;
-        plt_vfrac      = 1;
+        plt_p          = 0;
+        plt_eta        = 0;
+        plt_vort       = 0;
+        plt_strainrate = 0;
+        plt_stress     = 0;
+        plt_divu       = 0;
+        plt_vfrac      = 0;
     }
 
     // Count the number of variables to save.
-    if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
-    if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
+    if(plt_velx       == 1) pltVarCount += 1;
+    if(plt_vely       == 1) pltVarCount += 1;
+    if(plt_velz       == 1) pltVarCount += 1;
+    if(plt_gpx        == 1) pltVarCount += 1;
+    if(plt_gpy        == 1) pltVarCount += 1;
+    if(plt_gpz        == 1) pltVarCount += 1;
     if(plt_rho        == 1) pltVarCount += 1;
     if(plt_tracer     == 1) pltVarCount += ntrac;
     if(plt_p          == 1) pltVarCount += 1;
