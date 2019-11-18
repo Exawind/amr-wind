@@ -129,6 +129,30 @@ void incflo::ReadIOParameters()
     pp.query("plot_int", plot_int);
     pp.query("plot_per", plot_per);
 
+    // The plt_ccse_regtest resets the defaults,
+    //     but we can over-ride those below
+    int plt_ccse_regtest = 0;
+    pp.query("plt_ccse_regtest", plt_ccse_regtest);
+
+    if (plt_ccse_regtest != 0)
+    {
+        plt_velx       = 1;
+        plt_vely       = 1;
+        plt_velz       = 1;
+        plt_gpx        = 1;
+        plt_gpy        = 1;
+        plt_gpz        = 1;
+        plt_rho        = 1;
+        plt_tracer     = 1;
+        plt_p          = 0;
+        plt_eta        = 0;
+        plt_vort       = 0;
+        plt_strainrate = 0;
+        plt_stress     = 0;
+        plt_divu       = 0;
+        plt_vfrac      = 0;
+    }
+
     // Which variables to write to plotfile
     pltVarCount = 0;
 
@@ -152,28 +176,6 @@ void incflo::ReadIOParameters()
 
     // Special test for CCSE regression test. Override all individual
     // flags and save all data to plot file.
-
-    int plt_ccse_regtest = 0;
-    pp.query("plt_ccse_regtest", plt_ccse_regtest);
-
-    if(plt_ccse_regtest != 0)
-    {
-        plt_velx       = 1;
-        plt_vely       = 1;
-        plt_velz       = 1;
-        plt_gpx        = 1;
-        plt_gpy        = 1;
-        plt_gpz        = 1;
-        plt_rho        = 1;
-        plt_tracer     = 1;
-        plt_p          = 0;
-        plt_eta        = 0;
-        plt_vort       = 0;
-        plt_strainrate = 0;
-        plt_stress     = 0;
-        plt_divu       = 0;
-        plt_vfrac      = 0;
-    }
 
     // Count the number of variables to save.
     if(plt_velx       == 1) pltVarCount += 1;

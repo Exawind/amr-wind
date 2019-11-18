@@ -152,7 +152,12 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
 
            amrex::ParallelFor(bx,ncomp,
              [minf,domain,slopes_comp,ilo_ifab,ihi_ifab,jlo_ifab,jhi_ifab,klo_ifab,khi_ifab,
-              xs_fab,ys_fab,zs_fab,flag_fab,state_fab] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+#ifdef AMREX_USE_EB
+              xs_fab,ys_fab,zs_fab,flag_fab,state_fab] 
+#else
+              xs_fab,ys_fab,zs_fab,state_fab] 
+#endif
+              AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
            {
 #ifdef AMREX_USE_EB
                if ( (i == domain.smallEnd(0)) && !flag_fab(i,j,k).isCovered() && ilo_ifab(i-1,j,k,0) == minf)
