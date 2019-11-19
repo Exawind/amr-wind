@@ -6,121 +6,127 @@ void incflo::AllocateArrays(int lev)
     UpdateEBFactory(lev);
 #endif
 
+#ifdef AMREX_USE_EB
+    const FabFactory<FArrayBox>& factory =  *ebfactory[lev];
+#else
+    const FabFactory<FArrayBox>& factory = FArrayBoxFactory();
+#endif
+
     // ********************************************************************************
     // Cell-based arrays
     // ********************************************************************************
 
-#ifdef AMREX_USE_EB
-    // Level Mask = 1 if not covered by a finer patch, else 0
+    // Level Mask = 1 if not covered by a finer patch, else 0 
+    // Note we never pass an EBFactory to this one
     level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo() /*, default factory*/));
     level_mask[lev]->setVal(1);
     
     // Current Density
-    density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     density[lev]->setVal(0.);
 
     // Old density
-    density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     density_o[lev]->setVal(0.);
 
     // Current Tracer; default to 0
-    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     tracer[lev]->setVal(0.);
 
     // Old tracer; default to 0
-    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     tracer_o[lev]->setVal(0.);
 
     // Current Velocity
-    vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     vel[lev]->setVal(0.);
 
     // Old velocity
-    vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     vel_o[lev]->setVal(0.);
 
     // Pressure gradient
-    gp[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    gp[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     gp[lev]->setVal(0.);
 
     // Current Viscosity
-    eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     eta[lev]->setVal(0.);
 
     // Old Viscosity
-    eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     eta_old[lev]->setVal(0.);
 
     // Strain-rate magnitude
-    strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     strainrate[lev]->setVal(0.);
 
     // Vorticity
-    vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     vort[lev]->setVal(0.);
 
     // Drag
-    drag[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    drag[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     drag[lev]->setVal(0.);
 
     // Convective terms for velocity
-    conv_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
+    conv_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), factory));
     conv_u[lev]->setVal(0.);
 
     // Convective terms for density 
-    conv_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+    conv_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), factory));
     conv_r[lev]->setVal(0.);
 
     // Convective terms for tracers
-    conv_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    conv_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
     conv_t[lev]->setVal(0.);
 
     // Old Convective terms for velocity
-    conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
+    conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), factory));
     conv_u_old[lev]->setVal(0.);
 
     // Convective terms for density
-    conv_r_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *ebfactory[lev]));
+    conv_r_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), factory));
     conv_r_old[lev]->setVal(0.);
 
     // Convective terms for tracers
-    conv_t_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    conv_t_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
     conv_t_old[lev]->setVal(0.);
 
     // Divergence of stress tensor terms
-    divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
-    divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), *ebfactory[lev]));
+    divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), factory));
+    divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), factory));
     divtau[lev]->setVal(0.);
     divtau_old[lev]->setVal(0.);
 
     // Scalar diffusion terms
-    laps[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
-    laps_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), *ebfactory[lev]));
+    laps[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
+    laps_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
     laps[lev]->setVal(0.);
     laps_old[lev]->setVal(0.);
 
     // Slopes in x-direction
-    xslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    xslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     xslopes_u[lev]->setVal(0.);
-    xslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    xslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     xslopes_r[lev]->setVal(0.);
-    xslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    xslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     xslopes_t[lev]->setVal(0.);
 
     // Slopes in y-direction
-    yslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    yslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     yslopes_u[lev]->setVal(0.);
-    yslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    yslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), factory));
     yslopes_r[lev]->setVal(0.);
-    yslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    yslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     yslopes_t[lev]->setVal(0.);
 
     // Slopes in z-direction
-    zslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), *ebfactory[lev]));
+    zslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo(), factory));
     zslopes_u[lev]->setVal(0.);
-    zslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    zslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     zslopes_r[lev]->setVal(0.);
-    zslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    zslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
     zslopes_t[lev]->setVal(0.);
 
     // ********************************************************************************
@@ -130,13 +136,13 @@ void incflo::AllocateArrays(int lev)
     const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
 
     // Pressure
-    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), factory));
     p0[lev]->setVal(0.);
-    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), factory));
     p[lev]->setVal(0.);
 
     // Divergence of velocity field
-    divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo(), factory));
     divu[lev]->setVal(0.);
 
     // ********************************************************************************
@@ -146,173 +152,20 @@ void incflo::AllocateArrays(int lev)
     // Create a BoxArray on x-faces.
     BoxArray x_edge_ba = grids[lev];
     x_edge_ba.surroundingNodes(0);
-    m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo(), factory));
     m_u_mac[lev]->setVal(0.);
 
     // Create a BoxArray on y-faces.
     BoxArray y_edge_ba = grids[lev];
     y_edge_ba.surroundingNodes(1);
-    m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo(), factory));
     m_v_mac[lev]->setVal(0.);
 
     // Create a BoxArray on y-faces.
     BoxArray z_edge_ba = grids[lev];
     z_edge_ba.surroundingNodes(2);
-    m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
+    m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo(), factory));
     m_w_mac[lev]->setVal(0.);
-
-#else
-
-    // Level Mask = 1 if not covered by a finer patch, else 0
-    level_mask[lev].reset(new iMultiFab(grids[lev], dmap[lev], 1, 0, MFInfo()));
-    level_mask[lev]->setVal(1);
-    
-    // Current Density
-    density[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    density[lev]->setVal(0.);
-
-    // Old density
-    density_o[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    density_o[lev]->setVal(0.);
-
-    // Current Tracer; default to 0
-    tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    tracer[lev]->setVal(0.);
-
-    // Old tracer; default to 0
-    tracer_o[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    tracer_o[lev]->setVal(0.);
-
-    // Current Velocity
-    vel[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    vel[lev]->setVal(0.);
-
-    // Old velocity
-    vel_o[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    vel_o[lev]->setVal(0.);
-
-    // Pressure gradient
-    gp[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    gp[lev]->setVal(0.);
-
-    // Current Viscosity
-    eta[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    eta[lev]->setVal(0.);
-
-    // Old Viscosity
-    eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    eta_old[lev]->setVal(0.);
-
-    // Strain-rate magnitude
-    strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    strainrate[lev]->setVal(0.);
-
-    // Vorticity
-    vort[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    vort[lev]->setVal(0.);
-
-    // Drag
-    drag[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    drag[lev]->setVal(0.);
-
-    // Convective terms for velocity
-    conv_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo()));
-    conv_u[lev]->setVal(0.);
-
-    // Convective terms for density 
-    conv_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo()));
-    conv_r[lev]->setVal(0.);
-
-    // Convective terms for tracers
-    conv_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo()));
-    conv_t[lev]->setVal(0.);
-
-    // Old Convective terms for velocity
-    conv_u_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo()));
-    conv_u_old[lev]->setVal(0.);
-
-    // Convective terms for density
-    conv_r_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo()));
-    conv_r_old[lev]->setVal(0.);
-
-    // Convective terms for tracers
-    conv_t_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo()));
-    conv_t_old[lev]->setVal(0.);
-
-    // Divergence of stress tensor terms
-    divtau[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo()));
-    divtau_old[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo()));
-    divtau[lev]->setVal(0.);
-    divtau_old[lev]->setVal(0.);
-
-    // Scalar diffusion terms
-    laps[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo()));
-    laps_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo()));
-    laps[lev]->setVal(0.);
-    laps_old[lev]->setVal(0.);
-
-    // Slopes in x-direction
-    xslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    xslopes_u[lev]->setVal(0.);
-    xslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    xslopes_r[lev]->setVal(0.);
-    xslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    xslopes_t[lev]->setVal(0.);
-
-    // Slopes in y-direction
-    yslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    yslopes_u[lev]->setVal(0.);
-    yslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
-    yslopes_r[lev]->setVal(0.);
-    yslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    yslopes_t[lev]->setVal(0.);
-
-    // Slopes in z-direction
-    zslopes_u[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost, MFInfo()));
-    zslopes_u[lev]->setVal(0.);
-    zslopes_r[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    zslopes_r[lev]->setVal(0.);
-    zslopes_t[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
-    zslopes_t[lev]->setVal(0.);
-
-    // ********************************************************************************
-    // Node-based arrays
-    // ********************************************************************************
-
-    const BoxArray & nd_grids = amrex::convert(grids[lev], IntVect{1,1,1});
-
-    // Pressure
-    p0[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo()));
-    p0[lev]->setVal(0.);
-    p[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo()));
-    p[lev]->setVal(0.);
-
-    // Divergence of velocity field
-    divu[lev].reset(new MultiFab(nd_grids, dmap[lev], 1, nghost, MFInfo()));
-    divu[lev]->setVal(0.);
-
-    // ********************************************************************************
-    // Face-based arrays
-    // ********************************************************************************
-
-    // Create a BoxArray on x-faces.
-    BoxArray x_edge_ba = grids[lev];
-    x_edge_ba.surroundingNodes(0);
-    m_u_mac[lev].reset(new MultiFab(x_edge_ba, dmap[lev], 1, nghost, MFInfo()));
-    m_u_mac[lev]->setVal(0.);
-
-    // Create a BoxArray on y-faces.
-    BoxArray y_edge_ba = grids[lev];
-    y_edge_ba.surroundingNodes(1);
-    m_v_mac[lev].reset(new MultiFab(y_edge_ba, dmap[lev], 1, nghost, MFInfo()));
-    m_v_mac[lev]->setVal(0.);
-
-    // Create a BoxArray on y-faces.
-    BoxArray z_edge_ba = grids[lev];
-    z_edge_ba.surroundingNodes(2);
-    m_w_mac[lev].reset(new MultiFab(z_edge_ba, dmap[lev], 1, nghost, MFInfo()));
-    m_w_mac[lev]->setVal(0.);
-#endif
 }
 
 void incflo::RegridArrays(int lev)
