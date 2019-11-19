@@ -29,8 +29,9 @@ incflo::incflo_set_velocity_bcs (Real time,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-     for (MFIter mfi(*vel_in[lev], true); mfi.isValid(); ++mfi)
-        set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, &extrap_dir_bcs);
+     for (MFIter mfi(*vel_in[lev]); mfi.isValid(); ++mfi) {
+         set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, extrap_dir_bcs);
+     }
 
 #ifdef AMREX_USE_EB
      EB_set_covered(*vel_in[lev], 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow(), covered_val);
@@ -46,8 +47,11 @@ incflo::set_velocity_bcs(Real time,
                          const int lev,
                          FArrayBox& vel_fab,
                          const Box& domain,
-                         const int* extrap_dir_bcs) const
+                         const int extrap_dir_bcs) const
 {
+  // Must do this because probtype is a member of incflo so can not be "just passed" to the GPU
+  auto lprobtype = probtype;
+
   IntVect dom_lo(domain.loVect());
   IntVect dom_hi(domain.hiVect());
 
@@ -161,7 +165,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (nlft > 0)
   {
-    AMREX_FOR_4D(bx_yz_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_yz_lo_3D, 3, 
+      [bct_ilo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_u,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
@@ -173,7 +178,7 @@ incflo::set_velocity_bcs(Real time,
         if (n == 0)
         {
            vel_arr(i,j,k,n) = p_bc_u[bcv];
-           if (probtype == 31)
+           if (lprobtype == 31)
            {
                Real y = (j + 0.5) / (dom_hi[1] - dom_lo[1] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_u[bcv] * y * (1.0 - y);
@@ -187,7 +192,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (nrgt > 0)
   {
-    AMREX_FOR_4D(bx_yz_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_yz_hi_3D, 3, 
+      [bct_ihi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_u,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
@@ -206,7 +212,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (nbot > 0)
   {
-    AMREX_FOR_4D(bx_xz_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xz_lo_3D, 3, 
+      [bct_jlo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
@@ -218,7 +225,7 @@ incflo::set_velocity_bcs(Real time,
         if(n == 1)
         {
            vel_arr(i,j,k,n) = p_bc_v[bcv];
-           if (probtype == 32)
+           if (lprobtype == 32)
            {
                Real z = (k + 0.5) / (dom_hi[2] - dom_lo[2] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_v[bcv] * z * (1.0 - z);
@@ -234,7 +241,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (ntop > 0)
   {
-    AMREX_FOR_4D(bx_xz_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xz_hi_3D, 3, 
+      [bct_jhi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
@@ -253,7 +261,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (ndwn > 0)
   {
-    AMREX_FOR_4D(bx_xy_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xy_lo_3D, 3, 
+      [bct_klo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -265,7 +274,7 @@ incflo::set_velocity_bcs(Real time,
         if(n == 2)
         {
            vel_arr(i,j,k,n) = p_bc_w[bcv];
-           if (probtype == 33)
+           if (lprobtype == 33)
            {
                Real x = (i + 0.5) / (dom_hi[0] - dom_lo[0] + 1);
                vel_arr(i,j,k,n) =  6.0 * p_bc_w[bcv] * x * (1.0 - x);
@@ -279,7 +288,8 @@ incflo::set_velocity_bcs(Real time,
 
   if (nup > 0)
   {
-    AMREX_FOR_4D(bx_xy_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xy_hi_3D, 3, 
+      [bct_khi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
@@ -302,21 +312,23 @@ incflo::set_velocity_bcs(Real time,
 
   if (nlft > 0)
   {
-    AMREX_FOR_4D(bx_yz_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_yz_lo_3D,
+      [bct_ilo,dom_lo,nsw,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
       if(bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = 0.;
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
+        vel_arr(i,j,k,0) = 0.;
+        vel_arr(i,j,k,1) = p_bc_v[bcv];
+        vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_yz_lo_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_yz_lo_2D, 3, 
+        [bct_ilo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
       {
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
@@ -329,130 +341,160 @@ incflo::set_velocity_bcs(Real time,
 
   if (nrgt > 0)
   {
-    AMREX_FOR_4D(bx_yz_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_yz_hi_3D,
+      [bct_ihi,dom_hi,nsw,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
       if(bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = 0.;
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
+        vel_arr(i,j,k,0) = 0.;
+        vel_arr(i,j,k,1) = p_bc_v[bcv];
+        vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_yz_hi_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_yz_hi_2D,
+        [bct_ihi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
         if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i-1,j,k,n) + c2*vel_arr(i-2,j,k,n)) / 3.0;
+        {
+          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i-1,j,k,0) + c2*vel_arr(i-2,j,k,0)) / 3.0;
+          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i-1,j,k,1) + c2*vel_arr(i-2,j,k,1)) / 3.0;
+          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i-1,j,k,2) + c2*vel_arr(i-2,j,k,2)) / 3.0;
+        }
       });
     }
   }
 
   if (nbot > 0)
   {
-    AMREX_FOR_4D(bx_xz_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xz_lo_3D,
+      [bct_jlo,dom_lo,nsw,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
-        if (n == 1) vel_arr(i,j,k,n) = 0.;
-        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
+        vel_arr(i,j,k,0) = p_bc_u[bcv];
+        vel_arr(i,j,k,1) = 0.;
+        vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_xz_lo_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_xz_lo_2D,
+        [bct_jlo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
         if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j+1,k,n) + c2*vel_arr(i,j+2,k,n)) / 3.0;
+        {
+          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j+1,k,0) + c2*vel_arr(i,j+2,k,0)) / 3.0;
+          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j+1,k,1) + c2*vel_arr(i,j+2,k,1)) / 3.0;
+          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j+1,k,2) + c2*vel_arr(i,j+2,k,2)) / 3.0;
+        }
       });
     }
   }
 
   if (ntop > 0)
   {
-    AMREX_FOR_4D(bx_xz_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xz_hi_3D,
+      [bct_jhi,dom_hi,nsw,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
-        if (n == 1) vel_arr(i,j,k,n) = 0.;
-        if (n == 2) vel_arr(i,j,k,n) = p_bc_w[bcv];
+        vel_arr(i,j,k,0) = p_bc_u[bcv];
+        vel_arr(i,j,k,1) = 0.;
+        vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_xz_hi_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_xz_hi_2D, 
+        [bct_jhi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
         if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j-1,k,n) + c2*vel_arr(i,j-2,k,n)) / 3.0 ;
+        {
+          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j-1,k,0) + c2*vel_arr(i,j-2,k,0)) / 3.0 ;
+          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j-1,k,1) + c2*vel_arr(i,j-2,k,1)) / 3.0 ;
+          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j-1,k,2) + c2*vel_arr(i,j-2,k,1)) / 3.0 ;
+        }
       });
     }
   }
 
   if (ndwn > 0)
   {
-    AMREX_FOR_4D(bx_xy_lo_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xy_lo_3D,
+      [bct_klo,dom_lo,nsw,p_bc_u,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel_arr(i,j,k,n) = 0.;
+        vel_arr(i,j,k,0) = p_bc_u[bcv];
+        vel_arr(i,j,k,1) = p_bc_v[bcv];
+        vel_arr(i,j,k,2) = 0.;
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_xy_lo_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_xy_lo_2D,
+        [bct_klo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
         if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j,k+1,n) + c2*vel_arr(i,j,k+2,n)) / 3.0 ;
+        {
+          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j,k+1,0) + c2*vel_arr(i,j,k+2,0)) / 3.0 ;
+          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j,k+1,1) + c2*vel_arr(i,j,k+2,1)) / 3.0 ;
+          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j,k+1,2) + c2*vel_arr(i,j,k+2,2)) / 3.0 ;
+        }
       });
     }
   }
 
   if (nup > 0)
   {
-    AMREX_FOR_4D(bx_xy_hi_3D, 3, i, j, k, n,
+    amrex::ParallelFor(bx_xy_hi_3D,
+      [bct_khi,dom_hi,nsw,p_bc_u,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
       if (bct == nsw) {
-        if (n == 0) vel_arr(i,j,k,n) = p_bc_u[bcv];
-        if (n == 1) vel_arr(i,j,k,n) = p_bc_v[bcv];
-        if (n == 2) vel_arr(i,j,k,n) = 0.;
+        vel_arr(i,j,k,0) = p_bc_u[bcv];
+        vel_arr(i,j,k,1) = p_bc_v[bcv];
+        vel_arr(i,j,k,2) = 0.;
       }
     });
 
-    if(*extrap_dir_bcs > 0)
+    if(extrap_dir_bcs > 0)
     {
-      AMREX_FOR_4D(bx_xy_hi_2D, 3, i, j, k, n,
+      amrex::ParallelFor(bx_xy_hi_2D,
+        [bct_khi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
         if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i,j,k-1,n) + c2*vel_arr(i,j,k-2,n)) / 3.0;
+        {
+          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j,k-1,0) + c2*vel_arr(i,j,k-2,0)) / 3.0;
+          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j,k-1,1) + c2*vel_arr(i,j,k-2,1)) / 3.0;
+          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j,k-1,2) + c2*vel_arr(i,j,k-2,2)) / 3.0;
+        }
       });
     }
   }

@@ -1,5 +1,4 @@
 #include <incflo.H>
-#include <param_mod_F.H>
 
 namespace ugradu_aux {
 
@@ -75,32 +74,14 @@ incflo::incflo_compute_fluxes(int lev,
         // Create cc_mask
         iMultiFab cc_mask(grids[lev], dmap[lev], 1, 1);
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-       {
-           std::vector< std::pair<int,Box> > isects;
-           const std::vector<IntVect>& pshifts = geom[lev].periodicity().shiftIntVect();
-           const BoxArray& ba = cc_mask.boxArray();
-           for (MFIter mfi(cc_mask); mfi.isValid(); ++mfi)
-           {
-               Array4<int> const& fab = cc_mask.array(mfi);
+        const int covered_value = 1;
+        const int notcovered_value = 0;
+        const int physical_boundaries_value = 0;
+        const int interior_value = 1;
 
-               const Box& bx = mfi.fabbox();
-               for (const auto& iv : pshifts)
-               {
-                   ba.intersections(bx+iv, isects);
-                   for (const auto& is : isects)
-                   {
-                       const Box& b = is.second-iv;
-                       AMREX_FOR_3D ( b, i, j, k,
-                       {
-                           fab(i,j,k) = 1;
-                       });
-                   }
-               }
-           }
-        }
+        cc_mask.BuildMask(geom[lev].Domain(), geom[lev].periodicity(),
+            covered_value, notcovered_value,
+            physical_boundaries_value, interior_value);
 
 #ifdef AMREX_USE_EB
         // We do this here to avoid any confusion about the FAB setVal.
@@ -121,8 +102,8 @@ incflo::incflo_compute_fluxes(int lev,
 
             if (flags.getType(amrex::grow(bx,0)) != FabType::covered )
             {
-                // No cut cells in tile + nghost-cell witdh halo -> use non-eb routine
-                if (flags.getType(amrex::grow(bx,nghost)) == FabType::regular )
+                // No cut cells in tile + 1 halo -> use non-eb routine
+                if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
                 {
                     incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
                                                  (*state_in[lev])[mfi], state_comp, ncomp,
@@ -200,7 +181,9 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
   const GpuArray<int, 3> bc_types =
     {bc_list.get_minf(), bc_list.get_pinf(), bc_list.get_pout()};
 
-  AMREX_FOR_4D(ubx, ncomp, i, j, k, n,
+  amrex::ParallelFor(ubx,ncomp,
+    [slopes_comp,state_comp,dom_low,dom_high,bct_ilo,bct_ihi,bc_types,state,x_slopes,u,fx] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real state_w(0)  ;
     Real state_mns(0); Real state_pls(0);
@@ -229,7 +212,9 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
     fx(i,j,k,n) = u(i,j,k) * state_w;
   });
 
-  AMREX_FOR_4D(vbx, ncomp, i, j, k, n,
+  amrex::ParallelFor(vbx,ncomp,
+    [slopes_comp,state_comp,dom_low,dom_high,bct_jlo,bct_jhi,bc_types,state,y_slopes,v,fy] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real state_s(0)  ;
     Real state_mns(0); Real state_pls(0);
@@ -258,7 +243,9 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
     fy(i,j,k,n) = v(i,j,k) * state_s;
   });
 
-  AMREX_FOR_4D(wbx, ncomp, i, j, k, n,
+  amrex::ParallelFor(wbx,ncomp,
+    [slopes_comp,state_comp,dom_low,dom_high,bct_klo,bct_khi,bc_types,state,z_slopes,w,fz] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real state_b(0)  ;
     Real state_mns(0); Real state_pls(0);
@@ -341,12 +328,12 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   Array4<const Real> const& y_slopes = yslopes_in.array();
   Array4<const Real> const& z_slopes = zslopes_in.array();
 
-  Array4<int> const& bc_ilo_type = bc_ilo[lev]->array();
-  Array4<int> const& bc_ihi_type = bc_ihi[lev]->array();
-  Array4<int> const& bc_jlo_type = bc_jlo[lev]->array();
-  Array4<int> const& bc_jhi_type = bc_jhi[lev]->array();
-  Array4<int> const& bc_klo_type = bc_klo[lev]->array();
-  Array4<int> const& bc_khi_type = bc_khi[lev]->array();
+  Array4<int> const& bct_ilo = bc_ilo[lev]->array();
+  Array4<int> const& bct_ihi = bc_ihi[lev]->array();
+  Array4<int> const& bct_jlo = bc_jlo[lev]->array();
+  Array4<int> const& bct_jhi = bc_jhi[lev]->array();
+  Array4<int> const& bct_klo = bc_klo[lev]->array();
+  Array4<int> const& bct_khi = bc_khi[lev]->array();
 
   const Box ubx       = amrex::surroundingNodes(bx,0);
   const Box vbx       = amrex::surroundingNodes(bx,1);
@@ -380,7 +367,7 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   const GpuArray<int, 3> bc_types =
     {bc_list.get_minf(), bc_list.get_pinf(), bc_list.get_pout()};
 
-  const Real my_huge = get_my_huge();
+  const Real my_huge = 1.2345e300;
   //
   // First compute the convective fluxes at the face center
   // Do this on ALL faces on the tile, i.e. INCLUDE as many ghost faces as
@@ -390,19 +377,21 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   //
   // ===================== X =====================
   //
-  AMREX_FOR_4D(ubx_grown, ncomp, i, j, k, n,
+  amrex::ParallelFor(ubx_grown,ncomp,
+    [my_huge,slopes_comp,state_comp,dom_low,dom_high,bct_ilo,bct_ihi,bc_types,areafrac_x,x_slopes,state,u,sx] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real upls(0); Real umns(0);
 
     if( areafrac_x(i,j,k) > 0 ) {
       if( i <= dom_low.x and
-       ugradu_aux::is_equal_to_any(bc_ilo_type(dom_low.x-1,j,k,0),
+       ugradu_aux::is_equal_to_any(bct_ilo(dom_low.x-1,j,k,0),
                                    bc_types.data(), bc_types.size()))
       {
         sx(i,j,k,n) = state(dom_low.x-1,j,k,state_comp+n);
       }
       else if( i >= dom_high.x+1 and
-       ugradu_aux::is_equal_to_any(bc_ihi_type(dom_high.x+1,j,k,0),
+       ugradu_aux::is_equal_to_any(bct_ihi(dom_high.x+1,j,k,0),
                                    bc_types.data(), bc_types.size()))
       {
         sx(i,j,k,n) = state(dom_high.x+1,j,k,state_comp+n);
@@ -418,7 +407,8 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
     }
   });
 
-  AMREX_FOR_4D(ubx, ncomp, i, j, k, n,
+  amrex::ParallelFor(ubx,ncomp, [my_huge,fcx_fab,ccm_fab,areafrac_x,sx,u,fx] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     if( areafrac_x(i,j,k) > 0 ) {
        int jj = j + static_cast<int>(std::copysign(1.0, fcx_fab(i,j,k,0)));
@@ -441,19 +431,21 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   //
   // ===================== Y =====================
   //
-  AMREX_FOR_4D(vbx_grown, ncomp, i, j, k, n,
+  amrex::ParallelFor(vbx_grown,ncomp,
+    [my_huge,slopes_comp,state_comp,dom_low,dom_high,bct_jlo,bct_jhi,bc_types,areafrac_y,y_slopes,state,v,sy] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real vpls(0); Real vmns(0);
 
     if( areafrac_y(i,j,k) > 0 ) {
       if( j <= dom_low.y and
-       ugradu_aux::is_equal_to_any(bc_jlo_type(i,dom_low.y-1,k,0),
+       ugradu_aux::is_equal_to_any(bct_jlo(i,dom_low.y-1,k,0),
                                    bc_types.data(), bc_types.size()))
       {
         sy(i,j,k,n) = state(i,dom_low.y-1,k,state_comp+n);
       }
       else if( j >= dom_high.y+1 and
-       ugradu_aux::is_equal_to_any(bc_jhi_type(i,dom_high.y+1,k,0),
+       ugradu_aux::is_equal_to_any(bct_jhi(i,dom_high.y+1,k,0),
                                    bc_types.data(), bc_types.size()))
       {
         sy(i,j,k,n) = state(i,dom_high.y+1,k,state_comp+n);
@@ -470,7 +462,8 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
     }
   });
 
-  AMREX_FOR_4D(vbx, ncomp, i, j, k, n,
+  amrex::ParallelFor(vbx,ncomp, [my_huge,fcy_fab,ccm_fab,areafrac_y,sy,v,fy] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     if ( areafrac_y(i,j,k) > 0 ) {
        int ii = i + static_cast<int>(std::copysign(1.0,fcy_fab(i,j,k,0)));
@@ -492,19 +485,21 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
   //
   // ===================== Z =====================
   //
-  AMREX_FOR_4D(wbx_grown, ncomp, i, j, k, n,
+  amrex::ParallelFor(wbx_grown,ncomp,
+    [my_huge,slopes_comp,state_comp,dom_low,dom_high,bct_klo,bct_khi,bc_types,areafrac_z,z_slopes,state,w,sz] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     Real wpls(0); Real wmns(0);
 
     if( areafrac_z(i,j,k) > 0 ) {
       if( k <= dom_low.z and
-       ugradu_aux::is_equal_to_any(bc_klo_type(i,j,dom_low.z-1,0),
+       ugradu_aux::is_equal_to_any(bct_klo(i,j,dom_low.z-1,0),
                                    bc_types.data(), bc_types.size()))
       {
         sz(i,j,k,n) = state(i,j,dom_low.z-1,state_comp+n);
       }
       else if( k >= dom_high.z+1 and
-       ugradu_aux::is_equal_to_any(bc_khi_type(i,j,dom_high.z+1,0),
+       ugradu_aux::is_equal_to_any(bct_khi(i,j,dom_high.z+1,0),
                                    bc_types.data(), bc_types.size()))
       {
         sz(i,j,k,n) = state(i,j,dom_high.z+1,state_comp+n);
@@ -521,7 +516,8 @@ incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
     }
   });
 
-  AMREX_FOR_4D(wbx, ncomp, i, j, k, n,
+  amrex::ParallelFor(wbx,ncomp, [my_huge,fcz_fab,ccm_fab,areafrac_z,sz,w,fz] 
+    AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
   {
     if( areafrac_z(i,j,k) > 0 ) {
        int ii = i + static_cast<int>(std::copysign(1.0,fcz_fab(i,j,k,0)));

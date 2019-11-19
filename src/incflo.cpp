@@ -1,7 +1,6 @@
 
 #include <incflo.H>
 #include <derive_F.H>
-#include <param_mod_F.H>
 
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
@@ -22,12 +21,12 @@ DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
 incflo::incflo()
-  : m_bc_u(get_dim_bc()+1, 0)
-  , m_bc_v(get_dim_bc()+1, 0)
-  , m_bc_w(get_dim_bc()+1, 0)
-  , m_bc_r(get_dim_bc()+1, 0)
-  , m_bc_t(get_dim_bc()+1, 0)
-  , m_bc_p(get_dim_bc()+1, 0)
+  : m_bc_u(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_v(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_w(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_r(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_t(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_p(2*AMREX_SPACEDIM+1, 0)
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.

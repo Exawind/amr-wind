@@ -3,6 +3,7 @@ target_sources(${amr_wind_exe_name}
       #C++
       diagnostics.cpp
       incflo_build_info.cpp
+      incflo_steady_state.cpp
       io.cpp
       #Fortran
       constant_mod.f90

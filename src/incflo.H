@@ -149,7 +149,7 @@ public:
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
-                          const int* extrap_dir_bcs) const;
+                          const int extrap_dir_bcs) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -257,12 +257,12 @@ private:
      static IntVect e_y;
      static IntVect e_z;
 
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
+     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -275,16 +275,18 @@ private:
 
     // Read inputs file using ParmParse
     void ReadParameters();
+    void ReadIOParameters();
+    void ReadRheologyParameters();
 
     // Resize arrays to fit (up to) max_level + 1 AMR levels
-	void ResizeArrays();
+    void ResizeArrays();
 
     // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations, level_mask
-	void PostInit(int restart_flag);
-	void SetBCTypes();
+    void PostInit(int restart_flag);
+    void SetBCTypes();
     void InitFluid();
-	void SetBackgroundPressure();
-	void InitialProjection();
+    void SetBackgroundPressure();
+    void InitialProjection();
     void InitialIterations();
     void setup_level_mask();
 
@@ -389,7 +391,7 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeDrag();
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Embedded Boundaries
@@ -418,7 +420,15 @@ private:
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
 #endif
- 
+
+#if 0
+    // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
+    //    but otherwise it will just be a FabFactory that doesn't know anything about EB
+    //    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
+#else
+    //  Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+#endif
+
 #ifdef AMREX_USE_EB
     Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
@@ -471,11 +481,16 @@ private:
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
+
+    // Scalar diffusive coefficient
     Vector<Real> mu_s;
+
+    // Density (if constant)
     Real ro_0 = 1.0;
 
     bool constant_density = true;
-    bool advect_tracer  = false;
+    bool advect_tracer    = false;
+    bool use_godunov      = false;
 
     // Fluid properties
     std::string fluid_model;
@@ -510,8 +525,12 @@ private:
     std::string restart_file{""};
 
     // Flags for saving fluid data in plot files
-    int plt_vel         = 1;
-    int plt_gradp       = 1;
+    int plt_velx        = 1;
+    int plt_vely        = 1;
+    int plt_velz        = 1;
+    int plt_gpx         = 1;
+    int plt_gpy         = 1;
+    int plt_gpz         = 1;
     int plt_rho         = 1;
     int plt_tracer      = 1;
     int plt_p           = 0;
@@ -610,7 +629,7 @@ private:
     Vector<std::unique_ptr<MultiFab>> m_u_mac;
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
     Vector<std::unique_ptr<MultiFab>> m_w_mac;
-    
+
     // integer MultiFab specifying if a finer level exists above
     // value is 1 if a finer level is not above and 0 otherwise
     Vector<std::unique_ptr<iMultiFab>> level_mask;

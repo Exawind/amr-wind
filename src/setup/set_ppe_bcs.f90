@@ -12,7 +12,7 @@
 
       use amrex_fort_module, only: ar => amrex_real
       use iso_c_binding ,    only: c_int
-      use param,             only: half
+      use constant,          only: half
 
       use amrex_lo_bctypes_module
       use bc

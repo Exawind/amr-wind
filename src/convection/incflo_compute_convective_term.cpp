@@ -1,10 +1,4 @@
 #include <incflo.H>
-#include <param_mod_F.H>
-
-#include <AMReX_REAL.H>
-#include <AMReX_BLFort.H>
-#include <AMReX_SPACE.H>
-#include <AMReX_Array.H>
 
 #ifdef AMREX_USE_EB
 #include <AMReX_EB_utils.H>
@@ -51,9 +45,9 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), vel_in[lev]->nGrow());
 
 #ifdef AMREX_USE_EB
-        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]);
 #else
-        MultiFab Sborder_r(grids[lev], dmap[lev], 1+ntrac, nghost, MFInfo());
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1, nghost, MFInfo());
 #endif
         FillPatchDensity(lev, time, Sborder_r);
         MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, density_in[lev]->nGrow());
@@ -77,8 +71,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    arrays returned from this call are on face CENTROIDS
         incflo_predict_vels_on_faces(lev, time, vel_in);
-
-        Gpu::synchronize();
     }
 
     // Do projection on all AMR levels in one shot -- note that the {u_mac, v_mac, w_mac}
@@ -185,8 +177,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         conv_u_in[lev] -> mult(-1.0);
         conv_r_in[lev] -> mult(-1.0);
         conv_t_in[lev] -> mult(-1.0);
-
-        Gpu::synchronize();
     } // lev
 }
 
@@ -219,8 +209,6 @@ incflo::incflo_divergence_plus_redist(const int lev,
 #else
     computeDivergence(*conv_in[lev], GetArrOfConstPtrs(fluxes), geom[lev]);
 #endif
-
-    Gpu::synchronize();
 }
 
 

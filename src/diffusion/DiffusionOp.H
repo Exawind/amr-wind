@@ -10,7 +10,6 @@
 #include <AMReX_MLEBTensorOp.H>
 #else
 #include <AMReX_MLTensorOp.H>
-#include <AMReX_MLTensorOp.H>
 #endif
 
 //
@@ -66,7 +65,7 @@ public:
                           amrex::Real dt);
 
     // Scalar diffusion 
-    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
+    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& scal, 
                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
                         const amrex::Vector<amrex::Real> mu_s, amrex::Real dt);
 
@@ -95,7 +94,6 @@ private:
     amrex::Vector<amrex::BoxArray> grids;          
     amrex::Vector<amrex::DistributionMapping> dmap;
 
-    int max_level;
     int nghost = 0; 
 
     // Boundary conditions
@@ -113,7 +111,7 @@ private:
 #ifdef AMREX_USE_EB
     std::unique_ptr<amrex::MLEBTensorOp> vel_matrix;
 #else
-    std::unique_ptr<amrex::MLTensorOp>   vel_matrix;
+    std::unique_ptr<amrex::MLTensorOp> vel_matrix;
 #endif
 
     amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;

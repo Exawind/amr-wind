@@ -58,7 +58,8 @@ void incflo::ComputeStrainrate(Real time_in)
 #endif
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-                AMREX_FOR_3D(bx, i, j, k,
+                amrex::ParallelFor(bx,
+                  [idx,idy,idz,sr_fab,ccvel_fab] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     Real ux = 0.5 * (ccvel_fab(i+1,j,k,0) - ccvel_fab(i-1,j,k,0)) * idx;
                     Real vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
@@ -86,7 +87,8 @@ void incflo::ComputeStrainrate(Real time_in)
                 Real c1 = 2.0;
                 Real c2 = -0.5;
 
-                AMREX_FOR_3D(bx, i, j, k,
+                amrex::ParallelFor(bx,
+                  [idx,idy,idz,c0,c1,c2,sr_fab,flag_fab,ccvel_fab] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     if (flag_fab(i,j,k).isCovered())
                     {
@@ -313,7 +315,8 @@ void incflo::ComputeVorticity(Real time_in)
 #endif
             {
                 // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-                AMREX_FOR_3D(bx, i, j, k,
+                amrex::ParallelFor(bx,
+                  [idx,idy,idz,vort_fab,ccvel_fab] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     Real vx = 0.5 * (ccvel_fab(i+1,j,k,1) - ccvel_fab(i-1,j,k,1)) * idx;
                     Real wx = 0.5 * (ccvel_fab(i+1,j,k,2) - ccvel_fab(i-1,j,k,2)) * idx;
@@ -336,7 +339,8 @@ void incflo::ComputeVorticity(Real time_in)
                 Real c1 = 2.0;
                 Real c2 = -0.5;
 
-                AMREX_FOR_3D(bx, i, j, k,
+                amrex::ParallelFor(bx,
+                  [idx,idy,idz,c0,c1,c2,vort_fab,flag_fab,ccvel_fab] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     if (flag_fab(i,j,k).isCovered())
                     {

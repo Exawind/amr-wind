@@ -2,15 +2,12 @@ target_sources(${amr_wind_exe_name}
    PRIVATE
       #C++
       main.cpp
-      advance.cpp
+      incflo_advance.cpp
       incflo.cpp
       incflo_compute_dt.cpp
       #Headers
       incflo_bclist.H
-      param_mod_F.H
       incflo_proj_F.H
-      #Fortran
-      param_mod.f90
    )
 
 #Add generated source files
