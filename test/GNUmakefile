@@ -1,11 +1,13 @@
 
 # Parallelisation options
-USE_MPI  = TRUE
-USE_OMP  = FALSE
-USE_CUDA = FALSE
+USE_MPI = TRUE
+USE_OMP = FALSE
 
 # Debug mode?
 DEBUG = FALSE
+
+TEST = TRUE
+USE_ASSERTION = TRUE
 
 # Use HYPRE solver?
 USE_HYPRE = FALSE
@@ -14,11 +16,12 @@ USE_HYPRE = FALSE
 PROFILE       = FALSE
 TINY_PROFILE  = FALSE
 
-########################################################################
-# 	
-# Below are settings which we probably don't want to change very often. 
-# 								
-########################################################################
+
+########################################################################\
+# 																		#
+# Below are settings which we probably don't want to change very often. #
+# 																		#
+########################################################################/
 
 # Path to AMReX directory and incflo directories
 AMREX_HOME ?= ../../amrex
@@ -51,11 +54,14 @@ Bdirs 	+= src/boundary_conditions
 Bdirs 	+= src/convection
 Bdirs 	+= src/derive
 Bdirs 	+= src/diffusion
-Bdirs 	+= src/embedded_boundaries
 Bdirs 	+= src/projection
 Bdirs 	+= src/rheology
 Bdirs 	+= src/setup
 Bdirs 	+= src/utilities
+
+ifeq ($(USE_EB), TRUE)
+Bdirs 	+= src/embedded_boundaries
+endif
 
 Bpack	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir))
@@ -65,7 +71,11 @@ INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
 #These are the directories in AMReX
-Pdirs   := Base AmrCore Boundary EB
+Pdirs   := Base AmrCore Boundary 
+
+ifeq ($(USE_EB), TRUE)
+Pdirs 	+= EB
+endif
 
 ifeq ($(USE_HYPRE), TRUE)
 Pdirs   += Extern/HYPRE
