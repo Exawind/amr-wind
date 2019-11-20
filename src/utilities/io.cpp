@@ -581,7 +581,6 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
             // potential temperature
             mfab_arr(i,j,k,3) = tracer_arr(i,j,k,0);
             
-
             // fluctuations
             const Real up = vel_arr(i,j,k,0) - avg_fab_arr(0,0,k,0);
             const Real vp = vel_arr(i,j,k,1) - avg_fab_arr(0,0,k,1);
@@ -606,7 +605,7 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
             mfab_arr(i,j,k,17) = Tp*vp;
             mfab_arr(i,j,k,18) = Tp*wp;
             
-            // nu = mu/rho
+            // nu+nut = (mu+mut)/rho
             mfab_arr(i,j,k,19) = eta_arr(i,j,k)/den_arr(i,j,k);
 
          });
@@ -763,7 +762,7 @@ void incflo::spatially_average_quantities_down(bool plot)
             
             // fixme circular dependency so need to hack this for now
             if(nstep == -1) nu_mean_ground = 1.0;
-            amrex::Print() << "nu mean ground: " << nu_mean_ground << ' ' << nstep << std::endl;
+            amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
 
             break;
         }

@@ -40,8 +40,8 @@ incflo::init_abl(MultiFab& density_mfab, MultiFab& vel_mfab, MultiFab& tracer_mf
             vel_arr(i,j,k,2) = ic_w;
 
             // velocity field plus perturbations
-            if(z < ic_u) vel_arr(i,j,k,0) = z;
-            if(z < ic_v) vel_arr(i,j,k,1) = z;
+            if(z < fabs(ic_u)) vel_arr(i,j,k,0) = copysign(z,ic_u);
+            if(z < fabs(ic_v)) vel_arr(i,j,k,1) = copysign(z,ic_v);
 
             vel_arr(i,j,k,0) += ufac*damp*z*std::cos(aval*y);
             vel_arr(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
