@@ -15,7 +15,7 @@ incflo.cfl              =   0.45         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.KE_int = 1
+#amr.KE_int = 1
 amr.plot_int            =   10       # Steps between plot files
 amr.plot_per            =   -1          # Steps between plot files
 amr.check_int           =  100       # Steps between checkpoint files
@@ -66,11 +66,10 @@ incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 zlo.type =   "wall_model"
-# tracer is used to specify potential temperature gradient
-zlo.tracer = -5000.0
+zlo.tracer = 0.0
 
 zhi.type =   "slip"
-zhi.tracer = -4000 #0.003
+zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
