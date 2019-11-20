@@ -226,6 +226,8 @@ void incflo::Evolve()
         nstep++;
         cur_time += dt;
 
+        spatially_average_quantities_down(true);
+        
         // Write plot and checkpoint files
         if((plot_int > 0 && (nstep % plot_int == 0)) ||
            (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-12)))

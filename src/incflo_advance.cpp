@@ -150,7 +150,10 @@ void incflo::ApplyPredictor()
 
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
     ComputeViscosity(eta_old, cur_time);
-
+    
+    // Adds additional viscosity if LES is on
+    add_eddy_viscosity(eta, eta_tracer, cur_time);
+    
     // Compute explicit diffusion if used
     if (m_diff_type == DiffusionType::Explicit ||
         m_diff_type == DiffusionType::Crank_Nicolson)
@@ -196,17 +199,14 @@ void incflo::ApplyPredictor()
             MultiFab::Saxpy(*vel[lev], 0.5*dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
-        if (use_boussinesq)
+        if (!use_boussinesq)
         {
-           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
-           //      rather than density
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
-        } else {
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
                (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
         }
 
+        add_abl_source_terms(*vel[lev],*tracer[lev],vel[lev]->nGrow());
+        
         // Convert velocities to momenta
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             MultiFab::Multiply(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
@@ -236,13 +236,13 @@ void incflo::ApplyPredictor()
     {
         diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
         if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*dt);
+            diffusion_op->diffuse_scalar  (tracer, density, eta_tracer,    0.5*dt);
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
         diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
         if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
+            diffusion_op->diffuse_scalar  (tracer, density, eta_tracer,    dt);
     }
 
     // Project velocity field, update pressure
@@ -331,6 +331,14 @@ void incflo::ApplyCorrector()
     // We need this eta whether explicit, implicit or Crank-Nicolson
     ComputeViscosity(eta, new_time);
 
+    // Adds additional viscosity if LES is on
+    add_eddy_viscosity(eta, eta_tracer, cur_time);
+    
+    // fixme move this somewhere else if we want to monitor it
+    amrex::Print() << "eta norm " << Norm(eta,0,0,0) << std::endl;
+    amrex::Print() << "eta tracer norm " << Norm(eta_tracer,0,0,0) << std::endl;
+
+    
     // Compute explicit diffusion if used -- note that even though we call this "explicit",
     //   the diffusion term does end up being time-centered so formally second-order
     //   Now divtau is the diffusion term computed from u*
@@ -384,17 +392,15 @@ void incflo::ApplyCorrector()
             MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
         // Add gravitational forces
-        if (use_boussinesq)
+        if (!use_boussinesq)
         {
-           // This uses a Boussinesq approximation where the buoyancy depends on tracer
-           //      rather than density
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
-        } else {
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
         }
 
+        add_abl_source_terms(*vel[lev],*tracer[lev],vel[lev]->nGrow());
+        
+        
         // Convert velocities to momenta
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
         {
@@ -426,12 +432,12 @@ void incflo::ApplyCorrector()
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
        diffusion_op->diffuse_velocity(vel   , density, eta,  0.5*dt);
-       diffusion_op->diffuse_scalar  (tracer, density, mu_s, 0.5*dt);
+       diffusion_op->diffuse_scalar  (tracer, density, eta_tracer, 0.5*dt);
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
        diffusion_op->diffuse_velocity(vel   , density, eta,  dt);
-       diffusion_op->diffuse_scalar  (tracer, density, mu_s, dt);
+       diffusion_op->diffuse_scalar  (tracer, density, eta_tracer, dt);
     }
 
     // Project velocity field, update pressure

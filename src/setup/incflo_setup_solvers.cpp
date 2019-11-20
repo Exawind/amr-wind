@@ -62,10 +62,10 @@ incflo::incflo_init_solvers ()
 
 #ifdef AMREX_USE_EB
     diffusion_op.reset(new DiffusionOp(this, &ebfactory, vel_diff_lobc,  vel_diff_hibc,
-                                                        scal_diff_lobc, scal_diff_hibc, nghost));
+                                                        scal_diff_lobc, scal_diff_hibc, nghost,probtype));
 #else
     diffusion_op.reset(new DiffusionOp(this,             vel_diff_lobc,  vel_diff_hibc,
-                                                        scal_diff_lobc, scal_diff_hibc, nghost));
+                                                        scal_diff_lobc, scal_diff_hibc, nghost,probtype));
 #endif
 }
 

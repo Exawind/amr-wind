@@ -120,7 +120,9 @@ incflo::set_MAC_velocity_bcs ( int lev,
 
     const int minf = bc_list.get_minf();
     const int  nsw = bc_list.get_nsw();
-
+    const int slip = bc_list.get_slip();
+    const int wall_model = bc_list.get_wall_model();
+      
     amrex::Real* p_bc_u = m_bc_u.data();
     amrex::Real* p_bc_v = m_bc_v.data();
     amrex::Real* p_bc_w = m_bc_w.data();
@@ -130,12 +132,12 @@ incflo::set_MAC_velocity_bcs ( int lev,
     if (nlft > 0)
     {
       amrex::ParallelFor(ulo_bx_yz,
-        [bct_ilo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_ilo,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
         if (bct == minf) u(i,j,k) = p_bc_u[bcv];
-        if (bct ==  nsw) u(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) u(i,j,k) = 0.;
 
         if (bct == minf && lprobtype == 31) 
         {
@@ -148,24 +150,24 @@ incflo::set_MAC_velocity_bcs ( int lev,
     if (nrgt > 0)
     {
       amrex::ParallelFor(uhi_bx_yz,
-        [bct_ihi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_ihi,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_u,u] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
         if (bct == minf) u(i,j,k) = p_bc_u[bcv];
-        if (bct ==  nsw) u(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) u(i,j,k) = 0.;
       });
     }
 
     if (nbot > 0)
     {
       amrex::ParallelFor(vlo_bx_xz,
-        [bct_jlo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_jlo,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
         if (bct == minf) v(i,j,k) = p_bc_v[bcv];
-        if (bct ==  nsw) v(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) v(i,j,k) = 0.;
 
         if (bct == minf && lprobtype == 32) 
         {
@@ -178,24 +180,24 @@ incflo::set_MAC_velocity_bcs ( int lev,
     if (ntop > 0)
     {
       amrex::ParallelFor(vhi_bx_xz,
-        [bct_jhi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_jhi,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_v,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
         if (bct == minf) v(i,j,k) = p_bc_v[bcv];
-        if (bct ==  nsw) v(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) v(i,j,k) = 0.;
       });
     }
 
     if (ndwn > 0)
     {
       amrex::ParallelFor(wlo_bx_xy,
-        [bct_klo,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_klo,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
         if (bct == minf) w(i,j,k) = p_bc_w[bcv];
-        if (bct ==  nsw) w(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) w(i,j,k) = 0.;
 
         if (bct == minf && lprobtype == 33) 
         {
@@ -208,12 +210,12 @@ incflo::set_MAC_velocity_bcs ( int lev,
     if (nup > 0)
     {
       amrex::ParallelFor(whi_bx_xy,
-        [bct_khi,dom_lo,dom_hi,minf,nsw,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_khi,dom_lo,dom_hi,minf,nsw,slip,wall_model,lprobtype,p_bc_w,w] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
         const int bct = bct_khi(i,j,dom_hi[2]+1,0);
         if (bct == minf) w(i,j,k) = p_bc_w[bcv];
-        if (bct ==  nsw) w(i,j,k) = 0.;
+        if (bct ==  nsw || bct == slip || bct == wall_model) w(i,j,k) = 0.;
       });
     }
 

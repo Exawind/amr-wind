@@ -36,6 +36,8 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
     const int pout_ =  11;
     const int minf_ =  20;
     const int nsw_  = 100;
+    const int slip_ = 101;
+    const int wall_model_ = 102;
 
     // Default a BC to undefined.
     int itype = und_;
@@ -93,6 +95,18 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
       pp.queryarr("velocity", mi_velocity, 0, 3);
       pp.query("direction", direction);
       pp.query("location", location);
+
+    } else if (bc_type == "slip" || bc_type == "slip_wall"){
+        
+        amrex::Print() << bcID <<" set to slip wall. "  << std::endl;
+        itype = slip_;
+        pp.queryarr("tracer", mi_tracer, 0, ntrac);
+
+    } else if (bc_type == "wall_model"){
+        
+        amrex::Print() << bcID <<" set to wall model. "  << std::endl;
+        itype = wall_model_;
+        pp.queryarr("tracer", mi_tracer, 0, ntrac);
 
     }
 

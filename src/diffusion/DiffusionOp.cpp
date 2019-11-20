@@ -29,11 +29,13 @@ DiffusionOp::DiffusionOp(AmrCore* _amrcore,
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_hi,
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_lo,
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_hi,
-                         int _nghost)
+                         int _nghost,
+                         int _probtype)
 {
     if(verbose > 0)
         amrex::Print() << "Constructing DiffusionOp class" << std::endl;
-
+    
+    probtype = _probtype;
     nghost = _nghost;
 
     m_velbc_lo = a_velbc_lo;
@@ -128,7 +130,24 @@ void DiffusionOp::setup(AmrCore* _amrcore)
 
     // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
     vel_matrix->setDomainBC(m_velbc_lo, m_velbc_hi);
+    
+    if(probtype == 35){
+        amrex::Print() << " warning vel bcs are manually entered for probtype 35 in DiffusionOp.cpp " << std::endl;
+        //fixme hard coded in
+        Vector<Array<amrex::LinOpBCType,AMREX_SPACEDIM>> velbc_lo;
+        Vector<Array<amrex::LinOpBCType,AMREX_SPACEDIM>> velbc_hi;
 
+        velbc_lo.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::inhomogNeumann});
+        velbc_lo.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::inhomogNeumann});
+        velbc_lo.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::Dirichlet});
+
+        velbc_hi.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::Dirichlet});
+        velbc_hi.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::Dirichlet});
+        velbc_hi.push_back({LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::Dirichlet});
+
+        vel_matrix->setDomainBC(velbc_lo,velbc_hi);
+    }
+    
     // 
     // Define the matrix for the scalar diffusion solve.
     // 
@@ -145,6 +164,18 @@ void DiffusionOp::setup(AmrCore* _amrcore)
 
     // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
     scal_matrix->setDomainBC(m_scalbc_lo, m_scalbc_hi);
+    
+    if(probtype==35){
+        amrex::Print() << " warning tracer bcs are manually entered for probtype 35 in DiffusionOp.cpp " << std::endl;
+        //fixme hard coded in
+        Array<amrex::LinOpBCType,AMREX_SPACEDIM> tracbc_lo;
+        Array<amrex::LinOpBCType,AMREX_SPACEDIM> tracbc_hi;
+        tracbc_lo = {LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::inhomogNeumann};
+        tracbc_hi = {LinOpBCType::Periodic, LinOpBCType::Periodic, LinOpBCType::inhomogNeumann};
+        
+        // LinOpBCType Definitions are in amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+        scal_matrix->setDomainBC(tracbc_lo, tracbc_hi);
+    }
 
 }
 
@@ -252,7 +283,8 @@ void DiffusionOp::diffuse_velocity(      Vector<std::unique_ptr<MultiFab>>& vel_
 //
 void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_in,
                                  const Vector<std::unique_ptr<MultiFab>>& ro_in,
-                                 const Vector<Real> mu_s, Real dt)
+                                 const Vector<std::unique_ptr<MultiFab>>& mu_in,
+                                 Real dt)
 {
     BL_PROFILE("DiffusionOp::diffuse_scalar");
 
@@ -277,9 +309,7 @@ void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_i
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-           for(int n = 0; n < ntrac; n++)
-             b[lev][dir]->setVal(mu_s[n],n,1);
+        average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *mu_in[lev], geom[lev]);
 
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             b[lev][dir]->FillBoundary(geom[lev].periodicity());

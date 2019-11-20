@@ -147,11 +147,18 @@ incflo::set_velocity_bcs(Real time,
   const int pinf = bc_list.get_pinf();
   const int pout = bc_list.get_pout();
   const int  nsw = bc_list.get_nsw();
+  const int slip = bc_list.get_slip();
+  const int wall_model = bc_list.get_wall_model();
 
   const amrex::Real* p_bc_u = m_bc_u.data();
   const amrex::Real* p_bc_v = m_bc_v.data();
   const amrex::Real* p_bc_w = m_bc_w.data();
 
+  const Real vx_mean_ground_ = vx_mean_ground;
+  const Real vy_mean_ground_ = vy_mean_ground;
+  const Real nu_mean_ground_ = nu_mean_ground;
+  const Real utau_ = utau;
+    
   // Coefficients for linear extrapolation to ghost cells -- divide by 3 below
   Real c0 =  6.0;
   Real c1 = -3.0;
@@ -165,7 +172,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (nlft > 0)
   {
-    amrex::ParallelFor(bx_yz_lo_3D, 3, 
+    amrex::ParallelFor(bx_yz_lo_3D, 3,
       [bct_ilo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_u,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
@@ -192,7 +199,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (nrgt > 0)
   {
-    amrex::ParallelFor(bx_yz_hi_3D, 3, 
+    amrex::ParallelFor(bx_yz_hi_3D, 3,
       [bct_ihi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_u,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
@@ -212,7 +219,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (nbot > 0)
   {
-    amrex::ParallelFor(bx_xz_lo_3D, 3, 
+    amrex::ParallelFor(bx_xz_lo_3D, 3,
       [bct_jlo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
@@ -241,7 +248,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (ntop > 0)
   {
-    amrex::ParallelFor(bx_xz_hi_3D, 3, 
+    amrex::ParallelFor(bx_xz_hi_3D, 3,
       [bct_jhi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
@@ -261,7 +268,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (ndwn > 0)
   {
-    amrex::ParallelFor(bx_xy_lo_3D, 3, 
+    amrex::ParallelFor(bx_xy_lo_3D, 3,
       [bct_klo,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
@@ -288,7 +295,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (nup > 0)
   {
-    amrex::ParallelFor(bx_xy_hi_3D, 3, 
+    amrex::ParallelFor(bx_xy_hi_3D, 3,
       [bct_khi,dom_lo,dom_hi,pinf,pout,minf,lprobtype,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
       const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
@@ -313,7 +320,7 @@ incflo::set_velocity_bcs(Real time,
   if (nlft > 0)
   {
     amrex::ParallelFor(bx_yz_lo_3D,
-      [bct_ilo,dom_lo,nsw,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_ilo,dom_lo,nsw,slip,wall_model,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
@@ -322,13 +329,19 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = 0.;
         vel_arr(i,j,k,1) = p_bc_v[bcv];
         vel_arr(i,j,k,2) = p_bc_w[bcv];
+      } else if (bct == slip) {
+          vel_arr(i,j,k,0) = 0.0;
+          vel_arr(i,j,k,1) = vel_arr(dom_lo[0],j,k,1);
+          vel_arr(i,j,k,2) = vel_arr(dom_lo[0],j,k,2);
+      } else if (bct == wall_model) {
+          amrex::Abort("not implemented for the left wall yet");
       }
     });
 
     if(extrap_dir_bcs > 0)
     {
-      amrex::ParallelFor(bx_yz_lo_2D, 3, 
-        [bct_ilo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+      amrex::ParallelFor(bx_yz_lo_2D, 3,
+        [bct_ilo,dom_lo,minf,nsw,slip,wall_model,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
       {
         const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
@@ -342,7 +355,7 @@ incflo::set_velocity_bcs(Real time,
   if (nrgt > 0)
   {
     amrex::ParallelFor(bx_yz_hi_3D,
-      [bct_ihi,dom_hi,nsw,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_ihi,dom_hi,nsw,slip,wall_model,p_bc_v,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
@@ -351,13 +364,19 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = 0.;
         vel_arr(i,j,k,1) = p_bc_v[bcv];
         vel_arr(i,j,k,2) = p_bc_w[bcv];
+      } else if (bct == slip) {
+          vel_arr(i,j,k,0) = 0.0;
+          vel_arr(i,j,k,1) = vel_arr(dom_hi[0],j,k,1);
+          vel_arr(i,j,k,2) = vel_arr(dom_hi[0],j,k,2);
+      } else if (bct == wall_model) {
+          amrex::Abort("not implemented for the right wall yet");
       }
     });
 
     if(extrap_dir_bcs > 0)
     {
       amrex::ParallelFor(bx_yz_hi_2D,
-        [bct_ihi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_ihi,dom_hi,minf,nsw,slip,wall_model,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
@@ -374,7 +393,7 @@ incflo::set_velocity_bcs(Real time,
   if (nbot > 0)
   {
     amrex::ParallelFor(bx_xz_lo_3D,
-      [bct_jlo,dom_lo,nsw,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_jlo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
@@ -383,13 +402,19 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = p_bc_u[bcv];
         vel_arr(i,j,k,1) = 0.;
         vel_arr(i,j,k,2) = p_bc_w[bcv];
+      } else if (bct == slip) {
+          vel_arr(i,j,k,0) = vel_arr(i,dom_lo[1],k,0);
+          vel_arr(i,j,k,1) = 0.0;
+          vel_arr(i,j,k,2) = vel_arr(i,dom_lo[1],k,2);
+      } else if (bct == wall_model) {
+          amrex::Abort("not implemented for the bottom wall yet");
       }
     });
 
     if(extrap_dir_bcs > 0)
     {
       amrex::ParallelFor(bx_xz_lo_2D,
-        [bct_jlo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_jlo,dom_lo,minf,nsw,slip,wall_model,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
@@ -406,7 +431,7 @@ incflo::set_velocity_bcs(Real time,
   if (ntop > 0)
   {
     amrex::ParallelFor(bx_xz_hi_3D,
-      [bct_jhi,dom_hi,nsw,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_jhi,dom_hi,nsw,slip,wall_model,p_bc_u,p_bc_w,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
@@ -415,13 +440,19 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = p_bc_u[bcv];
         vel_arr(i,j,k,1) = 0.;
         vel_arr(i,j,k,2) = p_bc_w[bcv];
+      } else if (bct == slip) {
+          vel_arr(i,j,k,0) = vel_arr(i,dom_hi[1],k,0);
+          vel_arr(i,j,k,1) = 0.0;
+          vel_arr(i,j,k,2) = vel_arr(i,dom_hi[1],k,2);
+      } else if (bct == wall_model) {
+          amrex::Abort("not implemented for the top wall yet");
       }
     });
 
     if(extrap_dir_bcs > 0)
     {
-      amrex::ParallelFor(bx_xz_hi_2D, 
-        [bct_jhi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      amrex::ParallelFor(bx_xz_hi_2D,
+        [bct_jhi,dom_hi,minf,nsw,slip,wall_model,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
@@ -438,7 +469,7 @@ incflo::set_velocity_bcs(Real time,
   if (ndwn > 0)
   {
     amrex::ParallelFor(bx_xy_lo_3D,
-      [bct_klo,dom_lo,nsw,p_bc_u,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -447,13 +478,35 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = p_bc_u[bcv];
         vel_arr(i,j,k,1) = p_bc_v[bcv];
         vel_arr(i,j,k,2) = 0.;
+      } else if (bct == slip) {
+          vel_arr(i,j,k,0) = vel_arr(i,j,dom_lo[2],0);
+          vel_arr(i,j,k,1) = vel_arr(i,j,dom_lo[2],1);
+          vel_arr(i,j,k,2) = 0.0;
+      } else if (bct == wall_model) {
+          
+          const Real vx = vel_arr(i,j,dom_lo[2],0);
+          const Real vy = vel_arr(i,j,dom_lo[2],1);
+
+          // fixme remove this later when we trust this
+          const Real vmag = sqrt(pow(vx,2) + pow(vy,2)) + 1.0e-12;
+          const Real uh = sqrt(pow(vx_mean_ground_,2) + pow(vy_mean_ground_,2));
+          if(vmag/uh > 10.0) printf("uh oh local velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
+          if(uh/vmag > 10.0) printf("uh oh average velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
+          
+          // simple shear stress model for neutral BL
+          // apply as an inhomogeneous Neumann BC
+          // fixme this should be the local (nu+nut) but there is a circular dependency on strain rate and bc's
+          // we could locally calculate a strain rate but not sure what do with 1 eqn sgs
+          vel_arr(i,j,k,0) = utau_*utau_*vx/nu_mean_ground_;
+          vel_arr(i,j,k,1) = utau_*utau_*vy/nu_mean_ground_;
+          vel_arr(i,j,k,2) = 0.0;
       }
     });
 
     if(extrap_dir_bcs > 0)
     {
       amrex::ParallelFor(bx_xy_lo_2D,
-        [bct_klo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [bct_klo,dom_lo,minf,nsw,slip,wall_model,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
       {
         const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
@@ -470,7 +523,7 @@ incflo::set_velocity_bcs(Real time,
   if (nup > 0)
   {
     amrex::ParallelFor(bx_xy_hi_3D,
-      [bct_khi,dom_hi,nsw,p_bc_u,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_khi,dom_hi,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
@@ -479,6 +532,13 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,0) = p_bc_u[bcv];
         vel_arr(i,j,k,1) = p_bc_v[bcv];
         vel_arr(i,j,k,2) = 0.;
+      } else if (bct == slip) {
+        vel_arr(i,j,k,0) = vel_arr(i,j,dom_hi[2],0);
+        vel_arr(i,j,k,1) = vel_arr(i,j,dom_hi[2],1);
+        vel_arr(i,j,k,2) = 0.0;
+
+      } else if (bct == wall_model) {
+          amrex::Abort("not implemented for the upper wall yet");
       }
     });
 

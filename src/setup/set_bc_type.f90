@@ -14,7 +14,7 @@ contains
 
       use bc,       only: bc_defined, bc_type, bc_plane
       use bc,       only: cyclic_x, cyclic_y, cyclic_z
-      use bc,       only: minf_, nsw_, pinf_, pout_
+      use bc,       only: minf_, nsw_, pinf_, pout_, slip_, wall_model_
       use bc,       only: undef_cell
 
       implicit none
@@ -56,6 +56,8 @@ contains
             case('P_INFLOW'      ,'PI' ); type = pinf_
             case('P_OUTFLOW'     ,'PO' ); type = pout_
             case('MASS_INFLOW'   ,'MI' ); type = minf_
+            case('slip', 'slip_wall'); type = slip_
+            case('wall_model'); type = wall_model_
             case default
                write(6,*) 'unknown bc type'
                stop 7655
@@ -203,6 +205,16 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra, ntrac) 
         case(5,6); bc_w(pid) = 0.0d0;
      end select
 
+     bc_defined(pid) = .true.
+
+  case(SLIP_)
+     bc_type(pid) = 'slip'
+     bc_t(pid) = ptra(1);
+     bc_defined(pid) = .true.
+
+  case(WALL_MODEL_)
+     bc_type(pid) = 'wall_model'
+     bc_t(pid) = ptra(1);
      bc_defined(pid) = .true.
 
   case DEFAULT

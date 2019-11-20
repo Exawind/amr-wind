@@ -315,10 +315,13 @@ void incflo::WritePlotFile()
 {
 	BL_PROFILE("incflo::WritePlotFile()");
 
-        if (plt_divu      ) ComputeDivU(cur_time);
-        if (plt_strainrate) ComputeStrainrate(cur_time);
-        if (plt_eta       ) ComputeViscosity(eta,cur_time);
-        if (plt_vort      ) ComputeVorticity(cur_time);
+    if (plt_divu      ) ComputeDivU(cur_time);
+    if (plt_strainrate) ComputeStrainrate(cur_time);
+    if (plt_eta) {
+        ComputeViscosity(eta,cur_time);
+        add_eddy_viscosity(eta,eta_tracer,cur_time);
+    }
+    if (plt_vort      ) ComputeVorticity(cur_time);
 
 	const std::string& plotfilename = amrex::Concatenate(plot_file, nstep);
 
@@ -349,11 +352,11 @@ void incflo::WritePlotFile()
             pltscaVarsName.push_back("gpz");
 
         // Density
-        if (plt_rho == 1) 
+        if (plt_rho == 1)
             pltscaVarsName.push_back("density");
 
         // Tracers
-        if (plt_tracer == 1) 
+        if (plt_tracer == 1)
         {
             pltscaVarsName.push_back("tracer0");
             if (ntrac > 1)
@@ -442,7 +445,7 @@ void incflo::WritePlotFile()
             }
 
             // Density
-            if (plt_rho == 1) 
+            if (plt_rho == 1)
             {
                 MultiFab::Copy(*mf[lev], (*density[lev]), 0, lc, 1, 0);
                 lc += 1;
@@ -468,7 +471,7 @@ void incflo::WritePlotFile()
             }
 
             // Apparent viscosity
-            if (plt_eta == 1) 
+            if (plt_eta == 1)
             {
                 MultiFab::Copy(*mf[lev], (*eta[lev]), 0, lc, 1, 0);
                 lc += 1;
@@ -540,3 +543,330 @@ void incflo::WritePlotFile()
 
 	WriteJobInfo(plotfilename);
 }
+
+
+
+
+
+void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &avg_fab, int axis)
+{
+
+    if(axis!=2) amrex::Abort("not implemented for other index yet\n");
+    
+    AMREX_ASSERT(mfab->nComp() == fab->nComp());
+    AMREX_ASSERT(mfab->nComp() == 19); // must match function that is calling this
+    
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (MFIter mfi(mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        Box bx = mfi.tilebox();
+
+        const auto& mfab_arr = mfab.array(mfi);
+        const auto& vel_arr = vel[lev]->array(mfi);
+        const auto& tracer_arr = tracer[lev]->array(mfi);
+        const auto& eta_arr = eta[lev]->array(mfi);
+        const auto& den_arr = density[lev]->array(mfi);
+        const auto& avg_fab_arr = avg_fab.array();
+
+         // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
+        AMREX_FOR_3D(bx, i, j, k,
+        {
+            // velocities
+            mfab_arr(i,j,k,0) = vel_arr(i,j,k,0);
+            mfab_arr(i,j,k,1) = vel_arr(i,j,k,1);
+            mfab_arr(i,j,k,2) = vel_arr(i,j,k,2);
+
+            // potential temperature
+            mfab_arr(i,j,k,3) = tracer_arr(i,j,k,0);
+            
+
+            // fluctuations
+            const Real up = vel_arr(i,j,k,0) - avg_fab_arr(0,0,k,0);
+            const Real vp = vel_arr(i,j,k,1) - avg_fab_arr(0,0,k,1);
+            const Real wp = vel_arr(i,j,k,2) - avg_fab_arr(0,0,k,2);
+            const Real Tp = tracer_arr(i,j,k,0) - avg_fab_arr(0,0,k,3);
+            
+            mfab_arr(i,j,k,4) = up*up;
+            mfab_arr(i,j,k,5) = up*vp;
+            mfab_arr(i,j,k,6) = up*wp;
+            mfab_arr(i,j,k,7) = vp*vp;
+            mfab_arr(i,j,k,8) = vp*wp;
+            mfab_arr(i,j,k,9) = wp*wp;
+            
+            mfab_arr(i,j,k,10) = wp*up*up;
+            mfab_arr(i,j,k,11) = wp*up*vp;
+            mfab_arr(i,j,k,12) = wp*up*wp;
+            mfab_arr(i,j,k,13) = wp*vp*vp;
+            mfab_arr(i,j,k,14) = wp*vp*wp;
+            mfab_arr(i,j,k,15) = wp*wp*wp;
+            
+            mfab_arr(i,j,k,16) = Tp*up;
+            mfab_arr(i,j,k,17) = Tp*vp;
+            mfab_arr(i,j,k,18) = Tp*wp;
+            
+            // nu = mu/rho
+            mfab_arr(i,j,k,19) = eta_arr(i,j,k)/den_arr(i,j,k);
+
+         });
+    }
+    
+}
+
+
+
+void incflo::spatially_average_quantities_down(bool plot)
+{
+    if(finest_level > 0) {
+        amrex::Abort("commented out the fine to coarse averaging uncomment to test \n");
+    }
+    if(finest_level > 1) {
+        amrex::Abort("average down only works for 2 levels for now need to add for loops \n");
+    }
+
+    const int ncomp = 20;// must match number of quantities in set_mfab_spatial_averaging_quantities(...)
+    const int ngrow = 0;
+
+    int crse_lev = 0;
+    int fine_lev = finest_level;
+
+    // create a 3D box with 1D indices
+    const Box& domain = geom[0].Domain();
+    IntVect dom_lo(domain.loVect());
+    IntVect dom_hi(domain.hiVect());
+    
+    
+    const int axis = 2;// fixme if you change this the loop below will break
+
+    
+    const int s = domain.smallEnd(axis);
+    const int b = domain.bigEnd(axis);
+
+    IntVect small(0,0,0);
+    IntVect big(0,0,0);
+
+    small.setVal(axis,s);
+    big.setVal(axis,b);
+
+    // have every processor make a 1d box
+    Box bx1d = Box(small,big);
+
+    // have every processor make a 1d fab
+    FArrayBox fab(bx1d,ncomp);
+    fab.setVal(0.0);
+
+    // count number of cells in plane
+    Real nxny = 1.0;
+    for(int i=0;i<AMREX_SPACEDIM;++i){
+        if(i!=axis) nxny *= (dom_hi[i]-dom_lo[i]+1);
+    }
+         
+    
+     // need to put this in to a for loop over levels starting from finest and working down
+    MultiFab crse_mfab(grids[crse_lev], dmap[crse_lev], ncomp, ngrow);
+//    MultiFab fine_mfab(grids[fine_lev], dmap[fine_lev], ncomp, ngrow);
+
+    set_mfab_spatial_averaging_quantities(crse_mfab,crse_lev,fab,axis);
+//    set_mfab_spatial_averaging_quantities(fine_mfab,fine_lev,fab,axis);
+    
+//    const int ratio = 2;
+//    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
+
+    
+    // average the fab
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (MFIter mfi(crse_mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        Box bx = mfi.tilebox();
+
+        const auto& crse_arr = crse_mfab.array(mfi);
+        const auto& fab_arr = fab.array();
+        // ncomp is used here but it could actually be 4 depending on the average down function
+        int nvar = 4;
+        switch (axis) {
+            case 0:
+                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(i,0,0,n) += crse_arr(i,j,k,n)/nxny;} );
+                break;
+            case 1:
+                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(0,j,0,n) += crse_arr(i,j,k,n)/nxny;} );
+                break;
+            case 2:
+                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(0,0,k,n) += crse_arr(i,j,k,n)/nxny;} );
+                break;
+            default:
+                amrex::Abort("index value in average quantities is garbage \n");
+                break;
+        }
+    }
+
+    
+    //fixme put in a loop like above
+    // sum all fabs together
+    ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
+
+    set_mfab_spatial_averaging_quantities(crse_mfab,crse_lev,fab,axis);
+//    set_mfab_spatial_averaging_quantities(fine_mfab,fine_lev,fab,axis);
+
+//    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
+
+
+    fab.setVal(0.0);
+    
+    // average the fab again now that velocity and temperature are averaged!
+    #ifdef _OPENMP
+    #pragma omp parallel if (Gpu::notInLaunchRegion())
+    #endif
+        for (MFIter mfi(crse_mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            Box bx = mfi.tilebox();
+
+            const auto& crse_arr = crse_mfab.array(mfi);
+            const auto& fab_arr = fab.array();
+
+            switch (axis) {
+                case 0:
+                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(i,0,0,n) += crse_arr(i,j,k,n)/nxny;} );
+                    break;
+                case 1:
+                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(0,j,0,n) += crse_arr(i,j,k,n)/nxny;} );
+                    break;
+                case 2:
+                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(0,0,k,n) += crse_arr(i,j,k,n)/nxny;} );
+                    break;
+                default:
+                    amrex::Abort("index value in average quantities is garbage \n");
+                    break;
+            }
+        }
+    
+    // sum all fabs together
+    ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
+  
+    
+    // fixme piggy backing on this function but this belongs somewhere else
+    // maybe keep this 1d average in global memory and then make these functions separate?
+    AMREX_ASSERT(axis==2);
+    const auto& fab_arr = fab.array();
+    
+    for(int i=s; i <= b; ++i){
+        const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
+        if(z > 0.0) {
+            vx_mean_ground = fab_arr(0,0,i,0);
+            vy_mean_ground = fab_arr(0,0,i,1);
+            nu_mean_ground = fab_arr(0,0,i,19);
+            z_ground = z;
+           
+            amrex::Print() << "z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
+            
+            // fixme circular dependency so need to hack this for now
+            if(nstep == -1) nu_mean_ground = 1.0;
+            amrex::Print() << "nu mean ground: " << nu_mean_ground << ' ' << nstep << std::endl;
+
+            break;
+        }
+    }
+    
+    // simple shear stress model for neutral BL
+    // apply as an inhomogeneous Neumann BC
+    const Real uh = sqrt(pow(vx_mean_ground,2) + pow(vy_mean_ground,2)) + 1.0e-12;
+    utau = kappa*uh/log10(z_ground/surface_roughness_z0);
+    amrex::Print() << "utau: " << utau << std::endl;
+    
+    for(int i=s; i <= b; ++i){
+        const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
+        if(z > abl_forcing_height) {
+            vx_mean = fab_arr(0,0,i,0);
+            vy_mean = fab_arr(0,0,i,1);
+            amrex::Print() << "z: " << z << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
+            break;
+        }
+    }
+    
+    
+    
+    
+    if(!plot) return;
+    
+    // begin collecting and output values
+    
+     // make a box array with a single box
+    BoxArray ba1d(bx1d);
+
+    DistributionMapping dm1d;// {ba1d}; // could use the boxarray but not sure if always guaranteed that proc=0 owns it
+    // only processor 0 owns the box
+    Vector<int> pmap {0};
+    dm1d.define(pmap);
+
+     // create a multiFAB using one box on one proc
+    MultiFab mfab1d(ba1d,dm1d,ncomp,ngrow);
+
+
+     // fixme there has to be a way to copy a fab into a mfab right??
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (MFIter mfi(mfab1d, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        Box bx = mfi.tilebox();
+
+        const auto& fab_arr1 = mfab1d.array(mfi);
+        const auto& fab_arr2 = fab.array();
+
+        AMREX_FOR_4D(bx, ncomp, i, j, k, n,
+        {
+            fab_arr1(0,0,k,n) = fab_arr2(0,0,k,n);
+        });
+    }
+//
+//    if(ParallelDescriptor::IOProcessorNumber() == 0){
+//        FArrayBox& fabby = mfab[0];
+//        Real *fptr1 = fabby.dataPtr(0);
+//        Real *fptr2 = fab.dataPtr(0);
+//        for(int i=0; i < fab.size(); ++i){
+//            fptr1[i] = fptr2[i];
+//        }
+//    }
+
+    std::string line_plot_file{"line_plot"};
+
+    const std::string& plotfilename = amrex::Concatenate(line_plot_file, nstep);
+
+    amrex::Print() << "  Writing line plot file " << plotfilename << " at time " << cur_time << std::endl;
+
+    Vector<std::string> pltscaVarsName;
+
+    pltscaVarsName.push_back("<u>");
+    pltscaVarsName.push_back("<v>");
+    pltscaVarsName.push_back("<w>");
+    pltscaVarsName.push_back("<T>");
+    
+    pltscaVarsName.push_back("<u'u'>");
+    pltscaVarsName.push_back("<u'v'>");
+    pltscaVarsName.push_back("<u'w'>");
+    pltscaVarsName.push_back("<v'v'>");
+    pltscaVarsName.push_back("<v'w'>");
+    pltscaVarsName.push_back("<w'w'>");
+    
+    pltscaVarsName.push_back("<w'u'u'>");
+    pltscaVarsName.push_back("<w'u'v'>");
+    pltscaVarsName.push_back("<w'u'w'>");
+    pltscaVarsName.push_back("<w'v'v'>");
+    pltscaVarsName.push_back("<w'v'w'>");
+    pltscaVarsName.push_back("<w'w'w'>");
+    
+    pltscaVarsName.push_back("<T'u'>");
+    pltscaVarsName.push_back("<T'v'>");
+    pltscaVarsName.push_back("<T'w'>");
+    
+    //fixme todo add Rij, qj, nu_SGS https://a2ehfm-ecp.slack.com/archives/C3V26K34G/p1522245519000450
+    
+    int level_step = 0;
+    amrex::WriteSingleLevelPlotfile(plotfilename, mfab1d, pltscaVarsName, geom[0], cur_time, level_step);
+ 
+    WriteJobInfo(plotfilename);
+
+
+ }

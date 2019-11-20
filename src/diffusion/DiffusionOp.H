@@ -39,7 +39,8 @@ public:
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_hi,
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_lo,
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_hi,
-                int _nghost);
+                int _nghost,
+                int probtype);
 
     // Destructor
     ~DiffusionOp();
@@ -65,9 +66,10 @@ public:
                           amrex::Real dt);
 
     // Scalar diffusion 
-    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& scal, 
+    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-                        const amrex::Vector<amrex::Real> mu_s, amrex::Real dt);
+                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu,
+                        amrex::Real dt);
 
     // Tensor viscous term 
     void ComputeDivTau(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
@@ -95,7 +97,8 @@ private:
     amrex::Vector<amrex::DistributionMapping> dmap;
 
     int nghost = 0; 
-
+    int probtype = 0;
+    
     // Boundary conditions
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_velbc_lo;
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  m_velbc_hi;

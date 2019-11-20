@@ -48,6 +48,8 @@ module bc
    integer, parameter :: pout_      =  11 ! pressure outflow cell
    integer, parameter :: minf_      =  20 ! mass flux inflow cell
    integer, parameter :: nsw_       = 100 ! wall with no-slip b.c.
+   integer, parameter :: slip_      = 101 ! slip wall
+   integer, parameter :: wall_model_ = 102 ! inhomogeneous neumann wall model
 
 contains
 

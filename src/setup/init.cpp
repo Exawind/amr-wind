@@ -23,7 +23,8 @@ void incflo::ReadParameters()
 
     ReadIOParameters();
     ReadRheologyParameters();
-
+    ReadABLParameters();
+    
     { // Prefix amr
  	ParmParse pp("amr");
 
@@ -58,7 +59,6 @@ void incflo::ReadParameters()
         pp.query("advect_tracer"   , advect_tracer);
         pp.query("use_godunov"     , use_godunov);
 
-        AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
         pp.query("probtype", probtype);
@@ -72,6 +72,7 @@ void incflo::ReadParameters()
 
         // Density (if constant)
         pp.query("ro_0", ro_0);
+        AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         pp.query("ntrac", ntrac);
 
@@ -116,6 +117,44 @@ void incflo::ReadParameters()
     } // end prefix mac
 }
 
+void incflo::ReadABLParameters()
+{
+    ParmParse pp("abl");
+
+    // ABL Physics
+    pp.query("ntemperature", ntemperature);
+    AMREX_ALWAYS_ASSERT(ntemperature > 0);
+
+    temperature_values.resize(ntemperature);
+    temperature_heights.resize(ntemperature);
+    for (int i = 0; i < ntemperature; i++) {
+        temperature_heights[i] = 650.0;
+        temperature_values[i] = 300.0;
+    }
+    
+    pp.queryarr("temperature_heights", temperature_heights,0,ntemperature);
+    pp.queryarr("temperature_values", temperature_values,0,ntemperature);
+    
+    pp.query("use_boussinesq", use_boussinesq);
+    pp.query("coriolis_effect", coriolis_effect);
+    pp.query("abl_forcing", abl_forcing);
+    pp.query("sgs_model", sgs_model);
+    
+    pp.query("cutoff_height",cutoff_height);
+    pp.query("Uperiods",Uperiods);
+    pp.query("Vperiods",Vperiods);
+    pp.query("deltaU",deltaU);
+    pp.query("deltaV",deltaV);
+    pp.query("zRefHeight",zRefHeight);
+    pp.query("theta_amplitude",theta_amplitude);
+    pp.query("abl_forcing_height",abl_forcing_height);
+    pp.query("kappa",kappa);
+    pp.query("surface_roughness_z0",surface_roughness_z0);
+    pp.query("corfac",corfac);
+    pp.query("latitude",latitude);
+    pp.query("thermalExpansionCoeff",thermalExpansionCoeff);
+    
+}
 void incflo::ReadIOParameters()
 {
     // Prefix amr
@@ -213,12 +252,14 @@ void incflo::PostInit(int restart_flag)
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 
+    spatially_average_quantities_down(false);// fixme this is only done so that vx_mean_ground is computed for shear stress in bc
+    
     // Fill boundaries
     incflo_set_density_bcs(cur_time, density);
     incflo_set_tracer_bcs (cur_time, tracer);
     incflo_set_density_bcs(cur_time, density_o);
-    incflo_set_tracer_bcs (cur_time, tracer_o);
     incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_tracer_bcs (cur_time, tracer_o);
 
     setup_level_mask();
     
@@ -274,6 +315,10 @@ void incflo::InitFluid()
                        &xlo, &ylo, &zlo, &probtype);
         }
 
+        if(probtype == 35) {
+            init_abl(*density[lev],*vel[lev],*tracer[lev],dx,dy,dz);
+        }
+        
         // Make sure to set periodic bc's
             vel[lev]->FillBoundary(geom[lev].periodicity());
         density[lev]->FillBoundary(geom[lev].periodicity());
@@ -385,8 +430,8 @@ void incflo::InitialIterations()
 
     // Fill ghost cells
     incflo_set_density_bcs(cur_time, density);
-    incflo_set_tracer_bcs(cur_time, tracer);
     incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_tracer_bcs(cur_time, tracer);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
