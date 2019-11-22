@@ -497,8 +497,8 @@ incflo::set_velocity_bcs(Real time,
           // apply as an inhomogeneous Neumann BC
           // fixme this should be the local (nu+nut) but there is a circular dependency on strain rate and bc's
           // we could locally calculate a strain rate but not sure what do with 1 eqn sgs
-          vel_arr(i,j,k,0) = utau_*utau_*vx/nu_mean_ground_;
-          vel_arr(i,j,k,1) = utau_*utau_*vy/nu_mean_ground_;
+          vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nu_mean_ground_;
+          vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nu_mean_ground_;
           vel_arr(i,j,k,2) = 0.0;
       }
     });
