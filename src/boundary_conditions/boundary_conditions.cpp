@@ -93,6 +93,7 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
       pp.queryarr("velocity", mi_velocity, 0, 3);
       pp.query("direction", direction);
       pp.query("location", location);
+      pp.queryarr("tracer", mi_tracer, 0, ntrac);
 
     }
 

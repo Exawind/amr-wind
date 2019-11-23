@@ -6,6 +6,7 @@ target_sources(${amr_wind_unit_test_exe_name}
       #C++
       unit_tests_3d.C
       unit_test_3d_1.C
+      unit_test_ICs.C
    )
 
 

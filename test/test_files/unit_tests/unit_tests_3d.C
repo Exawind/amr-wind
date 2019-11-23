@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+//#include <incflo.H>
 //#include <mpi.h>
 
 int gl_argc = 0;
@@ -8,6 +9,8 @@ int main(int argc, char **argv)
 {
     //MPI_Init(&argc, &argv);
 
+    //amrex::Initialize(argc, argv);
+    //{
     int returnVal = 0;
 
     {
@@ -20,5 +23,7 @@ int main(int argc, char **argv)
     }
 
     return returnVal;
+    //}
+    //amrex::Finalize();
 }
 

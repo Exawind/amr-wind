@@ -75,6 +75,8 @@ void incflo::ReadParameters()
 
         pp.query("ntrac", ntrac);
 
+        pp.query("use_boussinesq", use_boussinesq);
+
         if (ntrac < 1)
             amrex::Abort("We currently require at least one tracer");
 
