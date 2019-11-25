@@ -196,6 +196,7 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra, ntrac) 
      bc_u(pid) = pvel(1)
      bc_v(pid) = pvel(2)
      bc_w(pid) = pvel(3)
+     bc_t(pid) = ptra(1)
 
      select case(pid)
         case(1,2); bc_u(pid) = 0.0d0;
