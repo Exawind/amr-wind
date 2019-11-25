@@ -28,7 +28,7 @@ incflo.ro_0             =  1.           # Reference density
 incflo.fluid_model      =  "newtonian"  # Fluid model (rheology)
 incflo.mu               =  0.001        # Dynamic viscosity coefficient
 
-incflo.advect_density   =  0            #
+incflo.advect_density   =  1            #
 incflo.advect_tracer    =  1            #
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
