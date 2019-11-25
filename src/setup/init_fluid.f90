@@ -53,6 +53,7 @@ contains
       if (probtype == 33) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype ==  4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
       if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype == 12) call periodic_tracer(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
@@ -418,6 +419,57 @@ contains
       end do
 
    end subroutine tuscan
+
+   subroutine periodic_tracer(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+
+      use constant,          only: zero, half, one
+
+      implicit none
+
+      integer(c_int),   intent(in   ) ::    lo(3),    hi(3)
+      integer(c_int),   intent(in   ) :: domlo(3), domhi(3)
+      integer(c_int),   intent(in   ) ::   slo(3),   shi(3)
+
+      real(rt),         intent(inout) ::     vel(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3), 3)
+      real(rt),         intent(inout) :: density(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+      real(rt),         intent(inout) ::  tracer(slo(1):shi(1), slo(2):shi(2), slo(3):shi(3))
+
+      real(rt),         intent(in   ) :: dx, dy, dz
+      real(rt)                        :: twopi = 8.0_rt * atan(one)
+
+      ! Local variables
+      integer(c_int)                  :: i, j, k
+      integer(c_int)                  :: num_cells
+      real(rt)                        :: x, y, z
+      real(rt)                        :: A, C, L
+
+      real(rt)                        :: e
+
+      e = exp(1.)
+
+      A = 1.0
+      L = real(domhi(1)+1,rt) * dx
+      C = twopi / L
+
+      do k = lo(3), hi(3)
+         do j = lo(2), hi(2)
+            do i = lo(1), hi(1)
+
+               x =  (real(i,rt) + 0.5d0) * dx
+               y =  (real(j,rt) + 0.5d0) * dy
+               z =  (real(k,rt) + 0.5d0) * dz
+
+               tracer(i,j,k) = A * ( sin(C*(y+z) - 0.00042) + 1.0) * e**x
+
+               vel(i,j,k,1)  = 1.0
+               vel(i,j,k,2)  = 0.1*( sin(C*(x+z) - 0.00042) + 1.0) * e**y
+               vel(i,j,k,3)  = 0.1*( sin(C*(x+y) - 0.00042) + 1.0) * e**z
+
+            end do
+         end do
+      end do
+
+   end subroutine periodic_tracer
 
 end module init_fluid_module
 

@@ -63,6 +63,9 @@ void incflo::Advance()
         }
     }
 
+    if (test_tracer_conservation)
+       amrex::Print() << "Sum tracer volume wgt = " << cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
     ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());

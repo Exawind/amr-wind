@@ -164,13 +164,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Derived quantities
+    // Derived quantities and diagnostics
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeVorticity(Real time_in);
     double ComputeKineticEnergy();
 
+    Real volWgtSum (int lev, const MultiFab & mf, int comp, bool local=false);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -490,6 +491,7 @@ private:
 
     bool constant_density = true;
     bool advect_tracer    = false;
+    bool test_tracer_conservation = false;
     bool use_godunov      = false;
 
     // Fluid properties

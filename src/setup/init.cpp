@@ -56,6 +56,7 @@ void incflo::ReadParameters()
 
         pp.query("constant_density", constant_density);
         pp.query("advect_tracer"   , advect_tracer);
+        pp.query("test_tracer_conservation" , test_tracer_conservation);
         pp.query("use_godunov"     , use_godunov);
 
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
@@ -283,6 +284,10 @@ void incflo::InitFluid()
         MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
         MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
     }
+
+    Real cur_time = 0.0;
+    if (test_tracer_conservation)
+       amrex::Print() << "Sum tracer volume wgt = " << cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 }
 
 void incflo::SetBCTypes()
