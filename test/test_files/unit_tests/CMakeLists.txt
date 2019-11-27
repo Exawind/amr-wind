@@ -24,7 +24,7 @@ target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE ${CMAKE
   
 #Link our unit test executable with GoogleTest
 #target_link_libraries(${utest_exe_name} PRIVATE GTest::GTest GTest::Main)
-target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest gtest_main)
+target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE gtest_main)
 target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/submods/googletest/googletest/include)
 
 target_link_libraries(${amr_wind_unit_test_exe_name} PRIVATE amrex)
