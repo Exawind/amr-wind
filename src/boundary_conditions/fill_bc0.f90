@@ -51,7 +51,7 @@ subroutine fill_bc0(s, slo, shi, &
    integer :: nlft, nrgt, nbot, ntop, nup, ndwn
    integer :: ilo, ihi, jlo, jhi, klo, khi
    integer :: i, j, k
-   integer :: valid_bcs(4) = [nsw_, minf_, pinf_, pout_]
+   integer :: valid_bcs(6) = [nsw_, minf_, pinf_, pout_, slip_, wall_model_]
 
    !......................................................................
 

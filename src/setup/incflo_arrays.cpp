@@ -50,6 +50,10 @@ void incflo::AllocateArrays(int lev)
     // Old Viscosity
     eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
     eta_old[lev]->setVal(0.);
+    
+    // Tracer Viscosity
+    eta_tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]));
+    eta_tracer[lev]->setVal(0.);
 
     // Strain-rate magnitude
     strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]));
@@ -203,6 +207,10 @@ void incflo::AllocateArrays(int lev)
     eta_old[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
     eta_old[lev]->setVal(0.);
 
+    // Tracer Viscosity
+    eta_tracer[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
+    eta_tracer[lev]->setVal(0.);
+    
     // Strain-rate magnitude
     strainrate[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost, MFInfo()));
     strainrate[lev]->setVal(0.);
@@ -396,7 +404,13 @@ void incflo::RegridArrays(int lev)
     eta_old_new->setVal(0.);
     eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
     eta_old[lev] = std::move(eta_old_new);
-
+    
+    std::unique_ptr<MultiFab> eta_tracer_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost,
+                                                       MFInfo(), *ebfactory[lev]));
+    eta_tracer_new->setVal(0.);
+    eta_tracer_new->copy(*eta_tracer[lev], 0, 0, ntrac, 0, nghost);
+    eta_tracer[lev] = std::move(eta_tracer_new);
+    
     // ***************************
     // Strain-rate magnitude
     // ***************************
@@ -654,6 +668,12 @@ void incflo::RegridArrays(int lev)
     eta_old_new->setVal(0.);
     eta_old_new->copy(*eta_old[lev], 0, 0, 1, 0, nghost);
     eta_old[lev] = std::move(eta_old_new);
+    
+    std::unique_ptr<MultiFab> eta_tracer_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost,
+                                                       MFInfo()));
+    eta_tracer_new->setVal(0.);
+    eta_tracer_new->copy(*eta_tracer[lev], 0, 0, ntrac, 0, nghost);
+    eta_tracer[lev] = std::move(eta_tracer_new);
 
     // ***************************
     // Strain-rate magnitude
@@ -882,6 +902,7 @@ void incflo::ResizeArrays()
     // Derived quantities: viscosity, strainrate, vorticity, div(u)
     eta.resize(max_level + 1);
     eta_old.resize(max_level + 1);
+    eta_tracer.resize(max_level + 1);
     strainrate.resize(max_level + 1);
     vort.resize(max_level + 1);
     drag.resize(max_level + 1);

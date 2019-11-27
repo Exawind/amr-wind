@@ -162,6 +162,10 @@ public:
     void ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
                            const Real time_in);
 
+    void add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
+                            Vector<std::unique_ptr<MultiFab>>& eta_tracer_out,
+                            const Real time_in);
+    
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Derived quantities
@@ -171,7 +175,21 @@ public:
     void ComputeVorticity(Real time_in);
     double ComputeKineticEnergy();
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // ABL Physics
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    
+    void add_abl_source_terms(MultiFab& vel_in, MultiFab& tracer_in, int nghost);
+    void add_coriolis (MultiFab& vel, int nghost);
+    void add_boussinesq (MultiFab& vel_in, MultiFab& tracer_in, int nghost);
+    void add_abl_forcing (MultiFab& vel_in, int nghost);
+    
+    void init_abl(MultiFab& den, MultiFab& vel, MultiFab& tracer, Real dx, Real dy, Real dz);
+    void set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &fab, int index);
+    void spatially_average_quantities_down(bool plot=true);
+    
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Convection
@@ -277,6 +295,7 @@ private:
     void ReadParameters();
     void ReadIOParameters();
     void ReadRheologyParameters();
+    void ReadABLParameters();
 
     // Resize arrays to fit (up to) max_level + 1 AMR levels
     void ResizeArrays();
@@ -499,7 +518,50 @@ private:
     Real tau_0 = 0.0;
     Real papa_reg = 0.0;
     Real eta_0 = 0.0;
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // ABL Physics
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    
+    bool coriolis_effect = false;
+    bool abl_forcing = false;
+    bool sgs_model = false;
+    
+    Vector<Real> temperature_heights;
+    Vector<Real> temperature_values;
+    int ntemperature = 1;
+    
+    Real cutoff_height = 600.0;
+    Real Uperiods = 4.0;
+    Real Vperiods = 4.0;
+    Real deltaU = 1.0;
+    Real deltaV = 1.0;
+    Real zRefHeight = 50.0;
+    Real theta_amplitude = 0.8;
+    Real abl_forcing_height = 70.0;
+    Real kappa = 0.4; //von Karman constant
+    Real surface_roughness_z0 = 0.0001; // surface roughness [m]
+    Real corfac = 1.45842318e-4;//fixme not sure where value came from
+    Real latitude = 0.9181479063;// fixme not sure where value came from
+    Real thermalExpansionCoeff = 0.0034; // is this just 1/300 T0=300?
+    
+    Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
+    Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
+    Vector<Real> up{Vector<Real>{0.0, 0.0, 1.0}};
 
+    
+    Real vx_mean; //fixme pick a better name
+    Real vy_mean;
+    Real vx_mean_ground;
+    Real vy_mean_ground;
+    Real nu_mean_ground;
+    Real z_ground;
+    Real utau;
+
+    
+    
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Input / Output
@@ -595,6 +657,7 @@ private:
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
     Vector<std::unique_ptr<MultiFab>> eta;
     Vector<std::unique_ptr<MultiFab>> eta_old;
+    Vector<std::unique_ptr<MultiFab>> eta_tracer;
     Vector<std::unique_ptr<MultiFab>> strainrate;
     Vector<std::unique_ptr<MultiFab>> vort;
     Vector<std::unique_ptr<MultiFab>> drag;

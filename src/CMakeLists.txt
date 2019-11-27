@@ -24,6 +24,7 @@ target_include_directories(${amr_wind_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_D
 target_include_directories(${amr_wind_exe_name} SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/submods/amrex/Tools/C_scripts)
 
 #Gather all other source files  
+add_subdirectory(atmospheric_boundary_layer)
 add_subdirectory(boundary_conditions)
 add_subdirectory(convection)
 add_subdirectory(derive)
