@@ -557,7 +557,6 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
     if(axis!=2) amrex::Abort("not implemented for other index yet\n");
     
     AMREX_ASSERT(mfab->nComp() == fab->nComp());
-    AMREX_ASSERT(mfab->nComp() == last_avg_var); // must match function that is calling this
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
