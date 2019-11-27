@@ -547,14 +547,17 @@ void incflo::WritePlotFile()
 
 
 
+enum avg_var { u_avg=0, v_avg, w_avg, T_avg, uu, uv, uw, vv, vw, ww, wuu, wuv, wuw, wvv, wvw, www, Tu, Tv, Tw, nu_avg, last_avg_var=nu_avg};
 
 void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &avg_fab, int axis)
 {
 
+    BL_PROFILE("incflo::set_mfab_spatial_averaging_quantities()");
+
     if(axis!=2) amrex::Abort("not implemented for other index yet\n");
     
     AMREX_ASSERT(mfab->nComp() == fab->nComp());
-    AMREX_ASSERT(mfab->nComp() == 19); // must match function that is calling this
+    AMREX_ASSERT(mfab->nComp() == last_avg_var); // must match function that is calling this
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -574,39 +577,39 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
         AMREX_FOR_3D(bx, i, j, k,
         {
             // velocities
-            mfab_arr(i,j,k,0) = vel_arr(i,j,k,0);
-            mfab_arr(i,j,k,1) = vel_arr(i,j,k,1);
-            mfab_arr(i,j,k,2) = vel_arr(i,j,k,2);
+            mfab_arr(i,j,k,u_avg) = vel_arr(i,j,k,0);
+            mfab_arr(i,j,k,v_avg) = vel_arr(i,j,k,1);
+            mfab_arr(i,j,k,w_avg) = vel_arr(i,j,k,2);
 
             // potential temperature
-            mfab_arr(i,j,k,3) = tracer_arr(i,j,k,0);
+            mfab_arr(i,j,k,T_avg) = tracer_arr(i,j,k,0);
             
             // fluctuations
-            const Real up = vel_arr(i,j,k,0) - avg_fab_arr(0,0,k,0);
-            const Real vp = vel_arr(i,j,k,1) - avg_fab_arr(0,0,k,1);
-            const Real wp = vel_arr(i,j,k,2) - avg_fab_arr(0,0,k,2);
-            const Real Tp = tracer_arr(i,j,k,0) - avg_fab_arr(0,0,k,3);
+            const Real up = vel_arr(i,j,k,0) - avg_fab_arr(0,0,k,u_avg);
+            const Real vp = vel_arr(i,j,k,1) - avg_fab_arr(0,0,k,v_avg);
+            const Real wp = vel_arr(i,j,k,2) - avg_fab_arr(0,0,k,w_avg);
+            const Real Tp = tracer_arr(i,j,k,0) - avg_fab_arr(0,0,k,T_avg);
             
-            mfab_arr(i,j,k,4) = up*up;
-            mfab_arr(i,j,k,5) = up*vp;
-            mfab_arr(i,j,k,6) = up*wp;
-            mfab_arr(i,j,k,7) = vp*vp;
-            mfab_arr(i,j,k,8) = vp*wp;
-            mfab_arr(i,j,k,9) = wp*wp;
+            mfab_arr(i,j,k,uu) = up*up;
+            mfab_arr(i,j,k,uv) = up*vp;
+            mfab_arr(i,j,k,uw) = up*wp;
+            mfab_arr(i,j,k,vv) = vp*vp;
+            mfab_arr(i,j,k,vw) = vp*wp;
+            mfab_arr(i,j,k,ww) = wp*wp;
             
-            mfab_arr(i,j,k,10) = wp*up*up;
-            mfab_arr(i,j,k,11) = wp*up*vp;
-            mfab_arr(i,j,k,12) = wp*up*wp;
-            mfab_arr(i,j,k,13) = wp*vp*vp;
-            mfab_arr(i,j,k,14) = wp*vp*wp;
-            mfab_arr(i,j,k,15) = wp*wp*wp;
+            mfab_arr(i,j,k,wuu) = wp*up*up;
+            mfab_arr(i,j,k,wuv) = wp*up*vp;
+            mfab_arr(i,j,k,wuw) = wp*up*wp;
+            mfab_arr(i,j,k,wvv) = wp*vp*vp;
+            mfab_arr(i,j,k,wvw) = wp*vp*wp;
+            mfab_arr(i,j,k,www) = wp*wp*wp;
             
-            mfab_arr(i,j,k,16) = Tp*up;
-            mfab_arr(i,j,k,17) = Tp*vp;
-            mfab_arr(i,j,k,18) = Tp*wp;
+            mfab_arr(i,j,k,Tu) = Tp*up;
+            mfab_arr(i,j,k,Tv) = Tp*vp;
+            mfab_arr(i,j,k,Tw) = Tp*wp;
             
             // nu+nut = (mu+mut)/rho
-            mfab_arr(i,j,k,19) = eta_arr(i,j,k)/den_arr(i,j,k);
+            mfab_arr(i,j,k,nu_avg) = eta_arr(i,j,k)/den_arr(i,j,k);
 
          });
     }
@@ -615,8 +618,12 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
 
 
 
+
 void incflo::spatially_average_quantities_down(bool plot)
 {
+
+    BL_PROFILE("incflo::spatially_average_quantities_down()");
+
     if(finest_level > 0) {
         amrex::Abort("commented out the fine to coarse averaging uncomment to test \n");
     }
@@ -624,7 +631,7 @@ void incflo::spatially_average_quantities_down(bool plot)
         amrex::Abort("average down only works for 2 levels for now need to add for loops \n");
     }
 
-    const int ncomp = 20;// must match number of quantities in set_mfab_spatial_averaging_quantities(...)
+    const int ncomp = last_avg_var+1;// must match number of quantities in set_mfab_spatial_averaging_quantities(...)
     const int ngrow = 0;
 
     int crse_lev = 0;
@@ -684,7 +691,7 @@ void incflo::spatially_average_quantities_down(bool plot)
         const auto& crse_arr = crse_mfab.array(mfi);
         const auto& fab_arr = fab.array();
         // ncomp is used here but it could actually be 4 depending on the average down function
-        int nvar = 4;
+        int nvar = ncomp;// this is safer in case something is moved
         switch (axis) {
             case 0:
                 AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(i,0,0,n) += crse_arr(i,j,k,n)/nxny;} );
@@ -753,9 +760,9 @@ void incflo::spatially_average_quantities_down(bool plot)
     for(int i=s; i <= b; ++i){
         const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
         if(z > 0.0) {
-            vx_mean_ground = fab_arr(0,0,i,0);
-            vy_mean_ground = fab_arr(0,0,i,1);
-            nu_mean_ground = fab_arr(0,0,i,19);
+            vx_mean_ground = fab_arr(0,0,i,u_avg);
+            vy_mean_ground = fab_arr(0,0,i,v_avg);
+            nu_mean_ground = fab_arr(0,0,i,nu_avg);
             z_ground = z;
            
             amrex::Print() << "z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
@@ -774,12 +781,16 @@ void incflo::spatially_average_quantities_down(bool plot)
     utau = kappa*uh/log10(z_ground/surface_roughness_z0);
     amrex::Print() << "utau: " << utau << std::endl;
     
-    for(int i=s; i <= b; ++i){
-        const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
-        if(z > abl_forcing_height) {
-            vx_mean = fab_arr(0,0,i,0);
-            vy_mean = fab_arr(0,0,i,1);
-            amrex::Print() << "z: " << z << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
+    for(int i=s; i < b; ++i){
+
+        const Real z1 = geom[0].ProbLo(axis) + (i+0.5+0)*geom[0].CellSize(axis);
+        const Real z2 = geom[0].ProbLo(axis) + (i+0.5+1)*geom[0].CellSize(axis);
+
+        if(z1 <= abl_forcing_height && z2 >= abl_forcing_height) {
+            const Real c = (abl_forcing_height-z1)/(z2-z1);
+            vx_mean = fab_arr(0,0,i,u_avg)*(1.0-c) + fab_arr(0,0,i+1,u_avg)*c;
+            vy_mean = fab_arr(0,0,i,v_avg)*(1.0-c) + fab_arr(0,0,i+1,v_avg)*c;
+            amrex::Print() << "abl forcing height: " << abl_forcing_height << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
             break;
         }
     }

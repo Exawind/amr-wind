@@ -261,7 +261,7 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
                 {
                     const Real z = geom[0].ProbLo(2) + (k+0.5)*dz;
                     const Real yp = z*utau/(mu/ro_0);
-                    const Real damp = pow(1.0-exp(-0.04*yp),2);
+                    const Real damp = pow(1.0-exp(-yp/26.0),2);
 
                     const Real Cs = 0.18; // 0.18 <= Cs <= 0.25 fixme should be an input
 
