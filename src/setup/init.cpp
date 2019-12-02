@@ -210,7 +210,7 @@ void incflo::PostInit(int restart_flag)
     {
         InitFluid();
     }
-    
+
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 
@@ -222,7 +222,7 @@ void incflo::PostInit(int restart_flag)
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
     setup_level_mask();
-    
+
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
@@ -367,7 +367,7 @@ void incflo::SetBackgroundPressure()
        gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
        for(int lev = 0; lev <= max_level; lev++)
           p0[lev]->setVal(0.);
- 
+
        use_boussinesq = true;
     }
 }
@@ -403,7 +403,7 @@ void incflo::InitialIterations()
     {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
- 	ApplyPredictor();
+ 	ApplyPredictor(true);
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
@@ -419,9 +419,6 @@ void incflo::InitialIterations()
         incflo_set_tracer_bcs  (cur_time, tracer );
     }
 
-    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection()
-    // use the correct decomposition.
-    nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free

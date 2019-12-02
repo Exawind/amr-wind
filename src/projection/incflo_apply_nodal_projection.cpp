@@ -22,7 +22,7 @@
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection(Real time, Real scaling_factor)
+void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 
@@ -33,7 +33,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
-    if (nstep >= 0)
+    if (!incremental)
     {
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -83,18 +83,19 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        if(nstep >= 0)
-        {
-            // p := phi
-            MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
-        }
-        else
+        if (incremental)
         {
             // p := p + phi
             MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
             MultiFab::Add(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
         }
+        else
+        {
+            // p := phi
+            MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
+            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
+        }
+
     }
 
     AverageDown();

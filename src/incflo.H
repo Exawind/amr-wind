@@ -318,10 +318,10 @@ private:
 
     void Advance();
     void ComputeDt(int initialisation, bool explicit_diffusion);
-	bool SteadyStateReached();
-	void ApplyPredictor();
-	void ApplyCorrector();
-    void ApplyProjection(Real time, Real scaling_factor);
+    bool SteadyStateReached();
+    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyCorrector();
+    void ApplyProjection(Real time, Real scaling_factor, bool incremental = false);
 
     // Number of ghost nodes for field arrays.
     const int nghost = 4;
