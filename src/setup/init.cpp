@@ -419,6 +419,8 @@ void incflo::InitialIterations()
         incflo_set_tracer_bcs  (cur_time, tracer );
     }
 
+    // Set nstep to 0 before entering time loop
+    nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
