@@ -25,7 +25,7 @@ void incflo::ComputeStrainrate(Real time_in)
 
         // State with ghost cells
 #ifdef AMREX_USE_EB
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 2, MFInfo(), *ebfactory[lev]);
 #else
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo());
 #endif
@@ -108,26 +108,26 @@ void incflo::ComputeStrainrate(Real time_in)
                             if (flag_fab(i+1,j,k).isCovered())
                             {
                                 // Covered cell to the right, go fish left
-                                ux = - (c0 * ccvel_fab(i,j,k,0)
-                                    + c1 * ccvel_fab(i-1,j,k,0)
-                                    + c2 * ccvel_fab(i-2,j,k,0)) * idx;
-                                vx = - (c0 * ccvel_fab(i,j,k,1)
-                                    + c1 * ccvel_fab(i-1,j,k,1)
-                                    + c2 * ccvel_fab(i-2,j,k,1)) * idx;
-                                wx = - (c0 * ccvel_fab(i,j,k,2)
-                                    + c1 * ccvel_fab(i-1,j,k,2)
-                                    + c2 * ccvel_fab(i-2,j,k,2)) * idx;
+                                ux = - (c0 * ccvel_fab(i  ,j,k,0)
+                                      + c1 * ccvel_fab(i-1,j,k,0)
+                                      + c2 * ccvel_fab(i-2,j,k,0)) * idx;
+                                vx = - (c0 * ccvel_fab(i  ,j,k,1)
+                                      + c1 * ccvel_fab(i-1,j,k,1)
+                                      + c2 * ccvel_fab(i-2,j,k,1)) * idx;
+                                wx = - (c0 * ccvel_fab(i  ,j,k,2)
+                                      + c1 * ccvel_fab(i-1,j,k,2)
+                                      + c2 * ccvel_fab(i-2,j,k,2)) * idx;
                             }
                             else if (flag_fab(i-1,j,k).isCovered())
                             {
                                 // Covered cell to the left, go fish right
-                                ux = (c0 * ccvel_fab(i,j,k,0)
+                                ux = (c0 * ccvel_fab(i  ,j,k,0)
                                     + c1 * ccvel_fab(i+1,j,k,0)
                                     + c2 * ccvel_fab(i+2,j,k,0)) * idx;
-                                vx = (c0 * ccvel_fab(i,j,k,1)
+                                vx = (c0 * ccvel_fab(i  ,j,k,1)
                                     + c1 * ccvel_fab(i+1,j,k,1)
                                     + c2 * ccvel_fab(i+2,j,k,1)) * idx;
-                                wx = (c0 * ccvel_fab(i,j,k,2)
+                                wx = (c0 * ccvel_fab(i  ,j,k,2)
                                     + c1 * ccvel_fab(i+1,j,k,2)
                                     + c2 * ccvel_fab(i+2,j,k,2)) * idx;
                             }
@@ -141,25 +141,25 @@ void incflo::ComputeStrainrate(Real time_in)
                             // Do the same in y-direction
                             if (flag_fab(i,j+1,k).isCovered())
                             {
-                                uy = - (c0 * ccvel_fab(i,j,k,0)
-                                    + c1 * ccvel_fab(i,j-1,k,0)
-                                    + c2 * ccvel_fab(i,j-2,k,0)) * idy;
-                                vy = - (c0 * ccvel_fab(i,j,k,1)
-                                    + c1 * ccvel_fab(i,j-1,k,1)
-                                    + c2 * ccvel_fab(i,j-2,k,1)) * idy;
-                                wy = - (c0 * ccvel_fab(i,j,k,2)
-                                    + c1 * ccvel_fab(i,j-1,k,2)
-                                    + c2 * ccvel_fab(i,j-2,k,2)) * idy;
+                                uy = - (c0 * ccvel_fab(i,j  ,k,0)
+                                      + c1 * ccvel_fab(i,j-1,k,0)
+                                      + c2 * ccvel_fab(i,j-2,k,0)) * idy;
+                                vy = - (c0 * ccvel_fab(i,j  ,k,1)
+                                      + c1 * ccvel_fab(i,j-1,k,1)
+                                      + c2 * ccvel_fab(i,j-2,k,1)) * idy;
+                                wy = - (c0 * ccvel_fab(i,j  ,k,2)
+                                      + c1 * ccvel_fab(i,j-1,k,2)
+                                      + c2 * ccvel_fab(i,j-2,k,2)) * idy;
                             }
                             else if (flag_fab(i,j-1,k).isCovered())
                             {
-                                uy = (c0 * ccvel_fab(i,j,k,0)
+                                uy = (c0 * ccvel_fab(i,j  ,k,0)
                                     + c1 * ccvel_fab(i,j+1,k,0)
                                     + c2 * ccvel_fab(i,j+2,k,0)) * idy;
-                                vy = (c0 * ccvel_fab(i,j,k,1)
+                                vy = (c0 * ccvel_fab(i,j  ,k,1)
                                     + c1 * ccvel_fab(i,j+1,k,1)
                                     + c2 * ccvel_fab(i,j+2,k,1)) * idy;
-                                wy = (c0 * ccvel_fab(i,j,k,2)
+                                wy = (c0 * ccvel_fab(i,j  ,k,2)
                                     + c1 * ccvel_fab(i,j+1,k,2)
                                     + c2 * ccvel_fab(i,j+2,k,2)) * idy;
                             }
@@ -173,25 +173,25 @@ void incflo::ComputeStrainrate(Real time_in)
                             // Do the same in z-direction
                             if (flag_fab(i,j,k+1).isCovered())
                             {
-                                uz = - (c0 * ccvel_fab(i,j,k,0)
-                                    + c1 * ccvel_fab(i,j,k-1,0)
-                                    + c2 * ccvel_fab(i,j,k-2,0)) * idz;
-                                vz = - (c0 * ccvel_fab(i,j,k,1)
-                                    + c1 * ccvel_fab(i,j,k-1,1)
-                                    + c2 * ccvel_fab(i,j,k-2,1)) * idz;
-                                wz = - (c0 * ccvel_fab(i,j,k,2)
-                                    + c1 * ccvel_fab(i,j,k-1,2)
-                                    + c2 * ccvel_fab(i,j,k-2,2)) * idz;
+                                uz = - (c0 * ccvel_fab(i,j,k  ,0)
+                                      + c1 * ccvel_fab(i,j,k-1,0)
+                                      + c2 * ccvel_fab(i,j,k-2,0)) * idz;
+                                vz = - (c0 * ccvel_fab(i,j,k  ,1)
+                                      + c1 * ccvel_fab(i,j,k-1,1)
+                                      + c2 * ccvel_fab(i,j,k-2,1)) * idz;
+                                wz = - (c0 * ccvel_fab(i,j,k  ,2)
+                                      + c1 * ccvel_fab(i,j,k-1,2)
+                                      + c2 * ccvel_fab(i,j,k-2,2)) * idz;
                             }
                             else if (flag_fab(i,j,k-1).isCovered())
                             {
-                                uz = (c0 * ccvel_fab(i,j,k,0)
+                                uz = (c0 * ccvel_fab(i,j,k  ,0)
                                     + c1 * ccvel_fab(i,j,k+1,0)
                                     + c2 * ccvel_fab(i,j,k+2,0)) * idz;
-                                vz = (c0 * ccvel_fab(i,j,k,1)
+                                vz = (c0 * ccvel_fab(i,j,k  ,1)
                                     + c1 * ccvel_fab(i,j,k+1,1)
                                     + c2 * ccvel_fab(i,j,k+2,1)) * idz;
-                                wz = (c0 * ccvel_fab(i,j,k,2)
+                                wz = (c0 * ccvel_fab(i,j,k  ,2)
                                     + c1 * ccvel_fab(i,j,k+1,2)
                                     + c2 * ccvel_fab(i,j,k+2,2)) * idz;
                             }
@@ -282,7 +282,7 @@ void incflo::ComputeVorticity(Real time_in)
 
         // State with ghost cells
 #ifdef AMREX_USE_EB
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 2, MFInfo(), *ebfactory[lev]);
 #else
         MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo());
 #endif
@@ -360,20 +360,20 @@ void incflo::ComputeVorticity(Real time_in)
                             if (flag_fab(i+1,j,k).isCovered())
                             {
                                 // Covered cell to the right, go fish left
-                                vx = - (c0 * ccvel_fab(i,j,k,1)
-                                    + c1 * ccvel_fab(i-1,j,k,1)
-                                    + c2 * ccvel_fab(i-2,j,k,1)) * idx;
-                                wx = - (c0 * ccvel_fab(i,j,k,2)
-                                    + c1 * ccvel_fab(i-1,j,k,2)
-                                    + c2 * ccvel_fab(i-2,j,k,2)) * idx;
+                                vx = - (c0 * ccvel_fab(i  ,j,k,1)
+                                      + c1 * ccvel_fab(i-1,j,k,1)
+                                      + c2 * ccvel_fab(i-2,j,k,1)) * idx;
+                                wx = - (c0 * ccvel_fab(i  ,j,k,2)
+                                      + c1 * ccvel_fab(i-1,j,k,2)
+                                      + c2 * ccvel_fab(i-2,j,k,2)) * idx;
                             }
                             else if (flag_fab(i-1,j,k).isCovered())
                             {
                                 // Covered cell to the left, go fish right
-                                vx = (c0 * ccvel_fab(i,j,k,1)
+                                vx = (c0 * ccvel_fab(i  ,j,k,1)
                                     + c1 * ccvel_fab(i+1,j,k,1)
                                     + c2 * ccvel_fab(i+2,j,k,1)) * idx;
-                                wx = (c0 * ccvel_fab(i,j,k,2)
+                                wx = (c0 * ccvel_fab(i  ,j,k,2)
                                     + c1 * ccvel_fab(i+1,j,k,2)
                                     + c2 * ccvel_fab(i+2,j,k,2)) * idx;
                             }
@@ -386,19 +386,19 @@ void incflo::ComputeVorticity(Real time_in)
                             // Do the same in y-direction
                             if (flag_fab(i,j+1,k).isCovered())
                             {
-                                uy = - (c0 * ccvel_fab(i,j,k,0)
-                                    + c1 * ccvel_fab(i,j-1,k,0)
-                                    + c2 * ccvel_fab(i,j-2,k,0)) * idy;
-                                wy = - (c0 * ccvel_fab(i,j,k,2)
-                                    + c1 * ccvel_fab(i,j-1,k,2)
-                                    + c2 * ccvel_fab(i,j-2,k,2)) * idy;
+                                uy = - (c0 * ccvel_fab(i,j  ,k,0)
+                                      + c1 * ccvel_fab(i,j-1,k,0)
+                                      + c2 * ccvel_fab(i,j-2,k,0)) * idy;
+                                wy = - (c0 * ccvel_fab(i,j  ,k,2)
+                                      + c1 * ccvel_fab(i,j-1,k,2)
+                                      + c2 * ccvel_fab(i,j-2,k,2)) * idy;
                             }
                             else if (flag_fab(i,j-1,k).isCovered())
                             {
-                                uy = (c0 * ccvel_fab(i,j,k,0)
+                                uy = (c0 * ccvel_fab(i,j  ,k,0)
                                     + c1 * ccvel_fab(i,j+1,k,0)
                                     + c2 * ccvel_fab(i,j+2,k,0)) * idy;
-                                wy = (c0 * ccvel_fab(i,j,k,2)
+                                wy = (c0 * ccvel_fab(i,j  ,k,2)
                                     + c1 * ccvel_fab(i,j+1,k,2)
                                     + c2 * ccvel_fab(i,j+2,k,2)) * idy;
                             }
@@ -411,19 +411,19 @@ void incflo::ComputeVorticity(Real time_in)
                             // Do the same in z-direction
                             if (flag_fab(i,j,k+1).isCovered())
                             {
-                                uz = - (c0 * ccvel_fab(i,j,k,0)
-                                    + c1 * ccvel_fab(i,j,k-1,0)
-                                    + c2 * ccvel_fab(i,j,k-2,0)) * idz;
-                                vz = - (c0 * ccvel_fab(i,j,k,1)
-                                    + c1 * ccvel_fab(i,j,k-1,1)
-                                    + c2 * ccvel_fab(i,j,k-2,1)) * idz;
+                                uz = - (c0 * ccvel_fab(i,j,k  ,0)
+                                      + c1 * ccvel_fab(i,j,k-1,0)
+                                      + c2 * ccvel_fab(i,j,k-2,0)) * idz;
+                                vz = - (c0 * ccvel_fab(i,j,k  ,1)
+                                      + c1 * ccvel_fab(i,j,k-1,1)
+                                      + c2 * ccvel_fab(i,j,k-2,1)) * idz;
                             }
                             else if (flag_fab(i,j,k-1).isCovered())
                             {
-                                uz = (c0 * ccvel_fab(i,j,k,0)
+                                uz = (c0 * ccvel_fab(i,j,k  ,0)
                                     + c1 * ccvel_fab(i,j,k+1,0)
                                     + c2 * ccvel_fab(i,j,k+2,0)) * idz;
-                                vz = (c0 * ccvel_fab(i,j,k,1)
+                                vz = (c0 * ccvel_fab(i,j,k  ,1)
                                     + c1 * ccvel_fab(i,j,k+1,1)
                                     + c2 * ccvel_fab(i,j,k+2,1)) * idz;
                             }
