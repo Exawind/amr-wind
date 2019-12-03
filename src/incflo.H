@@ -540,13 +540,13 @@ private:
     Real deltaV = 1.0;
     Real zRefHeight = 50.0;
     Real theta_amplitude = 0.8;
-    Real abl_forcing_height = 70.0;
+    Real abl_forcing_height = 90.0;
     Real kappa = 0.4; //von Karman constant
-    Real surface_roughness_z0 = 0.0001; // surface roughness [m]
-    Real corfac = 1.45842318e-4;//fixme not sure where value came from
-    Real latitude = 0.9181479063;// fixme not sure where value came from
-    Real thermalExpansionCoeff = 0.0034; // is this just 1/300 T0=300?
-    
+    Real surface_roughness_z0 = 0.15; // surface roughness [m]
+    Real corfac = 1.45842318e-4; // 2*earth_angular_velocity
+    Real latitude = 0.7208209811;
+    Real thermalExpansionCoeff = 0.003333333333; // is this just 1/300 T0=300?
+    Real Smagorinsky_Lilly_SGS_constant = 0.18; // 0.18 <= Cs <= 0.25
     Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
     Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
     Vector<Real> up{Vector<Real>{0.0, 0.0, 1.0}};

@@ -226,7 +226,7 @@ void incflo::Evolve()
         nstep++;
         cur_time += dt;
 
-        spatially_average_quantities_down(true);
+        if(probtype==35) spatially_average_quantities_down(true);
         
         // Write plot and checkpoint files
         if((plot_int > 0 && (nstep % plot_int == 0)) ||

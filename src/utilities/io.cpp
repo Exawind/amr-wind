@@ -556,7 +556,7 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
 
     if(axis!=2) amrex::Abort("not implemented for other index yet\n");
     
-    AMREX_ASSERT(mfab->nComp() == fab->nComp());
+    AMREX_ASSERT(mfab.nComp() == avg_fab.nComp());
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -869,10 +869,15 @@ void incflo::spatially_average_quantities_down(bool plot)
     pltscaVarsName.push_back("<T'u'>");
     pltscaVarsName.push_back("<T'v'>");
     pltscaVarsName.push_back("<T'w'>");
-    
+    pltscaVarsName.push_back("<nu+nu_t>");
+
     //fixme todo add Rij, qj, nu_SGS https://a2ehfm-ecp.slack.com/archives/C3V26K34G/p1522245519000450
     
     int level_step = 0;
+
+    // in debug mode amrex output will complain if these are not the same size
+    AMREX_ALWAYS_ASSERT(mfab1d.nComp() == pltscaVarsName.size());
+
     amrex::WriteSingleLevelPlotfile(plotfilename, mfab1d, pltscaVarsName, geom[0], cur_time, level_step);
  
     WriteJobInfo(plotfilename);

@@ -95,7 +95,7 @@ incflo::add_abl_source_terms(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
 {
 
     AMREX_ASSERT(vel_in.nGrow() >= nghost);
-    AMREX_ASSERT(vel_in.nGrow() == tracer_in.ngrow() );
+    AMREX_ASSERT(vel_in.nGrow() == tracer_in.nGrow() );
     AMREX_ASSERT(ntrac > 0);
     
     BL_PROFILE("incflo::add_abl_source_terms()");
@@ -114,10 +114,15 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
 {
 
     AMREX_ASSERT(vel_in.nGrow() >= nghost);
-    AMREX_ASSERT(vel_in.nGrow() == tracer_in.ngrow() );
+    AMREX_ASSERT(vel_in.nGrow() == tracer_in.nGrow() );
 
     BL_PROFILE("incflo::add_boussinesq()");
 
+    auto dt_ = dt;
+    auto T0 = temperature_values[0];
+    auto thermalExpansionCoeff_ = thermalExpansionCoeff;
+//    auto thermalExpansionCoeff_ = 1.0/T0;// fixme do we want this option or always make it T0?
+    auto g = gravity;
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -129,13 +134,13 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
         auto const v = vel_in.array(mfi);
         auto const T = tracer_in.array(mfi);
         
-        AMREX_FOR_3D ( bx, i, j, k,
+        amrex::ParallelFor(bx,[thermalExpansionCoeff_,dt_,T0,g,v,T] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
-            const Real fact = dt*thermalExpansionCoeff*(temperature_values[0] - T(i,j,k,0));
+            const Real fact = dt_*thermalExpansionCoeff_*(T0 - T(i,j,k,0));
 
-            v(i,j,k,0) += fact*gravity[0];
-            v(i,j,k,1) += fact*gravity[1];
-            v(i,j,k,2) += fact*gravity[2];
+            v(i,j,k,0) += fact*g[0];
+            v(i,j,k,1) += fact*g[1];
+            v(i,j,k,2) += fact*g[2];
             
          });
     }
@@ -163,6 +168,8 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
      
         auto const v = vel_in.array(mfi);
         
+//        amrex::ParallelFor(bx,
+//          [east,north,up,corfac,sinphi,cosphi,dt,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         AMREX_FOR_3D ( bx, i, j, k,
         {
                             
@@ -179,7 +186,6 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
             const Real az = ae*east[2] + an*north[2] + au*up[2];
 
             // add in coriolis without density since that is done in the next step
-            //fixme check the sign
             v(i,j,k,0) -= dt*ax;
             v(i,j,k,1) -= dt*ay;
             v(i,j,k,2) -= 0*dt*az;//fixme there might be known issues with using z component turn off for now
@@ -254,6 +260,7 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
             const auto& strainrate_arr = strainrate[lev]->array(mfi);
             const auto& tracer_arr = tracer[lev]->array(mfi);
             
+            // fixme move this if statement out of fab loop
             if(ntrac == 1){
                 
                 // Smagorinsky–Lilly SGS model
@@ -263,8 +270,6 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
                     const Real yp = z*utau/(mu/ro_0);
                     const Real damp = pow(1.0-exp(-yp/26.0),2);
 
-                    const Real Cs = 0.18; // 0.18 <= Cs <= 0.25 fixme should be an input
-
 //                    const Real dthetadz = (tracer_arr(i,j,k+1,0)-tracer_arr(i,j,k,0))/dz;
 //                    const Real dudz = (vel_arr(i,j,k+1,0)-vel_arr(i,j,k,0))/dz;
 //                    const Real dvdz = (vel_arr(i,j,k+1,1)-vel_arr(i,j,k,1))/dz;
@@ -272,8 +277,8 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
                     const Real Ric = 0.3; // 0.2 <= Ric <= 0.4 fixme should be an input
 //                    printf("%f Ri number %f\n",z,Ri);
                     
-                    const Real KM = pow(Cs*ds,2)*pow(1.0-Ri/Ric,0.5)*strainrate_arr(i,j,k);
-                    const Real Prandtl_turb = 0.333333;
+                    const Real KM = pow(Smagorinsky_Lilly_SGS_constant*ds,2)*pow(1.0-Ri/Ric,0.5)*strainrate_arr(i,j,k);
+                    const Real Prandtl_turb = 0.333333; //fixme make an input
                     const Real KH = KM/Prandtl_turb;
                     
                     viscosity_arr(i,j,k) += KM*damp;
