@@ -25,9 +25,9 @@ void incflo::ComputeStrainrate(Real time_in)
 
         // State with ghost cells
 #ifdef AMREX_USE_EB
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo(), *ebfactory[lev]);
 #else
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo());
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo());
 #endif
         FillPatchVel(lev, time_in, Sborder);
 
@@ -282,9 +282,9 @@ void incflo::ComputeVorticity(Real time_in)
 
         // State with ghost cells
 #ifdef AMREX_USE_EB
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo(), *ebfactory[lev]);
 #else
-        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), nghost, MFInfo());
+        MultiFab Sborder(grids[lev], dmap[lev], vel[lev]->nComp(), 1, MFInfo());
 #endif
         FillPatchVel(lev, time_in, Sborder);
 
