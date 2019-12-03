@@ -312,7 +312,6 @@ void incflo::ErrorEst(int lev,
     // Refine on cut cells
     if (refine_cutcells)
     {
-        const MultiFab* volfrac = &(ebfactory[lev] -> getVolFrac());
         amrex::TagCutCells(tags, *vel[lev]);
     }
 #endif

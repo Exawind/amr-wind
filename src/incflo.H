@@ -324,7 +324,11 @@ private:
     void ApplyProjection(Real time, Real scaling_factor, bool incremental = false);
 
     // Number of ghost nodes for field arrays.
+#ifdef AMREX_USE_EB
     const int nghost = 4;
+#else
+    const int nghost = 1;
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
