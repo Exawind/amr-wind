@@ -78,7 +78,6 @@ contains
       ! Local variables
       integer(c_int)                  :: i, j, k
       real(rt)                        :: x, y
-      real(rt)                        :: twopi = 8.0_rt * atan(one)
 
       ! x-direction
       do j = lo(2), hi(2)
@@ -439,7 +438,6 @@ contains
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      integer(c_int)                  :: num_cells
       real(rt)                        :: x, y, z
       real(rt)                        :: A, C, L
 

@@ -285,9 +285,9 @@ void incflo::InitFluid()
         MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
     }
 
-    Real cur_time = 0.0;
+    Real my_cur_time = 0.0;
     if (test_tracer_conservation)
-       amrex::Print() << "Sum tracer volume wgt = " << cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+       amrex::Print() << "Sum tracer volume wgt = " << my_cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 }
 
 void incflo::SetBCTypes()
