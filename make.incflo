@@ -18,6 +18,7 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 #These are the directories in incflo/src
 Bdirs := $(INCFLO_HOME)src
+Bdirs += $(INCFLO_HOME)src/atmospheric_boundary_layer
 Bdirs += $(INCFLO_HOME)src/boundary_conditions
 Bdirs += $(INCFLO_HOME)src/convection
 Bdirs += $(INCFLO_HOME)src/derive
