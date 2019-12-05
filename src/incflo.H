@@ -547,9 +547,9 @@ private:
     Real latitude = 0.7208209811;
     Real thermalExpansionCoeff; // initialized in the readABLparameters now
     Real Smagorinsky_Lilly_SGS_constant = 0.18; // 0.18 <= Cs <= 0.25
-    Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
-    Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
-    Vector<Real> up{Vector<Real>{0.0, 0.0, 1.0}};
+//    Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
+//    Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
+//    Vector<Real> up{Vector<Real>{0.0, 0.0, 1.0}};
 
     
     Real vx_mean; //fixme pick a better name
