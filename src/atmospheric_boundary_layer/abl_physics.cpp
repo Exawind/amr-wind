@@ -124,8 +124,7 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
     const auto dt_ = dt;
     const auto T0 = temperature_values[0];
     const auto thermalExpansionCoeff_ = thermalExpansionCoeff;
-//    const Vector<Real> g{gravity}; // why cant this go on a gpu?
-    double g[3];
+    amrex::GpuArray<double,3> g;
     g[0] = gravity[0];
     g[1] = gravity[1];
     g[2] = gravity[2];
@@ -162,18 +161,14 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
     BL_PROFILE("incflo::add_coriolis()");
 
     // fixme could move somewhere global since this is a constant
- 	const Real sinphi = std::sin(latitude);
-	const Real cosphi = std::cos(latitude);
+    const Real sinphi = std::sin(latitude);
+    const Real cosphi = std::cos(latitude);
     const Real dt_ = dt;
     const Real corfac_ = corfac;
-//    Gpu::DeviceVector<Real> e;//{east};
-//    amrex::Gpu::ManagedVector<amrex::Real> e(3);
-//    const Vector<Real> n{north};
-//    const Vector<Real> u{up};
-    double e[3] = {1.0,0.0,0.0};
-    double n[3] = {0.0,1.0,0.0};
-    double u[3] = {0.0,0.0,1.0};
-
+    amrex::GpuArray<double,3> e, n, u;
+    e = {1.0,0.0,0.0};
+    n = {0.0,1.0,0.0};
+    u = {0.0,0.0,1.0};
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
