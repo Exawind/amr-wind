@@ -124,7 +124,7 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
     const auto dt_ = dt;
     const auto T0 = temperature_values[0];
     const auto thermalExpansionCoeff_ = thermalExpansionCoeff;
-    amrex::GpuArray<double,3> g;
+    amrex::GpuArray<Real,3> g;
     g[0] = gravity[0];
     g[1] = gravity[1];
     g[2] = gravity[2];
@@ -165,7 +165,7 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
     const Real cosphi = std::cos(latitude);
     const Real dt_ = dt;
     const Real corfac_ = corfac;
-    amrex::GpuArray<double,3> e, n, u;
+    amrex::GpuArray<Real,3> e, n, u;
     e = {1.0,0.0,0.0};
     n = {0.0,1.0,0.0};
     u = {0.0,0.0,1.0};
