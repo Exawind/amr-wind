@@ -152,7 +152,12 @@ void incflo::ReadABLParameters()
     pp.query("surface_roughness_z0",surface_roughness_z0);
     pp.query("corfac",corfac);
     pp.query("latitude",latitude);
+
+    // set the default to be 1/T0 unless it exists and then it will override
+    thermalExpansionCoeff = 1.0/temperature_values[0];
     pp.query("thermalExpansionCoeff",thermalExpansionCoeff);
+
+    pp.query("Smagorinsky_Lilly_SGS_constant",Smagorinsky_Lilly_SGS_constant);
     
 }
 void incflo::ReadIOParameters()
@@ -252,7 +257,7 @@ void incflo::PostInit(int restart_flag)
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 
-    spatially_average_quantities_down(false);// fixme this is only done so that vx_mean_ground is computed for shear stress in bc
+    if(probtype==35) spatially_average_quantities_down(false);// fixme this is only done so that vx_mean_ground is computed for shear stress in bc
     
     // Fill boundaries
     incflo_set_density_bcs(cur_time, density);
