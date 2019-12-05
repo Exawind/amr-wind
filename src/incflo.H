@@ -545,7 +545,7 @@ private:
     Real surface_roughness_z0 = 0.15; // surface roughness [m]
     Real corfac = 1.45842318e-4; // 2*earth_angular_velocity
     Real latitude = 0.7208209811;
-    Real thermalExpansionCoeff = 0.003333333333; // is this just 1/300 T0=300?
+    Real thermalExpansionCoeff; // initialized in the readABLparameters now
     Real Smagorinsky_Lilly_SGS_constant = 0.18; // 0.18 <= Cs <= 0.25
     Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
     Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};

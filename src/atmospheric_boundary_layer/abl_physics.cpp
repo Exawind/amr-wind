@@ -118,11 +118,10 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
 
     BL_PROFILE("incflo::add_boussinesq()");
 
-    auto dt_ = dt;
-    auto T0 = temperature_values[0];
-    auto thermalExpansionCoeff_ = thermalExpansionCoeff;
-//    auto thermalExpansionCoeff_ = 1.0/T0;// fixme do we want this option or always make it T0?
-    auto g = gravity;
+    const auto dt_ = dt;
+    const auto T0 = temperature_values[0];
+    const auto thermalExpansionCoeff_ = thermalExpansionCoeff;
+    const auto g = gravity;
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -131,10 +130,10 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
     {
         const Box& bx = mfi.growntilebox(nghost);
      
-        auto const v = vel_in.array(mfi);
-        auto const T = tracer_in.array(mfi);
+        const auto v = vel_in.array(mfi);
+        const auto T = tracer_in.array(mfi);
         
-        amrex::ParallelFor(bx,[thermalExpansionCoeff_,dt_,T0,g,v,T] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             const Real fact = dt_*thermalExpansionCoeff_*(T0 - T(i,j,k,0));
 
@@ -158,7 +157,13 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
     // fixme could move somewhere global since this is a constant
  	const Real sinphi = std::sin(latitude);
 	const Real cosphi = std::cos(latitude);
-	
+    const Real dt_ = dt;
+    const Real corfac_ = corfac;
+    Vector<Real> e{east};
+    Vector<Real> n{north};
+    Vector<Real> u{up};
+
+    
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -168,27 +173,25 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
      
         auto const v = vel_in.array(mfi);
         
-//        amrex::ParallelFor(bx,
-//          [east,north,up,corfac,sinphi,cosphi,dt,v] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        AMREX_FOR_3D ( bx, i, j, k,
+        amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
                             
-            const Real ue = east[0]*v(i,j,k,0)  + east[1]*v(i,j,k,1)  + east[2]*v(i,j,k,2);
-            const Real un = north[0]*v(i,j,k,0) + north[1]*v(i,j,k,1) + north[2]*v(i,j,k,2);
-            const Real uu = up[0]*v(i,j,k,0)    + up[1]*v(i,j,k,1)    + up[2]*v(i,j,k,2);
+            const Real ue = e[0]*v(i,j,k,0) + e[1]*v(i,j,k,1) + e[2]*v(i,j,k,2);
+            const Real un = n[0]*v(i,j,k,0) + n[1]*v(i,j,k,1) + n[2]*v(i,j,k,2);
+            const Real uu = u[0]*v(i,j,k,0) + u[1]*v(i,j,k,1) + u[2]*v(i,j,k,2);
 
-            const Real ae = +corfac*( un*sinphi - uu*cosphi);
-            const Real an = -corfac*ue*sinphi;
-            const Real au = +corfac*ue*cosphi;
+            const Real ae = +corfac_*( un*sinphi - uu*cosphi);
+            const Real an = -corfac_*ue*sinphi;
+            const Real au = +corfac_*ue*cosphi;
 
-            const Real ax = ae*east[0] + an*north[0] + au*up[0];
-            const Real ay = ae*east[1] + an*north[1] + au*up[1];
-            const Real az = ae*east[2] + an*north[2] + au*up[2];
+            const Real ax = ae*e[0] + an*n[0] + au*u[0];
+            const Real ay = ae*e[1] + an*n[1] + au*u[1];
+            const Real az = ae*e[2] + an*n[2] + au*u[2];
 
             // add in coriolis without density since that is done in the next step
-            v(i,j,k,0) -= dt*ax;
-            v(i,j,k,1) -= dt*ay;
-            v(i,j,k,2) -= 0*dt*az;//fixme there might be known issues with using z component turn off for now
+            v(i,j,k,0) -= dt_*ax;
+            v(i,j,k,1) -= dt_*ay;
+            v(i,j,k,2) -= 0*dt_*az;//fixme there might be known issues with using z component turn off for now
             
         });
     }
@@ -201,7 +204,11 @@ incflo::add_abl_forcing(MultiFab& vel_in, int nghost)
 
     BL_PROFILE("incflo::add_abl_forcing()");
 
-  
+    const Real ic_u_ = ic_u;
+    const Real ic_v_ = ic_v;
+    const Real vx_mean_ = vx_mean;
+    const Real vy_mean_ = vy_mean;
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -209,15 +216,15 @@ incflo::add_abl_forcing(MultiFab& vel_in, int nghost)
     {
         const Box& bx = mfi.growntilebox(nghost);
      
-        auto const v = vel_in.array(mfi);
+        const auto v = vel_in.array(mfi);
         
-        AMREX_FOR_3D ( bx, i, j, k,
+        amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             // rho is handled on the outside
             // dt*omega*[ rho*(u-<u>)/dt ]  dt/dt cancel out
             const Real omega = 1.0; // under-relaxation
-            v(i,j,k,0) += omega*(ic_u - vx_mean);
-            v(i,j,k,1) += omega*(ic_v - vy_mean);
+            v(i,j,k,0) += omega*(ic_u_ - vx_mean_);
+            v(i,j,k,1) += omega*(ic_v_ - vy_mean_);
             
         });
     }
@@ -236,6 +243,16 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
 
     if(sgs_model && ntrac == 1) ComputeStrainrate(time_in);
        
+    if(ntrac > 1)
+    {
+        amrex::Abort("ntrac > 1 is for ksgs and not finished yet\n");
+    }
+    
+    const Real zlo = geom[0].ProbLo(2);
+    const Real utau_o_nu = utau/(mu/ro_0);
+    const Real Prandtl_turb = 0.333333; //fixme make an input
+    const Real Ri_critical = 0.3; // 0.2 <= Ric <= 0.4 critical Richardson number fixme should be an input
+
     for(int lev = 0; lev <= finest_level; lev++)
     {
         Box domain(geom[lev].Domain());
@@ -244,7 +261,9 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
         const Real dy = geom[lev].CellSize()[1];
         const Real dz = geom[lev].CellSize()[2];
         const Real ds = pow(dx*dy*dz,1.0/3.0);
-        
+
+        const Real Cs_ds2 = pow(Smagorinsky_Lilly_SGS_constant*ds,2);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -253,61 +272,37 @@ void incflo::add_eddy_viscosity(Vector<std::unique_ptr<MultiFab>>& eta_out,
             // Tilebox
             Box bx = mfi.tilebox();
 
-            const auto& viscosity_arr = eta_out[lev]->array(mfi);
-            const auto& viscosity_tracer_arr = eta_tracer_out[lev]->array(mfi);
+            const auto viscosity_arr = eta_out[lev]->array(mfi);
+            const auto viscosity_tracer_arr = eta_tracer_out[lev]->array(mfi);
             
-            const auto& vel_arr = vel[lev]->array(mfi);
-            const auto& strainrate_arr = strainrate[lev]->array(mfi);
-            const auto& tracer_arr = tracer[lev]->array(mfi);
+            const auto vel_arr = vel[lev]->array(mfi);
+            const auto strainrate_arr = strainrate[lev]->array(mfi);
+            const auto tracer_arr = tracer[lev]->array(mfi);
+            const auto den_arr = density[lev]->array(mfi);
             
-            // fixme move this if statement out of fab loop
-            if(ntrac == 1){
-                
-                // Smagorinsky–Lilly SGS model
-                AMREX_FOR_3D ( bx, i, j, k,
-                {
-                    const Real z = geom[0].ProbLo(2) + (k+0.5)*dz;
-                    const Real yp = z*utau/(mu/ro_0);
-                    const Real damp = pow(1.0-exp(-yp/26.0),2);
-
-//                    const Real dthetadz = (tracer_arr(i,j,k+1,0)-tracer_arr(i,j,k,0))/dz;
-//                    const Real dudz = (vel_arr(i,j,k+1,0)-vel_arr(i,j,k,0))/dz;
-//                    const Real dvdz = (vel_arr(i,j,k+1,1)-vel_arr(i,j,k,1))/dz;
-                    const Real Ri = 0.0;//fabs(gravity[2]*dthetadz)/(pow(dudz,2)+pow(dvdz,2)+1.0e-12)/ro_0;
-                    const Real Ric = 0.3; // 0.2 <= Ric <= 0.4 fixme should be an input
-//                    printf("%f Ri number %f\n",z,Ri);
-                    
-                    const Real KM = pow(Smagorinsky_Lilly_SGS_constant*ds,2)*pow(1.0-Ri/Ric,0.5)*strainrate_arr(i,j,k);
-                    const Real Prandtl_turb = 0.333333; //fixme make an input
-                    const Real KH = KM/Prandtl_turb;
-                    
-                    viscosity_arr(i,j,k) += KM*damp;
-                    viscosity_tracer_arr(i,j,k,0) = KH*damp;
-                    
-                });
-                
-            } else if(ntrac > 1)
+            // Smagorinsky–Lilly SGS model
+            amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
-                amrex::Abort("not finished yet\n");
-                // Deardorff TKE model SGS model
-                AMREX_FOR_3D ( bx, i, j, k,
-                {
-                    const Real z = geom[0].ProbLo(2) + (k+0.5)*dz;
-                    const Real yp = z*utau/(mu/ro_0);
-                    const Real damp = pow(1.0-exp(-0.04*yp),2);
-                    
-                    const Real l = ds;//fixme need to adjust l based on stratification see Moeng 1984
-                    const Real KM = 0.1*l*pow(tracer_arr(i,j,k,1),0.5);
-                    const Real KH = (1.0+2.0*l/ds)*KM;
-                    
-                    viscosity_arr(i,j,k) += damp*KM;
-                    viscosity_tracer_arr(i,j,k,0) = damp*KH;
-                    viscosity_tracer_arr(i,j,k,1) = 0.0;
+                const Real z = zlo + (k+0.5)*dz;
+                const Real yp = z*utau_o_nu;
+                const Real damp = pow(1.0-exp(-yp/26.0),2);// this probably does not turn on for ABL
 
-                });
+                // make sure ghosts exist before accessing k+1
+//              const Real dthetadz = (tracer_arr(i,j,k+1,0)-tracer_arr(i,j,k,0))/dz;
+//              const Real dudz = (vel_arr(i,j,k+1,0)-vel_arr(i,j,k,0))/dz;
+//              const Real dvdz = (vel_arr(i,j,k+1,1)-vel_arr(i,j,k,1))/dz;
+                const Real Ri = 0.0;// = fabs(gravity[2]*dthetadz)/(pow(dudz,2)+pow(dvdz,2)+1.0e-12)/ro_0;
                 
-            }
-
+                const Real KM = Cs_ds2*pow(1.0-Ri/Ri_critical,0.5)*strainrate_arr(i,j,k);
+                const Real KH = KM/Prandtl_turb;
+            
+                // add eddy viscosity to eta (mu+mu_t) where mu = rho*nu
+                viscosity_arr(i,j,k) += KM*damp*den_arr(i,j,k);
+                // set eddy viscosity for potential temperature equation
+                viscosity_tracer_arr(i,j,k,0) = KH*damp*den_arr(i,j,k);
+                
+            });
+     
         }
 
         

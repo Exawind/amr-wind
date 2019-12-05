@@ -152,7 +152,11 @@ void incflo::ReadABLParameters()
     pp.query("surface_roughness_z0",surface_roughness_z0);
     pp.query("corfac",corfac);
     pp.query("latitude",latitude);
+
+    // set the default to be 1/T0 unless it exists and then it will override
+    thermalExpansionCoeff = 1.0/temperature_values[0];
     pp.query("thermalExpansionCoeff",thermalExpansionCoeff);
+
     pp.query("Smagorinsky_Lilly_SGS_constant",Smagorinsky_Lilly_SGS_constant);
     
 }
