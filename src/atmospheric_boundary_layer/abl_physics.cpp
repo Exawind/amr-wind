@@ -21,9 +21,10 @@ incflo::init_abl(MultiFab& density_mfab, MultiFab& vel_mfab, MultiFab& tracer_mf
         const auto& vel_arr = vel_mfab.array(mfi);
         const auto& trac_arr = tracer_mfab.array(mfi);
 
-        AMREX_FOR_3D(bx, i, j, k,
-        {
-            
+        for(int k(bx.loVect()[2]); k <= bx.hiVect()[2]; k++){
+          for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++){
+            for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++){
+    
             // constant density
             den_arr(i,j,k) = ro_0;
 
@@ -85,7 +86,9 @@ incflo::init_abl(MultiFab& density_mfab, MultiFab& vel_mfab, MultiFab& tracer_mf
             }
             
             
-        });
+            }
+          }
+        }
     }
 }
 
@@ -121,8 +124,12 @@ incflo::add_boussinesq(MultiFab& vel_in, MultiFab& tracer_in, int nghost)
     const auto dt_ = dt;
     const auto T0 = temperature_values[0];
     const auto thermalExpansionCoeff_ = thermalExpansionCoeff;
-    const auto g = gravity;
-    
+//    const Vector<Real> g{gravity}; // why cant this go on a gpu?
+    double g[3];
+    g[0] = gravity[0];
+    g[1] = gravity[1];
+    g[2] = gravity[2];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -159,9 +166,13 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
 	const Real cosphi = std::cos(latitude);
     const Real dt_ = dt;
     const Real corfac_ = corfac;
-    Vector<Real> e{east};
-    Vector<Real> n{north};
-    Vector<Real> u{up};
+//    Gpu::DeviceVector<Real> e;//{east};
+//    amrex::Gpu::ManagedVector<amrex::Real> e(3);
+//    const Vector<Real> n{north};
+//    const Vector<Real> u{up};
+    double e[3] = {1.0,0.0,0.0};
+    double n[3] = {0.0,1.0,0.0};
+    double u[3] = {0.0,0.0,1.0};
 
     
 #ifdef _OPENMP
