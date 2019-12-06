@@ -618,6 +618,8 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
 
 void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real area, const int axis, const int ncomp){
 
+    BL_PROFILE("incflo::plane_average()");
+
     switch (axis) {
         case 0:
 #ifdef _OPENMP
