@@ -88,7 +88,7 @@ void incflo::ReadParameters()
         for (int i = 0; i < ntrac; i++)
            amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
 
-        AMREX_ALWAYS_ASSERT(mu > 0.0);
+        // AMREX_ALWAYS_ASSERT(mu > 0.0);
 
         // Get cyclicity, (to pass to Fortran)
         Vector<int> is_cyclic(AMREX_SPACEDIM);
@@ -127,8 +127,14 @@ void incflo::ReadIOParameters()
     pp.query("restart", restart_file);
 
     pp.query("plot_file", plot_file);
-    pp.query("plot_int", plot_int);
-    pp.query("plot_per", plot_per);
+    pp.query("plot_int"       , plot_int);
+    pp.query("plot_per_exact" , plot_per_exact);
+    pp.query("plot_per_approx", plot_per_approx);
+
+    if ( (plot_int       > 0 && plot_per_exact  > 0) ||
+         (plot_int       > 0 && plot_per_approx > 0) ||
+         (plot_per_exact > 0 && plot_per_approx > 0) )
+       amrex::Abort("Must choose only one of plot_int or plot_per_exact or plot_per_approx");
 
     // The plt_ccse_regtest resets the defaults,
     //     but we can over-ride those below

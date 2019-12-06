@@ -98,7 +98,7 @@ void incflo::InitData()
     PostInit(restart_flag);
 
     // Plot initial distribution
-    if((plot_int > 0 || plot_per > 0) && !restart_flag)
+    if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
     {
         WritePlotFile();
         last_plt = 0;
@@ -226,13 +226,12 @@ void incflo::Evolve()
         nstep++;
         cur_time += dt;
 
-        // Write plot and checkpoint files
-        if((plot_int > 0 && (nstep % plot_int == 0)) ||
-           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-12)))
+        if (writeNow())
         {
             WritePlotFile();
             last_plt = nstep;
         }
+
         if(check_int > 0 && (nstep % check_int == 0))
         {
             WriteCheckPointFile();
@@ -251,8 +250,8 @@ void incflo::Evolve()
     }
 
 	// Output at the final time
-    if(check_int > 0                  && nstep != last_chk) WriteCheckPointFile();
-    if((plot_int > 0 || plot_per > 0) && nstep != last_plt) WritePlotFile();
+    if( check_int > 0                                               && nstep != last_chk) WriteCheckPointFile();
+    if( (plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && nstep != last_plt) WritePlotFile();
 }
 
 // tag cells for refinement
@@ -421,4 +420,51 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
 #endif
+}
+
+bool
+incflo::writeNow()
+{
+    bool write_now = false;
+
+    if ( plot_int > 0 && (nstep % plot_int == 0) ) 
+        write_now = true;
+
+    else if ( plot_per_exact  > 0 && (std::abs(remainder(cur_time, plot_per_exact)) < 1.e-12) ) 
+        write_now = true;
+
+    else if (plot_per_approx > 0.0)
+    {
+        // Check to see if we've crossed a plot_per_approx interval by comparing
+        // the number of intervals that have elapsed for both the current
+        // time and the time at the beginning of this timestep.
+
+        int num_per_old = (cur_time-dt) / plot_per_approx;
+        int num_per_new = (cur_time   ) / plot_per_approx;
+
+        // Before using these, however, we must test for the case where we're
+        // within machine epsilon of the next interval. In that case, increment
+        // the counter, because we have indeed reached the next plot_per_approx interval
+        // at this point.
+
+        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(cur_time);
+        const Real next_plot_time = (num_per_old + 1) * plot_per_approx;
+
+        if ((num_per_new == num_per_old) && std::abs(cur_time - next_plot_time) <= eps)
+        {
+            num_per_new += 1;
+        }
+
+        // Similarly, we have to account for the case where the old time is within
+        // machine epsilon of the beginning of this interval, so that we don't double
+        // count that time threshold -- we already plotted at that time on the last timestep.
+
+        if ((num_per_new != num_per_old) && std::abs((cur_time - dt) - next_plot_time) <= eps)
+            num_per_old += 1;
+
+        if (num_per_old != num_per_new)
+            write_now = true;
+    }
+
+    return write_now;
 }

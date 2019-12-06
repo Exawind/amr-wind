@@ -250,20 +250,20 @@ public:
 
 private:
 
-     static int nlev;
-     static int ntrac;
+    static int nlev;
+    static int ntrac;
 
-     // Unit vectors in Cartesian space
-     static IntVect e_x;
-     static IntVect e_y;
-     static IntVect e_z;
+    // Unit vectors in Cartesian space
+    static IntVect e_x;
+    static IntVect e_y;
+    static IntVect e_z;
 
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -449,7 +449,8 @@ private:
 
     // Time and time step counters
     Real cur_time = 0.0;
-    Real dt = -1.0;
+    Real dt      = -1.0;
+    Real prev_dt = -1.0;
     int nstep = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
@@ -520,7 +521,13 @@ private:
 
     // Member variables for I/O
     int plot_int = -1;
-    Real plot_per = -1.0;
+
+    // Dump plotfiles at as close as possible to the designated period *without* changing dt
+    Real plot_per_approx = -1.0;
+    
+    // Dump plotfiles at exactcly the designated period by changing dt
+    Real plot_per_exact  = -1.0;
+
     int last_plt = -1;
     std::string plot_file{"plt"};
 
@@ -645,6 +652,8 @@ private:
     // Not yet classified
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool writeNow();
 
     void FillPatchVel    (int lev, Real time, MultiFab& mf);
     void FillPatchDensity(int lev, Real time, MultiFab& mf);

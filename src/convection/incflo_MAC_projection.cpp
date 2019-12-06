@@ -58,7 +58,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    mac_vel.resize(finest_level+1);
 
    if (incflo_verbose > 0)
-      Print() << " >> Before projection\n" ; 
+      Print() << " >> Before MAC projection\n";
 
    // This will hold (1/rho) on faces
    Vector< Array< std::unique_ptr<MultiFab>, AMREX_SPACEDIM> > rho_face;
@@ -199,7 +199,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    }
 
    if (incflo_verbose > 0)
-      Print() << " >> After projection\n" ; 
+      Print() << " >> After  MAC projection\n" ; 
 
    for ( int lev=0; lev <= finest_level ; ++lev )
    {   

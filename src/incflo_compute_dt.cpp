@@ -24,14 +24,17 @@ using namespace std;
 //
 void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
 {
-	BL_PROFILE("incflo::ComputeDt");
+    BL_PROFILE("incflo::ComputeDt");
 
-	// Compute dt for this time step
-	Real umax = 0.0;
-	Real vmax = 0.0;
-	Real wmax = 0.0;
-	Real rhomin = 1.e20;
-	Real etamax = 0.0;
+    // Store the dt we've just used in the previous time step as prev_dt
+    prev_dt = dt;
+
+    // Compute dt for this time step
+    Real umax = 0.0;
+    Real vmax = 0.0;
+    Real wmax = 0.0;
+    Real rhomin = 1.e20;
+    Real etamax = 0.0;
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -82,17 +85,17 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
         dt_new = 0.5 * dt;
     }
 
-    // Don't let the timestep grow by more than 10% per step.
-    if(dt > 0.0 && last_plt != nstep)
+    // Don't let the timestep grow by more than 10% per step unless the previous time step was unduly shrunk to match plot_per_exact
+    if( (dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
     {
         dt_new = amrex::min(dt_new, 1.1 * dt);
     }
     
     // Don't overshoot specified plot times
-    if(plot_per > 0.0 && 
-            (trunc((cur_time + dt_new + eps) / plot_per) > trunc((cur_time + eps) / plot_per)))
+    if(plot_per_exact > 0.0 && 
+            (trunc((cur_time + dt_new + eps) / plot_per_exact) > trunc((cur_time + eps) / plot_per_exact)))
     {
-        dt_new = trunc((cur_time + dt_new) / plot_per) * plot_per - cur_time;
+        dt_new = trunc((cur_time + dt_new) / plot_per_exact) * plot_per_exact - cur_time;
     }
 
     // Don't overshoot the final time if not running to steady state
@@ -104,25 +107,25 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
         }
     }
 
-    // Make sure the timestep is not set to zero after a plot_per stop
+    // Make sure the timestep is not set to zero after a plot_per_exact stop
     if(dt_new < eps)
     {
         dt_new = 0.5 * dt;
     }
 
     // If using fixed time step, check CFL condition and give warning if not satisfied
-	if(fixed_dt > 0.0)
+    if(fixed_dt > 0.0)
+    {
+	if(dt_new < fixed_dt)
 	{
-		if(dt_new < fixed_dt)
-		{
-			amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: \n"
-						   << "max dt by CFL     : " << dt_new << "\n"
-						   << "fixed dt specified: " << fixed_dt << std::endl;
-		}
-		dt = fixed_dt;
+		amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: \n"
+					   << "max dt by CFL     : " << dt_new << "\n"
+					   << "fixed dt specified: " << fixed_dt << std::endl;
 	}
-	else
-	{
-		dt = dt_new;
-	}
+	dt = fixed_dt;
+    }
+    else
+    {
+	dt = dt_new;
+    }
 }
