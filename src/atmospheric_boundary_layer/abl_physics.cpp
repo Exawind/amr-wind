@@ -51,10 +51,10 @@ incflo::init_abl(MultiFab& density_mfab, MultiFab& vel_mfab, MultiFab& tracer_mf
 
             // potential temperature and boussinesq stuff
             Real theta = temperature_values[0];
-            for(int i = 0; i < ntemperature-1; ++i){
-                const Real slope = (temperature_values[i+1]-temperature_values[i])/(temperature_heights[i+1]-temperature_heights[i]);
-                if(z > temperature_heights[i] && z <= temperature_heights[i+1]){
-                  theta = temperature_values[i] + (z-temperature_heights[i])*slope;
+            for(int t = 0; t < ntemperature-1; ++t){
+                const Real slope = (temperature_values[t+1]-temperature_values[t])/(temperature_heights[t+1]-temperature_heights[t]);
+                if(z > temperature_heights[t] && z <= temperature_heights[t+1]){
+                  theta = temperature_values[t] + (z-temperature_heights[t])*slope;
                 }
             }
 
