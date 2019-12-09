@@ -22,74 +22,70 @@ incflo::init_abl(MultiFab& density_mfab, MultiFab& vel_mfab, MultiFab& tracer_mf
         const auto& trac_arr = tracer_mfab.array(mfi);
 
         for(int k(bx.loVect()[2]); k <= bx.hiVect()[2]; k++){
-          for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++){
-            for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++){
+            for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++){
+                for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++){
     
-            // constant density
-            den_arr(i,j,k) = ro_0;
+                    // constant density
+                    den_arr(i,j,k) = ro_0;
 
-            // physical location of cell center
-            const Real x = geom[0].ProbLo(0) + (i+0.5)*dx;
-            const Real y = geom[0].ProbLo(1) + (j+0.5)*dy;
-            const Real z = geom[0].ProbLo(2) + (k+0.5)*dz;
-            
-            const Real zl = z/zRefHeight;
-            const Real damp = std::exp(-0.5*zl*zl);
-            
-            vel_arr(i,j,k,0) = ic_u;
-            vel_arr(i,j,k,1) = ic_v;
-            vel_arr(i,j,k,2) = ic_w;
+                    // physical location of cell center
+                    const Real x = geom[0].ProbLo(0) + (i+0.5)*dx;
+                    const Real y = geom[0].ProbLo(1) + (j+0.5)*dy;
+                    const Real z = geom[0].ProbLo(2) + (k+0.5)*dz;
 
-            // velocity field plus perturbations
-            if(z < fabs(ic_u)) vel_arr(i,j,k,0) = copysign(z,ic_u);
-            if(z < fabs(ic_v)) vel_arr(i,j,k,1) = copysign(z,ic_v);
+                    const Real zl = z/zRefHeight;
+                    const Real damp = std::exp(-0.5*zl*zl);
 
-            vel_arr(i,j,k,0) += ufac*damp*z*std::cos(aval*y);
-            vel_arr(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
-       
-            
+                    vel_arr(i,j,k,0) = ic_u;
+                    vel_arr(i,j,k,1) = ic_v;
+                    vel_arr(i,j,k,2) = ic_w;
 
-            // potential temperature and boussinesq stuff
-            Real theta = temperature_values[0];
-            for(int t = 0; t < ntemperature-1; ++t){
-                const Real slope = (temperature_values[t+1]-temperature_values[t])/(temperature_heights[t+1]-temperature_heights[t]);
-                if(z > temperature_heights[t] && z <= temperature_heights[t+1]){
-                  theta = temperature_values[t] + (z-temperature_heights[t])*slope;
-                }
-            }
+                    // velocity field plus perturbations
+                    if(z < fabs(ic_u)) vel_arr(i,j,k,0) = copysign(z,ic_u);
+                    if(z < fabs(ic_v)) vel_arr(i,j,k,1) = copysign(z,ic_v);
 
-            // add perturbations to potential temperature
-//            if(z < cutoff_height){
-//                // Random number generator for adding temperature perturbations
-//                const Real thetaGaussMean_ = 0.0;
-//                const Real thetaGaussVar_ = 1.0;
-//                std::random_device rd{};
-//                std::mt19937 gen{rd()};
-//                std::normal_distribution<Real> gaussNormal(thetaGaussMean_, thetaGaussVar_);
-//                theta += theta_amplitude*gaussNormal(gen);
-//            }
-            
-            // initialize all tracers to be zero
-            for(int n=0;n<ntrac;++n){
-                trac_arr(i,j,k,n)  = 0.0;
-            }
-            
-        
-            // initialize first tracer to potential density
-            if(ntrac>0){
-                trac_arr(i,j,k,0) = theta;
-            }
-            
-            // initialize second tracer to total kinetic energy for 1 eqn SGS model
-            if(ntrac>1){
-                trac_arr(i,j,k,1) = 0.5*(pow(vel_arr(i,j,k,0),2) + pow(vel_arr(i,j,k,1),2) + pow(vel_arr(i,j,k,2),2));
-            }
-            
-            
-            }
-          }
-        }
-    }
+                    vel_arr(i,j,k,0) += ufac*damp*z*std::cos(aval*y);
+                    vel_arr(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
+
+                    // potential temperature and boussinesq stuff
+                    Real theta = temperature_values[0];
+                    for(int t = 0; t < ntemperature-1; ++t){
+                        const Real slope = (temperature_values[t+1]-temperature_values[t])/(temperature_heights[t+1]-temperature_heights[t]);
+                        if(z > temperature_heights[t] && z <= temperature_heights[t+1]){
+                          theta = temperature_values[t] + (z-temperature_heights[t])*slope;
+                        }
+                    }
+
+                    // add perturbations to potential temperature
+        //            if(z < cutoff_height){
+        //                // Random number generator for adding temperature perturbations
+        //                const Real thetaGaussMean_ = 0.0;
+        //                const Real thetaGaussVar_ = 1.0;
+        //                std::random_device rd{};
+        //                std::mt19937 gen{rd()};
+        //                std::normal_distribution<Real> gaussNormal(thetaGaussMean_, thetaGaussVar_);
+        //                theta += theta_amplitude*gaussNormal(gen);
+        //            }
+
+                    // initialize all tracers to be zero
+                    for(int n=0;n<ntrac;++n){
+                        trac_arr(i,j,k,n)  = 0.0;
+                    }
+
+                    // initialize first tracer to potential density
+                    if(ntrac>0){
+                        trac_arr(i,j,k,0) = theta;
+                    }
+
+                    // initialize second tracer to total kinetic energy for 1 eqn SGS model
+                    if(ntrac>1){
+                        trac_arr(i,j,k,1) = 0.5*(pow(vel_arr(i,j,k,0),2) + pow(vel_arr(i,j,k,1),2) + pow(vel_arr(i,j,k,2),2));
+                    }
+
+                } // i loop
+            } // j loop
+        } // k loop
+    } // mfiter loop
 }
 
 // has support for filling in ghosts but probably not needed?

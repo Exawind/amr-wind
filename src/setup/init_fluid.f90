@@ -472,7 +472,7 @@ contains
    
    subroutine channel_flow(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, xlo, ylo, zlo)
 
-      use constant, only: ic_u, ic_v, ic_w, ntrac,one
+      use constant, only: ntrac,one
 
       implicit none
 
@@ -486,8 +486,7 @@ contains
 
       ! Local variables
       integer(c_int)                  :: i, j, k
-      integer(c_int)                  :: num_cells, num_cells_x, num_cells_y,num_cells_z
-      real(rt)                        :: x, y, z, yval, zval, pi
+      real(rt)                        :: x, y, z, pi
 
       pi = 4.0_rt * atan(one)
 
