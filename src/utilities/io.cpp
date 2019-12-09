@@ -573,7 +573,7 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
         const auto& avg_fab_arr = avg_fab.array();
 
          // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-        AMREX_FOR_3D(bx, i, j, k,
+        amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             // velocities
             mfab_arr(i,j,k,u_avg) = vel_arr(i,j,k,0);
@@ -615,6 +615,60 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
     
 }
 
+
+void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real area, const int axis, const int ncomp){
+
+    BL_PROFILE("incflo::plane_average()");
+
+    switch (axis) {
+        case 0:
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                const auto mfab_arr = mfab.array(mfi);
+                const auto avg_fab_arr = avg_fab.array();
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(i,0,0,n), mfab_arr(i,j,k,n)/area);} );
+            }
+
+            break;
+
+        case 1:
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                const auto mfab_arr = mfab.array(mfi);
+                const auto avg_fab_arr = avg_fab.array();
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(0,j,0,n), mfab_arr(i,j,k,n)/area);} );
+            }
+
+            break;
+
+        case 2:
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                const auto mfab_arr = mfab.array(mfi);
+                const auto avg_fab_arr = avg_fab.array();
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(0,0,k,n), mfab_arr(i,j,k,n)/area);} );
+            }
+
+            break;
+
+        default:
+            amrex::Abort("aborting axis should be between 0 and 2 \n");
+            break;
+    }
+
+}
 
 
 
@@ -662,9 +716,9 @@ void incflo::spatially_average_quantities_down(bool plot)
     fab.setVal(0.0);
 
     // count number of cells in plane
-    Real nxny = 1.0;
+    Real area = 1.0;
     for(int i=0;i<AMREX_SPACEDIM;++i){
-        if(i!=axis) nxny *= (dom_hi[i]-dom_lo[i]+1);
+        if(i!=axis) area *= (dom_hi[i]-dom_lo[i]+1);
     }
          
     
@@ -678,75 +732,22 @@ void incflo::spatially_average_quantities_down(bool plot)
 //    const int ratio = 2;
 //    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
 
-    
-    // average the fab
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (MFIter mfi(crse_mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
-    {
-        Box bx = mfi.tilebox();
+    // ncomp is used here and is safer but it could actually be 4 depending on the ordering of average down function
+    plane_average(crse_mfab, fab, area, axis, ncomp);
 
-        const auto& crse_arr = crse_mfab.array(mfi);
-        const auto& fab_arr = fab.array();
-        // ncomp is used here but it could actually be 4 depending on the average down function
-        int nvar = ncomp;// this is safer in case something is moved
-        switch (axis) {
-            case 0:
-                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(i,0,0,n) += crse_arr(i,j,k,n)/nxny;} );
-                break;
-            case 1:
-                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(0,j,0,n) += crse_arr(i,j,k,n)/nxny;} );
-                break;
-            case 2:
-                AMREX_FOR_4D(bx, nvar, i, j, k, n, {fab_arr(0,0,k,n) += crse_arr(i,j,k,n)/nxny;} );
-                break;
-            default:
-                amrex::Abort("index value in average quantities is garbage \n");
-                break;
-        }
-    }
-
-    
     //fixme put in a loop like above
     // sum all fabs together
     ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
 
     set_mfab_spatial_averaging_quantities(crse_mfab,crse_lev,fab,axis);
 //    set_mfab_spatial_averaging_quantities(fine_mfab,fine_lev,fab,axis);
-
 //    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
 
 
     fab.setVal(0.0);
     
-    // average the fab again now that velocity and temperature are averaged!
-    #ifdef _OPENMP
-    #pragma omp parallel if (Gpu::notInLaunchRegion())
-    #endif
-        for (MFIter mfi(crse_mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            Box bx = mfi.tilebox();
+    plane_average(crse_mfab,fab,area,axis,ncomp);
 
-            const auto& crse_arr = crse_mfab.array(mfi);
-            const auto& fab_arr = fab.array();
-
-            switch (axis) {
-                case 0:
-                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(i,0,0,n) += crse_arr(i,j,k,n)/nxny;} );
-                    break;
-                case 1:
-                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(0,j,0,n) += crse_arr(i,j,k,n)/nxny;} );
-                    break;
-                case 2:
-                    AMREX_FOR_4D(bx, ncomp, i, j, k, n, {fab_arr(0,0,k,n) += crse_arr(i,j,k,n)/nxny;} );
-                    break;
-                default:
-                    amrex::Abort("index value in average quantities is garbage \n");
-                    break;
-            }
-        }
-    
     // sum all fabs together
     ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
   
@@ -756,6 +757,7 @@ void incflo::spatially_average_quantities_down(bool plot)
     AMREX_ASSERT(axis==2);
     const auto& fab_arr = fab.array();
     
+    // no need to do a loop should be able to find the index because of fixed cell size
     for(int i=s; i <= b; ++i){
         const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
         if(z > 0.0) {
@@ -764,7 +766,7 @@ void incflo::spatially_average_quantities_down(bool plot)
             nu_mean_ground = fab_arr(0,0,i,nu_avg);
             z_ground = z;
            
-            amrex::Print() << "z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
+            amrex::Print() << "ground height z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
             
             // fixme circular dependency so need to hack this for now
             if(nstep == -1) nu_mean_ground = 1.0;
@@ -789,11 +791,10 @@ void incflo::spatially_average_quantities_down(bool plot)
             const Real c = (abl_forcing_height-z1)/(z2-z1);
             vx_mean = fab_arr(0,0,i,u_avg)*(1.0-c) + fab_arr(0,0,i+1,u_avg)*c;
             vy_mean = fab_arr(0,0,i,v_avg)*(1.0-c) + fab_arr(0,0,i+1,v_avg)*c;
-            amrex::Print() << "abl forcing height: " << abl_forcing_height << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
+            amrex::Print() << "abl forcing height z: " << abl_forcing_height << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
             break;
         }
-    }
-    
+    } 
     
     
     
@@ -829,15 +830,7 @@ void incflo::spatially_average_quantities_down(bool plot)
             fab_arr1(0,0,k,n) = fab_arr2(0,0,k,n);
         });
     }
-//
-//    if(ParallelDescriptor::IOProcessorNumber() == 0){
-//        FArrayBox& fabby = mfab[0];
-//        Real *fptr1 = fabby.dataPtr(0);
-//        Real *fptr2 = fab.dataPtr(0);
-//        for(int i=0; i < fab.size(); ++i){
-//            fptr1[i] = fptr2[i];
-//        }
-//    }
+
 
     std::string line_plot_file{"line_plot"};
 

@@ -188,6 +188,7 @@ public:
     
     void init_abl(MultiFab& den, MultiFab& vel, MultiFab& tracer, Real dx, Real dy, Real dz);
     void set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &fab, int index);
+    void plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real area, const int axis, const int ncomp);
     void spatially_average_quantities_down(bool plot=true);
     
     Real volWgtSum (int lev, const MultiFab & mf, int comp, bool local=false);
