@@ -6,13 +6,15 @@ USE_OMP = FALSE
 # Debug mode?
 DEBUG = FALSE
 
+TEST = TRUE
+USE_ASSERTION = TRUE
+
 # Use HYPRE solver?
 USE_HYPRE = FALSE
 
 # Profiling
 PROFILE       = FALSE
 TINY_PROFILE  = FALSE
-
 
 
 ########################################################################\
@@ -24,7 +26,6 @@ TINY_PROFILE  = FALSE
 # Path to AMReX directory and incflo directories
 AMREX_HOME ?= ../../amrex
 TOP = ..
-HYPRE_DIR ?= ../../hypre/src/hypre
 
 # Use OS-friendly compiler
 UNAME := $(shell uname)
@@ -53,11 +54,14 @@ Bdirs 	+= src/boundary_conditions
 Bdirs 	+= src/convection
 Bdirs 	+= src/derive
 Bdirs 	+= src/diffusion
-Bdirs 	+= src/embedded_boundaries
 Bdirs 	+= src/projection
 Bdirs 	+= src/rheology
 Bdirs 	+= src/setup
 Bdirs 	+= src/utilities
+
+ifeq ($(USE_EB), TRUE)
+Bdirs 	+= src/embedded_boundaries
+endif
 
 Bpack	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs	+= $(foreach dir, $(Bdirs), $(TOP)/$(dir))
@@ -67,7 +71,11 @@ INCLUDE_LOCATIONS += $(Blocs)
 VPATH_LOCATIONS   += $(Blocs)
 
 #These are the directories in AMReX
-Pdirs   := Base AmrCore Boundary EB
+Pdirs   := Base AmrCore Boundary 
+
+ifeq ($(USE_EB), TRUE)
+Pdirs 	+= EB
+endif
 
 ifeq ($(USE_HYPRE), TRUE)
 Pdirs   += Extern/HYPRE
@@ -119,3 +127,4 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.rules
 
 clean::
 	$(SILENT) $(RM) AMReX_buildInfo.cpp
+
