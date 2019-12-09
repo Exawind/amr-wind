@@ -312,7 +312,7 @@ void incflo::SetBCTypes()
                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                     domain.loVect(), domain.hiVect(),
-                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost);
+                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost_for_bcs);
     }
 }
 
