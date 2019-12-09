@@ -6,12 +6,15 @@ USE_OMP = FALSE
 # Debug mode?
 DEBUG = FALSE
 
+TEST = TRUE
+USE_ASSERTION = TRUE
+
 # Use HYPRE solver?
 USE_HYPRE = FALSE
 
 # Profiling
-PROFILE       = TRUE
-TINY_PROFILE  = TRUE
+PROFILE       = FALSE
+TINY_PROFILE  = FALSE
 
 
 ########################################################################\
