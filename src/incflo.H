@@ -168,7 +168,7 @@ public:
     
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Derived quantities
+    // Derived quantities and diagnostics
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,6 +190,8 @@ public:
     void set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &fab, int index);
     void spatially_average_quantities_down(bool plot=true);
     
+    Real volWgtSum (int lev, const MultiFab & mf, int comp, bool local=false);
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Convection
@@ -267,20 +269,20 @@ public:
 
 private:
 
-     static int nlev;
-     static int ntrac;
+    static int nlev;
+    static int ntrac;
 
-     // Unit vectors in Cartesian space
-     static IntVect e_x;
-     static IntVect e_y;
-     static IntVect e_z;
+    // Unit vectors in Cartesian space
+    static IntVect e_x;
+    static IntVect e_y;
+    static IntVect e_z;
 
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
-     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -336,13 +338,17 @@ private:
 
     void Advance();
     void ComputeDt(int initialisation, bool explicit_diffusion);
-	bool SteadyStateReached();
-	void ApplyPredictor();
-	void ApplyCorrector();
-    void ApplyProjection(Real time, Real scaling_factor);
+    bool SteadyStateReached();
+    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyCorrector();
+    void ApplyProjection(Real time, Real scaling_factor, bool incremental = false);
 
     // Number of ghost nodes for field arrays.
+#ifdef AMREX_USE_EB
     const int nghost = 4;
+#else
+    const int nghost = 1;
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -463,7 +469,8 @@ private:
 
     // Time and time step counters
     Real cur_time = 0.0;
-    Real dt = -1.0;
+    Real dt      = -1.0;
+    Real prev_dt = -1.0;
     int nstep = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
@@ -509,6 +516,7 @@ private:
 
     bool constant_density = true;
     bool advect_tracer    = false;
+    bool test_tracer_conservation = false;
     bool use_godunov      = false;
 
     // Fluid properties
@@ -576,7 +584,13 @@ private:
 
     // Member variables for I/O
     int plot_int = -1;
-    Real plot_per = -1.0;
+
+    // Dump plotfiles at as close as possible to the designated period *without* changing dt
+    Real plot_per_approx = -1.0;
+    
+    // Dump plotfiles at exactcly the designated period by changing dt
+    Real plot_per_exact  = -1.0;
+
     int last_plt = -1;
     std::string plot_file{"plt"};
 
@@ -702,6 +716,8 @@ private:
     // Not yet classified
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool writeNow();
 
     void FillPatchVel    (int lev, Real time, MultiFab& mf);
     void FillPatchDensity(int lev, Real time, MultiFab& mf);

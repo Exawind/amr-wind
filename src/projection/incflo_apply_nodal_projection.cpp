@@ -22,18 +22,29 @@
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection(Real time, Real scaling_factor)
+void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 
+    bool proj_for_small_dt      = false;
+
+    // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
+    // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
+
+    if (time > 0 && dt < 0.1 * prev_dt) 
+       proj_for_small_dt      = true;
+
     if (incflo_verbose > 2)
     {
-        amrex::Print() << "Before projection:" << std::endl;
+        if (proj_for_small_dt)
+           amrex::Print() << "Before projection (with small dt modification):" << std::endl;
+        else
+           amrex::Print() << "Before projection:" << std::endl;
         PrintMaxValues(time);
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
-    if (nstep >= 0)
+    if (!incremental)
     {
         for(int lev = 0; lev <= finest_level; lev++)
         {
@@ -55,7 +66,16 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
 
     // Set velocity BCs before projection
     int extrap_dir_bcs(0);
-    incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
+    incflo_set_velocity_bcs(time, vel    , extrap_dir_bcs);
+
+    // Define "vel" to be U^* - U^n rather than U^*
+    if (proj_for_small_dt)
+    {
+       incflo_set_velocity_bcs(time, vel_o, extrap_dir_bcs);
+
+       for(int lev = 0; lev <= finest_level; lev++)
+          MultiFab::Saxpy(*vel[lev], -1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
+    }
 
     // Create sigma
     Vector< std::unique_ptr< amrex::MultiFab > >  sigma(nlev);
@@ -73,6 +93,13 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     // Perform projection
     nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
 
+    // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
+    if (proj_for_small_dt)
+    {
+       for(int lev = 0; lev <= finest_level; lev++)
+          MultiFab::Saxpy(*vel[lev], 1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
+    }
+
     // Get phi and fluxes
     Vector< const amrex::MultiFab* >  phi(nlev);
     Vector< const amrex::MultiFab* >  gradphi(nlev);
@@ -80,28 +107,31 @@ void incflo::ApplyProjection(Real time, Real scaling_factor)
     phi     = nodal_projector -> getPhi();
     gradphi = nodal_projector -> getGradPhi();
 
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        if(nstep >= 0)
-        {
-            // p := phi
-            MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
-        }
-        else
+        if (incremental)
         {
             // p := p + phi
             MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
             MultiFab::Add(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
         }
+        else
+        {
+            // p := phi
+            MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
+            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
+        }
+
     }
 
     AverageDown();
 
     if(incflo_verbose > 2)
     {
-        amrex::Print() << "After projection: " << std::endl;
+        if (proj_for_small_dt)
+           amrex::Print() << "After  projection (with small dt modification):" << std::endl;
+        else
+           amrex::Print() << "After  projection:" << std::endl;
         PrintMaxValues(time);
     }
 }

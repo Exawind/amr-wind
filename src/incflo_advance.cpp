@@ -27,8 +27,8 @@ void incflo::Advance()
     // Set new and old time to correctly use in fillpatching
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        t_old[lev] = cur_time; 
-        t_new[lev] = cur_time + dt; 
+        t_old[lev] = cur_time;
+        t_new[lev] = cur_time + dt;
     }
 
     if(incflo_verbose > 0)
@@ -59,9 +59,12 @@ void incflo::Advance()
         if(probtype%10 == 3 or probtype == 5)
         {
             ComputeDrag();
-            amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl; 
+            amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl;
         }
     }
+
+    if (test_tracer_conservation)
+       amrex::Print() << "Sum tracer volume wgt = " << cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
@@ -87,33 +90,33 @@ void incflo::Advance()
 //         divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho
 //         rhs = u + dt * ( conv + divtau_old )
 //      else
-//         divtau_old  = 0.0 
-//         rhs = u + dt * conv 
+//         divtau_old  = 0.0
+//         rhs = u + dt * conv
 //
-//      eta     = eta at new_time 
+//      eta     = eta at new_time
 //
 //  2. Add explicit forcing term i.e. gravity + lagged pressure gradient
 //
 //      rhs += dt * ( g - grad(p + p0) / rho )
 //
-//      Note that in order to add the pressure gradient terms divided by rho, 
-//      we convert the velocity to momentum before adding and then convert them back. 
+//      Note that in order to add the pressure gradient terms divided by rho,
+//      we convert the velocity to momentum before adding and then convert them back.
 //
 //  3. A. If (m_diff_type == DiffusionType::Implicit)
-//        solve implicit diffusion equation for u* 
+//        solve implicit diffusion equation for u*
 //
-//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u 
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u
 //                                                  + dt * ( g - grad(p + p0) / rho )
-// 
+//
 //     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
-//        solve semi-implicit diffusion equation for u* 
+//        solve semi-implicit diffusion equation for u*
 //
 //     ( 1 - (dt/2) / rho * div ( eta_old grad ) ) u* = u^n + dt * conv_u + (dt/2) / rho * div (eta_old grad) u^n
 //                                                          + dt * ( g - grad(p + p0) / rho )
 //
 //  4. Apply projection
-//     
-//     Add pressure gradient term back to u*: 
+//
+//     Add pressure gradient term back to u*:
 //
 //      u** = u* + dt * grad p / rho
 //
@@ -121,7 +124,7 @@ void incflo::Advance()
 //
 //     div( grad(phi) / rho ) = div( u** )
 //
-//     Update pressure: 
+//     Update pressure:
 //
 //     p = phi / dt
 //
@@ -129,7 +132,7 @@ void incflo::Advance()
 //
 //     vel = u** - dt * grad p / rho
 //
-void incflo::ApplyPredictor()
+void incflo::ApplyPredictor(bool incremental_projection)
 {
     BL_PROFILE("incflo::ApplyPredictor");
 
@@ -185,15 +188,15 @@ void incflo::ApplyPredictor()
             MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
             for (int i = 0; i < ntrac; i++)
             {
-                if (m_diff_type == DiffusionType::Explicit) 
+                if (m_diff_type == DiffusionType::Explicit)
                     MultiFab::Saxpy(*tracer[lev],     dt, *laps_old[lev], i, i, 1, 0);
                 else if (m_diff_type == DiffusionType::Crank_Nicolson)
                     MultiFab::Saxpy(*tracer[lev], 0.5*dt, *laps_old[lev], i, i, 1, 0);
             }
         }
 
-        // Add the viscous terms         
-        if (m_diff_type == DiffusionType::Explicit) 
+        // Add the viscous terms
+        if (m_diff_type == DiffusionType::Explicit)
             MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
         else if (m_diff_type == DiffusionType::Crank_Nicolson)
             MultiFab::Saxpy(*vel[lev], 0.5*dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
@@ -246,7 +249,7 @@ void incflo::ApplyPredictor()
     }
 
     // Project velocity field, update pressure
-    ApplyProjection(new_time, dt);
+    ApplyProjection(new_time, dt, incremental_projection);
 
     // Fill velocity BCs again
     incflo_set_velocity_bcs(new_time, vel, 0);
@@ -255,11 +258,11 @@ void incflo::ApplyPredictor()
 //
 // Apply corrector:
 //
-//  Output variables from the predictor are labelled _pred 
+//  Output variables from the predictor are labelled _pred
 //
 //  1. Use u = vel_pred to compute
 //
-//      conv_u  = - u grad u 
+//      conv_u  = - u grad u
 //      conv_r  = - u grad rho
 //      conv_t  = - u grad trac
 //      eta     = viscosity
@@ -271,8 +274,8 @@ void incflo::ApplyPredictor()
 //      if (m_diff_type == DiffusionType::Explicit)
 //         divtau  = divtau at new_time using (*) state
 //      else
-//         divtau  = 0.0 
-//      eta     = eta at new_time 
+//         divtau  = 0.0
+//      eta     = eta at new_time
 //
 //     rhs = u + dt * ( conv + divtau )
 //
@@ -280,24 +283,24 @@ void incflo::ApplyPredictor()
 //
 //      rhs += dt * ( g - grad(p + p0) / rho )
 //
-//      Note that in order to add the pressure gradient terms divided by rho, 
-//      we convert the velocity to momentum before adding and then convert them back. 
+//      Note that in order to add the pressure gradient terms divided by rho,
+//      we convert the velocity to momentum before adding and then convert them back.
 //
 //  3. A. If (m_diff_type == DiffusionType::Implicit)
-//        solve implicit diffusion equation for u* 
+//        solve implicit diffusion equation for u*
 //
-//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u 
+//     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u
 //                                                  + dt * ( g - grad(p + p0) / rho )
-// 
+//
 //     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
-//        solve semi-implicit diffusion equation for u* 
+//        solve semi-implicit diffusion equation for u*
 //
 //     ( 1 - (dt/2) / rho * div ( eta grad ) ) u* = u^n + dt * conv_u + (dt/2) / rho * div (eta_old grad) u^n
 //                                                      + dt * ( g - grad(p + p0) / rho )
 //
 //  4. Apply projection
-//     
-//     Add pressure gradient term back to u*: 
+//
+//     Add pressure gradient term back to u*:
 //
 //      u** = u* + dt * grad p / rho
 //
@@ -305,7 +308,7 @@ void incflo::ApplyPredictor()
 //
 //     div( grad(phi) / rho ) = div( u** )
 //
-//     Update pressure: 
+//     Update pressure:
 //
 //     p = phi / dt
 //
@@ -383,7 +386,7 @@ void incflo::ApplyCorrector()
                MultiFab::Saxpy(*tracer[lev], dt / 2.0, *laps_old[lev], 0, 0, ntrac, 0);
         }
 
-        // Add the viscous terms         
+        // Add the viscous terms
         if (m_diff_type == DiffusionType::Explicit)
         {
             MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);

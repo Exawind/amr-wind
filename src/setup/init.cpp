@@ -57,6 +57,7 @@ void incflo::ReadParameters()
 
         pp.query("constant_density", constant_density);
         pp.query("advect_tracer"   , advect_tracer);
+        pp.query("test_tracer_conservation" , test_tracer_conservation);
         pp.query("use_godunov"     , use_godunov);
 
 
@@ -88,7 +89,7 @@ void incflo::ReadParameters()
         for (int i = 0; i < ntrac; i++)
            amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
 
-        AMREX_ALWAYS_ASSERT(mu > 0.0);
+        // AMREX_ALWAYS_ASSERT(mu > 0.0);
 
         // Get cyclicity, (to pass to Fortran)
         Vector<int> is_cyclic(AMREX_SPACEDIM);
@@ -170,8 +171,14 @@ void incflo::ReadIOParameters()
     pp.query("restart", restart_file);
 
     pp.query("plot_file", plot_file);
-    pp.query("plot_int", plot_int);
-    pp.query("plot_per", plot_per);
+    pp.query("plot_int"       , plot_int);
+    pp.query("plot_per_exact" , plot_per_exact);
+    pp.query("plot_per_approx", plot_per_approx);
+
+    if ( (plot_int       > 0 && plot_per_exact  > 0) ||
+         (plot_int       > 0 && plot_per_approx > 0) ||
+         (plot_per_exact > 0 && plot_per_approx > 0) )
+       amrex::Abort("Must choose only one of plot_int or plot_per_exact or plot_per_approx");
 
     // The plt_ccse_regtest resets the defaults,
     //     but we can over-ride those below
@@ -253,7 +260,7 @@ void incflo::PostInit(int restart_flag)
     {
         InitFluid();
     }
-    
+
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 
@@ -267,7 +274,7 @@ void incflo::PostInit(int restart_flag)
     incflo_set_tracer_bcs (cur_time, tracer_o);
 
     setup_level_mask();
-    
+
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
@@ -333,6 +340,10 @@ void incflo::InitFluid()
         MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
         MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
     }
+
+    Real my_cur_time = 0.0;
+    if (test_tracer_conservation)
+       amrex::Print() << "Sum tracer volume wgt = " << my_cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 }
 
 void incflo::SetBCTypes()
@@ -412,7 +423,7 @@ void incflo::SetBackgroundPressure()
        gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
        for(int lev = 0; lev <= max_level; lev++)
           p0[lev]->setVal(0.);
- 
+
        use_boussinesq = true;
     }
 }
@@ -448,7 +459,7 @@ void incflo::InitialIterations()
     {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
- 	ApplyPredictor();
+ 	ApplyPredictor(true);
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
@@ -463,6 +474,9 @@ void incflo::InitialIterations()
         incflo_set_density_bcs (cur_time, density);
         incflo_set_tracer_bcs  (cur_time, tracer );
     }
+
+    // Set nstep to 0 before entering time loop
+    nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
@@ -480,10 +494,6 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     ApplyProjection(cur_time, dummy_dt);
-
-    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection()
-    // use the correct decomposition.
-    nstep = 0;
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)

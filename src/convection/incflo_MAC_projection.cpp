@@ -58,7 +58,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    mac_vel.resize(finest_level+1);
 
    if (incflo_verbose > 0)
-      Print() << " >> Before projection\n" ; 
+      Print() << " >> Before MAC projection\n";
 
    // This will hold (1/rho) on faces
    Vector< Array< std::unique_ptr<MultiFab>, AMREX_SPACEDIM> > rho_face;
@@ -74,26 +74,25 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
 
    for ( int lev=0; lev <= finest_level; ++lev )
    {
+
+#ifdef AMREX_USE_EB
+    const FabFactory<FArrayBox>& factory =  *ebfactory[lev];
+#else
+    const FabFactory<FArrayBox>& factory = FArrayBoxFactory();
+#endif
+
       density_in[lev]->FillBoundary(geom[lev].periodicity());
 
       // We make these with no ghost cells
-#ifdef AMREX_USE_EB
-      rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
-      rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
-      rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
+      rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),factory));
+      rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),factory));
+      rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),factory));
 
-      // This doesn't need ghost cells either
-      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo(),*ebfactory[lev]));
-      mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo(),*ebfactory[lev]));
-#else
-      rho_face[lev][0].reset(new MultiFab(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
-      rho_face[lev][1].reset(new MultiFab(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
-      rho_face[lev][2].reset(new MultiFab(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo()));
+      // mac_rhs doesn't need ghost cells either
+      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo(),factory));
 
-      // This doesn't need ghost cells either
-      mac_rhs[lev].reset(new MultiFab(grids[lev],dmap[lev],1,0,MFInfo()));
-      mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,nghost,MFInfo()));
-#endif
+      // mac_phi only needs one ghost cell
+      mac_phi[lev].reset(new MultiFab(grids[lev],dmap[lev],1,1,MFInfo(),factory));
 
       mac_rhs[lev] -> setVal(0.);
       mac_phi[lev] -> setVal(0.);
@@ -200,7 +199,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    }
 
    if (incflo_verbose > 0)
-      Print() << " >> After projection\n" ; 
+      Print() << " >> After  MAC projection\n" ; 
 
    for ( int lev=0; lev <= finest_level ; ++lev )
    {   
