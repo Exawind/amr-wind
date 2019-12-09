@@ -86,8 +86,7 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
     }
 
     // Don't let the timestep grow by more than 10% per step unless the previous time step was unduly shrunk to match plot_per_exact
-    if(dt > 0.0 && last_plt != nstep)
-    // if( (dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    if( (dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
     {
         dt_new = amrex::min(dt_new, 1.1 * dt);
     }
