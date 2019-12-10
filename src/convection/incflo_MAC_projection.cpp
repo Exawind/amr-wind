@@ -141,50 +141,7 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    //
    MacProjector macproj( mac_vel, GetVecOfArrOfPtrsConst(rho_face), geom, lp_info);
 
-   // The boundary conditions need only be set at level 0
-   int bc_lo[3], bc_hi[3];
-   Box domain(geom[0].Domain());
-   set_ppe_bcs(bc_lo, bc_hi,
-               domain.loVect(), domain.hiVect(),
-               &nghost,
-               bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
-               bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
-               bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
-
-   macproj.setDomainBC({(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]},
-                       {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]});
-
-   macproj.setVerbose   ( mac_mg_verbose);
-   macproj.setCGVerbose ( mac_mg_cg_verbose);
-   macproj.setMaxIter   ( mac_mg_maxiter);
-   macproj.setCGMaxIter ( mac_mg_cg_maxiter);   
-   // The default bottom solver is BiCG
-   // Other options include:
-   ///   Hypre IJ AMG solver
-   //    macproj.getMLMG().setBottomSolver(MLMG::BottomSolver::hypre);
-   ///   regular smoothing
-   //    macproj.getMLMG().setBottomSolver(MLMG::BottomSolver::smoother);
-
-   if (mac_bottom_solver_type == "smoother")
-   {
-      macproj.setBottomSolver(MLMG::BottomSolver::smoother);
-   }
-   else if (mac_bottom_solver_type == "cg")
-   {
-      macproj.setBottomSolver(MLMG::BottomSolver::cg);
-   }
-   else if (mac_bottom_solver_type == "bicgcg")
-   {
-      macproj.setBottomSolver(MLMG::BottomSolver::bicgcg);
-   }
-   else if (mac_bottom_solver_type == "cgbicg")
-   {
-      macproj.setBottomSolver(MLMG::BottomSolver::cgbicg);
-   }
-   else if (mac_bottom_solver_type == "hypre")
-   {
-      macproj.setBottomSolver(MLMG::BottomSolver::hypre);
-   }
+   macproj.setDomainBC(ppe_lobc, ppe_hibc);
 
    if (steady_state)
    {
