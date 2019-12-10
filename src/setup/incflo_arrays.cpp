@@ -521,20 +521,20 @@ void incflo::MakeBCArrays()
         // Define and allocate the integer MultiFab that is the outside adjacent cells of the
         // problem domain.
         Box domainx(geom[lev].Domain());
-        domainx.grow(1, nghost);
-        domainx.grow(2, nghost);
+        domainx.grow(1, nghost_for_bcs);
+        domainx.grow(2, nghost_for_bcs);
         Box box_ilo = amrex::adjCellLo(domainx, 0, 1);
         Box box_ihi = amrex::adjCellHi(domainx, 0, 1);
 
         Box domainy(geom[lev].Domain());
-        domainy.grow(0, nghost);
-        domainy.grow(2, nghost);
+        domainy.grow(0, nghost_for_bcs);
+        domainy.grow(2, nghost_for_bcs);
         Box box_jlo = amrex::adjCellLo(domainy, 1, 1);
         Box box_jhi = amrex::adjCellHi(domainy, 1, 1);
 
         Box domainz(geom[lev].Domain());
-        domainz.grow(0, nghost);
-        domainz.grow(1, nghost);
+        domainz.grow(0, nghost_for_bcs);
+        domainz.grow(1, nghost_for_bcs);
         Box box_klo = amrex::adjCellLo(domainz, 2, 1);
         Box box_khi = amrex::adjCellHi(domainz, 2, 1);
 

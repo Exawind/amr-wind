@@ -346,9 +346,13 @@ private:
 
     // Number of ghost nodes for field arrays.
 #ifdef AMREX_USE_EB
-    const int nghost = 4;
+    const int nghost            = 4;
+    const int nghost_for_slopes = 4;
+    const int nghost_for_bcs    = 4;
 #else
-    const int nghost = 1;
+    const int nghost            = 1;
+    const int nghost_for_slopes = 3;
+    const int nghost_for_bcs    = 3;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////

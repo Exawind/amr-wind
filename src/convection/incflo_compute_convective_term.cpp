@@ -29,12 +29,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
     int num_comp;
 
-#ifdef AMREX_USE_EB
-    int nghost_for_slopes = nghost;
-#else
-    int nghost_for_slopes = 3;
-#endif
-
     int nghost_for_copy = std::min(nghost, nghost_for_slopes);
 
     // First do FillPatch of {velocity, density, tracer} so we know the ghost cells of
