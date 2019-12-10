@@ -413,7 +413,7 @@ void incflo::SetBackgroundPressure()
                    bc_jhi[lev]->dataPtr(),
                    bc_klo[lev]->dataPtr(),
                    bc_khi[lev]->dataPtr(),
-                   &nghost);
+                   &nghost_for_bcs);
         }
         p0[lev]->FillBoundary(p0_periodicity);
     }
