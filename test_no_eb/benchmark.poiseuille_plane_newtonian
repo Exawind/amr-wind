@@ -60,6 +60,6 @@ diffusion.verbose       =   0           # DiffusionEquation
 mac_proj.verbose        =   0           # MacProjector
 
 nodal_proj.verbose      =   0
-nodal_proj.atol         =   1.e-12
+nodal_proj.atol         =   1.e-11
 
 amr.plt_ccse_regtest    =   1
