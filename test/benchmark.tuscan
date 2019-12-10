@@ -73,9 +73,8 @@ incflo.write_eb_surface = true
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
-mac.verbose             =   1           # MacProjector
 
-mac.mg_verbose          =   1           # MAC   projection MG verbosity
-projection.mg_verbose   =   1           # Nodal projection MG verbosity
+mac_proj.verbose        =   1           # MAC Projector
+nodal_proj.verbose      =   1           # Nodal Projector
 
 amr.plt_ccse_regtest    =   1

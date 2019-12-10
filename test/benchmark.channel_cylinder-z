@@ -80,9 +80,9 @@ incflo.ic_p             =   0.0         #
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   1           # incflo itself
-mac.verbose             =   1           # MacProjector
+mac_proj.verbose        =   1           # MacProjector
 diffusion.verbose       =   1           # Diffusion operator
-projection.mg_verbose   =   1           # Nodal projection
+nodal_proj.mg_verbose   =   1           # Nodal projection
 
 amr.plt_ccse_regtest    =   1
 

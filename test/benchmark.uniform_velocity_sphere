@@ -59,7 +59,6 @@ incflo.ic_p             =    0.         #
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.do_initial_proj    = 1           # Do initial projection?
 incflo.initial_iterations = 3           # Number of initial iterations for pressure
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
@@ -67,6 +66,7 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   3           # incflo_level
-mac.verbose             =   0           # MacProjector
+mac_proj.verbose        =   0           # MAC Projector
+nodal_proj.verbose      =   0           # Nodal Projector
 
 amr.plt_ccse_regtest    =   1
