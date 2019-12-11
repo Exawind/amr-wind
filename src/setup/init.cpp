@@ -106,7 +106,7 @@ void incflo::ReadParameters()
     } // end prefix incflo
 
     { // Prefix mac
-        ParmParse pp_mac("mac");
+        ParmParse pp_mac("mac_proj");
         pp_mac.query( "mg_verbose"   , mac_mg_verbose );
         pp_mac.query( "mg_cg_verbose", mac_mg_cg_verbose );
         pp_mac.query( "mg_rtol"      , mac_mg_rtol );
