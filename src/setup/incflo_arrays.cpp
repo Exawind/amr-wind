@@ -1,5 +1,21 @@
 #include <incflo.H>
 
+incflo::LevelData::LevelData (amrex::BoxArray const& ba,
+                              amrex::DistributionMapping const& dm,
+                              amrex::FabFactory<FArrayBox> const& fact)
+    : density  (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
+      density_o(ba, dm, 1             , incflo::nghost, MFInfo(), fact),
+      tracer   (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
+      tracer_o (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
+      vel      (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
+      vel_o    (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
+      gp       (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
+      p        (amrex::convert(ba,IntVect::TheNodeVector()),
+                    dm, 1             , incflo::nghost, MFInfo(), fact),
+      p0       (amrex::convert(ba,IntVect::TheNodeVector()),
+                    dm, 1             , incflo::nghost, MFInfo(), fact)
+{}
+
 void incflo::AllocateArrays (int lev)
 {
 #ifdef AMREX_USE_EB

@@ -220,16 +220,21 @@ private:
     amrex::Vector<amrex::Real> t_new;
 
     struct LevelData {
+        LevelData () = default;
+        LevelData (amrex::BoxArray const& ba,
+                   amrex::DistributionMapping const& dm,
+                   amrex::FabFactory<FArrayBox> const& fact);
+        // cell-centered multifabs
         amrex::MultiFab density;
         amrex::MultiFab density_o;
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
         amrex::MultiFab vel;
         amrex::MultiFab vel_o;
+        amrex::MultiFab gp; // pressure gradient
+        // nodal multifabs
         amrex::MultiFab p;
         amrex::MultiFab p0;
-        amrex::MultiFab gp; // pressure gradient
-        // xxxxx
     };
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
@@ -239,6 +244,10 @@ private:
     amrex::Vector<BCRec> m_bcs;  // the size is the number of components
 
     int ntrac = 1;
+
+    LevelData makeLevelData (amrex::BoxArray const& ba,
+                             amrex::DistributionMapping const& dm,
+                             amrex::FabFactory<FArrayBox> const& fact) const;
 
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
@@ -307,13 +316,13 @@ private:
 
     // Number of ghost nodes for field arrays.
 #ifdef AMREX_USE_EB
-    const int nghost            = 4;
-    const int nghost_for_slopes = 4;
-    const int nghost_for_bcs    = 4;
+    static constexpr int nghost            = 4;
+    static constexpr int nghost_for_slopes = 4;
+    static constexpr int nghost_for_bcs    = 4;
 #else
-    const int nghost            = 1;
-    const int nghost_for_slopes = 3;
-    const int nghost_for_bcs    = 3;
+    static constexpr int nghost            = 1;
+    static constexpr int nghost_for_slopes = 3;
+    static constexpr int nghost_for_bcs    = 3;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,9 +416,9 @@ private:
     const EB2::Level* eb_level;
 
     // These values are required when fluid sees EB -- for now
-    const int m_eb_basic_grow_cells = nghost;
-    const int m_eb_volume_grow_cells = nghost;
-    const int m_eb_full_grow_cells = nghost;
+    static constexpr int m_eb_basic_grow_cells = nghost;
+    static constexpr int m_eb_volume_grow_cells = nghost;
+    static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
 #endif
 
 #if 0

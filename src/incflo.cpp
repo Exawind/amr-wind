@@ -7,6 +7,18 @@
 #include <AMReX_EBAmrUtil.H>
 #endif
 
+// static variables of incflo class
+
+constexpr int incflo::nghost;
+constexpr int incflo::nghost_for_slopes;
+constexpr int incflo::nghost_for_bcs;
+
+#ifdef AMREX_USE_EB
+constexpr int incflo::m_eb_basic_grow_cells;
+constexpr int incflo::m_eb_volume_grow_cells;
+constexpr int incflo::m_eb_full_grow_cells;
+#endif
+
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
@@ -34,20 +46,13 @@ incflo::incflo ()
     // xxxxx flux registers
 }
 
-incflo::~incflo(){};
+incflo::~incflo ()
+{}
 
-void incflo::InitData()
+void incflo::InitData ()
 {
     BL_PROFILE("incflo::InitData()");
 
-    // Set the BC types on domain boundary
-    // We are assuming checkpoint doesn't have anything that would change BCs.
-    SetBCTypes();
-
-    // Either init from scratch or from the checkpoint file
-    // In both cases, we call MakeNewLevelFromScratch():
-    // - Set BA and DM
-    // - Allocate arrays for level
     int restart_flag = 0;
     if(restart_file.empty())
     {
@@ -60,14 +65,17 @@ void incflo::InitData()
         SetUseNewChop();
 
         // This is an AmrCore member function which recursively makes new levels
+        // with MakeNewLevelFromScratch.
         InitFromScratch(cur_time);
+
+        // xxxxx averagedown ???
+
+        // xxxxx if (check_int > 0) { WriteCheckPointFile(); }
     }
     else
     {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
-        SetBCTypes();
-        restart_flag = 1;
     }
 
     // Post-initialisation step
@@ -248,8 +256,17 @@ void incflo::MakeNewLevelFromScratch(int lev,
     SetBoxArray(lev, new_grids);
     SetDistributionMap(lev, new_dmap);
 
-    // Allocate the fluid data, NOTE: this depends on the ebfactories.
-    AllocateArrays(lev);
+#ifdef AMREX_USE_EB
+    m_factory[lev] = makeEBFabFactory(Geom(lev), grids[lev], dmap[lev],
+                                      {m_eb_basic_grow_cells,
+                                       m_eb_volume_grow_cells,
+                                       m_eb_full_grow_cells},
+                                       EBSupport::full);
+#else
+    m_factory[lev].reset(new FArrayBoxFactory());
+#endif
+
+    m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev]));
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and
