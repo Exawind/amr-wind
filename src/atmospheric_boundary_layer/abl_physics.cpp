@@ -191,9 +191,9 @@ incflo::add_coriolis(MultiFab& vel_in, int nghost)
             const Real az = ae*e[2] + an*n[2] + au*u[2];
 
             // add in coriolis without density since that is done in the next step
-            v(i,j,k,0) -= dt_*ax;
-            v(i,j,k,1) -= dt_*ay;
-            v(i,j,k,2) -= 0*dt_*az;//fixme there might be known issues with using z component turn off for now
+            v(i,j,k,0) += dt_*ax;
+            v(i,j,k,1) += dt_*ay;
+            v(i,j,k,2) += dt_*az;//fixme there might be known issues with using z component turn off for now
             
         });
     }

@@ -11,16 +11,21 @@ import copy
 
 
 # inputs 
-# an average utau 
-start = 80000
-end = 80010
-skip = 5
-
-filename = "run2304/line_plot"
+filename = "line_plot"
+ 
+start = 96051
+end = 99999
+skip = 1
 
 fns = []
 for i in range(start,end+1,skip):
     fn = filename+str(i).zfill(5);
+    fns.append(fn)
+
+start = 100000
+end = 105111
+for i in range(start,end+1,skip):
+    fn = filename+str(i).zfill(6);
     fns.append(fn)
 
 
@@ -42,7 +47,7 @@ ds = yt.load(fns[0])
 g = ds.index.grids[0]
 z = np.array(g["z"].flatten())
 n = len(z)
-a=pd.DataFrame(np.zeros((n,11)),columns=["z","u","v","w","uu","vv","ww","uv","uw","vw","theta"])
+a=pd.DataFrame(np.zeros((n,20)),columns=["z","u","v","w","uu","vv","ww","uv","uw","vw","theta","wuu","wuv","wuw","wvv","wvw","www","Tu","Tv","Tw"])
 a.z += z[:]
 
 print(a.z)
@@ -61,6 +66,15 @@ for i, fn in enumerate(lfns):
     a.uw += g["<u'w'>"].flatten()
     a.vw += g["<v'w'>"].flatten()
     a.theta += g["<T>"].flatten()
+    a.wuu += g["<w'u'u'>"].flatten()
+    a.wuv += g["<w'u'v'>"].flatten()
+    a.wuw += g["<w'u'w'>"].flatten()
+    a.wvv += g["<w'v'v'>"].flatten()
+    a.wvw += g["<w'v'w'>"].flatten()
+    a.www += g["<w'w'w'>"].flatten()
+    a.Tu += g["<T'u'>"].flatten()
+    a.Tv += g["<T'v'>"].flatten()
+    a.Tw += g["<T'w'>"].flatten()
     N[0] += 1.0
 
 b = copy.copy(a.values)
