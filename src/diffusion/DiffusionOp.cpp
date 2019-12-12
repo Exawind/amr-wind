@@ -1,8 +1,11 @@
 #include <AMReX_MultiFabUtil.H>
-#include <AMReX_EBFArrayBox.H>
-#include <AMReX_EB_utils.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_Vector.H>
+
+#ifdef AMREX_USE_EB
+#include <AMReX_EBFArrayBox.H>
+#include <AMReX_EB_utils.H>
+#endif
 
 #include <DiffusionOp.H>
 #include <diffusion_F.H>
@@ -14,7 +17,9 @@ using namespace amrex;
 // We set up everything which doesn't change between timesteps here
 //
 DiffusionOp::DiffusionOp(AmrCore* _amrcore,
+#ifdef AMREX_USE_EB
                          Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory,
+#endif
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_lo,
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_hi,
                          std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_lo,
@@ -36,17 +41,27 @@ DiffusionOp::DiffusionOp(AmrCore* _amrcore,
     readParameters();
 
     // Actually do the setup work here
+#ifdef AMREX_USE_EB
     setup(_amrcore, _ebfactory);
+#else
+    setup(_amrcore);
+#endif
 }
 
+#ifdef AMREX_USE_EB
 void DiffusionOp::setup(AmrCore* _amrcore, 
                         Vector<std::unique_ptr<EBFArrayBoxFactory>>* _ebfactory)
+#else
+void DiffusionOp::setup(AmrCore* _amrcore) 
+#endif
 {
     // The amrcore boxArray and DistributionMap change when we regrid so we must pass the new object in here.
     amrcore = _amrcore;
 
+#ifdef AMREX_USE_EB
     // The ebfactory changes when we regrid so we must pass it in here.
     ebfactory = _ebfactory;
+#endif
 
     geom  = amrcore->Geom();
     grids = amrcore->boxArray();
@@ -66,18 +81,26 @@ void DiffusionOp::setup(AmrCore* _amrcore,
         {
             BoxArray edge_ba = grids[lev];
             edge_ba.surroundingNodes(dir);
+#ifdef AMREX_USE_EB
             b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost,
                                            MFInfo(), *(*ebfactory)[lev]));
+#else
+            b[lev][dir].reset(new MultiFab(edge_ba, dmap[lev], 1, nghost, MFInfo()));
+#endif
         }
+
+#ifdef AMREX_USE_EB
         phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 1,
                                     MFInfo(), *(*ebfactory)[lev]));
-
-        // No ghost cells needed for rhs
         rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0,
                                     MFInfo(), *(*ebfactory)[lev]));
-
         vel_eb[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                        MFInfo(), *(*ebfactory)[lev]));
+#else
+        phi[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 1, MFInfo()));
+        rhs[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, 0, MFInfo()));
+        vel_eb[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo()));
+#endif
         vel_eb[lev]->setVal(0.0);
     }
 
@@ -87,7 +110,11 @@ void DiffusionOp::setup(AmrCore* _amrcore,
     // 
     // Define the matrix for the viscous tensor solve.
     // 
+#ifdef AMREX_USE_EB
      vel_matrix.reset(new MLEBTensorOp(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory)));
+#else
+     vel_matrix.reset(new MLTensorOp(geom, grids, dmap, info));
+#endif
 
     // It is essential that we set MaxOrder to 2 if we want to use the standard
     // phi(i)-phi(i-1) approximation for the gradient at Dirichlet boundaries.
@@ -100,7 +127,11 @@ void DiffusionOp::setup(AmrCore* _amrcore,
     // 
     // Define the matrix for the scalar diffusion solve.
     // 
+#ifdef AMREX_USE_EB
     scal_matrix.reset(new MLEBABecLap(geom, grids, dmap, info, GetVecOfConstPtrs(*ebfactory)));
+#else
+    scal_matrix.reset(new MLABecLaplacian(geom, grids, dmap, info));
+#endif
 
     // It is essential that we set MaxOrder to 2 if we want to use the standard
     // phi(i)-phi(i-1) approximation for the gradient at Dirichlet boundaries.
@@ -167,8 +198,10 @@ void DiffusionOp::diffuse_velocity(      Vector<std::unique_ptr<MultiFab>>& vel_
         
         // This sets the coefficients
         vel_matrix->setACoeffs(lev, (*ro_in[lev]));
-        vel_matrix->setShearViscosity  (lev, GetArrOfConstPtrs(b[lev]));
+        vel_matrix->setShearViscosity  ( lev, GetArrOfConstPtrs(b[lev]));
+#ifdef AMREX_USE_EB
         vel_matrix->setEBShearViscosity(lev, (*mu_in[lev]));
+#endif
     }
 
     if(verbose > 0)
@@ -206,9 +239,6 @@ void DiffusionOp::diffuse_velocity(      Vector<std::unique_ptr<MultiFab>>& vel_
         phi[lev]->FillBoundary(geom[lev].periodicity());
         MultiFab::Copy(*vel_in[lev], *phi[lev], 0, 0, AMREX_SPACEDIM, 1);
     }
-
-    if(verbose > 0)
-        amrex::Print() << " done with viscous solve!" << std::endl;
 }
 
 //
@@ -216,8 +246,7 @@ void DiffusionOp::diffuse_velocity(      Vector<std::unique_ptr<MultiFab>>& vel_
 //
 void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_in,
                                  const Vector<std::unique_ptr<MultiFab>>& ro_in,
-                                 const Vector<std::unique_ptr<MultiFab>>& mu_in,
-                                 Real dt)
+                                 const Vector<Real> mu_s, Real dt)
 {
     BL_PROFILE("DiffusionOp::diffuse_scalar");
 
@@ -237,10 +266,13 @@ void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_i
     scal_matrix->setScalars(1.0, dt);
 
     int finest_level = amrcore->finestLevel();
+    int ntrac = scal_in[0]->nComp();
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        // Compute the spatially varying b coefficients (on faces) to equal the apparent viscosity
-        average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *mu_in[lev], geom[lev]);
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+           for(int n = 0; n < ntrac; n++)
+             b[lev][dir]->setVal(mu_s[n],n,1);
+
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
             b[lev][dir]->FillBoundary(geom[lev].periodicity());
         
@@ -259,16 +291,16 @@ void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_i
         phi[lev]->setVal(0.0);
         rhs[lev]->setVal(0.0);
 
-        // Set the right hand side to equal rhs
-        MultiFab::Copy((*rhs[lev]),(*scal_in[lev]), 0, 0, 1, 0);
+        MultiFab::Copy((*rhs[lev]),(*scal_in[lev]), 0, 0, ntrac, 0);
 
         // Multiply rhs by rho  -- we are solving 
         //
         //      rho s_star = rho s_old + dt ( - div (rho u s) + rho div (mu (grad s)) )
         //
-        MultiFab::Multiply((*rhs[lev]), (*ro_in[lev]), 0, 0, 1, 0);
+        for(int n = 0; n < ntrac; n++)
+           MultiFab::Multiply((*rhs[lev]), (*ro_in[lev]), 0, n, 1, 0);
 
-        MultiFab::Copy(*phi[lev],*scal_in[lev], 0, 0, 1, 1);
+        MultiFab::Copy(*phi[lev],*scal_in[lev], 0, 0, ntrac, 1);
         scal_matrix->setLevelBC(lev, GetVecOfConstPtrs(phi)[lev]);
     }
 
@@ -283,11 +315,8 @@ void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_i
     for(int lev = 0; lev <= finest_level; lev++)
     {
         phi[lev]->FillBoundary(geom[lev].periodicity());
-        MultiFab::Copy(*scal_in[lev], *phi[lev], 0, 0, 1, 1);
+        MultiFab::Copy(*scal_in[lev], *phi[lev], 0, 0, ntrac, 1);
     }
-
-    if(verbose > 0)
-        amrex::Print() << " done with scalar solve!" << std::endl;
 }
 
 //
@@ -329,8 +358,12 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
     Vector<std::unique_ptr<MultiFab> > divtau_aux(finest_level+1);
     for(int lev = 0; lev <= finest_level; lev++)
     {
+#ifdef AMREX_USE_EB
        divtau_aux[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost,
                                           MFInfo(), *(*ebfactory)[lev]));
+#else
+       divtau_aux[lev].reset(new MultiFab(grids[lev], dmap[lev], 3, nghost, MFInfo()));
+#endif
        divtau_aux[lev]->setVal(0.0);
     }
  
@@ -349,7 +382,9 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
              b[lev][dir]->FillBoundary(geom[lev].periodicity());
  
         vel_matrix->setShearViscosity  ( lev, GetArrOfConstPtrs(b[lev]));
+#ifdef AMREX_USE_EB
         vel_matrix->setEBShearViscosity( lev, (*mu_in[lev]));
+#endif
         vel_matrix->setLevelBC         ( lev, GetVecOfConstPtrs(vel_in)[lev] );
     }
  
@@ -359,7 +394,9 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
  
     for(int lev = 0; lev <= finest_level; lev++)
     {
+#ifdef AMREX_USE_EB
        amrex::single_level_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, AMREX_SPACEDIM, geom);
+#endif
  
        // Divide by density
        for (int n = 0; n < 3; n++)
@@ -370,16 +407,21 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
 void DiffusionOp::ComputeLapS(      Vector<std::unique_ptr<MultiFab>>& laps_out,
                               const Vector<std::unique_ptr<MultiFab>>& scal_in,
                               const Vector<std::unique_ptr<MultiFab>>& ro_in,
-                              const Vector<std::unique_ptr<MultiFab>>& mu_in)
+                              const Vector<Real> mu_s)
 {
-    BL_PROFILE("DiffusionOp::ComputeDivTau");
+    BL_PROFILE("DiffusionOp::ComputeLapS");
 
     int finest_level = amrcore->finestLevel();
+    int ntrac = scal_in[0]->nComp();
     Vector<std::unique_ptr<MultiFab> > laps_aux(finest_level+1);
     for(int lev = 0; lev <= finest_level; lev++)
     {
-       laps_aux[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, nghost,
+#ifdef AMREX_USE_EB
+       laps_aux[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost,
                                           MFInfo(), *(*ebfactory)[lev]));
+#else
+       laps_aux[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo()));
+#endif
        laps_aux[lev]->setVal(0.0);
     }
  
@@ -392,10 +434,9 @@ void DiffusionOp::ComputeLapS(      Vector<std::unique_ptr<MultiFab>>& laps_out,
     // Compute the coefficients
     for (int lev = 0; lev <= finest_level; lev++)
     {
-        average_cellcenter_to_face( GetArrOfPtrs(b[lev]), *mu_in[lev], geom[lev] );
- 
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-             b[lev][dir]->FillBoundary(geom[lev].periodicity());
+           for(int n = 0; n < ntrac; n++)
+             b[lev][dir]->setVal(mu_s[n],n,1);
  
         scal_matrix->setBCoeffs  ( lev, GetArrOfConstPtrs(b[lev]));
         scal_matrix->setLevelBC  ( lev, GetVecOfConstPtrs(scal_in)[lev] );
@@ -407,9 +448,12 @@ void DiffusionOp::ComputeLapS(      Vector<std::unique_ptr<MultiFab>>& laps_out,
  
     for(int lev = 0; lev <= finest_level; lev++)
     {
-       amrex::single_level_redistribute( lev, *laps_aux[lev], *laps_out[lev], 0, 1, geom);
+#ifdef AMREX_USE_EB
+       amrex::single_level_redistribute( lev, *laps_aux[lev], *laps_out[lev], 0, ntrac, geom);
+#endif
  
        // Divide by density
-       MultiFab::Divide( *laps_out[lev], *ro_in[lev], 0, 0, 1, 0 );
+       for(int n = 0; n < ntrac; n++)
+          MultiFab::Divide( *laps_out[lev], *ro_in[lev], 0, n, 1, 0 );
     }
 }

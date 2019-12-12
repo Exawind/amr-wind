@@ -33,8 +33,9 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
-    my_incflo->set_velocity_bcs (time, lev, dest_fab, domain, &extrap_dir_bcs);
+    my_incflo->set_velocity_bcs (time, lev, dest_fab, domain, extrap_dir_bcs);
 }
 
 // This interface must match the definition of the interface for
@@ -58,6 +59,7 @@ void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
     my_incflo->set_density_bcs (time, lev, dest_fab, domain);
 }
@@ -81,6 +83,7 @@ void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
+    Elixir eli_dest_fab = dest_fab.elixir();
 
     my_incflo->set_tracer_bcs (time, lev, dest_fab, dcomp, ncomp, domain);
 }
@@ -125,7 +128,6 @@ incflo::FillPatchVel (int lev, Real time, MultiFab& mf)
                                   0, 0, 3, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
     }
 }
 
@@ -170,7 +172,6 @@ incflo::FillPatchDensity (int lev, Real time, MultiFab& mf)
                                   0, 0, 1, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
     }
 }
 
@@ -217,7 +218,6 @@ incflo::FillPatchScalar (int lev, Real time, MultiFab& mf)
                                   0, 0, ntrac, geom[lev-1], geom[lev],
                                   cphysbc, 0, fphysbc, 0,
                                   refRatio(lev-1), mapper, bcs, 0);
-
     }
 }
 

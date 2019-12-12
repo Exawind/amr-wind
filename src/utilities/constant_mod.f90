@@ -39,9 +39,6 @@ module constant
    real(rt) :: ic_w
    real(rt) :: ic_p
 
-! Parameters limiting maximum number of items for specifying BCs
-   integer, parameter :: dim_bc = 6
-
 ! Parameters for testing if user input was specifed.
    real(rt),  parameter :: undefined = 9.87654321d31
 
@@ -65,5 +62,10 @@ contains
       real(rt), intent(in) :: x, y
       not_equal = (abs(x-y) >= epsilon(x))
    end function not_equal
+
+   real(rt) function get_my_huge() bind(C)
+      get_my_huge = my_huge
+      return
+   end function get_my_huge
 
 end module constant

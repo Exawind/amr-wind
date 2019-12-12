@@ -4,8 +4,11 @@
 
 #include <incflo.H>
 #include <boundary_conditions_F.H>
-#include <embedded_boundaries_F.H>
 #include <setup_F.H>
+
+#ifdef AMREX_USE_EB
+#include <embedded_boundaries_F.H>
+#endif
 
 void incflo::ReadParameters()
 {
@@ -18,76 +21,43 @@ void incflo::ReadParameters()
 	pp.query("steady_state", steady_state);
     }
 
-    {
-        // Prefix amr
+    ReadIOParameters();
+    ReadRheologyParameters();
+
+    { // Prefix amr
  	ParmParse pp("amr");
 
 	pp.query("regrid_int", regrid_int);
+#ifdef AMREX_USE_EB
         pp.query("refine_cutcells", refine_cutcells);
+#endif
 
-	pp.query("check_file", check_file);
-	pp.query("check_int", check_int);
-	pp.query("restart", restart_file);
+        pp.query("KE_int", KE_int);
 
-	pp.query("plot_file", plot_file);
-	pp.query("plot_int", plot_int);
-	pp.query("plot_per", plot_per);
+    } // end prefix amr
 
-        // Which variables to write to plotfile
-        pltVarCount = 0;
-
-        pp.query("plt_vel",        plt_vel   );
-        pp.query("plt_gradp",      plt_gradp );
-        pp.query("plt_rho",        plt_rho   );
-        pp.query("plt_tracer",     plt_tracer);
-        pp.query("plt_p",          plt_p     );
-        pp.query("plt_eta",        plt_eta   );
-        pp.query("plt_vort",       plt_vort  );
-        pp.query("plt_strainrate", plt_strainrate);
-        pp.query("plt_stress"    , plt_stress);
-        pp.query("plt_divu",       plt_divu  );
-        pp.query("plt_vfrac",      plt_vfrac );
-
-        // Special test for CCSE regression test. Override all individual
-        // flags and save all data to plot file.
-
-        int plt_ccse_regtest = 0;
-        pp.query("plt_ccse_regtest", plt_ccse_regtest);
-
-        if(plt_ccse_regtest != 0)
-        {
-            plt_vel        = 1;
-            plt_gradp      = 1;
-            plt_rho        = 1;
-            plt_tracer     = 1;
-            plt_p          = 1;
-            plt_eta        = 1;
-            plt_vort       = 1;
-            plt_strainrate = 1;
-            plt_stress     = 1;
-            plt_divu       = 1;
-            plt_vfrac      = 1;
-        }
-    }
-
-    {
-        // Prefix incflo
+    { // Prefix incflo
 	ParmParse pp("incflo");
 
         pp.query("verbose", incflo_verbose);
-        pp.query("cfl", cfl);
-        pp.query("fixed_dt", fixed_dt);
-        pp.query("steady_state_tol", steady_state_tol);
+
+	pp.query("steady_state_tol", steady_state_tol);
         pp.query("initial_iterations", initial_iterations);
         pp.query("do_initial_proj", do_initial_proj);
+
+	pp.query("fixed_dt", fixed_dt);
+	pp.query("cfl", cfl);
+        if (cfl > 0.5)
+            amrex::Abort("We currently require cfl <= 0.5 with the current advection scheme");
 
         // Physics
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
 	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
 
         pp.query("constant_density", constant_density);
-
-        pp.query("advect_tracer" , advect_tracer);
+        pp.query("advect_tracer"   , advect_tracer);
+        pp.query("test_tracer_conservation" , test_tracer_conservation);
+        pp.query("use_godunov"     , use_godunov);
 
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
@@ -101,8 +71,13 @@ void incflo::ReadParameters()
         // Viscosity (if constant)
         pp.query("mu", mu);
 
+        // Density (if constant)
         pp.query("ro_0", ro_0);
+
         pp.query("ntrac", ntrac);
+
+        if (ntrac < 1)
+            amrex::Abort("We currently require at least one tracer");
 
         // Scalar diffusion coefficients
         mu_s.resize(ntrac);
@@ -113,85 +88,7 @@ void incflo::ReadParameters()
         for (int i = 0; i < ntrac; i++)
            amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
 
-        AMREX_ALWAYS_ASSERT(mu > 0.0);
-
-        // TODO: Make a rheology class
-        fluid_model = "newtonian";
-        pp.query("fluid_model", fluid_model);
-        if(fluid_model == "newtonian")
-        {
-            amrex::Print() << "Newtonian fluid with"
-                           << " mu = " << mu << std::endl;
-        }
-        else if(fluid_model == "powerlaw")
-        {
-            pp.query("n", n_0);
-            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n_0 != 1.0,
-                    "No point in using power-law rheology with n = 1");
-
-            amrex::Print() << "Power-law fluid with"
-                           << " mu = " << mu
-                           << ", n = " << n_0 <<  std::endl;
-        }
-        else if(fluid_model == "bingham")
-        {
-            pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
-                    "No point in using Bingham rheology with tau_0 = 0");
-
-            pp.query("papa_reg", papa_reg);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0,
-                    "Papanastasiou regularisation parameter must be positive");
-
-            amrex::Print() << "Bingham fluid with"
-                           << " mu = " << mu
-                           << ", tau_0 = " << tau_0
-                           << ", papa_reg = " << papa_reg << std::endl;
-        }
-        else if(fluid_model == "hb")
-        {
-            pp.query("n", n_0);
-            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(n_0 != 1.0,
-                    "No point in using Herschel-Bulkley rheology with n = 1");
-
-            pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
-                    "No point in using Herschel-Bulkley rheology with tau_0 = 0");
-
-            pp.query("papa_reg", papa_reg);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(papa_reg > 0.0,
-                    "Papanastasiou regularisation parameter must be positive");
-
-            amrex::Print() << "Herschel-Bulkley fluid with"
-                           << " mu = " << mu
-                           << ", n = " << n_0
-                           << ", tau_0 = " << tau_0
-                           << ", papa_reg = " << papa_reg << std::endl;
-        }
-        else if(fluid_model == "smd")
-        {
-            pp.query("n", n_0);
-            AMREX_ALWAYS_ASSERT(n_0 > 0.0);
-
-            pp.query("tau_0", tau_0);
-            AMREX_ALWAYS_ASSERT_WITH_MESSAGE(tau_0 > 0.0,
-                    "No point in using de Souza Mendes-Dutra rheology with tau_0 = 0");
-
-            pp.query("eta_0", eta_0);
-            AMREX_ALWAYS_ASSERT(eta_0 > 0.0);
-
-            amrex::Print() << "de Souza Mendes-Dutra fluid with"
-                           << " mu = " << mu
-                           << ", n = " << n_0
-                           << ", tau_0 = " << tau_0
-                           << ", eta_0 = " << eta_0 << std::endl;
-        }
-        else
-        {
-            amrex::Abort("Unknown fluid_model! Choose either newtonian, powerlaw, bingham, hb, smd");
-        }
+        // AMREX_ALWAYS_ASSERT(mu > 0.0);
 
         // Get cyclicity, (to pass to Fortran)
         Vector<int> is_cyclic(AMREX_SPACEDIM);
@@ -206,9 +103,9 @@ void incflo::ReadParameters()
                          &ic_u, &ic_v, &ic_w, &ic_p,
                          &n_0, &ntrac, &tau_0, &papa_reg, &eta_0,
                          fluid_model.c_str(), fluid_model.size());
-    }
+    } // end prefix incflo
 
-    {
+    { // Prefix mac
         ParmParse pp_mac("mac");
         pp_mac.query( "mg_verbose"   , mac_mg_verbose );
         pp_mac.query( "mg_cg_verbose", mac_mg_cg_verbose );
@@ -217,11 +114,83 @@ void incflo::ReadParameters()
         pp_mac.query( "mg_maxiter"   , mac_mg_maxiter );
         pp_mac.query( "mg_cg_maxiter", mac_mg_cg_maxiter );
         pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level );
+    } // end prefix mac
+}
+
+void incflo::ReadIOParameters()
+{
+    // Prefix amr
+    ParmParse pp("amr");
+
+    pp.query("check_file", check_file);
+    pp.query("check_int", check_int);
+    pp.query("restart", restart_file);
+
+    pp.query("plot_file", plot_file);
+    pp.query("plot_int"       , plot_int);
+    pp.query("plot_per_exact" , plot_per_exact);
+    pp.query("plot_per_approx", plot_per_approx);
+
+    if ( (plot_int       > 0 && plot_per_exact  > 0) ||
+         (plot_int       > 0 && plot_per_approx > 0) ||
+         (plot_per_exact > 0 && plot_per_approx > 0) )
+       amrex::Abort("Must choose only one of plot_int or plot_per_exact or plot_per_approx");
+
+    // The plt_ccse_regtest resets the defaults,
+    //     but we can over-ride those below
+    int plt_ccse_regtest = 0;
+    pp.query("plt_ccse_regtest", plt_ccse_regtest);
+
+    if (plt_ccse_regtest != 0)
+    {
+        plt_velx       = 1;
+        plt_vely       = 1;
+        plt_velz       = 1;
+        plt_gpx        = 1;
+        plt_gpy        = 1;
+        plt_gpz        = 1;
+        plt_rho        = 1;
+        plt_tracer     = 1;
+        plt_p          = 0;
+        plt_eta        = 0;
+        plt_vort       = 0;
+        plt_strainrate = 0;
+        plt_stress     = 0;
+        plt_divu       = 0;
+        plt_vfrac      = 0;
     }
 
+    // Which variables to write to plotfile
+    pltVarCount = 0;
+
+    pp.query("plt_velx",       plt_velx  );
+    pp.query("plt_vely",       plt_vely  );
+    pp.query("plt_velz",       plt_velz  );
+
+    pp.query("plt_gpx",        plt_gpx );
+    pp.query("plt_gpy",        plt_gpy );
+    pp.query("plt_gpz",        plt_gpz );
+
+    pp.query("plt_rho",        plt_rho   );
+    pp.query("plt_tracer",     plt_tracer);
+    pp.query("plt_p",          plt_p     );
+    pp.query("plt_eta",        plt_eta   );
+    pp.query("plt_vort",       plt_vort  );
+    pp.query("plt_strainrate", plt_strainrate);
+    pp.query("plt_stress"    , plt_stress);
+    pp.query("plt_divu",       plt_divu  );
+    pp.query("plt_vfrac",      plt_vfrac );
+
+    // Special test for CCSE regression test. Override all individual
+    // flags and save all data to plot file.
+
     // Count the number of variables to save.
-    if(plt_vel        == 1) pltVarCount += AMREX_SPACEDIM;
-    if(plt_gradp      == 1) pltVarCount += AMREX_SPACEDIM;
+    if(plt_velx       == 1) pltVarCount += 1;
+    if(plt_vely       == 1) pltVarCount += 1;
+    if(plt_velz       == 1) pltVarCount += 1;
+    if(plt_gpx        == 1) pltVarCount += 1;
+    if(plt_gpy        == 1) pltVarCount += 1;
+    if(plt_gpz        == 1) pltVarCount += 1;
     if(plt_rho        == 1) pltVarCount += 1;
     if(plt_tracer     == 1) pltVarCount += ntrac;
     if(plt_p          == 1) pltVarCount += 1;
@@ -255,6 +224,8 @@ void incflo::PostInit(int restart_flag)
     incflo_set_tracer_bcs (cur_time, tracer_o);
     incflo_set_velocity_bcs(cur_time, vel, 0);
 
+    setup_level_mask();
+
     // Project the initial velocity field to make it divergence free
     // Perform initial iterations to find pressure distribution
     if(!restart_flag)
@@ -263,6 +234,15 @@ void incflo::PostInit(int restart_flag)
             InitialProjection();
         if (initial_iterations > 0)
             InitialIterations();
+    }
+}
+
+void incflo::setup_level_mask(){
+
+     BL_PROFILE("incflo::setup_level_mask");
+
+     for(int lev=0;lev<finest_level;++lev) {
+        *level_mask[lev] = makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0);
     }
 }
 
@@ -307,6 +287,10 @@ void incflo::InitFluid()
         MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
         MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
     }
+
+    Real my_cur_time = 0.0;
+    if (test_tracer_conservation)
+       amrex::Print() << "Sum tracer volume wgt = " << my_cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 }
 
 void incflo::SetBCTypes()
@@ -325,7 +309,7 @@ void incflo::SetBCTypes()
                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                     domain.loVect(), domain.hiVect(),
-                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost);
+                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost_for_bcs);
     }
 }
 
@@ -342,14 +326,13 @@ void incflo::SetBackgroundPressure()
                                 geom[0].isPeriodic(1),
                                 geom[0].isPeriodic(2));
 
-	// Here we set a separate periodicity flag for p0 because when we use
-	// pressure drop (delp) boundary conditions we fill all variables *except* p0
-	// periodically
+    // Here we set a separate periodicity flag for p0 because when we use
+    // pressure drop (delp) boundary conditions we fill all variables *except* p0
+    // periodically
     if(delp_dir > -1)
-    {
         press_per[delp_dir] = 0;
-    }
-	p0_periodicity = Periodicity(press_per);
+
+    p0_periodicity = Periodicity(press_per);
 
     for(int lev = 0; lev <= max_level; lev++)
     {
@@ -377,7 +360,7 @@ void incflo::SetBackgroundPressure()
                    bc_jhi[lev]->dataPtr(),
                    bc_klo[lev]->dataPtr(),
                    bc_khi[lev]->dataPtr(),
-                   &nghost);
+                   &nghost_for_bcs);
         }
         p0[lev]->FillBoundary(p0_periodicity);
     }
@@ -387,7 +370,7 @@ void incflo::SetBackgroundPressure()
        gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
        for(int lev = 0; lev <= max_level; lev++)
           p0[lev]->setVal(0.);
- 
+
        use_boussinesq = true;
     }
 }
@@ -400,7 +383,8 @@ void incflo::InitialIterations()
     BL_PROFILE("incflo::InitialIterations()");
 
     int initialisation = 1;
-	ComputeDt(initialisation);
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
+    ComputeDt(initialisation, explicit_diffusion);
 
     if(incflo_verbose)
     {
@@ -422,7 +406,7 @@ void incflo::InitialIterations()
     {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
- 	ApplyPredictor();
+ 	ApplyPredictor(true);
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
@@ -437,6 +421,9 @@ void incflo::InitialIterations()
         incflo_set_density_bcs (cur_time, density);
         incflo_set_tracer_bcs  (cur_time, tracer );
     }
+
+    // Set nstep to 0 before entering time loop
+    nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
@@ -454,10 +441,6 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     ApplyProjection(cur_time, dummy_dt);
-
-    // Set nstep (initially -1) to 0, so that subsequent call to ApplyProjection()
-    // use the correct decomposition.
-    nstep = 0;
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)

@@ -9,13 +9,12 @@ steady_state            =   0           # Steady-state solver?
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
-incflo.cfl              =   0.9         # CFL factor
+incflo.cfl              =   0.45        # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
 amr.plot_int            =   100         # Steps between plot files
-amr.plot_per            =   -1          # Steps between plot files
 amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
@@ -52,6 +51,7 @@ yhi.velocity            =   1.  0.  0.
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
-mac.verbose             =   0           # MacProjector
+mac_proj.verbose        =   0           # MAC Projector
+nodal_proj.verbose      =   0           # Nodal Projector
 
 amr.plt_ccse_regtest    =   1

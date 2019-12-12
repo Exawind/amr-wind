@@ -1,23 +1,29 @@
 #ifndef INCFLO_H_
 #define INCFLO_H_
 
+#include <AMReX_AmrCore.H>
+#include <AMReX_MultiFab.H>
 #include <AMReX_MultiFabUtil.H>
+#include <AMReX_MLCellABecLap.H>
+#include <AMReX_MLNodeLaplacian.H>
+#include <AMReX_ParmParse.H>
+#include <AMReX_PhysBCFunct.H>
+#include <AMReX_iMultiFab.H>
+#include <AMReX_NodalProjector.H>
+
+#ifdef AMREX_USE_EB
+#include <AMReX_MLEBABecLap.H>
 #include <AMReX_EBMultiFabUtil.H>
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EB2_IF_Intersection.H>
 #include <AMReX_EB2_IF_Plane.H>
 #include <AMReX_EB2_IF_Polynomial.H>
 #include <AMReX_EB2_IF_Translation.H>
-#include <AMReX_MLEBABecLap.H>
-#include <AMReX_MLNodeLaplacian.H>
-#include <AMReX_PhysBCFunct.H>
-#include <AMReX_iMultiFab.H>
-#include <AMReX_NodalProjector.H>
-
 #include <eb_if.H>
+#endif
+
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
-
 
 enum struct DiffusionType
 {
@@ -26,6 +32,8 @@ enum struct DiffusionType
     Crank_Nicolson,
     Implicit
 };
+
+using namespace amrex;
 
 class incflo : public AmrCore
 {
@@ -47,14 +55,16 @@ public:
     // Constructor
     //  - reads in parameters from inputs file
     //  - sizes multilevel arrays and datastructures
-    //  - makes EB geometry
+    //  - makes EB geometry if AMREX_USE_EB = TRUE
     incflo();
     virtual ~incflo();
 
     // Initialize multilevel AMR data
     void InitData();
 
+#ifdef AMREX_USE_EB
     void WriteMyEBSurface();
+#endif
 
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve();
@@ -130,7 +140,7 @@ public:
                           const int lev,
                           FArrayBox& vel_fab,
                           const Box& domain,
-                          const int* extrap_dir_bcs) const;
+                          const int extrap_dir_bcs) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -145,11 +155,14 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Derived quantities
+    // Derived quantities and diagnostics
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeVorticity(Real time_in);
+    double ComputeKineticEnergy();
+
+    Real volWgtSum (int lev, const MultiFab & mf, int comp, bool local=false);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -167,7 +180,6 @@ public:
                                int slopes_comp, int ncomp);
 
     void set_MAC_velocity_bcs (int lev,
-                               Vector< std::unique_ptr<MultiFab> >& mac_rhs,
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
@@ -187,52 +199,56 @@ public:
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac);
 
-    void incflo_compute_ugradu(const int lev, Box& bx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fx,
-                               Vector< std::unique_ptr<MultiFab> >& a_fy,
-                               Vector< std::unique_ptr<MultiFab> >& a_fz,
-                               Vector< std::unique_ptr<MultiFab> >& state,
-                               const int state_comp, const int n_comp,
-                               Vector< std::unique_ptr<MultiFab> >& xslopes,
-                               Vector< std::unique_ptr<MultiFab> >& yslopes,
-                               Vector< std::unique_ptr<MultiFab> >& zslopes,
-                               const int slopes_comp,
-                               Vector< std::unique_ptr<MultiFab> >& u_mac,
-                               Vector< std::unique_ptr<MultiFab> >& v_mac,
-                               Vector< std::unique_ptr<MultiFab> >& w_mac,
-                               MFIter* mfi, Box& domain);
+    void incflo_compute_fluxes_on_box(const int lev, Box& bx,
+                                      FArrayBox& a_fx,
+                                      FArrayBox& a_fy,
+                                      FArrayBox& a_fz,
+                                      const FArrayBox& state,
+                                      const int state_comp, const int n_comp,
+                                      const FArrayBox& xslopes,
+                                      const FArrayBox& yslopes,
+                                      const FArrayBox& zslopes,
+                                      const int slopes_comp,
+                                      const FArrayBox& u_mac,
+                                      const FArrayBox& v_mac,
+                                      const FArrayBox& w_mac);
 
-    void incflo_compute_ugradu_eb(const int lev, Box& bx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fx,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fy,
-                                  Vector< std::unique_ptr<MultiFab> >& a_fz,
-                                  Vector< std::unique_ptr<MultiFab> >& state,
-                                  const int state_comp, const int n_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& xslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& yslopes,
-                                  Vector< std::unique_ptr<MultiFab> >& zslopes,
-                                  const int slopes_comp,
-                                  Vector< std::unique_ptr<MultiFab> >& u_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& v_mac,
-                                  Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                  MFIter* mfi,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& areafrac,
-                                  Array< const MultiCutFab*,AMREX_SPACEDIM>& facecent,
-                                  const amrex::MultiFab* volfrac,
-                                  const amrex::MultiCutFab* bndrycent,
-                                  const amrex::iMultiFab* cc_mask,
-                                  Box& domain, const EBCellFlagFab& flags);
+#ifdef AMREX_USE_EB
+    void incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
+                                         FArrayBox& a_fx,
+                                         FArrayBox& a_fy,
+                                         FArrayBox& a_fz,
+                                         const FArrayBox& state,
+                                         const int state_comp, const int n_comp,
+                                         const FArrayBox& xslopes,
+                                         const FArrayBox& yslopes,
+                                         const FArrayBox& zslopes,
+                                         const int slopes_comp,
+                                         const FArrayBox& ep_u_mac,
+                                         const FArrayBox& ep_v_mac,
+                                         const FArrayBox& ep_w_mac,
+                                         const FArrayBox& ax,
+                                         const FArrayBox& ay,
+                                         const FArrayBox& az,
+                                         const FArrayBox& fc_x,
+                                         const FArrayBox& fc_y,
+                                         const FArrayBox& fc_z,
+                                         const FArrayBox& volfrac,
+                                         const FArrayBox& bndrycent,
+                                         const IArrayBox& cc_mask,
+                                         const EBCellFlagFab& flags);
+#endif
 
 private:
 
-     int ntrac = 1;
+    int ntrac = 1;
 
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_u;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_v;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_w;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_r;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_t;
-     mutable amrex::Cuda::ManagedVector<amrex::Real> m_bc_p;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
+    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -245,6 +261,8 @@ private:
 
     // Read inputs file using ParmParse
     void ReadParameters();
+    void ReadIOParameters();
+    void ReadRheologyParameters();
 
     // Resize arrays to fit (up to) max_level + 1 AMR levels
     void ResizeArrays();
@@ -256,6 +274,7 @@ private:
     void SetBackgroundPressure();
     void InitialProjection();
     void InitialIterations();
+    void setup_level_mask();
 
     // Member variables for initial conditions
     int probtype = 0;
@@ -283,11 +302,22 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void Advance();
-    void ComputeDt(int initialisation);
+    void ComputeDt(int initialisation, bool explicit_diffusion);
     bool SteadyStateReached();
-    void ApplyPredictor();
+    void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
-    void ApplyProjection(Real time, Real scaling_factor);
+    void ApplyProjection(Real time, Real scaling_factor, bool incremental = false);
+
+    // Number of ghost nodes for field arrays.
+#ifdef AMREX_USE_EB
+    const int nghost            = 4;
+    const int nghost_for_slopes = 4;
+    const int nghost_for_bcs    = 4;
+#else
+    const int nghost            = 1;
+    const int nghost_for_slopes = 3;
+    const int nghost_for_bcs    = 3;
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -362,6 +392,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef AMREX_USE_EB
     void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
@@ -376,15 +407,25 @@ private:
     void make_eb_spherecube();
     void make_eb_tuscan();
 
-    Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
-
-    // Number of ghost nodes for field arrays.
-    const int nghost = 4;
+    const EB2::Level* eb_level;
 
     // These values are required when fluid sees EB -- for now
     const int m_eb_basic_grow_cells = nghost;
     const int m_eb_volume_grow_cells = nghost;
     const int m_eb_full_grow_cells = nghost;
+#endif
+
+#if 0
+    // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
+    //    but otherwise it will just be a FabFactory that doesn't know anything about EB
+    //    Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
+#else
+    //  Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+#endif
+
+#ifdef AMREX_USE_EB
+    Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -397,7 +438,8 @@ private:
 
     // Time and time step counters
     Real cur_time = 0.0;
-    Real dt = -1.0;
+    Real dt      = -1.0;
+    Real prev_dt = -1.0;
     int nstep = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
@@ -434,11 +476,17 @@ private:
     Vector<Real> gp0{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> gravity{Vector<Real>{0.0, 0.0, 0.0}};
     Vector<Real> delp{Vector<Real>{0.0, 0.0, 0.0}};
+
+    // Scalar diffusive coefficient
     Vector<Real> mu_s;
+
+    // Density (if constant)
     Real ro_0 = 1.0;
 
     bool constant_density = true;
-    bool advect_tracer  = false;
+    bool advect_tracer    = false;
+    bool test_tracer_conservation = false;
+    bool use_godunov      = false;
 
     // Fluid properties
     std::string fluid_model;
@@ -462,18 +510,29 @@ private:
 
     // Member variables for I/O
     int plot_int = -1;
-    Real plot_per = -1.0;
+
+    // Dump plotfiles at as close as possible to the designated period *without* changing dt
+    Real plot_per_approx = -1.0;
+    
+    // Dump plotfiles at exactcly the designated period by changing dt
+    Real plot_per_exact  = -1.0;
+
     int last_plt = -1;
     std::string plot_file{"plt"};
 
     int check_int = -1;
     int last_chk = -1;
+    int KE_int = -1;
     std::string check_file{"chk"};
     std::string restart_file{""};
 
     // Flags for saving fluid data in plot files
-    int plt_vel         = 1;
-    int plt_gradp       = 1;
+    int plt_velx        = 1;
+    int plt_vely        = 1;
+    int plt_velz        = 1;
+    int plt_gpx         = 1;
+    int plt_gpy         = 1;
+    int plt_gpz         = 1;
     int plt_rho         = 1;
     int plt_tracer      = 1;
     int plt_p           = 0;
@@ -573,11 +632,17 @@ private:
     Vector<std::unique_ptr<MultiFab>> m_v_mac;
     Vector<std::unique_ptr<MultiFab>> m_w_mac;
 
+    // integer MultiFab specifying if a finer level exists above
+    // value is 1 if a finer level is not above and 0 otherwise
+    Vector<std::unique_ptr<iMultiFab>> level_mask;
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Not yet classified
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+
+    bool writeNow();
 
     void FillPatchVel    (int lev, Real time, MultiFab& mf);
     void FillPatchDensity(int lev, Real time, MultiFab& mf);

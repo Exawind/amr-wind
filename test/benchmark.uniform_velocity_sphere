@@ -9,13 +9,12 @@ steady_state            =   0           # Steady-state solver?
 #         TIME STEP COMPUTATION         #
 #.......................................#
 incflo.fixed_dt         =   -1.         # Use this constant dt if > 0
-incflo.cfl              =   0.7         # CFL factor
+incflo.cfl              =   0.45        # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
 amr.plot_int            =   1           # Steps between plot files
-amr.plot_per            =   -1          # Steps between plot files
 amr.check_int           =   -1          # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
@@ -60,7 +59,6 @@ incflo.ic_p             =    0.         #
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          NUMERICAL PARAMETERS         #
 #.......................................#
-incflo.do_initial_proj    = 1           # Do initial projection?
 incflo.initial_iterations = 3           # Number of initial iterations for pressure
 incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 
@@ -68,6 +66,7 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   3           # incflo_level
-mac.verbose             =   0           # MacProjector
+mac_proj.verbose        =   0           # MAC Projector
+nodal_proj.verbose      =   0           # Nodal Projector
 
 amr.plt_ccse_regtest    =   1

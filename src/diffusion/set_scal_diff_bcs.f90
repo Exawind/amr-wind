@@ -27,9 +27,6 @@
            & bct_klo(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2), &
            & bct_khi(domlo(1)-ng:domhi(1)+ng,domlo(2)-ng:domhi(2)+ng,2)
 
-      ! Local variables
-      integer(c_int)                :: bc_face
-
       !
       ! By default, all the BCs are Neumann
       !
@@ -59,31 +56,5 @@
          bc_lo(3) = amrex_lo_periodic
          bc_hi(3) = amrex_lo_periodic
       end if
-
-   contains
-
-      !
-      ! Test whether the BC type is the same everywhere on
-      ! the face. If BC is uniform on face, it returns its value
-      !
-      function get_bc_face (bct_array, nghost) result (bc_face)
-         integer(c_int), intent(in   ) :: bct_array(:,:,:)
-         integer(c_int), intent(in   ) :: nghost
-         integer                       :: bc_face
-         integer                       :: is, ie, js, je
-
-         ! Do not consider the edges: they may cause problems
-         is = nghost+1
-         ie = size(bct_array,1) - nghost
-         js = nghost+1
-         je = size(bct_array,2) - nghost
-
-         bc_face = bct_array(is,js,1)
-
-         if ( .not. all (bct_array(is:ie,js:je,1) == bc_face) ) then
-            stop "BC type must be uniform on each face of the domain"
-         end if
-
-      end function get_bc_face
 
    end subroutine set_scal_diff_bc

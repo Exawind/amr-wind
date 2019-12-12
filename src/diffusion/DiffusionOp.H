@@ -4,8 +4,13 @@
 #include <AMReX_AmrCore.H>
 #include <AMReX_MLMG.H>
 #include <AMReX_MLABecLaplacian.H>
+
+#ifdef AMREX_USE_EB
 #include <AMReX_MLEBABecLap.H>
 #include <AMReX_MLEBTensorOp.H>
+#else
+#include <AMReX_MLTensorOp.H>
+#endif
 
 //
 // Solver for the implicit part of the diffusion equation: 
@@ -27,7 +32,9 @@ class DiffusionOp
 public: 
     // Constructor, with initialisation
     DiffusionOp(amrex::AmrCore* _amrcore, 
+#ifdef AMREX_USE_EB
                 amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory,
+#endif
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_lo,
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_velbc_hi,
                 std::array<amrex::LinOpBCType,AMREX_SPACEDIM> a_scalbc_lo,
@@ -38,8 +45,12 @@ public:
     ~DiffusionOp();
 
     // Actually do the setup work here
+#ifdef AMREX_USE_EB
     void setup(amrex::AmrCore* _amrcore, 
                amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* _ebfactory);
+#else
+    void setup(amrex::AmrCore* _amrcore); 
+#endif
 
     // Read input from ParmParse (solver settings)
     void readParameters();
@@ -54,10 +65,9 @@ public:
                           amrex::Real dt);
 
     // Scalar diffusion 
-    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel, 
+    void diffuse_scalar(amrex::Vector<std::unique_ptr<amrex::MultiFab>>& scal, 
                         const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro, 
-                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu, 
-                        amrex::Real dt);
+                        const amrex::Vector<amrex::Real> mu_s, amrex::Real dt);
 
     // Tensor viscous term 
     void ComputeDivTau(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
@@ -65,17 +75,20 @@ public:
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
                        const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu_in);
 
-    // Tensor viscous term 
-    void ComputeLapS(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& divtau_out,
+    // Scalar diffusive term
+    void ComputeLapS(      amrex::Vector<std::unique_ptr<amrex::MultiFab>>& laps_out,
                      const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& vel_in,
                      const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& ro_in,
-                     const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mu_in);
+                     const amrex::Vector<amrex::Real> mu_s);
 
 private:
 
     // AmrCore data 
     amrex::AmrCore* amrcore;
+
+#ifdef AMREX_USE_EB
     amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>>* ebfactory;
+#endif
 
     amrex::Vector<amrex::Geometry> geom;
     amrex::Vector<amrex::BoxArray> grids;          
@@ -95,7 +108,11 @@ private:
     //
     // ( alpha a - beta div ( b grad ) ) phi = rhs
     //
+#ifdef AMREX_USE_EB
     std::unique_ptr<amrex::MLEBTensorOp> vel_matrix;
+#else
+    std::unique_ptr<amrex::MLTensorOp> vel_matrix;
+#endif
 
     amrex::Vector<amrex::Array<std::unique_ptr<amrex::MultiFab>, AMREX_SPACEDIM>> b;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> phi;
@@ -108,7 +125,11 @@ private:
     //
     // ( alpha a - beta div ( b grad ) ) phi = rhs
     //
-    std::unique_ptr<amrex::MLEBABecLap> scal_matrix;
+#ifdef AMREX_USE_EB
+    std::unique_ptr<amrex::MLEBABecLap>     scal_matrix;
+#else
+    std::unique_ptr<amrex::MLABecLaplacian> scal_matrix;
+#endif
 
     // DiffusionOp verbosity
     int verbose = 0;

@@ -5,13 +5,6 @@ module set_bc_type_module
 
 contains
 
-!vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvC
-!                                                                      C
-!  Subroutine: set_bc_type                                             C
-!                                                                      C
-!  Author: J. Musser                                  Date: 05-FEB-17  C
-!                                                                      C
-!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^C
    subroutine set_bc_type(bc_ilo_type, bc_ihi_type, &
                           bc_jlo_type, bc_jhi_type, &
                           bc_klo_type, bc_khi_type, &
@@ -23,7 +16,6 @@ contains
       use bc,       only: cyclic_x, cyclic_y, cyclic_z
       use bc,       only: minf_, nsw_, pinf_, pout_
       use bc,       only: undef_cell
-      use constant, only: dim_bc
 
       implicit none
 
@@ -56,7 +48,7 @@ contains
       bc_klo_type(:,:,1) = merge(undef_cell, nsw_, cyclic_z)
       bc_khi_type(:,:,1) = merge(undef_cell, nsw_, cyclic_z)
 
-      do bcv = 1, dim_bc
+      do bcv = 1, 6
          if (bc_defined(bcv)) then
 
             select case (trim(bc_type(bcv)))

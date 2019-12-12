@@ -9,38 +9,38 @@ module bc
    use amrex_fort_module, only : rt => amrex_real
    use iso_c_binding , only: c_int, c_char, c_null_char
 
-   use constant, only: dim_bc, undefined, zero, one
+   use constant, only: undefined, zero, one
 
    ! Type of boundary:
-   character(len=16) :: bc_type(dim_bc)
+   character(len=16) :: bc_type(6)
 
    ! Flags for periodic boundary conditions
    logical :: cyclic_x = .false.
    logical :: cyclic_y = .false.
    logical :: cyclic_z = .false.
 
-   logical :: bc_defined(1:dim_bc) = .false.
+   logical :: bc_defined(1:6) = .false.
 
    ! Boundary condition location (EB planes)
-   real(rt) :: bc_normal(1:dim_bc,1:3) = undefined
-   real(rt) :: bc_center(1:dim_bc,1:3) = undefined
+   real(rt) :: bc_normal(1:6,1:3) = undefined
+   real(rt) :: bc_center(1:6,1:3) = undefined
 
    ! Gas phase BC pressure
-   real(rt) :: bc_p(1:dim_bc) = undefined
+   real(rt) :: bc_p(1:6) = undefined
 
    ! Velocities at a specified boundary
-   real(rt) :: bc_u(1:dim_bc) = zero
-   real(rt) :: bc_v(1:dim_bc) = zero
-   real(rt) :: bc_w(1:dim_bc) = zero
+   real(rt) :: bc_u(1:6) = zero
+   real(rt) :: bc_v(1:6) = zero
+   real(rt) :: bc_w(1:6) = zero
 
    ! Density at a specified boundary
-   real(rt) :: bc_r(1:dim_bc) = one
+   real(rt) :: bc_r(1:6) = one
 
    ! Tracer at a specified boundary
-   real(rt) :: bc_t(1:dim_bc) = one
+   real(rt) :: bc_t(1:6) = one
 
    ! Character variable to determine the flow plane of a flow cell
-   character :: bc_plane(dim_bc)
+   character :: bc_plane(6)
 
    ! Cell flag definitions
    integer, parameter :: undef_cell =   0 ! undefined

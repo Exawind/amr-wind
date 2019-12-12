@@ -1,62 +1,87 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   -1          # Max (simulated) time to evolve
-max_step                =   50          # Max number of time steps
-steady_state            =   0           # Steady-state solver? 
+max_step                =   10          # Max number of time steps
+
+incflo.initial_iterations = 2
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   -1          # Use this constant dt if > 0
+incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
 incflo.cfl              =   0.45        # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int            =   25          # Steps between plot files
+amr.plot_int            =   10          # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
-incflo.ro_0             =   1000.       # Reference density 
+incflo.gravity          =  0. 0. 0.     # Gravitational force (3D)
+incflo.ro_0             =  1.           # Reference density 
 
-incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
-incflo.mu               =   1000.       # Dynamic viscosity coefficient
+incflo.fluid_model      =  "newtonian"  # Fluid model (rheology)
+incflo.mu               =  0.001        # Dynamic viscosity coefficient
+
+incflo.advect_density   =  1            #
+incflo.advect_tracer    =  1            #
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              =   128 128 8   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   5  15 15    # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
+amr.grid_eff            =   0.7 
+amr.max_grid_size_x     =   1024
+amr.max_grid_size_y     =   1024
+amr.max_grid_size_z     =   1024
+
+amr.blocking_factor     = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =   0.  0.  0.   # Lo corner coordinates
-geometry.prob_hi        =   1.  1.  0.0625 # Hi corner coordinates
-geometry.is_periodic    =   0   0   1    # Periodicity x y z (0/1)
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   1.  3.  3.  # Hi corner coordinates
+geometry.is_periodic    =   1   0   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
-xlo.type                =   "nsw"
-xhi.type                =   "nsw"
+#xlo.type                =   "nsw"
+#xhi.type                =   "nsw"
 ylo.type                =   "nsw"
 yhi.type                =   "nsw"
-yhi.velocity            =   1.  0.  0.
+zlo.type                =   "nsw"
+zhi.type                =   "nsw"
+
+# Add Tuscan geometry
+incflo.geometry         = "cylinder"
+
+cylinder.internal_flow = true
+cylinder.radius = 0.49
+cylinder.height = -1.0
+
+cylinder.direction = 0
+cylinder.center    =  0.5  1.5   1.5
+
+incflo.write_eb_surface = false
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#          NUMERICAL PARAMETERS         #
+#           INITIAL CONDITIONS          #
 #.......................................#
-incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+incflo.probtype                 = 12
+incflo.test_tracer_conservation = true
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   2           # incflo_level
-mac_proj.verbose        =   0           # MAC Projector
-nodal_proj.verbose      =   0           # Nodal Projector
 
-amr.plt_ccse_regtest    =   1
+mac_proj.verbose        =   1           # MAC Projector
+nodal_proj.verbose      =   1           # Nodal Projector
+
+amr.plt_ccse_regtest    =  1
+amr.plt_vfrac           =  1

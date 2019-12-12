@@ -1,21 +1,22 @@
 
 #include <incflo.H>
 #include <derive_F.H>
-#include <param_mod_F.H>
 
 // Need this for TagCutCells
+#ifdef AMREX_USE_EB
 #include <AMReX_EBAmrUtil.H>
+#endif
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
 incflo::incflo()
-  : m_bc_u(get_dim_bc()+1, 0)
-  , m_bc_v(get_dim_bc()+1, 0)
-  , m_bc_w(get_dim_bc()+1, 0)
-  , m_bc_r(get_dim_bc()+1, 0)
-  , m_bc_t(get_dim_bc()+1, 0)
-  , m_bc_p(get_dim_bc()+1, 0)
+  : m_bc_u(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_v(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_w(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_r(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_t(2*AMREX_SPACEDIM+1, 0)
+  , m_bc_p(2*AMREX_SPACEDIM+1, 0)
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -27,12 +28,14 @@ incflo::incflo()
     // Initialize memory for data-array internals
     ResizeArrays();
 
-    // This needs is needed before initializing level MultiFabs: ebfactories should
+    // Allocate the arrays for each face that will hold the bcs
+    MakeBCArrays();
+
+#ifdef AMREX_USE_EB
+    // This is needed before initializing level MultiFabs: ebfactories should
     // not change after the eb-dependent MultiFabs are allocated.
     MakeEBGeometry();
-
-    // Get boundary conditions from inputs file
-    GetInputBCs();
+#endif
 }
 
 incflo::~incflo(){};
@@ -81,21 +84,27 @@ void incflo::InitData()
     PostInit(restart_flag);
 
     // Plot initial distribution
-    if((plot_int > 0 || plot_per > 0) && !restart_flag)
+    if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
     {
         WritePlotFile();
         last_plt = 0;
+    }
+    if(KE_int > 0 && !restart_flag)
+    {
+        amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
     ParmParse pp("incflo");
     bool write_eb_surface = 0;
     pp.query("write_eb_surface", write_eb_surface);
 
+#ifdef AMREX_USE_EB
     if (write_eb_surface)
     {
         amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
         WriteMyEBSurface();
     }
+#endif
 }
 
 void incflo::Evolve()
@@ -107,37 +116,48 @@ void incflo::Evolve()
 
     while(!do_not_evolve)
     {
-        // // TODO: Necessary for dynamic meshing
-        // /* if (regrid_int > 0)
-        // {
-        //     // Make sure we don't regrid on max_level
-        //     for (int lev = 0; lev < max_level; ++lev)
-        //     {
-        //         // regrid is a member function of AmrCore
-        //         if (nstep % regrid_int == 0)
-        //         {
-        //             regrid(lev, time);
-        //             incflo_setup_solvers();
-        //         }
-        //     }
-        // }*/
+        // TODO: Necessary for dynamic meshing
+        /* if (regrid_int > 0)
+        {
+            // Make sure we don't regrid on max_level
+            for (int lev = 0; lev < max_level; ++lev)
+            {
+                // regrid is a member function of AmrCore
+                if (nstep % regrid_int == 0)
+                {
+                    regrid(lev, time);
+                    incflo_setup_solvers();
+                }
+         
+            }
+         
+            if (nstep % regrid_int == 0)
+            {
+              setup_level_mask();
+            }
+         
+        }*/
 
         // Advance to time t + dt
         Advance();
         nstep++;
         cur_time += dt;
 
-        // Write plot and checkpoint files
-        if((plot_int > 0 && (nstep % plot_int == 0)) ||
-           (plot_per > 0 && (std::abs(remainder(cur_time, plot_per)) < 1.e-12)))
+        if (writeNow())
         {
             WritePlotFile();
             last_plt = nstep;
         }
+
         if(check_int > 0 && (nstep % check_int == 0))
         {
             WriteCheckPointFile();
             last_chk = nstep;
+        }
+        
+        if(KE_int > 0 && (nstep % KE_int == 0))
+        {
+            amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
         }
 
         // Mechanism to terminate incflo normally.
@@ -147,8 +167,8 @@ void incflo::Evolve()
     }
 
 	// Output at the final time
-    if(check_int > 0                  && nstep != last_chk) WriteCheckPointFile();
-    if((plot_int > 0 || plot_per > 0) && nstep != last_plt) WritePlotFile();
+    if( check_int > 0                                               && nstep != last_chk) WriteCheckPointFile();
+    if( (plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && nstep != last_plt) WritePlotFile();
 }
 
 // tag cells for refinement
@@ -163,8 +183,10 @@ void incflo::ErrorEst(int lev,
     const char   tagval = TagBox::SET;
     const char clearval = TagBox::CLEAR;
 
+#ifdef AMREX_USE_EB
     auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(vel[lev]->Factory());
     auto const& flags = factory.getMultiEBCellFlagFab();
+#endif
 
     const Real* dx      = geom[lev].CellSize();
     const Real* prob_lo = geom[lev].ProbLo();
@@ -174,6 +196,7 @@ void incflo::ErrorEst(int lev,
 #endif
     for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
     {
+#ifdef AMREX_USE_EB
         const Box& bx  = mfi.tilebox();
         const auto& flag = flags[mfi];
         const FabType typ = flag.getType(bx);
@@ -188,15 +211,26 @@ void incflo::ErrorEst(int lev,
                         &tagval, &clearval,
                         AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
         }
+#else
+            TagBox&     tagfab  = tags[mfi];
+
+            // tag cells for refinement
+//          state_error(BL_TO_FORTRAN_BOX(bx),
+//                      BL_TO_FORTRAN_ANYD(tagfab),
+//                      BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
+//                      &tagval, &clearval,
+//                      AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
+#endif
     }
 
+#ifdef AMREX_USE_EB
     refine_cutcells = true;
     // Refine on cut cells
     if (refine_cutcells)
     {
-        const MultiFab* volfrac = &(ebfactory[lev] -> getVolFrac());
         amrex::TagCutCells(tags, *vel[lev]);
     }
+#endif
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
@@ -276,6 +310,7 @@ void incflo::AverageDownTo(int crse_lev)
 
     IntVect rr = refRatio(crse_lev);
 
+#ifdef AMREX_USE_EB
     amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
     amrex::EB_average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
 
@@ -288,4 +323,65 @@ void incflo::AverageDownTo(int crse_lev)
     amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
     amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
     amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
+#else
+    amrex::average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
+    amrex::average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
+
+    if (!constant_density)
+       amrex::average_down(*density[crse_lev+1], *density[crse_lev],    0, 1, rr);
+
+    if (advect_tracer)
+       amrex::average_down(*tracer[crse_lev+1],  *tracer[crse_lev],     0, ntrac, rr);
+
+    amrex::average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
+    amrex::average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
+    amrex::average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
+#endif
+}
+
+bool
+incflo::writeNow()
+{
+    bool write_now = false;
+
+    if ( plot_int > 0 && (nstep % plot_int == 0) ) 
+        write_now = true;
+
+    else if ( plot_per_exact  > 0 && (std::abs(remainder(cur_time, plot_per_exact)) < 1.e-12) ) 
+        write_now = true;
+
+    else if (plot_per_approx > 0.0)
+    {
+        // Check to see if we've crossed a plot_per_approx interval by comparing
+        // the number of intervals that have elapsed for both the current
+        // time and the time at the beginning of this timestep.
+
+        int num_per_old = (cur_time-dt) / plot_per_approx;
+        int num_per_new = (cur_time   ) / plot_per_approx;
+
+        // Before using these, however, we must test for the case where we're
+        // within machine epsilon of the next interval. In that case, increment
+        // the counter, because we have indeed reached the next plot_per_approx interval
+        // at this point.
+
+        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(cur_time);
+        const Real next_plot_time = (num_per_old + 1) * plot_per_approx;
+
+        if ((num_per_new == num_per_old) && std::abs(cur_time - next_plot_time) <= eps)
+        {
+            num_per_new += 1;
+        }
+
+        // Similarly, we have to account for the case where the old time is within
+        // machine epsilon of the beginning of this interval, so that we don't double
+        // count that time threshold -- we already plotted at that time on the last timestep.
+
+        if ((num_per_new != num_per_old) && std::abs((cur_time - dt) - next_plot_time) <= eps)
+            num_per_old += 1;
+
+        if (num_per_old != num_per_new)
+            write_now = true;
+    }
+
+    return write_now;
 }

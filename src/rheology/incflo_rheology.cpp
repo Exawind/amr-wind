@@ -1,4 +1,4 @@
-#include <AMReX_Box.H>
+// #include <AMReX_Box.H>
 
 #include <incflo.H>
 #include <rheology_F.H>
@@ -57,7 +57,7 @@ void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
                      bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                      bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                      domain.loVect(), domain.hiVect(),
-                     &nghost);
+                     &nghost_for_bcs);
         }
 
         eta_out[lev]->FillBoundary(geom[lev].periodicity());

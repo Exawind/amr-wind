@@ -3,7 +3,6 @@
 void
 incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                                        Vector< std::unique_ptr<MultiFab> >& vel_in)
-
 {
     BL_PROFILE("incflo::incflo_predict_vels_on_faces");
 
@@ -11,49 +10,32 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
     iMultiFab cc_mask(grids[lev], dmap[lev], 1, 1);
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-       {
-           std::vector< std::pair<int,Box> > isects;
-           const std::vector<IntVect>& pshifts = geom[lev].periodicity().shiftIntVect();
-           const BoxArray& ba = cc_mask.boxArray();
-           for (MFIter mfi(cc_mask); mfi.isValid(); ++mfi)
-           {
-               Array4<int> const& fab = cc_mask.array(mfi);
+    const int covered_value = 1;
+    const int notcovered_value = 0;
+    const int physical_boundaries_value = 0;
+    const int interior_value = 1;
 
-               const Box& bx = mfi.fabbox();
-               for (const auto& iv : pshifts)
-               {
-                   ba.intersections(bx+iv, isects);
-                   for (const auto& is : isects)
-                   {
-                       const Box& b = is.second-iv;
-                       AMREX_FOR_3D ( b, i, j, k,
-                       {
-                           fab(i,j,k) = 1;
-                       });
-                   }
-               }
-               // NOTE: here we do not need host-device synchronization since it
-               // is already included in the MFIter destructor
-           }
-       }
+    cc_mask.BuildMask(geom[lev].Domain(), geom[lev].periodicity(),
+        covered_value, notcovered_value,
+        physical_boundaries_value, interior_value);
 
+#ifdef AMREX_USE_EB
        // Get EB geometric info
        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
 
        areafrac  =   ebfactory[lev] -> getAreaFrac();
        facecent  =   ebfactory[lev] -> getFaceCent();
+#endif
 
        Real small_vel = 1.e-10;
-       Real  huge_vel = 1.e100;
+       Real  huge_vel = 1.2345e300;
 
        // ****************************************************************************
        // We will store the left and right states in arrays for interpolation
        // ****************************************************************************
 
+#ifdef AMREX_USE_EB
        MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
        MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
 
@@ -62,6 +44,16 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
        MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
        MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
+#else
+       MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+
+       MultiFab vpls(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab vmns(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+
+       MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+       MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
+#endif
 
        // We need this just to avoid FPE (eg for outflow faces)
        upls.setVal(covered_val);
@@ -94,19 +86,30 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           Box vbx_grown = mfi.growntilebox(IntVect::TheDimensionVector(1));
           Box wbx_grown = mfi.growntilebox(IntVect::TheDimensionVector(2));
 
+#ifdef AMREX_USE_EB
           const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
           const EBCellFlagFab&  flags = vel_fab.getEBCellFlagFab();
 
           if (flags.getType(amrex::grow(bx,0)) == FabType::covered )
           {
-             (*m_u_mac[lev])[mfi].setVal( 1.2345e300, ubx, 0, 1);
-             (*m_v_mac[lev])[mfi].setVal( 1.2345e300, vbx, 0, 1);
-             (*m_w_mac[lev])[mfi].setVal( 1.2345e300, wbx, 0, 1);
+             Real val = 1.2345e300;
+             const auto& umac_array = (*m_u_mac[lev])[mfi].array();
+             const auto& vmac_array = (*m_v_mac[lev])[mfi].array();
+             const auto& wmac_array = (*m_w_mac[lev])[mfi].array();
+ 
+             AMREX_FOR_3D(ubx, i, j, k, { umac_array(i,j,k) = val; });
+             AMREX_FOR_3D(vbx, i, j, k, { vmac_array(i,j,k) = val; });
+             AMREX_FOR_3D(wbx, i, j, k, { wmac_array(i,j,k) = val; });
+ 
+//           (*m_u_mac[lev])[mfi].setVal( 1.2345e300, ubx, 0, 1);
+//           (*m_v_mac[lev])[mfi].setVal( 1.2345e300, vbx, 0, 1);
+//           (*m_w_mac[lev])[mfi].setVal( 1.2345e300, wbx, 0, 1);
           }
   
           // No cut cells in this FAB
           else if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
           {
+#endif
              // Cell-centered velocity
              const auto& ccvel_fab = vel_in[lev]->array(mfi);
 
@@ -129,7 +132,9 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& wmns_fab = wmns.array(mfi);
 
              // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
-             AMREX_FOR_3D(ubx, i, j, k, 
+
+             amrex::ParallelFor(ubx,[small_vel,ccvel_fab,xslopes_fab,upls_fab,umns_fab,umac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // X-faces
                  upls_fab(i,j,k) = ccvel_fab(i  ,j,k,0) - 0.5 * xslopes_fab(i  ,j,k,0);
@@ -145,7 +150,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(vbx, i, j, k,
+             amrex::ParallelFor(vbx,[small_vel,ccvel_fab,yslopes_fab,vpls_fab,vmns_fab,vmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Y-faces
                  vpls_fab(i,j,k) = ccvel_fab(i,j  ,k,1) - 0.5 * yslopes_fab(i,j  ,k,1);
@@ -161,7 +167,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx, i, j, k,
+             amrex::ParallelFor(wbx,[small_vel,ccvel_fab,zslopes_fab,wpls_fab,wmns_fab,wmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Z-faces
                  wpls_fab(i,j,k) = ccvel_fab(i,j,k  ,2) - 0.5 * zslopes_fab(i,j,k  ,2);
@@ -177,8 +184,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
              
-             Gpu::synchronize();
-
+#ifdef AMREX_USE_EB
           // Cut cells in this FAB
           } else {
 
@@ -203,7 +209,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              const auto& apz_fab = areafrac[2]->array(mfi);
 
              // This FAB has cut cells
-             AMREX_FOR_3D(ubx_grown, i, j, k, 
+             amrex::ParallelFor(ubx_grown, [apx_fab,upls_fab,umns_fab,ccvel_fab,xslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // X-faces
                  if (apx_fab(i,j,k) > 0.0)
@@ -214,7 +221,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
              });
 
 
-             AMREX_FOR_3D(vbx_grown, i, j, k,
+             amrex::ParallelFor(vbx_grown, [apy_fab,vpls_fab,vmns_fab,ccvel_fab,yslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Y-faces
                  if (apy_fab(i,j,k) > 0.0)
@@ -224,7 +232,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx_grown, i, j, k,
+             amrex::ParallelFor(wbx_grown, [apz_fab,wpls_fab,wmns_fab,ccvel_fab,zslopes_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                  // Z-faces
                  if (apz_fab(i,j,k) > 0.0) {
@@ -233,9 +242,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             Gpu::synchronize();
-
           } // Cut cells
+#endif
        } // MFIter
 
        // ****************************************************************************
@@ -248,6 +256,7 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        wpls.FillBoundary(geom[lev].periodicity());
        wmns.FillBoundary(geom[lev].periodicity());
 
+#ifdef AMREX_USE_EB
        // ****************************************************************************
        // Do interpolation to centroids -- only for cut cells
        // ****************************************************************************
@@ -295,7 +304,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              const auto& ccm_fab = cc_mask.const_array(mfi);
 
-             AMREX_FOR_3D(ubx, i, j, k, 
+             amrex::ParallelFor(ubx,[small_vel,huge_vel,apx_fab,ccm_fab,fcx_fab,upls_fab,umns_fab,umac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apx_fab(i,j,k) == 0.0)
 
@@ -343,7 +353,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
 
              });
 
-             AMREX_FOR_3D(vbx, i, j, k,
+             amrex::ParallelFor(vbx,[small_vel,huge_vel,apy_fab,ccm_fab,fcy_fab,vpls_fab,vmns_fab,vmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apy_fab(i,j,k) == 0.0) {
 
@@ -390,7 +401,8 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             AMREX_FOR_3D(wbx, i, j, k,
+             amrex::ParallelFor(wbx,[small_vel,huge_vel,apz_fab,ccm_fab,fcz_fab,wpls_fab,wmns_fab,wmac_fab] 
+               AMREX_GPU_DEVICE (int i, int j, int k) noexcept
              {
                 if (apz_fab(i,j,k) == 0.0)
 
@@ -437,8 +449,10 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                  }
              });
 
-             Gpu::synchronize();
-
           } // Cut cells
        } // MFIter
+#endif
+
+       // Set bcs on u_mac
+       set_MAC_velocity_bcs( lev, m_u_mac, m_v_mac, m_w_mac, time );
 }

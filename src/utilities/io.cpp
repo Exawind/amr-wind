@@ -332,27 +332,27 @@ void incflo::WritePlotFile()
         // First just set all of the names once (not once per level)
 
         // Velocity components
-        if (plt_vel == 1)
-        {
+        if (plt_velx == 1)
             pltscaVarsName.push_back("velx");
+        if (plt_vely == 1)
             pltscaVarsName.push_back("vely");
+        if (plt_velz == 1)
             pltscaVarsName.push_back("velz");
-        }
 
         // Pressure gradient components
-        if (plt_gradp == 1)
-        {
+        if (plt_gpx == 1)
             pltscaVarsName.push_back("gpx");
+        if (plt_gpy == 1)
             pltscaVarsName.push_back("gpy");
+        if (plt_gpz == 1)
             pltscaVarsName.push_back("gpz");
-        }
 
         // Density
-        if(plt_rho == 1) 
+        if (plt_rho == 1) 
             pltscaVarsName.push_back("density");
 
         // Tracers
-        if(plt_tracer == 1) 
+        if (plt_tracer == 1) 
         {
             pltscaVarsName.push_back("tracer0");
             if (ntrac > 1)
@@ -398,35 +398,52 @@ void incflo::WritePlotFile()
 	{
             // Multifab to hold all the variables -- there can be only one!!!!
     	    const int ncomp = pltVarCount;
+#ifdef AMREX_USE_EB
 	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo(), *ebfactory[lev]));
+#else
+	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo()));
+#endif
 
             int lc = 0;
 
             // Velocity components
-            if(plt_vel == 1)
+            if (plt_velx == 1)
             {
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 0, lc  , 1, 0);
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 1, lc+1, 1, 0);
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 2, lc+2, 1, 0);
-
-                lc += AMREX_SPACEDIM;
+                MultiFab::Copy(*mf[lev], (*vel[lev]), 0, lc, 1, 0);
+                lc += 1;
+            }
+            if (plt_vely == 1)
+            {
+                MultiFab::Copy(*mf[lev], (*vel[lev]), 1, lc, 1, 0);
+                lc += 1;
+            }
+            if (plt_velz == 1)
+            {
+                MultiFab::Copy(*mf[lev], (*vel[lev]), 2, lc, 1, 0);
+                lc += 1;
             }
 
             // Pressure gradient components
-            if(plt_gradp == 1)
+            if (plt_gpx == 1)
             {
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 0, lc  , 1, 0);
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 1, lc+1, 1, 0);
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 2, lc+2, 1, 0);
-    
-                lc += AMREX_SPACEDIM;
+                MultiFab::Copy(*mf[lev], (*gp[lev]), 0, lc, 1, 0);
+                lc += 1;
+            }
+            if (plt_gpy == 1)
+            {
+                MultiFab::Copy(*mf[lev], (*gp[lev]), 1, lc, 1, 0);
+                lc += 1;
+            }
+            if (plt_gpz == 1)
+            {
+                MultiFab::Copy(*mf[lev], (*gp[lev]), 2, lc, 1, 0);
+                lc += 1;
             }
 
             // Density
-            if(plt_rho == 1) 
+            if (plt_rho == 1) 
             {
                 MultiFab::Copy(*mf[lev], (*density[lev]), 0, lc, 1, 0);
-    
                 lc += 1;
             }
 
@@ -434,7 +451,6 @@ void incflo::WritePlotFile()
             if(plt_tracer == 1) 
             {
                 MultiFab::Copy(*mf[lev], (*tracer[lev]), 0, lc, tracer[lev]->nComp(), 0);
-    
                 lc += tracer[lev]->nComp();
             }
 
@@ -451,10 +467,9 @@ void incflo::WritePlotFile()
             }
 
             // Apparent viscosity
-            if(plt_eta == 1) 
+            if (plt_eta == 1) 
             {
                 MultiFab::Copy(*mf[lev], (*eta[lev]), 0, lc, 1, 0);
-    
                 lc += 1;
             }
 
@@ -493,11 +508,13 @@ void incflo::WritePlotFile()
             // Cut cell volume fractino
             if(plt_vfrac == 1) 
             {
+#ifdef AMREX_USE_EB
                 if (ebfactory[lev]) 
                 {
                     MultiFab::Copy(*mf[lev], ebfactory[lev]->getVolFrac(), 0, lc, 1, 0);
                 }
                 else
+#endif
                 {
                     mf[lev]->setVal(1.0, lc, 1.0);
                 }
@@ -505,8 +522,10 @@ void incflo::WritePlotFile()
                 lc += 1;
             }
 
+#ifdef AMREX_USE_EB
             // Zero out all the values in covered cells
             EB_set_covered(*mf[lev], 0.0);
+#endif
         }
 
         // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
