@@ -431,69 +431,7 @@ void incflo::ResizeArrays ()
     t_new.resize(max_level + 1);
     t_old.resize(max_level + 1);
 
-    // Density 
-    density.resize(max_level + 1);
-    density_o.resize(max_level + 1);
-
-    // Tracer 
-    tracer.resize(max_level + 1);
-    tracer_o.resize(max_level + 1);
-
-    // Current (vel) and old (vel_o) velocities
-    vel.resize(max_level + 1);
-    vel_o.resize(max_level + 1);
-
-    // Pressure
-    p.resize(max_level + 1);
-    p0.resize(max_level + 1);
-
-    // Pressure gradients
-    gp.resize(max_level + 1);
-
-    // Derived quantities: viscosity, strainrate, vorticity, div(u)
-    eta.resize(max_level + 1);
-    eta_old.resize(max_level + 1);
-    strainrate.resize(max_level + 1);
-    vort.resize(max_level + 1);
-    drag.resize(max_level + 1);
-    divu.resize(max_level + 1);
-
-    // Convective terms u grad u 
-    conv_u.resize(max_level + 1);
-    conv_u_old.resize(max_level + 1);
-    conv_r.resize(max_level + 1);
-    conv_r_old.resize(max_level + 1);
-    conv_t.resize(max_level + 1);
-    conv_t_old.resize(max_level + 1);
-
-    divtau.resize(max_level + 1);
-    divtau_old.resize(max_level + 1);
-
-    laps.resize(max_level + 1);
-    laps_old.resize(max_level + 1);
-
-    // MAC velocities used for defining convective term
-    m_u_mac.resize(max_level + 1);
-    m_v_mac.resize(max_level + 1);
-    m_w_mac.resize(max_level + 1);
-
-    // Slopes used for upwinding convective terms
-    xslopes_u.resize(max_level + 1);
-    yslopes_u.resize(max_level + 1);
-    zslopes_u.resize(max_level + 1);
-    xslopes_r.resize(max_level + 1);
-    yslopes_r.resize(max_level + 1);
-    zslopes_r.resize(max_level + 1);
-    xslopes_t.resize(max_level + 1);
-    yslopes_t.resize(max_level + 1);
-    zslopes_t.resize(max_level + 1);
-
-#ifdef AMREX_USE_EB
-    // EB factory
-    ebfactory.resize(max_level + 1);
-#endif
-    
-    level_mask.resize(max_level + 1);
+    m_leveldata.resize(max_level+1);
 }
 
 void incflo::MakeBCArrays()

@@ -216,6 +216,28 @@ public:
 
 private:
 
+    amrex::Vector<amrex::Real> t_old;
+    amrex::Vector<amrex::Real> t_new;
+
+    struct LevelData {
+        amrex::MultiFab density;
+        amrex::MultiFab density_o;
+        amrex::MultiFab tracer;
+        amrex::MultiFab tracer_o;
+        amrex::MultiFab vel;
+        amrex::MultiFab vel_o;
+        amrex::MultiFab p;
+        amrex::MultiFab p0;
+        amrex::MultiFab gp; // pressure gradient
+        // xxxxx
+    };
+
+    amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
+
+    amrex::Vector<std::unique_ptr<FabFactory<FArrayBox> > > m_factory;
+
+    amrex::Vector<BCRec> m_bcs;  // the size is the number of components
+
     int ntrac = 1;
 
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
@@ -635,9 +657,6 @@ private:
     void AllocateArrays(int lev);
     void RegridArrays(int lev);
     void MakeBCArrays();
-
-    amrex::Vector<amrex::Real> t_old;
-    amrex::Vector<amrex::Real> t_new;
 };
 
 #endif
