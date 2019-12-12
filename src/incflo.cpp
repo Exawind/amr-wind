@@ -275,6 +275,8 @@ void incflo::MakeNewLevelFromScratch(int lev,
 
     init_prob_fluid(lev);
 
+    set_background_pressure(lev);
+
     amrex::Abort("xxxxx So far so good");
 }
 
