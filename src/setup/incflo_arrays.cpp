@@ -12,8 +12,6 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
       gp       (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
       eta      (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
       p        (amrex::convert(ba,IntVect::TheNodeVector()),
-                    dm, 1             , incflo::nghost, MFInfo(), fact),
-      p0       (amrex::convert(ba,IntVect::TheNodeVector()),
                     dm, 1             , incflo::nghost, MFInfo(), fact)
 {}
 

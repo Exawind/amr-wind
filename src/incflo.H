@@ -235,7 +235,6 @@ private:
         amrex::MultiFab eta;
         // nodal multifabs
         amrex::MultiFab p;
-        amrex::MultiFab p0;
     };
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
@@ -507,9 +506,10 @@ public: // for cuda
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     Periodicity p0_periodicity;
-    amrex::Vector<amrex::Real> gp0{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> gravity{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> delp{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
+    amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
+    amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> delp{{0.0, 0.0, 0.0}};
 
     // Scalar diffusive coefficient
     amrex::Vector<amrex::Real> mu_s;
