@@ -5,11 +5,12 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
                               amrex::FabFactory<FArrayBox> const& fact)
     : density  (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
       density_o(ba, dm, 1             , incflo::nghost, MFInfo(), fact),
-      tracer   (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
-      tracer_o (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
+      tracer   (ba, dm, incflo::ntrac , incflo::nghost, MFInfo(), fact),
+      tracer_o (ba, dm, ntrac         , incflo::nghost, MFInfo(), fact),
       vel      (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
       vel_o    (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
       gp       (ba, dm, AMREX_SPACEDIM, incflo::nghost, MFInfo(), fact),
+      eta      (ba, dm, 1             , incflo::nghost, MFInfo(), fact),
       p        (amrex::convert(ba,IntVect::TheNodeVector()),
                     dm, 1             , incflo::nghost, MFInfo(), fact),
       p0       (amrex::convert(ba,IntVect::TheNodeVector()),
@@ -448,6 +449,8 @@ void incflo::ResizeArrays ()
     t_old.resize(max_level + 1);
 
     m_leveldata.resize(max_level+1);
+
+    m_factory.resize(max_level+1);
 }
 
 void incflo::MakeBCArrays()

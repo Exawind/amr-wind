@@ -61,8 +61,8 @@ extern "C"
             amrex::Real* density,
             amrex::Real* tracer,
             amrex::Real* eta, 
-            amrex::Real* dx, amrex::Real* dy, amrex::Real* dz,
-            amrex::Real* xlength, amrex::Real* ylength, amrex::Real* zlength, 
+            amrex::Real const* dx, amrex::Real const* dy, amrex::Real const* dz,
+            amrex::Real const* xlength, amrex::Real const* ylength, amrex::Real const* zlength, 
             const int* probtype
         );
     

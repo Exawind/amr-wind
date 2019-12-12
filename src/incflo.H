@@ -232,6 +232,7 @@ private:
         amrex::MultiFab vel;
         amrex::MultiFab vel_o;
         amrex::MultiFab gp; // pressure gradient
+        amrex::MultiFab eta;
         // nodal multifabs
         amrex::MultiFab p;
         amrex::MultiFab p0;
@@ -243,11 +244,41 @@ private:
 
     amrex::Vector<BCRec> m_bcs;  // the size is the number of components
 
-    int ntrac = 1;
+    static int ntrac;
 
-    LevelData makeLevelData (amrex::BoxArray const& ba,
-                             amrex::DistributionMapping const& dm,
-                             amrex::FabFactory<FArrayBox> const& fact) const;
+    // Number of ghost nodes for field arrays.
+#ifdef AMREX_USE_EB
+    static constexpr int nghost            = 4;
+    static constexpr int nghost_for_slopes = 4;
+    static constexpr int nghost_for_bcs    = 4;
+#else
+    static constexpr int nghost            = 1;
+    static constexpr int nghost_for_slopes = 3;
+    static constexpr int nghost_for_bcs    = 3;
+#endif
+
+#ifdef AMREX_USE_EB
+    static constexpr int m_eb_basic_grow_cells = nghost;
+    static constexpr int m_eb_volume_grow_cells = nghost;
+    static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
+#endif
+
+    void init_prob_fluid (int lev);
+
+public: // for cuda
+
+    void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
+                                amrex::Array4<amrex::Real> const& p,
+                                amrex::Array4<amrex::Real> const& vel,
+                                amrex::Array4<amrex::Real> const& denisty,
+                                amrex::Array4<amrex::Real> const& tracer,
+                                amrex::Array4<amrex::Real> const& eta,
+                                amrex::Box const& domain,
+                                GpuArray<Real, AMREX_SPACEDIM> const& dx,
+                                GpuArray<Real, AMREX_SPACEDIM> const& problo,
+                                GpuArray<Real, AMREX_SPACEDIM> const& probhi);
+
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
@@ -313,17 +344,6 @@ private:
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
     void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental = false);
-
-    // Number of ghost nodes for field arrays.
-#ifdef AMREX_USE_EB
-    static constexpr int nghost            = 4;
-    static constexpr int nghost_for_slopes = 4;
-    static constexpr int nghost_for_bcs    = 4;
-#else
-    static constexpr int nghost            = 1;
-    static constexpr int nghost_for_slopes = 3;
-    static constexpr int nghost_for_bcs    = 3;
-#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -414,11 +434,6 @@ private:
     void make_eb_tuscan();
 
     const EB2::Level* eb_level;
-
-    // These values are required when fluid sees EB -- for now
-    static constexpr int m_eb_basic_grow_cells = nghost;
-    static constexpr int m_eb_volume_grow_cells = nghost;
-    static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
 #endif
 
 #if 0

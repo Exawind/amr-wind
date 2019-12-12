@@ -1,6 +1,7 @@
 
 #include <incflo.H>
 #include <derive_F.H>
+#include <setup_F.H>
 
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
@@ -9,6 +10,7 @@
 
 // static variables of incflo class
 
+int           incflo::ntrac = 1;
 constexpr int incflo::nghost;
 constexpr int incflo::nghost_for_slopes;
 constexpr int incflo::nghost_for_bcs;
@@ -257,7 +259,7 @@ void incflo::MakeNewLevelFromScratch(int lev,
     SetDistributionMap(lev, new_dmap);
 
 #ifdef AMREX_USE_EB
-    m_factory[lev] = makeEBFabFactory(Geom(lev), grids[lev], dmap[lev],
+    m_factory[lev] = makeEBFabFactory(geom[lev], grids[lev], dmap[lev],
                                       {m_eb_basic_grow_cells,
                                        m_eb_volume_grow_cells,
                                        m_eb_full_grow_cells},
@@ -267,6 +269,13 @@ void incflo::MakeNewLevelFromScratch(int lev,
 #endif
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev]));
+
+    t_new[lev] = time;
+    t_old[lev] = time - 1.e200;
+
+    init_prob_fluid(lev);
+
+    amrex::Abort("xxxxx So far so good");
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and
