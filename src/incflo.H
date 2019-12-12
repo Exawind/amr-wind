@@ -451,11 +451,14 @@ private:
     // Be verbose?
     int incflo_verbose = 0;
 
-    // Time and time step counters
-    Real cur_time = 0.0;
-    Real dt      = -1.0;
-    Real prev_dt = -1.0;
-    int nstep = -1;
+    // Times
+    Real cur_time     = 0.0;
+    Real dt           = -1.0;
+    Real prev_dt      = -1.0;
+    Real prev_prev_dt = -1.0;
+
+    // Time step counter
+    int nstep         = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
     // OR steady_state = true AND steady_state_tol is reached

@@ -26,7 +26,8 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
 {
     BL_PROFILE("incflo::ComputeDt");
 
-    // Store the dt we've just used in the previous time step as prev_dt
+    // Store the past two dt
+    prev_prev_dt = prev_dt;
     prev_dt = dt;
 
     // Compute dt for this time step
@@ -85,10 +86,15 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
         dt_new = 0.5 * dt;
     }
 
-    // Don't let the timestep grow by more than 10% per step unless the previous time step was unduly shrunk to match plot_per_exact
+    // Don't let the timestep grow by more than 10% per step 
+    // unless the previous time step was unduly shrunk to match plot_per_exact
     if( (dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
     {
-        dt_new = amrex::min(dt_new, 1.1 * dt);
+        dt_new = amrex::min(dt_new, 1.1 * prev_dt);
+    } 
+    else if ( (dt > 0.0) && (plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    {
+        dt_new = amrex::min( dt_new, 1.1 * amrex::max(prev_dt, prev_prev_dt) );
     }
     
     // Don't overshoot specified plot times
