@@ -30,7 +30,7 @@ incflo.ro_0             =   1.          # Reference density
 #.......................................#
 amr.n_cell              =   100 100 10  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
-amr.blocking_factor     =   10
+amr.blocking_factor     =   4 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
