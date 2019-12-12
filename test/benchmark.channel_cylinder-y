@@ -63,7 +63,7 @@ yhi.pressure            =   0.0
 # Add cylinder 
 incflo.geometry         = "cylinder"
 cylinder.internal_flow  = false
-cylinder.radius         = 0.05
+cylinder.radius         = 0.05000001
 cylinder.direction      = 0
 cylinder.center         = 0.0  0.15  0.2 
 
