@@ -594,6 +594,8 @@ private:
     Vector<std::unique_ptr<MultiFab>> p0;
     Vector<std::unique_ptr<MultiFab>> gp;
 
+    // xxxxx could we make some MultiFabs here local to functions
+
     // Derived variables TODO: to save memory, would only need to have 2 temporary variables
     Vector<std::unique_ptr<MultiFab>> eta;
     Vector<std::unique_ptr<MultiFab>> eta_old;

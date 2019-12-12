@@ -1,6 +1,6 @@
 #include <incflo.H>
 
-void incflo::AllocateArrays(int lev)
+void incflo::AllocateArrays (int lev)
 {
 #ifdef AMREX_USE_EB
     UpdateEBFactory(lev);
@@ -425,7 +425,7 @@ void incflo::RegridArrays(int lev)
 
 // Resize all arrays when instance of incflo class is constructed.
 // This is only done at the very start of the simulation. 
-void incflo::ResizeArrays()
+void incflo::ResizeArrays ()
 {
     // Time holders for fillpatch stuff
     t_new.resize(max_level + 1);
@@ -488,14 +488,6 @@ void incflo::ResizeArrays()
     yslopes_t.resize(max_level + 1);
     zslopes_t.resize(max_level + 1);
 
-    // BCs
-    bc_ilo.resize(max_level + 1);
-    bc_ihi.resize(max_level + 1);
-    bc_jlo.resize(max_level + 1);
-    bc_jhi.resize(max_level + 1);
-    bc_klo.resize(max_level + 1);
-    bc_khi.resize(max_level + 1);
-
 #ifdef AMREX_USE_EB
     // EB factory
     ebfactory.resize(max_level + 1);
@@ -506,35 +498,7 @@ void incflo::ResizeArrays()
 
 void incflo::MakeBCArrays()
 {
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        // Define and allocate the integer MultiFab that is the outside adjacent cells of the
-        // problem domain.
-        Box domainx(geom[lev].Domain());
-        domainx.grow(1, nghost_for_bcs);
-        domainx.grow(2, nghost_for_bcs);
-        Box box_ilo = amrex::adjCellLo(domainx, 0, 1);
-        Box box_ihi = amrex::adjCellHi(domainx, 0, 1);
-
-        Box domainy(geom[lev].Domain());
-        domainy.grow(0, nghost_for_bcs);
-        domainy.grow(2, nghost_for_bcs);
-        Box box_jlo = amrex::adjCellLo(domainy, 1, 1);
-        Box box_jhi = amrex::adjCellHi(domainy, 1, 1);
-
-        Box domainz(geom[lev].Domain());
-        domainz.grow(0, nghost_for_bcs);
-        domainz.grow(1, nghost_for_bcs);
-        Box box_klo = amrex::adjCellLo(domainz, 2, 1);
-        Box box_khi = amrex::adjCellHi(domainz, 2, 1);
-
-        // Note that each of these is a single IArrayBox so every process has a copy of them
-        bc_ilo[lev].reset(new IArrayBox(box_ilo, 2));
-        bc_ihi[lev].reset(new IArrayBox(box_ihi, 2));
-        bc_jlo[lev].reset(new IArrayBox(box_jlo, 2));
-        bc_jhi[lev].reset(new IArrayBox(box_jhi, 2));
-        bc_klo[lev].reset(new IArrayBox(box_klo, 2));
-        bc_khi[lev].reset(new IArrayBox(box_khi, 2));
-    }
+    // xxxxxx resize amrex::Vector<BCRec> bcs
+    // and set them
 }
 

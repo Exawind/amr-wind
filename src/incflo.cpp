@@ -10,13 +10,7 @@
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
-incflo::incflo()
-  : m_bc_u(2*AMREX_SPACEDIM+1, 0)
-  , m_bc_v(2*AMREX_SPACEDIM+1, 0)
-  , m_bc_w(2*AMREX_SPACEDIM+1, 0)
-  , m_bc_r(2*AMREX_SPACEDIM+1, 0)
-  , m_bc_t(2*AMREX_SPACEDIM+1, 0)
-  , m_bc_p(2*AMREX_SPACEDIM+1, 0)
+incflo::incflo ()
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -25,17 +19,19 @@ incflo::incflo()
     // Read inputs file using ParmParse
     ReadParameters();
 
+#ifdef AMREX_USE_EB
+    // This is needed before initializing level MultiFabs: ebfactories should
+    // not change after the eb-dependent MultiFabs are allocated.
+    MakeEBGeometry();
+#endif
+
     // Initialize memory for data-array internals
     ResizeArrays();
 
     // Allocate the arrays for each face that will hold the bcs
     MakeBCArrays();
 
-#ifdef AMREX_USE_EB
-    // This is needed before initializing level MultiFabs: ebfactories should
-    // not change after the eb-dependent MultiFabs are allocated.
-    MakeEBGeometry();
-#endif
+    // xxxxx flux registers
 }
 
 incflo::~incflo(){};

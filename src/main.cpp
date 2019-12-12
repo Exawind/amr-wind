@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     { /* These braces are necessary to ensure amrex::Finalize() can be called without explicitly
         deleting all the incflo member MultiFabs */
 
-        BL_PROFILE_VAR("main()", pmain);
+        BL_PROFILE("main()");
 
         // Issue an error if input file is not given 
         if(argc < 2) amrex::Abort("Input file must be given as command-line argument.");
@@ -55,8 +55,6 @@ int main(int argc, char* argv[])
         // Print timing results
         amrex::Print() << "Time spent in InitData():    " << init_time << std::endl;
         amrex::Print() << "Time spent in Evolve():      " << end_time - init_time << std::endl;
-
-        BL_PROFILE_VAR_STOP(pmain);
     }
     amrex::Finalize();
 }
