@@ -10,6 +10,85 @@
 #include <boundary_conditions_F.H>
 #include <setup_F.H>
 
+using namespace amrex;
+
+void incflo::init_bcs()
+{
+    auto f = [this] (std::string const& bcid, Orientation ori)
+    {
+        m_bc_tracer[ori].resize(ntrac,0.0);
+        if (ori.isLow()) {
+            m_bc_location[ori] = geom[0].ProbLo(ori.coordDir());
+        } else {
+            m_bc_location[ori] = geom[0].ProbHi(ori.coordDir());
+        }
+
+        ParmParse pp(bcid);
+        std::string bc_type_in = "null";
+        pp.query("type", bc_type_in);
+        std::string bc_type = amrex::toLower(bc_type_in);
+
+        if (bc_type == "pressure_inflow" or bc_type == "pi")
+        {
+            amrex::Print() << bcid << " set to pressure inflow.\n";
+
+            m_bc_type[ori] = BC::pressure_inflow;
+
+            pp.get("pressure", m_bc_pressure[ori]);
+        }
+        else if (bc_type == "pressure_outflow" or bc_type == "po")
+        {
+            amrex::Print() << bcid << " set to pressure outflow.\n";
+
+            m_bc_type[ori] = BC::pressure_inflow;
+
+            pp.get("pressure", m_bc_pressure[ori]);
+        }
+        else if (bc_type == "mass_inflow" or bc_type == "mi")
+        {
+            amrex::Print() << bcid << " set to mass inflow.\n";
+
+            m_bc_type[ori] = BC::pressure_inflow;
+
+            pp.query("pressure", m_bc_pressure[ori]);
+
+            std::vector<Real> v;
+            pp.getarr("velocity", v, 0, AMREX_SPACEDIM);
+            m_bc_velocity[ori] = {v[0],v[1],v[2]};
+
+            pp.query("density", m_bc_density[ori]);
+
+            pp.queryarr("tracer", m_bc_tracer[ori], 0, ntrac);
+        }
+        else if (bc_type == "no_slip_wall" or bc_type == "nsw")
+        {
+            amrex::Print() << bcid <<" set to no-slip wall.\n";
+
+            m_bc_type[ori] = BC::no_slip_wall;
+
+            std::vector<Real> v;
+            if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
+                m_bc_velocity[ori] = {v[0],v[1],v[2]};
+            }
+
+            pp.query("density", m_bc_density[ori]);
+
+            pp.query("location", m_bc_location[ori]);
+        }
+        else
+        {
+            m_bc_type[ori] = BC::undefined;
+        }
+    };
+
+    f("xlo", Orientation(Direction::x,Orientation::low));
+    f("xhi", Orientation(Direction::x,Orientation::high));
+    f("ylo", Orientation(Direction::y,Orientation::low));
+    f("yhi", Orientation(Direction::y,Orientation::high));
+    f("zlo", Orientation(Direction::z,Orientation::low));
+    f("zhi", Orientation(Direction::z,Orientation::high));
+}
+
 void incflo::GetInputBCs()
 {
     // Extracts all walls from the inputs file

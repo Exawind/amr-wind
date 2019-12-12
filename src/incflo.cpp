@@ -45,6 +45,8 @@ incflo::incflo ()
     // Allocate the arrays for each face that will hold the bcs
     MakeBCArrays();
 
+    init_bcs();
+
     // xxxxx flux registers
 }
 

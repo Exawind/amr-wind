@@ -242,7 +242,18 @@ private:
 
     amrex::Vector<std::unique_ptr<FabFactory<FArrayBox> > > m_factory;
 
-    amrex::Vector<BCRec> m_bcs;  // the size is the number of components
+    enum struct BC {
+        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, undefined
+    };
+
+    amrex::GpuArray<BC                                  , AMREX_SPACEDIM*2> m_bc_type;
+    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_pressure;
+    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_density;
+    amrex::GpuArray<amrex::GpuArray<Real,AMREX_SPACEDIM>, AMREX_SPACEDIM*2> m_bc_velocity;
+    amrex::GpuArray<amrex::Vector<Real>                 , AMREX_SPACEDIM*2> m_bc_tracer;
+    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_location;
+
+//xxxxx    amrex::Vector<amrex::BCRec> m_bcrecs;  // the size is the number of components
 
     static int ntrac;
 
@@ -263,6 +274,7 @@ private:
     static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
 #endif
 
+    void init_bcs ();
     void init_prob_fluid (int lev);
     void set_background_pressure (int lev);
 

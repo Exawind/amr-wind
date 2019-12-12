@@ -455,7 +455,6 @@ void incflo::ResizeArrays ()
 
 void incflo::MakeBCArrays()
 {
-    // xxxxxx resize amrex::Vector<BCRec> bcs
-    // and set them
+
 }
 
