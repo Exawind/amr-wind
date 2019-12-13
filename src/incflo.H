@@ -411,8 +411,6 @@ private:
     void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
-    std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
-
     void make_eb_annulus();
     void make_eb_box();
     void make_eb_cylinder();

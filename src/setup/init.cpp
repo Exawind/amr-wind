@@ -7,7 +7,6 @@
 #include <setup_F.H>
 
 #ifdef AMREX_USE_EB
-#include <embedded_boundaries_F.H>
 #endif
 
 void incflo::ReadParameters()

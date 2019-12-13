@@ -54,7 +54,7 @@ void incflo::SetInputBCs(const std::string bcID, const int index,
     pp.query("type", bc_type);
 
     if(bc_type == "pressure_inflow"  || bc_type == "pi" ||
-              bc_type == "PRESSURE_INFLOW"  || bc_type == "PI" ) {
+       bc_type == "PRESSURE_INFLOW"  || bc_type == "PI" ) {
 
       amrex::Print() << bcID <<" set to pressure inflow. "  << std::endl;
       itype = pinf_;

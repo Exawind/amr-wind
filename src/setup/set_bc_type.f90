@@ -12,7 +12,7 @@ contains
                           xlength, ylength, zlength,&
                           ng) bind(c,name='set_bc_type')
 
-      use bc,       only: bc_defined, bc_type, bc_plane
+      use bc,       only: bc_defined, bc_type
       use bc,       only: cyclic_x, cyclic_y, cyclic_z
       use bc,       only: minf_, nsw_, pinf_, pout_
       use bc,       only: undef_cell
@@ -61,27 +61,29 @@ contains
                stop 7655
             end select
 
-            if (bc_plane(bcv) == 'E') then
+            print *,'BC_TYPE ', bcv, type
+
+            if (bcv == 1) then
                bc_ilo_type(:,:,1) = type
                bc_ilo_type(:,:,2) = bcv
 
-            else if(bc_plane(bcv) == 'W') then
+            else if (bcv == 2) then
                bc_ihi_type(:,:,1) = type
                bc_ihi_type(:,:,2) = bcv
 
-            else if(bc_plane(bcv) == 'N') then
+            else if (bcv == 3) then
                bc_jlo_type(:,:,1) = type
                bc_jlo_type(:,:,2) = bcv
 
-            else if(bc_plane(bcv) == 'S') then
+            else if (bcv == 4) then
                bc_jhi_type(:,:,1) = type
                bc_jhi_type(:,:,2) = bcv
 
-            else if(bc_plane(bcv) == 'T') then
+            else if (bcv == 5) then
                bc_klo_type(:,:,1) = type
                bc_klo_type(:,:,2) = bcv
 
-            else if(bc_plane(bcv) == 'B') then
+            else if (bcv == 6) then
                bc_khi_type(:,:,1) = type
                bc_khi_type(:,:,2) = bcv
 
@@ -101,60 +103,6 @@ subroutine set_bc_mod(pid, ptype, plo, phi, ploc, ppg, pvel, pden, ptra, ntrac) 
 
   integer(c_int), intent(in   ) :: pid, ptype, ntrac 
   real(rt),       intent(in   ) :: plo(3), phi(3), ploc, ppg, pvel(3), pden, ptra(ntrac)
-
-  real(rt), parameter :: offset = 1.0d-15
-
-  select case(pid)
-
-  case(1); bc_plane(pid) = 'E'
-
-     bc_center(pid,1) = ploc + offset
-     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
-     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
-
-     bc_normal(pid,:) = (/ 1.0d0, 0.0d0, 0.0d0/)
-
-  case(2); bc_plane(pid) = 'W'
-
-     bc_center(pid,1) = ploc - offset
-     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
-     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
-
-     bc_normal(pid,:) = (/-1.0d0, 0.0d0, 0.0d0/)
-
-  case(3); bc_plane(pid) = 'N'
-
-     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
-     bc_center(pid,2) = ploc + offset
-     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
-
-     bc_normal(pid,:) = (/ 0.0d0, 1.0d0, 0.0d0/)
-
-  case(4); bc_plane(pid) = 'S'
-
-     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
-     bc_center(pid,2) = ploc - offset
-     bc_center(pid,3) = plo(3) + 0.5_rt*(phi(3) - plo(3))
-
-     bc_normal(pid,:) = (/ 0.0d0,-1.0d0, 0.0d0/)
-
-  case(5); bc_plane(pid) = 'T'
-
-     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
-     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
-     bc_center(pid,3) = ploc + offset
-
-     bc_normal(pid,:) = (/ 0.0d0, 0.0d0, 1.0d0/)
-
-  case(6); bc_plane(pid) = 'B'
-
-     bc_center(pid,1) = plo(1) + 0.5_rt*(phi(1) - plo(1))
-     bc_center(pid,2) = plo(2) + 0.5_rt*(phi(2) - plo(2))
-     bc_center(pid,3) = ploc - offset
-
-     bc_normal(pid,:) = (/ 0.0d0, 0.0d0,-1.0d0/)
-
-  end select
 
   select case(ptype)
 

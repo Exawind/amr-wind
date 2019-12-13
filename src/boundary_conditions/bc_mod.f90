@@ -21,10 +21,6 @@ module bc
 
    logical :: bc_defined(1:6) = .false.
 
-   ! Boundary condition location (EB planes)
-   real(rt) :: bc_normal(1:6,1:3) = undefined
-   real(rt) :: bc_center(1:6,1:3) = undefined
-
    ! Gas phase BC pressure
    real(rt) :: bc_p(1:6) = undefined
 
@@ -38,9 +34,6 @@ module bc
 
    ! Tracer at a specified boundary
    real(rt) :: bc_t(1:6) = one
-
-   ! Character variable to determine the flow plane of a flow cell
-   character :: bc_plane(6)
 
    ! Cell flag definitions
    integer, parameter :: undef_cell =   0 ! undefined
