@@ -275,7 +275,9 @@ private:
 
     void init_bcs ();
     void set_background_pressure ();
-    void init_prob_fluid (int lev);
+    void prob_init_fluid (int lev);
+    void prob_set_inflow_velocity (amrex::Orientation ori, amrex::Box const& bx,
+                                   Array4<Real> const& v, int lev, Real time);
 
     FabFactory<FArrayBox> const& Factory (int lev) const noexcept { return *m_factory[lev]; }
 #ifdef AMREX_USE_EB
@@ -297,7 +299,7 @@ public: // for cuda
                                 GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                 GpuArray<Real, AMREX_SPACEDIM> const& probhi);
 
-    void incflo_set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost);
+    void set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost);
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

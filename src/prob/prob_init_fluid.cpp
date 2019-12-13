@@ -2,7 +2,7 @@
 
 using namespace amrex;
 
-void incflo::init_prob_fluid (int lev)
+void incflo::prob_init_fluid (int lev)
 {
     auto& ld = *m_leveldata[lev];
     Box const& domain = geom[lev].Domain();

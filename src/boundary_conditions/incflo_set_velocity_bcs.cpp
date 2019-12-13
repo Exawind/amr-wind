@@ -6,7 +6,7 @@
 #include <bc_mod_F.H>
 
 void
-incflo::incflo_set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost)
+incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
     Geometry const& gm = Geom(lev);
     Box const& domain = gm.growPeriodicDomain(nghost);
@@ -23,20 +23,12 @@ incflo::incflo_set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, in
                 Box const& gbx = amrex::grow(mfi.validbox(),nghost);
                 Box blo = gbx & dlo;
                 Box bhi = gbx & dhi;
-                Array4<Real> const& v = vel[mfi].array(dir);
+                Array4<Real> const& v = vel[mfi].array();
                 if (blo.ok()) {
-                    Real vin = m_bc_velocity[olo][dir];
-                    amrex::ParallelFor(blo, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        v(i,j,k) = vin;
-                    });
+                    prob_set_inflow_velocity(olo, blo, v, lev, time);
                 }
                 if (bhi.ok()) {
-                    Real vin = m_bc_velocity[ohi][dir];
-                    amrex::ParallelFor(bhi, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        v(i,j,k) = vin;
-                    });
+                    prob_set_inflow_velocity(ohi, bhi, v, lev, time);
                 }
             }
         }

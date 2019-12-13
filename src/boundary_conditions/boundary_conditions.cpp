@@ -48,7 +48,7 @@ void incflo::init_bcs()
         {
             amrex::Print() << bcid << " set to mass inflow.\n";
 
-            m_bc_type[ori] = BC::pressure_inflow;
+            m_bc_type[ori] = BC::mass_inflow;
 
             pp.query("pressure", m_bc_pressure[ori]);
 

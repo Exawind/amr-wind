@@ -67,10 +67,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         }
     }
 
-    // Set velocity BCs before projection
-    int extrap_dir_bcs(0);
-//xxxxx todo    incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
-
     // Define "vel" to be U^* - U^n rather than U^*
 #if 0
     // xxxxx todo
@@ -152,8 +148,14 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         for (int lev = 0; lev <= finest_level; ++lev) {
             vel.push_back(&(m_leveldata[lev]->velocity));
             vel[lev]->setBndry(0.0);
-            incflo_set_inflow_velocity(lev, time, *vel[lev], 1);
+            set_inflow_velocity(lev, time, *vel[lev], 1);
         }
+
+        EB_set_covered(*vel[0], 0, 3, nghost, 0.0);
+        EB_set_covered(*sigma[0], 0, 1, 0, 0.0);
+        VisMF::Write(*vel[0], "b-vel");
+        VisMF::Write(*sigma[0], "b-sig");
+        amrex::Abort("xxxxx");
 
         nodal_projector->project(vel, GetVecOfConstPtrs(sigma));
     }

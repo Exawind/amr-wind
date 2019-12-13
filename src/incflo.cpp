@@ -283,7 +283,7 @@ void incflo::MakeNewLevelFromScratch(int lev,
     t_new[lev] = time;
     t_old[lev] = time - 1.e200;
 
-    init_prob_fluid(lev);
+    prob_init_fluid(lev);
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and

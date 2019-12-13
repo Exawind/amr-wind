@@ -9,6 +9,7 @@ Bdirs += src/boundary_conditions
 Bdirs += src/convection
 Bdirs += src/derive
 Bdirs += src/diffusion
+Bdirs += src/prob
 Bdirs += src/projection
 Bdirs += src/rheology
 Bdirs += src/setup
