@@ -12,13 +12,6 @@ void incflo::Advance()
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
     }
 
-    // Fill ghost nodes and reimpose boundary conditions
-    if (!constant_density)
-       incflo_set_density_bcs(cur_time, density);
-    if (advect_tracer)
-       incflo_set_tracer_bcs(cur_time, tracer);
-    incflo_set_velocity_bcs(cur_time, vel, 0);
-
     // Compute time step size
     int initialisation = 0;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);

@@ -434,8 +434,6 @@ public: // for cuda
     void MakeEBGeometry();
     bool UpdateEBFactory(int a_lev);
 
-    std::unique_ptr<UnionListIF<EB2::PlaneIF>> get_real_walls(bool& has_real_walls);
-
     void make_eb_annulus();
     void make_eb_box();
     void make_eb_cylinder();
@@ -469,11 +467,14 @@ public: // for cuda
     // Be verbose?
     int incflo_verbose = 0;
 
-    // Time and time step counters
-    amrex::Real cur_time = 0.0;
-    amrex::Real dt      = -1.0;
-    amrex::Real prev_dt = -1.0;
-    int nstep = -1;
+    // Times
+    amrex::Real cur_time     = 0.0;
+    amrex::Real dt           = -1.0;
+    amrex::Real prev_dt      = -1.0;
+    amrex::Real prev_prev_dt = -1.0;
+
+    // Time step counter
+    int nstep         = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
     // OR steady_state = true AND steady_state_tol is reached

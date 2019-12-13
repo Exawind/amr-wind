@@ -4,7 +4,6 @@
 #include <AMReX_ParmParse.H>
 
 #include <algorithm>
-#include <embedded_boundaries_F.H>
 #include <incflo.H>
 
 /****************************************************************************
@@ -22,6 +21,8 @@ void incflo::make_eb_box()
     }
     else
     {
+        std::cout << "IN MAKE_EB_BOX NOT PERIODIC " << std::endl;
+        exit(0);
         /************************************************************************
          *                                                                      *
          * Define Box geometry:                                                 *

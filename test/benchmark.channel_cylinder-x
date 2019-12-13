@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   0.2         # Max (simulated) time to evolve
+stop_time               =   0.025       # Max (simulated) time to evolve
 max_step                =  -1           # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
@@ -14,7 +14,7 @@ incflo.cfl              =   0.45        # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_per_exact      =   0.1         # Steps between plot files
+amr.plot_per_exact      =   0.01        # Steps between plot files
 amr.check_int           =   1000        # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 
@@ -63,7 +63,7 @@ xhi.pressure            =   0.0
 # Add cylinder 
 incflo.geometry         = "cylinder"
 cylinder.internal_flow  = false
-cylinder.radius         = 0.05
+cylinder.radius         = 0.05000001
 cylinder.direction      = 2
 cylinder.center         = 0.15  0.2  0.0 
 
@@ -80,8 +80,8 @@ incflo.ic_p             =   0.0         #
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   1           # incflo itself
-mac_proj.verbose        =   1           # MacProjector
+mac_proj.verbose        =   1           # MAC Projector
+nodal_proj.verbose      =   1           # Nodal Projector
 diffusion.verbose       =   1           # Diffusion operator
-nodal_proj.mg_verbose   =   1           # Nodal projection
 
 amr.plt_ccse_regtest    =   1
