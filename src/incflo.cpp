@@ -47,6 +47,8 @@ incflo::incflo ()
 
     init_bcs();
 
+    set_background_pressure();
+
     // xxxxx flux registers
 }
 
@@ -71,6 +73,12 @@ void incflo::InitData ()
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
         InitFromScratch(cur_time);
+
+        if (do_initial_proj) {
+            InitialProjection();
+        }
+
+        amrex::Abort("xxxxx So far so good");
 
         // xxxxx averagedown ???
 
@@ -276,10 +284,6 @@ void incflo::MakeNewLevelFromScratch(int lev,
     t_old[lev] = time - 1.e200;
 
     init_prob_fluid(lev);
-
-    set_background_pressure(lev);
-
-    amrex::Abort("xxxxx So far so good");
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and

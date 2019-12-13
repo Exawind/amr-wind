@@ -26,22 +26,22 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 
-    bool proj_for_small_dt      = false;
-
     // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
     // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
-    if (time > 0 && dt < 0.1 * prev_dt) 
-       proj_for_small_dt      = true;
+    bool proj_for_small_dt = (time > 0.0 && dt < 0.1 * prev_dt);
 
     if (incflo_verbose > 2)
     {
-        if (proj_for_small_dt)
-           amrex::Print() << "Before projection (with small dt modification):" << std::endl;
-        else
-           amrex::Print() << "Before projection:" << std::endl;
+        if (proj_for_small_dt) {
+            amrex::Print() << "Before projection (with small dt modification):" << std::endl;
+        } else {
+            amrex::Print() << "Before projection:" << std::endl;
+        }
         PrintMaxValues(time);
     }
+
+    amrex::Abort("xxxxx so far so good");
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental)

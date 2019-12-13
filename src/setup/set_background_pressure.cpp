@@ -2,17 +2,15 @@
 
 using namespace amrex;
 
-void incflo::set_background_pressure (int lev)
+void incflo::set_background_pressure ()
 {
-    auto& ld = *m_leveldata[lev];
-
     p000 = ic_p;
 
     if (probtype == 11) {
         use_boussinesq = true;
     } else {
-        const auto problo = geom[lev].ProbLoArray();
-        const auto probhi = geom[lev].ProbHiArray();
+        const auto problo = geom[0].ProbLoArray();
+        const auto probhi = geom[0].ProbHiArray();
         GpuArray<Real,AMREX_SPACEDIM> problen{probhi[0]-problo[0],
                                               probhi[1]-problo[1],
                                               probhi[2]-problo[2]};

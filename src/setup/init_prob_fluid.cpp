@@ -10,6 +10,8 @@ void incflo::init_prob_fluid (int lev)
     auto const& problo = geom[lev].ProbLoArray();
     auto const& probhi = geom[lev].ProbHiArray();
 
+    ld.p.setVal(0.0);
+
     for (MFIter mfi(ld.density); mfi.isValid(); ++mfi)
     {
         const Box& vbx = mfi.validbox();
@@ -43,8 +45,6 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
                                     GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                     GpuArray<Real, AMREX_SPACEDIM> const& probhi)
 {
-    // p is not set.
-
     Real dzinv = 1.0 / domain.length(2);
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);

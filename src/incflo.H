@@ -274,8 +274,8 @@ private:
 #endif
 
     void init_bcs ();
+    void set_background_pressure ();
     void init_prob_fluid (int lev);
-    void set_background_pressure (int lev);
 
 public: // for cuda
 

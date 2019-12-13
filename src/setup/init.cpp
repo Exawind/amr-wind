@@ -445,8 +445,8 @@ void incflo::InitialProjection()
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)
     {
-        p[lev]->setVal(0.0);
-        gp[lev]->setVal(0.0);
+        m_leveldata[lev]->p.setVal(0.0);
+        m_leveldata[lev]->gp.setVal(0.0);
     }
 
     if (incflo_verbose)
