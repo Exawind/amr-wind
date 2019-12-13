@@ -51,26 +51,6 @@ contains
 ! Purpose: Getters for the boundary conditions values                  !
 !                                                                      !
 !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv!
-  integer(c_int) function get_bc_defined(pID) bind(C)
-    integer(c_int), intent(in) :: pID
-    if(bc_defined(pID)) then
-      get_bc_defined = 1
-    else
-      get_bc_defined = 0
-    endif
-    return
-  end function get_bc_defined
-
-  subroutine get_bc_type(pID, c_string) bind(C)
-    integer(c_int), intent(in) :: pID
-    character(len=1, kind=c_char), intent(inout) :: c_string(16)
-    integer :: N,I
-    N = len_trim(BC_Type(pID))
-    do I=1,N
-      c_string(I) = BC_Type(pID)(I:I)
-    enddo
-    c_string(N+1) = c_null_char
-  end subroutine get_bc_type
 
   real(rt) function get_bc_u(pID) bind(C)
     integer(c_int), intent(in) :: pID
