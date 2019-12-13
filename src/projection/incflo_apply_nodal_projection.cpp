@@ -41,34 +41,39 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         PrintMaxValues(time);
     }
 
-    amrex::Abort("xxxxx so far so good");
-
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental)
     {
         for(int lev = 0; lev <= finest_level; lev++)
         {
-            // Convert velocities to momenta
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+            auto& ld = *m_leveldata[lev];
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
-                MultiFab::Multiply(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
-            }
-
-            MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-
-            // Convert momenta back to velocities
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            {
-                MultiFab::Divide(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
+                Box const& bx = mfi.tilebox();
+                Array4<Real> const& u = ld.velocity.array(mfi);
+                Array4<Real const> const& rho = ld.density.const_array(mfi);
+                Array4<Real const> const& gp = ld.gp.const_array(mfi);
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    Real soverrho = scaling_factor / rho(i,j,k);
+                    u(i,j,k,0) += gp(i,j,k,0) * soverrho;
+                    u(i,j,k,1) += gp(i,j,k,1) * soverrho;
+                    u(i,j,k,2) += gp(i,j,k,2) * soverrho;
+                });
             }
         }
     }
 
     // Set velocity BCs before projection
     int extrap_dir_bcs(0);
-    incflo_set_velocity_bcs(time, vel    , extrap_dir_bcs);
+//xxxxx todo    incflo_set_velocity_bcs(time, vel, extrap_dir_bcs);
 
     // Define "vel" to be U^* - U^n rather than U^*
+#if 0
+    // xxxxx todo
     if (proj_for_small_dt)
     {
        incflo_set_velocity_bcs(time, vel_o, extrap_dir_bcs);
@@ -76,36 +81,103 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
        for(int lev = 0; lev <= finest_level; lev++)
           MultiFab::Saxpy(*vel[lev], -1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
     }
+#endif
 
     // Create sigma
     Vector< std::unique_ptr< amrex::MultiFab > >  sigma(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev )
     {
-#ifdef AMREX_USE_EB
-        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]));
-#else
-        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo()));
+        auto const& ld = *m_leveldata[lev];
+        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *m_factory[lev]));
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        sigma[lev] -> setVal(scaling_factor);
-        MultiFab::Divide(*sigma[lev],*density[lev],0,0,1,0);
+        for (MFIter mfi(*sigma[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& sig = sigma[lev]->array(mfi);
+            Array4<Real const> const& rho = ld.density.const_array(mfi);
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                sig(i,j,k) = scaling_factor / rho(i,j,k);
+            });
+        }
     }
 
     // Perform projection
-    nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
+    {
+        if (!nodal_projector) {
+            std::array<LinOpBCType,AMREX_SPACEDIM> bclo;
+            std::array<LinOpBCType,AMREX_SPACEDIM> bchi;
+            for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                if (geom[0].isPeriodic(dir)) {
+                    bclo[dir] = LinOpBCType::Periodic;
+                    bchi[dir] = LinOpBCType::Periodic;
+                } else {
+                    if (m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_inflow or
+                        m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_outflow) {
+                        bclo[dir] = LinOpBCType::Dirichlet;
+                    } else {
+                        bclo[dir] = LinOpBCType::Neumann;
+                    }
+                    if (m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_inflow or
+                        m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_outflow) {
+                        bchi[dir] = LinOpBCType::Dirichlet;
+                    } else {
+                        bchi[dir] = LinOpBCType::Neumann;
+                    }
+                }
+            }
+#ifdef AMREX_USE_EB
+            if (!EBFactory(0).isAllRegular()) {
+                Vector<EBFArrayBoxFactory const*> fact(finest_level+1);
+                for (int lev = 0; lev <= finest_level; ++lev) {
+                    fact[lev] = &(EBFactory(lev));
+                }
+                nodal_projector.reset(new NodalProjector(Geom(0,finest_level),
+                                                         boxArray(0,finest_level),
+                                                         DistributionMap(0,finest_level),
+                                                         bclo, bchi, fact, LPInfo()));
+            } else
+#endif
+            {
+                nodal_projector.reset(new NodalProjector(Geom(0,finest_level),
+                                                         boxArray(0,finest_level),
+                                                         DistributionMap(0,finest_level),
+                                                         bclo, bchi, LPInfo()));
+            }
+        }
 
+        Vector<MultiFab*> vel;
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            vel.push_back(&(m_leveldata[lev]->velocity));
+            vel[lev]->setBndry(0.0);
+            incflo_set_inflow_velocity(lev, time, *vel[lev], 1);
+        }
+
+        nodal_projector->project(vel, GetVecOfConstPtrs(sigma));
+    }
+
+#if 0
+    // xxxxx todo
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt)
     {
        for(int lev = 0; lev <= finest_level; lev++)
           MultiFab::Saxpy(*vel[lev], 1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
     }
+#endif
 
     // Get phi and fluxes
-    Vector< const amrex::MultiFab* >  phi(finest_level+1);
-    Vector< const amrex::MultiFab* >  gradphi(finest_level+1);
+    auto phi = nodal_projector->getPhi();
+    auto gradphi = nodal_projector->getGradPhi();
 
-    phi     = nodal_projector -> getPhi();
-    gradphi = nodal_projector -> getGradPhi();
+    EB_set_covered(m_leveldata[0]->velocity, 0, 3, nghost, 0.0);
+    VisMF::Write(m_leveldata[0]->velocity, "vel");
+    VisMF::Write(*phi[0], "phi");
+    VisMF::Write(*gradphi[0], "gradphi");
+
+    amrex::Abort("xxxxx after project: so far so good");
 
     for(int lev = 0; lev <= finest_level; lev++)
     {

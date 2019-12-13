@@ -5,6 +5,44 @@
 #include <incflo.H>
 #include <bc_mod_F.H>
 
+void
+incflo::incflo_set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost)
+{
+    Geometry const& gm = Geom(lev);
+    Box const& domain = gm.growPeriodicDomain(nghost);
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        Orientation olo(dir,Orientation::low);
+        Orientation ohi(dir,Orientation::high);
+        if (m_bc_type[olo] == BC::mass_inflow or m_bc_type[ohi] == BC::mass_inflow) {
+            Box dlo = (m_bc_type[olo] == BC::mass_inflow) ? amrex::adjCellLo(domain,dir,nghost) : Box();
+            Box dhi = (m_bc_type[ohi] == BC::mass_inflow) ? amrex::adjCellHi(domain,dir,nghost) : Box();
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+            for (MFIter mfi(vel); mfi.isValid(); ++mfi) {
+                Box const& gbx = amrex::grow(mfi.validbox(),nghost);
+                Box blo = gbx & dlo;
+                Box bhi = gbx & dhi;
+                Array4<Real> const& v = vel[mfi].array(dir);
+                if (blo.ok()) {
+                    Real vin = m_bc_velocity[olo][dir];
+                    amrex::ParallelFor(blo, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                    {
+                        v(i,j,k) = vin;
+                    });
+                }
+                if (bhi.ok()) {
+                    Real vin = m_bc_velocity[ohi][dir];
+                    amrex::ParallelFor(bhi, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                    {
+                        v(i,j,k) = vin;
+                    });
+                }
+            }
+        }
+    }
+}
+
 //
 //  These subroutines set the BCs for the vel_arr components only.
 //

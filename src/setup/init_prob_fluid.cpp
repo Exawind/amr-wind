@@ -11,6 +11,7 @@ void incflo::init_prob_fluid (int lev)
     auto const& probhi = geom[lev].ProbHiArray();
 
     ld.p.setVal(0.0);
+    ld.gp.setVal(0.0);
 
     for (MFIter mfi(ld.density); mfi.isValid(); ++mfi)
     {
@@ -21,7 +22,7 @@ void incflo::init_prob_fluid (int lev)
         {
             init_plane_poiseuille(vbx, gbx,
                                   ld.p.array(mfi),
-                                  ld.vel.array(mfi),
+                                  ld.velocity.array(mfi),
                                   ld.density.array(mfi),
                                   ld.tracer.array(mfi),
                                   ld.eta.array(mfi),

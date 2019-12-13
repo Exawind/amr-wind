@@ -229,8 +229,8 @@ private:
         amrex::MultiFab density_o;
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
-        amrex::MultiFab vel;
-        amrex::MultiFab vel_o;
+        amrex::MultiFab velocity;
+        amrex::MultiFab velocity_o;
         amrex::MultiFab gp; // pressure gradient
         amrex::MultiFab eta;
         // nodal multifabs
@@ -242,7 +242,7 @@ private:
     amrex::Vector<std::unique_ptr<FabFactory<FArrayBox> > > m_factory;
 
     enum struct BC {
-        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, undefined
+        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, periodic, undefined
     };
 
     amrex::GpuArray<BC                                  , AMREX_SPACEDIM*2> m_bc_type;
@@ -277,6 +277,13 @@ private:
     void set_background_pressure ();
     void init_prob_fluid (int lev);
 
+    FabFactory<FArrayBox> const& Factory (int lev) const noexcept { return *m_factory[lev]; }
+#ifdef AMREX_USE_EB
+    EBFArrayBoxFactory const& EBFactory (int lev) const noexcept {
+        return static_cast<EBFArrayBoxFactory const&>(*m_factory[lev]);
+    }
+#endif
+
 public: // for cuda
 
     void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
@@ -289,6 +296,8 @@ public: // for cuda
                                 GpuArray<Real, AMREX_SPACEDIM> const& dx,
                                 GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                 GpuArray<Real, AMREX_SPACEDIM> const& probhi);
+
+    void incflo_set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost);
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -355,7 +364,7 @@ public: // for cuda
     bool SteadyStateReached();
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
-    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental = false);
+    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

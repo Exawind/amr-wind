@@ -79,6 +79,14 @@ void incflo::init_bcs()
         {
             m_bc_type[ori] = BC::undefined;
         }
+
+        if (geom[0].isPeriodic(ori.coordDir())) {
+            if (m_bc_type[ori] == BC::undefined) {
+                m_bc_type[ori] = BC::periodic;
+            } else {
+                amrex::Abort("Wrong BC type for periodic boundary");
+            }
+        }
     };
 
     f("xlo", Orientation(Direction::x,Orientation::low));

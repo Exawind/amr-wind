@@ -439,7 +439,8 @@ void incflo::InitialProjection()
     }
 
     Real dummy_dt = 1.0;
-    ApplyProjection(cur_time, dummy_dt);
+    bool incremental = false;
+    ApplyProjection(cur_time, dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)

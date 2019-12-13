@@ -431,7 +431,8 @@ void incflo::ApplyCorrector()
     }
 
     // Project velocity field, update pressure
-    ApplyProjection(new_time, dt);
+    bool incremental = false;
+    ApplyProjection(new_time, dt, incremental);
 
     // Fill velocity BCs again
     incflo_set_velocity_bcs(new_time, vel, 0);
