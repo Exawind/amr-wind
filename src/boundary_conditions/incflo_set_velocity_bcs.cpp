@@ -24,11 +24,12 @@ incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghos
                 Box blo = gbx & dlo;
                 Box bhi = gbx & dhi;
                 Array4<Real> const& v = vel[mfi].array();
+                int gid = mfi.index();
                 if (blo.ok()) {
-                    prob_set_inflow_velocity(olo, blo, v, lev, time);
+                    prob_set_inflow_velocity(gid, olo, blo, v, lev, time);
                 }
                 if (bhi.ok()) {
-                    prob_set_inflow_velocity(ohi, bhi, v, lev, time);
+                    prob_set_inflow_velocity(gid, ohi, bhi, v, lev, time);
                 }
             }
         }

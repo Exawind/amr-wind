@@ -151,12 +151,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
             set_inflow_velocity(lev, time, *vel[lev], 1);
         }
 
-        EB_set_covered(*vel[0], 0, 3, nghost, 0.0);
-        EB_set_covered(*sigma[0], 0, 1, 0, 0.0);
-        VisMF::Write(*vel[0], "b-vel");
-        VisMF::Write(*sigma[0], "b-sig");
-        amrex::Abort("xxxxx");
-
         nodal_projector->project(vel, GetVecOfConstPtrs(sigma));
     }
 
@@ -174,38 +168,47 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     auto phi = nodal_projector->getPhi();
     auto gradphi = nodal_projector->getGradPhi();
 
-    EB_set_covered(m_leveldata[0]->velocity, 0, 3, nghost, 0.0);
-    VisMF::Write(m_leveldata[0]->velocity, "vel");
-    VisMF::Write(*phi[0], "phi");
-    VisMF::Write(*gradphi[0], "gradphi");
-
-    amrex::Abort("xxxxx after project: so far so good");
-
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        if (incremental)
-        {
-            // p := p + phi
-            MultiFab::Add(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Add(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
+        auto& ld = *m_leveldata[lev];
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(ld.gp,TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+            Box const& tbx = mfi.tilebox();
+            Box const& nbx = mfi.nodaltilebox();
+            Array4<Real> const& gp_lev = ld.gp.array(mfi);
+            Array4<Real> const& p_lev = ld.p.array(mfi);
+            Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
+            Array4<Real const> const& p_proj = phi[lev]->const_array(mfi);
+            if (incremental) {
+                amrex::ParallelFor(tbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    gp_lev(i,j,k,0) += gp_proj(i,j,k,0);
+                    gp_lev(i,j,k,1) += gp_proj(i,j,k,1);
+                    gp_lev(i,j,k,2) += gp_proj(i,j,k,2);
+                });
+            } else {
+                amrex::ParallelFor(tbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    gp_lev(i,j,k,0) = gp_proj(i,j,k,0);
+                    gp_lev(i,j,k,1) = gp_proj(i,j,k,1);
+                    gp_lev(i,j,k,2) = gp_proj(i,j,k,2);
+                });
+            }
         }
-        else
-        {
-            // p := phi
-            MultiFab::Copy(*p[lev], *phi[lev], 0, 0, 1, phi[lev]->nGrow());
-            MultiFab::Copy(*gp[lev], *gradphi[lev], 0, 0, AMREX_SPACEDIM, gradphi[lev]->nGrow());
-        }
-
     }
 
-    AverageDown();
+    // xxxxx Is this needed? Even if yes, we probably only average down gp (and p?).
+    //  AverageDown();
 
     if(incflo_verbose > 2)
     {
-        if (proj_for_small_dt)
-           amrex::Print() << "After  projection (with small dt modification):" << std::endl;
-        else
-           amrex::Print() << "After  projection:" << std::endl;
+        if (proj_for_small_dt) {
+            amrex::Print() << "After  projection (with small dt modification):" << std::endl;
+        } else {
+            amrex::Print() << "After  projection:" << std::endl;
+        }
         PrintMaxValues(time);
     }
 }

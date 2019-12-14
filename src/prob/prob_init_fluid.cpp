@@ -17,8 +17,7 @@ void incflo::prob_init_fluid (int lev)
     {
         const Box& vbx = mfi.validbox();
         const Box& gbx = mfi.fabbox();
-        switch (probtype) {
-        case 32:
+        if (32 == probtype) 
         {
             init_plane_poiseuille(vbx, gbx,
                                   ld.p.array(mfi),
@@ -27,10 +26,10 @@ void incflo::prob_init_fluid (int lev)
                                   ld.tracer.array(mfi),
                                   ld.eta.array(mfi),
                                   domain, dx, problo, probhi);
-            break;
         }
-        default:
-            amrex::Abort("Unknown probtype");
+        else
+        {
+            amrex::Abort("prob_init_fluid: unknown probtype");
         };
     }
 }
@@ -51,10 +50,9 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
     const auto dhi = amrex::ubound(domain);
     Real lmu = this->mu;
     Real lrho = this->ro_0;
-    switch (probtype) {
-    case 32:
+    if (32 == probtype)
     {
-        Real v = ic_v;
+        Real v = this->ic_v;
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real z = (k+0.5)*dzinv;
@@ -74,9 +72,9 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
 
             eta(i,j,k) = lmu;
         });
-        break;
     }
-    default:
+    else
+    {
         amrex::Abort("Unknown plane poiseuille probtype");
     };
 }

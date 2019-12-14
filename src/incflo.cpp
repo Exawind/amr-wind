@@ -77,6 +77,11 @@ void incflo::InitData ()
         if (do_initial_proj) {
             InitialProjection();
         }
+        if (initial_iterations > 0) {
+            amrex::Abort("initial_iterations > 0");
+        } else {
+            amrex::Abort("initial_iterations = 0");
+        }
 
         amrex::Abort("xxxxx So far so good");
 
@@ -86,6 +91,7 @@ void incflo::InitData ()
     }
     else
     {
+        amrex::Abort("xxxxx restart todo");
         // Read starting configuration from chk file.
         ReadCheckpointFile();
     }
@@ -97,30 +103,32 @@ void incflo::InitData ()
     // - Apply initial conditions
     // - Project initial velocity to make divergence free
     // - Perform dummy iterations to find pressure distribution
-    PostInit(restart_flag);
+//    PostInit(restart_flag);
 
     // Plot initial distribution
     if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
     {
-        WritePlotFile();
+//xxxxx todo        WritePlotFile();
         last_plt = 0;
     }
     if(KE_int > 0 && !restart_flag)
     {
+        amrex::Abort("xxxxx KE_int todo");
         amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
-    ParmParse pp("incflo");
-    bool write_eb_surface = 0;
-    pp.query("write_eb_surface", write_eb_surface);
-
 #ifdef AMREX_USE_EB
+    ParmParse pp("incflo");
+    bool write_eb_surface = false;
+    pp.query("write_eb_surface", write_eb_surface);
     if (write_eb_surface)
     {
         amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
         WriteMyEBSurface();
     }
 #endif
+
+    amrex::Abort("xxxxx So far so good: end of InitData");
 }
 
 void incflo::Evolve()

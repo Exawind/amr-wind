@@ -276,7 +276,7 @@ private:
     void init_bcs ();
     void set_background_pressure ();
     void prob_init_fluid (int lev);
-    void prob_set_inflow_velocity (amrex::Orientation ori, amrex::Box const& bx,
+    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
                                    Array4<Real> const& v, int lev, Real time);
 
     FabFactory<FArrayBox> const& Factory (int lev) const noexcept { return *m_factory[lev]; }
