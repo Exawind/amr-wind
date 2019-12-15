@@ -25,14 +25,6 @@
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
-enum struct DiffusionType
-{
-    Invalid,
-    Explicit,
-    Crank_Nicolson,
-    Implicit
-};
-
 class incflo : public amrex::AmrCore
 {
 public:
@@ -273,11 +265,13 @@ private:
     static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
 #endif
 
-    void init_bcs ();
-    void set_background_pressure ();
-    void prob_init_fluid (int lev);
-    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
-                                   Array4<Real> const& v, int lev, Real time);
+    std::unique_ptr<NodalProjector> nodal_projector;
+
+    enum struct DiffusionType {
+        Invalid, Explicit, Crank_Nicolson, Implicit
+    };
+    DiffusionType m_diff_type = DiffusionType::Implicit;
+    std::unique_ptr<DiffusionOp> diffusion_op;
 
     FabFactory<FArrayBox> const& Factory (int lev) const noexcept { return *m_factory[lev]; }
 #ifdef AMREX_USE_EB
@@ -287,6 +281,12 @@ private:
 #endif
 
 public: // for cuda
+
+    void init_bcs ();
+    void set_background_pressure ();
+    void prob_init_fluid (int lev);
+    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
+                                   Array4<Real> const& v, int lev, Real time);
 
     void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
                                 amrex::Array4<amrex::Real> const& p,
@@ -413,17 +413,11 @@ public: // for cuda
     // Nodal Projection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    std::unique_ptr<NodalProjector> nodal_projector;
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Diffusion
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    std::unique_ptr<DiffusionOp> diffusion_op;
-
-    DiffusionType m_diff_type = DiffusionType::Implicit;
 
     void ComputeDivU(amrex::Real time_in);
 

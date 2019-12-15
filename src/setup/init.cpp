@@ -390,6 +390,8 @@ void incflo::InitialIterations()
         amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
     }
 
+    amrex::Abort("xxxx after computedt\n");
+
     // Fill ghost cells
     incflo_set_density_bcs(cur_time, density);
     incflo_set_tracer_bcs(cur_time, tracer);

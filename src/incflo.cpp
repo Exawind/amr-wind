@@ -78,12 +78,10 @@ void incflo::InitData ()
             InitialProjection();
         }
         if (initial_iterations > 0) {
-            amrex::Abort("initial_iterations > 0");
-        } else {
-            amrex::Abort("initial_iterations = 0");
+            InitialIterations();
         }
 
-        amrex::Abort("xxxxx So far so good");
+        amrex::Abort("xxxxx So far so good after InitialIterations");
 
         // xxxxx averagedown ???
 
@@ -108,7 +106,8 @@ void incflo::InitData ()
     // Plot initial distribution
     if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
     {
-//xxxxx todo        WritePlotFile();
+        amrex::Abort("xxxxx Plotfile todo");
+        WritePlotFile();
         last_plt = 0;
     }
     if(KE_int > 0 && !restart_flag)
