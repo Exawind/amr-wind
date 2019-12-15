@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <incflo.H>
 
+using namespace amrex;
+
 void incflo::MakeEBGeometry()
 {
    /******************************************************************************

@@ -1,5 +1,7 @@
 #include <incflo.H> 
 
+using namespace amrex;
+
 void incflo::ReadRheologyParameters()
 {
      ParmParse pp("incflo");

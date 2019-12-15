@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 void
 incflo::incflo_predict_vels_on_faces ( int lev, Real time,
                                        Vector< std::unique_ptr<MultiFab> >& vel_in)

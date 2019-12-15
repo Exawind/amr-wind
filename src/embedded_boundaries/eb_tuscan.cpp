@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <incflo.H>
 
+using namespace amrex;
+
 /********************************************************************************
  *                                                                              *
  * Function to create the experimental setup

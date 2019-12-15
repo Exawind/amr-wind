@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 incflo::LevelData::LevelData (amrex::BoxArray const& ba,
                               amrex::DistributionMapping const& dm,
                               amrex::FabFactory<FArrayBox> const& fact)

@@ -4,6 +4,8 @@
 #include <rheology_F.H>
 #include <boundary_conditions_F.H>
 
+using namespace amrex;
+
 void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
                                Real time_in)
 {

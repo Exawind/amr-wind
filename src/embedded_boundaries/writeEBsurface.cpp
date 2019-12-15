@@ -1,6 +1,8 @@
 #include <incflo.H>
 #include <AMReX_WriteEBSurface.H>
 
+using namespace amrex;
+
 void incflo::WriteMyEBSurface()
 {
   if (Geom(0).isAllPeriodic()) return;

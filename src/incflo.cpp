@@ -8,6 +8,8 @@
 #include <AMReX_EBAmrUtil.H>
 #endif
 
+using namespace amrex;
+
 // static variables of incflo class
 
 int           incflo::ntrac = 1;

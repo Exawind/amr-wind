@@ -3,6 +3,8 @@
 // #include <incflo_util_F.H>
 #include <AMReX_FillPatchUtil.H>
 
+using namespace amrex;
+
 namespace
 {
     incflo* my_incflo = nullptr;

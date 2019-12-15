@@ -2,6 +2,8 @@
 #include <incflo.H>
 #include <bc_mod_F.H>
 
+using namespace amrex;
+
 //
 // Set the BCs for face-centroid-based velocity components only
 // 

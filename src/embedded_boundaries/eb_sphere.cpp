@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <incflo.H>
 
+using namespace amrex;
+
 /********************************************************************************
  *                                                                              *
  * Function to create a simple sphere EB.                                     *

@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 //
 // Check if steady state has been reached by verifying that
 //

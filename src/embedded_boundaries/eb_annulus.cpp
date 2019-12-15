@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <incflo.H>
 
+using namespace amrex;
+
 /********************************************************************************
  *                                                                              *
  * Function to create a annular cylinder EB.                                     *

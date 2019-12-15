@@ -94,7 +94,7 @@ public:
     void set_density_bcs(amrex::Real time,
                          const int lev,
                          amrex::FArrayBox& scal_fab,
-                         const Box& domain);
+                         const amrex::Box& domain);
 
     void set_tracer_bcs(amrex::Real time,
                         const int lev,
@@ -215,7 +215,7 @@ private:
         LevelData () = default;
         LevelData (amrex::BoxArray const& ba,
                    amrex::DistributionMapping const& dm,
-                   amrex::FabFactory<FArrayBox> const& fact);
+                   amrex::FabFactory<amrex::FArrayBox> const& fact);
         // cell-centered multifabs
         amrex::MultiFab density;
         amrex::MultiFab density_o;
@@ -231,18 +231,19 @@ private:
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
 
-    amrex::Vector<std::unique_ptr<FabFactory<FArrayBox> > > m_factory;
+    amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
 
     enum struct BC {
         pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, periodic, undefined
     };
 
-    amrex::GpuArray<BC                                  , AMREX_SPACEDIM*2> m_bc_type;
-    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_pressure;
-    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_density;
-    amrex::GpuArray<amrex::GpuArray<Real,AMREX_SPACEDIM>, AMREX_SPACEDIM*2> m_bc_velocity;
-    amrex::GpuArray<amrex::Vector<Real>                 , AMREX_SPACEDIM*2> m_bc_tracer;
-    amrex::GpuArray<Real                                , AMREX_SPACEDIM*2> m_bc_location;
+    amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
+    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
+    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_density;
+    amrex::GpuArray<amrex::GpuArray<amrex::Real,AMREX_SPACEDIM>
+                                               ,AMREX_SPACEDIM*2> m_bc_velocity;
+    amrex::GpuArray<amrex::Vector<amrex::Real>, AMREX_SPACEDIM*2> m_bc_tracer;
+    amrex::GpuArray<amrex::Real               , AMREX_SPACEDIM*2> m_bc_location;
 
 //xxxxx    amrex::Vector<amrex::BCRec> m_bcrecs;  // the size is the number of components
 
@@ -265,7 +266,7 @@ private:
     static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
 #endif
 
-    std::unique_ptr<NodalProjector> nodal_projector;
+    std::unique_ptr<amrex::NodalProjector> nodal_projector;
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit
@@ -273,10 +274,12 @@ private:
     DiffusionType m_diff_type = DiffusionType::Implicit;
     std::unique_ptr<DiffusionOp> diffusion_op;
 
-    FabFactory<FArrayBox> const& Factory (int lev) const noexcept { return *m_factory[lev]; }
+    amrex::FabFactory<amrex::FArrayBox> const&
+    Factory (int lev) const noexcept { return *m_factory[lev]; }
 #ifdef AMREX_USE_EB
-    EBFArrayBoxFactory const& EBFactory (int lev) const noexcept {
-        return static_cast<EBFArrayBoxFactory const&>(*m_factory[lev]);
+    amrex::EBFArrayBoxFactory const&
+    EBFactory (int lev) const noexcept {
+        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
     }
 #endif
 
@@ -286,7 +289,7 @@ public: // for cuda
     void set_background_pressure ();
     void prob_init_fluid (int lev);
     void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
-                                   Array4<Real> const& v, int lev, Real time);
+                                   amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time);
 
     void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
                                 amrex::Array4<amrex::Real> const& p,
@@ -295,11 +298,11 @@ public: // for cuda
                                 amrex::Array4<amrex::Real> const& tracer,
                                 amrex::Array4<amrex::Real> const& eta,
                                 amrex::Box const& domain,
-                                GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                GpuArray<Real, AMREX_SPACEDIM> const& probhi);
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
 
-    void set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost);
+    void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -448,7 +451,7 @@ public: // for cuda
     void make_eb_spherecube();
     void make_eb_tuscan();
 
-    const EB2::Level* eb_level;
+    const amrex::EB2::Level* eb_level;
 #endif
 
 #if 0
@@ -460,7 +463,7 @@ public: // for cuda
 #endif
 
 #ifdef AMREX_USE_EB
-    amrex::Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,7 +514,7 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    Periodicity p0_periodicity;
+    amrex::Periodicity p0_periodicity;
     amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};

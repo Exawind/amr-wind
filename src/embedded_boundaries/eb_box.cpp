@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <incflo.H>
 
+using namespace amrex;
+
 /****************************************************************************
  * Function to create a simple rectangular box with EB walls.               *
  *                                                                          *

@@ -2,6 +2,8 @@
 #include "AMReX_buildInfo.H"
 #include <incflo.H>
 
+using namespace amrex;
+
 namespace
 {
     const std::string level_prefix {"Level_"};

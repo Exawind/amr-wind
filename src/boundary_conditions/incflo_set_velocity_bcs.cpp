@@ -5,6 +5,8 @@
 #include <incflo.H>
 #include <bc_mod_F.H>
 
+using namespace amrex;
+
 void
 incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost)
 {

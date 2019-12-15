@@ -3,6 +3,8 @@
 
 void writeBuildInfo();
 
+using namespace amrex;
+
 int main(int argc, char* argv[])
 {
 

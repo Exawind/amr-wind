@@ -3,6 +3,8 @@
 
 #include <incflo.H>
 
+using namespace amrex;
+
 //
 // Computes the following decomposition:
 //

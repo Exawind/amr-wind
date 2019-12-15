@@ -5,6 +5,8 @@
 #include <eb_if.H> 
 #include <incflo.H>
 
+using namespace amrex;
+
 /********************************************************************************
  *                                                                              *
  * Placeholder: create a simulation box _without_ EB walls.                     *
