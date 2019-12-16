@@ -127,14 +127,12 @@ void incflo::Advance()
 //
 //     vel = u** - dt * grad p / rho
 //
-void incflo::ApplyPredictor(bool incremental_projection)
+void incflo::ApplyPredictor (bool incremental_projection)
 {
     BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = cur_time + dt;
-
-    incflo_set_velocity_bcs(cur_time, vel_o, 0);
 
     if(incflo_verbose > 2)
     {
@@ -144,7 +142,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     // if ( use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
-    incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_o, density_o, tracer_o, cur_time );
+    compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
+                            get_velocity_old(), get_density_old(), get_tracer_old(),cur_time);
+    amrex::Abort("xxxxx so far so good after incflo_compute_convective_term");
 
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
     ComputeViscosity(eta_old, cur_time);

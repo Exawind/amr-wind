@@ -208,8 +208,17 @@ public:
 
 private:
 
+    // Be verbose?
+    int incflo_verbose = 0;
+
     amrex::Vector<amrex::Real> t_old;
     amrex::Vector<amrex::Real> t_new;
+
+    // Times
+    amrex::Real cur_time     = 0.0;
+    amrex::Real dt           = -1.0;
+    amrex::Real prev_dt      = -1.0;
+    amrex::Real prev_prev_dt = -1.0;
 
     struct LevelData {
         LevelData () = default;
@@ -217,16 +226,23 @@ private:
                    amrex::DistributionMapping const& dm,
                    amrex::FabFactory<amrex::FArrayBox> const& fact);
         // cell-centered multifabs
+        amrex::MultiFab velocity;
+        amrex::MultiFab velocity_o;
         amrex::MultiFab density;
         amrex::MultiFab density_o;
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
-        amrex::MultiFab velocity;
-        amrex::MultiFab velocity_o;
         amrex::MultiFab gp; // pressure gradient
         amrex::MultiFab eta;
         // nodal multifabs
         amrex::MultiFab p;
+        //
+        amrex::MultiFab conv_velocity;
+        amrex::MultiFab conv_velocity_o;
+        amrex::MultiFab conv_density;
+        amrex::MultiFab conv_density_o;
+        amrex::MultiFab conv_tracer;
+        amrex::MultiFab conv_tracer_o;
     };
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
@@ -282,6 +298,19 @@ private:
         return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
     }
 #endif
+
+    amrex::Vector<amrex::MultiFab*> get_velocity_old ();
+    amrex::Vector<amrex::MultiFab*> get_velocity_new ();
+    amrex::Vector<amrex::MultiFab*> get_density_old ();
+    amrex::Vector<amrex::MultiFab*> get_density_new ();
+    amrex::Vector<amrex::MultiFab*> get_tracer_old ();
+    amrex::Vector<amrex::MultiFab*> get_tracer_new ();
+    amrex::Vector<amrex::MultiFab*> get_conv_velocity_old ();
+    amrex::Vector<amrex::MultiFab*> get_conv_velocity_new ();
+    amrex::Vector<amrex::MultiFab*> get_conv_density_old ();
+    amrex::Vector<amrex::MultiFab*> get_conv_density_new ();
+    amrex::Vector<amrex::MultiFab*> get_conv_tracer_old ();
+    amrex::Vector<amrex::MultiFab*> get_conv_tracer_new ();
 
 public: // for cuda
 
@@ -377,6 +406,14 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
+                                  amrex::Vector<amrex::MultiFab*> const& conv_r,
+                                  amrex::Vector<amrex::MultiFab*> const& conv_t,
+                                  amrex::Vector<amrex::MultiFab*> const& vel,
+                                  amrex::Vector<amrex::MultiFab*> const& density,
+                                  amrex::Vector<amrex::MultiFab*> const& tracer,
+                                  amrex::Real time);
+
      void incflo_compute_convective_term(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_u,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_r,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_t,
@@ -471,15 +508,6 @@ public: // for cuda
     // Member variables: Runtime parameters
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Be verbose?
-    int incflo_verbose = 0;
-
-    // Times
-    amrex::Real cur_time     = 0.0;
-    amrex::Real dt           = -1.0;
-    amrex::Real prev_dt      = -1.0;
-    amrex::Real prev_prev_dt = -1.0;
 
     // Time step counter
     int nstep         = -1;

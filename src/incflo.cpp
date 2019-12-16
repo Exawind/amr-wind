@@ -424,3 +424,124 @@ incflo::writeNow()
 
     return write_now;
 }
+
+Vector<MultiFab*> incflo::get_velocity_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->velocity_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_velocity_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->velocity));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_density_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->density_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_density_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->density));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_tracer_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tracer_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_tracer_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tracer));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_velocity_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_velocity_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_velocity_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_velocity));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_density_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_density_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_density_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_density));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_tracer_old ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_tracer_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_conv_tracer_new ()
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->conv_tracer));
+    }
+    return r;
+}
+

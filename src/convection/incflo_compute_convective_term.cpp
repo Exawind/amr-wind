@@ -6,6 +6,18 @@
 
 using namespace amrex;
 
+void
+incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
+                                 Vector<MultiFab*> const& conv_r,
+                                 Vector<MultiFab*> const& conv_t,
+                                 Vector<MultiFab*> const& vel,
+                                 Vector<MultiFab*> const& density,
+                                 Vector<MultiFab*> const& tracer,
+                                 Real time)
+{
+    amrex::Abort("xxxxx in compute_convective_term");
+}
+
 //
 // Compute the three components of the convection term
 //

@@ -376,7 +376,7 @@ void incflo::SetBackgroundPressure()
 //
 // Perform initial pressure iterations
 //
-void incflo::InitialIterations()
+void incflo::InitialIterations ()
 {
     BL_PROFILE("incflo::InitialIterations()");
 
@@ -389,17 +389,15 @@ void incflo::InitialIterations()
         amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
     }
 
-    amrex::Abort("xxxx after computedt\n");
-
-    // Fill ghost cells
-    incflo_set_density_bcs(cur_time, density);
-    incflo_set_tracer_bcs(cur_time, tracer);
-    incflo_set_velocity_bcs(cur_time, vel, 0);
-
-    // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        MultiFab::Copy(*vel_o[lev], *vel[lev], 0, 0, vel[lev]->nComp(), vel_o[lev]->nGrow());
+        MultiFab::Copy(m_leveldata[lev]->velocity_o,
+                       m_leveldata[lev]->velocity, 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Copy(m_leveldata[lev]->density_o,
+                       m_leveldata[lev]->density, 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Copy(m_leveldata[lev]->tracer_o,
+                       m_leveldata[lev]->tracer, 0, 0, AMREX_SPACEDIM, 0);
+        t_old[lev] = t_new[lev];
     }
 
     for (int iter = 0; iter < initial_iterations; ++iter)
@@ -408,6 +406,8 @@ void incflo::InitialIterations()
 
  	ApplyPredictor(true);
 
+        amrex::Abort("xxxxx so far so good after ApplyPredictor(true)");
+
         for (int lev = 0; lev <= finest_level; lev++)
         {
             // Replace vel, density, tracer  by the original values
@@ -415,11 +415,6 @@ void incflo::InitialIterations()
             MultiFab::Copy(*density[lev], *density_o[lev], 0, 0, density[lev]->nComp(), density[lev]->nGrow());
             MultiFab::Copy( *tracer[lev],  *tracer_o[lev], 0, 0,  tracer[lev]->nComp(),  tracer[lev]->nGrow());
         }
-
-        // Reset the boundary values (necessary if they are time-dependent)
-        incflo_set_velocity_bcs(cur_time, vel    , 0);
-        incflo_set_density_bcs (cur_time, density);
-        incflo_set_tracer_bcs  (cur_time, tracer );
     }
 
     // Set nstep to 0 before entering time loop
