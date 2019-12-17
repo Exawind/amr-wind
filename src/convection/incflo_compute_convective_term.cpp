@@ -15,6 +15,17 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Vector<MultiFab*> const& tracer,
                                  Real time)
 {
+    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        const BoxArray& ba = density[lev]->boxArray();
+        const DistributionMapping& dm = density[lev]->DistributionMap();
+        u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 1);
+        v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 1);
+        w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 1);
+        predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
+    }
+
     amrex::Abort("xxxxx in compute_convective_term");
 }
 

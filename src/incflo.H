@@ -137,6 +137,10 @@ public:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
+    void predict_vels_on_faces (int lev, amrex::Real time, amrex::MultiFab& u_mac,
+                                amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
+                                amrex::MultiFab& vel);
+
     void incflo_predict_vels_on_faces(int lev, amrex::Real time,
                                       amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
 
