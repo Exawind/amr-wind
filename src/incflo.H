@@ -275,7 +275,7 @@ private:
     static constexpr int nghost_for_slopes = 4;
     static constexpr int nghost_for_bcs    = 4;
 #else
-    static constexpr int nghost            = 1;
+    static constexpr int nghost            = 2;
     static constexpr int nghost_for_slopes = 3;
     static constexpr int nghost_for_bcs    = 3;
 #endif

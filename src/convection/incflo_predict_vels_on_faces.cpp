@@ -6,11 +6,13 @@ using namespace amrex;
 void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
                                     MultiFab& w_mac, MultiFab& vel)
 {
-    // fillpatch on vel.  How many ghost cells do we need?
+    // fillpatch on vel.
+    const int nghost = 2;
 
 #ifdef AMREX_USE_EB
     auto const& fact = this->EBFactory(lev);
     auto const& flags = fact.getMultiEBCellFlagFab();
+    auto const& fcent = fact.getFaceCent();
 #endif
 
 #ifdef _OPENMP
@@ -39,6 +41,11 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             }
             else if (flagfab.getType(amrex::grow(bx,1)) == FabType::singlevalued)
             {
+                Array4<Real const> const& fcx = fcent[0]->const_array(mfi);
+                Array4<Real const> const& fcy = fcent[1]->const_array(mfi);
+                Array4<Real const> const& fcz = fcent[2]->const_array(mfi);
+                ::incflo_predict_vels_on_faces_eb(bx,ubx,vbx,wbx,u,v,w,vcc,
+                                                  flagarr,fcx,fcy,fcz);
             }
             else
 #endif
