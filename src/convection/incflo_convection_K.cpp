@@ -28,8 +28,8 @@ void incflo_predict_vels_on_faces (Box const& ubx, Box const& vbx, Box const& wb
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        Real vpls = vcc(i  ,j,k,1) - 0.5 * incflo_yslope(i  ,j,k,1,vcc);
-        Real vmns = vcc(i-1,j,k,1) + 0.5 * incflo_yslope(i-1,j,k,1,vcc);
+        Real vpls = vcc(i,j  ,k,1) - 0.5 * incflo_yslope(i,j  ,k,1,vcc);
+        Real vmns = vcc(i,j-1,k,1) + 0.5 * incflo_yslope(i,j-1,k,1,vcc);
         if (vmns < 0.0 and vpls > 0.0) {
             v(i,j,k) = 0.0;
         } else {
@@ -46,8 +46,8 @@ void incflo_predict_vels_on_faces (Box const& ubx, Box const& vbx, Box const& wb
 
     amrex::ParallelFor(wbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        Real wpls = vcc(i  ,j,k,2) - 0.5 * incflo_zslope(i  ,j,k,2,vcc);
-        Real wmns = vcc(i-1,j,k,2) + 0.5 * incflo_zslope(i-1,j,k,2,vcc);
+        Real wpls = vcc(i,j,k  ,2) - 0.5 * incflo_zslope(i,j,k  ,2,vcc);
+        Real wmns = vcc(i,j,k-1,2) + 0.5 * incflo_zslope(i,j,k-1,2,vcc);
         if (wmns < 0.0 and wpls > 0.0) {
             w(i,j,k) = 0.0;
         } else {
@@ -82,7 +82,7 @@ void incflo_predict_vels_on_faces_eb (Box const& ccbx,
     Array4<Real> const& upls = tmp.array(0);
     Array4<Real> const& umns = tmp.array(1);
 
-    amrex::ParallelFor(amrex::grow(amrex::grow(ubx,1),2),
+    amrex::ParallelFor(amrex::grow(amrex::grow(ubx,1,1),2,1),
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         upls(i,j,k) = vcc(i  ,j,k,0) - 0.5 * incflo_xslope(i  ,j,k,0,vcc);
@@ -92,20 +92,26 @@ void incflo_predict_vels_on_faces_eb (Box const& ccbx,
     amrex::ParallelFor(ubx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(-1,0,0)) {
-            int jj = j + static_cast<int>(std::copysign(1.0, fcx(i,j,k,0)));
-            int kk = k + static_cast<int>(std::copysign(1.0, fcx(i,j,k,1)));
+            Real upls_on_centroid, umns_on_centroid;
+            if (flag(i,j,k).isRegular()) {
+                upls_on_centroid = upls(i,j,k);
+                umns_on_centroid = umns(i,j,k);
+            } else {
+                int jj = j + static_cast<int>(std::copysign(1.0, fcx(i,j,k,0)));
+                int kk = k + static_cast<int>(std::copysign(1.0, fcx(i,j,k,1)));
 
-            Real fracy = std::abs(fcx(i,j,k,0));
-            Real fracz = std::abs(fcx(i,j,k,1));
+                Real fracy = std::abs(fcx(i,j,k,0));
+                Real fracz = std::abs(fcx(i,j,k,1));
 
-            Real upls_on_centroid = (1.0-fracy)*(1.0-fracz)*upls(i, j,k )+
-                                         fracy *(1.0-fracz)*upls(i,jj,k )+
-                                         fracz *(1.0-fracy)*upls(i, j,kk)+
-                                         fracy *     fracz *upls(i,jj,kk);
-            Real umns_on_centroid = (1.0-fracy)*(1.0-fracz)*umns(i, j,k )+
-                                         fracy *(1.0-fracz)*umns(i,jj,k )+
-                                         fracz *(1.0-fracy)*umns(i, j,kk)+
-                                         fracy *     fracz *umns(i,jj,kk);
+                upls_on_centroid = (1.0-fracy)*(1.0-fracz)*upls(i, j,k )+
+                                        fracy *(1.0-fracz)*upls(i,jj,k )+
+                                        fracz *(1.0-fracy)*upls(i, j,kk)+
+                                        fracy *     fracz *upls(i,jj,kk);
+                umns_on_centroid = (1.0-fracy)*(1.0-fracz)*umns(i, j,k )+
+                                        fracy *(1.0-fracz)*umns(i,jj,k )+
+                                        fracz *(1.0-fracy)*umns(i, j,kk)+
+                                        fracy *     fracz *umns(i,jj,kk);
+            }
 
             if (umns_on_centroid < 0.0 and upls_on_centroid > 0.0) {
                 u(i,j,k) = 0.0;
@@ -127,30 +133,36 @@ void incflo_predict_vels_on_faces_eb (Box const& ccbx,
     Array4<Real> const& vpls = upls;
     Array4<Real> const& vmns = umns;
 
-    amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0),2),
+    amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),2,1),
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        vpls(i,j,k) = vcc(i  ,j,k,1) - 0.5 * incflo_yslope(i  ,j,k,1,vcc);
-        vmns(i,j,k) = vcc(i-1,j,k,1) + 0.5 * incflo_yslope(i-1,j,k,1,vcc);
+        vpls(i,j,k) = vcc(i,j  ,k,1) - 0.5 * incflo_yslope(i,j  ,k,1,vcc);
+        vmns(i,j,k) = vcc(i,j-1,k,1) + 0.5 * incflo_yslope(i,j-1,k,1,vcc);
     });
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(0,-1,0)) {
-            int ii = i + static_cast<int>(std::copysign(1.0,fcy(i,j,k,0)));
-            int kk = k + static_cast<int>(std::copysign(1.0,fcy(i,j,k,1)));
+            Real vpls_on_centroid, vmns_on_centroid;
+            if (flag(i,j,k).isRegular()) {
+                vpls_on_centroid = vpls(i,j,k);
+                vmns_on_centroid = vmns(i,j,k);
+            } else {
+                int ii = i + static_cast<int>(std::copysign(1.0,fcy(i,j,k,0)));
+                int kk = k + static_cast<int>(std::copysign(1.0,fcy(i,j,k,1)));
 
-            Real fracx = std::abs(fcy(i,j,k,0));
-            Real fracz = std::abs(fcy(i,j,k,1));
+                Real fracx = std::abs(fcy(i,j,k,0));
+                Real fracz = std::abs(fcy(i,j,k,1));
 
-            Real vpls_on_centroid = (1.0-fracx)*(1.0-fracz)*vpls(i ,j,k )+
-                                         fracx *(1.0-fracz)*vpls(ii,j,k )+
-                                         fracz *(1.0-fracx)*vpls(i ,j,kk)+
-                                         fracx *     fracz *vpls(ii,j,kk);
-            Real vmns_on_centroid = (1.0-fracx)*(1.0-fracz)*vmns(i ,j,k )+
-                                         fracx *(1.0-fracz)*vmns(ii,j,k )+
-                                         fracz *(1.0-fracx)*vmns(i ,j,kk)+
-                                         fracx *     fracz *vmns(ii,j,kk);
+                vpls_on_centroid = (1.0-fracx)*(1.0-fracz)*vpls(i ,j,k )+
+                                        fracx *(1.0-fracz)*vpls(ii,j,k )+
+                                        fracz *(1.0-fracx)*vpls(i ,j,kk)+
+                                        fracx *     fracz *vpls(ii,j,kk);
+                vmns_on_centroid = (1.0-fracx)*(1.0-fracz)*vmns(i ,j,k )+
+                                        fracx *(1.0-fracz)*vmns(ii,j,k )+
+                                        fracz *(1.0-fracx)*vmns(i ,j,kk)+
+                                        fracx *     fracz *vmns(ii,j,kk);
+            }
 
             if (vmns_on_centroid < 0.0 and vpls_on_centroid > 0.0) {
                 v(i,j,k) = 0.0;
@@ -172,30 +184,36 @@ void incflo_predict_vels_on_faces_eb (Box const& ccbx,
     Array4<Real> const& wpls = upls;
     Array4<Real> const& wmns = umns;
 
-    amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0),1),
+    amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),1,1),
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        wpls(i,j,k) = vcc(i  ,j,k,2) - 0.5 * incflo_zslope(i  ,j,k,2,vcc);
-        wmns(i,j,k) = vcc(i-1,j,k,2) + 0.5 * incflo_zslope(i-1,j,k,2,vcc);
+        wpls(i,j,k) = vcc(i,j,k  ,2) - 0.5 * incflo_zslope(i,j,k  ,2,vcc);
+        wmns(i,j,k) = vcc(i,j,k-1,2) + 0.5 * incflo_zslope(i,j,k-1,2,vcc);
     });
 
     amrex::ParallelFor(wbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(0,0,-1)) {
-            int ii = i + static_cast<int>(std::copysign(1.0,fcz(i,j,k,0)));
-            int jj = j + static_cast<int>(std::copysign(1.0,fcz(i,j,k,1)));
+            Real wpls_on_centroid, wmns_on_centroid;
+            if (flag(i,j,k).isRegular()) {
+                wpls_on_centroid = wpls(i,j,k);
+                wmns_on_centroid = wmns(i,j,k);
+            } else {
+                int ii = i + static_cast<int>(std::copysign(1.0,fcz(i,j,k,0)));
+                int jj = j + static_cast<int>(std::copysign(1.0,fcz(i,j,k,1)));
 
-            Real fracx = std::abs(fcz(i,j,k,0));
-            Real fracy = std::abs(fcz(i,j,k,1));
+                Real fracx = std::abs(fcz(i,j,k,0));
+                Real fracy = std::abs(fcz(i,j,k,1));
 
-            Real wpls_on_centroid = (1.0-fracx)*(1.0-fracy)*wpls(i ,j ,k)+
-                                         fracx *(1.0-fracy)*wpls(ii,j ,k)+
-                                         fracy *(1.0-fracx)*wpls(i ,jj,k)+
-                                         fracx *     fracy *wpls(ii,jj,k);
-            Real wmns_on_centroid = (1.0-fracx)*(1.0-fracy)*wmns(i ,j ,k)+
-                                         fracx *(1.0-fracy)*wmns(ii,j ,k)+
-                                         fracy *(1.0-fracx)*wmns(i ,jj,k)+
-                                         fracx *     fracy *wmns(ii,jj,k);
+                wpls_on_centroid = (1.0-fracx)*(1.0-fracy)*wpls(i ,j ,k)+
+                                        fracx *(1.0-fracy)*wpls(ii,j ,k)+
+                                        fracy *(1.0-fracx)*wpls(i ,jj,k)+
+                                        fracx *     fracy *wpls(ii,jj,k);
+                wmns_on_centroid = (1.0-fracx)*(1.0-fracy)*wmns(i ,j ,k)+
+                                        fracx *(1.0-fracy)*wmns(ii,j ,k)+
+                                        fracy *(1.0-fracx)*wmns(i ,jj,k)+
+                                        fracx *     fracy *wmns(ii,jj,k);
+            }
 
             if (wmns_on_centroid < 0.0 and wpls_on_centroid > 0.0) {
                 w(i,j,k) = 0.0;

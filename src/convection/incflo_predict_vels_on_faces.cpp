@@ -32,7 +32,7 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             Array4<Real const> const& vcc = vel.const_array(mfi);
 #ifdef AMREX_USE_EB
             EBCellFlagFab const& flagfab = flags[mfi];
-            Array4<EBCellFlag const> flagarr = flagfab.const_array();
+            Array4<EBCellFlag const> const& flagarr = flagfab.const_array();
             if (flagfab.getType(bx) == FabType::covered)
             {
                 amrex::ParallelFor(ubx, vbx, wbx,
@@ -55,6 +55,12 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             }
         }
     }
+
+    EB_set_covered_faces({&u_mac,&v_mac,&w_mac}, 0.0);
+    VisMF::Write(u_mac, "u_mac");
+    VisMF::Write(v_mac, "v_mac");
+    VisMF::Write(w_mac, "w_mac");
+    amrex::Abort("xxxxx predict_vels_on_faces: end of fillpatch_velocity");
 }
 
 void

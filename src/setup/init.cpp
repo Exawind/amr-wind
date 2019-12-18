@@ -394,9 +394,11 @@ void incflo::InitialIterations ()
         MultiFab::Copy(m_leveldata[lev]->velocity_o,
                        m_leveldata[lev]->velocity, 0, 0, AMREX_SPACEDIM, 0);
         MultiFab::Copy(m_leveldata[lev]->density_o,
-                       m_leveldata[lev]->density, 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Copy(m_leveldata[lev]->tracer_o,
-                       m_leveldata[lev]->tracer, 0, 0, AMREX_SPACEDIM, 0);
+                       m_leveldata[lev]->density, 0, 0, 1, 0);
+        if (incflo::ntrac > 0) {
+            MultiFab::Copy(m_leveldata[lev]->tracer_o,
+                           m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, 0);
+        }
         t_old[lev] = t_new[lev];
     }
 
@@ -413,7 +415,9 @@ void incflo::InitialIterations ()
             // Replace vel, density, tracer  by the original values
             MultiFab::Copy(*    vel[lev],     *vel_o[lev], 0, 0,     vel[lev]->nComp(),     vel[lev]->nGrow());
             MultiFab::Copy(*density[lev], *density_o[lev], 0, 0, density[lev]->nComp(), density[lev]->nGrow());
-            MultiFab::Copy( *tracer[lev],  *tracer_o[lev], 0, 0,  tracer[lev]->nComp(),  tracer[lev]->nGrow());
+            if (incflo::ntrac > 0) {
+                MultiFab::Copy( *tracer[lev],  *tracer_o[lev], 0, 0,  tracer[lev]->nComp(),  tracer[lev]->nGrow());
+            }
         }
     }
 

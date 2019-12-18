@@ -283,7 +283,7 @@ private:
 #ifdef AMREX_USE_EB
     static constexpr int m_eb_basic_grow_cells = nghost;
     static constexpr int m_eb_volume_grow_cells = nghost;
-    static constexpr int m_eb_full_grow_cells = (nghost > 1) ? nghost : 1;
+    static constexpr int m_eb_full_grow_cells = 2;
 #endif
 
     std::unique_ptr<amrex::NodalProjector> nodal_projector;
