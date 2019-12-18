@@ -260,10 +260,10 @@ private:
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_density;
-    amrex::GpuArray<amrex::GpuArray<amrex::Real,AMREX_SPACEDIM>
-                                               ,AMREX_SPACEDIM*2> m_bc_velocity;
-    amrex::GpuArray<amrex::Vector<amrex::Real>, AMREX_SPACEDIM*2> m_bc_tracer;
-    amrex::GpuArray<amrex::Real               , AMREX_SPACEDIM*2> m_bc_location;
+    amrex::GpuArray<amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
+                                               , AMREX_SPACEDIM*2> m_bc_velocity;
+    amrex::GpuArray<amrex::Vector<amrex::Real> , AMREX_SPACEDIM*2> m_bc_tracer;
+    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_location;
 
 //xxxxx    amrex::Vector<amrex::BCRec> m_bcrecs;  // the size is the number of components
 
@@ -315,6 +315,12 @@ private:
     amrex::Vector<amrex::MultiFab*> get_conv_density_new ();
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_old ();
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_new ();
+
+    amrex::Vector<amrex::BCRec> get_velocity_bcrec () const;
+    amrex::Vector<amrex::BCRec> get_density_bcrec () const;
+    amrex::Vector<amrex::BCRec> get_tracer_bcrec () const;
+
+    void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
 
 public: // for cuda
 
@@ -374,7 +380,7 @@ public: // for cuda
 
     // Member variables for initial conditions
     int probtype = 0;
-    amrex::Real ic_u = 0.0;
+    amrex::Real ic_u = 0.0;  // xxxxx Do we really need it?
     amrex::Real ic_v = 0.0;
     amrex::Real ic_w = 0.0;
     amrex::Real ic_p = 0.0;

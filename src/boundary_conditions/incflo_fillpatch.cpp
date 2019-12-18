@@ -1,9 +1,25 @@
 #include <incflo.H>
+#include <prob_bc.H>
 // #include <incflo_F.H>
 // #include <incflo_util_F.H>
 #include <AMReX_FillPatchUtil.H>
 
 using namespace amrex;
+
+void incflo::fillpatch_velocity (int lev, Real time, MultiFab& vel, int ng)
+{
+    if (lev == 0) {
+        PhysBCFunct<GpuBndryFuncFab<IncfloVelFill> > physbc(geom[lev], get_velocity_bcrec(),
+                                                            IncfloVelFill{probtype, m_bc_velocity});
+        FillPatchSingleLevel(vel, IntVect(ng), time,
+                             {&(m_leveldata[lev]->velocity_o),
+                              &(m_leveldata[lev]->velocity)},
+                             {t_old[lev], t_new[lev]}, 0, 0, 3, geom[lev],
+                             physbc, 0);
+    } else {
+        amrex::Abort("multi-level todo");
+    }
+}
 
 namespace
 {
@@ -13,7 +29,7 @@ namespace
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 static
-void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void VelFillBox (Box const& bx, Array4<Real> const& dest,
                  const int dcomp, const int ncomp,
                  GeometryData const& geom, const Real time_in,
                  const BCRec* bcr, const int bcomp,
@@ -43,7 +59,7 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 static
-void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void DensityFillBox (Box const& bx, Array4<Real> const& dest,
                      const int dcomp, const int ncomp,
                      GeometryData const& geom, const Real time_in,
                      const BCRec* bcr, const int bcomp,
@@ -69,7 +85,7 @@ void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 static
-void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void ScalarFillBox (Box const& bx, Array4<Real> const& dest,
                     const int dcomp, const int ncomp,
                     GeometryData const& geom, const Real time_in,
                     const BCRec* bcr, const int bcomp,

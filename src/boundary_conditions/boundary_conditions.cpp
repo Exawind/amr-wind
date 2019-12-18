@@ -12,10 +12,138 @@
 
 using namespace amrex;
 
+Vector<BCRec> incflo::get_velocity_bcrec () const
+{
+    Vector<BCRec> bcr(AMREX_SPACEDIM*2);
+    for (OrientationIter oit; oit; ++oit) {
+        Orientation ori = oit();
+        int dir = ori.coordDir();
+        Orientation::Side side = ori.faceDir();
+        auto const bct = m_bc_type[ori];
+        if (bct == BC::pressure_inflow or
+            bct == BC::pressure_outflow)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::foextrap);
+                bcr[1].setLo(dir, BCType::foextrap);
+                bcr[2].setLo(dir, BCType::foextrap);
+            } else {
+                bcr[0].setHi(dir, BCType::foextrap);
+                bcr[1].setHi(dir, BCType::foextrap);
+                bcr[2].setHi(dir, BCType::foextrap);
+            }
+        }
+        else if (bct == BC::mass_inflow or bct == BC::no_slip_wall)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::ext_dir);
+                bcr[1].setLo(dir, BCType::ext_dir);
+                bcr[2].setLo(dir, BCType::ext_dir);
+            } else {
+                bcr[0].setHi(dir, BCType::ext_dir);
+                bcr[1].setHi(dir, BCType::ext_dir);
+                bcr[2].setHi(dir, BCType::ext_dir);
+            }
+        }
+        else if (bct == BC::periodic)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::int_dir);
+                bcr[1].setLo(dir, BCType::int_dir);
+                bcr[2].setLo(dir, BCType::int_dir);
+            } else {
+                bcr[0].setHi(dir, BCType::int_dir);
+                bcr[1].setHi(dir, BCType::int_dir);
+                bcr[2].setHi(dir, BCType::int_dir);
+            }
+        }
+    }
+    return bcr;
+}
+
+Vector<BCRec> incflo::get_tracer_bcrec () const
+{
+    Vector<BCRec> bcr(incflo::ntrac);
+    for (OrientationIter oit; oit; ++oit) {
+        Orientation ori = oit();
+        int dir = ori.coordDir();
+        Orientation::Side side = ori.faceDir();
+        auto const bct = m_bc_type[ori];
+        if (bct == BC::pressure_inflow or
+            bct == BC::pressure_outflow or
+            bct == BC::no_slip_wall)
+        {
+            if (side == Orientation::low) {
+                for (auto& b : bcr) b.setLo(dir, BCType::foextrap);
+            } else {
+                for (auto& b : bcr) b.setHi(dir, BCType::foextrap);
+            }
+        }
+        else if (bct == BC::mass_inflow)
+        {
+            if (side == Orientation::low) {
+                for (auto& b : bcr) b.setLo(dir, BCType::ext_dir);
+            } else {
+                for (auto& b : bcr) b.setHi(dir, BCType::ext_dir);
+            }
+        }
+        else if (bct == BC::periodic)
+        {
+            if (side == Orientation::low) {
+                for (auto& b : bcr) b.setLo(dir, BCType::int_dir);
+            } else {
+                for (auto& b : bcr) b.setHi(dir, BCType::int_dir);
+            }
+        }
+    }
+    return bcr;
+}
+
+Vector<BCRec> incflo::get_density_bcrec () const
+{
+    Vector<BCRec> bcr(1);
+    for (OrientationIter oit; oit; ++oit) {
+        Orientation ori = oit();
+        int dir = ori.coordDir();
+        Orientation::Side side = ori.faceDir();
+        auto const bct = m_bc_type[ori];
+        if (bct == BC::pressure_inflow or
+            bct == BC::pressure_outflow or
+            bct == BC::no_slip_wall)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::foextrap);
+            } else {
+                bcr[0].setHi(dir, BCType::foextrap);
+            }
+        }
+        else if (bct == BC::mass_inflow)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::ext_dir);
+            } else {
+                bcr[0].setHi(dir, BCType::ext_dir);
+            }
+        }
+        else if (bct == BC::periodic)
+        {
+            if (side == Orientation::low) {
+                bcr[0].setLo(dir, BCType::int_dir);
+            } else {
+                bcr[0].setHi(dir, BCType::int_dir);
+            }
+        }
+    }
+    return bcr;
+}
+
 void incflo::init_bcs()
 {
     auto f = [this] (std::string const& bcid, Orientation ori)
     {
+        m_bc_velocity[ori][0] = 0.0; // default
+        m_bc_velocity[ori][1] = 0.0;
+        m_bc_velocity[ori][2] = 0.0;
         m_bc_tracer[ori].resize(ntrac,0.0);
         if (ori.isLow()) {
             m_bc_location[ori] = geom[0].ProbLo(ori.coordDir());
