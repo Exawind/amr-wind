@@ -54,12 +54,6 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             }
         }
     }
-
-    EB_set_covered_faces({&u_mac,&v_mac,&w_mac}, 0.0);
-    VisMF::Write(u_mac, "u_mac");
-    VisMF::Write(v_mac, "v_mac");
-    VisMF::Write(w_mac, "w_mac");
-    amrex::Abort("xxxxx predict_vels_on_faces: end of fillpatch_velocity");
 }
 
 void

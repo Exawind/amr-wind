@@ -321,6 +321,7 @@ private:
     amrex::Vector<amrex::BCRec> get_tracer_bcrec () const;
 
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
+    void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
 
 public: // for cuda
 
@@ -447,6 +448,12 @@ public: // for cuda
                                   amrex::Vector<amrex::MultiFab*> const& density,
                                   amrex::Vector<amrex::MultiFab*> const& tracer,
                                   amrex::Real time);
+
+    void apply_MAC_projection (amrex::Vector<amrex::MultiFab>& u_mac,
+                               amrex::Vector<amrex::MultiFab>& v_mac,
+                               amrex::Vector<amrex::MultiFab>& w_mac,
+                               amrex::Vector<amrex::MultiFab*> const& density,
+                               amrex::Real time);
 
      void incflo_compute_convective_term(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_u,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_r,

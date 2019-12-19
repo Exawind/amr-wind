@@ -141,6 +141,7 @@ void incflo::init_bcs()
 {
     auto f = [this] (std::string const& bcid, Orientation ori)
     {
+        m_bc_density[ori] = 1.0;
         m_bc_velocity[ori][0] = 0.0; // default
         m_bc_velocity[ori][1] = 0.0;
         m_bc_velocity[ori][2] = 0.0;

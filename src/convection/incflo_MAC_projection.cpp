@@ -21,24 +21,64 @@ using namespace amrex;
 //
 // Inputs:
 // 
-//   lev               = the AMR level
 //   u_mac,v_mac,w_mac = the MAC velocity field to be projected
-//   density_in        = the cell-centered density
+//   density           = the cell-centered density
 //
 // Outputs:
 //
-//  phi               = the projection auxiliary function
 //  u_mac,v_mac,w_mac = the PROJECTED MAC velocity field 
 //
 // Notes:
 //
-//  phi is computed by solving
+//  phi, the projection auxiliary function, is computed by solving
 //
 //       div(ep*grad(phi)/rho) = div(ep * u*)
-//
-//  WARNING: this method returns the MAC velocity with up-to-date BCs in place
 // 
 void 
+incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
+                              Vector<MultiFab>& v_mac,
+                              Vector<MultiFab>& w_mac,
+                              Vector<MultiFab*> const& density,
+                              Real time)
+{
+    BL_PROFILE("incflo::apply_MAC_projection()");
+
+    if (incflo_verbose > 0) amrex::Print() << "MAC Projection:\n";
+
+    // This will hold (1/rho) on faces
+    Vector< Array<MultiFab, AMREX_SPACEDIM> > rho_face(finest_level+1);
+
+    // This will hold the RHS going into the MAC projection
+    Vector<MultiFab> mac_rhs(finest_level+1);
+
+    // This will hold the solution from the MAC projection
+    Vector<MultiFab> mac_phi(finest_level+1);
+
+    for (int lev=0; lev <= finest_level; ++lev)
+    {
+        rho_face[lev][0].define(u_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        rho_face[lev][1].define(v_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        rho_face[lev][2].define(w_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        mac_rhs[lev].define(grids[lev],dmap[lev],1,0,MFInfo(),Factory(lev));
+        mac_phi[lev].define(grids[lev],dmap[lev],1,1,MFInfo(),Factory(lev));
+
+        fillpatch_density(lev, time, *density[lev], 1);
+
+        // xxxxxx
+        EB_set_covered(*density[lev], 0, 1, 1, 0.0);
+        amrex::VisMF::Write(*density[lev], "rho");
+
+        amrex::average_cellcenter_to_face(GetArrOfPtrs(rho_face[lev]), *density[lev], geom[lev]);
+
+        amrex::VisMF::Write(rho_face[lev][0], "rhox");
+        amrex::VisMF::Write(rho_face[lev][1], "rhoy");
+        amrex::VisMF::Write(rho_face[lev][2], "rhoz");
+    }
+
+    amrex::Abort("xxxxx end of apply_MAC_projection");
+}
+
+void
 incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac, 
                               Vector< std::unique_ptr<MultiFab> >& v_mac,
                               Vector< std::unique_ptr<MultiFab> >& w_mac,

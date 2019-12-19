@@ -79,6 +79,59 @@ struct IncfloVelFill
     }
 };
 
+struct IncfloDenFill
+{
+    int probtype;
+    amrex::GpuArray<amrex::Real,AMREX_SPACEDIM*2> bcv;
 
+    AMREX_GPU_HOST
+    constexpr IncfloDenFill (int a_probtype, amrex::GpuArray<amrex::Real, AMREX_SPACEDIM*2> const& a_bcv)
+        : probtype(a_probtype), bcv(a_bcv) {}
+
+    AMREX_GPU_DEVICE
+    void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& rho,
+                     const int dcomp, const int numcomp,
+                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const amrex::BCRec* bcr, const int bcomp,
+                     const int orig_comp) const
+    {
+        using namespace amrex;
+
+        // do something for external Dirichlet (BCType::ext_dir)
+        const int i = iv[0];
+        const int j = iv[1];
+        const int k = iv[2];
+
+        const Box& domain_box = geom.Domain();
+        const BCRec& bc = bcr[bcomp];
+
+        if (bc.lo(0) == BCType::ext_dir and i < domain_box.smallEnd(0))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::x,Orientation::low)];
+        }
+        else if (bc.hi(0) == BCType::ext_dir and i > domain_box.bigEnd(0))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::x,Orientation::high)];
+        }
+
+        if (bc.lo(1) == BCType::ext_dir and j < domain_box.smallEnd(1))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::y,Orientation::low)];
+        }
+        else if (bc.hi(1) == BCType::ext_dir and j > domain_box.bigEnd(1))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::y,Orientation::high)];
+        }
+
+        if (bc.lo(2) == BCType::ext_dir and k < domain_box.smallEnd(2))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::z,Orientation::low)];
+        }
+        else if (bc.hi(2) == BCType::ext_dir and k > domain_box.bigEnd(2))
+        {
+            rho(i,j,k) = bcv[Orientation(Direction::z,Orientation::high)];
+        }
+    }
+};
 
 #endif

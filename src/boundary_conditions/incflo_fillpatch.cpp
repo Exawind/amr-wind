@@ -17,7 +17,22 @@ void incflo::fillpatch_velocity (int lev, Real time, MultiFab& vel, int ng)
                              {t_old[lev], t_new[lev]}, 0, 0, 3, geom[lev],
                              physbc, 0);
     } else {
-        amrex::Abort("multi-level todo");
+        amrex::Abort("fillpatch_velocity: multi-level todo");
+    }
+}
+
+void incflo::fillpatch_density (int lev, Real time, MultiFab& density, int ng)
+{
+    if (lev == 0) {
+        PhysBCFunct<GpuBndryFuncFab<IncfloDenFill> > physbc(geom[lev], get_density_bcrec(),
+                                                            IncfloDenFill{probtype, m_bc_density});
+        FillPatchSingleLevel(density, IntVect(ng), time,
+                             {&(m_leveldata[lev]->density_o),
+                              &(m_leveldata[lev]->density)},
+                             {t_old[lev], t_new[lev]}, 0, 0, 3, geom[lev],
+                             physbc, 0);
+    } else {
+        amrex::Abort("fillpatch_density: multi-level todo");
     }
 }
 
