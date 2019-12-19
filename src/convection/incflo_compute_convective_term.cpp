@@ -20,9 +20,12 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
     for (int lev = 0; lev <= finest_level; ++lev) {
         const BoxArray& ba = density[lev]->boxArray();
         const DistributionMapping& dm = density[lev]->DistributionMap();
-        u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm, 1, 1);
-        v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm, 1, 1);
-        w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm, 1, 1);
+        u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm,
+                          1, 1, MFInfo(), Factory(lev));
+        v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm,
+                          1, 1, MFInfo(), Factory(lev));
+        w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm,
+                          1, 1, MFInfo(), Factory(lev));
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
         predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);

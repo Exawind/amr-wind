@@ -29,7 +29,7 @@ void incflo::fillpatch_density (int lev, Real time, MultiFab& density, int ng)
         FillPatchSingleLevel(density, IntVect(ng), time,
                              {&(m_leveldata[lev]->density_o),
                               &(m_leveldata[lev]->density)},
-                             {t_old[lev], t_new[lev]}, 0, 0, 3, geom[lev],
+                             {t_old[lev], t_new[lev]}, 0, 0, 1, geom[lev],
                              physbc, 0);
     } else {
         amrex::Abort("fillpatch_density: multi-level todo");
