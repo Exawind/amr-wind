@@ -5,30 +5,6 @@
 #include <AMReX_FArrayBox.H>
 #endif
 
-void incflo_predict_vels_on_faces (amrex::Box const& ubx,
-                                   amrex::Box const& vbx,
-                                   amrex::Box const& wbx,
-                                   amrex::Array4<amrex::Real> const& u,
-                                   amrex::Array4<amrex::Real> const& v,
-                                   amrex::Array4<amrex::Real> const& w,
-                                   amrex::Array4<amrex::Real const> const& vcc);
-
-#ifdef AMREX_USE_EB
-void incflo_predict_vels_on_faces_eb (amrex::Box const& ccbx,
-                                      amrex::Box const& ubx,
-                                      amrex::Box const& vbx,
-                                      amrex::Box const& wbx,
-                                      amrex::Array4<amrex::Real> const& u,
-                                      amrex::Array4<amrex::Real> const& v,
-                                      amrex::Array4<amrex::Real> const& w,
-                                      amrex::Array4<amrex::Real const> const& vcc,
-                                      amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                      amrex::Array4<amrex::Real const> const& fcx,
-                                      amrex::Array4<amrex::Real const> const& fcy,
-                                      amrex::Array4<amrex::Real const> const& fcz);
-#endif
-
-
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 amrex::Real incflo_xslope (int i, int j, int k, int n,
                            amrex::Array4<amrex::Real const> const& vcc) noexcept

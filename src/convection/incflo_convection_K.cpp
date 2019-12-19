@@ -1,10 +1,11 @@
 #include <incflo_convection_K.H>
+#include <incflo.H>
 
 using namespace amrex;
 
-void incflo_predict_vels_on_faces (Box const& ubx, Box const& vbx, Box const& wbx,
-                                   Array4<Real> const& u, Array4<Real> const& v,
-                                   Array4<Real> const& w, Array4<Real const> const& vcc)
+void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
+                                    Array4<Real> const& u, Array4<Real> const& v,
+                                    Array4<Real> const& w, Array4<Real const> const& vcc)
 {
     constexpr Real small = 1.e-10;
 
@@ -65,14 +66,14 @@ void incflo_predict_vels_on_faces (Box const& ubx, Box const& vbx, Box const& wb
 
 
 #ifdef AMREX_USE_EB
-void incflo_predict_vels_on_faces_eb (Box const& ccbx,
-                                      Box const& ubx, Box const& vbx, Box const& wbx,
-                                      Array4<Real> const& u, Array4<Real> const& v,
-                                      Array4<Real> const& w, Array4<Real const> const& vcc,
-                                      Array4<EBCellFlag const> const& flag,
-                                      Array4<Real const> const& fcx,
-                                      Array4<Real const> const& fcy,
-                                      Array4<Real const> const& fcz)
+void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
+                                       Box const& ubx, Box const& vbx, Box const& wbx,
+                                       Array4<Real> const& u, Array4<Real> const& v,
+                                       Array4<Real> const& w, Array4<Real const> const& vcc,
+                                       Array4<EBCellFlag const> const& flag,
+                                       Array4<Real const> const& fcx,
+                                       Array4<Real const> const& fcy,
+                                       Array4<Real const> const& fcz)
 {
     constexpr Real small = 1.e-10;
 

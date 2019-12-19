@@ -343,6 +343,30 @@ public: // for cuda
 
     void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
+    void predict_vels_on_faces (int lev,
+                                amrex::Box const& ubx,
+                                amrex::Box const& vbx,
+                                amrex::Box const& wbx,
+                                amrex::Array4<amrex::Real> const& u,
+                                amrex::Array4<amrex::Real> const& v,
+                                amrex::Array4<amrex::Real> const& w,
+                                amrex::Array4<amrex::Real const> const& vcc);
+#ifdef AMREX_USE_EB
+    void predict_vels_on_faces_eb (int lev,
+                                   amrex::Box const& ccbx,
+                                   amrex::Box const& ubx,
+                                   amrex::Box const& vbx,
+                                   amrex::Box const& wbx,
+                                   amrex::Array4<amrex::Real> const& u,
+                                   amrex::Array4<amrex::Real> const& v,
+                                   amrex::Array4<amrex::Real> const& w,
+                                   amrex::Array4<amrex::Real const> const& vcc,
+                                   amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                   amrex::Array4<amrex::Real const> const& fcx,
+                                   amrex::Array4<amrex::Real const> const& fcy,
+                                   amrex::Array4<amrex::Real const> const& fcz);
+#endif
+
 // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
