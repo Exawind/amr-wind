@@ -26,9 +26,9 @@ amrex::Real incflo_xslope_extdir (int i, int j, int k, int n,
     amrex::Real dr = 2.0*(vcc(i+1,j,k,n) - vcc(i  ,j,k,n));
     amrex::Real dc = 0.5*(vcc(i+1,j,k,n) - vcc(i-1,j,k,n));
     if (edlo and i == domlo) {
-        dc = (vcc(i+1,j,k,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i-1,j,k,n))*(1.0/3.0);
+        dc = (vcc(i+1,j,k,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i-1,j,k,n))/3.0;
     } else if (edhi and i == domhi) {
-        dc = (4.0*vcc(i+1,j,k,n)-3.0*vcc(i,j,k,n)-vcc(i-1,j,k,n))*(1.0/3.0);
+        dc = (4.0*vcc(i+1,j,k,n)-3.0*vcc(i,j,k,n)-vcc(i-1,j,k,n))/3.0;
     }
     amrex::Real slope = amrex::min(std::abs(dl),std::abs(dc),std::abs(dr));
     slope = (dr*dl > 0.0) ? slope : 0.0;
@@ -56,9 +56,9 @@ amrex::Real incflo_yslope_extdir (int i, int j, int k, int n,
     amrex::Real dr = 2.0*(vcc(i,j+1,k,n) - vcc(i,j  ,k,n));
     amrex::Real dc = 0.5*(vcc(i,j+1,k,n) - vcc(i,j-1,k,n));
     if (edlo and j == domlo) {
-        dc = (vcc(i,j+1,k,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i,j-1,k,n))*(1.0/3.0);
+        dc = (vcc(i,j+1,k,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i,j-1,k,n))/3.0;
     } else if (edhi and j == domhi) {
-        dc = (4.0*vcc(i,j+1,k,n)-3.0*vcc(i,j,k,n)-vcc(i,j-1,k,n))*(1.0/3.0);
+        dc = (4.0*vcc(i,j+1,k,n)-3.0*vcc(i,j,k,n)-vcc(i,j-1,k,n))/3.0;
     }
     amrex::Real slope = amrex::min(std::abs(dl),std::abs(dc),std::abs(dr));
     slope = (dr*dl > 0.0) ? slope : 0.0;
@@ -86,9 +86,9 @@ amrex::Real incflo_zslope_extdir (int i, int j, int k, int n,
     amrex::Real dr = 2.0*(vcc(i,j,k+1,n) - vcc(i,j,k  ,n));
     amrex::Real dc = 0.5*(vcc(i,j,k+1,n) - vcc(i,j,k-1,n));
     if (edlo and k == domlo) {
-        dc = (vcc(i,j,k+1,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i,j,k-1,n))*(1.0/3.0);
+        dc = (vcc(i,j,k+1,n)+3.0*vcc(i,j,k,n)-4.0*vcc(i,j,k-1,n))/3.0;
     } else if (edhi and k == domhi) {
-        dc = (4.0*vcc(i,j,k+1,n)-3.0*vcc(i,j,k,n)-vcc(i,j,k-1,n))*(1.0/3.0);
+        dc = (4.0*vcc(i,j,k+1,n)-3.0*vcc(i,j,k,n)-vcc(i,j,k-1,n))/3.0;
     }
     amrex::Real slope = amrex::min(std::abs(dl),std::abs(dc),std::abs(dr));
     slope = (dr*dl > 0.0) ? slope : 0.0;
