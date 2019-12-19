@@ -12,7 +12,7 @@
 
 using namespace amrex;
 
-Vector<BCRec> incflo::get_velocity_bcrec () const
+Vector<BCRec> incflo::get_velocity_bcrec () const noexcept
 {
     Vector<BCRec> bcr(AMREX_SPACEDIM*2);
     for (OrientationIter oit; oit; ++oit) {
@@ -61,7 +61,7 @@ Vector<BCRec> incflo::get_velocity_bcrec () const
     return bcr;
 }
 
-Vector<BCRec> incflo::get_tracer_bcrec () const
+Vector<BCRec> incflo::get_tracer_bcrec () const noexcept
 {
     Vector<BCRec> bcr(incflo::ntrac);
     for (OrientationIter oit; oit; ++oit) {
@@ -99,7 +99,7 @@ Vector<BCRec> incflo::get_tracer_bcrec () const
     return bcr;
 }
 
-Vector<BCRec> incflo::get_density_bcrec () const
+Vector<BCRec> incflo::get_density_bcrec () const noexcept
 {
     Vector<BCRec> bcr(1);
     for (OrientationIter oit; oit; ++oit) {

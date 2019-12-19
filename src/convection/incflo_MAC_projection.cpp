@@ -46,35 +46,43 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
     if (incflo_verbose > 0) amrex::Print() << "MAC Projection:\n";
 
     // This will hold (1/rho) on faces
-    Vector< Array<MultiFab, AMREX_SPACEDIM> > rho_face(finest_level+1);
-
-    // This will hold the RHS going into the MAC projection
-    Vector<MultiFab> mac_rhs(finest_level+1);
-
-    // This will hold the solution from the MAC projection
-    Vector<MultiFab> mac_phi(finest_level+1);
-
+    Vector<Array<MultiFab ,AMREX_SPACEDIM> > rho_face(finest_level+1);
+    Vector<Array<MultiFab*,AMREX_SPACEDIM> > mac_vec(finest_level+1);
     for (int lev=0; lev <= finest_level; ++lev)
     {
         rho_face[lev][0].define(u_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
         rho_face[lev][1].define(v_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
         rho_face[lev][2].define(w_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
-        mac_rhs[lev].define(grids[lev],dmap[lev],1,0,MFInfo(),Factory(lev));
-        mac_phi[lev].define(grids[lev],dmap[lev],1,1,MFInfo(),Factory(lev));
 
         fillpatch_density(lev, time, *density[lev], 1);
-
-        // xxxxxx
-        EB_set_covered(*density[lev], 0, 1, 1, 0.0);
-        amrex::VisMF::Write(*density[lev], "rho");
-
         amrex::average_cellcenter_to_face(GetArrOfPtrs(rho_face[lev]), *density[lev], geom[lev]);
+        for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+            rho_face[lev][idim].invert(1.0, 0);
+        }
 
-        amrex::VisMF::Write(rho_face[lev][0], "rhox");
-        amrex::VisMF::Write(rho_face[lev][1], "rhoy");
-        amrex::VisMF::Write(rho_face[lev][2], "rhoz");
+        mac_vec[lev][0] = &u_mac[lev];
+        mac_vec[lev][1] = &v_mac[lev];
+        mac_vec[lev][2] = &w_mac[lev];
     }
 
+    //
+    // If we want to set max_coarsening_level we have to send it in to the constructor
+    //
+    LPInfo lp_info;
+    lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
+
+    //
+    // Perform MAC projection
+    //
+    MacProjector macproj(mac_vec, GetVecOfArrOfConstPtrs(rho_face), Geom(0,finest_level), lp_info);
+
+    macproj.setDomainBC(get_projection_bclo(), get_projection_bchi());
+
+    macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
+
+    VisMF::Write(u_mac[0], "umac");
+    VisMF::Write(v_mac[0], "vmac");
+    VisMF::Write(w_mac[0], "wmac");
     amrex::Abort("xxxxx end of apply_MAC_projection");
 }
 

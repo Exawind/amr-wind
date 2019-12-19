@@ -425,7 +425,7 @@ incflo::writeNow()
     return write_now;
 }
 
-Vector<MultiFab*> incflo::get_velocity_old ()
+Vector<MultiFab*> incflo::get_velocity_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -435,7 +435,7 @@ Vector<MultiFab*> incflo::get_velocity_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_velocity_new ()
+Vector<MultiFab*> incflo::get_velocity_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -445,7 +445,7 @@ Vector<MultiFab*> incflo::get_velocity_new ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_density_old ()
+Vector<MultiFab*> incflo::get_density_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -455,7 +455,7 @@ Vector<MultiFab*> incflo::get_density_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_density_new ()
+Vector<MultiFab*> incflo::get_density_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -465,7 +465,7 @@ Vector<MultiFab*> incflo::get_density_new ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_tracer_old ()
+Vector<MultiFab*> incflo::get_tracer_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -475,7 +475,7 @@ Vector<MultiFab*> incflo::get_tracer_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_tracer_new ()
+Vector<MultiFab*> incflo::get_tracer_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -485,7 +485,7 @@ Vector<MultiFab*> incflo::get_tracer_new ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_velocity_old ()
+Vector<MultiFab*> incflo::get_conv_velocity_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -495,7 +495,7 @@ Vector<MultiFab*> incflo::get_conv_velocity_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_velocity_new ()
+Vector<MultiFab*> incflo::get_conv_velocity_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -505,7 +505,7 @@ Vector<MultiFab*> incflo::get_conv_velocity_new ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_density_old ()
+Vector<MultiFab*> incflo::get_conv_density_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -515,7 +515,7 @@ Vector<MultiFab*> incflo::get_conv_density_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_density_new ()
+Vector<MultiFab*> incflo::get_conv_density_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -525,7 +525,7 @@ Vector<MultiFab*> incflo::get_conv_density_new ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_tracer_old ()
+Vector<MultiFab*> incflo::get_conv_tracer_old () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);
@@ -535,7 +535,7 @@ Vector<MultiFab*> incflo::get_conv_tracer_old ()
     return r;
 }
 
-Vector<MultiFab*> incflo::get_conv_tracer_new ()
+Vector<MultiFab*> incflo::get_conv_tracer_new () noexcept
 {
     Vector<MultiFab*> r;
     r.reserve(finest_level+1);

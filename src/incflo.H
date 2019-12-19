@@ -303,22 +303,25 @@ private:
     }
 #endif
 
-    amrex::Vector<amrex::MultiFab*> get_velocity_old ();
-    amrex::Vector<amrex::MultiFab*> get_velocity_new ();
-    amrex::Vector<amrex::MultiFab*> get_density_old ();
-    amrex::Vector<amrex::MultiFab*> get_density_new ();
-    amrex::Vector<amrex::MultiFab*> get_tracer_old ();
-    amrex::Vector<amrex::MultiFab*> get_tracer_new ();
-    amrex::Vector<amrex::MultiFab*> get_conv_velocity_old ();
-    amrex::Vector<amrex::MultiFab*> get_conv_velocity_new ();
-    amrex::Vector<amrex::MultiFab*> get_conv_density_old ();
-    amrex::Vector<amrex::MultiFab*> get_conv_density_new ();
-    amrex::Vector<amrex::MultiFab*> get_conv_tracer_old ();
-    amrex::Vector<amrex::MultiFab*> get_conv_tracer_new ();
+    amrex::Vector<amrex::MultiFab*> get_velocity_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_velocity_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_density_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_density_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_tracer_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_tracer_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_velocity_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_velocity_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_density_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_density_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_tracer_old () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_conv_tracer_new () noexcept;
 
-    amrex::Vector<amrex::BCRec> get_velocity_bcrec () const;
-    amrex::Vector<amrex::BCRec> get_density_bcrec () const;
-    amrex::Vector<amrex::BCRec> get_tracer_bcrec () const;
+    amrex::Vector<amrex::BCRec> get_velocity_bcrec () const noexcept;
+    amrex::Vector<amrex::BCRec> get_density_bcrec () const noexcept;
+    amrex::Vector<amrex::BCRec> get_tracer_bcrec () const noexcept;
+
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bclo () const noexcept;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bchi () const noexcept;
 
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
