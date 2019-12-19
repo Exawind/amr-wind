@@ -143,6 +143,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
            const auto& flag_fab =         flags.array();
 #endif
            const int minf = bc_list.get_minf();
+           const int  nsw = bc_list.get_nsw();
 
            const auto&  ilo_ifab  = bc_ilo[lev]->array();
            const auto&  ihi_ifab  = bc_ihi[lev]->array();
@@ -152,7 +153,7 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
            const auto&  khi_ifab  = bc_khi[lev]->array();
 
            amrex::ParallelFor(bx,ncomp,
-             [minf,domain,slopes_comp,ilo_ifab,ihi_ifab,jlo_ifab,jhi_ifab,klo_ifab,khi_ifab,
+             [minf,nsw,domain,slopes_comp,ilo_ifab,ihi_ifab,jlo_ifab,jhi_ifab,klo_ifab,khi_ifab,
 #ifdef AMREX_USE_EB
               xs_fab,ys_fab,zs_fab,flag_fab,state_fab] 
 #else
@@ -161,14 +162,10 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
               AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
            {
 #ifdef AMREX_USE_EB
-               if ( (i == domain.smallEnd(0)) && !flag_fab(i,j,k).isCovered() && 
-                    (ilo_ifab(i-1,j,k,0) == minf) )
-//                  (ilo_ifab(i-1,j,k,0) == minf || ilo_ifab(i-1,j,k,0) == nsw) )
-#else
-               if ( (i == domain.smallEnd(0)) &&
-                    (ilo_ifab(i-1,j,k,0) == minf) )
-//                  (ilo_ifab(i-1,j,k,0) == minf || ilo_ifab(i-1,j,k,0) == nsw) )
+               if ( !flag_fab(i,j,k).isCovered() ) {
 #endif
+               if ( (i == domain.smallEnd(0)) &&
+                    (ilo_ifab(i-1,j,k,0) == minf || ilo_ifab(i-1,j,k,0) == nsw) )
                {
                    Real du_xl = 2.0*(state_fab(i  ,j,k,n) - state_fab(i-1,j,k,n));
                    Real du_xr = 2.0*(state_fab(i+1,j,k,n) - state_fab(i  ,j,k,n));
@@ -179,11 +176,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    xs_fab(i,j,k,slopes_comp+n) = (du_xc       > 0.0) ? xslope : -xslope;
                }
 
-#ifdef AMREX_USE_EB
-               if ( (i == domain.bigEnd(0)) && !flag_fab(i,j,k).isCovered() && ihi_ifab(i+1,j,k,0) == minf)
-#else
-               if ( (i == domain.bigEnd(0)) &&                                 ihi_ifab(i+1,j,k,0) == minf)
-#endif
+               if ( (i == domain.bigEnd(0)) &&
+                    (ihi_ifab(i+1,j,k,0) == minf || ihi_ifab(i+1,j,k,0) == nsw) )
                {
                    Real du_xl = 2.0*(state_fab(i  ,j,k,n) - state_fab(i-1,j,k,n));
                    Real du_xr = 2.0*(state_fab(i+1,j,k,n) - state_fab(i  ,j,k,n));
@@ -194,11 +188,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    xs_fab(i,j,k,slopes_comp+n) = (du_xc       > 0.0) ? xslope : -xslope;
                }
 
-#ifdef AMREX_USE_EB
-               if ( (j == domain.smallEnd(1)) && !flag_fab(i,j,k).isCovered() && jlo_ifab(i,j-1,k,0) == minf)
-#else
-               if ( (j == domain.smallEnd(1)) &&                                 jlo_ifab(i,j-1,k,0) == minf)
-#endif
+               if ( (j == domain.smallEnd(1)) &&
+                    (jlo_ifab(i,j-1,k,0) == minf || jlo_ifab(i,j-1,k,0) == nsw) )
                {
                    Real du_yl = 2.0*(state_fab(i,j  ,k,n) - state_fab(i,j-1,k,n));
                    Real du_yr = 2.0*(state_fab(i,j+1,k,n) - state_fab(i,j  ,k,n));
@@ -209,11 +200,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    ys_fab(i,j,k,slopes_comp+n) = (du_yc       > 0.0) ? yslope : -yslope;
                }
 
-#ifdef AMREX_USE_EB
-               if ( (j == domain.bigEnd(1)) && !flag_fab(i,j,k).isCovered() && jhi_ifab(i,j+1,k,0) == minf)
-#else
-               if ( (j == domain.bigEnd(1)) &&                                 jhi_ifab(i,j+1,k,0) == minf)
-#endif
+               if ( (j == domain.bigEnd(1)) &&
+                    (jhi_ifab(i,j+1,k,0) == minf || jhi_ifab(i,j+1,k,0) == nsw) )
                {
                    Real du_yl = 2.0*(state_fab(i,j  ,k,n) - state_fab(i,j-1,k,n));
                    Real du_yr = 2.0*(state_fab(i,j+1,k,n) - state_fab(i,j  ,k,n));
@@ -224,11 +212,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    ys_fab(i,j,k,slopes_comp+n) = (du_yc       > 0.0) ? yslope : -yslope;
                }
 
-#ifdef AMREX_USE_EB
-               if ( (k == domain.smallEnd(2)) && !flag_fab(i,j,k).isCovered() && klo_ifab(i,j,k-1,0) == minf)
-#else
-               if ( (k == domain.smallEnd(2)) &&                                 klo_ifab(i,j,k-1,0) == minf)
-#endif
+               if ( (k == domain.smallEnd(2)) &&
+                    (klo_ifab(i,j,k-1,0) == minf || klo_ifab(i,j,k-1,0) == nsw) )
                {
                    Real du_zl = 2.0*(state_fab(i,j,k  ,n) - state_fab(i,j,k-1,n));
                    Real du_zr = 2.0*(state_fab(i,j,k+1,n) - state_fab(i,j,k  ,n));
@@ -238,11 +223,8 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    zslope          = (du_zr*du_zl > 0.0) ? zslope : 0.0;
                    zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                }
-#ifdef AMREX_USE_EB
-               if ( (k == domain.bigEnd(2)) && !flag_fab(i,j,k).isCovered() && khi_ifab(i,j,k+1,0) == minf)
-#else
-               if ( (k == domain.bigEnd(2)) &&                                 khi_ifab(i,j,k+1,0) == minf)
-#endif
+               if ( (k == domain.bigEnd(2)) &&
+                    (khi_ifab(i,j,k+1,0) == minf || khi_ifab(i,j,k+1,0) == nsw) )
                {
                    Real du_zl = 2.0*(state_fab(i,j,k  ,n) - state_fab(i,j,k-1,n));
                    Real du_zr = 2.0*(state_fab(i,j,k+1,n) - state_fab(i,j,k  ,n));
@@ -252,9 +234,13 @@ incflo::incflo_compute_slopes (int lev, Real time, MultiFab& Sborder,
                    zslope          = (du_zr*du_zl > 0.0) ? zslope : 0.0;
                    zs_fab(i,j,k,slopes_comp+n) = (du_zc       > 0.0) ? zslope : -zslope;
                }
+
+#ifdef AMREX_USE_EB
+               } // cell not covered
+#endif
            });
            
-        } // not covered
+        } // FAB not covered
     } // MFIter
 
     xslopes_in[lev] -> FillBoundary(geom[lev].periodicity());
