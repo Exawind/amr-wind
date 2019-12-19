@@ -779,7 +779,7 @@ void incflo::spatially_average_quantities_down(bool plot)
     // simple shear stress model for neutral BL
     // apply as an inhomogeneous Neumann BC
     const Real uh = sqrt(pow(vx_mean_ground,2) + pow(vy_mean_ground,2)) + 1.0e-12;
-    utau = kappa*uh/log10(z_ground/surface_roughness_z0);
+    utau = kappa*uh/log(z_ground/surface_roughness_z0);
     amrex::Print() << "utau: " << utau << std::endl;
     
     for(int i=s; i < b; ++i){
