@@ -153,8 +153,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if (m_diff_type == DiffusionType::Explicit ||
         m_diff_type == DiffusionType::Crank_Nicolson)
     {
-       int extrap_dir_bcs = 0;
-       incflo_set_velocity_bcs (cur_time, vel_o, extrap_dir_bcs);
+       incflo_set_velocity_bcs (cur_time, vel_o);
        diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
 
        diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
@@ -226,7 +225,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         incflo_set_density_bcs(new_time, density);
     if (advect_tracer)
         incflo_set_tracer_bcs(new_time, tracer);
-    incflo_set_velocity_bcs(new_time, vel, 0);
+    incflo_set_velocity_bcs(new_time, vel);
 
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
@@ -247,7 +246,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     ApplyProjection(new_time, dt, incremental_projection);
 
     // Fill velocity BCs again
-    incflo_set_velocity_bcs(new_time, vel, 0);
+    incflo_set_velocity_bcs(new_time, vel);
 }
 
 //
@@ -334,8 +333,7 @@ void incflo::ApplyCorrector()
     //   Now divtau is the diffusion term computed from u*
     if (m_diff_type == DiffusionType::Explicit)
     {
-       int extrap_dir_bcs = 0;
-       incflo_set_velocity_bcs (new_time, vel, extrap_dir_bcs);
+       incflo_set_velocity_bcs (new_time, vel);
        diffusion_op->ComputeDivTau(divtau, vel   , density, eta);
        diffusion_op->ComputeLapS  (laps,   tracer, density, mu_s);
     } else {
@@ -418,7 +416,7 @@ void incflo::ApplyCorrector()
        incflo_set_density_bcs(new_time, density);
     if (advect_tracer)
        incflo_set_tracer_bcs(new_time, tracer);
-    incflo_set_velocity_bcs(new_time, vel, 0);
+    incflo_set_velocity_bcs(new_time, vel);
 
     // Solve implicit diffusion equation for u*
     if (m_diff_type == DiffusionType::Crank_Nicolson)
@@ -437,5 +435,5 @@ void incflo::ApplyCorrector()
     ApplyProjection(new_time, dt, incremental);
 
     // Fill velocity BCs again
-    incflo_set_velocity_bcs(new_time, vel, 0);
+    incflo_set_velocity_bcs(new_time, vel);
 }

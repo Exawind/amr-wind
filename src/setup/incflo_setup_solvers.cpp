@@ -17,7 +17,7 @@ incflo::incflo_init_solvers ()
     //
     set_ppe_bcs(bc_lo, bc_hi,
                 domain.loVect(), domain.hiVect(),
-                &nghost_for_bcs,
+                &nghost,
                 bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
                 bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
                 bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
@@ -40,7 +40,7 @@ incflo::incflo_init_solvers ()
     //
     set_vel_diff_bc( bc_lo, bc_hi,
                     domain.loVect(), domain.hiVect(),
-                    &nghost_for_bcs,
+                    &nghost,
                     bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
                     bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
                     bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
@@ -54,7 +54,7 @@ incflo::incflo_init_solvers ()
     //
     set_scal_diff_bc( bc_lo, bc_hi,
                      domain.loVect(), domain.hiVect(),
-                     &nghost_for_bcs,
+                     &nghost,
                      bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
                      bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
                      bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
@@ -84,7 +84,7 @@ incflo::incflo_setup_solvers ()
     //
     set_ppe_bcs(bc_lo, bc_hi,
                 domain.loVect(), domain.hiVect(),
-                &nghost_for_bcs,
+                &nghost,
                 bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
                 bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
                 bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());

@@ -58,17 +58,13 @@ void VelFillBox (Box const& bx, Array4<Real> const& dest,
     const Box& domain = geom.Domain();
     int lev = my_incflo->GetLevel(domain);
 
-    // We are hard-wiring this fillpatch routine to define the Dirichlet values
-    //    at the faces (not the ghost cell center)
-    int extrap_dir_bcs = 0;
-
     // We only do this to make it not const
     Real time = time_in;
 
     FArrayBox dest_fab(dest);
     Elixir eli_dest_fab = dest_fab.elixir();
 
-    my_incflo->set_velocity_bcs (time, lev, dest_fab, domain, extrap_dir_bcs);
+    my_incflo->set_velocity_bcs (time, lev, dest_fab, domain);
 }
 
 // This interface must match the definition of the interface for

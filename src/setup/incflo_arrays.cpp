@@ -48,6 +48,5 @@ void incflo::ResizeArrays ()
 
 void incflo::MakeBCArrays()
 {
-
 }
 

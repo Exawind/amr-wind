@@ -82,7 +82,7 @@ public:
     void GetInputBCs();
 
     void incflo_set_velocity_bcs (amrex::Real time,
-                                  amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
+                                  amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
                                   int extrap_dir_bcs) const;
 
     void incflo_set_density_bcs (amrex::Real time,
@@ -106,8 +106,7 @@ public:
     void set_velocity_bcs(amrex::Real time,
                           const int lev,
                           amrex::FArrayBox& vel_fab,
-                          const amrex::Box& domain,
-                          const int extrap_dir_bcs) const;
+                          const amrex::Box& domain) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -183,6 +182,19 @@ public:
                                       const amrex::FArrayBox& u_mac,
                                       const amrex::FArrayBox& v_mac,
                                       const amrex::FArrayBox& w_mac);
+
+    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
+                                      const amrex::Array4<amrex::Real> &a_fx,
+                                      const amrex::Array4<amrex::Real> &a_fy,
+                                      const amrex::Array4<amrex::Real> &a_fz,
+                                      const amrex::Array4<amrex::Real> &tforces,
+                                      const amrex::Array4<amrex::Real> &divu,
+                                      const amrex::Array4<amrex::Real> &s,
+                                      const int state_comp, const int n_comp,
+                                      const amrex::Array4<const amrex::Real> &umac,
+                                      const amrex::Array4<const amrex::Real> &vmac,
+                                      const amrex::Array4<const amrex::Real> &wmac,
+                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
 #ifdef AMREX_USE_EB
     void incflo_compute_eb_fluxes_on_box(const int lev, amrex::Box& bx,
@@ -275,7 +287,7 @@ private:
     static constexpr int nghost_for_slopes = 4;
     static constexpr int nghost_for_bcs    = 4;
 #else
-    static constexpr int nghost            = 2;
+    static constexpr int nghost            = 3;
     static constexpr int nghost_for_slopes = 3;
     static constexpr int nghost_for_bcs    = 3;
 #endif

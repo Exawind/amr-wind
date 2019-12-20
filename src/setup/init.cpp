@@ -216,11 +216,11 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    incflo_set_density_bcs(cur_time, density);
-    incflo_set_tracer_bcs (cur_time, tracer);
-    incflo_set_density_bcs(cur_time, density_o);
-    incflo_set_tracer_bcs (cur_time, tracer_o);
-    incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_density_bcs (cur_time, density);
+    incflo_set_tracer_bcs  (cur_time, tracer);
+    incflo_set_density_bcs (cur_time, density_o);
+    incflo_set_tracer_bcs  (cur_time, tracer_o);
+    incflo_set_velocity_bcs(cur_time, vel);
 
     setup_level_mask();
 
@@ -307,7 +307,7 @@ void incflo::SetBCTypes()
                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                     domain.loVect(), domain.hiVect(),
-                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost_for_bcs);
+                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost);
     }
 }
 
@@ -358,7 +358,7 @@ void incflo::SetBackgroundPressure()
                    bc_jhi[lev]->dataPtr(),
                    bc_klo[lev]->dataPtr(),
                    bc_khi[lev]->dataPtr(),
-                   &nghost_for_bcs);
+                   &nghost);
         }
         p0[lev]->FillBoundary(p0_periodicity);
     }

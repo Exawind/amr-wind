@@ -23,7 +23,7 @@ bool incflo::SteadyStateReached()
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_velocity_bcs(cur_time, vel);
 
     // Use temporaries to store the difference between current and previous solution
     Vector<std::unique_ptr<MultiFab>> diff_vel;
