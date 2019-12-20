@@ -220,6 +220,19 @@ public:
                                       const FArrayBox& v_mac,
                                       const FArrayBox& w_mac);
 
+    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
+                                      const amrex::Array4<amrex::Real> &a_fx,
+                                      const amrex::Array4<amrex::Real> &a_fy,
+                                      const amrex::Array4<amrex::Real> &a_fz,
+                                      const amrex::Array4<amrex::Real> &tforces,
+                                      const amrex::Array4<amrex::Real> &divu,
+                                      const amrex::Array4<amrex::Real> &s,
+                                      const int state_comp, const int n_comp,
+                                      const amrex::Array4<const amrex::Real> &umac,
+                                      const amrex::Array4<const amrex::Real> &vmac,
+                                      const amrex::Array4<const amrex::Real> &wmac,
+                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
+
 #ifdef AMREX_USE_EB
     void incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
                                          FArrayBox& a_fx,

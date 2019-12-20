@@ -123,10 +123,43 @@ incflo::incflo_compute_fluxes(int lev,
                       }
             }
 #else
-                    incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                 (*state_in[lev])[mfi], state_comp, ncomp,
-                                                 (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                 (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
+                    // HACK HACK HACK -- NOTE THIS IS NOT READY FOR USE
+                    if (use_godunov)
+                    {
+                       // These are place-holders for now
+                       MultiFab tforces(grids[lev], dmap[lev], ncomp, 2);;
+                       MultiFab divu   (grids[lev], dmap[lev],     1, 2);;
+                       tforces.setVal(0.0);
+                       divu.setVal(0.0);
+
+                       BCRec dom_bc;
+                       {
+                         // const int* lo_bc = phys_bc.lo();
+                         // const int* hi_bc = phys_bc.hi();
+                         // HACK -- just set to all int_dir as stand-in for periodic 
+                         dom_bc.setLo(0,BCType::int_dir);
+                         dom_bc.setHi(0,BCType::int_dir);
+                         dom_bc.setLo(1,BCType::int_dir);
+                         dom_bc.setHi(1,BCType::int_dir);
+                         dom_bc.setLo(2,BCType::int_dir);
+                         dom_bc.setHi(2,BCType::int_dir);
+                       }
+
+                       Gpu::ManagedVector<BCRec> bc(ncomp);
+                       for (int n = 0; n < ncomp; ++n) 
+                            setBC(bx, geom[lev].Domain(), dom_bc, bc[n]);
+
+                       incflo_godunov_fluxes_on_box(lev, bx, (*a_fx[lev]).array(mfi), (*a_fy[lev]).array(mfi), (*a_fz[lev]).array(mfi),
+                                                    tforces.array(mfi), divu.array(mfi),
+                                                    state_in[lev]->array(mfi),state_comp,ncomp,
+                                                    u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), bc);
+
+                    }
+                    else
+                       incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
+                                                    (*state_in[lev])[mfi], state_comp, ncomp,
+                                                    (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                    (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
 #endif
         }// MFIter
 }
