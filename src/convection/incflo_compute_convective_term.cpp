@@ -29,8 +29,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
     int num_comp;
 
-    int nghost_for_copy = std::min(nghost, nghost_for_slopes);
-
     // First do FillPatch of {velocity, density, tracer} so we know the ghost cells of
     // these arrays are all filled
     for (int lev = 0; lev <= finest_level; lev++)
@@ -39,30 +37,30 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 #ifdef AMREX_USE_EB
         MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost, MFInfo(), *ebfactory[lev]);
 #else
-        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost_for_slopes, MFInfo());
+        MultiFab Sborder_u(grids[lev], dmap[lev], vel_in[lev]->nComp(), nghost, MFInfo());
 #endif
         FillPatchVel(lev, time, Sborder_u);
 
         // Copy each FAB back from Sborder_u into the vel array, complete with filled ghost cells
-        MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), nghost_for_copy);
+        MultiFab::Copy (*vel_in[lev], Sborder_u, 0, 0, vel_in[lev]->nComp(), nghost);
 
 #ifdef AMREX_USE_EB
         MultiFab Sborder_r(grids[lev], dmap[lev], 1, nghost, MFInfo(), *ebfactory[lev]);
 #else
-        MultiFab Sborder_r(grids[lev], dmap[lev], 1, nghost_for_slopes, MFInfo());
+        MultiFab Sborder_r(grids[lev], dmap[lev], 1, nghost, MFInfo());
 #endif
         FillPatchDensity(lev, time, Sborder_r);
-        MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, nghost_for_copy);
+        MultiFab::Copy (*density_in[lev], Sborder_r, 0, 0, 1, nghost);
 
         if (advect_tracer)
         {
 #ifdef AMREX_USE_EB
            MultiFab Sborder_s(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), *ebfactory[lev]);
 #else
-           MultiFab Sborder_s(grids[lev], dmap[lev], ntrac, nghost_for_slopes, MFInfo());
+           MultiFab Sborder_s(grids[lev], dmap[lev], ntrac, nghost, MFInfo());
 #endif
            FillPatchScalar(lev, time, Sborder_s);
-           MultiFab::Copy (*tracer_in[lev], Sborder_s, 0, 0, tracer_in[lev]->nComp(), nghost_for_copy);
+           MultiFab::Copy (*tracer_in[lev], Sborder_s, 0, 0, tracer_in[lev]->nComp(), nghost);
         }
  
         // We need this to avoid FPE
