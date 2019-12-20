@@ -6,8 +6,7 @@
 
 void incflo::ComputeDivU(Real time_in)
 {
-    int extrap_dir_bcs = 0;
-    incflo_set_velocity_bcs(time_in, vel, extrap_dir_bcs);
+    incflo_set_velocity_bcs(time_in, vel);
 
     nodal_projector->computeRHS(GetVecOfPtrs(divu),GetVecOfPtrs(vel));
 }

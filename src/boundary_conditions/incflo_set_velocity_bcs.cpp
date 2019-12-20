@@ -11,8 +11,7 @@
 
 void
 incflo::incflo_set_velocity_bcs (Real time,
-                                 Vector< std::unique_ptr<MultiFab> > & vel_in,
-                                 int extrap_dir_bcs) const
+                                 Vector< std::unique_ptr<MultiFab> > & vel_in) const
 {
   BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
@@ -30,7 +29,7 @@ incflo::incflo_set_velocity_bcs (Real time,
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
      for (MFIter mfi(*vel_in[lev]); mfi.isValid(); ++mfi) {
-         set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain, extrap_dir_bcs);
+         set_velocity_bcs(time, lev, (*vel_in[lev])[mfi], domain);
      }
 
 #ifdef AMREX_USE_EB
@@ -46,8 +45,7 @@ void
 incflo::set_velocity_bcs(Real time,
                          const int lev,
                          FArrayBox& vel_fab,
-                         const Box& domain,
-                         const int extrap_dir_bcs) const
+                         const Box& domain) const
 {
   // Must do this because probtype is a member of incflo so can not be "just passed" to the GPU
   auto lprobtype = probtype;
@@ -151,17 +149,6 @@ incflo::set_velocity_bcs(Real time,
   const amrex::Real* p_bc_u = m_bc_u.data();
   const amrex::Real* p_bc_v = m_bc_v.data();
   const amrex::Real* p_bc_w = m_bc_w.data();
-
-  // Coefficients for linear extrapolation to ghost cells -- divide by 3 below
-  Real c0 =  6.0;
-  Real c1 = -3.0;
-  Real c2 =  0.0;
-
-  // Coefficients for quadratic extrapolation to ghost cells -- divide by 3 below
-  // (Comment out to stay linear)
-  c0 =  8.0;
-  c1 = -6.0;
-  c2 =  1.0;
 
   if (nlft > 0)
   {
@@ -324,19 +311,6 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_yz_lo_2D, 3, 
-        [bct_ilo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-      {
-        const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
-
-        if(bct == minf || bct == nsw)
-          vel_arr(i,j,k,n) = (c0*vel_arr(i,j,k,n) + c1*vel_arr(i+1,j,k,n) + c2*vel_arr(i+2,j,k,n)) / 3.0;
-
-      });
-    }
   }
 
   if (nrgt > 0)
@@ -353,22 +327,6 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_yz_hi_2D,
-        [bct_ihi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
-
-        if(bct == minf || bct == nsw)
-        {
-          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i-1,j,k,0) + c2*vel_arr(i-2,j,k,0)) / 3.0;
-          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i-1,j,k,1) + c2*vel_arr(i-2,j,k,1)) / 3.0;
-          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i-1,j,k,2) + c2*vel_arr(i-2,j,k,2)) / 3.0;
-        }
-      });
-    }
   }
 
   if (nbot > 0)
@@ -385,22 +343,6 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_xz_lo_2D,
-        [bct_jlo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
-
-        if(bct == minf || bct == nsw)
-        {
-          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j+1,k,0) + c2*vel_arr(i,j+2,k,0)) / 3.0;
-          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j+1,k,1) + c2*vel_arr(i,j+2,k,1)) / 3.0;
-          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j+1,k,2) + c2*vel_arr(i,j+2,k,2)) / 3.0;
-        }
-      });
-    }
   }
 
   if (ntop > 0)
@@ -417,22 +359,6 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = p_bc_w[bcv];
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_xz_hi_2D, 
-        [bct_jhi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
-
-        if(bct == minf || bct == nsw)
-        {
-          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j-1,k,0) + c2*vel_arr(i,j-2,k,0)) / 3.0 ;
-          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j-1,k,1) + c2*vel_arr(i,j-2,k,1)) / 3.0 ;
-          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j-1,k,2) + c2*vel_arr(i,j-2,k,1)) / 3.0 ;
-        }
-      });
-    }
   }
 
   if (ndwn > 0)
@@ -449,22 +375,6 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = 0.;
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_xy_lo_2D,
-        [bct_klo,dom_lo,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        const int bct = bct_klo(i,j,dom_lo[2]-1,0);
-
-        if(bct == minf || bct == nsw)
-        {
-          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j,k+1,0) + c2*vel_arr(i,j,k+2,0)) / 3.0 ;
-          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j,k+1,1) + c2*vel_arr(i,j,k+2,1)) / 3.0 ;
-          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j,k+1,2) + c2*vel_arr(i,j,k+2,2)) / 3.0 ;
-        }
-      });
-    }
   }
 
   if (nup > 0)
@@ -481,21 +391,5 @@ incflo::set_velocity_bcs(Real time,
         vel_arr(i,j,k,2) = 0.;
       }
     });
-
-    if(extrap_dir_bcs > 0)
-    {
-      amrex::ParallelFor(bx_xy_hi_2D,
-        [bct_khi,dom_hi,minf,nsw,c0,c1,c2,vel_arr] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-      {
-        const int bct = bct_khi(i,j,dom_hi[2]+1,0);
-
-        if(bct == minf || bct == nsw)
-        {
-          vel_arr(i,j,k,0) = (c0*vel_arr(i,j,k,0) + c1*vel_arr(i,j,k-1,0) + c2*vel_arr(i,j,k-2,0)) / 3.0;
-          vel_arr(i,j,k,1) = (c0*vel_arr(i,j,k,1) + c1*vel_arr(i,j,k-1,1) + c2*vel_arr(i,j,k-2,1)) / 3.0;
-          vel_arr(i,j,k,2) = (c0*vel_arr(i,j,k,2) + c1*vel_arr(i,j,k-1,2) + c2*vel_arr(i,j,k-2,2)) / 3.0;
-        }
-      });
-    }
   }
 }

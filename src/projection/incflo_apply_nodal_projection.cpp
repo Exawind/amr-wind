@@ -65,13 +65,12 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     }
 
     // Set velocity BCs before projection
-    int extrap_dir_bcs(0);
-    incflo_set_velocity_bcs(time, vel    , extrap_dir_bcs);
+    incflo_set_velocity_bcs(time, vel);
 
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt)
     {
-       incflo_set_velocity_bcs(time, vel_o, extrap_dir_bcs);
+       incflo_set_velocity_bcs(time, vel_o);
 
        for(int lev = 0; lev <= finest_level; lev++)
           MultiFab::Saxpy(*vel[lev], -1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());

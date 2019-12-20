@@ -124,8 +124,7 @@ public:
     void GetInputBCs();
 
     void incflo_set_velocity_bcs (Real time,
-                                  Vector< std::unique_ptr<MultiFab> >& vel,
-                                  int extrap_dir_bcs) const;
+                                  Vector< std::unique_ptr<MultiFab> >& vel) const;
 
     void incflo_set_density_bcs (Real time,
                                  Vector< std::unique_ptr<MultiFab> >& density);
@@ -148,8 +147,7 @@ public:
     void set_velocity_bcs(Real time,
                           const int lev,
                           FArrayBox& vel_fab,
-                          const Box& domain,
-                          const int extrap_dir_bcs) const;
+                          const Box& domain) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

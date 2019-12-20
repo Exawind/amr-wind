@@ -220,11 +220,11 @@ void incflo::PostInit(int restart_flag)
     SetBackgroundPressure();
 
     // Fill boundaries
-    incflo_set_density_bcs(cur_time, density);
-    incflo_set_tracer_bcs (cur_time, tracer);
-    incflo_set_density_bcs(cur_time, density_o);
-    incflo_set_tracer_bcs (cur_time, tracer_o);
-    incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_density_bcs (cur_time, density);
+    incflo_set_tracer_bcs  (cur_time, tracer);
+    incflo_set_density_bcs (cur_time, density_o);
+    incflo_set_tracer_bcs  (cur_time, tracer_o);
+    incflo_set_velocity_bcs(cur_time, vel);
 
     setup_level_mask();
 
@@ -396,7 +396,7 @@ void incflo::InitialIterations()
     // Fill ghost cells
     incflo_set_density_bcs(cur_time, density);
     incflo_set_tracer_bcs(cur_time, tracer);
-    incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_velocity_bcs(cur_time, vel);
 
     // Copy vel into vel_o
     for(int lev = 0; lev <= finest_level; lev++)
@@ -419,7 +419,7 @@ void incflo::InitialIterations()
         }
 
         // Reset the boundary values (necessary if they are time-dependent)
-        incflo_set_velocity_bcs(cur_time, vel    , 0);
+        incflo_set_velocity_bcs(cur_time, vel    );
         incflo_set_density_bcs (cur_time, density);
         incflo_set_tracer_bcs  (cur_time, tracer );
     }
