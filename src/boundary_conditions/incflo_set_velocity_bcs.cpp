@@ -44,7 +44,7 @@ incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghos
 
 void
 incflo::incflo_set_velocity_bcs (Real time,
-                                 Vector< std::unique_ptr<MultiFab> > & vel_in) const
+                                 Vector< std::unique_ptr<MultiFab> > & vel_in)
 {
   BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 

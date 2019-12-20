@@ -83,7 +83,6 @@ public:
 
     void incflo_set_velocity_bcs (amrex::Real time,
                                   amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
-                                  int extrap_dir_bcs) const;
 
     void incflo_set_density_bcs (amrex::Real time,
                                  amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density);
@@ -183,7 +182,7 @@ public:
                                       const amrex::FArrayBox& v_mac,
                                       const amrex::FArrayBox& w_mac);
 
-    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
+    void incflo_godunov_fluxes_on_box(const int lev, amrex::Box& bx,
                                       const amrex::Array4<amrex::Real> &a_fx,
                                       const amrex::Array4<amrex::Real> &a_fy,
                                       const amrex::Array4<amrex::Real> &a_fz,
