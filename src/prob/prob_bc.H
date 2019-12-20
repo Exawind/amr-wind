@@ -134,4 +134,72 @@ struct IncfloDenFill
     }
 };
 
+struct IncfloTracFill
+{
+    int probtype, ntrac;
+    amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> bcv;
+
+    AMREX_GPU_HOST
+    constexpr IncfloTracFill (int a_probtype, int a_ntrac,
+                              amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> const& a_bcv)
+        : probtype(a_probtype), ntrac(a_ntrac), bcv(a_bcv) {}
+
+    AMREX_GPU_DEVICE
+    void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& tracer,
+                     const int dcomp, const int numcomp,
+                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const amrex::BCRec* bcr, const int bcomp,
+                     const int orig_comp) const
+    {
+        using namespace amrex;
+
+        // do something for external Dirichlet (BCType::ext_dir)
+        const int i = iv[0];
+        const int j = iv[1];
+        const int k = iv[2];
+
+        const Box& domain_box = geom.Domain();
+        const BCRec& bc = bcr[bcomp];
+
+        if (bc.lo(0) == BCType::ext_dir and i < domain_box.smallEnd(0))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::x,Orientation::low)][n];
+            }
+        }
+        else if (bc.hi(0) == BCType::ext_dir and i > domain_box.bigEnd(0))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::x,Orientation::high)][n];
+            }
+        }
+
+        if (bc.lo(1) == BCType::ext_dir and j < domain_box.smallEnd(1))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::y,Orientation::low)][n];
+            }
+        }
+        else if (bc.hi(1) == BCType::ext_dir and j > domain_box.bigEnd(1))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::y,Orientation::high)][n];
+            }
+        }
+
+        if (bc.lo(2) == BCType::ext_dir and k < domain_box.smallEnd(2))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::z,Orientation::low)][n];
+            }
+        }
+        else if (bc.hi(2) == BCType::ext_dir and k > domain_box.bigEnd(2))
+        {
+            for (int n = 0; n < ntrac; ++n) {
+                tracer(i,j,k,n) = bcv[Orientation(Direction::z,Orientation::high)][n];
+            }
+        }
+    }
+};
+
 #endif

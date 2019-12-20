@@ -54,7 +54,6 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
         rho_face[lev][1].define(v_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
         rho_face[lev][2].define(w_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
 
-        fillpatch_density(lev, time, *density[lev], 1);
         amrex::average_cellcenter_to_face(GetArrOfPtrs(rho_face[lev]), *density[lev], geom[lev]);
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
             rho_face[lev][idim].invert(1.0, 0);

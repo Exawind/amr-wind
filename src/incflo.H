@@ -276,7 +276,9 @@ private:
     amrex::GpuArray<amrex::Vector<amrex::Real> , AMREX_SPACEDIM*2> m_bc_tracer;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_location;
 
-//xxxxx    amrex::Vector<amrex::BCRec> m_bcrecs;  // the size is the number of components
+    // amrex::Vector cannot be used on gpu, so ...
+    amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> m_bc_tracer_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_bc_tracer_raii;
 
     static int ntrac;
 
@@ -336,6 +338,7 @@ private:
 
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
+    void fillpatch_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
 
 public: // for cuda
 

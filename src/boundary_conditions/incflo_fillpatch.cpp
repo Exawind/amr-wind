@@ -36,6 +36,22 @@ void incflo::fillpatch_density (int lev, Real time, MultiFab& density, int ng)
     }
 }
 
+void incflo::fillpatch_tracer (int lev, Real time, MultiFab& tracer, int ng)
+{
+    if (incflo::ntrac <= 0) return;
+    if (lev == 0) {
+        PhysBCFunct<GpuBndryFuncFab<IncfloTracFill> > physbc
+            (geom[lev], get_tracer_bcrec(), IncfloTracFill{probtype, incflo::ntrac, m_bc_tracer_d});
+        FillPatchSingleLevel(tracer, IntVect(ng), time,
+                             {&(m_leveldata[lev]->tracer_o),
+                              &(m_leveldata[lev]->tracer)},
+                             {t_old[lev], t_new[lev]}, 0, 0, 1, geom[lev],
+                             physbc, 0);
+    } else {
+        amrex::Abort("fillpatch_tracer: multi-level todo");
+    }
+}
+
 namespace
 {
     incflo* my_incflo = nullptr;

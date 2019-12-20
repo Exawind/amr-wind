@@ -224,6 +224,29 @@ void incflo::init_bcs()
     f("yhi", Orientation(Direction::y,Orientation::high));
     f("zlo", Orientation(Direction::z,Orientation::low));
     f("zhi", Orientation(Direction::z,Orientation::high));
+
+    if (incflo::ntrac > 0) {
+        Vector<Real> h_data(incflo::ntrac*AMREX_SPACEDIM*2);
+        Real* hp = h_data.data();
+        for (auto const& v : m_bc_tracer) {
+            for (auto x : v) {
+                *(hp++) = x;
+            }
+        }
+
+        m_bc_tracer_raii.resize(incflo::ntrac*AMREX_SPACEDIM*2);
+        Real* p = m_bc_tracer_raii.data();
+#ifdef AMREX_USE_GPU
+        Gpu::htod_memcpy(p, h_data.data(), sizeof(Real)*h_data.size());
+#else
+        std::memcpy(p, h_data.data(), sizeof(Real)*h_data.size());
+#endif
+
+        for (int i = 0; i < AMREX_SPACEDIM*2; ++i) {
+            m_bc_tracer_d[i] = p;
+            p += incflo::ntrac;
+        }
+    }
 }
 
 void incflo::GetInputBCs()

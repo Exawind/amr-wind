@@ -6,10 +6,6 @@ using namespace amrex;
 void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
                                     MultiFab& w_mac, MultiFab& vel)
 {
-    // fillpatch on vel.
-    const int ng = 2;
-    fillpatch_velocity(lev, time, vel, ng);
-
 #ifdef AMREX_USE_EB
     auto const& fact = this->EBFactory(lev);
     auto const& flags = fact.getMultiEBCellFlagFab();

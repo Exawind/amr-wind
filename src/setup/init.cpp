@@ -400,6 +400,16 @@ void incflo::InitialIterations ()
                            m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, 0);
         }
         t_old[lev] = t_new[lev];
+
+        int ng = 2;  // This might change for Godunov.
+#ifdef AMREX_USE_EB
+        if (!EBFactory(0).isAllRegular()) ng = 3;
+#endif
+        fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
+        fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
+        if (incflo::ntrac > 0) {
+            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
+        }
     }
 
     for (int iter = 0; iter < initial_iterations; ++iter)
@@ -412,6 +422,7 @@ void incflo::InitialIterations ()
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
+            // xxxx is this needed?
             // Replace vel, density, tracer  by the original values
             MultiFab::Copy(*    vel[lev],     *vel_o[lev], 0, 0,     vel[lev]->nComp(),     vel[lev]->nGrow());
             MultiFab::Copy(*density[lev], *density_o[lev], 0, 0, density[lev]->nComp(), density[lev]->nGrow());
