@@ -309,6 +309,8 @@ void DiffusionOp::diffuse_scalar(      Vector<std::unique_ptr<MultiFab>>& scal_i
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
+        // fixme this is broken there is no way to loop over eta_tracer (mu_in)
+        // ok for 1 tracer but will break when using more than 1 tracer... ksgs
         average_cellcenter_to_face(GetArrOfPtrs(b[lev]), *mu_in[lev], geom[lev]);
 
         for(int dir = 0; dir < AMREX_SPACEDIM; dir++)

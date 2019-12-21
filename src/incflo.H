@@ -173,7 +173,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void ComputeVorticity(Real time_in);
-    double ComputeKineticEnergy();
+    Real ComputeKineticEnergy();
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -190,7 +190,8 @@ public:
     void set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &fab, int index);
     void plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real area, const int axis, const int ncomp);
     void spatially_average_quantities_down(bool plot=true);
-    
+    void set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis);
+
     Real volWgtSum (int lev, const MultiFab & mf, int comp, bool local=false);
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -554,23 +555,22 @@ private:
     Real zRefHeight = 50.0;
     Real theta_amplitude = 0.8;
     Real abl_forcing_height = 90.0;
-    Real kappa = 0.4; //von Karman constant
+    Real kappa = 0.41; //von Karman constant
     Real surface_roughness_z0 = 0.15; // surface roughness [m]
     Real corfac = 1.45842318e-4; // 2*earth_angular_velocity
-    Real latitude = 0.7208209811;
+    Real latitude = 0.7208209811; // radians
     Real thermalExpansionCoeff; // initialized in the readABLparameters now
-    Real Smagorinsky_Lilly_SGS_constant = 0.18; // 0.18 <= Cs <= 0.25
+    Real Smagorinsky_Lilly_SGS_constant = 0.135;
+    Real log_law_sampling_height = 40.0;
+
 //    Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
 //    Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
 //    Vector<Real> up{Vector<Real>{0.0, 0.0, 1.0}};
-
     
     Real vx_mean; //fixme pick a better name
     Real vy_mean;
     Real vx_mean_ground;
     Real vy_mean_ground;
-    Real nu_mean_ground;
-    Real z_ground;
     Real utau;
 
     

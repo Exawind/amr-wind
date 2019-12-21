@@ -156,7 +156,6 @@ incflo::set_velocity_bcs(Real time,
 
   const Real vx_mean_ground_ = vx_mean_ground;
   const Real vy_mean_ground_ = vy_mean_ground;
-  const Real nu_mean_ground_ = nu_mean_ground;
   const Real utau_ = utau;
     
   // Coefficients for linear extrapolation to ghost cells -- divide by 3 below
@@ -468,8 +467,15 @@ incflo::set_velocity_bcs(Real time,
 
   if (ndwn > 0)
   {
+    const Real dx = geom[lev].CellSize()[0];
+    const Real dy = geom[lev].CellSize()[1];
+    const Real dz = geom[lev].CellSize()[2];
+    const Real ds = pow(dx*dy*dz,1.0/3.0);
+    const Real Cs_ds2 = pow(Smagorinsky_Lilly_SGS_constant*ds,2);
+    const Real nu = mu/ro_0;//fixme should be variable density
+
     amrex::ParallelFor(bx_xy_lo_3D,
-      [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,dz,Cs_ds2,nu] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -488,20 +494,28 @@ incflo::set_velocity_bcs(Real time,
           const Real vy = vel_arr(i,j,dom_lo[2],1);
           const Real uh = sqrt(pow(vx_mean_ground_,2) + pow(vy_mean_ground_,2));
           
+//          fixme should I just pass in eddy viscosity (stored in eta)?
+          
+          // velocity derivatives
+          // assuming velocity at wall equals zero
+          // use dz/2 since it is over half a cell
+          // dudz = 2*(u_1/2 - u_0)/dz
+          const Real uz =  2.0*vel_arr(i,j,dom_lo[2],0)/dz;
+          const Real vz =  2.0*vel_arr(i,j,dom_lo[2],1)/dz;
+          const Real wz =  2.0*vel_arr(i,j,dom_lo[2],2)/dz;
+          
+          // strain rate with all x y terms dropped
+          const Real sr = sqrt( 2.0 * pow(wz, 2) + pow(vz, 2) + pow(uz, 2));
+          const Real nut = nu + Cs_ds2*sr;
+
           // simple shear stress model for neutral BL
           // apply as an inhomogeneous Neumann BC
-          // fixme this should be the local (nu+nut) but there is a circular dependency on strain rate and bc's
-          // we could locally calculate a strain rate but not sure what do with 1 eqn sgs
-          // inhomogeneous Neumann BC
-          vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nu_mean_ground_;
-          vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nu_mean_ground_;
+          vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nut;
+          vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nut;
+
           // Dirichlet BC
           vel_arr(i,j,k,2) = 0.0;
 
-//          // fixme remove this later when we trust this
-//          const Real vmag = sqrt(pow(vx,2) + pow(vy,2)) + 1.0e-12;
-//          if(vmag/uh > 10.0) printf("uh oh local velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
-//          if(uh/vmag > 10.0) printf("uh oh average velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
       }
     });
 
