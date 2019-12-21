@@ -18,7 +18,7 @@ void set_ptr_to_incflo(incflo& incflo_for_fillpatching_in)
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 inline
-void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void VelFillBox (Box const& bx, Array4<Real> const& dest,
                  const int dcomp, const int ncomp,
                  GeometryData const& geom, const Real time_in,
                  const BCRec* bcr, const int bcomp,
@@ -55,7 +55,7 @@ void VelFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 inline
-void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void DensityFillBox (Box const& bx, Array4<Real> const& dest,
                      const int dcomp, const int ncomp,
                      GeometryData const& geom, const Real time_in,
                      const BCRec* bcr, const int bcomp,
@@ -92,7 +92,7 @@ void DensityFillBox (Box const& bx, Array4<amrex::Real> const& dest,
 // This interface must match the definition of the interface for
 //    CpuBndryFuncFab in amrex/Src/Base/AMReX_PhysBCFunct.H
 inline
-void ScalarFillBox (Box const& bx, Array4<amrex::Real> const& dest,
+void ScalarFillBox (Box const& bx, Array4<Real> const& dest,
                     const int dcomp, const int ncomp,
                     GeometryData const& geom, const Real time_in,
                     const BCRec* bcr, const int bcomp,

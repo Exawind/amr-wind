@@ -5,6 +5,8 @@
 #include <incflo.H>
 #include <bc_mod_F.H>
 
+using namespace amrex;
+
 //
 //  These subroutines set the BCs for the vel_arr components only.
 //
@@ -144,9 +146,9 @@ incflo::set_velocity_bcs(Real time,
   const int pout = bc_list.get_pout();
   const int  nsw = bc_list.get_nsw();
 
-  const amrex::Real* p_bc_u = m_bc_u.data();
-  const amrex::Real* p_bc_v = m_bc_v.data();
-  const amrex::Real* p_bc_w = m_bc_w.data();
+  const Real* p_bc_u = m_bc_u.data();
+  const Real* p_bc_v = m_bc_v.data();
+  const Real* p_bc_w = m_bc_w.data();
 
   if (nlft > 0)
   {

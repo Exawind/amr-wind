@@ -2,6 +2,8 @@
 #include <incflo.H>
 #include <bc_mod_F.H>
 
+using namespace amrex;
+
 //
 // Set the BCs for face-centroid-based velocity components only
 // 
@@ -10,7 +12,7 @@ incflo::set_MAC_velocity_bcs ( int lev,
                                Vector< std::unique_ptr<MultiFab> >& u_mac,
                                Vector< std::unique_ptr<MultiFab> >& v_mac,
                                Vector< std::unique_ptr<MultiFab> >& w_mac,
-                               amrex::Real time)
+                               Real time)
 {
   BL_PROFILE("MacProjection::set_MAC_velocity_bcs()");
 
@@ -121,9 +123,9 @@ incflo::set_MAC_velocity_bcs ( int lev,
     const int minf = bc_list.get_minf();
     const int  nsw = bc_list.get_nsw();
 
-    amrex::Real* p_bc_u = m_bc_u.data();
-    amrex::Real* p_bc_v = m_bc_v.data();
-    amrex::Real* p_bc_w = m_bc_w.data();
+    Real* p_bc_u = m_bc_u.data();
+    Real* p_bc_v = m_bc_v.data();
+    Real* p_bc_w = m_bc_w.data();
 
     // NOTE - we only call this for MAC velocities which are only defined on normal faces
 

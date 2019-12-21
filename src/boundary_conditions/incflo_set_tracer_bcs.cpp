@@ -127,7 +127,7 @@ incflo::set_tracer_bcs(Real time,
   const int pinf = bc_list.get_pinf();
   const int pout = bc_list.get_pout();
 
-  amrex::Real* p_bc_s;
+  Real* p_bc_s;
 
   p_bc_s = m_bc_t.data();
 
