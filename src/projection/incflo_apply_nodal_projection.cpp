@@ -77,8 +77,8 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     }
 
     // Create sigma
-    Vector< std::unique_ptr< amrex::MultiFab > >  sigma(nlev);
-    for (int lev(0); lev < nlev; ++lev )
+    Vector< std::unique_ptr< amrex::MultiFab > >  sigma(finest_level+1);
+    for (int lev(0); lev <= finest_level; ++lev )
     {
 #ifdef AMREX_USE_EB
         sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]));
@@ -100,8 +100,8 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     }
 
     // Get phi and fluxes
-    Vector< const amrex::MultiFab* >  phi(nlev);
-    Vector< const amrex::MultiFab* >  gradphi(nlev);
+    Vector< const amrex::MultiFab* >  phi(finest_level+1);
+    Vector< const amrex::MultiFab* >  gradphi(finest_level+1);
 
     phi     = nodal_projector -> getPhi();
     gradphi = nodal_projector -> getGradPhi();

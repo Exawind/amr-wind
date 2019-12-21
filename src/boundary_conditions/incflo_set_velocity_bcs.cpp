@@ -15,9 +15,7 @@ incflo::incflo_set_velocity_bcs (Real time,
 {
   BL_PROFILE("incflo::incflo_set_velocity_bcs()");
 
-  int nlev = vel_in.size();
-
-  for (int lev = 0; lev < nlev; lev++)
+  for (int lev = 0; lev <= finest_level; lev++)
   {
      // Set all values outside the domain to covered_val just to avoid use of undefined
      vel_in[lev]->setDomainBndry(covered_val,geom[lev]);
