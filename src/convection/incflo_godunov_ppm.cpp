@@ -76,17 +76,17 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+        Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+        Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+        Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
     }); 
 
     FArrayBox xlf(xgbx, ncomp); 
