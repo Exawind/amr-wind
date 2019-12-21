@@ -243,14 +243,14 @@ inline void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
 // This version is called before the MAC projection, when we use the cell-centered velocity
 //      for upwinding
 AMREX_GPU_HOST_DEVICE
-inline void Godunov_ppm(const int i, const int j, const int k, const int n, 
-                        const amrex::Real dt, const amrex::Real dx, 
-                        const amrex::Array4<const amrex::Real> &S, 
-                        const amrex::Array4<const amrex::Real> &vel, 
-                        const amrex::Array4<amrex::Real> &Im, 
-                        const amrex::Array4<amrex::Real> &Ip,
-                        const amrex::BCRec bc, const int domlo, const int domhi,                  
-                        const int dir)
+inline void Godunov_ppm_pred(const int i, const int j, const int k, const int n, 
+                             const amrex::Real dt, const amrex::Real dx, 
+                             const amrex::Array4<const amrex::Real> &S, 
+                             const amrex::Array4<const amrex::Real> &vel, 
+                             const amrex::Array4<amrex::Real> &Im, 
+                             const amrex::Array4<amrex::Real> &Ip,
+                             const amrex::BCRec bc, const int domlo, const int domhi,                  
+                             const int dir)
 {
     using namespace amrex;
 

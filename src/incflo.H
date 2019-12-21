@@ -171,7 +171,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // Convection
+    // MOL Convection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -218,19 +218,6 @@ public:
                                       const amrex::FArrayBox& v_mac,
                                       const amrex::FArrayBox& w_mac);
 
-    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
-                                      const amrex::Array4<amrex::Real> &a_fx,
-                                      const amrex::Array4<amrex::Real> &a_fy,
-                                      const amrex::Array4<amrex::Real> &a_fz,
-                                      const amrex::Array4<amrex::Real> &tforces,
-                                      const amrex::Array4<amrex::Real> &divu,
-                                      const amrex::Array4<amrex::Real> &s,
-                                      const int state_comp, const int n_comp,
-                                      const amrex::Array4<const amrex::Real> &umac,
-                                      const amrex::Array4<const amrex::Real> &vmac,
-                                      const amrex::Array4<const amrex::Real> &wmac,
-                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
-
 #ifdef AMREX_USE_EB
     void incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
                                          amrex::FArrayBox& a_fx,
@@ -256,6 +243,36 @@ public:
                                          const IArrayBox& cc_mask,
                                          const EBCellFlagFab& flags);
 #endif
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Godunov Convection
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void incflo_predict_godunov(int lev, amrex::Real time,
+                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
+
+    void incflo_predict_godunov_on_box (const int lev, Box& bx,
+                                        const Array4<Real> &a_vel,
+                                        const Array4<const Real> &u_face,
+                                        const Array4<const Real> &v_face,
+                                        const Array4<const Real> &w_face,
+                                        const Array4<Real> &tf,
+                                        const Array4<Real> &divu_cc,
+                                        const Gpu::ManagedVector<BCRec> &BCs);
+
+    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
+                                      const amrex::Array4<amrex::Real> &a_fx,
+                                      const amrex::Array4<amrex::Real> &a_fy,
+                                      const amrex::Array4<amrex::Real> &a_fz,
+                                      const amrex::Array4<amrex::Real> &tforces,
+                                      const amrex::Array4<amrex::Real> &divu,
+                                      const amrex::Array4<amrex::Real> &s,
+                                      const int state_comp, const int n_comp,
+                                      const amrex::Array4<const amrex::Real> &umac,
+                                      const amrex::Array4<const amrex::Real> &vmac,
+                                      const amrex::Array4<const amrex::Real> &wmac,
+                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
 private:
 
