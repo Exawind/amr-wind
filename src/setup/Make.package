@@ -8,3 +8,5 @@ f90EXE_sources += set_ppe_bcs.f90
 CEXE_sources += incflo_arrays.cpp
 CEXE_sources += incflo_setup_solvers.cpp
 CEXE_sources += init.cpp
+
+CEXE_headers += incflo_proj_F.H

@@ -10,7 +10,6 @@
 #include <AMReX_MacProjector.H>
 
 #include <incflo.H>
-#include <incflo_proj_F.H>
 
 using namespace amrex;
 
