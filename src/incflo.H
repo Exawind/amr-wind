@@ -571,6 +571,7 @@ private:
     Real vy_mean;
     Real vx_mean_ground;
     Real vy_mean_ground;
+    Real nu_mean_ground;
     Real utau;
 
     

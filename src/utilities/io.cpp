@@ -683,7 +683,7 @@ void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis){
     const Real zlo = geom[0].ProbLo(axis);
     
     const Real half_height = zlo + 0.5*dz;
-    Real nu_mean_ground;
+
     // set the velocity at the first cell above the ground
     switch (axis) {
         case 0:
@@ -703,6 +703,10 @@ void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis){
             nu_mean_ground = fab_arr(0,0,s,nu_avg);
             break;
     }
+    
+    // fixme circular dependency so need to hack this for now
+    if(nstep == -1) nu_mean_ground = 1.0;
+
     amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
     amrex::Print() << "ground half cell height, vx, vy: " << half_height << ' ' << vx_mean_ground  << ' ' << vy_mean_ground << std::endl;
 
@@ -858,60 +862,15 @@ void incflo::spatially_average_quantities_down(bool plot)
 
     // sum all fabs together
     ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
-  
     
     // set all the stored average quantities
     set_average_quantities(fab,s,b,axis);
-    
-//    // fixme piggy backing on this function but this belongs somewhere else
-//    // maybe keep this 1d average in global memory and then make these functions separate?
-//    AMREX_ASSERT(axis==2);
-//    const auto& fab_arr = fab.array();
-//    Real z_ground;
-//
-//    // no need to do a loop should be able to find the index because of fixed cell size
-//    for(int i=s; i <= b; ++i){
-//        const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
-//        if(z > 0.0) {
-//            vx_mean_ground = fab_arr(0,0,i,u_avg);
-//            vy_mean_ground = fab_arr(0,0,i,v_avg);
-////            nu_mean_ground = fab_arr(0,0,i,nu_avg);
-//            z_ground = z;
-//
-//            amrex::Print() << "ground height z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
-//
-//            // fixme circular dependency so need to hack this for now
-////            if(nstep == -1) nu_mean_ground = 1.0;
-////            amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
-//
-//            break;
-//        }
-//    }
-//
-//    // simple shear stress model for neutral BL
-//    // apply as an inhomogeneous Neumann BC
-//    const Real uh = sqrt(pow(vx_mean_ground,2) + pow(vy_mean_ground,2)) + 1.0e-12;
-//    utau = kappa*uh/log(z_ground/surface_roughness_z0);
-//    amrex::Print() << "zground,u,utau: " << z_ground << ' ' << uh << ' ' << utau << std::endl;
-//
-//    for(int i=s; i < b; ++i){
-//
-//        const Real z1 = geom[0].ProbLo(axis) + (i+0.5+0)*geom[0].CellSize(axis);
-//        const Real z2 = geom[0].ProbLo(axis) + (i+0.5+1)*geom[0].CellSize(axis);
-//        if(z1 <= abl_forcing_height && z2 >= abl_forcing_height) {
-//            amrex::Print() << "ind: " << i << std::endl;
-//
-//            const Real c = (abl_forcing_height-z1)/(z2-z1);
-//            vx_mean = fab_arr(0,0,i,u_avg)*(1.0-c) + fab_arr(0,0,i+1,u_avg)*c;
-//            vy_mean = fab_arr(0,0,i,v_avg)*(1.0-c) + fab_arr(0,0,i+1,v_avg)*c;
-//            amrex::Print() << "abl forcing height z: " << abl_forcing_height << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
-//            break;
-//        }
-//    }
-    
-    
+
     
     if(!plot) return;
+    
+    // fixme this is in case the copy from fab to mfab is not in the z axis
+    AMREX_ALWAYS_ASSERT(axis==2);
     
     // begin collecting and output values
     
