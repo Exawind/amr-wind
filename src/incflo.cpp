@@ -7,14 +7,9 @@
 #include <AMReX_EBAmrUtil.H>
 #endif
 
-// Define unit vectors for easily convert indices
-amrex::IntVect incflo::e_x(1,0,0);
-amrex::IntVect incflo::e_y(0,1,0);
-amrex::IntVect incflo::e_z(0,0,1);
+using namespace amrex;
 
 int incflo::ntrac = 1;
-
-DiffusionType incflo::m_diff_type = DiffusionType::Implicit;
 
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
@@ -323,10 +318,10 @@ void incflo::MakeNewLevelFromScratch(int lev,
         amrex::Print() << "with BoxArray " << new_grids << std::endl;
     }
 
-	SetBoxArray(lev, new_grids);
-	SetDistributionMap(lev, new_dmap);
+    SetBoxArray(lev, new_grids);
+    SetDistributionMap(lev, new_dmap);
 
-	// Allocate the fluid data, NOTE: this depends on the ebfactories.
+    // Allocate the fluid data, NOTE: this depends on the ebfactories.
     AllocateArrays(lev);
 }
 

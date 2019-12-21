@@ -33,8 +33,6 @@ enum DiffusionType
     Implicit
 };
 
-using namespace amrex;
-
 class incflo : public amrex::AmrCore
 {
 public:
@@ -263,11 +261,6 @@ private:
 
     static int ntrac;
 
-    // Unit vectors in Cartesian space
-    static IntVect e_x;
-    static IntVect e_y;
-    static IntVect e_z;
-
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
     mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
@@ -395,7 +388,9 @@ private:
 
     std::unique_ptr<DiffusionOp> diffusion_op;
 
-    static DiffusionType m_diff_type;
+    enum struct DiffusionType {
+        Invalid, Explicit, Crank_Nicolson, Implicit};
+    DiffusionType m_diff_type = DiffusionType::Implicit;
 
     void ComputeDivU(amrex::Real time_in);
 

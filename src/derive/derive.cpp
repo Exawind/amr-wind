@@ -4,6 +4,8 @@
 #include <derive_F.H>
 #include <incflo_proj_F.H>
 
+using namespace amrex;
+
 void incflo::ComputeDivU(Real time_in)
 {
     incflo_set_velocity_bcs(time_in, vel);

@@ -78,13 +78,13 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
           // Tilebox
           Box  bx = mfi.tilebox();
 
-          Box ubx = mfi.tilebox(e_x);
-          Box vbx = mfi.tilebox(e_y);
-          Box wbx = mfi.tilebox(e_z);
+          Box ubx = mfi.nodaltilebox(0);
+          Box vbx = mfi.nodaltilebox(1);
+          Box wbx = mfi.nodaltilebox(2);
 
-          Box ubx_grown = mfi.growntilebox(e_x);
-          Box vbx_grown = mfi.growntilebox(e_y);
-          Box wbx_grown = mfi.growntilebox(e_z);
+          Box ubx_grown = mfi.growntilebox(IntVect::TheDimensionVector(0));
+          Box vbx_grown = mfi.growntilebox(IntVect::TheDimensionVector(1));
+          Box wbx_grown = mfi.growntilebox(IntVect::TheDimensionVector(2));
 
 #ifdef AMREX_USE_EB
           const EBFArrayBox&  vel_fab = static_cast<EBFArrayBox const&>((*vel_in[lev])[mfi]);
@@ -267,9 +267,10 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        {
            // Tilebox
           Box  bx = mfi.tilebox();
-          Box ubx = mfi.tilebox(e_x);
-          Box vbx = mfi.tilebox(e_y);
-          Box wbx = mfi.tilebox(e_z);
+
+          Box ubx = mfi.nodaltilebox(0);
+          Box vbx = mfi.nodaltilebox(1);
+          Box wbx = mfi.nodaltilebox(2);
       
           // Check efficiently if this tile contains any eb stuff
 
