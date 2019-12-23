@@ -758,7 +758,7 @@ void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis){
         height = abl_forcing_height;
         ind = s + floor((abl_forcing_height - zlo)/dz - 0.5);
         const Real z1 = zlo + (ind+0.5)*dz;
-        c = (log_law_sampling_height-z1)/dz;
+        c = (abl_forcing_height-z1)/dz;
     }
 
     if(ind   < 0) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is negative \n");
