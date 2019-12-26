@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 void incflo::Advance()
 {
     BL_PROFILE("incflo::Advance");

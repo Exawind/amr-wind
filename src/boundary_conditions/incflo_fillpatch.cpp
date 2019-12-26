@@ -1,7 +1,7 @@
 #include <incflo.H>
-// #include <incflo_F.H>
-// #include <incflo_util_F.H>
 #include <AMReX_FillPatchUtil.H>
+
+using namespace amrex;
 
 namespace
 {

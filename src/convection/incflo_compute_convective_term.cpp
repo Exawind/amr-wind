@@ -4,6 +4,8 @@
 #include <AMReX_EB_utils.H>
 #endif
 
+using namespace amrex;
+
 //
 // Compute the three components of the convection term
 //

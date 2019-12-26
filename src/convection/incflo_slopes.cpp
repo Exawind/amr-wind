@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 //
 // Compute the slopes of Sborder (velocity, density or tracer)
 //

@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 void incflo::AllocateArrays(int lev)
 {
 #ifdef AMREX_USE_EB

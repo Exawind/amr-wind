@@ -1,13 +1,10 @@
-#include <AMReX_ParmParse.H>
+// #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
-#include <AMReX_Box.H>
-
 #include <incflo.H>
 #include <boundary_conditions_F.H>
 #include <setup_F.H>
 
-#ifdef AMREX_USE_EB
-#endif
+using namespace amrex;
 
 void incflo::ReadParameters()
 {

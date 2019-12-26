@@ -1,8 +1,9 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_buildInfo.H>
-
 #include <incflo.H>
+
+using namespace amrex;
 
 namespace { const std::string level_prefix{"Level_"}; }
 

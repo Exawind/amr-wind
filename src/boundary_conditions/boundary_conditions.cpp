@@ -10,6 +10,8 @@
 #include <boundary_conditions_F.H>
 #include <setup_F.H>
 
+using namespace amrex;
+
 void incflo::GetInputBCs()
 {
     // Extracts all walls from the inputs file

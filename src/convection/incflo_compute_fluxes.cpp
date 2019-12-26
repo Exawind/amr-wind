@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 namespace ugradu_aux {
 
 //

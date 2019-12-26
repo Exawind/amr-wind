@@ -1,6 +1,8 @@
 #include <incflo.H>
 #include <AMReX_buildInfo.H>
 
+using namespace amrex;
+
 // TODO: find better way of making the fillpatch stuff work
 void set_ptr_to_incflo(incflo& my_incflo);
  

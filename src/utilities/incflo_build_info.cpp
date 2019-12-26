@@ -1,6 +1,7 @@
-
 #include "AMReX_buildInfo.H"
 #include <incflo.H>
+
+using namespace amrex;
 
 namespace
 {

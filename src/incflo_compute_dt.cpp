@@ -4,6 +4,7 @@
 #include <limits>
 
 using namespace std;
+using namespace amrex;
 
 //
 // Compute new dt by using the formula derived in

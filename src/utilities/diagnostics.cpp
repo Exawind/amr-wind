@@ -1,6 +1,6 @@
-#include <AMReX_AmrCore.H>
-
 #include <incflo.H>
+
+using namespace amrex;
 
 //
 // Subroutine to compute norm of EB multifab

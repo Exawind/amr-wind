@@ -59,8 +59,8 @@ public:
 
     // Initialize multilevel AMR data
     void InitData();
-    BoxArray MakeBaseGrids () const;
-    void ChopGrids (const Box& domain, BoxArray& ba, int target_size) const;
+    amrex::BoxArray MakeBaseGrids () const;
+    void ChopGrids (const amrex::Box& domain, amrex::BoxArray& ba, int target_size) const;
 
 #ifdef AMREX_USE_EB
     void WriteMyEBSurface();
@@ -76,25 +76,25 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Tag cells for refinement
-    virtual void ErrorEst(int lev, TagBoxArray& tags, amrex::Real time, int ngrow) override;
+    virtual void ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
 
     // Make a new level from scratch using provided BoxArray and DistributionMapping
     // Only used during initialization
     void MakeNewLevelFromScratch(int lev, amrex::Real time,
-                                 const BoxArray& new_grids,
-                                 const DistributionMapping& new_dmap) override;
+                                 const amrex::BoxArray& new_grids,
+                                 const amrex::DistributionMapping& new_dmap) override;
 
     // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
     void MakeNewLevelFromCoarse(int lev, amrex::Real time,
-                                const BoxArray& ba,
-                                const DistributionMapping& dm) override;
+                                const amrex::BoxArray& ba,
+                                const amrex::DistributionMapping& dm) override;
 
     // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
     void RemakeLevel(int lev, amrex::Real time,
-                             const BoxArray& ba,
-                             const DistributionMapping& dm) override;
+                             const amrex::BoxArray& ba,
+                             const amrex::DistributionMapping& dm) override;
 
     // Delete level data
     void ClearLevel(int lev) override;
@@ -108,7 +108,7 @@ public:
     // Some getters (TODO: find better way to do fillpatching)
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    const Geometry get_geom_ref(int lev){ return geom[lev]; }
+    const amrex::Geometry get_geom_ref(int lev){ return geom[lev]; }
 
     const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
     const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
@@ -133,19 +133,19 @@ public:
     void set_density_bcs(amrex::Real time,
                          const int lev,
                          amrex::FArrayBox& scal_fab,
-                         const Box& domain);
+                         const amrex::Box& domain);
 
     void set_tracer_bcs(amrex::Real time,
                         const int lev,
                         amrex::FArrayBox& scal_fab,
                         const int comp,
                         const int ncomp,
-                        const Box& domain);
+                        const amrex::Box& domain);
 
     void set_velocity_bcs(amrex::Real time,
                           const int lev,
                           amrex::FArrayBox& vel_fab,
-                          const Box& domain) const;
+                          const amrex::Box& domain) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -204,7 +204,7 @@ public:
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& v_mac,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac);
 
-    void incflo_compute_fluxes_on_box(const int lev, Box& bx,
+    void incflo_compute_fluxes_on_box(const int lev, amrex::Box& bx,
                                       amrex::FArrayBox& a_fx,
                                       amrex::FArrayBox& a_fy,
                                       amrex::FArrayBox& a_fz,
@@ -219,7 +219,7 @@ public:
                                       const amrex::FArrayBox& w_mac);
 
 #ifdef AMREX_USE_EB
-    void incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
+    void incflo_compute_eb_fluxes_on_box(const int lev, amrex::Box& bx,
                                          amrex::FArrayBox& a_fx,
                                          amrex::FArrayBox& a_fy,
                                          amrex::FArrayBox& a_fz,
@@ -252,16 +252,16 @@ public:
     void incflo_predict_godunov(int lev, amrex::Real time,
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
 
-    void incflo_predict_godunov_on_box (const int lev, Box& bx,
-                                        const Array4<Real> &a_vel,
-                                        const Array4<const Real> &u_face,
-                                        const Array4<const Real> &v_face,
-                                        const Array4<const Real> &w_face,
-                                        const Array4<Real> &tf,
-                                        const Array4<Real> &divu_cc,
-                                        const Gpu::ManagedVector<BCRec> &BCs);
+    void incflo_predict_godunov_on_box (const int lev, amrex::Box& bx,
+                                        const amrex::Array4<      amrex::Real> &a_vel,
+                                        const amrex::Array4<const amrex::Real> &u_face,
+                                        const amrex::Array4<const amrex::Real> &v_face,
+                                        const amrex::Array4<const amrex::Real> &w_face,
+                                        const amrex::Array4<      amrex::Real> &tf,
+                                        const amrex::Array4<      amrex::Real> &divu_cc,
+                                        const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
-    void incflo_godunov_fluxes_on_box(const int lev, Box& bx,
+    void incflo_godunov_fluxes_on_box(const int lev, amrex::Box& bx,
                                       const amrex::Array4<amrex::Real> &a_fx,
                                       const amrex::Array4<amrex::Real> &a_fy,
                                       const amrex::Array4<amrex::Real> &a_fz,
@@ -395,7 +395,7 @@ private:
     // Nodal Projection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
-    std::unique_ptr<NodalProjector> nodal_projector;
+    std::unique_ptr<amrex::NodalProjector> nodal_projector;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -451,11 +451,11 @@ private:
     //    but otherwise it will just be a FabFactory that doesn't know anything about EB
     //    amrex::Vector<std::unique_ptr<FabFactory<amrex::FArrayBox>>> ebfactory;
 #else
-    //  amrex::Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+    //  amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
 #endif
 
 #ifdef AMREX_USE_EB
-    amrex::Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
+    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,7 +506,7 @@ private:
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    Periodicity p0_periodicity;
+    amrex::Periodicity p0_periodicity;
     amrex::Vector<amrex::Real> gp0{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> gravity{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> delp{amrex::Vector<amrex::Real>{0.0, 0.0, 0.0}};
@@ -610,12 +610,12 @@ private:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Boundary conditions
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_ilo;
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_ihi;
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_jlo;
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_jhi;
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_klo;
-    amrex::Vector<std::unique_ptr<IArrayBox>> bc_khi;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_ilo;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_ihi;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_jlo;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_jhi;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_klo;
+    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_khi;
 
     // Primary variables
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> density;
