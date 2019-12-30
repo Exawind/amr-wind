@@ -561,7 +561,7 @@ private:
     Real latitude = 0.7208209811; // radians
     Real thermalExpansionCoeff; // initialized in the readABLparameters now
     Real Smagorinsky_Lilly_SGS_constant = 0.135;
-    Real log_law_sampling_height = 40.0;
+    Real log_law_sampling_height = 0.1; // a small number will default to the first cell
 
 //    Vector<Real> east{Vector<Real>{1.0, 0.0, 0.0}};
 //    Vector<Real> north{Vector<Real>{0.0, 1.0, 0.0}};
