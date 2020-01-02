@@ -1,5 +1,3 @@
-#include <AMReX_AmrCore.H>
-
 #include <incflo.H>
 
 using namespace amrex;

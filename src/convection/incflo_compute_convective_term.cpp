@@ -222,7 +222,10 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
  
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    arrays returned from this call are on face CENTROIDS
-        incflo_predict_vels_on_faces(lev, time, vel_in);
+        if (use_godunov) 
+           incflo_predict_godunov(lev, time, vel_in);
+        else
+           incflo_predict_vels_on_faces(lev, time, vel_in);
     }
 
     // Do projection on all AMR levels in one shot -- note that the {u_mac, v_mac, w_mac}

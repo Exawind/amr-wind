@@ -1,6 +1,4 @@
 #include <AMReX_BC_TYPES.H>
-#include <AMReX_Box.H>
-
 #include <incflo.H>
 
 using namespace amrex;

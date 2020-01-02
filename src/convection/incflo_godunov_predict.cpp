@@ -6,20 +6,61 @@
 using namespace amrex;
 
 void
-incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
-                                      const Array4<Real> &a_fx,
-                                      const Array4<Real> &a_fy, 
-                                      const Array4<Real> &a_fz, 
-                                      const Array4<Real> &tf, 
-                                      const Array4<Real> &divu_cc,
-                                      const Array4<Real> &s, 
-                                      const int state_comp, const int ncomp,
-                                      const Array4<const Real> &u_mac, 
-                                      const Array4<const Real> &v_mac, 
-                                      const Array4<const Real> &w_mac,
-                                      const Gpu::ManagedVector<BCRec> &BCs)
+incflo::incflo_predict_godunov ( int lev, Real time,
+                                 Vector< std::unique_ptr<MultiFab> >& vel_in)
+{
+    BL_PROFILE("incflo::incflo_predict_godunov");
+
+    Box domain(geom[lev].Domain());
+
+    // These are place-holders for now
+    MultiFab tforces(grids[lev], dmap[lev], 3, 2);
+    MultiFab divu   (grids[lev], dmap[lev], 1, 2);
+    tforces.setVal(0.0);
+    divu.setVal(0.0);
+
+    BCRec dom_bc;
+    {
+      // const int* lo_bc = phys_bc.lo();
+      // const int* hi_bc = phys_bc.hi();
+      // HACK -- just set to all int_dir as stand-in for periodic
+      dom_bc.setLo(0,BCType::int_dir);
+      dom_bc.setHi(0,BCType::int_dir);
+      dom_bc.setLo(1,BCType::int_dir);
+      dom_bc.setHi(1,BCType::int_dir);
+      dom_bc.setLo(2,BCType::int_dir);
+      dom_bc.setHi(2,BCType::int_dir);
+    }
+
+    for (MFIter mfi(*vel_in[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        // Tilebox
+        Box bx = mfi.tilebox();
+
+        Gpu::ManagedVector<BCRec> bc(3);
+        for (int n = 0; n < 3; ++n)
+            setBC(bx, geom[lev].Domain(), dom_bc, bc[n]);
+
+        incflo_predict_godunov_on_box(lev, bx, (*vel_in[lev]).array(mfi), 
+                                      m_u_mac[lev]->array(mfi), m_v_mac[lev]->array(mfi), m_w_mac[lev]->array(mfi),
+                                      tforces.array(mfi), divu.array(mfi), bc);
+
+    }
+}
+
+void
+incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
+                                       const Array4<Real> &a_vel,
+                                       const Array4<const Real> &u_face, 
+                                       const Array4<const Real> &v_face, 
+                                       const Array4<const Real> &w_face,
+                                       const Array4<Real> &tf, 
+                                       const Array4<Real> &divu_cc,
+                                       const Gpu::ManagedVector<BCRec> &BCs)
 {
     Box domain(geom[lev].Domain());
+
+    int ncomp = 1;
 
     int iconserv[3];
     for (int i = 0; i < 3; i++) iconserv[i] = 1;
@@ -76,17 +117,17 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
     }); 
 
     FArrayBox xlf(xgbx, ncomp); 
@@ -114,6 +155,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     auto const tybx = surroundingNodes(grow(g1bx, 1, -1), 1); 
     auto const tzbx = surroundingNodes(grow(g1bx, 2, -1), 2);
     
+#if 0
 // --------------------X -------------------------------------------------
     AMREX_PARALLEL_FOR_4D(txbx, ncomp, i, j, k, n, {
         Real cons1;
@@ -520,4 +562,5 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D(fzbx, ncomp, i, j, k, n, {
         a_fz(i,j,k,n) = a_fz(i,j,k,n)*w_mac(i,j,k);
     });
+#endif
 }

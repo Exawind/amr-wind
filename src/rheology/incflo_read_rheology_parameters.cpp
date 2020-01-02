@@ -4,7 +4,7 @@ using namespace amrex;
 
 void incflo::ReadRheologyParameters()
 {
-     ParmParse pp("incflo");
+     amrex::ParmParse pp("incflo");
 
      fluid_model = "newtonian";
      pp.query("fluid_model", fluid_model);

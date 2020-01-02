@@ -239,17 +239,187 @@ inline void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
       }
 } 
 
+// Right now only ppm type 1 is supported on GPU
+// This version is called before the MAC projection, when we use the cell-centered velocity
+//      for upwinding
+AMREX_GPU_HOST_DEVICE
+inline void Godunov_ppm_pred(const int i, const int j, const int k, const int n, 
+                             const amrex::Real dt, const amrex::Real dx, 
+                             const amrex::Array4<const amrex::Real> &S, 
+                             const amrex::Array4<const amrex::Real> &vel, 
+                             const amrex::Array4<amrex::Real> &Im, 
+                             const amrex::Array4<amrex::Real> &Ip,
+                             const amrex::BCRec bc, const int domlo, const int domhi,                  
+                             const int dir)
+{
+    using namespace amrex;
+
+    amrex::Real sedge1, sedge2, sp, sm; 
+    amrex::Real s1 = S(i,j,k,n);     
+    amrex::Real eps = 1.e-6;
+    
+    if (dir==0)
+    {
+        amrex::Real s2 = S(i-1,j,k,n); 
+        amrex::Real d1 = vanLeer(S(i,j,k,n), S(i+1,j,k,n), S(i-1,j,k,n)); 
+        amrex::Real d2 = vanLeer(S(i-1,j,k,n), S(i,j,k,n), S(i-2,j,k,n)); 
+        sedge1 = 0.5e0*(S(i,j,k,n) + S(i-1,j,k,n)) - 1.e0/6.e0*(d1 - d2); 
+        sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i-1,j,k,n))); 
+        sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i-1,j,k,n))); 
+
+        amrex::Real s3 = s2;
+        s2 = s1; 
+        s1 = S(i+1,j,k,n); 
+
+        d2 = d1; 
+        d1 = vanLeer(S(i+1,j,k,n), S(i+2, j, k,n), S(i,j,k,n)); 
+        sedge2 = 0.5e0*(S(i+1,j,k,n) + S(i,j,k,n)) - 1.e0/6.e0*(d1 - d2); 
+        sedge2 = amrex::max(sedge2, amrex::min(S(i+1,j,k,n), S(i,j,k,n))); 
+        sedge2 = amrex::min(sedge2, amrex::max(S(i+1,j,k,n), S(i,j,k,n))); 
+        
+        sm = sedge1; 
+        sp = sedge2;         
+        if ((sedge2-S(i,j,k,n))*(S(i,j,k,n)-sedge1) <= 0.e0){
+            sp = S(i,j,k,n);
+            sm = S(i,j,k,n);
+        }
+        else if (std::abs(sp-S(i,j,k,n)) >= 2.e0*std::abs(sm-S(i,j,k,n)))
+            sp = 3.e0*S(i,j,k,n) - 2.e0*sedge1;
+        else if (std::abs(sm-S(i,j,k,n)) >=  2.e0*std::abs(sp-S(i,j,k,n))) 
+            sm = 3.e0*S(i,j,k,n) - 2.e0*sedge2;
+        
+        Godunov_ppm_xbc(i, j, k, n, sm, sp, sedge1,sedge2, S, bc.lo(0), bc.hi(0), domlo, domhi); 
+        amrex::Real s6 = 6.e0*s2- 3.e0*(sm + sp); 
+        amrex::Real sigma = std::abs(vel(i,j,k,dir))*dt/dx; 
+
+        if (vel(i,j,k,dir) > eps)
+        {
+            Ip(i,j,k,n) = sp - (0.5*sigma)*((sp - sm) 
+                             - (1.e0 -2.e0/3.e0*sigma)*s6);
+            Im(i,j,k,n) = S(i,j,k,n); 
+        }
+        else
+        {
+            Ip(i,j,k,n) = S(i,j,k,n); 
+            Im(i,j,k,n) = sm + (0.5*sigma)*((sp-sm)
+                             + (1.e0 - 2.e0/3.e0*sigma)*s6); 
+        }
+    }
+    else if (dir==1)
+    {
+        amrex::Real s2 = S(i,j-1,k,n); 
+        amrex::Real d1 = vanLeer(s1, S(i,j+1,k,n), s2); 
+        amrex::Real d2 = vanLeer(s2, s1, S(i,j-2,k,n)); 
+        sedge1 = 0.5e0*(s1 + s2) - 1.e0/6.e0*(d1 - d2); 
+        sedge1 = amrex::max(sedge1, amrex::min(s1, s2)); 
+        sedge1 = amrex::min(sedge1, amrex::max(s1, s2)); 
+
+        amrex::Real s3 = s2;
+        s2 = s1; 
+        s1 = S(i,j+1,k,n); 
+        
+        d1 = vanLeer(s1, S(i, j+2, k,n), S(i,j,k,n)); 
+        d2 = vanLeer(S(i,j,k,n), s1, s3);
+        sedge2 = 0.5e0*(s1 + S(i,j,k,n)) - 1.e0/6.e0*(d1 - d2); 
+        sedge2 = amrex::max(sedge2, amrex::min(s1, S(i,j,k,n))); 
+        sedge2 = amrex::min(sedge2, amrex::max(s1, S(i,j,k,n))); 
+        
+        sm = sedge1; 
+        sp = sedge2;         
+        if ((sedge2-S(i,j,k,n))*(S(i,j,k,n)-sedge1) < 0.e0){
+            sp = S(i,j,k,n);
+            sm = S(i,j,k,n);
+        }
+        else if (std::abs(sedge2-S(i,j,k,n)) >= 2.e0*std::abs(sedge1-S(i,j,k,n)))
+            sp = 3.e0*S(i,j,k,n) - 2.e0*sedge1;
+        else if (std::abs(sedge1-S(i,j,k,n)) >=  2.e0*std::abs(sedge2-S(i,j,k,n))) 
+            sm = 3.e0*S(i,j,k,n) - 2.e0*sedge2;
+        Godunov_ppm_ybc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo, domhi); 
+
+        amrex::Real s6 = 6.e0*S(i,j,k,n)- 3.e0*(sm + sp); 
+
+        amrex::Real sigma = std::abs(vel(i,j,k,dir))*dt/dx; 
+
+        if(vel(i,j,k,dir) > eps)
+        {
+            Ip(i,j,k,n) = sp - (0.5*sigma)*((sp - sm) 
+                             - (1.e0 -2.e0/3.e0*sigma)*s6); 
+            Im(i,j,k,n) = S(i,j,k,n); 
+        }
+        else
+        {
+            Im(i,j,k,n) = sm + (0.5*sigma)*((sp-sm) 
+                             + (1.e0 - 2.e0/3.e0*sigma)*s6); 
+            Ip(i,j,k,n) = S(i,j,k,n); 
+        }
+
+    }    
+    else
+    {
+        amrex::Real s2 = S(i,j,k-1,n); 
+
+        amrex::Real d1 = vanLeer(S(i,j,k,n), S(i,j,k+1,n), S(i,j,k-1,n)); 
+        amrex::Real d2 = vanLeer(S(i,j,k-1,n), S(i,j,k,n), S(i,j,k-2,n)); 
+
+        sedge1 = 0.5e0*(S(i,j,k,n) + S(i,j,k-1,n)) - 1.e0/6.e0*(d1 - d2); 
+        sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i,j,k-1,n))); 
+        sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i,j,k-1,n))); 
+
+        amrex::Real s3 = s2;
+        s2 = s1; 
+        s1 = S(i,j,k+1,n); 
+
+        amrex::Real d3 = d2;         
+        d2 = d1; 
+        d1 = vanLeer(S(i,j,k+1,n), S(i, j, k+2,n), S(i,j,k,n)); 
+
+        sedge2 = 0.5e0*(S(i,j,k+1,n) + S(i,j,k,n)) - 1.e0/6.e0*(d1 - d2); 
+        sedge2 = amrex::max(sedge2, amrex::min(S(i,j,k+1,n), S(i,j,k,n))); 
+        sedge2 = amrex::min(sedge2, amrex::max(S(i,j,k+1,n), S(i,j,k,n))); 
+        
+        sm = sedge1; 
+        sp = sedge2;        
+        if ((sp-S(i,j,k,n))*(S(i,j,k,n)-sm) <= 0.e0){
+            sp = S(i,j,k,n);
+            sm = S(i,j,k,n);
+        }
+        else if (std::abs(sp-S(i,j,k,n)) >= 2.e0*std::abs(sm-S(i,j,k,n)))
+            sp = 3.e0*S(i,j,k,n) - 2.e0*sm;
+        else if (std::abs(sm-S(i,j,k,n)) >=  2.e0*std::abs(sp-S(i,j,k,n))) 
+            sm = 3.e0*S(i,j,k,n) - 2.e0*sp;
+
+        Godunov_ppm_zbc(i, j, k, n, sm, sp, sedge1, sedge2,S, bc.lo(2), bc.hi(2), domlo, domhi); 
+
+        amrex::Real s6 = 6.e0*S(i,j,k,n)- 3.e0*(sm + sp); 
+        amrex::Real sigma = std::abs(vel(i,j,k,dir))*dt/dx; 
+
+        if(vel(i,j,k,dir) > eps)
+        { 
+            Ip(i,j,k,n) = sp - (0.5*sigma)*((sp - sm)
+                             - (1.e0 -2.e0/3.e0*sigma)*s6); 
+            Im(i,j,k,n) = s2;
+        } 
+        else
+        { 
+            Im(i,j,k,n) = sm + (0.5*sigma)*((sp-sm) 
+                             + (1.e0 - 2.e0/3.e0*sigma)*s6); 
+            Ip(i,j,k,n) = s2;
+        } 
+    }
+}
 
 // Right now only ppm type 1 is supported on GPU
+// This version is called after the MAC projection, when we use the MAC-projected velocity
+//      for upwinding
 AMREX_GPU_HOST_DEVICE
-inline void Godunov_ppm(const int i, const int j, const int k, const int n, 
-                        const amrex::Real dt, const amrex::Real dx, 
-                        const amrex::Array4<const amrex::Real> &S, 
-                        const amrex::Array4<const amrex::Real> &vel_edge, 
-                        const amrex::Array4<amrex::Real> &Im, 
-                        const amrex::Array4<amrex::Real> &Ip,
-                        const amrex::BCRec bc, const int domlo, const int domhi,                  
-                        const int dir)
+inline void Godunov_ppm_fpu(const int i, const int j, const int k, const int n, 
+                            const amrex::Real dt, const amrex::Real dx, 
+                            const amrex::Array4<const amrex::Real> &S, 
+                            const amrex::Array4<const amrex::Real> &vel_edge, 
+                            const amrex::Array4<amrex::Real> &Im, 
+                            const amrex::Array4<amrex::Real> &Ip,
+                            const amrex::BCRec bc, const int domlo, const int domhi,                  
+                            const int dir)
 {
     using namespace amrex;
 

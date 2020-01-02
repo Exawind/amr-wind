@@ -123,7 +123,7 @@ incflo::set_density_bcs(Real time,
   const int pinf = bc_list.get_pinf();
   const int pout = bc_list.get_pout();
 
-  amrex::Real* p_bc_s;
+  Real* p_bc_s;
 
   p_bc_s = m_bc_r.data();
 
@@ -135,11 +135,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_ilo(dom_lo[0]-1,j,k,1);
       const int bct = bct_ilo(dom_lo[0]-1,j,k,0);
 
-      if ((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
         scal_arr(i,j,k) = scal_arr(dom_lo[0],j,k);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -154,11 +154,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_ihi(dom_hi[0]+1,j,k,1);
       const int bct = bct_ihi(dom_hi[0]+1,j,k,0);
 
-      if((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
          scal_arr(i,j,k) = scal_arr(dom_hi[0],j,k);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -173,11 +173,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_jlo(i,dom_lo[1]-1,k,1);
       const int bct = bct_jlo(i,dom_lo[1]-1,k,0);
 
-      if((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
          scal_arr(i,j,k) = scal_arr(i,dom_lo[1],k);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -192,11 +192,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_jhi(i,dom_hi[1]+1,k,1);
       const int bct = bct_jhi(i,dom_hi[1]+1,k,0);
 
-      if((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
          scal_arr(i,j,k) = scal_arr(i,dom_hi[1],k);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -211,11 +211,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
 
-      if((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
          scal_arr(i,j,k) = scal_arr(i,j,dom_lo[2]);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
@@ -230,11 +230,11 @@ incflo::set_density_bcs(Real time,
       const int bcv = bct_khi(i,j,dom_hi[2]+1,1);
       const int bct = bct_khi(i,j,dom_hi[2]+1,0);
 
-      if ((bct == pinf) or (bct == pout))
+      if ((bct == pinf) or (bct == pout) or (bct == nsw))
       {
          scal_arr(i,j,k) = scal_arr(i,j,dom_hi[2]);
       }
-      else if(bct == minf || bct == nsw)
+      else if (bct == minf)
       {
          scal_arr(i,j,k) = p_bc_s[bcv];
       }
