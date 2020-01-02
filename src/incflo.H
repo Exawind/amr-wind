@@ -279,6 +279,13 @@ private:
     // amrex::Vector cannot be used on gpu, so ...
     amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> m_bc_tracer_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_bc_tracer_raii;
+    //
+    amrex::Vector<amrex::BCRec> m_bcrec_velocity;
+    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_velocity_d;
+    amrex::Vector<amrex::BCRec> m_bcrec_density;
+    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_density_d;
+    amrex::Vector<amrex::BCRec> m_bcrec_tracer;
+    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
 
     static int ntrac;
 
@@ -329,9 +336,16 @@ private:
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_new () noexcept;
 
-    amrex::Vector<amrex::BCRec> get_velocity_bcrec () const noexcept;
-    amrex::Vector<amrex::BCRec> get_density_bcrec () const noexcept;
-    amrex::Vector<amrex::BCRec> get_tracer_bcrec () const noexcept;
+    amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
+    amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
+    amrex::Vector<amrex::BCRec> const& get_tracer_bcrec () const noexcept { return m_bcrec_tracer; }
+
+    amrex::BCRec const* get_velocity_bcrec_device_ptr () const noexcept {
+        return m_bcrec_velocity_d.data(); }
+    amrex::BCRec const* get_density_bcrec_device_ptr () const noexcept {
+        return m_bcrec_density_d.data(); }
+    amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
+        return m_bcrec_tracer_d.data(); }
 
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bclo () const noexcept;
     std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bchi () const noexcept;
@@ -457,6 +471,46 @@ public: // for cuda
     // Convection
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
+
+    void compute_convective_fluxes (amrex::Box const& bx, int ncomp, int lev,
+                                    amrex::Array4<amrex::Real> const& fx,
+                                    amrex::Array4<amrex::Real> const& fy,
+                                    amrex::Array4<amrex::Real> const& fz,
+                                    amrex::Array4<amrex::Real const> const& q,
+                                    amrex::Array4<amrex::Real const> const& umac,
+                                    amrex::Array4<amrex::Real const> const& vmac,
+                                    amrex::Array4<amrex::Real const> const& wmac,
+                                    amrex::BCRec const* h_bcrec,
+                                    amrex::BCRec const* d_bcrec);
+
+#ifdef AMREX_USE_EB
+    void compute_convective_fluxes_eb (amrex::Box const& bx, int ncomp, int lev,
+                                       amrex::Array4<amrex::Real> const& fx,
+                                       amrex::Array4<amrex::Real> const& fy,
+                                       amrex::Array4<amrex::Real> const& fz,
+                                       amrex::Array4<amrex::Real const> const& q,
+                                       amrex::Array4<amrex::Real const> const& umac,
+                                       amrex::Array4<amrex::Real const> const& vmac,
+                                       amrex::Array4<amrex::Real const> const& wmac,
+                                       amrex::BCRec const* h_bcrec,
+                                       amrex::BCRec const* d_bcrec,
+                                       amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                       amrex::Array4<amrex::Real const> const& fcx,
+                                       amrex::Array4<amrex::Real const> const& fcy,
+                                       amrex::Array4<amrex::Real const> const& fcz,
+                                       amrex::Array4<amrex::Real> const& qface);
+#endif
+
+    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
+                                  amrex::Array4<amrex::Real> const& dvdt,
+                                  amrex::Array4<amrex::Real> const& drdt,
+                                  amrex::Array4<amrex::Real> const& dtdt,
+                                  amrex::Array4<amrex::Real const> const& vel,
+                                  amrex::Array4<amrex::Real const> const& rho,
+                                  amrex::Array4<amrex::Real const> const& tra,
+                                  amrex::Array4<amrex::Real const> const& umac,
+                                  amrex::Array4<amrex::Real const> const& vmac,
+                                  amrex::Array4<amrex::Real const> const& wmac);
 
     void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
                                   amrex::Vector<amrex::MultiFab*> const& conv_r,

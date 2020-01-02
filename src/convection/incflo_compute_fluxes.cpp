@@ -1,6 +1,381 @@
+#include <incflo_convection_K.H>
 #include <incflo.H>
 
 using namespace amrex;
+
+void
+incflo::compute_convective_fluxes (Box const& bx, int ncomp, int lev,
+                                   Array4<Real> const& fx,
+                                   Array4<Real> const& fy,
+                                   Array4<Real> const& fz,
+                                   Array4<Real const> const& q,
+                                   Array4<Real const> const& umac,
+                                   Array4<Real const> const& vmac,
+                                   Array4<Real const> const& wmac,
+                                   BCRec const* h_bcrec, BCRec const* d_bcrec)
+{
+    constexpr Real small = 1.e-10;
+
+    const Box& domain_box = geom[lev].Domain();
+    const int domain_ilo = domain_box.smallEnd(0);
+    const int domain_ihi = domain_box.bigEnd(0);
+    const int domain_jlo = domain_box.smallEnd(1);
+    const int domain_jhi = domain_box.bigEnd(1);
+    const int domain_klo = domain_box.smallEnd(2);
+    const int domain_khi = domain_box.bigEnd(2);
+
+    Box const& xbx = amrex::surroundingNodes(bx,0);
+    Box const& ybx = amrex::surroundingNodes(bx,1);
+    Box const& zbx = amrex::surroundingNodes(bx,2);
+
+    // At an ext_dir boundary, the boundary value is on the face, not cell center.
+    bool has_extdir_lo = (h_bcrec[0].lo(0) == BCType::ext_dir) or
+                         (h_bcrec[1].lo(0) == BCType::ext_dir) or
+                         (h_bcrec[2].lo(0) == BCType::ext_dir);
+    bool has_extdir_hi = (h_bcrec[0].hi(0) == BCType::ext_dir) or
+                         (h_bcrec[1].hi(0) == BCType::ext_dir) or
+                         (h_bcrec[2].hi(0) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
+        (has_extdir_hi and domain_ihi <= xbx.bigEnd(0)))
+    {
+        amrex::ParallelFor(xbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
+            bool extdir_ihi = d_bcrec[n].hi(0) == BCType::ext_dir;
+            Real qs;
+            if (extdir_ilo and i == domain_ilo) {
+                qs = q(i-1,j,k,n);
+            } else if (extdir_ihi and i == domain_ihi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_xslope_extdir
+                    (i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope_extdir
+                    (i-1,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                if (umac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (umac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fx(i,j,k,n) = qs * umac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(xbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i  ,j,k,n) - 0.5 * incflo_xslope(i  ,j,k,n,q);
+            Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope(i-1,j,k,n,q);
+            Real qs;
+            if (umac(i,j,k) > small) {
+                qs = qmns;
+            } else if (umac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fx(i,j,k,n) = qs * umac(i,j,k);
+        });
+    }
+
+    has_extdir_lo = (h_bcrec[0].lo(1) == BCType::ext_dir) or
+                    (h_bcrec[1].lo(1) == BCType::ext_dir) or
+                    (h_bcrec[2].lo(1) == BCType::ext_dir);
+    has_extdir_hi = (h_bcrec[0].hi(1) == BCType::ext_dir) or
+                    (h_bcrec[1].hi(1) == BCType::ext_dir) or
+                    (h_bcrec[2].hi(1) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
+        (has_extdir_hi and domain_jhi <= ybx.bigEnd(1)))
+    {
+        amrex::ParallelFor(ybx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_jlo = d_bcrec[n].lo(1) == BCType::ext_dir;
+            bool extdir_jhi = d_bcrec[n].hi(1) == BCType::ext_dir;
+            Real qs;
+            if (extdir_jlo and j == domain_jlo) {
+                qs = q(i,j-1,k,n);
+            } else if (extdir_jhi and j == domain_jhi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_yslope_extdir
+                    (i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope_extdir
+                    (i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                if (vmac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (vmac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fy(i,j,k,n) = qs * vmac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(ybx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i,j  ,k,n) - 0.5 * incflo_yslope(i,j  ,k,n,q);
+            Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope(i,j-1,k,n,q);
+            Real qs;
+            if (vmac(i,j,k) > small) {
+                qs = qmns;
+            } else if (vmac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fy(i,j,k,n) = qs * vmac(i,j,k);
+        });
+    }
+
+    has_extdir_lo = (h_bcrec[0].lo(2) == BCType::ext_dir) or
+                    (h_bcrec[1].lo(2) == BCType::ext_dir) or
+                    (h_bcrec[2].lo(2) == BCType::ext_dir);
+    has_extdir_hi = (h_bcrec[0].hi(2) == BCType::ext_dir) or
+                    (h_bcrec[1].hi(2) == BCType::ext_dir) or
+                    (h_bcrec[2].hi(2) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
+        (has_extdir_hi and domain_khi <= zbx.bigEnd(2)))
+    {
+        amrex::ParallelFor(zbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_klo = d_bcrec[n].lo(2) == BCType::ext_dir;
+            bool extdir_khi = d_bcrec[n].hi(2) == BCType::ext_dir;
+            Real qs;
+            if (extdir_klo and k == domain_klo) {
+                qs = q(i,j,k-1,n);
+            } else if (extdir_khi and k == domain_khi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_zslope_extdir
+                    (i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope_extdir(
+                    i,j,k-1,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                if (wmac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (wmac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fz(i,j,k,n) = qs * wmac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(zbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i,j,k  ,n) - 0.5 * incflo_zslope(i,j,k  ,n,q);
+            Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope(i,j,k-1,n,q);
+            Real qs;
+            if (wmac(i,j,k) > small) {
+                qs = qmns;
+            } else if (wmac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fz(i,j,k,n) = qs * wmac(i,j,k);
+        });
+    }
+}
+
+#ifdef AMREX_USE_EB
+void incflo::compute_convective_fluxes_eb (Box const& bx, int ncomp, int lev,
+                                           Array4<Real> const& fx,
+                                           Array4<Real> const& fy,
+                                           Array4<Real> const& fz,
+                                           Array4<Real const> const& q,
+                                           Array4<Real const> const& umac,
+                                           Array4<Real const> const& vmac,
+                                           Array4<Real const> const& wmac,
+                                           BCRec const* h_bcrec,
+                                           BCRec const* d_bcrec,
+                                           Array4<EBCellFlag const> const& flag,
+                                           Array4<Real const> const& fcx,
+                                           Array4<Real const> const& fcy,
+                                           Array4<Real const> const& fcz,
+                                           Array4<Real> const& qface)
+{
+    constexpr Real small = 1.e-10;
+
+    const Box& domain_box = geom[lev].Domain();
+    const int domain_ilo = domain_box.smallEnd(0);
+    const int domain_ihi = domain_box.bigEnd(0);
+    const int domain_jlo = domain_box.smallEnd(1);
+    const int domain_jhi = domain_box.bigEnd(1);
+    const int domain_klo = domain_box.smallEnd(2);
+    const int domain_khi = domain_box.bigEnd(2);
+
+    Box const& xbx = amrex::surroundingNodes(bx,0);
+    Box const& ybx = amrex::surroundingNodes(bx,1);
+    Box const& zbx = amrex::surroundingNodes(bx,2);
+
+    // At an ext_dir boundary, the boundary value is on the face, not cell center.
+    bool has_extdir_lo = (h_bcrec[0].lo(0) == BCType::ext_dir) or
+                         (h_bcrec[1].lo(0) == BCType::ext_dir) or
+                         (h_bcrec[2].lo(0) == BCType::ext_dir);
+    bool has_extdir_hi = (h_bcrec[0].hi(0) == BCType::ext_dir) or
+                         (h_bcrec[1].hi(0) == BCType::ext_dir) or
+                         (h_bcrec[2].hi(0) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
+        (has_extdir_hi and domain_ihi <= xbx.bigEnd(0)))
+    {
+        amrex::ParallelFor(xbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
+            bool extdir_ihi = d_bcrec[n].hi(0) == BCType::ext_dir;
+            Real qs;
+            if (extdir_ilo and i == domain_ilo) {
+                qs = q(i-1,j,k,n);
+            } else if (extdir_ihi and i == domain_ihi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_xslope_extdir
+                    (i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope_extdir
+                    (i-1,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                if (umac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (umac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fx(i,j,k,n) = qs * umac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(xbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i  ,j,k,n) - 0.5 * incflo_xslope(i  ,j,k,n,q);
+            Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope(i-1,j,k,n,q);
+            Real qs;
+            if (umac(i,j,k) > small) {
+                qs = qmns;
+            } else if (umac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fx(i,j,k,n) = qs * umac(i,j,k);
+        });
+    }
+
+    has_extdir_lo = (h_bcrec[0].lo(1) == BCType::ext_dir) or
+                    (h_bcrec[1].lo(1) == BCType::ext_dir) or
+                    (h_bcrec[2].lo(1) == BCType::ext_dir);
+    has_extdir_hi = (h_bcrec[0].hi(1) == BCType::ext_dir) or
+                    (h_bcrec[1].hi(1) == BCType::ext_dir) or
+                    (h_bcrec[2].hi(1) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
+        (has_extdir_hi and domain_jhi <= ybx.bigEnd(1)))
+    {
+        amrex::ParallelFor(ybx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_jlo = d_bcrec[n].lo(1) == BCType::ext_dir;
+            bool extdir_jhi = d_bcrec[n].hi(1) == BCType::ext_dir;
+            Real qs;
+            if (extdir_jlo and j == domain_jlo) {
+                qs = q(i,j-1,k,n);
+            } else if (extdir_jhi and j == domain_jhi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_yslope_extdir
+                    (i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope_extdir
+                    (i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                if (vmac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (vmac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fy(i,j,k,n) = qs * vmac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(ybx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i,j  ,k,n) - 0.5 * incflo_yslope(i,j  ,k,n,q);
+            Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope(i,j-1,k,n,q);
+            Real qs;
+            if (vmac(i,j,k) > small) {
+                qs = qmns;
+            } else if (vmac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fy(i,j,k,n) = qs * vmac(i,j,k);
+        });
+    }
+
+    has_extdir_lo = (h_bcrec[0].lo(2) == BCType::ext_dir) or
+                    (h_bcrec[1].lo(2) == BCType::ext_dir) or
+                    (h_bcrec[2].lo(2) == BCType::ext_dir);
+    has_extdir_hi = (h_bcrec[0].hi(2) == BCType::ext_dir) or
+                    (h_bcrec[1].hi(2) == BCType::ext_dir) or
+                    (h_bcrec[2].hi(2) == BCType::ext_dir);
+    if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
+        (has_extdir_hi and domain_khi <= zbx.bigEnd(2)))
+    {
+        amrex::ParallelFor(zbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            bool extdir_klo = d_bcrec[n].lo(2) == BCType::ext_dir;
+            bool extdir_khi = d_bcrec[n].hi(2) == BCType::ext_dir;
+            Real qs;
+            if (extdir_klo and k == domain_klo) {
+                qs = q(i,j,k-1,n);
+            } else if (extdir_khi and k == domain_khi+1) {
+                qs = q(i,j,k,n);
+            } else {
+                Real qpls = q(i,j,k,n) - 0.5 * incflo_zslope_extdir
+                    (i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope_extdir(
+                    i,j,k-1,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                if (wmac(i,j,k) > small) {
+                    qs = qmns;
+                } else if (wmac(i,j,k) < -small) {
+                    qs = qpls;
+                } else {
+                    qs = 0.5*(qmns+qpls);
+                }
+            }
+            fz(i,j,k,n) = qs * wmac(i,j,k);
+        });
+    }
+    else
+    {
+        amrex::ParallelFor(zbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            Real qpls = q(i,j,k  ,n) - 0.5 * incflo_zslope(i,j,k  ,n,q);
+            Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope(i,j,k-1,n,q);
+            Real qs;
+            if (wmac(i,j,k) > small) {
+                qs = qmns;
+            } else if (wmac(i,j,k) < -small) {
+                qs = qpls;
+            } else {
+                qs = 0.5*(qmns+qpls);
+            }
+            fz(i,j,k,n) = qs * wmac(i,j,k);
+        });
+    }
+}
+#endif
+
 
 namespace ugradu_aux {
 

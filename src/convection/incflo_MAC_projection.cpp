@@ -78,11 +78,6 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
     macproj.setDomainBC(get_projection_bclo(), get_projection_bchi());
 
     macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
-
-    VisMF::Write(u_mac[0], "umac");
-    VisMF::Write(v_mac[0], "vmac");
-    VisMF::Write(w_mac[0], "wmac");
-    amrex::Abort("xxxxx end of apply_MAC_projection");
 }
 
 void
