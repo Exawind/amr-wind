@@ -253,7 +253,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     {
         if (flag(i,j,k).isConnected(-1,0,0)) {
             Real upls_on_centroid, umns_on_centroid;
-            if (flag(i,j,k).isRegular()) {
+            if (flag(i,j,k).isRegular() or flag(i-1,j,k).isRegular()) {
                 upls_on_centroid = upls(i,j,k);
                 umns_on_centroid = umns(i,j,k);
             } else {
@@ -325,7 +325,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     {
         if (flag(i,j,k).isConnected(0,-1,0)) {
             Real vpls_on_centroid, vmns_on_centroid;
-            if (flag(i,j,k).isRegular()) {
+            if (flag(i,j,k).isRegular() or flag(i,j-1,k).isRegular()) {
                 vpls_on_centroid = vpls(i,j,k);
                 vmns_on_centroid = vmns(i,j,k);
             } else {
@@ -397,7 +397,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     {
         if (flag(i,j,k).isConnected(0,0,-1)) {
             Real wpls_on_centroid, wmns_on_centroid;
-            if (flag(i,j,k).isRegular()) {
+            if (flag(i,j,k).isRegular() or flag(i,j,k-1).isRegular()) {
                 wpls_on_centroid = wpls(i,j,k);
                 wmns_on_centroid = wmns(i,j,k);
             } else {
@@ -438,6 +438,129 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         } else {
             w(i,j,k) = 0.0;
         }
+    });
+}
+#endif
+
+void incflo::compute_convective_rate (int lev, Box const& bx, int ncomp,
+                                      Array4<Real> const& dUdt,
+                                      Array4<Real const> const& fx,
+                                      Array4<Real const> const& fy,
+                                      Array4<Real const> const& fz)
+{
+    const auto dxinv = Geom(lev).InvCellSizeArray();
+    amrex::ParallelFor(bx, ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        dUdt(i,j,k,n) = dxinv[0] * (fx(i,j,k,n) - fx(i+1,j,k,n))
+            +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
+            +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
+    });
+}
+
+#ifdef AMREX_USE_EB
+void incflo::compute_convective_rate_eb (int lev, Box const& bx, int ncomp,
+                                         Array4<Real> const& dUdt,
+                                         Array4<Real const> const& fx,
+                                         Array4<Real const> const& fy,
+                                         Array4<Real const> const& fz,
+                                         Array4<EBCellFlag const> const& flag,
+                                         Array4<Real const> const& vfrac,
+                                         Array4<Real const> const& apx,
+                                         Array4<Real const> const& apy,
+                                         Array4<Real const> const& apz)
+{
+    const auto dxinv = Geom(lev).InvCellSizeArray();
+    amrex::ParallelFor(bx, ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        if (flag(i,j,k).isRegular()) {
+            dUdt(i,j,k,n) = dxinv[0] * (fx(i,j,k,n) - fx(i+1,j,k,n))
+                +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
+                +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
+        } else if (flag(i,j,k).isSingleValued()) {
+            dUdt(i,j,k,n) = (1.0/vfrac(i,j,k)) *
+                ( dxinv[0] * (apx(i,j,k)*fx(i,j,k,n) - apx(i+1,j,k)*fx(i+1,j,k,n))
+                + dxinv[1] * (apy(i,j,k)*fy(i,j,k,n) - apy(i,j+1,k)*fy(i,j+1,k,n))
+                + dxinv[2] * (apz(i,j,k)*fz(i,j,k,n) - apz(i,j,k+1)*fz(i,j,k+1,n)) );
+        } else {
+            dUdt(i,j,k,n) = 0.0;
+        }
+    });
+}
+
+void incflo::redistribute_eb (int lev, Box const& bx, int ncomp,
+                              Array4<Real> const& dUdt,
+                              Array4<Real const> const& dUdt_in,
+                              Array4<Real> const& scratch,
+                              Array4<EBCellFlag const> const& flag,
+                              Array4<Real const> const& vfrac)
+{
+    // xxxxx TODO: more weight options
+    constexpr Real wgt = 1.0;
+
+    Array4<Real> tmp(scratch, 0);
+    Array4<Real> delm(scratch, ncomp);
+
+    amrex::ParallelFor(amrex::grow(bx,1), ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        if (flag(i,j,k).isSingleValued()) {
+            Real vtot = 0.0;
+            Real divnc = 0.0;
+            for (int kk = -1; kk <= 1; ++kk) {
+            for (int jj = -1; jj <= 1; ++jj) {
+            for (int ii = -1; ii <= 1; ++ii) {
+                if ((ii != 0 or jj != 0 or kk != 0) and
+                    flag(i,j,k).isConnected(ii,jj,kk))
+                {
+                    Real vf = vfrac(i+ii,j+jj,k+kk);
+                    vtot += vf;
+                    divnc += vf * dUdt_in(i+ii,j+jj,k+kk,n);
+                }
+            }}}
+            divnc /= vtot;
+            Real optmp = (1.0-vfrac(i,j,k))*(divnc-dUdt_in(i,j,k));
+            tmp(i,j,k,n) = optmp;
+            delm(i,j,k,n) = -vfrac(i,j,k)*optmp;
+        } else {
+            tmp(i,j,k,n) = 0.0;
+        }
+    });
+
+    amrex::ParallelFor(amrex::grow(bx,1), ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        if (flag(i,j,k).isSingleValued()) {
+            Real wtot = 0.0;
+            for (int kk = -1; kk <= 1; ++kk) {
+            for (int jj = -1; jj <= 1; ++jj) {
+            for (int ii = -1; ii <= 1; ++ii) {
+                if ((ii != 0 or jj != 0 or kk != 0) and
+                    flag(i,j,k).isConnected(ii,jj,kk))
+                {
+                    wtot += vfrac(i+ii,j+jj,k+kk) * wgt;
+                }
+            }}}
+            wtot = 1.0/wtot;
+
+            Real dtmp = delm(i,j,k,n) * wtot * wgt;
+            for (int kk = -1; kk <= 1; ++kk) {
+            for (int jj = -1; jj <= 1; ++jj) {
+            for (int ii = -1; ii <= 1; ++ii) {
+                if ((ii != 0 or jj != 0 or kk != 0) and
+                    flag(i,j,k).isConnected(ii,jj,kk))
+                {
+                    Gpu::Atomic::Add(&tmp(i+ii,j+jj,k+kk,n), dtmp);
+                }
+            }}}
+        }
+    });
+
+    amrex::ParallelFor(bx, ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        dUdt(i,j,k,n) = dUdt_in(i,j,k,n) + tmp(i,j,k,n);
     });
 }
 #endif

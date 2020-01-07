@@ -43,21 +43,26 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 
     regular = (flagfab.getType(amrex::grow(bx,1)) == FabType::regular);
 
-    Array4<Real const> fcx, fcy, fcz;
+    Array4<Real const> fcx, fcy, fcz, vfrac, apx, apy, apz;
     if (!regular) {
         fcx = fact.getFaceCent()[0]->const_array(mfi);
         fcy = fact.getFaceCent()[1]->const_array(mfi);
         fcz = fact.getFaceCent()[2]->const_array(mfi);
+        vfrac = fact.getVolFrac().const_array(mfi);
+        apx = fact.getAreaFrac()[0]->const_array(mfi);
+        apy = fact.getAreaFrac()[1]->const_array(mfi);
+        apz = fact.getAreaFrac()[2]->const_array(mfi);
     }
 #endif
 
-    Box gbx = (regular) ? bx : amrex::grow(bx,1);
     int nmaxcomp = std::max(AMREX_SPACEDIM,ntrac);
     Box tmpbox = amrex::surroundingNodes(bx);
     int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
 #ifdef AMREX_USE_EB
+    Box gbx = bx;
     if (!regular) {
-        tmpbox.grow(1);
+        gbx.grow(2);
+        tmpbox.grow(3);
         tmpcomp += nmaxcomp;
     }
 #endif
@@ -70,22 +75,38 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 #ifdef AMREX_USE_EB
     if (!regular)
     {
-        Array4<Real> scratch = tmpfab.array(nmaxcomp*3);
+        Array4<Real> scratch = tmpfab.array(0);
+        Array4<Real> qface = tmpfab.array(nmaxcomp*3);
+        Array4<Real> dUdt_tmp = tmpfab.array(nmaxcomp*3);
 
         // velocity
-        compute_convective_fluxes_eb(gbx, AMREX_SPACEDIM, lev, fx, fy, fz, vel, umac, vmac, wmac,
+        compute_convective_fluxes_eb(lev, gbx, AMREX_SPACEDIM, fx, fy, fz, vel, umac, vmac, wmac,
                                      get_velocity_bcrec().data(),
                                      get_velocity_bcrec_device_ptr(),
-                                     flag, fcx, fcy, fcz, scratch);
+                                     flag, fcx, fcy, fcz, qface);
+
+        compute_convective_rate_eb(lev, gbx, AMREX_SPACEDIM, dUdt_tmp, fx, fy, fz,
+                                   flag, vfrac, apx, apy, apz);
+
+        redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
     }
     else
 #endif
     {
         // velocity
-        compute_convective_fluxes(gbx, AMREX_SPACEDIM, lev, fx, fy, fz, vel, umac, vmac, wmac,
+        compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel, umac, vmac, wmac,
                                   get_velocity_bcrec().data(),
                                   get_velocity_bcrec_device_ptr());
+        compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
+
+        // density
+        if (!constant_density) {
+
+        }
+
+        // tracer
     }
+   
 }
 
 void
@@ -100,18 +121,18 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
     Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
     int ngmac = 0;  // This will change for Godunov.
 #ifdef AMREX_USE_EB
-    if (!EBFactory(0).isAllRegular()) ++ngmac;
+    if (!EBFactory(0).isAllRegular()) ngmac = 3;
 #endif
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         const BoxArray& ba = density[lev]->boxArray();
         const DistributionMapping& dm = density[lev]->DistributionMap();
         u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm,
-                          1, 1, MFInfo(), Factory(lev));
+                          1, ngmac, MFInfo(), Factory(lev));
         v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm,
-                          1, 1, MFInfo(), Factory(lev));
+                          1, ngmac, MFInfo(), Factory(lev));
         w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm,
-                          1, 1, MFInfo(), Factory(lev));
+                          1, ngmac, MFInfo(), Factory(lev));
         if (ngmac > 0) {
             u_mac[lev].setVal(0.0);
             v_mac[lev].setVal(0.0);

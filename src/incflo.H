@@ -313,9 +313,9 @@ private:
     static constexpr int nghost_for_slopes = 4;
     static constexpr int nghost_for_bcs    = 4;
 #else
-    static constexpr int nghost            = 3;
-    static constexpr int nghost_for_slopes = 3;
-    static constexpr int nghost_for_bcs    = 3;
+    static constexpr int nghost            = 2;
+    static constexpr int nghost_for_slopes = 2;
+    static constexpr int nghost_for_bcs    = 2;
 #endif
 
 #ifdef AMREX_USE_EB
@@ -401,6 +401,7 @@ public: // for cuda
                                 amrex::Array4<amrex::Real> const& v,
                                 amrex::Array4<amrex::Real> const& w,
                                 amrex::Array4<amrex::Real const> const& vcc);
+
 #ifdef AMREX_USE_EB
     void predict_vels_on_faces_eb (int lev,
                                    amrex::Box const& ccbx,
@@ -490,7 +491,7 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    void compute_convective_fluxes (amrex::Box const& bx, int ncomp, int lev,
+    void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
                                     amrex::Array4<amrex::Real> const& fx,
                                     amrex::Array4<amrex::Real> const& fy,
                                     amrex::Array4<amrex::Real> const& fz,
@@ -501,8 +502,14 @@ public: // for cuda
                                     amrex::BCRec const* h_bcrec,
                                     amrex::BCRec const* d_bcrec);
 
+    void compute_convective_rate (int lev, amrex::Box const& bx, int ncomp,
+                                  amrex::Array4<amrex::Real> const& dUdt,
+                                  amrex::Array4<amrex::Real const> const& fx,
+                                  amrex::Array4<amrex::Real const> const& fy,
+                                  amrex::Array4<amrex::Real const> const& fz);
+
 #ifdef AMREX_USE_EB
-    void compute_convective_fluxes_eb (amrex::Box const& bx, int ncomp, int lev,
+    void compute_convective_fluxes_eb (int lev, amrex::Box const& bx, int ncomp,
                                        amrex::Array4<amrex::Real> const& fx,
                                        amrex::Array4<amrex::Real> const& fy,
                                        amrex::Array4<amrex::Real> const& fz,
@@ -517,6 +524,24 @@ public: // for cuda
                                        amrex::Array4<amrex::Real const> const& fcy,
                                        amrex::Array4<amrex::Real const> const& fcz,
                                        amrex::Array4<amrex::Real> const& qface);
+
+    void compute_convective_rate_eb (int lev, amrex::Box const& bx, int ncomp,
+                                     amrex::Array4<amrex::Real> const& dUdt,
+                                     amrex::Array4<amrex::Real const> const& fx,
+                                     amrex::Array4<amrex::Real const> const& fy,
+                                     amrex::Array4<amrex::Real const> const& fz,
+                                     amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                     amrex::Array4<amrex::Real const> const& vfrac,
+                                     amrex::Array4<amrex::Real const> const& apx,
+                                     amrex::Array4<amrex::Real const> const& apy,
+                                     amrex::Array4<amrex::Real const> const& apz);
+
+    void redistribute_eb (int lev, amrex::Box const& bx, int ncomp,
+                          amrex::Array4<amrex::Real> const& dUdt,
+                          amrex::Array4<amrex::Real const> const& dUdt_in,
+                          amrex::Array4<amrex::Real> const& scratch,
+                          amrex::Array4<amrex::EBCellFlag const> const& flag,
+                          amrex::Array4<amrex::Real const> const& vfrac);
 #endif
 
     void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,

@@ -401,7 +401,7 @@ void incflo::InitialIterations ()
 
         int ng = 2;  // This might change for Godunov.
 #ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) ng = 3;
+        if (!EBFactory(0).isAllRegular()) ng = 4;
 #endif
         fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
