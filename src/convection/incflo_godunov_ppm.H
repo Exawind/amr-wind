@@ -577,32 +577,37 @@ inline void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
 
 
 AMREX_GPU_HOST_DEVICE
-inline void Godunov_trans_xbc(const int i, const int j, const int k, const int n, 
-                             const amrex::Array4<const amrex::Real> &s, 
-                             amrex::Real &lo, amrex::Real &hi, 
-                             const amrex::Array4< const amrex::Real> &uedge, 
-                             const int bclo, const int bchi, 
-                             const int domlo[], const int domhi[], 
-                             bool ycouple, bool zcouple)
+inline void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real &uedge,
+                                 const int bclo, 
+                                 const int domlo[], const int domhi[], 
+                                 bool ycouple, bool zcouple)
 {
     using namespace amrex;
 
-// Lower X
+    // Low X
     if(ycouple && (j< domlo[1] || j > domhi[1])) return; 
     if(zcouple && (k< domlo[2] || k > domhi[2])) return;
-    const int domlox = domlo[0], domhix = domhi[0]; 
-    if(i <= domlox){ 
+
+    if (i <= domlo[0])
+    { 
         if(bclo==BCType::ext_dir){
-/*            if(n == XVEL){ //TODO not the right xvel? 
-                if(uedge(domlox,j,k) >= 0.e0){
-                    lo = s(domlox-1, j, k, n); 
-                    hi = s(domlox-1, j, k, n); 
+
+#if 0
+            if(n == XVEL){ //TODO not the right xvel? 
+                if(uedge >= 0.e0){
+                    lo = s(domlo[0]-1, j, k, n); 
+                    hi = s(domlo[0]-1, j, k, n); 
                 }
                 else
                     lo = s(domlox, j, k, n); 
             }
-            else{ */
-                amrex::Real st = (uedge(domlox,j,k) <= 1e-10) ? hi : s(domlox-1,j,k,n); 
+            else { 
+#endif
+                Real st = (uedge <= 1e-10) ? hi : s(domlo[0]-1,j,k,n); 
                 lo = st; 
                 hi = st; 
 //            }
@@ -617,19 +622,39 @@ inline void Godunov_trans_xbc(const int i, const int j, const int k, const int n
             lo = 0.; 
         }
     }
-//Upper X 
-    else if(i >= domhix){
+}
+
+AMREX_GPU_HOST_DEVICE
+inline void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real &uedge,
+                                 const int bchi, 
+                                 const int domlo[], const int domhi[], 
+                                 bool ycouple, bool zcouple)
+{
+    using namespace amrex;
+
+    if(ycouple && (j< domlo[1] || j > domhi[1])) return; 
+    if(zcouple && (k< domlo[2] || k > domhi[2])) return;
+
+    // High X
+    if (i >= domhi[0]) 
+    {
         if(bchi==BCType::ext_dir){
-/*            if(n == XVEL){
-                if(uedge(domhix,j,k) <=0.){
-                    lo = s(domhix,j,k,n); 
-                    hi = s(domhix,j,k,n);
+#if 0
+            if(n == XVEL){
+                if(uedge <=0.){
+                    lo = s(domhi[0],j,k,n); 
+                    hi = s(domhi[0],j,k,n);
                 }  
                 else  
                      hi = lo; 
             }
-            else{ */ 
-                amrex::Real st = (uedge(domhix+1,j,k) >= -1e-10)? lo : s(domhix+1,j,k,n); 
+            else { 
+#endif
+                amrex::Real st = (uedge >= -1e-10)? lo : s(domhi[0]+1,j,k,n); 
                 lo = st; 
                 hi = st; 
 //            }
@@ -645,13 +670,14 @@ inline void Godunov_trans_xbc(const int i, const int j, const int k, const int n
 }
 
 AMREX_GPU_HOST_DEVICE
-inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n, 
-                             const amrex::Array4<const amrex::Real> &s, 
-                             amrex::Real &lo, amrex::Real hi, 
-                             const amrex::Array4< const amrex::Real> &vedge, 
-                             const int bclo, const int bchi, 
-                             const int domlo[], const int domhi[], 
-                             bool xcouple, bool zcouple)
+inline void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real vedge,
+                                 const int bclo, 
+                                 const int domlo[], const int domhi[], 
+                                 bool xcouple, bool zcouple)
 {
     using namespace amrex;
 
@@ -662,7 +688,7 @@ inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n
     if(j <= domloy){ 
         if(bclo==BCType::ext_dir){
 /*            if(n == YVEL){
-                if(vedge(i,domloy,k) >= 0.e0){
+                if(vedge >= 0.e0){
                     lo = s(i, domloy-1, k, n); 
                     hi = s(i, domloy-1, k, n); 
                 } 
@@ -670,7 +696,7 @@ inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n
                     lo = s(i, domloy, k, n); 
             }
             else{ */ 
-                amrex::Real st = (vedge(i,domloy,k) <= 1e-10) ? hi : s(i,domloy-1,k,n); 
+                amrex::Real st = (vedge < 1e-10) ? hi : s(i,domloy-1,k,n); 
                 lo = st; 
                 hi = st; 
 //            }
@@ -685,11 +711,27 @@ inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n
             lo = 0.; 
         }
     }
+}
+
+AMREX_GPU_HOST_DEVICE
+inline void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real vedge,
+                                 const int bchi, 
+                                 const int domlo[], const int domhi[], 
+                                 bool xcouple, bool zcouple)
+{
+    using namespace amrex;
+    if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
+    if(zcouple && (k < domlo[2] || k > domhi[2])) return; 
+    const int domloy = domlo[1], domhiy = domhi[1]; 
 //Upper Y
-    else if(j > domhiy){
+    if(j > domhiy){
         if(bchi==BCType::ext_dir){
 /*            if(n == YVEL){
-                if(vedge(i,domhiy,k) <=0.){
+                if(vedge <=0.){
                     lo = s(i,domhiy,k,n); 
                     hi = s(i,domhiy,k,n);
                 }
@@ -697,7 +739,7 @@ inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n
                 hi = lo; 
             } */ 
 //            else{ 
-                amrex::Real st = (vedge(i,domhiy+1,k) >= -1e-10)? lo : s(i,domhiy+1,k,n); 
+                amrex::Real st = (vedge >= -1e-10)? lo : s(i,domhiy+1,k,n); 
                 lo = st; 
                 hi = st; 
 //            }
@@ -713,13 +755,14 @@ inline void Godunov_trans_ybc(const int i, const int j, const int k, const int n
 }
 
 AMREX_GPU_HOST_DEVICE
-inline void Godunov_trans_zbc(const int i, const int j, const int k, const int n, 
-                             const amrex::Array4<const amrex::Real> &s, 
-                             amrex::Real &lo, amrex::Real &hi, 
-                             const amrex::Array4< const amrex::Real> &wedge, 
-                             const int bclo, const int bchi, 
-                             const int domlo[], const int domhi[],
-                             bool xcouple, bool ycouple)
+inline void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real wedge,
+                                 const int bclo, 
+                                 const int domlo[], const int domhi[], 
+                                 bool xcouple, bool ycouple)
 {
     using namespace amrex;
 
@@ -730,7 +773,7 @@ inline void Godunov_trans_zbc(const int i, const int j, const int k, const int n
     if(k <= domloz){ 
         if(bclo==BCType::ext_dir){
 /*            if(n == ZVEL){
-                if(wedge(i,j,domloz) >= 0.e0){
+                if(wedge >= 0.e0){
                     lo = s(i, j, domloz-1, n); 
                     hi = s(i, j, domloz-1, n); 
                 }
@@ -738,7 +781,7 @@ inline void Godunov_trans_zbc(const int i, const int j, const int k, const int n
                     lo = s(i, j, domloz, n); 
             } 
             else{ */
-                amrex::Real st = (wedge(i,j,domloz) <= 1e-10) ? hi : s(i,j,domloz-1,n); 
+                amrex::Real st = (wedge <= 1e-10) ? hi : s(i,j,domloz-1,n); 
                 lo = st; 
                 hi = st;
 //            }
@@ -753,11 +796,27 @@ inline void Godunov_trans_zbc(const int i, const int j, const int k, const int n
             lo = 0.; 
         }
     }
+}
+
+AMREX_GPU_HOST_DEVICE
+inline void Godunov_trans_zbc_hi(const int i, const int j, const int k, const int n, 
+                                 const amrex::Array4<const amrex::Real> &s, 
+                                       amrex::Real &lo,
+                                       amrex::Real &hi,
+                                       amrex::Real wedge,
+                                 const int bchi, 
+                                 const int domlo[], const int domhi[], 
+                                 bool xcouple, bool ycouple)
+{
+    using namespace amrex;
+    if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
+    if(ycouple && (j < domlo[1] || j > domhi[1])) return; 
+    const int domloz = domlo[2], domhiz = domhi[2]; 
 //Upper Z 
-    else if(k > domhiz){
+    if(k > domhiz){
         if(bchi==BCType::ext_dir){
 /*            if(n == ZVEL){
-                if(wedge(i,j,domhiz) <=0.){
+                if(wedge <=0.){
                     lo = s(i,j,domhiz+1,n); 
                     hi = s(i,j,domhiz+1,n);
                 }
@@ -765,7 +824,7 @@ inline void Godunov_trans_zbc(const int i, const int j, const int k, const int n
                      hi = lo; 
             }
             else{ */ 
-                amrex::Real st = (wedge(i,j,domhiz+1) >= -1e-10)? lo : s(i,j,k,domhiz+1); 
+                amrex::Real st = (wedge >= -1e-10)? lo : s(i,j,k,domhiz+1); 
                 lo = st; 
                 hi = st; 
 //            }

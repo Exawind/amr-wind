@@ -41,7 +41,25 @@ incflo::incflo_predict_godunov ( int lev, Real time,
         for (int n = 0; n < 3; ++n)
             setBC(bx, geom[lev].Domain(), dom_bc, bc[n]);
 
+        // Create temporaries to hold the normal velocities on faces that we will *only* use for upwinding
+        // in the computation of the transverse derivatives
+        FArrayBox uad((*m_u_mac[lev])[mfi].box(), 1);
+        Elixir uad_eli = uad.elixir();
+        FArrayBox vad((*m_v_mac[lev])[mfi].box(), 1);
+        Elixir vad_eli = vad.elixir();
+        FArrayBox wad((*m_w_mac[lev])[mfi].box(), 1);
+        Elixir wad_eli = wad.elixir();
+
+        // The output of this call is predicted normal velocities on faces that we will *only* use for upwinding
+        // in the computation of the transverse derivatives
+        incflo_make_trans_velocities(lev, bx, (*vel_in[lev]).array(mfi), 
+                                     uad.array(), vad.array(), wad.array(), 
+                                     tforces.array(mfi), bc);
+
+        // The output of this call is the predicted normal velocities on faces -- we store these in 
+        // {m_u_mac, m_v_mac, m_w_mac} but they have not yet been projected
         incflo_predict_godunov_on_box(lev, bx, (*vel_in[lev]).array(mfi), 
+                                      uad.array(), vad.array(), wad.array(), 
                                       m_u_mac[lev]->array(mfi), m_v_mac[lev]->array(mfi), m_w_mac[lev]->array(mfi),
                                       tforces.array(mfi), divu.array(mfi), bc);
 
@@ -51,9 +69,12 @@ incflo::incflo_predict_godunov ( int lev, Real time,
 void
 incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
                                        const Array4<Real> &a_vel,
-                                       const Array4<const Real> &u_face, 
-                                       const Array4<const Real> &v_face, 
-                                       const Array4<const Real> &w_face,
+                                       const Array4<const Real> &u_ad, 
+                                       const Array4<const Real> &v_ad, 
+                                       const Array4<const Real> &w_ad,
+                                       const Array4<      Real> &u_face, 
+                                       const Array4<      Real> &v_face, 
+                                       const Array4<      Real> &w_face,
                                        const Array4<Real> &tf, 
                                        const Array4<Real> &divu_cc,
                                        const Gpu::ManagedVector<BCRec> &BCs)
@@ -157,26 +178,38 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     
 #if 0
 // --------------------X -------------------------------------------------
-    AMREX_PARALLEL_FOR_4D(txbx, ncomp, i, j, k, n, {
+    AMREX_PARALLEL_FOR_4D(txbx, ncomp, i, j, k, n, 
+    {
         Real cons1;
         Real cons2; 
         Real lo; 
         Real hi; 
         Real st;
-        Real fux = (std::abs(u_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
-        bool uval = u_mac(i,j,k) >= 0.e0; 
         auto bc = BCs[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i-1,j,k,n)*divu_cc(i-1,j,k) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i  ,j,k,n)*divu_cc(i  ,j,k) : 0;
         lo    = Ipx(i-1,j,k,n) + 0.5e0*dt*tf(i-1,j,k,n) + cons1; 
         hi    = Imx(i  ,j,k,n) + 0.5e0*dt*tf(i  ,j,k,n) + cons2;
-        Godunov_trans_xbc(i, j, k, n, s, lo, hi, u_mac, bc.lo(0), bc.hi(0), 
-                            bx.loVect(), bx.hiVect(), false, false);  
+        Godunov_trans_xbc_lo(i, j, k, n, s, lo, hi, lo, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_xbc_hi(i, j, k, n, s, lo, hi, lo, bc.hi(0),
+                             domain.loVect(), domain.hiVect(), false, false);  
         xlo(i,j,k,n) = lo; 
         xhi(i,j,k,n) = hi;
+
+        Real eps = 1e-6;
+
+        bool uval = u_mac(i,j,k) >= 0.e0; 
         st = (uval) ? lo : hi;
-        xedge(i, j, k, n) = fux*st + (1.e0 - fux)*0.5e0*(hi + lo);
-    }); 
+        Real fux = (std::abs(lo+hi) < eps) ? 0.0 : 1.0; 
+        xedge(i, j, k, n) = fux*st + (1.0 - fux) *0.5 * (hi + lo);
+
+        uad = merge(lo,hi,(lo+hi) > 0.);
+        bool ltm = ( (ulo(i,j) .le. 0.  .and.  uhi(i,j) .ge. 0.) || ;
+                   (abs(ulo(i,j)+uhi(i,j)) .lt. eps) );
+        xedge(i,j,k,n) = merge(0.,uad,ltm);
+
+    } ); 
 
 // Clear integral states from PPM 
     Imxeli.clear(); 
@@ -197,8 +230,10 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j  ,k,n)*divu_cc(i,j  ,k) : 0;
         lo    = Ipy(i,j-1,k,n) + 0.5e0*dt*tf(i,j-1,k,n) + cons1; 
         hi    = Imy(i,j,k,n)   + 0.5e0*dt*tf(i,j,k,n) + cons2; 
-        Godunov_trans_ybc(i, j, k, n, s, lo, hi, v_mac, bc.lo(1), bc.hi(1),
-                                 bx.loVect(), bx.hiVect(), false, false);  
+        Godunov_trans_ybc_lo(i, j, k, n, s, lo, hi, lo, bc.lo(1), 
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_ybc_hi(i, j, k, n, s, lo, hi, lo, bc.hi(1),
+                             domain.loVect(), domain.hiVect(), false, false);  
         ylo(i,j,k,n) = lo; 
         yhi(i,j,k,n) = hi; 
         st    = (vval >= 0.e0) ? lo : hi; 
@@ -223,8 +258,10 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k  ,n)*divu_cc(i,j,k  ) : 0;
         lo    = Ipz(i,j,k-1,n) + 0.5e0*dt*tf(i,j,k-1,n) + cons1; 
         hi    = Imz(i,j,k,n)   + 0.5e0*dt*tf(i,j,k,n) + cons2; 
-        Godunov_trans_zbc(i, j, k, n, s, lo, hi, w_mac, bc.lo(2), bc.hi(2),
-                                 bx.loVect(), bx.hiVect(), false, false); 
+        Godunov_trans_zbc_lo(i, j, k, n, s, lo, hi, lo, bc.lo(2),
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_zbc_hi(i, j, k, n, s, lo, hi, lo, bc.hi(2),
+                             domain.loVect(), domain.hiVect(), false, false);  
 
         zlo(i,j,k,n) = lo; 
         zhi(i,j,k,n) = hi; 
@@ -296,9 +333,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         //YX
         Godunov_corner_couple(i,j,k, n, dt, dx, iconserv, ylo, yhi, 
                              s, divu_cc, u_mac, xedge, yxlo, yxhi, 1, 0);
-        Godunov_trans_ybc(i, j, k, n, s, yxlo(i,j,k,n), yxhi(i,j,k,n), v_mac,
-                                   bc.lo(1), bc.hi(1),
-                                   bx.loVect(), bx.hiVect(), true, false);  
+
+        Real vad = v_mac(i,j,k);
+        Godunov_trans_ybc_lo(i, j, k, n, s, yxlo(i,j,k,n), yxhi(i,j,k,n), vad, bc.lo(1),
+                             domain.loVect(), domain.hiVect(), true, false);  
+        Godunov_trans_ybc_ho(i, j, k, n, s, yxlo(i,j,k,n), yxhi(i,j,k,n), vad, bc.hi(1),
+                             domain.loVect(), domain.hiVect(), true, false);  
     }); 
     
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, {
@@ -306,9 +346,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         //ZX
         Godunov_corner_couple(i,j,k, n, dt, dx, iconserv, zlo, zhi, 
                              s, divu_cc, u_mac, xedge, zxlo, zxhi, 2, 0);
-        Godunov_trans_zbc(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), w_mac,
-                                   bc.lo(2), bc.hi(2),
-                                   bx.loVect(), bx.hiVect(), true, false); 
+
+        Real wad = w_mac(i,j,k);
+        Godunov_trans_zbc_lo(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.lo(2), 
+                             domain.loVect(), domain.hiVect(), true, false);  
+        Godunov_trans_zbc_hi(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.hi(2), 
+                             domain.loVect(), domain.hiVect(), true, false);  
     });
 
    //Dir trans against Y
@@ -317,9 +360,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         const auto bc = BCs[n]; 
         Godunov_corner_couple(i,j,k, n, dt, dy, iconserv, xlo, xhi, 
                              s, divu_cc, v_mac, yedge, xylo, xyhi, 0, 0);
-        Godunov_trans_xbc(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), u_mac,
-                            bc.lo(0), bc.hi(0), 
-                            bx.loVect(), bx.hiVect(), true, false);
+
+        Real uad = u_mac(i,j,k);
+        Godunov_trans_xbc_lo(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), true, false);  
+        Godunov_trans_xbc_hi(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.hi(0),
+                             domain.loVect(), domain.hiVect(), true, false);  
     }); 
 
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, {
@@ -327,9 +373,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         //ZY 
         Godunov_corner_couple(i,j,k, n, dt, dy, iconserv, zlo, zhi, 
                              s, divu_cc, v_mac, yedge, zylo, zyhi, 2, 1);
-        Godunov_trans_zbc(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), w_mac,
-                                 bc.lo(2), bc.hi(2),
-                                 bx.loVect(), bx.hiVect(), false, true);
+
+        Real wad = w_mac(i,j,k);
+        Godunov_trans_zbc_lo(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.lo(2),
+                             domain.loVect(), domain.hiVect(), false, true);  
+        Godunov_trans_zbc_hi(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.hi(2),
+                             domain.loVect(), domain.hiVect(), false, true);  
 
     });
     //Dir trans against Z
@@ -338,9 +387,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         const auto bc = BCs[n]; 
         Godunov_corner_couple(i,j,k, n, dt, dz, iconserv, xlo, xhi, 
                              s, divu_cc, w_mac, zedge, xzlo, xzhi, 0, 1);
-        Godunov_trans_xbc(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), u_mac,
-                            bc.lo(0), bc.hi(0), 
-                            bx.loVect(), bx.hiVect(), false, true); 
+
+        Real uad = u_mac(i,j,k);
+        Godunov_trans_xbc_lo(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), false, true);  
+        Godunov_trans_xbc_hi(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.hi(0),
+                             domain.loVect(), domain.hiVect(), false, true);  
     });  
 
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, {
@@ -348,9 +400,12 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         //YZ
         Godunov_corner_couple(i,j,k, n, dt, dz, iconserv, ylo, yhi, 
                              s, divu_cc, w_mac, zedge, yzlo, yzhi, 1, 1);
-        Godunov_trans_ybc(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), v_mac,
-                                   bc.lo(1), bc.hi(1),
-                                   bx.loVect(), bx.hiVect(), false, true);
+
+        Real vad = v_mac(i,j,k);
+        Godunov_trans_ybc_lo(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.lo(1),
+                             domain.loVect(), domain.hiVect(), false, true);  
+        Godunov_trans_ybc_hi(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.hi(1),
+                             domain.loVect(), domain.hiVect(), false, true);  
     });
 
    /* Upwinding Edge States */ 
@@ -563,4 +618,143 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         a_fz(i,j,k,n) = a_fz(i,j,k,n)*w_mac(i,j,k);
     });
 #endif
+}
+
+void
+incflo::incflo_make_trans_velocities (const int lev, Box& bx,
+                                      const Array4<const Real> &a_vel,
+                                      const Array4<      Real> &u_ad, 
+                                      const Array4<      Real> &v_ad, 
+                                      const Array4<      Real> &w_ad,
+                                      const Array4<Real> &tf, 
+                                      const Gpu::ManagedVector<BCRec> &BCs)
+{
+    Box domain(geom[lev].Domain());
+
+    int ncomp = 1;
+
+    int iconserv[3];
+    for (int i = 0; i < 3; i++) iconserv[i] = 1;
+
+    auto const g2bx = amrex::grow(bx, 2); 
+    auto const g1bx = amrex::grow(bx, 1); 
+
+    const Real dx = geom[lev].CellSize(0); 
+    const Real dy = geom[lev].CellSize(1); 
+    const Real dz = geom[lev].CellSize(2); 
+   
+    auto const gxbx = amrex::grow(g2bx,0, 1); 
+    FArrayBox Imxf(gxbx, ncomp); 
+    FArrayBox Ipxf(gxbx, ncomp);
+    Elixir Imxeli = Imxf.elixir(); 
+    Elixir Ipxeli = Ipxf.elixir(); 
+    auto const Imx = Imxf.array(); 
+    auto const Ipx = Ipxf.array(); 
+
+    auto const gybx = amrex::grow(g2bx,1, 1); 
+    FArrayBox Imyf(gybx, ncomp); 
+    FArrayBox Ipyf(gybx, ncomp);
+    Elixir Imyeli = Imyf.elixir(); 
+    Elixir Ipyeli = Ipyf.elixir(); 
+    auto const Imy = Imyf.array(); 
+    auto const Ipy = Ipyf.array(); 
+   
+    auto const gzbx = amrex::grow(g2bx,2, 1); 
+    FArrayBox Imzf(gzbx, ncomp); 
+    FArrayBox Ipzf(gzbx, ncomp);
+    Elixir Imzeli = Imzf.elixir(); 
+    Elixir Ipzeli = Ipzf.elixir(); 
+    auto const Imz = Imzf.array(); 
+    auto const Ipz = Ipzf.array(); 
+
+    auto const xgbx = surroundingNodes(g1bx, 0);
+    auto const ygbx = surroundingNodes(g1bx, 1); 
+    auto const zgbx = surroundingNodes(g1bx, 2); 
+
+    /* Use PPM to generate Im and Ip */
+ 
+    AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
+        const auto bc = BCs[n];
+        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+    });
+
+    AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
+        const auto bc = BCs[n];
+        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+    });
+
+    AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
+        const auto bc = BCs[n];
+        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+    }); 
+
+    auto const txbx = surroundingNodes(grow(g1bx, 0, -1), 0);
+    auto const tybx = surroundingNodes(grow(g1bx, 1, -1), 1); 
+    auto const tzbx = surroundingNodes(grow(g1bx, 2, -1), 2);
+    
+// --------------------X -------------------------------------------------
+    AMREX_PARALLEL_FOR_4D(txbx, ncomp, i, j, k, n, 
+    {
+        Real lo = Ipx(i-1,j,k,n) + 0.5e0*dt*tf(i-1,j,k,n); 
+        Real hi = Imx(i  ,j,k,n) + 0.5e0*dt*tf(i  ,j,k,n);
+
+        auto bc = BCs[n];  
+        Godunov_trans_xbc_lo(i, j, k, n, a_vel, lo, hi, lo, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_xbc_hi(i, j, k, n, a_vel, lo, hi, lo, bc.hi(0), 
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Real eps = 1e-6;
+
+        Real st = ( (lo+hi) >= 0.) ? lo : hi;
+        bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
+        u_ad(i,j,k,n) = ltm ? 0. : st;
+
+    }); 
+
+    Imxeli.clear(); 
+    Ipxeli.clear(); 
+
+//--------------------Y -------------------------------------------------
+     AMREX_PARALLEL_FOR_4D(tybx, ncomp, i, j, k, n, 
+     {
+        Real lo = Ipy(i,j-1,k,n) + 0.5e0*dt*tf(i,j-1,k,n); 
+        Real hi = Imy(i,j,k,n)   + 0.5e0*dt*tf(i,j  ,k,n); 
+
+        auto bc = BCs[n];  
+        Godunov_trans_ybc_lo(i, j, k, n, a_vel, lo, hi, lo, bc.lo(1), 
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_ybc_hi(i, j, k, n, a_vel, lo, hi, lo, bc.hi(1),
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Real eps = 1e-6;
+
+        Real st = ( (lo+hi) >= 0.) ? lo : hi;
+        bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
+        v_ad(i,j,k,n) = ltm ? 0. : st;
+    });
+
+    Imyeli.clear(); 
+    Ipyeli.clear(); 
+
+//------------------ Z ---------------------------------------------------
+     AMREX_PARALLEL_FOR_4D(tzbx, ncomp, i, j, k, n, 
+     {
+        Real lo = Ipz(i,j,k-1,n) + 0.5e0*dt*tf(i,j,k-1,n); 
+        Real hi = Imz(i,j,k,n)   + 0.5e0*dt*tf(i,j,k  ,n); 
+
+        auto bc = BCs[n];  
+        Godunov_trans_zbc_lo(i, j, k, n, a_vel, lo, hi, lo, bc.lo(2),
+                             domain.loVect(), domain.hiVect(), false, false);  
+        Godunov_trans_zbc_hi(i, j, k, n, a_vel, lo, hi, lo, bc.hi(2),
+                             domain.loVect(), domain.hiVect(), false, false);  
+
+        Real eps = 1e-6;
+
+        Real st = ( (lo+hi) >= 0.) ? lo : hi;
+        bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
+        w_ad(i,j,k,n) = ltm ? 0. : st;
+
+    });     
+
+    Imzeli.clear(); 
+    Ipzeli.clear(); 
 }
