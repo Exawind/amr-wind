@@ -17,7 +17,7 @@ namespace {
 }
 
 void
-incflo::compute_convective_fluxes ( int lev, Box const& bx, int ncomp,
+incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real> const& fx,
                                    Array4<Real> const& fy,
                                    Array4<Real> const& fz,

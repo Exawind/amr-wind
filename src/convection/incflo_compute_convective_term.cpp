@@ -8,9 +8,9 @@ using namespace amrex;
 
 void
 incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
-                                 Array4<Real> const& dvdt,
-                                 Array4<Real> const& drdt,
-                                 Array4<Real> const& dtdt,
+                                 Array4<Real> const& dvdt, // velocity
+                                 Array4<Real> const& drdt, // density
+                                 Array4<Real> const& dtdt, // tracer
                                  Array4<Real const> const& vel,
                                  Array4<Real const> const& rho,
                                  Array4<Real const> const& tra,
@@ -58,14 +58,28 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     int nmaxcomp = std::max(AMREX_SPACEDIM,ntrac);
     Box tmpbox = amrex::surroundingNodes(bx);
     int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
+    Box rhotrac_box = amrex::grow(bx,2);
 #ifdef AMREX_USE_EB
     Box gbx = bx;
     if (!regular) {
         gbx.grow(2);
         tmpbox.grow(3);
         tmpcomp += nmaxcomp;
+        rhotrac_box.grow(2);
     }
 #endif
+
+    FArrayBox rhotracfab(rhotrac_box, ntrac);
+    Elixir eli_rt = rhotracfab.elixir();
+    Array4<Real> rhotrac = rhotracfab.array();
+    if (ntrac > 0) {
+        amrex::ParallelFor(rhotrac_box, ntrac,
+        [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        {
+            rhotrac(i,j,k,n) = rho(i,j,k) * tra(i,j,k,n);
+        });
+    }
+
     FArrayBox tmpfab(tmpbox, tmpcomp);
     Elixir eli = tmpfab.elixir();
     Array4<Real> fx = tmpfab.array(0);
@@ -84,11 +98,30 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                      get_velocity_bcrec().data(),
                                      get_velocity_bcrec_device_ptr(),
                                      flag, fcx, fcy, fcz, qface);
-
         compute_convective_rate_eb(lev, gbx, AMREX_SPACEDIM, dUdt_tmp, fx, fy, fz,
                                    flag, vfrac, apx, apy, apz);
-
         redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
+
+        // density
+        if (!constant_density) {
+            compute_convective_fluxes_eb(lev, gbx, 1, fx, fy, fz, rho, umac, vmac, wmac,
+                                         get_density_bcrec().data(),
+                                         get_density_bcrec_device_ptr(),
+                                         flag, fcx, fcy, fcz, qface);
+            compute_convective_rate_eb(lev, gbx, 1, dUdt_tmp, fx, fy, fz,
+                                       flag, vfrac, apx, apy, apz);
+            redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
+        }
+
+        if (ntrac > 0) {
+            compute_convective_fluxes_eb(lev, gbx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
+                                         get_tracer_bcrec().data(),
+                                         get_tracer_bcrec_device_ptr(),
+                                         flag, fcx, fcy, fcz, qface);
+            compute_convective_rate_eb(lev, gbx, ntrac, dUdt_tmp, fx, fy, fz,
+                                       flag, vfrac, apx, apy, apz);
+            redistribute_eb(lev, bx, ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);
+        }
     }
     else
 #endif
@@ -101,10 +134,19 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 
         // density
         if (!constant_density) {
-
+            compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho, umac, vmac, wmac,
+                                      get_density_bcrec().data(),
+                                      get_density_bcrec_device_ptr());
+            compute_convective_rate(lev, bx, 1, drdt, fx, fy, fz);
         }
 
         // tracer
+        if (ntrac > 0) {
+            compute_convective_fluxes(lev, bx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
+                                      get_tracer_bcrec().data(),
+                                      get_tracer_bcrec_device_ptr());
+            compute_convective_rate(lev, bx, ntrac, dtdt, fx, fy, fz);
+        }
     }
    
 }
@@ -173,8 +215,6 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     w_mac[lev].const_array(mfi));
         }
     }
-
-    amrex::Abort("xxxxx in compute_convective_term after mac projection");
 }
 
 //
