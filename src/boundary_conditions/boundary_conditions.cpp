@@ -175,7 +175,7 @@ void incflo::init_bcs()
 #else
         std::memcpy
 #endif
-            (m_bcrec_velocity_d.data(), m_bcrec_velocity.data(), sizeof(Real)*AMREX_SPACEDIM);
+            (m_bcrec_velocity_d.data(), m_bcrec_velocity.data(), sizeof(BCRec)*AMREX_SPACEDIM);
     }
 
     {
@@ -218,7 +218,7 @@ void incflo::init_bcs()
 #else
         std::memcpy
 #endif
-            (m_bcrec_density_d.data(), m_bcrec_density.data(), sizeof(Real));
+            (m_bcrec_density_d.data(), m_bcrec_density.data(), sizeof(BCRec));
     }
 
     if (incflo::ntrac > 0)
@@ -262,7 +262,7 @@ void incflo::init_bcs()
 #else
         std::memcpy
 #endif
-            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(Real)*incflo::ntrac);
+            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*incflo::ntrac);
     }
 }
 
