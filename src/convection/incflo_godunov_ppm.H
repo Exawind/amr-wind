@@ -267,7 +267,6 @@ inline void Godunov_ppm_pred(const int i, const int j, const int k, const int n,
         sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i-1,j,k,n))); 
         sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i-1,j,k,n))); 
 
-        amrex::Real s3 = s2;
         s2 = s1; 
         s1 = S(i+1,j,k,n); 
 
@@ -365,11 +364,9 @@ inline void Godunov_ppm_pred(const int i, const int j, const int k, const int n,
         sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i,j,k-1,n))); 
         sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i,j,k-1,n))); 
 
-        amrex::Real s3 = s2;
         s2 = s1; 
         s1 = S(i,j,k+1,n); 
 
-        amrex::Real d3 = d2;         
         d2 = d1; 
         d1 = vanLeer(S(i,j,k+1,n), S(i, j, k+2,n), S(i,j,k,n)); 
 
@@ -435,7 +432,6 @@ inline void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
         sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i-1,j,k,n))); 
         sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i-1,j,k,n))); 
 
-        amrex::Real s3 = s2;
         s2 = s1; 
         s1 = S(i+1,j,k,n); 
 
@@ -532,11 +528,9 @@ inline void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
         sedge1 = amrex::max(sedge1, amrex::min(S(i,j,k,n), S(i,j,k-1,n))); 
         sedge1 = amrex::min(sedge1, amrex::max(S(i,j,k,n), S(i,j,k-1,n))); 
 
-        amrex::Real s3 = s2;
         s2 = s1; 
         s1 = S(i,j,k+1,n); 
 
-        amrex::Real d3 = d2;         
         d2 = d1; 
         d1 = vanLeer(S(i,j,k+1,n), S(i, j, k+2,n), S(i,j,k,n)); 
 
@@ -684,7 +678,7 @@ inline void Godunov_trans_ybc_lo(const int i, const int j, const int k, const in
 // Lower X 
     if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
     if(zcouple && (k < domlo[2] || k > domhi[2])) return; 
-    const int domloy = domlo[1], domhiy = domhi[1]; 
+    const int domloy = domlo[1];
     if(j <= domloy){ 
         if(bclo==BCType::ext_dir){
 /*            if(n == YVEL){
@@ -726,7 +720,7 @@ inline void Godunov_trans_ybc_hi(const int i, const int j, const int k, const in
     using namespace amrex;
     if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
     if(zcouple && (k < domlo[2] || k > domhi[2])) return; 
-    const int domloy = domlo[1], domhiy = domhi[1]; 
+    const int domhiy = domhi[1]; 
 //Upper Y
     if(j > domhiy){
         if(bchi==BCType::ext_dir){
@@ -768,7 +762,7 @@ inline void Godunov_trans_zbc_lo(const int i, const int j, const int k, const in
 
     if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
     if(ycouple && (j < domlo[1] || j > domhi[1])) return; 
-    const int domloz = domlo[2], domhiz = domhi[2]; 
+    const int domloz = domlo[2];
 // Lower Z
     if(k <= domloz){ 
         if(bclo==BCType::ext_dir){
@@ -811,7 +805,7 @@ inline void Godunov_trans_zbc_hi(const int i, const int j, const int k, const in
     using namespace amrex;
     if(xcouple && (i < domlo[0] || i > domhi[0])) return; 
     if(ycouple && (j < domlo[1] || j > domhi[1])) return; 
-    const int domloz = domlo[2], domhiz = domhi[2]; 
+    const int domhiz = domhi[2]; 
 //Upper Z 
     if(k > domhiz){
         if(bchi==BCType::ext_dir){
