@@ -25,6 +25,8 @@
 #include <DiffusionOp.H>
 #include <incflo_bclist.H>
 
+#include <DiffusionTensorOp.H>
+
 class incflo : public amrex::AmrCore
 {
 public:
@@ -331,6 +333,7 @@ private:
     };
     DiffusionType m_diff_type = DiffusionType::Implicit;
     std::unique_ptr<DiffusionOp> diffusion_op;
+    std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
 
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return *m_factory[lev]; }

@@ -242,15 +242,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
-    amrex::Print() << "xxxxxxxxxxxxxxxxx we may not need this" << std::endl;
-#if 0
-    if (!constant_density)
-        incflo_set_density_bcs(new_time, density);
-    if (advect_tracer)
-        incflo_set_tracer_bcs(new_time, tracer);
-    incflo_set_velocity_bcs(new_time, vel);
-#endif
-
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
@@ -266,15 +257,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         amrex::Abort("xxxxx so far so good in ApplyPredictor before diffusion");
         diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
+        amrex::Abort("xxxxx so far so good in ApplyPredictor before diffuse velocity");
         if (advect_tracer)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
     }
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt, incremental_projection);
-
-    // Fill velocity BCs again
-    incflo_set_velocity_bcs(new_time, vel);
 }
 
 //
