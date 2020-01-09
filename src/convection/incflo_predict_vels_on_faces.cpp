@@ -22,12 +22,17 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
         physical_boundaries_value, interior_value);
 
 #ifdef AMREX_USE_EB
+
+       const FabFactory<FArrayBox>& factory =  *ebfactory[lev];
+
        // Get EB geometric info
        Array< const MultiCutFab*,AMREX_SPACEDIM> areafrac;
        Array< const MultiCutFab*,AMREX_SPACEDIM> facecent;
 
        areafrac  =   ebfactory[lev] -> getAreaFrac();
        facecent  =   ebfactory[lev] -> getFaceCent();
+#else
+       const FabFactory<FArrayBox>& factory = FArrayBoxFactory();
 #endif
 
        Real small_vel = 1.e-10;
@@ -37,25 +42,14 @@ incflo::incflo_predict_vels_on_faces ( int lev, Real time,
        // We will store the left and right states in arrays for interpolation
        // ****************************************************************************
 
-#ifdef AMREX_USE_EB
-       MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
-       MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
+       MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
+       MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
 
-       MultiFab vpls(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
-       MultiFab vmns(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
+       MultiFab vpls(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
+       MultiFab vmns(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
 
-       MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
-       MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), *ebfactory[lev]);
-#else
-       MultiFab upls(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-       MultiFab umns(m_u_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-
-       MultiFab vpls(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-       MultiFab vmns(m_v_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-
-       MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-       MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo());
-#endif
+       MultiFab wpls(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
+       MultiFab wmns(m_w_mac[lev]->boxArray(), dmap[lev], 1, 1, MFInfo(), factory);
 
        // We need this just to avoid FPE (eg for outflow faces)
        upls.setVal(covered_val);

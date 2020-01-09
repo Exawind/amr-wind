@@ -429,11 +429,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
        
         Godunov_cc_xbc(i, j, k, n, s, stl, sth, u_mac, bc.lo(0), bc.hi(0),
                                  bx.loVect()[0], bx.hiVect()[0]);  
-        if(stl>1e10 || sth > 1e10){
-            std::cout << "old = " << stlold << '\t' << sthold << std::endl; 
-            std::cout << "New" << std::endl; 
-            std::cout<< stl << '\t' << sth << '\t' << i << '\t' << j << '\t' << k << "  X" << std::endl;
-            std::cin.get();          }
+
         temp = (u_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(u_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp;
         a_fx(i,j,k,n) = temp;
@@ -473,10 +469,6 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         }
         Godunov_cc_ybc(i, j, k, n, s, stl, sth, v_mac, bc.lo(1), bc.hi(1), 
                                   bx.loVect()[1], bx.hiVect()[1]); 
-        if(stl>1e10 || sth > 1e10){
-            std::cout<< stl << '\t' << sth << '\t' << i << '\t' << j << '\t' << k << "  Y" << std::endl;
-            std::cin.get();  
-        }
 
         temp = (v_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(v_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp; 
