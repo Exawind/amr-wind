@@ -193,11 +193,22 @@ public:
     void incflo_predict_godunov(int lev, amrex::Real time,
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
 
+    void incflo_make_trans_velocities (const int lev, amrex::Box& bx,
+                                       const amrex::Array4<const amrex::Real> &a_vel,
+                                       const amrex::Array4<      amrex::Real> &u_ad,
+                                       const amrex::Array4<      amrex::Real> &v_ad,
+                                       const amrex::Array4<      amrex::Real> &w_ad,
+                                       const amrex::Array4<      amrex::Real> &tf,
+                                       const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
+
     void incflo_predict_godunov_on_box (const int lev, amrex::Box& bx,
                                         const amrex::Array4<      amrex::Real> &a_vel,
-                                        const amrex::Array4<const amrex::Real> &u_face,
-                                        const amrex::Array4<const amrex::Real> &v_face,
-                                        const amrex::Array4<const amrex::Real> &w_face,
+                                        const amrex::Array4<const amrex::Real> &u_ad,
+                                        const amrex::Array4<const amrex::Real> &v_ad,
+                                        const amrex::Array4<const amrex::Real> &w_ad,
+                                        const amrex::Array4<      amrex::Real> &u_face,
+                                        const amrex::Array4<      amrex::Real> &v_face,
+                                        const amrex::Array4<      amrex::Real> &w_face,
                                         const amrex::Array4<      amrex::Real> &tf,
                                         const amrex::Array4<      amrex::Real> &divu_cc,
                                         const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
