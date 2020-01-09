@@ -127,6 +127,9 @@ void incflo::Advance()
 //
 //     vel = u** - dt * grad p / rho
 //
+// It is assumed that the ghost cels of the old data have been filled and
+// the old and new data are the same in valid region.
+//
 void incflo::ApplyPredictor (bool incremental_projection)
 {
     BL_PROFILE("incflo::ApplyPredictor");
@@ -186,7 +189,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 #endif
         for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-            Box const& bx = mfi.validbox();
+            Box const& bx = mfi.tilebox();
             Array4<Real> const& vel = ld.velocity.array(mfi);
             Array4<Real> const& rho = ld.density.array(mfi);
             Array4<Real> const& tra = ld.tracer.array(mfi);
@@ -212,7 +215,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
                 // xxxxx TODO add viscous terms for explicit and Crank_Nicolson diffusion type
 
-                Real rhoinv = 1.0/rho(i,j,k);
+                Real rhoinv = 1.0/(rho(i,j,k)+1.e-80);
                 for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
                     // First add the convective term to the velocity
                     Real vt = dvdt(i,j,k,dir);
@@ -239,24 +242,29 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
-    amrex::Abort("xxxxx so far so good in ApplyPredictor");
-
+    amrex::Print() << "xxxxxxxxxxxxxxxxx we may not need this" << std::endl;
+#if 0
     if (!constant_density)
         incflo_set_density_bcs(new_time, density);
     if (advect_tracer)
         incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel);
+#endif
 
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
+        amrex::Abort("TODO: Crank_Nicolson");
+#if 0
         diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
         if (advect_tracer)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*dt);
+#endif
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
+        amrex::Abort("xxxxx so far so good in ApplyPredictor before diffusion");
         diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
         if (advect_tracer)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
