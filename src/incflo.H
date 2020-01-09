@@ -266,7 +266,7 @@ private:
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
         amrex::MultiFab gp; // pressure gradient
-        amrex::MultiFab eta;
+        amrex::MultiFab eta; // xxxx seems that we do not need it for "newtonian" fluid model.
         // nodal multifabs
         amrex::MultiFab p;
         //

@@ -144,82 +144,102 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // if (!use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
                             get_velocity_old(), get_density_old(), get_tracer_old(), cur_time);
-    amrex::Abort("xxxxx so far so good after incflo_compute_convective_term");
 
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
-    ComputeViscosity(eta_old, cur_time);
+    if (fluid_model != "newtonian") {
+        amrex::Abort("non-Newtonian: TODO");
+        ComputeViscosity(eta_old, cur_time);
+    }
 
     // Compute explicit diffusion if used
     if (m_diff_type == DiffusionType::Explicit ||
         m_diff_type == DiffusionType::Crank_Nicolson)
     {
-       incflo_set_velocity_bcs (cur_time, vel_o);
-       diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
-
-       diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
+        amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
+        // incflo_set_velocity_bcs (cur_time, vel_o);
+        // diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
+        // diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
     } else {
+#if 0
        for (int lev = 0; lev <= finest_level; lev++)
        {
           divtau_old[lev]->setVal(0.);
             laps_old[lev]->setVal(0.);
        }
+#endif
     }
+
+    // Define local variables for lambda to capture.
+    Real l_dt = dt;
+    bool l_constant_density = constant_density;
+    bool l_use_boussinesq = use_boussinesq;
+    int l_ntrac = incflo::ntrac;
+    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
+    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
 
     for (int lev = 0; lev <= finest_level; lev++)
     {
-        // First add the convective term to the velocity
-        MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+        auto& ld = *m_leveldata[lev];
 
-        //   Now add the convective term to the density and tracer
-        if (!constant_density)
-            MultiFab::Saxpy(*density[lev], dt, *conv_r_old[lev], 0, 0,      1, 0);
-
-        if (advect_tracer)
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-            MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
-            for (int i = 0; i < ntrac; i++)
+            Box const& bx = mfi.validbox();
+            Array4<Real> const& vel = ld.velocity.array(mfi);
+            Array4<Real> const& rho = ld.density.array(mfi);
+            Array4<Real> const& tra = ld.tracer.array(mfi);
+            Array4<Real const> const& dvdt = ld.conv_velocity_o.const_array(mfi);
+            Array4<Real const> const& drdt = ld.conv_density_o.const_array(mfi);
+            Array4<Real const> const& dtdt = ld.conv_tracer_o.const_array(mfi);
+            Array4<Real const> const& gradp = ld.gp.const_array(mfi);
+
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
-                if (m_diff_type == DiffusionType::Explicit)
-                    MultiFab::Saxpy(*tracer[lev],     dt, *laps_old[lev], i, i, 1, 0);
-                else if (m_diff_type == DiffusionType::Crank_Nicolson)
-                    MultiFab::Saxpy(*tracer[lev], 0.5*dt, *laps_old[lev], i, i, 1, 0);
-            }
+                // Now add the convective term to the density and tracer
+                if (!l_constant_density) {
+                    rho(i,j,k) += l_dt * drdt(i,j,k);
+                }
+
+                if (l_ntrac > 0) {
+                    // xxxxx TODO: this is currently inconsistent.
+                    //             dtdt is actually for rho*tracer.
+                    for (int n = 0; n < l_ntrac; ++n) {
+                        tra(i,j,k,n) += l_dt * dtdt(i,j,k,n);
+                    }
+                }
+
+                // xxxxx TODO add viscous terms for explicit and Crank_Nicolson diffusion type
+
+                Real rhoinv = 1.0/rho(i,j,k);
+                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                    // First add the convective term to the velocity
+                    Real vt = dvdt(i,j,k,dir);
+
+                    // Add gravitational forces
+                    if (l_use_boussinesq) {
+                        // xxxxx TODO: should this use the old or new tracer?
+                        vt += tra(i,j,k,0) * l_gravity[dir];
+                    } else {
+                        vt += l_gravity[dir];
+                    }
+
+                    // Add -gradp / rho
+                    // xxxxx TODO: should this use the old or new density?
+                    vt += -gradp(i,j,k,dir) * rhoinv;
+
+                    if (!l_use_boussinesq) {
+                        vt += -l_gp0[dir];
+                    }
+
+                    vel(i,j,k,dir) += l_dt * vt;
+                }
+            });
         }
-
-        // Add the viscous terms
-        if (m_diff_type == DiffusionType::Explicit)
-            MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-        else if (m_diff_type == DiffusionType::Crank_Nicolson)
-            MultiFab::Saxpy(*vel[lev], 0.5*dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-
-        // Add gravitational forces
-        if (use_boussinesq)
-        {
-           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
-           //      rather than density
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
-        } else {
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-               (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
-        }
-
-        // Convert velocities to momenta
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            MultiFab::Multiply(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
-
-        // Add (-dt grad p to momenta)
-        MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-
-        // Add (-dt grad p0 to momenta if not Boussinesq)
-        if (!use_boussinesq)
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-                (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
-
-        // Convert momenta back to velocities
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
     }
+
+    amrex::Abort("xxxxx so far so good in ApplyPredictor");
 
     if (!constant_density)
         incflo_set_density_bcs(new_time, density);
