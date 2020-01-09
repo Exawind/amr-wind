@@ -37,7 +37,6 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
         auto const dxinv = geom[lev].InvCellSizeArray();
         MultiFab const& vel = m_leveldata[lev]->velocity;
         MultiFab const& rho = m_leveldata[lev]->density;
-        MultiFab const& eta = m_leveldata[lev]->eta;
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
 #ifdef AMREX_USE_EB
@@ -60,21 +59,21 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
                            return mx;
                        });
             if (explicit_diffusion) {
-                diff_lev = amrex::ReduceMax(rho, eta, flag, 0,
+                diff_lev = amrex::ReduceMax(rho, flag, 0,
                            [=] AMREX_GPU_HOST_DEVICE (Box const& b,
                                                       Array4<Real const> const& r,
-                                                      Array4<Real const> const& e,
                                                       Array4<EBCellFlag const> const& f) -> Real
                           {
                               Real mx = -1.0;
                               amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
                               {
                                   if (!f(i,j,k).isCovered()) {
-                                      mx = amrex::max(e(i,j,k)/r(i,j,k), mx);
+                                      mx = amrex::max(1.0/r(i,j,k), mx);
                                   }
                               });
                               return mx;
                           });
+                diff_lev *= this->mu;
             }
         } else
 #endif
@@ -93,18 +92,18 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
                            return mx;
                        });
             if (explicit_diffusion) {
-                diff_lev = amrex::ReduceMax(rho, eta, 0,
+                diff_lev = amrex::ReduceMax(rho, 0,
                            [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                      Array4<Real const> const& r,
-                                                      Array4<Real const> const& e) -> Real
+                                                      Array4<Real const> const& r) -> Real
                            {
                                Real mx = -1.0;
                                amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
                                {
-                                   mx = amrex::max(e(i,j,k)/r(i,j,k), mx);
+                                   mx = amrex::max(1.0/r(i,j,k), mx);
                                });
                                return mx;
                            });
+                diff_lev *= this->mu;
             }
         }
         conv_cfl = std::max(conv_cfl, conv_lev);

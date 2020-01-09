@@ -2,6 +2,13 @@
 
 using namespace amrex;
 
+DiffusionTensorOp*
+incflo::get_diffusion_tensor_op ()
+{
+    if (!diffusion_tensor_op) diffusion_tensor_op.reset(new DiffusionTensorOp(this));
+    return diffusion_tensor_op.get();
+}
+
 Vector<Array<LinOpBCType,AMREX_SPACEDIM> >
 incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
 {

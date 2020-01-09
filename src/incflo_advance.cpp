@@ -255,9 +255,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
-        amrex::Abort("xxxxx so far so good in ApplyPredictor before diffusion");
-        diffusion_op->diffuse_velocity(vel   , density, eta_old, dt);
-        amrex::Abort("xxxxx so far so good in ApplyPredictor before diffuse velocity");
+        get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
+                                                    get_density_new(), cur_time, dt);
+        VisMF::Write(m_leveldata[0]->velocity, "vel");
+        amrex::Abort("xxxxx so far so good in ApplyPredictor after diffuse velocity");
         if (advect_tracer)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
     }

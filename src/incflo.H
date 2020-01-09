@@ -283,7 +283,6 @@ private:
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
         amrex::MultiFab gp; // pressure gradient
-        amrex::MultiFab eta; // xxxx seems that we do not need it for "newtonian" fluid model.
         // nodal multifabs
         amrex::MultiFab p;
         //
@@ -350,6 +349,8 @@ private:
     std::unique_ptr<DiffusionOp> diffusion_op;
     std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
 
+    DiffusionTensorOp* get_diffusion_tensor_op ();
+
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return *m_factory[lev]; }
 #ifdef AMREX_USE_EB
@@ -406,7 +407,6 @@ public: // for cuda
                                 amrex::Array4<amrex::Real> const& vel,
                                 amrex::Array4<amrex::Real> const& denisty,
                                 amrex::Array4<amrex::Real> const& tracer,
-                                amrex::Array4<amrex::Real> const& eta,
                                 amrex::Box const& domain,
                                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
                                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,

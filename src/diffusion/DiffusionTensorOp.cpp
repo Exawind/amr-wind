@@ -24,7 +24,9 @@ DiffusionTensorOp::DiffusionTensorOp (incflo* a_incflo)
                                        m_incflo->boxArray(0,finest_level),
                                        m_incflo->DistributionMap(0,finest_level),
                                        info, ebfact));
-        m_linop = m_eb_op.get();
+        m_eb_op->setMaxOrder(m_mg_maxorder);
+        m_eb_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
+                             m_incflo->get_diffuse_tensor_bc(Orientation::high));
     }
     else
 #endif
@@ -33,12 +35,10 @@ DiffusionTensorOp::DiffusionTensorOp (incflo* a_incflo)
                                       m_incflo->boxArray(0,m_incflo->finestLevel()),
                                       m_incflo->DistributionMap(0,m_incflo->finestLevel()),
                                       info));
-        m_linop = m_reg_op.get();
+        m_reg_op->setMaxOrder(m_mg_maxorder);
+        m_reg_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
+                              m_incflo->get_diffuse_tensor_bc(Orientation::high));
     }
-
-    m_linop->setMaxOrder(m_mg_maxorder);
-    m_linop->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
-                         m_incflo->get_diffuse_tensor_bc(Orientation::high));
 }
 
 void
@@ -57,4 +57,48 @@ DiffusionTensorOp::readParameters ()
     pp.query("mg_rtol", m_mg_rtol);
     pp.query("mg_atol", m_mg_atol);
     pp.query("bottom_solver_type", m_bottom_solver_type);
+}
+
+void
+DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
+                                     Vector<MultiFab*> const& density,
+                                     Real t, Real dt)
+{
+    //
+    //      alpha a - beta div ( b grad )   <--->   rho - dt div ( mu grad )
+    //
+    // So the constants and variable coefficients are:
+    //
+    //      alpha: 1
+    //      beta: dt
+    //      a: rho
+    //      b: mu
+
+    if (m_verbose > 0) {
+        amrex::Print() << "Diffusing velocity components all together..." << std::endl;
+    }
+
+    const int finest_level = m_incflo->finestLevel();
+
+#ifdef AMREX_USE_EB
+    if (m_eb_op)
+    {
+        m_eb_op->setScalars(1.0, dt);
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            m_eb_op->setACoeffs(lev, *density[lev]);
+            m_eb_op->setShearViscosity(lev, m_incflo->mu);
+            m_eb_op->setEBShearViscosity(lev, m_incflo->mu);
+        }
+    }
+    else
+#endif
+    {
+        m_reg_op->setScalars(1.0, dt);
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            m_reg_op->setACoeffs(lev, *density[lev]);
+            m_reg_op->setShearViscosity(lev, m_incflo->mu);
+        }
+    }
+
+    amrex::Abort("xxxxx so far so good in diffuse_velocity");
 }

@@ -24,7 +24,6 @@ void incflo::prob_init_fluid (int lev)
                                   ld.velocity.array(mfi),
                                   ld.density.array(mfi),
                                   ld.tracer.array(mfi),
-                                  ld.eta.array(mfi),
                                   domain, dx, problo, probhi);
         }
         else
@@ -39,7 +38,6 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
                                     amrex::Array4<amrex::Real> const& vel,
                                     amrex::Array4<amrex::Real> const& density,
                                     amrex::Array4<amrex::Real> const& tracer,
-                                    amrex::Array4<amrex::Real> const& eta,
                                     amrex::Box const& domain,
                                     GpuArray<Real, AMREX_SPACEDIM> const& dx,
                                     GpuArray<Real, AMREX_SPACEDIM> const& problo,
@@ -48,7 +46,6 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
     Real dzinv = 1.0 / domain.length(2);
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
-    Real lmu = this->mu;
     Real lrho = this->ro_0;
     if (32 == probtype)
     {
@@ -69,8 +66,6 @@ void incflo::init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx
             if (nt > 0 and j <= dhi.y/8)   tracer(i,j,k,0) = 1.0;
             if (nt > 1 and j <= dhi.y/2)   tracer(i,j,k,1) = 2.0;
             if (nt > 2 and j <= dhi.y*3/4) tracer(i,j,k,2) = 3.0;
-
-            eta(i,j,k) = lmu;
         });
     }
     else

@@ -23,6 +23,10 @@ class DiffusionTensorOp
 public:
     DiffusionTensorOp (incflo* a_incflo);
 
+    void diffuse_velocity (amrex::Vector<amrex::MultiFab*> const& velocity,
+                           amrex::Vector<amrex::MultiFab*> const& density,
+                           amrex::Real t, amrex::Real dt);
+
 private:
 
     void readParameters ();
@@ -33,7 +37,6 @@ private:
     std::unique_ptr<amrex::MLEBTensorOp> m_eb_op;
 #endif
     std::unique_ptr<amrex::MLTensorOp> m_reg_op;
-    amrex::MLLinOp* m_linop;
 
     // DiffusionOp verbosity
     int m_verbose = 0;
