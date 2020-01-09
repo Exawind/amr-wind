@@ -25,12 +25,15 @@ public:
 
 private:
 
+    void readParameters ();
+
     incflo* m_incflo;
 
 #ifdef AMREX_USE_EB
     std::unique_ptr<amrex::MLEBTensorOp> m_eb_op;
 #endif
     std::unique_ptr<amrex::MLTensorOp> m_reg_op;
+    amrex::MLLinOp* m_linop;
 
     // DiffusionOp verbosity
     int m_verbose = 0;

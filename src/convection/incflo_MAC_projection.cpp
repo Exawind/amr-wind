@@ -74,7 +74,7 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
     //
     MacProjector macproj(mac_vec, GetVecOfArrOfConstPtrs(rho_face), Geom(0,finest_level), lp_info);
 
-    macproj.setDomainBC(get_projection_bclo(), get_projection_bchi());
+    macproj.setDomainBC(get_projection_bc(Orientation::low), get_projection_bc(Orientation::high));
 
     macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
 }

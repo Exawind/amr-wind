@@ -4,41 +4,34 @@
 using namespace amrex;
 
 std::array<amrex::LinOpBCType,AMREX_SPACEDIM>
-incflo::get_projection_bclo () const noexcept
+incflo::get_projection_bc (Orientation::Side side) const noexcept
 {
-    std::array<LinOpBCType,AMREX_SPACEDIM> bclo;
+    std::array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom[0].isPeriodic(dir)) {
-            bclo[dir] = LinOpBCType::Periodic;
+            r[dir] = LinOpBCType::Periodic;
         } else {
-            if (m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_inflow or
-                m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_outflow) {
-                bclo[dir] = LinOpBCType::Dirichlet;
-            } else {
-                bclo[dir] = LinOpBCType::Neumann;
+            auto bc = m_bc_type[Orientation(dir,side)];
+            switch (bc)
+            {
+            case BC::pressure_inflow:
+            case BC::pressure_outflow:
+            {
+                r[dir] = LinOpBCType::Dirichlet;
+                break;
             }
+            case BC::mass_inflow:
+            case BC::no_slip_wall:
+            {
+                r[dir] = LinOpBCType::Neumann;
+                break;
+            }
+            default:
+                amrex::Abort("get_projection_bc: undefined BC type");
+            };
         }
     }
-    return bclo;
-}
-
-std::array<amrex::LinOpBCType,AMREX_SPACEDIM>
-incflo::get_projection_bchi () const noexcept
-{
-    std::array<LinOpBCType,AMREX_SPACEDIM> bchi;
-    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (geom[0].isPeriodic(dir)) {
-            bchi[dir] = LinOpBCType::Periodic;
-        } else {
-            if (m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_inflow or
-                m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_outflow) {
-                bchi[dir] = LinOpBCType::Dirichlet;
-            } else {
-                bchi[dir] = LinOpBCType::Neumann;
-            }
-        }
-    }
-    return bchi;
+    return r;
 }
 
 //
@@ -141,8 +134,8 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // Perform projection
     {
         if (!nodal_projector) {
-            auto bclo = get_projection_bclo();
-            auto bchi = get_projection_bchi();
+            auto bclo = get_projection_bc(Orientation::low);
+            auto bchi = get_projection_bc(Orientation::high);
 #ifdef AMREX_USE_EB
             if (!EBFactory(0).isAllRegular()) {
                 Vector<EBFArrayBoxFactory const*> fact(finest_level+1);

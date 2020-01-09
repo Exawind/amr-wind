@@ -27,9 +27,13 @@
 
 #include <DiffusionTensorOp.H>
 
+class DiffusionTensorOp;
+
 class incflo : public amrex::AmrCore
 {
 public:
+
+    friend DiffusionTensorOp;
 
     incflo ();
     virtual ~incflo();
@@ -379,8 +383,11 @@ private:
     amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
         return m_bcrec_tracer_d.data(); }
 
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bclo () const noexcept;
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM> get_projection_bchi () const noexcept;
+    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>
+    get_projection_bc (amrex::Orientation::Side side) const noexcept;
+
+    amrex::Vector<amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM> >
+    get_diffuse_tensor_bc (amrex::Orientation::Side side) const noexcept;
 
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
