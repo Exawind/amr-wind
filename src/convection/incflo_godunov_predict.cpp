@@ -15,9 +15,9 @@ incflo::incflo_predict_godunov ( int lev, Real time,
 
     // These are place-holders for now
     MultiFab tforces(grids[lev], dmap[lev], 3, 2);
-    MultiFab divu   (grids[lev], dmap[lev], 1, 2);
+    MultiFab divu_cc(grids[lev], dmap[lev], 1, 2);
     tforces.setVal(0.0);
-    divu.setVal(0.0);
+    divu_cc.setVal(0.0);
 
     BCRec dom_bc;
     {
@@ -61,8 +61,7 @@ incflo::incflo_predict_godunov ( int lev, Real time,
         incflo_predict_godunov_on_box(lev, bx, (*vel_in[lev]).array(mfi), 
                                       uad.array(), vad.array(), wad.array(), 
                                       m_u_mac[lev]->array(mfi), m_v_mac[lev]->array(mfi), m_w_mac[lev]->array(mfi),
-                                      tforces.array(mfi), divu.array(mfi), bc);
-
+                                      tforces.array(mfi), divu_cc.array(mfi), bc);
     }
 }
 
@@ -81,11 +80,13 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 {
     Box domain(geom[lev].Domain());
 
-    // We only predict the normal velocity in this routine
-    int ncomp = 1;
+    // We only predict the normal velocity in this routine but we need transverse terms
+    //   which means we need all velocities on all faces
+    int ncomp = 3;
 
-    int iconserv[1];
-    iconserv[0] = 1;
+    // We only predict velocity in this routine, which is convectively not conservatively, updated
+    int iconserv[ncomp];
+    for (int i = 0; i < ncomp; i++) iconserv[i] = 0;
 
     auto const g2bx = amrex::grow(bx, 2); 
     auto const g1bx = amrex::grow(bx, 1); 
@@ -443,8 +444,11 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
  
 //--------------------------------------- X -------------------------------------- 
     /* Final Update of Faces */ 
-    AMREX_PARALLEL_FOR_4D(xbx, ncomp, i, j, k, n,
+    AMREX_PARALLEL_FOR_3D(xbx, i, j, k,
     {
+        // We only care about x-velocity on x-faces here
+        int n = 0;
+
         auto bc = BCs[n]; 
         Real stl = xlo(i,j,k,n) - (0.25*dt/dy)*(v_ad(i-1,j+1,k)+v_ad(i-1,j,k))*
                                   (yzlo(i-1,j+1,k,n) - yzlo(i-1,j,k,n))
@@ -463,12 +467,15 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
-        u_face(i,j,k,n) = ltm ? 0. : st;
+        u_face(i,j,k) = ltm ? 0. : st;
     }); 
 
 //-------------------------------------- Y ------------------------------------            
-    AMREX_PARALLEL_FOR_4D(ybx, ncomp, i, j, k, n,
+    AMREX_PARALLEL_FOR_3D(ybx, i, j, k,
     {
+        // We only care about y-velocity on y-faces here
+        int n = 1;
+
         auto bc = BCs[n]; 
 
         Real stl = ylo(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j-1,k)+u_ad(i,j-1,k))*
@@ -488,12 +495,15 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
-        v_face(i,j,k,n) = ltm ? 0. : st;
+        v_face(i,j,k) = ltm ? 0. : st;
      });
 
 //----------------------------------- Z ----------------------------------------- 
-     AMREX_PARALLEL_FOR_4D(zbx, ncomp, i, j, k, n, 
+     AMREX_PARALLEL_FOR_3D(zbx, i, j, k,
      {
+        // We only care about z-velocity on z-faces here
+        int n = 2;
+
         auto bc = BCs[n]; 
 
         Real stl = zlo(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j,k-1)+u_ad(i,j,k-1))*
@@ -513,7 +523,7 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
-        w_face(i,j,k,n) = ltm ? 0. : st;
+        w_face(i,j,k) = ltm ? 0. : st;
     }); 
 }
 
@@ -528,10 +538,10 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 {
     Box domain(geom[lev].Domain());
 
-    int ncomp = 1;
-
-    int iconserv[3];
-    for (int i = 0; i < 3; i++) iconserv[i] = 1;
+    // We only predict the normal velocity in this routine but because we are calling
+    //   the same Godunov_ppm_pred routine as called by ppm_predict, we must pass 
+    //   arrays with all three components
+    int ncomp = 3;
 
     auto const g2bx = amrex::grow(bx, 2); 
     auto const g1bx = amrex::grow(bx, 1); 
@@ -564,10 +574,6 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
     auto const Imz = Imzf.array(); 
     auto const Ipz = Ipzf.array(); 
 
-    auto const xgbx = surroundingNodes(g1bx, 0);
-    auto const ygbx = surroundingNodes(g1bx, 1); 
-    auto const zgbx = surroundingNodes(g1bx, 2); 
-
     /* Use PPM to generate Im and Ip */
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
@@ -590,8 +596,11 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
     auto const tzbx = surroundingNodes(grow(g1bx, 2, -1), 2);
     
 // --------------------X -------------------------------------------------
-    AMREX_PARALLEL_FOR_4D(txbx, ncomp, i, j, k, n, 
+    AMREX_PARALLEL_FOR_3D(txbx, i, j, k, 
     {
+        // We only care about x-velocity on x-faces here
+        int n = 0;
+
         Real lo = Ipx(i-1,j,k,n) + 0.5e0*dt*tf(i-1,j,k,n); 
         Real hi = Imx(i  ,j,k,n) + 0.5e0*dt*tf(i  ,j,k,n);
 
@@ -604,16 +613,18 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 
         Real st = ( (lo+hi) >= 0.) ? lo : hi;
         bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
-        u_ad(i,j,k,n) = ltm ? 0. : st;
-
+        u_ad(i,j,k) = ltm ? 0. : st;
     }); 
 
     Imxeli.clear(); 
     Ipxeli.clear(); 
 
 //--------------------Y -------------------------------------------------
-     AMREX_PARALLEL_FOR_4D(tybx, ncomp, i, j, k, n, 
+     AMREX_PARALLEL_FOR_3D(tybx, i, j, k,
      {
+        // We only care about y-velocity on y-faces here
+        int n = 1;
+
         Real lo = Ipy(i,j-1,k,n) + 0.5e0*dt*tf(i,j-1,k,n); 
         Real hi = Imy(i,j,k,n)   + 0.5e0*dt*tf(i,j  ,k,n); 
 
@@ -626,15 +637,18 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 
         Real st = ( (lo+hi) >= 0.) ? lo : hi;
         bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
-        v_ad(i,j,k,n) = ltm ? 0. : st;
+        v_ad(i,j,k) = ltm ? 0. : st;
     });
 
     Imyeli.clear(); 
     Ipyeli.clear(); 
 
 //------------------ Z ---------------------------------------------------
-     AMREX_PARALLEL_FOR_4D(tzbx, ncomp, i, j, k, n, 
+     AMREX_PARALLEL_FOR_3D(tzbx, i, j, k,
      {
+        // We only care about z-velocity on z-faces here
+        int n = 2;
+
         Real lo = Ipz(i,j,k-1,n) + 0.5e0*dt*tf(i,j,k-1,n); 
         Real hi = Imz(i,j,k,n)   + 0.5e0*dt*tf(i,j,k  ,n); 
 
@@ -648,7 +662,7 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 
         Real st = ( (lo+hi) >= 0.) ? lo : hi;
         bool ltm = ( (lo <= 0. && hi >= 0.) || (std::abs(lo+hi) < eps) );
-        w_ad(i,j,k,n) = ltm ? 0. : st;
+        w_ad(i,j,k) = ltm ? 0. : st;
 
     });     
 
