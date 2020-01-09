@@ -401,21 +401,23 @@ void incflo::InitialIterations ()
                            m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, 0);
         }
         t_old[lev] = t_new[lev];
-
-        int ng = 2;  // This might change for Godunov.
-#ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) ng = 4;
-#endif
-        fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
-        fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (incflo::ntrac > 0) {
-            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
-        }
     }
 
     for (int iter = 0; iter < initial_iterations; ++iter)
     {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
+
+        int ng = 2;  // This might change for Godunov.
+#ifdef AMREX_USE_EB
+        if (!EBFactory(0).isAllRegular()) ng = 4;
+#endif
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
+            fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
+            if (incflo::ntrac > 0) {
+                fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
+            }
+        }
 
  	ApplyPredictor(true);
 

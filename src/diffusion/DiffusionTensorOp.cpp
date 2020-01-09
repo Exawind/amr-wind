@@ -100,5 +100,61 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         }
     }
 
+    Vector<MultiFab> rhs(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        rhs[lev].define(velocity[lev]->boxArray(),
+                        velocity[lev]->DistributionMap(), AMREX_SPACEDIM, 0);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(rhs[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& rhs_a = rhs[lev].array(mfi);
+            Array4<Real const> const& vel_a = velocity[lev]->const_array(mfi);
+            Array4<Real const> const& rho_a = density[lev]->const_array(mfi);
+            amrex::ParallelFor(bx,AMREX_SPACEDIM,
+            [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+            {
+                rhs_a(i,j,k,n) = rho_a(i,j,k) * vel_a(i,j,k,n);
+            });
+        }
+
+#ifdef AMREX_USE_EB
+        if (m_eb_op) {
+            m_eb_op->setLevelBC(lev, velocity[lev]);
+        } else
+#endif
+        {
+            m_reg_op->setLevelBC(lev, velocity[lev]);
+        }
+    }
+
+#ifdef AMREX_USE_EB
+    MLMG mlmg(m_eb_op ? static_cast<MLLinOp&>(*m_eb_op) : static_cast<MLLinOp&>(*m_reg_op));
+#else
+    MLMG mlmg(*m_reg_op);
+#endif
+
+    // The default bottom solver is BiCG
+    if (m_bottom_solver_type == "smoother")
+    {
+        mlmg.setBottomSolver(MLMG::BottomSolver::smoother);
+    }
+    else if (m_bottom_solver_type == "hypre")
+    {
+        mlmg.setBottomSolver(MLMG::BottomSolver::hypre);
+    }
+    // Maximum iterations for MultiGrid / ConjugateGradients
+    mlmg.setMaxIter(m_mg_max_iter);
+    mlmg.setMaxFmgIter(m_mg_max_fmg_iter);
+    mlmg.setCGMaxIter(m_mg_cg_maxiter);
+
+    // Verbosity for MultiGrid / ConjugateGradients
+    mlmg.setVerbose(m_mg_verbose);
+    mlmg.setCGVerbose(m_mg_cg_verbose);
+
+    mlmg.solve(velocity, GetVecOfConstPtrs(rhs), m_mg_rtol, m_mg_atol);
+
+    VisMF::Write(*velocity[0], "vel");
     amrex::Abort("xxxxx so far so good in diffuse_velocity");
 }

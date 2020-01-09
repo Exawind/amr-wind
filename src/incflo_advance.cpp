@@ -242,6 +242,18 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
+    if (m_diff_type == DiffusionType::Crank_Nicolson or
+        m_diff_type == DiffusionType::Implicit)
+    {
+        const int ng_diffusion = 1;
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            fillpatch_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
+            if (incflo::ntrac > 0) {
+                fillpatch_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
+            }
+        }
+    }
+
     // Solve diffusion equation for u* but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
     if (m_diff_type == DiffusionType::Crank_Nicolson)
