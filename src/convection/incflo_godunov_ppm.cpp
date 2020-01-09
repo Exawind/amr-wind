@@ -424,8 +424,6 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                            - (0.25*dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
                              (zylo(i,j,k+1,n) - zylo(i,j,k,n));
         }
-        Real stlold = stl; 
-        Real sthold = sth; 
        
         Godunov_cc_xbc(i, j, k, n, s, stl, sth, u_mac, bc.lo(0), bc.hi(0),
                                  bx.loVect()[0], bx.hiVect()[0]);  
@@ -467,6 +465,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                            - (0.25*dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
                              (zxlo(i,j,k+1,n) - zxlo(i,j,k,n));
         }
+
         Godunov_cc_ybc(i, j, k, n, s, stl, sth, v_mac, bc.lo(1), bc.hi(1), 
                                   bx.loVect()[1], bx.hiVect()[1]); 
 
@@ -508,16 +507,9 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                                - (0.25*dt/dy)*(v_mac(i,j+1,k)+v_mac(i,j,k))*
                                  (yxlo(i,j+1,k,n) - yxlo(i,j,k,n));
         }
-        Real stlold = stl; 
-        Real sthold = sth; 
+
         Godunov_cc_zbc(i, j, k, n, s, stl, sth, w_mac, bc.lo(2), bc.hi(2), 
                                         bx.loVect()[2], bx.hiVect()[2]);  
-        if(stl>1e10 || sth > 1e10){
-            std::cout << "old = " << stlold << '\t' << sthold << std::endl; 
-            std::cout << "New" << std::endl; 
-            std::cout<< stl << '\t' << sth << '\t' << i << '\t' << j << '\t' << k << "  Z" << std::endl;
-            std::cin.get();  
-        }
 
         temp = (w_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(w_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp; 
