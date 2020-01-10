@@ -72,11 +72,9 @@ void incflo::ComputeDt(int initialisation, bool explicit_diffusion)
     // Update dt
     Real dt_new = 2.0 * cfl / comb_cfl;
 
-    // Reduce CFL for initial step
-    if(initialisation)
-    {
-        dt_new *= 0.1;
-    }
+    // Optionally reduce CFL for initial step 
+    if (initialisation)
+        dt_new *= init_shrink;
 
     // Protect against very small comb_cfl
     // This may happen, for example, when the initial velocity field

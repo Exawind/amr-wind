@@ -497,6 +497,7 @@ private:
     // Options to control time stepping
     amrex::Real cfl = 0.5;
     amrex::Real fixed_dt = -1.;
+    amrex::Real init_shrink = 0.1;
 
     // Initial projection / iterations
     bool do_initial_proj    = true;
@@ -531,7 +532,10 @@ private:
     bool constant_density = true;
     bool advect_tracer    = false;
     bool test_tracer_conservation = false;
-    bool use_godunov      = false;
+
+    bool use_godunov         = false;
+    bool use_forces_in_trans = false;
+    bool diffusion_type      = -1;
 
     // Fluid properties
     std::string fluid_model;

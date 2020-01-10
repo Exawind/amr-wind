@@ -43,8 +43,11 @@ void incflo::ReadParameters()
 
 	pp.query("fixed_dt", fixed_dt);
 	pp.query("cfl", cfl);
-        if (cfl > 0.5)
-            amrex::Abort("We currently require cfl <= 0.5 with the current advection scheme");
+
+        // This will multiply the time-step in the very first step only
+	pp.query("init_shrink", init_shrink);
+        if (init_shrink > 1.0)
+            amrex::Abort("We require init_shrink <= 1.0");
 
         // Physics
 	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
@@ -53,7 +56,28 @@ void incflo::ReadParameters()
         pp.query("constant_density", constant_density);
         pp.query("advect_tracer"   , advect_tracer);
         pp.query("test_tracer_conservation" , test_tracer_conservation);
-        pp.query("use_godunov"     , use_godunov);
+        pp.query("use_godunov"        , use_godunov);
+        pp.query("use_forces_in_trans", use_forces_in_trans);
+
+        // Note that the default of m_diff_type is set to DiffusionType::Implicit in incflo.H 
+        //      hence we set diffusion_type here to the same (aka 2)
+        diffusion_type = 2;
+        pp.query("diffusion_type", diffusion_type);
+#if 0
+        if (diffusion_type == 0)
+           m_diff_type = DiffusionType::Explicit;
+        else if (diffusion_type == 1)
+           m_diff_type = DiffusionType::Crank_Nicolson;
+        else if (diffusion_type == 2)
+           m_diff_type = DiffusionType::Implicit;
+        else
+            amrex::Abort("We currently require diffusion_type = 0 for explicit, 1 for Crank-Nicolson or 2 for implicit");
+#endif
+
+        if (!use_godunov && cfl > 0.5)
+            amrex::Abort("We currently require cfl <= 0.5 when using the MOL advection scheme");
+        if (use_godunov && cfl > 1.0)
+            amrex::Abort("We currently require cfl <= 1.0 when using the Godunov advection scheme");
 
         AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
