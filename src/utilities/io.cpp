@@ -671,6 +671,118 @@ void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real 
 }
 
 
+void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis){
+
+    AMREX_ALWAYS_ASSERT(s>=0);
+    AMREX_ALWAYS_ASSERT(b>s);
+
+    // fixme switch this to a 1d array
+    const auto fab_arr = avg_fab.array();
+    
+    const Real dz = geom[0].CellSize(axis);
+    const Real zlo = geom[0].ProbLo(axis);
+    
+    const Real half_height = zlo + 0.5*dz;
+
+    // set the velocity at the first cell above the ground
+    switch (axis) {
+        case 0:
+            vx_mean_ground = fab_arr(s,0,0,u_avg);
+            vy_mean_ground = fab_arr(s,0,0,v_avg);
+            nu_mean_ground = fab_arr(s,0,0,nu_avg);
+            break;
+        case 1:
+            vx_mean_ground = fab_arr(0,s,0,u_avg);
+            vy_mean_ground = fab_arr(0,s,0,v_avg);
+            nu_mean_ground = fab_arr(0,s,0,nu_avg);
+
+            break;
+        case 2:
+            vx_mean_ground = fab_arr(0,0,s,u_avg);
+            vy_mean_ground = fab_arr(0,0,s,v_avg);
+            nu_mean_ground = fab_arr(0,0,s,nu_avg);
+            break;
+    }
+    
+    // fixme circular dependency so need to hack this for now
+    if(nstep == -1) nu_mean_ground = 1.0;
+
+    amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
+    amrex::Print() << "ground half cell height, vx, vy: " << half_height << ' ' << vx_mean_ground  << ' ' << vy_mean_ground << std::endl;
+
+    
+    // search for cells near log_law_sampling_height
+    Real height = half_height;
+    Real c = 0.0;
+    int ind = s;
+        
+    if(log_law_sampling_height > half_height){
+        height = log_law_sampling_height;
+        ind = s + floor((log_law_sampling_height - zlo)/dz - 0.5);
+        const Real z1 = zlo + (ind+0.5)*dz;
+        c = (log_law_sampling_height-z1)/dz;
+    }
+
+    if(ind   < 0) amrex::Abort("low_law_sampling_height is set incorrectly since conversion to integer is negative \n");
+    if(ind+1 > b) amrex::Abort("low_law_sampling_height is set incorrectly since conversion to integer is larger than domain \n");
+
+    Real vx,vy;
+    switch (axis) {
+        case 0:
+            vx = fab_arr(ind,0,0,u_avg)*(1.0-c) + fab_arr(ind+1,0,0,u_avg)*c;
+            vy = fab_arr(ind,0,0,v_avg)*(1.0-c) + fab_arr(ind+1,0,0,v_avg)*c;
+            break;
+        case 1:
+            vx = fab_arr(0,ind,0,u_avg)*(1.0-c) + fab_arr(0,ind+1,0,u_avg)*c;
+            vy = fab_arr(0,ind,0,v_avg)*(1.0-c) + fab_arr(0,ind+1,0,v_avg)*c;
+            break;
+        case 2:
+            vx = fab_arr(0,0,ind,u_avg)*(1.0-c) + fab_arr(0,0,ind+1,u_avg)*c;
+            vy = fab_arr(0,0,ind,v_avg)*(1.0-c) + fab_arr(0,0,ind+1,v_avg)*c;
+            break;
+    }
+    
+    const Real uh = sqrt(pow(vx,2) + pow(vy,2));
+        
+    // simple shear stress model for neutral BL
+    // apply as an inhomogeneous Neumann BC
+    utau = kappa*uh/log(height/surface_roughness_z0);
+    
+    amrex::Print() << "log law sampling height, u, utau: " << height << ' ' << uh  << ' ' << utau << std::endl;
+  
+    
+    // search for cells near abl_forcing_height
+    c = 0.0;
+    ind = s;
+    if(abl_forcing_height > half_height){
+        height = abl_forcing_height;
+        ind = s + floor((abl_forcing_height - zlo)/dz - 0.5);
+        const Real z1 = zlo + (ind+0.5)*dz;
+        c = (abl_forcing_height-z1)/dz;
+    }
+
+    if(ind   < 0) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is negative \n");
+    if(ind+1 > b) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is larger than domain \n");
+   
+    switch (axis) {
+        case 0:
+            vx_mean = fab_arr(ind,0,0,u_avg)*(1.0-c) + fab_arr(ind+1,0,0,u_avg)*c;
+            vy_mean = fab_arr(ind,0,0,v_avg)*(1.0-c) + fab_arr(ind+1,0,0,v_avg)*c;
+            break;
+        case 1:
+            vx_mean = fab_arr(0,ind,0,u_avg)*(1.0-c) + fab_arr(0,ind+1,0,u_avg)*c;
+            vy_mean = fab_arr(0,ind,0,v_avg)*(1.0-c) + fab_arr(0,ind+1,0,v_avg)*c;
+            break;
+        case 2:
+            vx_mean = fab_arr(0,0,ind,u_avg)*(1.0-c) + fab_arr(0,0,ind+1,u_avg)*c;
+            vy_mean = fab_arr(0,0,ind,v_avg)*(1.0-c) + fab_arr(0,0,ind+1,v_avg)*c;
+            break;
+    }
+    
+    amrex::Print() << "abl forcing height z, vx, vy: " << height << ' ' << vx_mean << ' ' << vy_mean << std::endl;
+    
+}
+
 
 void incflo::spatially_average_quantities_down(bool plot)
 {
@@ -716,9 +828,9 @@ void incflo::spatially_average_quantities_down(bool plot)
     fab.setVal(0.0);
 
     // count number of cells in plane
-    Real area = 1.0;
+    Real nplane_cells = 1.0;
     for(int i=0;i<AMREX_SPACEDIM;++i){
-        if(i!=axis) area *= (dom_hi[i]-dom_lo[i]+1);
+        if(i!=axis) nplane_cells *= (dom_hi[i]-dom_lo[i]+1);
     }
          
     
@@ -733,7 +845,7 @@ void incflo::spatially_average_quantities_down(bool plot)
 //    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
 
     // ncomp is used here and is safer but it could actually be 4 depending on the ordering of average down function
-    plane_average(crse_mfab, fab, area, axis, ncomp);
+    plane_average(crse_mfab, fab, nplane_cells, axis, ncomp);
 
     //fixme put in a loop like above
     // sum all fabs together
@@ -746,59 +858,19 @@ void incflo::spatially_average_quantities_down(bool plot)
 
     fab.setVal(0.0);
     
-    plane_average(crse_mfab,fab,area,axis,ncomp);
+    plane_average(crse_mfab,fab,nplane_cells,axis,ncomp);
 
     // sum all fabs together
     ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
-  
     
-    // fixme piggy backing on this function but this belongs somewhere else
-    // maybe keep this 1d average in global memory and then make these functions separate?
-    AMREX_ASSERT(axis==2);
-    const auto& fab_arr = fab.array();
-    
-    // no need to do a loop should be able to find the index because of fixed cell size
-    for(int i=s; i <= b; ++i){
-        const Real z = geom[0].ProbLo(axis) + (i+0.5)*geom[0].CellSize(axis);
-        if(z > 0.0) {
-            vx_mean_ground = fab_arr(0,0,i,u_avg);
-            vy_mean_ground = fab_arr(0,0,i,v_avg);
-            nu_mean_ground = fab_arr(0,0,i,nu_avg);
-            z_ground = z;
-           
-            amrex::Print() << "ground height z: " << z_ground << " vx_mean_ground: " << vx_mean_ground << " vy_mean_ground: " << vy_mean_ground << std::endl;
-            
-            // fixme circular dependency so need to hack this for now
-            if(nstep == -1) nu_mean_ground = 1.0;
-            amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
+    // set all the stored average quantities
+    set_average_quantities(fab,s,b,axis);
 
-            break;
-        }
-    }
-    
-    // simple shear stress model for neutral BL
-    // apply as an inhomogeneous Neumann BC
-    const Real uh = sqrt(pow(vx_mean_ground,2) + pow(vy_mean_ground,2)) + 1.0e-12;
-    utau = kappa*uh/log(z_ground/surface_roughness_z0);
-    amrex::Print() << "utau: " << utau << std::endl;
-    
-    for(int i=s; i < b; ++i){
-
-        const Real z1 = geom[0].ProbLo(axis) + (i+0.5+0)*geom[0].CellSize(axis);
-        const Real z2 = geom[0].ProbLo(axis) + (i+0.5+1)*geom[0].CellSize(axis);
-
-        if(z1 <= abl_forcing_height && z2 >= abl_forcing_height) {
-            const Real c = (abl_forcing_height-z1)/(z2-z1);
-            vx_mean = fab_arr(0,0,i,u_avg)*(1.0-c) + fab_arr(0,0,i+1,u_avg)*c;
-            vy_mean = fab_arr(0,0,i,v_avg)*(1.0-c) + fab_arr(0,0,i+1,v_avg)*c;
-            amrex::Print() << "abl forcing height z: " << abl_forcing_height << " vx_mean: " << vx_mean << " vy_mean: " << vy_mean << std::endl;
-            break;
-        }
-    } 
-    
-    
     
     if(!plot) return;
+    
+    // fixme this is in case the copy from fab to mfab is not in the z axis
+    AMREX_ALWAYS_ASSERT(axis==2);
     
     // begin collecting and output values
     

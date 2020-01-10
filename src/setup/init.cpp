@@ -159,6 +159,7 @@ void incflo::ReadABLParameters()
     pp.query("thermalExpansionCoeff",thermalExpansionCoeff);
 
     pp.query("Smagorinsky_Lilly_SGS_constant",Smagorinsky_Lilly_SGS_constant);
+    pp.query("log_law_sampling_height",log_law_sampling_height);
     
 }
 void incflo::ReadIOParameters()

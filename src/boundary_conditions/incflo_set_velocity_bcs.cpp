@@ -468,6 +468,7 @@ incflo::set_velocity_bcs(Real time,
 
   if (ndwn > 0)
   {
+
     amrex::ParallelFor(bx_xy_lo_3D,
       [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
@@ -488,20 +489,16 @@ incflo::set_velocity_bcs(Real time,
           const Real vy = vel_arr(i,j,dom_lo[2],1);
           const Real uh = sqrt(pow(vx_mean_ground_,2) + pow(vy_mean_ground_,2));
           
+//          fixme should I just pass in eddy viscosity (stored in eta)?
+
           // simple shear stress model for neutral BL
           // apply as an inhomogeneous Neumann BC
-          // fixme this should be the local (nu+nut) but there is a circular dependency on strain rate and bc's
-          // we could locally calculate a strain rate but not sure what do with 1 eqn sgs
-          // inhomogeneous Neumann BC
           vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nu_mean_ground_;
           vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nu_mean_ground_;
+
           // Dirichlet BC
           vel_arr(i,j,k,2) = 0.0;
 
-//          // fixme remove this later when we trust this
-//          const Real vmag = sqrt(pow(vx,2) + pow(vy,2)) + 1.0e-12;
-//          if(vmag/uh > 10.0) printf("uh oh local velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
-//          if(uh/vmag > 10.0) printf("uh oh average velocity is large i %d j %d vmag %f uh %f\n",i,j,vmag,uh);
       }
     });
 

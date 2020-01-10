@@ -164,7 +164,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
        int extrap_dir_bcs = 0;
        incflo_set_velocity_bcs (cur_time, vel_o, extrap_dir_bcs);
        diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
-
+       amrex::Abort("fixme this should be eta_tracer not mu_s");
        diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
     } else {
        for (int lev = 0; lev <= finest_level; lev++)
