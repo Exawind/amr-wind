@@ -275,12 +275,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
-    VisMF::Write(m_leveldata[0]->velocity, "vel");
-    VisMF::Write(m_leveldata[0]->tracer, "tra");
-    amrex::Abort("xxxxx so far so good in ApplyPredictor after diffuse velocity");
-
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt, incremental_projection);
+
+    VisMF::Write(m_leveldata[0]->velocity, "vel");
+    VisMF::Write(m_leveldata[0]->gp, "gp");
+    VisMF::Write(m_leveldata[0]->p, "p");
+    amrex::Abort("xxxxx so far so good at end of ApplyPredictor");
 }
 
 //

@@ -111,18 +111,18 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
 #endif
 
     // Create sigma
-    Vector< std::unique_ptr< amrex::MultiFab > >  sigma(finest_level+1);
+    Vector<amrex::MultiFab> sigma(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev )
     {
         auto const& ld = *m_leveldata[lev];
-        sigma[lev].reset(new MultiFab(grids[lev], dmap[lev], 1, 0, MFInfo(), *m_factory[lev]));
+        sigma[lev].define(grids[lev], dmap[lev], 1, 0, MFInfo(), *m_factory[lev]);
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(*sigma[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(sigma[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             Box const& bx = mfi.tilebox();
-            Array4<Real> const& sig = sigma[lev]->array(mfi);
+            Array4<Real> const& sig = sigma[lev].array(mfi);
             Array4<Real const> const& rho = ld.density.const_array(mfi);
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
@@ -194,18 +194,24 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
             Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
             Array4<Real const> const& p_proj = phi[lev]->const_array(mfi);
             if (incremental) {
-                amrex::ParallelFor(tbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                amrex::ParallelFor(tbx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
                 {
-                    gp_lev(i,j,k,0) += gp_proj(i,j,k,0);
-                    gp_lev(i,j,k,1) += gp_proj(i,j,k,1);
-                    gp_lev(i,j,k,2) += gp_proj(i,j,k,2);
+                    gp_lev(i,j,k,n) += gp_proj(i,j,k,n);
+                });
+                amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    p_lev (i,j,k) += p_proj(i,j,k);
                 });
             } else {
-                amrex::ParallelFor(tbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                amrex::ParallelFor(tbx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
                 {
-                    gp_lev(i,j,k,0) = gp_proj(i,j,k,0);
-                    gp_lev(i,j,k,1) = gp_proj(i,j,k,1);
-                    gp_lev(i,j,k,2) = gp_proj(i,j,k,2);
+                    gp_lev(i,j,k,n) = gp_proj(i,j,k,n);
+                });
+                amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    p_lev(i,j,k) = p_proj(i,j,k);
                 });
             }
         }
