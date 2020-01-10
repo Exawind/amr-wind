@@ -101,13 +101,11 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt || incremental)
     {
-#if 0
-        // xxxxx
-       incflo_set_velocity_bcs(time, vel_o);
-
-       for(int lev = 0; lev <= finest_level; lev++)
-          MultiFab::Saxpy(*vel[lev], -1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-#endif
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Subtract(m_leveldata[lev]->velocity,
+                               m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
+            m_leveldata[lev]->velocity.setDomainBndry(0.0, Geom(lev));
+        }
     }
 
     // Create sigma
@@ -169,11 +167,10 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)
     {
-#if 0
-    // xxxxx todo
-       for(int lev = 0; lev <= finest_level; lev++)
-          MultiFab::Saxpy(*vel[lev], 1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-#endif
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Add(m_leveldata[lev]->velocity,
+                          m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
+        }
     }
 
     // Get phi and fluxes
