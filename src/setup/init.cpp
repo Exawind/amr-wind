@@ -390,18 +390,10 @@ void incflo::InitialIterations ()
         amrex::Print() << "Doing initial pressure iterations with dt = " << dt << std::endl;
     }
 
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        MultiFab::Copy(m_leveldata[lev]->velocity_o,
-                       m_leveldata[lev]->velocity, 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Copy(m_leveldata[lev]->density_o,
-                       m_leveldata[lev]->density, 0, 0, 1, 0);
-        if (incflo::ntrac > 0) {
-            MultiFab::Copy(m_leveldata[lev]->tracer_o,
-                           m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, 0);
-        }
-        t_old[lev] = t_new[lev];
-    }
+    copy_from_new_to_old_velocity();
+    copy_from_new_to_old_density();
+    copy_from_new_to_old_tracer();
+    for(int lev = 0; lev <= finest_level; ++lev) t_old[lev] = t_new[lev];
 
     int ng = 2;  // This might change for Godunov.
 #ifdef AMREX_USE_EB
@@ -422,31 +414,14 @@ void incflo::InitialIterations ()
 
  	ApplyPredictor(true);
 
-        {
-            amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
-            amrex::EB_set_covered(m_leveldata[0]->gp, 0.0);
-            amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
-            VisMF::Write(m_leveldata[0]->velocity, "vel-"+std::to_string(iter));
-            VisMF::Write(m_leveldata[0]->gp, "gp-"+std::to_string(iter));
-            VisMF::Write(m_leveldata[0]->p, "p-"+std::to_string(iter));
-//            amrex::Abort("xxxxx so far so good after ApplyPredictor(true)");
-        }
-
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-            MultiFab::Copy(m_leveldata[lev]->velocity,
-                           m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
-            MultiFab::Copy(m_leveldata[lev]->density,
-                           m_leveldata[lev]->density_o, 0, 0, 1, 0);
-        }
+        copy_from_old_to_new_velocity();
+        copy_from_old_to_new_density();
     }
 
     advect_tracer = advect_tracer_save;
 
     // Set nstep to 0 before entering time loop
     nstep = 0;
-
-    amrex::Abort("xxxxx so far so good end of Initial_Iterations");
 }
 
 // Project velocity field to make sure initial velocity is divergence-free

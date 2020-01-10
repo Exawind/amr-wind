@@ -403,6 +403,20 @@ private:
     void fillphysbc_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
     void fillphysbc_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
 
+    void copy_from_new_to_old_velocity (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_new_to_old_velocity (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_new_to_old_density  (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_new_to_old_density  (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_new_to_old_tracer   (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_new_to_old_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+    //
+    void copy_from_old_to_new_velocity (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_old_to_new_velocity (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_old_to_new_density  (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_old_to_new_density  (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_old_to_new_tracer   (         amrex::IntVect const& ng = amrex::IntVect{0});
+    void copy_from_old_to_new_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
+
 public: // for cuda
 
     void init_bcs ();

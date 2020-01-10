@@ -34,18 +34,49 @@ void incflo::Advance()
                        << " with dt = " << dt << ".\n" << std::endl;
     }
 
-    // Backup velocity to old
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        MultiFab::Copy(    *vel_o[lev],     *vel[lev], 0, 0,     vel[lev]->nComp(),     vel_o[lev]->nGrow());
-        MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
-        MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
+    copy_from_new_to_old_velocity();
+    copy_from_new_to_old_density();
+    copy_from_new_to_old_tracer();
+
+    int ng = 2;  // This might change for Godunov.
+#ifdef AMREX_USE_EB
+    if (!EBFactory(0).isAllRegular()) ng = 4;
+#endif
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
+        fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
+        if (advect_tracer) {
+            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
+        }
     }
 
     ApplyPredictor();
 
-    if (!use_godunov)
-       ApplyCorrector();
+    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
+    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
+    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
+    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
+    amrex::VisMF::Write(m_leveldata[0]->p, "p");
+
+    amrex::Abort("xxxxx in Advance(): after ApplyPredictor");
+
+    if (!use_godunov) {
+        ApplyCorrector();
+    }
+
+    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
+    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
+    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
+    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
+    amrex::VisMF::Write(m_leveldata[0]->p, "p");
+
+    amrex::Abort("xxxxx in Advance(): after ApplyCorrector");
 
     if(incflo_verbose > 1)
     {
@@ -69,7 +100,7 @@ void incflo::Advance()
         amrex::Print() << "Time per step " << end_step << std::endl;
     }
 
-	BL_PROFILE_REGION_STOP("incflo::Advance");
+    amrex::Abort("xxxxx in Advance(): end");
 }
 
 //

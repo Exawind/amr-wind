@@ -83,8 +83,6 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        amrex::Abort("xxxxx So far so good after InitialIterations");
-
         // xxxxx averagedown ???
 
         // xxxxx if (check_int > 0) { WriteCheckPointFile(); }
@@ -108,14 +106,14 @@ void incflo::InitData ()
     // Plot initial distribution
     if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
     {
-        amrex::Abort("xxxxx Plotfile todo");
-        WritePlotFile();
+        amrex::Warning("xxxxx Plotfile todo");
+//        WritePlotFile();
         last_plt = 0;
     }
     if(KE_int > 0 && !restart_flag)
     {
         amrex::Abort("xxxxx KE_int todo");
-        amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
+//        amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
 #ifdef AMREX_USE_EB
@@ -125,11 +123,10 @@ void incflo::InitData ()
     if (write_eb_surface)
     {
         amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
-        WriteMyEBSurface();
+        amrex::Warning("xxxxx WriteMyEBSurface todo");
+  //      WriteMyEBSurface();
     }
 #endif
-
-    amrex::Abort("xxxxx So far so good: end of InitData");
 }
 
 void incflo::Evolve()
@@ -168,6 +165,8 @@ void incflo::Evolve()
         nstep++;
         cur_time += dt;
 
+        amrex::Abort("xxxxx After the first Advance()");
+
         if (writeNow())
         {
             WritePlotFile();
@@ -190,6 +189,8 @@ void incflo::Evolve()
                         ((stop_time > 0. && (cur_time >= stop_time - 1.e-12 * dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
+
+    amrex::Abort("xxxxx At the end of Evolve");
 
 	// Output at the final time
     if( check_int > 0                                               && nstep != last_chk) WriteCheckPointFile();
@@ -545,3 +546,84 @@ Vector<MultiFab*> incflo::get_conv_tracer_new () noexcept
     return r;
 }
 
+void incflo::copy_from_new_to_old_velocity (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_new_to_old_velocity(lev, ng);
+    }
+}
+
+void incflo::copy_from_new_to_old_velocity (int lev, IntVect const& ng)
+{
+    MultiFab::Copy(m_leveldata[lev]->velocity_o,
+                   m_leveldata[lev]->velocity, 0, 0, AMREX_SPACEDIM, ng);
+}
+
+void incflo::copy_from_old_to_new_velocity (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_old_to_new_velocity(lev, ng);
+    }
+}
+
+void incflo::copy_from_old_to_new_velocity (int lev, IntVect const& ng)
+{
+    MultiFab::Copy(m_leveldata[lev]->velocity,
+                   m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, ng);
+}
+
+void incflo::copy_from_new_to_old_density (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_new_to_old_density(lev, ng);
+    }
+}
+
+void incflo::copy_from_new_to_old_density (int lev, IntVect const& ng)
+{
+    MultiFab::Copy(m_leveldata[lev]->density_o,
+                   m_leveldata[lev]->density, 0, 0, 1, ng);
+}
+
+void incflo::copy_from_old_to_new_density (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_old_to_new_density(lev, ng);
+    }
+}
+
+void incflo::copy_from_old_to_new_density (int lev, IntVect const& ng)
+{
+    MultiFab::Copy(m_leveldata[lev]->density,
+                   m_leveldata[lev]->density_o, 0, 0, 1, ng);
+}
+
+void incflo::copy_from_new_to_old_tracer (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_new_to_old_tracer(lev, ng);
+    }
+}
+
+void incflo::copy_from_new_to_old_tracer (int lev, IntVect const& ng)
+{
+    if (incflo::ntrac > 0) {
+        MultiFab::Copy(m_leveldata[lev]->tracer_o,
+                       m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, ng);
+    }
+}
+
+void incflo::copy_from_old_to_new_tracer (IntVect const& ng)
+{
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        copy_from_old_to_new_tracer(lev, ng);
+    }
+}
+
+void incflo::copy_from_old_to_new_tracer (int lev, IntVect const& ng)
+{
+    if (incflo::ntrac > 0) {
+        MultiFab::Copy(m_leveldata[lev]->tracer,
+                       m_leveldata[lev]->tracer_o, 0, 0, incflo::ntrac, ng);
+    }
+}
