@@ -3,10 +3,10 @@
 
 using namespace amrex;
 
-std::array<amrex::LinOpBCType,AMREX_SPACEDIM>
+Array<amrex::LinOpBCType,AMREX_SPACEDIM>
 incflo::get_projection_bc (Orientation::Side side) const noexcept
 {
-    std::array<LinOpBCType,AMREX_SPACEDIM> r;
+    Array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom[0].isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;

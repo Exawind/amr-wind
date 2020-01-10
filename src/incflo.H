@@ -26,14 +26,14 @@
 #include <incflo_bclist.H>
 
 #include <DiffusionTensorOp.H>
-
-class DiffusionTensorOp;
+#include <DiffusionScalarOp.H>
 
 class incflo : public amrex::AmrCore
 {
 public:
 
     friend DiffusionTensorOp;
+    friend DiffusionScalarOp;
 
     incflo ();
     virtual ~incflo();
@@ -348,8 +348,10 @@ private:
     DiffusionType m_diff_type = DiffusionType::Implicit;
     std::unique_ptr<DiffusionOp> diffusion_op;
     std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
+    std::unique_ptr<DiffusionScalarOp> diffusion_scalar_op;
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
+    DiffusionScalarOp* get_diffusion_scalar_op ();
 
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return *m_factory[lev]; }
@@ -384,11 +386,14 @@ private:
     amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
         return m_bcrec_tracer_d.data(); }
 
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>
+    amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
 
     amrex::Vector<amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM> >
     get_diffuse_tensor_bc (amrex::Orientation::Side side) const noexcept;
+
+    amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
+    get_diffuse_scalar_bc (amrex::Orientation::Side side) const noexcept;
 
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);

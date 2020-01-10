@@ -154,7 +154,4 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
     mlmg.setCGVerbose(m_mg_cg_verbose);
 
     mlmg.solve(velocity, GetVecOfConstPtrs(rhs), m_mg_rtol, m_mg_atol);
-
-    VisMF::Write(*velocity[0], "vel");
-    amrex::Abort("xxxxx so far so good in diffuse_velocity");
 }

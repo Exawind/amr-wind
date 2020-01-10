@@ -269,11 +269,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new(), cur_time, dt);
-        VisMF::Write(m_leveldata[0]->velocity, "vel");
-        amrex::Abort("xxxxx so far so good in ApplyPredictor after diffuse velocity");
-        if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
+        if (advect_tracer) {
+            get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
+                                                      get_density_new(), cur_time, dt);
+        }
     }
+
+    VisMF::Write(m_leveldata[0]->velocity, "vel");
+    VisMF::Write(m_leveldata[0]->tracer, "tra");
+    amrex::Abort("xxxxx so far so good in ApplyPredictor after diffuse velocity");
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt, incremental_projection);
