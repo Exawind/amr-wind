@@ -101,6 +101,14 @@ void incflo::AllocateArrays(int lev)
     divtau[lev]->setVal(0.);
     divtau_old[lev]->setVal(0.);
 
+    // Forcing terms on velocity
+    vel_forces[lev].reset(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 2, MFInfo(), factory));
+    vel_forces[lev]->setVal(0.);
+
+    // Forcing terms on density (last component and always zero) and tracers
+    scal_forces[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac+1, 2, MFInfo(), factory));
+    scal_forces[lev]->setVal(0.);
+
     // Scalar diffusion terms
     laps[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
     laps_old[lev].reset(new MultiFab(grids[lev], dmap[lev], ntrac, 0, MFInfo(), factory));
@@ -320,6 +328,20 @@ void incflo::RegridArrays(int lev)
     divtau_old[lev]->setVal(0.);
 
     // ***************************
+    // Velocity forcing terms 
+    // ***************************
+    std::unique_ptr<MultiFab> vel_forces_new(new MultiFab(grids[lev], dmap[lev], AMREX_SPACEDIM, 2, MFInfo(), factory));
+    vel_forces[lev] = std::move(vel_forces_new);
+    vel_forces[lev]->setVal(0.);
+
+    // ***************************
+    // Scalar forcing terms 
+    // ***************************
+    std::unique_ptr<MultiFab> scal_forces_new(new MultiFab(grids[lev], dmap[lev], scal_forces[lev]->nComp(), 2, MFInfo(), factory));
+    scal_forces[lev] = std::move(scal_forces_new);
+    scal_forces[lev]->setVal(0.);
+
+    // ***************************
     // Scalar diffusion terms 
     // ***************************
     std::unique_ptr<MultiFab> laps_new(new MultiFab(grids[lev], dmap[lev], ntrac, nghost, MFInfo(), factory));
@@ -470,6 +492,9 @@ void incflo::ResizeArrays()
 
     divtau.resize(max_level + 1);
     divtau_old.resize(max_level + 1);
+
+    vel_forces.resize(max_level + 1);
+    scal_forces.resize(max_level + 1);
 
     laps.resize(max_level + 1);
     laps_old.resize(max_level + 1);

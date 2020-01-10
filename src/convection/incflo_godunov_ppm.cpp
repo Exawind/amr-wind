@@ -10,10 +10,11 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                                       const Array4<Real> &a_fx,
                                       const Array4<Real> &a_fy, 
                                       const Array4<Real> &a_fz, 
-                                      const Array4<Real> &tf, 
-                                      const Array4<Real> &divu_cc,
                                       const Array4<Real> &s, 
-                                      const int state_comp, const int ncomp,
+                                      const int state_comp, 
+                                      const Array4<Real> &forces, 
+                                      const int force_comp, const int ncomp,
+                                      const Array4<Real> &divu_cc,
                                       const Array4<const Real> &u_mac, 
                                       const Array4<const Real> &v_mac, 
                                       const Array4<const Real> &w_mac,
@@ -126,8 +127,8 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         auto bc = BCs[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i-1,j,k,n)*divu_cc(i-1,j,k) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i  ,j,k,n)*divu_cc(i  ,j,k) : 0;
-        lo    = Ipx(i-1,j,k,n) + 0.5e0*dt*tf(i-1,j,k,n) + cons1; 
-        hi    = Imx(i  ,j,k,n) + 0.5e0*dt*tf(i  ,j,k,n) + cons2;
+        lo    = Ipx(i-1,j,k,n) + 0.5e0*dt*forces(i-1,j,k,n) + cons1; 
+        hi    = Imx(i  ,j,k,n) + 0.5e0*dt*forces(i  ,j,k,n) + cons2;
 
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, lo, hi, uad, bc.lo(0), 
@@ -157,8 +158,8 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         auto bc = BCs[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j-1,k,n)*divu_cc(i,j-1,k) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j  ,k,n)*divu_cc(i,j  ,k) : 0;
-        lo    = Ipy(i,j-1,k,n) + 0.5e0*dt*tf(i,j-1,k,n) + cons1; 
-        hi    = Imy(i,j,k,n)   + 0.5e0*dt*tf(i,j,k,n) + cons2; 
+        lo    = Ipy(i,j-1,k,n) + 0.5e0*dt*forces(i,j-1,k,n) + cons1; 
+        hi    = Imy(i,j,k,n)   + 0.5e0*dt*forces(i,j  ,k,n) + cons2; 
 
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, lo, hi, vad, bc.lo(1), 
@@ -187,8 +188,8 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         auto bc = BCs[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k-1,n)*divu_cc(i,j,k-1) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k  ,n)*divu_cc(i,j,k  ) : 0;
-        lo    = Ipz(i,j,k-1,n) + 0.5e0*dt*tf(i,j,k-1,n) + cons1; 
-        hi    = Imz(i,j,k,n)   + 0.5e0*dt*tf(i,j,k,n) + cons2; 
+        lo    = Ipz(i,j,k-1,n) + 0.5e0*dt*forces(i,j,k-1,n) + cons1; 
+        hi    = Imz(i,j,k,n)   + 0.5e0*dt*forces(i,j,k  ,n) + cons2; 
 
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, lo, hi, wad, bc.lo(2), 
