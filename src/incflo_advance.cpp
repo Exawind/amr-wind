@@ -164,7 +164,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
        }
     }
 
-#if 0
     // **********************************************************************************************
     // 
     // Compute explicit forcing terms to be added explicitly to the velocity
@@ -205,11 +204,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
        MultiFab::Saxpy(*vel_forces[lev], 1., *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
        vel_forces[lev]->FillBoundary(geom[lev].periodicity());
-
-       // HACK FOR NOW
-       vel_forces[lev]->setVal(0.);
     }
-#endif
 
     // **********************************************************************************************
     // 
@@ -261,41 +256,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         }
 
         // Now add the velocity forcing terms all at once.
-        // MultiFab::Saxpy(*vel[lev], dt, *vel_forces[lev], 0, 0, AMREX_SPACEDIM, vel_forces[lev]->nGrow());
-
-        // Add the viscous terms
-        if (m_diff_type == DiffusionType::Explicit)
-            MultiFab::Saxpy(*vel[lev], dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-        else if (m_diff_type == DiffusionType::Crank_Nicolson)
-            MultiFab::Saxpy(*vel[lev], 0.5*dt, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-
-        // Add gravitational forces
-        if (use_boussinesq)
-        {
-           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
-           //      rather than density
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
-        } else {
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-               (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
-        }
-
-        // Convert velocities to momenta
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            MultiFab::Multiply(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
-
-        // Add (-dt grad p to momenta)
-        MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-
-        // Add (-dt grad p0 to momenta if not Boussinesq)
-        if (!use_boussinesq)
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-                (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
-
-        // Convert momenta back to velocities
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
+        MultiFab::Saxpy(*vel[lev], dt, *vel_forces[lev], 0, 0, AMREX_SPACEDIM, vel_forces[lev]->nGrow());
     }
 
     if (!constant_density)
