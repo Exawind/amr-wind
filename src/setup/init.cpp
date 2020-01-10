@@ -403,40 +403,51 @@ void incflo::InitialIterations ()
         t_old[lev] = t_new[lev];
     }
 
+    int ng = 2;  // This might change for Godunov.
+#ifdef AMREX_USE_EB
+    if (!EBFactory(0).isAllRegular()) ng = 4;
+#endif
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
+        fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
+        if (incflo::ntrac > 0) {
+            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
+        }
+    }
+
     for (int iter = 0; iter < initial_iterations; ++iter)
     {
         if(incflo_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
-        int ng = 2;  // This might change for Godunov.
-#ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) ng = 4;
-#endif
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
-            fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
-            if (incflo::ntrac > 0) {
-                fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
-            }
-        }
-
  	ApplyPredictor(true);
 
-        amrex::Abort("xxxxx so far so good after ApplyPredictor(true)");
+        {
+            amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
+            amrex::EB_set_covered(m_leveldata[0]->gp, 0.0);
+            amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
+            VisMF::Write(m_leveldata[0]->velocity, "vel-"+std::to_string(iter));
+            VisMF::Write(m_leveldata[0]->gp, "gp-"+std::to_string(iter));
+            VisMF::Write(m_leveldata[0]->p, "p-"+std::to_string(iter));
+//            amrex::Abort("xxxxx so far so good after ApplyPredictor(true)");
+        }
 
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            // xxxx is this needed?
-            // Replace vel, density, tracer  by the original values
-            MultiFab::Copy(*    vel[lev],     *vel_o[lev], 0, 0,     vel[lev]->nComp(),     vel[lev]->nGrow());
-            MultiFab::Copy(*density[lev], *density_o[lev], 0, 0, density[lev]->nComp(), density[lev]->nGrow());
+            MultiFab::Copy(m_leveldata[lev]->velocity,
+                           m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
+            MultiFab::Copy(m_leveldata[lev]->density,
+                           m_leveldata[lev]->density_o, 0, 0, 1, 0);
             if (incflo::ntrac > 0) {
-                MultiFab::Copy( *tracer[lev],  *tracer_o[lev], 0, 0,  tracer[lev]->nComp(),  tracer[lev]->nGrow());
+                MultiFab::Copy(m_leveldata[lev]->tracer,
+                               m_leveldata[lev]->tracer_o, 0, 0, incflo::ntrac, 0);
             }
         }
     }
 
     // Set nstep to 0 before entering time loop
     nstep = 0;
+
+    amrex::Abort("xxxxx so far so good end of Initial_Iterations");
 }
 
 // Project velocity field to make sure initial velocity is divergence-free

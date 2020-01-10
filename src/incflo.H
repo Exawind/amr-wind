@@ -399,6 +399,10 @@ private:
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
     void fillpatch_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
 
+    void fillphysbc_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
+    void fillphysbc_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
+    void fillphysbc_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
+
 public: // for cuda
 
     void init_bcs ();

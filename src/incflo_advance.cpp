@@ -245,11 +245,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if (m_diff_type == DiffusionType::Crank_Nicolson or
         m_diff_type == DiffusionType::Implicit)
     {
+        // xxxxx TODO: we actually only need to fill the physbc because of multilevel
+        // composite solve.
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
-            fillpatch_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
+            fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
             if (incflo::ntrac > 0) {
-                fillpatch_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
+                fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
             }
         }
     }
@@ -277,11 +279,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     // Project velocity field, update pressure
     ApplyProjection(new_time, dt, incremental_projection);
-
-    VisMF::Write(m_leveldata[0]->velocity, "vel");
-    VisMF::Write(m_leveldata[0]->gp, "gp");
-    VisMF::Write(m_leveldata[0]->p, "p");
-    amrex::Abort("xxxxx so far so good at end of ApplyPredictor");
 }
 
 //
