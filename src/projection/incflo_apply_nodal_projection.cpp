@@ -46,21 +46,17 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental)
     {
-        for(int lev = 0; lev <= finest_level; lev++)
+        for (int lev = 0; lev <= finest_level; lev++)
         {
             // Convert velocities to momenta
             for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            {
                 MultiFab::Multiply(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
-            }
 
             MultiFab::Saxpy(*vel[lev], scaling_factor, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
 
             // Convert momenta back to velocities
             for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            {
                 MultiFab::Divide(*vel[lev], *density[lev], 0, dir, 1, vel[lev]->nGrow());
-            }
         }
     }
 
@@ -68,7 +64,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     incflo_set_velocity_bcs(time, vel);
 
     // Define "vel" to be U^* - U^n rather than U^*
-    if (proj_for_small_dt)
+    if (proj_for_small_dt || incremental)
     {
        incflo_set_velocity_bcs(time, vel_o);
 
@@ -93,7 +89,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
-    if (proj_for_small_dt)
+    if (proj_for_small_dt || incremental)
     {
        for(int lev = 0; lev <= finest_level; lev++)
           MultiFab::Saxpy(*vel[lev], 1.0, *vel_o[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
