@@ -535,7 +535,7 @@ private:
 
     bool use_godunov         = false;
     bool use_forces_in_trans = false;
-    bool diffusion_type      = -1;
+    int  diffusion_type      = -1;
 
     // Fluid properties
     std::string fluid_model;
