@@ -468,12 +468,6 @@ incflo::set_velocity_bcs(Real time,
 
   if (ndwn > 0)
   {
-    const Real dx = geom[lev].CellSize()[0];
-    const Real dy = geom[lev].CellSize()[1];
-    const Real dz = geom[lev].CellSize()[2];
-    const Real ds = pow(dx*dy*dz,1.0/3.0);
-    const Real Cs_ds2 = pow(Smagorinsky_Lilly_SGS_constant*ds,2);
-    const Real nu = mu/ro_0;//fixme should be variable density
 
     amrex::ParallelFor(bx_xy_lo_3D,
       [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
