@@ -165,7 +165,9 @@ public:
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& a_fy,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& a_fz,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& state,
-                               const int state_comp, const int n_comp,
+                               const int state_comp, 
+                               amrex::Vector< std::unique_ptr<amrex::MultiFab> >& forces,
+                               const int force_comp, const int ncomp,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& xslopes,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& yslopes,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& zslopes,
@@ -195,7 +197,8 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     void incflo_predict_godunov(int lev, amrex::Real time,
-                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
+                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
+                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces);
 
     void incflo_make_trans_velocities (const int lev, amrex::Box& bx,
                                        const amrex::Array4<const amrex::Real> &a_vel,
@@ -221,10 +224,11 @@ public:
                                       const amrex::Array4<amrex::Real> &a_fx,
                                       const amrex::Array4<amrex::Real> &a_fy,
                                       const amrex::Array4<amrex::Real> &a_fz,
-                                      const amrex::Array4<amrex::Real> &tforces,
+                                      const amrex::Array4<amrex::Real> &state,
+                                      const int state_comp, 
+                                      const amrex::Array4<amrex::Real> &forces,
+                                      const int force_comp, const int ncomp,
                                       const amrex::Array4<amrex::Real> &divu,
-                                      const amrex::Array4<amrex::Real> &s,
-                                      const int state_comp, const int n_comp,
                                       const amrex::Array4<const amrex::Real> &umac,
                                       const amrex::Array4<const amrex::Real> &vmac,
                                       const amrex::Array4<const amrex::Real> &wmac,
@@ -616,6 +620,8 @@ public: // for cuda
      void incflo_compute_convective_term(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_u,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_r,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_t,
+                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces,
+                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& scal_forces,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density_in,
                                          amrex::Vector< std::unique_ptr<amrex::MultiFab> >& tracer_in,
@@ -721,6 +727,7 @@ public: // for cuda
     // Options to control time stepping
     amrex::Real cfl = 0.5;
     amrex::Real fixed_dt = -1.;
+    amrex::Real init_shrink = 0.1;
 
     // Initial projection / iterations
     bool do_initial_proj    = true;
@@ -756,7 +763,10 @@ public: // for cuda
     bool constant_density = true;
     bool advect_tracer    = false;
     bool test_tracer_conservation = false;
-    bool use_godunov      = false;
+
+    bool use_godunov         = false;
+    bool use_forces_in_trans = false;
+    int  diffusion_type      = 2;
 
     // Fluid properties
     std::string fluid_model;
@@ -884,6 +894,9 @@ public: // for cuda
 
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> divtau;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> divtau_old;
+
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>>  vel_forces;
+    amrex::Vector<std::unique_ptr<amrex::MultiFab>> scal_forces;
 
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> laps;
     amrex::Vector<std::unique_ptr<amrex::MultiFab>> laps_old;

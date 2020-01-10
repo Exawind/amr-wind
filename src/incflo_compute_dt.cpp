@@ -134,10 +134,10 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
     // Update dt
     Real dt_new = 2.0 * cfl / comb_cfl;
 
-    // Reduce CFL for initial step
+    // Optionally reduce CFL for initial step
     if(initialization)
     {
-        dt_new *= 0.1;
+        dt_new *= init_shrink;
     }
 
     // Protect against very small comb_cfl

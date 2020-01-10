@@ -395,7 +395,9 @@ void DiffusionOp::ComputeDivTau(Vector<std::unique_ptr<MultiFab>>& divtau_out,
     for(int lev = 0; lev <= finest_level; lev++)
     {
 #ifdef AMREX_USE_EB
-       amrex::single_level_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, AMREX_SPACEDIM, geom);
+       amrex::single_level_redistribute( lev, *divtau_aux[lev], *divtau_out[lev], 0, 3, geom);
+#else
+       MultiFab::Copy((*divtau_out[lev]),(*divtau_aux[lev]), 0, 0, 3, 0);
 #endif
  
        // Divide by density

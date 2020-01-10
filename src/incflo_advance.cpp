@@ -187,7 +187,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     // Compute explicit diffusion if used
     if (m_diff_type == DiffusionType::Explicit ||
-        m_diff_type == DiffusionType::Crank_Nicolson)
+        m_diff_type == DiffusionType::Crank_Nicolson ||
+        use_godunov)
     {
         amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
         // incflo_set_velocity_bcs (cur_time, vel_o);
@@ -195,6 +196,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         // diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
     } else {
 #if 0
+        // xxxxx TODO
        for (int lev = 0; lev <= finest_level; lev++)
        {
           divtau_old[lev]->setVal(0.);
@@ -402,8 +404,12 @@ void incflo::ApplyCorrector()
           divtau[lev]->setVal(0.);
     }
 
+    // Just to be sure ... even though this shouldn't ever be used because if use_godunov we don't call the corrector
+    for(int lev = 0; lev <= finest_level; lev++)
+       vel_forces[lev]->setVal(.0);
+
     // Compute the explicit advective terms R_u^* and R_s^*
-    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel, density, tracer, new_time );
+    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel_forces, scal_forces, vel, density, tracer, new_time );
 
     for(int lev = 0; lev <= finest_level; lev++)
     {

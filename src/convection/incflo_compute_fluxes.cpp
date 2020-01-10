@@ -498,16 +498,15 @@ is_equal_to_any(const int bc,
 
 using namespace ugradu_aux;
 
-//
-// Compute the three components of the convection term
-//
 void
 incflo::incflo_compute_fluxes(int lev,
                           Vector< std::unique_ptr<MultiFab> >& a_fx,
                           Vector< std::unique_ptr<MultiFab> >& a_fy,
                           Vector< std::unique_ptr<MultiFab> >& a_fz,
                           Vector< std::unique_ptr<MultiFab> >& state_in,
-                          const int state_comp, const int ncomp,
+                          const int state_comp, 
+                          Vector< std::unique_ptr<MultiFab> >& forces_in,
+                          const int force_comp, const int ncomp,
                           Vector< std::unique_ptr<MultiFab> >& xslopes_in,
                           Vector< std::unique_ptr<MultiFab> >& yslopes_in,
                           Vector< std::unique_ptr<MultiFab> >& zslopes_in,
@@ -587,9 +586,7 @@ incflo::incflo_compute_fluxes(int lev,
                     if (use_godunov)
                     {
                        // These are place-holders for now
-                       MultiFab tforces(grids[lev], dmap[lev], ncomp, 2);;
                        MultiFab divu   (grids[lev], dmap[lev],     1, 2);;
-                       tforces.setVal(0.0);
                        divu.setVal(0.0);
 
                        BCRec dom_bc;
@@ -610,8 +607,8 @@ incflo::incflo_compute_fluxes(int lev,
                             setBC(bx, geom[lev].Domain(), dom_bc, bc[n]);
 
                        incflo_godunov_fluxes_on_box(lev, bx, (*a_fx[lev]).array(mfi), (*a_fy[lev]).array(mfi), (*a_fz[lev]).array(mfi),
-                                                    tforces.array(mfi), divu.array(mfi),
-                                                    state_in[lev]->array(mfi),state_comp,ncomp,
+                                                    state_in[lev]->array(mfi) , state_comp,
+                                                    forces_in[lev]->array(mfi), force_comp, ncomp, divu.array(mfi),
                                                     u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), bc);
 
                     }

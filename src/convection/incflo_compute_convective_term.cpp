@@ -228,6 +228,8 @@ void
 incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& conv_u_in, 
                                         Vector< std::unique_ptr<MultiFab> >& conv_r_in,
                                         Vector< std::unique_ptr<MultiFab> >& conv_t_in,
+                                        Vector< std::unique_ptr<MultiFab> >& vel_forces_in,
+                                        Vector< std::unique_ptr<MultiFab> >& scal_forces_in,
                                         Vector< std::unique_ptr<MultiFab> >& vel_in,
                                         Vector< std::unique_ptr<MultiFab> >& density_in,
                                         Vector< std::unique_ptr<MultiFab> >& tracer_in,
@@ -283,7 +285,7 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    arrays returned from this call are on face CENTROIDS
         if (use_godunov) 
-           incflo_predict_godunov(lev, time, vel_in);
+           incflo_predict_godunov(lev, time, vel_in, vel_forces_in);
         else
            incflo_predict_vels_on_faces(lev, time, vel_in);
     }
@@ -318,7 +320,7 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
         fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-        incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, num_comp,
+        incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, vel_forces_in, 0, num_comp,
                               xslopes_u, yslopes_u, zslopes_u, 0,
                               m_u_mac, m_v_mac, m_w_mac);
 
@@ -339,9 +341,10 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-            incflo_compute_fluxes(lev, fx, fy, fz, density_in, 0, num_comp,
-                                xslopes_r, yslopes_r, zslopes_r, 0,
-                                m_u_mac, m_v_mac, m_w_mac);
+            // Note that the "ntrac" component of scal_forces holds zeroes
+            incflo_compute_fluxes(lev, fx, fy, fz, density_in, 0, scal_forces_in, ntrac, num_comp,
+                                  xslopes_r, yslopes_r, zslopes_r, 0,
+                                  m_u_mac, m_v_mac, m_w_mac);
 
             incflo_divergence_plus_redist(lev, conv_r_in, fx, fy, fz, num_comp);
 
@@ -362,9 +365,9 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-            incflo_compute_fluxes(lev, fx, fy, fz, tracer_in, 0, num_comp,
-                                xslopes_t, yslopes_t, zslopes_t, 0,
-                                m_u_mac, m_v_mac, m_w_mac);
+            incflo_compute_fluxes(lev, fx, fy, fz, tracer_in, 0, scal_forces_in, 0, num_comp,
+                                  xslopes_t, yslopes_t, zslopes_t, 0,
+                                  m_u_mac, m_v_mac, m_w_mac);
 
             incflo_divergence_plus_redist(lev, conv_t_in, fx, fy, fz, num_comp);
         }
