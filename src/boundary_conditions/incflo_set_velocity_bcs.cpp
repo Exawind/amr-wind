@@ -476,7 +476,7 @@ incflo::set_velocity_bcs(Real time,
     const Real nu = mu/ro_0;//fixme should be variable density
 
     amrex::ParallelFor(bx_xy_lo_3D,
-      [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,dz,Cs_ds2,nu,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+      [bct_klo,dom_lo,nsw,slip,wall_model,p_bc_u,p_bc_v,vel_arr,vx_mean_ground_,vy_mean_ground_,utau_,nu_mean_ground_] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
       const int bcv = bct_klo(i,j,dom_lo[2]-1,1);
       const int bct = bct_klo(i,j,dom_lo[2]-1,0);
@@ -496,23 +496,11 @@ incflo::set_velocity_bcs(Real time,
           const Real uh = sqrt(pow(vx_mean_ground_,2) + pow(vy_mean_ground_,2));
           
 //          fixme should I just pass in eddy viscosity (stored in eta)?
-          
-          // velocity derivatives
-          // assuming velocity at wall equals zero
-          // use dz/2 since it is over half a cell
-          // dudz = 2*(u_1/2 - u_0)/dz
-          const Real uz =  2.0*vel_arr(i,j,dom_lo[2],0)/dz;
-          const Real vz =  2.0*vel_arr(i,j,dom_lo[2],1)/dz;
-          const Real wz =  2.0*vel_arr(i,j,dom_lo[2],2)/dz;
-          
-          // strain rate with all x y terms dropped
-          const Real sr = sqrt( 2.0 * pow(wz, 2) + pow(vz, 2) + pow(uz, 2));
-          const Real nut = nu_mean_ground_; //nu + Cs_ds2*sr;
 
           // simple shear stress model for neutral BL
           // apply as an inhomogeneous Neumann BC
-          vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nut;
-          vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nut;
+          vel_arr(i,j,k,0) = utau_*utau_*vx/uh/nu_mean_ground_;
+          vel_arr(i,j,k,1) = utau_*utau_*vy/uh/nu_mean_ground_;
 
           // Dirichlet BC
           vel_arr(i,j,k,2) = 0.0;
