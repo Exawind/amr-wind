@@ -171,17 +171,6 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
         mlmg.setVerbose(m_mg_verbose);
         mlmg.setCGVerbose(m_mg_cg_verbose);
 
-        amrex::EB_set_covered(*tracer[0], 0.0);
-        VisMF::Write(*tracer[0], "tra0");
-
-        amrex::system::verbose = 10;
-        amrex::OutStream().precision(17);
-
         mlmg.solve(GetVecOfPtrs(phi), GetVecOfConstPtrs(rhs), m_mg_rtol, m_mg_atol);
-
-        amrex::EB_set_covered(*tracer[0], 0.0);
-        VisMF::Write(*tracer[0], "tra1");
-
-        amrex::Abort("xxxxxx after scalar solve");
     }
 }

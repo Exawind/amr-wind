@@ -19,13 +19,6 @@ incflo::get_diffusion_scalar_op ()
 Vector<Array<LinOpBCType,AMREX_SPACEDIM> >
 incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
 {
-    auto sbc = get_diffuse_scalar_bc(side);
-    return {sbc, sbc, sbc};
-}
-
-Array<LinOpBCType,AMREX_SPACEDIM>
-incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
-{
     Array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (Geom(0).isPeriodic(dir)) {
@@ -42,6 +35,37 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
             }
             case BC::mass_inflow:
             case BC::no_slip_wall:
+            {
+                r[dir] = LinOpBCType::Dirichlet;
+                break;
+            }
+            default:
+                amrex::Abort("get_diffuse_tensor_bc: undefined BC type");
+            };
+        }
+    }
+    return {r, r, r};
+}
+
+Array<LinOpBCType,AMREX_SPACEDIM>
+incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
+{
+    Array<LinOpBCType,AMREX_SPACEDIM> r;
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        if (Geom(0).isPeriodic(dir)) {
+            r[dir] = LinOpBCType::Periodic;
+        } else {
+            auto bc = m_bc_type[Orientation(dir,side)];
+            switch (bc)
+            {
+            case BC::pressure_inflow:
+            case BC::pressure_outflow:
+            case BC::no_slip_wall:
+            {
+                r[dir] = LinOpBCType::Neumann;
+                break;
+            }
+            case BC::mass_inflow:
             {
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
