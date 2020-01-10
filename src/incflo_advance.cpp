@@ -176,7 +176,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     Real l_dt = dt;
     bool l_constant_density = constant_density;
     bool l_use_boussinesq = use_boussinesq;
-    int l_ntrac = incflo::ntrac;
+    int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
     GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
     GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
 
@@ -245,12 +245,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if (m_diff_type == DiffusionType::Crank_Nicolson or
         m_diff_type == DiffusionType::Implicit)
     {
-        // xxxxx TODO: we actually only need to fill the physbc because of multilevel
-        // composite solve.
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-            if (incflo::ntrac > 0) {
+            if (advect_tracer) {
                 fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
             }
         }

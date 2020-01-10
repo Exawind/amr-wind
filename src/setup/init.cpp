@@ -410,10 +410,11 @@ void incflo::InitialIterations ()
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (incflo::ntrac > 0) {
-            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
-        }
     }
+
+    // No need to advect tracer in initial pressure iterations
+    auto advect_tracer_save = advect_tracer;
+    advect_tracer = false;
 
     for (int iter = 0; iter < initial_iterations; ++iter)
     {
@@ -437,12 +438,10 @@ void incflo::InitialIterations ()
                            m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
             MultiFab::Copy(m_leveldata[lev]->density,
                            m_leveldata[lev]->density_o, 0, 0, 1, 0);
-            if (incflo::ntrac > 0) {
-                MultiFab::Copy(m_leveldata[lev]->tracer,
-                               m_leveldata[lev]->tracer_o, 0, 0, incflo::ntrac, 0);
-            }
         }
     }
+
+    advect_tracer = advect_tracer_save;
 
     // Set nstep to 0 before entering time loop
     nstep = 0;

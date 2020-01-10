@@ -32,7 +32,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             dvdt(i,j,k,2) = 0.0;
             drdt(i,j,k) = 0.0;
         });
-        if (incflo::ntrac > 0) {
+        if (advect_tracer) {
             amrex::ParallelFor(bx, ntrac, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
             {
                 dtdt(i,j,k,n) = 0.0;
@@ -55,7 +55,8 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     }
 #endif
 
-    int nmaxcomp = std::max(AMREX_SPACEDIM,ntrac);
+    int nmaxcomp = AMREX_SPACEDIM;
+    if (advect_tracer) nmaxcomp = std::max(nmaxcomp,ntrac);
     Box tmpbox = amrex::surroundingNodes(bx);
     int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
     Box rhotrac_box = amrex::grow(bx,2);
@@ -69,10 +70,13 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     }
 #endif
 
-    FArrayBox rhotracfab(rhotrac_box, ntrac);
-    Elixir eli_rt = rhotracfab.elixir();
-    Array4<Real> rhotrac = rhotracfab.array();
-    if (ntrac > 0) {
+    FArrayBox rhotracfab;
+    Elixir eli_rt;
+    Array4<Real> rhotrac;
+    if (advect_tracer) {
+        rhotracfab.resize(rhotrac_box, ntrac);
+        eli_rt = rhotracfab.elixir();
+        rhotrac = rhotracfab.array();
         amrex::ParallelFor(rhotrac_box, ntrac,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
@@ -113,7 +117,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
         }
 
-        if (ntrac > 0) {
+        if (advect_tracer) {
             compute_convective_fluxes_eb(lev, gbx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                          get_tracer_bcrec().data(),
                                          get_tracer_bcrec_device_ptr(),
@@ -141,7 +145,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         }
 
         // tracer
-        if (ntrac > 0) {
+        if (advect_tracer) {
             compute_convective_fluxes(lev, bx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                       get_tracer_bcrec().data(),
                                       get_tracer_bcrec_device_ptr());
