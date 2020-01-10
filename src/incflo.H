@@ -418,7 +418,7 @@ private:
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit};
-    DiffusionType m_diff_type = DiffusionType::Implicit;
+    DiffusionType m_diff_type; // Note this is set to DiffusionType::Implicit 
 
     void ComputeDivU(amrex::Real time_in);
 
@@ -535,7 +535,7 @@ private:
 
     bool use_godunov         = false;
     bool use_forces_in_trans = false;
-    int  diffusion_type      = -1;
+    int  diffusion_type      = 2;
 
     // Fluid properties
     std::string fluid_model;

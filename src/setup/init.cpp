@@ -59,11 +59,8 @@ void incflo::ReadParameters()
         pp.query("use_godunov"        , use_godunov);
         pp.query("use_forces_in_trans", use_forces_in_trans);
 
-        // Note that the default of m_diff_type is set to DiffusionType::Implicit in incflo.H 
-        //      hence we set diffusion_type here to the same (aka 2)
-        diffusion_type = 2;
+        // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         pp.query("diffusion_type", diffusion_type);
-#if 0
         if (diffusion_type == 0)
            m_diff_type = DiffusionType::Explicit;
         else if (diffusion_type == 1)
@@ -72,7 +69,6 @@ void incflo::ReadParameters()
            m_diff_type = DiffusionType::Implicit;
         else
             amrex::Abort("We currently require diffusion_type = 0 for explicit, 1 for Crank-Nicolson or 2 for implicit");
-#endif
 
         if (!use_godunov && cfl > 0.5)
             amrex::Abort("We currently require cfl <= 0.5 when using the MOL advection scheme");
