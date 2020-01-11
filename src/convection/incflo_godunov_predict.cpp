@@ -499,8 +499,6 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
         u_face(i,j,k) = ltm ? 0. : st;
-        // if (i == 3 && k == 3) amrex::Print() << "U_ADV " << j << " " << u_face(i,j,k) << std::endl;
-        if (i == 3 && k == 3) amrex::Print() << "ADDING " << j << " " << tf(i,j,k,n) << std::endl;
     }); 
 
 //-------------------------------------- Y ------------------------------------            
@@ -535,7 +533,6 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
         v_face(i,j,k) = ltm ? 0. : st;
-        if (i == 3 && k == 3) amrex::Print() << "V_ADV " << j << " " << v_face(i,j,k) << std::endl;
      });
 
 //----------------------------------- Z ----------------------------------------- 

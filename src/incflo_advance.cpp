@@ -218,9 +218,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_forces, scal_forces,
                                     vel_o, density_o, tracer_o, cur_time );
 
-    VisMF::Write(*conv_u_old[0], "CONV");
-    exit(0);
-
     // **********************************************************************************************
     // 
     // Now make these the forcing terms have the right viscous/diffusive terms for the scheme we're using
