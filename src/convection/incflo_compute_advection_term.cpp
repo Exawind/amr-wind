@@ -251,7 +251,7 @@ incflo::incflo_compute_convective_update(const int lev,
 
        Array4<Real> const& diff_arr = conv[lev]->array(mfi);
 
-       compute_convective_difference(bx, diff_arr, umac_arr, vmac_arr, wmac_arr, fx_arr, fy_arr, fz_arr, dxinv);
+       amrex_compute_convective_difference(bx, diff_arr, umac_arr, vmac_arr, wmac_arr, fx_arr, fy_arr, fz_arr, dxinv);
     }
 }
 
