@@ -1146,36 +1146,4 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
     }
 
 }
-
-AMREX_GPU_HOST_DEVICE
-inline
-void compute_convective_difference (amrex::Box const& bx, amrex::Array4<amrex::Real> const& diff,
-                                    amrex::Array4<amrex::Real const> const& u_mac,
-                                    amrex::Array4<amrex::Real const> const& v_mac,
-                                    amrex::Array4<amrex::Real const> const& w_mac,
-                                    amrex::Array4<amrex::Real const> const& s_on_x_face,
-                                    amrex::Array4<amrex::Real const> const& s_on_y_face,
-                                    amrex::Array4<amrex::Real const> const& s_on_z_face,
-                                    amrex::GpuArray<amrex::Real,AMREX_SPACEDIM> const& dxinv) noexcept
-{
-    const auto lo = lbound(bx);
-    const auto hi = ubound(bx);
-    const amrex::Real dxi = dxinv[0];
-    const amrex::Real dyi = dxinv[1];
-    const amrex::Real dzi = dxinv[2];
-
-    for             (int n = 0; n <  diff.ncomp; ++n) {
-        for         (int k = lo.z; k <= hi.z; ++k) {
-            for     (int j = lo.y; j <= hi.y; ++j) {
-                AMREX_PRAGMA_SIMD
-                    for (int i = lo.x; i <= hi.x; ++i) {
-                        diff(i,j,k,n) = 0.5*dxi * (u_mac(i+1,j,k)+u_mac(i,j,k)) * (s_on_x_face(i+1,j,k,n)-s_on_x_face(i,j,k,n))
-                            +           0.5*dyi * (v_mac(i,j+1,k)+v_mac(i,j,k)) * (s_on_y_face(i,j+1,k,n)-s_on_y_face(i,j,k,n))
-                            +           0.5*dzi * (w_mac(i,j,k+1)+w_mac(i,j,k)) * (s_on_z_face(i,j,k+1,n)-s_on_z_face(i,j,k,n));
-                    }
-            }
-        }
-    }
-}
-
 #endif 

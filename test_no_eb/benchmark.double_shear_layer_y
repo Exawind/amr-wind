@@ -1,9 +1,9 @@
 
 max_step                = 1000
 
-stop_time               =   1.2         # Max (simulated) time to evolve
+stop_time               = 1.2           # Max (simulated) time to evolve
 
-incflo.cfl              = 0.45          # CFL factor
+incflo.cfl              = 0.9           # CFL factor
 incflo.init_shrink      = 1.0
 
 amr.plot_per_approx     =   0.4         # Steps between plot files
@@ -12,12 +12,12 @@ incflo.mu               =   0.0002      # Dynamic viscosity coefficient
 
 amr.max_level           =   0
 
-amr.n_cell              =   8  32 32   # Grid cells at coarsest AMRlevel
-amr.max_grid_size       =   16 16 16   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   8  32 32    # Grid cells at coarsest AMRlevel
+amr.max_grid_size       =   16 16 16    # Grid cells at coarsest AMRlevel
 amr.blocking_factor     =   8           # Blocking factor for grids
 
-geometry.prob_lo        =   0.   0.  0.  # Lo corner coordinates
-geometry.prob_hi        =   0.25 1.  1.  #Hi corner coordinates
+geometry.prob_lo        =   0.   0.  0. # Lo corner coordinates
+geometry.prob_hi        =   0.25 1.  1. # Hi corner coordinates
 
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 

@@ -1,9 +1,9 @@
 
 max_step                = 1000
 
-stop_time               =   1.2         # Max (simulated) time to evolve
+stop_time               = 1.2           # Max (simulated) time to evolve
 
-incflo.cfl              = 0.45          # CFL factor
+incflo.cfl              = 0.9           # CFL factor
 incflo.init_shrink      = 1.0
 
 amr.plot_per_approx     =   0.4         # Steps between plot files
@@ -23,8 +23,8 @@ geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
 incflo.probtype         =  21
 
-amr.plt_ccse_regtest    =   1
-amr.plt_vort            = 1  
+amr.plt_ccse_regtest    =  1
+amr.plt_vort            =  1  
 
 incflo.use_godunov      = true
 incflo.diffusion_type   = 1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
