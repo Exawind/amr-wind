@@ -139,17 +139,20 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, 
+                         domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc,
+                         domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc,
+                         domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
     FArrayBox xlf(xgbx, ncomp); 
@@ -622,17 +625,20 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc,
+                         domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc,
+                         domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc,
+                         domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
     auto const txbx = surroundingNodes(grow(g1bx, 0, -1), 0);

@@ -77,17 +77,17 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, bx.loVect()[0], bx.hiVect()[0], 0);
+        Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, bx.loVect()[1], bx.hiVect()[1], 1);
+        Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = BCs[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, bx.loVect()[2], bx.hiVect()[2], 2);
+        Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
     FArrayBox xlf(xgbx, ncomp); 
@@ -427,7 +427,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         }
        
         Godunov_cc_xbc(i, j, k, n, s, stl, sth, u_mac, bc.lo(0), bc.hi(0),
-                                 bx.loVect()[0], bx.hiVect()[0]);  
+                       domain.loVect()[0], domain.hiVect()[0]);  
 
         temp = (u_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(u_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp;
@@ -468,7 +468,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         }
 
         Godunov_cc_ybc(i, j, k, n, s, stl, sth, v_mac, bc.lo(1), bc.hi(1), 
-                                  bx.loVect()[1], bx.hiVect()[1]); 
+                       domain.loVect()[1], domain.hiVect()[1]); 
 
         temp = (v_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(v_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp; 
@@ -510,7 +510,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         }
 
         Godunov_cc_zbc(i, j, k, n, s, stl, sth, w_mac, bc.lo(2), bc.hi(2), 
-                                        bx.loVect()[2], bx.hiVect()[2]);  
+                       domain.loVect()[2], domain.hiVect()[2]);  
 
         temp = (w_mac(i,j,k) >= 0.e0) ? stl : sth; 
         temp = (std::abs(w_mac(i,j,k)) < 1e-06) ? 0.5*(stl + sth) : temp; 
