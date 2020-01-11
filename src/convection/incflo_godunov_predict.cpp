@@ -84,8 +84,7 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     int ncomp = 3;
 
     // We only predict velocity in this routine, which is convectively not conservatively, updated
-    int iconserv[ncomp];
-    for (int i = 0; i < ncomp; i++) iconserv[i] = 0;
+    int iconserv[3] = {0,0,0};
 
     auto const g2bx = amrex::grow(bx, 2); 
     auto const g1bx = amrex::grow(bx, 1); 

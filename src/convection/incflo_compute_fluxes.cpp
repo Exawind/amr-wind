@@ -55,7 +55,8 @@ incflo::incflo_compute_fluxes(int lev,
                           const int slopes_comp,
                           Vector< std::unique_ptr<MultiFab> >& u_mac,
                           Vector< std::unique_ptr<MultiFab> >& v_mac,
-                          Vector< std::unique_ptr<MultiFab> >& w_mac)
+                          Vector< std::unique_ptr<MultiFab> >& w_mac,
+                                int iconserv[])
 {
         Box domain(geom[lev].Domain());
 
@@ -124,7 +125,7 @@ incflo::incflo_compute_fluxes(int lev,
                       }
             }
 #else
-                    // HACK HACK HACK -- NOTE THIS IS NOT READY FOR USE
+                    // HACK HACK HACK -- THIS IS HARD-WIRED for triply periodic
                     if (use_godunov)
                     {
                        // These are place-holders for now
@@ -151,7 +152,7 @@ incflo::incflo_compute_fluxes(int lev,
                        incflo_godunov_fluxes_on_box(lev, bx, (*a_fx[lev]).array(mfi), (*a_fy[lev]).array(mfi), (*a_fz[lev]).array(mfi),
                                                     state_in[lev]->array(mfi) , state_comp,
                                                     forces_in[lev]->array(mfi), force_comp, ncomp, divu.array(mfi),
-                                                    u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), bc);
+                                                    u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), iconserv, bc);
 
                     }
                     else

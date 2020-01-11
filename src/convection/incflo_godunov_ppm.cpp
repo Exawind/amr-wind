@@ -18,12 +18,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                                       const Array4<const Real> &u_mac, 
                                       const Array4<const Real> &v_mac, 
                                       const Array4<const Real> &w_mac,
+                                            int iconserv[],
                                       const Gpu::ManagedVector<BCRec> &BCs)
 {
     Box domain(geom[lev].Domain());
-
-    int iconserv[3];
-    for (int i = 0; i < 3; i++) iconserv[i] = 1;
 
     auto const g2bx = amrex::grow(bx, 2); 
     auto const g1bx = amrex::grow(bx, 1); 
@@ -265,7 +263,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yxbx, ncomp, i, j, k, n, {
         const auto bc = BCs[n]; 
         //YX
-        Godunov_corner_couple(i,j,k, n, dt, dx, iconserv, ylo, yhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, ylo, yhi, 
                              s, divu_cc, u_mac, xedge, yxlo, yxhi, 1, 0);
 
         Real vad = v_mac(i,j,k);
@@ -278,7 +276,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, {
         const auto bc = BCs[n]; 
         //ZX
-        Godunov_corner_couple(i,j,k, n, dt, dx, iconserv, zlo, zhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, zlo, zhi, 
                              s, divu_cc, u_mac, xedge, zxlo, zxhi, 2, 0);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.lo(2),
@@ -291,7 +289,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xybx, ncomp, i, j, k, n, {
         //XY
         const auto bc = BCs[n]; 
-        Godunov_corner_couple(i,j,k, n, dt, dy, iconserv, xlo, xhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, xlo, xhi, 
                              s, divu_cc, v_mac, yedge, xylo, xyhi, 0, 0);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.lo(0),
@@ -303,7 +301,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, {
         const auto bc = BCs[n]; 
         //ZY 
-        Godunov_corner_couple(i,j,k, n, dt, dy, iconserv, zlo, zhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, zlo, zhi, 
                              s, divu_cc, v_mac, yedge, zylo, zyhi, 2, 1);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.lo(2),
@@ -316,7 +314,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xzbx, ncomp, i, j, k, n, {
         //XZ
         const auto bc = BCs[n]; 
-        Godunov_corner_couple(i,j,k, n, dt, dz, iconserv, xlo, xhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, xlo, xhi, 
                              s, divu_cc, w_mac, zedge, xzlo, xzhi, 0, 1);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.lo(0),
@@ -328,7 +326,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, {
         const auto bc = BCs[n]; 
         //YZ
-        Godunov_corner_couple(i,j,k, n, dt, dz, iconserv, ylo, yhi, 
+        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, ylo, yhi, 
                              s, divu_cc, w_mac, zedge, yzlo, yzhi, 1, 1);
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.lo(1),

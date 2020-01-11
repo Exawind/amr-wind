@@ -83,7 +83,6 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 
     for (int lev=0; lev <= finest_level; ++lev)
     {
-
 #ifdef AMREX_USE_EB
     const FabFactory<FArrayBox>& factory =  *ebfactory[lev];
 #else
@@ -105,9 +104,11 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
         fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
+        int iconserv_vel[3] = {0,0,0};
+
         incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, vel_forces_in, 0, num_comp,
                               xslopes_u, yslopes_u, zslopes_u, 0,
-                              m_u_mac, m_v_mac, m_w_mac);
+                              m_u_mac, m_v_mac, m_w_mac, iconserv_vel);
 
         incflo_divergence_plus_redist(lev, conv_u_in, fx, fy, fz, num_comp);
 
@@ -126,10 +127,12 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
+            int iconserv_density[1] = {1};
+
             // Note that the "ntrac" component of scal_forces holds zeroes
             incflo_compute_fluxes(lev, fx, fy, fz, density_in, 0, scal_forces_in, ntrac, num_comp,
                                   xslopes_r, yslopes_r, zslopes_r, 0,
-                                  m_u_mac, m_v_mac, m_w_mac);
+                                  m_u_mac, m_v_mac, m_w_mac, iconserv_density);
 
             incflo_divergence_plus_redist(lev, conv_r_in, fx, fy, fz, num_comp);
 
@@ -150,9 +153,12 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
+            int iconserv_trac[ntrac];
+            for (int i = 0; i < ntrac; i++) iconserv_trac[i] = 1;
+
             incflo_compute_fluxes(lev, fx, fy, fz, tracer_in, 0, scal_forces_in, 0, num_comp,
                                   xslopes_t, yslopes_t, zslopes_t, 0,
-                                  m_u_mac, m_v_mac, m_w_mac);
+                                  m_u_mac, m_v_mac, m_w_mac, iconserv_trac);
 
             incflo_divergence_plus_redist(lev, conv_t_in, fx, fy, fz, num_comp);
         }

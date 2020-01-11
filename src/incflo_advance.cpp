@@ -177,7 +177,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         MultiFab::Copy (*vel_forces[lev], *gp[lev], 0, 0, 3, 2);
         vel_forces[lev] -> mult(-1.0);
 
-        // For now we don't have any forces acting on the scalars
+        // For now we don't have any external forces acting on the scalars
         scal_forces[lev] -> setVal(0.);
 
         // Add (-gp0 to forcing term if not Boussinesq)
@@ -200,10 +200,12 @@ void incflo::ApplyPredictor(bool incremental_projection)
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
                (*vel_forces[lev]).plus(gravity[dir], dir, 1, 0);
         }
-       // Add the viscous term to the forcing term for use construcing the convective update
-       MultiFab::Saxpy(*vel_forces[lev], 1., *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+       // Add the diffusive/viscous term to the forcing term for use in construcing the convective update
+       MultiFab::Saxpy( *vel_forces[lev],1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+       MultiFab::Saxpy(*scal_forces[lev],1.0,   *laps_old[lev], 0, 0, ntrac         , 0);
 
-       vel_forces[lev]->FillBoundary(geom[lev].periodicity());
+        vel_forces[lev]->FillBoundary(geom[lev].periodicity());
+       scal_forces[lev]->FillBoundary(geom[lev].periodicity());
     }
 
     // **********************************************************************************************
@@ -216,19 +218,31 @@ void incflo::ApplyPredictor(bool incremental_projection)
     incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_forces, scal_forces,
                                     vel_o, density_o, tracer_o, cur_time );
 
-    for (int lev = 0; lev <= finest_level; lev++)
-    {
-       // Now make these the right viscous terms for the scheme we're using
-       if (m_diff_type == DiffusionType::Implicit)
-           MultiFab::Saxpy(*vel_forces[lev], -1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-       else if (m_diff_type == DiffusionType::Crank_Nicolson)
-           MultiFab::Saxpy(*vel_forces[lev], -0.5, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-    }
-
+    VisMF::Write(*conv_u_old[0], "CONV");
+    exit(0);
 
     // **********************************************************************************************
     // 
-    // Update the density, tracer and velocity
+    // Now make these the forcing terms have the right viscous/diffusive terms for the scheme we're using
+    // 
+    // **********************************************************************************************
+    for (int lev = 0; lev <= finest_level; lev++)
+    {
+       if (m_diff_type == DiffusionType::Implicit)
+       {
+           MultiFab::Saxpy( *vel_forces[lev],-1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+           MultiFab::Saxpy(*scal_forces[lev],-1.0,   *laps_old[lev], 0, 0, ntrac         , 0);
+       }
+       else if (m_diff_type == DiffusionType::Crank_Nicolson)
+       {
+           MultiFab::Saxpy(*vel_forces[lev], -0.5, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+           MultiFab::Saxpy(*scal_forces[lev],-0.5,   *laps_old[lev], 0, 0, ntrac         , 0);
+       }
+    }
+
+    // **********************************************************************************************
+    // 
+    // Add convective and other forcing terms to the density, tracer and velocity
     // 
     // **********************************************************************************************
     for (int lev = 0; lev <= finest_level; lev++)
@@ -243,13 +257,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
         if (advect_tracer)
         {
             MultiFab::Saxpy( *tracer[lev], dt, *conv_t_old[lev],  0, 0, ntrac, 0);
-            for (int i = 0; i < ntrac; i++)
-            {
-                if (m_diff_type == DiffusionType::Explicit)
-                    MultiFab::Saxpy(*tracer[lev],     dt, *laps_old[lev], i, i, 1, 0);
-                else if (m_diff_type == DiffusionType::Crank_Nicolson)
-                    MultiFab::Saxpy(*tracer[lev], 0.5*dt, *laps_old[lev], i, i, 1, 0);
-            }
 
             // Add the scalar forcing terms
             MultiFab::Saxpy(*tracer[lev], dt, *scal_forces[lev], 0, 0, ntrac, scal_forces[lev]->nGrow());
@@ -265,8 +272,12 @@ void incflo::ApplyPredictor(bool incremental_projection)
         incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel);
 
-    // Solve diffusion equation for u* but using eta_old at old time
+    // **********************************************************************************************
+    // 
+    // Solve diffusion equation for u* at t^{n+1} but using eta_old at old time
     // (we can't really trust the vel we have so far in this step to define eta at new time)
+    // 
+    // **********************************************************************************************
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
         diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
@@ -280,7 +291,11 @@ void incflo::ApplyPredictor(bool incremental_projection)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    dt);
     }
 
+    // **********************************************************************************************
+    // 
     // Project velocity field, update pressure
+    // 
+    // **********************************************************************************************
     ApplyProjection(new_time, dt, incremental_projection);
 
     // Fill velocity BCs again

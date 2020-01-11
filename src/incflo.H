@@ -204,7 +204,8 @@ public:
                                const int slopes_comp,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& u_mac,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& v_mac,
-                               amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac);
+                               amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac,
+                                     int iconserv[]);
 
     void incflo_compute_fluxes_on_box(const int lev, amrex::Box& bx,
                                       amrex::FArrayBox& a_fx,
@@ -287,6 +288,7 @@ public:
                                       const amrex::Array4<const amrex::Real> &umac,
                                       const amrex::Array4<const amrex::Real> &vmac,
                                       const amrex::Array4<const amrex::Real> &wmac,
+                                            int iconserv[],
                                       const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
 private:
