@@ -200,7 +200,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
                (*vel_forces[lev]).plus(gravity[dir], dir, 1, 0);
         }
-       // Add the diffusive/viscous term to the forcing term for use in construcing the convective update
+       // Add the diffusive/viscous term to the forcing term for use in construcing the advection update
        MultiFab::Saxpy( *vel_forces[lev],1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
        MultiFab::Saxpy(*scal_forces[lev],1.0,   *laps_old[lev], 0, 0, ntrac         , 0);
 
@@ -213,9 +213,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Compute convective / conservative update
     // 
     // **********************************************************************************************
-    // if ( use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
-    // if (!use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
-    incflo_compute_convective_term( conv_u_old, conv_r_old, conv_t_old, vel_forces, scal_forces,
+    // if ( use_godunov) Compute the explicit advection terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
+    // if (!use_godunov) Compute the explicit advection terms R_u^n      , R_s^n       and R_t^n
+    incflo_compute_MAC_velocities( vel_forces, scal_forces, vel_o, density_o, tracer_o, cur_time );
+    incflo_compute_advection_term( conv_u_old, conv_r_old, conv_t_old, vel_forces, scal_forces,
                                     vel_o, density_o, tracer_o, cur_time );
 
     // **********************************************************************************************
@@ -239,15 +240,15 @@ void incflo::ApplyPredictor(bool incremental_projection)
 
     // **********************************************************************************************
     // 
-    // Add convective and other forcing terms to the density, tracer and velocity
+    // Add advection and other forcing terms to the density, tracer and velocity
     // 
     // **********************************************************************************************
     for (int lev = 0; lev <= finest_level; lev++)
     {
-        // First add the convective term to the velocity
+        // First add the advection term to the velocity
         MultiFab::Saxpy(*vel[lev], dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
 
-        //   Now add the convective term to the density and tracer
+        //   Now add the advection term to the density and tracer
         if (!constant_density)
             MultiFab::Saxpy(*density[lev], dt, *conv_r_old[lev], 0, 0,      1, 0);
 
@@ -391,78 +392,117 @@ void incflo::ApplyCorrector()
           divtau[lev]->setVal(0.);
     }
 
-    // Just to be sure ... even though this shouldn't ever be used because if use_godunov we don't call the corrector
-    for(int lev = 0; lev <= finest_level; lev++)
-       vel_forces[lev]->setVal(.0);
-
-    // Compute the explicit advective terms R_u^* and R_s^*
-    incflo_compute_convective_term( conv_u, conv_r, conv_t, vel_forces, scal_forces, vel, density, tracer, new_time );
-
-    for(int lev = 0; lev <= finest_level; lev++)
+    // **********************************************************************************************
+    // 
+    // We only reach the corrector if !use_godunov which means we don't use the forces
+    //    in constructing the advection term
+    // 
+    // **********************************************************************************************
+    for (int lev = 0; lev <= finest_level; lev++)
     {
-        // First add the convective terms to velocity
-        MultiFab::LinComb(*vel[lev], 1.0, *vel_o[lev], 0, dt / 2.0, *conv_u[lev], 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Saxpy(*vel[lev], dt / 2.0, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+         vel_forces[lev] -> setVal(0.);
+        scal_forces[lev] -> setVal(0.);
+    }
 
-        //   Now add the convective terms to density
-        if (!constant_density)
-        {
-           MultiFab::LinComb(*density[lev], 1.0, *density_o[lev], 0, dt / 2.0, *conv_r[lev], 0, 0, 1, 0);
-           MultiFab::Saxpy(*density[lev], dt / 2.0, *conv_r_old[lev], 0, 0, 1, 0);
-        }
+    // **********************************************************************************************
+    // 
+    // Compute convective / conservative update
+    // 
+    // **********************************************************************************************
 
-        //   Now add the convective terms to tracer
-        if (advect_tracer)
-        {
-           MultiFab::LinComb(*tracer[lev], 1.0, *tracer_o[lev], 0, dt / 2.0, *conv_t[lev]    , 0, 0, tracer[lev]->nComp(), 0);
-           MultiFab::Saxpy(  *tracer[lev], dt / 2.0                        , *conv_t_old[lev], 0, 0, tracer[lev]->nComp(), 0);
+    // Compute the explicit advection terms R_u^* and R_s^*
+    incflo_compute_MAC_velocities( vel_forces, scal_forces, vel, density, tracer, cur_time );
 
-           if (m_diff_type == DiffusionType::Explicit)
-           {
-               MultiFab::Saxpy(*tracer[lev], dt / 2.0, *laps_old[lev], 0, 0, ntrac, 0);
-               MultiFab::Saxpy(*tracer[lev], dt / 2.0,     *laps[lev], 0, 0, ntrac, 0);
-           } else if (m_diff_type == DiffusionType::Crank_Nicolson)
-               MultiFab::Saxpy(*tracer[lev], dt / 2.0, *laps_old[lev], 0, 0, ntrac, 0);
-        }
+    // Note we don't actually use vel_forces or scal_forces here because they are only used if 
+    //      use_godunov and we don't get to the corrector in that case
+    incflo_compute_advection_term( conv_u, conv_r, conv_t, vel_forces, scal_forces, vel, density, tracer, new_time );
 
-        // Add the viscous terms
-        if (m_diff_type == DiffusionType::Explicit)
-        {
-            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-            MultiFab::Saxpy(*vel[lev], dt / 2.0,     *divtau[lev], 0, 0, AMREX_SPACEDIM, 0);
-        } else if (m_diff_type == DiffusionType::Crank_Nicolson)
-            MultiFab::Saxpy(*vel[lev], dt / 2.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+    // **********************************************************************************************
+    // 
+    // Compute forcing terms to be added explicitly in the update
+    // We need the forcing terms to have two ghost cells because of the way they are used 
+    //    in the Godunov prediction
+    // 
+    // **********************************************************************************************
+    for (int lev = 0; lev <= finest_level; lev++)
+    {
+        // Fill forcing term with -gp to start
+        MultiFab::Copy (*vel_forces[lev], *gp[lev], 0, 0, 3, 2);
+        vel_forces[lev] -> mult(-1.0);
+
+        // Add (-gp0 to forcing term if not Boussinesq)
+        if (!use_boussinesq)
+            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+                (*vel_forces[lev]).plus(-gp0[dir], dir, 1, vel_forces[lev]->nGrow());
+
+        // Now divide -(gp+gp0) by density at half-time
+        // TODO: CREATE HALF_TIME DENSITY ARRAY
+        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+            MultiFab::Divide(*vel_forces[lev], (*density[lev]), 0, dir, 1, vel_forces[lev]->nGrow());
 
         // Add gravitational forces
         if (use_boussinesq)
         {
-           // This uses a Boussinesq approximation where the buoyancy depends on tracer
+           // TODO: CREATE HALF_TIME TRACER ARRAY
+           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
            //      rather than density
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel[lev], dt*gravity[dir], *tracer[lev], 0, dir, 1, 0);
+              MultiFab::Saxpy(*vel_forces[lev], gravity[dir], *tracer[lev], 0, dir, 1, 0);
         } else {
            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            (*vel[lev]).plus(dt * gravity[dir], dir, 1, 0);
+               (*vel_forces[lev]).plus(gravity[dir], dir, 1, 0);
         }
 
-        // Convert velocities to momenta
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+       // Add the diffusive/viscous term to the forcing term 
+       if (m_diff_type == DiffusionType::Explicit)
+       {
+          // Note that even though we call this "explicit",
+          //   the diffusion term does end up being time-centered so formally second-order
+          MultiFab::Saxpy( *vel_forces[lev],0.5, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+          MultiFab::Saxpy( *vel_forces[lev],0.5,     *divtau[lev], 0, 0, AMREX_SPACEDIM, 0);
+
+          MultiFab::Saxpy(*scal_forces[lev],0.5,   *laps_old[lev], 0, 0, ntrac         , 0);
+          MultiFab::Saxpy(*scal_forces[lev],0.5,       *laps[lev], 0, 0, ntrac         , 0);
+       }
+       else if (m_diff_type == DiffusionType::Crank_Nicolson)
+       {
+          MultiFab::Saxpy( *vel_forces[lev],1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+          MultiFab::Saxpy(*scal_forces[lev],1.0,   *laps_old[lev], 0, 0, ntrac         , 0);
+       }
+
+        vel_forces[lev]->FillBoundary(geom[lev].periodicity());
+       scal_forces[lev]->FillBoundary(geom[lev].periodicity());
+    }
+
+    // **********************************************************************************************
+    // 
+    // Add advection and other forcing terms to the density, tracer and velocity
+    // 
+    // **********************************************************************************************
+    for(int lev = 0; lev <= finest_level; lev++)
+    {
+        // Aadd the time-centered advection term to velocity
+        MultiFab::LinComb(*vel[lev], 1.0   , *vel_o[lev]     , 0, 0.5*dt, *conv_u[lev], 0, 0, AMREX_SPACEDIM, 0);
+        MultiFab::Saxpy  (*vel[lev], 0.5*dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+
+        // Add the time-centered forcing term to velocity
+        MultiFab::Saxpy(*vel[lev], dt, *vel_forces[lev], 0, 0, AMREX_SPACEDIM, vel_forces[lev]->nGrow());
+
+        if (!constant_density)
         {
-            MultiFab::Multiply(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
+            // Add the time-centered advection terms to tracer
+            MultiFab::LinComb(*density[lev], 1.0   , *density_o[lev] , 0, 0.5*dt, *conv_r[lev], 0, 0, 1, 0);
+            MultiFab::Saxpy  (*density[lev], 0.5*dt, *conv_r_old[lev], 0, 0, 1, 0);
         }
 
-        // Add (-dt grad p to momenta)
-        MultiFab::Saxpy(*vel[lev], -dt, *gp[lev], 0, 0, AMREX_SPACEDIM, vel[lev]->nGrow());
-
-        // Add (-dt grad p0 to momenta if not Boussinesq)
-        if (!use_boussinesq)
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-                (*vel[lev]).plus(-dt * gp0[dir], dir, 1, 0);
-
-        // Convert momenta back to velocities
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
+        if (advect_tracer)
         {
-            MultiFab::Divide(*vel[lev], (*density[lev]), 0, dir, 1, vel[lev]->nGrow());
+            // Add the time-centered advection term to tracer
+            MultiFab::LinComb(*tracer[lev], 1.0   , *tracer_o[lev]  , 0, 0.5*dt, *conv_t[lev]    , 0, 0, tracer[lev]->nComp(), 0);
+            MultiFab::Saxpy(  *tracer[lev], 0.5*dt, *conv_t_old[lev], 0, 0, tracer[lev]->nComp(), 0);
+
+            // Add the time-centered forcing term to tracer
+            MultiFab::Saxpy(*tracer[lev], dt, *scal_forces[lev], 0, 0, ntrac, scal_forces[lev]->nGrow());
         }
     }
 
@@ -472,7 +512,12 @@ void incflo::ApplyCorrector()
        incflo_set_tracer_bcs(new_time, tracer);
     incflo_set_velocity_bcs(new_time, vel);
 
-    // Solve implicit diffusion equation for u*
+    // **********************************************************************************************
+    // 
+    // Solve diffusion equation for u* at t^{n+1} but using eta at predicted new time
+    // 
+    // **********************************************************************************************
+
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
        diffusion_op->diffuse_velocity(vel   , density, eta,  0.5*dt);
@@ -484,7 +529,11 @@ void incflo::ApplyCorrector()
        diffusion_op->diffuse_scalar  (tracer, density, mu_s, dt);
     }
 
+    // **********************************************************************************************
+    // 
     // Project velocity field, update pressure
+    // 
+    // **********************************************************************************************
     ApplyProjection(new_time, dt);
 
     // Fill velocity BCs again

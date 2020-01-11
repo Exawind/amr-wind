@@ -56,7 +56,8 @@ incflo::incflo_compute_fluxes(int lev,
                           Vector< std::unique_ptr<MultiFab> >& u_mac,
                           Vector< std::unique_ptr<MultiFab> >& v_mac,
                           Vector< std::unique_ptr<MultiFab> >& w_mac,
-                                int iconserv[])
+                          int iconserv[],
+                          bool return_state_not_flux)      
 {
         Box domain(geom[lev].Domain());
 
@@ -107,21 +108,21 @@ incflo::incflo_compute_fluxes(int lev,
                 // No cut cells in tile + 1 halo -> use non-eb routine
                 if (flags.getType(amrex::grow(bx,1)) == FabType::regular )
                 {
-                    incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                 (*state_in[lev])[mfi], state_comp, ncomp,
-                                                 (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                 (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
+                    incflo_compute_MOL_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
+                                                     (*state_in[lev])[mfi], state_comp, ncomp,
+                                                     (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                     (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
 
                 }
                 else
                 {
-                    incflo_compute_eb_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                    (*state_in[lev])[mfi], state_comp, ncomp,
-                                                    (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                    ( *u_mac[lev])[mfi], ( *v_mac[lev])[mfi], ( *w_mac[lev])[mfi],
-                                                    (*areafrac[0])[mfi], (*areafrac[1])[mfi], (*areafrac[2])[mfi],
-                                                    (*facecent[0])[mfi], (*facecent[1])[mfi], (*facecent[2])[mfi],
-                                                    (*volfrac)[mfi], (*bndrycent)[mfi], cc_mask[mfi], flags);
+                    incflo_compute_eb_MOL_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
+                                                        (*state_in[lev])[mfi], state_comp, ncomp,
+                                                        (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                        ( *u_mac[lev])[mfi], ( *v_mac[lev])[mfi], ( *w_mac[lev])[mfi],
+                                                        (*areafrac[0])[mfi], (*areafrac[1])[mfi], (*areafrac[2])[mfi],
+                                                        (*facecent[0])[mfi], (*facecent[1])[mfi], (*facecent[2])[mfi],
+                                                        (*volfrac)[mfi], (*bndrycent)[mfi], cc_mask[mfi], flags);
                       }
             }
 #else
@@ -152,32 +153,33 @@ incflo::incflo_compute_fluxes(int lev,
                        incflo_godunov_fluxes_on_box(lev, bx, (*a_fx[lev]).array(mfi), (*a_fy[lev]).array(mfi), (*a_fz[lev]).array(mfi),
                                                     state_in[lev]->array(mfi) , state_comp,
                                                     forces_in[lev]->array(mfi), force_comp, ncomp, divu.array(mfi),
-                                                    u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), iconserv, bc);
+                                                    u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), bc, 
+                                                    iconserv, return_state_not_flux);
 
                     }
                     else
-                       incflo_compute_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
-                                                    (*state_in[lev])[mfi], state_comp, ncomp,
-                                                    (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
-                                                    (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
+                       incflo_compute_MOL_fluxes_on_box(lev, bx, (*a_fx[lev])[mfi], (*a_fy[lev])[mfi], (*a_fz[lev])[mfi],
+                                                        (*state_in[lev])[mfi], state_comp, ncomp,
+                                                        (*xslopes_in[lev])[mfi], (*yslopes_in[lev])[mfi], (*zslopes_in[lev])[mfi], slopes_comp,
+                                                        (*u_mac[lev])[mfi], (*v_mac[lev])[mfi], (*w_mac[lev])[mfi]);
 #endif
         }// MFIter
 }
 
 void
-incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
-                                     FArrayBox& a_fx,
-                                     FArrayBox& a_fy,
-                                     FArrayBox& a_fz,
-                                     const FArrayBox& state_in,
-                                     const int state_comp, const int ncomp,
-                                     const FArrayBox& xslopes_in,
-                                     const FArrayBox& yslopes_in,
-                                     const FArrayBox& zslopes_in,
-                                     const int slopes_comp,
-                                     const FArrayBox& u_mac,
-                                     const FArrayBox& v_mac,
-                                     const FArrayBox& w_mac)
+incflo::incflo_compute_MOL_fluxes_on_box(const int lev, Box& bx,
+                                         FArrayBox& a_fx,
+                                         FArrayBox& a_fy,
+                                         FArrayBox& a_fz,
+                                         const FArrayBox& state_in,
+                                         const int state_comp, const int ncomp,
+                                         const FArrayBox& xslopes_in,
+                                         const FArrayBox& yslopes_in,
+                                         const FArrayBox& zslopes_in,
+                                         const int slopes_comp,
+                                         const FArrayBox& u_mac,
+                                         const FArrayBox& v_mac,
+                                         const FArrayBox& w_mac)
 {
   Box domain(geom[lev].Domain());
 
@@ -314,29 +316,29 @@ incflo::incflo_compute_fluxes_on_box(const int lev, Box& bx,
 // boundaries
 //
 void
-incflo::incflo_compute_eb_fluxes_on_box(const int lev, Box& bx,
-                                        FArrayBox& a_fx,
-                                        FArrayBox& a_fy,
-                                        FArrayBox& a_fz,
-                                        const FArrayBox& state_in,
-                                        const int state_comp, const int ncomp,
-                                        const FArrayBox& xslopes_in,
-                                        const FArrayBox& yslopes_in,
-                                        const FArrayBox& zslopes_in,
-                                        const int slopes_comp,
-                                        const FArrayBox& u_mac,
-                                        const FArrayBox& v_mac,
-                                        const FArrayBox& w_mac,
-                                        const FArrayBox& afrac_x_fab,
-                                        const FArrayBox& afrac_y_fab,
-                                        const FArrayBox& afrac_z_fab,
-                                        const FArrayBox& face_centroid_x,
-                                        const FArrayBox& face_centroid_y,
-                                        const FArrayBox& face_centroid_z,
-                                        const FArrayBox& volfrac,
-                                        const FArrayBox& bndry_centroid,
-                                        const IArrayBox& cc_mask,
-                                        const EBCellFlagFab& flags)
+incflo::incflo_compute_eb_MOL_fluxes_on_box(const int lev, Box& bx,
+                                            FArrayBox& a_fx,
+                                            FArrayBox& a_fy,
+                                            FArrayBox& a_fz,
+                                            const FArrayBox& state_in,
+                                            const int state_comp, const int ncomp,
+                                            const FArrayBox& xslopes_in,
+                                            const FArrayBox& yslopes_in,
+                                            const FArrayBox& zslopes_in,
+                                            const int slopes_comp,
+                                            const FArrayBox& u_mac,
+                                            const FArrayBox& v_mac,
+                                            const FArrayBox& w_mac,
+                                            const FArrayBox& afrac_x_fab,
+                                            const FArrayBox& afrac_y_fab,
+                                            const FArrayBox& afrac_z_fab,
+                                            const FArrayBox& face_centroid_x,
+                                            const FArrayBox& face_centroid_y,
+                                            const FArrayBox& face_centroid_z,
+                                            const FArrayBox& volfrac,
+                                            const FArrayBox& bndry_centroid,
+                                            const IArrayBox& cc_mask,
+                                            const EBCellFlagFab& flags)
 {
   Box domain(geom[lev].Domain());
 

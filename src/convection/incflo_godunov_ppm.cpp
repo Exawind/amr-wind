@@ -18,8 +18,9 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                                       const Array4<const Real> &u_mac, 
                                       const Array4<const Real> &v_mac, 
                                       const Array4<const Real> &w_mac,
-                                            int iconserv[],
-                                      const Gpu::ManagedVector<BCRec> &BCs)
+                                      const Gpu::ManagedVector<BCRec> &BCs,
+                                      int iconserv[],
+                                      bool return_state_not_flux)
 {
     Box domain(geom[lev].Domain());
 
@@ -519,13 +520,16 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     const Box fybx = surroundingNodes(bx, 1);
     const Box fzbx = surroundingNodes(bx, 2);
 
-   AMREX_PARALLEL_FOR_4D(fxbx, ncomp, i, j, k, n, {
-        a_fx(i,j,k,n) = a_fx(i,j,k,n)*u_mac(i,j,k);
-    });
-    AMREX_PARALLEL_FOR_4D(fybx, ncomp, i, j, k, n, {
-        a_fy(i,j,k,n) = a_fy(i,j,k,n)*v_mac(i,j,k);
-    });
-    AMREX_PARALLEL_FOR_4D(fzbx, ncomp, i, j, k, n, {
-        a_fz(i,j,k,n) = a_fz(i,j,k,n)*w_mac(i,j,k);
-    });
+    if (!return_state_not_flux)
+    {
+       AMREX_PARALLEL_FOR_4D(fxbx, ncomp, i, j, k, n, {
+            a_fx(i,j,k,n) = a_fx(i,j,k,n)*u_mac(i,j,k);
+        });
+        AMREX_PARALLEL_FOR_4D(fybx, ncomp, i, j, k, n, {
+            a_fy(i,j,k,n) = a_fy(i,j,k,n)*v_mac(i,j,k);
+        });
+        AMREX_PARALLEL_FOR_4D(fzbx, ncomp, i, j, k, n, {
+            a_fz(i,j,k,n) = a_fz(i,j,k,n)*w_mac(i,j,k);
+        });
+    }
 }

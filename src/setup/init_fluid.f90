@@ -46,14 +46,19 @@ contains
       if (probtype ==  5) call tracer_advection(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo)
       
       if (probtype ==  1) call taylor_green(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
-      if (probtype ==  2) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
       if (probtype ==  3) call taylor_green3d(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+      if (probtype ==  4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
+
+      if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+      if (probtype == 12) call periodic_tracer(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
+
+      if (probtype == 21) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo, probtype)
+      if (probtype == 22) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo, probtype)
+      if (probtype == 23) call double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo, probtype)
+
       if (probtype == 31) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype == 32) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
       if (probtype == 33) call plane_poiseuille(lo, hi, vel, tracer, slo, shi, dx, dy, dz, domlo, domhi, probtype)
-      if (probtype ==  4) call couette(lo, hi, vel, slo, shi, dx, dy, dz, domlo, domhi)
-      if (probtype == 11) call tuscan(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
-      if (probtype == 12) call periodic_tracer(lo, hi, vel, density, tracer, slo, shi, dx, dy, dz, domlo, domhi)
 
    end subroutine init_fluid
 
@@ -166,7 +171,7 @@ contains
 
     end subroutine taylor_green3d
 
-   subroutine double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo)
+   subroutine double_shear_layer(lo, hi, vel, slo, shi, dx, dy, dz, domlo, probtype )
 
       use constant, only: zero, half, one
 
@@ -176,6 +181,7 @@ contains
       integer(c_int), intent(in   ) :: lo(3), hi(3)
       integer(c_int), intent(in   ) :: domlo(3)
       integer(c_int), intent(in   ) :: slo(3), shi(3)
+      integer(c_int), intent(in   ) :: probtype
 
       ! Arrays
       real(rt),       intent(inout) :: vel(slo(1):shi(1),slo(2):shi(2),slo(3):shi(3),3)
@@ -183,17 +189,14 @@ contains
       real(rt),       intent(in   ) :: dx, dy, dz
 
       ! Local variables
-      integer(c_int)                :: i, j, k, plane
+      integer(c_int)                :: i, j, k
       real(rt)                      :: x, y, z
       real(rt)                      :: twopi = 8.0_rt * atan(one)
 
-      plane = 1
+      select case ( probtype )
 
-      select case ( plane )
+      case (21)  ! x-y plane
 
-      case (1)  ! x-y plane
-
-         ! x-direction
          do j = lo(2), hi(2)
             y =  ( real(j,rt) + half ) * dy
             do i = lo(1), hi(1)
@@ -206,32 +209,31 @@ contains
             end do
          end do
 
-      case (2)  ! x-z plane
+      case (22)  ! y-z plane
 
-         ! x-direction
-         do k = lo(3), hi(3)
-            z =  ( real(k,rt) + half ) * dz
-            do i = lo(1), hi(1)
-               x =  ( real(i,rt) + half ) * dx
-               do j = lo(2), hi(2)
-                  vel(i,j,k,1) = tanh ( 30.0_rt * (0.25_rt - abs ( z - 0.5_rt ) ) )
-                  vel(i,j,k,2) = zero
-                  vel(i,j,k,3) = 0.05_rt * sin ( twopi * x )
-               end do
-            end do
-         end do
-
-      case (3)  ! y-z plane
-
-         ! x-direction
          do k = lo(3), hi(3)
             z =  ( real(k,rt) + half ) * dz
             do j = lo(2), hi(2)
                y =  ( real(j,rt) + half ) * dy
                do i = lo(1), hi(1)
-                  vel(i,j,k,1) = zero
                   vel(i,j,k,2) = tanh ( 30.0_rt * (0.25_rt - abs ( z - 0.5_rt ) ) )
                   vel(i,j,k,3) = 0.05_rt * sin ( twopi * y )
+                  vel(i,j,k,1) = zero
+               end do
+            end do
+         end do
+
+      case (23)  ! x-z plane
+
+         ! z-direction
+         do k = lo(3), hi(3)
+            z =  ( real(k,rt) + half ) * dz
+            do i = lo(1), hi(1)
+               x =  ( real(i,rt) + half ) * dx
+               do j = lo(2), hi(2)
+                  vel(i,j,k,3) = tanh ( 30.0_rt * (0.25_rt - abs ( x - 0.5_rt ) ) )
+                  vel(i,j,k,1) = 0.05_rt * sin ( twopi * z )
+                  vel(i,j,k,2) = zero
                end do
             end do
          end do

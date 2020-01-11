@@ -12,22 +12,22 @@ incflo.mu               =   0.0002      # Dynamic viscosity coefficient
 
 amr.max_level           =   0
 
-amr.n_cell              =   32  32  8   # Grid cells at coarsest AMRlevel
-amr.max_grid_size       =   16  16 16   # Grid cells at coarsest AMRlevel
+amr.n_cell              =   8  32 32   # Grid cells at coarsest AMRlevel
+amr.max_grid_size       =   16 16 16   # Grid cells at coarsest AMRlevel
 amr.blocking_factor     =   8           # Blocking factor for grids
 
-geometry.prob_lo        =   0.  0. 0.   # Lo corner coordinates
-geometry.prob_hi        =   1.  1. 0.25 # Hi corner coordinates
+geometry.prob_lo        =   0.   0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   0.25 1.  1.  #Hi corner coordinates
 
 geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 
-incflo.probtype         =  21
+incflo.probtype         =  22
 
-amr.plt_ccse_regtest    =   1
+amr.plt_ccse_regtest    =  1
 amr.plt_vort            = 1  
 
-incflo.use_godunov      = true
-incflo.diffusion_type   = 1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
+incflo.use_godunov      =  true
+incflo.diffusion_type   =  1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 
 incflo.verbose          =   2           # incflo_level
 mac_proj.verbose        =   1           # MAC Projector

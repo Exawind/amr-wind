@@ -1,0 +1,40 @@
+
+max_step                = 1000
+
+stop_time               = 1.2         # Max (simulated) time to evolve
+
+incflo.cfl              = 0.45          # CFL factor
+incflo.init_shrink      = 1.0
+
+amr.plot_per_approx     =  0.4         # Steps between plot files
+amr.check_int           =  100         # Steps between checkpoint files
+incflo.mu               =  0.0002      # Dynamic viscosity coefficient
+
+amr.max_level           =  0
+
+amr.n_cell              =  32  8  32  # Grid cells at coarsest AMRlevel
+amr.max_grid_size       =  16 16  16  # Grid cells at coarsest AMRlevel
+amr.blocking_factor     =  8          # Blocking factor for grids
+
+geometry.prob_lo        =   0.  0.   0.  # Lo corner coordinates
+geometry.prob_hi        =   1.0 0.25 1.  #Hi corner coordinates
+
+geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
+incflo.probtype         =  23
+
+amr.plt_ccse_regtest    =  1
+amr.plt_vort            = 1  
+
+incflo.use_godunov      =  true
+incflo.diffusion_type   =  1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
+
+incflo.verbose          =   2           # incflo_level
+mac_proj.verbose        =   1           # MAC Projector
+nodal_proj.verbose      =   1           # Nodal Projector
+diffusion.verbose       =   1           # Diffusion 
+diffusion.mg_verbose    =   0           # Diffusion
+
+mac_proj.mg_rtol        = 1.e-12
+
+fabarray.mfiter_tile_size = 1024 1024 1024

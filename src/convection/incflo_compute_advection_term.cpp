@@ -4,23 +4,26 @@
 #include <AMReX_EB_utils.H>
 #endif
 
+// Need this for convective difference routine
+#include "incflo_godunov_ppm.H"
+
 using namespace amrex;
 
 //
-// Compute the three components of the convection term
+// Compute the three components of the advection term
 //
 void
-incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& conv_u_in, 
-                                        Vector< std::unique_ptr<MultiFab> >& conv_r_in,
-                                        Vector< std::unique_ptr<MultiFab> >& conv_t_in,
-                                        Vector< std::unique_ptr<MultiFab> >& vel_forces_in,
-                                        Vector< std::unique_ptr<MultiFab> >& scal_forces_in,
-                                        Vector< std::unique_ptr<MultiFab> >& vel_in,
-                                        Vector< std::unique_ptr<MultiFab> >& density_in,
-                                        Vector< std::unique_ptr<MultiFab> >& tracer_in,
-                                        Real time)
+incflo::incflo_compute_advection_term( Vector< std::unique_ptr<MultiFab> >& conv_u_in, 
+                                       Vector< std::unique_ptr<MultiFab> >& conv_r_in,
+                                       Vector< std::unique_ptr<MultiFab> >& conv_t_in,
+                                       Vector< std::unique_ptr<MultiFab> >& vel_forces_in,
+                                       Vector< std::unique_ptr<MultiFab> >& scal_forces_in,
+                                       Vector< std::unique_ptr<MultiFab> >& vel_in,
+                                       Vector< std::unique_ptr<MultiFab> >& density_in,
+                                       Vector< std::unique_ptr<MultiFab> >& tracer_in,
+                                       Real time)
 {
-    BL_PROFILE("incflo::incflo_compute_convective_term");
+    BL_PROFILE("incflo::incflo_compute_advection_term");
 
     // Temporaries to store fluxes 
     Vector< std::unique_ptr<MultiFab> > fx;
@@ -105,12 +108,23 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
         fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
         int iconserv_vel[3] = {0,0,0};
+        bool return_state_not_flux;
+
+        
+        if (use_godunov) //  This will define the update as (u dot grad u)
+            return_state_not_flux = true;
+        else //This will define the update as (div(uu))
+            return_state_not_flux = false;
 
         incflo_compute_fluxes(lev, fx, fy, fz, vel_in, 0, vel_forces_in, 0, num_comp,
                               xslopes_u, yslopes_u, zslopes_u, 0,
-                              m_u_mac, m_v_mac, m_w_mac, iconserv_vel);
+                              m_u_mac, m_v_mac, m_w_mac, iconserv_vel, return_state_not_flux);
 
-        incflo_divergence_plus_redist(lev, conv_u_in, fx, fy, fz, num_comp);
+        if (return_state_not_flux) 
+            incflo_compute_convective_update  (lev, conv_u_in, fx, fy, fz, num_comp);
+        else
+            incflo_compute_conservative_update(lev, conv_u_in, fx, fy, fz, num_comp);
+
 
         // **************************************************
         // Compute div (rho u) -- the update for density
@@ -130,11 +144,12 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             int iconserv_density[1] = {1};
 
             // Note that the "ntrac" component of scal_forces holds zeroes
+            bool return_state_not_flux = false;
             incflo_compute_fluxes(lev, fx, fy, fz, density_in, 0, scal_forces_in, ntrac, num_comp,
                                   xslopes_r, yslopes_r, zslopes_r, 0,
-                                  m_u_mac, m_v_mac, m_w_mac, iconserv_density);
+                                  m_u_mac, m_v_mac, m_w_mac, iconserv_density, return_state_not_flux);
 
-            incflo_divergence_plus_redist(lev, conv_r_in, fx, fy, fz, num_comp);
+            incflo_compute_conservative_update(lev, conv_r_in, fx, fy, fz, num_comp);
 
         }
 
@@ -156,11 +171,13 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
             int iconserv_trac[ntrac];
             for (int i = 0; i < ntrac; i++) iconserv_trac[i] = 1;
 
+            // Here we are assuming we are updating (rho * trac) conservatively, not trac itself convectively
+            bool return_state_not_flux = false;
             incflo_compute_fluxes(lev, fx, fy, fz, tracer_in, 0, scal_forces_in, 0, num_comp,
                                   xslopes_t, yslopes_t, zslopes_t, 0,
-                                  m_u_mac, m_v_mac, m_w_mac, iconserv_trac);
+                                  m_u_mac, m_v_mac, m_w_mac, iconserv_trac, return_state_not_flux);
 
-            incflo_divergence_plus_redist(lev, conv_t_in, fx, fy, fz, num_comp);
+            incflo_compute_conservative_update(lev, conv_t_in, fx, fy, fz, num_comp);
         }
 
         // Convert (rho * tracer) back to tracer
@@ -178,12 +195,12 @@ incflo::incflo_compute_convective_term( Vector< std::unique_ptr<MultiFab> >& con
 }
 
 void 
-incflo::incflo_divergence_plus_redist(const int lev, 
-                                      Vector< std::unique_ptr<MultiFab> >& conv_in,
-                                      Vector< std::unique_ptr<MultiFab> >& fx,
-                                      Vector< std::unique_ptr<MultiFab> >& fy,
-                                      Vector< std::unique_ptr<MultiFab> >& fz,
-                                      int num_comp)
+incflo::incflo_compute_conservative_update(const int lev, 
+                                           Vector< std::unique_ptr<MultiFab> >& conv_in,
+                                           Vector< std::unique_ptr<MultiFab> >& fx,
+                                           Vector< std::unique_ptr<MultiFab> >& fy,
+                                           Vector< std::unique_ptr<MultiFab> >& fz,
+                                           int num_comp)
 {
     // Note conv_tmp needs two ghost cells for the redistribution step.
 #ifdef AMREX_USE_EB
@@ -206,6 +223,36 @@ incflo::incflo_divergence_plus_redist(const int lev,
 #else
     computeDivergence(*conv_in[lev], GetArrOfConstPtrs(fluxes), geom[lev]);
 #endif
+}
+
+
+void 
+incflo::incflo_compute_convective_update(const int lev, 
+                                         Vector< std::unique_ptr<MultiFab> >& conv,
+                                         Vector< std::unique_ptr<MultiFab> >& fx,
+                                         Vector< std::unique_ptr<MultiFab> >& fy,
+                                         Vector< std::unique_ptr<MultiFab> >& fz,
+                                         int num_comp)
+{
+    const GpuArray<Real,AMREX_SPACEDIM> dxinv = geom[lev].InvCellSizeArray();
+
+    for (MFIter mfi(*conv[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+       // Tilebox
+       Box bx = mfi.tilebox ();
+
+       Array4<Real const> const& umac_arr = m_u_mac[lev]->const_array(mfi);
+       Array4<Real const> const& vmac_arr = m_v_mac[lev]->const_array(mfi);
+       Array4<Real const> const& wmac_arr = m_w_mac[lev]->const_array(mfi);
+
+       Array4<Real const> const& fx_arr = fx[lev]->const_array(mfi);
+       Array4<Real const> const& fy_arr = fy[lev]->const_array(mfi);
+       Array4<Real const> const& fz_arr = fz[lev]->const_array(mfi);
+
+       Array4<Real> const& diff_arr = conv[lev]->array(mfi);
+
+       compute_convective_difference(bx, diff_arr, umac_arr, vmac_arr, wmac_arr, fx_arr, fy_arr, fz_arr, dxinv);
+    }
 }
 
 
