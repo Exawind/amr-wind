@@ -216,6 +216,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // if ( use_godunov) Compute the explicit advection terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!use_godunov) Compute the explicit advection terms R_u^n      , R_s^n       and R_t^n
     incflo_compute_MAC_velocities( vel_forces, scal_forces, vel_o, density_o, tracer_o, cur_time );
+
     incflo_compute_advection_term( conv_u_old, conv_r_old, conv_t_old, vel_forces, scal_forces,
                                     vel_o, density_o, tracer_o, cur_time );
 
@@ -410,9 +411,9 @@ void incflo::ApplyCorrector()
     // 
     // **********************************************************************************************
 
-    // Compute the explicit advection terms R_u^* and R_s^*
-    incflo_compute_MAC_velocities( vel_forces, scal_forces, vel, density, tracer, cur_time );
+    incflo_compute_MAC_velocities( vel_forces, scal_forces, vel, density, tracer, new_time );
 
+    // Compute the explicit advection terms R_u^* and R_s^*
     // Note we don't actually use vel_forces or scal_forces here because they are only used if 
     //      use_godunov and we don't get to the corrector in that case
     incflo_compute_advection_term( conv_u, conv_r, conv_t, vel_forces, scal_forces, vel, density, tracer, new_time );

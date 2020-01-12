@@ -19,17 +19,6 @@ incflo::incflo_compute_MAC_velocities( Vector< std::unique_ptr<MultiFab> >& vel_
 {
     BL_PROFILE("incflo::incflo_compute_MAC_velocities");
 
-    // Temporaries to store fluxes 
-    Vector< std::unique_ptr<MultiFab> > fx;
-    Vector< std::unique_ptr<MultiFab> > fy;
-    Vector< std::unique_ptr<MultiFab> > fz;
-
-    fx.resize(finest_level+1);
-    fy.resize(finest_level+1);
-    fz.resize(finest_level+1);
-
-    int num_comp;
-
     // First do FillPatch of {velocity, density, tracer} so we know the ghost cells of
     // these arrays are all filled
     for (int lev = 0; lev <= finest_level; lev++)
