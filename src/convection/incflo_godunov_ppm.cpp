@@ -19,7 +19,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
                                       const Array4<const Real> &v_mac, 
                                       const Array4<const Real> &w_mac,
                                       const Gpu::ManagedVector<BCRec> &BCs,
-                                      int iconserv[],
+                                      GpuArray<int,3> const& iconserv,
                                       bool return_state_not_flux)
 {
     Box domain(geom[lev].Domain());
@@ -72,20 +72,22 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     auto const ygbx = surroundingNodes(g1bx, 1); 
     auto const zgbx = surroundingNodes(g1bx, 2); 
 
+    BCRec const* pbc = BCs.data();
+
     /* Use PPM to generate Im and Ip */
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n];
+        const auto bc = pbc[n];
         Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n];
+        const auto bc = pbc[n];
         Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n];
+        const auto bc = pbc[n];
         Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
@@ -123,7 +125,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real st;
         Real fux = (std::abs(u_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
         bool uval = u_mac(i,j,k) >= 0.e0; 
-        auto bc = BCs[n];  
+        auto bc = pbc[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i-1,j,k,n)*divu_cc(i-1,j,k) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i  ,j,k,n)*divu_cc(i  ,j,k) : 0;
         lo    = Ipx(i-1,j,k,n) + 0.5e0*dt*forces(i-1,j,k,n) + cons1; 
@@ -154,7 +156,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real fuy = (std::abs(v_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
 
         bool vval = v_mac(i,j,k) >= 0.e0; 
-        auto bc = BCs[n];  
+        auto bc = pbc[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j-1,k,n)*divu_cc(i,j-1,k) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j  ,k,n)*divu_cc(i,j  ,k) : 0;
         lo    = Ipy(i,j-1,k,n) + 0.5e0*dt*forces(i,j-1,k,n) + cons1; 
@@ -184,7 +186,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real st;
         Real fuz = (std::abs(w_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
         bool wval = w_mac(i,j,k) >= 0.e0; 
-        auto bc = BCs[n];  
+        auto bc = pbc[n];  
         cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k-1,n)*divu_cc(i,j,k-1) : 0;
         cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k  ,n)*divu_cc(i,j,k  ) : 0;
         lo    = Ipz(i,j,k-1,n) + 0.5e0*dt*forces(i,j,k-1,n) + cons1; 
@@ -262,7 +264,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
 /*------------------Now perform corner coupling */
     //Dir trans against X
     AMREX_PARALLEL_FOR_4D (yxbx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         //YX
         Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, ylo, yhi, 
                              s, divu_cc, u_mac, xedge, yxlo, yxhi, 1, 0);
@@ -275,7 +277,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     }); 
     
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         //ZX
         Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, zlo, zhi, 
                              s, divu_cc, u_mac, xedge, zxlo, zxhi, 2, 0);
@@ -289,7 +291,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
    //Dir trans against Y
     AMREX_PARALLEL_FOR_4D (xybx, ncomp, i, j, k, n, {
         //XY
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, xlo, xhi, 
                              s, divu_cc, v_mac, yedge, xylo, xyhi, 0, 0);
         Real uad = u_mac(i,j,k);
@@ -300,7 +302,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     }); 
 
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         //ZY 
         Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, zlo, zhi, 
                              s, divu_cc, v_mac, yedge, zylo, zyhi, 2, 1);
@@ -314,7 +316,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     //Dir trans against Z
     AMREX_PARALLEL_FOR_4D (xzbx, ncomp, i, j, k, n, {
         //XZ
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, xlo, xhi, 
                              s, divu_cc, w_mac, zedge, xzlo, xzhi, 0, 1);
         Real uad = u_mac(i,j,k);
@@ -325,7 +327,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     });  
 
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, {
-        const auto bc = BCs[n]; 
+        const auto bc = pbc[n]; 
         //YZ
         Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, ylo, yhi, 
                              s, divu_cc, w_mac, zedge, yzlo, yzhi, 1, 1);
@@ -396,7 +398,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real stl;
         Real sth;
         Real temp; 
-        auto bc = BCs[n]; 
+        auto bc = pbc[n]; 
 //--------------------------------------- X -------------------------------------- 
         if(iconserv[n]==1){
         stl = xlo(i,j,k,n) - (0.5*dt/dy)*(yzlo(i-1,j+1,k,n)*v_mac(i-1,j+1,k)
@@ -437,7 +439,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real stl;
         Real sth;
         Real temp; 
-        auto bc = BCs[n]; 
+        auto bc = pbc[n]; 
 //-------------------------------------- Y ------------------------------------            
         if(iconserv[n]==1){
         stl = ylo(i,j,k,n) - (0.5*dt/dx)*(xzlo(i+1,j-1,k,n)*u_mac(i+1,j-1,k)
@@ -478,7 +480,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real stl;
         Real sth;
         Real temp; 
-        auto bc = BCs[n]; 
+        auto bc = pbc[n]; 
 //----------------------------------- Z ----------------------------------------- 
         if (iconserv[n]==1)
         {

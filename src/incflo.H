@@ -205,7 +205,7 @@ public:
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& u_mac,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& v_mac,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac,
-                               int iconserv[], bool return_state_not_flux);
+                               amrex::GpuArray<int,3> const& iconserv, bool return_state_not_flux);
 
     void incflo_compute_MOL_fluxes_on_box(const int lev, amrex::Box& bx,
                                           amrex::FArrayBox& a_fx,
@@ -289,7 +289,7 @@ public:
                                       const amrex::Array4<const amrex::Real> &vmac,
                                       const amrex::Array4<const amrex::Real> &wmac,
                                       const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs,
-                                      int iconserv[], bool return_state_not_flux);
+                                      amrex::GpuArray<int,3> const& iconserv, bool return_state_not_flux);
 
 private:
 

@@ -56,7 +56,7 @@ incflo::incflo_compute_fluxes(int lev,
                           Vector< std::unique_ptr<MultiFab> >& u_mac,
                           Vector< std::unique_ptr<MultiFab> >& v_mac,
                           Vector< std::unique_ptr<MultiFab> >& w_mac,
-                          int iconserv[],
+                          GpuArray<int,3> const& iconserv,
                           bool return_state_not_flux)      
 {
         Box domain(geom[lev].Domain());

@@ -974,7 +974,7 @@ inline void Godunov_cc_zbc(const int i, const int j, const int k, const int n,
 AMREX_GPU_HOST_DEVICE
 inline void Godunov_corner_couple(const int i, const int j, const int k, const int n, 
                                  const amrex::Real dt, const amrex::Real dx, 
-                                 int iconserv[], 
+                                 GpuArray<int,3> const& iconserv, 
                                  const amrex::Array4<const amrex::Real> &lo, 
                                  const amrex::Array4<const amrex::Real> &hi,  
                                  const amrex::Array4<const amrex::Real> &s, 

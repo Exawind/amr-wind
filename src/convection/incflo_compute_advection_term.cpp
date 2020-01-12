@@ -60,7 +60,7 @@ incflo::incflo_compute_advection_term( Vector< std::unique_ptr<MultiFab> >& conv
         fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
         fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-        int iconserv_vel[3] = {0,0,0};
+        GpuArray<int,3> iconserv_vel{0,0,0};
         bool return_state_not_flux;
 
         
@@ -94,7 +94,7 @@ incflo::incflo_compute_advection_term( Vector< std::unique_ptr<MultiFab> >& conv
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-            int iconserv_density[1] = {1};
+            GpuArray<int,3> iconserv_density{1,1,1};
 
             // Note that the "ntrac" component of scal_forces holds zeroes
             bool return_state_not_flux = false;
@@ -121,8 +121,8 @@ incflo::incflo_compute_advection_term( Vector< std::unique_ptr<MultiFab> >& conv
             fy[lev].reset(new MultiFab(m_v_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
             fz[lev].reset(new MultiFab(m_w_mac[lev]->boxArray(),dmap[lev],num_comp,flux_ngrow,MFInfo(),factory));
 
-            int iconserv_trac[ntrac];
-            for (int i = 0; i < ntrac; i++) iconserv_trac[i] = 1;
+            GpuArray<int,3> iconserv_trac{1,1,1};
+            AMREX_ALWAYS_ASSERT(ntrac <= 3);
 
             // Here we are assuming we are updating (rho * trac) conservatively, not trac itself convectively
             bool return_state_not_flux = false;
