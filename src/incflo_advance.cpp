@@ -64,30 +64,25 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
-    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
-    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
-    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
-    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
-    amrex::VisMF::Write(m_leveldata[0]->p, "p");
-
-    amrex::Abort("xxxxx in Advance(): after ApplyCorrector");
-
     if(incflo_verbose > 1)
     {
         amrex::Print() << "End of time step: " << std::endl;
+#if 0
+        // xxxxx
         PrintMaxValues(cur_time + dt);
         if(probtype%10 == 3 or probtype == 5)
         {
             ComputeDrag();
             amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl;
         }
+#endif
     }
 
-    if (test_tracer_conservation)
-       amrex::Print() << "Sum tracer volume wgt = " << cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+#if 0
+    if (test_tracer_conservation) {
+        amrex::Print() << "Sum tracer volume wgt = " << cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+    }
+#endif
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
@@ -96,6 +91,15 @@ void incflo::Advance()
     {
         amrex::Print() << "Time per step " << end_step << std::endl;
     }
+
+    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
+    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
+    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
+    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
+    amrex::VisMF::Write(m_leveldata[0]->p, "p");
 
     amrex::Abort("xxxxx in Advance(): end");
 }
@@ -277,7 +281,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                     vt += -gradp(i,j,k,dir) * rhoinv;
 
                     if (!l_use_boussinesq) {
-                        vt += -l_gp0[dir];
+                        vt += -l_gp0[dir] * rhoinv;
                     }
 
                     vel(i,j,k,dir) += l_dt * vt;
@@ -453,109 +457,81 @@ void incflo::ApplyCorrector()
     compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
                             get_velocity_new(), get_density_new(), get_tracer_new(), new_time);
 
+    // Define local variables for lambda to capture.
+    Real l_dt = dt;
+    bool l_constant_density = constant_density;
+    bool l_use_boussinesq = use_boussinesq;
+    int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
+    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
+    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
 
-    amrex::EB_set_covered(m_leveldata[0]->conv_velocity, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->conv_density, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->conv_tracer, 0.0);
-    VisMF::Write(m_leveldata[0]->conv_velocity, "conv_vel");
-    VisMF::Write(m_leveldata[0]->conv_density, "conv_rho");
-    VisMF::Write(m_leveldata[0]->conv_tracer, "conv_tra");
-    amrex::Abort("xxxxx");
-
-    // **********************************************************************************************
-    // 
-    // Compute forcing terms to be added explicitly in the update
-    // We need the forcing terms to have two ghost cells because of the way they are used 
-    //    in the Godunov prediction
-    // 
-    // **********************************************************************************************
-    for (int lev = 0; lev <= finest_level; lev++)
+    for (int lev = 0; lev <= finest_level; ++lev)
     {
-        // Fill forcing term with -gp to start
-        MultiFab::Copy (*vel_forces[lev], *gp[lev], 0, 0, 3, 2);
-        vel_forces[lev] -> mult(-1.0);
+        auto& ld = *m_leveldata[lev];
 
-        // Add (-gp0 to forcing term if not Boussinesq)
-        if (!use_boussinesq)
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-                (*vel_forces[lev]).plus(-gp0[dir], dir, 1, vel_forces[lev]->nGrow());
-
-        // Now divide -(gp+gp0) by density at half-time
-        // TODO: CREATE HALF_TIME DENSITY ARRAY
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-            MultiFab::Divide(*vel_forces[lev], (*density[lev]), 0, dir, 1, vel_forces[lev]->nGrow());
-
-        // Add gravitational forces
-        if (use_boussinesq)
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-           // TODO: CREATE HALF_TIME TRACER ARRAY
-           // This uses a Boussinesq approximation where the buoyancy depends on first tracer
-           //      rather than density
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-              MultiFab::Saxpy(*vel_forces[lev], gravity[dir], *tracer[lev], 0, dir, 1, 0);
-        } else {
-           for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-               (*vel_forces[lev]).plus(gravity[dir], dir, 1, 0);
-        }
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& vel = ld.velocity.array(mfi);
+            Array4<Real> const& rho = ld.density.array(mfi);
+            Array4<Real> const& tra = ld.tracer.array(mfi);
+            Array4<Real const> const& vel_o = ld.velocity_o.const_array(mfi);
+            Array4<Real const> const& rho_o = ld.density_o.const_array(mfi);
+            Array4<Real const> const& tra_o = ld.tracer_o.const_array(mfi);
+            Array4<Real const> const& dvdt = ld.conv_velocity.const_array(mfi);
+            Array4<Real const> const& drdt = ld.conv_density.const_array(mfi);
+            Array4<Real const> const& dtdt = ld.conv_tracer.const_array(mfi);
+            Array4<Real const> const& dvdt_o = ld.conv_velocity_o.const_array(mfi);
+            Array4<Real const> const& drdt_o = ld.conv_density_o.const_array(mfi);
+            Array4<Real const> const& dtdt_o = ld.conv_tracer_o.const_array(mfi);
+            Array4<Real const> const& gradp = ld.gp.const_array(mfi);
 
-       // Add the diffusive/viscous term to the forcing term 
-       if (m_diff_type == DiffusionType::Explicit)
-       {
-          // Note that even though we call this "explicit",
-          //   the diffusion term does end up being time-centered so formally second-order
-          MultiFab::Saxpy( *vel_forces[lev],0.5, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-          MultiFab::Saxpy( *vel_forces[lev],0.5,     *divtau[lev], 0, 0, AMREX_SPACEDIM, 0);
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                // xxxxx TODO add viscous terms for explicit and Crank_Nicolson diffusion type
 
-          MultiFab::Saxpy(*scal_forces[lev],0.5,   *laps_old[lev], 0, 0, ntrac         , 0);
-          MultiFab::Saxpy(*scal_forces[lev],0.5,       *laps[lev], 0, 0, ntrac         , 0);
-       }
-       else if (m_diff_type == DiffusionType::Crank_Nicolson)
-       {
-          MultiFab::Saxpy( *vel_forces[lev],1.0, *divtau_old[lev], 0, 0, AMREX_SPACEDIM, 0);
-          MultiFab::Saxpy(*scal_forces[lev],1.0,   *laps_old[lev], 0, 0, ntrac         , 0);
-       }
+                Real rhoinv = 1.0/(rho(i,j,k)+1.e-80);
+                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+                    // First add the convective term to the velocity
+                    Real vt = 0.5*(dvdt(i,j,k,dir)+dvdt_o(i,j,k,dir));
 
-        vel_forces[lev]->FillBoundary(geom[lev].periodicity());
-       scal_forces[lev]->FillBoundary(geom[lev].periodicity());
-    }
+                    // Add gravitational forces
+                    if (l_use_boussinesq) {
+                        // xxxxx TODO: should this use the old or new tracer?
+                        vt += tra(i,j,k,0) * l_gravity[dir];
+                    } else {
+                        vt += l_gravity[dir];
+                    }
 
-    // **********************************************************************************************
-    // 
-    // Add advection and other forcing terms to the density, tracer and velocity
-    // 
-    // **********************************************************************************************
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        // Aadd the time-centered advection term to velocity
-        MultiFab::LinComb(*vel[lev], 1.0   , *vel_o[lev]     , 0, 0.5*dt, *conv_u[lev], 0, 0, AMREX_SPACEDIM, 0);
-        MultiFab::Saxpy  (*vel[lev], 0.5*dt, *conv_u_old[lev], 0, 0, AMREX_SPACEDIM, 0);
+                    // Add -gradp / rho
+                    // xxxxx TODO: should this use the old or new density?
+                    vt += -gradp(i,j,k,dir) * rhoinv;
 
-        // Add the time-centered forcing term to velocity
-        MultiFab::Saxpy(*vel[lev], dt, *vel_forces[lev], 0, 0, AMREX_SPACEDIM, vel_forces[lev]->nGrow());
+                    if (!l_use_boussinesq) {
+                        vt += -l_gp0[dir] * rhoinv;
+                    }
 
-        if (!constant_density)
-        {
-            // Add the time-centered advection terms to tracer
-            MultiFab::LinComb(*density[lev], 1.0   , *density_o[lev] , 0, 0.5*dt, *conv_r[lev], 0, 0, 1, 0);
-            MultiFab::Saxpy  (*density[lev], 0.5*dt, *conv_r_old[lev], 0, 0, 1, 0);
-        }
+                    vel(i,j,k,dir) = vel_o(i,j,k,dir) + l_dt * vt;
+                }
 
-        if (advect_tracer)
-        {
-            // Add the time-centered advection term to tracer
-            MultiFab::LinComb(*tracer[lev], 1.0   , *tracer_o[lev]  , 0, 0.5*dt, *conv_t[lev]    , 0, 0, tracer[lev]->nComp(), 0);
-            MultiFab::Saxpy(  *tracer[lev], 0.5*dt, *conv_t_old[lev], 0, 0, tracer[lev]->nComp(), 0);
+                // Now add the convective term to the density and tracer
+                if (!l_constant_density) {
+                    rho(i,j,k) = rho_o(i,j,k) + l_dt * 0.5*(drdt(i,j,k)+drdt_o(i,j,k));
+                }
 
-            // Add the time-centered forcing term to tracer
-            MultiFab::Saxpy(*tracer[lev], dt, *scal_forces[lev], 0, 0, ntrac, scal_forces[lev]->nGrow());
+                if (l_ntrac > 0) {
+                    // xxxxx TODO: this is currently inconsistent.
+                    //             dtdt is actually for rho*tracer.
+                    for (int n = 0; n < l_ntrac; ++n) {
+                        tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt * 0.5*(dtdt(i,j,k,n)+dtdt_o(i,j,k,n));
+                    }
+                }
+            });
         }
     }
-
-    if (!constant_density)
-       incflo_set_density_bcs(new_time, density);
-    if (advect_tracer)
-       incflo_set_tracer_bcs(new_time, tracer);
-    incflo_set_velocity_bcs(new_time, vel);
 
     // **********************************************************************************************
     // 
@@ -565,13 +541,18 @@ void incflo::ApplyCorrector()
 
     if (m_diff_type == DiffusionType::Crank_Nicolson)
     {
-       diffusion_op->diffuse_velocity(vel   , density, eta,  0.5*dt);
-       diffusion_op->diffuse_scalar  (tracer, density, mu_s, 0.5*dt);
+        amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
+        // diffusion_op->diffuse_velocity(vel   , density, eta,  0.5*dt);
+        // diffusion_op->diffuse_scalar  (tracer, density, mu_s, 0.5*dt);
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
-       diffusion_op->diffuse_velocity(vel   , density, eta,  dt);
-       diffusion_op->diffuse_scalar  (tracer, density, mu_s, dt);
+        get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
+                                                    get_density_new(), new_time, dt);
+        if (advect_tracer) {
+            get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
+                                                      get_density_new(), new_time, dt);
+        }
     }
 
     // **********************************************************************************************
@@ -579,7 +560,4 @@ void incflo::ApplyCorrector()
     // Project velocity field, update pressure
     bool incremental = false;
     ApplyProjection(new_time, dt, incremental);
-
-    // Fill velocity BCs again
-    incflo_set_velocity_bcs(new_time, vel);
 }
