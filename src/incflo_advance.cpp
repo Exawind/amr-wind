@@ -52,16 +52,13 @@ void incflo::Advance()
 
     ApplyPredictor();
 
-    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
-    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
-    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
-    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
-    amrex::VisMF::Write(m_leveldata[0]->p, "p");
-
-    amrex::Abort("xxxxx in Advance(): after ApplyPredictor");
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        fillpatch_velocity(lev, t_new[lev], m_leveldata[lev]->velocity, ng);
+        fillpatch_density(lev, t_new[lev], m_leveldata[lev]->density, ng);
+        if (advect_tracer) {
+            fillpatch_tracer(lev, t_new[lev], m_leveldata[lev]->tracer, ng);
+        }
+    }
 
     if (!use_godunov) {
         ApplyCorrector();
@@ -409,20 +406,29 @@ void incflo::ApplyCorrector()
     // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "new_time",
     //                           which is currently u*)
     // We need this eta whether explicit, implicit or Crank-Nicolson
-    ComputeViscosity(eta, new_time);
+    if (fluid_model != "newtonian") {
+        amrex::Abort("non-Newtonian: TODO");
+        ComputeViscosity(eta, new_time);
+    }
 
     // Compute explicit diffusion if used -- note that even though we call this "explicit",
     //   the diffusion term does end up being time-centered so formally second-order
     //   Now divtau is the diffusion term computed from u*
     if (m_diff_type == DiffusionType::Explicit)
     {
+        amrex::Abort("TODO: Explicit");
+#if 0
        incflo_set_velocity_bcs (new_time, vel);
        diffusion_op->ComputeDivTau(divtau, vel   , density, eta);
        diffusion_op->ComputeLapS  (laps,   tracer, density, mu_s);
+#endif
     } else {
+#if 0
        for (int lev = 0; lev <= finest_level; lev++)
           divtau[lev]->setVal(0.);
+#endif
     }
+
 
     // **********************************************************************************************
     // 
@@ -430,11 +436,13 @@ void incflo::ApplyCorrector()
     //    in constructing the advection term
     // 
     // **********************************************************************************************
+#if 0
     for (int lev = 0; lev <= finest_level; lev++)
     {
          vel_forces[lev] -> setVal(0.);
         scal_forces[lev] -> setVal(0.);
     }
+#endif
 
     // **********************************************************************************************
     // 
@@ -442,12 +450,17 @@ void incflo::ApplyCorrector()
     // 
     // **********************************************************************************************
 
-    incflo_compute_MAC_velocities( vel_forces, scal_forces, vel, density, tracer, new_time );
+    compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
+                            get_velocity_new(), get_density_new(), get_tracer_new(), new_time);
 
-    // Compute the explicit advection terms R_u^* and R_s^*
-    // Note we don't actually use vel_forces or scal_forces here because they are only used if 
-    //      use_godunov and we don't get to the corrector in that case
-    incflo_compute_advection_term( conv_u, conv_r, conv_t, vel_forces, scal_forces, vel, density, tracer, new_time );
+
+    amrex::EB_set_covered(m_leveldata[0]->conv_velocity, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->conv_density, 0.0);
+    amrex::EB_set_covered(m_leveldata[0]->conv_tracer, 0.0);
+    VisMF::Write(m_leveldata[0]->conv_velocity, "conv_vel");
+    VisMF::Write(m_leveldata[0]->conv_density, "conv_rho");
+    VisMF::Write(m_leveldata[0]->conv_tracer, "conv_tra");
+    amrex::Abort("xxxxx");
 
     // **********************************************************************************************
     // 

@@ -222,6 +222,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     w_mac[lev].const_array(mfi));
         }
     }
+
 }
 
 //
