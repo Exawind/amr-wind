@@ -129,9 +129,11 @@ incflo::incflo_compute_fluxes(int lev,
                     // HACK HACK HACK -- THIS IS HARD-WIRED for triply periodic
                     if (use_godunov)
                     {
-                       // These are place-holders for now
-                       MultiFab divu   (grids[lev], dmap[lev],     1, 2);;
-                       divu.setVal(0.0);
+                       // HACK HACK HACK -- For now we assume incompressible flow, i.e. divu = 0
+                       FArrayBox divu_fab(grow(bx,2), 1);
+                       divu_fab.setVal(0.0);
+                       Elixir divu_eli = divu_fab.elixir();
+                       const auto divu_arr = divu_fab.array();
 
                        BCRec dom_bc;
                        {
@@ -152,7 +154,7 @@ incflo::incflo_compute_fluxes(int lev,
 
                        incflo_godunov_fluxes_on_box(lev, bx, (*a_fx[lev]).array(mfi), (*a_fy[lev]).array(mfi), (*a_fz[lev]).array(mfi),
                                                     state_in[lev]->array(mfi) , state_comp,
-                                                    forces_in[lev]->array(mfi), force_comp, ncomp, divu.array(mfi),
+                                                    forces_in[lev]->array(mfi), force_comp, ncomp, divu_arr,
                                                     u_mac[lev]->array(mfi), v_mac[lev]->array(mfi), w_mac[lev]->array(mfi), bc, 
                                                     iconserv, return_state_not_flux);
 
