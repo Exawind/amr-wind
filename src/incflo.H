@@ -213,8 +213,8 @@ public:
                                              const amrex::FArrayBox& fc_z,
                                              const amrex::FArrayBox& volfrac,
                                              const amrex::FArrayBox& bndrycent,
-                                             const IArrayBox& cc_mask,
-                                             const EBCellFlagFab& flags);
+                                             const amrex::IArrayBox& cc_mask,
+                                             const amrex::EBCellFlagFab& flags);
 #endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
