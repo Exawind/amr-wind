@@ -1,4 +1,5 @@
-CEXE_sources += incflo_compute_convective_term.cpp
+CEXE_sources += incflo_compute_advection_term.cpp
+CEXE_sources += incflo_compute_MAC_velocities.cpp
 CEXE_sources += incflo_compute_fluxes.cpp
 CEXE_sources += incflo_godunov_ppm.cpp
 CEXE_sources += incflo_godunov_predict.cpp

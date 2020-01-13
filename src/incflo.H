@@ -174,21 +174,48 @@ public:
                                const int slopes_comp,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& u_mac,
                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& v_mac,
-                               amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac);
+                               amrex::Vector< std::unique_ptr<amrex::MultiFab> >& w_mac,
+                               amrex::GpuArray<int,3> const& iconserv, bool return_state_not_flux);
 
-    void incflo_compute_fluxes_on_box(const int lev, amrex::Box& bx,
-                                      amrex::FArrayBox& a_fx,
-                                      amrex::FArrayBox& a_fy,
-                                      amrex::FArrayBox& a_fz,
-                                      const amrex::FArrayBox& state,
-                                      const int state_comp, const int n_comp,
-                                      const amrex::FArrayBox& xslopes,
-                                      const amrex::FArrayBox& yslopes,
-                                      const amrex::FArrayBox& zslopes,
-                                      const int slopes_comp,
-                                      const amrex::FArrayBox& u_mac,
-                                      const amrex::FArrayBox& v_mac,
-                                      const amrex::FArrayBox& w_mac);
+    void incflo_compute_MOL_fluxes_on_box(const int lev, amrex::Box& bx,
+                                          amrex::FArrayBox& a_fx,
+                                          amrex::FArrayBox& a_fy,
+                                          amrex::FArrayBox& a_fz,
+                                          const amrex::FArrayBox& state,
+                                          const int state_comp, const int n_comp,
+                                          const amrex::FArrayBox& xslopes,
+                                          const amrex::FArrayBox& yslopes,
+                                          const amrex::FArrayBox& zslopes,
+                                          const int slopes_comp,
+                                          const amrex::FArrayBox& u_mac,
+                                          const amrex::FArrayBox& v_mac,
+                                          const amrex::FArrayBox& w_mac);
+
+#ifdef AMREX_USE_EB
+    void incflo_compute_eb_MOL_fluxes_on_box(const int lev, amrex::Box& bx,
+                                             amrex::FArrayBox& a_fx,
+                                             amrex::FArrayBox& a_fy,
+                                             amrex::FArrayBox& a_fz,
+                                             const amrex::FArrayBox& state,
+                                             const int state_comp, const int n_comp,
+                                             const amrex::FArrayBox& xslopes,
+                                             const amrex::FArrayBox& yslopes,
+                                             const amrex::FArrayBox& zslopes,
+                                             const int slopes_comp,
+                                             const amrex::FArrayBox& ep_u_mac,
+                                             const amrex::FArrayBox& ep_v_mac,
+                                             const amrex::FArrayBox& ep_w_mac,
+                                             const amrex::FArrayBox& ax,
+                                             const amrex::FArrayBox& ay,
+                                             const amrex::FArrayBox& az,
+                                             const amrex::FArrayBox& fc_x,
+                                             const amrex::FArrayBox& fc_y,
+                                             const amrex::FArrayBox& fc_z,
+                                             const amrex::FArrayBox& volfrac,
+                                             const amrex::FArrayBox& bndrycent,
+                                             const IArrayBox& cc_mask,
+                                             const EBCellFlagFab& flags);
+#endif
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -232,7 +259,8 @@ public:
                                       const amrex::Array4<const amrex::Real> &umac,
                                       const amrex::Array4<const amrex::Real> &vmac,
                                       const amrex::Array4<const amrex::Real> &wmac,
-                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
+                                      const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs,
+                                      amrex::GpuArray<int,3> const& iconserv, bool return_state_not_flux);
 
 #ifdef AMREX_USE_EB
     void incflo_compute_eb_fluxes_on_box(const int lev, amrex::Box& bx,
@@ -617,15 +645,22 @@ public: // for cuda
                                amrex::Vector<amrex::MultiFab*> const& density,
                                amrex::Real time);
 
-     void incflo_compute_convective_term(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_u,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_r,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_t,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& scal_forces,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density_in,
-                                         amrex::Vector< std::unique_ptr<amrex::MultiFab> >& tracer_in,
-                                         amrex::Real time);
+     void incflo_compute_MAC_velocities(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& scal_forces,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density_in,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& tracer_in,
+                                        amrex::Real time);
+
+     void incflo_compute_advection_term(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_u,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_r,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv_t,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& scal_forces,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density_in,
+                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& tracer_in,
+                                        amrex::Real time);
 
     void apply_MAC_projection ( amrex::Vector< std::unique_ptr<amrex::MultiFab> >& u_mac,
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& v_mac,
@@ -633,11 +668,18 @@ public: // for cuda
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density,
                                 amrex::Real time);
 
-     void incflo_divergence_plus_redist(const int lev, amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv,
-                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fx,
-                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fy,
-                                        amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fz,
-                                        int num_comp);
+     void incflo_compute_conservative_update(const int lev, amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv,
+                                             amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fx,
+                                             amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fy,
+                                             amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fz,
+                                             int num_comp);
+
+     void incflo_compute_convective_update(const int lev, amrex::Vector< std::unique_ptr<amrex::MultiFab> >& conv,
+                                           amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fx,
+                                           amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fy,
+                                           amrex::Vector< std::unique_ptr<amrex::MultiFab> >& fz,
+                                           int num_comp);
+
 
      // Verbosity
      int  mac_mg_verbose = 0;
