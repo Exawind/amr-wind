@@ -104,7 +104,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Subtract(m_leveldata[lev]->velocity,
                                m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
-            m_leveldata[lev]->velocity.setDomainBndry(0.0, Geom(lev));
         }
     }
 
@@ -158,7 +157,9 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         for (int lev = 0; lev <= finest_level; ++lev) {
             vel.push_back(&(m_leveldata[lev]->velocity));
             vel[lev]->setBndry(0.0);
-            set_inflow_velocity(lev, time, *vel[lev], 1);
+            if (!proj_for_small_dt and !incremental) {
+                set_inflow_velocity(lev, time, *vel[lev], 1);
+            }
         }
 
         nodal_projector->project(vel, GetVecOfConstPtrs(sigma));
