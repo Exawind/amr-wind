@@ -273,7 +273,6 @@ public:
                                         const amrex::Array4<      amrex::Real> &v_face,
                                         const amrex::Array4<      amrex::Real> &w_face,
                                         const amrex::Array4<      amrex::Real> &tf,
-                                        const amrex::Array4<      amrex::Real> &divu_cc,
                                         const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
     void incflo_godunov_fluxes_on_box(const int lev, amrex::Box& bx,

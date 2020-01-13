@@ -14,10 +14,6 @@ incflo::incflo_predict_godunov ( int lev, Real time,
 
     Box domain(geom[lev].Domain());
 
-    // The divu array shouldn't be used since velocity is not a conserved quantity, but we fill it with zero's just to be safe.
-    MultiFab divu_cc(grids[lev], dmap[lev], 1, 2);
-    divu_cc.setVal(0.0);
-
     BCRec dom_bc;
     {
       // const int* lo_bc = phys_bc.lo();
@@ -60,7 +56,7 @@ incflo::incflo_predict_godunov ( int lev, Real time,
         incflo_predict_godunov_on_box(lev, bx, (*vel_in[lev]).array(mfi), 
                                       uad.array(), vad.array(), wad.array(), 
                                       m_u_mac[lev]->array(mfi), m_v_mac[lev]->array(mfi), m_w_mac[lev]->array(mfi),
-                                      (*vel_forces_in[lev]).array(mfi), divu_cc.array(mfi), bc);
+                                      (*vel_forces_in[lev]).array(mfi), bc);
     }
 }
 
@@ -74,10 +70,13 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
                                        const Array4<      Real> &v_face, 
                                        const Array4<      Real> &w_face,
                                        const Array4<Real> &tf, 
-                                       const Array4<Real> &divu_cc,
                                        const Gpu::ManagedVector<BCRec> &BCs)
 {
     Box domain(geom[lev].Domain());
+
+    // Need to do these to make GPUs happy since dt and use_forces_in_trans are members of incflo 
+    Real l_dt = dt;
+    Real l_use_forces_in_trans = use_forces_in_trans;
 
     // We only predict the normal velocity in this routine but we need transverse terms
     //   which means we need all velocities on all faces
@@ -136,23 +135,21 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
     BCRec const* pbc = BCs.data();
 
-    /* Use PPM to generate Im and Ip */
- 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc, 
+        Godunov_ppm_pred(i, j, k, n, l_dt, dx, a_vel, a_vel, Imx, Ipx, bc, 
                          domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc,
+        Godunov_ppm_pred(i, j, k, n, l_dt, dy, a_vel, a_vel, Imy, Ipy, bc,
                          domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc,
+        Godunov_ppm_pred(i, j, k, n, l_dt, dz, a_vel, a_vel, Imz, Ipz, bc,
                          domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
@@ -187,9 +184,9 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipx(i-1,j,k,n) + 0.5*dt*tf(i-1,j,k,n);
-           hi = Imx(i  ,j,k,n) + 0.5*dt*tf(i  ,j,k,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipx(i-1,j,k,n) + 0.5*l_dt*tf(i-1,j,k,n);
+           hi = Imx(i  ,j,k,n) + 0.5*l_dt*tf(i  ,j,k,n);
         } else {
            lo = Ipx(i-1,j,k,n);
            hi = Imx(i  ,j,k,n);
@@ -221,9 +218,9 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipy(i,j-1,k,n) + 0.5*dt*tf(i,j-1,k,n);
-           hi = Imy(i,j,k,n)   + 0.5*dt*tf(i,j-1,k,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
+           hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
         } else {
            lo = Ipy(i,j-1,k,n);
            hi = Imy(i,j  ,k,n);
@@ -255,9 +252,9 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipz(i,j,k-1,n) + 0.5*dt*tf(i,j,k-1,n);
-           hi = Imz(i,j,k,n)   + 0.5*dt*tf(i,j,k-1,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
+           hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
         } else {
            lo = Ipz(i,j,k-1,n);
            hi = Imz(i,j,k  ,n);
@@ -336,14 +333,20 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     auto const zxbx = surroundingNodes(grow(bx, 1, 1), 2); 
     auto const zybx = surroundingNodes(grow(bx, 0, 1), 2); 
 
+    // We need divu_fab only to pass to Godunov_corner_couple but it isn't actually used
+    FArrayBox divu_fab(grow(bx,2), 1);
+    divu_fab.setVal(0.0);
+    Elixir divu_eli = divu_fab.elixir();
+    const auto divu_arr = divu_fab.array(); 
+
 /*------------------Now perform corner coupling */
     // Add d/dx term to y-faces and upwind using v_ad to {yxlo}
     // Start with {ylo,yhi} --> {yxlo, yxhi}
     AMREX_PARALLEL_FOR_4D (yxbx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, ylo, yhi, 
-                              a_vel, divu_cc, u_ad, xedge, yxlo, yxhi, 1, 0);
+        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, ylo, yhi, 
+                              a_vel, divu_arr, u_ad, xedge, yxlo, yxhi, 1, 0);
 
         Real vad = v_ad(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, a_vel, yxlo(i,j,k,n), yxhi(i,j,k,n), vad, bc.lo(1),
@@ -363,8 +366,8 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, zlo, zhi, 
-                             a_vel, divu_cc, u_ad, xedge, zxlo, zxhi, 2, 0);
+        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, zlo, zhi, 
+                              a_vel, divu_arr, u_ad, xedge, zxlo, zxhi, 2, 0);
 
         Real wad = w_ad(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, a_vel, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.lo(2), 
@@ -384,8 +387,8 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xybx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, xlo, xhi, 
-                             a_vel, divu_cc, v_ad, yedge, xylo, xyhi, 0, 0);
+        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, xlo, xhi, 
+                              a_vel, divu_arr, v_ad, yedge, xylo, xyhi, 0, 0);
 
         Real uad = u_ad(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, a_vel, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.lo(0),
@@ -406,8 +409,8 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, zlo, zhi, 
-                             a_vel, divu_cc, v_ad, yedge, zylo, zyhi, 2, 1);
+        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, zlo, zhi, 
+                              a_vel, divu_arr, v_ad, yedge, zylo, zyhi, 2, 1);
 
         Real wad = w_ad(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, a_vel, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.lo(2),
@@ -428,8 +431,8 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xzbx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, xlo, xhi, 
-                             a_vel, divu_cc, w_ad, zedge, xzlo, xzhi, 0, 1);
+        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, xlo, xhi, 
+                              a_vel, divu_arr, w_ad, zedge, xzlo, xzhi, 0, 1);
 
         Real uad = u_ad(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, a_vel, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.lo(0),
@@ -449,8 +452,8 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, 
     {
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, ylo, yhi, 
-                             a_vel, divu_cc, w_ad, zedge, yzlo, yzhi, 1, 1);
+        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, ylo, yhi, 
+                              a_vel, divu_arr, w_ad, zedge, yzlo, yzhi, 1, 1);
 
         Real vad = v_ad(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, a_vel, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.lo(1),
@@ -477,20 +480,20 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
         int n = 0;
 
         auto bc = pbc[n]; 
-        Real stl = xlo(i,j,k,n) - (0.25*dt/dy)*(v_ad(i-1,j+1,k)+v_ad(i-1,j,k))*
+        Real stl = xlo(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i-1,j+1,k)+v_ad(i-1,j,k))*
                                   (yzlo(i-1,j+1,k,n) - yzlo(i-1,j,k,n))
-                                - (0.25*dt/dz)*(w_ad(i-1,j,k+1)+w_ad(i-1,j,k))*
+                                - (0.25*l_dt/dz)*(w_ad(i-1,j,k+1)+w_ad(i-1,j,k))*
                                   (zylo(i-1,j,k+1,n) - zylo(i-1,j,k,n));
 
-        Real sth = xhi(i,j,k,n) - (0.25*dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
+        Real sth = xhi(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
                                   (yzlo(i,j+1,k,n) - yzlo(i,j,k,n))
-                                - (0.25*dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
+                                - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
                                   (zylo(i,j,k+1,n) - zylo(i,j,k,n));
 
-        if (!use_forces_in_trans)
+        if (!l_use_forces_in_trans)
         { 
-           stl += 0.5 * dt * tf(i-1,j,k,n);
-           sth += 0.5 * dt * tf(i  ,j,k,n);
+           stl += 0.5 * l_dt * tf(i-1,j,k,n);
+           sth += 0.5 * l_dt * tf(i  ,j,k,n);
         }
 
         Real eps = 1e-6;
@@ -511,20 +514,20 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         auto bc = pbc[n]; 
 
-        Real stl = ylo(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j-1,k)+u_ad(i,j-1,k))*
+        Real stl = ylo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j-1,k)+u_ad(i,j-1,k))*
                                   (xzlo(i+1,j-1,k,n) - xzlo(i,j-1,k,n))
-                                - (0.25*dt/dz)*(w_ad(i,j-1,k+1)+w_ad(i,j-1,k))*
+                                - (0.25*l_dt/dz)*(w_ad(i,j-1,k+1)+w_ad(i,j-1,k))*
                                   (zxlo(i,j-1,k+1,n) - zxlo(i,j-1,k,n));
 
-        Real sth = yhi(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
+        Real sth = yhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
                                   (xzlo(i+1,j,k,n) - xzlo(i,j,k,n))
-                                - (0.25*dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
+                                - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
                                   (zxlo(i,j,k+1,n) - zxlo(i,j,k,n));
 
-        if (!use_forces_in_trans)
+        if (!l_use_forces_in_trans)
         { 
-           stl += 0.5 * dt * tf(i,j-1,k,n);
-           sth += 0.5 * dt * tf(i,j  ,k,n);
+           stl += 0.5 * l_dt * tf(i,j-1,k,n);
+           sth += 0.5 * l_dt * tf(i,j  ,k,n);
         }
 
         Real eps = 1e-6;
@@ -545,20 +548,20 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         auto bc = pbc[n]; 
 
-        Real stl = zlo(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j,k-1)+u_ad(i,j,k-1))*
+        Real stl = zlo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k-1)+u_ad(i,j,k-1))*
                                   (xylo(i+1,j,k-1,n) - xylo(i,j,k-1,n))
-                                - (0.25*dt/dy)*(v_ad(i,j+1,k-1)+v_ad(i,j,k-1))*
+                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k-1)+v_ad(i,j,k-1))*
                                   (yxlo(i,j+1,k-1,n) - yxlo(i,j,k-1,n));
      
-        Real sth = zhi(i,j,k,n) - (0.25*dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
+        Real sth = zhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
                                   (xylo(i+1,j,k,n) - xylo(i,j,k,n))
-                                - (0.25*dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
+                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
                                   (yxlo(i,j+1,k,n) - yxlo(i,j,k,n));
 
-        if (!use_forces_in_trans)
+        if (!l_use_forces_in_trans)
         { 
-           stl += 0.5 * dt * tf(i,j,k-1,n);
-           sth += 0.5 * dt * tf(i,j,k  ,n);
+           stl += 0.5 * l_dt * tf(i,j,k-1,n);
+           sth += 0.5 * l_dt * tf(i,j,k  ,n);
         }
 
         Godunov_cc_zbc(i, j, k, n, a_vel, stl, sth, w_ad, bc.lo(2), bc.hi(2), 
@@ -582,6 +585,10 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
                                       const Gpu::ManagedVector<BCRec> &BCs)
 {
     Box domain(geom[lev].Domain());
+
+    // Need to do these to make GPUs happy since dt and use_forces_in_trans are members of incflo 
+    Real l_dt = dt;
+    Real l_use_forces_in_trans = use_forces_in_trans;
 
     // We only predict the normal velocity in this routine but because we are calling
     //   the same Godunov_ppm_pred routine as called by ppm_predict, we must pass 
@@ -625,25 +632,28 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dx, a_vel, a_vel, Imx, Ipx, bc,
+        Godunov_ppm_pred(i, j, k, n, l_dt, dx, a_vel, a_vel, Imx, Ipx, bc,
                          domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dy, a_vel, a_vel, Imy, Ipy, bc,
+        Godunov_ppm_pred(i, j, k, n, l_dt, dy, a_vel, a_vel, Imy, Ipy, bc,
                          domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_pred(i, j, k, n, dt, dz, a_vel, a_vel, Imz, Ipz, bc,
+        Godunov_ppm_pred(i, j, k, n, l_dt, dz, a_vel, a_vel, Imz, Ipz, bc,
                          domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
     auto const txbx = surroundingNodes(grow(g1bx, 0, -1), 0);
     auto const tybx = surroundingNodes(grow(g1bx, 1, -1), 1); 
     auto const tzbx = surroundingNodes(grow(g1bx, 2, -1), 2);
+
+    Gpu::synchronize();
+    AMREX_GPU_ERROR_CHECK();
     
 // --------------------X -------------------------------------------------
     AMREX_PARALLEL_FOR_3D(txbx, i, j, k, 
@@ -654,12 +664,12 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipx(i-1,j,k,n) + 0.5*dt*tf(i-1,j,k,n);
-           hi = Imx(i  ,j,k,n) + 0.5*dt*tf(i  ,j,k,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipx(i-1,j,k,n) + 0.5*l_dt*tf(i-1,j,k,n);
+           hi = Imx(i  ,j,k,n) + 0.5*l_dt*tf(i  ,j,k,n);
         } else {
-           lo = Ipx(i-1,j,k,n);
-           hi = Imx(i  ,j,k,n);
+           lo = Ipx(i-1,j,k,0);
+           hi = Imx(i  ,j,k,0);
         }
 
         auto bc = pbc[n];  
@@ -677,6 +687,9 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
     Imxeli.clear(); 
     Ipxeli.clear(); 
 
+    Gpu::synchronize();
+    AMREX_GPU_ERROR_CHECK();
+
 //--------------------Y -------------------------------------------------
      AMREX_PARALLEL_FOR_3D(tybx, i, j, k,
      {
@@ -686,9 +699,9 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipy(i,j-1,k,n) + 0.5*dt*tf(i,j-1,k,n);
-           hi = Imy(i,j,k,n)   + 0.5*dt*tf(i,j-1,k,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
+           hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
         } else {
            lo = Ipy(i,j-1,k,n);
            hi = Imy(i,j  ,k,n);
@@ -718,9 +731,9 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
         Real lo;
         Real hi;
 
-        if (use_forces_in_trans) {
-           lo = Ipz(i,j,k-1,n) + 0.5*dt*tf(i,j,k-1,n);
-           hi = Imz(i,j,k,n)   + 0.5*dt*tf(i,j,k-1,n);
+        if (l_use_forces_in_trans) {
+           lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
+           hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
         } else {
            lo = Ipz(i,j,k-1,n);
            hi = Imz(i,j,k  ,n);
