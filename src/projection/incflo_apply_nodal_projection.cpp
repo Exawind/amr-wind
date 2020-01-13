@@ -110,18 +110,6 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     nodal_projector->setDomainBC(ppe_lobc, ppe_hibc);
     nodal_projector->project();
 
-    //
-    // OLD way
-    //
-// #ifdef AMREX_USE_EB
-//     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc,
-//                                              GetVecOfConstPtrs(ebfactory), info));
-// #else
-//     nodal_projector.reset(new NodalProjector(geom, grids, dmap, ppe_lobc, ppe_hibc, info));
-// #endif
-
-//     // Perform projection
-//     nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)
