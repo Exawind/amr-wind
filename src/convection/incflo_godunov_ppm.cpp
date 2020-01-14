@@ -24,6 +24,9 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
 {
     Box domain(geom[lev].Domain());
 
+    // Need to do this to make GPUs happy since dt is member of incflo
+    Real l_dt = dt;
+
     auto const g2bx = amrex::grow(bx, 2); 
     auto const g1bx = amrex::grow(bx, 1); 
 
@@ -78,17 +81,17 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
  
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dx, s, u_mac, Imx, Ipx, bc, domain.loVect()[0], domain.hiVect()[0], 0);
+        Godunov_ppm_fpu(i, j, k, n, l_dt, dx, s, u_mac, Imx, Ipx, bc, domain.loVect()[0], domain.hiVect()[0], 0);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dy, s, v_mac, Imy, Ipy, bc, domain.loVect()[1], domain.hiVect()[1], 1);
+        Godunov_ppm_fpu(i, j, k, n, l_dt, dy, s, v_mac, Imy, Ipy, bc, domain.loVect()[1], domain.hiVect()[1], 1);
     });
 
     AMREX_PARALLEL_FOR_4D (g1bx, ncomp, i, j, k, n, {
         const auto bc = pbc[n];
-        Godunov_ppm_fpu(i, j, k, n, dt, dz, s, w_mac, Imz, Ipz, bc, domain.loVect()[2], domain.hiVect()[2], 2);
+        Godunov_ppm_fpu(i, j, k, n, l_dt, dz, s, w_mac, Imz, Ipz, bc, domain.loVect()[2], domain.hiVect()[2], 2);
     }); 
 
     FArrayBox xlf(xgbx, ncomp); 
@@ -126,10 +129,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real fux = (std::abs(u_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
         bool uval = u_mac(i,j,k) >= 0.e0; 
         auto bc = pbc[n];  
-        cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i-1,j,k,n)*divu_cc(i-1,j,k) : 0;
-        cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i  ,j,k,n)*divu_cc(i  ,j,k) : 0;
-        lo    = Ipx(i-1,j,k,n) + 0.5e0*dt*forces(i-1,j,k,n) + cons1; 
-        hi    = Imx(i  ,j,k,n) + 0.5e0*dt*forces(i  ,j,k,n) + cons2;
+        cons1 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i-1,j,k,n)*divu_cc(i-1,j,k) : 0;
+        cons2 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i  ,j,k,n)*divu_cc(i  ,j,k) : 0;
+        lo    = Ipx(i-1,j,k,n) + 0.5e0*l_dt*forces(i-1,j,k,n) + cons1; 
+        hi    = Imx(i  ,j,k,n) + 0.5e0*l_dt*forces(i  ,j,k,n) + cons2;
 
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, lo, hi, uad, bc.lo(0), 
@@ -157,10 +160,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
 
         bool vval = v_mac(i,j,k) >= 0.e0; 
         auto bc = pbc[n];  
-        cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j-1,k,n)*divu_cc(i,j-1,k) : 0;
-        cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j  ,k,n)*divu_cc(i,j  ,k) : 0;
-        lo    = Ipy(i,j-1,k,n) + 0.5e0*dt*forces(i,j-1,k,n) + cons1; 
-        hi    = Imy(i,j,k,n)   + 0.5e0*dt*forces(i,j  ,k,n) + cons2; 
+        cons1 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i,j-1,k,n)*divu_cc(i,j-1,k) : 0;
+        cons2 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i,j  ,k,n)*divu_cc(i,j  ,k) : 0;
+        lo    = Ipy(i,j-1,k,n) + 0.5e0*l_dt*forces(i,j-1,k,n) + cons1; 
+        hi    = Imy(i,j,k,n)   + 0.5e0*l_dt*forces(i,j  ,k,n) + cons2; 
 
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, lo, hi, vad, bc.lo(1), 
@@ -187,10 +190,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         Real fuz = (std::abs(w_mac(i,j,k)) < 1e-06)? 0.e0 : 1.e0; 
         bool wval = w_mac(i,j,k) >= 0.e0; 
         auto bc = pbc[n];  
-        cons1 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k-1,n)*divu_cc(i,j,k-1) : 0;
-        cons2 = (iconserv[n]==1)? - 0.5e0*dt*s(i,j,k  ,n)*divu_cc(i,j,k  ) : 0;
-        lo    = Ipz(i,j,k-1,n) + 0.5e0*dt*forces(i,j,k-1,n) + cons1; 
-        hi    = Imz(i,j,k,n)   + 0.5e0*dt*forces(i,j,k  ,n) + cons2; 
+        cons1 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i,j,k-1,n)*divu_cc(i,j,k-1) : 0;
+        cons2 = (iconserv[n]==1)? - 0.5e0*l_dt*s(i,j,k  ,n)*divu_cc(i,j,k  ) : 0;
+        lo    = Ipz(i,j,k-1,n) + 0.5e0*l_dt*forces(i,j,k-1,n) + cons1; 
+        hi    = Imz(i,j,k,n)   + 0.5e0*l_dt*forces(i,j,k  ,n) + cons2; 
 
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, lo, hi, wad, bc.lo(2), 
@@ -266,7 +269,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yxbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //YX
-        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, ylo, yhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, ylo, yhi, 
                              s, divu_cc, u_mac, xedge, yxlo, yxhi, 1, 0);
 
         Real vad = v_mac(i,j,k);
@@ -279,7 +282,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //ZX
-        Godunov_corner_couple(i, j, k, n, dt, dx, iconserv, zlo, zhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, zlo, zhi, 
                              s, divu_cc, u_mac, xedge, zxlo, zxhi, 2, 0);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.lo(2),
@@ -292,7 +295,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xybx, ncomp, i, j, k, n, {
         //XY
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, xlo, xhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, xlo, xhi, 
                              s, divu_cc, v_mac, yedge, xylo, xyhi, 0, 0);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.lo(0),
@@ -304,7 +307,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //ZY 
-        Godunov_corner_couple(i, j, k, n, dt, dy, iconserv, zlo, zhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, zlo, zhi, 
                              s, divu_cc, v_mac, yedge, zylo, zyhi, 2, 1);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.lo(2),
@@ -317,7 +320,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xzbx, ncomp, i, j, k, n, {
         //XZ
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, xlo, xhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, xlo, xhi, 
                              s, divu_cc, w_mac, zedge, xzlo, xzhi, 0, 1);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.lo(0),
@@ -329,7 +332,7 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //YZ
-        Godunov_corner_couple(i, j, k, n, dt, dz, iconserv, ylo, yhi, 
+        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, ylo, yhi, 
                              s, divu_cc, w_mac, zedge, yzlo, yzhi, 1, 1);
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.lo(1),
@@ -401,29 +404,29 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         auto bc = pbc[n]; 
 //--------------------------------------- X -------------------------------------- 
         if(iconserv[n]==1){
-        stl = xlo(i,j,k,n) - (0.5*dt/dy)*(yzlo(i-1,j+1,k,n)*v_mac(i-1,j+1,k)
+        stl = xlo(i,j,k,n) - (0.5*l_dt/dy)*(yzlo(i-1,j+1,k,n)*v_mac(i-1,j+1,k)
                            - yzlo(i-1,j,k,n)*v_mac(i-1,j,k))
-                           - (0.5*dt/dz)*(zylo(i-1,j,k+1,n)*w_mac(i-1,j,k+1)
+                           - (0.5*l_dt/dz)*(zylo(i-1,j,k+1,n)*w_mac(i-1,j,k+1)
                            - zylo(i-1,j,k,n)*w_mac(i-1,j,k))
-                           + (0.5*dt/dy)*s(i-1,j,k,n)*(v_mac(i-1,j+1,k) -v_mac(i-1,j,k))
-                           + (0.5*dt/dz)*s(i-1,j,k,n)*(w_mac(i-1,j,k+1) -w_mac(i-1,j,k));
+                           + (0.5*l_dt/dy)*s(i-1,j,k,n)*(v_mac(i-1,j+1,k) -v_mac(i-1,j,k))
+                           + (0.5*l_dt/dz)*s(i-1,j,k,n)*(w_mac(i-1,j,k+1) -w_mac(i-1,j,k));
 
-        sth = xhi(i,j,k,n) - (0.5*dt/dy)*(yzlo(i,j+1,k,n)*v_mac(i,j+1,k)
+        sth = xhi(i,j,k,n) - (0.5*l_dt/dy)*(yzlo(i,j+1,k,n)*v_mac(i,j+1,k)
                            - yzlo(i,j,k,n)*v_mac(i,j,k))
-                           - (0.5*dt/dz)*(zylo(i,j,k+1,n)*w_mac(i,j,k+1)
+                           - (0.5*l_dt/dz)*(zylo(i,j,k+1,n)*w_mac(i,j,k+1)
                            - zylo(i,j,k,n)*w_mac(i,j,k))
-                           + (0.5*dt/dy)*s(i,j,k,n)*(v_mac(i,j+1,k) -v_mac(i,j,k))
-                           + (0.5*dt/dz)*s(i,j,k,n)*(w_mac(i,j,k+1) -w_mac(i,j,k)); 
+                           + (0.5*l_dt/dy)*s(i,j,k,n)*(v_mac(i,j+1,k) -v_mac(i,j,k))
+                           + (0.5*l_dt/dz)*s(i,j,k,n)*(w_mac(i,j,k+1) -w_mac(i,j,k)); 
         }
         else{
-        stl = xlo(i,j,k,n) - (0.25*dt/dy)*(v_mac(i-1,j+1,k)+v_mac(i-1,j,k))*
+        stl = xlo(i,j,k,n) - (0.25*l_dt/dy)*(v_mac(i-1,j+1,k)+v_mac(i-1,j,k))*
                              (yzlo(i-1,j+1,k,n) - yzlo(i-1,j,k,n))
-                           - (0.25*dt/dz)*(w_mac(i-1,j,k+1)+w_mac(i-1,j,k))*
+                           - (0.25*l_dt/dz)*(w_mac(i-1,j,k+1)+w_mac(i-1,j,k))*
                              (zylo(i-1,j,k+1,n) - zylo(i-1,j,k,n));
 
-        sth = xhi(i,j,k,n) - (0.25*dt/dy)*(v_mac(i,j+1,k)+v_mac(i,j,k))*
+        sth = xhi(i,j,k,n) - (0.25*l_dt/dy)*(v_mac(i,j+1,k)+v_mac(i,j,k))*
                              (yzlo(i,j+1,k,n) - yzlo(i,j,k,n))
-                           - (0.25*dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
+                           - (0.25*l_dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
                              (zylo(i,j,k+1,n) - zylo(i,j,k,n));
         }
        
@@ -442,29 +445,29 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
         auto bc = pbc[n]; 
 //-------------------------------------- Y ------------------------------------            
         if(iconserv[n]==1){
-        stl = ylo(i,j,k,n) - (0.5*dt/dx)*(xzlo(i+1,j-1,k,n)*u_mac(i+1,j-1,k)
+        stl = ylo(i,j,k,n) - (0.5*l_dt/dx)*(xzlo(i+1,j-1,k,n)*u_mac(i+1,j-1,k)
                            - xzlo(i,j-1,k,n)*u_mac(i,j-1,k))
-                           - (0.5*dt/dz)*(zxlo(i,j-1,k+1,n)*w_mac(i,j-1,k+1)
+                           - (0.5*l_dt/dz)*(zxlo(i,j-1,k+1,n)*w_mac(i,j-1,k+1)
                            - zxlo(i,j-1,k,n)*w_mac(i,j-1,k))
-                           + (0.5*dt/dx)*s(i,j-1,k,n)*(u_mac(i+1,j-1,k) -u_mac(i,j-1,k))
-                           + (0.5*dt/dz)*s(i,j-1,k,n)*(w_mac(i,j-1,k+1) -w_mac(i,j-1,k));
+                           + (0.5*l_dt/dx)*s(i,j-1,k,n)*(u_mac(i+1,j-1,k) -u_mac(i,j-1,k))
+                           + (0.5*l_dt/dz)*s(i,j-1,k,n)*(w_mac(i,j-1,k+1) -w_mac(i,j-1,k));
 
-        sth = yhi(i,j,k,n) - (0.5*dt/dx)*(xzlo(i+1,j,k,n)*u_mac(i+1,j,k)
+        sth = yhi(i,j,k,n) - (0.5*l_dt/dx)*(xzlo(i+1,j,k,n)*u_mac(i+1,j,k)
                            - xzlo(i,j,k,n)*u_mac(i,j,k))
-                           - (0.5*dt/dz)*(zxlo(i,j,k+1,n)*w_mac(i,j,k+1)
+                           - (0.5*l_dt/dz)*(zxlo(i,j,k+1,n)*w_mac(i,j,k+1)
                            - zxlo(i,j,k,n)*w_mac(i,j,k))
-                           + (0.5*dt/dx)*s(i,j,k,n)*(u_mac(i+1,j,k) -u_mac(i,j,k))
-                           + (0.5*dt/dz)*s(i,j,k,n)*(w_mac(i,j,k+1) -w_mac(i,j,k)); 
+                           + (0.5*l_dt/dx)*s(i,j,k,n)*(u_mac(i+1,j,k) -u_mac(i,j,k))
+                           + (0.5*l_dt/dz)*s(i,j,k,n)*(w_mac(i,j,k+1) -w_mac(i,j,k)); 
         }
         else{
-        stl = ylo(i,j,k,n) - (0.25*dt/dx)*(u_mac(i+1,j-1,k)+u_mac(i,j-1,k))*
+        stl = ylo(i,j,k,n) - (0.25*l_dt/dx)*(u_mac(i+1,j-1,k)+u_mac(i,j-1,k))*
                              (xzlo(i+1,j-1,k,n) - xzlo(i,j-1,k,n))
-                           - (0.25*dt/dz)*(w_mac(i,j-1,k+1)+w_mac(i,j-1,k))*
+                           - (0.25*l_dt/dz)*(w_mac(i,j-1,k+1)+w_mac(i,j-1,k))*
                              (zxlo(i,j-1,k+1,n) - zxlo(i,j-1,k,n));
 
-        sth = yhi(i,j,k,n) - (0.25*dt/dx)*(u_mac(i+1,j,k)+u_mac(i,j,k))*
+        sth = yhi(i,j,k,n) - (0.25*l_dt/dx)*(u_mac(i+1,j,k)+u_mac(i,j,k))*
                              (xzlo(i+1,j,k,n) - xzlo(i,j,k,n))
-                           - (0.25*dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
+                           - (0.25*l_dt/dz)*(w_mac(i,j,k+1)+w_mac(i,j,k))*
                              (zxlo(i,j,k+1,n) - zxlo(i,j,k,n));
         }
 
@@ -484,29 +487,29 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
 //----------------------------------- Z ----------------------------------------- 
         if (iconserv[n]==1)
         {
-            stl = zlo(i,j,k,n) - (0.5*dt/dx)*(xylo(i+1,j,k-1,n)*u_mac(i+1,j,k-1)
+            stl = zlo(i,j,k,n) - (0.5*l_dt/dx)*(xylo(i+1,j,k-1,n)*u_mac(i+1,j,k-1)
                                - xylo(i,j,k-1,n)*u_mac(i,j,k-1))
-                               - (0.5*dt/dy)*(yxlo(i,j+1,k-1,n)*v_mac(i,j+1,k-1)
+                               - (0.5*l_dt/dy)*(yxlo(i,j+1,k-1,n)*v_mac(i,j+1,k-1)
                                - yxlo(i,j,k-1,n)*v_mac(i,j,k-1))
-                               + (0.5*dt/dx)*s(i,j,k-1,n)*(u_mac(i+1,j,k-1) -u_mac(i,j,k-1))
-                               + (0.5*dt/dy)*s(i,j,k-1,n)*(v_mac(i,j+1,k-1) -v_mac(i,j,k-1));
+                               + (0.5*l_dt/dx)*s(i,j,k-1,n)*(u_mac(i+1,j,k-1) -u_mac(i,j,k-1))
+                               + (0.5*l_dt/dy)*s(i,j,k-1,n)*(v_mac(i,j+1,k-1) -v_mac(i,j,k-1));
 
-            sth = zhi(i,j,k,n) - (0.5*dt/dx)*(xylo(i+1,j,k,n)*u_mac(i+1,j,k)
+            sth = zhi(i,j,k,n) - (0.5*l_dt/dx)*(xylo(i+1,j,k,n)*u_mac(i+1,j,k)
                                - xylo(i,j,k,n)*u_mac(i,j,k))
-                               - (0.5*dt/dy)*(yxlo(i,j+1,k,n)*v_mac(i,j+1,k)
+                               - (0.5*l_dt/dy)*(yxlo(i,j+1,k,n)*v_mac(i,j+1,k)
                                - yxlo(i,j,k,n)*v_mac(i,j,k))
-                               + (0.5*dt/dx)*s(i,j,k,n)*(u_mac(i+1,j,k) -u_mac(i,j,k))
-                               + (0.5*dt/dy)*s(i,j,k,n)*(v_mac(i,j+1,k) -v_mac(i,j,k)); 
+                               + (0.5*l_dt/dx)*s(i,j,k,n)*(u_mac(i+1,j,k) -u_mac(i,j,k))
+                               + (0.5*l_dt/dy)*s(i,j,k,n)*(v_mac(i,j+1,k) -v_mac(i,j,k)); 
         } else
         {
-            stl = zlo(i,j,k,n) - (0.25*dt/dx)*(u_mac(i+1,j,k-1)+u_mac(i,j,k-1))*
+            stl = zlo(i,j,k,n) - (0.25*l_dt/dx)*(u_mac(i+1,j,k-1)+u_mac(i,j,k-1))*
                                  (xylo(i+1,j,k-1,n) - xylo(i,j,k-1,n))
-                               - (0.25*dt/dy)*(v_mac(i,j+1,k-1)+v_mac(i,j,k-1))*
+                               - (0.25*l_dt/dy)*(v_mac(i,j+1,k-1)+v_mac(i,j,k-1))*
                                  (yxlo(i,j+1,k-1,n) - yxlo(i,j,k-1,n));
 
-            sth = zhi(i,j,k,n) - (0.25*dt/dx)*(u_mac(i+1,j,k)+u_mac(i,j,k))*
+            sth = zhi(i,j,k,n) - (0.25*l_dt/dx)*(u_mac(i+1,j,k)+u_mac(i,j,k))*
                                  (xylo(i+1,j,k,n) - xylo(i,j,k,n))
-                               - (0.25*dt/dy)*(v_mac(i,j+1,k)+v_mac(i,j,k))*
+                               - (0.25*l_dt/dy)*(v_mac(i,j+1,k)+v_mac(i,j,k))*
                                  (yxlo(i,j+1,k,n) - yxlo(i,j,k,n));
         }
 

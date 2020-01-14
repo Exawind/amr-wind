@@ -244,7 +244,6 @@ public:
                                         const amrex::Array4<      amrex::Real> &v_face,
                                         const amrex::Array4<      amrex::Real> &w_face,
                                         const amrex::Array4<      amrex::Real> &tf,
-                                        const amrex::Array4<      amrex::Real> &divu_cc,
                                         const amrex::Gpu::ManagedVector<amrex::BCRec> &BCs);
 
     void incflo_godunov_fluxes_on_box(const int lev, amrex::Box& bx,
@@ -372,7 +371,7 @@ private:
     static constexpr int m_eb_full_grow_cells = 2;
 #endif
 
-    std::unique_ptr<amrex::NodalProjector> nodal_projector;
+    std::unique_ptr<amrex::NodalProjector> nodal_projector; // xxxxx TODO: can be removed now
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit

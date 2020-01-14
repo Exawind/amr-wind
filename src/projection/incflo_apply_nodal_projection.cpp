@@ -1,5 +1,6 @@
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
+#include <incflo_proj_F.H>
 
 using namespace amrex;
 
@@ -60,7 +61,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
     // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
-    bool proj_for_small_dt = (time > 0.0 && dt < 0.1 * prev_dt);
+    bool proj_for_small_dt = (time > 0.0 and dt < 0.1 * prev_dt);
 
     if (incflo_verbose > 2)
     {
@@ -129,41 +130,24 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     }
 
     // Perform projection
-    {
-        if (!nodal_projector) {
-            auto bclo = get_projection_bc(Orientation::low);
-            auto bchi = get_projection_bc(Orientation::high);
-#ifdef AMREX_USE_EB
-            if (!EBFactory(0).isAllRegular()) {
-                Vector<EBFArrayBoxFactory const*> fact(finest_level+1);
-                for (int lev = 0; lev <= finest_level; ++lev) {
-                    fact[lev] = &(EBFactory(lev));
-                }
-                nodal_projector.reset(new NodalProjector(Geom(0,finest_level),
-                                                         boxArray(0,finest_level),
-                                                         DistributionMap(0,finest_level),
-                                                         bclo, bchi, fact, LPInfo()));
-            } else
-#endif
-            {
-                nodal_projector.reset(new NodalProjector(Geom(0,finest_level),
-                                                         boxArray(0,finest_level),
-                                                         DistributionMap(0,finest_level),
-                                                         bclo, bchi, LPInfo()));
-            }
-        }
+    std::unique_ptr<NodalProjector> nodal_projector;
 
-        Vector<MultiFab*> vel;
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            vel.push_back(&(m_leveldata[lev]->velocity));
-            vel[lev]->setBndry(0.0);
-            if (!proj_for_small_dt and !incremental) {
-                set_inflow_velocity(lev, time, *vel[lev], 1);
-            }
-        }
+    auto bclo = get_projection_bc(Orientation::low);
+    auto bchi = get_projection_bc(Orientation::high);
 
-        nodal_projector->project(vel, GetVecOfConstPtrs(sigma));
+    Vector<MultiFab*> vel;
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        vel.push_back(&(m_leveldata[lev]->velocity));
+        vel[lev]->setBndry(0.0);
+        if (!proj_for_small_dt and !incremental) {
+            set_inflow_velocity(lev, time, *vel[lev], 1);
+        }
     }
+
+    nodal_projector.reset(new NodalProjector(vel, GetVecOfConstPtrs(sigma),
+                                             Geom(0,finest_level), LPInfo()));
+    nodal_projector->setDomainBC(bclo, bchi);
+    nodal_projector->project();
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)

@@ -978,7 +978,7 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                                  const amrex::Array4<const amrex::Real> &lo, 
                                  const amrex::Array4<const amrex::Real> &hi,  
                                  const amrex::Array4<const amrex::Real> &s, 
-                                 const amrex::Array4<const amrex::Real> &divu, 
+                                 const amrex::Array4<const amrex::Real> &divu_cc, 
                                  const amrex::Array4<const amrex::Real> &mac,         
                                  const amrex::Array4<const amrex::Real> &state, 
                                  const amrex::Array4<amrex::Real> &lo1, 
@@ -995,13 +995,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                 lo1(i,j,k,n)  = lo(i, j, k, n)
                               - dt/(3.e0*dx)*(state(i-1,j+1,k,n)*mac(i-1,j+1,k)
                               - state(i-1,j,k,n)*mac(i-1,j,k))
-                              - dt/3.e0*s(i-1,j,k,n)*divu(i-1,j,k)
+                              - dt/3.e0*s(i-1,j,k,n)*divu_cc(i-1,j,k)
                               + dt/(3.e0*dx)*s(i-1,j,k,n)*(mac(i-1,j+1,k)-mac(i-1,j,k));
 
                 hi1(i,j,k,n)  = hi(i, j, k, n)
                               - dt/(3.e0*dx)*(state(i,j+1,k,n)*mac(i,j+1,k)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/3.e0*s(i,j,k,n)*divu(i,j,k)
+                              - dt/3.e0*s(i,j,k,n)*divu_cc(i,j,k)
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i,j+1,k)-mac(i,j,k));
             }
         //xzlo xzhi 
@@ -1009,13 +1009,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                 lo1(i,j,k,n)  = lo(i,j,k,n)
                               - dt/(3.e0*dx)*(state(i-1,j,k+1,n)*mac(i-1,j,k+1)
                               - state(i-1,j,k,n)*mac(i-1,j,k))
-                              - dt/(3.e0)*s(i-1,j,k,n)*divu(i-1,j,k)
+                              - dt/(3.e0)*s(i-1,j,k,n)*divu_cc(i-1,j,k)
                               + dt/(3.e0*dx)*s(i-1,j,k,n)*(mac(i-1,j,k+1) - mac(i-1,j,k));
 
                 hi1(i,j,k,n)  = hi(i,j,k,n)
                               - dt/(3.e0*dx)*(state(i,j,k+1,n)*mac(i,j,k+1)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/(3.e0)*s(i,j,k,n)*divu(i,j,k)
+                              - dt/(3.e0)*s(i,j,k,n)*divu_cc(i,j,k)
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i,j,k+1) - mac(i,j,k));
             }
             }
@@ -1048,13 +1048,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                 lo1(i,j,k,n)  = lo(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i+1,j-1,k,n)*mac(i+1,j-1,k)
                               - state(i,j-1,k,n)*mac(i,j-1,k))
-                              - dt/(3.e0)*s(i,j-1,k,n)*divu(i,j-1,k)
+                              - dt/(3.e0)*s(i,j-1,k,n)*divu_cc(i,j-1,k)
                               + dt/(3.e0*dx)*s(i,j-1,k,n)*(mac(i+1,j-1,k)-mac(i,j-1,k));
 
                 hi1(i,j,k,n)  = hi(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i+1,j,k,n)*mac(i+1,j,k)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/(3.e0)*s(i,j,k,n)*divu(i,j,k) 
+                              - dt/(3.e0)*s(i,j,k,n)*divu_cc(i,j,k) 
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i+1,j,k) - mac(i,j,k));
             }
         //yzlo yzhi         
@@ -1062,13 +1062,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                lo1(i,j,k,n)  = lo(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i,j-1,k+1,n)*mac(i,j-1,k+1)
                               - state(i,j-1,k,n)*mac(i,j-1,k))
-                              - dt/(3.e0)*s(i,j-1,k,n)*divu(i,j-1,k)
+                              - dt/(3.e0)*s(i,j-1,k,n)*divu_cc(i,j-1,k)
                               + dt/(3.e0*dx)*s(i,j-1,k,n)*(mac(i,j-1,k+1)-mac(i,j-1,k));
 
                 hi1(i,j,k,n)  = hi(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i,j,k+1,n)*mac(i,j,k+1)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/(3.e0)*s(i,j,k,n)*divu(i,j,k) 
+                              - dt/(3.e0)*s(i,j,k,n)*divu_cc(i,j,k) 
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i,j,k+1) - mac(i,j,k));
             }
         }
@@ -1100,13 +1100,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                lo1(i,j,k,n)  = lo(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i+1,j,k-1,n)*mac(i+1,j,k-1)
                               - state(i,j,k-1,n)*mac(i,j,k-1))
-                              - dt/(3.e0)*s(i,j,k-1,n)*divu(i,j,k-1)
+                              - dt/(3.e0)*s(i,j,k-1,n)*divu_cc(i,j,k-1)
                               + dt/(3.e0*dx)*s(i,j,k-1,n)*(mac(i+1,j,k-1)-mac(i,j,k-1));
 
                 hi1(i,j,k,n)  = hi(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i+1,j,k,n)*mac(i+1,j,k)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/(3.e0)*s(i,j,k,n)*divu(i,j,k) 
+                              - dt/(3.e0)*s(i,j,k,n)*divu_cc(i,j,k) 
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i+1,j,k) - mac(i,j,k));
             }
         //zylo zyhi         
@@ -1114,13 +1114,13 @@ inline void Godunov_corner_couple(const int i, const int j, const int k, const i
                lo1(i,j,k,n)  = lo(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i,j+1,k-1,n)*mac(i,j+1,k-1)
                               - state(i,j,k-1,n)*mac(i,j,k-1))
-                              - dt/(3.e0)*s(i,j,k-1,n)*divu(i,j,k-1)
+                              - dt/(3.e0)*s(i,j,k-1,n)*divu_cc(i,j,k-1)
                               + dt/(3.e0*dx)*s(i,j,k-1,n)*(mac(i,j+1,k-1)-mac(i,j,k-1));
 
                 hi1(i,j,k,n)  = hi(i,j,k,n) 
                               - dt/(3.e0*dx)*(state(i,j+1,k,n)*mac(i,j+1,k)
                               - state(i,j,k,n)*mac(i,j,k))
-                              - dt/(3.e0)*s(i,j,k,n)*divu(i,j,k) 
+                              - dt/(3.e0)*s(i,j,k,n)*divu_cc(i,j,k) 
                               + dt/(3.e0*dx)*s(i,j,k,n)*(mac(i,j+1,k) - mac(i,j,k));
             }
         }
