@@ -8,6 +8,7 @@
 
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
+#include <incflo_proj_F.H>
 
 #include <incflo.H>
 
@@ -181,6 +182,19 @@ incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac,
    // Perform MAC projection
    //
    MacProjector macproj( mac_vel, GetVecOfArrOfPtrsConst(rho_face), geom, lp_info);
+
+   int bc_lo[3], bc_hi[3];
+   Box domain(geom[0].Domain());
+
+   set_ppe_bcs(bc_lo, bc_hi,
+               domain.loVect(), domain.hiVect(),
+               &nghost,
+               bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+               bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+               bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+
+   ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
+   ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
 
    macproj.setDomainBC(ppe_lobc, ppe_hibc);
 

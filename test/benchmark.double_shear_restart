@@ -1,0 +1,29 @@
+max_step                =   20
+
+incflo.cfl              =   0.45        # CFL factor
+
+amr.plot_int            =   20         # Steps between plot files
+amr.check_int           =   10          # Steps between checkpoint files
+
+incflo.mu               =   0.0002      # Dynamic viscosity coefficient
+
+amr.max_level           =   0
+amr.n_cell              =   32  32  8   # Grid cells at coarsest AMRlevel
+amr.blocking_factor     =   8           # Blocking factor for grids
+
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   1.  1.  .25 #Hi corner coordinates
+
+geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
+
+incflo.probtype         =   21
+
+amr.plt_ccse_regtest    =   0
+amr.plt_velx            =   1 
+amr.plt_vely            =   1 
+amr.plt_velz            =   0 
+amr.plt_gpx             =   1 
+amr.plt_gpy             =   1 
+amr.plt_gpz             =   0 
+amr.plt_rho             =   1 
+amr.plt_tracer          =   1
