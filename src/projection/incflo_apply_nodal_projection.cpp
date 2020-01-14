@@ -1,5 +1,6 @@
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
+#include <incflo_proj_F.H>
 
 using namespace amrex;
 
@@ -31,7 +32,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
     // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
-    if (time > 0 && dt < 0.1 * prev_dt) 
+    if (time > 0 && dt < 0.1 * prev_dt)
        proj_for_small_dt      = true;
 
     if (incflo_verbose > 2)
@@ -85,8 +86,30 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
         MultiFab::Divide(*sigma[lev],*density[lev],0,0,1,0);
     }
 
-    // Perform projection
-    nodal_projector -> project(GetVecOfPtrs(vel), GetVecOfConstPtrs(sigma));
+    // Setup solver
+    int bc_lo[3], bc_hi[3];
+    Box domain(geom[0].Domain());
+
+    //
+    // First the nodal projection
+    //
+    set_ppe_bcs(bc_lo, bc_hi,
+                domain.loVect(), domain.hiVect(),
+                &nghost,
+                bc_ilo[0]->dataPtr(), bc_ihi[0]->dataPtr(),
+                bc_jlo[0]->dataPtr(), bc_jhi[0]->dataPtr(),
+                bc_klo[0]->dataPtr(), bc_khi[0]->dataPtr());
+
+    ppe_lobc = {(LinOpBCType)bc_lo[0], (LinOpBCType)bc_lo[1], (LinOpBCType)bc_lo[2]};
+    ppe_hibc = {(LinOpBCType)bc_hi[0], (LinOpBCType)bc_hi[1], (LinOpBCType)bc_hi[2]};
+
+    LPInfo info;
+    info.setMaxCoarseningLevel(100);
+
+    nodal_projector.reset(new NodalProjector(GetVecOfPtrs(vel),GetVecOfConstPtrs(sigma), geom, info));
+    nodal_projector->setDomainBC(ppe_lobc, ppe_hibc);
+    nodal_projector->project();
+
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)
