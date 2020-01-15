@@ -288,7 +288,7 @@ void incflo::MakeNewLevelFromScratch(int lev,
     m_factory[lev].reset(new FArrayBoxFactory());
 #endif
 
-    m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev]));
+    m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev], ng_state()));
 
     t_new[lev] = time;
     t_old[lev] = time - 1.e200;
