@@ -12,7 +12,7 @@
 
 using namespace amrex;
 
-void incflo::init_bcs()
+void incflo::init_bcs ()
 {
     auto f = [this] (std::string const& bcid, Orientation ori)
     {

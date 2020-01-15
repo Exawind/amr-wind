@@ -4,7 +4,7 @@
 using namespace amrex;
 
 void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
-                                    MultiFab& w_mac, MultiFab& vel)
+                                    MultiFab& w_mac, MultiFab const& vel)
 {
 #ifdef AMREX_USE_EB
     auto const& fact = this->EBFactory(lev);

@@ -269,8 +269,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yxbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //YX
-        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, ylo, yhi, 
-                             s, divu_cc, u_mac, xedge, yxlo, yxhi, 1, 0);
+        Godunov_corner_couple_yx(yxlo(i,j,k,n), yxhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 ylo(i,j,k,n), yhi(i,j,k,n),
+                                 s, divu_cc, u_mac, xedge);
 
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, yxlo(i,j,k,n), yxhi(i,j,k,n), vad, bc.lo(1),
@@ -282,8 +284,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zxbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //ZX
-        Godunov_corner_couple(i, j, k, n, l_dt, dx, iconserv, zlo, zhi, 
-                             s, divu_cc, u_mac, xedge, zxlo, zxhi, 2, 0);
+        Godunov_corner_couple_zx(zxlo(i,j,k,n), zxhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 zlo(i,j,k,n), zhi(i,j,k,n),
+                                 s, divu_cc, u_mac, xedge);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zxlo(i,j,k,n), zxhi(i,j,k,n), wad, bc.lo(2),
                              domain.loVect(), domain.hiVect(), true, false); 
@@ -295,8 +299,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xybx, ncomp, i, j, k, n, {
         //XY
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, xlo, xhi, 
-                             s, divu_cc, v_mac, yedge, xylo, xyhi, 0, 0);
+        Godunov_corner_couple_xy(xylo(i,j,k,n), xyhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dy, iconserv[n],
+                                 xlo(i,j,k,n), xhi(i,j,k,n),
+                                 s, divu_cc, v_mac, yedge);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xylo(i,j,k,n), xyhi(i,j,k,n), uad, bc.lo(0),
                              domain.loVect(), domain.hiVect(), true, false);
@@ -307,8 +313,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (zybx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //ZY 
-        Godunov_corner_couple(i, j, k, n, l_dt, dy, iconserv, zlo, zhi, 
-                             s, divu_cc, v_mac, yedge, zylo, zyhi, 2, 1);
+        Godunov_corner_couple_zy(zylo(i,j,k,n), zyhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dy, iconserv[n],
+                                 zlo(i,j,k,n), zhi(i,j,k,n),
+                                 s, divu_cc, v_mac, yedge);
         Real wad = w_mac(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, s, zylo(i,j,k,n), zyhi(i,j,k,n), wad, bc.lo(2),
                              domain.loVect(), domain.hiVect(), false, true);
@@ -320,8 +328,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (xzbx, ncomp, i, j, k, n, {
         //XZ
         const auto bc = pbc[n]; 
-        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, xlo, xhi, 
-                             s, divu_cc, w_mac, zedge, xzlo, xzhi, 0, 1);
+        Godunov_corner_couple_xz(xzlo(i,j,k,n), xzhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dz, iconserv[n],
+                                 xlo(i,j,k,n), xhi(i,j,k,n),
+                                 s, divu_cc, w_mac, zedge);
         Real uad = u_mac(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, s, xzlo(i,j,k,n), xzhi(i,j,k,n), uad, bc.lo(0),
                              domain.loVect(), domain.hiVect(), false, true); 
@@ -332,8 +342,10 @@ incflo::incflo_godunov_fluxes_on_box (const int lev, Box& bx,
     AMREX_PARALLEL_FOR_4D (yzbx, ncomp, i, j, k, n, {
         const auto bc = pbc[n]; 
         //YZ
-        Godunov_corner_couple(i, j, k, n, l_dt, dz, iconserv, ylo, yhi, 
-                             s, divu_cc, w_mac, zedge, yzlo, yzhi, 1, 1);
+        Godunov_corner_couple_yz(yzlo(i,j,k,n), yzhi(i,j,k,n),
+                                 i, j, k, n, l_dt, dz, iconserv[n],
+                                 ylo(i,j,k,n), yhi(i,j,k,n),
+                                 s, divu_cc, w_mac, zedge);
         Real vad = v_mac(i,j,k);
         Godunov_trans_ybc_lo(i, j, k, n, s, yzlo(i,j,k,n), yzhi(i,j,k,n), vad, bc.lo(1),
                              domain.loVect(), domain.hiVect(), false, true);

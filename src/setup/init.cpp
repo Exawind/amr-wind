@@ -6,7 +6,7 @@
 
 using namespace amrex;
 
-void incflo::ReadParameters()
+void incflo::ReadParameters ()
 {
     {
         // Variables without prefix in inputs file
@@ -415,7 +415,7 @@ void incflo::InitialIterations ()
     copy_from_new_to_old_tracer();
     for(int lev = 0; lev <= finest_level; ++lev) t_old[lev] = t_new[lev];
 
-    int ng = 2;  // This might change for Godunov.
+    int ng = (use_godunov) ? 3 : 2;
 #ifdef AMREX_USE_EB
     if (!EBFactory(0).isAllRegular()) ng = 4;
 #endif
@@ -436,6 +436,14 @@ void incflo::InitialIterations ()
 
         copy_from_old_to_new_velocity();
         copy_from_old_to_new_density();
+
+    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
+    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
+    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
+    amrex::VisMF::Write(m_leveldata[0]->p, "p");
+
+        amrex::Abort("xxxxx after first pressure iteration");
+
     }
 
     advect_tracer = advect_tracer_save;

@@ -189,8 +189,17 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
-        predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
+        if (use_godunov) {
+            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev]);
+        } else {
+            predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
+        }
     }
+
+    VisMF::Write(u_mac[0], "u_mac");
+    VisMF::Write(v_mac[0], "v_mac");
+    VisMF::Write(w_mac[0], "w_mac");
+    amrex::Abort("after predict mac");
 
     apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
 

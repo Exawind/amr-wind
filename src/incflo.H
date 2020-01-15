@@ -143,7 +143,7 @@ public:
 
     void predict_vels_on_faces (int lev, amrex::Real time, amrex::MultiFab& u_mac,
                                 amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
-                                amrex::MultiFab& vel);
+                                amrex::MultiFab const& vel);
 
     void incflo_predict_vels_on_faces(int lev, amrex::Real time,
                                       amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
@@ -226,6 +226,33 @@ public:
     void incflo_predict_godunov(int lev, amrex::Real time,
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel,
                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces);
+
+    void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
+                          amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
+                          amrex::MultiFab const& vel, amrex::MultiFab const& rho);
+
+    void make_ppm_integrals (int lev, amrex::Box const& bx, int ncomp,
+                             amrex::Array4<amrex::Real> const& Imx,
+                             amrex::Array4<amrex::Real> const& Ipx,
+                             amrex::Array4<amrex::Real> const& Imy,
+                             amrex::Array4<amrex::Real> const& Ipy,
+                             amrex::Array4<amrex::Real> const& Imz,
+                             amrex::Array4<amrex::Real> const& Ipz,
+                             amrex::Array4<amrex::Real const> const& q,
+                             amrex::Array4<amrex::Real const> const& vel);
+
+    void make_trans_velocities (int lev, amrex::Box const& bx,
+                                amrex::Box const& xbx, amrex::Box const& ybx, amrex::Box const& zbx,
+                                amrex::Array4<amrex::Real> const& u_ad,
+                                amrex::Array4<amrex::Real> const& v_ad,
+                                amrex::Array4<amrex::Real> const& w_ad,
+                                amrex::Array4<amrex::Real const> const& Imx,
+                                amrex::Array4<amrex::Real const> const& Ipx,
+                                amrex::Array4<amrex::Real const> const& Imy,
+                                amrex::Array4<amrex::Real const> const& Ipy,
+                                amrex::Array4<amrex::Real const> const& Imz,
+                                amrex::Array4<amrex::Real const> const& Ipz,
+                                amrex::Array4<amrex::Real const> const& vel);
 
     void incflo_make_trans_velocities (const int lev, amrex::Box& bx,
                                        const amrex::Array4<const amrex::Real> &a_vel,
@@ -466,6 +493,16 @@ public: // for cuda
                                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
                                 amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
 
+    void init_double_shear_layer (amrex::Box const& vbx, amrex::Box const& gbx,
+                                  amrex::Array4<amrex::Real> const& p,
+                                  amrex::Array4<amrex::Real> const& vel,
+                                  amrex::Array4<amrex::Real> const& denisty,
+                                  amrex::Array4<amrex::Real> const& tracer,
+                                  amrex::Box const& domain,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
+
     void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
     void predict_vels_on_faces (int lev,
@@ -512,7 +549,7 @@ public: // for cuda
     void SetInputBCs(const std::string bcID, const int index, const int cyclic, const amrex::Real domloc);
 
     // Read inputs file using ParmParse
-    void ReadParameters();
+    void ReadParameters ();
     void ReadIOParameters();
     void ReadRheologyParameters();
 
@@ -983,7 +1020,7 @@ public: // for cuda
 
     void AllocateArrays(int lev);
     void RegridArrays(int lev);
-    void MakeBCArrays();
+    void MakeBCArrays ();
 
 };
 
