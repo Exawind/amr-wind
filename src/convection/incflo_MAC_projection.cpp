@@ -38,7 +38,7 @@ void
 incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
                               Vector<MultiFab>& v_mac,
                               Vector<MultiFab>& w_mac,
-                              Vector<MultiFab*> const& density,
+                              Vector<MultiFab const*> const& density,
                               Real time)
 {
     BL_PROFILE("incflo::apply_MAC_projection()");

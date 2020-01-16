@@ -10,8 +10,10 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
       density   (ba, dm, 1             , ng, MFInfo(), fact),
       density_o (ba, dm, 1             , ng, MFInfo(), fact),
       tracer    (ba, dm, incflo::ntrac , ng, MFInfo(), fact),
-      tracer_o  (ba, dm, ntrac         , ng, MFInfo(), fact),
+      tracer_o  (ba, dm, incflo::ntrac , ng, MFInfo(), fact),
       gp        (ba, dm, AMREX_SPACEDIM, 0 , MFInfo(), fact),
+      vel_forces(ba, dm, AMREX_SPACEDIM, 1 , MFInfo(), fact),
+      tra_forces(ba, dm, incflo::ntrac , 1 , MFInfo(), fact),
       p         (amrex::convert(ba,IntVect::TheNodeVector()),
                      dm, 1             , 0 , MFInfo(), fact),
       conv_velocity  (ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact),
@@ -20,7 +22,9 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
       conv_density_o (ba, dm, 1             , 0, MFInfo(), fact),
       conv_tracer    (ba, dm, incflo::ntrac , 0, MFInfo(), fact),
       conv_tracer_o  (ba, dm, incflo::ntrac , 0, MFInfo(), fact)
-{}
+{
+    // xxxxx TODO we probably do not need the new conv_* for godunov
+}
 
 void incflo::AllocateArrays (int lev)
 {

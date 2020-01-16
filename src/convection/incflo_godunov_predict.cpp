@@ -16,8 +16,6 @@ void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
                                  Array4<Real const> const& vel)
 {
     Real l_dt = this->dt;
-    bool l_use_forces_in_trans = this->use_forces_in_trans;
-
     const auto dx = Geom(lev).CellSize();
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);
@@ -44,7 +42,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
                                     Array4<Real const> const& Ipy,
                                     Array4<Real const> const& Imz,
                                     Array4<Real const> const& Ipz,
-                                    Array4<Real const> const& vel)
+                                    Array4<Real const> const& vel,
+                                    Array4<Real const> const& f)
 {
     Real l_dt = this->dt;
     bool l_use_forces_in_trans = this->use_forces_in_trans;
@@ -61,9 +60,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
 
         Real lo, hi;
         if (l_use_forces_in_trans) {
-            amrex::Abort("TODO: use_forces_in_trans");
-            // lo = Ipx(i-1,j,k,n) + 0.5*l_dt*tf(i-1,j,k,n);
-            // hi = Imx(i  ,j,k,n) + 0.5*l_dt*tf(i  ,j,k,n);
+            lo = Ipx(i-1,j,k,n) + 0.5*l_dt*f(i-1,j,k,n);
+            hi = Imx(i  ,j,k,n) + 0.5*l_dt*f(i  ,j,k,n);
         } else {
             lo = Ipx(i-1,j,k,n);
             hi = Imx(i  ,j,k,n);
@@ -87,9 +85,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
 
         Real lo, hi;
         if (l_use_forces_in_trans) {
-            amrex::Abort("TODO: use_forces_in_trans");
-            // lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
-            // hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
+            lo = Ipy(i,j-1,k,n) + 0.5*l_dt*f(i,j-1,k,n);
+            hi = Imy(i,j  ,k,n) + 0.5*l_dt*f(i,j  ,k,n);
         } else {
             lo = Ipy(i,j-1,k,n);
             hi = Imy(i,j  ,k,n);
@@ -113,9 +110,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
 
         Real lo, hi;
         if (l_use_forces_in_trans) {
-            amrex::Abort("TODO: use_forces_in_trans");
-            // lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
-            // hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
+            lo = Ipz(i,j,k-1,n) + 0.5*l_dt*f(i,j,k-1,n);
+            hi = Imz(i,j,k  ,n) + 0.5*l_dt*f(i,j,k  ,n);
         } else {
             lo = Ipz(i,j,k-1,n);
             hi = Imz(i,j,k  ,n);
@@ -150,6 +146,7 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
                                      Array4<Real> const& Ipy,
                                      Array4<Real> const& Imz,
                                      Array4<Real> const& Ipz,
+                                     Array4<Real const> const& f,
                                      Real* p)
 {
     Real l_dt = this->dt;
@@ -188,8 +185,8 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         {
             Real lo, hi;
             if (l_use_forces_in_trans) {
-                // xxxxx lo = Ipx(i-1,j,k,n) + 0.5*l_dt*tf(i-1,j,k,n);
-                // hi = Imx(i  ,j,k,n) + 0.5*l_dt*tf(i  ,j,k,n);
+                lo = Ipx(i-1,j,k,n) + 0.5*l_dt*f(i-1,j,k,n);
+                hi = Imx(i  ,j,k,n) + 0.5*l_dt*f(i  ,j,k,n);
             } else {
                 lo = Ipx(i-1,j,k,n);
                 hi = Imx(i  ,j,k,n);
@@ -215,8 +212,8 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         {
             Real lo, hi;
             if (l_use_forces_in_trans) {
-                // xxxxx lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
-                // hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
+                lo = Ipy(i,j-1,k,n) + 0.5*l_dt*f(i,j-1,k,n);
+                hi = Imy(i,j  ,k,n) + 0.5*l_dt*f(i,j  ,k,n);
             } else {
                 lo = Ipy(i,j-1,k,n);
                 hi = Imy(i,j  ,k,n);
@@ -242,8 +239,8 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         {
             Real lo, hi;
             if (l_use_forces_in_trans) {
-                // xxxxx lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
-                // hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
+                lo = Ipz(i,j,k-1,n) + 0.5*l_dt*f(i,j,k-1,n);
+                hi = Imz(i,j,k  ,n) + 0.5*l_dt*f(i,j,k  ,n);
             } else {
                 lo = Ipz(i,j,k-1,n);
                 hi = Imz(i,j,k  ,n);
@@ -348,8 +345,8 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
 
         if (!l_use_forces_in_trans)
         {
-            // xxxxx stl += 0.5 * l_dt * tf(i-1,j,k,n);
-            // sth += 0.5 * l_dt * tf(i  ,j,k,n);
+            stl += 0.5 * l_dt * f(i-1,j,k,n);
+            sth += 0.5 * l_dt * f(i  ,j,k,n);
         }
 
         constexpr Real eps = 1e-6;
@@ -363,7 +360,8 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
 }
 
 void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
-                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho)
+                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho,
+                              MultiFab const& vel_forces)
 {
     const int ncomp = AMREX_SPACEDIM;
 #ifdef _OPENMP
@@ -383,6 +381,7 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             Array4<Real> const& a_vmac = v_mac.array(mfi);
             Array4<Real> const& a_wmac = w_mac.array(mfi);
             Array4<Real const> const& a_vel = vel.const_array(mfi);
+            Array4<Real const> const& a_f = vel_forces.const_array(mfi);
 
             scratch.resize(bxg1, ncomp*12+3);
 //            Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
@@ -411,15 +410,15 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
 
             make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
                                   u_ad, v_ad, w_ad,
-                                  Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel);
+                                  Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f);
 
             predict_godunov_on_box(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
-                                   a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, p);
+                                   a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
 
             Gpu::streamSynchronize();  // otherwise we might be using too much memory
         }
     }
-     
+
     VisMF::Write(u_mac, "u_mac");
 
     amrex::Abort("end of predict_godunov");

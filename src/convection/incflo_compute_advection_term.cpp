@@ -162,9 +162,11 @@ void
 incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Vector<MultiFab*> const& conv_r,
                                  Vector<MultiFab*> const& conv_t,
-                                 Vector<MultiFab*> const& vel,
-                                 Vector<MultiFab*> const& density,
-                                 Vector<MultiFab*> const& tracer,
+                                 Vector<MultiFab const*> const& vel,
+                                 Vector<MultiFab const*> const& density,
+                                 Vector<MultiFab const*> const& tracer,
+                                 Vector<MultiFab const*> const& vel_forces,
+                                 Vector<MultiFab const*> const& tra_forces,
                                  Real time)
 {
     Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
@@ -190,16 +192,19 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
         if (use_godunov) {
-            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev]);
+            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev],
+                            *vel_forces[lev]);
         } else {
             predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
         }
     }
 
-    VisMF::Write(u_mac[0], "u_mac");
-    VisMF::Write(v_mac[0], "v_mac");
-    VisMF::Write(w_mac[0], "w_mac");
-    amrex::Abort("after predict mac");
+    if (use_godunov) {
+        VisMF::Write(u_mac[0], "u_mac");
+        VisMF::Write(v_mac[0], "v_mac");
+        VisMF::Write(w_mac[0], "w_mac");
+        amrex::Abort("after predict mac");
+    }
 
     apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
 
@@ -212,7 +217,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
 
         MFItInfo mfi_info;
-        if (Gpu::notInLaunchRegion) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
+        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif

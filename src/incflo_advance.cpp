@@ -177,12 +177,27 @@ void incflo::ApplyPredictor (bool incremental_projection)
         PrintMaxValues(new_time);
     }
 
+    compute_forces(get_vel_forces(), get_tra_forces(),
+                   get_density_old_const(), get_tracer_old_const());
+
+    if (use_godunov) {
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(Geom(0).isAllPeriodic() and finest_level == 0,
+                                         "TODO: fillpatch_forces");
+        m_leveldata[0]->vel_forces.FillBoundary(Geom(0).periodicity());
+    } else {
+        // forces are not used in compute_convective_term
+    }
+
     // if ( use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
-                            get_velocity_old(), get_density_old(), get_tracer_old(), cur_time);
+                            get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
+                            get_vel_forces_const(), get_tra_forces_const(),
+                            cur_time);
 
-    amrex::Abort("xxxxx after compute_convective_term");
+    if (use_godunov) {
+        amrex::Abort("xxxxx after compute_convective_term");
+    }
 
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
     if (fluid_model != "newtonian") {
@@ -213,29 +228,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define local variables for lambda to capture.
     Real l_dt = dt;
     bool l_constant_density = constant_density;
-    bool l_use_boussinesq = use_boussinesq;
     int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
-    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
-    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
-
     for (int lev = 0; lev <= finest_level; lev++)
     {
         auto& ld = *m_leveldata[lev];
-#if 0
-        // xxxxx TODO: conflict
-        // Fill forcing term with -gp to start
-        MultiFab::Copy (*vel_forces[lev], *gp[lev], 0, 0, 3, 2);
-        vel_forces[lev] -> mult(-1.0);
-
-        // For now we don't have any external forces acting on the scalars
-        scal_forces[lev] -> setVal(0.);
-
-        // Add (-gp0 to forcing term if not Boussinesq)
-        if (!use_boussinesq)
-            for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-                (*vel_forces[lev]).plus(-gp0[dir], dir, 1, vel_forces[lev]->nGrow());
-#endif
-
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -248,47 +244,21 @@ void incflo::ApplyPredictor (bool incremental_projection)
             Array4<Real const> const& dvdt = ld.conv_velocity_o.const_array(mfi);
             Array4<Real const> const& drdt = ld.conv_density_o.const_array(mfi);
             Array4<Real const> const& dtdt = ld.conv_tracer_o.const_array(mfi);
-            Array4<Real const> const& gradp = ld.gp.const_array(mfi);
+            Array4<Real const> const& vel_f = ld.vel_forces.const_array(mfi);
+            Array4<Real const> const& tra_f = ld.tra_forces.const_array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
-                // Now add the convective term to the density and tracer
+                vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0));
+                vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1));
+                vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2));
+
                 if (!l_constant_density) {
                     rho(i,j,k) += l_dt * drdt(i,j,k);
                 }
 
-                if (l_ntrac > 0) {
-                    // xxxxx TODO: this is currently inconsistent.
-                    //             dtdt is actually for rho*tracer.
-                    for (int n = 0; n < l_ntrac; ++n) {
-                        tra(i,j,k,n) += l_dt * dtdt(i,j,k,n);
-                    }
-                }
-
-                // xxxxx TODO add viscous terms for explicit and Crank_Nicolson diffusion type
-
-                Real rhoinv = 1.0/(rho(i,j,k)+1.e-80);
-                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-                    // First add the convective term to the velocity
-                    Real vt = dvdt(i,j,k,dir);
-
-                    // Add gravitational forces
-                    if (l_use_boussinesq) {
-                        // xxxxx TODO: should this use the old or new tracer?
-                        vt += tra(i,j,k,0) * l_gravity[dir];
-                    } else {
-                        vt += l_gravity[dir];
-                    }
-
-                    // Add -gradp / rho
-                    // xxxxx TODO: should this use the old or new density?
-                    vt += -gradp(i,j,k,dir) * rhoinv;
-
-                    if (!l_use_boussinesq) {
-                        vt += -l_gp0[dir] * rhoinv;
-                    }
-
-                    vel(i,j,k,dir) += l_dt * vt;
+                for (int n = 0; n < l_ntrac; ++n) {
+                    tra(i,j,k,n) += l_dt * (dtdt(i,j,k,n)+tra_f(i,j,k,n));
                 }
             });
         }
@@ -459,16 +429,17 @@ void incflo::ApplyCorrector()
     // **********************************************************************************************
 
     compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
-                            get_velocity_new(), get_density_new(), get_tracer_new(), new_time);
+                            get_velocity_new_const(), get_density_new_const(), get_tracer_new_const(),
+                            get_vel_forces_const(), get_tra_forces_const(),
+                            new_time);
+
+    compute_forces(get_vel_forces(), get_tra_forces(),
+                   get_density_new_const(), get_tracer_new_const());
 
     // Define local variables for lambda to capture.
     Real l_dt = dt;
     bool l_constant_density = constant_density;
-    bool l_use_boussinesq = use_boussinesq;
     int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
-    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
-    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
-
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         auto& ld = *m_leveldata[lev];
@@ -491,47 +462,23 @@ void incflo::ApplyCorrector()
             Array4<Real const> const& dvdt_o = ld.conv_velocity_o.const_array(mfi);
             Array4<Real const> const& drdt_o = ld.conv_density_o.const_array(mfi);
             Array4<Real const> const& dtdt_o = ld.conv_tracer_o.const_array(mfi);
-            Array4<Real const> const& gradp = ld.gp.const_array(mfi);
+            Array4<Real const> const& vel_f = ld.vel_forces.const_array(mfi);
+            Array4<Real const> const& tra_f = ld.tra_forces.const_array(mfi);
 
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
-                // xxxxx TODO add viscous terms for explicit and Crank_Nicolson diffusion type
-
-                Real rhoinv = 1.0/(rho(i,j,k)+1.e-80);
-                for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-                    // First add the convective term to the velocity
-                    Real vt = 0.5*(dvdt(i,j,k,dir)+dvdt_o(i,j,k,dir));
-
-                    // Add gravitational forces
-                    if (l_use_boussinesq) {
-                        // xxxxx TODO: should this use the old or new tracer?
-                        vt += tra(i,j,k,0) * l_gravity[dir];
-                    } else {
-                        vt += l_gravity[dir];
-                    }
-
-                    // Add -gradp / rho
-                    // xxxxx TODO: should this use the old or new density?
-                    vt += -gradp(i,j,k,dir) * rhoinv;
-
-                    if (!l_use_boussinesq) {
-                        vt += -l_gp0[dir] * rhoinv;
-                    }
-
-                    vel(i,j,k,dir) = vel_o(i,j,k,dir) + l_dt * vt;
+                for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                    vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
+                        (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim));
                 }
 
-                // Now add the convective term to the density and tracer
                 if (!l_constant_density) {
                     rho(i,j,k) = rho_o(i,j,k) + l_dt * 0.5*(drdt(i,j,k)+drdt_o(i,j,k));
                 }
 
-                if (l_ntrac > 0) {
-                    // xxxxx TODO: this is currently inconsistent.
-                    //             dtdt is actually for rho*tracer.
-                    for (int n = 0; n < l_ntrac; ++n) {
-                        tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt * 0.5*(dtdt(i,j,k,n)+dtdt_o(i,j,k,n));
-                    }
+                for (int n = 0; n < l_ntrac; ++n) {
+                    tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt *
+                        (0.5*(dtdt(i,j,k,n)+dtdt_o(i,j,k,n)+tra_f(i,j,k,n)));
                 }
             });
         }
@@ -564,4 +511,56 @@ void incflo::ApplyCorrector()
     // Project velocity field, update pressure
     bool incremental = false;
     ApplyProjection(new_time, dt, incremental);
+}
+
+void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
+                             Vector<MultiFab*> const& tra_forces,
+                             Vector<MultiFab const*> const& density,
+                             Vector<MultiFab const*> const& tracer)
+{
+    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
+    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
+
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        for (MFIter mfi(*vel_forces[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& vel_f = vel_forces[lev]->array(mfi);
+            Array4<Real const> const& rho = density[lev]->const_array(mfi);
+            Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
+
+            if (use_boussinesq) {
+                // This uses a Boussinesq approximation where the buoyancy depends on
+                //      first tracer rather than density
+                Array4<Real const> const& tra = tracer[lev]->const_array(mfi);
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    Real rhoinv = 1.0/rho(i,j,k);
+                    Real ft = tra(i,j,k);
+                    vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
+                    vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;
+                    vel_f(i,j,k,2) = -gradp(i,j,k,2)*rhoinv + l_gravity[2] * ft;
+                    // xxxxx TODO add divtau_old
+                });
+            } else {
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    Real rhoinv = 1.0/rho(i,j,k);
+                    vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
+                    vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
+                    vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
+                    // xxxxx TODO add divtau_old
+                });
+            }
+        }
+    }
+
+    // For now we don't have any external forces on the scalars
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        tra_forces[lev]->setVal(0.0);
+        // xxxxx TODO add laps_old
+    }
 }

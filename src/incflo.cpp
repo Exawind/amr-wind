@@ -486,6 +486,26 @@ Vector<MultiFab*> incflo::get_tracer_new () noexcept
     return r;
 }
 
+Vector<MultiFab*> incflo::get_vel_forces () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->vel_forces));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_tra_forces () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tra_forces));
+    }
+    return r;
+}
+
 Vector<MultiFab*> incflo::get_conv_velocity_old () noexcept
 {
     Vector<MultiFab*> r;
@@ -542,6 +562,86 @@ Vector<MultiFab*> incflo::get_conv_tracer_new () noexcept
     r.reserve(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev) {
         r.push_back(&(m_leveldata[lev]->conv_tracer));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_velocity_old_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->velocity_o));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_velocity_new_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->velocity));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_density_old_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->density_o));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_density_new_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->density));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_tracer_old_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tracer_o));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_tracer_new_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tracer));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_vel_forces_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->vel_forces));
+    }
+    return r;
+}
+
+Vector<MultiFab const*> incflo::get_tra_forces_const () const noexcept
+{
+    Vector<MultiFab const*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->tra_forces));
     }
     return r;
 }

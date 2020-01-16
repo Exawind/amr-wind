@@ -229,7 +229,8 @@ public:
 
     void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
                           amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
-                          amrex::MultiFab const& vel, amrex::MultiFab const& rho);
+                          amrex::MultiFab const& vel, amrex::MultiFab const& rho,
+                          amrex::MultiFab const& vel_forces);
 
     void make_ppm_integrals (int lev, amrex::Box const& bx, int ncomp,
                              amrex::Array4<amrex::Real> const& Imx,
@@ -252,7 +253,8 @@ public:
                                 amrex::Array4<amrex::Real const> const& Ipy,
                                 amrex::Array4<amrex::Real const> const& Imz,
                                 amrex::Array4<amrex::Real const> const& Ipz,
-                                amrex::Array4<amrex::Real const> const& vel);
+                                amrex::Array4<amrex::Real const> const& vel,
+                                amrex::Array4<amrex::Real const> const& f);
 
     void predict_godunov_on_box (int lev, amrex::Box const& bx, int ncomp,
                                  amrex::Box const& xbx, amrex::Box const& ybx, amrex::Box const& zbx,
@@ -269,6 +271,7 @@ public:
                                  amrex::Array4<amrex::Real> const& Ipy,
                                  amrex::Array4<amrex::Real> const& Imz,
                                  amrex::Array4<amrex::Real> const& Ipz,
+                                 amrex::Array4<amrex::Real const> const& f,
                                  amrex::Real* p);
 
     void incflo_make_trans_velocities (const int lev, amrex::Box& bx,
@@ -358,6 +361,8 @@ private:
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
         amrex::MultiFab gp; // pressure gradient
+        amrex::MultiFab vel_forces;
+        amrex::MultiFab tra_forces;
         // nodal multifabs
         amrex::MultiFab p;
         //
@@ -445,12 +450,23 @@ private:
     amrex::Vector<amrex::MultiFab*> get_density_new () noexcept;
     amrex::Vector<amrex::MultiFab*> get_tracer_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_tracer_new () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_vel_forces () noexcept;
+    amrex::Vector<amrex::MultiFab*> get_tra_forces () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_velocity_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_velocity_new () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_density_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_density_new () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_conv_tracer_new () noexcept;
+    //
+    amrex::Vector<amrex::MultiFab const*> get_velocity_old_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_velocity_new_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_density_old_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_density_new_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_tracer_old_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_tracer_new_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_vel_forces_const () const noexcept;
+    amrex::Vector<amrex::MultiFab const*> get_tra_forces_const () const noexcept;
 
     amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
     amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
@@ -675,6 +691,11 @@ public: // for cuda
                           amrex::Array4<amrex::Real const> const& vfrac);
 #endif
 
+    void compute_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
+                         amrex::Vector<amrex::MultiFab*> const& tra_forces,
+                         amrex::Vector<amrex::MultiFab const*> const& density,
+                         amrex::Vector<amrex::MultiFab const*> const& tracer);
+
     void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
                                   amrex::Array4<amrex::Real> const& dvdt,
                                   amrex::Array4<amrex::Real> const& drdt,
@@ -689,15 +710,17 @@ public: // for cuda
     void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
                                   amrex::Vector<amrex::MultiFab*> const& conv_r,
                                   amrex::Vector<amrex::MultiFab*> const& conv_t,
-                                  amrex::Vector<amrex::MultiFab*> const& vel,
-                                  amrex::Vector<amrex::MultiFab*> const& density,
-                                  amrex::Vector<amrex::MultiFab*> const& tracer,
+                                  amrex::Vector<amrex::MultiFab const*> const& vel,
+                                  amrex::Vector<amrex::MultiFab const*> const& density,
+                                  amrex::Vector<amrex::MultiFab const*> const& tracer,
+                                  amrex::Vector<amrex::MultiFab const*> const& vel_forces,
+                                  amrex::Vector<amrex::MultiFab const*> const& tra_forces,
                                   amrex::Real time);
 
     void apply_MAC_projection (amrex::Vector<amrex::MultiFab>& u_mac,
                                amrex::Vector<amrex::MultiFab>& v_mac,
                                amrex::Vector<amrex::MultiFab>& w_mac,
-                               amrex::Vector<amrex::MultiFab*> const& density,
+                               amrex::Vector<amrex::MultiFab const*> const& density,
                                amrex::Real time);
 
      void incflo_compute_MAC_velocities(amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel_forces,
