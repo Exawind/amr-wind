@@ -220,7 +220,7 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         if (l_use_forces_in_trans) {
            lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
-           hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
+           hi = Imy(i,j  ,k,n) + 0.5*l_dt*tf(i,j  ,k,n);
         } else {
            lo = Ipy(i,j-1,k,n);
            hi = Imy(i,j  ,k,n);
@@ -254,7 +254,7 @@ incflo::incflo_predict_godunov_on_box (const int lev, Box& bx,
 
         if (l_use_forces_in_trans) {
            lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
-           hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
+           hi = Imz(i,j,k  ,n) + 0.5*l_dt*tf(i,j,k  ,n);
         } else {
            lo = Ipz(i,j,k-1,n);
            hi = Imz(i,j,k  ,n);
@@ -701,7 +701,7 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 
         if (l_use_forces_in_trans) {
            lo = Ipy(i,j-1,k,n) + 0.5*l_dt*tf(i,j-1,k,n);
-           hi = Imy(i,j,k,n)   + 0.5*l_dt*tf(i,j-1,k,n);
+           hi = Imy(i,j  ,k,n) + 0.5*l_dt*tf(i,j  ,k,n);
         } else {
            lo = Ipy(i,j-1,k,n);
            hi = Imy(i,j  ,k,n);
@@ -733,7 +733,7 @@ incflo::incflo_make_trans_velocities (const int lev, Box& bx,
 
         if (l_use_forces_in_trans) {
            lo = Ipz(i,j,k-1,n) + 0.5*l_dt*tf(i,j,k-1,n);
-           hi = Imz(i,j,k,n)   + 0.5*l_dt*tf(i,j,k-1,n);
+           hi = Imz(i,j,k  ,n) + 0.5*l_dt*tf(i,j,k  ,n);
         } else {
            lo = Ipz(i,j,k-1,n);
            hi = Imz(i,j,k  ,n);
