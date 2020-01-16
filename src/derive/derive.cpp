@@ -9,6 +9,7 @@ using namespace amrex;
 
 void incflo::ComputeDivU(Real time_in)
 {
+#if 0
 
     incflo_set_velocity_bcs(time_in, vel);
 
@@ -38,6 +39,7 @@ void incflo::ComputeDivU(Real time_in)
 #endif
     linop.setDomainBC(ppe_lobc,ppe_hibc);
     linop.compDivergence(GetVecOfPtrs(divu),GetVecOfPtrs(vel));
+#endif
 }
 
 void incflo::ComputeStrainrate(Real time_in)

@@ -83,7 +83,6 @@ public:
     const int* get_bc_klo_ptr(int lev){ return bc_klo[lev]->dataPtr(); }
     const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
 
-    int get_nghost(){ return nghost; }
     int get_probtype(){ return probtype; }
     void GetInputBCs();
 
@@ -352,7 +351,8 @@ private:
         LevelData () = default;
         LevelData (amrex::BoxArray const& ba,
                    amrex::DistributionMapping const& dm,
-                   amrex::FabFactory<amrex::FArrayBox> const& fact, int ng);
+                   amrex::FabFactory<amrex::FArrayBox> const& fact,
+                   int ntrac, int ng_state, int ng_force);
         // cell-centered multifabs
         amrex::MultiFab velocity;
         amrex::MultiFab velocity_o;
@@ -401,26 +401,38 @@ private:
     amrex::Vector<amrex::BCRec> m_bcrec_tracer;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
 
-    static int ntrac;
+    int ntrac = 1;
 
-    // Number of ghost nodes for field arrays.
+    // Number of ghost cells for field arrays.
+    int nghost_state () const {
 #ifdef AMREX_USE_EB
-    static constexpr int nghost            = 4;
-    static constexpr int nghost_for_slopes = 4;
-    static constexpr int nghost_for_bcs    = 4;
-#else
-    static constexpr int nghost            = 2;
-    static constexpr int nghost_for_slopes = 2;
-    static constexpr int nghost_for_bcs    = 2;
+        if (!EBFactory(0).isAllRegular()) return (use_godunov) ? 5 : 4;
 #endif
+        return (use_godunov) ? 3 : 2;
+    }
+
+    int nghost_force () const { return (use_godunov) ? 1 : 0; }
+
+    int nghost_mac () const {
+#ifdef AMREX_USE_EB
+        if (!EBFactory(0).isAllRegular()) return 3;
+#endif
+        return 0;
+    }
 
 #ifdef AMREX_USE_EB
-    static constexpr int m_eb_basic_grow_cells = nghost;
-    static constexpr int m_eb_volume_grow_cells = nghost;
-    static constexpr int m_eb_full_grow_cells = 2;
-#endif
+    int nghost_eb_basic () const {
+        return (use_godunov) ? 5 : 4;
+    }
 
-    int ng_state () const { return (use_godunov) ? nghost+1 : nghost; }
+    int nghost_eb_volume () const {
+        return (use_godunov) ? 5 : 4;
+    }
+
+    int nghost_eb_full () const {
+        return (use_godunov) ? 3 : 2;
+    }
+#endif
 
     std::unique_ptr<amrex::NodalProjector> nodal_projector; // xxxxx TODO: can be removed now
 

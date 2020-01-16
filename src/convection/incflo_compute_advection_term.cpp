@@ -155,7 +155,6 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             compute_convective_rate(lev, bx, ntrac, dtdt, fx, fy, fz);
         }
     }
-   
 }
 
 void
@@ -170,10 +169,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Real time)
 {
     Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
-    int ngmac = 0;  // This will change for Godunov.
-#ifdef AMREX_USE_EB
-    if (!EBFactory(0).isAllRegular()) ngmac = 3;
-#endif
+    int ngmac = nghost_mac();
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         const BoxArray& ba = density[lev]->boxArray();
@@ -185,9 +181,9 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm,
                           1, ngmac, MFInfo(), Factory(lev));
         if (ngmac > 0) {
-            u_mac[lev].setVal(0.0);
-            v_mac[lev].setVal(0.0);
-            w_mac[lev].setVal(0.0);
+            u_mac[lev].setBndry(0.0);
+            v_mac[lev].setBndry(0.0);
+            w_mac[lev].setBndry(0.0);
         }
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
@@ -236,7 +232,6 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     w_mac[lev].const_array(mfi));
         }
     }
-
 }
 
 //

@@ -38,10 +38,7 @@ void incflo::Advance()
     copy_from_new_to_old_density();
     copy_from_new_to_old_tracer();
 
-    int ng = 2;  // This might change for Godunov.
-#ifdef AMREX_USE_EB
-    if (!EBFactory(0).isAllRegular()) ng = 4;
-#endif
+    int ng = nghost_state();
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
@@ -228,7 +225,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define local variables for lambda to capture.
     Real l_dt = dt;
     bool l_constant_density = constant_density;
-    int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
+    int l_ntrac = (advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; lev++)
     {
         auto& ld = *m_leveldata[lev];
@@ -439,7 +436,7 @@ void incflo::ApplyCorrector()
     // Define local variables for lambda to capture.
     Real l_dt = dt;
     bool l_constant_density = constant_density;
-    int l_ntrac = (advect_tracer) ? incflo::ntrac : 0;
+    int l_ntrac = (advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         auto& ld = *m_leveldata[lev];

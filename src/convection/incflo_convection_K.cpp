@@ -503,14 +503,17 @@ void incflo::redistribute_eb (int lev, Box const& bx, int ncomp,
     Array4<Real> delm(scratch, ncomp);
     Array4<Real> wgt(scratch, 2*ncomp);
 
+    Box const& bxg1 = amrex::grow(bx,1);
+    Box const& bxg2 = amrex::grow(bx,2);
+
     // xxxxx TODO: more weight options
-    amrex::ParallelFor(amrex::grow(bx,2),
+    amrex::ParallelFor(bxg2,
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         wgt(i,j,k) = (dbox.contains(IntVect(i,j,k))) ? 1.0 : 0.0;
     });
 
-    amrex::ParallelFor(amrex::grow(bx,1), ncomp,
+    amrex::ParallelFor(bxg1, ncomp,
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
         if (flag(i,j,k).isSingleValued()) {
@@ -537,7 +540,7 @@ void incflo::redistribute_eb (int lev, Box const& bx, int ncomp,
         }
     });
 
-    amrex::ParallelFor(amrex::grow(bx,1) & dbox, ncomp,
+    amrex::ParallelFor(bxg1 & dbox, ncomp,
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
         if (flag(i,j,k).isSingleValued()) {
@@ -558,6 +561,7 @@ void incflo::redistribute_eb (int lev, Box const& bx, int ncomp,
             for (int jj = -1; jj <= 1; ++jj) {
             for (int ii = -1; ii <= 1; ++ii) {
                 if ((ii != 0 or jj != 0 or kk != 0) and
+                    bx.contains(IntVect(i+ii,j+jj,k+kk)) and
                     flag(i,j,k).isConnected(ii,jj,kk))
                 {
                     Gpu::Atomic::Add(&tmp(i+ii,j+jj,k+kk,n), dtmp*wgt(i+ii,j+jj,k+kk));

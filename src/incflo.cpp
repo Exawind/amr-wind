@@ -10,19 +10,6 @@
 
 using namespace amrex;
 
-// static variables of incflo class
-
-int           incflo::ntrac = 1;
-constexpr int incflo::nghost;
-constexpr int incflo::nghost_for_slopes;
-constexpr int incflo::nghost_for_bcs;
-
-#ifdef AMREX_USE_EB
-constexpr int incflo::m_eb_basic_grow_cells;
-constexpr int incflo::m_eb_volume_grow_cells;
-constexpr int incflo::m_eb_full_grow_cells;
-#endif
-
 // Constructor
 // Note that geometry on all levels has already been defined in the AmrCore constructor,
 // which the incflo class inherits from.
@@ -280,15 +267,16 @@ void incflo::MakeNewLevelFromScratch(int lev,
 
 #ifdef AMREX_USE_EB
     m_factory[lev] = makeEBFabFactory(geom[lev], grids[lev], dmap[lev],
-                                      {m_eb_basic_grow_cells,
-                                       m_eb_volume_grow_cells,
-                                       m_eb_full_grow_cells},
+                                      {nghost_eb_basic(),
+                                       nghost_eb_volume(),
+                                       nghost_eb_full()},
                                        EBSupport::full);
 #else
     m_factory[lev].reset(new FArrayBoxFactory());
 #endif
 
-    m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev], ng_state()));
+    m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
+                                         ntrac, nghost_state(), nghost_force()));
 
     t_new[lev] = time;
     t_old[lev] = time - 1.e200;
@@ -707,9 +695,9 @@ void incflo::copy_from_new_to_old_tracer (IntVect const& ng)
 
 void incflo::copy_from_new_to_old_tracer (int lev, IntVect const& ng)
 {
-    if (incflo::ntrac > 0) {
+    if (ntrac > 0) {
         MultiFab::Copy(m_leveldata[lev]->tracer_o,
-                       m_leveldata[lev]->tracer, 0, 0, incflo::ntrac, ng);
+                       m_leveldata[lev]->tracer, 0, 0, ntrac, ng);
     }
 }
 
@@ -722,8 +710,8 @@ void incflo::copy_from_old_to_new_tracer (IntVect const& ng)
 
 void incflo::copy_from_old_to_new_tracer (int lev, IntVect const& ng)
 {
-    if (incflo::ntrac > 0) {
+    if (ntrac > 0) {
         MultiFab::Copy(m_leveldata[lev]->tracer,
-                       m_leveldata[lev]->tracer_o, 0, 0, incflo::ntrac, ng);
+                       m_leveldata[lev]->tracer_o, 0, 0, ntrac, ng);
     }
 }

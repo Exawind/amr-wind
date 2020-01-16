@@ -4,24 +4,25 @@ using namespace amrex;
 
 incflo::LevelData::LevelData (amrex::BoxArray const& ba,
                               amrex::DistributionMapping const& dm,
-                              amrex::FabFactory<FArrayBox> const& fact, int ng)
-    : velocity  (ba, dm, AMREX_SPACEDIM, ng, MFInfo(), fact),
-      velocity_o(ba, dm, AMREX_SPACEDIM, ng, MFInfo(), fact),
-      density   (ba, dm, 1             , ng, MFInfo(), fact),
-      density_o (ba, dm, 1             , ng, MFInfo(), fact),
-      tracer    (ba, dm, incflo::ntrac , ng, MFInfo(), fact),
-      tracer_o  (ba, dm, incflo::ntrac , ng, MFInfo(), fact),
-      gp        (ba, dm, AMREX_SPACEDIM, 0 , MFInfo(), fact),
-      vel_forces(ba, dm, AMREX_SPACEDIM, 1 , MFInfo(), fact),
-      tra_forces(ba, dm, incflo::ntrac , 1 , MFInfo(), fact),
+                              amrex::FabFactory<FArrayBox> const& fact,
+                              int ntrac, int ng_state, int ng_force)
+    : velocity  (ba, dm, AMREX_SPACEDIM, ng_state, MFInfo(), fact),
+      velocity_o(ba, dm, AMREX_SPACEDIM, ng_state, MFInfo(), fact),
+      density   (ba, dm, 1             , ng_state, MFInfo(), fact),
+      density_o (ba, dm, 1             , ng_state, MFInfo(), fact),
+      tracer    (ba, dm, ntrac         , ng_state, MFInfo(), fact),
+      tracer_o  (ba, dm, ntrac         , ng_state, MFInfo(), fact),
+      gp        (ba, dm, AMREX_SPACEDIM, 0       , MFInfo(), fact),
+      vel_forces(ba, dm, AMREX_SPACEDIM, ng_force, MFInfo(), fact),
+      tra_forces(ba, dm, ntrac         , ng_force, MFInfo(), fact),
       p         (amrex::convert(ba,IntVect::TheNodeVector()),
                      dm, 1             , 0 , MFInfo(), fact),
       conv_velocity  (ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact),
       conv_velocity_o(ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact),
       conv_density   (ba, dm, 1             , 0, MFInfo(), fact),
       conv_density_o (ba, dm, 1             , 0, MFInfo(), fact),
-      conv_tracer    (ba, dm, incflo::ntrac , 0, MFInfo(), fact),
-      conv_tracer_o  (ba, dm, incflo::ntrac , 0, MFInfo(), fact)
+      conv_tracer    (ba, dm, ntrac         , 0, MFInfo(), fact),
+      conv_tracer_o  (ba, dm, ntrac         , 0, MFInfo(), fact)
 {
     // xxxxx TODO we probably do not need the new conv_* for godunov
 }

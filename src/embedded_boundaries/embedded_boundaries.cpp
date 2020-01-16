@@ -71,6 +71,7 @@ void incflo::MakeEBGeometry()
 // the proper dm and ba
 bool incflo::UpdateEBFactory(int a_lev)
 {
+#if 0
     // This assert is to verify that some kind of EB geometry
     // has already been defined
     AMREX_ASSERT(not EB2::IndexSpace::empty());
@@ -96,4 +97,6 @@ bool incflo::UpdateEBFactory(int a_lev)
     }
 
     return is_updated;
+#endif
+    return true;
 }

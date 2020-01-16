@@ -19,9 +19,9 @@ void incflo::fillphysbc_density (int lev, Real time, MultiFab& density, int ng)
 
 void incflo::fillphysbc_tracer (int lev, Real time, MultiFab& tracer, int ng)
 {
-    if (incflo::ntrac > 0) {
+    if (ntrac > 0) {
         PhysBCFunct<GpuBndryFuncFab<IncfloTracFill> > physbc
-            (geom[lev], get_tracer_bcrec(), IncfloTracFill{probtype, incflo::ntrac, m_bc_tracer_d});
-        physbc.FillBoundary(tracer, 0, incflo::ntrac, IntVect(ng), time, 0);
+            (geom[lev], get_tracer_bcrec(), IncfloTracFill{probtype, ntrac, m_bc_tracer_d});
+        physbc.FillBoundary(tracer, 0, ntrac, IntVect(ng), time, 0);
     }
 }

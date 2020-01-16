@@ -314,84 +314,10 @@ void incflo::InitFluid()
 
 void incflo::SetBCTypes()
 {
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        Real dx = geom[lev].CellSize(0);
-        Real dy = geom[lev].CellSize(1);
-        Real dz = geom[lev].CellSize(2);
-        Real xlen = geom[lev].ProbHi(0) - geom[lev].ProbLo(0);
-        Real ylen = geom[lev].ProbHi(1) - geom[lev].ProbLo(1);
-        Real zlen = geom[lev].ProbHi(2) - geom[lev].ProbLo(2);
-        Box domain(geom[lev].Domain());
-
-        set_bc_type(bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                    bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                    bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                    domain.loVect(), domain.hiVect(),
-                    &dx, &dy, &dz, &xlen, &ylen, &zlen, &nghost);
-    }
 }
 
 void incflo::SetBackgroundPressure()
 {
-    Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-    Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-    Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
-
-    int delp_dir;
-    set_delp_dir(&delp_dir);
-
-    IntVect press_per = IntVect(geom[0].isPeriodic(0),
-                                geom[0].isPeriodic(1),
-                                geom[0].isPeriodic(2));
-
-    // Here we set a separate periodicity flag for p0 because when we use
-    // pressure drop (delp) boundary conditions we fill all variables *except* p0
-    // periodically
-    if(delp_dir > -1)
-        press_per[delp_dir] = 0;
-
-    p0_periodicity = Periodicity(press_per);
-
-    for(int lev = 0; lev <= max_level; lev++)
-    {
-        Real dx = geom[lev].CellSize(0);
-        Real dy = geom[lev].CellSize(1);
-        Real dz = geom[lev].CellSize(2);
-
-        Box domain(geom[lev].Domain());
-
-        // We deliberately don't tile this loop since we will be looping
-        //    over bc's on faces and it makes more sense to do this one grid at a time
-        for(MFIter mfi(*density[lev], false); mfi.isValid(); ++mfi)
-        {
-            const Box& bx = mfi.validbox();
-
-            set_p0(bx.loVect(), bx.hiVect(),
-                   domain.loVect(), domain.hiVect(),
-                   BL_TO_FORTRAN_ANYD((*p0[lev])[mfi]),
-                   &gp0[0],
-                   &dx, &dy, &dz, &xlen, &ylen, &zlen,
-                   &delp_dir,
-                   bc_ilo[lev]->dataPtr(),
-                   bc_ihi[lev]->dataPtr(),
-                   bc_jlo[lev]->dataPtr(),
-                   bc_jhi[lev]->dataPtr(),
-                   bc_klo[lev]->dataPtr(),
-                   bc_khi[lev]->dataPtr(),
-                   &nghost);
-        }
-        p0[lev]->FillBoundary(p0_periodicity);
-    }
-
-    if (probtype == 11)
-    {
-       gp0[0] = 0.; gp0[1] = 0.; gp0[2] = 0.;
-       for(int lev = 0; lev <= max_level; lev++)
-          p0[lev]->setVal(0.);
-
-       use_boussinesq = true;
-    }
 }
 
 //
@@ -415,10 +341,7 @@ void incflo::InitialIterations ()
     copy_from_new_to_old_tracer();
     for(int lev = 0; lev <= finest_level; ++lev) t_old[lev] = t_new[lev];
 
-    int ng = (use_godunov) ? 3 : 2;
-#ifdef AMREX_USE_EB
-    if (!EBFactory(0).isAllRegular()) ng = 4;
-#endif
+    int ng = nghost_state();
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);

@@ -52,12 +52,14 @@ void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
 #endif
         for(MFIter mfi(*density[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
+#if 0
             fill_bc0(BL_TO_FORTRAN_ANYD((*eta_out[lev])[mfi]),
                      bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
                      bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
                      bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
                      domain.loVect(), domain.hiVect(),
                      &nghost);
+#endif
         }
 
         eta_out[lev]->FillBoundary(geom[lev].periodicity());

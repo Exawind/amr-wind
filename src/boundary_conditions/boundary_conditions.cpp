@@ -100,8 +100,8 @@ void incflo::init_bcs ()
     f("zlo", Orientation(Direction::z,Orientation::low));
     f("zhi", Orientation(Direction::z,Orientation::high));
 
-    if (incflo::ntrac > 0) {
-        Vector<Real> h_data(incflo::ntrac*AMREX_SPACEDIM*2);
+    if (ntrac > 0) {
+        Vector<Real> h_data(ntrac*AMREX_SPACEDIM*2);
         Real* hp = h_data.data();
         for (auto const& v : m_bc_tracer) {
             for (auto x : v) {
@@ -109,7 +109,7 @@ void incflo::init_bcs ()
             }
         }
 
-        m_bc_tracer_raii.resize(incflo::ntrac*AMREX_SPACEDIM*2);
+        m_bc_tracer_raii.resize(ntrac*AMREX_SPACEDIM*2);
         Real* p = m_bc_tracer_raii.data();
 #ifdef AMREX_USE_GPU
         Gpu::htod_memcpy
@@ -120,7 +120,7 @@ void incflo::init_bcs ()
 
         for (int i = 0; i < AMREX_SPACEDIM*2; ++i) {
             m_bc_tracer_d[i] = p;
-            p += incflo::ntrac;
+            p += ntrac;
         }
     }
 
@@ -221,9 +221,9 @@ void incflo::init_bcs ()
             (m_bcrec_density_d.data(), m_bcrec_density.data(), sizeof(BCRec));
     }
 
-    if (incflo::ntrac > 0)
+    if (ntrac > 0)
     {
-        m_bcrec_tracer.resize(incflo::ntrac);
+        m_bcrec_tracer.resize(ntrac);
         for (OrientationIter oit; oit; ++oit) {
             Orientation ori = oit();
             int dir = ori.coordDir();
@@ -256,13 +256,13 @@ void incflo::init_bcs ()
                 }
             }
         }
-        m_bcrec_tracer_d.resize(incflo::ntrac);
+        m_bcrec_tracer_d.resize(ntrac);
 #ifdef AMREX_USE_GPU
         Gpu::htod_memcpy
 #else
         std::memcpy
 #endif
-            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*incflo::ntrac);
+            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*ntrac);
     }
 }
 
