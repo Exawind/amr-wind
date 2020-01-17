@@ -9,6 +9,7 @@ void incflo::PrintMaxValues(Real time_in)
 {
     return; // xxxxx TODO
 
+#if 0
     ComputeDivU(time_in);
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -18,6 +19,7 @@ void incflo::PrintMaxValues(Real time_in)
         PrintMaxGp(lev);
     }
     amrex::Print() << std::endl;
+#endif
 }
 
 //

@@ -31,9 +31,9 @@ DiffusionTensorOp::DiffusionTensorOp (incflo* a_incflo)
     else
 #endif
     {
-        m_reg_op.reset(new MLTensorOp(m_incflo->Geom(0,m_incflo->finestLevel()),
-                                      m_incflo->boxArray(0,m_incflo->finestLevel()),
-                                      m_incflo->DistributionMap(0,m_incflo->finestLevel()),
+        m_reg_op.reset(new MLTensorOp(m_incflo->Geom(0,finest_level),
+                                      m_incflo->boxArray(0,finest_level),
+                                      m_incflo->DistributionMap(0,finest_level),
                                       info));
         m_reg_op->setMaxOrder(m_mg_maxorder);
         m_reg_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),

@@ -14,7 +14,6 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                  Array4<Real const> const& vmac,
                                  Array4<Real const> const& wmac)
 {
-    bool regular = true;
 #ifdef AMREX_USE_EB
     auto const& fact = EBFactory(lev);
     EBCellFlagFab const& flagfab = fact.getMultiEBCellFlagFab()[mfi];
@@ -37,7 +36,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         return;
     }
 
-    regular = (flagfab.getType(amrex::grow(bx,1)) == FabType::regular);
+    bool regular = (flagfab.getType(amrex::grow(bx,1)) == FabType::regular);
 
     Array4<Real const> fcx, fcy, fcz, vfrac, apx, apy, apz;
     if (!regular) {

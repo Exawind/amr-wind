@@ -5,6 +5,10 @@ using namespace amrex;
 
 void incflo::WriteMyEBSurface()
 {
+    amrex::Warning("TODO: WriteMyEBSurface");
+
+#if 0
+
   if (Geom(0).isAllPeriodic()) return;
 
   // Only write at the finest level!
@@ -12,10 +16,6 @@ void incflo::WriteMyEBSurface()
 
   BoxArray & ba            = grids[lev];
   DistributionMapping & dm = dmap[lev];
-
-  amrex::Warning("TODO: WriteMyEBSurface");
-
-#if 0
 
   const EBFArrayBoxFactory * ebf;
 

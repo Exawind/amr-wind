@@ -17,7 +17,6 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
     {
         for (MFIter mfi(vel, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-            Box const& bx = mfi.tilebox();
             Box const& ubx = mfi.nodaltilebox(0);
             Box const& vbx = mfi.nodaltilebox(1);
             Box const& wbx = mfi.nodaltilebox(2);
@@ -26,16 +25,18 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             Array4<Real> const& w = w_mac.array(mfi);
             Array4<Real const> const& vcc = vel.const_array(mfi);
 #ifdef AMREX_USE_EB
+            Box const& bx = mfi.tilebox();
             EBCellFlagFab const& flagfab = flags[mfi];
             Array4<EBCellFlag const> const& flagarr = flagfab.const_array();
-            if (flagfab.getType(bx) == FabType::covered)
+            auto const typ = flagfab.getType(amrex::grow(bx,1));
+            if (typ == FabType::covered)
             {
                 amrex::ParallelFor(ubx, vbx, wbx,
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept { u(i,j,k) = 0.0; },
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept { v(i,j,k) = 0.0; },
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept { w(i,j,k) = 0.0; });
             }
-            else if (flagfab.getType(amrex::grow(bx,1)) == FabType::singlevalued)
+            else if (typ == FabType::singlevalued)
             {
                 Array4<Real const> const& fcx = fcent[0]->const_array(mfi);
                 Array4<Real const> const& fcy = fcent[1]->const_array(mfi);
