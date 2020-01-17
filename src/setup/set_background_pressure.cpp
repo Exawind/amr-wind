@@ -4,9 +4,9 @@ using namespace amrex;
 
 void incflo::set_background_pressure ()
 {
-    p000 = ic_p;
+    p000 = m_ic_p;
 
-    if (probtype == 11) {
+    if (m_probtype == 11) {
         use_boussinesq = true;
     } else {
         const auto problo = geom[0].ProbLoArray();

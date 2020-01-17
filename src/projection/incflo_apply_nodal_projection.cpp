@@ -60,9 +60,9 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
     // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
-    bool proj_for_small_dt = (time > 0.0 and dt < 0.1 * prev_dt);
+    bool proj_for_small_dt = (time > 0.0 and m_dt < 0.1 * m_prev_dt);
 
-    if (incflo_verbose > 2)
+    if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
             amrex::Print() << "Before projection (with small dt modification):" << std::endl;
@@ -201,7 +201,7 @@ void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
     // xxxxx Is this needed? Even if yes, we probably only average down gp (and p?).
     //  AverageDown();
 
-    if(incflo_verbose > 2)
+    if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
             amrex::Print() << "After  projection (with small dt modification):" << std::endl;

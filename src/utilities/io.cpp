@@ -40,8 +40,8 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 
 		// Time stepping controls
 		HeaderFile << nstep << "\n";
-		HeaderFile << dt << "\n";
-		HeaderFile << cur_time << "\n";
+		HeaderFile << m_dt << "\n";
+		HeaderFile << m_cur_time << "\n";
 
 		// Geometry
 		for(int i = 0; i < BL_SPACEDIM; ++i)
@@ -143,7 +143,7 @@ void incflo::ReadCheckpointFile()
     GotoNextLine(is);
 
     // Current time
-    is >> cur_time;
+    is >> m_cur_time;
     GotoNextLine(is);
 
     // Low coordinates of domain bounding box
@@ -186,7 +186,7 @@ void incflo::ReadCheckpointFile()
         // Create distribution mapping
         DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-        MakeNewLevelFromScratch(lev, cur_time, ba, dm);
+        MakeNewLevelFromScratch(lev, m_cur_time, ba, dm);
     }
 
 	/***************************************************************************
@@ -320,14 +320,14 @@ void incflo::WritePlotFile()
 #if 0
 	BL_PROFILE("incflo::WritePlotFile()");
 
-        if (plt_divu      ) ComputeDivU(cur_time);
-        if (plt_strainrate) ComputeStrainrate(cur_time);
-        if (plt_eta       ) ComputeViscosity(eta,cur_time);
-        if (plt_vort      ) ComputeVorticity(cur_time);
+        if (plt_divu      ) ComputeDivU(m_cur_time);
+        if (plt_strainrate) ComputeStrainrate(m_cur_time);
+        if (plt_eta       ) ComputeViscosity(eta,m_cur_time);
+        if (plt_vort      ) ComputeVorticity(m_cur_time);
 
 	const std::string& plotfilename = amrex::Concatenate(plot_file, nstep);
 
-	amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << cur_time << std::endl;
+	amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_cur_time << std::endl;
 
 	const int ngrow = 0;
 
@@ -541,7 +541,7 @@ void incflo::WritePlotFile()
 
         // Write the plotfile
         amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), 
-                                   pltscaVarsName, Geom(), cur_time, istep, refRatio());
+                                   pltscaVarsName, Geom(), m_cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
 #endif

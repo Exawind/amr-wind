@@ -32,8 +32,8 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
 void incflo::ResizeArrays ()
 {
     // Time holders for fillpatch stuff
-    t_new.resize(max_level + 1);
-    t_old.resize(max_level + 1);
+    m_t_new.resize(max_level + 1);
+    m_t_old.resize(max_level + 1);
 
     m_leveldata.resize(max_level+1);
 

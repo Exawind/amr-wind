@@ -9,7 +9,7 @@ void incflo::Advance()
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
 
-    if(incflo_verbose > 0)
+    if (m_verbose > 0)
     {
         amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
     }
@@ -22,16 +22,16 @@ void incflo::Advance()
     // Set new and old time to correctly use in fillpatching
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        t_old[lev] = cur_time;
-        t_new[lev] = cur_time + dt;
+        m_t_old[lev] = m_cur_time;
+        m_t_new[lev] = m_cur_time + m_dt;
     }
 
-    if(incflo_verbose > 0)
+    if (m_verbose > 0)
     {
         amrex::Print() << "\nStep " << nstep + 1
-                       << ": from old_time " << cur_time
-                       << " to new time " << cur_time + dt
-                       << " with dt = " << dt << ".\n" << std::endl;
+                       << ": from old_time " << m_cur_time
+                       << " to new time " << m_cur_time + m_dt
+                       << " with dt = " << m_dt << ".\n" << std::endl;
     }
 
     copy_from_new_to_old_velocity();
@@ -40,20 +40,20 @@ void incflo::Advance()
 
     int ng = nghost_state();
     for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, t_old[lev], m_leveldata[lev]->velocity_o, ng);
-        fillpatch_density(lev, t_old[lev], m_leveldata[lev]->density_o, ng);
+        fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
+        fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
         if (advect_tracer) {
-            fillpatch_tracer(lev, t_old[lev], m_leveldata[lev]->tracer_o, ng);
+            fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
         }
     }
 
     ApplyPredictor();
 
     for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, t_new[lev], m_leveldata[lev]->velocity, ng);
-        fillpatch_density(lev, t_new[lev], m_leveldata[lev]->density, ng);
+        fillpatch_velocity(lev, m_t_new[lev], m_leveldata[lev]->velocity, ng);
+        fillpatch_density(lev, m_t_new[lev], m_leveldata[lev]->density, ng);
         if (advect_tracer) {
-            fillpatch_tracer(lev, t_new[lev], m_leveldata[lev]->tracer, ng);
+            fillpatch_tracer(lev, m_t_new[lev], m_leveldata[lev]->tracer, ng);
         }
     }
 
@@ -61,13 +61,13 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
-    if(incflo_verbose > 1)
+    if (m_verbose > 1)
     {
         amrex::Print() << "End of time step: " << std::endl;
 #if 0
         // xxxxx
-        PrintMaxValues(cur_time + dt);
-        if(probtype%10 == 3 or probtype == 5)
+        PrintMaxValues(m_cur_time + dt);
+        if(m_probtype%10 == 3 or m_probtype == 5)
         {
             ComputeDrag();
             amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl;
@@ -77,14 +77,14 @@ void incflo::Advance()
 
 #if 0
     if (test_tracer_conservation) {
-        amrex::Print() << "Sum tracer volume wgt = " << cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+        amrex::Print() << "Sum tracer volume wgt = " << m_cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
     }
 #endif
 
     // Stop timing current time step
     Real end_step = ParallelDescriptor::second() - strt_step;
     ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
-    if(incflo_verbose > 0)
+    if (m_verbose > 0)
     {
         amrex::Print() << "Time per step " << end_step << std::endl;
     }
@@ -111,7 +111,7 @@ void incflo::Advance()
 //      conv_u  = - u grad u
 //      conv_r  = - div( u rho  )
 //      conv_t  = - div( u trac )
-//      eta_old     = visosity at cur_time
+//      eta_old     = visosity at m_cur_time
 //      if (m_diff_type == DiffusionType::Explicit)
 //         divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho
 //         rhs = u + dt * ( conv + divtau_old )
@@ -166,9 +166,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = cur_time + dt;
+    Real new_time = m_cur_time + m_dt;
 
-    if(incflo_verbose > 2)
+    if (m_verbose > 2)
     {
         amrex::Print() << "Before predictor step:" << std::endl;
         PrintMaxValues(new_time);
@@ -190,16 +190,16 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
                             get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
                             get_vel_forces_const(), get_tra_forces_const(),
-                            cur_time);
+                            m_cur_time);
 
     if (use_godunov) {
         amrex::Abort("xxxxx after compute_convective_term");
     }
 
-    // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
+    // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "m_cur_time")
     if (fluid_model != "newtonian") {
         amrex::Abort("non-Newtonian: TODO");
-//        ComputeViscosity(eta_old, cur_time);
+//        ComputeViscosity(eta_old, m_cur_time);
     }
 
     // Compute explicit diffusion if used
@@ -208,7 +208,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         use_godunov)
     {
         amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
-        // incflo_set_velocity_bcs (cur_time, vel_o);
+        // incflo_set_velocity_bcs (m_cur_time, vel_o);
         // diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
         // diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
     } else {
@@ -223,7 +223,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     // Define local variables for lambda to capture.
-    Real l_dt = dt;
+    Real l_dt = m_dt;
     bool l_constant_density = constant_density;
     int l_ntrac = (advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; lev++)
@@ -281,18 +281,18 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         amrex::Abort("TODO: Crank_Nicolson");
 #if 0
-        diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*dt);
+        diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*m_dt);
         if (advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*dt);
+            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*m_dt);
 #endif
     }
     else if (m_diff_type == DiffusionType::Implicit)
     {
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new(), cur_time, dt);
+                                                    get_density_new(), m_cur_time, m_dt);
         if (advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                      get_density_new(), cur_time, dt);
+                                                      get_density_new(), m_cur_time, m_dt);
         }
     }
 
@@ -301,7 +301,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Project velocity field, update pressure
     // 
     // **********************************************************************************************
-    ApplyProjection(new_time, dt, incremental_projection);
+    ApplyProjection(new_time, m_dt, incremental_projection);
 }
 
 //
@@ -370,9 +370,9 @@ void incflo::ApplyCorrector()
     BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = cur_time + dt;
+    Real new_time = m_cur_time + m_dt;
 
-    if(incflo_verbose > 2)
+    if (m_verbose > 2)
     {
         amrex::Print() << "Before corrector step:" << std::endl;
         PrintMaxValues(new_time);
@@ -434,7 +434,7 @@ void incflo::ApplyCorrector()
                    get_density_new_const(), get_tracer_new_const());
 
     // Define local variables for lambda to capture.
-    Real l_dt = dt;
+    Real l_dt = m_dt;
     bool l_constant_density = constant_density;
     int l_ntrac = (advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; ++lev)
@@ -496,10 +496,10 @@ void incflo::ApplyCorrector()
     else if (m_diff_type == DiffusionType::Implicit)
     {
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new(), new_time, dt);
+                                                    get_density_new(), new_time, m_dt);
         if (advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                      get_density_new(), new_time, dt);
+                                                      get_density_new(), new_time, m_dt);
         }
     }
 
@@ -507,7 +507,7 @@ void incflo::ApplyCorrector()
     // 
     // Project velocity field, update pressure
     bool incremental = false;
-    ApplyProjection(new_time, dt, incremental);
+    ApplyProjection(new_time, m_dt, incremental);
 }
 
 void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,

@@ -309,23 +309,23 @@ public: // for cuda
 private:
 
     // Be verbose?
-    int incflo_verbose = 0;
+    int m_verbose = 0;
 
     // Member variables for initial conditions
-    int probtype = 0;
-    amrex::Real ic_u = 0.0;
-    amrex::Real ic_v = 0.0;
-    amrex::Real ic_w = 0.0;
-    amrex::Real ic_p = 0.0;
+    int m_probtype = 0;
+    amrex::Real m_ic_u = 0.0;
+    amrex::Real m_ic_v = 0.0;
+    amrex::Real m_ic_w = 0.0;
+    amrex::Real m_ic_p = 0.0;
 
-    amrex::Vector<amrex::Real> t_old;
-    amrex::Vector<amrex::Real> t_new;
+    amrex::Vector<amrex::Real> m_t_old;
+    amrex::Vector<amrex::Real> m_t_new;
 
     // Times
-    amrex::Real cur_time     = 0.0;
-    amrex::Real dt           = -1.0;
-    amrex::Real prev_dt      = -1.0;
-    amrex::Real prev_prev_dt = -1.0;
+    amrex::Real m_cur_time     = 0.0;
+    amrex::Real m_dt           = -1.0;
+    amrex::Real m_prev_dt      = -1.0;
+    amrex::Real m_prev_prev_dt = -1.0;
 
     // Time step counter
     int nstep         = -1;

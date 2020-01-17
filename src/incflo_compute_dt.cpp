@@ -27,8 +27,8 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
     BL_PROFILE("incflo::ComputeDt");
 
     // Store the past two dt
-    prev_prev_dt = prev_dt;
-    prev_dt = dt;
+    m_prev_prev_dt = m_prev_dt;
+    m_prev_dt = m_dt;
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;
@@ -146,40 +146,40 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
     Real eps = std::numeric_limits<Real>::epsilon();
     if(comb_cfl <= eps)
     {
-        dt_new = 0.5 * dt;
+        dt_new = 0.5 * m_dt;
     }
 
     // Don't let the timestep grow by more than 10% per step 
     // unless the previous time step was unduly shrunk to match plot_per_exact
-    if( (dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    if( (m_dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
     {
-        dt_new = amrex::min(dt_new, 1.1 * prev_dt);
+        dt_new = amrex::min(dt_new, 1.1 * m_prev_dt);
     } 
-    else if ( (dt > 0.0) && (plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    else if ( (m_dt > 0.0) && (plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
     {
-        dt_new = amrex::min( dt_new, 1.1 * amrex::max(prev_dt, prev_prev_dt) );
+        dt_new = amrex::min( dt_new, 1.1 * amrex::max(m_prev_dt, m_prev_prev_dt) );
     }
     
     // Don't overshoot specified plot times
     if(plot_per_exact > 0.0 && 
-            (std::trunc((cur_time + dt_new + eps) / plot_per_exact) > std::trunc((cur_time + eps) / plot_per_exact)))
+            (std::trunc((m_cur_time + dt_new + eps) / plot_per_exact) > std::trunc((m_cur_time + eps) / plot_per_exact)))
     {
-        dt_new = std::trunc((cur_time + dt_new) / plot_per_exact) * plot_per_exact - cur_time;
+        dt_new = std::trunc((m_cur_time + dt_new) / plot_per_exact) * plot_per_exact - m_cur_time;
     }
 
     // Don't overshoot the final time if not running to steady state
     if(!steady_state && stop_time > 0.0)
     {
-        if(cur_time + dt_new > stop_time)
+        if(m_cur_time + dt_new > stop_time)
         {
-            dt_new = stop_time - cur_time;
+            dt_new = stop_time - m_cur_time;
         }
     }
 
     // Make sure the timestep is not set to zero after a plot_per_exact stop
     if(dt_new < eps)
     {
-        dt_new = 0.5 * dt;
+        dt_new = 0.5 * m_dt;
     }
 
     // If using fixed time step, check CFL condition and give warning if not satisfied
@@ -191,10 +191,10 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
 					   << "max dt by CFL     : " << dt_new << "\n"
 					   << "fixed dt specified: " << fixed_dt << std::endl;
 	}
-	dt = fixed_dt;
+	m_dt = fixed_dt;
     }
     else
     {
-	dt = dt_new;
+	m_dt = dt_new;
     }
 }

@@ -42,7 +42,7 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
 {
     BL_PROFILE("incflo::apply_MAC_projection()");
 
-    if (incflo_verbose > 0) amrex::Print() << "MAC Projection:\n";
+    if (m_verbose > 0) amrex::Print() << "MAC Projection:\n";
 
     // This will hold (1/rho) on faces
     Vector<Array<MultiFab ,AMREX_SPACEDIM> > rho_face(finest_level+1);

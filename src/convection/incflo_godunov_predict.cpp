@@ -15,7 +15,7 @@ void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
                                  Array4<Real const> const& q,
                                  Array4<Real const> const& vel)
 {
-    Real l_dt = this->dt;
+    Real l_dt = m_dt;
     const auto dx = Geom(lev).CellSize();
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);
@@ -45,7 +45,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
                                     Array4<Real const> const& vel,
                                     Array4<Real const> const& f)
 {
-    Real l_dt = this->dt;
+    Real l_dt = m_dt;
     bool l_use_forces_in_trans = this->use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
@@ -149,7 +149,7 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
                                      Array4<Real const> const& f,
                                      Real* p)
 {
-    Real l_dt = this->dt;
+    Real l_dt = m_dt;
     bool l_use_forces_in_trans = this->use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();

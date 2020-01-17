@@ -8,9 +8,6 @@
 
 using namespace amrex;
 
-// Constructor
-// Note that geometry on all levels has already been defined in the AmrCore constructor,
-// which the incflo class inherits from.
 incflo::incflo ()
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
@@ -21,8 +18,7 @@ incflo::incflo ()
     ReadParameters();
 
 #ifdef AMREX_USE_EB
-    // This is needed before initializing level MultiFabs: ebfactories should
-    // not change after the eb-dependent MultiFabs are allocated.
+    // This is needed before initializing level MultiFab
     MakeEBGeometry();
 #endif
 
@@ -32,8 +28,6 @@ incflo::incflo ()
     init_bcs();
 
     set_background_pressure();
-
-    // xxxxx flux registers
 }
 
 incflo::~incflo ()
@@ -56,7 +50,7 @@ void incflo::InitData ()
 
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
-        InitFromScratch(cur_time);
+        InitFromScratch(m_cur_time);
 
         if (do_initial_proj) {
             InitialProjection();
@@ -95,7 +89,7 @@ void incflo::InitData ()
     if(KE_int > 0 && !restart_flag)
     {
         amrex::Abort("xxxxx KE_int todo");
-//        amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
+//        amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
 #ifdef AMREX_USE_EB
@@ -115,7 +109,7 @@ void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
 
-    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (cur_time > stop_time)) ||
+    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (m_cur_time > stop_time)) ||
    					     ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
 
     while(!do_not_evolve)
@@ -145,7 +139,7 @@ void incflo::Evolve()
         // Advance to time t + dt
         Advance();
         nstep++;
-        cur_time += dt;
+        m_cur_time += m_dt;
 
         amrex::Abort("xxxxx After the first Advance()");
 
@@ -163,12 +157,12 @@ void incflo::Evolve()
         
         if(KE_int > 0 && (nstep % KE_int == 0))
         {
-            amrex::Print() << "Time, Kinetic Energy: " << cur_time << ", " << ComputeKineticEnergy() << std::endl;
+            amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
         }
 
         // Mechanism to terminate incflo normally.
         do_not_evolve = (steady_state && SteadyStateReached()) ||
-                        ((stop_time > 0. && (cur_time >= stop_time - 1.e-12 * dt)) ||
+                        ((stop_time > 0. && (m_cur_time >= stop_time - 1.e-12 * m_dt)) ||
                          (max_step >= 0 && nstep >= max_step));
     }
 
@@ -259,7 +253,7 @@ void incflo::MakeNewLevelFromScratch(int lev,
 {
     BL_PROFILE("incflo::MakeNewLevelFromScratch()");
 
-    if(incflo_verbose > 0)
+    if (m_verbose > 0)
     {
         amrex::Print() << "Making new level " << lev << std::endl;
         amrex::Print() << "with BoxArray " << new_grids << std::endl;
@@ -281,8 +275,8 @@ void incflo::MakeNewLevelFromScratch(int lev,
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
                                          ntrac, nghost_state(), nghost_force()));
 
-    t_new[lev] = time;
-    t_old[lev] = time - 1.e200;
+    m_t_new[lev] = time;
+    m_t_old[lev] = time - 1.e200;
 
     prob_init_fluid(lev);
 }
@@ -348,7 +342,7 @@ incflo::writeNow()
     if ( plot_int > 0 && (nstep % plot_int == 0) ) 
         write_now = true;
 
-    else if ( plot_per_exact  > 0 && (std::abs(std::remainder(cur_time, plot_per_exact)) < 1.e-12) ) 
+    else if ( plot_per_exact  > 0 && (std::abs(std::remainder(m_cur_time, plot_per_exact)) < 1.e-12) ) 
         write_now = true;
 
     else if (plot_per_approx > 0.0)
@@ -357,18 +351,18 @@ incflo::writeNow()
         // the number of intervals that have elapsed for both the current
         // time and the time at the beginning of this timestep.
 
-        int num_per_old = (cur_time-dt) / plot_per_approx;
-        int num_per_new = (cur_time   ) / plot_per_approx;
+        int num_per_old = (m_cur_time-m_dt) / plot_per_approx;
+        int num_per_new = (m_cur_time     ) / plot_per_approx;
 
         // Before using these, however, we must test for the case where we're
         // within machine epsilon of the next interval. In that case, increment
         // the counter, because we have indeed reached the next plot_per_approx interval
         // at this point.
 
-        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(cur_time);
+        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(m_cur_time);
         const Real next_plot_time = (num_per_old + 1) * plot_per_approx;
 
-        if ((num_per_new == num_per_old) && std::abs(cur_time - next_plot_time) <= eps)
+        if ((num_per_new == num_per_old) && std::abs(m_cur_time - next_plot_time) <= eps)
         {
             num_per_new += 1;
         }
@@ -377,7 +371,7 @@ incflo::writeNow()
         // machine epsilon of the beginning of this interval, so that we don't double
         // count that time threshold -- we already plotted at that time on the last timestep.
 
-        if ((num_per_new != num_per_old) && std::abs((cur_time - dt) - next_plot_time) <= eps)
+        if ((num_per_new != num_per_old) && std::abs((m_cur_time - m_dt) - next_plot_time) <= eps)
             num_per_old += 1;
 
         if (num_per_old != num_per_new)

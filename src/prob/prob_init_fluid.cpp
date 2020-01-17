@@ -17,7 +17,7 @@ void incflo::prob_init_fluid (int lev)
     {
         const Box& vbx = mfi.validbox();
         const Box& gbx = mfi.fabbox();
-        if (21 == probtype or 22 == probtype or 23 == probtype)
+        if (21 == m_probtype or 22 == m_probtype or 23 == m_probtype)
         {
             init_double_shear_layer(vbx, gbx,
                                     ld.p.array(mfi),
@@ -26,7 +26,7 @@ void incflo::prob_init_fluid (int lev)
                                     ld.tracer.array(mfi),
                                     domain, dx, problo, probhi);
         }
-        else if (32 == probtype)
+        else if (32 == m_probtype)
         {
             init_plane_poiseuille(vbx, gbx,
                                   ld.p.array(mfi),
@@ -37,7 +37,7 @@ void incflo::prob_init_fluid (int lev)
         }
         else
         {
-            amrex::Abort("prob_init_fluid: unknown probtype");
+            amrex::Abort("prob_init_fluid: unknown m_probtype");
         };
     }
 }
@@ -56,9 +56,9 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
     Real lrho = this->ro_0;
-    if (32 == probtype)
+    if (32 == m_probtype)
     {
-        Real v = this->ic_v;
+        Real v = m_ic_v;
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real z = (k+0.5)*dzinv;
@@ -79,7 +79,7 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
     }
     else
     {
-        amrex::Abort("Unknown plane poiseuille probtype");
+        amrex::Abort("Unknown plane poiseuille m_probtype");
     };
 }
 
@@ -95,7 +95,7 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
 {
     static constexpr Real twopi = 2.0 * 3.1415926535897932;
     Real lrho = this->ro_0;
-    if (21 == probtype)
+    if (21 == m_probtype)
     {
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
@@ -113,7 +113,7 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
             }
         });
     }
-    else if (22 == probtype)
+    else if (22 == m_probtype)
     {
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
@@ -131,7 +131,7 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
             }
         });
     }
-    else if (23 == probtype)
+    else if (23 == m_probtype)
     {
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
@@ -151,7 +151,7 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
     }
     else
     {
-        amrex::Abort("Unknown double shear layer probtype");
+        amrex::Abort("Unknown double shear layer m_probtype");
     };
 }
 

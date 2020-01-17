@@ -27,7 +27,7 @@ bool incflo::SteadyStateReached()
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    incflo_set_velocity_bcs(cur_time, vel);
+    incflo_set_velocity_bcs(m_cur_time, vel);
 
     // Use temporaries to store the difference between current and previous solution
     Vector<std::unique_ptr<MultiFab>> diff_vel;
@@ -61,7 +61,7 @@ bool incflo::SteadyStateReached()
         condition2[lev] = (max_relchange < steady_state_tol);
 
         // Print out info on steady state checks
-        if(incflo_verbose > 0)
+        if (m_verbose > 0)
         {
             amrex::Print() << "\nSteady state check level " << lev << std::endl; 
             amrex::Print() << "||u-uo||/||uo|| = " << max_relchange
