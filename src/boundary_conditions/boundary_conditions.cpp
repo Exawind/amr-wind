@@ -1,10 +1,6 @@
-#include <AMReX_Array.H>
+#include <AMReX_Vector.H>
 #include <AMReX_BC_TYPES.H>
-#include <AMReX_BLassert.H>
-#include <AMReX_Box.H>
-#include <AMReX_MultiFab.H>
 #include <AMReX_ParmParse.H>
-#include <AMReX_VisMF.H>
 
 #include <incflo.H>
 
@@ -264,25 +260,3 @@ void incflo::init_bcs ()
     }
 }
 
-void incflo::GetInputBCs()
-{
-    // Extracts all walls from the inputs file
-    int cyclic;
-
-    cyclic = geom[0].isPeriodic(0) ? 1 : 0;
-    SetInputBCs("xlo", 1, cyclic, geom[0].ProbLo(0));
-    SetInputBCs("xhi", 2, cyclic, geom[0].ProbHi(0));
-
-    cyclic = geom[0].isPeriodic(1) ? 1 : 0;
-    SetInputBCs("ylo", 3, cyclic, geom[0].ProbLo(1));
-    SetInputBCs("yhi", 4, cyclic, geom[0].ProbHi(1));
-
-    cyclic = geom[0].isPeriodic(2) ? 1 : 0;
-    SetInputBCs("zlo", 5, cyclic, geom[0].ProbLo(2));
-    SetInputBCs("zhi", 6, cyclic, geom[0].ProbHi(2));
-}
-
-void incflo::SetInputBCs(const std::string bcID, const int index,
-                         const int cyclic, const Real domloc)
-{
-}

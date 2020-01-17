@@ -1,7 +1,4 @@
 
 CEXE_sources += boundary_conditions.cpp
 CEXE_sources += incflo_fillpatch.cpp incflo_fillphysbc.cpp
-
-CEXE_sources += incflo_set_density_bcs.cpp
-CEXE_sources += incflo_set_tracer_bcs.cpp
 CEXE_sources += incflo_set_velocity_bcs.cpp

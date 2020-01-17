@@ -83,33 +83,6 @@ public:
     const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
 
     int get_probtype(){ return probtype; }
-    void GetInputBCs();
-
-    void incflo_set_velocity_bcs (amrex::Real time,
-                                  amrex::Vector< std::unique_ptr<amrex::MultiFab> >& vel);
-
-    void incflo_set_density_bcs (amrex::Real time,
-                                 amrex::Vector< std::unique_ptr<amrex::MultiFab> >& density);
-
-    void incflo_set_tracer_bcs (amrex::Real time,
-                                amrex::Vector< std::unique_ptr<amrex::MultiFab> >& trac);
-
-    void set_density_bcs(amrex::Real time,
-                         const int lev,
-                         amrex::FArrayBox& scal_fab,
-                         const amrex::Box& domain);
-
-    void set_tracer_bcs(amrex::Real time,
-                        const int lev,
-                        amrex::FArrayBox& scal_fab,
-                        const int comp,
-                        const int ncomp,
-                        const amrex::Box& domain);
-
-    void set_velocity_bcs(amrex::Real time,
-                          const int lev,
-                          amrex::FArrayBox& vel_fab,
-                          const amrex::Box& domain) const;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -591,9 +564,6 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Set boundary conditions from inputs file
-    void SetInputBCs(const std::string bcID, const int index, const int cyclic, const amrex::Real domloc);
-
     // Read inputs file using ParmParse
     void ReadParameters ();
     void ReadIOParameters();
@@ -1057,14 +1027,6 @@ public: // for cuda
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     bool writeNow();
-
-    void FillPatchVel    (int lev, amrex::Real time, amrex::MultiFab& mf);
-    void FillPatchDensity(int lev, amrex::Real time, amrex::MultiFab& mf);
-    void FillPatchScalar (int lev, amrex::Real time, amrex::MultiFab& mf);
-
-    void GetDataVel    (int lev, amrex::Real time, amrex::Vector<amrex::MultiFab*>& data, amrex::Vector<amrex::Real>& datatime);
-    void GetDataDensity(int lev, amrex::Real time, amrex::Vector<amrex::MultiFab*>& data, amrex::Vector<amrex::Real>& datatime);
-    void GetDataScalar (int lev, amrex::Real time, amrex::Vector<amrex::MultiFab*>& data, amrex::Vector<amrex::Real>& datatime);
 
     void AverageDown();
     void AverageDownTo(int crse_lev);

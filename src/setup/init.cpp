@@ -221,13 +221,6 @@ void incflo::PostInit(int restart_flag)
     // Set the background pressure and gradients in "DELP" cases
     SetBackgroundPressure();
 
-    // Fill boundaries
-    incflo_set_density_bcs (cur_time, density);
-    incflo_set_tracer_bcs  (cur_time, tracer);
-    incflo_set_density_bcs (cur_time, density_o);
-    incflo_set_tracer_bcs  (cur_time, tracer_o);
-    incflo_set_velocity_bcs(cur_time, vel);
-
     setup_level_mask();
 
     // Project the initial velocity field to make it divergence free

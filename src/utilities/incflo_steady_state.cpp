@@ -17,6 +17,10 @@ using namespace amrex;
 //
 bool incflo::SteadyStateReached()
 {
+
+    amrex::Abort("xxxxx TODO: SteadyStateReached");
+    return false;
+#if 0
     BL_PROFILE("incflo::SteadyStateReached()");
 
     int condition1[finest_level + 1];
@@ -79,4 +83,5 @@ bool incflo::SteadyStateReached()
     } else {
         return reached;
     }
+#endif
 }
