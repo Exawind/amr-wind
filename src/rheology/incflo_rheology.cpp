@@ -5,6 +5,7 @@ using namespace amrex;
 void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
                                Real time_in)
 {
+#if 0
     BL_PROFILE("incflo::ComputeViscosity");
 
     if (fluid_model == "newtonian")
@@ -66,4 +67,5 @@ void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
         eta_out[lev]->FillBoundary(geom[lev].periodicity());
       }
     }
+#endif
 }

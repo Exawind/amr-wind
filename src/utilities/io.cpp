@@ -63,6 +63,7 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 
 void incflo::WriteCheckPointFile() const
 {
+#if 0
 	BL_PROFILE("incflo::WriteCheckPointFile()");
 
 	const std::string& checkpointname = amrex::Concatenate(check_file, nstep);
@@ -94,10 +95,12 @@ void incflo::WriteCheckPointFile() const
 				 lev, checkpointname, level_prefix, chkscaVarsName[i]));
 		}
 	}
+#endif
 }
 
 void incflo::ReadCheckpointFile()
 {
+#if 0
     BL_PROFILE("incflo::ReadCheckpointFile()");
 
     amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
@@ -222,6 +225,7 @@ void incflo::ReadCheckpointFile()
 	}
 
 	amrex::Print() << "Restart complete" << std::endl;
+#endif
 }
 
 void incflo::WriteJobInfo(const std::string& path) const
@@ -313,6 +317,7 @@ void incflo::WriteJobInfo(const std::string& path) const
 
 void incflo::WritePlotFile() 
 {
+#if 0
 	BL_PROFILE("incflo::WritePlotFile()");
 
         if (plt_divu      ) ComputeDivU(cur_time);
@@ -539,4 +544,5 @@ void incflo::WritePlotFile()
                                    pltscaVarsName, Geom(), cur_time, istep, refRatio());
 
 	WriteJobInfo(plotfilename);
+#endif
 }

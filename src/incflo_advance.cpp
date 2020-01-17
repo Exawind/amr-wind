@@ -199,7 +199,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "cur_time")
     if (fluid_model != "newtonian") {
         amrex::Abort("non-Newtonian: TODO");
-        ComputeViscosity(eta_old, cur_time);
+//        ComputeViscosity(eta_old, cur_time);
     }
 
     // Compute explicit diffusion if used
@@ -383,7 +383,7 @@ void incflo::ApplyCorrector()
     // We need this eta whether explicit, implicit or Crank-Nicolson
     if (fluid_model != "newtonian") {
         amrex::Abort("non-Newtonian: TODO");
-        ComputeViscosity(eta, new_time);
+//        ComputeViscosity(eta, new_time);
     }
 
     // Compute explicit diffusion if used -- note that even though we call this "explicit",

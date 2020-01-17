@@ -13,9 +13,14 @@ void incflo::WriteMyEBSurface()
   BoxArray & ba            = grids[lev];
   DistributionMapping & dm = dmap[lev];
 
+  amrex::Warning("TODO: WriteMyEBSurface");
+
+#if 0
+
   const EBFArrayBoxFactory * ebf;
 
   ebf = ebfactory[lev].get();
 
   WriteEBSurface(ba,dm,Geom(lev),ebf);
+#endif
 }

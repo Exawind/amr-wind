@@ -58,14 +58,7 @@ public:
     // Delete level data
     virtual void ClearLevel(int lev) override;
 
-    const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
-    const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
-    const int* get_bc_jlo_ptr(int lev){ return bc_jlo[lev]->dataPtr(); }
-    const int* get_bc_jhi_ptr(int lev){ return bc_jhi[lev]->dataPtr(); }
-    const int* get_bc_klo_ptr(int lev){ return bc_klo[lev]->dataPtr(); }
-    const int* get_bc_khi_ptr(int lev){ return bc_khi[lev]->dataPtr(); }
-
-    int get_probtype(){ return probtype; }
+public: // for cuda
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -223,6 +216,15 @@ private:
 
     amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
 
+    amrex::FabFactory<amrex::FArrayBox> const&
+    Factory (int lev) const noexcept { return *m_factory[lev]; }
+#ifdef AMREX_USE_EB
+    amrex::EBFArrayBoxFactory const&
+    EBFactory (int lev) const noexcept {
+        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
+    }
+#endif
+
     enum struct BC {
         pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, periodic, undefined
     };
@@ -279,8 +281,6 @@ private:
     }
 #endif
 
-    std::unique_ptr<amrex::NodalProjector> nodal_projector; // xxxxx TODO: can be removed now
-
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit
     };
@@ -290,15 +290,6 @@ private:
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
     DiffusionScalarOp* get_diffusion_scalar_op ();
-
-    amrex::FabFactory<amrex::FArrayBox> const&
-    Factory (int lev) const noexcept { return *m_factory[lev]; }
-#ifdef AMREX_USE_EB
-    amrex::EBFArrayBoxFactory const&
-    EBFactory (int lev) const noexcept {
-        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
-    }
-#endif
 
     amrex::Vector<amrex::MultiFab*> get_velocity_old () noexcept;
     amrex::Vector<amrex::MultiFab*> get_velocity_new () noexcept;
@@ -421,15 +412,6 @@ public: // for cuda
                                    amrex::Array4<amrex::Real const> const& fcz);
 #endif
 
-// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_u;
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_v;
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_w;
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_r;
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_t;
-    mutable amrex::Gpu::ManagedVector<amrex::Real> m_bc_p;
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Initialization
@@ -450,22 +432,10 @@ public: // for cuda
 
     // Member variables for initial conditions
     int probtype = 0;
-    amrex::Real ic_u = 0.0;  // xxxxx Do we really need it?
+    amrex::Real ic_u = 0.0;
     amrex::Real ic_v = 0.0;
     amrex::Real ic_w = 0.0;
     amrex::Real ic_p = 0.0;
-
-    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for projections
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_lobc;
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  ppe_hibc;
-
-    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for velocity diffusion solves
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  vel_diff_lobc;
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  vel_diff_hibc;
-
-    // LinOpBCType Definitions from amrex/Src/Boundary/AMReX_LO_BCTYPES.H -- these for scalar diffusion solves
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  scal_diff_lobc;
-    std::array<amrex::LinOpBCType,AMREX_SPACEDIM>  scal_diff_hibc;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -620,10 +590,6 @@ public: // for cuda
     void make_eb_tuscan();
 #endif
 
-#ifdef AMREX_USE_EB
-    amrex::Vector<std::unique_ptr<amrex::EBFArrayBoxFactory>> ebfactory;
-#endif
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Member variables: Runtime parameters
@@ -662,7 +628,6 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    amrex::Periodicity p0_periodicity;
     amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};
@@ -740,14 +705,6 @@ public: // for cuda
     // Total number of variables to write in plot file
     int pltVarCount = 0;
 
-    // amrex::Vector variables to simplify IO -- the vectors are the same for plt/chk
-    amrex::Vector<const amrex::Vector<std::unique_ptr<amrex::MultiFab>>*> vectorVars;
-    amrex::Vector<std::string> vecVarsName = {"velx", "vely", "velz", "gpx", "gpy", "gpz"};
-
-    // Scalar variables at cell centers that need to be written to checkfile.
-    amrex::Vector<const amrex::Vector<std::unique_ptr<amrex::MultiFab>>*> chkscalarVars = {&p, &density, &tracer, &eta};
-    amrex::Vector<std::string> chkscaVarsName = {"p", "density", "tracer", "eta"};
-
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Diagnostics
@@ -758,87 +715,6 @@ public: // for cuda
     void PrintMaxVel(int lev);
     void PrintMaxGp(int lev);
     void CheckForNans(int lev);
-
-    const amrex::Real covered_val = 1.0e40;
-    const amrex::Real boundary_val = 1.0e80;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Member variables: Data containers
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Boundary conditions
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_ilo;
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_ihi;
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_jlo;
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_jhi;
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_klo;
-    amrex::Vector<std::unique_ptr<amrex::IArrayBox>> bc_khi;
-
-    // Primary variables
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> density;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> density_o;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> tracer;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> tracer_o;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> vel;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> vel_o;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> p;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> p0;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> gp;
-
-    // xxxxx could we make some amrex::MultiFabs here local to functions
-
-    // Derived variables TODO: to save memory, would only need to have 2 temporary variables
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> eta;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> eta_old;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> strainrate;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> vort;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> drag;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> divu;
-
-    // Helper variables
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_u;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_u_old;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_r;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_r_old;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_t;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> conv_t_old;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> divtau;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> divtau_old;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>>  vel_forces;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> scal_forces;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> laps;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> laps_old;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> xslopes_u;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> yslopes_u;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> zslopes_u;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> xslopes_r;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> yslopes_r;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> zslopes_r;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> xslopes_t;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> yslopes_t;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> zslopes_t;
-
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_u_mac;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_v_mac;
-    amrex::Vector<std::unique_ptr<amrex::MultiFab>> m_w_mac;
-
-    // integer amrex::MultiFab specifying if a finer level exists above
-    // value is 1 if a finer level is not above and 0 otherwise
-    amrex::Vector<std::unique_ptr<amrex::iMultiFab>> level_mask;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Not yet classified
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
 
     bool writeNow();
 

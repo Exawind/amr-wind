@@ -186,6 +186,8 @@ void incflo::ErrorEst(int lev,
                       Real time,
                       int ngrow)
 {
+#if 0
+    // xxxxx TODO: ErrorEst
     BL_PROFILE("incflo::ErrorEst()");
 
     const char   tagval = TagBox::SET;
@@ -243,6 +245,7 @@ void incflo::ErrorEst(int lev,
     {
         amrex::TagCutCells(tags, *vel[lev]);
     }
+#endif
 #endif
 }
 
