@@ -27,7 +27,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             dvdt(i,j,k,2) = 0.0;
             drdt(i,j,k) = 0.0;
         });
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             amrex::ParallelFor(bx, ntrac, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
             {
                 dtdt(i,j,k,n) = 0.0;
@@ -51,7 +51,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 #endif
 
     int nmaxcomp = AMREX_SPACEDIM;
-    if (advect_tracer) nmaxcomp = std::max(nmaxcomp,ntrac);
+    if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,ntrac);
     Box tmpbox = amrex::surroundingNodes(bx);
     int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
     Box rhotrac_box = amrex::grow(bx,2);
@@ -68,7 +68,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     FArrayBox rhotracfab;
     Elixir eli_rt;
     Array4<Real> rhotrac;
-    if (advect_tracer) {
+    if (m_advect_tracer) {
         rhotracfab.resize(rhotrac_box, ntrac);
         eli_rt = rhotracfab.elixir();
         rhotrac = rhotracfab.array();
@@ -102,7 +102,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
 
         // density
-        if (!constant_density) {
+        if (!m_constant_density) {
             compute_convective_fluxes_eb(lev, gbx, 1, fx, fy, fz, rho, umac, vmac, wmac,
                                          get_density_bcrec().data(),
                                          get_density_bcrec_device_ptr(),
@@ -112,7 +112,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
         }
 
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             compute_convective_fluxes_eb(lev, gbx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                          get_tracer_bcrec().data(),
                                          get_tracer_bcrec_device_ptr(),
@@ -132,7 +132,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
 
         // density
-        if (!constant_density) {
+        if (!m_constant_density) {
             compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho, umac, vmac, wmac,
                                       get_density_bcrec().data(),
                                       get_density_bcrec_device_ptr());
@@ -140,7 +140,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         }
 
         // tracer
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             compute_convective_fluxes(lev, bx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                       get_tracer_bcrec().data(),
                                       get_tracer_bcrec_device_ptr());
@@ -179,7 +179,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
-        if (use_godunov) {
+        if (m_use_godunov) {
             predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev],
                             *vel_forces[lev]);
         } else {
@@ -187,7 +187,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
     }
 
-    if (use_godunov) {
+    if (m_use_godunov) {
         VisMF::Write(u_mac[0], "u_mac");
         VisMF::Write(v_mac[0], "v_mac");
         VisMF::Write(w_mac[0], "w_mac");

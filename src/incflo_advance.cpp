@@ -28,7 +28,7 @@ void incflo::Advance()
 
     if (m_verbose > 0)
     {
-        amrex::Print() << "\nStep " << nstep + 1
+        amrex::Print() << "\nStep " << m_nstep + 1
                        << ": from old_time " << m_cur_time
                        << " to new time " << m_cur_time + m_dt
                        << " with dt = " << m_dt << ".\n" << std::endl;
@@ -42,7 +42,7 @@ void incflo::Advance()
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
         }
     }
@@ -52,12 +52,12 @@ void incflo::Advance()
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, m_t_new[lev], m_leveldata[lev]->velocity, ng);
         fillpatch_density(lev, m_t_new[lev], m_leveldata[lev]->density, ng);
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             fillpatch_tracer(lev, m_t_new[lev], m_leveldata[lev]->tracer, ng);
         }
     }
 
-    if (!use_godunov) {
+    if (!m_use_godunov) {
         ApplyCorrector();
     }
 
@@ -76,7 +76,7 @@ void incflo::Advance()
     }
 
 #if 0
-    if (test_tracer_conservation) {
+    if (m_test_tracer_conservation) {
         amrex::Print() << "Sum tracer volume wgt = " << m_cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
     }
 #endif
@@ -177,7 +177,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_forces(get_vel_forces(), get_tra_forces(),
                    get_density_old_const(), get_tracer_old_const());
 
-    if (use_godunov) {
+    if (m_use_godunov) {
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(Geom(0).isAllPeriodic() and finest_level == 0,
                                          "TODO: fillpatch_forces");
         m_leveldata[0]->vel_forces.FillBoundary(Geom(0).periodicity());
@@ -185,19 +185,19 @@ void incflo::ApplyPredictor (bool incremental_projection)
         // forces are not used in compute_convective_term
     }
 
-    // if ( use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
-    // if (!use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
+    // if ( m_use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
+    // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
                             get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
                             get_vel_forces_const(), get_tra_forces_const(),
                             m_cur_time);
 
-    if (use_godunov) {
+    if (m_use_godunov) {
         amrex::Abort("xxxxx after compute_convective_term");
     }
 
     // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "m_cur_time")
-    if (fluid_model != "newtonian") {
+    if (m_fluid_model != "newtonian") {
         amrex::Abort("non-Newtonian: TODO");
 //        ComputeViscosity(eta_old, m_cur_time);
     }
@@ -205,7 +205,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute explicit diffusion if used
     if (m_diff_type == DiffusionType::Explicit ||
         m_diff_type == DiffusionType::Crank_Nicolson ||
-        use_godunov)
+        m_use_godunov)
     {
         amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
         // incflo_set_velocity_bcs (m_cur_time, vel_o);
@@ -224,8 +224,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
-    bool l_constant_density = constant_density;
-    int l_ntrac = (advect_tracer) ? ntrac : 0;
+    bool l_constant_density = m_constant_density;
+    int l_ntrac = (m_advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; lev++)
     {
         auto& ld = *m_leveldata[lev];
@@ -267,7 +267,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-            if (advect_tracer) {
+            if (m_advect_tracer) {
                 fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
             }
         }
@@ -282,7 +282,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         amrex::Abort("TODO: Crank_Nicolson");
 #if 0
         diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*m_dt);
-        if (advect_tracer)
+        if (m_advect_tracer)
             diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*m_dt);
 #endif
     }
@@ -290,7 +290,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new(), m_cur_time, m_dt);
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
                                                       get_density_new(), m_cur_time, m_dt);
         }
@@ -381,7 +381,7 @@ void incflo::ApplyCorrector()
     // This fills the eta array (if non-Newtonian, then using strain-rate of velocity at time "new_time",
     //                           which is currently u*)
     // We need this eta whether explicit, implicit or Crank-Nicolson
-    if (fluid_model != "newtonian") {
+    if (m_fluid_model != "newtonian") {
         amrex::Abort("non-Newtonian: TODO");
 //        ComputeViscosity(eta, new_time);
     }
@@ -407,7 +407,7 @@ void incflo::ApplyCorrector()
 
     // **********************************************************************************************
     // 
-    // We only reach the corrector if !use_godunov which means we don't use the forces
+    // We only reach the corrector if !m_use_godunov which means we don't use the forces
     //    in constructing the advection term
     // 
     // **********************************************************************************************
@@ -435,8 +435,8 @@ void incflo::ApplyCorrector()
 
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
-    bool l_constant_density = constant_density;
-    int l_ntrac = (advect_tracer) ? ntrac : 0;
+    bool l_constant_density = m_constant_density;
+    int l_ntrac = (m_advect_tracer) ? ntrac : 0;
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         auto& ld = *m_leveldata[lev];
@@ -497,7 +497,7 @@ void incflo::ApplyCorrector()
     {
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new(), new_time, m_dt);
-        if (advect_tracer) {
+        if (m_advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
                                                       get_density_new(), new_time, m_dt);
         }
@@ -515,8 +515,8 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                              Vector<MultiFab const*> const& density,
                              Vector<MultiFab const*> const& tracer)
 {
-    GpuArray<Real,3> l_gravity{gravity[0],gravity[1],gravity[2]};
-    GpuArray<Real,3> l_gp0{gp0[0], gp0[1], gp0[2]};
+    GpuArray<Real,3> l_gravity{m_gravity[0],m_gravity[1],m_gravity[2]};
+    GpuArray<Real,3> l_gp0{m_gp0[0], m_gp0[1], m_gp0[2]};
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -529,7 +529,7 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
             Array4<Real const> const& rho = density[lev]->const_array(mfi);
             Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
 
-            if (use_boussinesq) {
+            if (m_use_boussinesq) {
                 // This uses a Boussinesq approximation where the buoyancy depends on
                 //      first tracer rather than density
                 Array4<Real const> const& tra = tracer[lev]->const_array(mfi);

@@ -10,9 +10,9 @@ void incflo::ReadParameters ()
         // Variables without prefix in inputs file
 	ParmParse pp;
 
-	pp.query("stop_time", stop_time);
-	pp.query("max_step", max_step);
-	pp.query("steady_state", steady_state);
+	pp.query("stop_time", m_stop_time);
+	pp.query("max_step", m_max_step);
+	pp.query("steady_state", m_steady_state);
     }
 
     ReadIOParameters();
@@ -21,12 +21,12 @@ void incflo::ReadParameters ()
     { // Prefix amr
  	ParmParse pp("amr");
 
-	pp.query("regrid_int", regrid_int);
+	pp.query("regrid_int", m_regrid_int);
 #ifdef AMREX_USE_EB
-        pp.query("refine_cutcells", refine_cutcells);
+        pp.query("refine_cutcells", m_refine_cutcells);
 #endif
 
-        pp.query("KE_int", KE_int);
+        pp.query("KE_int", m_KE_int);
 
     } // end prefix amr
 
@@ -35,27 +35,28 @@ void incflo::ReadParameters ()
 
         pp.query("verbose", m_verbose);
 
-	pp.query("steady_state_tol", steady_state_tol);
-        pp.query("initial_iterations", initial_iterations);
-        pp.query("do_initial_proj", do_initial_proj);
+	pp.query("steady_state_tol", m_steady_state_tol);
+        pp.query("initial_iterations", m_initial_iterations);
+        pp.query("do_initial_proj", m_do_initial_proj);
 
-	pp.query("fixed_dt", fixed_dt);
-	pp.query("cfl", cfl);
+	pp.query("fixed_dt", m_fixed_dt);
+	pp.query("cfl", m_cfl);
 
         // This will multiply the time-step in the very first step only
-	pp.query("init_shrink", init_shrink);
-        if (init_shrink > 1.0)
-            amrex::Abort("We require init_shrink <= 1.0");
+	pp.query("init_shrink", m_init_shrink);
+        if (m_init_shrink > 1.0) {
+            amrex::Abort("We require m_init_shrink <= 1.0");
+        }
 
         // Physics
-	pp.queryarr("delp", delp, 0, AMREX_SPACEDIM);
-	pp.queryarr("gravity", gravity, 0, AMREX_SPACEDIM);
+	pp.queryarr("delp", m_delp, 0, AMREX_SPACEDIM);
+	pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
 
-        pp.query("constant_density", constant_density);
-        pp.query("advect_tracer"   , advect_tracer);
-        pp.query("test_tracer_conservation" , test_tracer_conservation);
-        pp.query("use_godunov"        , use_godunov);
-        pp.query("use_forces_in_trans", use_forces_in_trans);
+        pp.query("constant_density", m_constant_density);
+        pp.query("advect_tracer"   , m_advect_tracer);
+        pp.query("test_tracer_conservation" , m_test_tracer_conservation);
+        pp.query("use_godunov"        , m_use_godunov);
+        pp.query("use_forces_in_trans", m_use_forces_in_trans);
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;
@@ -70,14 +71,12 @@ void incflo::ReadParameters ()
             amrex::Abort("We currently require diffusion_type = 0 for explicit, 1 for Crank-Nicolson or 2 for implicit");
         }
 
-        if (!use_godunov && cfl > 0.5) {
+        if (!m_use_godunov && m_cfl > 0.5) {
             amrex::Abort("We currently require cfl <= 0.5 when using the MOL advection scheme");
         }
-        if (use_godunov && cfl > 1.0) {
+        if (m_use_godunov && m_cfl > 1.0) {
             amrex::Abort("We currently require cfl <= 1.0 when using the Godunov advection scheme");
         }
-
-        AMREX_ALWAYS_ASSERT(ro_0 >= 0.0);
 
         // Initial conditions
         pp.query("probtype", m_probtype);
@@ -87,38 +86,39 @@ void incflo::ReadParameters ()
         pp.query("ic_p", m_ic_p);
 
         // Viscosity (if constant)
-        pp.query("mu", mu);
+        pp.query("mu", m_mu);
 
         // Density (if constant)
-        pp.query("ro_0", ro_0);
+        pp.query("ro_0", m_ro_0);
+        AMREX_ALWAYS_ASSERT(m_ro_0 >= 0.0);
 
         pp.query("ntrac", ntrac);
 
-        if (ntrac <= 0) advect_tracer = 0;
+        if (ntrac <= 0) m_advect_tracer = 0;
 
         if (ntrac < 1) {
             amrex::Abort("We currently require at least one tracer");
         }
 
         // Scalar diffusion coefficients
-        mu_s.resize(ntrac, 0.0);
-        pp.queryarr("mu_s", mu_s, 0, ntrac );
+        m_mu_s.resize(ntrac, 0.0);
+        pp.queryarr("mu_s", m_mu_s, 0, ntrac );
 
         amrex::Print() << "Scalar diffusion coefficients " << std::endl;
         for (int i = 0; i < ntrac; i++) {
-            amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
+            amrex::Print() << "Tracer" << i << ":" << m_mu_s[i] << std::endl;
         }
     } // end prefix incflo
 
     { // Prefix mac
         ParmParse pp_mac("mac_proj");
-        pp_mac.query( "mg_verbose"   , mac_mg_verbose );
-        pp_mac.query( "mg_cg_verbose", mac_mg_cg_verbose );
-        pp_mac.query( "mg_rtol"      , mac_mg_rtol );
-        pp_mac.query( "mg_atol"      , mac_mg_atol );
-        pp_mac.query( "mg_maxiter"   , mac_mg_maxiter );
-        pp_mac.query( "mg_cg_maxiter", mac_mg_cg_maxiter );
-        pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level );
+        pp_mac.query( "mg_verbose"   , m_mac_mg_verbose );
+        pp_mac.query( "mg_cg_verbose", m_mac_mg_cg_verbose );
+        pp_mac.query( "mg_rtol"      , m_mac_mg_rtol );
+        pp_mac.query( "mg_atol"      , m_mac_mg_atol );
+        pp_mac.query( "mg_maxiter"   , m_mac_mg_maxiter );
+        pp_mac.query( "mg_cg_maxiter", m_mac_mg_cg_maxiter );
+        pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
     } // end prefix mac
 }
 
@@ -127,18 +127,18 @@ void incflo::ReadIOParameters()
     // Prefix amr
     ParmParse pp("amr");
 
-    pp.query("check_file", check_file);
-    pp.query("check_int", check_int);
-    pp.query("restart", restart_file);
+    pp.query("check_file", m_check_file);
+    pp.query("check_int", m_check_int);
+    pp.query("restart", m_restart_file);
 
-    pp.query("plot_file", plot_file);
-    pp.query("plot_int"       , plot_int);
-    pp.query("plot_per_exact" , plot_per_exact);
-    pp.query("plot_per_approx", plot_per_approx);
+    pp.query("plot_file", m_plot_file);
+    pp.query("plot_int"       , m_plot_int);
+    pp.query("plot_per_exact" , m_plot_per_exact);
+    pp.query("plot_per_approx", m_plot_per_approx);
 
-    if ( (plot_int       > 0 && plot_per_exact  > 0) ||
-         (plot_int       > 0 && plot_per_approx > 0) ||
-         (plot_per_exact > 0 && plot_per_approx > 0) )
+    if ( (m_plot_int       > 0 && m_plot_per_exact  > 0) ||
+         (m_plot_int       > 0 && m_plot_per_approx > 0) ||
+         (m_plot_per_exact > 0 && m_plot_per_approx > 0) )
        amrex::Abort("Must choose only one of plot_int or plot_per_exact or plot_per_approx");
 
     // The plt_ccse_regtest resets the defaults,
@@ -148,63 +148,63 @@ void incflo::ReadIOParameters()
 
     if (plt_ccse_regtest != 0)
     {
-        plt_velx       = 1;
-        plt_vely       = 1;
-        plt_velz       = 1;
-        plt_gpx        = 1;
-        plt_gpy        = 1;
-        plt_gpz        = 1;
-        plt_rho        = 1;
-        plt_tracer     = 1;
-        plt_p          = 0;
-        plt_eta        = 0;
-        plt_vort       = 0;
-        plt_strainrate = 0;
-        plt_stress     = 0;
-        plt_divu       = 0;
-        plt_vfrac      = 0;
+        m_plt_velx       = 1;
+        m_plt_vely       = 1;
+        m_plt_velz       = 1;
+        m_plt_gpx        = 1;
+        m_plt_gpy        = 1;
+        m_plt_gpz        = 1;
+        m_plt_rho        = 1;
+        m_plt_tracer     = 1;
+        m_plt_p          = 0;
+        m_plt_eta        = 0;
+        m_plt_vort       = 0;
+        m_plt_strainrate = 0;
+        m_plt_stress     = 0;
+        m_plt_divu       = 0;
+        m_plt_vfrac      = 0;
     }
 
     // Which variables to write to plotfile
-    pltVarCount = 0;
 
-    pp.query("plt_velx",       plt_velx  );
-    pp.query("plt_vely",       plt_vely  );
-    pp.query("plt_velz",       plt_velz  );
+    pp.query("plt_velx",       m_plt_velx  );
+    pp.query("plt_vely",       m_plt_vely  );
+    pp.query("plt_velz",       m_plt_velz  );
 
-    pp.query("plt_gpx",        plt_gpx );
-    pp.query("plt_gpy",        plt_gpy );
-    pp.query("plt_gpz",        plt_gpz );
+    pp.query("plt_gpx",        m_plt_gpx );
+    pp.query("plt_gpy",        m_plt_gpy );
+    pp.query("plt_gpz",        m_plt_gpz );
 
-    pp.query("plt_rho",        plt_rho   );
-    pp.query("plt_tracer",     plt_tracer);
-    pp.query("plt_p",          plt_p     );
-    pp.query("plt_eta",        plt_eta   );
-    pp.query("plt_vort",       plt_vort  );
-    pp.query("plt_strainrate", plt_strainrate);
-    pp.query("plt_stress"    , plt_stress);
-    pp.query("plt_divu",       plt_divu  );
-    pp.query("plt_vfrac",      plt_vfrac );
+    pp.query("plt_rho",        m_plt_rho   );
+    pp.query("plt_tracer",     m_plt_tracer);
+    pp.query("plt_p",          m_plt_p     );
+    pp.query("plt_eta",        m_plt_eta   );
+    pp.query("plt_vort",       m_plt_vort  );
+    pp.query("plt_strainrate", m_plt_strainrate);
+    pp.query("plt_stress"    , m_plt_stress);
+    pp.query("plt_divu",       m_plt_divu  );
+    pp.query("plt_vfrac",      m_plt_vfrac );
 
     // Special test for CCSE regression test. Override all individual
     // flags and save all data to plot file.
 
     // Count the number of variables to save.
-    if (plt_velx       == 1) pltVarCount += 1;
-    if (plt_vely       == 1) pltVarCount += 1;
-    if (plt_velz       == 1) pltVarCount += 1;
-    if (plt_gpx        == 1) pltVarCount += 1;
-    if (plt_gpy        == 1) pltVarCount += 1;
-    if (plt_gpz        == 1) pltVarCount += 1;
-    if (plt_rho        == 1) pltVarCount += 1;
-    if (plt_tracer     == 1) pltVarCount += ntrac;
-    if (plt_p          == 1) pltVarCount += 1;
-    if (plt_eta        == 1) pltVarCount += 1;
-    if (plt_vort       == 1) pltVarCount += 1;
-    if (plt_strainrate == 1) pltVarCount += 1;
-    if (plt_stress     == 1) pltVarCount += 1;
-    if (plt_divu       == 1) pltVarCount += 1;
-    if (plt_vfrac      == 1) pltVarCount += 1;
+    m_pltVarCount = 0;
+    if (m_plt_velx       == 1) m_pltVarCount += 1;
+    if (m_plt_vely       == 1) m_pltVarCount += 1;
+    if (m_plt_velz       == 1) m_pltVarCount += 1;
+    if (m_plt_gpx        == 1) m_pltVarCount += 1;
+    if (m_plt_gpy        == 1) m_pltVarCount += 1;
+    if (m_plt_gpz        == 1) m_pltVarCount += 1;
+    if (m_plt_rho        == 1) m_pltVarCount += 1;
+    if (m_plt_tracer     == 1) m_pltVarCount += ntrac;
+    if (m_plt_p          == 1) m_pltVarCount += 1;
+    if (m_plt_eta        == 1) m_pltVarCount += 1;
+    if (m_plt_vort       == 1) m_pltVarCount += 1;
+    if (m_plt_strainrate == 1) m_pltVarCount += 1;
+    if (m_plt_stress     == 1) m_pltVarCount += 1;
+    if (m_plt_divu       == 1) m_pltVarCount += 1;
+    if (m_plt_vfrac      == 1) m_pltVarCount += 1;
 }
 
 //
@@ -235,10 +235,10 @@ void incflo::InitialIterations ()
     }
 
     // No need to advect tracer in initial pressure iterations
-    auto advect_tracer_save = advect_tracer;
-    advect_tracer = false;
+    auto advect_tracer_save = m_advect_tracer;
+    m_advect_tracer = false;
 
-    for (int iter = 0; iter < initial_iterations; ++iter)
+    for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
         if (m_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
 
@@ -247,7 +247,7 @@ void incflo::InitialIterations ()
         copy_from_old_to_new_velocity();
         copy_from_old_to_new_density();
 
-        if (use_godunov) {
+        if (m_use_godunov) {
     amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
     amrex::VisMF::Write(m_leveldata[0]->density, "rho");
     amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
@@ -258,10 +258,10 @@ void incflo::InitialIterations ()
 
     }
 
-    advect_tracer = advect_tracer_save;
+    m_advect_tracer = advect_tracer_save;
 
-    // Set nstep to 0 before entering time loop
-    nstep = 0;
+    // Set m_nstep to 0 before entering time loop
+    m_nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free

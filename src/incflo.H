@@ -328,57 +328,57 @@ private:
     amrex::Real m_prev_prev_dt = -1.0;
 
     // Time step counter
-    int nstep         = -1;
+    int m_nstep         = -1;
 
     // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
     // OR steady_state = true AND steady_state_tol is reached
-    amrex::Real stop_time = -1.0;
-    int max_step = -1;
-    bool steady_state = false;
-    amrex::Real steady_state_tol = 1.0e-5;
+    amrex::Real m_stop_time = -1.0;
+    int m_max_step = -1;
+    bool m_steady_state = false;
+    amrex::Real m_steady_state_tol = 1.0e-5;
 
     // Options to control time stepping
-    amrex::Real cfl = 0.5;
-    amrex::Real fixed_dt = -1.;
-    amrex::Real init_shrink = 0.1;
+    amrex::Real m_cfl = 0.5;
+    amrex::Real m_fixed_dt = -1.;
+    amrex::Real m_init_shrink = 0.1;
 
     // Initial projection / iterations
-    bool do_initial_proj    = true;
-    int  initial_iterations = 3;
+    bool m_do_initial_proj    = true;
+    int  m_initial_iterations = 3;
 
     // Use Boussinesq approximation for buoyancy?
-    bool use_boussinesq = false;
+    bool m_use_boussinesq = false;
 
     // AMR / refinement settings
-    int refine_cutcells = 1;
-    int regrid_int = -1;
+    int m_refine_cutcells = 1;
+    int m_regrid_int = -1;
 
-    int  mac_mg_verbose = 0;
-    int  mac_mg_cg_verbose = 0;
-    int  mac_mg_maxiter = 200;
-    int  mac_mg_cg_maxiter = 200;
-    int  mac_mg_max_coarsening_level = 100;
-    amrex::Real mac_mg_rtol = 1.0e-11;
-    amrex::Real mac_mg_atol = 1.0e-14;
-    std::string mac_bottom_solver_type;
+    int m_mac_mg_verbose = 0;
+    int m_mac_mg_cg_verbose = 0;
+    int m_mac_mg_maxiter = 200;
+    int m_mac_mg_cg_maxiter = 200;
+    int m_mac_mg_max_coarsening_level = 100;
+    amrex::Real m_mac_mg_rtol = 1.0e-11;
+    amrex::Real m_mac_mg_atol = 1.0e-14;
+    std::string m_mac_bottom_solver_type;
 
-    amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
-    amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> delp{{0.0, 0.0, 0.0}};
+    amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
+    amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_delp{{0.0, 0.0, 0.0}};
 
     // Scalar diffusive coefficient
-    amrex::Vector<amrex::Real> mu_s;
+    amrex::Vector<amrex::Real> m_mu_s;
 
     // Density (if constant)
-    amrex::Real ro_0 = 1.0;
+    amrex::Real m_ro_0 = 1.0;
 
-    bool constant_density = true;
-    bool advect_tracer    = false;
-    bool test_tracer_conservation = false;
+    bool m_constant_density = true;
+    bool m_advect_tracer    = false;
+    bool m_test_tracer_conservation = false;
 
-    bool use_godunov         = false;
-    bool use_forces_in_trans = false;
+    bool m_use_godunov         = false;
+    bool m_use_forces_in_trans = false;
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit
@@ -386,49 +386,49 @@ private:
     DiffusionType m_diff_type = DiffusionType::Implicit;
 
     // Fluid properties
-    std::string fluid_model;
-    amrex::Real mu = 1.0;
-    amrex::Real n_0 = 0.0;
-    amrex::Real tau_0 = 0.0;
-    amrex::Real papa_reg = 0.0;
-    amrex::Real eta_0 = 0.0;
+    std::string m_fluid_model;
+    amrex::Real m_mu = 1.0;
+    amrex::Real m_n_0 = 0.0;
+    amrex::Real m_tau_0 = 0.0;
+    amrex::Real m_papa_reg = 0.0;
+    amrex::Real m_eta_0 = 0.0;
 
-    int plot_int = -1;
+    int m_plot_int = -1;
 
     // Dump plotfiles at as close as possible to the designated period *without* changing dt
-    amrex::Real plot_per_approx = -1.0;
+    amrex::Real m_plot_per_approx = -1.0;
     
     // Dump plotfiles at exactcly the designated period by changing dt
-    amrex::Real plot_per_exact  = -1.0;
+    amrex::Real m_plot_per_exact  = -1.0;
 
-    int last_plt = -1;
-    std::string plot_file{"plt"};
+    int m_last_plt = -1;
+    std::string m_plot_file{"plt"};
 
-    int check_int = -1;
-    int last_chk = -1;
-    int KE_int = -1;
-    std::string check_file{"chk"};
-    std::string restart_file{""};
+    int m_check_int = -1;
+    int m_last_chk = -1;
+    int m_KE_int = -1;
+    std::string m_check_file{"chk"};
+    std::string m_restart_file{""};
 
     // Flags for saving fluid data in plot files
-    int plt_velx        = 1;
-    int plt_vely        = 1;
-    int plt_velz        = 1;
-    int plt_gpx         = 1;
-    int plt_gpy         = 1;
-    int plt_gpz         = 1;
-    int plt_rho         = 1;
-    int plt_tracer      = 1;
-    int plt_p           = 0;
-    int plt_eta         = 0;
-    int plt_vort        = 1;
-    int plt_strainrate  = 0;
-    int plt_stress      = 0;
-    int plt_divu        = 0;
-    int plt_vfrac       = 1;
+    int m_plt_velx        = 1;
+    int m_plt_vely        = 1;
+    int m_plt_velz        = 1;
+    int m_plt_gpx         = 1;
+    int m_plt_gpy         = 1;
+    int m_plt_gpz         = 1;
+    int m_plt_rho         = 1;
+    int m_plt_tracer      = 1;
+    int m_plt_p           = 0;
+    int m_plt_eta         = 0;
+    int m_plt_vort        = 1;
+    int m_plt_strainrate  = 0;
+    int m_plt_stress      = 0;
+    int m_plt_divu        = 0;
+    int m_plt_vfrac       = 1;
 
     // Total number of variables to write in plot file
-    int pltVarCount = 0;
+    int m_pltVarCount = 0;
 
     struct LevelData {
         LevelData () = default;
@@ -498,12 +498,12 @@ private:
     // Number of ghost cells for field arrays.
     int nghost_state () const {
 #ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) return (use_godunov) ? 5 : 4;
+        if (!EBFactory(0).isAllRegular()) return (m_use_godunov) ? 5 : 4;
 #endif
-        return (use_godunov) ? 3 : 2;
+        return (m_use_godunov) ? 3 : 2;
     }
 
-    int nghost_force () const { return (use_godunov) ? 1 : 0; }
+    int nghost_force () const { return (m_use_godunov) ? 1 : 0; }
 
     int nghost_mac () const {
 #ifdef AMREX_USE_EB
@@ -514,15 +514,15 @@ private:
 
 #ifdef AMREX_USE_EB
     int nghost_eb_basic () const {
-        return (use_godunov) ? 5 : 4;
+        return (m_use_godunov) ? 5 : 4;
     }
 
     int nghost_eb_volume () const {
-        return (use_godunov) ? 5 : 4;
+        return (m_use_godunov) ? 5 : 4;
     }
 
     int nghost_eb_full () const {
-        return (use_godunov) ? 3 : 2;
+        return (m_use_godunov) ? 3 : 2;
     }
 #endif
 

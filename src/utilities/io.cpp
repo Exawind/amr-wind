@@ -39,7 +39,7 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 		HeaderFile << finest_level << "\n";
 
 		// Time stepping controls
-		HeaderFile << nstep << "\n";
+		HeaderFile << m_nstep << "\n";
 		HeaderFile << m_dt << "\n";
 		HeaderFile << m_cur_time << "\n";
 
@@ -66,7 +66,7 @@ void incflo::WriteCheckPointFile() const
 #if 0
 	BL_PROFILE("incflo::WriteCheckPointFile()");
 
-	const std::string& checkpointname = amrex::Concatenate(check_file, nstep);
+	const std::string& checkpointname = amrex::Concatenate(check_file, m_nstep);
 
     amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
@@ -135,7 +135,7 @@ void incflo::ReadCheckpointFile()
     GotoNextLine(is);
 
     // Step count
-    is >> nstep;
+    is >> m_nstep;
     GotoNextLine(is);
 
     // Time step size
@@ -325,7 +325,7 @@ void incflo::WritePlotFile()
         if (plt_eta       ) ComputeViscosity(eta,m_cur_time);
         if (plt_vort      ) ComputeVorticity(m_cur_time);
 
-	const std::string& plotfilename = amrex::Concatenate(plot_file, nstep);
+	const std::string& plotfilename = amrex::Concatenate(plot_file, m_nstep);
 
 	amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_cur_time << std::endl;
 

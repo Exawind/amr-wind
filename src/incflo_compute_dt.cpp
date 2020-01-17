@@ -73,7 +73,7 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
                               });
                               return mx;
                           });
-                diff_lev *= this->mu;
+                diff_lev *= m_mu;
             }
         } else
 #endif
@@ -103,7 +103,7 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
                                });
                                return mx;
                            });
-                diff_lev *= this->mu;
+                diff_lev *= m_mu;
             }
         }
         conv_cfl = std::max(conv_cfl, conv_lev);
@@ -124,20 +124,20 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
 
     // Forcing term
     const auto dxinv_finest = Geom(finest_level).InvCellSizeArray();
-    Real forc_cfl = std::abs(gravity[0] - std::abs(gp0[0])) * dxinv_finest[0]
-                  + std::abs(gravity[1] - std::abs(gp0[1])) * dxinv_finest[1]
-                  + std::abs(gravity[2] - std::abs(gp0[2])) * dxinv_finest[2];
+    Real forc_cfl = std::abs(m_gravity[0] - std::abs(m_gp0[0])) * dxinv_finest[0]
+                  + std::abs(m_gravity[1] - std::abs(m_gp0[1])) * dxinv_finest[1]
+                  + std::abs(m_gravity[2] - std::abs(m_gp0[2])) * dxinv_finest[2];
 
     // Combined CFL conditioner
     Real comb_cfl = cd_cfl + std::sqrt(cd_cfl*cd_cfl + 4.0 * forc_cfl);
 
     // Update dt
-    Real dt_new = 2.0 * cfl / comb_cfl;
+    Real dt_new = 2.0 * m_cfl / comb_cfl;
 
     // Optionally reduce CFL for initial step
     if(initialization)
     {
-        dt_new *= init_shrink;
+        dt_new *= m_init_shrink;
     }
 
     // Protect against very small comb_cfl
@@ -150,48 +150,48 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
     }
 
     // Don't let the timestep grow by more than 10% per step 
-    // unless the previous time step was unduly shrunk to match plot_per_exact
-    if( (m_dt > 0.0) && !(plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    // unless the previous time step was unduly shrunk to match m_plot_per_exact
+    if( (m_dt > 0.0) && !(m_plot_per_exact > 0 && m_last_plt == m_nstep && m_nstep > 0) )
     {
         dt_new = amrex::min(dt_new, 1.1 * m_prev_dt);
     } 
-    else if ( (m_dt > 0.0) && (plot_per_exact > 0 && last_plt == nstep && nstep > 0) )
+    else if ( (m_dt > 0.0) && (m_plot_per_exact > 0 && m_last_plt == m_nstep && m_nstep > 0) )
     {
         dt_new = amrex::min( dt_new, 1.1 * amrex::max(m_prev_dt, m_prev_prev_dt) );
     }
     
     // Don't overshoot specified plot times
-    if(plot_per_exact > 0.0 && 
-            (std::trunc((m_cur_time + dt_new + eps) / plot_per_exact) > std::trunc((m_cur_time + eps) / plot_per_exact)))
+    if(m_plot_per_exact > 0.0 && 
+            (std::trunc((m_cur_time + dt_new + eps) / m_plot_per_exact) > std::trunc((m_cur_time + eps) / m_plot_per_exact)))
     {
-        dt_new = std::trunc((m_cur_time + dt_new) / plot_per_exact) * plot_per_exact - m_cur_time;
+        dt_new = std::trunc((m_cur_time + dt_new) / m_plot_per_exact) * m_plot_per_exact - m_cur_time;
     }
 
     // Don't overshoot the final time if not running to steady state
-    if(!steady_state && stop_time > 0.0)
+    if(!m_steady_state && m_stop_time > 0.0)
     {
-        if(m_cur_time + dt_new > stop_time)
+        if(m_cur_time + dt_new > m_stop_time)
         {
-            dt_new = stop_time - m_cur_time;
+            dt_new = m_stop_time - m_cur_time;
         }
     }
 
-    // Make sure the timestep is not set to zero after a plot_per_exact stop
+    // Make sure the timestep is not set to zero after a m_plot_per_exact stop
     if(dt_new < eps)
     {
         dt_new = 0.5 * m_dt;
     }
 
     // If using fixed time step, check CFL condition and give warning if not satisfied
-    if(fixed_dt > 0.0)
+    if(m_fixed_dt > 0.0)
     {
-	if(dt_new < fixed_dt)
+	if(dt_new < m_fixed_dt)
 	{
 		amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition: \n"
 					   << "max dt by CFL     : " << dt_new << "\n"
-					   << "fixed dt specified: " << fixed_dt << std::endl;
+					   << "fixed dt specified: " << m_fixed_dt << std::endl;
 	}
-	m_dt = fixed_dt;
+	m_dt = m_fixed_dt;
     }
     else
     {

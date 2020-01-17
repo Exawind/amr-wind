@@ -46,7 +46,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
                                     Array4<Real const> const& f)
 {
     Real l_dt = m_dt;
-    bool l_use_forces_in_trans = this->use_forces_in_trans;
+    bool l_use_forces_in_trans = m_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
 
@@ -150,7 +150,7 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
                                      Real* p)
 {
     Real l_dt = m_dt;
-    bool l_use_forces_in_trans = this->use_forces_in_trans;
+    bool l_use_forces_in_trans = m_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);

@@ -4,10 +4,10 @@ using namespace amrex;
 
 void incflo::set_background_pressure ()
 {
-    p000 = m_ic_p;
+    m_p000 = m_ic_p;
 
     if (m_probtype == 11) {
-        use_boussinesq = true;
+        m_use_boussinesq = true;
     } else {
         const auto problo = geom[0].ProbLoArray();
         const auto probhi = geom[0].ProbHiArray();
@@ -18,10 +18,10 @@ void incflo::set_background_pressure ()
         // (1) incflo.delp in inputs
         int delp_dir = -1;
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-            if (std::abs(delp[dir]) > std::numeric_limits<Real>::epsilon()) {
+            if (std::abs(m_delp[dir]) > std::numeric_limits<Real>::epsilon()) {
                 if (delp_dir == -1) {
                     delp_dir = dir;
-                    gp0[dir] = delp[dir] / problen[dir];
+                    m_gp0[dir] = m_delp[dir] / problen[dir];
                 } else {
                     amrex::Abort("set_background_pressure: how did this happen?");
                 }
@@ -36,7 +36,7 @@ void incflo::set_background_pressure ()
             {
                 if (delp_dir == -1) {
                     delp_dir = dir;
-                    gp0[dir] = (m_bc_pressure[Orientation(dir,Orientation::high)]
+                    m_gp0[dir] = (m_bc_pressure[Orientation(dir,Orientation::high)]
                                 - m_bc_pressure[Orientation(dir,Orientation::low)]) / problen[dir];
                 } else {
                     amrex::Abort("set_background_pressure: how did this happen?");
@@ -45,11 +45,11 @@ void incflo::set_background_pressure ()
         }
         // (3) gravity
         for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-            Real dpdx = gravity[dir] * ro_0;
+            Real dpdx = m_gravity[dir] * m_ro_0;
             if (std::abs(dpdx) > std::numeric_limits<Real>::epsilon()) {
                 if (delp_dir == -1) {
                     delp_dir = dir;
-                    gp0[dir] = dpdx;
+                    m_gp0[dir] = dpdx;
                 } else {
                     amrex::Abort("set_background_pressure: how did this happen?");
                 }

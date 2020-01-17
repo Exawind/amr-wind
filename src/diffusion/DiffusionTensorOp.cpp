@@ -86,8 +86,8 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         m_eb_op->setScalars(1.0, dt);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_eb_op->setACoeffs(lev, *density[lev]);
-            m_eb_op->setShearViscosity(lev, m_incflo->mu);
-            m_eb_op->setEBShearViscosity(lev, m_incflo->mu);
+            m_eb_op->setShearViscosity(lev, m_incflo->m_mu);
+            m_eb_op->setEBShearViscosity(lev, m_incflo->m_mu);
         }
     }
     else
@@ -96,7 +96,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         m_reg_op->setScalars(1.0, dt);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_reg_op->setACoeffs(lev, *density[lev]);
-            m_reg_op->setShearViscosity(lev, m_incflo->mu);
+            m_reg_op->setShearViscosity(lev, m_incflo->m_mu);
         }
     }
 

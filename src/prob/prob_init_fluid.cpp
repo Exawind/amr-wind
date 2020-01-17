@@ -55,7 +55,7 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
     Real dzinv = 1.0 / domain.length(2);
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
-    Real lrho = this->ro_0;
+    Real lrho = m_ro_0;
     if (32 == m_probtype)
     {
         Real v = m_ic_v;
@@ -94,7 +94,7 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
                                       GpuArray<Real, AMREX_SPACEDIM> const& probhi)
 {
     static constexpr Real twopi = 2.0 * 3.1415926535897932;
-    Real lrho = this->ro_0;
+    Real lrho = m_ro_0;
     if (21 == m_probtype)
     {
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept

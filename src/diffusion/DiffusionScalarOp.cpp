@@ -108,14 +108,14 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
         if (m_eb_op)
         {
             for (int lev = 0; lev <= finest_level; ++lev) {
-                m_eb_op->setBCoeffs(lev, m_incflo->mu_s[comp]);
+                m_eb_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
             }
         }
         else
 #endif
         {
             for (int lev = 0; lev <= finest_level; ++lev) {
-                m_reg_op->setBCoeffs(lev, m_incflo->mu_s[comp]);
+                m_reg_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
             }
         }
 

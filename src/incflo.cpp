@@ -38,7 +38,7 @@ void incflo::InitData ()
     BL_PROFILE("incflo::InitData()");
 
     int restart_flag = 0;
-    if(restart_file.empty())
+    if(m_restart_file.empty())
     {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
@@ -52,16 +52,16 @@ void incflo::InitData ()
         // with MakeNewLevelFromScratch.
         InitFromScratch(m_cur_time);
 
-        if (do_initial_proj) {
+        if (m_do_initial_proj) {
             InitialProjection();
         }
-        if (initial_iterations > 0) {
+        if (m_initial_iterations > 0) {
             InitialIterations();
         }
 
         // xxxxx averagedown ???
 
-        // xxxxx if (check_int > 0) { WriteCheckPointFile(); }
+        // xxxxx if (m_check_int > 0) { WriteCheckPointFile(); }
     }
     else
     {
@@ -80,15 +80,15 @@ void incflo::InitData ()
 //    PostInit(restart_flag);
 
     // Plot initial distribution
-    if((plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && !restart_flag)
+    if((m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && !restart_flag)
     {
         amrex::Warning("xxxxx Plotfile todo");
 //        WritePlotFile();
-        last_plt = 0;
+        m_last_plt = 0;
     }
-    if(KE_int > 0 && !restart_flag)
+    if(m_KE_int > 0 && !restart_flag)
     {
-        amrex::Abort("xxxxx KE_int todo");
+        amrex::Abort("xxxxx m_KE_int todo");
 //        amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
@@ -109,8 +109,8 @@ void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
 
-    bool do_not_evolve = ((max_step == 0) || ((stop_time >= 0.) && (m_cur_time > stop_time)) ||
-   					     ((stop_time <= 0.) && (max_step <= 0))) && !steady_state;
+    bool do_not_evolve = ((m_max_step == 0) || ((m_stop_time >= 0.) && (m_cur_time > m_stop_time)) ||
+   					     ((m_stop_time <= 0.) && (m_max_step <= 0))) && !m_steady_state;
 
     while(!do_not_evolve)
     {
@@ -121,7 +121,7 @@ void incflo::Evolve()
             for (int lev = 0; lev < max_level; ++lev)
             {
                 // regrid is a member function of AmrCore
-                if (nstep % regrid_int == 0)
+                if (m_nstep % regrid_int == 0)
                 {
                     regrid(lev, time);
                     incflo_setup_solvers();
@@ -129,7 +129,7 @@ void incflo::Evolve()
          
             }
          
-            if (nstep % regrid_int == 0)
+            if (m_nstep % regrid_int == 0)
             {
               setup_level_mask();
             }
@@ -138,7 +138,7 @@ void incflo::Evolve()
 
         // Advance to time t + dt
         Advance();
-        nstep++;
+        m_nstep++;
         m_cur_time += m_dt;
 
         amrex::Abort("xxxxx After the first Advance()");
@@ -146,31 +146,31 @@ void incflo::Evolve()
         if (writeNow())
         {
             WritePlotFile();
-            last_plt = nstep;
+            m_last_plt = m_nstep;
         }
 
-        if(check_int > 0 && (nstep % check_int == 0))
+        if(m_check_int > 0 && (m_nstep % m_check_int == 0))
         {
             WriteCheckPointFile();
-            last_chk = nstep;
+            m_last_chk = m_nstep;
         }
         
-        if(KE_int > 0 && (nstep % KE_int == 0))
+        if(m_KE_int > 0 && (m_nstep % m_KE_int == 0))
         {
             amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
         }
 
         // Mechanism to terminate incflo normally.
-        do_not_evolve = (steady_state && SteadyStateReached()) ||
-                        ((stop_time > 0. && (m_cur_time >= stop_time - 1.e-12 * m_dt)) ||
-                         (max_step >= 0 && nstep >= max_step));
+        do_not_evolve = (m_steady_state && SteadyStateReached()) ||
+                        ((m_stop_time > 0. && (m_cur_time >= m_stop_time - 1.e-12 * m_dt)) ||
+                         (m_max_step >= 0 && m_nstep >= m_max_step));
     }
 
     amrex::Abort("xxxxx At the end of Evolve");
 
 	// Output at the final time
-    if( check_int > 0                                               && nstep != last_chk) WriteCheckPointFile();
-    if( (plot_int > 0 || plot_per_exact > 0 || plot_per_approx > 0) && nstep != last_plt) WritePlotFile();
+    if( m_check_int > 0                                               && m_nstep != m_last_chk) WriteCheckPointFile();
+    if( (m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && m_nstep != m_last_plt) WritePlotFile();
 }
 
 // tag cells for refinement
@@ -339,28 +339,28 @@ incflo::writeNow()
 {
     bool write_now = false;
 
-    if ( plot_int > 0 && (nstep % plot_int == 0) ) 
+    if ( m_plot_int > 0 && (m_nstep % m_plot_int == 0) ) 
         write_now = true;
 
-    else if ( plot_per_exact  > 0 && (std::abs(std::remainder(m_cur_time, plot_per_exact)) < 1.e-12) ) 
+    else if ( m_plot_per_exact  > 0 && (std::abs(std::remainder(m_cur_time, m_plot_per_exact)) < 1.e-12) ) 
         write_now = true;
 
-    else if (plot_per_approx > 0.0)
+    else if (m_plot_per_approx > 0.0)
     {
-        // Check to see if we've crossed a plot_per_approx interval by comparing
+        // Check to see if we've crossed a m_plot_per_approx interval by comparing
         // the number of intervals that have elapsed for both the current
         // time and the time at the beginning of this timestep.
 
-        int num_per_old = (m_cur_time-m_dt) / plot_per_approx;
-        int num_per_new = (m_cur_time     ) / plot_per_approx;
+        int num_per_old = (m_cur_time-m_dt) / m_plot_per_approx;
+        int num_per_new = (m_cur_time     ) / m_plot_per_approx;
 
         // Before using these, however, we must test for the case where we're
         // within machine epsilon of the next interval. In that case, increment
-        // the counter, because we have indeed reached the next plot_per_approx interval
+        // the counter, because we have indeed reached the next m_plot_per_approx interval
         // at this point.
 
         const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(m_cur_time);
-        const Real next_plot_time = (num_per_old + 1) * plot_per_approx;
+        const Real next_plot_time = (num_per_old + 1) * m_plot_per_approx;
 
         if ((num_per_new == num_per_old) && std::abs(m_cur_time - next_plot_time) <= eps)
         {

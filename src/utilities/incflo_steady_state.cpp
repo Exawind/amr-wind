@@ -57,8 +57,8 @@ bool incflo::SteadyStateReached()
             max_relchange = amrex::max(max_relchange, relchange);
         }
 
-        condition1[lev] = (max_change < steady_state_tol * dt);
-        condition2[lev] = (max_relchange < steady_state_tol);
+        condition1[lev] = (max_change < m_steady_state_tol * dt);
+        condition2[lev] = (max_relchange < m_steady_state_tol);
 
         // Print out info on steady state checks
         if (m_verbose > 0)
@@ -77,7 +77,7 @@ bool incflo::SteadyStateReached()
 
     // Always return negative to first access. This way
     // initial zero velocity field do not test for false positive
-    if(nstep < 2)
+    if(m_nstep < 2)
     {
         return false;
     } else {

@@ -67,7 +67,7 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
     // If we want to set max_coarsening_level we have to send it in to the constructor
     //
     LPInfo lp_info;
-    lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
+    lp_info.setMaxCoarseningLevel(m_mac_mg_max_coarsening_level);
 
     //
     // Perform MAC projection
@@ -76,5 +76,5 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
 
     macproj.setDomainBC(get_projection_bc(Orientation::low), get_projection_bc(Orientation::high));
 
-    macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
+    macproj.project(m_mac_mg_rtol,m_mac_mg_atol,MLMG::Location::FaceCentroid);
 }
