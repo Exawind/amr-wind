@@ -230,7 +230,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     if ((extdir_ilo and domain_ilo >= ubx.smallEnd(0)-1) or
         (extdir_ihi and domain_ihi <= ubx.bigEnd(0)))
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(ubx,1,1),2,1),
+        amrex::ParallelFor(Box(ubx).grow(1,1).grow(2,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             upls(i,j,k) = vcc(i,j,k,0) - 0.5 * incflo_xslope_extdir_eb
@@ -241,7 +241,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     }
     else
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(ubx,1,1),2,1),
+        amrex::ParallelFor(Box(ubx).grow(1,1).grow(2,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             upls(i,j,k) = vcc(i  ,j,k,0) - 0.5 * incflo_xslope_eb(i  ,j,k,0,vcc,flag);
@@ -302,7 +302,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     if ((extdir_jlo and domain_jlo >= vbx.smallEnd(1)-1) or
         (extdir_jhi and domain_jhi <= vbx.bigEnd(1)))
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),2,1),
+        amrex::ParallelFor(Box(vbx).grow(0,1).grow(2,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             vpls(i,j,k) = vcc(i,j,k,1) - 0.5 * incflo_yslope_extdir_eb
@@ -313,7 +313,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     }
     else
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),2,1),
+        amrex::ParallelFor(Box(vbx).grow(0,1).grow(2,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             vpls(i,j,k) = vcc(i,j  ,k,1) - 0.5 * incflo_yslope_eb(i,j  ,k,1,vcc,flag);
@@ -374,7 +374,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     if ((extdir_klo and domain_klo >= wbx.smallEnd(2)-1) or
         (extdir_khi and domain_khi <= wbx.bigEnd(2)))
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),1,1),
+        amrex::ParallelFor(Box(wbx).grow(0,1).grow(1,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             wpls(i,j,k) = vcc(i,j,k,2) - 0.5 * incflo_zslope_extdir_eb
@@ -385,7 +385,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     }
     else
     {
-        amrex::ParallelFor(amrex::grow(amrex::grow(vbx,0,1),1,1),
+        amrex::ParallelFor(Box(wbx).grow(0,1).grow(1,1),
         [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             wpls(i,j,k) = vcc(i,j,k  ,2) - 0.5 * incflo_zslope_eb(i,j,k  ,2,vcc,flag);
