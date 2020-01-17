@@ -257,7 +257,7 @@ void incflo::ComputeStrainrate(Real time_in)
 }
 
 
-Real incflo::ComputeKineticEnergy()
+Real incflo::ComputeKineticEnergy () const
 {
 #if 0
     BL_PROFILE("incflo::ComputeKineticEnergy");

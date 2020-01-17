@@ -60,44 +60,41 @@ public:
 
 public: // for cuda
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    void ComputeDt(int initialisation, bool explicit_diffusion);
+    void compute_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
+                         amrex::Vector<amrex::MultiFab*> const& tra_forces,
+                         amrex::Vector<amrex::MultiFab const*> const& density,
+                         amrex::Vector<amrex::MultiFab const*> const& tracer);
+
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Diffusion
+    // boundary_conditions
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-    void ComputeStrainrate(amrex::Real time_in);
+    void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
-    void ComputeViscosity( amrex::Vector<std::unique_ptr<amrex::MultiFab>>& eta_out,
-                           const amrex::Real time_in);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Derived quantities and diagnostics
+    // convection
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-    void ComputeVorticity(amrex::Real time_in);
-    double ComputeKineticEnergy();
+    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyCorrector();
+    void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
+                                  amrex::Vector<amrex::MultiFab*> const& conv_r,
+                                  amrex::Vector<amrex::MultiFab*> const& conv_t,
+                                  amrex::Vector<amrex::MultiFab const*> const& vel,
+                                  amrex::Vector<amrex::MultiFab const*> const& density,
+                                  amrex::Vector<amrex::MultiFab const*> const& tracer,
+                                  amrex::Vector<amrex::MultiFab const*> const& vel_forces,
+                                  amrex::Vector<amrex::MultiFab const*> const& tra_forces,
+                                  amrex::Real time);
 
-    amrex::Real volWgtSum (int lev, const amrex::MultiFab & mf, int comp, bool local=false);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
     //
-    // MOL Convection
+    // Gogunov
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void predict_vels_on_faces (int lev, amrex::Real time, amrex::MultiFab& u_mac,
-                                amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
-                                amrex::MultiFab const& vel);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Godunov Convection
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
     void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
                           amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
                           amrex::MultiFab const& vel, amrex::MultiFab const& rho,
@@ -145,36 +142,181 @@ public: // for cuda
                                  amrex::Array4<amrex::Real const> const& f,
                                  amrex::Real* p);
 
+    //
+    // MOL
+    //
+    void predict_vels_on_faces (int lev, amrex::Real time, amrex::MultiFab& u_mac,
+                                amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
+                                amrex::MultiFab const& vel);
+
+    void predict_vels_on_faces (int lev,
+                                amrex::Box const& ubx,
+                                amrex::Box const& vbx,
+                                amrex::Box const& wbx,
+                                amrex::Array4<amrex::Real> const& u,
+                                amrex::Array4<amrex::Real> const& v,
+                                amrex::Array4<amrex::Real> const& w,
+                                amrex::Array4<amrex::Real const> const& vcc);
+
 #ifdef AMREX_USE_EB
-    void incflo_compute_eb_fluxes_on_box(const int lev, amrex::Box& bx,
-                                         amrex::FArrayBox& a_fx,
-                                         amrex::FArrayBox& a_fy,
-                                         amrex::FArrayBox& a_fz,
-                                         const amrex::FArrayBox& state,
-                                         const int state_comp, const int n_comp,
-                                         const amrex::FArrayBox& xslopes,
-                                         const amrex::FArrayBox& yslopes,
-                                         const amrex::FArrayBox& zslopes,
-                                         const int slopes_comp,
-                                         const amrex::FArrayBox& ep_u_mac,
-                                         const amrex::FArrayBox& ep_v_mac,
-                                         const amrex::FArrayBox& ep_w_mac,
-                                         const amrex::FArrayBox& ax,
-                                         const amrex::FArrayBox& ay,
-                                         const amrex::FArrayBox& az,
-                                         const amrex::FArrayBox& fc_x,
-                                         const amrex::FArrayBox& fc_y,
-                                         const amrex::FArrayBox& fc_z,
-                                         const amrex::FArrayBox& volfrac,
-                                         const amrex::FArrayBox& bndrycent,
-                                         const amrex::IArrayBox& cc_mask,
-                                         const amrex::EBCellFlagFab& flags);
+    void predict_vels_on_faces_eb (int lev,
+                                   amrex::Box const& ccbx,
+                                   amrex::Box const& ubx,
+                                   amrex::Box const& vbx,
+                                   amrex::Box const& wbx,
+                                   amrex::Array4<amrex::Real> const& u,
+                                   amrex::Array4<amrex::Real> const& v,
+                                   amrex::Array4<amrex::Real> const& w,
+                                   amrex::Array4<amrex::Real const> const& vcc,
+                                   amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                   amrex::Array4<amrex::Real const> const& fcx,
+                                   amrex::Array4<amrex::Real const> const& fcy,
+                                   amrex::Array4<amrex::Real const> const& fcz);
 #endif
+
+    void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
+                                    amrex::Array4<amrex::Real> const& fx,
+                                    amrex::Array4<amrex::Real> const& fy,
+                                    amrex::Array4<amrex::Real> const& fz,
+                                    amrex::Array4<amrex::Real const> const& q,
+                                    amrex::Array4<amrex::Real const> const& umac,
+                                    amrex::Array4<amrex::Real const> const& vmac,
+                                    amrex::Array4<amrex::Real const> const& wmac,
+                                    amrex::BCRec const* h_bcrec,
+                                    amrex::BCRec const* d_bcrec);
+
+    void compute_convective_rate (int lev, amrex::Box const& bx, int ncomp,
+                                  amrex::Array4<amrex::Real> const& dUdt,
+                                  amrex::Array4<amrex::Real const> const& fx,
+                                  amrex::Array4<amrex::Real const> const& fy,
+                                  amrex::Array4<amrex::Real const> const& fz);
+
+#ifdef AMREX_USE_EB
+    void compute_convective_fluxes_eb (int lev, amrex::Box const& bx, int ncomp,
+                                       amrex::Array4<amrex::Real> const& fx,
+                                       amrex::Array4<amrex::Real> const& fy,
+                                       amrex::Array4<amrex::Real> const& fz,
+                                       amrex::Array4<amrex::Real const> const& q,
+                                       amrex::Array4<amrex::Real const> const& umac,
+                                       amrex::Array4<amrex::Real const> const& vmac,
+                                       amrex::Array4<amrex::Real const> const& wmac,
+                                       amrex::BCRec const* h_bcrec,
+                                       amrex::BCRec const* d_bcrec,
+                                       amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                       amrex::Array4<amrex::Real const> const& fcx,
+                                       amrex::Array4<amrex::Real const> const& fcy,
+                                       amrex::Array4<amrex::Real const> const& fcz,
+                                       amrex::Array4<amrex::Real> const& qface);
+
+    void compute_convective_rate_eb (int lev, amrex::Box const& bx, int ncomp,
+                                     amrex::Array4<amrex::Real> const& dUdt,
+                                     amrex::Array4<amrex::Real const> const& fx,
+                                     amrex::Array4<amrex::Real const> const& fy,
+                                     amrex::Array4<amrex::Real const> const& fz,
+                                     amrex::Array4<amrex::EBCellFlag const> const& flag,
+                                     amrex::Array4<amrex::Real const> const& vfrac,
+                                     amrex::Array4<amrex::Real const> const& apx,
+                                     amrex::Array4<amrex::Real const> const& apy,
+                                     amrex::Array4<amrex::Real const> const& apz);
+
+    void redistribute_eb (int lev, amrex::Box const& bx, int ncomp,
+                          amrex::Array4<amrex::Real> const& dUdt,
+                          amrex::Array4<amrex::Real const> const& dUdt_in,
+                          amrex::Array4<amrex::Real> const& scratch,
+                          amrex::Array4<amrex::EBCellFlag const> const& flag,
+                          amrex::Array4<amrex::Real const> const& vfrac);
+#endif
+
+    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
+                                  amrex::Array4<amrex::Real> const& dvdt, // velocity
+                                  amrex::Array4<amrex::Real> const& drdt, // density
+                                  amrex::Array4<amrex::Real> const& dtdt, // tracer
+                                  amrex::Array4<amrex::Real const> const& vel,
+                                  amrex::Array4<amrex::Real const> const& rho,
+                                  amrex::Array4<amrex::Real const> const& tra,
+                                  amrex::Array4<amrex::Real const> const& umac,
+                                  amrex::Array4<amrex::Real const> const& vmac,
+                                  amrex::Array4<amrex::Real const> const& wmac);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // derive
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ComputeStrainrate (amrex::Real time);
+    void ComputeVorticity (amrex::Real time);
+    void ComputeDivU (amrex::Real time);
+    void ComputeDrag();
+    amrex::Real ComputeKineticEnergy () const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // prob
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void prob_init_fluid (int lev);
+    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
+                                   amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time);
+
+    void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
+                                amrex::Array4<amrex::Real> const& p,
+                                amrex::Array4<amrex::Real> const& vel,
+                                amrex::Array4<amrex::Real> const& denisty,
+                                amrex::Array4<amrex::Real> const& tracer,
+                                amrex::Box const& domain,
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
+
+    void init_double_shear_layer (amrex::Box const& vbx, amrex::Box const& gbx,
+                                  amrex::Array4<amrex::Real> const& p,
+                                  amrex::Array4<amrex::Real> const& vel,
+                                  amrex::Array4<amrex::Real> const& denisty,
+                                  amrex::Array4<amrex::Real> const& tracer,
+                                  amrex::Box const& domain,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
+                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // projection
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // rheology
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ComputeViscosity (amrex::Vector<amrex::MultiFab*> const& eta,
+                           amrex::Real time);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // utilities
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    amrex::Real volWgtSum (int lev, const amrex::MultiFab& mf, int comp, bool local=false);
+    bool SteadyStateReached ();
 
 private:
 
     // Be verbose?
     int incflo_verbose = 0;
+
+    // Member variables for initial conditions
+    int probtype = 0;
+    amrex::Real ic_u = 0.0;
+    amrex::Real ic_v = 0.0;
+    amrex::Real ic_w = 0.0;
+    amrex::Real ic_p = 0.0;
 
     amrex::Vector<amrex::Real> t_old;
     amrex::Vector<amrex::Real> t_new;
@@ -184,6 +326,109 @@ private:
     amrex::Real dt           = -1.0;
     amrex::Real prev_dt      = -1.0;
     amrex::Real prev_prev_dt = -1.0;
+
+    // Time step counter
+    int nstep         = -1;
+
+    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
+    // OR steady_state = true AND steady_state_tol is reached
+    amrex::Real stop_time = -1.0;
+    int max_step = -1;
+    bool steady_state = false;
+    amrex::Real steady_state_tol = 1.0e-5;
+
+    // Options to control time stepping
+    amrex::Real cfl = 0.5;
+    amrex::Real fixed_dt = -1.;
+    amrex::Real init_shrink = 0.1;
+
+    // Initial projection / iterations
+    bool do_initial_proj    = true;
+    int  initial_iterations = 3;
+
+    // Use Boussinesq approximation for buoyancy?
+    bool use_boussinesq = false;
+
+    // AMR / refinement settings
+    int refine_cutcells = 1;
+    int regrid_int = -1;
+
+    int  mac_mg_verbose = 0;
+    int  mac_mg_cg_verbose = 0;
+    int  mac_mg_maxiter = 200;
+    int  mac_mg_cg_maxiter = 200;
+    int  mac_mg_max_coarsening_level = 100;
+    amrex::Real mac_mg_rtol = 1.0e-11;
+    amrex::Real mac_mg_atol = 1.0e-14;
+    std::string mac_bottom_solver_type;
+
+    amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
+    amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> delp{{0.0, 0.0, 0.0}};
+
+    // Scalar diffusive coefficient
+    amrex::Vector<amrex::Real> mu_s;
+
+    // Density (if constant)
+    amrex::Real ro_0 = 1.0;
+
+    bool constant_density = true;
+    bool advect_tracer    = false;
+    bool test_tracer_conservation = false;
+
+    bool use_godunov         = false;
+    bool use_forces_in_trans = false;
+
+    enum struct DiffusionType {
+        Invalid, Explicit, Crank_Nicolson, Implicit
+    };
+    DiffusionType m_diff_type = DiffusionType::Implicit;
+
+    // Fluid properties
+    std::string fluid_model;
+    amrex::Real mu = 1.0;
+    amrex::Real n_0 = 0.0;
+    amrex::Real tau_0 = 0.0;
+    amrex::Real papa_reg = 0.0;
+    amrex::Real eta_0 = 0.0;
+
+    int plot_int = -1;
+
+    // Dump plotfiles at as close as possible to the designated period *without* changing dt
+    amrex::Real plot_per_approx = -1.0;
+    
+    // Dump plotfiles at exactcly the designated period by changing dt
+    amrex::Real plot_per_exact  = -1.0;
+
+    int last_plt = -1;
+    std::string plot_file{"plt"};
+
+    int check_int = -1;
+    int last_chk = -1;
+    int KE_int = -1;
+    std::string check_file{"chk"};
+    std::string restart_file{""};
+
+    // Flags for saving fluid data in plot files
+    int plt_velx        = 1;
+    int plt_vely        = 1;
+    int plt_velz        = 1;
+    int plt_gpx         = 1;
+    int plt_gpy         = 1;
+    int plt_gpz         = 1;
+    int plt_rho         = 1;
+    int plt_tracer      = 1;
+    int plt_p           = 0;
+    int plt_eta         = 0;
+    int plt_vort        = 1;
+    int plt_strainrate  = 0;
+    int plt_stress      = 0;
+    int plt_divu        = 0;
+    int plt_vfrac       = 1;
+
+    // Total number of variables to write in plot file
+    int pltVarCount = 0;
 
     struct LevelData {
         LevelData () = default;
@@ -281,10 +526,6 @@ private:
     }
 #endif
 
-    enum struct DiffusionType {
-        Invalid, Explicit, Crank_Nicolson, Implicit
-    };
-    DiffusionType m_diff_type = DiffusionType::Implicit;
     std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
     std::unique_ptr<DiffusionScalarOp> diffusion_scalar_op;
 
@@ -357,183 +598,24 @@ private:
     void copy_from_old_to_new_tracer   (         amrex::IntVect const& ng = amrex::IntVect{0});
     void copy_from_old_to_new_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
 
-public: // for cuda
+    void Advance ();
+    bool writeNow ();
+    void AverageDown ();
+    void AverageDownTo (int crse_lev);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // boundary_conditions
+    //
+    ///////////////////////////////////////////////////////////////////////////
 
     void init_bcs ();
-    void set_background_pressure ();
-    void prob_init_fluid (int lev);
-    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
-                                   amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time);
 
-    void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
-                                amrex::Array4<amrex::Real> const& p,
-                                amrex::Array4<amrex::Real> const& vel,
-                                amrex::Array4<amrex::Real> const& denisty,
-                                amrex::Array4<amrex::Real> const& tracer,
-                                amrex::Box const& domain,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
-
-    void init_double_shear_layer (amrex::Box const& vbx, amrex::Box const& gbx,
-                                  amrex::Array4<amrex::Real> const& p,
-                                  amrex::Array4<amrex::Real> const& vel,
-                                  amrex::Array4<amrex::Real> const& denisty,
-                                  amrex::Array4<amrex::Real> const& tracer,
-                                  amrex::Box const& domain,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
-
-    void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
-
-    void predict_vels_on_faces (int lev,
-                                amrex::Box const& ubx,
-                                amrex::Box const& vbx,
-                                amrex::Box const& wbx,
-                                amrex::Array4<amrex::Real> const& u,
-                                amrex::Array4<amrex::Real> const& v,
-                                amrex::Array4<amrex::Real> const& w,
-                                amrex::Array4<amrex::Real const> const& vcc);
-
-#ifdef AMREX_USE_EB
-    void predict_vels_on_faces_eb (int lev,
-                                   amrex::Box const& ccbx,
-                                   amrex::Box const& ubx,
-                                   amrex::Box const& vbx,
-                                   amrex::Box const& wbx,
-                                   amrex::Array4<amrex::Real> const& u,
-                                   amrex::Array4<amrex::Real> const& v,
-                                   amrex::Array4<amrex::Real> const& w,
-                                   amrex::Array4<amrex::Real const> const& vcc,
-                                   amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                   amrex::Array4<amrex::Real const> const& fcx,
-                                   amrex::Array4<amrex::Real const> const& fcy,
-                                   amrex::Array4<amrex::Real const> const& fcz);
-#endif
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Initialization
+    // convection
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Read inputs file using ParmParse
-    void ReadParameters ();
-    void ReadIOParameters();
-    void ReadRheologyParameters();
-
-    // Resize arrays to fit (up to) max_level + 1 AMR levels
-    void ResizeArrays();
-
-    // Initialization
-    void InitialProjection();
-    void InitialIterations();
-
-    // Member variables for initial conditions
-    int probtype = 0;
-    amrex::Real ic_u = 0.0;
-    amrex::Real ic_v = 0.0;
-    amrex::Real ic_w = 0.0;
-    amrex::Real ic_p = 0.0;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Simulate!
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void Advance();
-    void ComputeDt(int initialisation, bool explicit_diffusion);
-    bool SteadyStateReached();
-    void ApplyPredictor(bool incremental_projection = false);
-    void ApplyCorrector();
-    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Convection
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
-                                    amrex::Array4<amrex::Real> const& fx,
-                                    amrex::Array4<amrex::Real> const& fy,
-                                    amrex::Array4<amrex::Real> const& fz,
-                                    amrex::Array4<amrex::Real const> const& q,
-                                    amrex::Array4<amrex::Real const> const& umac,
-                                    amrex::Array4<amrex::Real const> const& vmac,
-                                    amrex::Array4<amrex::Real const> const& wmac,
-                                    amrex::BCRec const* h_bcrec,
-                                    amrex::BCRec const* d_bcrec);
-
-    void compute_convective_rate (int lev, amrex::Box const& bx, int ncomp,
-                                  amrex::Array4<amrex::Real> const& dUdt,
-                                  amrex::Array4<amrex::Real const> const& fx,
-                                  amrex::Array4<amrex::Real const> const& fy,
-                                  amrex::Array4<amrex::Real const> const& fz);
-
-#ifdef AMREX_USE_EB
-    void compute_convective_fluxes_eb (int lev, amrex::Box const& bx, int ncomp,
-                                       amrex::Array4<amrex::Real> const& fx,
-                                       amrex::Array4<amrex::Real> const& fy,
-                                       amrex::Array4<amrex::Real> const& fz,
-                                       amrex::Array4<amrex::Real const> const& q,
-                                       amrex::Array4<amrex::Real const> const& umac,
-                                       amrex::Array4<amrex::Real const> const& vmac,
-                                       amrex::Array4<amrex::Real const> const& wmac,
-                                       amrex::BCRec const* h_bcrec,
-                                       amrex::BCRec const* d_bcrec,
-                                       amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                       amrex::Array4<amrex::Real const> const& fcx,
-                                       amrex::Array4<amrex::Real const> const& fcy,
-                                       amrex::Array4<amrex::Real const> const& fcz,
-                                       amrex::Array4<amrex::Real> const& qface);
-
-    void compute_convective_rate_eb (int lev, amrex::Box const& bx, int ncomp,
-                                     amrex::Array4<amrex::Real> const& dUdt,
-                                     amrex::Array4<amrex::Real const> const& fx,
-                                     amrex::Array4<amrex::Real const> const& fy,
-                                     amrex::Array4<amrex::Real const> const& fz,
-                                     amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                     amrex::Array4<amrex::Real const> const& vfrac,
-                                     amrex::Array4<amrex::Real const> const& apx,
-                                     amrex::Array4<amrex::Real const> const& apy,
-                                     amrex::Array4<amrex::Real const> const& apz);
-
-    void redistribute_eb (int lev, amrex::Box const& bx, int ncomp,
-                          amrex::Array4<amrex::Real> const& dUdt,
-                          amrex::Array4<amrex::Real const> const& dUdt_in,
-                          amrex::Array4<amrex::Real> const& scratch,
-                          amrex::Array4<amrex::EBCellFlag const> const& flag,
-                          amrex::Array4<amrex::Real const> const& vfrac);
-#endif
-
-    void compute_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
-                         amrex::Vector<amrex::MultiFab*> const& tra_forces,
-                         amrex::Vector<amrex::MultiFab const*> const& density,
-                         amrex::Vector<amrex::MultiFab const*> const& tracer);
-
-    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
-                                  amrex::Array4<amrex::Real> const& dvdt,
-                                  amrex::Array4<amrex::Real> const& drdt,
-                                  amrex::Array4<amrex::Real> const& dtdt,
-                                  amrex::Array4<amrex::Real const> const& vel,
-                                  amrex::Array4<amrex::Real const> const& rho,
-                                  amrex::Array4<amrex::Real const> const& tra,
-                                  amrex::Array4<amrex::Real const> const& umac,
-                                  amrex::Array4<amrex::Real const> const& vmac,
-                                  amrex::Array4<amrex::Real const> const& wmac);
-
-    void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
-                                  amrex::Vector<amrex::MultiFab*> const& conv_r,
-                                  amrex::Vector<amrex::MultiFab*> const& conv_t,
-                                  amrex::Vector<amrex::MultiFab const*> const& vel,
-                                  amrex::Vector<amrex::MultiFab const*> const& density,
-                                  amrex::Vector<amrex::MultiFab const*> const& tracer,
-                                  amrex::Vector<amrex::MultiFab const*> const& vel_forces,
-                                  amrex::Vector<amrex::MultiFab const*> const& tra_forces,
-                                  amrex::Real time);
+    ///////////////////////////////////////////////////////////////////////////
 
     void apply_MAC_projection (amrex::Vector<amrex::MultiFab>& u_mac,
                                amrex::Vector<amrex::MultiFab>& v_mac,
@@ -541,45 +623,14 @@ public: // for cuda
                                amrex::Vector<amrex::MultiFab const*> const& density,
                                amrex::Real time);
 
-     // Verbosity
-     int  mac_mg_verbose = 0;
-     int  mac_mg_cg_verbose = 0;
-
-     // Control MLMG behavior
-     int  mac_mg_maxiter = 200;
-     int  mac_mg_cg_maxiter = 200;
-     amrex::Real mac_mg_rtol = 1.0e-11;
-     amrex::Real mac_mg_atol = 1.0e-14;
-     std::string mac_bottom_solver_type;
-
-     // Max coarsening level
-     int  mac_mg_max_coarsening_level = 100;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Diffusion
+    // embedded_boundaries
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void ComputeDivU(amrex::Real time_in);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Derived quantities
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
-    void ComputeDrag();
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Embedded Boundaries
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
 #ifdef AMREX_USE_EB
     void MakeEBGeometry();
-
     void make_eb_annulus();
     void make_eb_box();
     void make_eb_cylinder();
@@ -590,76 +641,32 @@ public: // for cuda
     void make_eb_tuscan();
 #endif
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: Runtime parameters
+    // rheology
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-    // Time step counter
-    int nstep         = -1;
+    void ReadRheologyParameters();
 
-    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
-    // OR steady_state = true AND steady_state_tol is reached
-    amrex::Real stop_time = -1.0;
-    int max_step = -1;
-    bool steady_state = false;
-    amrex::Real steady_state_tol = 1.0e-5;
-
-    // Options to control time stepping
-    amrex::Real cfl = 0.5;
-    amrex::Real fixed_dt = -1.;
-    amrex::Real init_shrink = 0.1;
-
-    // Initial projection / iterations
-    bool do_initial_proj    = true;
-    int  initial_iterations = 3;
-
-    // Use Boussinesq approximation for buoyancy?
-    bool use_boussinesq = false;
-
-    // AMR / refinement settings
-    int refine_cutcells = 1;
-    int regrid_int = -1;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Member variables: Physics
+    // setup
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-    amrex::Real p000 = 0.0; // background pressure at node (0,0,0).
-    amrex::Vector<amrex::Real> gp0{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> gravity{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> delp{{0.0, 0.0, 0.0}};
+    void set_background_pressure ();
+    void ReadParameters ();
+    void ReadIOParameters();
+    void ResizeArrays(); // Resize arrays to fit (up to) max_level + 1 AMR levels
+    void InitialProjection();
+    void InitialIterations();
 
-    // Scalar diffusive coefficient
-    amrex::Vector<amrex::Real> mu_s;
-
-    // Density (if constant)
-    amrex::Real ro_0 = 1.0;
-
-    bool constant_density = true;
-    bool advect_tracer    = false;
-    bool test_tracer_conservation = false;
-
-    bool use_godunov         = false;
-    bool use_forces_in_trans = false;
-    int  diffusion_type      = 2;
-
-    // Fluid properties
-    std::string fluid_model;
-    amrex::Real mu = 1.0;
-    amrex::Real n_0 = 0.0;
-    amrex::Real tau_0 = 0.0;
-    amrex::Real papa_reg = 0.0;
-    amrex::Real eta_0 = 0.0;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     //
-    // Input / Output
+    // utilities
     //
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     void WriteHeader(const std::string& name, bool is_checkpoint) const;
     void WriteJobInfo(const std::string& dir) const;
@@ -667,59 +674,11 @@ public: // for cuda
     void WritePlotFile();
     void ReadCheckpointFile();
 
-    // Member variables for I/O
-    int plot_int = -1;
-
-    // Dump plotfiles at as close as possible to the designated period *without* changing dt
-    amrex::Real plot_per_approx = -1.0;
-    
-    // Dump plotfiles at exactcly the designated period by changing dt
-    amrex::Real plot_per_exact  = -1.0;
-
-    int last_plt = -1;
-    std::string plot_file{"plt"};
-
-    int check_int = -1;
-    int last_chk = -1;
-    int KE_int = -1;
-    std::string check_file{"chk"};
-    std::string restart_file{""};
-
-    // Flags for saving fluid data in plot files
-    int plt_velx        = 1;
-    int plt_vely        = 1;
-    int plt_velz        = 1;
-    int plt_gpx         = 1;
-    int plt_gpy         = 1;
-    int plt_gpz         = 1;
-    int plt_rho         = 1;
-    int plt_tracer      = 1;
-    int plt_p           = 0;
-    int plt_eta         = 0;
-    int plt_vort        = 1;
-    int plt_strainrate  = 0;
-    int plt_stress      = 0;
-    int plt_divu        = 0;
-    int plt_vfrac       = 1;
-
-    // Total number of variables to write in plot file
-    int pltVarCount = 0;
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Diagnostics
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
-
     void PrintMaxValues(amrex::Real time);
     void PrintMaxVel(int lev);
     void PrintMaxGp(int lev);
     void CheckForNans(int lev);
 
-    bool writeNow();
-
-    void AverageDown();
-    void AverageDownTo(int crse_lev);
 };
 
 #endif

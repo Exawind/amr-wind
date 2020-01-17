@@ -2,8 +2,7 @@
 
 using namespace amrex;
 
-void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
-                               Real time_in)
+void incflo::ComputeViscosity (Vector<MultiFab*> const& eta, Real time)
 {
 #if 0
     BL_PROFILE("incflo::ComputeViscosity");

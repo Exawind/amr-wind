@@ -58,6 +58,7 @@ void incflo::ReadParameters ()
         pp.query("use_forces_in_trans", use_forces_in_trans);
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
+        int diffusion_type = 2;
         pp.query("diffusion_type", diffusion_type);
         if (diffusion_type == 0)
            m_diff_type = DiffusionType::Explicit;
