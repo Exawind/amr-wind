@@ -22,8 +22,6 @@
 #include <eb_if.H>
 #endif
 
-#include <DiffusionOp.H>
-
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
 
@@ -412,7 +410,6 @@ private:
         Invalid, Explicit, Crank_Nicolson, Implicit
     };
     DiffusionType m_diff_type = DiffusionType::Implicit;
-    std::unique_ptr<DiffusionOp> diffusion_op;
     std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
     std::unique_ptr<DiffusionScalarOp> diffusion_scalar_op;
 
@@ -754,11 +751,6 @@ public: // for cuda
      // Max coarsening level
      int  mac_mg_max_coarsening_level = 100;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Nodal Projection
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////
     //
     // Diffusion
