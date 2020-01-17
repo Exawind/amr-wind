@@ -920,7 +920,6 @@ public: // for cuda
     //
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    amrex::Real Norm(const amrex::Vector<std::unique_ptr<amrex::MultiFab>>& mf, int lev, int comp, int norm_type);
     void PrintMaxValues(amrex::Real time);
     void PrintMaxVel(int lev);
     void PrintMaxGp(int lev);

@@ -3,33 +3,11 @@
 using namespace amrex;
 
 //
-// Subroutine to compute norm of EB multifab
-//
-Real incflo::Norm(const Vector<std::unique_ptr<MultiFab>>& mf, int lev, int comp, int norm_type)
-{
-
-    int ngrow(0);
-
-    if(norm_type == 0)
-    {
-        return mf[lev]->norm0(comp,ngrow,false,true);
-    }
-    else if(norm_type == 1)
-    {
-        return mf[lev]->norm1(comp,geom[lev].periodicity(),true);
-    }
-    else
-    {
-        amrex::Print() << "Warning: called incflo::Norm() with norm_type not in {0,1}" << std::endl;
-        return -1.0;
-    }
-}
-
-//
 // Print maximum values (useful for tracking evolution)
+//
 void incflo::PrintMaxValues(Real time_in)
 {
-    return; // xxxxx todo
+    return; // xxxxx TODO
 
     ComputeDivU(time_in);
 
@@ -47,6 +25,8 @@ void incflo::PrintMaxValues(Real time_in)
 //
 void incflo::PrintMaxVel(int lev)
 {
+#if 0
+    // xxxxx TODO
     amrex::Print() << "max(abs(u/v/w/divu))  = "
                    << Norm(vel , lev, 0, 0) << "  "
 		   << Norm(vel , lev, 1, 0) << "  "
@@ -57,6 +37,7 @@ void incflo::PrintMaxVel(int lev)
        for (int i = 0; i < ntrac; i++)
           amrex::Print() << "max tracer" << i << " = " << Norm(tracer,lev,i,0) << std::endl;;
     }
+#endif
 }
 
 //
@@ -64,15 +45,20 @@ void incflo::PrintMaxVel(int lev)
 //
 void incflo::PrintMaxGp(int lev)
 {
+#if 0
+    // xxxxx TODO
     amrex::Print() << "max(abs(gpx/gpy/gpz/p))  = "
                    << Norm(gp, lev, 0, 0) << "  "
 		   << Norm(gp, lev, 1, 0) << "  "
                    << Norm(gp, lev, 2, 0) << "  "
 		   << Norm(p , lev, 0, 0) << "  " << std::endl;
+#endif
 }
 
 void incflo::CheckForNans(int lev)
 {
+#if 0
+    // xxxxx
     bool ro_has_nans = density[lev]->contains_nan(0);
     bool ug_has_nans = vel[lev]->contains_nan(0);
     bool vg_has_nans = vel[lev]->contains_nan(1);
@@ -93,11 +79,15 @@ void incflo::CheckForNans(int lev)
 
     if(pg_has_nans)
 	amrex::Print() << "WARNING: p contains NaNs!!!";
+#endif
 }
 
 Real
 incflo::volWgtSum (int lev, const MultiFab& mf, int comp, bool local)
 {
+    return 0;
+#if 0
+    // xxxxx
     BL_PROFILE("incflo::volWgtSum()");
 
 #ifdef AMREX_USE_EB
@@ -153,5 +143,6 @@ incflo::volWgtSum (int lev, const MultiFab& mf, int comp, bool local)
         ParallelDescriptor::ReduceRealSum(sum);
 
     return sum;
+#endif
 }
 
