@@ -23,7 +23,6 @@
 #endif
 
 #include <DiffusionOp.H>
-#include <incflo_bclist.H>
 
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
@@ -871,8 +870,6 @@ public: // for cuda
     // AMR / refinement settings
     int refine_cutcells = 1;
     int regrid_int = -1;
-
-    BCList bc_list;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //

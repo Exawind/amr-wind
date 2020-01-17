@@ -1,7 +1,5 @@
 
 #include <incflo.H>
-#include <derive_F.H>
-#include <setup_F.H>
 
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
@@ -217,15 +215,20 @@ void incflo::ErrorEst(int lev,
         {
             TagBox&     tagfab  = tags[mfi];
 
+            amrex::Abort("xxxxx TODO: ErrorEst");
+#if 0
             // tag cells for refinement
             state_error(BL_TO_FORTRAN_BOX(bx),
                         BL_TO_FORTRAN_ANYD(tagfab),
                         BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
                         &tagval, &clearval,
                         AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
+#endif
         }
 #else
             TagBox&     tagfab  = tags[mfi];
+
+            amrex::Abort("xxxxx TODO: ErrorEst");
 
             // tag cells for refinement
 //          state_error(BL_TO_FORTRAN_BOX(bx),
@@ -334,37 +337,7 @@ void incflo::AverageDown()
 
 void incflo::AverageDownTo(int crse_lev)
 {
-    BL_PROFILE("incflo::AverageDownTo()");
-
-    IntVect rr = refRatio(crse_lev);
-
-#ifdef AMREX_USE_EB
-    amrex::EB_average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
-    amrex::EB_average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
-
-    if (!constant_density)
-       amrex::EB_average_down(*density[crse_lev+1], *density[crse_lev],    0, 1, rr);
-
-    if (advect_tracer)
-       amrex::EB_average_down(*tracer[crse_lev+1],  *tracer[crse_lev],     0, ntrac, rr);
-
-    amrex::EB_average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
-    amrex::EB_average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
-    amrex::EB_average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
-#else
-    amrex::average_down(*vel[crse_lev+1],        *vel[crse_lev],        0, AMREX_SPACEDIM, rr);
-    amrex::average_down( *gp[crse_lev+1],         *gp[crse_lev],        0, AMREX_SPACEDIM, rr);
-
-    if (!constant_density)
-       amrex::average_down(*density[crse_lev+1], *density[crse_lev],    0, 1, rr);
-
-    if (advect_tracer)
-       amrex::average_down(*tracer[crse_lev+1],  *tracer[crse_lev],     0, ntrac, rr);
-
-    amrex::average_down(*eta[crse_lev+1],        *eta[crse_lev],        0, 1, rr);
-    amrex::average_down(*strainrate[crse_lev+1], *strainrate[crse_lev], 0, 1, rr);
-    amrex::average_down(*vort[crse_lev+1],       *vort[crse_lev],       0, 1, rr);
-#endif
+    amrex::Abort("xxxxx TODO AverageDownTo");
 }
 
 bool
@@ -375,7 +348,7 @@ incflo::writeNow()
     if ( plot_int > 0 && (nstep % plot_int == 0) ) 
         write_now = true;
 
-    else if ( plot_per_exact  > 0 && (std::abs(remainder(cur_time, plot_per_exact)) < 1.e-12) ) 
+    else if ( plot_per_exact  > 0 && (std::abs(std::remainder(cur_time, plot_per_exact)) < 1.e-12) ) 
         write_now = true;
 
     else if (plot_per_approx > 0.0)

@@ -8,7 +8,6 @@
 
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
-#include <incflo_proj_F.H>
 
 #include <incflo.H>
 

@@ -1,7 +1,3 @@
-f90EXE_sources += bc_mod.f90
-f90EXE_sources += fill_bc0.f90
-
-F90EXE_headers += bc_mod_F.H
 
 CEXE_sources += boundary_conditions.cpp
 CEXE_sources += incflo_fillpatch.cpp incflo_fillphysbc.cpp

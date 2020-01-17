@@ -1,5 +1,3 @@
-#include <incflo_proj_F.H>
-#include <diffusion_F.H>
 #include <incflo.H>
 
 using namespace amrex;

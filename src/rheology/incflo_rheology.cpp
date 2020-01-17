@@ -1,6 +1,4 @@
 #include <incflo.H>
-#include <rheology_F.H>
-#include <boundary_conditions_F.H>
 
 using namespace amrex;
 
@@ -34,6 +32,8 @@ void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
             const auto& strainrate_arr = strainrate[lev]->array(mfi);
             const auto&  viscosity_arr = eta_out[lev]->array(mfi);
 
+#if 0
+
             // TODO can't compile with CUDA if viscosity function is written in Fortran
             //AMREX_FOR_3D(bx, i, j, k, 
             //{
@@ -43,6 +43,7 @@ void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
               for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++)
                 for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++)
                   viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
+#endif
         }
 
         eta_out[lev]->FillBoundary(geom[lev].periodicity());

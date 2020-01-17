@@ -1,8 +1,6 @@
 // #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
-#include <boundary_conditions_F.H>
-#include <setup_F.H>
 
 using namespace amrex;
 
@@ -104,24 +102,11 @@ void incflo::ReadParameters ()
         pp.queryarr("mu_s", mu_s, 0, ntrac );
 
         amrex::Print() << "Scalar diffusion coefficients " << std::endl;
-        for (int i = 0; i < ntrac; i++)
-           amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
-
-        // AMREX_ALWAYS_ASSERT(mu > 0.0);
-
-        // Get cyclicity, (to pass to Fortran)
-        Vector<int> is_cyclic(AMREX_SPACEDIM);
-        for(int dir = 0; dir < AMREX_SPACEDIM; dir++)
-        {
-            is_cyclic[dir] = geom[0].isPeriodic(dir);
+        for (int i = 0; i < ntrac; i++) {
+            amrex::Print() << "Tracer" << i << ":" << mu_s[i] << std::endl;
         }
 
-        // Loads constants given at runtime `inputs` file into the Fortran module "constant"
-        fortran_get_data(is_cyclic.dataPtr(),
-                         delp.dataPtr(), gravity.dataPtr(), &ro_0, &mu,
-                         &ic_u, &ic_v, &ic_w, &ic_p,
-                         &n_0, &ntrac, &tau_0, &papa_reg, &eta_0,
-                         fluid_model.c_str(), fluid_model.size());
+        // AMREX_ALWAYS_ASSERT(mu > 0.0);
     } // end prefix incflo
 
     { // Prefix mac
@@ -267,49 +252,6 @@ void incflo::setup_level_mask(){
 
 void incflo::InitFluid()
 {
-    Real xlen = geom[0].ProbHi(0) - geom[0].ProbLo(0);
-    Real ylen = geom[0].ProbHi(1) - geom[0].ProbLo(1);
-    Real zlen = geom[0].ProbHi(2) - geom[0].ProbLo(2);
-
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        Box domain(geom[lev].Domain());
-
-        Real dx = geom[lev].CellSize(0);
-        Real dy = geom[lev].CellSize(1);
-        Real dz = geom[lev].CellSize(2);
-
-        // We deliberately don't tile this loop since we will be looping
-        //    over bc's on faces and it makes more sense to do this one grid at a time
-        for(MFIter mfi(*density[lev], false); mfi.isValid(); ++mfi)
-        {
-            const Box& bx = mfi.validbox();
-            const Box& sbx = (*density[lev])[mfi].box();
-            init_fluid(sbx.loVect(), sbx.hiVect(),
-                       bx.loVect(), bx.hiVect(),
-                       domain.loVect(), domain.hiVect(),
-                       (*p[lev])[mfi].dataPtr(),
-                       (*vel[lev])[mfi].dataPtr(),
-                       (*density[lev])[mfi].dataPtr(),
-                       (*tracer[lev])[mfi].dataPtr(),
-                       (*eta[lev])[mfi].dataPtr(),
-                       &dx, &dy, &dz,
-                       &xlen, &ylen, &zlen, &probtype);
-        }
-
-        // Make sure to set periodic bc's
-            vel[lev]->FillBoundary(geom[lev].periodicity());
-        density[lev]->FillBoundary(geom[lev].periodicity());
-         tracer[lev]->FillBoundary(geom[lev].periodicity());
-
-        MultiFab::Copy(    *vel_o[lev],     *vel[lev], 0, 0,     vel[lev]->nComp(),     vel_o[lev]->nGrow());
-        MultiFab::Copy(*density_o[lev], *density[lev], 0, 0, density[lev]->nComp(), density_o[lev]->nGrow());
-        MultiFab::Copy(* tracer_o[lev],  *tracer[lev], 0, 0,  tracer[lev]->nComp(),  tracer_o[lev]->nGrow());
-    }
-
-    Real my_cur_time = 0.0;
-    if (test_tracer_conservation)
-       amrex::Print() << "Sum tracer volume wgt = " << my_cur_time << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
 }
 
 void incflo::SetBCTypes()

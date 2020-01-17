@@ -8,7 +8,6 @@
 #endif
 
 #include <DiffusionOp.H>
-#include <diffusion_F.H>
 
 using namespace amrex;
 

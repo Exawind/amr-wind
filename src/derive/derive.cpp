@@ -1,9 +1,7 @@
 #include <AMReX_Box.H>
 
 #include <incflo.H>
-#include <derive_F.H>
 #include <AMReX_NodalProjector.H>
-#include <incflo_proj_F.H>
 
 using namespace amrex;
 
@@ -44,6 +42,7 @@ void incflo::ComputeDivU(Real time_in)
 
 void incflo::ComputeStrainrate(Real time_in)
 {
+#if 0
     BL_PROFILE("incflo::ComputeStrainrate");
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -254,11 +253,13 @@ void incflo::ComputeStrainrate(Real time_in)
 #endif
         } // MFIter
     } // lev
+#endif
 }
 
 
 Real incflo::ComputeKineticEnergy()
 {
+#if 0
     BL_PROFILE("incflo::ComputeKineticEnergy");
 
     // integrated total Kinetic energy
@@ -297,10 +298,13 @@ Real incflo::ComputeKineticEnergy()
 
     return KE;
 
+#endif
+    return 0;
 }
 
 void incflo::ComputeVorticity(Real time_in)
 {
+#if 0
 	BL_PROFILE("incflo::ComputeVorticity");
 
     for(int lev = 0; lev <= finest_level; lev++)
@@ -481,10 +485,12 @@ void incflo::ComputeVorticity(Real time_in)
 #endif
         } // MFIter
     } // Loop over levels
+#endif
 }
 
 void incflo::ComputeDrag()
 {
+#if 0
 	BL_PROFILE("incflo::ComputeDrag");
 
     // Coefficients for one-sided difference estimation
@@ -602,4 +608,5 @@ void incflo::ComputeDrag()
         } // MFIter
 #endif
     }
+#endif
 }
