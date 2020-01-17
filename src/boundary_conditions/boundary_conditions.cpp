@@ -14,7 +14,7 @@ void incflo::init_bcs ()
         m_bc_velocity[ori][0] = 0.0; // default
         m_bc_velocity[ori][1] = 0.0;
         m_bc_velocity[ori][2] = 0.0;
-        m_bc_tracer[ori].resize(ntrac,0.0);
+        m_bc_tracer[ori].resize(m_ntrac,0.0);
         if (ori.isLow()) {
             m_bc_location[ori] = geom[0].ProbLo(ori.coordDir());
         } else {
@@ -56,7 +56,7 @@ void incflo::init_bcs ()
 
             pp.query("density", m_bc_density[ori]);
 
-            pp.queryarr("tracer", m_bc_tracer[ori], 0, ntrac);
+            pp.queryarr("tracer", m_bc_tracer[ori], 0, m_ntrac);
         }
         else if (bc_type == "no_slip_wall" or bc_type == "nsw")
         {
@@ -94,8 +94,8 @@ void incflo::init_bcs ()
     f("zlo", Orientation(Direction::z,Orientation::low));
     f("zhi", Orientation(Direction::z,Orientation::high));
 
-    if (ntrac > 0) {
-        Vector<Real> h_data(ntrac*AMREX_SPACEDIM*2);
+    if (m_ntrac > 0) {
+        Vector<Real> h_data(m_ntrac*AMREX_SPACEDIM*2);
         Real* hp = h_data.data();
         for (auto const& v : m_bc_tracer) {
             for (auto x : v) {
@@ -103,7 +103,7 @@ void incflo::init_bcs ()
             }
         }
 
-        m_bc_tracer_raii.resize(ntrac*AMREX_SPACEDIM*2);
+        m_bc_tracer_raii.resize(m_ntrac*AMREX_SPACEDIM*2);
         Real* p = m_bc_tracer_raii.data();
 #ifdef AMREX_USE_GPU
         Gpu::htod_memcpy
@@ -114,7 +114,7 @@ void incflo::init_bcs ()
 
         for (int i = 0; i < AMREX_SPACEDIM*2; ++i) {
             m_bc_tracer_d[i] = p;
-            p += ntrac;
+            p += m_ntrac;
         }
     }
 
@@ -215,9 +215,9 @@ void incflo::init_bcs ()
             (m_bcrec_density_d.data(), m_bcrec_density.data(), sizeof(BCRec));
     }
 
-    if (ntrac > 0)
+    if (m_ntrac > 0)
     {
-        m_bcrec_tracer.resize(ntrac);
+        m_bcrec_tracer.resize(m_ntrac);
         for (OrientationIter oit; oit; ++oit) {
             Orientation ori = oit();
             int dir = ori.coordDir();
@@ -250,13 +250,13 @@ void incflo::init_bcs ()
                 }
             }
         }
-        m_bcrec_tracer_d.resize(ntrac);
+        m_bcrec_tracer_d.resize(m_ntrac);
 #ifdef AMREX_USE_GPU
         Gpu::htod_memcpy
 #else
         std::memcpy
 #endif
-            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*ntrac);
+            (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*m_ntrac);
     }
 }
 

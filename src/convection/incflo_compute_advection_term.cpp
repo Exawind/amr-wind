@@ -28,7 +28,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             drdt(i,j,k) = 0.0;
         });
         if (m_advect_tracer) {
-            amrex::ParallelFor(bx, ntrac, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+            amrex::ParallelFor(bx, m_ntrac, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
             {
                 dtdt(i,j,k,n) = 0.0;
             });
@@ -51,7 +51,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 #endif
 
     int nmaxcomp = AMREX_SPACEDIM;
-    if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,ntrac);
+    if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,m_ntrac);
     Box tmpbox = amrex::surroundingNodes(bx);
     int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
     Box rhotrac_box = amrex::grow(bx,2);
@@ -69,10 +69,10 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     Elixir eli_rt;
     Array4<Real> rhotrac;
     if (m_advect_tracer) {
-        rhotracfab.resize(rhotrac_box, ntrac);
+        rhotracfab.resize(rhotrac_box, m_ntrac);
         eli_rt = rhotracfab.elixir();
         rhotrac = rhotracfab.array();
-        amrex::ParallelFor(rhotrac_box, ntrac,
+        amrex::ParallelFor(rhotrac_box, m_ntrac,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             rhotrac(i,j,k,n) = rho(i,j,k) * tra(i,j,k,n);
@@ -113,13 +113,13 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         }
 
         if (m_advect_tracer) {
-            compute_convective_fluxes_eb(lev, gbx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
+            compute_convective_fluxes_eb(lev, gbx, m_ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                          get_tracer_bcrec().data(),
                                          get_tracer_bcrec_device_ptr(),
                                          flag, fcx, fcy, fcz, qface);
-            compute_convective_rate_eb(lev, gbx, ntrac, dUdt_tmp, fx, fy, fz,
+            compute_convective_rate_eb(lev, gbx, m_ntrac, dUdt_tmp, fx, fy, fz,
                                        flag, vfrac, apx, apy, apz);
-            redistribute_eb(lev, bx, ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);
+            redistribute_eb(lev, bx, m_ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);
         }
     }
     else
@@ -141,10 +141,10 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 
         // tracer
         if (m_advect_tracer) {
-            compute_convective_fluxes(lev, bx, ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
+            compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
                                       get_tracer_bcrec().data(),
                                       get_tracer_bcrec_device_ptr());
-            compute_convective_rate(lev, bx, ntrac, dtdt, fx, fy, fz);
+            compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
         }
     }
 }
@@ -215,10 +215,10 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
             compute_convective_term(bx, lev, mfi,
                                     conv_u[lev]->array(mfi),
                                     conv_r[lev]->array(mfi),
-                                    (ntrac>0) ? conv_t[lev]->array(mfi) : Array4<Real>{},
+                                    (m_ntrac>0) ? conv_t[lev]->array(mfi) : Array4<Real>{},
                                     vel[lev]->const_array(mfi),
                                     density[lev]->array(mfi),
-                                    (ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
+                                    (m_ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
                                     u_mac[lev].const_array(mfi),
                                     v_mac[lev].const_array(mfi),
                                     w_mac[lev].const_array(mfi));

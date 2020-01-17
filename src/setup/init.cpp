@@ -92,20 +92,20 @@ void incflo::ReadParameters ()
         pp.query("ro_0", m_ro_0);
         AMREX_ALWAYS_ASSERT(m_ro_0 >= 0.0);
 
-        pp.query("ntrac", ntrac);
+        pp.query("ntrac", m_ntrac);
 
-        if (ntrac <= 0) m_advect_tracer = 0;
+        if (m_ntrac <= 0) m_advect_tracer = 0;
 
-        if (ntrac < 1) {
+        if (m_ntrac < 1) {
             amrex::Abort("We currently require at least one tracer");
         }
 
         // Scalar diffusion coefficients
-        m_mu_s.resize(ntrac, 0.0);
-        pp.queryarr("mu_s", m_mu_s, 0, ntrac );
+        m_mu_s.resize(m_ntrac, 0.0);
+        pp.queryarr("mu_s", m_mu_s, 0, m_ntrac );
 
         amrex::Print() << "Scalar diffusion coefficients " << std::endl;
-        for (int i = 0; i < ntrac; i++) {
+        for (int i = 0; i < m_ntrac; i++) {
             amrex::Print() << "Tracer" << i << ":" << m_mu_s[i] << std::endl;
         }
     } // end prefix incflo
@@ -197,7 +197,7 @@ void incflo::ReadIOParameters()
     if (m_plt_gpy        == 1) m_pltVarCount += 1;
     if (m_plt_gpz        == 1) m_pltVarCount += 1;
     if (m_plt_rho        == 1) m_pltVarCount += 1;
-    if (m_plt_tracer     == 1) m_pltVarCount += ntrac;
+    if (m_plt_tracer     == 1) m_pltVarCount += m_ntrac;
     if (m_plt_p          == 1) m_pltVarCount += 1;
     if (m_plt_eta        == 1) m_pltVarCount += 1;
     if (m_plt_vort       == 1) m_pltVarCount += 1;

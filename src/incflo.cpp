@@ -273,7 +273,7 @@ void incflo::MakeNewLevelFromScratch(int lev,
 #endif
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
-                                         ntrac, nghost_state(), nghost_force()));
+                                         m_ntrac, nghost_state(), nghost_force()));
 
     m_t_new[lev] = time;
     m_t_old[lev] = time - 1.e200;
@@ -662,9 +662,9 @@ void incflo::copy_from_new_to_old_tracer (IntVect const& ng)
 
 void incflo::copy_from_new_to_old_tracer (int lev, IntVect const& ng)
 {
-    if (ntrac > 0) {
+    if (m_ntrac > 0) {
         MultiFab::Copy(m_leveldata[lev]->tracer_o,
-                       m_leveldata[lev]->tracer, 0, 0, ntrac, ng);
+                       m_leveldata[lev]->tracer, 0, 0, m_ntrac, ng);
     }
 }
 
@@ -677,8 +677,8 @@ void incflo::copy_from_old_to_new_tracer (IntVect const& ng)
 
 void incflo::copy_from_old_to_new_tracer (int lev, IntVect const& ng)
 {
-    if (ntrac > 0) {
+    if (m_ntrac > 0) {
         MultiFab::Copy(m_leveldata[lev]->tracer,
-                       m_leveldata[lev]->tracer_o, 0, 0, ntrac, ng);
+                       m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, ng);
     }
 }

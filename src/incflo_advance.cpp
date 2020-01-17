@@ -225,7 +225,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
     bool l_constant_density = m_constant_density;
-    int l_ntrac = (m_advect_tracer) ? ntrac : 0;
+    int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
     for (int lev = 0; lev <= finest_level; lev++)
     {
         auto& ld = *m_leveldata[lev];
@@ -436,7 +436,7 @@ void incflo::ApplyCorrector()
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
     bool l_constant_density = m_constant_density;
-    int l_ntrac = (m_advect_tracer) ? ntrac : 0;
+    int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         auto& ld = *m_leveldata[lev];

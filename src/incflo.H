@@ -308,6 +308,10 @@ public: // for cuda
 
 private:
 
+    //
+    // member variables
+    //
+
     // Be verbose?
     int m_verbose = 0;
 
@@ -461,15 +465,6 @@ private:
 
     amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
 
-    amrex::FabFactory<amrex::FArrayBox> const&
-    Factory (int lev) const noexcept { return *m_factory[lev]; }
-#ifdef AMREX_USE_EB
-    amrex::EBFArrayBoxFactory const&
-    EBFactory (int lev) const noexcept {
-        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
-    }
-#endif
-
     enum struct BC {
         pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, periodic, undefined
     };
@@ -493,7 +488,23 @@ private:
     amrex::Vector<amrex::BCRec> m_bcrec_tracer;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
 
-    int ntrac = 1;
+    int m_ntrac = 1;
+
+    std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
+    std::unique_ptr<DiffusionScalarOp> m_diffusion_scalar_op;
+
+    //
+    // end of member variables
+    //
+
+    amrex::FabFactory<amrex::FArrayBox> const&
+    Factory (int lev) const noexcept { return *m_factory[lev]; }
+#ifdef AMREX_USE_EB
+    amrex::EBFArrayBoxFactory const&
+    EBFactory (int lev) const noexcept {
+        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
+    }
+#endif
 
     // Number of ghost cells for field arrays.
     int nghost_state () const {
@@ -525,9 +536,6 @@ private:
         return (m_use_godunov) ? 3 : 2;
     }
 #endif
-
-    std::unique_ptr<DiffusionTensorOp> diffusion_tensor_op;
-    std::unique_ptr<DiffusionScalarOp> diffusion_scalar_op;
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
     DiffusionScalarOp* get_diffusion_scalar_op ();
