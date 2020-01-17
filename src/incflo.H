@@ -1011,11 +1011,6 @@ public: // for cuda
 
     void AverageDown();
     void AverageDownTo(int crse_lev);
-
-    void AllocateArrays(int lev);
-    void RegridArrays(int lev);
-    void MakeBCArrays ();
-
 };
 
 #endif

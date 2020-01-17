@@ -1,3 +1,4 @@
 CEXE_sources += incflo_arrays.cpp
 CEXE_sources += incflo_setup_solvers.cpp
-CEXE_sources += init.cpp set_background_pressure.cpp
+CEXE_sources += init.cpp
+CEXE_sources += set_background_pressure.cpp

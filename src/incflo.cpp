@@ -29,9 +29,6 @@ incflo::incflo ()
     // Initialize memory for data-array internals
     ResizeArrays();
 
-    // Allocate the arrays for each face that will hold the bcs
-    MakeBCArrays();
-
     init_bcs();
 
     set_background_pressure();

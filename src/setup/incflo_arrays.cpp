@@ -27,16 +27,6 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
     // xxxxx TODO we probably do not need the new conv_* for godunov
 }
 
-void incflo::AllocateArrays (int lev)
-{
-    // xxxxx remove?
-}
-
-void incflo::RegridArrays(int lev)
-{
-    // xxxxx remove?
-}
-
 // Resize all arrays when instance of incflo class is constructed.
 // This is only done at the very start of the simulation. 
 void incflo::ResizeArrays ()
@@ -49,8 +39,3 @@ void incflo::ResizeArrays ()
 
     m_factory.resize(max_level+1);
 }
-
-void incflo::MakeBCArrays()
-{
-}
-
