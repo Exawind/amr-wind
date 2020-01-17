@@ -1,5 +1,5 @@
 #include <AMReX_EB2.H>
-#include <AMReX_EB2_IF_Sphere.H>
+#include <AMReX_EB2_IF.H>
 #include <AMReX_ParmParse.H>
 
 #include <algorithm>

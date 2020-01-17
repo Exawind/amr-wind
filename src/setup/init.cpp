@@ -206,55 +206,6 @@ void incflo::ReadIOParameters()
     if(plt_vfrac      == 1) pltVarCount += 1;
 }
 
-void incflo::PostInit(int restart_flag)
-{
-    // Init nodal and diffusion solvers (for now only diffusion)
-    // (Note we must do this *after* setting the bc types above)
-    incflo_init_solvers();
-
-    // Initial fluid arrays: pressure, velocity, density, viscosity
-    if(!restart_flag)
-    {
-        InitFluid();
-    }
-
-    // Set the background pressure and gradients in "DELP" cases
-    SetBackgroundPressure();
-
-    setup_level_mask();
-
-    // Project the initial velocity field to make it divergence free
-    // Perform initial iterations to find pressure distribution
-    if(!restart_flag)
-    {
-        if (do_initial_proj)
-            InitialProjection();
-        if (initial_iterations > 0)
-            InitialIterations();
-    }
-}
-
-void incflo::setup_level_mask(){
-
-     BL_PROFILE("incflo::setup_level_mask");
-
-     for(int lev=0;lev<finest_level;++lev) {
-        *level_mask[lev] = makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0);
-    }
-}
-
-void incflo::InitFluid()
-{
-}
-
-void incflo::SetBCTypes()
-{
-}
-
-void incflo::SetBackgroundPressure()
-{
-}
-
 //
 // Perform initial pressure iterations
 //

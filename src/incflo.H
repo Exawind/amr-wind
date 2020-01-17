@@ -2,24 +2,13 @@
 #define INCFLO_H_
 
 #include <AMReX_AmrCore.H>
-#include <AMReX_MultiFab.H>
 #include <AMReX_MultiFabUtil.H>
-#include <AMReX_MLCellABecLap.H>
-#include <AMReX_MLNodeLaplacian.H>
 #include <AMReX_ParmParse.H>
-#include <AMReX_PhysBCFunct.H>
 #include <AMReX_iMultiFab.H>
 #include <AMReX_NodalProjector.H>
 
 #ifdef AMREX_USE_EB
-#include <AMReX_MLEBABecLap.H>
 #include <AMReX_EBMultiFabUtil.H>
-#include <AMReX_EBFArrayBox.H>
-#include <AMReX_EB2_IF_Intersection.H>
-#include <AMReX_EB2_IF_Plane.H>
-#include <AMReX_EB2_IF_Polynomial.H>
-#include <AMReX_EB2_IF_Translation.H>
-#include <eb_if.H>
 #endif
 
 #include <DiffusionTensorOp.H>
@@ -68,10 +57,6 @@ public:
 
     // Delete level data
     virtual void ClearLevel(int lev) override;
-
-    // Set up nodal and diffusion solvers
-    void incflo_init_solvers();
-    void incflo_setup_solvers();
 
     const int* get_bc_ilo_ptr(int lev){ return bc_ilo[lev]->dataPtr(); }
     const int* get_bc_ihi_ptr(int lev){ return bc_ihi[lev]->dataPtr(); }
@@ -459,14 +444,9 @@ public: // for cuda
     // Resize arrays to fit (up to) max_level + 1 AMR levels
     void ResizeArrays();
 
-    // Post-initialization: set BCs, apply ICs, initial velocity projection, pressure iterations
-    void PostInit(int restart_flag);
-    void SetBCTypes();
-    void InitFluid();
-    void SetBackgroundPressure();
+    // Initialization
     void InitialProjection();
     void InitialIterations();
-    void setup_level_mask();
 
     // Member variables for initial conditions
     int probtype = 0;
