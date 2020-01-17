@@ -775,7 +775,6 @@ public: // for cuda
 
 #ifdef AMREX_USE_EB
     void MakeEBGeometry();
-    bool UpdateEBFactory(int a_lev);
 
     void make_eb_annulus();
     void make_eb_box();
@@ -785,16 +784,6 @@ public: // for cuda
     void make_eb_sphere();
     void make_eb_spherecube();
     void make_eb_tuscan();
-
-    const amrex::EB2::Level* eb_level;
-#endif
-
-#if 0
-    // If AMREX_USE_EB = TRUE this will be be an EBFArrayBoxFactory,
-    //    but otherwise it will just be a FabFactory that doesn't know anything about EB
-    //    amrex::Vector<std::unique_ptr<FabFactory<FArrayBox>>> ebfactory;
-#else
-    //  amrex::Vector<std::unique_ptr<EBFArrayBoxFactory>> ebfactory;
 #endif
 
 #ifdef AMREX_USE_EB
