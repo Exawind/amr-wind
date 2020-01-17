@@ -5,6 +5,8 @@
 #include <AMReX_FArrayBox.H>
 #endif
 
+namespace {
+
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 amrex::Real incflo_xslope (int i, int j, int k, int n,
                            amrex::Array4<amrex::Real const> const& vcc) noexcept
@@ -174,3 +176,5 @@ amrex::Real incflo_zslope_extdir_eb (int i, int j, int k, int n,
 }
 
 #endif
+
+}

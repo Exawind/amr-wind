@@ -78,12 +78,3 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
 
     macproj.project(mac_mg_rtol,mac_mg_atol,MLMG::Location::FaceCentroid);
 }
-
-void
-incflo::apply_MAC_projection (Vector< std::unique_ptr<MultiFab> >& u_mac, 
-                              Vector< std::unique_ptr<MultiFab> >& v_mac,
-                              Vector< std::unique_ptr<MultiFab> >& w_mac,
-                              Vector< std::unique_ptr<MultiFab> >& density_in,
-                              Real time)
-{
-}
