@@ -5,6 +5,71 @@
 
 using namespace amrex;
 
+void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
+                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho,
+                              MultiFab const& vel_forces)
+{
+    const int ncomp = AMREX_SPACEDIM;
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    {
+        FArrayBox scratch;
+        for (MFIter mfi(vel,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        {
+            Box const& bx = mfi.tilebox();
+            Box const& bxg1 = amrex::grow(bx,1);
+            Box const& xbx = mfi.nodaltilebox(0);
+            Box const& ybx = mfi.nodaltilebox(1);
+            Box const& zbx = mfi.nodaltilebox(2);
+
+            Array4<Real> const& a_umac = u_mac.array(mfi);
+            Array4<Real> const& a_vmac = v_mac.array(mfi);
+            Array4<Real> const& a_wmac = w_mac.array(mfi);
+            Array4<Real const> const& a_vel = vel.const_array(mfi);
+            Array4<Real const> const& a_f = vel_forces.const_array(mfi);
+
+            scratch.resize(bxg1, ncomp*12+3);
+//            Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
+            Real* p = scratch.dataPtr();
+
+            Array4<Real> Imx = makeArray4(p,bxg1,ncomp);
+            p +=         Imx.size();
+            Array4<Real> Ipx = makeArray4(p,bxg1,ncomp);
+            p +=         Ipx.size();
+            Array4<Real> Imy = makeArray4(p,bxg1,ncomp);
+            p +=         Imy.size();
+            Array4<Real> Ipy = makeArray4(p,bxg1,ncomp);
+            p +=         Ipy.size();
+            Array4<Real> Imz = makeArray4(p,bxg1,ncomp);
+            p +=         Imz.size();
+            Array4<Real> Ipz = makeArray4(p,bxg1,ncomp);
+            p +=         Ipz.size();
+            Array4<Real> u_ad = makeArray4(p,Box(bx).grow(1,1).grow(2,1).surroundingNodes(0),1);
+            p +=         u_ad.size();
+            Array4<Real> v_ad = makeArray4(p,Box(bx).grow(0,1).grow(2,1).surroundingNodes(1),1);
+            p +=         v_ad.size();
+            Array4<Real> w_ad = makeArray4(p,Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
+            p +=         w_ad.size();
+
+            make_ppm_integrals (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
+
+            make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
+                                  u_ad, v_ad, w_ad,
+                                  Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f);
+
+            predict_godunov_on_box(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
+                                   a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
+
+            Gpu::streamSynchronize();  // otherwise we might be using too much memory
+        }
+    }
+
+    VisMF::Write(u_mac, "u_mac");
+
+    amrex::Abort("end of predict_godunov");
+}
+
 void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
                                  Array4<Real> const& Imx,
                                  Array4<Real> const& Ipx,
@@ -277,9 +342,9 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
     //
     // X-Flux
     //
-    Box xbxtmp = Box(xbx).enclosedCells().grow(0,1);
-    Array4<Real> yzlo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(xbxtmp,1),ncomp);
-    Array4<Real> zylo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(xbxtmp,2),ncomp);
+    Box const xbxtmp = Box(xbx).enclosedCells().grow(0,1);
+    Array4<Real> yzlo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(xbxtmp,1), ncomp);
+    Array4<Real> zylo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(xbxtmp,2), ncomp);
     // Add d/dy term to z-faces
     // Start with {zlo,zhi} --> {zylo, zyhi} and upwind using w_ad to {zylo}
     // Add d/dz to y-faces
@@ -301,11 +366,11 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         Godunov_trans_zbc_hi(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.hi(2),
                              domain.loVect(), domain.hiVect(), false, true);  
 
-        constexpr Real eps = 1e-6;
+        constexpr Real eps = 1.e-6;
 
         Real st = (wad >= 0.) ? l_zylo : l_zyhi;
         Real fu = (std::abs(wad) < eps) ? 0.0 : 1.0;
-        zylo(i,j,k,n) = fu*st + (1.0 - fu) *0.5 * (l_zyhi + l_zylo);
+        zylo(i,j,k,n) = fu*st + (1.0 - fu) * 0.5 * (l_zyhi + l_zylo);
     },
     Box(yzlo), ncomp,
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -323,11 +388,11 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         Godunov_trans_ybc_hi(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.hi(1),
                              domain.loVect(), domain.hiVect(), false, true);
 
-        constexpr Real eps = 1e-6;
+        constexpr Real eps = 1.e-6;
 
         Real st = (vad >= 0.) ? l_yzlo : l_yzhi;
         Real fu = (std::abs(vad) < eps) ? 0.0 : 1.0;
-        yzlo(i,j,k,n) = fu*st + (1.0 - fu) *0.5 * (l_yzhi + l_yzlo);
+        yzlo(i,j,k,n) = fu*st + (1.0 - fu) * 0.5 * (l_yzhi + l_yzlo);
     });
     //
     amrex::ParallelFor(xbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -343,8 +408,7 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
                                 - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
                                   (zylo(i,j,k+1,n) - zylo(i,j,k,n));
 
-        if (!l_use_forces_in_trans)
-        {
+        if (!l_use_forces_in_trans) {
             stl += 0.5 * l_dt * f(i-1,j,k,n);
             sth += 0.5 * l_dt * f(i  ,j,k,n);
         }
@@ -357,69 +421,88 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
         qx(i,j,k) = ltm ? 0. : st;
     });
-}
 
-void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
-                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho,
-                              MultiFab const& vel_forces)
-{
-    const int ncomp = AMREX_SPACEDIM;
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
+    //
+    // Y-Flux
+    //
+    Box const ybxtmp = Box(ybx).enclosedCells().grow(1,1);
+    Array4<Real> xzlo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(ybxtmp,0), ncomp);
+    Array4<Real> zxlo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(ybxtmp,2), ncomp);
+
+    // Add d/dz to x-faces
+    // Start with {xlo,xhi} --> {xzlo, xzhi} and upwind using u_ad to {xzlo}
+    // Add d/dx term to z-faces
+    // Start with {zlo,zhi} --> {zxlo, zxhi} and upwind using w_ad to {zxlo}
+    amrex::ParallelFor(
+    Box(xzlo), ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int k) noexcept
     {
-        FArrayBox scratch;
-        for (MFIter mfi(vel,TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            Box const& bx = mfi.tilebox();
-            Box const& bxg1 = amrex::grow(bx,1);
-            Box const& xbx = mfi.nodaltilebox(0);
-            Box const& ybx = mfi.nodaltilebox(1);
-            Box const& zbx = mfi.nodaltilebox(2);
+        const auto bc = pbc[n];
+        Real l_xzlo, l_xzhi;
+        Godunov_corner_couple_xz(l_xzlo, l_xzhi,
+                                 i, j, k, n, l_dt, dz, iconserv[n],
+                                 xlo(i,j,k,n),  xhi(i,j,k,n),
+                                 q, divu, w_ad, zedge);
 
-            Array4<Real> const& a_umac = u_mac.array(mfi);
-            Array4<Real> const& a_vmac = v_mac.array(mfi);
-            Array4<Real> const& a_wmac = w_mac.array(mfi);
-            Array4<Real const> const& a_vel = vel.const_array(mfi);
-            Array4<Real const> const& a_f = vel_forces.const_array(mfi);
+        Real uad = u_ad(i,j,k);
+        Godunov_trans_xbc_lo(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_xbc_hi(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.hi(0),
+                             domain.loVect(), domain.hiVect(), true, false);
 
-            scratch.resize(bxg1, ncomp*12+3);
-//            Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
-            Real* p = scratch.dataPtr();
+        constexpr Real eps = 1.e-6;
 
-            Array4<Real> Imx = makeArray4(p,bxg1,ncomp);
-            p +=         Imx.size();
-            Array4<Real> Ipx = makeArray4(p,bxg1,ncomp);
-            p +=         Ipx.size();
-            Array4<Real> Imy = makeArray4(p,bxg1,ncomp);
-            p +=         Imy.size();
-            Array4<Real> Ipy = makeArray4(p,bxg1,ncomp);
-            p +=         Ipy.size();
-            Array4<Real> Imz = makeArray4(p,bxg1,ncomp);
-            p +=         Imz.size();
-            Array4<Real> Ipz = makeArray4(p,bxg1,ncomp);
-            p +=         Ipz.size();
-            Array4<Real> u_ad = makeArray4(p,Box(bx).grow(1,1).grow(2,1).surroundingNodes(0),1);
-            p +=         u_ad.size();
-            Array4<Real> v_ad = makeArray4(p,Box(bx).grow(0,1).grow(2,1).surroundingNodes(1),1);
-            p +=         v_ad.size();
-            Array4<Real> w_ad = makeArray4(p,Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
-            p +=         w_ad.size();
+        Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
+        Real fu = (std::abs(uad) < eps) ? 0.0 : 1.0;
+        xzlo(i,j,k,n)  = fu*st + (1.0 - fu) * 0.5 * (l_xzhi + l_xzlo);
+    },
+    Box(zxlo), ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        const auto bc = pbc[n];
+        Real l_zxlo, l_zxhi;
+        Godunov_corner_couple_zx(l_zxlo, l_zxhi,
+                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 zlo(i,j,k,n), zhi(i,j,k,n),
+                                 q, divu, u_ad, xedge);
 
-            make_ppm_integrals (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
+        Real wad = w_ad(i,j,k);
+        Godunov_trans_zbc_lo(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2),
+                             domain.loVect(), domain.hiVect(), true, false);
+        Gpdunov_trans_zbc_hi(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.hi(2),
+                             domain.loVect(), domain.hiVect(), true, false);
 
-            make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
-                                  u_ad, v_ad, w_ad,
-                                  Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f);
+        constexpr Real eps = 1.e-6;
 
-            predict_godunov_on_box(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
-                                   a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
+        Real st = (wad >= 0.) ? l_zxlo : lzxhi;
+        Real fu = (std::abs(wad) < eps) ? 0.0 : 1.0;
+        zxlo(i,j,k,n) = fu*st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
+    });
+    //
+    amrex::ParallelFor(ybx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    {
+        constexpr int n = 1;
+        auto bc = pbc[n];
+        Real stl = ylo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j-1,k)+u_ad(i,j-1,k))*
+                                  (xzlo(i+1,j-1,k,n) - xzlo(i,j-1,k,n))
+                                - (0.25*l_dt/dz)*(w_ad(i,j-1,k+1)+w_ad(i,j-1,k))*
+                                  (zxlo(i,j-1,k+1,n) - zxlo(i,j-1,k,n));
+        Real sth = yhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
+                                  (xzlo(i+1,j,k,n) - xzlo(i,j,k,n))
+                                - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
+                                  (zxlo(i,j,k+1,n) - zxlo(i,j,k,n));
 
-            Gpu::streamSynchronize();  // otherwise we might be using too much memory
+        if (!l_use_forces_in_trans) {
+           stl += 0.5 * l_dt * f(i,j-1,k,n);
+           sth += 0.5 * l_dt * f(i,j  ,k,n);
         }
-    }
 
-    VisMF::Write(u_mac, "u_mac");
+        constexpr Real eps = 1e-6;
 
-    amrex::Abort("end of predict_godunov");
+        Godunov_cc_ybc(i, j, k, n, q, stl, sth, v_ad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+
+        Real st = ( (stl+sth) >= 0.) ? stl : sth;
+        bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
+        qy(i,j,k) = ltm ? 0. : st;
+    });
 }

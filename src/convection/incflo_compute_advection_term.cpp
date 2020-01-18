@@ -3,6 +3,83 @@
 using namespace amrex;
 
 void
+incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
+                                 Vector<MultiFab*> const& conv_r,
+                                 Vector<MultiFab*> const& conv_t,
+                                 Vector<MultiFab const*> const& vel,
+                                 Vector<MultiFab const*> const& density,
+                                 Vector<MultiFab const*> const& tracer,
+                                 Vector<MultiFab const*> const& vel_forces,
+                                 Vector<MultiFab const*> const& tra_forces,
+                                 Real time)
+{
+    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
+    int ngmac = nghost_mac();
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        const BoxArray& ba = density[lev]->boxArray();
+        const DistributionMapping& dm = density[lev]->DistributionMap();
+        u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm,
+                          1, ngmac, MFInfo(), Factory(lev));
+        v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm,
+                          1, ngmac, MFInfo(), Factory(lev));
+        w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm,
+                          1, ngmac, MFInfo(), Factory(lev));
+        if (ngmac > 0) {
+            u_mac[lev].setBndry(0.0);
+            v_mac[lev].setBndry(0.0);
+            w_mac[lev].setBndry(0.0);
+        }
+        // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
+        //    returned from this call are on face CENTROIDS
+        if (m_use_godunov) {
+            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev],
+                            *vel_forces[lev]);
+        } else {
+            predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
+        }
+    }
+
+    if (m_use_godunov) {
+        VisMF::Write(u_mac[0], "u_mac");
+        VisMF::Write(v_mac[0], "v_mac");
+        VisMF::Write(w_mac[0], "w_mac");
+        amrex::Abort("after predict mac");
+    }
+
+    apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
+
+    for (int lev = 0; lev <= finest_level; ++lev)
+    {
+        if (ngmac > 0) {
+            u_mac[lev].FillBoundary(geom[lev].periodicity());
+            v_mac[lev].FillBoundary(geom[lev].periodicity());
+            w_mac[lev].FillBoundary(geom[lev].periodicity());
+        }
+
+        MFItInfo mfi_info;
+        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(*density[lev],mfi_info); mfi.isValid(); ++mfi)
+        {
+            Box const& bx = mfi.tilebox();
+            compute_convective_term(bx, lev, mfi,
+                                    conv_u[lev]->array(mfi),
+                                    conv_r[lev]->array(mfi),
+                                    (m_ntrac>0) ? conv_t[lev]->array(mfi) : Array4<Real>{},
+                                    vel[lev]->const_array(mfi),
+                                    density[lev]->array(mfi),
+                                    (m_ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
+                                    u_mac[lev].const_array(mfi),
+                                    v_mac[lev].const_array(mfi),
+                                    w_mac[lev].const_array(mfi));
+        }
+    }
+}
+
+void
 incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                  Array4<Real> const& dvdt, // velocity
                                  Array4<Real> const& drdt, // density
@@ -145,83 +222,6 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                       get_tracer_bcrec().data(),
                                       get_tracer_bcrec_device_ptr());
             compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
-        }
-    }
-}
-
-void
-incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
-                                 Vector<MultiFab*> const& conv_r,
-                                 Vector<MultiFab*> const& conv_t,
-                                 Vector<MultiFab const*> const& vel,
-                                 Vector<MultiFab const*> const& density,
-                                 Vector<MultiFab const*> const& tracer,
-                                 Vector<MultiFab const*> const& vel_forces,
-                                 Vector<MultiFab const*> const& tra_forces,
-                                 Real time)
-{
-    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
-    int ngmac = nghost_mac();
-
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        const BoxArray& ba = density[lev]->boxArray();
-        const DistributionMapping& dm = density[lev]->DistributionMap();
-        u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm,
-                          1, ngmac, MFInfo(), Factory(lev));
-        v_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(1)), dm,
-                          1, ngmac, MFInfo(), Factory(lev));
-        w_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(2)), dm,
-                          1, ngmac, MFInfo(), Factory(lev));
-        if (ngmac > 0) {
-            u_mac[lev].setBndry(0.0);
-            v_mac[lev].setBndry(0.0);
-            w_mac[lev].setBndry(0.0);
-        }
-        // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
-        //    returned from this call are on face CENTROIDS
-        if (m_use_godunov) {
-            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev],
-                            *vel_forces[lev]);
-        } else {
-            predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
-        }
-    }
-
-    if (m_use_godunov) {
-        VisMF::Write(u_mac[0], "u_mac");
-        VisMF::Write(v_mac[0], "v_mac");
-        VisMF::Write(w_mac[0], "w_mac");
-        amrex::Abort("after predict mac");
-    }
-
-    apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
-
-    for (int lev = 0; lev <= finest_level; ++lev)
-    {
-        if (ngmac > 0) {
-            u_mac[lev].FillBoundary(geom[lev].periodicity());
-            v_mac[lev].FillBoundary(geom[lev].periodicity());
-            w_mac[lev].FillBoundary(geom[lev].periodicity());
-        }
-
-        MFItInfo mfi_info;
-        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(*density[lev],mfi_info); mfi.isValid(); ++mfi)
-        {
-            Box const& bx = mfi.tilebox();
-            compute_convective_term(bx, lev, mfi,
-                                    conv_u[lev]->array(mfi),
-                                    conv_r[lev]->array(mfi),
-                                    (m_ntrac>0) ? conv_t[lev]->array(mfi) : Array4<Real>{},
-                                    vel[lev]->const_array(mfi),
-                                    density[lev]->array(mfi),
-                                    (m_ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
-                                    u_mac[lev].const_array(mfi),
-                                    v_mac[lev].const_array(mfi),
-                                    w_mac[lev].const_array(mfi));
         }
     }
 }
