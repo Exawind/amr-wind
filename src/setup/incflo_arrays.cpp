@@ -5,7 +5,8 @@ using namespace amrex;
 incflo::LevelData::LevelData (amrex::BoxArray const& ba,
                               amrex::DistributionMapping const& dm,
                               amrex::FabFactory<FArrayBox> const& fact,
-                              int ntrac, int ng_state, int ng_force)
+                              int ntrac, int ng_state, int ng_force,
+                              bool use_godunov, bool implicit_diffusion)
     : velocity  (ba, dm, AMREX_SPACEDIM, ng_state, MFInfo(), fact),
       velocity_o(ba, dm, AMREX_SPACEDIM, ng_state, MFInfo(), fact),
       density   (ba, dm, 1             , ng_state, MFInfo(), fact),
@@ -17,14 +18,25 @@ incflo::LevelData::LevelData (amrex::BoxArray const& ba,
       tra_forces(ba, dm, ntrac         , ng_force, MFInfo(), fact),
       p         (amrex::convert(ba,IntVect::TheNodeVector()),
                      dm, 1             , 0 , MFInfo(), fact),
-      conv_velocity  (ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact),
       conv_velocity_o(ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact),
-      conv_density   (ba, dm, 1             , 0, MFInfo(), fact),
       conv_density_o (ba, dm, 1             , 0, MFInfo(), fact),
-      conv_tracer    (ba, dm, ntrac         , 0, MFInfo(), fact),
       conv_tracer_o  (ba, dm, ntrac         , 0, MFInfo(), fact)
 {
-    // xxxxx TODO we probably do not need the new conv_* for godunov
+    if (use_godunov) {
+        divtau_o.define(ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact);
+        laps_o.define  (ba, dm, ntrac         , 0, MFInfo(), fact);
+    } else {
+        conv_velocity.define(ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact);
+        conv_density.define (ba, dm, 1             , 0, MFInfo(), fact);
+        conv_tracer.define (ba, dm, ntrac         , 0, MFInfo(), fact);
+        if (!implicit_diffusion) {
+            divtau.define  (ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact);
+            divtau_o.define(ba, dm, AMREX_SPACEDIM, 0, MFInfo(), fact);
+            laps.define    (ba, dm, ntrac         , 0, MFInfo(), fact);
+            laps_o.define  (ba, dm, ntrac         , 0, MFInfo(), fact);
+        }
+    }
+
 }
 
 // Resize all arrays when instance of incflo class is constructed.

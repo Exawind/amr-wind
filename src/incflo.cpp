@@ -59,25 +59,17 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        // xxxxx averagedown ???
+        // xxxxx TODO averagedown ???
 
-        // xxxxx if (m_check_int > 0) { WriteCheckPointFile(); }
+        // xxxxx TODO if (m_check_int > 0) { WriteCheckPointFile(); }
     }
     else
     {
+        restart_flag = 1;
         amrex::Abort("xxxxx restart todo");
         // Read starting configuration from chk file.
         ReadCheckpointFile();
     }
-
-    // Post-initialisation step
-    // - Initialize diffusive and projection operators
-    // - Fill boundaries
-    // - Create instance of MAC projection class
-    // - Apply initial conditions
-    // - Project initial velocity to make divergence free
-    // - Perform dummy iterations to find pressure distribution
-//    PostInit(restart_flag);
 
     // Plot initial distribution
     if((m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && !restart_flag)
@@ -273,7 +265,8 @@ void incflo::MakeNewLevelFromScratch(int lev,
 #endif
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
-                                         m_ntrac, nghost_state(), nghost_force()));
+                                         m_ntrac, nghost_state(), nghost_force(),
+                                         m_use_godunov, m_diff_type==DiffusionType::Implicit));
 
     m_t_new[lev] = time;
     m_t_old[lev] = time - 1.e200;

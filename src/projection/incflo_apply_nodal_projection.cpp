@@ -53,12 +53,13 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection(Real time, Real scaling_factor, bool incremental)
+void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 
-    // If we have dropped the dt substantially for whatever reason, use a different form of the approximate
-    // projection that projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
+    // If we have dropped the dt substantially for whatever reason,
+    // use a different form of the approximate projection that
+    // projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
     bool proj_for_small_dt = (time > 0.0 and m_dt < 0.1 * m_prev_dt);
 

@@ -177,6 +177,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_forces(get_vel_forces(), get_tra_forces(),
                    get_density_old_const(), get_tracer_old_const());
 
+    if (m_diff_type != DiffusionType::Implicit || m_use_godunov) {
+        //
+    }
+
     if (m_use_godunov) {
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(Geom(0).isAllPeriodic() and finest_level == 0,
                                          "TODO: fillpatch_forces");
@@ -540,7 +544,6 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                     vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
                     vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;
                     vel_f(i,j,k,2) = -gradp(i,j,k,2)*rhoinv + l_gravity[2] * ft;
-                    // xxxxx TODO add divtau_old
                 });
             } else {
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -549,7 +552,6 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                     vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
                     vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
                     vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
-                    // xxxxx TODO add divtau_old
                 });
             }
         }
@@ -558,6 +560,5 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
     // For now we don't have any external forces on the scalars
     for (int lev = 0; lev <= finest_level; ++lev) {
         tra_forces[lev]->setVal(0.0);
-        // xxxxx TODO add laps_old
     }
 }

@@ -439,7 +439,8 @@ private:
         LevelData (amrex::BoxArray const& ba,
                    amrex::DistributionMapping const& dm,
                    amrex::FabFactory<amrex::FArrayBox> const& fact,
-                   int ntrac, int ng_state, int ng_force);
+                   int ntrac, int ng_state, int ng_force,
+                   bool use_godunov, bool implicit_diffusion);
         // cell-centered multifabs
         amrex::MultiFab velocity;
         amrex::MultiFab velocity_o;
@@ -459,6 +460,11 @@ private:
         amrex::MultiFab conv_density_o;
         amrex::MultiFab conv_tracer;
         amrex::MultiFab conv_tracer_o;
+        //
+        amrex::MultiFab divtau;
+        amrex::MultiFab divtau_o;
+        amrex::MultiFab laps;
+        amrex::MultiFab laps_o;
     };
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
