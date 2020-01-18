@@ -27,6 +27,11 @@ public:
                            amrex::Vector<amrex::MultiFab*> const& density,
                            amrex::Real t, amrex::Real dt);
 
+    void compute_divtau (amrex::Vector<amrex::MultiFab*> const& divtau,
+                         amrex::Vector<amrex::MultiFab const*> const& velocity,
+                         amrex::Vector<amrex::MultiFab const*> const& density,
+                         amrex::Real t);
+
 private:
 
     void readParameters ();
@@ -34,9 +39,11 @@ private:
     incflo* m_incflo;
 
 #ifdef AMREX_USE_EB
-    std::unique_ptr<amrex::MLEBTensorOp> m_eb_op;
+    std::unique_ptr<amrex::MLEBTensorOp> m_eb_solve_op;
+    std::unique_ptr<amrex::MLEBTensorOp> m_eb_apply_op;
 #endif
-    std::unique_ptr<amrex::MLTensorOp> m_reg_op;
+    std::unique_ptr<amrex::MLTensorOp> m_reg_solve_op;
+    std::unique_ptr<amrex::MLTensorOp> m_reg_apply_op;
 
     // DiffusionOp verbosity
     int m_verbose = 0;

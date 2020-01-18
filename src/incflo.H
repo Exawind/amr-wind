@@ -543,6 +543,10 @@ private:
     }
 #endif
 
+    bool need_divtau () const {
+        return m_use_godunov || DiffusionType::Implicit != m_diff_type;
+    }
+
     DiffusionTensorOp* get_diffusion_tensor_op ();
     DiffusionScalarOp* get_diffusion_scalar_op ();
 
