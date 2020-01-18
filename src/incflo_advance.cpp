@@ -177,8 +177,26 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_forces(get_vel_forces(), get_tra_forces(),
                    get_density_old_const(), get_tracer_old_const());
 
-    if (m_diff_type != DiffusionType::Implicit || m_use_godunov) {
-        //
+    if (need_divtau()) {
+        get_diffusion_tensor_op()->compute_divtau(get_divtau_old(),
+                                                  get_velocity_old_const(),
+                                                  get_density_old_const(),
+                                                  m_cur_time);
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Add(m_leveldata[lev]->vel_forces,
+                          m_leveldata[lev]->divtau_o, 0, 0, AMREX_SPACEDIM, 0);
+        }
+
+        if (m_advect_tracer) {
+            get_diffusion_scalar_op()->compute_laps(get_laps_old(),
+                                                    get_tracer_old_const(),
+                                                    get_density_old_const(),
+                                                    m_cur_time);
+            for (int lev = 0; lev <= finest_level; ++lev) {
+                MultiFab::Add(m_leveldata[lev]->tra_forces,
+                              m_leveldata[lev]->laps_o, 0, 0, m_ntrac, 0);
+            }
+        }
     }
 
     if (m_use_godunov) {

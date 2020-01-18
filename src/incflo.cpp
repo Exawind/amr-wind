@@ -266,7 +266,9 @@ void incflo::MakeNewLevelFromScratch(int lev,
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
                                          m_ntrac, nghost_state(), nghost_force(),
-                                         m_use_godunov, m_diff_type==DiffusionType::Implicit));
+                                         m_use_godunov,
+                                         m_diff_type==DiffusionType::Implicit,
+                                         m_advect_tracer));
 
     m_t_new[lev] = time;
     m_t_old[lev] = time - 1.e200;
@@ -510,6 +512,46 @@ Vector<MultiFab*> incflo::get_conv_tracer_new () noexcept
     r.reserve(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev) {
         r.push_back(&(m_leveldata[lev]->conv_tracer));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_divtau_old () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->divtau_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_divtau_new () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->divtau));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_laps_old () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->laps_o));
+    }
+    return r;
+}
+
+Vector<MultiFab*> incflo::get_laps_new () noexcept
+{
+    Vector<MultiFab*> r;
+    r.reserve(finest_level+1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        r.push_back(&(m_leveldata[lev]->laps));
     }
     return r;
 }

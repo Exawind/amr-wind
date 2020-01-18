@@ -19,6 +19,11 @@ public:
                          amrex::Vector<amrex::MultiFab*> const& density,
                          amrex::Real t, amrex::Real dt);
 
+    void compute_laps (amrex::Vector<amrex::MultiFab*> const& laps,
+                       amrex::Vector<amrex::MultiFab const*> const& phi,
+                       amrex::Vector<amrex::MultiFab const*> const& density,
+                       amrex::Real t);
+
 private:
 
     void readParameters ();
@@ -26,9 +31,11 @@ private:
     incflo* m_incflo;
 
 #ifdef AMREX_USE_EB
-    std::unique_ptr<amrex::MLEBABecLap> m_eb_op;
+    std::unique_ptr<amrex::MLEBABecLap> m_eb_solve_op;
+    std::unique_ptr<amrex::MLEBABecLap> m_eb_apply_op;
 #endif
-    std::unique_ptr<amrex::MLABecLaplacian> m_reg_op;
+    std::unique_ptr<amrex::MLABecLaplacian> m_reg_solve_op;
+    std::unique_ptr<amrex::MLABecLaplacian> m_reg_apply_op;
 
     // DiffusionOp verbosity
     int m_verbose = 0;
