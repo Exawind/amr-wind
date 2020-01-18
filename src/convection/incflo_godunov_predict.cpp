@@ -64,11 +64,6 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             Gpu::streamSynchronize();  // otherwise we might be using too much memory
         }
     }
-
-    VisMF::Write(u_mac, "u_mac");
-    VisMF::Write(v_mac, "v_mac");
-
-    amrex::Abort("end of predict_godunov");
 }
 
 void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
@@ -363,9 +358,9 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
 
         Real wad = w_ad(i,j,k);
         Godunov_trans_zbc_lo(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2),
-                             domain.loVect(), domain.hiVect(), false, true);  
+                             domain.loVect(), domain.hiVect(), false, true);
         Godunov_trans_zbc_hi(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.hi(2),
-                             domain.loVect(), domain.hiVect(), false, true);  
+                             domain.loVect(), domain.hiVect(), false, true);
 
         constexpr Real eps = 1.e-6;
 
@@ -414,9 +409,9 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
             sth += 0.5 * l_dt * f(i  ,j,k,n);
         }
 
-        constexpr Real eps = 1e-6;
-
         Godunov_cc_xbc(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+
+        constexpr Real eps = 1e-6;
 
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
@@ -447,15 +442,15 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
 
         Real uad = u_ad(i,j,k);
         Godunov_trans_xbc_lo(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0),
-                             domain.loVect(), domain.hiVect(), true, false);
+                             domain.loVect(), domain.hiVect(), false, true);
         Godunov_trans_xbc_hi(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.hi(0),
-                             domain.loVect(), domain.hiVect(), true, false);
+                             domain.loVect(), domain.hiVect(), false, true);
 
         constexpr Real eps = 1.e-6;
 
         Real st = (uad >= 0.) ? l_xzlo : l_xzhi;
         Real fu = (std::abs(uad) < eps) ? 0.0 : 1.0;
-        xzlo(i,j,k)  = fu*st + (1.0 - fu) * 0.5 * (l_xzhi + l_xzlo);
+        xzlo(i,j,k) = fu*st + (1.0 - fu) * 0.5 * (l_xzhi + l_xzlo);
     },
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
@@ -498,9 +493,9 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
            sth += 0.5 * l_dt * f(i,j  ,k,n);
         }
 
-        constexpr Real eps = 1e-6;
-
         Godunov_cc_ybc(i, j, k, n, q, stl, sth, v_ad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+
+        constexpr Real eps = 1e-6;
 
         Real st = ( (stl+sth) >= 0.) ? stl : sth;
         bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
@@ -511,13 +506,83 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
     // Z-Flux
     //
     Box const zbxtmp = Box(zbx).enclosedCells().grow(2,1);
-    Array4<Real> xylo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(zbxtmp,0), ncomp);
-    Array4<Real> yxlo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(zbxtmp,1), ncomp);
+    Array4<Real> xylo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(zbxtmp,0), 1);
+    Array4<Real> yxlo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(zbxtmp,1), 1);
 
-    amrex::ParallelFor(
-    Box(xylo), ncomp,
-    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    // Add d/dy term to x-faces
+    // Start with {xlo,xhi} --> {xylo, xyhi} and upwind using u_ad to {xylo}
+    // Add d/dx term to y-faces and upwind using v_ad to {yxlo}
+    // Start with {ylo,yhi} --> {yxlo, yxhi}
+    amrex::ParallelFor(Box(xylo), Box(yxlo),
+    [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
+        constexpr int n = 2;
         const auto bc = pbc[n];
+        Real l_xylo, l_xyhi;
+        Godunov_corner_couple_xy(l_xylo, l_xyhi,
+                                 i, j, k, n, l_dt, dy, iconserv[n],
+                                 xlo(i,j,k,n), xhi(i,j,k,n),
+                                 q, divu, v_ad, yedge);
+
+        Real uad = u_ad(i,j,k);
+        Godunov_trans_xbc_lo(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0),
+                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_xbc_hi(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.hi(0),
+                             domain.loVect(), domain.hiVect(), true, false);
+
+        constexpr Real eps = 1.e-6;
+
+        Real st = (uad >= 0.) ? l_xylo : l_xyhi;
+        Real fu = (std::abs(uad) < eps) ? 0.0 : 1.0;
+        xylo(i,j,k) = fu*st + (1.0 - fu) * 0.5 * (l_xyhi + l_xylo);
+    },
+    [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    {
+        constexpr int n = 2;
+        const auto bc = pbc[n];
+        Real l_yxlo, l_yxhi;
+        Godunov_corner_couple_yx(l_yxlo, l_yxhi,
+                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 ylo(i,j,k,n), yhi(i,j,k,n),
+                                 q, divu, u_ad, xedge);
+
+        Real vad = v_ad(i,j,k);
+        Godunov_trans_ybc_lo(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1),
+                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_ybc_hi(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.hi(1),
+                             domain.loVect(), domain.hiVect(), true, false);
+
+        constexpr Real eps = 1.e-6;
+
+        Real st = (vad >= 0.) ? l_yxlo : l_yxhi;
+        Real fu = (std::abs(vad) < eps) ? 0.0 : 1.0;
+        yxlo(i,j,k) = fu*st + (1.0 - fu) * 0.5 * (l_yxhi + l_yxlo);
+    });
+    //
+    amrex::ParallelFor(zbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    {
+        constexpr int n = 2;
+        auto bc = pbc[n];
+        Real stl = zlo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k-1)+u_ad(i,j,k-1))*
+                                  (xylo(i+1,j,k-1) - xylo(i,j,k-1))
+                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k-1)+v_ad(i,j,k-1))*
+                                  (yxlo(i,j+1,k-1) - yxlo(i,j,k-1));
+        Real sth = zhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
+                                  (xylo(i+1,j,k) - xylo(i,j,k))
+                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
+                                  (yxlo(i,j+1,k) - yxlo(i,j,k));
+
+        if (!l_use_forces_in_trans) {
+           stl += 0.5 * l_dt * f(i,j,k-1,n);
+           sth += 0.5 * l_dt * f(i,j,k  ,n);
+        }
+
+        Godunov_cc_zbc(i, j, k, n, q, stl, sth, w_ad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+
+        constexpr Real eps = 1e-6;
+
+        Real st = ( (stl+sth) >= 0.) ? stl : sth;
+        bool ltm = ( (stl <= 0. && sth >= 0.) || (std::abs(stl+sth) < eps) );
+        qz(i,j,k) = ltm ? 0. : st;
     });
 }

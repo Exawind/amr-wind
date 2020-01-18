@@ -40,14 +40,14 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
     }
 
+    apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
+
     if (m_use_godunov) {
         VisMF::Write(u_mac[0], "u_mac");
         VisMF::Write(v_mac[0], "v_mac");
         VisMF::Write(w_mac[0], "w_mac");
-        amrex::Abort("after predict mac");
+        amrex::Abort("after predict mac and mac project");
     }
-
-    apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
 
     for (int lev = 0; lev <= finest_level; ++lev)
     {
