@@ -49,15 +49,15 @@ void incflo::Advance()
 
     ApplyPredictor();
 
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, m_t_new[lev], m_leveldata[lev]->velocity, ng);
-        fillpatch_density(lev, m_t_new[lev], m_leveldata[lev]->density, ng);
-        if (m_advect_tracer) {
-            fillpatch_tracer(lev, m_t_new[lev], m_leveldata[lev]->tracer, ng);
-        }
-    }
-
     if (!m_use_godunov) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            fillpatch_velocity(lev, m_t_new[lev], m_leveldata[lev]->velocity, ng);
+            fillpatch_density(lev, m_t_new[lev], m_leveldata[lev]->density, ng);
+            if (m_advect_tracer) {
+                fillpatch_tracer(lev, m_t_new[lev], m_leveldata[lev]->tracer, ng);
+            }
+        }
+
         ApplyCorrector();
     }
 
@@ -214,36 +214,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
                             get_vel_forces_const(), get_tra_forces_const(),
                             m_cur_time);
 
-    if (m_use_godunov) {
-        amrex::Abort("xxxxx after compute_convective_term");
-    }
-
-    // This fills the eta_old array (if non-Newtonian, then using strain-rate of velocity at time "m_cur_time")
-    if (m_fluid_model != "newtonian") {
-        amrex::Abort("non-Newtonian: TODO");
-//        ComputeViscosity(eta_old, m_cur_time);
-    }
-
-    // Compute explicit diffusion if used
-    if (m_diff_type == DiffusionType::Explicit ||
-        m_diff_type == DiffusionType::Crank_Nicolson ||
-        m_use_godunov)
-    {
-        amrex::Abort("TODO: Explicit or Crank_Nicolson diffustion");
-        // incflo_set_velocity_bcs (m_cur_time, vel_o);
-        // diffusion_op->ComputeDivTau(divtau_old,    vel_o, density_o, eta_old);
-        // diffusion_op->ComputeLapS  (  laps_old, tracer_o, density_o, mu_s);
-    } else {
-#if 0
-        // xxxxx TODO
-       for (int lev = 0; lev <= finest_level; lev++)
-       {
-          divtau_old[lev]->setVal(0.);
-            laps_old[lev]->setVal(0.);
-       }
-#endif
-    }
-
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
     bool l_constant_density = m_constant_density;
@@ -265,26 +235,50 @@ void incflo::ApplyPredictor (bool incremental_projection)
             Array4<Real const> const& dtdt = ld.conv_tracer_o.const_array(mfi);
             Array4<Real const> const& vel_f = ld.vel_forces.const_array(mfi);
             Array4<Real const> const& tra_f = ld.tra_forces.const_array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-            {
-                vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0));
-                vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1));
-                vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2));
-
-                if (!l_constant_density) {
-                    rho(i,j,k) += l_dt * drdt(i,j,k);
+            // if need_divtau()==true, the forces have already included diffusion terms
+            if (need_divtau() and m_diff_type != DiffusionType::Explicit) {
+                Array4<Real const> const& divtau = ld.divtau_o.const_array(mfi);
+                Array4<Real const> laps;
+                if (m_advect_tracer) {
+                    laps = ld.laps_o.const_array(mfi);
                 }
+                // It's either implicit or Crank-Nicolson.
+                Real s = (m_diff_type == DiffusionType::Implicit) ? -1.0 : -0.5;
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+s*divtau(i,j,k,0));
+                    vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1)+s*divtau(i,j,k,1));
+                    vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2)+s*divtau(i,j,k,2));
 
-                for (int n = 0; n < l_ntrac; ++n) {
-                    tra(i,j,k,n) += l_dt * (dtdt(i,j,k,n)+tra_f(i,j,k,n));
-                }
-            });
+                    if (!l_constant_density) {
+                        rho(i,j,k) += l_dt * drdt(i,j,k);
+                    }
+
+                    for (int n = 0; n < l_ntrac; ++n) {
+                        tra(i,j,k,n) += l_dt * (dtdt(i,j,k,n)+tra_f(i,j,k,n)+s*laps(i,j,k,n));
+                    }
+                });
+            } else {
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0));
+                    vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1));
+                    vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2));
+
+                    if (!l_constant_density) {
+                        rho(i,j,k) += l_dt * drdt(i,j,k);
+                    }
+
+                    for (int n = 0; n < l_ntrac; ++n) {
+                        tra(i,j,k,n) += l_dt * (dtdt(i,j,k,n)+tra_f(i,j,k,n));
+                    }
+                });
+            }
         }
     }
 
-    if (m_diff_type == DiffusionType::Crank_Nicolson or
-        m_diff_type == DiffusionType::Implicit)
+    // Solve diffusion equation for u* but using eta_old at old time
+    if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -293,28 +287,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
                 fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
             }
         }
-    }
 
-    // Solve diffusion equation for u* but using eta_old at old time
-    // (we can't really trust the vel we have so far in this step to define eta at new time)
-    // 
-    // **********************************************************************************************
-    if (m_diff_type == DiffusionType::Crank_Nicolson)
-    {
-        amrex::Abort("TODO: Crank_Nicolson");
-#if 0
-        diffusion_op->diffuse_velocity(vel   , density, eta_old, 0.5*m_dt);
-        if (m_advect_tracer)
-            diffusion_op->diffuse_scalar  (tracer, density, mu_s,    0.5*m_dt);
-#endif
-    }
-    else if (m_diff_type == DiffusionType::Implicit)
-    {
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new(), m_cur_time, m_dt);
+                                                    get_density_new(), m_cur_time, dt_diff);
         if (m_advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                      get_density_new(), m_cur_time, m_dt);
+                                                      get_density_new(), m_cur_time, dt_diff);
         }
     }
 

@@ -246,16 +246,6 @@ void incflo::InitialIterations ()
 
         copy_from_old_to_new_velocity();
         copy_from_old_to_new_density();
-
-        if (m_use_godunov) {
-    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
-    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
-    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
-    amrex::VisMF::Write(m_leveldata[0]->p, "p");
-
-        amrex::Abort("xxxxx after first pressure iteration");
-    }
-
     }
 
     m_advect_tracer = advect_tracer_save;

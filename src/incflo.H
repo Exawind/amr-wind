@@ -562,7 +562,7 @@ private:
 #endif
 
     bool need_divtau () const {
-        return m_use_godunov || DiffusionType::Implicit != m_diff_type;
+        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
     }
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
