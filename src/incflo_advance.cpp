@@ -88,19 +88,6 @@ void incflo::Advance()
     {
         amrex::Print() << "Time per step " << end_step << std::endl;
     }
-
-#ifdef AMREX_USE_EB
-    amrex::EB_set_covered(m_leveldata[0]->velocity, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->density, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->tracer, 0.0);
-    amrex::EB_set_covered(m_leveldata[0]->p, 0.0);
-#endif
-    amrex::VisMF::Write(m_leveldata[0]->velocity, "vel");
-    amrex::VisMF::Write(m_leveldata[0]->density, "rho");
-    amrex::VisMF::Write(m_leveldata[0]->tracer, "tra");
-    amrex::VisMF::Write(m_leveldata[0]->p, "p");
-
-    amrex::Abort("xxxxx in Advance(): end");
 }
 
 //

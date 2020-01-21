@@ -76,8 +76,7 @@ void incflo::InitData ()
     // Plot initial distribution
     if((m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && !restart_flag)
     {
-        amrex::Warning("xxxxx Plotfile todo");
-//        WritePlotFile();
+        WritePlotFile();
         m_last_plt = 0;
     }
     if(m_KE_int > 0 && !restart_flag)
@@ -135,8 +134,6 @@ void incflo::Evolve()
         m_nstep++;
         m_cur_time += m_dt;
 
-        amrex::Abort("xxxxx After the first Advance()");
-
         if (writeNow())
         {
             WritePlotFile();
@@ -160,11 +157,15 @@ void incflo::Evolve()
                          (m_max_step >= 0 && m_nstep >= m_max_step));
     }
 
-    amrex::Abort("xxxxx At the end of Evolve");
-
 	// Output at the final time
-    if( m_check_int > 0                                               && m_nstep != m_last_chk) WriteCheckPointFile();
-    if( (m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && m_nstep != m_last_plt) WritePlotFile();
+    if( m_check_int > 0 && m_nstep != m_last_chk) {
+        WriteCheckPointFile();
+    }
+    if( (m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0)
+        && m_nstep != m_last_plt)
+    {
+        WritePlotFile();
+    }
 }
 
 // tag cells for refinement

@@ -184,27 +184,6 @@ void incflo::ReadIOParameters()
     pp.query("plt_stress"    , m_plt_stress);
     pp.query("plt_divu",       m_plt_divu  );
     pp.query("plt_vfrac",      m_plt_vfrac );
-
-    // Special test for CCSE regression test. Override all individual
-    // flags and save all data to plot file.
-
-    // Count the number of variables to save.
-    m_pltVarCount = 0;
-    if (m_plt_velx       == 1) m_pltVarCount += 1;
-    if (m_plt_vely       == 1) m_pltVarCount += 1;
-    if (m_plt_velz       == 1) m_pltVarCount += 1;
-    if (m_plt_gpx        == 1) m_pltVarCount += 1;
-    if (m_plt_gpy        == 1) m_pltVarCount += 1;
-    if (m_plt_gpz        == 1) m_pltVarCount += 1;
-    if (m_plt_rho        == 1) m_pltVarCount += 1;
-    if (m_plt_tracer     == 1) m_pltVarCount += m_ntrac;
-    if (m_plt_p          == 1) m_pltVarCount += 1;
-    if (m_plt_eta        == 1) m_pltVarCount += 1;
-    if (m_plt_vort       == 1) m_pltVarCount += 1;
-    if (m_plt_strainrate == 1) m_pltVarCount += 1;
-    if (m_plt_stress     == 1) m_pltVarCount += 1;
-    if (m_plt_divu       == 1) m_pltVarCount += 1;
-    if (m_plt_vfrac      == 1) m_pltVarCount += 1;
 }
 
 //

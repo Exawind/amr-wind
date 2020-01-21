@@ -256,7 +256,8 @@ public: // for cuda
     ///////////////////////////////////////////////////////////////////////////
 
     void ComputeStrainrate (amrex::Real time);
-    void ComputeVorticity (amrex::Real time);
+    void ComputeVorticity (int lev, amrex::Real time, amrex::MultiFab& vort,
+                           amrex::MultiFab const& vel);
     void ComputeDivU (amrex::Real time);
     void ComputeDrag();
     amrex::Real ComputeKineticEnergy () const;
@@ -441,9 +442,6 @@ private:
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
-
-    // Total number of variables to write in plot file
-    int m_pltVarCount = 0;
 
     struct LevelData {
         LevelData () = default;

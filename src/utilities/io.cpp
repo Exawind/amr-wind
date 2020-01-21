@@ -317,232 +317,174 @@ void incflo::WriteJobInfo(const std::string& path) const
 
 void incflo::WritePlotFile() 
 {
-#if 0
-	BL_PROFILE("incflo::WritePlotFile()");
+    BL_PROFILE("incflo::WritePlotFile()");
 
-        if (plt_divu      ) ComputeDivU(m_cur_time);
-        if (plt_strainrate) ComputeStrainrate(m_cur_time);
-        if (plt_eta       ) ComputeViscosity(eta,m_cur_time);
-        if (plt_vort      ) ComputeVorticity(m_cur_time);
-
-	const std::string& plotfilename = amrex::Concatenate(plot_file, m_nstep);
-
-	amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_cur_time << std::endl;
-
-	const int ngrow = 0;
-
-	Vector<std::unique_ptr<MultiFab>> mf(finest_level + 1);
-
-        Vector<std::string> pltscaVarsName;
-
-        // First just set all of the names once (not once per level)
-
-        // Velocity components
-        if (plt_velx == 1)
-            pltscaVarsName.push_back("velx");
-        if (plt_vely == 1)
-            pltscaVarsName.push_back("vely");
-        if (plt_velz == 1)
-            pltscaVarsName.push_back("velz");
-
-        // Pressure gradient components
-        if (plt_gpx == 1)
-            pltscaVarsName.push_back("gpx");
-        if (plt_gpy == 1)
-            pltscaVarsName.push_back("gpy");
-        if (plt_gpz == 1)
-            pltscaVarsName.push_back("gpz");
-
-        // Density
-        if (plt_rho == 1) 
-            pltscaVarsName.push_back("density");
-
-        // Tracers
-        if (plt_tracer == 1) 
-        {
-            pltscaVarsName.push_back("tracer0");
-            if (ntrac > 1)
-               pltscaVarsName.push_back("tracer1");
-            if (ntrac > 2)
-               pltscaVarsName.push_back("tracer2");
-            if (ntrac > 3)
-               amrex::Error("Haven't made names for ntrac > 3 yet");
-        }
-
-
-        // Pressure
-        if(plt_p == 1)
-            pltscaVarsName.push_back("p");
-
-        // Apparent viscosity
-        if(plt_eta == 1) 
-            pltscaVarsName.push_back("eta");
-
-        // Vorticity
-        if(plt_vort == 1) 
-            pltscaVarsName.push_back("vort");
-
-        // Magnitude of the rate-of-strain tensor 
-        if(plt_strainrate == 1) 
-            pltscaVarsName.push_back("strainrate");
-
-        // Magnitude of the stress tensor 
-        if(plt_stress == 1) 
-            pltscaVarsName.push_back("stress");
-
-        // Divergence of velocity field
-        if(plt_divu == 1) 
-            pltscaVarsName.push_back("divu");
-
-        // Cut cell volume fraction
-        if(plt_vfrac == 1) 
-            pltscaVarsName.push_back("vfrac");
-
-        // Now fill the data at every level
-
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
-            // Multifab to hold all the variables -- there can be only one!!!!
-    	    const int ncomp = pltVarCount;
+    if (m_plt_vort or m_plt_divu) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
 #ifdef AMREX_USE_EB
-	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo(), *ebfactory[lev]));
+            const int ng = (EBFactory(0).isAllRegular()) ? 1 : 2;
 #else
-	    mf[lev].reset(new MultiFab(grids[lev], dmap[lev], ncomp, ngrow, MFInfo()));
+            const int ng = 1;
 #endif
-
-            int lc = 0;
-
-            // Velocity components
-            if (plt_velx == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 0, lc, 1, 0);
-                lc += 1;
-            }
-            if (plt_vely == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 1, lc, 1, 0);
-                lc += 1;
-            }
-            if (plt_velz == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*vel[lev]), 2, lc, 1, 0);
-                lc += 1;
-            }
-
-            // Pressure gradient components
-            if (plt_gpx == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 0, lc, 1, 0);
-                lc += 1;
-            }
-            if (plt_gpy == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 1, lc, 1, 0);
-                lc += 1;
-            }
-            if (plt_gpz == 1)
-            {
-                MultiFab::Copy(*mf[lev], (*gp[lev]), 2, lc, 1, 0);
-                lc += 1;
-            }
-
-            // Density
-            if (plt_rho == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*density[lev]), 0, lc, 1, 0);
-                lc += 1;
-            }
-
-            // Tracer
-            if(plt_tracer == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*tracer[lev]), 0, lc, tracer[lev]->nComp(), 0);
-                lc += tracer[lev]->nComp();
-            }
-
-            // Pressure
-            if(plt_p == 1)
-            {
-                MultiFab p_nd(p[lev]->boxArray(), dmap[lev], 1, 0);
-                p_nd.setVal(0.0);
-                MultiFab::Copy(p_nd, (*p[lev]), 0, 0, 1, 0);
-                MultiFab::Add(p_nd, (*p0[lev]), 0, 0, 1, 0);
-                amrex::average_node_to_cellcenter(*mf[lev], lc, p_nd, 0, 1);
-    
-                lc += 1;
-            }
-
-            // Apparent viscosity
-            if (plt_eta == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*eta[lev]), 0, lc, 1, 0);
-                lc += 1;
-            }
-
-            // Vorticity
-            if(plt_vort == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*vort[lev]), 0, lc, 1, 0);
-    
-                lc += 1;
-            }
-
-            // Magnitude of the rate-of-strain tensor 
-            if(plt_strainrate == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, lc, 1, 0);
-    
-                lc += 1;
-            }
-
-            // Magnitude of the stress tensor 
-            if(plt_stress == 1) 
-            {
-                MultiFab::Copy(*mf[lev], (*strainrate[lev]), 0, lc, 1, 0);
-                MultiFab::Multiply(*mf[lev], (*eta[lev]), 0, lc, 1, 0);
-
-                lc += 1;
-            }
-    
-            // Divergence of velocity field
-            if(plt_divu == 1) 
-            {
-                amrex::average_node_to_cellcenter(*mf[lev], lc, (*divu[lev]), 0, 1);
-                lc += 1;
-            }
-
-            // Cut cell volume fractino
-            if(plt_vfrac == 1) 
-            {
-#ifdef AMREX_USE_EB
-                if (ebfactory[lev]) 
-                {
-                    MultiFab::Copy(*mf[lev], ebfactory[lev]->getVolFrac(), 0, lc, 1, 0);
-                }
-                else
-#endif
-                {
-                    mf[lev]->setVal(1.0, lc, 1.0);
-                }
-
-                lc += 1;
-            }
-
-#ifdef AMREX_USE_EB
-            // Zero out all the values in covered cells
-            EB_set_covered(*mf[lev], 0.0);
-#endif
+            fillpatch_velocity(lev, m_cur_time, m_leveldata[lev]->velocity, ng);
         }
+    }
 
-        // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
-        // but will never change unless we use subcycling. 
-        // If we do use subcycling, this should be a incflo class member. 
-        Vector<int> istep(finest_level + 1, 1);
 
-        // Write the plotfile
-        amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), 
-                                   pltscaVarsName, Geom(), m_cur_time, istep, refRatio());
+    const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_nstep);
 
-	WriteJobInfo(plotfilename);
+    amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_cur_time << std::endl;
+
+    int ncomp = 0;
+
+    // Velocity components
+    if (m_plt_velx) ++ncomp;
+    if (m_plt_vely) ++ncomp;
+    if (m_plt_velz) ++ncomp;
+    // Pressure gradient components
+    if (m_plt_gpx) ++ncomp;
+    if (m_plt_gpy) ++ncomp;
+    if (m_plt_gpz) ++ncomp;
+    // Density
+    if (m_plt_rho) ++ncomp;
+    // Tracers
+    if (m_plt_tracer) ncomp += m_ntrac;
+    // Pressure
+    if(m_plt_p) ++ncomp;
+    // Apparent viscosity
+    if(m_plt_eta) ++ncomp;
+    // Vorticity
+    if(m_plt_vort) ++ncomp;
+    // Magnitude of the rate-of-strain tensor 
+    if(m_plt_strainrate) ++ncomp;
+    // Magnitude of the stress tensor 
+    if(m_plt_stress) ++ncomp;
+    // Divergence of velocity field
+    if(m_plt_divu) ++ncomp;
+#ifdef AMREX_USE_EB
+    // Cut cell volume fraction
+    if(m_plt_vfrac) ++ncomp;
 #endif
+
+    Vector<MultiFab> mf(finest_level + 1);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        mf[lev].define(grids[lev], dmap[lev], ncomp, 0, MFInfo(), Factory(lev));
+    }
+
+    Vector<std::string> pltscaVarsName;
+    int icomp = 0;
+    if (m_plt_velx) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 0, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("velx");
+        ++icomp;
+    }
+    if (m_plt_vely) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 1, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("vely");
+        ++icomp;
+    }
+    if (m_plt_velz) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 2, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("velz");
+        ++icomp;
+    }
+    if (m_plt_gpx) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 0, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("gpx");
+        ++icomp;
+    }
+    if (m_plt_gpy) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 1, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("gpy");
+        ++icomp;
+    }
+    if (m_plt_gpz) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 2, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("gpz");
+        ++icomp;
+    }
+    if (m_plt_rho) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->density, 0, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("density");
+        ++icomp;
+    }
+    if (m_plt_tracer) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], m_leveldata[lev]->tracer, 0, icomp, m_ntrac, 0);
+        }
+        for (int i = 0; i < m_ntrac; ++i) {
+            pltscaVarsName.push_back("tracer"+std::to_string(i));
+        }
+        icomp += m_ntrac;
+    }
+    if (m_plt_p) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::average_node_to_cellcenter(mf[lev], icomp, m_leveldata[lev]->p, 0, 1);
+        }
+        pltscaVarsName.push_back("p");
+        ++icomp;
+    }
+    if (m_plt_eta) {
+        amrex::Abort("plt_eta: xxxxx TODO");
+        pltscaVarsName.push_back("eta");
+        ++icomp;
+    }
+    if (m_plt_vort) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab vort(mf[lev], amrex::make_alias, icomp, 1);
+            ComputeVorticity(lev, m_cur_time, vort, m_leveldata[lev]->velocity);
+        }
+        pltscaVarsName.push_back("vort");
+        ++icomp;
+    }
+    if (m_plt_strainrate) {
+        amrex::Abort("plt_strainrate: xxxxx TODO");
+        pltscaVarsName.push_back("strainrate");
+        ++icomp;
+    }
+    if (m_plt_stress) {
+        amrex::Abort("plt_stress: xxxxx TODO");
+        pltscaVarsName.push_back("stress");
+        ++icomp;
+    }
+    if (m_plt_divu) {
+        amrex::Abort("plt_divu: xxxxx TODO");
+        pltscaVarsName.push_back("divu");
+        ++icomp;
+    }
+#ifdef AMREX_USE_EB
+    if (m_plt_vfrac) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab::Copy(mf[lev], EBFactory(lev).getVolFrac(), 0, icomp, 1, 0);
+        }
+        pltscaVarsName.push_back("vfrac");
+        ++icomp;
+    }
+#endif
+
+    AMREX_ALWAYS_ASSERT(ncomp == static_cast<int>(pltscaVarsName.size()));
+
+    // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
+    // but will never change unless we use subcycling. 
+    // If we do use subcycling, this should be a incflo class member. 
+    Vector<int> istep(finest_level + 1, m_nstep);
+
+    // Write the plotfile
+    amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), 
+                                   pltscaVarsName, Geom(), m_cur_time, istep, refRatio());
+    WriteJobInfo(plotfilename);
 }
