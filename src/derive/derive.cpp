@@ -326,7 +326,7 @@ void incflo::ComputeVorticity (int lev, Real t, MultiFab& vort, MultiFab const& 
 
 #ifdef AMREX_USE_EB
         const EBCellFlagFab& flags = flags_mf[mfi];
-        auto typ = flags.getType(bx, 1);
+        auto typ = flags.getType(bx);
         if (typ == FabType::covered)
         {
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept

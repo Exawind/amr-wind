@@ -48,7 +48,8 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
         (has_extdir_hi and domain_ihi <= xbx.bigEnd(0)))
     {
-        amrex::ParallelFor(xbx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        amrex::ParallelFor(xbx, ncomp, [d_bcrec,q,domain_ilo,domain_ihi,umac,small,fx]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
             bool extdir_ihi = d_bcrec[n].hi(0) == BCType::ext_dir;
