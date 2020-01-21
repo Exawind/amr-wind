@@ -58,8 +58,8 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
                                   u_ad, v_ad, w_ad,
                                   Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f);
 
-            predict_godunov_on_box(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
-                                   a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
+            predict_godunov(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
+                            a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
 
             Gpu::streamSynchronize();  // otherwise we might be using too much memory
         }
@@ -192,23 +192,23 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
     });
 }
 
-void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
-                                     Box const& xbx, Box const& ybx, Box const& zbx,
-                                     Array4<Real> const& qx,
-                                     Array4<Real> const& qy,
-                                     Array4<Real> const& qz,
-                                     Array4<Real const> const& q,
-                                     Array4<Real const> const& u_ad,
-                                     Array4<Real const> const& v_ad,
-                                     Array4<Real const> const& w_ad,
-                                     Array4<Real> const& Imx,
-                                     Array4<Real> const& Ipx,
-                                     Array4<Real> const& Imy,
-                                     Array4<Real> const& Ipy,
-                                     Array4<Real> const& Imz,
-                                     Array4<Real> const& Ipz,
-                                     Array4<Real const> const& f,
-                                     Real* p)
+void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
+                              Box const& xbx, Box const& ybx, Box const& zbx,
+                              Array4<Real> const& qx,
+                              Array4<Real> const& qy,
+                              Array4<Real> const& qz,
+                              Array4<Real const> const& q,
+                              Array4<Real const> const& u_ad,
+                              Array4<Real const> const& v_ad,
+                              Array4<Real const> const& w_ad,
+                              Array4<Real> const& Imx,
+                              Array4<Real> const& Ipx,
+                              Array4<Real> const& Imy,
+                              Array4<Real> const& Ipy,
+                              Array4<Real> const& Imz,
+                              Array4<Real> const& Ipz,
+                              Array4<Real const> const& f,
+                              Real* p)
 {
     Real l_dt = m_dt;
     bool l_use_forces_in_trans = m_use_forces_in_trans;
@@ -329,7 +329,7 @@ void incflo::predict_godunov_on_box (int lev, Box const& bx, int ncomp,
     Array4<Real> zedge = Imz;
 
     Array4<Real> divu = makeArray4(Ipx.dataPtr(), grow(bx,1), 1);
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
+    amrex::ParallelFor(Box(divu), [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
         divu(i,j,k) = 0.0;
     });
 

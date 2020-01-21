@@ -91,6 +91,18 @@ public: // for cuda
                                   amrex::Vector<amrex::MultiFab const*> const& vel_forces,
                                   amrex::Vector<amrex::MultiFab const*> const& tra_forces,
                                   amrex::Real time);
+    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
+                                  amrex::Array4<amrex::Real> const& dvdt, // velocity
+                                  amrex::Array4<amrex::Real> const& drdt, // density
+                                  amrex::Array4<amrex::Real> const& dtdt, // tracer
+                                  amrex::Array4<amrex::Real const> const& vel,
+                                  amrex::Array4<amrex::Real const> const& rho,
+                                  amrex::Array4<amrex::Real const> const& tra,
+                                  amrex::Array4<amrex::Real const> const& umac,
+                                  amrex::Array4<amrex::Real const> const& vmac,
+                                  amrex::Array4<amrex::Real const> const& wmac,
+                                  amrex::Array4<amrex::Real const> const& fv,
+                                  amrex::Array4<amrex::Real const> const& ft);
 
     //
     // Gogunov
@@ -124,23 +136,33 @@ public: // for cuda
                                 amrex::Array4<amrex::Real const> const& vel,
                                 amrex::Array4<amrex::Real const> const& f);
 
-    void predict_godunov_on_box (int lev, amrex::Box const& bx, int ncomp,
-                                 amrex::Box const& xbx, amrex::Box const& ybx, amrex::Box const& zbx,
-                                 amrex::Array4<amrex::Real> const& qx,
-                                 amrex::Array4<amrex::Real> const& qy,
-                                 amrex::Array4<amrex::Real> const& qz,
-                                 amrex::Array4<amrex::Real const> const& q,
-                                 amrex::Array4<amrex::Real const> const& u_ad,
-                                 amrex::Array4<amrex::Real const> const& v_ad,
-                                 amrex::Array4<amrex::Real const> const& w_ad,
-                                 amrex::Array4<amrex::Real> const& Imx,
-                                 amrex::Array4<amrex::Real> const& Ipx,
-                                 amrex::Array4<amrex::Real> const& Imy,
-                                 amrex::Array4<amrex::Real> const& Ipy,
-                                 amrex::Array4<amrex::Real> const& Imz,
-                                 amrex::Array4<amrex::Real> const& Ipz,
-                                 amrex::Array4<amrex::Real const> const& f,
-                                 amrex::Real* p);
+    void predict_godunov (int lev, amrex::Box const& bx, int ncomp,
+                          amrex::Box const& xbx, amrex::Box const& ybx, amrex::Box const& zbx,
+                          amrex::Array4<amrex::Real> const& qx,
+                          amrex::Array4<amrex::Real> const& qy,
+                          amrex::Array4<amrex::Real> const& qz,
+                          amrex::Array4<amrex::Real const> const& q,
+                          amrex::Array4<amrex::Real const> const& u_ad,
+                          amrex::Array4<amrex::Real const> const& v_ad,
+                          amrex::Array4<amrex::Real const> const& w_ad,
+                          amrex::Array4<amrex::Real> const& Imx,
+                          amrex::Array4<amrex::Real> const& Ipx,
+                          amrex::Array4<amrex::Real> const& Imy,
+                          amrex::Array4<amrex::Real> const& Ipy,
+                          amrex::Array4<amrex::Real> const& Imz,
+                          amrex::Array4<amrex::Real> const& Ipz,
+                          amrex::Array4<amrex::Real const> const& f,
+                          amrex::Real* p);
+
+    void compute_godunov_advection (int lev, amrex::Box const& bx, int ncomp,
+                                    amrex::Array4<amrex::Real> const& dqdt,
+                                    amrex::Array4<amrex::Real const> const& q,
+                                    amrex::Array4<amrex::Real const> const& umac,
+                                    amrex::Array4<amrex::Real const> const& vmac,
+                                    amrex::Array4<amrex::Real const> const& wmac,
+                                    amrex::Array4<amrex::Real const> const& fq,
+                                    amrex::BCRec const* d_bcrec, int const* iconserv,
+                                    amrex::Real* p);
 
     //
     // MOL
@@ -226,17 +248,6 @@ public: // for cuda
                           amrex::Array4<amrex::EBCellFlag const> const& flag,
                           amrex::Array4<amrex::Real const> const& vfrac);
 #endif
-
-    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
-                                  amrex::Array4<amrex::Real> const& dvdt, // velocity
-                                  amrex::Array4<amrex::Real> const& drdt, // density
-                                  amrex::Array4<amrex::Real> const& dtdt, // tracer
-                                  amrex::Array4<amrex::Real const> const& vel,
-                                  amrex::Array4<amrex::Real const> const& rho,
-                                  amrex::Array4<amrex::Real const> const& tra,
-                                  amrex::Array4<amrex::Real const> const& umac,
-                                  amrex::Array4<amrex::Real const> const& vmac,
-                                  amrex::Array4<amrex::Real const> const& wmac);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -494,6 +505,13 @@ private:
     amrex::Vector<amrex::BCRec> m_bcrec_tracer;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
 
+    amrex::Vector<int> m_iconserv_velocity;
+    amrex::Gpu::DeviceVector<int> m_iconserv_velocity_d;
+    amrex::Vector<int> m_iconserv_density;
+    amrex::Gpu::DeviceVector<int> m_iconserv_density_d;
+    amrex::Vector<int> m_iconserv_tracer;
+    amrex::Gpu::DeviceVector<int> m_iconserv_tracer_d;
+
     int m_ntrac = 1;
 
     std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
@@ -524,9 +542,9 @@ private:
 
     int nghost_mac () const {
 #ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) return 3;
+        if (!EBFactory(0).isAllRegular()) return (m_use_godunov) ? 4 : 3;
 #endif
-        return 0;
+        return (m_use_godunov) ? 1 : 0;
     }
 
 #ifdef AMREX_USE_EB
@@ -578,10 +596,21 @@ private:
     amrex::Vector<amrex::MultiFab const*> get_vel_forces_const () const noexcept;
     amrex::Vector<amrex::MultiFab const*> get_tra_forces_const () const noexcept;
 
+    amrex::Vector<int> const& get_velocity_iconserv () const noexcept { return m_iconserv_velocity; }
+    amrex::Vector<int> const& get_density_iconserv () const noexcept { return m_iconserv_density; }
+    amrex::Vector<int> const& get_tracer_iconserv () const noexcept { return m_iconserv_tracer; }
+    //
+    int const* get_velocity_iconserv_device_ptr () const noexcept {
+        return m_iconserv_velocity_d.data(); }
+    int const* get_density_iconserv_device_ptr () const noexcept {
+        return m_iconserv_density_d.data(); }
+    int const* get_tracer_iconserv_device_ptr () const noexcept {
+        return m_iconserv_tracer_d.data(); }
+
     amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
     amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
     amrex::Vector<amrex::BCRec> const& get_tracer_bcrec () const noexcept { return m_bcrec_tracer; }
-
+    //
     amrex::BCRec const* get_velocity_bcrec_device_ptr () const noexcept {
         return m_bcrec_velocity_d.data(); }
     amrex::BCRec const* get_density_bcrec_device_ptr () const noexcept {
@@ -638,6 +667,8 @@ private:
     // convection
     //
     ///////////////////////////////////////////////////////////////////////////
+
+    void init_advection ();
 
     void apply_MAC_projection (amrex::Vector<amrex::MultiFab>& u_mac,
                                amrex::Vector<amrex::MultiFab>& v_mac,

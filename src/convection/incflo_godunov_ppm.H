@@ -440,22 +440,19 @@ void Godunov_ppm_pred_z(const int i, const int j, const int k, const int n,
 // This version is called after the MAC projection, when we use the MAC-projected velocity
 //      for upwinding
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
-                            const amrex::Real dt, const amrex::Real dx, 
-                            const amrex::Array4<const amrex::Real> &S, 
-                            const amrex::Array4<const amrex::Real> &vel_edge, 
-                            const amrex::Array4<amrex::Real> &Im, 
-                            const amrex::Array4<amrex::Real> &Ip,
-                            const amrex::BCRec bc, 
-                            const int domlo, const int domhi,                  
-                            const int dir)
+void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
+                        const amrex::Real dt, const amrex::Real dx,
+                        amrex::Real& Im, amrex::Real& Ip,
+                        const amrex::Array4<const amrex::Real> &S,
+                        const amrex::Array4<const amrex::Real> &vel_edge,
+                        const amrex::BCRec bc,
+                        const int domlo, const int domhi)
 {
     using namespace amrex;
 
     amrex::Real sedge1, sedge2, sp, sm;
     amrex::Real s1 = S(i,j,k,n);
     
-    if (dir==0)
     {
         amrex::Real s2 = S(i-1,j,k,n);
         amrex::Real d1 = vanLeer(S(i,j,k,n), S(i+1,j,k,n), S(i-1,j,k,n));
@@ -490,19 +487,34 @@ void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
         amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
 
         if(vel_edge(i+1,j,k) > 1.e-06){
-            Ip(i,j,k,n) = sp - (0.5*sigmap)*((sp - sm) 
+            Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
         }
         else
-            Ip(i,j,k,n) = S(i,j,k,n);
+            Ip = S(i,j,k,n);
 
         if(vel_edge(i,j,k) < -1.e-06)
-            Im(i,j,k,n) = sm + (0.5*sigmam)*((sp-sm)
+            Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
-            Im(i,j,k,n) = S(i,j,k,n);
+            Im = S(i,j,k,n);
     }
-    else if (dir==1)
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
+                        const amrex::Real dt, const amrex::Real dx,
+                        amrex::Real& Im, amrex::Real& Ip,
+                        const amrex::Array4<const amrex::Real> &S,
+                        const amrex::Array4<const amrex::Real> &vel_edge,
+                        const amrex::BCRec bc,
+                        const int domlo, const int domhi)
+{
+    using namespace amrex;
+
+    amrex::Real sedge1, sedge2, sp, sm;
+    amrex::Real s1 = S(i,j,k,n);
+
     {
         amrex::Real s2 = S(i,j-1,k,n);
         amrex::Real d1 = vanLeer(s1, S(i,j+1,k,n), s2);
@@ -537,19 +549,34 @@ void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
         amrex::Real sigmap = std::abs(vel_edge(i,j+1,k))*dt/dx;
         amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
         if(vel_edge(i,j+1,k) > 1.e-06)
-            Ip(i,j,k,n) = sp - (0.5*sigmap)*((sp - sm) 
+            Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
         else
-            Ip(i,j,k,n) = S(i,j,k,n);
+            Ip = S(i,j,k,n);
 
         if(vel_edge(i,j,k) < -1.e-06)
-            Im(i,j,k,n) = sm + (0.5*sigmam)*((sp-sm) 
+            Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
-            Im(i,j,k,n) = S(i,j,k,n);
+            Im = S(i,j,k,n);
 
-    }    
-    else
+    }
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
+                        const amrex::Real dt, const amrex::Real dx,
+                        amrex::Real& Im, amrex::Real& Ip,
+                        const amrex::Array4<const amrex::Real> &S,
+                        const amrex::Array4<const amrex::Real> &vel_edge,
+                        const amrex::BCRec bc,
+                        const int domlo, const int domhi)
+{
+    using namespace amrex;
+
+    amrex::Real sedge1, sedge2, sp, sm;
+    amrex::Real s1 = S(i,j,k,n);
+
     {
         amrex::Real s2 = S(i,j,k-1,n);
 
@@ -587,17 +614,17 @@ void Godunov_ppm_fpu(const int i, const int j, const int k, const int n,
         amrex::Real sigmap = std::abs(vel_edge(i,j,k+1))*dt/dx;
         amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
         if(vel_edge(i,j,k+1) > 1.e-06)
-            Ip(i,j,k,n) = sp - (0.5*sigmap)*((sp - sm)
+            Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
         else
-            Ip(i,j,k,n) = s2;
+            Ip = s2;
 
 
         if(vel_edge(i,j,k) < -1.e-06)
-            Im(i,j,k,n) = sm + (0.5*sigmam)*((sp-sm) 
+            Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
-            Im(i,j,k,n) = s2;
+            Im = s2;
     }
 }
 

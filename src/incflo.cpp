@@ -27,6 +27,8 @@ incflo::incflo ()
 
     init_bcs();
 
+    init_advection();
+
     set_background_pressure();
 }
 

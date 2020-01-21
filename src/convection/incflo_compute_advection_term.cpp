@@ -2,6 +2,18 @@
 
 using namespace amrex;
 
+void incflo::init_advection ()
+{
+    m_iconserv_velocity.resize(AMREX_SPACEDIM, 0);
+    m_iconserv_velocity_d.resize(AMREX_SPACEDIM, 0);
+
+    m_iconserv_density.resize(1, 1);
+    m_iconserv_density_d.resize(1, 1);
+
+    m_iconserv_tracer.resize(m_ntrac, 1);
+    m_iconserv_tracer_d.resize(m_ntrac, 1);
+}
+
 void
 incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Vector<MultiFab*> const& conv_r,
@@ -42,13 +54,6 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
 
     apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
 
-    if (m_use_godunov) {
-        VisMF::Write(u_mac[0], "u_mac");
-        VisMF::Write(v_mac[0], "v_mac");
-        VisMF::Write(w_mac[0], "w_mac");
-        amrex::Abort("after predict mac and mac project");
-    }
-
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         if (ngmac > 0) {
@@ -74,9 +79,16 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     (m_ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
                                     u_mac[lev].const_array(mfi),
                                     v_mac[lev].const_array(mfi),
-                                    w_mac[lev].const_array(mfi));
+                                    w_mac[lev].const_array(mfi),
+                                    vel_forces[lev]->const_array(mfi),
+                                    tra_forces[lev]->const_array(mfi));
         }
     }
+
+    VisMF::Write(*conv_u[0], "dvdt");
+//    VisMF::Write(*conv_r[0], "drdt");
+//    VisMF::Write(*conv_t[0], "dtdt");
+    amrex::Abort("xxxxx End of compute convective term");
 }
 
 void
@@ -89,9 +101,13 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                  Array4<Real const> const& tra,
                                  Array4<Real const> const& umac,
                                  Array4<Real const> const& vmac,
-                                 Array4<Real const> const& wmac)
+                                 Array4<Real const> const& wmac,
+                                 Array4<Real const> const& fv,
+                                 Array4<Real const> const& ft)
 {
 #ifdef AMREX_USE_EB
+    AMREX_ALWAYS_ASSERT(!m_use_godunov);
+
     auto const& fact = EBFactory(lev);
     EBCellFlagFab const& flagfab = fact.getMultiEBCellFlagFab()[mfi];
     Array4<EBCellFlag const> const& flag = flagfab.const_array();
@@ -127,27 +143,17 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
     }
 #endif
 
-    int nmaxcomp = AMREX_SPACEDIM;
-    if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,m_ntrac);
-    Box tmpbox = amrex::surroundingNodes(bx);
-    int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
     Box rhotrac_box = amrex::grow(bx,2);
-#ifdef AMREX_USE_EB
-    Box gbx = bx;
-    if (!regular) {
-        gbx.grow(2);
-        tmpbox.grow(3);
-        tmpcomp += nmaxcomp;
-        rhotrac_box.grow(2);
-    }
-#endif
+    if (m_use_godunov) rhotrac_box.grow(1);
 
     FArrayBox rhotracfab;
     Elixir eli_rt;
     Array4<Real> rhotrac;
     if (m_advect_tracer) {
         rhotracfab.resize(rhotrac_box, m_ntrac);
-        eli_rt = rhotracfab.elixir();
+        if (!m_use_godunov) {
+            eli_rt = rhotracfab.elixir();
+        }
         rhotrac = rhotracfab.array();
         amrex::ParallelFor(rhotrac_box, m_ntrac,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -156,72 +162,111 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         });
     }
 
-    FArrayBox tmpfab(tmpbox, tmpcomp);
-    Elixir eli = tmpfab.elixir();
-    Array4<Real> fx = tmpfab.array(0);
-    Array4<Real> fy = tmpfab.array(nmaxcomp);
-    Array4<Real> fz = tmpfab.array(nmaxcomp*2);
+    int nmaxcomp = AMREX_SPACEDIM;
+    if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,m_ntrac);
 
-#ifdef AMREX_USE_EB
-    if (!regular)
+    if (m_use_godunov)
     {
-        Array4<Real> scratch = tmpfab.array(0);
-        Array4<Real> qface = tmpfab.array(nmaxcomp*3);
-        Array4<Real> dUdt_tmp = tmpfab.array(nmaxcomp*3);
+        FArrayBox tmpfab(amrex::grow(bx,1), nmaxcomp*14+1);
+//        Elixir eli = tmpfab.elixir();
 
         // velocity
-        compute_convective_fluxes_eb(lev, gbx, AMREX_SPACEDIM, fx, fy, fz, vel, umac, vmac, wmac,
-                                     get_velocity_bcrec().data(),
-                                     get_velocity_bcrec_device_ptr(),
-                                     flag, fcx, fcy, fcz, qface);
-        compute_convective_rate_eb(lev, gbx, AMREX_SPACEDIM, dUdt_tmp, fx, fy, fz,
-                                   flag, vfrac, apx, apy, apz);
-        redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
-
-        // density
-        if (!m_constant_density) {
-            compute_convective_fluxes_eb(lev, gbx, 1, fx, fy, fz, rho, umac, vmac, wmac,
-                                         get_density_bcrec().data(),
-                                         get_density_bcrec_device_ptr(),
-                                         flag, fcx, fcy, fcz, qface);
-            compute_convective_rate_eb(lev, gbx, 1, dUdt_tmp, fx, fy, fz,
-                                       flag, vfrac, apx, apy, apz);
-            redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
-        }
-
-        if (m_advect_tracer) {
-            compute_convective_fluxes_eb(lev, gbx, m_ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
-                                         get_tracer_bcrec().data(),
-                                         get_tracer_bcrec_device_ptr(),
-                                         flag, fcx, fcy, fcz, qface);
-            compute_convective_rate_eb(lev, gbx, m_ntrac, dUdt_tmp, fx, fy, fz,
-                                       flag, vfrac, apx, apy, apz);
-            redistribute_eb(lev, bx, m_ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);
-        }
+        compute_godunov_advection(lev, bx, AMREX_SPACEDIM,
+                                  dvdt, vel,
+                                  umac, vmac, wmac, fv,
+                                  get_velocity_bcrec_device_ptr(),
+                                  get_velocity_iconserv_device_ptr(),
+                                  tmpfab.dataPtr());
+        Gpu::streamSynchronize();
     }
     else
-#endif
     {
-        // velocity
-        compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel, umac, vmac, wmac,
-                                  get_velocity_bcrec().data(),
-                                  get_velocity_bcrec_device_ptr());
-        compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
-
-        // density
-        if (!m_constant_density) {
-            compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho, umac, vmac, wmac,
-                                      get_density_bcrec().data(),
-                                      get_density_bcrec_device_ptr());
-            compute_convective_rate(lev, bx, 1, drdt, fx, fy, fz);
+        Box tmpbox = amrex::surroundingNodes(bx);
+        int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
+#ifdef AMREX_USE_EB
+        Box gbx = bx;
+        if (!regular) {
+            gbx.grow(2);
+            tmpbox.grow(3);
+            tmpcomp += nmaxcomp;
+            rhotrac_box.grow(2);
         }
+#endif
 
-        // tracer
-        if (m_advect_tracer) {
-            compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac, umac, vmac, wmac,
-                                      get_tracer_bcrec().data(),
-                                      get_tracer_bcrec_device_ptr());
-            compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
+        FArrayBox tmpfab(tmpbox, tmpcomp);
+        Elixir eli = tmpfab.elixir();
+
+        Array4<Real> fx = tmpfab.array(0);
+        Array4<Real> fy = tmpfab.array(nmaxcomp);
+        Array4<Real> fz = tmpfab.array(nmaxcomp*2);
+
+#ifdef AMREX_USE_EB
+        if (!regular)
+        {
+            Array4<Real> scratch = tmpfab.array(0);
+            Array4<Real> qface = tmpfab.array(nmaxcomp*3);
+            Array4<Real> dUdt_tmp = tmpfab.array(nmaxcomp*3);
+
+            // velocity
+            compute_convective_fluxes_eb(lev, gbx, AMREX_SPACEDIM,
+                                         fx, fy, fz, vel, umac, vmac, wmac,
+                                         get_velocity_bcrec().data(),
+                                         get_velocity_bcrec_device_ptr(),
+                                         flag, fcx, fcy, fcz, qface);
+            compute_convective_rate_eb(lev, gbx, AMREX_SPACEDIM, dUdt_tmp, fx, fy, fz,
+                                       flag, vfrac, apx, apy, apz);
+            redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
+
+            // density
+            if (!m_constant_density) {
+                compute_convective_fluxes_eb(lev, gbx, 1,
+                                             fx, fy, fz, rho, umac, vmac, wmac,
+                                             get_density_bcrec().data(),
+                                             get_density_bcrec_device_ptr(),
+                                             flag, fcx, fcy, fcz, qface);
+                compute_convective_rate_eb(lev, gbx, 1, dUdt_tmp, fx, fy, fz,
+                                           flag, vfrac, apx, apy, apz);
+                redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
+            }
+
+            if (m_advect_tracer) {
+                compute_convective_fluxes_eb(lev, gbx, m_ntrac,
+                                             fx, fy, fz, rhotrac, umac, vmac, wmac,
+                                             get_tracer_bcrec().data(),
+                                             get_tracer_bcrec_device_ptr(),
+                                             flag, fcx, fcy, fcz, qface);
+                compute_convective_rate_eb(lev, gbx, m_ntrac, dUdt_tmp, fx, fy, fz,
+                                           flag, vfrac, apx, apy, apz);
+                redistribute_eb(lev, bx, m_ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);
+            }
+        }
+        else
+#endif
+        {
+            // velocity
+            compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel,
+                                      umac, vmac, wmac,
+                                      get_velocity_bcrec().data(),
+                                      get_velocity_bcrec_device_ptr());
+            compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
+
+            // density
+            if (!m_constant_density) {
+                compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho,
+                                          umac, vmac, wmac,
+                                          get_density_bcrec().data(),
+                                          get_density_bcrec_device_ptr());
+                compute_convective_rate(lev, bx, 1, drdt, fx, fy, fz);
+            }
+
+            // tracer
+            if (m_advect_tracer) {
+                compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac,
+                                          umac, vmac, wmac,
+                                          get_tracer_bcrec().data(),
+                                          get_tracer_bcrec_device_ptr());
+                compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
+            }
         }
     }
 }
