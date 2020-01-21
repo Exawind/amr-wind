@@ -91,8 +91,12 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
             auto bc = pbc[n];  
             Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i-1,j,k,n)*divu(i-1,j,k) : 0.;
             Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i  ,j,k,n)*divu(i  ,j,k) : 0.;
-            Real lo = Ipx(i-1,j,k,n) + 0.5*l_dt*fq(i-1,j,k,n) + cons1; 
-            Real hi = Imx(i  ,j,k,n) + 0.5*l_dt*fq(i  ,j,k,n) + cons2;
+            Real lo = Ipx(i-1,j,k,n) + cons1; 
+            Real hi = Imx(i  ,j,k,n) + cons2;
+            if (fq) {
+                lo += 0.5*l_dt*fq(i-1,j,k,n);
+                hi += 0.5*l_dt*fq(i  ,j,k,n);
+            }
 
             Godunov_trans_xbc_lo(i, j, k, n, q, lo, hi, uad, bc.lo(0), 
                                  domain.loVect(), domain.hiVect(), false, false);  
@@ -111,8 +115,12 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
             auto bc = pbc[n];
             Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k) : 0.;
             Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j  ,k,n)*divu(i,j  ,k) : 0.;
-            Real lo = Ipy(i,j-1,k,n) + 0.5*l_dt*fq(i,j-1,k,n) + cons1;
-            Real hi = Imy(i,j  ,k,n) + 0.5*l_dt*fq(i,j  ,k,n) + cons2;
+            Real lo = Ipy(i,j-1,k,n) + cons1;
+            Real hi = Imy(i,j  ,k,n) + cons2;
+            if (fq) {
+                lo += 0.5*l_dt*fq(i,j-1,k,n);
+                hi += 0.5*l_dt*fq(i,j  ,k,n);
+            }
 
             Godunov_trans_ybc_lo(i, j, k, n, q, lo, hi, vad, bc.lo(1),
                                  domain.loVect(), domain.hiVect(), false, false);
@@ -131,8 +139,12 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
             auto bc = pbc[n];
             Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k-1,n)*divu(i,j,k-1) : 0.;
             Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k  ,n)*divu(i,j,k  ) : 0.;
-            Real lo = Ipz(i,j,k-1,n) + 0.5*l_dt*fq(i,j,k-1,n) + cons1;
-            Real hi = Imz(i,j,k  ,n) + 0.5*l_dt*fq(i,j,k  ,n) + cons2;
+            Real lo = Ipz(i,j,k-1,n) + cons1;
+            Real hi = Imz(i,j,k  ,n) + cons2;
+            if (fq) {
+                lo += 0.5*l_dt*fq(i,j,k-1,n);
+                hi += 0.5*l_dt*fq(i,j,k  ,n);
+            }
 
             Godunov_trans_zbc_lo(i, j, k, n, q, lo, hi, wad, bc.lo(2),
                                  domain.loVect(), domain.hiVect(), false, false);

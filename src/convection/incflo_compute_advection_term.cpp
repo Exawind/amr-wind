@@ -84,11 +84,6 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     tra_forces[lev]->const_array(mfi));
         }
     }
-
-    VisMF::Write(*conv_u[0], "dvdt");
-//    VisMF::Write(*conv_r[0], "drdt");
-//    VisMF::Write(*conv_t[0], "dtdt");
-    amrex::Abort("xxxxx End of compute convective term");
 }
 
 void
@@ -102,8 +97,8 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                  Array4<Real const> const& umac,
                                  Array4<Real const> const& vmac,
                                  Array4<Real const> const& wmac,
-                                 Array4<Real const> const& fv,
-                                 Array4<Real const> const& ft)
+                                 Array4<Real const> const& fvel,
+                                 Array4<Real const> const& ftra)
 {
 #ifdef AMREX_USE_EB
     AMREX_ALWAYS_ASSERT(!m_use_godunov);
@@ -170,13 +165,28 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
         FArrayBox tmpfab(amrex::grow(bx,1), nmaxcomp*14+1);
 //        Elixir eli = tmpfab.elixir();
 
-        // velocity
         compute_godunov_advection(lev, bx, AMREX_SPACEDIM,
                                   dvdt, vel,
-                                  umac, vmac, wmac, fv,
+                                  umac, vmac, wmac, fvel,
                                   get_velocity_bcrec_device_ptr(),
                                   get_velocity_iconserv_device_ptr(),
                                   tmpfab.dataPtr());
+        if (!m_constant_density) {
+            compute_godunov_advection(lev, bx, 1,
+                                      drdt, rho,
+                                      umac, vmac, wmac, {},
+                                      get_density_bcrec_device_ptr(),
+                                      get_density_iconserv_device_ptr(),
+                                      tmpfab.dataPtr());
+        }
+        if (m_advect_tracer) {
+            compute_godunov_advection(lev, bx, m_ntrac,
+                                      dtdt, tra,
+                                      umac, vmac, wmac, ftra,
+                                      get_tracer_bcrec_device_ptr(),
+                                      get_tracer_iconserv_device_ptr(),
+                                      tmpfab.dataPtr());
+        }
         Gpu::streamSynchronize();
     }
     else
