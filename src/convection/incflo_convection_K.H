@@ -118,7 +118,7 @@ amrex::Real incflo_xslope_extdir_eb (int i, int j, int k, int n,
                                      amrex::Array4<amrex::EBCellFlag const> const& flag,
                                      bool edlo, bool edhi, int domlo, int domhi) noexcept
 {
-    if (flag(i,j,k).isConnected(-1,0,0) or flag(i,j,k).isConnected(1,0,0)) {
+    if (flag(i,j,k).isConnected(-1,0,0) and flag(i,j,k).isConnected(1,0,0)) {
         return incflo_xslope_extdir(i,j,k,n,vcc,edlo,edhi,domlo,domhi);
     } else {
         return 0.0;
