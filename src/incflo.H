@@ -272,35 +272,7 @@ public: // for cuda
     void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
                                    amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time);
 
-    void init_taylor_green (amrex::Box const& vbx, amrex::Box const& gbx,
-                            amrex::Array4<amrex::Real> const& p,
-                            amrex::Array4<amrex::Real> const& vel,
-                            amrex::Array4<amrex::Real> const& denisty,
-                            amrex::Array4<amrex::Real> const& tracer,
-                            amrex::Box const& domain,
-                            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
-                            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
-                            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
-
-    void init_plane_poiseuille (amrex::Box const& vbx, amrex::Box const& gbx,
-                                amrex::Array4<amrex::Real> const& p,
-                                amrex::Array4<amrex::Real> const& vel,
-                                amrex::Array4<amrex::Real> const& denisty,
-                                amrex::Array4<amrex::Real> const& tracer,
-                                amrex::Box const& domain,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
-
-    void init_double_shear_layer (amrex::Box const& vbx, amrex::Box const& gbx,
-                                  amrex::Array4<amrex::Real> const& p,
-                                  amrex::Array4<amrex::Real> const& vel,
-                                  amrex::Array4<amrex::Real> const& denisty,
-                                  amrex::Array4<amrex::Real> const& tracer,
-                                  amrex::Box const& domain,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& dx,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& problo,
-                                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> const& probhi);
+#include "incflo_prob_I.H"
 
     ///////////////////////////////////////////////////////////////////////////
     //
