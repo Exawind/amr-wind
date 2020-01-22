@@ -140,6 +140,9 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 
     Box rhotrac_box = amrex::grow(bx,2);
     if (m_use_godunov) rhotrac_box.grow(1);
+#ifdef AMREX_USE_EB
+    if (!regular) rhotrac_box.grow(2);
+#endif
 
     FArrayBox rhotracfab;
     Elixir eli_rt;
@@ -199,7 +202,6 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
             gbx.grow(2);
             tmpbox.grow(3);
             tmpcomp += nmaxcomp;
-            rhotrac_box.grow(2);
         }
 #endif
 
