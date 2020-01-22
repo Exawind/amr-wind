@@ -79,7 +79,7 @@ void incflo::prob_init_fluid (int lev)
                                     ld.tracer.array(mfi),
                                     domain, dx, problo, probhi);
         }
-        else if (32 == m_probtype)
+        else if (31 == m_probtype or 32 == m_probtype or 33 == m_probtype)
         {
             init_plane_poiseuille(vbx, gbx,
                                   ld.p.array(mfi),
