@@ -476,6 +476,12 @@ void incflo::WritePlotFile()
     }
 #endif
 
+#ifdef AMREX_USE_EB
+    for (int lev = 0; lev <= finest_level) {
+        EB_set_covered(mf[lev], 0.0);
+    }
+#endif
+
     AMREX_ALWAYS_ASSERT(ncomp == static_cast<int>(pltscaVarsName.size()));
 
     // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
