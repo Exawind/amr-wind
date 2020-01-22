@@ -21,7 +21,7 @@ void incflo::set_background_pressure ()
             if (std::abs(m_delp[dir]) > std::numeric_limits<Real>::epsilon()) {
                 if (delp_dir == -1) {
                     delp_dir = dir;
-                    m_gp0[dir] = m_delp[dir] / problen[dir];
+                    m_gp0[dir] = -m_delp[dir] / problen[dir];
                 } else {
                     amrex::Abort("set_background_pressure: how did this happen?");
                 }
@@ -49,7 +49,7 @@ void incflo::set_background_pressure ()
             if (std::abs(dpdx) > std::numeric_limits<Real>::epsilon()) {
                 if (delp_dir == -1) {
                     delp_dir = dir;
-                    m_gp0[dir] = dpdx;
+                    m_gp0[dir] = -dpdx;
                 } else {
                     amrex::Abort("set_background_pressure: how did this happen?");
                 }
