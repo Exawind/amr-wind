@@ -36,7 +36,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     if ((extdir_ilo and domain_ilo >= ubx.smallEnd(0)-1) or
         (extdir_ihi and domain_ihi <= ubx.bigEnd(0)))
     {
-        amrex::ParallelFor(ubx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(ubx, [vcc,extdir_ilo,extdir_ihi,domain_ilo,domain_ihi,u]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real upls = vcc(i,j,k,0) - 0.5 * incflo_xslope_extdir
                 (i,j,k,0,vcc, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
@@ -64,7 +65,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     }
     else
     {
-        amrex::ParallelFor(ubx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(ubx, [vcc,u]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real upls = vcc(i  ,j,k,0) - 0.5 * incflo_xslope(i  ,j,k,0,vcc);
             Real umns = vcc(i-1,j,k,0) + 0.5 * incflo_xslope(i-1,j,k,0,vcc);
@@ -86,7 +88,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     if ((extdir_jlo and domain_jlo >= vbx.smallEnd(1)-1) or
         (extdir_jhi and domain_jhi <= vbx.bigEnd(1)))
     {
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(vbx, [vcc,extdir_jlo,extdir_jhi,domain_jlo,domain_jhi,v]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real vpls = vcc(i,j,k,1) - 0.5 * incflo_yslope_extdir
                 (i,j,k,1,vcc, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
@@ -114,7 +117,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     }
     else
     {
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(vbx, [vcc,v]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real vpls = vcc(i,j  ,k,1) - 0.5 * incflo_yslope(i,j  ,k,1,vcc);
             Real vmns = vcc(i,j-1,k,1) + 0.5 * incflo_yslope(i,j-1,k,1,vcc);
@@ -136,7 +140,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     if ((extdir_klo and domain_klo >= wbx.smallEnd(2)-1) or
         (extdir_khi and domain_khi <= wbx.bigEnd(2)))
     {
-        amrex::ParallelFor(wbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(wbx, [vcc,extdir_klo,extdir_khi,domain_klo,domain_khi,w]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real wpls = vcc(i,j,k,2) - 0.5 * incflo_zslope_extdir
                 (i,j,k,2,vcc, extdir_klo, extdir_khi, domain_klo, domain_khi);
@@ -164,7 +169,8 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     }
     else
     {
-        amrex::ParallelFor(wbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(wbx, [vcc,w]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real wpls = vcc(i,j,k  ,2) - 0.5 * incflo_zslope(i,j,k  ,2,vcc);
             Real wmns = vcc(i,j,k-1,2) + 0.5 * incflo_zslope(i,j,k-1,2,vcc);
@@ -249,7 +255,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         });
     }
 
-    amrex::ParallelFor(ubx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    amrex::ParallelFor(ubx, [flag,upls,umns,fcx,u,vcc,domain_ilo,domain_ihi,small,extdir_ilo,extdir_ihi]
+    AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(-1,0,0)) {
             Real upls_on_centroid, umns_on_centroid;
@@ -321,7 +328,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         });
     }
 
-    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    amrex::ParallelFor(vbx, [flag,vpls,vmns,fcy,v,vcc,domain_jlo,domain_jhi,small,extdir_jlo,extdir_jhi]
+    AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(0,-1,0)) {
             Real vpls_on_centroid, vmns_on_centroid;
@@ -393,7 +401,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         });
     }
 
-    amrex::ParallelFor(wbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    amrex::ParallelFor(wbx, [flag,wpls,wmns,fcz,w,vcc,domain_klo,domain_khi,small,extdir_klo,extdir_khi]
+    AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         if (flag(i,j,k).isConnected(0,0,-1)) {
             Real wpls_on_centroid, wmns_on_centroid;
