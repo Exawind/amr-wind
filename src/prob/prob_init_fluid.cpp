@@ -13,11 +13,21 @@ void incflo::prob_init_fluid (int lev)
     ld.p.setVal(0.0);
     ld.gp.setVal(0.0);
 
+    if (m_probtype == 0) {
+        ld.density.setVal(m_ro_0);
+        ld.velocity.setVal(m_ic_u, 0, 1);
+        ld.velocity.setVal(m_ic_v, 1, 1);
+        ld.velocity.setVal(m_ic_w, 2, 1);
+        if (m_ntrac > 0) ld.tracer.setVal(0.0);
+    }
+
     for (MFIter mfi(ld.density); mfi.isValid(); ++mfi)
     {
         const Box& vbx = mfi.validbox();
         const Box& gbx = mfi.fabbox();
-        if (1 == m_probtype)
+        if (0 == m_probtype)
+        { }
+        else if (1 == m_probtype)
         {
             init_taylor_green(vbx, gbx,
                               ld.p.array(mfi),
