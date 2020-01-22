@@ -61,7 +61,7 @@ void incflo::MakeEBGeometry()
     else
     {
 	amrex::Print() << "\n No EB geometry declared in inputs => "
-	               << " Will read walls from incflo.dat only." << std::endl;
+	               << " Will build all regular geometry." << std::endl;
         make_eb_regular();
     }
     amrex::Print() << "Done making the geometry ebfactory.\n" << std::endl;
