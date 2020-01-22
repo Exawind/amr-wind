@@ -63,12 +63,11 @@ void incflo::InitData ()
 
         // xxxxx TODO averagedown ???
 
-        // xxxxx TODO if (m_check_int > 0) { WriteCheckPointFile(); }
+        if (m_check_int > 0) { WriteCheckPointFile(); }
     }
     else
     {
         restart_flag = 1;
-        amrex::Abort("xxxxx restart todo");
         // Read starting configuration from chk file.
         ReadCheckpointFile();
     }
@@ -241,10 +240,8 @@ void incflo::ErrorEst(int lev,
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
 // Only used during initialization.
 // overrides the pure virtual function in AmrCore
-void incflo::MakeNewLevelFromScratch(int lev,
-                                     Real time,
-                                     const BoxArray& new_grids,
-                                     const DistributionMapping& new_dmap)
+void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_grids,
+                                      const DistributionMapping& new_dmap)
 {
     BL_PROFILE("incflo::MakeNewLevelFromScratch()");
 
@@ -276,7 +273,9 @@ void incflo::MakeNewLevelFromScratch(int lev,
     m_t_new[lev] = time;
     m_t_old[lev] = time - 1.e200;
 
-    prob_init_fluid(lev);
+    if (m_restart_file.empty()) {
+        prob_init_fluid(lev);
+    }
 }
 
 // Make a new level using provided BoxArray and DistributionMapping and

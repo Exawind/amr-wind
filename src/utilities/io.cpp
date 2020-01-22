@@ -9,101 +9,103 @@ namespace { const std::string level_prefix{"Level_"}; }
 
 void GotoNextLine(std::istream& is)
 {
-	constexpr std::streamsize bl_ignore_max{100000};
-	is.ignore(bl_ignore_max, '\n');
+    constexpr std::streamsize bl_ignore_max{100000};
+    is.ignore(bl_ignore_max, '\n');
 }
 
 void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 {
-	if(ParallelDescriptor::IOProcessor())
-	{
-		std::string HeaderFileName(name + "/Header");
-		VisMF::IO_Buffer io_buffer(VisMF::IO_Buffer_Size);
-		std::ofstream HeaderFile;
+    if(ParallelDescriptor::IOProcessor())
+    {
+        std::string HeaderFileName(name + "/Header");
+        VisMF::IO_Buffer io_buffer(VisMF::IO_Buffer_Size);
+        std::ofstream HeaderFile;
 
-		HeaderFile.rdbuf()->pubsetbuf(io_buffer.dataPtr(), io_buffer.size());
+        HeaderFile.rdbuf()->pubsetbuf(io_buffer.dataPtr(), io_buffer.size());
 
-		HeaderFile.open(HeaderFileName.c_str(),
-						std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+        HeaderFile.open(HeaderFileName.c_str(),
+                        std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
 
-		if(!HeaderFile.good())
-			amrex::FileOpenFailed(HeaderFileName);
+        if(!HeaderFile.good()) {
+            amrex::FileOpenFailed(HeaderFileName);
+        }
 
-		HeaderFile.precision(17);
+        HeaderFile.precision(17);
 
-		if(is_checkpoint)
-			HeaderFile << "Checkpoint version: 1\n";
-		else
-			HeaderFile << "HyperCLaw-V1.1\n";
+        if(is_checkpoint) {
+            HeaderFile << "Checkpoint version: 1\n";
+        } else {
+            HeaderFile << "HyperCLaw-V1.1\n";
+        }
 
-		HeaderFile << finest_level << "\n";
+        HeaderFile << finest_level << "\n";
 
-		// Time stepping controls
-		HeaderFile << m_nstep << "\n";
-		HeaderFile << m_dt << "\n";
-		HeaderFile << m_cur_time << "\n";
+        // Time stepping controls
+        HeaderFile << m_nstep << "\n";
+        HeaderFile << m_cur_time << "\n";
+        HeaderFile << m_dt << "\n";
+        HeaderFile << m_prev_dt << "\n";
+        HeaderFile << m_prev_prev_dt << "\n";
 
-		// Geometry
-		for(int i = 0; i < BL_SPACEDIM; ++i)
-			HeaderFile << Geom(0).ProbLo(i) << ' ';
-		HeaderFile << '\n';
+        // Geometry
+        for(int i = 0; i < BL_SPACEDIM; ++i) {
+            HeaderFile << Geom(0).ProbLo(i) << ' ';
+        }
+        HeaderFile << '\n';
 
-		for(int i = 0; i < BL_SPACEDIM; ++i)
-			HeaderFile << Geom(0).ProbHi(i) << ' ';
-		HeaderFile << '\n';
+        for(int i = 0; i < BL_SPACEDIM; ++i)
+            HeaderFile << Geom(0).ProbHi(i) << ' ';
+        HeaderFile << '\n';
 
-		// BoxArray
-		for(int lev = 0; lev <= finest_level; ++lev)
-		{
-			boxArray(lev).writeOn(HeaderFile);
-			HeaderFile << '\n';
-		}
-	}
+        // BoxArray
+        for(int lev = 0; lev <= finest_level; ++lev)
+        {
+            boxArray(lev).writeOn(HeaderFile);
+            HeaderFile << '\n';
+        }
+    }
 }
 
 void incflo::WriteCheckPointFile() const
 {
-#if 0
-	BL_PROFILE("incflo::WriteCheckPointFile()");
+    BL_PROFILE("incflo::WriteCheckPointFile()");
 
-	const std::string& checkpointname = amrex::Concatenate(check_file, m_nstep);
+    const std::string& checkpointname = amrex::Concatenate(m_check_file, m_nstep);
 
     amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
-	amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
+    amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
     bool is_checkpoint = true;
-	WriteHeader(checkpointname, is_checkpoint);
-	WriteJobInfo(checkpointname);
+    WriteHeader(checkpointname, is_checkpoint);
+    WriteJobInfo(checkpointname);
 
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
+    for(int lev = 0; lev <= finest_level; ++lev)
+    {
+        VisMF::Write(m_leveldata[lev]->velocity,
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "velocity"));
 
-		// This writes all three velocity components
-		VisMF::Write((*vel[lev]),
-			     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[0]));
+        VisMF::Write(m_leveldata[lev]->density,
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "density"));
 
-		// This writes all three pressure gradient components
-		VisMF::Write((*gp[lev]),
-			      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, vecVarsName[3]));
+        if (m_ntrac > 0) {
+            VisMF::Write(m_leveldata[lev]->tracer,
+                         amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
+        }
 
-		// Write scalar variables
-		for(int i = 0; i < chkscalarVars.size(); i++)
-		{
-		   VisMF::Write(*((*chkscalarVars[i])[lev]),
-				 amrex::MultiFabFileFullPrefix(
-				 lev, checkpointname, level_prefix, chkscaVarsName[i]));
-		}
-	}
-#endif
+        VisMF::Write(m_leveldata[lev]->gp,
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "gradp"));
+
+        VisMF::Write(m_leveldata[lev]->p,
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "p"));
+    }
 }
 
 void incflo::ReadCheckpointFile()
 {
-#if 0
     BL_PROFILE("incflo::ReadCheckpointFile()");
 
-    amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
+    amrex::Print() << "Restarting from checkpoint " << m_restart_file << std::endl;
 
     Real prob_lo[BL_SPACEDIM];
     Real prob_hi[BL_SPACEDIM];
@@ -114,7 +116,7 @@ void incflo::ReadCheckpointFile()
      *              (by calling MakeNewLevelFromScratch)
      ***************************************************************************/
 
-    std::string File(restart_file + "/Header");
+    std::string File(m_restart_file + "/Header");
 
     VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
 
@@ -138,12 +140,18 @@ void incflo::ReadCheckpointFile()
     is >> m_nstep;
     GotoNextLine(is);
 
-    // Time step size
-    is >> dt;
-    GotoNextLine(is);
-
     // Current time
     is >> m_cur_time;
+    GotoNextLine(is);
+
+    // Time step size
+    is >> m_dt;
+    GotoNextLine(is);
+
+    is >> m_prev_dt;
+    GotoNextLine(is);
+
+    is >> m_prev_prev_dt;
     GotoNextLine(is);
 
     // Low coordinates of domain bounding box
@@ -189,130 +197,119 @@ void incflo::ReadCheckpointFile()
         MakeNewLevelFromScratch(lev, m_cur_time, ba, dm);
     }
 
-	/***************************************************************************
+    /***************************************************************************
      * Load fluid data                                                         *
      ***************************************************************************/
 
-	// Load the field data
-	for(int lev = 0; lev <= finest_level; ++lev)
-	{
-	    // Read velocity and pressure gradients
-	    MultiFab mf_vel;
-	    VisMF::Read(mf_vel, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "velx"));
-            MultiFab::Copy((*vel[lev]), mf_vel, 0, 0, AMREX_SPACEDIM, 0);
+    // Load the field data
+    for(int lev = 0; lev <= finest_level; ++lev)
+    {
+        VisMF::Read(m_leveldata[lev]->velocity,
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "velocity"));
 
-	    MultiFab mf_gp;
-	    VisMF::Read(mf_gp, MultiFabFileFullPrefix(lev, restart_file, level_prefix, "gpx"));
-            MultiFab::Copy((*gp[lev]), mf_gp, 0, 0, AMREX_SPACEDIM, 0);
+        VisMF::Read(m_leveldata[lev]->density,
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "density"));
 
-	    // Read scalar variables
-	    for (int i = 0; i < chkscalarVars.size(); i++)
-	    {
-                // If we have created the walls using the domain boundary conditions and not
-                //    by creating them from implicit functions, then the implicit_functions mf
-                //    will be empty.  We don't want to fail when reading so we allow the code
-                //    to read it in an empty multifab just for this one.
-                int allow_empty_mf = 0;
-                if (chkscaVarsName[i] == "implicit_functions") allow_empty_mf = 1;
+        if (m_ntrac > 0) {
+            VisMF::Read(m_leveldata[lev]->tracer,
+                        amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
+        }
 
-                MultiFab mf;
-                VisMF::Read(mf, amrex::MultiFabFileFullPrefix(lev, restart_file, level_prefix,
-                                                              chkscaVarsName[i]), nullptr,
-                                                              ParallelDescriptor::IOProcessorNumber(), 
-                                                              allow_empty_mf);
-                MultiFab::Copy(*((*chkscalarVars[i])[lev]), mf, 0, 0, 1, 0);
-	    }
-	}
+        VisMF::Read(m_leveldata[lev]->gp,
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "gradp"));
 
-	amrex::Print() << "Restart complete" << std::endl;
-#endif
+        VisMF::Read(m_leveldata[lev]->p,
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "p"));
+    }
+
+    amrex::Print() << "Restart complete" << std::endl;
 }
 
 void incflo::WriteJobInfo(const std::string& path) const
 {
-	if(ParallelDescriptor::IOProcessor())
-	{
-		// job_info file with details about the run
-		std::ofstream jobInfoFile;
-		std::string FullPathJobInfoFile = path;
-		std::string PrettyLine =
-			"===============================================================================\n";
+    if(ParallelDescriptor::IOProcessor())
+    {
+        // job_info file with details about the run
+        std::ofstream jobInfoFile;
+        std::string FullPathJobInfoFile = path;
+        std::string PrettyLine =
+            "===============================================================================\n";
 
-		FullPathJobInfoFile += "/incflo_job_info";
-		jobInfoFile.open(FullPathJobInfoFile.c_str(), std::ios::out);
+        FullPathJobInfoFile += "/incflo_job_info";
+        jobInfoFile.open(FullPathJobInfoFile.c_str(), std::ios::out);
 
-		// job information
-		jobInfoFile << PrettyLine;
-		jobInfoFile << " incflo Job Information\n";
-		jobInfoFile << PrettyLine;
+        // job information
+        jobInfoFile << PrettyLine;
+        jobInfoFile << " incflo Job Information\n";
+        jobInfoFile << PrettyLine;
 
-		jobInfoFile << "number of MPI processes: " << ParallelDescriptor::NProcs() << "\n";
+        jobInfoFile << "number of MPI processes: " << ParallelDescriptor::NProcs() << "\n";
 #ifdef _OPENMP
-		jobInfoFile << "number of threads:       " << omp_get_max_threads() << "\n";
+        jobInfoFile << "number of threads:       " << omp_get_max_threads() << "\n";
 #endif
 
-		jobInfoFile << "\n\n";
+        jobInfoFile << "\n\n";
 
-		// build information
-		jobInfoFile << PrettyLine;
-		jobInfoFile << " Build Information\n";
-		jobInfoFile << PrettyLine;
+        // build information
+        jobInfoFile << PrettyLine;
+        jobInfoFile << " Build Information\n";
+        jobInfoFile << PrettyLine;
 
-		jobInfoFile << "build date:    " << buildInfoGetBuildDate() << "\n";
-		jobInfoFile << "build machine: " << buildInfoGetBuildMachine() << "\n";
-		jobInfoFile << "build dir:     " << buildInfoGetBuildDir() << "\n";
-		jobInfoFile << "AMReX dir:     " << buildInfoGetAMReXDir() << "\n";
+        jobInfoFile << "build date:    " << buildInfoGetBuildDate() << "\n";
+        jobInfoFile << "build machine: " << buildInfoGetBuildMachine() << "\n";
+        jobInfoFile << "build dir:     " << buildInfoGetBuildDir() << "\n";
+        jobInfoFile << "AMReX dir:     " << buildInfoGetAMReXDir() << "\n";
 
-		jobInfoFile << "\n";
+        jobInfoFile << "\n";
 
-		jobInfoFile << "COMP:          " << buildInfoGetComp() << "\n";
-		jobInfoFile << "COMP version:  " << buildInfoGetCompVersion() << "\n";
-		jobInfoFile << "FCOMP:         " << buildInfoGetFcomp() << "\n";
-		jobInfoFile << "FCOMP version: " << buildInfoGetFcompVersion() << "\n";
+        jobInfoFile << "COMP:          " << buildInfoGetComp() << "\n";
+        jobInfoFile << "COMP version:  " << buildInfoGetCompVersion() << "\n";
+        jobInfoFile << "FCOMP:         " << buildInfoGetFcomp() << "\n";
+        jobInfoFile << "FCOMP version: " << buildInfoGetFcompVersion() << "\n";
 
-		jobInfoFile << "\n";
+        jobInfoFile << "\n";
 
-		const char* githash1 = buildInfoGetGitHash(1);
-		const char* githash2 = buildInfoGetGitHash(2);
-		if(strlen(githash1) > 0)
-		{
-			jobInfoFile << "incflo git hash: " << githash1 << "\n";
-		}
-		if(strlen(githash2) > 0)
-		{
-			jobInfoFile << "AMReX git hash: " << githash2 << "\n";
-		}
+        const char* githash1 = buildInfoGetGitHash(1);
+        const char* githash2 = buildInfoGetGitHash(2);
+        if(std::strlen(githash1) > 0)
+        {
+            jobInfoFile << "incflo git hash: " << githash1 << "\n";
+        }
+        if(std::strlen(githash2) > 0)
+        {
+            jobInfoFile << "AMReX git hash: " << githash2 << "\n";
+        }
 
-		jobInfoFile << "\n\n";
+        jobInfoFile << "\n\n";
 
-		// grid information
-		jobInfoFile << PrettyLine;
-		jobInfoFile << " Grid Information\n";
-		jobInfoFile << PrettyLine;
+        // grid information
+        jobInfoFile << PrettyLine;
+        jobInfoFile << " Grid Information\n";
+        jobInfoFile << PrettyLine;
 
-		for(int i = 0; i <= finest_level; i++)
-		{
-			jobInfoFile << " level: " << i << "\n";
-			jobInfoFile << "   number of boxes = " << grids[i].size() << "\n";
-			jobInfoFile << "   maximum zones   = ";
-			for(int dir = 0; dir < BL_SPACEDIM; dir++)
-			{
-				jobInfoFile << geom[i].Domain().length(dir) << " ";
-			}
-			jobInfoFile << "\n\n";
-		}
+        for(int i = 0; i <= finest_level; i++)
+        {
+            jobInfoFile << " level: " << i << "\n";
+            jobInfoFile << "   number of boxes = " << grids[i].size() << "\n";
+            jobInfoFile << "   maximum zones   = ";
+            for(int dir = 0; dir < BL_SPACEDIM; dir++)
+            {
+                jobInfoFile << geom[i].Domain().length(dir) << " ";
+            }
+            jobInfoFile << "\n\n";
+        }
 
-		jobInfoFile << "\n\n";
+        jobInfoFile << "\n\n";
 
-		// runtime parameters
-		jobInfoFile << PrettyLine;
-		jobInfoFile << " Inputs File Parameters\n";
-		jobInfoFile << PrettyLine;
+        // runtime parameters
+        jobInfoFile << PrettyLine;
+        jobInfoFile << " Inputs File Parameters\n";
+        jobInfoFile << PrettyLine;
 
-		ParmParse::dumpTable(jobInfoFile, true);
+        ParmParse::dumpTable(jobInfoFile, true);
 
-		jobInfoFile.close();
-	}
+        jobInfoFile.close();
+    }
 }
 
 void incflo::WritePlotFile() 
