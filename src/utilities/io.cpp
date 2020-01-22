@@ -477,7 +477,7 @@ void incflo::WritePlotFile()
 #endif
 
 #ifdef AMREX_USE_EB
-    for (int lev = 0; lev <= finest_level) {
+    for (int lev = 0; lev <= finest_level; ++lev) {
         EB_set_covered(mf[lev], 0.0);
     }
 #endif
