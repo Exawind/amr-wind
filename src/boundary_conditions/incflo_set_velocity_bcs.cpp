@@ -18,7 +18,7 @@ incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghos
             Box dlo = (m_bc_type[olo] == BC::mass_inflow) ? amrex::adjCellLo(domain,dir,nghost) : Box();
             Box dhi = (m_bc_type[ohi] == BC::mass_inflow) ? amrex::adjCellHi(domain,dir,nghost) : Box();
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(vel); mfi.isValid(); ++mfi) {
                 Box const& gbx = amrex::grow(mfi.validbox(),nghost);

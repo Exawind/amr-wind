@@ -22,9 +22,9 @@ void incflo::ComputeViscosity (Vector<MultiFab*> const& eta, Real time)
         Box domain(geom[lev].Domain());
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for(MFIter mfi(*eta_out[lev], true); mfi.isValid(); ++mfi)
+        for(MFIter mfi(*eta_out[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             // Tilebox
             Box bx = mfi.tilebox();

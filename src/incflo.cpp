@@ -169,71 +169,38 @@ void incflo::Evolve()
 
 // tag cells for refinement
 // overrides the pure virtual function in AmrCore
-void incflo::ErrorEst(int lev,
-                      TagBoxArray& tags,
-                      Real time,
-                      int ngrow)
+void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
 {
-#if 0
-    // xxxxx TODO: ErrorEst
     BL_PROFILE("incflo::ErrorEst()");
 
+#if 0
     const char   tagval = TagBox::SET;
     const char clearval = TagBox::CLEAR;
 
 #ifdef AMREX_USE_EB
-    auto const& factory = dynamic_cast<EBFArrayBoxFactory const&>(vel[lev]->Factory());
+    auto const& factory = EBFactory(lev);
     auto const& flags = factory.getMultiEBCellFlagFab();
 #endif
 
-    const Real* dx      = geom[lev].CellSize();
-    const Real* prob_lo = geom[lev].ProbLo();
+    const auto dx      = geom[lev].CellSizeArray();
+    const auto prob_lo = geom[lev].ProbLoArray();
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(*vel[lev],true); mfi.isValid(); ++mfi)
+    for (MFIter mfi(*vel[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
-#ifdef AMREX_USE_EB
-        const Box& bx  = mfi.tilebox();
-        const auto& flag = flags[mfi];
-        const FabType typ = flag.getType(bx);
-        if (typ != FabType::covered)
-        {
-            TagBox&     tagfab  = tags[mfi];
-
-            amrex::Abort("xxxxx TODO: ErrorEst");
-#if 0
-            // tag cells for refinement
-            state_error(BL_TO_FORTRAN_BOX(bx),
-                        BL_TO_FORTRAN_ANYD(tagfab),
-                        BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
-                        &tagval, &clearval,
-                        AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
-#endif
-        }
-#else
-            TagBox&     tagfab  = tags[mfi];
-
-            amrex::Abort("xxxxx TODO: ErrorEst");
-
-            // tag cells for refinement
-//          state_error(BL_TO_FORTRAN_BOX(bx),
-//                      BL_TO_FORTRAN_ANYD(tagfab),
-//                      BL_TO_FORTRAN_ANYD((ebfactory[lev]->getVolFrac())[mfi]),
-//                      &tagval, &clearval,
-//                      AMREX_ZFILL(dx), AMREX_ZFILL(prob_lo), &time);
-#endif
+        // xxxxx TODO ErrorEst
     }
+#endif
 
 #ifdef AMREX_USE_EB
-    refine_cutcells = true;
+    m_refine_cutcells = true;
     // Refine on cut cells
-    if (refine_cutcells)
+    if (m_refine_cutcells)
     {
-        amrex::TagCutCells(tags, *vel[lev]);
+        amrex::TagCutCells(tags, m_leveldata[lev]->velocity);
     }
-#endif
 #endif
 }
 

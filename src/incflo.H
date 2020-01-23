@@ -22,45 +22,45 @@ public:
     friend DiffusionScalarOp;
 
     incflo ();
-    virtual ~incflo();
+    virtual ~incflo ();
 
     // Initialize multilevel AMR data
-    void InitData();
+    void InitData ();
 
 #ifdef AMREX_USE_EB
-    void WriteMyEBSurface();
+    void WriteMyEBSurface ();
 #endif
 
     // Evolve solution to final time through repeated calls to Advance()
-    void Evolve();
+    void Evolve ();
 
     // Tag cells for refinement
-    virtual void ErrorEst(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
+    virtual void ErrorEst (int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
 
     // Make a new level from scratch using provided BoxArray and DistributionMapping
     // Only used during initialization
-    virtual void MakeNewLevelFromScratch(int lev, amrex::Real time,
-                                         const amrex::BoxArray& new_grids,
-                                         const amrex::DistributionMapping& new_dmap) override;
+    virtual void MakeNewLevelFromScratch (int lev, amrex::Real time,
+                                          const amrex::BoxArray& new_grids,
+                                          const amrex::DistributionMapping& new_dmap) override;
 
     // Make a new level using provided BoxArray and DistributionMapping,
     // and fill with interpolated coarse level data
-    virtual void MakeNewLevelFromCoarse(int lev, amrex::Real time,
-                                        const amrex::BoxArray& ba,
-                                        const amrex::DistributionMapping& dm) override;
+    virtual void MakeNewLevelFromCoarse (int lev, amrex::Real time,
+                                         const amrex::BoxArray& ba,
+                                         const amrex::DistributionMapping& dm) override;
 
     // Remake an existing level using provided BoxArray and DistributionMapping,
     // and fill with existing fine and coarse data
-    virtual void RemakeLevel(int lev, amrex::Real time,
-                             const amrex::BoxArray& ba,
-                             const amrex::DistributionMapping& dm) override;
+    virtual void RemakeLevel (int lev, amrex::Real time,
+                              const amrex::BoxArray& ba,
+                              const amrex::DistributionMapping& dm) override;
 
     // Delete level data
-    virtual void ClearLevel(int lev) override;
+    virtual void ClearLevel (int lev) override;
 
 public: // for cuda
 
-    void ComputeDt(int initialisation, bool explicit_diffusion);
+    void ComputeDt (int initialisation, bool explicit_diffusion);
     void compute_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                          amrex::Vector<amrex::MultiFab*> const& tra_forces,
                          amrex::Vector<amrex::MultiFab const*> const& density,
@@ -259,7 +259,7 @@ public: // for cuda
     void ComputeVorticity (int lev, amrex::Real time, amrex::MultiFab& vort,
                            amrex::MultiFab const& vel);
     void ComputeDivU (amrex::Real time);
-    void ComputeDrag();
+    void ComputeDrag ();
     amrex::Real ComputeKineticEnergy () const;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -663,15 +663,15 @@ private:
     ///////////////////////////////////////////////////////////////////////////
 
 #ifdef AMREX_USE_EB
-    void MakeEBGeometry();
-    void make_eb_annulus();
-    void make_eb_box();
-    void make_eb_cylinder();
-    void make_eb_twocylinders();
-    void make_eb_regular();
-    void make_eb_sphere();
-    void make_eb_spherecube();
-    void make_eb_tuscan();
+    void MakeEBGeometry ();
+    void make_eb_annulus ();
+    void make_eb_box ();
+    void make_eb_cylinder ();
+    void make_eb_twocylinders ();
+    void make_eb_regular ();
+    void make_eb_sphere ();
+    void make_eb_spherecube ();
+    void make_eb_tuscan ();
 #endif
 
     ///////////////////////////////////////////////////////////////////////////
@@ -680,7 +680,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void ReadRheologyParameters();
+    void ReadRheologyParameters ();
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -690,10 +690,10 @@ private:
 
     void set_background_pressure ();
     void ReadParameters ();
-    void ReadIOParameters();
-    void ResizeArrays(); // Resize arrays to fit (up to) max_level + 1 AMR levels
-    void InitialProjection();
-    void InitialIterations();
+    void ReadIOParameters ();
+    void ResizeArrays (); // Resize arrays to fit (up to) max_level + 1 AMR levels
+    void InitialProjection ();
+    void InitialIterations ();
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -701,16 +701,16 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void WriteHeader(const std::string& name, bool is_checkpoint) const;
-    void WriteJobInfo(const std::string& dir) const;
-    void WriteCheckPointFile() const;
-    void WritePlotFile();
-    void ReadCheckpointFile();
+    void WriteHeader (const std::string& name, bool is_checkpoint) const;
+    void WriteJobInfo (const std::string& dir) const;
+    void WriteCheckPointFile () const;
+    void WritePlotFile ();
+    void ReadCheckpointFile ();
 
-    void PrintMaxValues(amrex::Real time);
-    void PrintMaxVel(int lev);
-    void PrintMaxGp(int lev);
-    void CheckForNans(int lev);
+    void PrintMaxValues (amrex::Real time);
+    void PrintMaxVel (int lev);
+    void PrintMaxGp (int lev);
+    void CheckForNans (int lev);
 
 };
 
