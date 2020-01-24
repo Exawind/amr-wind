@@ -269,10 +269,14 @@ public: // for cuda
     ///////////////////////////////////////////////////////////////////////////
 
     amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_velocity_eta_to_faces (int lev, amrex::MultiFab const& cc_eta);
+    average_velocity_eta_to_faces (int lev, amrex::MultiFab const& cc_eta) const;
 
     amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_tracer_eta_to_faces (int lev, int comp, amrex::MultiFab const& cc_eta);
+    average_tracer_eta_to_faces (int lev, int comp, amrex::MultiFab const& cc_eta) const;
+
+    void fixup_eta_on_domain_faces (int lev,
+                                    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>& fc,
+                                    amrex::MultiFab const& cc) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //

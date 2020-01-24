@@ -79,7 +79,7 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
 }
 
 Array<MultiFab,AMREX_SPACEDIM>
-incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta)
+incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta) const
 {
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
@@ -91,11 +91,12 @@ incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta)
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
                                               dm, 1, 0, MFInfo(), fact)};
     amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, Geom(lev));
+    fixup_eta_on_domain_faces(lev, r, cc_eta);
     return r;
 }
 
 Array<MultiFab,AMREX_SPACEDIM>
-incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta)
+incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta) const
 {
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
@@ -107,7 +108,81 @@ incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta)
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
                                               dm, 1, 0, MFInfo(), fact)};
-    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, Geom(lev));
+    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, Geom(lev));
+    fixup_eta_on_domain_faces(lev, r, cc);
     return r;
 }
 
+void
+incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
+                                   MultiFab const& cc) const
+{
+    const Geometry& gm = Geom(lev);
+    const Box& domain = gm.Domain();
+    MFItInfo mfi_info{};
+    if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (MFIter mfi(cc,mfi_info); mfi.isValid(); ++mfi) {
+        Box const& bx = mfi.validbox();
+        Array4<Real const> const& cca = cc.const_array(mfi);
+
+        int idim = 0;
+        if (!gm.isPeriodic(idim)) {
+            Array4<Real> const& fca = fc[idim].array(mfi);
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryLo(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i,j,k);
+                });
+            }
+            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryHi(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i-1,j,k);
+                });
+            }
+        }
+
+        idim = 1;
+        if (!gm.isPeriodic(idim)) {
+            Array4<Real> const& fca = fc[idim].array(mfi);
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryLo(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i,j,k);
+                });
+            }
+            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryHi(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i,j-1,k);
+                });
+            }
+        }
+
+        idim = 2;
+        if (!gm.isPeriodic(idim)) {
+            Array4<Real> const& fca = fc[idim].array(mfi);
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryLo(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i,j,k);
+                });
+            }
+            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                amrex::ParallelFor(amrex::bdryHi(bx, idim),
+                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    fca(i,j,k) = cca(i,j,k-1);
+                });
+            }
+        }
+    }
+}
