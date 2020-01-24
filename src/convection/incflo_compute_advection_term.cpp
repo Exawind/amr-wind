@@ -76,12 +76,14 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     (m_ntrac>0) ? conv_t[lev]->array(mfi) : Array4<Real>{},
                                     vel[lev]->const_array(mfi),
                                     density[lev]->array(mfi),
-                                    (m_ntrac>0) ? tracer[lev]->array(mfi) : Array4<Real const>{},
+                                    (m_ntrac>0) ? tracer[lev]->const_array(mfi) : Array4<Real const>{},
                                     u_mac[lev].const_array(mfi),
                                     v_mac[lev].const_array(mfi),
                                     w_mac[lev].const_array(mfi),
-                                    vel_forces[lev]->const_array(mfi),
-                                    tra_forces[lev]->const_array(mfi));
+                                    (!vel_forces.empty()) ? vel_forces[lev]->const_array(mfi)
+                                                          : Array4<Real const>{},
+                                    (!tra_forces.empty()) ? tra_forces[lev]->const_array(mfi)
+                                                          : Array4<Real const>{});
         }
     }
 }

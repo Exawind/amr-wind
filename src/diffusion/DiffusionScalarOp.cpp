@@ -85,6 +85,7 @@ DiffusionScalarOp::readParameters ()
 void
 DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
                                    Vector<MultiFab*> const& density,
+                                   Vector<MultiFab const*> const& eta,
                                    Real t, Real dt)
 {
     //
@@ -131,14 +132,16 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
         if (m_eb_solve_op)
         {
             for (int lev = 0; lev <= finest_level; ++lev) {
-                m_eb_solve_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+                m_eb_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
             }
         }
         else
 #endif
         {
             for (int lev = 0; lev <= finest_level; ++lev) {
-                m_reg_solve_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+                m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
             }
         }
 
@@ -201,6 +204,7 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
 void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                                       Vector<MultiFab const*> const& a_tracer,
                                       Vector<MultiFab const*> const& a_density,
+                                      Vector<MultiFab const*> const& a_eta,
                                       Real t)
 {
     BL_PROFILE("DiffusionScalarOp::compute_laps");
@@ -240,7 +244,8 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
             for (int lev = 0; lev <= finest_level; ++lev) {
                 laps_comp.emplace_back(laps_tmp[lev],amrex::make_alias,comp,1);
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
-                m_eb_apply_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
+                m_eb_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
                 m_eb_apply_op->setLevelBC(lev, &laps_comp[lev]);
             }
 
@@ -271,7 +276,8 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
             for (int lev = 0; lev <= finest_level; ++lev) {
                 laps_comp.emplace_back(*a_laps[lev],amrex::make_alias,comp,1);
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
-                m_reg_apply_op->setBCoeffs(lev, m_incflo->m_mu_s[comp]);
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
+                m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
                 m_reg_apply_op->setLevelBC(lev, &laps_comp[lev]);
             }
 

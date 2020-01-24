@@ -264,6 +264,18 @@ public: // for cuda
 
     ///////////////////////////////////////////////////////////////////////////
     //
+    // diffusion
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
+    average_velocity_eta_to_faces (int lev, amrex::MultiFab const& cc_eta);
+
+    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
+    average_tracer_eta_to_faces (int lev, int comp, amrex::MultiFab const& cc_eta);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
     // prob
     //
     ///////////////////////////////////////////////////////////////////////////
@@ -288,8 +300,12 @@ public: // for cuda
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void ComputeViscosity (amrex::Vector<amrex::MultiFab*> const& eta,
-                           amrex::Real time);
+    virtual void compute_viscosity (amrex::Vector<amrex::MultiFab*> const& vel_eta,
+                                    amrex::Vector<amrex::MultiFab*> const& tra_eta,
+                                    amrex::Vector<amrex::MultiFab const*> const& rho,
+                                    amrex::Vector<amrex::MultiFab const*> const& vel,
+                                    amrex::Vector<amrex::MultiFab const*> const& tra,
+                                    amrex::Real time, int nghost);
 
     ///////////////////////////////////////////////////////////////////////////
     //

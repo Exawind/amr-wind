@@ -2,69 +2,27 @@
 
 using namespace amrex;
 
-void incflo::ComputeViscosity (Vector<MultiFab*> const& eta, Real time)
+void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
+                                Vector<MultiFab*> const& tra_eta,
+                                Vector<MultiFab const*> const& rho,
+                                Vector<MultiFab const*> const& vel,
+                                Vector<MultiFab const*> const& tra,
+                                Real time, int nghost)
 {
-#if 0
-    BL_PROFILE("incflo::ComputeViscosity");
-
-    if (fluid_model == "newtonian")
+    if (m_fluid_model == "newtonian")
     {
-       for(int lev = 0; lev <= finest_level; lev++)
-          eta_out[lev]->setVal(mu,0,1,eta_out[lev]->nGrow());
-
-    } else {
-
-      // Only compute strain rate if we're going to use it
-      ComputeStrainrate(time_in);
-
-      for(int lev = 0; lev <= finest_level; lev++)
-      {
-        Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for(MFIter mfi(*eta_out[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            // Tilebox
-            Box bx = mfi.tilebox();
-
-            const auto& strainrate_arr = strainrate[lev]->array(mfi);
-            const auto&  viscosity_arr = eta_out[lev]->array(mfi);
-
-#if 0
-
-            // TODO can't compile with CUDA if viscosity function is written in Fortran
-            //AMREX_FOR_3D(bx, i, j, k, 
-            //{
-            //    viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
-            //});
-            for(int k(bx.loVect()[2]); k <= bx.hiVect()[2]; k++)
-              for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++)
-                for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++)
-                  viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
-#endif
+        for (auto mf : vel_eta) {
+            mf->setVal(m_mu, 0, 1, nghost);
         }
-
-        eta_out[lev]->FillBoundary(geom[lev].periodicity());
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for(MFIter mfi(*density[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-#if 0
-            fill_bc0(BL_TO_FORTRAN_ANYD((*eta_out[lev])[mfi]),
-                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                     domain.loVect(), domain.hiVect(),
-                     &nghost);
-#endif
-        }
-
-        eta_out[lev]->FillBoundary(geom[lev].periodicity());
-      }
     }
-#endif
+    else
+    {
+        amrex::Abort("xxxxx TODO");
+    }
+
+    for (auto mf : tra_eta) {
+        for (int n = 0; n < m_ntrac; ++n) {
+            mf->setVal(m_mu_s[n], n, 1, nghost);
+        }
+    }
 }

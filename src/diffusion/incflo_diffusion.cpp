@@ -77,3 +77,37 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
     }
     return r;
 }
+
+Array<MultiFab,AMREX_SPACEDIM>
+incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta)
+{
+    const auto& ba = cc_eta.boxArray();
+    const auto& dm = cc_eta.DistributionMap();
+    const auto& fact = cc_eta.Factory();
+    Array<MultiFab,AMREX_SPACEDIM> r{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
+                                              dm, 1, 0, MFInfo(), fact),
+                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
+                                              dm, 1, 0, MFInfo(), fact),
+                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
+                                              dm, 1, 0, MFInfo(), fact)};
+    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, Geom(lev));
+    return r;
+}
+
+Array<MultiFab,AMREX_SPACEDIM>
+incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta)
+{
+    const auto& ba = cc_eta.boxArray();
+    const auto& dm = cc_eta.DistributionMap();
+    const auto& fact = cc_eta.Factory();
+    MultiFab cc(cc_eta, amrex::make_alias, comp, 1);
+    Array<MultiFab,AMREX_SPACEDIM> r{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
+                                              dm, 1, 0, MFInfo(), fact),
+                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
+                                              dm, 1, 0, MFInfo(), fact),
+                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
+                                              dm, 1, 0, MFInfo(), fact)};
+    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, Geom(lev));
+    return r;
+}
+

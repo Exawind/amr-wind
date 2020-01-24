@@ -86,6 +86,7 @@ DiffusionTensorOp::readParameters ()
 void
 DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
                                      Vector<MultiFab*> const& density,
+                                     Vector<MultiFab const*> const& eta,
                                      Real t, Real dt)
 {
     //
@@ -110,8 +111,9 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         m_eb_solve_op->setScalars(1.0, dt);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_eb_solve_op->setACoeffs(lev, *density[lev]);
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
             m_eb_solve_op->setShearViscosity(lev, m_incflo->m_mu);
-            m_eb_solve_op->setEBShearViscosity(lev, m_incflo->m_mu);
+            m_eb_solve_op->setEBShearViscosity(lev, *eta[lev]);
         }
     }
     else
@@ -120,6 +122,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         m_reg_solve_op->setScalars(1.0, dt);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_reg_solve_op->setACoeffs(lev, *density[lev]);
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
             m_reg_solve_op->setShearViscosity(lev, m_incflo->m_mu);
         }
     }
@@ -184,6 +187,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
 void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
                                         Vector<MultiFab const*> const& a_velocity,
                                         Vector<MultiFab const*> const& a_density,
+                                        Vector<MultiFab const*> const& a_eta,
                                         Real t)
 {
     BL_PROFILE("DiffusionTensorOp::compute_divtau");
@@ -215,8 +219,9 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
         m_eb_apply_op->setScalars(0.0, -1.0);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_eb_apply_op->setACoeffs(lev, *a_density[lev]);
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
             m_eb_apply_op->setShearViscosity(lev, m_incflo->m_mu);
-            m_eb_apply_op->setEBShearViscosity(lev, m_incflo->m_mu);
+            m_eb_apply_op->setEBShearViscosity(lev, *a_eta[lev]);
             m_eb_apply_op->setLevelBC(lev, &velocity[lev]);
         }
 
@@ -238,6 +243,7 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
         m_reg_apply_op->setScalars(0.0, -1.0);
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
             m_reg_apply_op->setShearViscosity(lev, m_incflo->m_mu);
             m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
         }
