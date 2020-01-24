@@ -199,8 +199,19 @@ void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
         }
     }
 
-    // xxxxx Is this needed? Even if yes, we probably only average down gp (and p?).
-    //  AverageDown();
+    for (int lev = finest_level-1; lev >= 0; --lev) {
+#ifdef AMREX_USE_EB
+        amrex::EB_average_down(m_leveldata[lev+1]->velocity, m_leveldata[lev]->velocity,
+                               0, AMREX_SPACEDIM, refRatio(lev));
+        amrex::EB_average_down(m_leveldata[lev+1]->gp, m_leveldata[lev]->gp,
+                               0, AMREX_SPACEDIM, refRatio(lev));
+#else
+        amrex::average_down(m_leveldata[lev+1]->velocity, m_leveldata[lev]->velocity,
+                            0, AMREX_SPACEDIM, refRatio(lev));
+        amrex::average_down(m_leveldata[lev+1]->gp, m_leveldata[lev]->gp,
+                            0, AMREX_SPACEDIM, refRatio(lev));
+#endif
+    }
 
     if (m_verbose > 2)
     {
