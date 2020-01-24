@@ -77,7 +77,7 @@ void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
                                  Array4<Real const> const& vel)
 {
     Real l_dt = m_dt;
-    const auto dx = Geom(lev).CellSize();
+    const auto dx = Geom(lev).CellSizeArray();
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);
     const Dim3 dhi = amrex::ubound(domain);
