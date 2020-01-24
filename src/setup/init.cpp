@@ -211,11 +211,10 @@ void incflo::InitialIterations ()
     for (int lev = 0; lev <= finest_level; ++lev) {
         fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
         fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
+        if (m_advect_tracer) {
+            fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
+        }
     }
-
-    // No need to advect tracer in initial pressure iterations
-    auto advect_tracer_save = m_advect_tracer;
-    m_advect_tracer = false;
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
@@ -225,9 +224,8 @@ void incflo::InitialIterations ()
 
         copy_from_old_to_new_velocity();
         copy_from_old_to_new_density();
+        copy_from_old_to_new_tracer();
     }
-
-    m_advect_tracer = advect_tracer_save;
 
     // Set m_nstep to 0 before entering time loop
     m_nstep = 0;
