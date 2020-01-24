@@ -430,7 +430,7 @@ private:
         LevelData (amrex::BoxArray const& ba,
                    amrex::DistributionMapping const& dm,
                    amrex::FabFactory<amrex::FArrayBox> const& fact,
-                   int ntrac, int ng_state, int ng_force,
+                   int ntrac, int ng_state,
                    bool use_godunov, bool implicit_diffusion, bool advect_tracer);
         // cell-centered multifabs
         amrex::MultiFab velocity;
@@ -440,8 +440,6 @@ private:
         amrex::MultiFab tracer;
         amrex::MultiFab tracer_o;
         amrex::MultiFab gp; // pressure gradient
-        amrex::MultiFab vel_forces;
-        amrex::MultiFab tra_forces;
         // nodal multifabs
         amrex::MultiFab p;
         //
