@@ -15,11 +15,6 @@ void incflo::init_bcs ()
         m_bc_velocity[ori][1] = 0.0;
         m_bc_velocity[ori][2] = 0.0;
         m_bc_tracer[ori].resize(m_ntrac,0.0);
-        if (ori.isLow()) {
-            m_bc_location[ori] = geom[0].ProbLo(ori.coordDir());
-        } else {
-            m_bc_location[ori] = geom[0].ProbHi(ori.coordDir());
-        }
 
         ParmParse pp(bcid);
         std::string bc_type_in = "null";
@@ -38,7 +33,7 @@ void incflo::init_bcs ()
         {
             amrex::Print() << bcid << " set to pressure outflow.\n";
 
-            m_bc_type[ori] = BC::pressure_inflow;
+            m_bc_type[ori] = BC::pressure_outflow;
 
             pp.get("pressure", m_bc_pressure[ori]);
         }
@@ -48,10 +43,8 @@ void incflo::init_bcs ()
 
             m_bc_type[ori] = BC::mass_inflow;
 
-            pp.query("pressure", m_bc_pressure[ori]);
-
             std::vector<Real> v;
-            pp.getarr("velocity", v, 0, AMREX_SPACEDIM);
+            pp.queryarr("velocity", v, 0, AMREX_SPACEDIM);
             m_bc_velocity[ori] = {v[0],v[1],v[2]};
 
             pp.query("density", m_bc_density[ori]);
@@ -70,8 +63,6 @@ void incflo::init_bcs ()
             }
 
             pp.query("density", m_bc_density[ori]);
-
-            pp.query("location", m_bc_location[ori]);
         }
         else
         {

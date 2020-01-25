@@ -494,7 +494,6 @@ private:
     amrex::GpuArray<amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
                                                , AMREX_SPACEDIM*2> m_bc_velocity;
     amrex::GpuArray<amrex::Vector<amrex::Real> , AMREX_SPACEDIM*2> m_bc_tracer;
-    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_location;
 
     // amrex::Vector cannot be used on gpu, so ...
     amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> m_bc_tracer_d;
