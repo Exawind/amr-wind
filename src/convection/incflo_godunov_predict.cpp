@@ -220,9 +220,6 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     Real dy = Geom(lev).CellSize(1);
     Real dz = Geom(lev).CellSize(2);
 
-    // We only predict velocity in this routine, which is convectively not conservatively, updated
-    GpuArray<int,3> iconserv{0,0,0};
-
     BCRec const* pbc = get_velocity_bcrec_device_ptr();
 
     Box xebox = Box(bx).grow(1,1).grow(2,1).surroundingNodes(0);
@@ -352,7 +349,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n]; 
         Real l_zylo, l_zyhi;
         Godunov_corner_couple_zy(l_zylo, l_zyhi,
-                                 i, j, k, n, l_dt, dy, iconserv[n],
+                                 i, j, k, n, l_dt, dy, false,
                                  zlo(i,j,k,n), zhi(i,j,k,n),
                                  q, divu, v_ad, yedge);
 
@@ -374,7 +371,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n];
         Real l_yzlo, l_yzhi;
         Godunov_corner_couple_yz(l_yzlo, l_yzhi,
-                                 i, j, k, n, l_dt, dz, iconserv[n],
+                                 i, j, k, n, l_dt, dz, false,
                                  ylo(i,j,k,n), yhi(i,j,k,n),
                                  q, divu, w_ad, zedge);
 
@@ -436,7 +433,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n];
         Real l_xzlo, l_xzhi;
         Godunov_corner_couple_xz(l_xzlo, l_xzhi,
-                                 i, j, k, n, l_dt, dz, iconserv[n],
+                                 i, j, k, n, l_dt, dz, false,
                                  xlo(i,j,k,n),  xhi(i,j,k,n),
                                  q, divu, w_ad, zedge);
 
@@ -458,7 +455,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n];
         Real l_zxlo, l_zxhi;
         Godunov_corner_couple_zx(l_zxlo, l_zxhi,
-                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 i, j, k, n, l_dt, dx, false,
                                  zlo(i,j,k,n), zhi(i,j,k,n),
                                  q, divu, u_ad, xedge);
 
@@ -520,7 +517,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n];
         Real l_xylo, l_xyhi;
         Godunov_corner_couple_xy(l_xylo, l_xyhi,
-                                 i, j, k, n, l_dt, dy, iconserv[n],
+                                 i, j, k, n, l_dt, dy, false,
                                  xlo(i,j,k,n), xhi(i,j,k,n),
                                  q, divu, v_ad, yedge);
 
@@ -542,7 +539,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         const auto bc = pbc[n];
         Real l_yxlo, l_yxhi;
         Godunov_corner_couple_yx(l_yxlo, l_yxhi,
-                                 i, j, k, n, l_dt, dx, iconserv[n],
+                                 i, j, k, n, l_dt, dx, false,
                                  ylo(i,j,k,n), yhi(i,j,k,n),
                                  q, divu, u_ad, xedge);
 
