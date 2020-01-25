@@ -1,4 +1,5 @@
 #include <incflo.H>
+#include <incflo_MAC_bcs.H>
 
 using namespace amrex;
 
@@ -10,6 +11,10 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
     auto const& flags = fact.getMultiEBCellFlagFab();
     auto const& fcent = fact.getFaceCent();
 #endif
+
+    Box const& domain = Geom(lev).Domain();
+    Vector<BCRec> const& h_bcrec = get_velocity_bcrec();
+    BCRec const* d_bcrec = get_velocity_bcrec_device_ptr();
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -48,6 +53,8 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
             {
                 predict_vels_on_faces(lev,ubx,vbx,wbx,u,v,w,vcc);
             }
+
+            incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec,d_bcrec);
         }
     }
 }

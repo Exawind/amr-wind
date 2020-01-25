@@ -1,7 +1,8 @@
 #include "incflo_godunov_ppm.H" 
 #include "incflo.H"
+#include <incflo_MAC_bcs.H>
 #include <AMReX_BCRec.H>
-#include <iomanip> 
+#include <iomanip>
 
 using namespace amrex;
 
@@ -9,6 +10,10 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
                               MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho,
                               MultiFab const& vel_forces)
 {
+    Box const& domain = Geom(lev).Domain();
+    Vector<BCRec> const& h_bcrec = get_velocity_bcrec();
+    BCRec const* d_bcrec = get_velocity_bcrec_device_ptr();
+
     const int ncomp = AMREX_SPACEDIM;
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -60,6 +65,8 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
 
             predict_godunov(lev, bx, ncomp, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
                             a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p);
+
+            incflo_set_mac_bcs(domain,xbx,ybx,zbx,a_umac,a_vmac,a_wmac,a_vel,h_bcrec,d_bcrec);
 
             Gpu::streamSynchronize();  // otherwise we might be using too much memory
         }
