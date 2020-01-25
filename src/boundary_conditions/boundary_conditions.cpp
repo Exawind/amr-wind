@@ -61,8 +61,17 @@ void incflo::init_bcs ()
             if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
                 m_bc_velocity[ori] = {v[0],v[1],v[2]};
             }
+        }
+        else if (bc_type == "slip_wall" or bc_type == "sw")
+        {
+            amrex::Print() << bcid <<" set to slip wall.\n";
 
-            pp.query("density", m_bc_density[ori]);
+            m_bc_type[ori] = BC::slip_wall;
+
+            std::vector<Real> v;
+            if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
+                m_bc_velocity[ori] = {v[0],v[1],v[2]};
+            }
         }
         else
         {

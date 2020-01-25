@@ -485,7 +485,8 @@ private:
     amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
 
     enum struct BC {
-        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, periodic, undefined
+        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, slip_wall,
+        periodic, undefined
     };
 
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
