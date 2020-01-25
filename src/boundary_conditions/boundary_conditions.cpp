@@ -57,8 +57,14 @@ void incflo::init_bcs ()
 
             m_bc_type[ori] = BC::no_slip_wall;
 
+            // Note that m_bc_velocity defaults to 0 above so we are ok if 
+            //      queryarr finds nothing 
+            // Here we make sure that we only use the tangential components
+            //      of a specified velocity field -- the wall is not allowed
+            //      to move in the normal direction
             std::vector<Real> v;
             if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
+                v[ori.coordDir()] = 0.0;
                 m_bc_velocity[ori] = {v[0],v[1],v[2]};
             }
         }
@@ -68,10 +74,10 @@ void incflo::init_bcs ()
 
             m_bc_type[ori] = BC::slip_wall;
 
-            std::vector<Real> v;
-            if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
-                m_bc_velocity[ori] = {v[0],v[1],v[2]};
-            }
+            // These values are set by default above - 
+            //      note that we only actually use the zero value for the normal direction;
+            //      the tangential components are set to be first order extrap 
+            // m_bc_velocity[ori] = {0.0, 0.0, 0.0};
         }
         else
         {
@@ -150,6 +156,27 @@ void incflo::init_bcs ()
                     m_bcrec_velocity[2].setHi(dir, BCType::ext_dir);
                 }
             }
+            else if (bct == BC::slip_wall)
+            {
+                if (side == Orientation::low) {
+                    // Tangential directions have foextrap
+                    m_bcrec_velocity[0].setLo(dir, BCType::foextrap);
+                    m_bcrec_velocity[1].setLo(dir, BCType::foextrap);
+                    m_bcrec_velocity[2].setLo(dir, BCType::foextrap);
+
+                    // Only normal direction has ext_dir
+                    m_bcrec_velocity[dir].setLo(dir, BCType::ext_dir);
+
+                } else {
+                    // Tangential directions have foextrap
+                    m_bcrec_velocity[0].setHi(dir, BCType::foextrap);
+                    m_bcrec_velocity[1].setHi(dir, BCType::foextrap);
+                    m_bcrec_velocity[2].setHi(dir, BCType::foextrap);
+
+                    // Only normal direction has ext_dir
+                    m_bcrec_velocity[dir].setHi(dir, BCType::ext_dir);
+                }
+            }
             else if (bct == BC::periodic)
             {
                 if (side == Orientation::low) {
@@ -179,8 +206,9 @@ void incflo::init_bcs ()
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
             auto const bct = m_bc_type[ori];
-            if (bct == BC::pressure_inflow or
+            if (bct == BC::pressure_inflow  or
                 bct == BC::pressure_outflow or
+                bct == BC::slip_wall        or
                 bct == BC::no_slip_wall)
             {
                 if (side == Orientation::low) {
@@ -223,8 +251,9 @@ void incflo::init_bcs ()
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
             auto const bct = m_bc_type[ori];
-            if (bct == BC::pressure_inflow or
+            if (bct == BC::pressure_inflow  or
                 bct == BC::pressure_outflow or
+                bct == BC::slip_wall        or
                 bct == BC::no_slip_wall)
             {
                 if (side == Orientation::low) {

@@ -39,6 +39,17 @@ incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
+            case BC::slip_wall:
+            {
+                // Tangential directions have Neumann bcs
+                r[0] = LinOpBCType::Neumann;
+                r[1] = LinOpBCType::Neumann;
+                r[2] = LinOpBCType::Neumann;
+
+                // Only normal component has Dirichlet bc 
+                r[dir] = LinOpBCType::Dirichlet;
+                break;
+            }
             default:
                 amrex::Abort("get_diffuse_tensor_bc: undefined BC type");
             };
@@ -60,6 +71,7 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
             {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
+            case BC::slip_wall:
             case BC::no_slip_wall:
             {
                 r[dir] = LinOpBCType::Neumann;

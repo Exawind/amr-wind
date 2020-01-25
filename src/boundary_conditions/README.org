@@ -1,11 +1,11 @@
 * fillpatch
 
-|        | pi       | po       | mi      | nsw         | sw         |
-|--------+----------+----------+---------+-------------+------------|
-| v_n    | foextrap | foextrap | ext_dir | ext_dir (0) | ex_dir (0) |
-| v_t    | foextrap | foextrap | ext_dir | ext_dir (0) | foextrap   |
-| rho    | foextrap | foextrap | ext_dir | foextrap    | foextrap   |
-| scalar | foextrap | foextrap | ext_dir | foextrap    | foextrap   |
+|        | pi       | po       | mi      | nsw         | sw          |
+|--------+----------+----------+---------+-------------+-------------|
+| v_n    | foextrap | foextrap | ext_dir | ext_dir (0) | ext_dir (0) |
+| v_t    | foextrap | foextrap | ext_dir | ext_dir (0) | foextrap    |
+| rho    | foextrap | foextrap | ext_dir | foextrap    | foextrap    |
+| scalar | foextrap | foextrap | ext_dir | foextrap    | foextrap    |
 
 * projection
 
