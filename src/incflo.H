@@ -21,6 +21,10 @@ public:
     friend DiffusionTensorOp;
     friend DiffusionScalarOp;
 
+    enum struct FluidModel {
+        Newtonian, powerlaw, Bingham, HerschelBulkley, deSouzaMendesDutra
+    };
+
     incflo ();
     virtual ~incflo ();
 
@@ -404,7 +408,7 @@ private:
     DiffusionType m_diff_type = DiffusionType::Implicit;
 
     // Fluid properties
-    std::string m_fluid_model;
+    FluidModel m_fluid_model;
     amrex::Real m_mu = 1.0;
     amrex::Real m_n_0 = 0.0;
     amrex::Real m_tau_0 = 0.0;

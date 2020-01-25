@@ -6,15 +6,17 @@ void incflo::ReadRheologyParameters()
 {
      amrex::ParmParse pp("incflo");
 
-     m_fluid_model = "newtonian";
-     pp.query("fluid_model", m_fluid_model);
-     if(m_fluid_model == "newtonian")
+     std::string fluid_model_s = "newtonian";
+     pp.query("fluid_model", fluid_model_s);
+     if(fluid_model_s == "newtonian")
      {
+         m_fluid_model = FluidModel::Newtonian;
          amrex::Print() << "Newtonian fluid with"
                         << " mu = " << m_mu << std::endl;
      }
-     else if(m_fluid_model == "powerlaw")
+     else if(fluid_model_s == "powerlaw")
      {
+         m_fluid_model = FluidModel::powerlaw;
          pp.query("n", m_n_0);
          AMREX_ALWAYS_ASSERT(m_n_0 > 0.0);
          AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_n_0 != 1.0,
@@ -24,8 +26,9 @@ void incflo::ReadRheologyParameters()
                         << " mu = " << m_mu
                         << ", n = " << m_n_0 <<  std::endl;
      }
-     else if(m_fluid_model == "bingham")
+     else if(fluid_model_s == "bingham")
      {
+         m_fluid_model = FluidModel::Bingham;
          pp.query("tau_0", m_tau_0);
          AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_tau_0 > 0.0,
                  "No point in using Bingham rheology with tau_0 = 0");
@@ -39,8 +42,9 @@ void incflo::ReadRheologyParameters()
                         << ", tau_0 = " << m_tau_0
                         << ", papa_reg = " << m_papa_reg << std::endl;
      }
-     else if(m_fluid_model == "hb")
+     else if(fluid_model_s == "hb")
      {
+         m_fluid_model = FluidModel::HerschelBulkley;
          pp.query("n", m_n_0);
          AMREX_ALWAYS_ASSERT(m_n_0 > 0.0);
             AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_n_0 != 1.0,
@@ -60,8 +64,9 @@ void incflo::ReadRheologyParameters()
                         << ", tau_0 = " << m_tau_0
                         << ", papa_reg = " << m_papa_reg << std::endl;
      }
-     else if(m_fluid_model == "smd")
+     else if(fluid_model_s == "smd")
      {
+         m_fluid_model = FluidModel::deSouzaMendesDutra;
          pp.query("n", m_n_0);
          AMREX_ALWAYS_ASSERT(m_n_0 > 0.0);
 
