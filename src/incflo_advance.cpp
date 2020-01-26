@@ -166,6 +166,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
                                 MFInfo(), Factory(lev));
+
         if (m_advect_tracer) {
             tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
                                     MFInfo(), Factory(lev));
@@ -206,8 +207,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     if (m_use_godunov) {
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(Geom(0).isAllPeriodic() and finest_level == 0,
-                                         "TODO: fillpatch_forces");
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(finest_level  == 0,"TODO: fillpatch_forces");
+        if (!Geom(0).isAllPeriodic())
+            Print() << "Warning: we are setting forces to zero outside the domain" << std::endl;
         vel_forces[0].FillBoundary(Geom(0).periodicity());
     } else {
         // forces are not used in compute_convective_term
@@ -583,6 +585,20 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                              Vector<MultiFab const*> const& density,
                              Vector<MultiFab const*> const& tracer)
 {
+    // We set vel_forces to zero in order to ensure we have zeroes in the force
+    //    arrays outside the domain -- this is necessary until we set up 
+    //    fillpatching for the forcing terms
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        vel_forces[lev]->setVal(0.0);
+    }
+
+    // For now we don't have any external forces on the scalars
+    if (m_advect_tracer) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            tra_forces[lev]->setVal(0.0);
+        }
+    }
+
     GpuArray<Real,3> l_gravity{m_gravity[0],m_gravity[1],m_gravity[2]};
     GpuArray<Real,3> l_gp0{m_gp0[0], m_gp0[1], m_gp0[2]};
 
@@ -618,13 +634,6 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                     vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
                 });
             }
-        }
-    }
-
-    // For now we don't have any external forces on the scalars
-    if (m_advect_tracer) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            tra_forces[lev]->setVal(0.0);
         }
     }
 }

@@ -27,11 +27,12 @@ incflo.ro_0             =   1.          # Reference density
 incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
 incflo.mu               =   1.          # Dynamic viscosity coefficient
 
+incflo.use_godunov      = true
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              =   32  32  16  # Grid cells at coarsest AMRlevel
-amr.n_cell              =   64  64  32  # Grid cells at coarsest AMRlevel
 amr.max_level           =   0           # Max AMR level in hierarchy 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -57,9 +58,7 @@ incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
 #.......................................#
 incflo.verbose          =   2           # incflo_level
 diffusion.verbose       =   0           # DiffusionEquation
-mac_proj.verbose        =   0           # MacProjector
-
-nodal_proj.verbose      =   0
-nodal_proj.atol         =   1.e-11
+mac_proj.verbose        =   0           # MAC Projector
+nodal_proj.verbose      =   0           # Nodal Projector
 
 amr.plt_ccse_regtest    =   1
