@@ -19,10 +19,12 @@ incflo::get_diffusion_scalar_op ()
 Vector<Array<LinOpBCType,AMREX_SPACEDIM> >
 incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
 {
-    Array<LinOpBCType,AMREX_SPACEDIM> r;
+    Vector<Array<LinOpBCType,AMREX_SPACEDIM>> r(3);
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (Geom(0).isPeriodic(dir)) {
-            r[dir] = LinOpBCType::Periodic;
+            r[0][dir] = LinOpBCType::Periodic;
+            r[1][dir] = LinOpBCType::Periodic;
+            r[2][dir] = LinOpBCType::Periodic;
         } else {
             auto bc = m_bc_type[Orientation(dir,side)];
             switch (bc)
@@ -30,24 +32,30 @@ incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
             case BC::pressure_inflow:
             case BC::pressure_outflow:
             {
-                r[dir] = LinOpBCType::Neumann;
+                // All three components are Neumann
+                r[0][dir] = LinOpBCType::Neumann;
+                r[1][dir] = LinOpBCType::Neumann;
+                r[2][dir] = LinOpBCType::Neumann;
                 break;
             }
             case BC::mass_inflow:
             case BC::no_slip_wall:
             {
-                r[dir] = LinOpBCType::Dirichlet;
+                // All three components are Dirichlet
+                r[0][dir] = LinOpBCType::Dirichlet;
+                r[1][dir] = LinOpBCType::Dirichlet;
+                r[2][dir] = LinOpBCType::Dirichlet;
                 break;
             }
             case BC::slip_wall:
             {
-                // Tangential directions have Neumann bcs
-                r[0] = LinOpBCType::Neumann;
-                r[1] = LinOpBCType::Neumann;
-                r[2] = LinOpBCType::Neumann;
+                // Tangential components are Neumann
+                // Normal     component  is  Dirichlet
+                r[0][dir] = LinOpBCType::Neumann;
+                r[1][dir] = LinOpBCType::Neumann;
+                r[2][dir] = LinOpBCType::Neumann;
 
-                // Only normal component has Dirichlet bc 
-                r[dir] = LinOpBCType::Dirichlet;
+                r[dir][dir] = LinOpBCType::Dirichlet;
                 break;
             }
             default:
@@ -55,7 +63,7 @@ incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
             };
         }
     }
-    return {r, r, r};
+    return r;
 }
 
 Array<LinOpBCType,AMREX_SPACEDIM>
