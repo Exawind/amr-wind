@@ -160,19 +160,19 @@ void incflo::init_bcs ()
             else if (bct == BC::slip_wall)
             {
                 if (side == Orientation::low) {
-                    // Tangential directions have foextrap
-                    m_bcrec_velocity[0].setLo(dir, BCType::foextrap);
-                    m_bcrec_velocity[1].setLo(dir, BCType::foextrap);
-                    m_bcrec_velocity[2].setLo(dir, BCType::foextrap);
+                    // Tangential directions have hoextrap
+                    m_bcrec_velocity[0].setLo(dir, BCType::hoextrap);
+                    m_bcrec_velocity[1].setLo(dir, BCType::hoextrap);
+                    m_bcrec_velocity[2].setLo(dir, BCType::hoextrap);
 
                     // Only normal direction has ext_dir
                     m_bcrec_velocity[dir].setLo(dir, BCType::ext_dir);
 
                 } else {
-                    // Tangential directions have foextrap
-                    m_bcrec_velocity[0].setHi(dir, BCType::foextrap);
-                    m_bcrec_velocity[1].setHi(dir, BCType::foextrap);
-                    m_bcrec_velocity[2].setHi(dir, BCType::foextrap);
+                    // Tangential directions have hoextrap
+                    m_bcrec_velocity[0].setHi(dir, BCType::hoextrap);
+                    m_bcrec_velocity[1].setHi(dir, BCType::hoextrap);
+                    m_bcrec_velocity[2].setHi(dir, BCType::hoextrap);
 
                     // Only normal direction has ext_dir
                     m_bcrec_velocity[dir].setHi(dir, BCType::ext_dir);
