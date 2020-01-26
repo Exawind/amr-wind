@@ -61,7 +61,7 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
-    if (m_verbose > 1)
+    if (m_verbose > 2)
     {
         amrex::Print() << "End of time step: " << std::endl;
 #if 0
@@ -208,8 +208,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     if (m_use_godunov) {
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(finest_level  == 0,"TODO: fillpatch_forces");
-        if (!Geom(0).isAllPeriodic())
-            Print() << "Warning: we are setting forces to zero outside the domain" << std::endl;
         vel_forces[0].FillBoundary(Geom(0).periodicity());
     } else {
         // forces are not used in compute_convective_term
@@ -585,11 +583,11 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                              Vector<MultiFab const*> const& density,
                              Vector<MultiFab const*> const& tracer)
 {
-    // We set vel_forces to zero in order to ensure we have zeroes in the force
-    //    arrays outside the domain -- this is necessary until we set up 
-    //    fillpatching for the forcing terms
+    // We just need vel_forces not to be undefined outside the domain --
+    //    the actual value doesn't matter because that will be taken care of by 
+    //    the bc routines
     for (int lev = 0; lev <= finest_level; ++lev) {
-        vel_forces[lev]->setVal(0.0);
+        vel_forces[lev]->setVal(1.e20);
     }
 
     // For now we don't have any external forces on the scalars
