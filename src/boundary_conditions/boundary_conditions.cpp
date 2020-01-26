@@ -44,8 +44,9 @@ void incflo::init_bcs ()
             m_bc_type[ori] = BC::mass_inflow;
 
             std::vector<Real> v;
-            pp.queryarr("velocity", v, 0, AMREX_SPACEDIM);
-            m_bc_velocity[ori] = {v[0],v[1],v[2]};
+            if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
+               m_bc_velocity[ori] = {v[0],v[1],v[2]};
+            }
 
             pp.query("density", m_bc_density[ori]);
 
