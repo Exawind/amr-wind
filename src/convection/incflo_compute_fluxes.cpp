@@ -228,12 +228,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     Box const& zbx = amrex::surroundingNodes(bx,2);
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
-    bool has_extdir_lo = (h_bcrec[0].lo(0) == BCType::ext_dir) or
-                         (h_bcrec[1].lo(0) == BCType::ext_dir) or
-                         (h_bcrec[2].lo(0) == BCType::ext_dir);
-    bool has_extdir_hi = (h_bcrec[0].hi(0) == BCType::ext_dir) or
-                         (h_bcrec[1].hi(0) == BCType::ext_dir) or
-                         (h_bcrec[2].hi(0) == BCType::ext_dir);
+    auto extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
+    bool has_extdir_lo = extdir_lohi.first;
+    bool has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
         (has_extdir_hi and domain_ihi <= xbx.bigEnd(0)))
     {
@@ -308,12 +305,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
         }
     });
 
-    has_extdir_lo = (h_bcrec[0].lo(1) == BCType::ext_dir) or
-                    (h_bcrec[1].lo(1) == BCType::ext_dir) or
-                    (h_bcrec[2].lo(1) == BCType::ext_dir);
-    has_extdir_hi = (h_bcrec[0].hi(1) == BCType::ext_dir) or
-                    (h_bcrec[1].hi(1) == BCType::ext_dir) or
-                    (h_bcrec[2].hi(1) == BCType::ext_dir);
+    extdir_lohi = has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
+    has_extdir_lo = extdir_lohi.first;
+    has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
         (has_extdir_hi and domain_jhi <= ybx.bigEnd(1)))
     {
@@ -389,12 +383,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
         }
     });
 
-    has_extdir_lo = (h_bcrec[0].lo(2) == BCType::ext_dir) or
-                    (h_bcrec[1].lo(2) == BCType::ext_dir) or
-                    (h_bcrec[2].lo(2) == BCType::ext_dir);
-    has_extdir_hi = (h_bcrec[0].hi(2) == BCType::ext_dir) or
-                    (h_bcrec[1].hi(2) == BCType::ext_dir) or
-                    (h_bcrec[2].hi(2) == BCType::ext_dir);
+    extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
+    has_extdir_lo = extdir_lohi.first;
+    has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
         (has_extdir_hi and domain_khi <= zbx.bigEnd(2)))
     {
