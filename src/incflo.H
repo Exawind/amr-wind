@@ -506,6 +506,8 @@ private:
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_density_d;
     amrex::Vector<amrex::BCRec> m_bcrec_tracer;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
+    amrex::Vector<amrex::BCRec> m_bcrec_force;
+    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_force_d;
 
     amrex::Vector<int> m_iconserv_velocity;
     amrex::Gpu::DeviceVector<int> m_iconserv_velocity_d;
@@ -612,6 +614,7 @@ private:
     amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
     amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
     amrex::Vector<amrex::BCRec> const& get_tracer_bcrec () const noexcept { return m_bcrec_tracer; }
+    amrex::Vector<amrex::BCRec> const& get_force_bcrec () const noexcept { return m_bcrec_force; }
     //
     amrex::BCRec const* get_velocity_bcrec_device_ptr () const noexcept {
         return m_bcrec_velocity_d.data(); }
@@ -619,6 +622,8 @@ private:
         return m_bcrec_density_d.data(); }
     amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
         return m_bcrec_tracer_d.data(); }
+    amrex::BCRec const* get_force_bcrec_device_ptr () const noexcept {
+        return m_bcrec_force_d.data(); }
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
@@ -632,6 +637,7 @@ private:
     void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
     void fillpatch_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
+    void fillpatch_force (amrex::Real time, amrex::Vector<amrex::MultiFab*> const& force, int ng);
 
     void fillphysbc_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillphysbc_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);

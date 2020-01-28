@@ -196,4 +196,20 @@ struct IncfloTracFill
     }
 };
 
+struct IncfloForFill
+{
+    int probtype;
+
+    AMREX_GPU_HOST
+    constexpr IncfloForFill (int a_probtype) : probtype(a_probtype) {}
+
+    AMREX_GPU_DEVICE
+    void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& vel,
+                     const int dcomp, const int numcomp,
+                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const amrex::BCRec* bcr, const int bcomp,
+                     const int orig_comp) const
+    {}
+};
+
 #endif

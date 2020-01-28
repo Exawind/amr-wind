@@ -288,5 +288,41 @@ void incflo::init_bcs ()
 #endif
             (m_bcrec_tracer_d.data(), m_bcrec_tracer.data(), sizeof(BCRec)*m_ntrac);
     }
+
+    // force
+    {
+        const int ncomp = std::max(m_ntrac, AMREX_SPACEDIM);
+        m_bcrec_force.resize(ncomp);
+        for (OrientationIter oit; oit; ++oit) {
+            Orientation ori = oit();
+            int dir = ori.coordDir();
+            Orientation::Side side = ori.faceDir();
+            auto const bct = m_bc_type[ori];
+            if (bct == BC::periodic)
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : m_bcrec_force) b.setLo(dir, BCType::int_dir);
+                } else {
+                    for (auto& b : m_bcrec_force) b.setHi(dir, BCType::int_dir);
+                }
+            }
+            else
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : m_bcrec_force) b.setLo(dir, BCType::foextrap);
+                } else {
+                    for (auto& b : m_bcrec_force) b.setHi(dir, BCType::foextrap);
+                }
+            }
+        }
+        m_bcrec_force_d.resize(ncomp);
+#ifdef AMREX_USE_GPU
+        Gpu::htod_memcpy
+#else
+        std::memcpy
+#endif
+            (m_bcrec_force_d.data(), m_bcrec_force.data(), sizeof(BCRec)*ncomp);
+
+    }
 }
 

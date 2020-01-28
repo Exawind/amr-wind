@@ -25,10 +25,10 @@ void incflo::fillpatch_velocity (int lev, Real time, MultiFab& vel, int ng)
         PhysBCFunct<GpuBndryFuncFab<IncfloVelFill> > fphysbc
             (geom[lev], bcrec, IncfloVelFill{m_probtype, m_bc_velocity});
 #ifdef AMREX_USE_EB
-	Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
+        Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
             (Interpolater*)(&cell_cons_interp) : (Interpolater*)(&eb_cell_cons_interp);
 #else
-	Interpolater* mapper = &cell_cons_interp;
+        Interpolater* mapper = &cell_cons_interp;
 #endif
         FillPatchTwoLevels(vel, IntVect(ng), time,
                            {&(m_leveldata[lev-1]->velocity_o),
@@ -60,10 +60,10 @@ void incflo::fillpatch_density (int lev, Real time, MultiFab& density, int ng)
         PhysBCFunct<GpuBndryFuncFab<IncfloDenFill> > fphysbc
             (geom[lev], bcrec, IncfloDenFill{m_probtype, m_bc_density});
 #ifdef AMREX_USE_EB
-	Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
+        Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
             (Interpolater*)(&cell_cons_interp) : (Interpolater*)(&eb_cell_cons_interp);
 #else
-	Interpolater* mapper = &cell_cons_interp;
+        Interpolater* mapper = &cell_cons_interp;
 #endif
         FillPatchTwoLevels(density, IntVect(ng), time,
                            {&(m_leveldata[lev-1]->density_o),
@@ -96,10 +96,10 @@ void incflo::fillpatch_tracer (int lev, Real time, MultiFab& tracer, int ng)
         PhysBCFunct<GpuBndryFuncFab<IncfloTracFill> > fphysbc
             (geom[lev], bcrec, IncfloTracFill{m_probtype, m_ntrac, m_bc_tracer_d});
 #ifdef AMREX_USE_EB
-	Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
+        Interpolater* mapper = (EBFactory(0).isAllRegular()) ?
             (Interpolater*)(&cell_cons_interp) : (Interpolater*)(&eb_cell_cons_interp);
 #else
-	Interpolater* mapper = &cell_cons_interp;
+        Interpolater* mapper = &cell_cons_interp;
 #endif
         FillPatchTwoLevels(tracer, IntVect(ng), time,
                            {&(m_leveldata[lev-1]->tracer_o),
@@ -109,6 +109,35 @@ void incflo::fillpatch_tracer (int lev, Real time, MultiFab& tracer, int ng)
                             &(m_leveldata[lev]->tracer)},
                            {m_t_old[lev], m_t_new[lev]},
                            0, 0, m_ntrac, geom[lev-1], geom[lev],
+                           cphysbc, 0, fphysbc, 0,
+                           refRatio(lev-1), mapper, bcrec, 0);
+    }
+}
+
+void incflo::fillpatch_force (Real time, Vector<MultiFab*> const& force, int ng)
+{
+    const int ncomp = force[0]->nComp();
+    const auto& bcrec = get_force_bcrec();
+    int lev = 0;
+    {
+        PhysBCFunct<GpuBndryFuncFab<IncfloForFill> > physbc
+            (geom[lev], bcrec, IncfloForFill{m_probtype});
+        FillPatchSingleLevel(*force[lev], IntVect(ng), time,
+                             {force[lev]}, {time},
+                             0, 0, ncomp, geom[lev],
+                             physbc, 0);
+    }
+    for (lev = 1; lev <= finest_level; ++lev)
+    {
+        PhysBCFunct<GpuBndryFuncFab<IncfloForFill> > cphysbc
+            (geom[lev-1], bcrec, IncfloForFill{m_probtype});
+        PhysBCFunct<GpuBndryFuncFab<IncfloForFill> > fphysbc
+            (geom[lev  ], bcrec, IncfloForFill{m_probtype});
+        Interpolater* mapper = &pc_interp;
+        FillPatchTwoLevels(*force[lev], IntVect(ng), time,
+                           {force[lev-1]}, {time},
+                           {force[lev  ]}, {time},
+                           0, 0, ncomp, geom[lev-1], geom[lev],
                            cphysbc, 0, fphysbc, 0,
                            refRatio(lev-1), mapper, bcrec, 0);
     }

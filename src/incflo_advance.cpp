@@ -206,11 +206,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
-    if (m_use_godunov) {
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(finest_level  == 0,"TODO: fillpatch_forces");
-        vel_forces[0].FillBoundary(Geom(0).periodicity());
-    } else {
-        // forces are not used in compute_convective_term
+    if (m_use_godunov and nghost_force() > 0) {
+        fillpatch_force(m_cur_time, GetVecOfPtrs(vel_forces), nghost_force());
+        if (m_advect_tracer) {
+            fillpatch_force(m_cur_time, GetVecOfPtrs(tra_forces), nghost_force());
+        }
     }
 
     // if ( m_use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
@@ -583,13 +583,6 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
                              Vector<MultiFab const*> const& density,
                              Vector<MultiFab const*> const& tracer)
 {
-    // We just need vel_forces not to be undefined outside the domain --
-    //    the actual value doesn't matter because that will be taken care of by 
-    //    the bc routines
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        vel_forces[lev]->setVal(1.e20);
-    }
-
     // For now we don't have any external forces on the scalars
     if (m_advect_tracer) {
         for (int lev = 0; lev <= finest_level; ++lev) {
