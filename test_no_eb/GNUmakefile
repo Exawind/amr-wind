@@ -3,6 +3,8 @@ TOP = ..
 
 EBASE = incflo
 
+BL_NO_FORT = TRUE
+
 DIM = 3
 
 PRECISION  = DOUBLE
