@@ -80,8 +80,7 @@ void incflo::InitData ()
     }
     if(m_KE_int > 0 && !restart_flag)
     {
-        amrex::Abort("xxxxx m_KE_int todo");
-//        amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
+        amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
     }
 
 #ifdef AMREX_USE_EB

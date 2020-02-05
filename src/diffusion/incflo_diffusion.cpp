@@ -187,10 +187,15 @@ incflo::wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
+                    // density and velocity are cell centered
+                    // viscosity eta is face centered
                     Real rho = c0*den(i,j,k) + c1*den(i,j,k+1);
                     Real mu = eta(i,j,k);
                     Real vx = c0*vel(i,j,k,0)+ c1*vel(i,j,k+1,0);
                     Real vy = c0*vel(i,j,k,1)+ c1*vel(i,j,k+1,1);
+                    
+                    // for convience velocity also holds BC's which is why derivatives are going into the ghost cells at k-1
+                    // fixme this is confusing, maybe have a separate mfab for BCs?
                     
                     // dudz(x,y,z=0)
                     vel(i,j,k-1,0) = rho*utau*utau*vx/umag/mu;
@@ -200,17 +205,6 @@ incflo::wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::
                     vel(i,j,k-1,2) = 0.0;
                     //fixme remove this print
                     if(i==0 and j==0) amrex::Print() << "wall model at 0,0. dudz = " << vel(i,j,k-1,0) << " dvdz= " << vel(i,j,k-1,1) << " vx/umag= " << vx/umag << " vy/umag= "  << vy/umag << " mu= "  << mu <<  std::endl;
-
-
-//                    // dudz(x,y,z=0)
-//                    Real utau = 8*kappa/log(90/roughness_height)
-//
-//                    vel(i,j,k-1,0) = (vx/umag)*utau/kappa/(dz/2);
-//                    // dvdz(x,y,z=0)
-//                    vel(i,j,k-1,1) = (vy/umag)*utau/kappa/(dz/2);
-//                    // w(x,y,z=0)
-//                    vel(i,j,k-1,2) = 0.0;
-                    
 
                 });
             }
