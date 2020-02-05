@@ -259,17 +259,30 @@ void incflo::ComputeStrainrate(Real time_in)
 
 Real incflo::ComputeKineticEnergy () const
 {
-#if 0
     BL_PROFILE("incflo::ComputeKineticEnergy");
+
+#ifdef AMREX_USE_EB
+    amrex::Print() << "Warning ComputeKineticEnergy does not work for EB yet" << std::endl;
+    return 0.0;
+#endif
 
     // integrated total Kinetic energy
     Real KE = 0.0;
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        Real cell_vol = geom[lev].CellSize()[0]*geom[lev].CellSize()[1]*geom[lev].CellSize()[2];
 
-        KE += amrex::ReduceSum(*density[lev],*vel[lev],*level_mask[lev],0,
+        iMultiFab level_mask;
+        if(lev < finest_level){
+            level_mask = makeFineMask(grids[lev],dmap[lev], grids[lev+1], IntVect(2), 1, 0);
+        }else {
+            level_mask.define(grids[lev], dmap[lev], 1, 0, MFInfo());
+            level_mask.setVal(1);
+        }
+
+        const Real cell_vol = geom[lev].CellSize()[0]*geom[lev].CellSize()[1]*geom[lev].CellSize()[2];
+
+        KE += amrex::ReduceSum(m_leveldata[lev]->density, m_leveldata[lev]->velocity, level_mask, 0,
         [=] AMREX_GPU_HOST_DEVICE (Box const& bx,
                                    Array4<Real const> const& den_arr,
                                    Array4<Real const> const& vel_arr,
@@ -290,16 +303,14 @@ Real incflo::ComputeKineticEnergy () const
     }
 
     // total volume of grid on level 0
-    Real total_vol = geom[0].ProbDomain().volume();
+    const Real total_vol = geom[0].ProbDomain().volume();
 
-    KE *= 0.5/total_vol/ro_0;
+    KE *= 0.5/total_vol/m_ro_0;
 
     ParallelDescriptor::ReduceRealSum(KE);
 
     return KE;
 
-#endif
-    return 0;
 }
 
 void incflo::ComputeVorticity (int lev, Real t, MultiFab& vort, MultiFab const& vel)
