@@ -192,7 +192,7 @@ void incflo::init_rayleigh_taylor (Box const& vbx, Box const& gbx,
         Real z = problo[2] + (k+0.5)*dx[2];
         const Real r2d = amrex::min(std::hypot((x-splitx),(y-splity)), 0.5*L_x);
         const Real pertheight = 0.5 - 0.01*std::cos(2.0*pi*r2d/L_x);
-        density(i,j,k) = rho_1 + ((rho_2-rho_1)/2.0)*(1.0+std::tanh((z-pertheight)/0.03));
+        density(i,j,k) = rho_1 + ((rho_2-rho_1)/2.0)*(1.0+std::tanh((z-pertheight)/0.005));
         vel(i,j,k,0) = 0.0;
         vel(i,j,k,1) = 0.0;
         vel(i,j,k,2) = 0.0;
