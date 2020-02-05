@@ -56,7 +56,9 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
             Array4<Real const> const& rho = m_leveldata[lev]->density.const_array(mfi);
             Real rhoerr = tag_rho ? rhoerr_v[lev]: std::numeric_limits<Real>::max();
             Real gradrhoerr = tag_gradrho ? gradrhoerr_v[lev] : std::numeric_limits<Real>::max();
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            amrex::ParallelFor(bx,
+            [tag_rho,tag_gradrho,rhoerr,gradrhoerr,tagval,rho,tag]
+            AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
                 if (tag_rho and rho(i,j,k) > rhoerr) {
                     tag(i,j,k) = tagval;
