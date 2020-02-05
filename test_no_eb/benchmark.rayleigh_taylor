@@ -14,7 +14,7 @@ amr.max_level           =   2
 amr.regrid_int          =   2
 
 amr.n_cell              =   32 32 64     # Grid cells at coarsest AMRlevel
-amr.max_grid_size       =   16 16 16     # Grid cells at coarsest AMRlevel
+amr.max_grid_size       =   16 16 16 16  # Max grid size at AMR levels
 amr.blocking_factor     =   8            # Blocking factor for grids
 
 geometry.prob_lo        =  0.  0.  0.   # Lo corner coordinates
