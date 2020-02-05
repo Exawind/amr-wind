@@ -43,6 +43,6 @@ incflo.verbose          =   2           # incflo_level
 mac_proj.verbose        =   1           # MAC Projector
 nodal_proj.verbose      =   1           # Nodal Projector
 diffusion.verbose       =   1           # Diffusion
-diffusion.mg_verbose    =   0           # Diffusion
+diffusion.mg_verbose    =   1           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12
