@@ -62,7 +62,7 @@ yhi.velocity            =   0.  0.  0.
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #           INITIAL CONDITIONS          #
 #.......................................#
-incflo.probtype         =   3
+incflo.probtype         =   31
 incflo.ic_u             =   0.2         #
 incflo.ic_v             =   0.0         #
 incflo.ic_w             =   0.0         #

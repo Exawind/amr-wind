@@ -1,3 +1,2 @@
-f90EXE_sources += derive_mod.f90
-
 CEXE_sources += derive.cpp
+CEXE_headers += derive_K.H

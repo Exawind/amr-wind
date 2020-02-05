@@ -3,9 +3,7 @@ target_sources(${amr_wind_exe_name}
       #C++
       derive.cpp
       #Headers
-      derive_F.H
-      #Fortran
-      derive_mod.f90
+      derive_K.H
    )
 
 target_include_directories(${amr_wind_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

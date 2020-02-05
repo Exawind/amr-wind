@@ -1,66 +1,170 @@
-// #include <AMReX_Box.H>
-
 #include <incflo.H>
-#include <rheology_F.H>
-#include <boundary_conditions_F.H>
+#include <derive_K.H>
 
-void incflo::ComputeViscosity( Vector<std::unique_ptr<MultiFab>>& eta_out,
-                               Real time_in)
+using namespace amrex;
+
+namespace {
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+amrex::Real expterm (amrex::Real nu) noexcept
 {
-    BL_PROFILE("incflo::ComputeViscosity");
+    return (nu < 1.e-9) ? (1.0-0.5*nu+nu*nu*(1.0/6.0)-(nu*nu*nu)*(1./24.))
+                        : -std::expm1(-nu)/nu;
+}
 
-    if (fluid_model == "newtonian")
-    {
-       for(int lev = 0; lev <= finest_level; lev++)
-          eta_out[lev]->setVal(mu,0,1,eta_out[lev]->nGrow());
+struct NonNewtonianViscosity
+{
+    incflo::FluidModel fluid_model;
+    amrex::Real mu, n_flow, tau_0, eta_0, papa_reg, smag_const;
 
-    } else {
-
-      // Only compute strain rate if we're going to use it
-      ComputeStrainrate(time_in);
-
-      for(int lev = 0; lev <= finest_level; lev++)
-      {
-        Box domain(geom[lev].Domain());
-
-#ifdef _OPENMP
-#pragma omp parallel
-#endif
-        for(MFIter mfi(*eta_out[lev], true); mfi.isValid(); ++mfi)
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    amrex::Real operator() (amrex::Real sr, amrex::Real den, amrex::Real ds) const noexcept {
+        switch (fluid_model)
         {
-            // Tilebox
-            Box bx = mfi.tilebox();
-
-            const auto& strainrate_arr = strainrate[lev]->array(mfi);
-            const auto&  viscosity_arr = eta_out[lev]->array(mfi);
-
-            // TODO can't compile with CUDA if viscosity function is written in Fortran
-            //AMREX_FOR_3D(bx, i, j, k, 
-            //{
-            //    viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
-            //});
-            for(int k(bx.loVect()[2]); k <= bx.hiVect()[2]; k++)
-              for(int j(bx.loVect()[1]); j <= bx.hiVect()[1]; j++)
-                for(int i(bx.loVect()[0]); i <= bx.hiVect()[0]; i++)
-                  viscosity_arr(i,j,k) = viscosity(strainrate_arr(i,j,k));
-        }
-
-        eta_out[lev]->FillBoundary(geom[lev].periodicity());
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for(MFIter mfi(*density[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        case incflo::FluidModel::powerlaw:
         {
-            fill_bc0(BL_TO_FORTRAN_ANYD((*eta_out[lev])[mfi]),
-                     bc_ilo[lev]->dataPtr(), bc_ihi[lev]->dataPtr(),
-                     bc_jlo[lev]->dataPtr(), bc_jhi[lev]->dataPtr(),
-                     bc_klo[lev]->dataPtr(), bc_khi[lev]->dataPtr(),
-                     domain.loVect(), domain.hiVect(),
-                     &nghost_for_bcs);
+            return mu * std::pow(sr,n_flow-1.0);
         }
-
-        eta_out[lev]->FillBoundary(geom[lev].periodicity());
-      }
+        case incflo::FluidModel::Bingham:
+        {
+            return mu + tau_0 * expterm(sr/papa_reg) / papa_reg;
+        }
+        case incflo::FluidModel::HerschelBulkley:
+        {
+            return (mu*std::pow(sr,n_flow)+tau_0)*expterm(sr/papa_reg)/papa_reg;
+        }
+        case incflo::FluidModel::deSouzaMendesDutra:
+        {
+            return (mu*std::pow(sr,n_flow)+tau_0)*expterm(sr*(eta_0/tau_0))*(eta_0/tau_0);
+        }
+        case incflo::FluidModel::SmagorinskyLillySGS:
+        {
+            // fixme this is not good place for Smagorinsky move to an ABL specific location
+            return mu + den*smag_const*smag_const*ds*ds*sr;
+        }
+        default:
+        {
+            return mu;
+        }
+        };
     }
+};
+
+}
+
+void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
+                                Vector<MultiFab*> const& tra_eta,
+                                Vector<MultiFab const*> const& rho,
+                                Vector<MultiFab const*> const& vel,
+                                Vector<MultiFab const*> const& tra,
+                                Real time, int nghost)
+{
+    if (m_fluid_model == FluidModel::Newtonian)
+    {
+        for (auto mf : vel_eta) {
+            mf->setVal(m_mu, 0, 1, nghost);
+        }
+    }
+    else
+    {
+        NonNewtonianViscosity non_newtonian_viscosity;
+        non_newtonian_viscosity.fluid_model = m_fluid_model;
+        non_newtonian_viscosity.mu = m_mu;
+        non_newtonian_viscosity.n_flow = m_n_0;
+        non_newtonian_viscosity.tau_0 = m_tau_0;
+        non_newtonian_viscosity.eta_0 = m_eta_0;
+        non_newtonian_viscosity.papa_reg = m_papa_reg;
+        non_newtonian_viscosity.smag_const = m_Smagorinsky_Lilly_SGS_constant;
+
+        for (int lev = 0; lev <= finest_level; ++lev) {
+#ifdef AMREX_USE_EB
+            auto const& fact = EBFactory(lev);
+            auto const& flags = fact.getMultiEBCellFlagFab();
+#endif
+
+            const Real dx = geom[lev].CellSize()[0];
+            const Real dy = geom[lev].CellSize()[1];
+            const Real dz = geom[lev].CellSize()[2];
+            const Real ds = pow(dx*dy*dz,1.0/3.0);
+            
+            Real idx = 1.0 / dx;
+            Real idy = 1.0 / dy;
+            Real idz = 1.0 / dz;
+
+#ifdef _OPENMP
+#pragma omp parallel omp if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(*vel_eta[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box const& bx = mfi.growntilebox(nghost);
+                Array4<Real> const& eta_arr = vel_eta[lev]->array(mfi);
+                Array4<Real const> const& vel_arr = vel[lev]->const_array(mfi);
+                Array4<Real const> const& rho_arr = rho[lev]->const_array(mfi);
+
+#ifdef AMREX_USE_EB
+                auto const& flag_fab = flags[mfi];
+                auto typ = flag_fab.getType(bx);
+                if (typ == FabType::covered)
+                {
+                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                    {
+                        eta_arr(i,j,k) = 0.0;
+                    });
+                }
+                else if (typ == FabType::singlevalued)
+                {
+                    auto const& flag_arr = flag_fab.const_array();
+                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                    {
+                        Real sr = incflo_strainrate_eb(i,j,k,idx,idy,idz,vel_arr,flag_arr(i,j,k));
+                        Real den = rho_arr(i,j,k);
+                        eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                    });
+                }
+                else
+#endif
+                {
+                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                    {
+                        // fixme strainrate does not account for one sided stencils near walls
+                        Real sr = incflo_strainrate(i,j,k,idx,idy,idz,vel_arr);
+                        Real den = rho_arr(i,j,k);
+                        eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                    });
+                }
+            }
+        }
+    }
+
+    switch(m_fluid_model){
+        case incflo::FluidModel::SmagorinskyLillySGS:
+        {
+            
+            for (auto mf : tra_eta) {
+                for (int n = 0; n < m_ntrac; ++n) {
+                    mf->setVal(0.0, n, 1, nghost);
+                }
+            }
+
+            if(m_ntrac){
+                AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_ntrac == 1,"SmagorinskyLillySGS only implemented for 1 tracer");
+                
+                Real iPrandtl_turb = 3.0;//fixme make an input
+                for (int lev = 0; lev <= finest_level; ++lev) {
+                    MultiFab::Xpay(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);
+                }
+            }
+            break;            
+        }
+        default:
+        {
+            for (auto mf : tra_eta) {
+                for (int n = 0; n < m_ntrac; ++n) {
+                    mf->setVal(m_mu_s[n], n, 1, nghost);
+                }
+            }
+        }
+    };
+   
+
 }

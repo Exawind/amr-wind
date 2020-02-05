@@ -1,6 +1,4 @@
-CEXE_sources += DiffusionOp.cpp
-CEXE_headers += DiffusionOp.H
+CEXE_sources += incflo_diffusion.cpp
+CEXE_sources += DiffusionTensorOp.cpp DiffusionScalarOp.cpp
+CEXE_headers += DiffusionTensorOp.H   DiffusionScalarOp.H
 
-f90EXE_headers += diffusion_F.H
-f90EXE_sources += set_scal_diff_bcs.f90
-f90EXE_sources += set_vel_diff_bcs.f90

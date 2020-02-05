@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <type_traits>
 
-using namespace amrex;
-
 /********************************************************************************
  *                                                                              *
  * Union of a list (std::vector) of the same kind of implicit function.         *
@@ -20,7 +18,7 @@ class UnionListIF
 {
 
 public:
-	UnionListIF(const Vector<F>& a_ifs)
+	UnionListIF(const amrex::Vector<F>& a_ifs)
 		: m_ifs(a_ifs)
 	{
 		empty = !a_ifs.empty();
@@ -40,14 +38,14 @@ public:
 		return empty;
 	}
 
-	Real operator()(const RealArray& p) const
+	amrex::Real operator()(const amrex::RealArray& p) const
 	{
 
 		// NOTE: this assumes that m_ifs is not empty
-		Real vmax = m_ifs[0](p);
+		amrex::Real vmax = m_ifs[0](p);
 		for(int i = 1; i < m_ifs.size(); i++)
 		{
-			Real vcur = m_ifs[i](p);
+			amrex::Real vcur = m_ifs[i](p);
 			if(vmax < vcur)
 				vmax = vcur;
 		}
@@ -65,7 +63,7 @@ public:
 	}
 
 private:
-	Vector<F> m_ifs;
+	amrex::Vector<F> m_ifs;
 	bool empty;
 };
 
@@ -155,7 +153,7 @@ public:
 		return true;
 	}
 
-	Real operator()(const RealArray& p) const
+	amrex::Real operator()(const amrex::RealArray& p) const
 	{
 
 		if(!f1_active)
@@ -210,7 +208,7 @@ public:
 		return true;
 	}
 
-	Real operator()(const RealArray& p) const
+	amrex::Real operator()(const amrex::RealArray& p) const
 	{
 
 		if(!f1_active)

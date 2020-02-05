@@ -21,9 +21,9 @@ amr.plot_per            =   -1          # Steps between plot files
 amr.check_int           =  -100       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
-amr.plt_eta = 1
+#amr.plt_eta = 1
 amr.plt_p = 1
-amr.plt_divu = 1
+#amr.plt_divu = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
@@ -68,7 +68,7 @@ incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 zlo.type =   "wall_model"
 zlo.tracer = 0.0
 
-zhi.type =   "slip"
+zhi.type =   "slip_wall"
 zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

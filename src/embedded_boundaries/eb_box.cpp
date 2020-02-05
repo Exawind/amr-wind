@@ -1,11 +1,11 @@
 #include <AMReX_EB2.H>
-#include <AMReX_EB2_IF_Plane.H>
-#include <AMReX_EB2_IF_Union.H>
+#include <AMReX_EB2_IF.H>
 #include <AMReX_ParmParse.H>
 
 #include <algorithm>
-#include <embedded_boundaries_F.H>
 #include <incflo.H>
+
+using namespace amrex;
 
 /****************************************************************************
  * Function to create a simple rectangular box with EB walls.               *
@@ -22,6 +22,8 @@ void incflo::make_eb_box()
     }
     else
     {
+        std::cout << "IN MAKE_EB_BOX NOT PERIODIC " << std::endl;
+        exit(0);
         /************************************************************************
          *                                                                      *
          * Define Box geometry:                                                 *
@@ -110,23 +112,6 @@ void incflo::make_eb_box()
         // Build index space
         int max_level_here = 0;
         int max_coarsening_level = 100;
-        EBSupport m_eb_support_level = EBSupport::full;
         EB2::Build(gshop, geom.back(), max_level_here, max_level_here + max_coarsening_level);
-        const EB2::IndexSpace& eb_is = EB2::IndexSpace::top();
-
-        // Make the EBFabFactory
-        for(int lev = 0; lev <= max_level; lev++)
-        {
-            const EB2::Level& eb_is_lev = eb_is.getLevel(geom[lev]);
-            eb_level = &eb_is_lev;
-            ebfactory[lev].reset(new EBFArrayBoxFactory(*eb_level, 
-                                                        geom[lev], 
-                                                        grids[lev], 
-                                                        dmap[lev],
-                                                        {m_eb_basic_grow_cells, 
-                                                        m_eb_volume_grow_cells, 
-                                                        m_eb_full_grow_cells},
-                                                        m_eb_support_level));
-        }
     }
 }

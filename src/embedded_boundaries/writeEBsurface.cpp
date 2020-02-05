@@ -1,8 +1,14 @@
 #include <incflo.H>
 #include <AMReX_WriteEBSurface.H>
 
+using namespace amrex;
+
 void incflo::WriteMyEBSurface()
 {
+    amrex::Warning("TODO: WriteMyEBSurface");
+
+#if 0
+
   if (Geom(0).isAllPeriodic()) return;
 
   // Only write at the finest level!
@@ -16,4 +22,5 @@ void incflo::WriteMyEBSurface()
   ebf = ebfactory[lev].get();
 
   WriteEBSurface(ba,dm,Geom(lev),ebf);
+#endif
 }

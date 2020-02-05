@@ -1,5 +1,7 @@
 #include <incflo.H>
 
+using namespace amrex;
+
 //
 // Check if steady state has been reached by verifying that
 //
@@ -15,13 +17,17 @@
 //
 bool incflo::SteadyStateReached()
 {
+
+    amrex::Abort("xxxxx TODO: SteadyStateReached");
+    return false;
+#if 0
     BL_PROFILE("incflo::SteadyStateReached()");
 
     int condition1[finest_level + 1];
     int condition2[finest_level + 1];
 
     // Make sure velocity is up to date
-    incflo_set_velocity_bcs(cur_time, vel, 0);
+    incflo_set_velocity_bcs(m_cur_time, vel);
 
     // Use temporaries to store the difference between current and previous solution
     Vector<std::unique_ptr<MultiFab>> diff_vel;
@@ -51,11 +57,11 @@ bool incflo::SteadyStateReached()
             max_relchange = amrex::max(max_relchange, relchange);
         }
 
-        condition1[lev] = (max_change < steady_state_tol * dt);
-        condition2[lev] = (max_relchange < steady_state_tol);
+        condition1[lev] = (max_change < m_steady_state_tol * dt);
+        condition2[lev] = (max_relchange < m_steady_state_tol);
 
         // Print out info on steady state checks
-        if(incflo_verbose > 0)
+        if (m_verbose > 0)
         {
             amrex::Print() << "\nSteady state check level " << lev << std::endl; 
             amrex::Print() << "||u-uo||/||uo|| = " << max_relchange
@@ -71,10 +77,11 @@ bool incflo::SteadyStateReached()
 
     // Always return negative to first access. This way
     // initial zero velocity field do not test for false positive
-    if(nstep < 2)
+    if(m_nstep < 2)
     {
         return false;
     } else {
         return reached;
     }
+#endif
 }

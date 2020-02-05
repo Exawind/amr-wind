@@ -1,0 +1,3 @@
+CEXE_sources += prob_bc.cpp prob_init_fluid.cpp
+CEXE_headers += prob_bc.H incflo_prob_I.H
+

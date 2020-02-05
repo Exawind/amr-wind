@@ -1,4 +1,2 @@
-f90EXE_sources += incflo_rheology_mod.f90
-
 CEXE_sources += incflo_rheology.cpp
 CEXE_sources += incflo_read_rheology_parameters.cpp
