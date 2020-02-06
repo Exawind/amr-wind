@@ -1,0 +1,30 @@
+* fillpatch
+
+|        | pi       | po       | mi       | nsw         | sw          |
+|--------+----------+----------+----------+-------------+-------------|
+| v_n    | foextrap | foextrap | ext_dir  | ext_dir (0) | ext_dir (0) |
+| v_t    | foextrap | foextrap | ext_dir  | ext_dir (0) | hoextrap    |
+| rho    | foextrap | foextrap | ext_dir  | foextrap    | foextrap    |
+| scalar | foextrap | foextrap | ext_dir  | foextrap    | foextrap    |
+| force  | foextrap | foextrap | foextrap | foextrap    | foextrap    |
+
+* projection
+
+| pi        | po        | mi      | nsw     | sw      |
+|-----------+-----------+---------+---------+---------|
+| Dirichlet | Dirichlet | Neumann | Neumann | Neumann |
+
+* tensor solve
+
+|        | pi      | po      | mi        | nsw           | sw            |
+|--------+---------+---------+-----------+---------------+---------------|
+| normal | Neumann | Neumann | Dirichlet | Dirichlet (0) | Dirichlet (0) |
+| tang   | Neumann | Neumann | Dirichlet | Dirichlet (0) | Neumann (0)   |
+
+* scalar diffusion
+
+| pi      | po      | mi        | nsw     | sw      |
+|---------+---------+-----------+---------+---------|
+| Neumann | Neumann | Dirichlet | Neumann | Neumann |
+| Neumann | Neumann | Dirichlet | Neumann | Neumann |
+

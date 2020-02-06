@@ -1,7 +1,6 @@
 CEXE_sources += incflo.cpp
 CEXE_sources += incflo_advance.cpp
 CEXE_sources += incflo_compute_dt.cpp
+CEXE_sources += incflo_tagging.cpp
+CEXE_sources += incflo_regrid.cpp
 CEXE_sources += main.cpp
-
-CEXE_headers += incflo_bclist.H
-CEXE_headers += incflo_proj_F.H

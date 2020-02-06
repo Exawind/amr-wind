@@ -91,7 +91,7 @@ void incflo::ReadRheologyParameters()
 
         amrex::Print() << "Smagorinsky Lilly SGS model"
                        << " mu = " << m_mu 
-                       << "SmagorinskyLillyConstant = " << m_Smagorinsky_Lilly_SGS_constant << std::endl;
+                       << " SmagorinskyLillyConstant = " << m_Smagorinsky_Lilly_SGS_constant << std::endl;
      }
      else
      {

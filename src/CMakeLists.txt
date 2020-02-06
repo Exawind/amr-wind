@@ -5,6 +5,8 @@ target_sources(${amr_wind_exe_name}
       incflo_advance.cpp
       incflo.cpp
       incflo_compute_dt.cpp
+      incflo_tagging.cpp
+      incflo_regrid.cpp
       #Headers
    )
 

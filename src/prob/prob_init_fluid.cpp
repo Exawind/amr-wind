@@ -1,5 +1,6 @@
 #include <incflo.H>
 #include <random>
+#include <AMReX_Random.H>
 
 using namespace amrex;
 
@@ -52,6 +53,15 @@ void incflo::prob_init_fluid (int lev)
                          ld.density.array(mfi),
                          ld.tracer.array(mfi),
                          domain, dx, problo, probhi);
+        }
+        else if (5 == m_probtype)
+        {
+            init_rayleigh_taylor(vbx, gbx,
+                                 ld.p.array(mfi),
+                                 ld.velocity.array(mfi),
+                                 ld.density.array(mfi),
+                                 ld.tracer.array(mfi),
+                                 domain, dx, problo, probhi);
         }
         else if (11 == m_probtype)
         {
@@ -163,6 +173,38 @@ void incflo::init_couette (Box const& vbx, Box const& gbx,
     {
         Real y = (j+0.5) / num_cells_y;
         vel(i,j,k,0) *= (y-0.5);
+        vel(i,j,k,1) = 0.0;
+        vel(i,j,k,2) = 0.0;
+    });
+}
+
+
+void incflo::init_rayleigh_taylor (Box const& vbx, Box const& gbx,
+                                   Array4<Real> const& p,
+                                   Array4<Real> const& vel,
+                                   Array4<Real> const& density,
+                                   Array4<Real> const& tracer,
+                                   Box const& domain,
+                                   GpuArray<Real, AMREX_SPACEDIM> const& dx,
+                                   GpuArray<Real, AMREX_SPACEDIM> const& problo,
+                                   GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+{
+    static constexpr Real pi = 3.1415926535897932;
+    static constexpr Real rho_1 = 0.5;
+    static constexpr Real rho_2 = 2.0;
+    const Real splitx = 0.5*(problo[0] + probhi[0]);
+    const Real splity = 0.5*(problo[1] + probhi[1]);
+    const Real L_x = probhi[0] - problo[0];
+
+    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    {
+        Real x = problo[0] + (i+0.5)*dx[0];
+        Real y = problo[1] + (j+0.5)*dx[1];
+        Real z = problo[2] + (k+0.5)*dx[2];
+        const Real r2d = amrex::min(std::hypot((x-splitx),(y-splity)), 0.5*L_x);
+        const Real pertheight = 0.5 - 0.01*std::cos(2.0*pi*r2d/L_x);
+        density(i,j,k) = rho_1 + ((rho_2-rho_1)/2.0)*(1.0+std::tanh((z-pertheight)/0.005));
+        vel(i,j,k,0) = 0.0;
         vel(i,j,k,1) = 0.0;
         vel(i,j,k,2) = 0.0;
     });

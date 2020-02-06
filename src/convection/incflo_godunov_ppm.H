@@ -877,7 +877,7 @@ void Godunov_trans_zbc_hi(const int i, const int j, const int k, const int n,
                      hi = lo;
             }
             else{ */ 
-                amrex::Real st = (wedge >= -1e-10)? lo : s(i,j,k,domhiz+1);
+                amrex::Real st = (wedge >= -1e-10)? lo : s(i,j,domhiz+1,n);
                 lo = st;
                 hi = st;
 //            }

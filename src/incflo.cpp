@@ -94,6 +94,10 @@ void incflo::InitData ()
   //      WriteMyEBSurface();
     }
 #endif
+
+    if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
+        printGridSummary(amrex::OutStream(), 0, finest_level);
+    }
 }
 
 void incflo::Evolve()
@@ -105,6 +109,20 @@ void incflo::Evolve()
 
     while(!do_not_evolve)
     {
+        if (m_verbose > 0)
+        {
+            amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
+        }
+
+        if (m_regrid_int > 0 and m_nstep > 0 and m_nstep%m_regrid_int == 0)
+        {
+            if (m_verbose > 0) amrex::Print() << "Regriding...\n";
+            regrid(0, m_cur_time);
+            if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
+                printGridSummary(amrex::OutStream(), 0, finest_level);
+            }
+        }
+
         // Advance to time t + dt
         Advance();
         m_nstep++;
@@ -144,43 +162,6 @@ void incflo::Evolve()
     }
 }
 
-// tag cells for refinement
-// overrides the pure virtual function in AmrCore
-void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
-{
-    BL_PROFILE("incflo::ErrorEst()");
-
-#if 0
-    const char   tagval = TagBox::SET;
-    const char clearval = TagBox::CLEAR;
-
-#ifdef AMREX_USE_EB
-    auto const& factory = EBFactory(lev);
-    auto const& flags = factory.getMultiEBCellFlagFab();
-#endif
-
-    const auto dx      = geom[lev].CellSizeArray();
-    const auto prob_lo = geom[lev].ProbLoArray();
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (MFIter mfi(*vel[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
-    {
-        // xxxxx TODO ErrorEst
-    }
-#endif
-
-#ifdef AMREX_USE_EB
-    m_refine_cutcells = true;
-    // Refine on cut cells
-    if (m_refine_cutcells)
-    {
-        amrex::TagCutCells(tags, m_leveldata[lev]->velocity);
-    }
-#endif
-}
-
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
 // Only used during initialization.
 // overrides the pure virtual function in AmrCore
@@ -191,8 +172,10 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     if (m_verbose > 0)
     {
-        amrex::Print() << "Making new level " << lev << std::endl;
-        amrex::Print() << "with BoxArray " << new_grids << std::endl;
+        amrex::Print() << "Making new level " << lev << " from scratch" << std::endl;
+        if (m_verbose > 2) {
+            amrex::Print() << "with BoxArray " << new_grids << std::endl;
+        }
     }
 
     SetBoxArray(lev, new_grids);
@@ -220,42 +203,6 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     if (m_restart_file.empty()) {
         prob_init_fluid(lev);
     }
-}
-
-// Make a new level using provided BoxArray and DistributionMapping and
-// fill with interpolated coarse level data.
-// overrides the pure virtual function in AmrCore
-void incflo::MakeNewLevelFromCoarse (int lev,
-                                     Real time,
-                                     const BoxArray& ba,
-                                     const DistributionMapping& dm)
-{
-    BL_PROFILE("incflo::MakeNewLevelFromCoarse()");
-
-    amrex::Print() << "ABORT: incflo::MakeNewLevelFromCoarse() not yet implemented. " << std::endl;
-    amrex::Abort();
-}
-
-// Remake an existing level using provided BoxArray and DistributionMapping and
-// fill with existing fine and coarse data.
-// overrides the pure virtual function in AmrCore
-void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
-			 const DistributionMapping& dm)
-{
-    BL_PROFILE("incflo::RemakeLevel()");
-
-    amrex::Print() << "ABORT: incflo::RemakeLevel() not yet implemented. " << std::endl;
-    amrex::Abort();
-}
-
-// Delete level data
-// overrides the pure virtual function in AmrCore
-void incflo::ClearLevel (int lev)
-{
-    BL_PROFILE("incflo::ClearLevel()");
-
-    amrex::Print() << "ABORT: incflo::ClearLevel() not yet implemented. " << std::endl;
-    amrex::Abort();
 }
 
 // Set covered coarse cells to be the average of overlying fine cells

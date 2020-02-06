@@ -9,11 +9,6 @@ void incflo::Advance()
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
 
-    if (m_verbose > 0)
-    {
-        amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
-    }
-
     // Compute time step size
     int initialisation = 0;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
