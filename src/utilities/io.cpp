@@ -633,15 +633,15 @@ void incflo::set_average_quantities(const int s, const int b, const int axis, co
     
     const Real half_height = zlo + 0.5*dz;
 
-    vx_mean_ground = line[ncomp*s+u_avg];
-    vy_mean_ground = line[ncomp*s+v_avg];
+    m_vx_mean_ground = line[ncomp*s+u_avg];
+    m_vy_mean_ground = line[ncomp*s+v_avg];
     
 //    nu_mean_ground = line[ncomp*s+nu_avg];
 //    // fixme circular dependency so need to hack this for now
 //    if(nstep == -1) nu_mean_ground = 1.0;
 //    amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
     
-    amrex::Print() << "ground half cell height, vx, vy: " << half_height << ' ' << vx_mean_ground  << ' ' << vy_mean_ground << std::endl;
+    amrex::Print() << "ground half cell height, vx, vy: " << half_height << ' ' << m_vx_mean_ground  << ' ' << m_vy_mean_ground << std::endl;
    
     // search for cells near log_law_sampling_height
     Real height = half_height;
@@ -665,9 +665,9 @@ void incflo::set_average_quantities(const int s, const int b, const int axis, co
         
     // simple shear stress model for neutral BL
     // apply as an inhomogeneous Neumann BC
-    utau = m_kappa*uh/log(height/m_surface_roughness_z0);
+    m_utau = m_kappa*uh/log(height/m_surface_roughness_z0);
     
-    amrex::Print() << "log law sampling height, u, utau: " << height << ' ' << uh  << ' ' << utau << std::endl;
+    amrex::Print() << "log law sampling height, u, utau: " << height << ' ' << uh  << ' ' << m_utau << std::endl;
       
     // search for cells near abl_forcing_height
     c = 0.0;
@@ -682,11 +682,11 @@ void incflo::set_average_quantities(const int s, const int b, const int axis, co
     if(ind   < 0) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is negative \n");
     if(ind+1 > b) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is larger than domain \n");
    
-    vx_mean = line[ncomp*ind+u_avg]*(1.0-c) + line[ncomp*(ind+1)+u_avg]*c;
-    vy_mean = line[ncomp*ind+v_avg]*(1.0-c) + line[ncomp*(ind+1)+v_avg]*c;
+    m_vx_mean = line[ncomp*ind+u_avg]*(1.0-c) + line[ncomp*(ind+1)+u_avg]*c;
+    m_vy_mean = line[ncomp*ind+v_avg]*(1.0-c) + line[ncomp*(ind+1)+v_avg]*c;
 
     
-    amrex::Print() << "abl forcing height z, vx, vy: " << height << ' ' << vx_mean << ' ' << vy_mean << std::endl;
+    amrex::Print() << "abl forcing height z, vx, vy: " << height << ' ' << m_vx_mean << ' ' << m_vy_mean << std::endl;
     
 }
 
@@ -806,52 +806,7 @@ void incflo::spatially_average_quantities_down(int plot_type)
         outfile.write((char *) line.data(), sizeof(Real)*ncell*ncomp);
     }
     
-    
-    // binary file test
-    if(plot_type == 1 and ParallelDescriptor::IOProcessor()){
-        std::ifstream infile;
-
-        infile.open("line_plot.bin",std::ios_base::in|std::ios_base::binary);
-        if(!infile) amrex::Abort("line plot binary file not found");
-
-        int ncell_in;
-        int ncomp_in;
-        infile.read((char *) &ncell_in, sizeof(int));
-        infile.read((char *) &ncomp_in, sizeof(int));
-        
-        AMREX_ALWAYS_ASSERT(ncell_in == b-s+1);
-        AMREX_ALWAYS_ASSERT(ncomp_in == ncomp);
-
-        Real z[ncell_in];
-        infile.read((char *) z, sizeof(Real)*ncell_in);
-        auto dx = geom[lev].CellSizeArray();
-        for(int i=s,j=0;i<=b;++i,++j)
-        {
-            Real zdiff = fabs((i+0.5)*dx[axis]- z[j]);
-            if(zdiff > 1.0e-12) amrex::Abort("z diff failed");
-        }
-        
-        int nstep_in;
-        Real cur_time_in;
-        
-        infile.read((char *) &nstep_in, sizeof(int));
-        infile.read((char *) &cur_time_in, sizeof(Real));
-        
-        if(m_nstep==0){
-            Real line_in[ncell_in*ncomp_in];
-            infile.read((char *) line_in, sizeof(Real)*ncell*ncomp);
-            for(int i=0;i<ncell;++i){
-                for(int n=0;n<ncomp;++n){
-                    Real ldiff = fabs(line[n + ncomp*i]-line_in[n+ncomp*i]);
-                    if(ldiff > 1.0e-12) amrex::Abort("line diff failed");
-
-                }
-            }
-        }        
-    }
-    
     if(plot_type==2) single_level_line_plot(s, b, axis, ncomp, line);
-    
 
  }
 

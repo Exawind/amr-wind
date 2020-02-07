@@ -464,11 +464,11 @@ private:
    
      
     // fixme this is sloppy and are being used as global variables...
-    amrex::Real vx_mean; //fixme pick a better name
-    amrex::Real vy_mean;
-    amrex::Real vx_mean_ground;
-    amrex::Real vy_mean_ground;
-    amrex::Real utau;
+    amrex::Real m_vx_mean; //fixme pick a better name
+    amrex::Real m_vy_mean;
+    amrex::Real m_vx_mean_ground;
+    amrex::Real m_vy_mean_ground;
+    amrex::Real m_utau;
     
     
     int m_plot_int = -1;

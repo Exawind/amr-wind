@@ -605,8 +605,8 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
     const Real v = m_ic_v;
     const Real w = m_ic_w;
     
-    const Real umean = vx_mean;//fixme get rid of this global storage
-    const Real vmean = vy_mean;//fixme get rid of this global storage
+    const Real umean = m_vx_mean;//fixme get rid of this global storage
+    const Real vmean = m_vy_mean;//fixme get rid of this global storage
     
     const Real T0 = m_temperature_values[0];
     const Real thermalExpansionCoeff = m_thermalExpansionCoeff;

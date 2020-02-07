@@ -127,8 +127,8 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
             // fixme not sure I want this here. this is the only place b is stored, however it is simple to grab eta from the first cell or extrapolate so maybe this can move somewhere else?
             if(m_incflo->m_probtype==35){
                 amrex::Print() << "warning wall model being called " << std::endl;
-                Real umag = sqrt(pow(m_incflo->vx_mean_ground,2) + pow(m_incflo->vy_mean_ground,2));
-                m_incflo->wall_model_bc(lev,m_incflo->utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
+                Real umag = sqrt(pow(m_incflo->m_vx_mean_ground,2) + pow(m_incflo->m_vy_mean_ground,2));
+                m_incflo->wall_model_bc(lev,m_incflo->m_utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
             }
             m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
