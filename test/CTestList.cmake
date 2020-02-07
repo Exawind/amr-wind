@@ -99,6 +99,8 @@ endfunction(add_test_u)
 #=============================================================================
 add_test_r(test_1 4)
 add_test_r(test_2 4)
+add_test_r(test_tgv 4)
+add_test_r(test_tgv_godunov 4)
 
 #=============================================================================
 # Verification tests
