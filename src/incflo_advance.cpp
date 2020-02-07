@@ -42,9 +42,8 @@ void incflo::Advance()
         }
     }
 
-    // fixme this has some specific abl stuff in it that will break for non-abl cases
-    // make this generic so plane averages can be done without abl
-    if(m_probtype==35) spatially_average_quantities_down(true);
+    // plane averaging assumes that fillpatch has already been called on all levels
+    if(m_plane_averaging) spatially_average_quantities_down();
     
     ApplyPredictor();
 

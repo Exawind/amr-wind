@@ -495,14 +495,12 @@ void incflo::WritePlotFile()
 
 enum avg_var {u_avg, v_avg, w_avg, T_avg, uu, uv, uw, vv, vw, ww, wuu, wuv, wuw, wvv, wvw, www, Tu, Tv, Tw, nu_avg, last_avg_var=nu_avg};
 
-void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArrayBox &avg_fab, int axis)
+void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, int axis, Vector<Real> &line)
 {
 
     BL_PROFILE("incflo::set_mfab_spatial_averaging_quantities()");
-
-    if(axis!=2) amrex::Abort("not implemented for other index yet\n");
     
-    AMREX_ASSERT(mfab.nComp() == avg_fab.nComp());
+    const int ncomp = mfab.nComp();
     
     auto& ld = *m_leveldata[lev];
                
@@ -518,7 +516,6 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
         const auto& tracer_arr = ld.tracer.array(mfi);
 //        const auto& eta_arr = ld.eta.array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
         const auto& den_arr = ld.density.array(mfi);
-        const auto& avg_fab_arr = avg_fab.array();
 
          // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -531,11 +528,20 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
             // potential temperature
             mfab_arr(i,j,k,T_avg) = tracer_arr(i,j,k,0);
             
+            int ind;
+            if(axis==0){
+                ind = i;
+            } else if(axis==1){
+                ind = j;
+            } else {
+                ind = k;
+            }
+            
             // fluctuations
-            const Real up = vel_arr(i,j,k,0) - avg_fab_arr(0,0,k,u_avg);
-            const Real vp = vel_arr(i,j,k,1) - avg_fab_arr(0,0,k,v_avg);
-            const Real wp = vel_arr(i,j,k,2) - avg_fab_arr(0,0,k,w_avg);
-            const Real Tp = tracer_arr(i,j,k,0) - avg_fab_arr(0,0,k,T_avg);
+            const Real up = vel_arr(i,j,k,0) - line[ncomp*ind+u_avg];
+            const Real vp = vel_arr(i,j,k,1) - line[ncomp*ind+v_avg];
+            const Real wp = vel_arr(i,j,k,2) - line[ncomp*ind+w_avg];
+            const Real Tp = tracer_arr(i,j,k,0) - line[ncomp*ind+T_avg];
             
             mfab_arr(i,j,k,uu) = up*up;
             mfab_arr(i,j,k,uv) = up*vp;
@@ -564,10 +570,10 @@ void incflo::set_mfab_spatial_averaging_quantities(MultiFab &mfab, int lev, FArr
 }
 
 
-void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real area, const int axis, const int ncomp){
+void incflo::plane_average(const MultiFab& mfab, const Real nplane_cells, const int axis, const int ncomp, Vector<Real> &line){
 
     BL_PROFILE("incflo::plane_average()");
-
+  
     switch (axis) {
         case 0:
 #ifdef _OPENMP
@@ -577,8 +583,7 @@ void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real 
             {
                 Box bx = mfi.tilebox();
                 const auto mfab_arr = mfab.array(mfi);
-                const auto avg_fab_arr = avg_fab.array();
-                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(i,0,0,n), mfab_arr(i,j,k,n)/area);} );
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(&line[ncomp*i+n], mfab_arr(i,j,k,n)/nplane_cells);} );
             }
 
             break;
@@ -591,8 +596,7 @@ void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real 
             {
                 Box bx = mfi.tilebox();
                 const auto mfab_arr = mfab.array(mfi);
-                const auto avg_fab_arr = avg_fab.array();
-                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(0,j,0,n), mfab_arr(i,j,k,n)/area);} );
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(&line[ncomp*j+n], mfab_arr(i,j,k,n)/nplane_cells);} );
             }
 
             break;
@@ -605,8 +609,7 @@ void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real 
             {
                 Box bx = mfi.tilebox();
                 const auto mfab_arr = mfab.array(mfi);
-                const auto avg_fab_arr = avg_fab.array();
-                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(avg_fab_arr.ptr(0,0,k,n), mfab_arr(i,j,k,n)/area);} );
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n, {HostDevice::Atomic::Add(&line[ncomp*k+n], mfab_arr(i,j,k,n)/nplane_cells);} );
             }
 
             break;
@@ -619,46 +622,26 @@ void incflo::plane_average(const MultiFab& mfab, FArrayBox& avg_fab, const Real 
 }
 
 
-void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis)
+void incflo::set_average_quantities(const int s, const int b, const int axis, const int ncomp, amrex::Vector<Real> &line)
 {
 
     AMREX_ALWAYS_ASSERT(s>=0);
     AMREX_ALWAYS_ASSERT(b>s);
-
-    // fixme switch this to a 1d array
-    const auto fab_arr = avg_fab.array();
-    
+  
     const Real dz = geom[0].CellSize(axis);
     const Real zlo = geom[0].ProbLo(axis);
     
     const Real half_height = zlo + 0.5*dz;
 
-    // set the velocity at the first cell above the ground
-    switch (axis) {
-        case 0:
-            vx_mean_ground = fab_arr(s,0,0,u_avg);
-            vy_mean_ground = fab_arr(s,0,0,v_avg);
-//            nu_mean_ground = fab_arr(s,0,0,nu_avg);
-            break;
-        case 1:
-            vx_mean_ground = fab_arr(0,s,0,u_avg);
-            vy_mean_ground = fab_arr(0,s,0,v_avg);
-//            nu_mean_ground = fab_arr(0,s,0,nu_avg);
-
-            break;
-        case 2:
-            vx_mean_ground = fab_arr(0,0,s,u_avg);
-            vy_mean_ground = fab_arr(0,0,s,v_avg);
-//            nu_mean_ground = fab_arr(0,0,s,nu_avg);
-            break;
-    }
+    vx_mean_ground = line[ncomp*s+u_avg];
+    vy_mean_ground = line[ncomp*s+v_avg];
     
-    // fixme circular dependency so need to hack this for now
+//    nu_mean_ground = line[ncomp*s+nu_avg];
+//    // fixme circular dependency so need to hack this for now
 //    if(nstep == -1) nu_mean_ground = 1.0;
-
 //    amrex::Print() << "nu mean ground: " << nu_mean_ground << std::endl;
+    
     amrex::Print() << "ground half cell height, vx, vy: " << half_height << ' ' << vx_mean_ground  << ' ' << vy_mean_ground << std::endl;
-
    
     // search for cells near log_law_sampling_height
     Real height = half_height;
@@ -675,32 +658,17 @@ void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis)
     if(ind   < 0) amrex::Abort("low_law_sampling_height is set incorrectly since conversion to integer is negative \n");
     if(ind+1 > b) amrex::Abort("low_law_sampling_height is set incorrectly since conversion to integer is larger than domain \n");
 
-    Real vx,vy;
-    switch (axis) {
-        case 0:
-            vx = fab_arr(ind,0,0,u_avg)*(1.0-c) + fab_arr(ind+1,0,0,u_avg)*c;
-            vy = fab_arr(ind,0,0,v_avg)*(1.0-c) + fab_arr(ind+1,0,0,v_avg)*c;
-            break;
-        case 1:
-            vx = fab_arr(0,ind,0,u_avg)*(1.0-c) + fab_arr(0,ind+1,0,u_avg)*c;
-            vy = fab_arr(0,ind,0,v_avg)*(1.0-c) + fab_arr(0,ind+1,0,v_avg)*c;
-            break;
-        case 2:
-            vx = fab_arr(0,0,ind,u_avg)*(1.0-c) + fab_arr(0,0,ind+1,u_avg)*c;
-            vy = fab_arr(0,0,ind,v_avg)*(1.0-c) + fab_arr(0,0,ind+1,v_avg)*c;
-            break;
-    }
-    
+    const Real vx = line[ncomp*ind+u_avg]*(1.0-c) + line[ncomp*(ind+1)+u_avg]*c;
+    const Real vy = line[ncomp*ind+v_avg]*(1.0-c) + line[ncomp*(ind+1)+v_avg]*c;
+
     const Real uh = sqrt(pow(vx,2) + pow(vy,2));
         
     // simple shear stress model for neutral BL
     // apply as an inhomogeneous Neumann BC
-
     utau = m_kappa*uh/log(height/m_surface_roughness_z0);
     
     amrex::Print() << "log law sampling height, u, utau: " << height << ' ' << uh  << ' ' << utau << std::endl;
-  
-    
+      
     // search for cells near abl_forcing_height
     c = 0.0;
     ind = s;
@@ -714,56 +682,181 @@ void incflo::set_average_quantities(FArrayBox& avg_fab, int s, int b, int axis)
     if(ind   < 0) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is negative \n");
     if(ind+1 > b) amrex::Abort("abl_forcing_height is set incorrectly since conversion to integer is larger than domain \n");
    
-    switch (axis) {
-        case 0:
-            vx_mean = fab_arr(ind,0,0,u_avg)*(1.0-c) + fab_arr(ind+1,0,0,u_avg)*c;
-            vy_mean = fab_arr(ind,0,0,v_avg)*(1.0-c) + fab_arr(ind+1,0,0,v_avg)*c;
-            break;
-        case 1:
-            vx_mean = fab_arr(0,ind,0,u_avg)*(1.0-c) + fab_arr(0,ind+1,0,u_avg)*c;
-            vy_mean = fab_arr(0,ind,0,v_avg)*(1.0-c) + fab_arr(0,ind+1,0,v_avg)*c;
-            break;
-        case 2:
-            vx_mean = fab_arr(0,0,ind,u_avg)*(1.0-c) + fab_arr(0,0,ind+1,u_avg)*c;
-            vy_mean = fab_arr(0,0,ind,v_avg)*(1.0-c) + fab_arr(0,0,ind+1,v_avg)*c;
-            break;
-    }
+    vx_mean = line[ncomp*ind+u_avg]*(1.0-c) + line[ncomp*(ind+1)+u_avg]*c;
+    vy_mean = line[ncomp*ind+v_avg]*(1.0-c) + line[ncomp*(ind+1)+v_avg]*c;
+
     
     amrex::Print() << "abl forcing height z, vx, vy: " << height << ' ' << vx_mean << ' ' << vy_mean << std::endl;
     
 }
 
 
-void incflo::spatially_average_quantities_down(bool plot)
+void incflo::spatially_average_quantities_down(int plot_type)
 {
 
     BL_PROFILE("incflo::spatially_average_quantities_down()");
 
-    if(finest_level > 0) {
-        amrex::Abort("commented out the fine to coarse averaging uncomment to test \n");
-    }
-    if(finest_level > 1) {
-        amrex::Abort("average down only works for 2 levels for now need to add for loops \n");
-    }
-
-    const int ncomp = last_avg_var+1;// must match number of quantities in set_mfab_spatial_averaging_quantities(...)
-    const int ngrow = 0;
-
-    int crse_lev = 0;
-    int fine_lev = finest_level;
-
-    // create a 3D box with 1D indices
-    const Box& domain = geom[0].Domain();
-    IntVect dom_lo(domain.loVect());
-    IntVect dom_hi(domain.hiVect());
+    // for now only have this set to level 0
+    const int lev = 0;
+    // fixme this could be an input if useful for other problems
+    const int axis = 2;
     
-    
-    const int axis = 2;// fixme if you change this the loop below will break
+    // must match number of quantities in set_mfab_spatial_averaging_quantities(...)
+    const int ncomp = last_avg_var+1;
 
+    const Box& domain = geom[lev].Domain();
+    const IntVect dom_lo(domain.loVect());
+    const IntVect dom_hi(domain.hiVect());
     
     const int s = domain.smallEnd(axis);
     const int b = domain.bigEnd(axis);
+    const int ncell = b-s+1;
+    
+    // code below depends on small index s starting at 0, it would be weird if it didn't
+    AMREX_ALWAYS_ASSERT(s==0);
+    
+    amrex::Vector<Real> line(ncell*ncomp,0.0);
 
+    // count number of cells in plane
+    Real nplane_cells = 1.0;
+    for(int i=0;i<AMREX_SPACEDIM;++i){
+        if(i!=axis) nplane_cells *= (dom_hi[i]-dom_lo[i]+1);
+    }
+         
+    // no ghost cells needed
+    const int ngrow = 0;
+    
+    // first pass is to get averages
+    MultiFab mfab(grids[lev], dmap[lev], ncomp, ngrow);
+    set_mfab_spatial_averaging_quantities(mfab,lev,axis,line);
+    // ncomp is used here and is safer but it could actually be 4 depending on the ordering of average down function
+    plane_average(mfab, nplane_cells, axis, ncomp, line);
+    // sum all lines together
+    ParallelDescriptor::ReduceRealSum(line.data(), line.size());
+   
+    // second pass has averages and can now calculate fluctuations
+    set_mfab_spatial_averaging_quantities(mfab, lev, axis, line);
+    // reset back to zero
+    line = Vector<Real> (line.size(),0.0);
+    plane_average(mfab, nplane_cells, axis, ncomp, line);
+    // sum all lines together
+    ParallelDescriptor::ReduceRealSum(line.data(), line.size());
+
+    // set all the stored average quantities for every time step
+    // fixme warning this has specific ABL stuff in it
+    if(m_probtype==35) set_average_quantities(s, b, axis, ncomp, line);
+    
+    if(!(m_line_plot_int > 0 and (m_nstep % m_line_plot_int == 0))) return;
+
+    // single text file for line data
+    // fixme does this deserve it's own function?
+    if(plot_type==0 and ParallelDescriptor::IOProcessor()){
+        std::ofstream outfile;
+        outfile.precision(4);//fixme how much precision do we want?
+        if(m_nstep == 0){
+            // make new file
+            outfile.open("line_plot.txt",std::ios_base::out);
+            outfile << "# ncell, ncomp" << std::endl;
+            outfile << ncell << ", " << ncomp << std::endl;
+            outfile << "# step, time, z, u_avg, v_avg, w_avg, T_avg, uu, uv, uw, vv, vw, ww, wuu, wuv, wuw, wvv, wvw, www, Tu, Tv, Tw, nu_avg" << std::endl;
+        }else {
+            // append file
+            outfile.open("line_plot.txt", std::ios_base::out|std::ios_base::app);
+        }
+        
+        auto dx = geom[lev].CellSizeArray();
+
+        for(int i=s;i<=b;++i){
+            Real z = (i+0.5)*dx[axis];
+            outfile << m_nstep << ", " << std::scientific << m_cur_time << ", " << z;
+            for(int n=0;n<ncomp;++n){
+                outfile <<  ", " << std::scientific << line[n + ncomp*i];
+            }
+            outfile << std::endl;
+        }
+
+    }
+    
+    
+    // single binary file for line data
+    if(plot_type == 1 and ParallelDescriptor::IOProcessor()){
+        std::ofstream outfile;
+
+        if(m_nstep == 0){
+            
+            // make new file
+            outfile.open("line_plot.bin",std::ios_base::out|std::ios_base::binary);
+            
+            outfile.write((char *) &ncell, sizeof(int));
+            outfile.write((char *) &ncomp, sizeof(int));
+            
+            auto dx = geom[lev].CellSizeArray();
+
+            for(int i=s;i<=b;++i){
+                Real z = (i+0.5)*dx[axis];
+                outfile.write((char *) &z, sizeof(Real));
+            }
+            
+        }else {
+            outfile.open("line_plot.bin",std::ios_base::out|std::ios_base::binary|std::ios_base::app);
+        }
+
+        outfile.write((char *) &m_nstep, sizeof(int));
+        outfile.write((char *) &m_cur_time, sizeof(Real));
+        outfile.write((char *) line.data(), sizeof(Real)*ncell*ncomp);
+    }
+    
+    
+    // binary file test
+    if(plot_type == 1 and ParallelDescriptor::IOProcessor()){
+        std::ifstream infile;
+
+        infile.open("line_plot.bin",std::ios_base::in|std::ios_base::binary);
+        if(!infile) amrex::Abort("line plot binary file not found");
+
+        int ncell_in;
+        int ncomp_in;
+        infile.read((char *) &ncell_in, sizeof(int));
+        infile.read((char *) &ncomp_in, sizeof(int));
+        
+        AMREX_ALWAYS_ASSERT(ncell_in == b-s+1);
+        AMREX_ALWAYS_ASSERT(ncomp_in == ncomp);
+
+        Real z[ncell_in];
+        infile.read((char *) z, sizeof(Real)*ncell_in);
+        auto dx = geom[lev].CellSizeArray();
+        for(int i=s,j=0;i<=b;++i,++j)
+        {
+            Real zdiff = fabs((i+0.5)*dx[axis]- z[j]);
+            if(zdiff > 1.0e-12) amrex::Abort("z diff failed");
+        }
+        
+        int nstep_in;
+        Real cur_time_in;
+        
+        infile.read((char *) &nstep_in, sizeof(int));
+        infile.read((char *) &cur_time_in, sizeof(Real));
+        
+        if(m_nstep==0){
+            Real line_in[ncell_in*ncomp_in];
+            infile.read((char *) line_in, sizeof(Real)*ncell*ncomp);
+            for(int i=0;i<ncell;++i){
+                for(int n=0;n<ncomp;++n){
+                    Real ldiff = fabs(line[n + ncomp*i]-line_in[n+ncomp*i]);
+                    if(ldiff > 1.0e-12) amrex::Abort("line diff failed");
+
+                }
+            }
+        }        
+    }
+    
+    if(plot_type==2) single_level_line_plot(s, b, axis, ncomp, line);
+    
+
+ }
+
+void incflo::single_level_line_plot(int s, int b, int axis, int ncomp, Vector<Real> &line){
+    
     IntVect small(0,0,0);
     IntVect big(0,0,0);
 
@@ -772,58 +865,7 @@ void incflo::spatially_average_quantities_down(bool plot)
 
     // have every processor make a 1d box
     Box bx1d = Box(small,big);
-
-    // have every processor make a 1d fab
-    FArrayBox fab(bx1d,ncomp);
-    fab.setVal(0.0);
-
-    // count number of cells in plane
-    Real nplane_cells = 1.0;
-    for(int i=0;i<AMREX_SPACEDIM;++i){
-        if(i!=axis) nplane_cells *= (dom_hi[i]-dom_lo[i]+1);
-    }
-         
-    
-     // need to put this in to a for loop over levels starting from finest and working down
-    MultiFab crse_mfab(grids[crse_lev], dmap[crse_lev], ncomp, ngrow);
-//    MultiFab fine_mfab(grids[fine_lev], dmap[fine_lev], ncomp, ngrow);
-
-    set_mfab_spatial_averaging_quantities(crse_mfab,crse_lev,fab,axis);
-//    set_mfab_spatial_averaging_quantities(fine_mfab,fine_lev,fab,axis);
-    
-//    const int ratio = 2;
-//    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
-
-    // ncomp is used here and is safer but it could actually be 4 depending on the ordering of average down function
-    plane_average(crse_mfab, fab, nplane_cells, axis, ncomp);
-
-    //fixme put in a loop like above
-    // sum all fabs together
-    ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
-
-    set_mfab_spatial_averaging_quantities(crse_mfab,crse_lev,fab,axis);
-//    set_mfab_spatial_averaging_quantities(fine_mfab,fine_lev,fab,axis);
-//    average_down(fine_mfab, crse_mfab, geom[fine_lev], geom[crse_lev], 0, ncomp, ratio);
-
-
-    fab.setVal(0.0);
-    
-    plane_average(crse_mfab,fab,nplane_cells,axis,ncomp);
-
-    // sum all fabs together
-    ParallelDescriptor::ReduceRealSum(fab.dataPtr(0),fab.size());
-    
-    // set all the stored average quantities
-    set_average_quantities(fab,s,b,axis);
-
-    
-    if(!plot) return;
-    
-    // fixme this is in case the copy from fab to mfab is not in the z axis
-    AMREX_ALWAYS_ASSERT(axis==2);
-    
-    // begin collecting and output values
-    
+            
      // make a box array with a single box
     BoxArray ba1d(bx1d);
 
@@ -832,27 +874,46 @@ void incflo::spatially_average_quantities_down(bool plot)
     Vector<int> pmap {0};
     dm1d.define(pmap);
 
+    const int ngrow = 0;
+    
      // create a multiFAB using one box on one proc
     MultiFab mfab1d(ba1d,dm1d,ncomp,ngrow);
 
-
-     // fixme there has to be a way to copy a fab into a mfab right??
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (MFIter mfi(mfab1d, TilingIfNotGPU()); mfi.isValid(); ++mfi)
-    {
-        Box bx = mfi.tilebox();
-
-        const auto& fab_arr1 = mfab1d.array(mfi);
-        const auto& fab_arr2 = fab.array();
-
-        AMREX_FOR_4D(bx, ncomp, i, j, k, n,
-        {
-            fab_arr1(0,0,k,n) = fab_arr2(0,0,k,n);
-        });
+    switch(axis){
+        case 0:
+            for (MFIter mfi(mfab1d, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                auto fab_arr = mfab1d.array(mfi);
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n,
+                {
+                    fab_arr(i,0,0,n) = line[n + ncomp*i];
+                });
+            }
+            break;
+        case 1:
+            for (MFIter mfi(mfab1d, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                auto fab_arr = mfab1d.array(mfi);
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n,
+                {
+                    fab_arr(0,j,0,n) = line[n + ncomp*j];
+                });
+            }
+            break;
+        case 2:
+            for (MFIter mfi(mfab1d, TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box bx = mfi.tilebox();
+                auto fab_arr = mfab1d.array(mfi);
+                AMREX_FOR_4D(bx, ncomp, i, j, k, n,
+                {
+                    fab_arr(0,0,k,n) = line[n + ncomp*k];
+                });
+            }
+            break;
     }
-
 
     std::string line_plot_file{"line_plot"};
 
@@ -866,36 +927,35 @@ void incflo::spatially_average_quantities_down(bool plot)
     pltscaVarsName.push_back("<v>");
     pltscaVarsName.push_back("<w>");
     pltscaVarsName.push_back("<T>");
-    
+
     pltscaVarsName.push_back("<u'u'>");
     pltscaVarsName.push_back("<u'v'>");
     pltscaVarsName.push_back("<u'w'>");
     pltscaVarsName.push_back("<v'v'>");
     pltscaVarsName.push_back("<v'w'>");
     pltscaVarsName.push_back("<w'w'>");
-    
+
     pltscaVarsName.push_back("<w'u'u'>");
     pltscaVarsName.push_back("<w'u'v'>");
     pltscaVarsName.push_back("<w'u'w'>");
     pltscaVarsName.push_back("<w'v'v'>");
     pltscaVarsName.push_back("<w'v'w'>");
     pltscaVarsName.push_back("<w'w'w'>");
-    
+
     pltscaVarsName.push_back("<T'u'>");
     pltscaVarsName.push_back("<T'v'>");
     pltscaVarsName.push_back("<T'w'>");
     pltscaVarsName.push_back("<nu+nu_t>");
 
     //fixme todo add Rij, qj, nu_SGS https://a2ehfm-ecp.slack.com/archives/C3V26K34G/p1522245519000450
-    
+
     int level_step = 0;
 
     // in debug mode amrex output will complain if these are not the same size
     AMREX_ALWAYS_ASSERT(mfab1d.nComp() == pltscaVarsName.size());
 
     amrex::WriteSingleLevelPlotfile(plotfilename, mfab1d, pltscaVarsName, geom[0], m_cur_time, level_step);
- 
+
     WriteJobInfo(plotfilename);
-
-
- }
+    
+}

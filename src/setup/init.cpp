@@ -20,14 +20,22 @@ void incflo::ReadParameters ()
     ReadRheologyParameters();
 
     { // Prefix amr
- 	ParmParse pp("amr");
+        ParmParse pp("amr");
 
-	pp.query("regrid_int", m_regrid_int);
+        pp.query("regrid_int", m_regrid_int);
 #ifdef AMREX_USE_EB
         pp.query("refine_cutcells", m_refine_cutcells);
 #endif
 
         pp.query("KE_int", m_KE_int);
+        
+        pp.query("plane_averaging", m_plane_averaging);
+        pp.query("line_plot_int", m_line_plot_int);
+        
+        if(m_line_plot_int > 0 and m_plane_averaging == false)
+            amrex::Print() << "Warning line plot will not work unless plane_averaging=1" << std::endl;
+        if(m_line_plot_int < 1 and m_plane_averaging == true)
+            amrex::Print() << "Warning plane averaging is on but line plots are not being output, set line_plot_int to greater than 0" << std::endl;
 
     } // end prefix amr
 

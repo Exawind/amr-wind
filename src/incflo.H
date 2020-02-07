@@ -271,10 +271,12 @@ public: // for cuda
     
     
     //fixme move these and clean up
-    void set_mfab_spatial_averaging_quantities(amrex::MultiFab &mfab, int lev, amrex::FArrayBox &fab, int index);
-    void plane_average(const amrex::MultiFab& mfab, amrex::FArrayBox& avg_fab, const amrex::Real area, const int axis, const int ncomp);
-    void spatially_average_quantities_down(bool plot=true);
-    void set_average_quantities(amrex::FArrayBox& avg_fab, int s, int b, int axis);
+    void set_mfab_spatial_averaging_quantities(amrex::MultiFab &mfab, int lev, int axis, amrex::Vector<amrex::Real> &line);
+    bool m_plane_averaging = false;
+    void plane_average(const amrex::MultiFab& mfab, const amrex::Real nplane_cells, const int axis, const int ncomp, amrex::Vector<amrex::Real> &line);
+    void spatially_average_quantities_down(int plot_type=0);
+    void set_average_quantities(const int s, const int b, const int axis, const int ncomp, amrex::Vector<amrex::Real> &line);
+    void single_level_line_plot(int s, int b, int axis, int ncomp, amrex::Vector<amrex::Real> &line);
     void wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, amrex::MultiFab& density, amrex::MultiFab& velocity) const;
 
     
@@ -483,6 +485,8 @@ private:
     int m_check_int = -1;
     int m_last_chk = -1;
     int m_KE_int = -1;
+    int m_line_plot_int = 1;
+    
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
 
