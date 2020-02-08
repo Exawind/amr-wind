@@ -21,14 +21,18 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Vector<MultiFab const*> const& vel,
                                  Vector<MultiFab const*> const& density,
                                  Vector<MultiFab const*> const& tracer,
+                                 Vector<MultiFab*> const& u_mac,
+                                 Vector<MultiFab*> const& v_mac,
+                                 Vector<MultiFab*> const& w_mac,
                                  Vector<MultiFab const*> const& vel_forces,
                                  Vector<MultiFab const*> const& tra_forces,
                                  Real time)
 {
-    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
+//  Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
     int ngmac = nghost_mac();
 
     for (int lev = 0; lev <= finest_level; ++lev) {
+#if 0
         const BoxArray& ba = density[lev]->boxArray();
         const DistributionMapping& dm = density[lev]->DistributionMap();
         u_mac[lev].define(amrex::convert(ba,IntVect::TheDimensionVector(0)), dm,
@@ -42,13 +46,14 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
             v_mac[lev].setBndry(0.0);
             w_mac[lev].setBndry(0.0);
         }
+#endif
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
         if (m_use_godunov) {
-            predict_godunov(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev], *density[lev],
+            predict_godunov(lev, time, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev], *density[lev],
                             *vel_forces[lev]);
         } else {
-            predict_vels_on_faces(lev, time, u_mac[lev], v_mac[lev], w_mac[lev], *vel[lev]);
+            predict_vels_on_faces(lev, time, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev]);
         }
     }
 
@@ -57,9 +62,9 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         if (ngmac > 0) {
-            u_mac[lev].FillBoundary(geom[lev].periodicity());
-            v_mac[lev].FillBoundary(geom[lev].periodicity());
-            w_mac[lev].FillBoundary(geom[lev].periodicity());
+            u_mac[lev]->FillBoundary(geom[lev].periodicity());
+            v_mac[lev]->FillBoundary(geom[lev].periodicity());
+            w_mac[lev]->FillBoundary(geom[lev].periodicity());
         }
 
         MFItInfo mfi_info;
@@ -77,9 +82,9 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                     vel[lev]->const_array(mfi),
                                     density[lev]->array(mfi),
                                     (m_ntrac>0) ? tracer[lev]->const_array(mfi) : Array4<Real const>{},
-                                    u_mac[lev].const_array(mfi),
-                                    v_mac[lev].const_array(mfi),
-                                    w_mac[lev].const_array(mfi),
+                                    u_mac[lev]->const_array(mfi),
+                                    v_mac[lev]->const_array(mfi),
+                                    w_mac[lev]->const_array(mfi),
                                     (!vel_forces.empty()) ? vel_forces[lev]->const_array(mfi)
                                                           : Array4<Real const>{},
                                     (!tra_forces.empty()) ? tra_forces[lev]->const_array(mfi)

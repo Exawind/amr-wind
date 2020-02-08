@@ -208,10 +208,29 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
+    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
+    int ngmac = nghost_mac();
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        u_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(0)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        v_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(1)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        w_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(2)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        if (ngmac > 0) {
+            u_mac[lev].setBndry(0.0);
+            v_mac[lev].setBndry(0.0);
+            w_mac[lev].setBndry(0.0);
+        }
+    }
+
     // if ( m_use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
                             get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
+                            GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
+                            GetVecOfPtrs(w_mac), 
                             GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
                             m_cur_time);
 
@@ -309,6 +328,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // 
     // **********************************************************************************************
     ApplyProjection(new_time, m_dt, incremental_projection);
+
+    // **********************************************************************************************
+    // 
+    // Over-write velocity in cells with vfrac < 1e-4
+    // 
+    // **********************************************************************************************
+    incflo_correct_small_cells(get_velocity_new(),
+                               GetVecOfConstPtrs(u_mac), GetVecOfConstPtrs(v_mac),
+                               GetVecOfConstPtrs(w_mac));
 }
 
 //
@@ -412,8 +440,27 @@ void incflo::ApplyCorrector()
     // 
     // **********************************************************************************************
 
+    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
+    int ngmac = nghost_mac();
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        u_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(0)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        v_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(1)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        w_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(2)), dmap[lev],
+                          1, ngmac, MFInfo(), Factory(lev));
+        if (ngmac > 0) {
+            u_mac[lev].setBndry(0.0);
+            v_mac[lev].setBndry(0.0);
+            w_mac[lev].setBndry(0.0);
+        }
+    }
+
     compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
                             get_velocity_new_const(), get_density_new_const(), get_tracer_new_const(),
+                            GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
+                            GetVecOfPtrs(w_mac), 
                             {}, {}, new_time);
 
     compute_forces(GetVecOfPtrs(vel_forces), GetVecOfPtrs(tra_forces),
@@ -571,6 +618,15 @@ void incflo::ApplyCorrector()
     // Project velocity field, update pressure
     bool incremental = false;
     ApplyProjection(new_time, m_dt, incremental);
+
+    // **********************************************************************************************
+    // 
+    // Over-write velocity in cells with vfrac < 1e-4
+    // 
+    // **********************************************************************************************
+    incflo_correct_small_cells(get_velocity_new(),
+                               GetVecOfConstPtrs(u_mac), GetVecOfConstPtrs(v_mac),
+                               GetVecOfConstPtrs(w_mac));
 }
 
 void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,

@@ -92,9 +92,16 @@ public: // for cuda
                                   amrex::Vector<amrex::MultiFab const*> const& vel,
                                   amrex::Vector<amrex::MultiFab const*> const& density,
                                   amrex::Vector<amrex::MultiFab const*> const& tracer,
+//                                amrex::Vector<amrex::MultiFab const*> const& u_mac,
+//                                amrex::Vector<amrex::MultiFab const*> const& v_mac,
+//                                amrex::Vector<amrex::MultiFab const*> const& w_mac,
+                                  amrex::Vector<amrex::MultiFab*> const& u_mac,
+                                  amrex::Vector<amrex::MultiFab*> const& v_mac,
+                                  amrex::Vector<amrex::MultiFab*> const& w_mac,
                                   amrex::Vector<amrex::MultiFab const*> const& vel_forces,
                                   amrex::Vector<amrex::MultiFab const*> const& tra_forces,
                                   amrex::Real time);
+
     void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
                                   amrex::Array4<amrex::Real> const& dvdt, // velocity
                                   amrex::Array4<amrex::Real> const& drdt, // density
@@ -109,7 +116,7 @@ public: // for cuda
                                   amrex::Array4<amrex::Real const> const& ft);
 
     //
-    // Gogunov
+    // Godunov
     //
     void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
                           amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
@@ -199,6 +206,11 @@ public: // for cuda
                                    amrex::Array4<amrex::Real const> const& fcy,
                                    amrex::Array4<amrex::Real const> const& fcz);
 #endif
+     
+    void incflo_correct_small_cells (amrex::Vector<amrex::MultiFab*      > const& cc_vel,
+                                     amrex::Vector<amrex::MultiFab const*> const& u_mac,
+                                     amrex::Vector<amrex::MultiFab const*> const& v_mac,
+                                     amrex::Vector<amrex::MultiFab const*> const& w_mac);
 
     void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
                                     amrex::Array4<amrex::Real> const& fx,
@@ -684,9 +696,9 @@ private:
 
     void init_advection ();
 
-    void apply_MAC_projection (amrex::Vector<amrex::MultiFab>& u_mac,
-                               amrex::Vector<amrex::MultiFab>& v_mac,
-                               amrex::Vector<amrex::MultiFab>& w_mac,
+    void apply_MAC_projection (amrex::Vector<amrex::MultiFab*> const& u_mac,
+                               amrex::Vector<amrex::MultiFab*> const& v_mac,
+                               amrex::Vector<amrex::MultiFab*> const& w_mac,
                                amrex::Vector<amrex::MultiFab const*> const& density,
                                amrex::Real time);
 
