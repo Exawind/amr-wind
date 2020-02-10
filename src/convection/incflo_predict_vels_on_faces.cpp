@@ -10,6 +10,7 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
     auto const& fact = this->EBFactory(lev);
     auto const& flags = fact.getMultiEBCellFlagFab();
     auto const& fcent = fact.getFaceCent();
+    auto const& ccent = fact.getCentroid();
 #endif
 
     Box const& domain = Geom(lev).Domain();
@@ -46,7 +47,8 @@ void incflo::predict_vels_on_faces (int lev, Real time, MultiFab& u_mac, MultiFa
                 Array4<Real const> const& fcx = fcent[0]->const_array(mfi);
                 Array4<Real const> const& fcy = fcent[1]->const_array(mfi);
                 Array4<Real const> const& fcz = fcent[2]->const_array(mfi);
-                predict_vels_on_faces_eb(lev,bx,ubx,vbx,wbx,u,v,w,vcc,flagarr,fcx,fcy,fcz);
+                Array4<Real const> const& ccc = ccent.const_array(mfi);
+                predict_vels_on_faces_eb(lev,bx,ubx,vbx,wbx,u,v,w,vcc,flagarr,fcx,fcy,fcz,ccc);
             }
             else
 #endif

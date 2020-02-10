@@ -68,7 +68,8 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         }
 
         MFItInfo mfi_info;
-        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
+        // if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
+        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,1024,1024)).SetDynamic(true);
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -133,11 +134,12 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
 
     bool regular = (flagfab.getType(amrex::grow(bx,1)) == FabType::regular);
 
-    Array4<Real const> fcx, fcy, fcz, vfrac, apx, apy, apz;
+    Array4<Real const> fcx, fcy, fcz, ccc, vfrac, apx, apy, apz;
     if (!regular) {
         fcx = fact.getFaceCent()[0]->const_array(mfi);
         fcy = fact.getFaceCent()[1]->const_array(mfi);
         fcz = fact.getFaceCent()[2]->const_array(mfi);
+        ccc = fact.getCentroid().const_array(mfi);
         vfrac = fact.getVolFrac().const_array(mfi);
         apx = fact.getAreaFrac()[0]->const_array(mfi);
         apy = fact.getAreaFrac()[1]->const_array(mfi);
@@ -231,7 +233,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                          fx, fy, fz, vel, umac, vmac, wmac,
                                          get_velocity_bcrec().data(),
                                          get_velocity_bcrec_device_ptr(),
-                                         flag, fcx, fcy, fcz, qface);
+                                         flag, fcx, fcy, fcz, ccc);
             compute_convective_rate_eb(lev, gbx, AMREX_SPACEDIM, dUdt_tmp, fx, fy, fz,
                                        flag, vfrac, apx, apy, apz);
             redistribute_eb(lev, bx, AMREX_SPACEDIM, dvdt, dUdt_tmp, scratch, flag, vfrac);
@@ -242,7 +244,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                              fx, fy, fz, rho, umac, vmac, wmac,
                                              get_density_bcrec().data(),
                                              get_density_bcrec_device_ptr(),
-                                             flag, fcx, fcy, fcz, qface);
+                                             flag, fcx, fcy, fcz, ccc);
                 compute_convective_rate_eb(lev, gbx, 1, dUdt_tmp, fx, fy, fz,
                                            flag, vfrac, apx, apy, apz);
                 redistribute_eb(lev, bx, 1, drdt, dUdt_tmp, scratch, flag, vfrac);
@@ -253,7 +255,7 @@ incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
                                              fx, fy, fz, rhotrac, umac, vmac, wmac,
                                              get_tracer_bcrec().data(),
                                              get_tracer_bcrec_device_ptr(),
-                                             flag, fcx, fcy, fcz, qface);
+                                             flag, fcx, fcy, fcz, ccc);
                 compute_convective_rate_eb(lev, gbx, m_ntrac, dUdt_tmp, fx, fy, fz,
                                            flag, vfrac, apx, apy, apz);
                 redistribute_eb(lev, bx, m_ntrac, dtdt, dUdt_tmp, scratch, flag, vfrac);

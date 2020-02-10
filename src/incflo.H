@@ -204,7 +204,8 @@ public: // for cuda
                                    amrex::Array4<amrex::EBCellFlag const> const& flag,
                                    amrex::Array4<amrex::Real const> const& fcx,
                                    amrex::Array4<amrex::Real const> const& fcy,
-                                   amrex::Array4<amrex::Real const> const& fcz);
+                                   amrex::Array4<amrex::Real const> const& fcz, 
+                                   amrex::Array4<amrex::Real const> const& ccc);
 #endif
      
     void incflo_correct_small_cells (amrex::Vector<amrex::MultiFab*      > const& cc_vel,
@@ -244,7 +245,7 @@ public: // for cuda
                                        amrex::Array4<amrex::Real const> const& fcx,
                                        amrex::Array4<amrex::Real const> const& fcy,
                                        amrex::Array4<amrex::Real const> const& fcz,
-                                       amrex::Array4<amrex::Real> const& qface);
+                                       amrex::Array4<amrex::Real const> const& ccc);
 
     void compute_convective_rate_eb (int lev, amrex::Box const& bx, int ncomp,
                                      amrex::Array4<amrex::Real> const& dUdt,
