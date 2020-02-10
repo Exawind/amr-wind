@@ -98,10 +98,9 @@ amrex::Real incflo_zslope_extdir (int i, int j, int k, int n,
 }
 
 #ifdef AMREX_USE_EB
-// SHOULD THIS BE GpuArray????
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE
-amrex::Array<amrex::Real,3>
+amrex::GpuArray<amrex::Real,3>
 incflo_slopes_eb (int i, int j, int k, int n,
                   amrex::Array4<amrex::Real const> const& state,
                   amrex::Array4<amrex::Real const> const& ccent,
@@ -262,10 +261,8 @@ incflo_slopes_eb (int i, int j, int k, int n,
    return {xs,ys,zs};
 }
 
-// SHOULD THIS BE GpuArray????
-
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE
-amrex::Array<amrex::Real,3>
+amrex::GpuArray<amrex::Real,3>
 incflo_slopes_extdir_eb (int i, int j, int k, int n,
                   amrex::Array4<amrex::Real const> const& state,
                   amrex::Array4<amrex::Real const> const& ccent,
