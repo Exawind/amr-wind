@@ -226,9 +226,6 @@ void incflo::InitialIterations ()
         copy_from_old_to_new_density();
         copy_from_old_to_new_tracer();
     }
-
-    // Set m_nstep to 0 before entering time loop
-    m_nstep = 0;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
