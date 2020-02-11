@@ -53,10 +53,6 @@ void incflo::InitData ()
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
         InitFromScratch(m_cur_time);
-
-        // plane averaging assumes that flow is initialized on all levels
-         if(m_plane_averaging) spatially_average_quantities_down();
-         
         
         if (m_do_initial_proj) {
             InitialProjection();

@@ -1,4 +1,5 @@
 #include <incflo.H>
+#include "PlaneAveraging.H"
 
 using namespace amrex;
 
@@ -42,8 +43,19 @@ void incflo::Advance()
         }
     }
 
-    // plane averaging assumes that fillpatch has already been called on all levels
-    if(m_plane_averaging) spatially_average_quantities_down();
+   if(m_plane_averaging){
+       const int axis=2;
+       PlaneAveraging *pa = new PlaneAveraging(*this, get_velocity_new(), get_tracer_new(),axis);
+
+       m_vx_mean_ground = pa->line_velocity_xdir(geom[0].ProbLoArray()[axis]);
+       m_vy_mean_ground = pa->line_velocity_ydir(geom[0].ProbLoArray()[axis]);
+       m_vx_mean_loglaw = pa->line_velocity_xdir(m_log_law_sampling_height);
+       m_vy_mean_loglaw = pa->line_velocity_ydir(m_log_law_sampling_height);
+       m_vx_mean_forcing = pa->line_velocity_xdir(m_abl_forcing_height);
+       m_vy_mean_forcing = pa->line_velocity_ydir(m_abl_forcing_height);
+
+       if(m_line_plot_int > 0 and m_nstep % m_line_plot_int == 0) {pa->plot_line_text();}
+   }
     
     ApplyPredictor();
 
@@ -605,8 +617,8 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
     const Real v = m_ic_v;
     const Real w = m_ic_w;
     
-    const Real umean = m_vx_mean;//fixme get rid of this global storage
-    const Real vmean = m_vy_mean;//fixme get rid of this global storage
+    const Real umean = m_vx_mean_forcing;//fixme get rid of this global storage
+    const Real vmean = m_vy_mean_forcing;//fixme get rid of this global storage
     
     const Real T0 = m_temperature_values[0];
     const Real thermalExpansionCoeff = m_thermalExpansionCoeff;

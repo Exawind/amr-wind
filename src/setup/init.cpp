@@ -16,7 +16,6 @@ void incflo::ReadParameters ()
     }
 
     ReadIOParameters();
-    ReadABLParameters();
     ReadRheologyParameters();
 
     { // Prefix amr
@@ -129,6 +128,9 @@ void incflo::ReadParameters ()
         pp_mac.query( "mg_cg_maxiter", m_mac_mg_cg_maxiter );
         pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
     } // end prefix mac
+    
+    ReadABLParameters();
+
 }
 
 void incflo::ReadIOParameters()
@@ -258,7 +260,20 @@ void incflo::ReadABLParameters()
     pp.query("thermalExpansionCoeff",m_thermalExpansionCoeff);
 
     pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);
+    
+    // fixme do we want to default this at first half cell always?
+    int lev = 0;
+    int dir = 2;
+    m_log_law_sampling_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
     pp.query("log_law_sampling_height",m_log_law_sampling_height);
+    
+    // initialize these so we do not have to call planar averages before initial iterations
+    m_vx_mean_ground = m_ic_u;
+    m_vy_mean_ground = m_ic_v;
+    m_vx_mean_loglaw = m_ic_u;
+    m_vy_mean_loglaw = m_ic_v;
+    m_vx_mean_forcing = m_ic_u;
+    m_vy_mean_forcing = m_ic_v;
     
 }
 

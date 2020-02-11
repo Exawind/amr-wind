@@ -271,12 +271,7 @@ public: // for cuda
     
     
     //fixme move these and clean up
-    void set_mfab_spatial_averaging_quantities(amrex::MultiFab &mfab, int lev, int axis, amrex::Vector<amrex::Real> &line);
     bool m_plane_averaging = false;
-    void plane_average(const amrex::MultiFab& mfab, const amrex::Real nplane_cells, const int axis, const int ncomp, amrex::Vector<amrex::Real> &line);
-    void spatially_average_quantities_down(int plot_type=0);
-    void set_average_quantities(const int s, const int b, const int axis, const int ncomp, amrex::Vector<amrex::Real> &line);
-    void single_level_line_plot(int s, int b, int axis, int ncomp, amrex::Vector<amrex::Real> &line);
     void wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, amrex::MultiFab& density, amrex::MultiFab& velocity) const;
 
     
@@ -460,16 +455,16 @@ private:
     amrex::Real m_cosphi;
     amrex::Real m_thermalExpansionCoeff; // initialized in the readABLparameters now
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
-    amrex::Real m_log_law_sampling_height = 2.0;
+    amrex::Real m_log_law_sampling_height = 5.0;
    
      
     // fixme this is sloppy and are being used as global variables...
-    amrex::Real m_vx_mean; //fixme pick a better name
-    amrex::Real m_vy_mean;
     amrex::Real m_vx_mean_ground;
     amrex::Real m_vy_mean_ground;
-    amrex::Real m_utau;
-    
+    amrex::Real m_vx_mean_loglaw;
+    amrex::Real m_vy_mean_loglaw;
+    amrex::Real m_vx_mean_forcing;
+    amrex::Real m_vy_mean_forcing;
     
     int m_plot_int = -1;
 

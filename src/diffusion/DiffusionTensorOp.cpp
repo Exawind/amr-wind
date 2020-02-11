@@ -128,7 +128,10 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
             if(m_incflo->m_probtype==35){
                 amrex::Print() << "warning wall model being called " << std::endl;
                 Real umag = sqrt(pow(m_incflo->m_vx_mean_ground,2) + pow(m_incflo->m_vy_mean_ground,2));
-                m_incflo->wall_model_bc(lev,m_incflo->m_utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
+                Real uh = sqrt(pow(m_incflo->m_vx_mean_loglaw,2) + pow(m_incflo->m_vy_mean_loglaw,2));
+                Real utau = m_incflo->m_kappa*uh/log(m_incflo->m_log_law_sampling_height/m_incflo->m_surface_roughness_z0);
+                // fixme does this also need to be in divtau below?
+                m_incflo->wall_model_bc(lev,utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
             }
             m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
