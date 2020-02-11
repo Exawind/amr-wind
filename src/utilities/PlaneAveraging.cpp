@@ -19,6 +19,8 @@ int get_index(int axis, int i, int j, int k){
             return j;
         case 2:
             return k;
+        default:
+            return k;
     }
     
 }

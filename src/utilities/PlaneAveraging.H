@@ -8,9 +8,6 @@
 #define PlaneAveraging_H
 
 #include <AMReX_AmrCore.H>
-//#include <AMReX_MultiFabUtil.H>
-//#include <AMReX_ParmParse.H>
-//#include <AMReX_iMultiFab.H>
 
 class incflo;
 
