@@ -422,11 +422,12 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
     const Real v = m_ic_v;
     const Real w = m_ic_w;
 
-    Gpu::DeviceVector<Real> m_temperature_heights_d;
-    Gpu::DeviceVector<Real> m_temperature_values_d;
-    m_temperature_values_d.resize(m_ntemperature);
-    m_temperature_heights_d.resize(m_ntemperature);
+    AsyncArray<Real> m_temperature_heights_d( m_temperature_heights.data(), m_temperature_heights.size());
+    AsyncArray<Real> m_temperature_values_d( m_temperature_values.data(), m_temperature_values.size());
+    Real* d_th = m_temperature_heights_d.data();
+    Real* d_tv = m_temperature_values_d.data();
 
+#if 0
     // fixme can this be done once outside the level loop?
 #ifdef AMREX_USE_GPU
         Gpu::htod_memcpy
@@ -442,7 +443,7 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
         std::memcpy
 #endif
                    (m_temperature_heights_d.data(), m_temperature_heights.data(), sizeof(Real)*m_ntemperature);
-
+#endif
     
     
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -474,14 +475,15 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
         vel(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
         
         // potential temperature
-        Real theta = m_temperature_values_d[0];
+        Real theta = d_tv[0];//m_temperature_values_d[0];
         for(int t = 0; t < m_ntemperature-1; ++t){
-            const Real slope = (m_temperature_values_d[t+1]-m_temperature_values_d[t])/(m_temperature_heights_d[t+1]-m_temperature_heights_d[t]);
-            if(z > m_temperature_heights_d[t] && z <= m_temperature_heights_d[t+1]){
-              theta = m_temperature_values_d[t] + (z-m_temperature_heights_d[t])*slope;
+            const Real slope = (d_tv[t+1]-d_tv[t])/(d_th[t+1]-d_th[t]);
+            if(z > d_th[t] && z <= d_th[t+1]){
+              theta = d_tv[t] + (z-d_th[t])*slope;
             }
         }
-        
+#if 0 
+ figure out how to get on device       
         // add perturbations to potential temperature
         if(z < cutoff_height){
             // Random number generator for adding temperature perturbations
@@ -492,7 +494,7 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
             std::normal_distribution<Real> gaussNormal(thetaGaussMean_, thetaGaussVar_);
             theta += theta_amplitude*gaussNormal(gen);
         }
-        
+#endif        
         tracer(i,j,k,0) = theta;
         
     });

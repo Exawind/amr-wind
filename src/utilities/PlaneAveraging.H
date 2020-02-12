@@ -62,7 +62,9 @@ private:
     int level = 0; /** level for plane averaging for now fixed at level=0 */
     
     amrex::Real eval_line_average(amrex::Real x, int comp);
-    
+
+public:
+
     void fill_line(const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer);
 
 

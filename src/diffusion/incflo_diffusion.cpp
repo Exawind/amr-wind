@@ -205,7 +205,7 @@ incflo::wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::
                     vel(i,j,k-1,2) = 0.0;
                     
                     //fixme remove this print
-                    if(i==0 and j==0) amrex::Print() << "wall model at 0,0. dudz = " << vel(i,j,k-1,0) << " dvdz= " << vel(i,j,k-1,1) << " vx/umag= " << vx/umag << " vy/umag= "  << vy/umag << " mu= "  << mu << " utau= " << utau <<  std::endl;
+                    //if(i==0 and j==0) amrex::Print() << "wall model at 0,0. dudz = " << vel(i,j,k-1,0) << " dvdz= " << vel(i,j,k-1,1) << " vx/umag= " << vx/umag << " vy/umag= "  << vy/umag << " mu= "  << mu << " utau= " << utau <<  std::endl;
 
                 });
             }

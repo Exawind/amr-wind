@@ -9,7 +9,7 @@
 
 using namespace amrex;
 
-
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 int get_index(int axis, int i, int j, int k){
 
     switch (axis) {
@@ -118,7 +118,34 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
     }
     
     const Real denom = 1.0/(Real) ncell_plane;
-    
+    const int axis_ = axis; 
+
+    AsyncArray<Real> lavg(line_average.data(), line_average.size());
+    AsyncArray<Real> lfluc(line_fluctuation.data(), line_fluctuation.size());
+    Real *line_average_ = lavg.data();
+    Real *line_fluctuation_ = lfluc.data();
+    int navg_ = navg;
+    int nfluc_ = nfluc;
+    int u_avg_ = u_avg;
+    int v_avg_ = v_avg;
+    int w_avg_ = w_avg;
+    int T_avg_ = T_avg;
+    int uu_ = uu;
+    int uv_ = uv;
+    int uw_ = uw;
+    int vv_ = vv;
+    int vw_ = vw;
+    int ww_ = ww;
+    int wuu_ = wuu;
+    int wuv_ = wuv;
+    int wuw_ = wuw;
+    int wvv_ = wvv;
+    int wvw_ = wvw;
+    int www_ = www;
+    int Tu_ = Tu;
+    int Tv_ = Tv;
+    int Tw_ = Tw;
+ 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -128,22 +155,26 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
 
         auto vel_arr = velocity.const_array(mfi);
         auto tracer_arr = tracer.const_array(mfi);
-//        const auto& eta_arr = ld.eta.array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
+        //  const auto& eta_arr = ld.eta.array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
-            const int ind = get_index(axis,i,j,k);
-            HostDevice::Atomic::Add(&line_average[navg*ind+u_avg], vel_arr(i,j,k,0)*denom);
-            HostDevice::Atomic::Add(&line_average[navg*ind+v_avg], vel_arr(i,j,k,1)*denom);
-            HostDevice::Atomic::Add(&line_average[navg*ind+w_avg], vel_arr(i,j,k,2)*denom);
-            HostDevice::Atomic::Add(&line_average[navg*ind+T_avg], tracer_arr(i,j,k,0)*denom);
+            int ind = get_index(axis_,i,j,k);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+u_avg_], vel_arr(i,j,k,0)*denom);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+v_avg_], vel_arr(i,j,k,1)*denom);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+w_avg_], vel_arr(i,j,k,2)*denom);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+T_avg_], tracer_arr(i,j,k,0)*denom);
             
         });
         
     }
     
+    lavg.copyToHost(line_average.data(), line_average.size());
     ParallelDescriptor::ReduceRealSum(line_average.data(), line_average.size());
 
+    // fixme do I have to do this again or will async copy again?
+    AsyncArray<Real> lavg2(line_average.data(), line_average.size());
+    line_average_ = lavg2.data();
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -158,31 +189,31 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             
-            const int ind = get_index(axis,i,j,k);
+            int ind = get_index(axis_,i,j,k);
         
-            const Real up = vel_arr(i,j,k,0) - line_average[navg*ind+u_avg];
-            const Real vp = vel_arr(i,j,k,1) - line_average[navg*ind+v_avg];
-            const Real wp = vel_arr(i,j,k,2) - line_average[navg*ind+w_avg];
-            const Real Tp = tracer_arr(i,j,k,0) - line_average[navg*ind+T_avg];
+            const Real up = vel_arr(i,j,k,0) - line_average_[navg_*ind+u_avg_];
+            const Real vp = vel_arr(i,j,k,1) - line_average_[navg_*ind+v_avg_];
+            const Real wp = vel_arr(i,j,k,2) - line_average_[navg_*ind+w_avg_];
+            const Real Tp = tracer_arr(i,j,k,0) - line_average_[navg_*ind+T_avg_];
 
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+uu], up*up*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+uv], up*vp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+uw], up*wp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+vv], vp*vp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+vw], vp*wp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+ww], wp*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uu_], up*up*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uv_], up*vp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uw_], up*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+vv_], vp*vp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+vw_], vp*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+ww_], wp*wp*denom);
 
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+wuu], wp*up*up*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+wuv], wp*up*vp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+wuw], wp*up*wp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+wvv], wp*vp*vp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+wvw], wp*vp*wp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+www], wp*wp*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wuu_], wp*up*up*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wuv_], wp*up*vp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wuw_], wp*up*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wvv_], wp*vp*vp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wvw_], wp*vp*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+www_], wp*wp*wp*denom);
 
             
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+Tu], Tp*up*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+Tv], Tp*vp*denom);
-            HostDevice::Atomic::Add(&line_fluctuation[nfluc*ind+Tw], Tp*wp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tu_], Tp*up*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tv_], Tp*vp*denom);
+            HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tw_], Tp*wp*denom);
 
             // nu+nut = (mu+mut)/rho
 //            mfab_arr(i,j,k,nu_avg) = eta_arr(i,j,k)/den_arr(i,j,k);
@@ -191,6 +222,7 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
         
     }
     
+    lfluc.copyToHost(line_fluctuation.data(), line_fluctuation.size());
     ParallelDescriptor::ReduceRealSum(line_fluctuation.data(), line_fluctuation.size());
         
 
