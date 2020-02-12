@@ -23,19 +23,17 @@ public:
     
     ~PlaneAveraging();
 
-    amrex::Real line_velocity_xdir(amrex::Real x){ return eval_line_average(x,u_avg); };
-    amrex::Real line_velocity_ydir(amrex::Real x){ return eval_line_average(x,v_avg); };
-    amrex::Real line_velocity_zdir(amrex::Real x){ return eval_line_average(x,w_avg); };
+    amrex::Real line_velocity_xdir(amrex::Real x){ return eval_line_average(x,u_avg); }; /** evaluate line average at specific location for velocity xdir*/
+    amrex::Real line_velocity_ydir(amrex::Real x){ return eval_line_average(x,v_avg); }; /** evaluate line average at specific location for velocity ydir*/
+    amrex::Real line_velocity_zdir(amrex::Real x){ return eval_line_average(x,w_avg); }; /** evaluate line average at specific location for velocity zdir*/
     
-    void plot_line_average_text(int step=0, amrex::Real time=0.0);
-    void plot_line_text(int step=0, amrex::Real time=0.0);
-    void plot_line_binary(int step=0, amrex::Real time=0.0);
-//    void plot_line_native(int step=0, amrex::Real time=0.0);
+    void plot_line_average_text(std::string filename, int step, amrex::Real time); /** output a single text file with averages only */
+    void plot_line_text(std::string filename, int step, amrex::Real time); /** output a single text file with averages and fluctuations */
+    void plot_line_binary(std::string filename, int step, amrex::Real time); /** output a single binary file with averages and fluctuations */
+//    void plot_line_native(int step, amrex::Real time);//fixme todo if we still want this
 
-    void set_precision(int p) {precision = p;};
+    void set_precision(int p) {precision = p;}; /** change precision of text file output */
     
-
-
 
 private:
     
@@ -47,9 +45,9 @@ private:
     const static int navg = last_avg_var+1; /** number of average components */
     const static int nfluc = last_fluc_var+1; /** number of fluctuation components */
 
-    amrex::Vector<amrex::Real> line_average;
-    amrex::Vector<amrex::Real> line_fluctuation;
-    amrex::Vector<amrex::Real> line_xcentroid;
+    amrex::Vector<amrex::Real> line_average; /** line storage for the average velocity and tracer variables */
+    amrex::Vector<amrex::Real> line_fluctuation; /** line storage for fluctuations */
+    amrex::Vector<amrex::Real> line_xcentroid; /** line storage for centroids of each cell along a line*/
 
     amrex::Real dx; /** mesh spacing in axis direction*/
     amrex::Real xlo; /** bottom of domain in axis direction */
@@ -61,12 +59,23 @@ private:
     int precision = 4; /** precision for line plot text file */
     int level = 0; /** level for plane averaging for now fixed at level=0 */
     
-    amrex::Real eval_line_average(amrex::Real x, int comp);
+    amrex::Real eval_line_average(amrex::Real x, int comp); /** evaluate line average at specific location for any average component */
 
-public:
 
-    void fill_line(const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer);
+public: // public for GPU 
 
+    template<int Index>
+    struct SelectIndex
+    {
+        int operator()(int i, int j, int k) const;
+    };
+
+    template<> struct SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };};
+    template<> struct SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };};
+    template<> struct SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };};
+
+    template<typename IndexSelector>
+    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer); /** fill line storage with averages and fluctuations */
 
 };
 

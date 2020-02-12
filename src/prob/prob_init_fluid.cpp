@@ -422,36 +422,14 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
     const Real v = m_ic_v;
     const Real w = m_ic_w;
 
-    AsyncArray<Real> m_temperature_heights_d( m_temperature_heights.data(), m_temperature_heights.size());
-    AsyncArray<Real> m_temperature_values_d( m_temperature_values.data(), m_temperature_values.size());
-    Real* d_th = m_temperature_heights_d.data();
-    Real* d_tv = m_temperature_values_d.data();
-
-#if 0
-    // fixme can this be done once outside the level loop?
-#ifdef AMREX_USE_GPU
-        Gpu::htod_memcpy
-#else
-        std::memcpy
-#endif
-                   (m_temperature_values_d.data(), m_temperature_values.data(), sizeof(Real)*m_ntemperature);
-        
-        
-#ifdef AMREX_USE_GPU
-        Gpu::htod_memcpy
-#else
-        std::memcpy
-#endif
-                   (m_temperature_heights_d.data(), m_temperature_heights.data(), sizeof(Real)*m_ntemperature);
-#endif
-    
+    AsyncArray<Real> th(m_temperature_heights.data(), m_temperature_heights.size());
+    AsyncArray<Real> tv(m_temperature_values.data(), m_temperature_values.size());
+    Real* m_temperature_heights_d = th.data();
+    Real* m_temperature_values_d = tv.data();
     
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        
-
-              
-        
+    
         // physical location of cell center
         const Real x = problo[0] + (i+0.5)*dx[0];
         const Real y = problo[1] + (j+0.5)*dx[1];
@@ -475,11 +453,11 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
         vel(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
         
         // potential temperature
-        Real theta = d_tv[0];//m_temperature_values_d[0];
+        Real theta = m_temperature_values_d[0];
         for(int t = 0; t < m_ntemperature-1; ++t){
-            const Real slope = (d_tv[t+1]-d_tv[t])/(d_th[t+1]-d_th[t]);
-            if(z > d_th[t] && z <= d_th[t+1]){
-              theta = d_tv[t] + (z-d_th[t])*slope;
+            const Real slope = (m_temperature_values_d[t+1]-m_temperature_values_d[t])/(m_temperature_heights_d[t+1]-m_temperature_heights_d[t]);
+            if(z > m_temperature_heights_d[t] && z <= m_temperature_heights_d[t+1]){
+              theta = m_temperature_values_d[t] + (z-m_temperature_heights_d[t])*slope;
             }
         }
 #if 0 

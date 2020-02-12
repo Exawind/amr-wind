@@ -9,29 +9,14 @@
 
 using namespace amrex;
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
-int get_index(int axis, int i, int j, int k){
-
-    switch (axis) {
-        case 0:
-            return i;
-        case 1:
-            return j;
-        case 2:
-            return k;
-        default:
-            return k;
-    }
-    
-}
-
-void PlaneAveraging::plot_line_text(int step, Real time)
+void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 {
 
-    std::ofstream outfile;
-    std::string filename = "line_plot.txt";
+    if(!ParallelDescriptor::IOProcessor()) return;
     
+    std::ofstream outfile;
     outfile.precision(precision);
+
     if(step == 0){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
@@ -56,13 +41,14 @@ void PlaneAveraging::plot_line_text(int step, Real time)
     }
 }
 
-void PlaneAveraging::plot_line_average_text(int step, Real time)
+void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real time)
 {
+    
+    if(!ParallelDescriptor::IOProcessor()) return;
 
     std::ofstream outfile;
-    std::string filename = "line_average_plot.txt";
-
     outfile.precision(precision);
+    
     if(step == 0){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
@@ -84,12 +70,12 @@ void PlaneAveraging::plot_line_average_text(int step, Real time)
 }
 
 
-void PlaneAveraging::plot_line_binary(int step, Real time)
+void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
 {
 
-    std::ofstream outfile;
+    if(!ParallelDescriptor::IOProcessor()) return;
 
-    std::string filename = "line_plot.bin";
+    std::ofstream outfile;
     
     if(step == 0){
         // make new file
@@ -110,7 +96,8 @@ void PlaneAveraging::plot_line_binary(int step, Real time)
     outfile.write((char *) line_fluctuation.data(), sizeof(Real)*line_fluctuation.size());
 }
 
-void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
+template<typename IndexSelector>
+void PlaneAveraging::fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
 {
 
     for(int i=0;i<ncell_line;++i){
@@ -122,8 +109,10 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
 
     AsyncArray<Real> lavg(line_average.data(), line_average.size());
     AsyncArray<Real> lfluc(line_fluctuation.data(), line_fluctuation.size());
+    
     Real *line_average_ = lavg.data();
     Real *line_fluctuation_ = lfluc.data();
+    
     int navg_ = navg;
     int nfluc_ = nfluc;
     int u_avg_ = u_avg;
@@ -155,16 +144,18 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
 
         auto vel_arr = velocity.const_array(mfi);
         auto tracer_arr = tracer.const_array(mfi);
-        //  const auto& eta_arr = ld.eta.array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
+//        auto den_arr = density.const_array(mfi);
+//        auto eta_arr = eta.const_array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
-            int ind = get_index(axis_,i,j,k);
+            const int ind = idxOp(i,j,k);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+u_avg_], vel_arr(i,j,k,0)*denom);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+v_avg_], vel_arr(i,j,k,1)*denom);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+w_avg_], vel_arr(i,j,k,2)*denom);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+T_avg_], tracer_arr(i,j,k,0)*denom);
-            
+            // nu+nut = (mu+mut)/rho
+//            HostDevice::Atomic::Add(&line_average_[navg_*ind+nu_avg_], eta_arr(i,j,k)/den_arr(i,j,k)*denom);
         });
         
     }
@@ -188,12 +179,14 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
-            
-            int ind = get_index(axis_,i,j,k);
-        
+            const int ind = idxOp(i,j,k);
+            // velocity fluctuation
             const Real up = vel_arr(i,j,k,0) - line_average_[navg_*ind+u_avg_];
             const Real vp = vel_arr(i,j,k,1) - line_average_[navg_*ind+v_avg_];
             const Real wp = vel_arr(i,j,k,2) - line_average_[navg_*ind+w_avg_];
+            
+            //fixme need to enumerate tracer variables too
+            // tracer fluctuation
             const Real Tp = tracer_arr(i,j,k,0) - line_average_[navg_*ind+T_avg_];
 
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uu_], up*up*denom);
@@ -210,13 +203,9 @@ void PlaneAveraging::fill_line(const amrex::MultiFab& velocity,  const amrex::Mu
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+wvw_], wp*vp*wp*denom);
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+www_], wp*wp*wp*denom);
 
-            
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tu_], Tp*up*denom);
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tv_], Tp*vp*denom);
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+Tw_], Tp*wp*denom);
-
-            // nu+nut = (mu+mut)/rho
-//            mfab_arr(i,j,k,nu_avg) = eta_arr(i,j,k)/den_arr(i,j,k);
      
         });
         
@@ -274,7 +263,20 @@ PlaneAveraging::PlaneAveraging(incflo& a_incflo,
     line_fluctuation.resize(ncell_line*nfluc,0.0);
     line_xcentroid.resize(ncell_line,0.0);
 
-    fill_line(*velocity[level],*tracer[level]);
+    switch (axis) {
+        case 0:
+            fill_line(SelectIndex<0>(),*velocity[level],*tracer[level]);
+            break;
+        case 1:
+            fill_line(SelectIndex<1>(),*velocity[level],*tracer[level]);
+            break;
+        case 2:
+            fill_line(SelectIndex<2>(),*velocity[level],*tracer[level]);
+            break;
+        default:
+            amrex::Abort("axis must be equal to 0, 1, or 2");
+            break;
+    }
     
 }
 

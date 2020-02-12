@@ -45,7 +45,7 @@ void incflo::Advance()
 
    if(m_plane_averaging){
        const int axis=2;
-       PlaneAveraging *pa = new PlaneAveraging(*this, get_velocity_new(), get_tracer_new(),axis);
+       PlaneAveraging *pa = new PlaneAveraging(*this, get_velocity_new(), get_tracer_new(), axis);
 
        m_vx_mean_ground = pa->line_velocity_xdir(geom[0].ProbLoArray()[axis]);
        m_vy_mean_ground = pa->line_velocity_ydir(geom[0].ProbLoArray()[axis]);
@@ -54,7 +54,7 @@ void incflo::Advance()
        m_vx_mean_forcing = pa->line_velocity_xdir(m_abl_forcing_height);
        m_vy_mean_forcing = pa->line_velocity_ydir(m_abl_forcing_height);
 
-       if(m_line_plot_int > 0 and m_nstep % m_line_plot_int == 0) {pa->plot_line_text();}
+       if(m_line_plot_int > 0 and m_nstep % m_line_plot_int == 0) {pa->plot_line_text("line_plot.txt", m_nstep, m_cur_time);}
    }
     
     ApplyPredictor();
