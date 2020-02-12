@@ -54,7 +54,7 @@ private:
     
     int ncell_plane; /** number of cells in plane */
     int ncell_line; /** number of cells along line */
-    int axis;
+    int axis; /** input to specify which axis is plane averaged */
     
     int precision = 4; /** precision for line plot text file */
     int level = 0; /** level for plane averaging for now fixed at level=0 */
@@ -64,18 +64,20 @@ private:
 
 public: // public for GPU 
 
+    /** select index based on axis input, see specialization */
     template<int Index>
     struct SelectIndex
     {
         int operator()(int i, int j, int k) const;
     };
 
-    template<> struct SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };};
-    template<> struct SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };};
-    template<> struct SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };};
+    template<> struct SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };}; /** specialization for returning first index */
+    template<> struct SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };}; /** specialization for returning second index */
+    template<> struct SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };}; /** specialization for returning third index */
 
+    /** fill line storage with averages and fluctuations */
     template<typename IndexSelector>
-    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer); /** fill line storage with averages and fluctuations */
+    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
 
 };
 
