@@ -96,6 +96,10 @@ void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
     outfile.write((char *) line_fluctuation.data(), sizeof(Real)*line_fluctuation.size());
 }
 
+template<> struct PlaneAveraging::SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };};
+template<> struct PlaneAveraging::SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };};
+template<> struct PlaneAveraging::SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };};
+
 template<typename IndexSelector>
 void PlaneAveraging::fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
 {

@@ -64,16 +64,12 @@ private:
 
 public: // public for GPU 
 
-    /** select index based on axis input, see specialization */
+    /** select index based on axis input, see explicit specialization */
     template<int Index>
     struct SelectIndex
     {
         int operator()(int i, int j, int k) const;
     };
-
-    template<> struct SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };}; /** specialization for returning first index */
-    template<> struct SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };}; /** specialization for returning second index */
-    template<> struct SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };}; /** specialization for returning third index */
 
     /** fill line storage with averages and fluctuations */
     template<typename IndexSelector>
