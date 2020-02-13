@@ -21,7 +21,7 @@ public:
                    amrex::Vector<amrex::MultiFab*> const& tracer,
                    int axis=2);
     
-    ~PlaneAveraging();
+    ~PlaneAveraging(){};
 
     amrex::Real line_velocity_xdir(amrex::Real x){ return eval_line_average(x,u_avg); }; /** evaluate line average at specific location for velocity xdir*/
     amrex::Real line_velocity_ydir(amrex::Real x){ return eval_line_average(x,v_avg); }; /** evaluate line average at specific location for velocity ydir*/
