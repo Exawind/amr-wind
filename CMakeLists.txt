@@ -29,34 +29,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ########################### AMReX #####################################
 
 set(AMREX_SUBMOD_LOCATION "submods/amrex")
-
-#Set amrex options
-set(USE_XSDK_DEFAULTS OFF)
-set(DIM 3)
-set(ENABLE_PIC OFF)
-set(ENABLE_MPI ${AMR_WIND_ENABLE_MPI})
-set(ENABLE_OMP ${AMR_WIND_ENABLE_OPENMP})
-set(ENABLE_DP ON)
-set(ENABLE_EB OFF)
-set(ENABLE_FORTRAN_INTERFACES OFF)
-set(ENABLE_LINEAR_SOLVERS ON)
-set(ENABLE_AMRDATA OFF)
-set(ENABLE_PARTICLES OFF)
-set(ENABLE_SENSEI_INSITU OFF)
-set(ENABLE_CONDUIT OFF)
-set(ENABLE_SUNDIALS OFF)
-set(ENABLE_FPE OFF)
-set(ENABLE_ASSERTIONS OFF)
-set(ENABLE_BASE_PROFILE OFF)
-set(ENABLE_TINY_PROFILE OFF)
-set(ENABLE_TRACE_PROFILE OFF)
-set(ENABLE_MEM_PROFILE OFF)
-set(ENABLE_COMM_PROFILE OFF)
-set(ENABLE_BACKTRACE OFF)
-set(ENABLE_PROFPARSER OFF)
-set(ENABLE_CUDA OFF)
-set(ENABLE_ACC OFF)
-
+include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
 add_subdirectory(${AMREX_SUBMOD_LOCATION})
 
 if(AMR_WIND_ENABLE_FCOMPARE OR AMR_WIND_TEST_WITH_FCOMPARE)
@@ -64,10 +37,6 @@ if(AMR_WIND_ENABLE_FCOMPARE OR AMR_WIND_TEST_WITH_FCOMPARE)
 endif()
 
 ########################### AMR-Wind #####################################
-
-#We inherit amrex's compiler flags for now?
-#include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
-#set_compile_flags()
 
 find_package(Python REQUIRED)
 find_package(Threads REQUIRED) # Needed this for the Travis CI system
@@ -106,29 +75,7 @@ set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 #Create main target executable
 add_executable(${amr_wind_exe_name} "")
 
-# Logic for handling warnings
-list(APPEND AMR_WIND_CXX_FLAGS "-Wno-pass-failed")
-if(AMR_WIND_ENABLE_ALL_WARNINGS)
-  # GCC, Clang, and Intel seem to accept these
-  list(APPEND AMR_WIND_CXX_FLAGS "-Wall" "-Wextra" "-pedantic")
-  if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    # ifort doesn't like -Wall
-    list(APPEND AMR_WIND_Fortran_FLAGS "-Wall")
-  else()
-    # Intel always reports some diagnostics we don't necessarily care about
-    list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076")
-  endif()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
-    # Avoid notes about -faligned-new with GCC > 7
-    list(APPEND AMR_WIND_CXX_FLAGS "-faligned-new")
-  endif()
-endif()
-
-# Add our extra flags according to language
-separate_arguments(AMR_WIND_CXX_FLAGS)
-separate_arguments(AMR_WIND_Fortran_FLAGS)
-target_compile_options(${amr_wind_exe_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
-target_compile_options(${amr_wind_exe_name} PUBLIC $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 
 #Keep our Fortran module files confined to a unique directory for each executable 
 set_target_properties(${amr_wind_exe_name} PROPERTIES Fortran_MODULE_DIRECTORY
