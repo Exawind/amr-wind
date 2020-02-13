@@ -12,12 +12,10 @@ option(AMR_WIND_ENABLE_DOCUMENTATION "Build documentation" OFF)
 option(AMR_WIND_ENABLE_SPHINX_API_DOCS "Link Doxygen API docs to Sphinx" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
-option(AMR_WIND_ENABLE_FEXTREMA "Enable building fextrema when not testing" OFF)
 
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
-option(AMR_WIND_TEST_WITH_FEXTREMA "Check test plots against maxima and minima files" OFF)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
@@ -29,6 +27,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ########################### AMReX #####################################
+
+set(AMREX_SUBMOD_LOCATION "submods/amrex")
 
 #Set amrex options
 set(USE_XSDK_DEFAULTS OFF)
@@ -56,7 +56,12 @@ set(ENABLE_BACKTRACE OFF)
 set(ENABLE_PROFPARSER OFF)
 set(ENABLE_CUDA OFF)
 set(ENABLE_ACC OFF)
-add_subdirectory(submods/amrex)
+
+add_subdirectory(${AMREX_SUBMOD_LOCATION})
+
+if(AMR_WIND_ENABLE_FCOMPARE OR AMR_WIND_TEST_WITH_FCOMPARE)
+  add_subdirectory(${AMREX_SUBMOD_LOCATION}/Tools/PlotFile)
+endif()
 
 ########################### AMR-Wind #####################################
 
@@ -111,11 +116,11 @@ file(MAKE_DIRECTORY ${GENERATED_FILES_DIR})
 
 #Generate the AMReX_buildInfo.cpp file with Python
 add_custom_target(generate_build_info_${amr_wind_exe_name} ALL
-   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/submods/amrex/Tools/C_scripts/makebuildinfo_C.py
-   --amrex_home "${CMAKE_SOURCE_DIR}/submods/amrex"                        
+   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}/Tools/C_scripts/makebuildinfo_C.py
+   --amrex_home "${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
    --COMP ${CMAKE_CXX_COMPILER_ID} --COMP_VERSION ${CMAKE_CXX_COMPILER_VERSION}
    --FCOMP ${CMAKE_Fortran_COMPILER_ID} --FCOMP_VERSION ${CMAKE_Fortran_COMPILER_VERSION}
-   --GIT "${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/submods/amrex"
+   --GIT "${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
    WORKING_DIRECTORY ${GENERATED_FILES_DIR} BYPRODUCTS ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
    COMMENT "Generating AMReX_buildInfo.cpp"
 )                  

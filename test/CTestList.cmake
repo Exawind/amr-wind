@@ -53,11 +53,7 @@ function(add_test_r TEST_NAME NP)
     set(PLOT_TEST ${CURRENT_TEST_BINARY_DIR}/plt00010)
     # Find fcompare
     if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE ${CMAKE_BINARY_DIR}/fcompare)
-    endif()
-    # Find fextrema
-    if(AMR_WIND_TEST_WITH_FEXTREMA)
-      set(FEXTREMA ${CMAKE_BINARY_DIR}/fextrema)
+      set(FCOMPARE ${CMAKE_BINARY_DIR}/${AMREX_SUBMOD_LOCATION}/Tools/PlotFile/fcompare)
     endif()
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
@@ -71,17 +67,13 @@ function(add_test_r TEST_NAME NP)
     if(AMR_WIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
-    # Use fextrema to test diffs in plots against gold files
-    if(AMR_WIND_TEST_WITH_FEXTREMA)
-      set(FEXTREMA_COMMAND "&& ${FEXTREMA} ${PLOT_TEST} > ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext && ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_files/fextrema_compare.py -f ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.ext -g ${CURRENT_TEST_SOURCE_DIR}/${TEST_NAME}.ext.gold -t ${TOLERANCE}")
-    endif()
     if(AMR_WIND_ENABLE_MPI)
       set(MPI_COMMANDS "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS}")
     else()
       unset(MPI_COMMANDS)
     endif()
     # Add test and actual test commands to CTest database
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FEXTREMA_COMMAND} ${FCOMPARE_COMMAND}")
+    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 1500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
 endfunction(add_test_r)
@@ -112,6 +104,10 @@ add_test_r(tgv_godunov 4)
 
 #=============================================================================
 # Verification tests
+#=============================================================================
+
+#=============================================================================
+# Performance tests
 #=============================================================================
 
 #=============================================================================
