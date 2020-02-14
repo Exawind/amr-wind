@@ -64,9 +64,8 @@ public: // public for GPU
 
 
     /** fill line storage with averages and fluctuations */
-//    template<typename IndexSelector>
-//    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
-    void fill_line(std::function<int(int,int,int)> f, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
+    template<typename IndexSelector>
+    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
 };
 
 #endif /* PlaneAveraging_H */

@@ -99,9 +99,8 @@ void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
     outfile.write((char *) line_fluctuation.data(), sizeof(Real)*line_fluctuation.size());
 }
 
-//template<typename IndexSelector>
-//void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
-void PlaneAveraging::fill_line(std::function<int(int,int,int)> idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
+template<typename IndexSelector>
+void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
 {
 
     BL_PROFILE("PlaneAveraging::fill_line()");
