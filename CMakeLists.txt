@@ -33,7 +33,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
 add_subdirectory(${AMREX_SUBMOD_LOCATION})
 
 if(AMR_WIND_ENABLE_FCOMPARE OR AMR_WIND_TEST_WITH_FCOMPARE)
-  add_subdirectory(${AMREX_SUBMOD_LOCATION}/Tools/PlotFile)
+  add_subdirectory(${AMREX_SUBMOD_LOCATION}/Tools/Plotfile)
 endif()
 
 ########################### AMR-Wind #####################################
