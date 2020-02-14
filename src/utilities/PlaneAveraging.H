@@ -31,7 +31,6 @@ public:
     void plot_line_average_text(std::string filename, int step, amrex::Real time); /** output a single text file with averages only */
     void plot_line_text(std::string filename, int step, amrex::Real time); /** output a single text file with averages and fluctuations */
     void plot_line_binary(std::string filename, int step, amrex::Real time); /** output a single binary file with averages and fluctuations */
-//    void plot_line_native(int step, amrex::Real time);//fixme todo if we still want this
 
     void set_precision(int p) {precision = p;}; /** change precision of text file output */
     
