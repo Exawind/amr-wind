@@ -8,6 +8,7 @@ target_sources(${amr_wind_exe_name}
       PlaneAveraging.cpp
       #Headers
       PlaneAveraging.H
+      DirectionSelector.H
    )
 
 target_include_directories(${amr_wind_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

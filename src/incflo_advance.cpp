@@ -45,7 +45,7 @@ void incflo::Advance()
 
    if(m_plane_averaging){
        const int axis=2;
-       PlaneAveraging pa(*this, get_velocity_new(), get_tracer_new(), axis);
+       PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
 
        m_vx_mean_ground = pa.line_velocity_xdir(geom[0].ProbLoArray()[axis]);
        m_vy_mean_ground = pa.line_velocity_ydir(geom[0].ProbLoArray()[axis]);
@@ -618,7 +618,6 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
 
     const Real u = m_ic_u;
     const Real v = m_ic_v;
-    const Real w = m_ic_w;
     
     const Real umean = m_vx_mean_forcing;//fixme get rid of this global storage
     const Real vmean = m_vy_mean_forcing;//fixme get rid of this global storage

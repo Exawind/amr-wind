@@ -8,6 +8,7 @@
 #define PlaneAveraging_H
 
 #include <AMReX_AmrCore.H>
+#include "DirectionSelector.H"
 
 class incflo;
 
@@ -16,7 +17,7 @@ class PlaneAveraging
     
 public:
     
-    PlaneAveraging(incflo&,
+    PlaneAveraging(amrex::Vector<amrex::Geometry>& Geom,
                    amrex::Vector<amrex::MultiFab*> const& velocity,
                    amrex::Vector<amrex::MultiFab*> const& tracer,
                    int axis=2);
@@ -36,9 +37,7 @@ public:
     
 
 private:
-    
-    incflo& m_incflo;
-   
+       
     enum average_var {u_avg, v_avg, w_avg, T_avg, nu_avg, last_avg_var=nu_avg};
     enum fluctuation_var {uu, uv, uw, vv, vw, ww, wuu, wuv, wuw, wvv, wvw, www, Tu, Tv, Tw, last_fluc_var=Tw};
     
@@ -54,7 +53,6 @@ private:
     
     int ncell_plane; /** number of cells in plane */
     int ncell_line; /** number of cells along line */
-    int axis; /** input to specify which axis is plane averaged */
     
     int precision = 4; /** precision for line plot text file */
     int level = 0; /** level for plane averaging for now fixed at level=0 */
@@ -64,17 +62,11 @@ private:
 
 public: // public for GPU 
 
-    /** select index based on axis input, see explicit specialization */
-    template<int Index>
-    struct SelectIndex
-    {
-        int operator()(int i, int j, int k) const;
-    };
 
     /** fill line storage with averages and fluctuations */
-    template<typename IndexSelector>
-    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
-
+//    template<typename IndexSelector>
+//    void fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
+    void fill_line(std::function<int(int,int,int)> f, const amrex::MultiFab& velocity, const amrex::MultiFab& tracer);
 };
 
 #endif /* PlaneAveraging_H */

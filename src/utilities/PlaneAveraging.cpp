@@ -11,6 +11,7 @@ using namespace amrex;
 
 void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 {
+    BL_PROFILE("PlaneAveraging::plot_line_text()");
 
     if(!ParallelDescriptor::IOProcessor()) return;
     
@@ -43,7 +44,8 @@ void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 
 void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real time)
 {
-    
+    BL_PROFILE("PlaneAveraging::plot_line_average_text()");
+
     if(!ParallelDescriptor::IOProcessor()) return;
 
     std::ofstream outfile;
@@ -72,6 +74,7 @@ void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real
 
 void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
 {
+    BL_PROFILE("PlaneAveraging::plot_line_binary()");
 
     if(!ParallelDescriptor::IOProcessor()) return;
 
@@ -96,20 +99,18 @@ void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
     outfile.write((char *) line_fluctuation.data(), sizeof(Real)*line_fluctuation.size());
 }
 
-template<> struct PlaneAveraging::SelectIndex<0>{ int operator()(int i, int j, int k) const { return i; };};
-template<> struct PlaneAveraging::SelectIndex<1>{ int operator()(int i, int j, int k) const { return j; };};
-template<> struct PlaneAveraging::SelectIndex<2>{ int operator()(int i, int j, int k) const { return k; };};
-
-template<typename IndexSelector>
-void PlaneAveraging::fill_line(const IndexSelector& idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
+//template<typename IndexSelector>
+//void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
+void PlaneAveraging::fill_line(std::function<int(int,int,int)> idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
 {
 
+    BL_PROFILE("PlaneAveraging::fill_line()");
+    
     for(int i=0;i<ncell_line;++i){
         line_xcentroid[i] = xlo + (i+0.5)*dx;
     }
     
     const Real denom = 1.0/(Real) ncell_plane;
-    const int axis_ = axis; 
 
     AsyncArray<Real> lavg(line_average.data(), line_average.size());
     AsyncArray<Real> lfluc(line_fluctuation.data(), line_fluctuation.size());
@@ -167,7 +168,6 @@ void PlaneAveraging::fill_line(const IndexSelector& idxOp, const amrex::MultiFab
     lavg.copyToHost(line_average.data(), line_average.size());
     ParallelDescriptor::ReduceRealSum(line_average.data(), line_average.size());
 
-    // fixme do I have to do this again or will async copy again?
     AsyncArray<Real> lavg2(line_average.data(), line_average.size());
     line_average_ = lavg2.data();
     
@@ -239,19 +239,22 @@ Real PlaneAveraging::eval_line_average(Real x, int comp)
     
 }
 
-PlaneAveraging::PlaneAveraging(incflo& a_incflo,
+
+
+PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
                                amrex::Vector<amrex::MultiFab*> const& velocity,
                                amrex::Vector<amrex::MultiFab*> const& tracer,
                                int axis)
-    : m_incflo(a_incflo), axis(axis)
 {
     
     AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
     
-    xlo = m_incflo.Geom(level).ProbLo(axis);
-    dx = m_incflo.Geom(level).CellSize(axis);
+    // level=0 is default, could later make this an input. Might only makes sense for fully covered levels
     
-    const Box& domain = m_incflo.Geom(level).Domain();
+    xlo = geom[level].ProbLo(axis);
+    dx = geom[level].CellSize(axis);
+    
+    const Box& domain = geom[level].Domain();
     const IntVect dom_lo(domain.loVect());
     const IntVect dom_hi(domain.hiVect());
     
@@ -266,16 +269,16 @@ PlaneAveraging::PlaneAveraging(incflo& a_incflo,
     line_average.resize(ncell_line*navg,0.0);
     line_fluctuation.resize(ncell_line*nfluc,0.0);
     line_xcentroid.resize(ncell_line,0.0);
-
+    
     switch (axis) {
         case 0:
-            fill_line(SelectIndex<0>(),*velocity[level],*tracer[level]);
+            fill_line(XDir(),*velocity[level],*tracer[level]);
             break;
         case 1:
-            fill_line(SelectIndex<1>(),*velocity[level],*tracer[level]);
+            fill_line(YDir(),*velocity[level],*tracer[level]);
             break;
         case 2:
-            fill_line(SelectIndex<2>(),*velocity[level],*tracer[level]);
+            fill_line(ZDir(),*velocity[level],*tracer[level]);
             break;
         default:
             amrex::Abort("axis must be equal to 0, 1, or 2");
