@@ -2,3 +2,5 @@ CEXE_sources += diagnostics.cpp
 CEXE_sources += incflo_build_info.cpp
 CEXE_sources += incflo_steady_state.cpp
 CEXE_sources += io.cpp
+CEXE_sources += PlaneAveraging.cpp
+CEXE_headers += PlaneAveraging.H

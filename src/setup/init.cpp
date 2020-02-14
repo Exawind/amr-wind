@@ -1,6 +1,7 @@
 // #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
+#include <cmath>
 
 using namespace amrex;
 
@@ -16,18 +17,25 @@ void incflo::ReadParameters ()
     }
 
     ReadIOParameters();
-    ReadABLParameters();
     ReadRheologyParameters();
 
     { // Prefix amr
- 	ParmParse pp("amr");
+        ParmParse pp("amr");
 
-	pp.query("regrid_int", m_regrid_int);
+        pp.query("regrid_int", m_regrid_int);
 #ifdef AMREX_USE_EB
         pp.query("refine_cutcells", m_refine_cutcells);
 #endif
 
         pp.query("KE_int", m_KE_int);
+        
+        pp.query("plane_averaging", m_plane_averaging);
+        pp.query("line_plot_int", m_line_plot_int);
+        
+        if(m_line_plot_int > 0 and m_plane_averaging == false)
+            amrex::Print() << "Warning line plot will not work unless plane_averaging=1" << std::endl;
+        if(m_line_plot_int < 1 and m_plane_averaging == true)
+            amrex::Print() << "Warning plane averaging is on but line plots are not being output, set line_plot_int to greater than 0" << std::endl;
 
     } // end prefix amr
 
@@ -121,6 +129,9 @@ void incflo::ReadParameters ()
         pp_mac.query( "mg_cg_maxiter", m_mac_mg_cg_maxiter );
         pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
     } // end prefix mac
+    
+    ReadABLParameters();
+
 }
 
 void incflo::ReadIOParameters()
@@ -250,7 +261,18 @@ void incflo::ReadABLParameters()
     pp.query("thermalExpansionCoeff",m_thermalExpansionCoeff);
 
     pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);
+    
+    // fixme do we want to default this at first half cell always?
+    int lev = 0;
+    int dir = 2;
+    m_log_law_sampling_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
     pp.query("log_law_sampling_height",m_log_law_sampling_height);
+    
+    // initialize these so we do not have to call planar averages before initial iterations
+    m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_v + m_ic_u*m_ic_v);
+    m_velocity_mean_loglaw = std::sqrt(m_ic_u*m_ic_v + m_ic_u*m_ic_v);
+    m_vx_mean_forcing = m_ic_u;
+    m_vy_mean_forcing = m_ic_v;
     
 }
 

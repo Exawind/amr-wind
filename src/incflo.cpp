@@ -53,7 +53,7 @@ void incflo::InitData ()
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
         InitFromScratch(m_cur_time);
-
+        
         if (m_do_initial_proj) {
             InitialProjection();
         }

@@ -125,11 +125,15 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
             Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
             
             // fixme not sure I want this here. this is the only place b is stored, however it is simple to grab eta from the first cell or extrapolate so maybe this can move somewhere else?
+#if 0
             if(m_incflo->m_probtype==35){
                 amrex::Print() << "warning wall model being called " << std::endl;
-                Real umag = sqrt(pow(m_incflo->vx_mean_ground,2) + pow(m_incflo->vy_mean_ground,2));
-                m_incflo->wall_model_bc(lev,m_incflo->utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
+                Real umag = m_incflo->m_velocity_mean_ground;
+                Real utau = m_incflo->m_kappa*m_incflo->m_velocity_mean_loglaw/log(m_incflo->m_log_law_sampling_height/m_incflo->m_surface_roughness_z0);
+                // fixme does this also need to be in divtau below?
+                m_incflo->wall_model_bc(lev,utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
             }
+#endif
             m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
         }

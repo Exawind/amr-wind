@@ -1,4 +1,6 @@
 #include <incflo.H>
+#include "PlaneAveraging.H"
+#include <cmath>
 
 using namespace amrex;
 
@@ -42,9 +44,28 @@ void incflo::Advance()
         }
     }
 
-    // fixme this has some specific abl stuff in it that will break for non-abl cases
-    // make this generic so plane averages can be done without abl
-    if(m_probtype==35) spatially_average_quantities_down(true);
+   if(m_plane_averaging){
+       const int axis=2;
+       PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
+
+       Real vx = pa.line_velocity_xdir(geom[0].ProbLoArray()[axis]);
+       Real vy = pa.line_velocity_ydir(geom[0].ProbLoArray()[axis]);
+
+       m_velocity_mean_ground = std::sqrt(vx*vx + vy*vy);
+
+       vx = pa.line_velocity_xdir(m_log_law_sampling_height);
+       vy = pa.line_velocity_ydir(m_log_law_sampling_height);
+
+       m_velocity_mean_loglaw = std::sqrt(vx*vx + vy*vy);
+
+       m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
+       m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
+
+       if(m_line_plot_int > 0 and m_nstep % m_line_plot_int == 0)
+       {
+           pa.plot_line_text("line_plot.txt", m_nstep, m_cur_time);
+       }
+   }
     
     ApplyPredictor();
 
@@ -604,10 +625,9 @@ void incflo::compute_forces (Vector<MultiFab*> const& vel_forces,
 
     const Real u = m_ic_u;
     const Real v = m_ic_v;
-    const Real w = m_ic_w;
     
-    const Real umean = vx_mean;//fixme get rid of this global storage
-    const Real vmean = vy_mean;//fixme get rid of this global storage
+    const Real umean = m_vx_mean_forcing;//fixme get rid of this global storage
+    const Real vmean = m_vy_mean_forcing;//fixme get rid of this global storage
     
     const Real T0 = m_temperature_values[0];
     const Real thermalExpansionCoeff = m_thermalExpansionCoeff;

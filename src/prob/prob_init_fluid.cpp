@@ -422,35 +422,14 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
     const Real v = m_ic_v;
     const Real w = m_ic_w;
 
-    Gpu::DeviceVector<Real> m_temperature_heights_d;
-    Gpu::DeviceVector<Real> m_temperature_values_d;
-    m_temperature_values_d.resize(m_ntemperature);
-    m_temperature_heights_d.resize(m_ntemperature);
-
-    // fixme can this be done once outside the level loop?
-#ifdef AMREX_USE_GPU
-        Gpu::htod_memcpy
-#else
-        std::memcpy
-#endif
-                   (m_temperature_values_d.data(), m_temperature_values.data(), sizeof(Real)*m_ntemperature);
-        
-        
-#ifdef AMREX_USE_GPU
-        Gpu::htod_memcpy
-#else
-        std::memcpy
-#endif
-                   (m_temperature_heights_d.data(), m_temperature_heights.data(), sizeof(Real)*m_ntemperature);
-
-    
+    AsyncArray<Real> th(m_temperature_heights.data(), m_temperature_heights.size());
+    AsyncArray<Real> tv(m_temperature_values.data(), m_temperature_values.size());
+    Real* m_temperature_heights_d = th.data();
+    Real* m_temperature_values_d = tv.data();
     
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
-        
-
-              
-        
+    
         // physical location of cell center
         const Real x = problo[0] + (i+0.5)*dx[0];
         const Real y = problo[1] + (j+0.5)*dx[1];
@@ -481,7 +460,8 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
               theta = m_temperature_values_d[t] + (z-m_temperature_heights_d[t])*slope;
             }
         }
-        
+#if 0 
+ figure out how to get on device       
         // add perturbations to potential temperature
         if(z < cutoff_height){
             // Random number generator for adding temperature perturbations
@@ -492,7 +472,7 @@ void incflo::init_abl (Box const& vbx, Box const& gbx,
             std::normal_distribution<Real> gaussNormal(thetaGaussMean_, thetaGaussVar_);
             theta += theta_amplitude*gaussNormal(gen);
         }
-        
+#endif        
         tracer(i,j,k,0) = theta;
         
     });
