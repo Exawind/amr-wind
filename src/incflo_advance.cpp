@@ -1,5 +1,6 @@
 #include <incflo.H>
 #include "PlaneAveraging.H"
+#include <cmath>
 
 using namespace amrex;
 
@@ -47,10 +48,16 @@ void incflo::Advance()
        const int axis=2;
        PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
 
-       m_vx_mean_ground = pa.line_velocity_xdir(geom[0].ProbLoArray()[axis]);
-       m_vy_mean_ground = pa.line_velocity_ydir(geom[0].ProbLoArray()[axis]);
-       m_vx_mean_loglaw = pa.line_velocity_xdir(m_log_law_sampling_height);
-       m_vy_mean_loglaw = pa.line_velocity_ydir(m_log_law_sampling_height);
+       Real vx = pa.line_velocity_xdir(geom[0].ProbLoArray()[axis]);
+       Real vy = pa.line_velocity_ydir(geom[0].ProbLoArray()[axis]);
+
+       m_velocity_mean_ground = std::sqrt(vx*vx + vy*vy);
+
+       vx = pa.line_velocity_xdir(m_log_law_sampling_height);
+       vy = pa.line_velocity_ydir(m_log_law_sampling_height);
+
+       m_velocity_mean_loglaw = std::sqrt(vx*vx + vy*vy);
+
        m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
        m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
 

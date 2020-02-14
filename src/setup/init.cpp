@@ -1,6 +1,7 @@
 // #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
+#include <cmath>
 
 using namespace amrex;
 
@@ -268,10 +269,8 @@ void incflo::ReadABLParameters()
     pp.query("log_law_sampling_height",m_log_law_sampling_height);
     
     // initialize these so we do not have to call planar averages before initial iterations
-    m_vx_mean_ground = m_ic_u;
-    m_vy_mean_ground = m_ic_v;
-    m_vx_mean_loglaw = m_ic_u;
-    m_vy_mean_loglaw = m_ic_v;
+    m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_v + m_ic_u*m_ic_v);
+    m_velocity_mean_loglaw = std::sqrt(m_ic_u*m_ic_v + m_ic_u*m_ic_v);
     m_vx_mean_forcing = m_ic_u;
     m_vy_mean_forcing = m_ic_v;
     

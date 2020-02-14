@@ -459,10 +459,8 @@ private:
    
      
     // fixme this is sloppy and are being used as global variables...
-    amrex::Real m_vx_mean_ground;
-    amrex::Real m_vy_mean_ground;
-    amrex::Real m_vx_mean_loglaw;
-    amrex::Real m_vy_mean_loglaw;
+    amrex::Real m_velocity_mean_ground;
+    amrex::Real m_velocity_mean_loglaw;
     amrex::Real m_vx_mean_forcing;
     amrex::Real m_vy_mean_forcing;
     
