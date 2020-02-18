@@ -246,7 +246,7 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
                 Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
                 m_eb_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_eb_apply_op->setLevelBC(lev, &laps_comp[lev]);
+                m_eb_apply_op->setLevelBC(lev, &tracer_comp[lev]);
             }
 
             MLMG mlmg(*m_eb_apply_op);
