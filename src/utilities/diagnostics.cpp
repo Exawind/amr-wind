@@ -7,10 +7,13 @@ using namespace amrex;
 //
 void incflo::PrintMaxValues(Real time_in)
 {
+    
+#if AMREX_USE_EB
+    amrex::Print << "Warning PrintMaxValues() does not work with EB yet" << std::endl;
     return; // xxxxx TODO
-
-#if 0
-    ComputeDivU(time_in);
+#endif
+    
+//    ComputeDivU(time_in);
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -19,7 +22,7 @@ void incflo::PrintMaxValues(Real time_in)
         PrintMaxGp(lev);
     }
     amrex::Print() << std::endl;
-#endif
+
 }
 
 //
@@ -27,19 +30,20 @@ void incflo::PrintMaxValues(Real time_in)
 //
 void incflo::PrintMaxVel(int lev)
 {
-#if 0
-    // xxxxx TODO
-    amrex::Print() << "max(abs(u/v/w/divu))  = "
-                   << Norm(vel , lev, 0, 0) << "  "
-		   << Norm(vel , lev, 1, 0) << "  "
-                   << Norm(vel , lev, 2, 0) << "  "
-                   << Norm(divu, lev, 0, 0) << "  " << std::endl;
-    if (ntrac > 0)
+
+    LevelData &ld = *m_leveldata[lev];
+    
+    amrex::Print() << "max(abs(u/v/w))  = "
+                   << ld.velocity.norm0(0) << "  "
+                   << ld.velocity.norm0(1)  << "  "
+                   << ld.velocity.norm0(2)  << "  "
+                   << std::endl;
+    if (m_ntrac > 0)
     {
-       for (int i = 0; i < ntrac; i++)
-          amrex::Print() << "max tracer" << i << " = " << Norm(tracer,lev,i,0) << std::endl;;
+       for (int i = 0; i < m_ntrac; i++)
+          amrex::Print() << "max tracer" << i << " = " << ld.tracer.norm0(i) << std::endl;;
     }
-#endif
+
 }
 
 //
@@ -47,25 +51,27 @@ void incflo::PrintMaxVel(int lev)
 //
 void incflo::PrintMaxGp(int lev)
 {
-#if 0
-    // xxxxx TODO
+
+    LevelData &ld = *m_leveldata[lev];
+
     amrex::Print() << "max(abs(gpx/gpy/gpz/p))  = "
-                   << Norm(gp, lev, 0, 0) << "  "
-		   << Norm(gp, lev, 1, 0) << "  "
-                   << Norm(gp, lev, 2, 0) << "  "
-		   << Norm(p , lev, 0, 0) << "  " << std::endl;
-#endif
+                   << ld.gp.norm0(0) << "  "
+                   << ld.gp.norm0(1) << "  "
+                   << ld.gp.norm0(2) << "  "
+		           << ld.p.norm0(0) << "  " << std::endl;
+
 }
 
 void incflo::CheckForNans(int lev)
 {
-#if 0
-    // xxxxx
-    bool ro_has_nans = density[lev]->contains_nan(0);
-    bool ug_has_nans = vel[lev]->contains_nan(0);
-    bool vg_has_nans = vel[lev]->contains_nan(1);
-    bool wg_has_nans = vel[lev]->contains_nan(2);
-    bool pg_has_nans = p[lev]->contains_nan(0);
+
+    LevelData &ld = *m_leveldata[lev];
+
+    bool ro_has_nans = ld.density.contains_nan(0);
+    bool ug_has_nans = ld.velocity.contains_nan(0);
+    bool vg_has_nans = ld.velocity.contains_nan(1);
+    bool wg_has_nans = ld.velocity.contains_nan(2);
+    bool pg_has_nans = ld.p.contains_nan(0);
 
     if (ro_has_nans)
 	amrex::Print() << "WARNING: ro contains NaNs!!!";
@@ -81,7 +87,7 @@ void incflo::CheckForNans(int lev)
 
     if(pg_has_nans)
 	amrex::Print() << "WARNING: p contains NaNs!!!";
-#endif
+
 }
 
 Real
