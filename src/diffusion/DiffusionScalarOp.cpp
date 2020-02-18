@@ -246,7 +246,7 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
                 Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
                 m_eb_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_eb_apply_op->setLevelBC(lev, &laps_comp[lev]);
+                m_eb_apply_op->setLevelBC(lev, &tracer_comp[lev]);
             }
 
             MLMG mlmg(*m_eb_apply_op);
@@ -265,14 +265,6 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
 #endif
     {
 
-        Vector<MultiFab> laps_tmp(finest_level+1);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            laps_tmp[lev].define(a_laps[lev]->boxArray(),
-                                 a_laps[lev]->DistributionMap(),
-                                 m_incflo->m_ntrac, 2, MFInfo(),
-                                 a_laps[lev]->Factory());
-            laps_tmp[lev].setVal(0.0);
-        }
 
         // We want to return div (mu grad)) phi
         m_reg_apply_op->setScalars(0.0, -1.0);
@@ -284,11 +276,11 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
             Vector<MultiFab> laps_comp;
             Vector<MultiFab> tracer_comp;
             for (int lev = 0; lev <= finest_level; ++lev) {
-                laps_comp.emplace_back(laps_tmp[lev],amrex::make_alias,comp,1);
+                laps_comp.emplace_back(*a_laps[lev],amrex::make_alias,comp,1);
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
                 Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
                 m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_reg_apply_op->setLevelBC(lev, &laps_comp[lev]);
+                m_reg_apply_op->setLevelBC(lev, &tracer_comp[lev]);
             }
 
             MLMG mlmg(*m_reg_apply_op);
