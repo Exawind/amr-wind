@@ -23,7 +23,7 @@ struct NonNewtonianViscosity
         {
         case incflo::FluidModel::powerlaw:
         {
-            return mu * std::pow(sr,n_flow-1.0);
+            return  mu * std::pow(sr,n_flow-1.0);
         }
         case incflo::FluidModel::Bingham:
         {
@@ -86,7 +86,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
             const Real dy = geom[lev].CellSize()[1];
             const Real dz = geom[lev].CellSize()[2];
             const Real ds = pow(dx*dy*dz,1.0/3.0);
-            
+            const Real cs = m_Smagorinsky_Lilly_SGS_constant;
             Real idx = 1.0 / dx;
             Real idy = 1.0 / dy;
             Real idz = 1.0 / dz;
@@ -139,7 +139,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
     switch(m_fluid_model){
         case incflo::FluidModel::SmagorinskyLillySGS:
         {
-            
+
             for (auto mf : tra_eta) {
                 for (int n = 0; n < m_ntrac; ++n) {
                     mf->setVal(0.0, n, 1, nghost);
@@ -148,19 +148,19 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
 
             if(m_ntrac){
                 AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_ntrac == 1,"SmagorinskyLillySGS only implemented for 1 tracer");
-                
+
                 Real iPrandtl_turb = 3.0;//fixme make an input
                 for (int lev = 0; lev <= finest_level; ++lev) {
                     MultiFab::Xpay(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);
                 }
             }
-            break;            
+            break;
         }
         default:
         {
             for (auto mf : tra_eta) {
                 for (int n = 0; n < m_ntrac; ++n) {
-                    mf->setVal(m_mu_s[n], n, 1, nghost);
+                    mf->setVal(1.0, n, 1, nghost);
                 }
             }
         }

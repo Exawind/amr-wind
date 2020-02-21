@@ -24,7 +24,7 @@ public:
     DiffusionTensorOp (incflo* a_incflo);
 
     void diffuse_velocity (amrex::Vector<amrex::MultiFab*> const& velocity,
-                           amrex::Vector<amrex::MultiFab*> const& density,
+                           amrex::Vector<amrex::MultiFab const*> const& density,
                            amrex::Vector<amrex::MultiFab const*> const& eta,
                            amrex::Real t, amrex::Real dt);
 

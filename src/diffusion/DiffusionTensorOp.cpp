@@ -85,7 +85,7 @@ DiffusionTensorOp::readParameters ()
 
 void
 DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
-                                     Vector<MultiFab*> const& density,
+                                     Vector<MultiFab const*> const& density,
                                      Vector<MultiFab const*> const& eta,
                                      Real t, Real dt)
 {
@@ -114,6 +114,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
             Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
             m_eb_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
             m_eb_solve_op->setEBShearViscosity(lev, *eta[lev]);
+            m_eb_solve_op->setLevelBC(lev, velocity[lev]);
         }
     }
     else
@@ -123,19 +124,23 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_reg_solve_op->setACoeffs(lev, *density[lev]);
             Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
-            
-            // fixme not sure I want this here. this is the only place b is stored, however it is simple to grab eta from the first cell or extrapolate so maybe this can move somewhere else?
-#if 0
-            if(m_incflo->m_probtype==35){
-                amrex::Print() << "warning wall model being called " << std::endl;
-                Real umag = m_incflo->m_velocity_mean_ground;
-                Real utau = m_incflo->m_kappa*m_incflo->m_velocity_mean_loglaw/log(m_incflo->m_log_law_sampling_height/m_incflo->m_surface_roughness_z0);
-                // fixme does this also need to be in divtau below?
-                m_incflo->wall_model_bc(lev,utau,umag,GetArrOfConstPtrs(b),*density[lev],*velocity[lev]);
-            }
-#endif
             m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
+            // if at least one boundary is a wall model
+            if(m_incflo->m_wall_model_flag){
+              
+                MultiFab bc(velocity[lev]->boxArray(),velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),velocity[lev]->Factory());
+                // copy velocity into bc in case there is a periodic bc
+                // fixme this seems inefficient
+                MultiFab::Copy(bc, *velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
+                m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b),*density[lev],*velocity[lev],bc);
+                m_reg_solve_op->setLevelBC(lev, &bc);
+                
+            } else {
+                // bc's are stored in the ghost cells of velocity
+                m_reg_solve_op->setLevelBC(lev, velocity[lev]);
+            }
+            
         }
     }
 
@@ -158,14 +163,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
             });
         }
 
-#ifdef AMREX_USE_EB
-        if (m_eb_solve_op) {
-            m_eb_solve_op->setLevelBC(lev, velocity[lev]);
-        } else
-#endif
-        {
-            m_reg_solve_op->setLevelBC(lev, velocity[lev]);
-        }
+
     }
 
 #ifdef AMREX_USE_EB
@@ -257,7 +255,18 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
             m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
             Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
             m_reg_apply_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
-            m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
+
+            if(m_incflo->m_wall_model_flag){
+                MultiFab bc(a_velocity[lev]->boxArray(),a_velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),a_velocity[lev]->Factory());
+                // copy velocity into bc in case there is a periodic bc
+                // fixme this seems inefficient
+                MultiFab::Copy(bc, *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
+                m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b), *a_density[lev], *a_velocity[lev], bc);
+                m_reg_apply_op->setLevelBC(lev, &bc);
+
+            } else {
+                m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
+            }
         }
 
         MLMG mlmg(*m_reg_apply_op);

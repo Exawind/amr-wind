@@ -48,15 +48,11 @@ void incflo::Advance()
        const int axis=2;
        PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
 
-       Real vx = pa.line_velocity_xdir(geom[0].ProbLoArray()[axis]);
-       Real vy = pa.line_velocity_ydir(geom[0].ProbLoArray()[axis]);
+       Real vx = pa.line_velocity_xdir(m_ground_height);
+       Real vy = pa.line_velocity_ydir(m_ground_height);
 
        m_velocity_mean_ground = std::sqrt(vx*vx + vy*vy);
-
-       vx = pa.line_velocity_xdir(m_log_law_sampling_height);
-       vy = pa.line_velocity_ydir(m_log_law_sampling_height);
-
-       m_velocity_mean_loglaw = std::sqrt(vx*vx + vy*vy);
+       m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
 
        m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
        m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
@@ -200,6 +196,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_forces(GetVecOfPtrs(vel_forces), GetVecOfPtrs(tra_forces),
                    get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),m_dt);
 
+    //fixme need bcs to get viscosity correct when using strain rate
     compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
                       get_density_old_const(), get_velocity_old_const(), get_tracer_old_const(),
                       m_cur_time, 1);
@@ -317,7 +314,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new(),
+                                                    get_density_new_const(),
                                                     GetVecOfConstPtrs(vel_eta),
                                                     m_cur_time, dt_diff);
         if (m_advect_tracer) {
@@ -580,7 +577,7 @@ void incflo::ApplyCorrector()
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new(),
+                                                    get_density_new_const(),
                                                     GetVecOfConstPtrs(vel_eta),
                                                     new_time, dt_diff);
         if (m_advect_tracer) {
