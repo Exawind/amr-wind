@@ -1,3 +1,6 @@
+#ifndef INCFLO_CONVECTION_K_H_
+#define INCFLO_CONVECTION_K_H_
+
 #ifdef AMREX_USE_EB
 #include <AMReX_EBFArrayBox.H>
 #include <AMReX_EBCellFlag.H>
@@ -371,6 +374,8 @@ incflo_slopes_extdir_eb (int i, int j, int k, int n,
 
     return {xslope,yslope,zslope};
 }
+
+#endif
 
 }
 #endif
