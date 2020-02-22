@@ -312,7 +312,7 @@ incflo_slopes_extdir_eb (int i, int j, int k, int n,
         }
     }
 
-    if        (edlo_y and i == domlo_y) {
+    if        (edlo_y and j == domlo_y) {
         if( !( flag(i,j  ,k).isSingleValued() or
               (flag(i,j-1,k).isSingleValued() or not flag(i,j,k).isConnected(0,-1,0)) or
               (flag(i,j+1,k).isSingleValued() or not flag(i,j,k).isConnected(0, 1,0))) )
