@@ -42,12 +42,14 @@ struct IncfloVelFill
                 if (31 == probtype and vcomp == 0)
                 {
                     Real y = (j+0.5)*(1.0/domain_box.length(1));
-                    vel(i,j,k,0) *= 6. * y * (1.-y);
+                    vel(i,j,k,0) *= 6. * y * (1.-y) * 
+                         bcv[Orientation(Direction::x,Orientation::low)][0];
                 } else
                 if (311 == probtype and vcomp == 0)
                 {
                     Real z = (k+0.5)*(1.0/domain_box.length(2));
-                    vel(i,j,k,0) *= 6. * z * (1.-z);
+                    vel(i,j,k,0) *= 6. * z * (1.-z) * 
+                         bcv[Orientation(Direction::x,Orientation::low)][0];
                 }
             }
             else if (bc.hi(0) == BCType::ext_dir and i > domain_box.bigEnd(0))
@@ -61,12 +63,14 @@ struct IncfloVelFill
                 if (32 == probtype and vcomp == 1)
                 {
                     Real z = (k+0.5)*(1.0/domain_box.length(2));
-                    vel(i,j,k,1) *= 6. * z * (1.-z);
+                    vel(i,j,k,1) *= 6. * z * (1.-z) *
+                         bcv[Orientation(Direction::y,Orientation::low)][1];
                 }
                 if (322 == probtype and vcomp == 1)
                 {
                     Real x = (i+0.5)*(1.0/domain_box.length(0));
-                    vel(i,j,k,1) *= 6. * x * (1.-x);
+                    vel(i,j,k,1) *= 6. * x * (1.-x) *
+                         bcv[Orientation(Direction::y,Orientation::low)][1];
                 }
             }
             else if (bc.hi(1) == BCType::ext_dir and j > domain_box.bigEnd(1))
@@ -80,12 +84,14 @@ struct IncfloVelFill
                 if (33 == probtype and vcomp == 2)
                 {
                     Real x = (i+0.5)*(1.0/domain_box.length(0));
-                    vel(i,j,k,2) *= 6. * x * (1.-x);
+                    vel(i,j,k,2) *= 6. * x * (1.-x) *
+                         bcv[Orientation(Direction::z,Orientation::low)][2];
                 }
                 if (333 == probtype and vcomp == 2)
                 {
                     Real y = (j+0.5)*(1.0/domain_box.length(1));
-                    vel(i,j,k,2) *= 6. * y * (1.-y);
+                    vel(i,j,k,2) *= 6. * y * (1.-y) *
+                         bcv[Orientation(Direction::z,Orientation::low)][2];
                 }
             }
             else if (bc.hi(2) == BCType::ext_dir and k > domain_box.bigEnd(2))
