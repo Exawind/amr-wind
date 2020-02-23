@@ -111,7 +111,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
 
                if (extdir_ilo and i == domain_ilo) {
                    u(i,j,k) = vcc(i-1,j,k,0);
-               } else if (extdir_ihi and i == domain_jhi+1) {
+               } else if (extdir_ihi and i == domain_ihi+1) {
                    u(i,j,k) = vcc(i,j,k,0);
                }
 
