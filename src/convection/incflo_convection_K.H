@@ -275,7 +275,7 @@ incflo_slopes_extdir_eb (int i, int j, int k, int n,
                   bool edlo_z, bool edhi_z, int domlo_z, int domhi_z) noexcept
 {
     // First get EB-aware slope that doesn't know about extdir
-    amrex::Array<amrex::Real,3> eb_slope = incflo_slopes_eb (i,j,k,n,state,ccent,flag);
+    amrex::GpuArray<amrex::Real,3> eb_slope = incflo_slopes_eb (i,j,k,n,state,ccent,flag);
     amrex::Real xslope = eb_slope[0];
     amrex::Real yslope = eb_slope[1];
     amrex::Real zslope = eb_slope[2];
