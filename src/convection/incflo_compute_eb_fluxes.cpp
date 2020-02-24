@@ -168,9 +168,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                // Compute slopes of component "n" of q
                const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
 
-               Real qpls = q(i  ,j,k,n);// - delta_x * slopes_eb_hi[0]
-                                        // + delta_y * slopes_eb_hi[1]
-                                        // + delta_z * slopes_eb_hi[2];
+               Real qpls = q(i  ,j,k,n) - delta_x * slopes_eb_hi[0]
+                                        + delta_y * slopes_eb_hi[1]
+                                        + delta_z * slopes_eb_hi[2];
 
                qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
 
@@ -185,9 +185,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                // Compute slopes of component "n" of q
                const auto& slopes_eb_lo = incflo_slopes_eb(i-1,j,k,n,q,ccc,flag);
 
-               Real qmns = q(i-1,j,k,n);// + delta_x * slopes_eb_lo[0]
-                                        // + delta_y * slopes_eb_lo[1]
-                                        // + delta_z * slopes_eb_lo[2];
+               Real qmns = q(i-1,j,k,n) + delta_x * slopes_eb_lo[0]
+                                        + delta_y * slopes_eb_lo[1]
+                                        + delta_z * slopes_eb_lo[2];
     
                qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
@@ -326,9 +326,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                // Compute slopes of component "n" of q
                const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
 
-               Real qpls = q(i,j  ,k,n); // + delta_x * slopes_eb_hi[0]
-                                         // - delta_y * slopes_eb_hi[1]
-                                         // + delta_z * slopes_eb_hi[2];
+               Real qpls = q(i,j  ,k,n) + delta_x * slopes_eb_hi[0]
+                                        - delta_y * slopes_eb_hi[1]
+                                        + delta_z * slopes_eb_hi[2];
 
                qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
 
@@ -343,9 +343,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                // Compute slopes of component "n" of q
                const auto& slopes_eb_lo = incflo_slopes_eb(i,j-1,k,n,q,ccc,flag);
 
-               Real qmns = q(i,j-1,k,n); // + delta_x * slopes_eb_lo[0]
-                                         // + delta_y * slopes_eb_lo[1]
-                                         // + delta_z * slopes_eb_lo[2];
+               Real qmns = q(i,j-1,k,n) + delta_x * slopes_eb_lo[0]
+                                        + delta_y * slopes_eb_lo[1]
+                                        + delta_z * slopes_eb_lo[2];
     
                qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
@@ -484,9 +484,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                 // Compute slopes of component "n" of q
                 const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
  
-                Real qpls = q(i,j,k  ,n);// + delta_x * slopes_eb_hi[0]
-                                         // + delta_y * slopes_eb_hi[1]
-                                         // - delta_z * slopes_eb_hi[2];
+                Real qpls = q(i,j,k  ,n) + delta_x * slopes_eb_hi[0]
+                                         + delta_y * slopes_eb_hi[1]
+                                         - delta_z * slopes_eb_hi[2];
  
                 qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
  
@@ -501,9 +501,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                 // Compute slopes of component "n" of q
                 const auto& slopes_eb_lo = incflo_slopes_eb(i,j,k-1,n,q,ccc,flag);
     
-                Real qmns = q(i,j,k-1,n);// + delta_x * slopes_eb_lo[0]
-                                         // + delta_y * slopes_eb_lo[1]
-                                         // + delta_z * slopes_eb_lo[2];
+                Real qmns = q(i,j,k-1,n) + delta_x * slopes_eb_lo[0]
+                                         + delta_y * slopes_eb_lo[1]
+                                         + delta_z * slopes_eb_lo[2];
 
                 qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
