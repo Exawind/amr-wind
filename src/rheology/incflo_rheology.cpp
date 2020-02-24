@@ -151,7 +151,8 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                 
                 Real iPrandtl_turb = 3.0;//fixme make an input
                 for (int lev = 0; lev <= finest_level; ++lev) {
-                    MultiFab::Xpay(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);
+                    // tra_eta += iPrandtl_turb*vel_eta
+                    MultiFab::Saxpy(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);                    
                 }
             }
             break;            
