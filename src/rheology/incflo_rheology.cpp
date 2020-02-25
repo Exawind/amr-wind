@@ -23,7 +23,7 @@ struct NonNewtonianViscosity
         {
         case incflo::FluidModel::powerlaw:
         {
-            return  mu * std::pow(sr,n_flow-1.0);
+            return mu * std::pow(sr,n_flow-1.0);
         }
         case incflo::FluidModel::Bingham:
         {
@@ -219,7 +219,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
         {
             for (auto mf : tra_eta) {
                 for (int n = 0; n < m_ntrac; ++n) {
-                    mf->setVal(1.0, n, 1, nghost);
+                    mf->setVal(m_mu_s[n], n, 1, nghost);
                 }
             }
         }
