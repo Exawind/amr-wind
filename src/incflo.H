@@ -273,10 +273,10 @@ public: // for cuda
     //fixme move these and clean up
     bool m_plane_averaging = false;
 
-    void wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
+    void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
     bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
     
-    void heat_flux_model_bc(int lev, int comp, amrex::MultiFab& bc) const;
+    void heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const;
   
     ///////////////////////////////////////////////////////////////////////////
     //

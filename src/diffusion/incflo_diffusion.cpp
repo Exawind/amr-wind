@@ -117,9 +117,10 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
 }
 
 void
-incflo::wall_model_bc(int lev,
-                      amrex::Real utau, amrex::Real umag,
-                      const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta,
+incflo::wall_model_bc(const int lev,
+                      const amrex::Real utau,
+                      const amrex::Real umag,
+                      const amrex::Array<amrex::MultiFab const*, AMREX_SPACEDIM>& fc_eta,
                       const amrex::MultiFab& density,
                       const amrex::MultiFab& velocity,
                       amrex::MultiFab& bc) const
@@ -128,7 +129,6 @@ incflo::wall_model_bc(int lev,
     amrex::Print() << "warning wall model being called with hard coded bc's, wall model is assumed on bottom and slip on top" << std::endl;
 
     const Geometry& gm = Geom(lev);
-    auto  dx = geom[lev].CellSizeArray();
     const Box& domain = gm.Domain();
     MFItInfo mfi_info{};
 
@@ -148,12 +148,12 @@ incflo::wall_model_bc(int lev,
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(density,mfi_info); mfi.isValid(); ++mfi) {
-        Box const& bx = mfi.validbox();
+        const Box& bx = mfi.validbox();
         auto vel = velocity.array(mfi);
         auto den = density.array(mfi);
         auto bc_a = bc.array(mfi);
-        int idim = 0;
         
+        int idim = 0;
         // fixme this assume periodic
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
@@ -196,7 +196,7 @@ incflo::wall_model_bc(int lev,
             Array4<Real const> const& eta = fc_eta[idim]->const_array(mfi);
             
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                // tried to grow box in i and j but eta is not defined on corners :(
+                // fixme tried to grow box in i and j but eta is not defined on corners :(
 //                amrex::Print() << amrex::bdryLo(bx, idim) << std::endl;
 //                auto bxc = Box(amrex::bdryLo(bx, idim)).grow(IntVect(1,1,0));
 //                amrex::Print() << bxc << std::endl;
@@ -231,8 +231,9 @@ incflo::wall_model_bc(int lev,
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
-//                    bc_a(i,j,k,0) = 0.0; // Neumann does not need a bc since it assumes dudz=0
-//                    bc_a(i,j,k,1) = 0.0; // Neumann does not need a bc since it assumes dvdz=0
+                    
+                    // bc_a(i,j,k,0) = 0.0; // Neumann does not need a bc since it assumes dudz=0
+                    // bc_a(i,j,k,1) = 0.0; // Neumann does not need a bc since it assumes dvdz=0
                     
                     // w(x,y,z=L) = 0
                     bc_a(i,j,k,2) = 0.0; // set dirichlet on top bc
@@ -247,7 +248,7 @@ incflo::wall_model_bc(int lev,
 
 
 void
-incflo::heat_flux_model_bc(int lev, int comp, amrex::MultiFab& bc) const
+incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const
 {
 
     const Geometry& gm = Geom(lev);
@@ -264,7 +265,7 @@ incflo::heat_flux_model_bc(int lev, int comp, amrex::MultiFab& bc) const
     for (MFIter mfi(bc,mfi_info); mfi.isValid(); ++mfi) {
         
         Box const& bx = mfi.validbox();
-        auto bc_a = bc.array(mfi);
+        Array4<Real> const& bc_a = bc.array(mfi);
         
         int idim = 0;
         
