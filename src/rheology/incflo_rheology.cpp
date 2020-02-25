@@ -205,7 +205,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                 }
             }
 
-            if(m_ntrac){
+            if(m_ntrac && m_advect_tracer){
                 AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_ntrac == 1,"SmagorinskyLillySGS only implemented for 1 tracer");
 
                 Real iPrandtl_turb = 3.0;//fixme make an input
