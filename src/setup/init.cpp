@@ -253,7 +253,7 @@ void incflo::ReadABLParameters()
     pp.query("latitude",m_latitude);
 
     m_sinphi = std::sin(m_latitude);
-    m_cosphi = std::sin(m_latitude);
+    m_cosphi = std::cos(m_latitude);
 
     // set the default to be 1/T0 unless it exists and then it will override
     AMREX_ALWAYS_ASSERT(m_temperature_values[0] > 0.0);
