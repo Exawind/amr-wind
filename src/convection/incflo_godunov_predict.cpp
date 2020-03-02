@@ -1,4 +1,6 @@
+#include "incflo_godunov_plm.H" 
 #include "incflo_godunov_ppm.H" 
+
 #include "incflo.H"
 #include <incflo_MAC_bcs.H>
 #include <AMReX_BCRec.H>
@@ -57,7 +59,10 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             Array4<Real> w_ad = makeArray4(p,Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
             p +=         w_ad.size();
 
-            make_ppm_integrals (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
+            if (m_ppm)
+                predict_ppm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
+            else
+                predict_plm (lev, xbx, ybx, zbx, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel);
 
             make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
                                   u_ad, v_ad, w_ad,
@@ -71,33 +76,6 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             Gpu::streamSynchronize();  // otherwise we might be using too much memory
         }
     }
-}
-
-void incflo::make_ppm_integrals (int lev, Box const& bx, int ncomp,
-                                 Array4<Real> const& Imx,
-                                 Array4<Real> const& Ipx,
-                                 Array4<Real> const& Imy,
-                                 Array4<Real> const& Ipy,
-                                 Array4<Real> const& Imz,
-                                 Array4<Real> const& Ipz,
-                                 Array4<Real const> const& q,
-                                 Array4<Real const> const& vel)
-{
-    Real l_dt = m_dt;
-    const auto dx = Geom(lev).CellSizeArray();
-    const Box& domain = Geom(lev).Domain();
-    const Dim3 dlo = amrex::lbound(domain);
-    const Dim3 dhi = amrex::ubound(domain);
-
-    BCRec const* pbc = get_velocity_bcrec_device_ptr();
-
-    amrex::ParallelFor(bx, AMREX_SPACEDIM,
-    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-    {
-        Godunov_ppm_pred_x(i,j,k,n,l_dt,dx[0],q,vel,Imx,Ipx,pbc[0],dlo.x,dhi.x);
-        Godunov_ppm_pred_y(i,j,k,n,l_dt,dx[1],q,vel,Imy,Ipy,pbc[1],dlo.y,dhi.y);
-        Godunov_ppm_pred_z(i,j,k,n,l_dt,dx[2],q,vel,Imz,Ipz,pbc[2],dlo.z,dhi.z);
-    });
 }
 
 void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box const& zbx,

@@ -1,0 +1,74 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+max_step                =  150          # Max number of time steps
+steady_state            =   0           # Steady-state solver? 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+incflo.fixed_dt         =   -1.0        # Use this constant dt if > 0
+incflo.cfl              =   0.45        # CFL factor
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+amr.plot_int            =   50          # Steps between plot files
+amr.check_int           =   1000        # Steps between checkpoint files
+amr.restart             =   ""          # Checkpoint to restart from 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
+incflo.ro_0             =   1.          # Reference density 
+
+incflo.fluid_model      =   "newtonian" # Fluid model (rheology)
+incflo.mu               =   1.          # Dynamic viscosity coefficient
+
+incflo.advect_tracer    = 1
+
+incflo.use_godunov      = true
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              =   64  16  32  # Grid cells at coarsest AMRlevel
+amr.max_level           =   0           # Max AMR level in hierarchy 
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =   0.  0.  0.  # Lo corner coordinates
+geometry.prob_hi        =   2.  0.5 1.  # Hi corner coordinates
+
+geometry.is_periodic    =   0   1   0   # Periodicity x y z (0/1)
+
+incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
+
+incflo.probtype = 41 
+
+# Boundary conditions
+xlo.type                =   "mi"        #  mass inflow
+xlo.tracer              =   1.0         #  inflow value of tracer
+
+xhi.type                =   "po"        #  pressure outflow
+xhi.pressure            =   0.0
+
+zlo.type                =   "nsw"       # No-slip wall 
+zhi.type                =    "sw"       # Slip wall
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#          NUMERICAL PARAMETERS         #
+#.......................................#
+incflo.steady_state_tol   = 1.e-5       # Tolerance for steady-state
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              VERBOSITY                #
+#.......................................#
+incflo.verbose          =   2           # incflo_level
+diffusion.verbose       =   0           # DiffusionEquation
+mac_proj.verbose        =   0           # MAC Projector
+nodal_proj.verbose      =   0           # Nodal Projector
+
+amr.plt_ccse_regtest    =   1

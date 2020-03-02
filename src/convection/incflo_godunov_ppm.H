@@ -1,5 +1,5 @@
-#ifndef GODUNOV_ADVECTION_H
-#define GODUNOV_ADVECTION_H
+#ifndef GODUNOV_PPM_H
+#define GODUNOV_PPM_H
 #include <incflo.H> 
 #include <AMReX_Gpu.H> 
 #include <AMReX_FArrayBox.H>

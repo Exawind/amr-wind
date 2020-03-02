@@ -25,6 +25,16 @@ void incflo::prob_set_inflow_velocity (int grid_id, Orientation ori, Box const& 
             vel(i,j,k,0) = 6. * u * z * (1.-z);
         });
     }
+    else if (41 == m_probtype)
+    {
+        Real dzinv = 1.0 / Geom(lev).Domain().length(2);
+        Real u = m_ic_u;
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real z = (k+0.5)*dzinv;
+            vel(i,j,k,0) = 0.5*z;
+        });
+    }
     else if (32 == m_probtype)
     {
         Real dzinv = 1.0 / Geom(lev).Domain().length(2);

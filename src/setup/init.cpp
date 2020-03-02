@@ -56,6 +56,7 @@ void incflo::ReadParameters ()
         pp.query("advect_tracer"   , m_advect_tracer);
         pp.query("test_tracer_conservation" , m_test_tracer_conservation);
         pp.query("use_godunov"        , m_use_godunov);
+        pp.query("use_ppm"            , m_ppm);
         pp.query("use_forces_in_trans", m_use_forces_in_trans);
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit

@@ -123,15 +123,22 @@ public: // for cuda
                           amrex::MultiFab const& vel, amrex::MultiFab const& rho,
                           amrex::MultiFab const& vel_forces);
 
-    void make_ppm_integrals (int lev, amrex::Box const& bx, int ncomp,
-                             amrex::Array4<amrex::Real> const& Imx,
-                             amrex::Array4<amrex::Real> const& Ipx,
-                             amrex::Array4<amrex::Real> const& Imy,
-                             amrex::Array4<amrex::Real> const& Ipy,
-                             amrex::Array4<amrex::Real> const& Imz,
-                             amrex::Array4<amrex::Real> const& Ipz,
-                             amrex::Array4<amrex::Real const> const& q,
-                             amrex::Array4<amrex::Real const> const& vel);
+    void predict_plm (int lev, amrex::Box const& ubx, amrex::Box const& vbx, amrex::Box const& wbx,
+                      amrex::Array4<amrex::Real> const& Imx, amrex::Array4<amrex::Real> const& Ipx,
+                      amrex::Array4<amrex::Real> const& Imy, amrex::Array4<amrex::Real> const& Ipy,
+                      amrex::Array4<amrex::Real> const& Imz, amrex::Array4<amrex::Real> const& Ipz,
+                      amrex::Array4<amrex::Real  const> const& vcc);
+
+
+    void predict_ppm (int lev, amrex::Box const& bx, int ncomp,
+                      amrex::Array4<amrex::Real> const& Imx,
+                      amrex::Array4<amrex::Real> const& Ipx,
+                      amrex::Array4<amrex::Real> const& Imy,
+                      amrex::Array4<amrex::Real> const& Ipy,
+                      amrex::Array4<amrex::Real> const& Imz,
+                      amrex::Array4<amrex::Real> const& Ipz,
+                      amrex::Array4<amrex::Real const> const& q,
+                      amrex::Array4<amrex::Real const> const& vel);
 
     void make_trans_velocities (int lev, amrex::Box const& xbx,
                                 amrex::Box const& ybx, amrex::Box const& zbx,
@@ -178,7 +185,7 @@ public: // for cuda
     //
     // MOL
     //
-    void predict_vels_on_faces (int lev, amrex::Real time, amrex::MultiFab& u_mac,
+    void predict_vels_on_faces (int lev,  amrex::MultiFab& u_mac,
                                 amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
                                 amrex::MultiFab const& vel);
 
@@ -413,6 +420,7 @@ private:
     bool m_test_tracer_conservation = false;
 
     bool m_use_godunov         = false;
+    bool m_ppm                 = true;
     bool m_use_forces_in_trans = false;
 
     enum struct DiffusionType {
