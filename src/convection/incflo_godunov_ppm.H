@@ -263,6 +263,7 @@ void Godunov_ppm_pred_x(const int i, const int j, const int k, const int n,
 
     amrex::Real sedge1, sedge2, sp, sm;
     amrex::Real s1 = S(i,j,k,n);
+
     constexpr amrex::Real small_vel = 1e-10;
 
     {
@@ -456,6 +457,8 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
+    constexpr amrex::Real small_vel = 1e-10;
+
     amrex::Real sedge1, sedge2, sp, sm;
     amrex::Real s1 = S(i,j,k,n);
     
@@ -492,14 +495,13 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
         amrex::Real sigmap = std::abs(vel_edge(i+1,j,k))*dt/dx;
         amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
 
-        if(vel_edge(i+1,j,k) > 1.e-06){
+        if(vel_edge(i+1,j,k) > small_vel) 
             Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
-        }
         else
             Ip = S(i,j,k,n);
 
-        if(vel_edge(i,j,k) < -1.e-06)
+        if(vel_edge(i,j,k) < -small_vel)
             Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
@@ -517,6 +519,8 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
                         const int domlo, const int domhi)
 {
     using namespace amrex;
+
+    constexpr amrex::Real small_vel = 1e-10;
 
     amrex::Real sedge1, sedge2, sp, sm;
     amrex::Real s1 = S(i,j,k,n);
@@ -554,13 +558,13 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
         amrex::Real s6 = 6.e0*S(i,j,k,n)- 3.e0*(sm + sp);
         amrex::Real sigmap = std::abs(vel_edge(i,j+1,k))*dt/dx;
         amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
-        if(vel_edge(i,j+1,k) > 1.e-06)
+        if(vel_edge(i,j+1,k) > small_vel)
             Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
         else
             Ip = S(i,j,k,n);
 
-        if(vel_edge(i,j,k) < -1.e-06)
+        if(vel_edge(i,j,k) < -small_vel)
             Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
@@ -579,6 +583,8 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
                         const int domlo, const int domhi)
 {
     using namespace amrex;
+
+    constexpr amrex::Real small_vel = 1e-10;
 
     amrex::Real sedge1, sedge2, sp, sm;
     amrex::Real s1 = S(i,j,k,n);
@@ -618,15 +624,15 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
 
         amrex::Real s6 = 6.e0*S(i,j,k,n)- 3.e0*(sm + sp);
         amrex::Real sigmap = std::abs(vel_edge(i,j,k+1))*dt/dx;
-        amrex::Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
-        if(vel_edge(i,j,k+1) > 1.e-06)
+        amrex::Real sigmam = std::abs(vel_edge(i,j,k  ))*dt/dx;
+        if(vel_edge(i,j,k+1) > small_vel)
             Ip = sp - (0.5*sigmap)*((sp - sm)
                              - (1.e0 -2.e0/3.e0*sigmap)*s6);
         else
             Ip = s2;
 
 
-        if(vel_edge(i,j,k) < -1.e-06)
+        if(vel_edge(i,j,k) < -small_vel)
             Im = sm + (0.5*sigmam)*((sp-sm)
                              + (1.e0 - 2.e0/3.e0*sigmam)*s6);
         else
