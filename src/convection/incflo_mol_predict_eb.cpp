@@ -64,8 +64,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = yf  - yc;
                Real delta_z = zf  - zc;
 
-               Real cc_umax = std::max(vcc(i,j,k,0), vcc(i-1,j,k,0));
-               Real cc_umin = std::min(vcc(i,j,k,0), vcc(i-1,j,k,0));
+               Real cc_umax = amrex::max(vcc(i,j,k,0), vcc(i-1,j,k,0));
+               Real cc_umin = amrex::min(vcc(i,j,k,0), vcc(i-1,j,k,0));
 
                // Compute slopes of component "0" of vcc
                const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,0,vcc,ccc,flag,
@@ -77,7 +77,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_hi[1]
                                           + delta_z * slopes_eb_hi[2];
 
-               upls = std::max(std::min(upls, cc_umax), cc_umin);
+               upls = amrex::max(amrex::min(upls, cc_umax), cc_umin);
 
                xc = ccc(i-1,j,k,0); // centroid of cell (i-1,j,k)
                yc = ccc(i-1,j,k,1);
@@ -97,7 +97,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
 
-               umns = std::max(std::min(umns, cc_umax), cc_umin);
+               umns = amrex::max(amrex::min(umns, cc_umax), cc_umin);
 
                if ( umns < 0.0 && upls > 0.0 ) {
                   u(i,j,k) = 0.0;
@@ -139,8 +139,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = yf  - yc;
                Real delta_z = zf  - zc;
 
-               Real cc_umax = std::max(vcc(i,j,k,0), vcc(i-1,j,k,0));
-               Real cc_umin = std::min(vcc(i,j,k,0), vcc(i-1,j,k,0));
+               Real cc_umax = amrex::max(vcc(i,j,k,0), vcc(i-1,j,k,0));
+               Real cc_umin = amrex::min(vcc(i,j,k,0), vcc(i-1,j,k,0));
 
                // Compute slopes of component "0" of vcc
                const auto slopes_eb_hi = incflo_slopes_eb(i,j,k,0,vcc,ccc,flag);
@@ -149,7 +149,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_hi[1]
                                           + delta_z * slopes_eb_hi[2];
 
-               upls = std::max(std::min(upls, cc_umax), cc_umin);
+               upls = amrex::max(amrex::min(upls, cc_umax), cc_umin);
 
                xc = ccc(i-1,j,k,0); // centroid of cell (i-1,j,k)
                yc = ccc(i-1,j,k,1);
@@ -166,7 +166,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
 
-               umns = std::max(std::min(umns, cc_umax), cc_umin);
+               umns = amrex::max(amrex::min(umns, cc_umax), cc_umin);
 
                if ( umns < 0.0 && upls > 0.0 ) {
                   u(i,j,k) = 0.0;
@@ -208,8 +208,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = 0.5 + yc;
                Real delta_z = zf  - zc;
 
-               Real cc_vmax = std::max(vcc(i,j,k,1), vcc(i,j-1,k,1));
-               Real cc_vmin = std::min(vcc(i,j,k,1), vcc(i,j-1,k,1));
+               Real cc_vmax = amrex::max(vcc(i,j,k,1), vcc(i,j-1,k,1));
+               Real cc_vmin = amrex::min(vcc(i,j,k,1), vcc(i,j-1,k,1));
 
                // Compute slopes of component "1" of vcc
                const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,1,vcc,ccc,flag,
@@ -221,7 +221,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           - delta_y * slopes_eb_hi[1]
                                           + delta_z * slopes_eb_hi[2];
 
-               vpls = std::max(std::min(vpls, cc_vmax), cc_vmin);
+               vpls = amrex::max(amrex::min(vpls, cc_vmax), cc_vmin);
 
                xc = ccc(i,j-1,k,0); // centroid of cell (i,j-1,k)
                yc = ccc(i,j-1,k,1);
@@ -241,7 +241,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
 
-               vmns = std::max(std::min(vmns, cc_vmax), cc_vmin);
+               vmns = amrex::max(amrex::min(vmns, cc_vmax), cc_vmin);
 
                if ( vmns < 0.0 && vpls > 0.0 ) {
                   v(i,j,k) = 0.0;
@@ -282,8 +282,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = 0.5 + yc;
                Real delta_z = zf  - zc;
 
-               Real cc_vmax = std::max(vcc(i,j,k,1), vcc(i,j-1,k,1));
-               Real cc_vmin = std::min(vcc(i,j,k,1), vcc(i,j-1,k,1));
+               Real cc_vmax = amrex::max(vcc(i,j,k,1), vcc(i,j-1,k,1));
+               Real cc_vmin = amrex::min(vcc(i,j,k,1), vcc(i,j-1,k,1));
 
                // Compute slopes of component "1" of vcc
                const auto slopes_eb_hi = incflo_slopes_eb(i,j,k,1,vcc,ccc,flag);
@@ -292,7 +292,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           - delta_y * slopes_eb_hi[1]
                                           + delta_z * slopes_eb_hi[2];
 
-               vpls = std::max(std::min(vpls, cc_vmax), cc_vmin);
+               vpls = amrex::max(amrex::min(vpls, cc_vmax), cc_vmin);
 
                xc = ccc(i,j-1,k,0); // centroid of cell (i,j-1,k)
                yc = ccc(i,j-1,k,1);
@@ -309,7 +309,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
                                           
-               vmns = std::max(std::min(vmns, cc_vmax), cc_vmin);
+               vmns = amrex::max(amrex::min(vmns, cc_vmax), cc_vmin);
 
                if ( vmns < 0.0 && vpls > 0.0 ) {
                   v(i,j,k) = 0.0;
@@ -351,8 +351,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = yf  - yc;
                Real delta_z = 0.5 + zc;
 
-               Real cc_wmax = std::max(vcc(i,j,k,2), vcc(i,j,k-1,2));
-               Real cc_wmin = std::min(vcc(i,j,k,2), vcc(i,j,k-1,2));
+               Real cc_wmax = amrex::max(vcc(i,j,k,2), vcc(i,j,k-1,2));
+               Real cc_wmin = amrex::min(vcc(i,j,k,2), vcc(i,j,k-1,2));
 
                // Compute slopes of component "2" of vcc
                const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,2,vcc,ccc,flag,
@@ -364,7 +364,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_hi[1]
                                           - delta_z * slopes_eb_hi[2];
 
-               wpls = std::max(std::min(wpls, cc_wmax), cc_wmin);
+               wpls = amrex::max(amrex::min(wpls, cc_wmax), cc_wmin);
 
                xc = ccc(i,j,k-1,0); // centroid of cell (i,j,k-1)
                yc = ccc(i,j,k-1,1);
@@ -384,7 +384,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
 
-               wmns = std::max(std::min(wmns, cc_wmax), cc_wmin);
+               wmns = amrex::max(amrex::min(wmns, cc_wmax), cc_wmin);
 
                if ( wmns < 0.0 && wpls > 0.0 ) {
                   w(i,j,k) = 0.0;
@@ -425,8 +425,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                Real delta_y = yf  - yc;
                Real delta_z = 0.5 + zc;
 
-               Real cc_wmax = std::max(vcc(i,j,k,2), vcc(i,j,k-1,2));
-               Real cc_wmin = std::min(vcc(i,j,k,2), vcc(i,j,k-1,2));
+               Real cc_wmax = amrex::max(vcc(i,j,k,2), vcc(i,j,k-1,2));
+               Real cc_wmin = amrex::min(vcc(i,j,k,2), vcc(i,j,k-1,2));
 
                // Compute slopes of component "2" of vcc
                const auto slopes_eb_hi = incflo_slopes_eb(i,j,k,2,vcc,ccc,flag);
@@ -435,7 +435,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_hi[1]
                                           - delta_z * slopes_eb_hi[2];
 
-               wpls = std::max(std::min(wpls, cc_wmax), cc_wmin);
+               wpls = amrex::max(amrex::min(wpls, cc_wmax), cc_wmin);
 
                xc = ccc(i,j,k-1,0); // centroid of cell (i,j,k-1)
                yc = ccc(i,j,k-1,1);
@@ -452,7 +452,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                           + delta_y * slopes_eb_lo[1]
                                           + delta_z * slopes_eb_lo[2];
 
-               wmns = std::max(std::min(wmns, cc_wmax), cc_wmin);
+               wmns = amrex::max(amrex::min(wmns, cc_wmax), cc_wmin);
 
                if ( wmns < 0.0 && wpls > 0.0 ) {
                   w(i,j,k) = 0.0;

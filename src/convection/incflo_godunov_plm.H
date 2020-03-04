@@ -13,7 +13,7 @@
 namespace {
 
 // This version is called after the MAC projection
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 void Godunov_plm_fpu_x (const int i, const int j, const int k, const int n,
                         const amrex::Real dt, const amrex::Real dx,
                         amrex::Real& Im, amrex::Real& Ip,
@@ -50,7 +50,7 @@ void Godunov_plm_fpu_x (const int i, const int j, const int k, const int n,
 }
 
 // This version is called after the MAC projection
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 void Godunov_plm_fpu_y (const int i, const int j, const int k, const int n,
                         const amrex::Real dt, const amrex::Real dy,
                         amrex::Real& Im, amrex::Real& Ip,
@@ -86,7 +86,7 @@ void Godunov_plm_fpu_y (const int i, const int j, const int k, const int n,
 }
 
 // This version is called after the MAC projection
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 void Godunov_plm_fpu_z (const int i, const int j, const int k, const int n,
                         const amrex::Real dt, const amrex::Real dz,
                         amrex::Real& Im, amrex::Real& Ip,

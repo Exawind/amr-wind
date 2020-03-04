@@ -91,8 +91,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                    Real delta_y = yf  - yc;
                    Real delta_z = zf  - zc;
     
-                   Real cc_qmax = std::max(q(i,j,k,n),q(i-1,j,k,n));
-                   Real cc_qmin = std::min(q(i,j,k,n),q(i-1,j,k,n));
+                   Real cc_qmax = amrex::max(q(i,j,k,n),q(i-1,j,k,n));
+                   Real cc_qmin = amrex::min(q(i,j,k,n),q(i-1,j,k,n));
      
                    // Compute slopes of component "n" of q
                    const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,n,q,ccc,flag,
@@ -104,7 +104,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                             + delta_y * slopes_eb_hi[1]
                                             + delta_z * slopes_eb_hi[2];
     
-                   qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+                   qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
     
                    xc = ccc(i-1,j,k,0); // centroid of cell (i-1,j,k)
                    yc = ccc(i-1,j,k,1);
@@ -124,7 +124,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                             + delta_y * slopes_eb_lo[1]
                                             + delta_z * slopes_eb_lo[2];
     
-                   qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+                   qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                     if (umac(i,j,k) > small_vel) {
                         qs = qmns;
@@ -162,8 +162,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                Real delta_y = yf  - yc;
                Real delta_z = zf  - zc;
 
-               Real cc_qmax = std::max(q(i,j,k,n),q(i-1,j,k,n));
-               Real cc_qmin = std::min(q(i,j,k,n),q(i-1,j,k,n));
+               Real cc_qmax = amrex::max(q(i,j,k,n),q(i-1,j,k,n));
+               Real cc_qmin = amrex::min(q(i,j,k,n),q(i-1,j,k,n));
 
                // Compute slopes of component "n" of q
                const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
@@ -172,7 +172,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                         + delta_y * slopes_eb_hi[1]
                                         + delta_z * slopes_eb_hi[2];
 
-               qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+               qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
 
                xc = ccc(i-1,j,k,0); // centroid of cell (i-1,j,k)
                yc = ccc(i-1,j,k,1);
@@ -189,7 +189,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                         + delta_y * slopes_eb_lo[1]
                                         + delta_z * slopes_eb_lo[2];
     
-               qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+               qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                if (umac(i,j,k) > small_vel) {
                     qs = qmns;
@@ -249,8 +249,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                    Real delta_y = 0.5 + yc;
                    Real delta_z = zf  - zc;
     
-                   Real cc_qmax = std::max(q(i,j,k,n),q(i,j-1,k,n));
-                   Real cc_qmin = std::min(q(i,j,k,n),q(i,j-1,k,n));
+                   Real cc_qmax = amrex::max(q(i,j,k,n),q(i,j-1,k,n));
+                   Real cc_qmin = amrex::min(q(i,j,k,n),q(i,j-1,k,n));
      
                    // Compute slopes of component "n" of q
                    const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,n,q,ccc,flag,
@@ -262,7 +262,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                             - delta_y * slopes_eb_hi[1]
                                             + delta_z * slopes_eb_hi[2];
     
-                   qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+                   qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
     
                    xc = ccc(i,j-1,k,0); // centroid of cell (i-1,j,k)
                    yc = ccc(i,j-1,k,1);
@@ -282,7 +282,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                             + delta_y * slopes_eb_lo[1]
                                             + delta_z * slopes_eb_lo[2];
     
-                   qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+                   qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                     if (vmac(i,j,k) > small_vel) {
                         qs = qmns;
@@ -320,8 +320,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                Real delta_y = 0.5 + yc;
                Real delta_z = zf  - zc;
 
-               Real cc_qmax = std::max(q(i,j,k,n),q(i,j-1,k,n));
-               Real cc_qmin = std::min(q(i,j,k,n),q(i,j-1,k,n));
+               Real cc_qmax = amrex::max(q(i,j,k,n),q(i,j-1,k,n));
+               Real cc_qmin = amrex::min(q(i,j,k,n),q(i,j-1,k,n));
 
                // Compute slopes of component "n" of q
                const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
@@ -330,7 +330,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                         - delta_y * slopes_eb_hi[1]
                                         + delta_z * slopes_eb_hi[2];
 
-               qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+               qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
 
                xc = ccc(i,j-1,k,0); // centroid of cell (i-1,j,k)
                yc = ccc(i,j-1,k,1);
@@ -347,7 +347,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                         + delta_y * slopes_eb_lo[1]
                                         + delta_z * slopes_eb_lo[2];
     
-               qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+               qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                if (vmac(i,j,k) > small_vel) {
                    qs = qmns;
@@ -407,8 +407,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                     Real delta_y = yf  - yc;
                     Real delta_z = 0.5 + zc;
      
-                    Real cc_qmax = std::max(q(i,j,k,n),q(i,j,k-1,n));
-                    Real cc_qmin = std::min(q(i,j,k,n),q(i,j,k-1,n));
+                    Real cc_qmax = amrex::max(q(i,j,k,n),q(i,j,k-1,n));
+                    Real cc_qmin = amrex::min(q(i,j,k,n),q(i,j,k-1,n));
      
                     // Compute slopes of component "n" of q
                     const auto& slopes_eb_hi = incflo_slopes_extdir_eb(i,j,k,n,q,ccc,flag,
@@ -420,7 +420,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                              + delta_y * slopes_eb_hi[1]
                                              - delta_z * slopes_eb_hi[2];
      
-                    qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+                    qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
      
                     xc = ccc(i,j,k-1,0); // centroid of cell (i,j,k-1)
                     yc = ccc(i,j,k-1,1);
@@ -440,7 +440,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                              + delta_y * slopes_eb_lo[1]
                                              + delta_z * slopes_eb_lo[2];
     
-                    qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+                    qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                     if (wmac(i,j,k) > small_vel) {
                         qs = qmns;
@@ -478,8 +478,8 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                 Real delta_y = yf  - yc;
                 Real delta_z = 0.5 + zc;
      
-                Real cc_qmax = std::max(q(i,j,k,n),q(i,j,k-1,n));
-                Real cc_qmin = std::min(q(i,j,k,n),q(i,j,k-1,n));
+                Real cc_qmax = amrex::max(q(i,j,k,n),q(i,j,k-1,n));
+                Real cc_qmin = amrex::min(q(i,j,k,n),q(i,j,k-1,n));
      
                 // Compute slopes of component "n" of q
                 const auto& slopes_eb_hi = incflo_slopes_eb(i,j,k,n,q,ccc,flag);
@@ -488,7 +488,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                          + delta_y * slopes_eb_hi[1]
                                          - delta_z * slopes_eb_hi[2];
  
-                qpls = std::max(std::min(qpls, cc_qmax), cc_qmin);
+                qpls = amrex::max(amrex::min(qpls, cc_qmax), cc_qmin);
  
                 xc = ccc(i,j,k-1,0); // centroid of cell (i,j,k-1)
                 yc = ccc(i,j,k-1,1);
@@ -505,7 +505,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                          + delta_y * slopes_eb_lo[1]
                                          + delta_z * slopes_eb_lo[2];
 
-                qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
+                qmns = amrex::max(amrex::min(qmns, cc_qmax), cc_qmin);
 
                 if (wmac(i,j,k) > small_vel) {
                     qs = qmns;
