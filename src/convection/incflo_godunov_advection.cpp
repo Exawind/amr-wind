@@ -148,7 +148,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  domain.loVect(), domain.hiVect(), false, false);
             ylo(i,j,k,n) = lo;
             yhi(i,j,k,n) = hi;
-            Real st = (vval >= 0.) ? lo : hi;
+            Real st = (vval) ? lo : hi;
             Imy(i,j,k,n) = fuy*st + (1. - fuy)*0.5*(hi + lo);
         },
         zebox, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept

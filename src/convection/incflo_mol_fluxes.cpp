@@ -27,7 +27,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real const> const& wmac,
                                    BCRec const* h_bcrec, BCRec const* d_bcrec)
 {
-    constexpr Real small = 1.e-10;
+    constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
@@ -48,7 +48,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
         (has_extdir_hi and domain_ihi <= xbx.bigEnd(0)))
     {
-        amrex::ParallelFor(xbx, ncomp, [d_bcrec,q,domain_ilo,domain_ihi,umac,small,fx]
+        amrex::ParallelFor(xbx, ncomp, [d_bcrec,q,domain_ilo,domain_ihi,umac,small_vel,fx]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
@@ -63,9 +63,9 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                     (i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
                 Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope_extdir
                     (i-1,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
-                if (umac(i,j,k) > small) {
+                if (umac(i,j,k) > small_vel) {
                     qs = qmns;
-                } else if (umac(i,j,k) < -small) {
+                } else if (umac(i,j,k) < -small_vel) {
                     qs = qpls;
                 } else {
                     qs = 0.5*(qmns+qpls);
@@ -76,15 +76,15 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     }
     else
     {
-        amrex::ParallelFor(xbx, ncomp, [q,umac,small,fx]
+        amrex::ParallelFor(xbx, ncomp, [q,umac,small_vel,fx]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Real qpls = q(i  ,j,k,n) - 0.5 * incflo_xslope(i  ,j,k,n,q);
             Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope(i-1,j,k,n,q);
             Real qs;
-            if (umac(i,j,k) > small) {
+            if (umac(i,j,k) > small_vel) {
                 qs = qmns;
-            } else if (umac(i,j,k) < -small) {
+            } else if (umac(i,j,k) < -small_vel) {
                 qs = qpls;
             } else {
                 qs = 0.5*(qmns+qpls);
@@ -99,7 +99,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
         (has_extdir_hi and domain_jhi <= ybx.bigEnd(1)))
     {
-        amrex::ParallelFor(ybx, ncomp, [d_bcrec,q,domain_jlo,domain_jhi,vmac,small,fy]
+        amrex::ParallelFor(ybx, ncomp, [d_bcrec,q,domain_jlo,domain_jhi,vmac,small_vel,fy]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             bool extdir_jlo = d_bcrec[n].lo(1) == BCType::ext_dir;
@@ -114,9 +114,9 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                     (i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
                 Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope_extdir
                     (i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
-                if (vmac(i,j,k) > small) {
+                if (vmac(i,j,k) > small_vel) {
                     qs = qmns;
-                } else if (vmac(i,j,k) < -small) {
+                } else if (vmac(i,j,k) < -small_vel) {
                     qs = qpls;
                 } else {
                     qs = 0.5*(qmns+qpls);
@@ -127,15 +127,15 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     }
     else
     {
-        amrex::ParallelFor(ybx, ncomp, [q,vmac,small,fy]
+        amrex::ParallelFor(ybx, ncomp, [q,vmac,small_vel,fy]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Real qpls = q(i,j  ,k,n) - 0.5 * incflo_yslope(i,j  ,k,n,q);
             Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope(i,j-1,k,n,q);
             Real qs;
-            if (vmac(i,j,k) > small) {
+            if (vmac(i,j,k) > small_vel) {
                 qs = qmns;
-            } else if (vmac(i,j,k) < -small) {
+            } else if (vmac(i,j,k) < -small_vel) {
                 qs = qpls;
             } else {
                 qs = 0.5*(qmns+qpls);
@@ -150,7 +150,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
         (has_extdir_hi and domain_khi <= zbx.bigEnd(2)))
     {
-        amrex::ParallelFor(zbx, ncomp, [d_bcrec,q,domain_klo,domain_khi,wmac,small,fz]
+        amrex::ParallelFor(zbx, ncomp, [d_bcrec,q,domain_klo,domain_khi,wmac,small_vel,fz]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             bool extdir_klo = d_bcrec[n].lo(2) == BCType::ext_dir;
@@ -165,9 +165,9 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                     (i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
                 Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope_extdir(
                     i,j,k-1,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
-                if (wmac(i,j,k) > small) {
+                if (wmac(i,j,k) > small_vel) {
                     qs = qmns;
-                } else if (wmac(i,j,k) < -small) {
+                } else if (wmac(i,j,k) < -small_vel) {
                     qs = qpls;
                 } else {
                     qs = 0.5*(qmns+qpls);
@@ -178,15 +178,15 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     }
     else
     {
-        amrex::ParallelFor(zbx, ncomp, [q,wmac,small,fz]
+        amrex::ParallelFor(zbx, ncomp, [q,wmac,small_vel,fz]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Real qpls = q(i,j,k  ,n) - 0.5 * incflo_zslope(i,j,k  ,n,q);
             Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope(i,j,k-1,n,q);
             Real qs;
-            if (wmac(i,j,k) > small) {
+            if (wmac(i,j,k) > small_vel) {
                 qs = qmns;
-            } else if (wmac(i,j,k) < -small) {
+            } else if (wmac(i,j,k) < -small_vel) {
                 qs = qpls;
             } else {
                 qs = 0.5*(qmns+qpls);

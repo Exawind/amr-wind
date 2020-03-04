@@ -66,7 +66,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                                     Array4<Real> const& u, Array4<Real> const& v,
                                     Array4<Real> const& w, Array4<Real const> const& vcc)
 {
-    constexpr Real small = 1.e-10;
+    constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
@@ -106,7 +106,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 u(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (upls + umns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     u(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     u(i,j,k) = umns;
@@ -133,7 +133,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 u(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (upls + umns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     u(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     u(i,j,k) = umns;
@@ -158,7 +158,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 v(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (vpls + vmns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     v(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     v(i,j,k) = vmns;
@@ -185,7 +185,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 v(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (vpls + vmns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     v(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     v(i,j,k) = vmns;
@@ -210,7 +210,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 w(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (wpls + wmns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     w(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     w(i,j,k) = wmns;
@@ -237,7 +237,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
                 w(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (wpls + wmns);
-                if (std::abs(avg) < small) {
+                if (std::abs(avg) < small_vel) {
                     w(i,j,k) = 0.0;
             } else if (avg > 0.0) {
                     w(i,j,k) = wmns;

@@ -33,7 +33,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                            Array4<Real const> const& fcz,
                                            Array4<Real const> const& ccc)
 {
-    constexpr Real small = 1.e-10;
+    constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
@@ -61,7 +61,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     {
         amrex::ParallelFor(xbx, ncomp,
         [d_bcrec,domain_ilo,domain_jlo,domain_klo,domain_ihi,domain_jhi,domain_khi,
-        q,ccc,fcx,flag,umac,small,fx]
+        q,ccc,fcx,flag,umac,small_vel,fx]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
            bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
@@ -126,9 +126,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     
                    qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-                    if (umac(i,j,k) > small) {
+                    if (umac(i,j,k) > small_vel) {
                         qs = qmns;
-                    } else if (umac(i,j,k) < -small) {
+                    } else if (umac(i,j,k) < -small_vel) {
                         qs = qpls;
                     } else {
                         qs = 0.5*(qmns+qpls);
@@ -145,7 +145,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     else
     {
         amrex::ParallelFor(xbx, ncomp,
-        [q,ccc,fcx,flag,umac,small,fx]
+        [q,ccc,fcx,flag,umac,small_vel,fx]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
            Real qs;
@@ -191,9 +191,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     
                qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-               if (umac(i,j,k) > small) {
+               if (umac(i,j,k) > small_vel) {
                     qs = qmns;
-                } else if (umac(i,j,k) < -small) {
+                } else if (umac(i,j,k) < -small_vel) {
                     qs = qpls;
                 } else {
                     qs = 0.5*(qmns+qpls);
@@ -219,7 +219,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     {
         amrex::ParallelFor(ybx, ncomp,
         [d_bcrec,domain_ilo,domain_jlo,domain_klo,domain_ihi,domain_jhi,domain_khi,
-         q,ccc,fcy,flag,vmac,small,fy]
+         q,ccc,fcy,flag,vmac,small_vel,fy]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Real qs;
@@ -284,9 +284,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     
                    qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-                    if (vmac(i,j,k) > small) {
+                    if (vmac(i,j,k) > small_vel) {
                         qs = qmns;
-                    } else if (vmac(i,j,k) < -small) {
+                    } else if (vmac(i,j,k) < -small_vel) {
                         qs = qpls;
                     } else {
                         qs = 0.5*(qmns+qpls);
@@ -303,7 +303,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     else
     {
         amrex::ParallelFor(ybx, ncomp,
-        [q,ccc,fcy,flag,vmac,small,fy]
+        [q,ccc,fcy,flag,vmac,small_vel,fy]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Real qs;
@@ -349,9 +349,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     
                qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-               if (vmac(i,j,k) > small) {
+               if (vmac(i,j,k) > small_vel) {
                    qs = qmns;
-               } else if (vmac(i,j,k) < -small) {
+               } else if (vmac(i,j,k) < -small_vel) {
                    qs = qpls;
                } else {
                    qs = 0.5*(qmns+qpls);
@@ -377,7 +377,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     {
         amrex::ParallelFor(zbx, ncomp,
         [d_bcrec,domain_ilo,domain_jlo,domain_klo,domain_ihi,domain_jhi,domain_khi,
-         q,ccc,fcz,flag,wmac,small,fz]
+         q,ccc,fcz,flag,wmac,small_vel,fz]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             if (flag(i,j,k).isConnected(0,0,-1)) {
@@ -442,9 +442,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     
                     qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-                    if (wmac(i,j,k) > small) {
+                    if (wmac(i,j,k) > small_vel) {
                         qs = qmns;
-                    } else if (wmac(i,j,k) < -small) {
+                    } else if (wmac(i,j,k) < -small_vel) {
                         qs = qpls;
                     } else {
                         qs = 0.5*(qmns+qpls);
@@ -461,7 +461,7 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
     else
     {
         amrex::ParallelFor(zbx, ncomp,
-        [q,ccc,fcz,flag,wmac,small,fz]
+        [q,ccc,fcz,flag,wmac,small_vel,fz]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             if (flag(i,j,k).isConnected(0,0,-1)) {
@@ -507,9 +507,9 @@ void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
 
                 qmns = std::max(std::min(qmns, cc_qmax), cc_qmin);
 
-                if (wmac(i,j,k) > small) {
+                if (wmac(i,j,k) > small_vel) {
                     qs = qmns;
-                } else if (wmac(i,j,k) < -small) {
+                } else if (wmac(i,j,k) < -small_vel) {
                     qs = qpls;
                 } else {
                     qs = 0.5*(qmns+qpls);

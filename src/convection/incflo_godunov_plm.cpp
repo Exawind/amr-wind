@@ -9,8 +9,6 @@ void incflo::predict_plm (int lev, Box const& ubx, Box const& vbx, Box const& wb
                           Array4<Real> const& Imz, Array4<Real> const& Ipz,
                           Array4<Real const> const& vcc)
 {
-    constexpr Real small = 1.e-10;
-
     const Real dx = geom[lev].CellSize(0);
     const Real dy = geom[lev].CellSize(1);
     const Real dz = geom[lev].CellSize(2);

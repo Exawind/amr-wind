@@ -14,7 +14,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
                                        Array4<Real const> const& fcz,
                                        Array4<Real const> const& ccc)
 {
-    constexpr Real small = 1.e-10;
+    constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
@@ -39,8 +39,6 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     bool extdir_khi = (bc_khi == BC::mass_inflow) or (bc_khi == BC::no_slip_wall);
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
-
-    Real small_vel = 1.e-10;
 
     // ****************************************************************************
     // Predict to x-faces
