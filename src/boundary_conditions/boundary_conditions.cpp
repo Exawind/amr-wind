@@ -1,4 +1,4 @@
-#include <AMReX_Vector.H>GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+#include <AMReX_Vector.H>
 #include <AMReX_BC_TYPES.H>
 #include <AMReX_ParmParse.H>
 
@@ -224,6 +224,7 @@ void incflo::init_bcs ()
                 } else {
                     for (auto& b : m_bcrec_tracer) b.setHi(dir, BCType::hoextrap);
                 }
+            }
             else if (bct == BC::mass_inflow)
             {
                 if (side == Orientation::low) {
