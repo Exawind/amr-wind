@@ -47,7 +47,9 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         (extdir_ihi and domain_ihi <= ubx.bigEnd(0)))
     {
         amrex::ParallelFor(Box(ubx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [u,vcc,flag,fcx,ccc,extdir_ilo,extdir_ihi,extdir_jlo,extdir_jhi,extdir_klo,extdir_khi,
+         domain_ilo,domain_ihi,domain_jlo,domain_jhi,domain_klo,domain_khi]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(-1,0,0))
             {
@@ -121,7 +123,8 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     else
     {
         amrex::ParallelFor(Box(ubx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [u,vcc,flag,fcx,ccc]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(-1,0,0))
             {
@@ -188,7 +191,9 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         (extdir_jhi and domain_jhi <= vbx.bigEnd(1)))
     {
         amrex::ParallelFor(Box(vbx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [v,vcc,flag,fcy,ccc,extdir_ilo,extdir_ihi,extdir_jlo,extdir_jhi,extdir_klo,extdir_khi,
+         domain_ilo,domain_ihi,domain_jlo,domain_jhi,domain_klo,domain_khi]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(0,-1,0))
             {
@@ -262,7 +267,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     else
     {
         amrex::ParallelFor(Box(vbx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [v,vcc,flag,fcy,ccc] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(0,-1,0))
             {
@@ -329,7 +334,9 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
         (extdir_khi and domain_khi <= wbx.bigEnd(2)))
     {
         amrex::ParallelFor(Box(wbx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [w,vcc,flag,fcz,ccc,extdir_ilo,extdir_ihi,extdir_jlo,extdir_jhi,extdir_klo,extdir_khi,
+         domain_ilo,domain_ihi,domain_jlo,domain_jhi,domain_klo,domain_khi]
+        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(0,0,-1))
             {
@@ -403,7 +410,7 @@ void incflo::predict_vels_on_faces_eb (int lev, Box const& ccbx,
     else
     {
         amrex::ParallelFor(Box(wbx),
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        [w,vcc,flag,fcz,ccc] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             if (flag(i,j,k).isConnected(0,0,-1))
             {
