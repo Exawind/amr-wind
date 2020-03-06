@@ -15,6 +15,8 @@ void incflo::prob_init_fluid (int lev)
     ld.gp.setVal(0.0);
 
     ld.density.setVal(m_ro_0);
+    ld.density_o.setVal(m_ro_0);
+
     ld.velocity.setVal(m_ic_u, 0, 1);
     ld.velocity.setVal(m_ic_v, 1, 1);
     ld.velocity.setVal(m_ic_w, 2, 1);
