@@ -61,6 +61,9 @@ void incflo::InitData ()
             InitialIterations();
         }
 
+        // Set m_nstep to 0 before entering time loop
+        m_nstep = 0;
+
         // xxxxx TODO averagedown ???
 
         if (m_check_int > 0) { WriteCheckPointFile(); }

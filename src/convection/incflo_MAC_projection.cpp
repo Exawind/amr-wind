@@ -34,9 +34,9 @@ using namespace amrex;
 //       div(ep*grad(phi)/rho) = div(ep * u*)
 // 
 void 
-incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
-                              Vector<MultiFab>& v_mac,
-                              Vector<MultiFab>& w_mac,
+incflo::apply_MAC_projection (Vector<MultiFab*> const& u_mac,
+                              Vector<MultiFab*> const& v_mac,
+                              Vector<MultiFab*> const& w_mac,
                               Vector<MultiFab const*> const& density,
                               Real time)
 {
@@ -49,18 +49,18 @@ incflo::apply_MAC_projection (Vector<MultiFab>& u_mac,
     Vector<Array<MultiFab*,AMREX_SPACEDIM> > mac_vec(finest_level+1);
     for (int lev=0; lev <= finest_level; ++lev)
     {
-        rho_face[lev][0].define(u_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
-        rho_face[lev][1].define(v_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
-        rho_face[lev][2].define(w_mac[lev].boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        rho_face[lev][0].define(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        rho_face[lev][1].define(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+        rho_face[lev][2].define(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
 
         amrex::average_cellcenter_to_face(GetArrOfPtrs(rho_face[lev]), *density[lev], geom[lev]);
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
             rho_face[lev][idim].invert(1.0, 0);
         }
 
-        mac_vec[lev][0] = &u_mac[lev];
-        mac_vec[lev][1] = &v_mac[lev];
-        mac_vec[lev][2] = &w_mac[lev];
+        mac_vec[lev][0] = u_mac[lev];
+        mac_vec[lev][1] = v_mac[lev];
+        mac_vec[lev][2] = w_mac[lev];
     }
 
     //

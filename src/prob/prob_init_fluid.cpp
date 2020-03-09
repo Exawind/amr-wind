@@ -16,6 +16,8 @@ void incflo::prob_init_fluid (int lev)
     ld.gp.setVal(0.0);
 
     ld.density.setVal(m_ro_0);
+    ld.density_o.setVal(m_ro_0);
+
     ld.velocity.setVal(m_ic_u, 0, 1);
     ld.velocity.setVal(m_ic_v, 1, 1);
     ld.velocity.setVal(m_ic_w, 2, 1);
@@ -90,7 +92,9 @@ void incflo::prob_init_fluid (int lev)
                                     ld.tracer.array(mfi),
                                     domain, dx, problo, probhi);
         }
-        else if (31 == m_probtype or 32 == m_probtype or 33 == m_probtype)
+        else if (31  == m_probtype or 32  == m_probtype or 33  == m_probtype or 
+                 311 == m_probtype or 322 == m_probtype or 333 == m_probtype or
+                 41  == m_probtype)
         {
             init_plane_poiseuille(vbx, gbx,
                                   ld.p.array(mfi),
@@ -345,6 +349,44 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
             if (nt > 2 and i <= dhi.x*3/4) tracer(i,j,k,2) = 3.0;
         });
     }
+    else if (311 == m_probtype)
+    {
+        Real u = m_ic_u;
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real z = (k+0.5)*dzinv;
+            vel(i,j,k,0) = 6. * u * z * (1.-z);
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 0.0;
+
+            const int nt = tracer.nComp();
+            for (int n = 0; n < nt; ++n) {
+                tracer(i,j,k,n) = 0.0;
+            }
+            if (nt > 0 and i <= dhi.x/8)   tracer(i,j,k,0) = 1.0;
+            if (nt > 1 and i <= dhi.x/2)   tracer(i,j,k,1) = 2.0;
+            if (nt > 2 and i <= dhi.x*3/4) tracer(i,j,k,2) = 3.0;
+        });
+    }
+    else if (41 == m_probtype)
+    {
+        Real u = m_ic_u;
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real z = (k+0.5)*dzinv;
+            vel(i,j,k,0) = 0.5*z;
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 0.0;
+
+            const int nt = tracer.nComp();
+            for (int n = 0; n < nt; ++n) {
+                tracer(i,j,k,n) = 0.0;
+            }
+            if (nt > 0 and i <= dhi.x/8)   tracer(i,j,k,0) = 1.0;
+            if (nt > 1 and i <= dhi.x/2)   tracer(i,j,k,1) = 2.0;
+            if (nt > 2 and i <= dhi.x*3/4) tracer(i,j,k,2) = 3.0;
+        });
+    }
     else if (32 == m_probtype)
     {
         Real v = m_ic_v;
@@ -353,6 +395,25 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
             Real z = (k+0.5)*dzinv;
             vel(i,j,k,0) = 0.0;
             vel(i,j,k,1) = 6. * v * z * (1.-z);
+            vel(i,j,k,2) = 0.0;
+
+            const int nt = tracer.nComp();
+            for (int n = 0; n < nt; ++n) {
+                tracer(i,j,k,n) = 0.0;
+            }
+            if (nt > 0 and j <= dhi.y/8)   tracer(i,j,k,0) = 1.0;
+            if (nt > 1 and j <= dhi.y/2)   tracer(i,j,k,1) = 2.0;
+            if (nt > 2 and j <= dhi.y*3/4) tracer(i,j,k,2) = 3.0;
+        });
+    }
+    else if (322 == m_probtype)
+    {
+        Real v = m_ic_v;
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real x = (i+0.5)*dxinv;
+            vel(i,j,k,0) = 0.0;
+            vel(i,j,k,1) = 6. * v * x * (1.-x);
             vel(i,j,k,2) = 0.0;
 
             const int nt = tracer.nComp();
@@ -373,6 +434,25 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
             vel(i,j,k,0) = 0.0;
             vel(i,j,k,1) = 0.0;
             vel(i,j,k,2) = 6. * w * x * (1.-x);
+
+            const int nt = tracer.nComp();
+            for (int n = 0; n < nt; ++n) {
+                tracer(i,j,k,n) = 0.0;
+            }
+            if (nt > 0 and k <= dhi.z/8)   tracer(i,j,k,0) = 1.0;
+            if (nt > 1 and k <= dhi.z/2)   tracer(i,j,k,1) = 2.0;
+            if (nt > 2 and k <= dhi.z*3/4) tracer(i,j,k,2) = 3.0;
+        });
+    }
+    else if (333 == m_probtype)
+    {
+        Real w = m_ic_w;
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real y = (j+0.5)*dyinv;
+            vel(i,j,k,0) = 0.0;
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 6. * w * y * (1.-y);
 
             const int nt = tracer.nComp();
             for (int n = 0; n < nt; ++n) {
