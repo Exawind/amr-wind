@@ -265,12 +265,12 @@ void incflo::ReadABLParameters()
     // fixme do we want to default this at first half cell always?
     int lev = 0;
     int dir = 2;
-    m_log_law_sampling_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
-    pp.query("log_law_sampling_height",m_log_law_sampling_height);
     
     // initialize these so we do not have to call planar averages before initial iterations
+    m_ground_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
     m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_u + m_ic_v*m_ic_v);
-    m_velocity_mean_loglaw = std::sqrt(m_ic_u*m_ic_u + m_ic_v*m_ic_v);
+    m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
+
     m_vx_mean_forcing = m_ic_u;
     m_vy_mean_forcing = m_ic_v;
     

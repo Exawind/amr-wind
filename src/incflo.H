@@ -272,9 +272,12 @@ public: // for cuda
     
     //fixme move these and clean up
     bool m_plane_averaging = false;
-    void wall_model_bc(int lev, amrex::Real utau, amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, amrex::MultiFab& density, amrex::MultiFab& velocity) const;
 
+    void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
+    bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
     
+    void heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const;
+  
     ///////////////////////////////////////////////////////////////////////////
     //
     // diffusion
@@ -419,10 +422,10 @@ private:
     // Fluid properties
     FluidModel m_fluid_model;
     amrex::Real m_mu = 1.0;
-    amrex::Real m_n_0 = 0.0;
-    amrex::Real m_tau_0 = 0.0;
-    amrex::Real m_papa_reg = 0.0;
-    amrex::Real m_eta_0 = 0.0;
+    amrex::Real m_n_0 = 1.0;
+    amrex::Real m_tau_0 = 1.0;
+    amrex::Real m_papa_reg = 1.0;
+    amrex::Real m_eta_0 = 1.0;
     
     
     void ReadABLParameters();
@@ -455,12 +458,11 @@ private:
     amrex::Real m_cosphi;
     amrex::Real m_thermalExpansionCoeff; // initialized in the readABLparameters now
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
-    amrex::Real m_log_law_sampling_height = 5.0;
-   
      
     // fixme this is sloppy and are being used as global variables...
     amrex::Real m_velocity_mean_ground;
-    amrex::Real m_velocity_mean_loglaw;
+    amrex::Real m_utau_mean_ground;
+    amrex::Real m_ground_height;
     amrex::Real m_vx_mean_forcing;
     amrex::Real m_vy_mean_forcing;
     

@@ -86,10 +86,13 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
             const Real dy = geom[lev].CellSize()[1];
             const Real dz = geom[lev].CellSize()[2];
             const Real ds = pow(dx*dy*dz,1.0/3.0);
-            
+
             Real idx = 1.0 / dx;
             Real idy = 1.0 / dy;
             Real idz = 1.0 / dz;
+            
+            const Geometry& gm = Geom(lev);
+            const Box& domain = gm.Domain();
 
 #ifdef _OPENMP
 #pragma omp parallel omp if (Gpu::notInLaunchRegion())
@@ -130,7 +133,63 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         Real sr = incflo_strainrate(i,j,k,idx,idy,idz,vel_arr);
                         Real den = rho_arr(i,j,k);
                         eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+
                     });
+                    
+                    // interior valid box
+                    Box const& bxi = mfi.validbox();
+                    
+                    //fixme finish x and y directions if we like this formulation
+                    int idim = 0;
+                    if (!gm.isPeriodic(idim)) {
+                        amrex::Abort("oh no assuming periodic in x direction vorticity");
+                    }
+                    idim = 1;
+                    if (!gm.isPeriodic(idim)) {
+                        amrex::Abort("oh no assuming periodic in y direction vorticity");
+                    }
+                    idim = 2;
+                    
+                    if (!gm.isPeriodic(idim)) {
+                        if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
+                            
+                            IntVect low(bxi.smallEnd());
+                            IntVect hi(bxi.bigEnd());
+                            int sm = low[idim];
+                            low.setVal(idim,sm);
+                            hi.setVal(idim,sm);
+                          
+                            Box bxlo = Box(low,hi);
+                            
+                            amrex::ParallelFor(bxlo,
+                            [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                            {
+                                Real sr = incflo_strainrate_klo(i,j,k,idx,idy,idz,vel_arr);
+                                Real den = rho_arr(i,j,k);
+                                eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                            });
+                        }
+                        
+                        if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
+                            
+                            IntVect low(bxi.smallEnd());
+                            IntVect hi(bxi.bigEnd());
+                            int sm = hi[idim];
+                            low.setVal(idim,sm);
+                            hi.setVal(idim,sm);
+
+                            Box bxhi = Box(low,hi);
+
+                            amrex::ParallelFor(bxhi,
+                            [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                            {
+                               Real sr = incflo_strainrate_khi(i,j,k,idx,idy,idz,vel_arr);
+                               Real den = rho_arr(i,j,k);
+                               eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                            });
+                        }
+                    }
+                    
                 }
             }
         }
@@ -139,23 +198,23 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
     switch(m_fluid_model){
         case incflo::FluidModel::SmagorinskyLillySGS:
         {
-            
+
             for (auto mf : tra_eta) {
                 for (int n = 0; n < m_ntrac; ++n) {
                     mf->setVal(0.0, n, 1, nghost);
                 }
             }
 
-            if(m_ntrac){
+            if(m_ntrac && m_advect_tracer){
                 AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_ntrac == 1,"SmagorinskyLillySGS only implemented for 1 tracer");
-                
+
                 Real iPrandtl_turb = 3.0;//fixme make an input
                 for (int lev = 0; lev <= finest_level; ++lev) {
                     // tra_eta += iPrandtl_turb*vel_eta
                     MultiFab::Saxpy(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);                    
                 }
             }
-            break;            
+            break;
         }
         default:
         {

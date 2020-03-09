@@ -128,26 +128,31 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
 
     for (int comp = 0; comp < tracer[0]->nComp(); ++comp)
     {
-#ifdef AMREX_USE_EB
-        if (m_eb_solve_op)
-        {
-            for (int lev = 0; lev <= finest_level; ++lev) {
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
-                m_eb_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-            }
-        }
-        else
-#endif
-        {
-            for (int lev = 0; lev <= finest_level; ++lev) {
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
-                m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-            }
-        }
 
         Vector<MultiFab> phi;
         for (int lev = 0; lev <= finest_level; ++lev) {
             phi.emplace_back(*tracer[lev], amrex::make_alias, comp, 1);
+#ifdef AMREX_USE_EB
+            if (m_eb_solve_op)
+            {
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+                m_eb_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
+                m_eb_solve_op->setLevelBC(lev, &phi[lev]);
+            }
+            else
+#endif
+            {
+                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+                m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
+                
+                MultiFab bc(phi[lev].boxArray(),phi[lev].DistributionMap(),1, 1, MFInfo(),phi[lev].Factory());
+
+                // copy tracer into bc in case there is a periodic bc
+                // fixme this seems inefficient
+                MultiFab::Copy(bc, phi[lev], 0, 0, 1, 1);
+                m_incflo->heat_flux_model_bc(lev, comp, bc);
+                m_reg_solve_op->setLevelBC(lev, &bc);
+            }
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -161,15 +166,6 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
                 {
                     rhs_a(i,j,k) = rho_a(i,j,k) * tra_a(i,j,k);
                 });
-            }
-
-#ifdef AMREX_USE_EB
-            if (m_eb_solve_op) {
-                m_eb_solve_op->setLevelBC(lev, &phi[lev]);
-            } else
-#endif
-            {
-                m_reg_solve_op->setLevelBC(lev, &phi[lev]);
             }
         }
 
@@ -278,7 +274,14 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                 tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
                 Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
                 m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_reg_apply_op->setLevelBC(lev, &tracer_comp[lev]);
+                
+                MultiFab bc(tracer_comp[lev].boxArray(), tracer_comp[lev].DistributionMap(), 1, 1, MFInfo(), tracer_comp[lev].Factory());
+                // copy tracer into bc in case there is a periodic bc
+                // fixme this seems inefficient
+                MultiFab::Copy(bc, tracer_comp[lev], 0, 0, 1, 1);
+
+                m_incflo->heat_flux_model_bc(lev, comp, bc);
+                m_reg_apply_op->setLevelBC(lev, &bc);
             }
 
             MLMG mlmg(*m_reg_apply_op);

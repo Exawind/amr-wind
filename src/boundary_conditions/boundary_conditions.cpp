@@ -79,15 +79,20 @@ void incflo::init_bcs ()
             //      note that we only actually use the zero value for the normal direction;
             //      the tangential components are set to be first order extrap 
             // m_bc_velocity[ori] = {0.0, 0.0, 0.0};
+            
+            pp.queryarr("tracer", m_bc_tracer[ori], 0, m_ntrac);
+
         }
         else if (bc_type == "wall_model" or bc_type == "wm")
         {
             amrex::Print() << bcid <<" set to wall model.\n";
 
             m_bc_type[ori] = BC::wall_model;
-            
+            m_wall_model_flag = true;
             // These values are set by default above -
             // m_bc_velocity[ori] = {0.0, 0.0, 0.0};
+            
+            pp.queryarr("tracer", m_bc_tracer[ori], 0, m_ntrac);
 
         }
         else
@@ -167,7 +172,7 @@ void incflo::init_bcs ()
                     m_bcrec_velocity[2].setHi(dir, BCType::ext_dir);
                 }
             }
-            else if (bct == BC::slip_wall or bct == BC::wall_model) //fixme not sure what to do yet for wall model...
+            else if (bct == BC::slip_wall or bct == BC::wall_model) //fixme not sure what to do yet for wall model... first order or high order?
             {
                 if (side == Orientation::low) {
                     // Tangential directions have hoextrap
