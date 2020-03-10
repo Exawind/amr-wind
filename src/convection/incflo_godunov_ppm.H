@@ -682,21 +682,21 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real &uedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool ycouple, bool zcouple)
+void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real &uedge,
+                              const int bclo, const int bchi, 
+                              const int domlo[], const int domhi[], 
+                              bool ycouple, bool zcouple)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (ycouple && (j< domlo[1] || j > domhi[1])) return;
-    if (zcouple && (k< domlo[2] || k > domhi[2])) return;
+    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
+    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
 
     // Low X
     if (i <= domlo[0])
@@ -720,24 +720,6 @@ void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real &uedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool ycouple, bool zcouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (ycouple && (j< domlo[1] || j > domhi[1])) return;
-    if (zcouple && (k< domlo[2] || k > domhi[2])) return;
 
     // High X
     if (i > domhi[0]) 
@@ -764,14 +746,14 @@ void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real vedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool zcouple)
+void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real vedge,
+                              const int bclo, const int bchi, 
+                              const int domlo[], const int domhi[], 
+                              bool xcouple, bool zcouple)
 {
     using namespace amrex;
 
@@ -802,24 +784,6 @@ void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real vedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool zcouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
 
     // High Y
     if (j > domhi[1])
@@ -846,14 +810,14 @@ void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real wedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool ycouple)
+void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real wedge,
+                              const int bclo, const int bchi, 
+                              const int domlo[], const int domhi[], 
+                              bool xcouple, bool ycouple)
 {
     using namespace amrex;
 
@@ -886,24 +850,6 @@ void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_zbc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real wedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool ycouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
 
     // High Z 
     if (k > domhi[2])
