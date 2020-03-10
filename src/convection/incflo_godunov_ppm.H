@@ -48,7 +48,7 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
 
         } else if (i == domlo+1) {
 
-            sedge1 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo,j,k, n) 
+            sedge1 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo  ,j,k,n) 
                    +  0.5*s(domlo+1,j,k,n) - 0.05*s(domlo+2,j,k,n);
             sedge1 = amrex::max(sedge1, amrex::min(s(domlo+1,j,k,n), s(domlo,j,k,n)));
             sedge1 = amrex::min(sedge1, amrex::max(s(domlo+1,j,k,n), s(domlo,j,k,n)));
@@ -82,7 +82,7 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
 
         } else if (i == domhi-1) {
 
-            sedge2 = -0.2*s(domhi+1,j,k,n) + 0.75*s(domhi,j, k, n) 
+            sedge2 = -0.2*s(domhi+1,j,k,n) + 0.75*s(domhi  ,j,k,n) 
                      +0.5*s(domhi-1,j,k,n) - 0.05*s(domhi-2,j,k,n);
             sedge2 = amrex::max(sedge2, amrex::min(s(domhi-1,j,k,n), s(domhi,j,k,n)));
             sedge2 = amrex::min(sedge2, amrex::max(s(domhi-1,j,k,n), s(domhi,j,k,n)));
@@ -299,7 +299,7 @@ void Godunov_ppm_pred_x(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -368,7 +368,7 @@ void Godunov_ppm_pred_y(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -437,7 +437,7 @@ void Godunov_ppm_pred_z(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
