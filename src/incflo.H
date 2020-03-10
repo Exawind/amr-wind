@@ -120,7 +120,7 @@ public: // for cuda
     //
     void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
                           amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
-                          amrex::MultiFab const& vel, amrex::MultiFab const& rho,
+                          amrex::MultiFab const& vel, 
                           amrex::MultiFab const& vel_forces);
 
     void predict_plm (int lev, amrex::Box const& ubx, amrex::Box const& vbx, amrex::Box const& wbx,

@@ -6,7 +6,7 @@ void incflo::set_background_pressure ()
 {
     m_p000 = m_ic_p;
 
-    if (m_probtype == 11) {
+    if (m_probtype == 11 || m_probtype == 111 || m_probtype == 112 || m_probtype == 113) {
         m_use_boussinesq = true;
     } else {
         const auto problo = geom[0].ProbLoArray();

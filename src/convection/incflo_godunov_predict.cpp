@@ -9,8 +9,7 @@
 using namespace amrex;
 
 void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_mac,
-                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& rho,
-                              MultiFab const& vel_forces)
+                              MultiFab& w_mac, MultiFab const& vel, MultiFab const& vel_forces)
 {
     Box const& domain = Geom(lev).Domain();
     Vector<BCRec> const& h_bcrec = get_velocity_bcrec();
@@ -291,6 +290,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
 
             Real wad = w_ad(i,j,k);
             auto bc = pbc[n];
+            
             Godunov_trans_zbc_lo(i, j, k, n, q, lo, hi, wad, bc.lo(2),
                                  domain.loVect(), domain.hiVect(), false, false);
             Godunov_trans_zbc_hi(i, j, k, n, q, lo, hi, wad, bc.hi(2),
@@ -377,21 +377,21 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     {
         constexpr int n = 0;
         auto bc = pbc[n];
-        Real stl = xlo(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i-1,j+1,k)+v_ad(i-1,j,k))*
-                                  (yzlo(i-1,j+1,k) - yzlo(i-1,j,k))
-                                - (0.25*l_dt/dz)*(w_ad(i-1,j,k+1)+w_ad(i-1,j,k))*
-                                  (zylo(i-1,j,k+1) - zylo(i-1,j,k));
-        Real sth = xhi(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
-                                  (yzlo(i,j+1,k) - yzlo(i,j,k))
-                                - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
-                                  (zylo(i,j,k+1) - zylo(i,j,k));
-
+        Real stl = xlo(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i-1,j+1,k  )+v_ad(i-1,j,k))*
+                                                 (yzlo(i-1,j+1,k  )-yzlo(i-1,j,k))
+                                - (0.25*l_dt/dz)*(w_ad(i-1,j  ,k+1)+w_ad(i-1,j,k))*
+                                                 (zylo(i-1,j  ,k+1)-zylo(i-1,j,k));
+        Real sth = xhi(i,j,k,n) - (0.25*l_dt/dy)*(v_ad(i  ,j+1,k  )+v_ad(i  ,j,k))*
+                                                 (yzlo(i  ,j+1,k  )-yzlo(i  ,j,k))
+                                - (0.25*l_dt/dz)*(w_ad(i  ,j  ,k+1)+w_ad(i  ,j,k))*
+                                                 (zylo(i  ,j  ,k+1)-zylo(i  ,j,k));
         if (!l_use_forces_in_trans) {
             stl += 0.5 * l_dt * f(i-1,j,k,n);
             sth += 0.5 * l_dt * f(i  ,j,k,n);
         }
 
-        Godunov_cc_xbc(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+        Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, u_ad, bc.lo(0), dlo.x);
+        Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, u_ad, bc.hi(0), dhi.x);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -461,21 +461,21 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     {
         constexpr int n = 1;
         auto bc = pbc[n];
-        Real stl = ylo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j-1,k)+u_ad(i,j-1,k))*
-                                  (xzlo(i+1,j-1,k) - xzlo(i,j-1,k))
-                                - (0.25*l_dt/dz)*(w_ad(i,j-1,k+1)+w_ad(i,j-1,k))*
-                                  (zxlo(i,j-1,k+1) - zxlo(i,j-1,k));
-        Real sth = yhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
-                                  (xzlo(i+1,j,k) - xzlo(i,j,k))
-                                - (0.25*l_dt/dz)*(w_ad(i,j,k+1)+w_ad(i,j,k))*
-                                  (zxlo(i,j,k+1) - zxlo(i,j,k));
-
+        Real stl = ylo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j-1,k  )+u_ad(i,j-1,k))*
+                                                 (xzlo(i+1,j-1,k  )-xzlo(i,j-1,k))
+                                - (0.25*l_dt/dz)*(w_ad(i  ,j-1,k+1)+w_ad(i,j-1,k))*
+                                                 (zxlo(i  ,j-1,k+1)-zxlo(i,j-1,k));
+        Real sth = yhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j  ,k  )+u_ad(i,j  ,k))*
+                                                 (xzlo(i+1,j  ,k  )-xzlo(i,j  ,k))
+                                - (0.25*l_dt/dz)*(w_ad(i  ,j  ,k+1)+w_ad(i,j  ,k))*
+                                                 (zxlo(i  ,j  ,k+1)-zxlo(i,j  ,k));
         if (!l_use_forces_in_trans) {
            stl += 0.5 * l_dt * f(i,j-1,k,n);
            sth += 0.5 * l_dt * f(i,j  ,k,n);
         }
 
-        Godunov_cc_ybc(i, j, k, n, q, stl, sth, v_ad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+        Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, v_ad, bc.lo(1), dlo.y);
+        Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, v_ad, bc.hi(1), dhi.y);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -491,11 +491,11 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     Array4<Real> xylo = makeArray4(Ipy.dataPtr(), amrex::surroundingNodes(zbxtmp,0), 1);
     Array4<Real> yxlo = makeArray4(Ipz.dataPtr(), amrex::surroundingNodes(zbxtmp,1), 1);
 
+    amrex::ParallelFor(Box(xylo), Box(yxlo),
+    //
     // Add d/dy term to x-faces
     // Start with {xlo,xhi} --> {xylo, xyhi} and upwind using u_ad to {xylo}
-    // Add d/dx term to y-faces and upwind using v_ad to {yxlo}
-    // Start with {ylo,yhi} --> {yxlo, yxhi}
-    amrex::ParallelFor(Box(xylo), Box(yxlo),
+    //
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         constexpr int n = 2;
@@ -518,6 +518,10 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
         Real fu = (std::abs(uad) < small_vel) ? 0.0 : 1.0;
         xylo(i,j,k) = fu*st + (1.0 - fu) * 0.5 * (l_xyhi + l_xylo);
     },
+    //
+    // Add d/dx term to y-faces
+    // Start with {ylo,yhi} --> {yxlo, yxhi} and upwind using v_ad to {yxlo}
+    //
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         constexpr int n = 2;
@@ -545,21 +549,22 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     {
         constexpr int n = 2;
         auto bc = pbc[n];
-        Real stl = zlo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k-1)+u_ad(i,j,k-1))*
-                                  (xylo(i+1,j,k-1) - xylo(i,j,k-1))
-                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k-1)+v_ad(i,j,k-1))*
-                                  (yxlo(i,j+1,k-1) - yxlo(i,j,k-1));
-        Real sth = zhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j,k)+u_ad(i,j,k))*
-                                  (xylo(i+1,j,k) - xylo(i,j,k))
-                                - (0.25*l_dt/dy)*(v_ad(i,j+1,k)+v_ad(i,j,k))*
-                                  (yxlo(i,j+1,k) - yxlo(i,j,k));
+        Real stl = zlo(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j  ,k-1)+u_ad(i,j,k-1))*
+                                                 (xylo(i+1,j  ,k-1)-xylo(i,j,k-1))
+                                - (0.25*l_dt/dy)*(v_ad(i  ,j+1,k-1)+v_ad(i,j,k-1))*
+                                                 (yxlo(i  ,j+1,k-1)-yxlo(i,j,k-1));
+        Real sth = zhi(i,j,k,n) - (0.25*l_dt/dx)*(u_ad(i+1,j  ,k  )+u_ad(i,j,k  ))*
+                                                 (xylo(i+1,j  ,k  )-xylo(i,j,k  ))
+                                - (0.25*l_dt/dy)*(v_ad(i  ,j+1,k  )+v_ad(i,j,k  ))*
+                                                 (yxlo(i  ,j+1,k  )-yxlo(i,j,k  ));
 
         if (!l_use_forces_in_trans) {
            stl += 0.5 * l_dt * f(i,j,k-1,n);
            sth += 0.5 * l_dt * f(i,j,k  ,n);
         }
 
-        Godunov_cc_zbc(i, j, k, n, q, stl, sth, w_ad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+        Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, w_ad, bc.lo(2), dlo.z);
+        Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, w_ad, bc.hi(2), dhi.z);
 
         constexpr Real small_vel = 1.e-10;
 

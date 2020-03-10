@@ -73,6 +73,15 @@ void incflo::prob_init_fluid (int lev)
                         ld.tracer.array(mfi),
                         domain, dx, problo, probhi);
         }
+        else if (111 == m_probtype || 112 == m_probtype || 113 == m_probtype)
+        {
+            init_boussinesq_bubble(vbx, gbx,
+                                   ld.p.array(mfi),
+                                   ld.velocity.array(mfi),
+                                   ld.density.array(mfi),
+                                   ld.tracer.array(mfi),
+                                   domain, dx, problo, probhi);
+        }
         else if (12 == m_probtype)
         {
             init_periodic_tracer(vbx, gbx,
@@ -224,9 +233,44 @@ void incflo::init_tuscan (Box const& vbx, Box const& gbx,
             tracer(i,j,k) = 0.0;
         } else {
             tracer(i,j,k) = 0.01;
-        }
+         }
     });
 }
+
+void incflo::init_boussinesq_bubble (Box const& vbx, Box const& gbx,
+                                     Array4<Real> const& p,
+                                     Array4<Real> const& vel,
+                                     Array4<Real> const& density,
+                                     Array4<Real> const& tracer,
+                                     Box const& domain,
+                                     GpuArray<Real, AMREX_SPACEDIM> const& dx,
+                                     GpuArray<Real, AMREX_SPACEDIM> const& problo,
+                                     GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+{
+    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    {
+        vel(i,j,k,0) = 0.0;
+        vel(i,j,k,1) = 0.0;
+        vel(i,j,k,2) = 0.0;
+        density(i,j,k) = 1.0;
+
+        Real r;
+
+        Real x = (i+0.5)*dx[0];
+        Real y = (j+0.5)*dx[1];
+        Real z = (k+0.5)*dx[2];
+
+        if (111 == m_probtype) r = std::sqrt((x-0.5 )*(x-0.5 ) + (y-0.25)*(y-0.25) + (z-0.25)*(z-0.25));
+        if (112 == m_probtype) r = std::sqrt((x-0.25)*(x-0.25) + (y-0.5 )*(y-0.5 ) + (z-0.25)*(z-0.25));
+        if (113 == m_probtype) r = std::sqrt((x-0.25)*(x-0.25) + (y-0.25)*(y-0.25) + (z-0.5 )*(z-0.5 ));
+
+        if(r < .1)
+            tracer(i,j,k,0) = 0.0;
+        else
+            tracer(i,j,k,0) = 0.01;
+    });
+}
+
 void incflo::init_periodic_tracer (Box const& vbx, Box const& gbx,
                                    Array4<Real> const& p,
                                    Array4<Real> const& vel,
