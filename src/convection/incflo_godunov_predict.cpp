@@ -61,7 +61,8 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             if (m_ppm)
                 predict_ppm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
             else
-                predict_plm (lev, xbx, ybx, zbx, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel);
+                predict_plm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
+          //      predict_plm (lev, xbx, ybx, zbx, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel);
 
             make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
                                   u_ad, v_ad, w_ad,
