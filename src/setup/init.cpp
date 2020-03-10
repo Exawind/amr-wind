@@ -131,6 +131,13 @@ void incflo::ReadParameters ()
         pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
     } // end prefix mac
     
+    { // Prefix nodal_proj
+        ParmParse pp_mac("nodal_proj");
+        pp_mac.query( "mg_verbose"   , m_nodal_proj_mg_verbose );
+        pp_mac.query( "mg_rtol"      , m_nodal_proj_mg_rtol );
+        pp_mac.query( "mg_atol"      , m_nodal_proj_mg_atol );
+    } // end prefix nodal_proj
+    
     ReadABLParameters();
 
 }

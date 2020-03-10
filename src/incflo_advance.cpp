@@ -196,7 +196,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     compute_forces(GetVecOfPtrs(vel_forces), GetVecOfPtrs(tra_forces),
                    get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),m_dt);
 
-    //fixme need bcs to get viscosity correct when using strain rate
     compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
                       get_density_old_const(), get_velocity_old_const(), get_tracer_old_const(),
                       m_cur_time, 1);

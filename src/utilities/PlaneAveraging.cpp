@@ -21,9 +21,9 @@ void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
     if(step == 0){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
-        outfile << "# ncell, ncomp" << std::endl;
+        outfile << "#ncell,ncomp" << std::endl;
         outfile << ncell_line << ", " << navg+nfluc+3 << std::endl;
-        outfile << "# step, time, z, u_avg, v_avg, w_avg, T_avg, nu_avg, uu, uv, uw, vv, vw, ww, wuu, wuv, wuw, wvv, wvw, www, Tu, Tv, Tw" << std::endl;
+        outfile << "#step,time,z,u_avg,v_avg,w_avg,T_avg,nu_avg,uu,uv,uw,vv,vw,ww,wuu,wuv,wuw,wvv,wvw,www,Tu,Tv,Tw" << std::endl;
     }else {
         // append file
         outfile.open(filename.c_str(), std::ios_base::out|std::ios_base::app);
@@ -54,9 +54,9 @@ void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real
     if(step == 0){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
-        outfile << "# ncell, ncomp" << std::endl;
+        outfile << "#ncell,ncomp" << std::endl;
         outfile << ncell_line << ", " << navg+3 << std::endl;
-        outfile << "# step, time, z, u_avg, v_avg, w_avg, T_avg, nu_avg" << std::endl;
+        outfile << "#step,time,z,u_avg,v_avg,w_avg,T_avg,nu_avg" << std::endl;
     } else {
         // append file
         outfile.open(filename.c_str(), std::ios_base::out|std::ios_base::app);
