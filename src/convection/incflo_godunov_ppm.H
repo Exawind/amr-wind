@@ -703,7 +703,10 @@ void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n,
     {
         if (bclo==BCType::ext_dir)
         {
-            Real st = (uedge <= small_vel) ? hi : s(domlo[0]-1,j,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (uedge <= small_vel) ? hi : s(domlo[0]-1,j,k,n);
+            // So here we do something simpler...
+            Real st = s(domlo[0]-1,j,k,n);
             lo = st;
             hi = st;
         } 
@@ -741,7 +744,10 @@ void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n,
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (uedge >= -small_vel)? lo : s(domhi[0]+1,j,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (uedge >= -small_vel)? lo : s(domhi[0]+1,j,k,n);
+            // So here we do something simpler...
+            Real st = s(domhi[0]+1,j,k,n);
             lo = st;
             hi = st;
         }
@@ -779,7 +785,10 @@ void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n,
     {
         if (bclo==BCType::ext_dir)
         {
-            Real st = (vedge <= small_vel) ? hi : s(i,domlo[1]-1,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (vedge <= small_vel) ? hi : s(i,domlo[1]-1,k,n);
+            // So here we do something simpler...
+            Real st = s(i,domlo[1]-1,k,n);
             lo = st;
             hi = st;
         }
@@ -817,7 +826,10 @@ void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n,
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (vedge >= -small_vel)? lo : s(i,domhi[1]+1,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (vedge >= -small_vel)? lo : s(i,domhi[1]+1,k,n);
+            // So here we do something simpler...
+            Real st = s(i,domhi[1]+1,k,n);
             lo = st;
             hi = st;
         }
@@ -857,7 +869,10 @@ void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n,
     { 
         if (bclo==BCType::ext_dir)
         {
-            Real st = (wedge <= small_vel) ? hi : s(i,j,domlo[2]-1,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo[2]-1,n);
+            // So here we do something simpler...
+            Real st = s(i,j,domlo[2]-1,n);
             lo = st;
             hi = st;
         }
@@ -895,7 +910,10 @@ void Godunov_trans_zbc_hi(const int i, const int j, const int k, const int n,
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (wedge >= -small_vel)? lo : s(i,j,domhi[2]+1,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi[2]+1,n);
+            // So here we do something simpler...
+            Real st = s(i,j,domhi[2]+1,n);
             lo = st;
             hi = st;
         }
