@@ -511,7 +511,7 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -579,7 +579,7 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -647,7 +647,7 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
