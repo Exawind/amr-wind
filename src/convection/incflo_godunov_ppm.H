@@ -38,31 +38,33 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
     {
         if (i == domlo)
         {
-                sm = s(domlo-1,j,k,n);
-                sedge2 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo,j, k, n) 
-                       +  0.5*s(domlo+1,j,k,n) - 0.05*s(domlo+2,j,k,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(domlo+1,j,k,n), s(domlo,j,k,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(domlo+1,j,k,n), s(domlo,j,k,n)));
-                sp = sedge2;
+            sedge2 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo,j, k, n) 
+                   +  0.5*s(domlo+1,j,k,n) - 0.05*s(domlo+2,j,k,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(domlo+1,j,k,n), s(domlo,j,k,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(domlo+1,j,k,n), s(domlo,j,k,n)));
+
+            sm = s(domlo-1,j,k,n);
+            sp = sedge2;
 
         } else if (i == domlo+1) {
 
-                sedge1 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo,j,k, n) 
-                       +  0.5*s(domlo+1,j,k,n) - 0.05*s(domlo+2,j,k,n);
-                sedge1 = amrex::max(sedge1, amrex::min(s(domlo+1,j,k,n), s(domlo,j,k,n)));
-                sedge1 = amrex::min(sedge1, amrex::max(s(domlo+1,j,k,n), s(domlo,j,k,n)));
+            sedge1 = -0.2*s(domlo-1,j,k,n) + 0.75*s(domlo  ,j,k,n) 
+                   +  0.5*s(domlo+1,j,k,n) - 0.05*s(domlo+2,j,k,n);
+            sedge1 = amrex::max(sedge1, amrex::min(s(domlo+1,j,k,n), s(domlo,j,k,n)));
+            sedge1 = amrex::min(sedge1, amrex::max(s(domlo+1,j,k,n), s(domlo,j,k,n)));
 
-                sp = sedge2;
-                sm = sedge1;
-                if ( (sp - s(domlo+1,j,k,n))*(s(domlo+1,j,k,n) - sm) <= 0.)
-                {
-                    sp = s(domlo+1,j,k,n);
-                    sm = s(domlo+1,j,k,n);
-                }
-                else if(std::abs(sp - s(domlo+1,j,k,n)) >= 2.*std::abs(sm - s(domlo+1,j,k,n)))
-                    sp = 3.*s(domlo+1,j,k,n) - 2.*sm;
-                else if(std::abs(sm - s(domlo+1,j,k,n)) >= 2.*std::abs(sp - s(domlo+1,j,k,n)))
-                    sm = 3.*s(domlo+1,j,k,n) - 2.*sp;
+            sp = sedge2;
+            sm = sedge1;
+
+            if ( (sp - s(domlo+1,j,k,n))*(s(domlo+1,j,k,n) - sm) <= 0.)
+            {
+                sp = s(domlo+1,j,k,n);
+                sm = s(domlo+1,j,k,n);
+            }
+            else if(std::abs(sp - s(domlo+1,j,k,n)) >= 2.*std::abs(sm - s(domlo+1,j,k,n)))
+                sp = 3.*s(domlo+1,j,k,n) - 2.*sm;
+            else if(std::abs(sm - s(domlo+1,j,k,n)) >= 2.*std::abs(sp - s(domlo+1,j,k,n)))
+                sm = 3.*s(domlo+1,j,k,n) - 2.*sp;
         }
     }
 
@@ -70,34 +72,36 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
     {
         if (i == domhi)
         { 
-            sp = s(domhi+1,j,k,n);
             sedge1 =  -0.2*s(domhi+1,j,k,n) + 0.75*s(domhi,j,k, n) 
                       +0.5*s(domhi-1,j,k,n) - 0.05*s(domhi-2,j,k,n);
             sedge1 = amrex::max(sedge1, amrex::min(s(domhi-1,j,k,n), s(domhi,j,k,n)));
             sedge1 = amrex::min(sedge1, amrex::max(s(domhi-1,j,k,n), s(domhi,j,k,n)));
+
+            sp = s(domhi+1,j,k,n);
             sm = sedge1;
 
         } else if (i == domhi-1) {
 
-                sedge2 = -0.2*s(domhi+1,j,k,n) + 0.75*s(domhi,j, k, n) 
-                         +0.5*s(domhi-1,j,k,n) - 0.05*s(domhi-2,j,k,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(domhi-1,j,k,n), s(domhi,j,k,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(domhi-1,j,k,n), s(domhi,j,k,n)));
-                sp = sedge2;
-                sm = sedge1;
-                if( (sp - s(domhi-1,j,k,n))*(s(domhi-1,j,k,n) - sm) <= 0.)
-                {
-                    sp = s(domhi-1,j,k,n);
-                    sm = s(domhi-1,j,k,n);
-                }
-                else if(std::abs(sp - s(domhi-1,j,k,n)) >= 2.*std::abs(sm - s(domhi-1,j,k,n)))
-                    sp = 3.*s(domhi-1,j,k,n) - 2.*sm;
-                else if(std::abs(sm - s(domhi-1,j,k,n)) >= 2.*std::abs(sp - s(domhi-1,j,k,n)))
-                    sm = 3.*s(domhi-1,j,k,n) - 2.*sp;
-    
+            sedge2 = -0.2*s(domhi+1,j,k,n) + 0.75*s(domhi  ,j,k,n) 
+                     +0.5*s(domhi-1,j,k,n) - 0.05*s(domhi-2,j,k,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(domhi-1,j,k,n), s(domhi,j,k,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(domhi-1,j,k,n), s(domhi,j,k,n)));
+
+            sp = sedge2;
+            sm = sedge1;
+
+            if( (sp - s(domhi-1,j,k,n))*(s(domhi-1,j,k,n) - sm) <= 0.)
+            {
+                sp = s(domhi-1,j,k,n);
+                sm = s(domhi-1,j,k,n);
+            }
+            else if(std::abs(sp - s(domhi-1,j,k,n)) >= 2.*std::abs(sm - s(domhi-1,j,k,n)))
+                sp = 3.*s(domhi-1,j,k,n) - 2.*sm;
+            else if(std::abs(sm - s(domhi-1,j,k,n)) >= 2.*std::abs(sp - s(domhi-1,j,k,n)))
+                sm = 3.*s(domhi-1,j,k,n) - 2.*sp;
         }
     }
-} 
+}
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void Godunov_ppm_ybc(const int i, const int j, const int k, const int n,
@@ -113,31 +117,33 @@ void Godunov_ppm_ybc(const int i, const int j, const int k, const int n,
     {
         if (j == domlo)
         {
-                sm = s(i,domlo-1,k,n);
-                sedge2 = -0.2*s(i,domlo-1,k,n) + 0.75*s(i,domlo  ,k,n) 
-                         +0.5*s(i,domlo+1,k,n) - 0.05*s(i,domlo+2,k,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(i,domlo+1,k,n), s(i,domlo,k,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(i,domlo+1,k,n), s(i,domlo,k,n)));
-                sp = sedge2;
+            sedge2 = -0.2*s(i,domlo-1,k,n) + 0.75*s(i,domlo  ,k,n) 
+                     +0.5*s(i,domlo+1,k,n) - 0.05*s(i,domlo+2,k,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(i,domlo+1,k,n), s(i,domlo,k,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(i,domlo+1,k,n), s(i,domlo,k,n)));
+
+            sm = s(i,domlo-1,k,n);
+            sp = sedge2;
 
         } else if (j == domlo+1) {
-                sedge1 = -0.2*s(i,domlo-1,k,n) + 0.75*s(i,domlo  ,k,n) 
-                         +0.5*s(i,domlo+1,k,n) - 0.05*s(i,domlo+2,k,n);
-                sedge1 = amrex::max(sedge1, amrex::min(s(i,domlo+1,k,n), s(i,domlo,k,n)));
-                sedge1 = amrex::min(sedge1, amrex::max(s(i,domlo+1,k,n), s(i,domlo,k,n)));
 
-                sp = sedge2;
-                sm = sedge1;
+            sedge1 = -0.2*s(i,domlo-1,k,n) + 0.75*s(i,domlo  ,k,n) 
+                     +0.5*s(i,domlo+1,k,n) - 0.05*s(i,domlo+2,k,n);
+            sedge1 = amrex::max(sedge1, amrex::min(s(i,domlo+1,k,n), s(i,domlo,k,n)));
+            sedge1 = amrex::min(sedge1, amrex::max(s(i,domlo+1,k,n), s(i,domlo,k,n)));
 
-                if ( (sp - s(i,domlo+1,k,n))*(s(i,domlo+1,k,n) - sm) <= 0.)
-                {
-                    sp = s(i,domlo+1,k,n);
-                    sm = s(i,domlo+1,k,n);
-                }
-                else if(std::abs(sp - s(i,domlo+1,k,n)) >= 2.*std::abs(sm - s(i,domlo+1,k,n)))
-                    sp = 3.*s(i,domlo+1,k,n) - 2.*sm;
-                else if(std::abs(sm - s(i,domlo+1,k,n)) >= 2.*std::abs(sp - s(i,domlo+1,k,n)))
-                    sm = 3.*s(i,domlo+1,k,n) - 2.*sp;
+            sp = sedge2;
+            sm = sedge1;
+
+            if ( (sp - s(i,domlo+1,k,n))*(s(i,domlo+1,k,n) - sm) <= 0.)
+            {
+                sp = s(i,domlo+1,k,n);
+                sm = s(i,domlo+1,k,n);
+            }
+            else if(std::abs(sp - s(i,domlo+1,k,n)) >= 2.*std::abs(sm - s(i,domlo+1,k,n)))
+                sp = 3.*s(i,domlo+1,k,n) - 2.*sm;
+            else if(std::abs(sm - s(i,domlo+1,k,n)) >= 2.*std::abs(sp - s(i,domlo+1,k,n)))
+                sm = 3.*s(i,domlo+1,k,n) - 2.*sp;
         }
     }
 
@@ -145,32 +151,33 @@ void Godunov_ppm_ybc(const int i, const int j, const int k, const int n,
     {
         if (j == domhi)
         {
-                sp = s(i,domhi+1,k, n);
-                sedge1 =  -0.2*s(i,domhi+1,k,n) + 0.75*s(i,domhi  ,k,n) 
-                          +0.5*s(i,domhi-1,k,n) - 0.05*s(i,domhi-2,k,n);
-                sedge1 = amrex::max(sedge1, amrex::min(s(i,domhi-1,k,n), s(i,domhi,k,n)));
-                sedge1 = amrex::min(sedge1, amrex::max(s(i,domhi-1,k,n), s(i,domhi,k,n)));
-                sm = sedge1;
+            sedge1 =  -0.2*s(i,domhi+1,k,n) + 0.75*s(i,domhi  ,k,n) 
+                      +0.5*s(i,domhi-1,k,n) - 0.05*s(i,domhi-2,k,n);
+            sedge1 = amrex::max(sedge1, amrex::min(s(i,domhi-1,k,n), s(i,domhi,k,n)));
+            sedge1 = amrex::min(sedge1, amrex::max(s(i,domhi-1,k,n), s(i,domhi,k,n)));
+
+            sp = s(i,domhi+1,k, n);
+            sm = sedge1;
 
         } else if (j == domhi-1) {
 
-                sedge2 =  -0.2*s(i,domhi+1,k,n) + 0.75*s(i,domhi  ,k,n) 
-                          +0.5*s(i,domhi-1,k,n) - 0.05*s(i,domhi-2,k,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(i,domhi-1,k,n), s(i,domhi,k,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(i,domhi-1,k,n), s(i,domhi,k,n)));
-                sp = sedge2;
-                sm = sedge1;
-                if( (sp - s(i,domhi-1,k,n))*(s(i,domhi-1,k,n) - sm) <= 0.){
-                    sp = s(i,domhi-1,k,n);
-                    sm = s(i,domhi-1,k,n);
-                }
-                else if(std::abs(sp - s(i,domhi-1,k,n)) >= 2.*std::abs(sm - s(i,domhi-1,k,n))){
-                    sp = 3.*s(i,domhi-1,k,n) - 2.*sm;
-                }
-                else if(std::abs(sm - s(i,domhi-1,k,n)) >= 2.*std::abs(sp - s(i,domhi-1,k,n))){
-                    sm = 3.*s(i,domhi-1,k,n) - 2.*sp;
-                } 
-    
+            sedge2 =  -0.2*s(i,domhi+1,k,n) + 0.75*s(i,domhi  ,k,n) 
+                      +0.5*s(i,domhi-1,k,n) - 0.05*s(i,domhi-2,k,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(i,domhi-1,k,n), s(i,domhi,k,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(i,domhi-1,k,n), s(i,domhi,k,n)));
+
+            sp = sedge2;
+            sm = sedge1;
+
+            if( (sp - s(i,domhi-1,k,n))*(s(i,domhi-1,k,n) - sm) <= 0.){
+                sp = s(i,domhi-1,k,n);
+                sm = s(i,domhi-1,k,n);
+            }
+            else if(std::abs(sp - s(i,domhi-1,k,n)) >= 2.*std::abs(sm - s(i,domhi-1,k,n))) 
+                sp = 3.*s(i,domhi-1,k,n) - 2.*sm;
+
+            else if(std::abs(sm - s(i,domhi-1,k,n)) >= 2.*std::abs(sp - s(i,domhi-1,k,n))) 
+                sm = 3.*s(i,domhi-1,k,n) - 2.*sp;
         }
     }
 }
@@ -190,32 +197,34 @@ void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
 
         if (k == domlo)
         {
-                 sm = s(i,j,domlo-1,n);
-                 sedge2 = -0.2*s(i,j,domlo-1,n) + 0.75*s(i,j,domlo  ,n) 
-                          +0.5*s(i,j,domlo+1,n) - 0.05*s(i,j,domlo+2,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(i,j,domlo+1,n), s(i,j,domlo,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(i,j,domlo+1,n), s(i,j,domlo,n)));
-                sp = sedge2;
+            sedge2 = -0.2*s(i,j,domlo-1,n) + 0.75*s(i,j,domlo  ,n) 
+                     +0.5*s(i,j,domlo+1,n) - 0.05*s(i,j,domlo+2,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(i,j,domlo+1,n), s(i,j,domlo,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(i,j,domlo+1,n), s(i,j,domlo,n)));
+
+            sm = s(i,j,domlo-1,n);
+            sp = sedge2;
 
         } else if (k == domlo+1) {
 
-                sedge1 = -0.2*s(i,j,domlo-1,n) + 0.75*s(i,j,domlo  ,n) 
-                         +0.5*s(i,j,domlo+1,n) - 0.05*s(i,j,domlo+2,n);
-                sedge1 = amrex::max(sedge1, amrex::min(s(i,j,domlo+1,n), s(i,j,domlo,n)));
-                sedge1 = amrex::min(sedge1, amrex::max(s(i,j,domlo+1,n), s(i,j,domlo,n)));
+            sedge1 = -0.2*s(i,j,domlo-1,n) + 0.75*s(i,j,domlo  ,n) 
+                     +0.5*s(i,j,domlo+1,n) - 0.05*s(i,j,domlo+2,n);
+            sedge1 = amrex::max(sedge1, amrex::min(s(i,j,domlo+1,n), s(i,j,domlo,n)));
+            sedge1 = amrex::min(sedge1, amrex::max(s(i,j,domlo+1,n), s(i,j,domlo,n)));
 
-                sp = sedge2;
-                sm = sedge1;
-                if( (sp - s(i,j,domlo+1,n))*(s(i,j,domlo+1,n) - sm) <= 0.){
-                    sp = s(i,j,domlo+1,n);
-                    sm = s(i,j,domlo+1,n);
-                }
-                else if(std::abs(sp - s(i,j,domlo+1,n)) >= 2.*std::abs(sm - s(i,j,domlo+1,n))){
-                    sp = 3.*s(i,j,domlo+1,n) - 2.*sm;
-                }
-                else if(std::abs(sm - s(i,j,domlo+1,n)) >= 2.*std::abs(sp - s(i,j,domlo+1,n))){
-                    sm = 3.*s(i,j,domlo+1,n) - 2.*sp;
-                } 
+            sp = sedge2;
+            sm = sedge1;
+
+            if ( (sp - s(i,j,domlo+1,n))*(s(i,j,domlo+1,n) - sm) <= 0. )
+            {
+                sp = s(i,j,domlo+1,n);
+                sm = s(i,j,domlo+1,n);
+            }
+            else if(std::abs(sp - s(i,j,domlo+1,n)) >= 2.*std::abs(sm - s(i,j,domlo+1,n))) 
+                sp = 3.*s(i,j,domlo+1,n) - 2.*sm;
+
+            else if(std::abs(sm - s(i,j,domlo+1,n)) >= 2.*std::abs(sp - s(i,j,domlo+1,n)))
+                sm = 3.*s(i,j,domlo+1,n) - 2.*sp;
         }
     }
 
@@ -223,32 +232,35 @@ void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
     {
         if (k == domhi) 
         { 
-            sp = s(i,j,domhi+1,n);
             sedge1 =  -0.2*s(i,j,domhi+1,n) + 0.75*s(i,j,domhi  ,n) 
                       +0.5*s(i,j,domhi-1,n) - 0.05*s(i,j,domhi-2,n);
             sedge1 = amrex::max(sedge1, amrex::min(s(i,j,domhi-1,n), s(i,j,domhi,n)));
             sedge1 = amrex::min(sedge1, amrex::max(s(i,j,domhi-1,n), s(i,j,domhi,n)));
+
+            sp = s(i,j,domhi+1,n);
             sm = sedge1;
 
         } else if (k == domhi-1) {
 
-                sedge2 = -0.2*s(i,j,domhi+1,n) + 0.75*s(i,j,domhi  ,n) 
-                         +0.5*s(i,j,domhi-1,n) - 0.05*s(i,j,domhi-2,n);
-                sedge2 = amrex::max(sedge2, amrex::min(s(i,j,domhi-1,n), s(i,j,domhi,n)));
-                sedge2 = amrex::min(sedge2, amrex::max(s(i,j,domhi-1,n), s(i,j,domhi,n)));
-                sp = sedge2;
-                sm = sedge1;
-                if( (sp - s(i,j,domhi-1,n))*(s(i,j,domhi-1,n) - sm) <= 0.){
-                    sp = s(i,j,domhi-1,n);
-                    sm = s(i,j,domhi-1,n);
-                }
-                else if(std::abs(sp - s(i,j,domhi-1,n)) >= 2.*std::abs(sm - s(i,j,domhi-1,n))){
-                    sp = 3.*s(i,j,domhi-1,n) - 2.*sm;
-                }
-                else if(std::abs(sm - s(i,j,domhi-1,n)) >= 2.*std::abs(sp - s(i,j,domhi-1,n))){
-                    sm = 3.*s(i,j,domhi-1,n) - 2.*sp;
-                } 
-    
+            sedge2 = -0.2*s(i,j,domhi+1,n) + 0.75*s(i,j,domhi  ,n) 
+                     +0.5*s(i,j,domhi-1,n) - 0.05*s(i,j,domhi-2,n);
+            sedge2 = amrex::max(sedge2, amrex::min(s(i,j,domhi-1,n), s(i,j,domhi,n)));
+            sedge2 = amrex::min(sedge2, amrex::max(s(i,j,domhi-1,n), s(i,j,domhi,n)));
+
+            sp = sedge2;
+            sm = sedge1;
+
+            if ( (sp - s(i,j,domhi-1,n))*(s(i,j,domhi-1,n) - sm) <= 0. )
+            {
+                sp = s(i,j,domhi-1,n);
+                sm = s(i,j,domhi-1,n);
+            }
+            else if(std::abs(sp - s(i,j,domhi-1,n)) >= 2.*std::abs(sm - s(i,j,domhi-1,n)))
+                sp = 3.*s(i,j,domhi-1,n) - 2.*sm;
+            
+            else if(std::abs(sm - s(i,j,domhi-1,n)) >= 2.*std::abs(sp - s(i,j,domhi-1,n))) 
+                sm = 3.*s(i,j,domhi-1,n) - 2.*sp;
+              
         }
     }
 } 
@@ -287,7 +299,7 @@ void Godunov_ppm_pred_x(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -356,7 +368,7 @@ void Godunov_ppm_pred_y(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -425,7 +437,7 @@ void Godunov_ppm_pred_z(const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -499,7 +511,7 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -567,7 +579,7 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
@@ -635,7 +647,7 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
     d2 = vanLeer(s0,sp1,sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
-    sedge1 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
+    sedge2 = amrex::min(amrex::max(sedge2, amrex::min(s0, sp1)),amrex::max(s0,sp1));
     
     sm = sedge1;
     sp = sedge2;
