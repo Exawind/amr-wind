@@ -112,7 +112,7 @@ void Godunov_plm_fpu_z (const int i, const int j, const int k, const int n,
         } else {
             wpls = S(i,j,k  ,n) + 0.5 * (-1.0 - wmac * dt/dz) * 
                incflo_zslope_extdir(i,j,k  ,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
-            wmns = S(i-1,j,k,n) + 0.5 * ( 1.0 - wmac * dt/dz) * 
+            wmns = S(i,j,k-1,n) + 0.5 * ( 1.0 - wmac * dt/dz) * 
                incflo_zslope_extdir(i,j,k-1,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
         }
 
