@@ -39,9 +39,9 @@ void Godunov_plm_fpu_x (const int i, const int j, const int k, const int n,
             umns = S(i  ,j,k,n);
         } else {
             upls = S(i  ,j,k,n) + 0.5 * (-1.0 - umac * dt/dx) * 
-               incflo_xslope_extdir(i  ,j,k,n,S, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+               incflo_ho_xslope_extdir(i  ,j,k,n,S, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
             umns = S(i-1,j,k,n) + 0.5 * ( 1.0 - umac * dt/dx) * 
-               incflo_xslope_extdir(i-1,j,k,n,S, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+               incflo_ho_xslope_extdir(i-1,j,k,n,S, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
         }
 
         Ip = umns;
@@ -75,9 +75,9 @@ void Godunov_plm_fpu_y (const int i, const int j, const int k, const int n,
             vmns = S(i,j  ,k,n);
         } else {
             vpls = S(i,j  ,k,n) + 0.5 * (-1.0 - vmac * dt/dy) * 
-               incflo_yslope_extdir(i,j  ,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+               incflo_ho_yslope_extdir(i,j  ,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
             vmns = S(i,j-1,k,n) + 0.5 * ( 1.0 - vmac * dt/dy) * 
-               incflo_yslope_extdir(i,j-1,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+               incflo_ho_yslope_extdir(i,j-1,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
         }
 
         Ip = vmns;
@@ -111,9 +111,9 @@ void Godunov_plm_fpu_z (const int i, const int j, const int k, const int n,
             wmns = S(i,j,k  ,n);
         } else {
             wpls = S(i,j,k  ,n) + 0.5 * (-1.0 - wmac * dt/dz) * 
-               incflo_zslope_extdir(i,j,k  ,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
+               incflo_ho_zslope_extdir(i,j,k  ,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
             wmns = S(i,j,k-1,n) + 0.5 * ( 1.0 - wmac * dt/dz) * 
-               incflo_zslope_extdir(i,j,k-1,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
+               incflo_ho_zslope_extdir(i,j,k-1,n,S, extdir_klo, extdir_khi, domain_klo, domain_khi);
         }
 
         Ip = wmns;
