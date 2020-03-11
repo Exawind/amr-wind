@@ -106,7 +106,6 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
             Real uad = umac(i,j,k);
             Real fux = (std::abs(uad) < small_vel)? 0. : 1.;
             bool uval = uad >= 0.; 
-            auto bc = pbc[n];  
             Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i-1,j,k,n)*divu(i-1,j,k) : 0.;
             Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i  ,j,k,n)*divu(i  ,j,k) : 0.;
             Real lo = Ipx(i-1,j,k,n) + cons1; 
@@ -116,14 +115,14 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                 hi += 0.5*l_dt*fq(i  ,j,k,n);
             }
 
-            Godunov_trans_xbc_lo(i, j, k, n, q, lo, hi, uad, bc.lo(0), 
-                                 domain.loVect(), domain.hiVect(), false, false);  
-            Godunov_trans_xbc_hi(i, j, k, n, q, lo, hi, uad, bc.hi(0), 
-                                 domain.loVect(), domain.hiVect(), false, false);  
+            auto bc = pbc[n];  
+
+            Godunov_trans_xbc(i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
             xlo(i,j,k,n) = lo; 
             xhi(i,j,k,n) = hi;
             Real st = (uval) ? lo : hi;
             Imx(i,j,k,n) = fux*st + (1. - fux)*0.5*(hi + lo);
+
         },
         yebox, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
@@ -132,7 +131,6 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
             Real vad = vmac(i,j,k);
             Real fuy = (std::abs(vad) < small_vel)? 0. : 1.;
             bool vval = vad >= 0.;
-            auto bc = pbc[n];
             Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k) : 0.;
             Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j  ,k,n)*divu(i,j  ,k) : 0.;
             Real lo = Ipy(i,j-1,k,n) + cons1;
@@ -142,10 +140,10 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                 hi += 0.5*l_dt*fq(i,j  ,k,n);
             }
 
-            Godunov_trans_ybc_lo(i, j, k, n, q, lo, hi, vad, bc.lo(1),
-                                 domain.loVect(), domain.hiVect(), false, false);
-            Godunov_trans_ybc_hi(i, j, k, n, q, lo, hi, vad, bc.hi(1),
-                                 domain.loVect(), domain.hiVect(), false, false);
+            auto bc = pbc[n];
+
+            Godunov_trans_ybc(i, j, k, n, q, lo, hi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+
             ylo(i,j,k,n) = lo;
             yhi(i,j,k,n) = hi;
             Real st = (vval) ? lo : hi;
@@ -168,10 +166,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                 hi += 0.5*l_dt*fq(i,j,k  ,n);
             }
 
-            Godunov_trans_zbc_lo(i, j, k, n, q, lo, hi, wad, bc.lo(2),
-                                 domain.loVect(), domain.hiVect(), false, false);
-            Godunov_trans_zbc_hi(i, j, k, n, q, lo, hi, wad, bc.hi(2),
-                             domain.loVect(), domain.hiVect(), false, false);
+            Godunov_trans_zbc(i, j, k, n, q, lo, hi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
             zlo(i,j,k,n) = lo;
             zhi(i,j,k,n) = hi;
@@ -203,10 +198,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, vmac, yedge);
 
         Real wad = wmac(i,j,k);
-        Godunov_trans_zbc_lo(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2),
-                             domain.loVect(), domain.hiVect(), false, true);
-        Godunov_trans_zbc_hi(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.hi(2),
-                             domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_zbc(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -225,10 +217,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, wmac, zedge);
 
         Real vad = vmac(i,j,k);
-        Godunov_trans_ybc_lo(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1),
-                             domain.loVect(), domain.hiVect(), false, true);
-        Godunov_trans_ybc_hi(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.hi(1),
-                             domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_ybc(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -243,7 +232,6 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
     {
         Real stl, sth;
         constexpr Real small_vel = 1.e-10;
-        auto bc = pbc[n]; 
         if (iconserv[n]) {
             stl = xlo(i,j,k,n) - (0.5*dtdy)*(yzlo(i-1,j+1,k  ,n)*vmac(i-1,j+1,k  )
                                            - yzlo(i-1,j  ,k  ,n)*vmac(i-1,j  ,k  ))
@@ -270,7 +258,9 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                              (zylo(i,j,k+1,n) - zylo(i,j,k,n));
         }
 
-        Godunov_cc_xbc(i, j, k, n, q, stl, sth, umac, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+        auto bc = pbc[n]; 
+        Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
+        Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
 
         Real temp = (umac(i,j,k) >= 0.) ? stl : sth; 
         temp = (std::abs(umac(i,j,k)) < small_vel) ? 0.5*(stl + sth) : temp;
@@ -295,10 +285,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, wmac, zedge);
 
         Real uad = umac(i,j,k);
-        Godunov_trans_xbc_lo(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0),
-                             domain.loVect(), domain.hiVect(), false, true);
-        Godunov_trans_xbc_hi(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.hi(0),
-                             domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_xbc(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -317,10 +304,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, umac, xedge);
 
         Real wad = wmac(i,j,k);
-        Godunov_trans_zbc_lo(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2),
-                             domain.loVect(), domain.hiVect(), true, false);
-        Godunov_trans_zbc_hi(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.hi(2),
-                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_zbc(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -329,6 +313,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
         zxlo(i,j,k,n) = fu*st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
     });
     //
+
     Array4<Real> qy = makeArray4(Ipy.dataPtr(), ybx, ncomp);
     amrex::ParallelFor(ybx, ncomp,
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -336,7 +321,6 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
         Real stl, sth;
         constexpr Real small_vel = 1.e-10;
 
-        auto bc = pbc[n];
         if (iconserv[n]){
             stl = ylo(i,j,k,n) - (0.5*dtdx)*(xzlo(i+1,j-1,k  ,n)*umac(i+1,j-1,k  )
                                            - xzlo(i  ,j-1,k  ,n)*umac(i  ,j-1,k  ))
@@ -363,7 +347,9 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                              (zxlo(i,j,k+1,n) - zxlo(i,j,k,n));
         }
 
-        Godunov_cc_ybc(i, j, k, n, q, stl, sth, vmac, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+        auto bc = pbc[n];
+        Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
+        Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
 
         Real temp = (vmac(i,j,k) >= 0.) ? stl : sth; 
         temp = (std::abs(vmac(i,j,k)) < small_vel) ? 0.5*(stl + sth) : temp; 
@@ -388,10 +374,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, vmac, yedge);
 
         Real uad = umac(i,j,k);
-        Godunov_trans_xbc_lo(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0),
-                             domain.loVect(), domain.hiVect(), true, false);
-        Godunov_trans_xbc_hi(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.hi(0),
-                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_xbc(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -410,10 +393,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                  q, divu, umac, xedge);
 
         Real vad = vmac(i,j,k);
-        Godunov_trans_ybc_lo(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1),
-                             domain.loVect(), domain.hiVect(), true, false);
-        Godunov_trans_ybc_hi(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.hi(1),
-                             domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_ybc(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -428,7 +408,6 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
     {
         Real stl, sth;
         constexpr Real small_vel = 1.e-10;
-        auto bc = pbc[n]; 
         if (iconserv[n]) {
             stl = zlo(i,j,k,n) - (0.5*dtdx)*(xylo(i+1,j  ,k-1,n)*umac(i+1,j  ,k-1)
                                            - xylo(i  ,j  ,k-1,n)*umac(i  ,j  ,k-1))
@@ -455,7 +434,9 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
                                              (yxlo(i  ,j+1,k,n) - yxlo(i,j,k,n));
         }
 
-        Godunov_cc_zbc(i, j, k, n, q, stl, sth, wmac, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
+        auto bc = pbc[n]; 
+        Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2),  dlo.z);
+        Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, wmac, bc.hi(2), dhi.z);
 
         Real temp = (wmac(i,j,k) >= 0.) ? stl : sth; 
         temp = (std::abs(wmac(i,j,k)) < small_vel) ? 0.5*(stl + sth) : temp; 

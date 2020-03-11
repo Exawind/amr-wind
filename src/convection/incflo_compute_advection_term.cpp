@@ -34,8 +34,7 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
         // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
         //    returned from this call are on face CENTROIDS
         if (m_use_godunov) {
-            predict_godunov(lev, time, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev], *density[lev],
-                            *vel_forces[lev]);
+            predict_godunov(lev, time, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev], *vel_forces[lev]);
         } else {
             predict_vels_on_faces(lev, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev]);
         }

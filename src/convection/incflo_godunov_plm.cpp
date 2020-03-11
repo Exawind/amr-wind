@@ -3,10 +3,11 @@
 
 using namespace amrex;
 
-void incflo::predict_plm (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
+void incflo::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real> const& Imx, Array4<Real> const& Ipx,
                           Array4<Real> const& Imy, Array4<Real> const& Ipy,
                           Array4<Real> const& Imz, Array4<Real> const& Ipz,
+                          Array4<Real const> const& q,
                           Array4<Real const> const& vcc)
 {
     const Real dx = geom[lev].CellSize(0);
@@ -41,117 +42,117 @@ void incflo::predict_plm (int lev, Box const& ubx, Box const& vbx, Box const& wb
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
 
-    if ((extdir_ilo and domain_ilo >= ubx.smallEnd(0)-1) or
-        (extdir_ihi and domain_ihi <= ubx.bigEnd(0)))
+    if ((extdir_ilo and domain_ilo >= bx.smallEnd(0)-1) or
+        (extdir_ihi and domain_ihi <= bx.bigEnd(0)))
     {
-        amrex::ParallelFor(ubx, [vcc,extdir_ilo,extdir_ihi,domain_ilo,domain_ihi,Imx,Ipx,dtdx]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_ilo,extdir_ihi,domain_ilo,domain_ihi,Imx,Ipx,dtdx]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real upls = vcc(i  ,j,k,0) + 0.5 * (-1.0 - vcc(i  ,j,k,0) * dtdx) * 
-                incflo_xslope_extdir(i,j,k,0,vcc, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
-            Real umns = vcc(i-1,j,k,0) + 0.5 * ( 1.0 - vcc(i-1,j,k,0) * dtdx) * 
-                incflo_xslope_extdir(i-1,j,k,0,vcc, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+            Real upls = q(i  ,j,k,n) + 0.5 * (-1.0 - vcc(i  ,j,k,0) * dtdx) * 
+                incflo_xslope_extdir(i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+            Real umns = q(i-1,j,k,n) + 0.5 * ( 1.0 - vcc(i-1,j,k,0) * dtdx) * 
+                incflo_xslope_extdir(i-1,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
 
             if (extdir_ilo and i == domain_ilo) {
-                umns = vcc(i-1,j,k,0);
-                upls = vcc(i-1,j,k,0);
+                umns = q(i-1,j,k,n);
+                upls = q(i-1,j,k,n);
             } else if (extdir_ihi and i == domain_ihi+1) {
-                umns = vcc(i,j,k,0);
-                upls = vcc(i,j,k,0);
+                umns = q(i,j,k,n);
+                upls = q(i,j,k,n);
             }
 
-            Ipx(i-1,j,k,0) = umns;
-            Imx(i  ,j,k,0) = upls;
+            Ipx(i-1,j,k,n) = umns;
+            Imx(i  ,j,k,n) = upls;
         });
     }
     else
     {
-        amrex::ParallelFor(ubx, [vcc,Ipx,Imx,dtdx]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,Ipx,Imx,dtdx]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real upls = vcc(i  ,j,k,0) + 0.5 * (-1.0 - vcc(i  ,j,k,0) * dtdx) * 
-                incflo_xslope(i  ,j,k,0,vcc);
-            Real umns = vcc(i-1,j,k,0) + 0.5 * ( 1.0 - vcc(i-1,j,k,0) * dtdx) * 
-                incflo_xslope(i-1,j,k,0,vcc);
+            Real upls = q(i  ,j,k,n) + 0.5 * (-1.0 - vcc(i  ,j,k,0) * dtdx) * 
+                incflo_xslope(i  ,j,k,n,q);
+            Real umns = q(i-1,j,k,n) + 0.5 * ( 1.0 - vcc(i-1,j,k,0) * dtdx) * 
+                incflo_xslope(i-1,j,k,n,q);
 
-            Ipx(i-1,j,k,0) = umns;
-            Imx(i  ,j,k,0) = upls;
+            Ipx(i-1,j,k,n) = umns;
+            Imx(i  ,j,k,n) = upls;
         });
     }
 
-    if ((extdir_jlo and domain_jlo >= vbx.smallEnd(1)-1) or
-        (extdir_jhi and domain_jhi <= vbx.bigEnd(1)))
+    if ((extdir_jlo and domain_jlo >= bx.smallEnd(1)-1) or
+        (extdir_jhi and domain_jhi <= bx.bigEnd(1)))
     {
-        amrex::ParallelFor(vbx, [vcc,extdir_jlo,extdir_jhi,domain_jlo,domain_jhi,Imy,Ipy,dtdy]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_jlo,extdir_jhi,domain_jlo,domain_jhi,Imy,Ipy,dtdy]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real vpls = vcc(i,j  ,k,1) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) * 
-                incflo_yslope_extdir(i,j,k,1,vcc, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
-            Real vmns = vcc(i,j-1,k,1) + 0.5 * ( 1.0 - vcc(i,j-1,k,1) * dtdy) * 
-                incflo_yslope_extdir(i,j-1,k,1,vcc, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+            Real vpls = q(i,j  ,k,n) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) * 
+                incflo_yslope_extdir(i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+            Real vmns = q(i,j-1,k,n) + 0.5 * ( 1.0 - vcc(i,j-1,k,1) * dtdy) * 
+                incflo_yslope_extdir(i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
 
             if (extdir_jlo and j == domain_jlo) {
-                vmns = vcc(i,j-1,k,1);
-                vpls = vcc(i,j-1,k,1);
+                vmns = q(i,j-1,k,n);
+                vpls = q(i,j-1,k,n);
             } else if (extdir_jhi and j == domain_jhi+1) {
-                vmns = vcc(i,j,k,1);
-                vpls = vcc(i,j,k,1);
+                vmns = q(i,j,k,n);
+                vpls = q(i,j,k,n);
             }
 
-            Ipy(i,j-1,k,1) = vmns;
-            Imy(i,j  ,k,1) = vpls;
+            Ipy(i,j-1,k,n) = vmns;
+            Imy(i,j  ,k,n) = vpls;
         });
     }
     else
     {
-        amrex::ParallelFor(vbx, [vcc,Ipy,Imy,dtdy]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,Ipy,Imy,dtdy]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real vpls = vcc(i,j  ,k,1) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) * 
-                incflo_yslope(i,j  ,k,1,vcc);
-            Real vmns = vcc(i,j-1,k,1) + 0.5 * ( 1.0 - vcc(i,j-1,k,1) * dtdy) * 
-                incflo_yslope(i,j-1,k,1,vcc);
+            Real vpls = q(i,j  ,k,n) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) * 
+                incflo_yslope(i,j  ,k,n,q);
+            Real vmns = q(i,j-1,k,n) + 0.5 * ( 1.0 - vcc(i,j-1,k,1) * dtdy) * 
+                incflo_yslope(i,j-1,k,n,q);
 
-            Ipy(i,j-1,k,1) = vmns;
-            Imy(i,j  ,k,1) = vpls;
+            Ipy(i,j-1,k,n) = vmns;
+            Imy(i,j  ,k,n) = vpls;
         });
     }
 
-    if ((extdir_klo and domain_klo >= wbx.smallEnd(2)-1) or
-        (extdir_khi and domain_khi <= wbx.bigEnd(2)))
+    if ((extdir_klo and domain_klo >= bx.smallEnd(2)-1) or
+        (extdir_khi and domain_khi <= bx.bigEnd(2)))
     {
-        amrex::ParallelFor(wbx, [vcc,extdir_klo,extdir_khi,domain_klo,domain_khi,Ipz,Imz,dtdz]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_klo,extdir_khi,domain_klo,domain_khi,Ipz,Imz,dtdz]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real wpls = vcc(i,j,k  ,2) + 0.5 * (-1.0 - vcc(i,j,k  ,2) * dtdz) * 
-                incflo_zslope_extdir(i,j,k,2,vcc, extdir_klo, extdir_khi, domain_klo, domain_khi);
-            Real wmns = vcc(i,j,k-1,2) + 0.5 * ( 1.0 - vcc(i,j,k-1,2) * dtdz) * 
-                incflo_zslope_extdir(i,j,k-1,2,vcc, extdir_klo, extdir_khi, domain_klo, domain_khi);
+            Real wpls = q(i,j,k  ,n) + 0.5 * (-1.0 - vcc(i,j,k  ,2) * dtdz) * 
+                incflo_zslope_extdir(i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+            Real wmns = q(i,j,k-1,n) + 0.5 * ( 1.0 - vcc(i,j,k-1,2) * dtdz) * 
+                incflo_zslope_extdir(i,j,k-1,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
 
             if (extdir_klo and k == domain_klo) {
-                wmns = vcc(i,j,k-1,2);
-                wpls = vcc(i,j,k-1,2);
+                wmns = vcc(i,j,k-1,n);
+                wpls = vcc(i,j,k-1,n);
             } else if (extdir_khi and k == domain_khi+1) {
-                wmns = vcc(i,j,k,2);
-                wpls = vcc(i,j,k,2);
+                wmns = vcc(i,j,k,n);
+                wpls = vcc(i,j,k,n);
             }
 
-            Ipz(i,j,k-1,2) = wmns;
-            Imz(i,j,k  ,2) = wpls;
+            Ipz(i,j,k-1,n) = wmns;
+            Imz(i,j,k  ,n) = wpls;
         });
     }
     else
     {
-        amrex::ParallelFor(wbx, [vcc,Ipz,Imz,dtdz]
-        AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(bx, ncomp, [q,vcc,Ipz,Imz,dtdz]
+        AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real wpls = vcc(i,j,k  ,2) + 0.5 * (-1.0 - vcc(i,j,k  ,2) * dtdz) * 
-                incflo_zslope(i,j,k  ,2,vcc);
-            Real wmns = vcc(i,j,k-1,2) + 0.5 * ( 1.0 - vcc(i,j,k-1,2) * dtdz) * 
-                incflo_zslope(i,j,k-1,2,vcc);
+            Real wpls = q(i,j,k  ,n) + 0.5 * (-1.0 - vcc(i,j,k  ,2) * dtdz) * 
+                incflo_zslope(i,j,k  ,n,q);
+            Real wmns = q(i,j,k-1,n) + 0.5 * ( 1.0 - vcc(i,j,k-1,2) * dtdz) * 
+                incflo_zslope(i,j,k-1,n,q);
 
-            Ipz(i,j,k-1,2) = wmns;
-            Imz(i,j,k  ,2) = wpls;
+            Ipz(i,j,k-1,n) = wmns;
+            Imz(i,j,k  ,n) = wpls;
         });
     }
 }
