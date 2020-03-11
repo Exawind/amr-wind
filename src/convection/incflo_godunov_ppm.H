@@ -682,28 +682,27 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real &uedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool ycouple, bool zcouple)
+void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real &uedge,
+                              const int bclo, const int bchi, 
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (ycouple && (j< domlo[1] || j > domhi[1])) return;
-    if (zcouple && (k< domlo[2] || k > domhi[2])) return;
-
     // Low X
-    if (i <= domlo[0])
+    if (i <= domlo)
     {
         if (bclo==BCType::ext_dir)
         {
-            Real st = (uedge <= small_vel) ? hi : s(domlo[0]-1,j,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (uedge <= small_vel) ? hi : s(domlo-1,j,k,n);
+            // So here we do something simpler...
+            Real st = s(domlo-1,j,k,n);
             lo = st;
             hi = st;
         } 
@@ -717,31 +716,16 @@ void Godunov_trans_xbc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real &uedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool ycouple, bool zcouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (ycouple && (j< domlo[1] || j > domhi[1])) return;
-    if (zcouple && (k< domlo[2] || k > domhi[2])) return;
 
     // High X
-    if (i > domhi[0]) 
+    if (i > domhi) 
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (uedge >= -small_vel)? lo : s(domhi[0]+1,j,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (uedge >= -small_vel)? lo : s(domhi+1,j,k,n);
+            // So here we do something simpler...
+            Real st = s(domhi+1,j,k,n);
             lo = st;
             hi = st;
         }
@@ -758,28 +742,27 @@ void Godunov_trans_xbc_hi(const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real vedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool zcouple)
+void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real vedge,
+                              const int bclo, const int bchi, 
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
-
     // Low Y 
-    if (j <= domlo[1])
+    if (j <= domlo)
     {
         if (bclo==BCType::ext_dir)
         {
-            Real st = (vedge <= small_vel) ? hi : s(i,domlo[1]-1,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (vedge <= small_vel) ? hi : s(i,domlo-1,k,n);
+            // So here we do something simpler...
+            Real st = s(i,domlo-1,k,n);
             lo = st;
             hi = st;
         }
@@ -793,31 +776,16 @@ void Godunov_trans_ybc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real vedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool zcouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
 
     // High Y
-    if (j > domhi[1])
+    if (j > domhi)
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (vedge >= -small_vel)? lo : s(i,domhi[1]+1,k,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (vedge >= -small_vel)? lo : s(i,domhi+1,k,n);
+            // So here we do something simpler...
+            Real st = s(i,domhi+1,k,n);
             lo = st;
             hi = st;
         }
@@ -834,30 +802,27 @@ void Godunov_trans_ybc_hi(const int i, const int j, const int k, const int n,
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real wedge,
-                                 const int bclo, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool ycouple)
+void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
+                              const amrex::Array4<const amrex::Real> &s, 
+                                    amrex::Real &lo,
+                                    amrex::Real &hi,
+                                    amrex::Real wedge,
+                              const int bclo, const int bchi, 
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
-
-    const int domloz = domlo[2];
-
     // Low Z
-    if (k <= domlo[2])
+    if (k <= domlo)
     { 
         if (bclo==BCType::ext_dir)
         {
-            Real st = (wedge <= small_vel) ? hi : s(i,j,domlo[2]-1,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo-1,n);
+            // So here we do something simpler...
+            Real st = s(i,j,domlo-1,n);
             lo = st;
             hi = st;
         }
@@ -871,31 +836,16 @@ void Godunov_trans_zbc_lo(const int i, const int j, const int k, const int n,
             lo = 0.;
         }
     }
-}
-
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void Godunov_trans_zbc_hi(const int i, const int j, const int k, const int n,
-                                 const amrex::Array4<const amrex::Real> &s, 
-                                       amrex::Real &lo,
-                                       amrex::Real &hi,
-                                       amrex::Real wedge,
-                                 const int bchi, 
-                                 const int domlo[], const int domhi[], 
-                                 bool xcouple, bool ycouple)
-{
-    using namespace amrex;
-
-    constexpr amrex::Real small_vel = 1e-10;
-
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
 
     // High Z 
-    if (k > domhi[2])
+    if (k > domhi)
     {
         if (bchi==BCType::ext_dir)
         {
-            Real st = (wedge >= -small_vel)? lo : s(i,j,domhi[2]+1,n);
+            // IAMR does this but it breaks lo/hi symmetry
+            // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi+1,n);
+            // So here we do something simpler...
+            Real st = s(i,j,domhi+1,n);
             lo = st;
             hi = st;
         }
