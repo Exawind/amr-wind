@@ -94,6 +94,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
     bool l_use_forces_in_trans = m_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
+    const Dim3 dlo = amrex::lbound(domain);
+    const Dim3 dhi = amrex::ubound(domain);
 
     BCRec const* pbc = get_velocity_bcrec_device_ptr();
 
@@ -113,8 +115,8 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
         }
 
         auto bc = pbc[n];
-        Godunov_trans_xbc(i, j, k, n, vel, lo, hi, lo, bc.lo(0), bc.hi(0),
-                          domain.loVect(), domain.hiVect(), false, false);
+        Godunov_trans_xbc(i, j, k, n, vel, lo, hi, lo, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+
         constexpr Real small_vel = 1e-10;
 
         Real st = ( (lo+hi) >= 0.) ? lo : hi;
@@ -136,8 +138,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
         }
 
         auto bc = pbc[n];
-        Godunov_trans_ybc(i, j, k, n, vel, lo, hi, lo, bc.lo(1), bc.hi(1),
-                          domain.loVect(), domain.hiVect(), false, false);
+        Godunov_trans_ybc(i, j, k, n, vel, lo, hi, lo, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
         constexpr Real small_vel = 1e-10;
 
@@ -160,8 +161,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
         }
 
         auto bc = pbc[n];
-        Godunov_trans_zbc(i, j, k, n, vel, lo, hi, lo, bc.lo(2), bc.hi(2),
-                          domain.loVect(), domain.hiVect(), false, false);
+        Godunov_trans_zbc(i, j, k, n, vel, lo, hi, lo, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
         constexpr Real small_vel = 1e-10;
 
@@ -232,8 +232,8 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
             Real uad = u_ad(i,j,k);
             auto bc = pbc[n];
 
-            Godunov_trans_xbc(i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0),
-                              domain.loVect(), domain.hiVect(), false, false);
+            Godunov_trans_xbc(i, j, k, n, q, lo, hi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
+
             xlo(i,j,k,n) = lo;
             xhi(i,j,k,n) = hi;
 
@@ -257,8 +257,8 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
             Real vad = v_ad(i,j,k);
             auto bc = pbc[n];
 
-            Godunov_trans_ybc(i, j, k, n, q, lo, hi, vad, bc.lo(1), bc.hi(1),
-                              domain.loVect(), domain.hiVect(), false, false);
+            Godunov_trans_ybc(i, j, k, n, q, lo, hi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
+
             ylo(i,j,k,n) = lo;
             yhi(i,j,k,n) = hi;
 
@@ -282,8 +282,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
             Real wad = w_ad(i,j,k);
             auto bc = pbc[n];
             
-            Godunov_trans_zbc(i, j, k, n, q, lo, hi, wad, bc.lo(2), bc.hi(2),
-                              domain.loVect(), domain.hiVect(), false, false);
+            Godunov_trans_zbc(i, j, k, n, q, lo, hi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
             zlo(i,j,k,n) = lo;
             zhi(i,j,k,n) = hi;
@@ -328,8 +327,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, v_ad, yedge);
 
         Real wad = w_ad(i,j,k);
-        Godunov_trans_zbc(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2),
-                          domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_zbc(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -348,8 +346,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, w_ad, zedge);
 
         Real vad = v_ad(i,j,k);
-        Godunov_trans_ybc(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1),
-                          domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_ybc(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -408,8 +405,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, w_ad, zedge);
 
         Real uad = u_ad(i,j,k);
-        Godunov_trans_xbc(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0),
-                          domain.loVect(), domain.hiVect(), false, true);
+        Godunov_trans_xbc(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -428,8 +424,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, u_ad, xedge);
 
         Real wad = w_ad(i,j,k);
-        Godunov_trans_zbc(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2),
-                          domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_zbc(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -488,8 +483,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, v_ad, yedge);
 
         Real uad = u_ad(i,j,k);
-        Godunov_trans_xbc(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0),
-                          domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_xbc(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
 
         constexpr Real small_vel = 1.e-10;
 
@@ -512,8 +506,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                                  q, divu, u_ad, xedge);
 
         Real vad = v_ad(i,j,k);
-        Godunov_trans_ybc(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1),
-                          domain.loVect(), domain.hiVect(), true, false);
+        Godunov_trans_ybc(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
 
         constexpr Real small_vel = 1.e-10;
 

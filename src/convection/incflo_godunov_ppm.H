@@ -688,25 +688,21 @@ void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
                                     amrex::Real &hi,
                                     amrex::Real &uedge,
                               const int bclo, const int bchi, 
-                              const int domlo[], const int domhi[], 
-                              bool ycouple, bool zcouple)
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
-    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
-
     // Low X
-    if (i <= domlo[0])
+    if (i <= domlo)
     {
         if (bclo==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (uedge <= small_vel) ? hi : s(domlo[0]-1,j,k,n);
+            // Real st = (uedge <= small_vel) ? hi : s(domlo-1,j,k,n);
             // So here we do something simpler...
-            Real st = s(domlo[0]-1,j,k,n);
+            Real st = s(domlo-1,j,k,n);
             lo = st;
             hi = st;
         } 
@@ -722,14 +718,14 @@ void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
     }
 
     // High X
-    if (i > domhi[0]) 
+    if (i > domhi) 
     {
         if (bchi==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (uedge >= -small_vel)? lo : s(domhi[0]+1,j,k,n);
+            // Real st = (uedge >= -small_vel)? lo : s(domhi+1,j,k,n);
             // So here we do something simpler...
-            Real st = s(domhi[0]+1,j,k,n);
+            Real st = s(domhi+1,j,k,n);
             lo = st;
             hi = st;
         }
@@ -752,25 +748,21 @@ void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
                                     amrex::Real &hi,
                                     amrex::Real vedge,
                               const int bclo, const int bchi, 
-                              const int domlo[], const int domhi[], 
-                              bool xcouple, bool zcouple)
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (zcouple && (k < domlo[2] || k > domhi[2])) return;
-
     // Low Y 
-    if (j <= domlo[1])
+    if (j <= domlo)
     {
         if (bclo==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (vedge <= small_vel) ? hi : s(i,domlo[1]-1,k,n);
+            // Real st = (vedge <= small_vel) ? hi : s(i,domlo-1,k,n);
             // So here we do something simpler...
-            Real st = s(i,domlo[1]-1,k,n);
+            Real st = s(i,domlo-1,k,n);
             lo = st;
             hi = st;
         }
@@ -786,14 +778,14 @@ void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
     }
 
     // High Y
-    if (j > domhi[1])
+    if (j > domhi)
     {
         if (bchi==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (vedge >= -small_vel)? lo : s(i,domhi[1]+1,k,n);
+            // Real st = (vedge >= -small_vel)? lo : s(i,domhi+1,k,n);
             // So here we do something simpler...
-            Real st = s(i,domhi[1]+1,k,n);
+            Real st = s(i,domhi+1,k,n);
             lo = st;
             hi = st;
         }
@@ -816,27 +808,21 @@ void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
                                     amrex::Real &hi,
                                     amrex::Real wedge,
                               const int bclo, const int bchi, 
-                              const int domlo[], const int domhi[], 
-                              bool xcouple, bool ycouple)
+                              const int domlo, const int domhi)
 {
     using namespace amrex;
 
     constexpr amrex::Real small_vel = 1e-10;
 
-    if (xcouple && (i < domlo[0] || i > domhi[0])) return;
-    if (ycouple && (j < domlo[1] || j > domhi[1])) return;
-
-    const int domloz = domlo[2];
-
     // Low Z
-    if (k <= domlo[2])
+    if (k <= domlo)
     { 
         if (bclo==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo[2]-1,n);
+            // Real st = (wedge <= small_vel) ? hi : s(i,j,domlo-1,n);
             // So here we do something simpler...
-            Real st = s(i,j,domlo[2]-1,n);
+            Real st = s(i,j,domlo-1,n);
             lo = st;
             hi = st;
         }
@@ -852,14 +838,14 @@ void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
     }
 
     // High Z 
-    if (k > domhi[2])
+    if (k > domhi)
     {
         if (bchi==BCType::ext_dir)
         {
             // IAMR does this but it breaks lo/hi symmetry
-            // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi[2]+1,n);
+            // Real st = (wedge >= -small_vel)? lo : s(i,j,domhi+1,n);
             // So here we do something simpler...
-            Real st = s(i,j,domhi[2]+1,n);
+            Real st = s(i,j,domhi+1,n);
             lo = st;
             hi = st;
         }
