@@ -76,7 +76,7 @@ void Godunov_plm_fpu_y (const int i, const int j, const int k, const int n,
         } else {
             vpls = S(i,j  ,k,n) + 0.5 * (-1.0 - vmac * dt/dy) * 
                incflo_yslope_extdir(i,j  ,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
-            vmns = S(i,j-1,k,n) + 0.5 * (-1.0 - vmac * dt/dy) * 
+            vmns = S(i,j-1,k,n) + 0.5 * ( 1.0 - vmac * dt/dy) * 
                incflo_yslope_extdir(i,j-1,k,n,S, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
         }
 
