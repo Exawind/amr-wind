@@ -7,6 +7,7 @@ target_sources(${amr_wind_exe_name}
       incflo_compute_dt.cpp
       incflo_tagging.cpp
       incflo_regrid.cpp
+      incflo_compute_forces.cpp
       #Headers
    )
 

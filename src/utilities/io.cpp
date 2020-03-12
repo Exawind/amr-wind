@@ -316,7 +316,7 @@ void incflo::WritePlotFile()
 {
     BL_PROFILE("incflo::WritePlotFile()");
 
-    if (m_plt_vort or m_plt_divu) {
+    if (m_plt_vort or m_plt_divu or m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
 #ifdef AMREX_USE_EB
             const int ng = (EBFactory(0).isAllRegular()) ? 1 : 2;
@@ -324,9 +324,10 @@ void incflo::WritePlotFile()
             const int ng = 1;
 #endif
             fillpatch_velocity(lev, m_cur_time, m_leveldata[lev]->velocity, ng);
+            fillpatch_density(lev, m_cur_time, m_leveldata[lev]->density, ng);
+            fillpatch_tracer(lev, m_cur_time, m_leveldata[lev]->tracer, ng);
         }
     }
-
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_nstep);
 
@@ -338,26 +339,39 @@ void incflo::WritePlotFile()
     if (m_plt_velx) ++ncomp;
     if (m_plt_vely) ++ncomp;
     if (m_plt_velz) ++ncomp;
+
     // Pressure gradient components
     if (m_plt_gpx) ++ncomp;
     if (m_plt_gpy) ++ncomp;
     if (m_plt_gpz) ++ncomp;
+
     // Density
     if (m_plt_rho) ++ncomp;
+
     // Tracers
     if (m_plt_tracer) ncomp += m_ntrac;
+
     // Pressure
     if(m_plt_p) ++ncomp;
+
     // Apparent viscosity
     if(m_plt_eta) ++ncomp;
+
     // Vorticity
     if(m_plt_vort) ++ncomp;
+
+    // Forcing terms in velocity update
+    if(m_plt_forcing) ncomp += 3;
+
     // Magnitude of the rate-of-strain tensor 
     if(m_plt_strainrate) ++ncomp;
+
     // Magnitude of the stress tensor 
     if(m_plt_stress) ++ncomp;
+
     // Divergence of velocity field
     if(m_plt_divu) ++ncomp;
+
 #ifdef AMREX_USE_EB
     // Cut cell volume fraction
     if(m_plt_vfrac) ++ncomp;
@@ -447,6 +461,19 @@ void incflo::WritePlotFile()
         }
         pltscaVarsName.push_back("vort");
         ++icomp;
+    }
+    if (m_plt_forcing) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
+            compute_vel_forces_on_level(lev, forcing, 
+                                        m_leveldata[lev]->velocity,
+                                        m_leveldata[lev]->density,
+                                        m_leveldata[lev]->tracer);
+        }
+        pltscaVarsName.push_back("forcing_x");
+        pltscaVarsName.push_back("forcing_y");
+        pltscaVarsName.push_back("forcing_z");
+        icomp += 3;
     }
     if (m_plt_strainrate) {
         amrex::Abort("plt_strainrate: xxxxx TODO");

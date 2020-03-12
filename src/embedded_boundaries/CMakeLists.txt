@@ -2,6 +2,7 @@ target_sources(${amr_wind_exe_name}
    PRIVATE
       #C++
       embedded_boundaries.cpp
+      eb_cyl_tuscan.cpp
       eb_annulus.cpp
       eb_box.cpp
       eb_cylinder.cpp
