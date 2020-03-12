@@ -65,10 +65,18 @@ public:
 public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);
-    void compute_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
-                         amrex::Vector<amrex::MultiFab*> const& tra_forces,
-                         amrex::Vector<amrex::MultiFab const*> const& density,
-                         amrex::Vector<amrex::MultiFab const*> const& tracer);
+
+    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces);
+    void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
+                             amrex::Vector<amrex::MultiFab const*> const& velocity,
+                             amrex::Vector<amrex::MultiFab const*> const& density,
+                             amrex::Vector<amrex::MultiFab const*> const& tracer);
+    void compute_vel_forces_on_level ( int lev,
+                                       amrex::MultiFab& vel_forces,
+                                       const amrex::MultiFab& velocity,
+                                       const amrex::MultiFab& density,
+                                       const amrex::MultiFab& tracer);
+
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -342,7 +350,6 @@ public: // for cuda
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    amrex::Real volWgtSum (int lev, const amrex::MultiFab& mf, int comp, bool local=false);
     bool SteadyStateReached ();
 
 private:
@@ -466,6 +473,7 @@ private:
     int m_plt_p           = 0;
     int m_plt_eta         = 0;
     int m_plt_vort        = 1;
+    int m_plt_forcing     = 1;
     int m_plt_strainrate  = 0;
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
@@ -727,6 +735,7 @@ private:
     void make_eb_regular ();
     void make_eb_sphere ();
     void make_eb_spherecube ();
+    void make_eb_cyl_tuscan ();
     void make_eb_tuscan ();
 #endif
 

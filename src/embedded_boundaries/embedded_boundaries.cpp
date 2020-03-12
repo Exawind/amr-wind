@@ -58,6 +58,11 @@ void incflo::MakeEBGeometry()
 	amrex::Print() << "\n Building tuscan geometry." << std::endl;
         make_eb_tuscan();
     }
+    else if(geom_type == "jcap")
+    {
+	amrex::Print() << "\n Building JCAP geometry." << std::endl;
+        make_eb_cyl_tuscan();
+    }
     else
     {
 	amrex::Print() << "\n No EB geometry declared in inputs => "

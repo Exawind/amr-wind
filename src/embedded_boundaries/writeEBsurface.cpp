@@ -1,26 +1,19 @@
 #include <incflo.H>
 #include <AMReX_WriteEBSurface.H>
 
-using namespace amrex;
-
-void incflo::WriteMyEBSurface()
+void incflo::WriteMyEBSurface ()
 {
-    amrex::Warning("TODO: WriteMyEBSurface");
+  using namespace amrex;
 
-#if 0
-
-  if (Geom(0).isAllPeriodic()) return;
+  amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
 
   // Only write at the finest level!
-  int lev = 0;
+  int lev = finest_level;
 
   BoxArray & ba            = grids[lev];
   DistributionMapping & dm = dmap[lev];
 
-  const EBFArrayBoxFactory * ebf;
+  const EBFArrayBoxFactory* ebfact = &EBFactory(lev);
 
-  ebf = ebfactory[lev].get();
-
-  WriteEBSurface(ba,dm,Geom(lev),ebf);
-#endif
+  WriteEBSurface(ba,dm,Geom(lev),ebfact);
 }

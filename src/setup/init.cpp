@@ -185,6 +185,8 @@ void incflo::ReadIOParameters()
     pp.query("plt_stress"    , m_plt_stress);
     pp.query("plt_divu",       m_plt_divu  );
     pp.query("plt_vfrac",      m_plt_vfrac );
+
+    pp.query("plt_forcing",    m_plt_forcing );
 }
 
 //

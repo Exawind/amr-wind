@@ -1,4 +1,3 @@
-
 #include <incflo.H>
 
 // Need this for TagCutCells
@@ -91,12 +90,7 @@ void incflo::InitData ()
     ParmParse pp("incflo");
     bool write_eb_surface = false;
     pp.query("write_eb_surface", write_eb_surface);
-    if (write_eb_surface)
-    {
-        amrex::Print() << "Writing the geometry to a vtp file.\n" << std::endl;
-        amrex::Warning("xxxxx WriteMyEBSurface todo");
-  //      WriteMyEBSurface();
-    }
+    if (write_eb_surface) WriteMyEBSurface();
 #endif
 
     if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
