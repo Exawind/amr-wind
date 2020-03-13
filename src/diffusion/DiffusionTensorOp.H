@@ -26,13 +26,12 @@ public:
     void diffuse_velocity (amrex::Vector<amrex::MultiFab*> const& velocity,
                            amrex::Vector<amrex::MultiFab*> const& density,
                            amrex::Vector<amrex::MultiFab const*> const& eta,
-                           amrex::Real t, amrex::Real dt);
+                           amrex::Real dt);
 
     void compute_divtau (amrex::Vector<amrex::MultiFab*> const& divtau,
                          amrex::Vector<amrex::MultiFab const*> const& velocity,
                          amrex::Vector<amrex::MultiFab const*> const& density,
-                         amrex::Vector<amrex::MultiFab const*> const& eta,
-                         amrex::Real t);
+                         amrex::Vector<amrex::MultiFab const*> const& eta);
 
 private:
 

@@ -427,9 +427,19 @@ private:
     bool m_advect_tracer    = false;
     bool m_test_tracer_conservation = false;
 
+    // Default to MOL (not Godunov)
     bool m_use_godunov         = false;
-    bool m_ppm                 = true;
-    bool m_use_forces_in_trans = false;
+
+    // If using Godunov, default to PPM (not PLM)
+    bool m_godunov_ppm         = true;
+
+    // If using Godunov, default to including viscous/diffusive
+    //    terms in the forcing terms
+    bool m_godunov_include_diff_in_forcing = true;
+
+    // If using Godunov, when to add the forcing terms in 
+    //    the construction of the "trans" velocities
+    bool m_godunov_use_forces_in_trans = false;
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit

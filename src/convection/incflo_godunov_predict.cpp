@@ -58,7 +58,7 @@ void incflo::predict_godunov (int lev, Real time, MultiFab& u_mac, MultiFab& v_m
             Array4<Real> w_ad = makeArray4(p,Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
             p +=         w_ad.size();
 
-            if (m_ppm)
+            if (m_godunov_ppm)
                 predict_ppm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
             else
                 predict_plm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel);
@@ -91,7 +91,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
                                     Array4<Real const> const& f)
 {
     Real l_dt = m_dt;
-    bool l_use_forces_in_trans = m_use_forces_in_trans;
+    bool l_use_forces_in_trans = m_godunov_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);
@@ -190,7 +190,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                               Real* p)
 {
     Real l_dt = m_dt;
-    bool l_use_forces_in_trans = m_use_forces_in_trans;
+    bool l_use_forces_in_trans = m_godunov_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
     const Dim3 dlo = amrex::lbound(domain);

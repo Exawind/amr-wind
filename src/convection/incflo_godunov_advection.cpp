@@ -68,7 +68,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
     p +=         xyzhi.size();
 
     // Use PPM to generate Im and Ip */
-    if (m_ppm) {
+    if (m_godunov_ppm) {
         amrex::ParallelFor(bxg1, ncomp,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {

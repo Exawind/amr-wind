@@ -18,13 +18,12 @@ public:
     void diffuse_scalar (amrex::Vector<amrex::MultiFab*> const& phi,
                          amrex::Vector<amrex::MultiFab*> const& density,
                          amrex::Vector<amrex::MultiFab const*> const& eta,
-                         amrex::Real t, amrex::Real dt);
+                         amrex::Real dt);
 
     void compute_laps (amrex::Vector<amrex::MultiFab*> const& laps,
                        amrex::Vector<amrex::MultiFab const*> const& phi,
                        amrex::Vector<amrex::MultiFab const*> const& density,
-                       amrex::Vector<amrex::MultiFab const*> const& eta,
-                       amrex::Real t);
+                       amrex::Vector<amrex::MultiFab const*> const& eta);
 
 private:
 

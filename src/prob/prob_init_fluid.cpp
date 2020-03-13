@@ -26,7 +26,7 @@ void incflo::prob_init_fluid (int lev)
     {
         const Box& vbx = mfi.validbox();
         const Box& gbx = mfi.fabbox();
-        if (0 == m_probtype)
+        if (0 == m_probtype || 114 == m_probtype )
         { }
         else if (1 == m_probtype)
         {
