@@ -473,7 +473,7 @@ private:
     int m_plt_p           = 0;
     int m_plt_eta         = 0;
     int m_plt_vort        = 1;
-    int m_plt_forcing     = 1;
+    int m_plt_forcing     = 0;
     int m_plt_strainrate  = 0;
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
