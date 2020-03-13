@@ -3,7 +3,7 @@ TOP = ..
 
 EBASE = incflo
 
-BL_NO_FORT = TRUE
+BL_NO_FORT = FALSE
 
 DIM = 3
 
