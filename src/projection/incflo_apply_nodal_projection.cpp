@@ -54,7 +54,8 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
+void incflo::ApplyProjection (Vector<MultiFab const*> density,
+                              Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 

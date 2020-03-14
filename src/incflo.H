@@ -329,7 +329,8 @@ public: // for cuda
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental);
+    void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
+                         amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -606,7 +607,7 @@ private:
 #endif
 
     bool need_divtau () const {
-        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
+        return !(!m_godunov_include_diff_in_forcing and DiffusionType::Implicit == m_diff_type);
     }
 
     DiffusionTensorOp* get_diffusion_tensor_op ();

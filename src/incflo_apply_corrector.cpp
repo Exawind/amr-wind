@@ -75,6 +75,13 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
+    // Half-time density
+    Vector<MultiFab> density_nph;
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+        MultiFab::Copy(density_nph[lev], m_leveldata[lev]->density, 0, 0, 1, 0);
+    }
+
     // **********************************************************************************************
     // 
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
@@ -125,10 +132,16 @@ void incflo::ApplyCorrector()
                             GetVecOfPtrs(w_mac), 
                             {}, {}, new_time);
 
+    // *************************************************************************************
+    // Define the forcing terms to use in the final update
+    // *************************************************************************************
     compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(), 
                                                  get_density_new_const(), get_tracer_new_const());
     compute_tra_forces(GetVecOfPtrs(tra_forces));
 
+    // *************************************************************************************
+    // Compute viscosity / diffusive coefficients
+    // *************************************************************************************
     compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
                       get_density_new_const(), get_velocity_new_const(), get_tracer_new_const(),
                       new_time, 1);
@@ -278,7 +291,7 @@ void incflo::ApplyCorrector()
     // 
     // Project velocity field, update pressure
     bool incremental = false;
-    ApplyProjection(new_time, m_dt, incremental);
+    ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_dt, incremental);
 
     // **********************************************************************************************
     // 

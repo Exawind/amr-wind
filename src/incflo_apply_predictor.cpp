@@ -72,11 +72,19 @@ void incflo::ApplyPredictor (bool incremental_projection)
         PrintMaxValues(new_time);
     }
 
+    // Half-time density
+    Vector<MultiFab> density_nph;
+
+    // Forcing terms
     Vector<MultiFab> vel_forces, tra_forces;
+
     Vector<MultiFab> vel_eta, tra_eta;
+
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
                                 MFInfo(), Factory(lev));
+
+        density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
 
         if (m_advect_tracer) {
             tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
@@ -88,10 +96,19 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
+    for (int lev = 0; lev <= finest_level; lev++)
+        MultiFab::Copy(density_nph[lev], m_leveldata[lev]->density, 0, 0, 1, 0);
+
+    // *************************************************************************************
+    // Define the forcing terms to use in the Godunov prediction
+    // *************************************************************************************
     compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(), 
                                                  get_density_old_const(), get_tracer_old_const());
     compute_tra_forces(GetVecOfPtrs(tra_forces));
 
+    // *************************************************************************************
+    // Compute viscosity / diffusive coefficients
+    // *************************************************************************************
     compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
                       get_density_old_const(), get_velocity_old_const(), get_tracer_old_const(),
                       m_cur_time, 1);
@@ -101,19 +118,19 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                   get_velocity_old_const(),
                                                   get_density_old_const(),
                                                   GetVecOfConstPtrs(vel_eta));
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Add(vel_forces[lev], m_leveldata[lev]->divtau_o, 0, 0, AMREX_SPACEDIM, 0);
-        }
+        if (m_godunov_include_diff_in_forcing)
+            for (int lev = 0; lev <= finest_level; ++lev)  
+                MultiFab::Add(vel_forces[lev], m_leveldata[lev]->divtau_o, 0, 0, AMREX_SPACEDIM, 0);
+    }
 
-        if (m_advect_tracer) {
-            get_diffusion_scalar_op()->compute_laps(get_laps_old(),
-                                                    get_tracer_old_const(),
-                                                    get_density_old_const(),
-                                                    GetVecOfConstPtrs(tra_eta));
-            for (int lev = 0; lev <= finest_level; ++lev) {
-                MultiFab::Add(tra_forces[lev], m_leveldata[lev]->laps_o, 0, 0, m_ntrac, 0);
-            }
-        }
+    if (m_advect_tracer && need_divtau()) {
+        get_diffusion_scalar_op()->compute_laps(get_laps_old(),
+                                                get_tracer_old_const(),
+                                                get_density_old_const(),
+                                                GetVecOfConstPtrs(tra_eta));
+        if (m_godunov_include_diff_in_forcing)
+            for (int lev = 0; lev <= finest_level; ++lev) 
+            MultiFab::Add(tra_forces[lev], m_leveldata[lev]->laps_o, 0, 0, m_ntrac, 0);
     }
 
     if (m_use_godunov and nghost_force() > 0) {
@@ -140,14 +157,23 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
+    // *************************************************************************************
     // if ( m_use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
     // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
+    // *************************************************************************************
     compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
                             get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
                             GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
                             GetVecOfPtrs(w_mac), 
                             GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
                             m_cur_time);
+
+    // *************************************************************************************
+    // Re-define the forcing terms (without the viscous terms)
+    // *************************************************************************************
+    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(), 
+                                                 get_density_old_const(), get_tracer_old_const());
+    compute_tra_forces(GetVecOfPtrs(tra_forces));
 
     // Define local variables for lambda to capture.
     Real l_dt = m_dt;
@@ -171,7 +197,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
             Array4<Real const> const& vel_f = vel_forces[lev].const_array(mfi);
             Array4<Real const> const& tra_f = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
                                                             : Array4<Real const>{};
-            // if need_divtau()==true, the forces have already included diffusion terms
+
             if (need_divtau() and m_diff_type != DiffusionType::Explicit) {
                 Array4<Real const> const& divtau = ld.divtau_o.const_array(mfi);
                 Array4<Real const> laps;
@@ -179,7 +205,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                     laps = ld.laps_o.const_array(mfi);
                 }
                 // It's either implicit or Crank-Nicolson.
-                Real s = (m_diff_type == DiffusionType::Implicit) ? -1.0 : -0.5;
+                Real s = (m_diff_type == DiffusionType::Explicit) ?  1.0 :  0.5;
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+s*divtau(i,j,k,0));
@@ -242,7 +268,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Project velocity field, update pressure
     // 
     // **********************************************************************************************
-    ApplyProjection(new_time, m_dt, incremental_projection);
+    ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_dt, incremental_projection);
 
     // **********************************************************************************************
     // 
