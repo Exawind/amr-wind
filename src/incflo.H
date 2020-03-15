@@ -66,7 +66,8 @@ public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);
 
-    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces);
+    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
+                             amrex::Vector<amrex::MultiFab const*> const& density);
     void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                              amrex::Vector<amrex::MultiFab const*> const& velocity,
                              amrex::Vector<amrex::MultiFab const*> const& density,

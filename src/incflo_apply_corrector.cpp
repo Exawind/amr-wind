@@ -75,39 +75,9 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // Half-time density
-    Vector<MultiFab> density_nph;
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
-    }
-
-    // **********************************************************************************************
-    // 
-    // We only reach the corrector if !m_use_godunov which means we don't use the forces
-    //    in constructing the advection term
-    // 
-    // **********************************************************************************************
-    Vector<MultiFab> vel_forces, tra_forces;
-    Vector<MultiFab> vel_eta, tra_eta;
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
-                                MFInfo(), Factory(lev));
-        if (m_advect_tracer) {
-            tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
-                                    MFInfo(), Factory(lev));
-        }
-        vel_eta.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
-        if (m_advect_tracer) {
-            tra_eta.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
-        }
-    }
-
-    // **********************************************************************************************
-    // 
-    // Compute convective / conservative update
-    // 
-    // **********************************************************************************************
-
+    // *************************************************************************************
+    // Allocate space for the MAC velocities
+    // *************************************************************************************
     Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
     int ngmac = nghost_mac();
 
@@ -125,6 +95,37 @@ void incflo::ApplyCorrector()
         }
     }
 
+    // *************************************************************************************
+    // Allocate space for half-time density
+    // *************************************************************************************
+    Vector<MultiFab> density_nph;
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+    }
+
+    // **********************************************************************************************
+    // We only reach the corrector if !m_use_godunov which means we don't use the forces
+    //    in constructing the advection term
+    // **********************************************************************************************
+    Vector<MultiFab> vel_forces, tra_forces;
+    Vector<MultiFab> vel_eta, tra_eta;
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
+                                MFInfo(), Factory(lev));
+        if (m_advect_tracer) {
+            tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
+                                    MFInfo(), Factory(lev));
+        }
+        vel_eta.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
+        if (m_advect_tracer) {
+            tra_eta.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
+        }
+    }
+
+    // **********************************************************************************************
+    // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
+    // Note that "get_conv_tracer_new" returns div(rho u tracer)
+    // *************************************************************************************
     compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
                             get_velocity_new_const(), get_density_new_const(), get_tracer_new_const(),
                             GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
@@ -193,12 +194,15 @@ void incflo::ApplyCorrector()
     } // not constant density
 
     // *************************************************************************************
-    // Compute the tracer forcing terms
+    // Compute the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
-    compute_tra_forces(GetVecOfPtrs(tra_forces));
+    if (m_advect_tracer)
+        compute_tra_forces(GetVecOfPtrs(tra_forces),  GetVecOfConstPtrs(density_nph));
 
     // *************************************************************************************
-    // Update the tracer next
+    // Update the tracer next (note that dtdt already has rho in it)
+    // (rho trac)^new = (rho trac)^old + dt * (
+    //                   div(rho trac u) + div (mu grad trac) + rho * f_t
     // *************************************************************************************
     if (m_advect_tracer)
     {
@@ -211,12 +215,14 @@ void incflo::ApplyCorrector()
             for (MFIter mfi(ld.tracer,TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tra_o  = ld.tracer_o.const_array(mfi);
-                Array4<Real      > const& tra    = ld.tracer.array(mfi);
-                Array4<Real const> const& dtdt_o = ld.conv_tracer_o.const_array(mfi);
-                Array4<Real const> const& dtdt   = ld.conv_tracer.const_array(mfi);
-                Array4<Real const> const& drdt   = ld.conv_density.const_array(mfi);
-                Array4<Real const> const& tra_f = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
+                Array4<Real const> const& tra_o   = ld.tracer_o.const_array(mfi);
+                Array4<Real const> const& rho_o   = ld.density_o.const_array(mfi);
+                Array4<Real      > const& tra     = ld.tracer.array(mfi);
+                Array4<Real const> const& rho     = ld.density.const_array(mfi);
+                Array4<Real const> const& rho_nph = density_nph[lev].const_array(mfi);
+                Array4<Real const> const& dtdt_o  = ld.conv_tracer_o.const_array(mfi);
+                Array4<Real const> const& dtdt    = ld.conv_tracer.const_array(mfi);
+                Array4<Real const> const& tra_f   = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
                                                                 : Array4<Real const>{};
 
                 if (m_diff_type == DiffusionType::Explicit) 
@@ -229,10 +235,12 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt *
-                                (0.5*(dtdt(i,j,k,n)+dtdt_o(i,j,k,n)
-                                     +laps(i,j,k,n)+laps_o(i,j,k,n))
-                                 +tra_f(i,j,k,n) );
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                                ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
+                                 +0.5*(laps_o(i,j,k,n) +   laps(i,j,k,n))
+                                   +    tra_f(i,j,k,n) );
+
+                            tra(i,j,k,n) /= rho(i,j,k);
                         }
                     });
                 } 
@@ -244,9 +252,12 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt *
-                                ( 0.5*(dtdt(i,j,k,n)+dtdt_o(i,j,k,n) + laps_o(i,j,k,n))
-                                     +tra_f(i,j,k,n) );
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                                ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
+                                 +0.5*(laps_o(i,j,k,n)                  )
+                                   +    tra_f(i,j,k,n) );
+
+                            tra(i,j,k,n) /= rho(i,j,k);
                         }
                     });
                 } 
@@ -256,9 +267,11 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = tra_o(i,j,k,n) + l_dt *
-                                ( 0.5*(dtdt  (i,j,k,n)+dtdt_o(i,j,k,n))
-                                      +tra_f (i,j,k,n) );
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                                ( 0.5*( dtdt(i,j,k,n)+dtdt_o(i,j,k,n))
+                                   +   tra_f(i,j,k,n) );
+
+                            tra(i,j,k,n) /= rho(i,j,k);
                         }
                     });
                 }
@@ -281,7 +294,7 @@ void incflo::ApplyCorrector()
                                                   get_density_new(),
                                                   GetVecOfConstPtrs(tra_eta),
                                                   dt_diff);
-    } // if (m_advect_tracer)
+    }
 
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
