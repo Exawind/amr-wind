@@ -87,7 +87,7 @@ void
 DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
                                      Vector<MultiFab const*> const& density,
                                      Vector<MultiFab const*> const& eta,
-                                     Real t, Real dt)
+                                     Real /* t */, Real dt)
 {
     //
     //      alpha a - beta div ( b grad )   <--->   rho - dt div ( mu grad )
@@ -198,7 +198,7 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
                                         Vector<MultiFab const*> const& a_velocity,
                                         Vector<MultiFab const*> const& a_density,
                                         Vector<MultiFab const*> const& a_eta,
-                                        Real t)
+                                        Real /* t */)
 {
     BL_PROFILE("DiffusionTensorOp::compute_divtau");
 

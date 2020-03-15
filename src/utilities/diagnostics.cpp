@@ -5,7 +5,7 @@ using namespace amrex;
 //
 // Print maximum values (useful for tracking evolution)
 //
-void incflo::PrintMaxValues(Real time_in)
+void incflo::PrintMaxValues(Real /* time_in */)
 {
     
 #if AMREX_USE_EB

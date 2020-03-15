@@ -3,7 +3,7 @@
 
 using namespace amrex;
 
-void incflo::predict_ppm (int lev, Box const& bx, int ncomp,
+void incflo::predict_ppm (int lev, Box const& bx, int /* ncomp */,
                           Array4<Real> const& Imx,
                           Array4<Real> const& Ipx,
                           Array4<Real> const& Imy,

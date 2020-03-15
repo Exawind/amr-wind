@@ -18,10 +18,10 @@ struct IncfloVelFill
 
     AMREX_GPU_DEVICE
     void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& vel,
-                     const int dcomp, const int numcomp,
-                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const int /*dcomp */, const int /* numcomp */,
+                     amrex::GeometryData const& geom, const amrex::Real /* time */,
                      const amrex::BCRec* bcr, const int bcomp,
-                     const int orig_comp) const
+                     const int /* orig_comp */) const
     {
         using namespace amrex;
 
@@ -113,10 +113,10 @@ struct IncfloDenFill
 
     AMREX_GPU_DEVICE
     void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& rho,
-                     const int dcomp, const int numcomp,
-                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const int /* dcomp */, const int /* numcomp */,
+                     amrex::GeometryData const& geom, const amrex::Real /* time */,
                      const amrex::BCRec* bcr, const int bcomp,
-                     const int orig_comp) const
+                     const int /* orig_comp */) const
     {
         using namespace amrex;
 
@@ -169,10 +169,10 @@ struct IncfloTracFill
 
     AMREX_GPU_DEVICE
     void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& tracer,
-                     const int dcomp, const int numcomp,
-                     amrex::GeometryData const& geom, const amrex::Real time,
+                     const int /* dcomp */, const int /* numcomp */,
+                     amrex::GeometryData const& geom, const amrex::Real /* time */,
                      const amrex::BCRec* bcr, const int bcomp,
-                     const int orig_comp) const
+                     const int /* orig_comp */) const
     {
         using namespace amrex;
 
@@ -225,12 +225,16 @@ struct IncfloForFill
     constexpr IncfloForFill (int a_probtype) : probtype(a_probtype) {}
 
     AMREX_GPU_DEVICE
-    void operator() (const amrex::IntVect& iv, amrex::Array4<amrex::Real> const& vel,
-                     const int dcomp, const int numcomp,
-                     amrex::GeometryData const& geom, const amrex::Real time,
-                     const amrex::BCRec* bcr, const int bcomp,
-                     const int orig_comp) const
-    {}
+	void operator()(const amrex::IntVect& /* iv */,
+					amrex::Array4<amrex::Real> const& /* vel */,
+					const int /* dcomp */,
+					const int /* numcomp */,
+					amrex::GeometryData const& /* geom */,
+					const amrex::Real /* time */,
+					const amrex::BCRec* /* bcr */,
+					const int /* bcomp */,
+					const int /* orig_comp */) const
+	{}
 };
 
 #endif

@@ -56,8 +56,8 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                                 Vector<MultiFab*> const& tra_eta,
                                 Vector<MultiFab const*> const& rho,
                                 Vector<MultiFab const*> const& vel,
-                                Vector<MultiFab const*> const& tra,
-                                Real time, int nghost)
+                                Vector<MultiFab const*> const& /* tra */,
+                                Real /* time */, int nghost)
 {
     if (m_fluid_model == FluidModel::Newtonian)
     {

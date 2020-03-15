@@ -86,7 +86,7 @@ void
 DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
                                    Vector<MultiFab*> const& density,
                                    Vector<MultiFab const*> const& eta,
-                                   Real t, Real dt)
+                                   Real /* t */, Real dt)
 {
     //
     //      alpha a - beta div ( b grad )   <--->   rho - dt div ( mu grad )
@@ -201,7 +201,7 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                                       Vector<MultiFab const*> const& a_tracer,
                                       Vector<MultiFab const*> const& a_density,
                                       Vector<MultiFab const*> const& a_eta,
-                                      Real t)
+                                      Real /* t */)
 {
     BL_PROFILE("DiffusionScalarOp::compute_laps");
 

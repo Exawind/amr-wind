@@ -215,7 +215,7 @@ void incflo::AverageDown()
     }
 }
 
-void incflo::AverageDownTo(int crse_lev)
+void incflo::AverageDownTo(int /* crse_lev */)
 {
     amrex::Abort("xxxxx TODO AverageDownTo");
 }

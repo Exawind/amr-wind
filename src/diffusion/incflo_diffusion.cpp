@@ -158,14 +158,14 @@ incflo::wall_model_bc(const int lev,
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
                 {
                     amrex::Abort("wall model bc assumes periodic should not be in here xlo");
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
                 {
                     amrex::Abort("wall model bc assumes periodic should not be in here xhi");
                 });
@@ -176,14 +176,14 @@ incflo::wall_model_bc(const int lev,
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
                 {
                     amrex::Abort("wall model bc assumes periodic should not be in here ylo");
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
                 {
                     amrex::Abort("wall model bc assumes periodic should not be in here yhi");
                 });

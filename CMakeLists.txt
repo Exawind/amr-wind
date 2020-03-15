@@ -76,6 +76,7 @@ set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 add_executable(${amr_wind_exe_name} "")
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
 #Keep our Fortran module files confined to a unique directory for each executable 
 set_target_properties(${amr_wind_exe_name} PROPERTIES Fortran_MODULE_DIRECTORY

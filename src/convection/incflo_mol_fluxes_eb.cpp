@@ -4,6 +4,7 @@
 
 using namespace amrex;
 
+#ifdef AMREX_USE_EB
 namespace {
     std::pair<bool,bool> has_extdir (BCRec const* bcrec, int ncomp, int dir)
     {
@@ -16,7 +17,6 @@ namespace {
     }
 }
 
-#ifdef AMREX_USE_EB
 void incflo::compute_convective_fluxes_eb (int lev, Box const& bx, int ncomp,
                                            Array4<Real> const& fx,
                                            Array4<Real> const& fy,

@@ -39,4 +39,4 @@ if(AMR_WIND_ENABLE_EB)
 endif()
 
 #Link to amrex library
-target_link_libraries(${amr_wind_exe_name} PRIVATE amrex)
+target_link_libraries_system(${amr_wind_exe_name} amrex)
