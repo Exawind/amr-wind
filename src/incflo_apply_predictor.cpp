@@ -128,7 +128,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
         compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(), 
                            get_density_old_const(), 
                            get_tracer_old_const(), get_tracer_old_const());
-        compute_tra_forces(GetVecOfPtrs(tra_forces));
+        if (m_advect_tracer)
+           compute_tra_forces(GetVecOfPtrs(tra_forces));
     }
 
     // *************************************************************************************
@@ -223,7 +224,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Compute (or if Godunov, re-compute) the tracer forcing terms
     // *************************************************************************************
-    compute_tra_forces(GetVecOfPtrs(tra_forces));
+    if (m_advect_tracer)
+       compute_tra_forces(GetVecOfPtrs(tra_forces));
 
     // *************************************************************************************
     // Update the tracer next
@@ -289,6 +291,23 @@ void incflo::ApplyPredictor (bool incremental_projection)
     } // if (m_advect_tracer)
 
     // *************************************************************************************
+    // Solve diffusion equation for tracer
+    // *************************************************************************************
+    if ( m_advect_tracer &&
+        (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit) )
+    {
+        const int ng_diffusion = 1;
+        for (int lev = 0; lev <= finest_level; ++lev) 
+            fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
+
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
+        get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
+                                                  get_density_new(),
+                                                  GetVecOfConstPtrs(tra_eta),
+                                                  dt_diff);
+    } // if (m_advect_tracer)
+
+    // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms 
     //    and using the half-time density
     // *************************************************************************************
@@ -346,7 +365,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
         } // mfi
     } // lev
 
+    // *************************************************************************************
     // Solve diffusion equation for u* but using eta_old at old time
+    // *************************************************************************************
     if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
         const int ng_diffusion = 1;
@@ -362,12 +383,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                     get_density_new(),
                                                     GetVecOfConstPtrs(vel_eta),
                                                     dt_diff);
-        if (m_advect_tracer) {
-            get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                      get_density_new(),
-                                                      GetVecOfConstPtrs(tra_eta),
-                                                      dt_diff);
-        }
     }
 
     // **********************************************************************************************
