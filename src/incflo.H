@@ -474,6 +474,9 @@ private:
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
 
+    amrex::Vector<amrex::Real> tag_region_lo;
+    amrex::Vector<amrex::Real> tag_region_hi;
+
     // Flags for saving fluid data in plot files
     int m_plt_velx        = 1;
     int m_plt_vely        = 1;
