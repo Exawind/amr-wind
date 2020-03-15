@@ -88,7 +88,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
             {
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& u = ld.velocity.array(mfi);
-                Array4<Real const> const& rho = ld.density.const_array(mfi);
+                Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& gp = ld.gp.const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -123,7 +123,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
         {
             Box const& bx = mfi.tilebox();
             Array4<Real> const& sig = sigma[lev].array(mfi);
-            Array4<Real const> const& rho = ld.density.const_array(mfi);
+            Array4<Real const> const& rho = density[lev]->const_array(mfi);
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
                 sig(i,j,k) = scaling_factor / rho(i,j,k);
