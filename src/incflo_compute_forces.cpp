@@ -53,73 +53,71 @@ void incflo::compute_vel_forces_on_level (int lev,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        for (MFIter mfi(vel_forces,TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& vel_f = vel_forces.array(mfi);
-            Array4<Real const> const& rho = density.const_array(mfi);
-            Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
+    for (MFIter mfi(vel_forces,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    {
+        Box const& bx = mfi.tilebox();
+        Array4<Real> const& vel_f = vel_forces.array(mfi);
+        Array4<Real const> const& rho = density.const_array(mfi);
+        Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
 
-            if (m_use_boussinesq) {
-                // This uses a Boussinesq approximation where the buoyancy depends on
-                //      first tracer rather than density
-                Array4<Real const> const& tra = tracer.const_array(mfi);
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    Real rhoinv = 1.0/rho(i,j,k);
-                    Real ft = thermalExpansionCoeff*(T0-tra(i,j,k));
-                    vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
-                    vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;
-                    vel_f(i,j,k,2) = -gradp(i,j,k,2)*rhoinv + l_gravity[2] * ft;
-                });
-            } else {
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    Real rhoinv = 1.0/rho(i,j,k);
-                    vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
-                    vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
-                    vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
-                });
-            }
-            
-            if(m_use_coriolis){
-                
-                Array4<Real const> const& vel = velocity.const_array(mfi);
-                
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    
-                    const Real ue = east[0]*vel(i,j,k,0) + east[1]*vel(i,j,k,1) + east[2]*vel(i,j,k,2);
-                    const Real un = north[0]*vel(i,j,k,0) + north[1]*vel(i,j,k,1) + north[2]*vel(i,j,k,2);
-                    const Real uu = up[0]*vel(i,j,k,0) + up[1]*vel(i,j,k,1) + up[2]*vel(i,j,k,2);
-
-                    const Real ae = +corfac*(un*sinphi - uu*cosphi);
-                    const Real an = -corfac*ue*sinphi;
-                    const Real au = +corfac*ue*cosphi;
-
-                    const Real ax = ae*east[0] + an*north[0] + au*up[0];
-                    const Real ay = ae*east[1] + an*north[1] + au*up[1];
-                    const Real az = ae*east[2] + an*north[2] + au*up[2];//fixme do we turn the z component off?
-                    
-                    vel_f(i,j,k,0) += ax;
-                    vel_f(i,j,k,1) += ay;
-                    vel_f(i,j,k,2) += az;
-                    
-                });
-            }
-            
-            if(m_use_abl_forcing){
-                const Real dudt = (u-umean)/dt;// fixme make sure this is the correct dt and not dt/2
-                const Real dvdt = (v-vmean)/dt;
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    vel_f(i,j,k,0) += dudt;
-                    vel_f(i,j,k,1) += dvdt;
-                    // vel_f(i,j,k,2) -= 0.0; // assuming periodic in x,y-dir so do not drive flow in z-dir
-                });
-            }
-            
+        if (m_use_boussinesq) {
+            // This uses a Boussinesq approximation where the buoyancy depends on
+            //      first tracer rather than density
+            Array4<Real const> const& tra = tracer.const_array(mfi);
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                Real rhoinv = 1.0/rho(i,j,k);
+                Real ft = thermalExpansionCoeff*(T0-tra(i,j,k));
+                vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
+                vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;
+                vel_f(i,j,k,2) = -gradp(i,j,k,2)*rhoinv + l_gravity[2] * ft;
+            });
+        } else {
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                Real rhoinv = 1.0/rho(i,j,k);
+                vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
+                vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
+                vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
+            });
         }
-    }
+        
+        if(m_use_coriolis){
+            
+            Array4<Real const> const& vel = velocity.const_array(mfi);
+            
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                
+                const Real ue = east[0]*vel(i,j,k,0) + east[1]*vel(i,j,k,1) + east[2]*vel(i,j,k,2);
+                const Real un = north[0]*vel(i,j,k,0) + north[1]*vel(i,j,k,1) + north[2]*vel(i,j,k,2);
+                const Real uu = up[0]*vel(i,j,k,0) + up[1]*vel(i,j,k,1) + up[2]*vel(i,j,k,2);
+
+                const Real ae = +corfac*(un*sinphi - uu*cosphi);
+                const Real an = -corfac*ue*sinphi;
+                const Real au = +corfac*ue*cosphi;
+
+                const Real ax = ae*east[0] + an*north[0] + au*up[0];
+                const Real ay = ae*east[1] + an*north[1] + au*up[1];
+                const Real az = ae*east[2] + an*north[2] + au*up[2];//fixme do we turn the z component off?
+                
+                vel_f(i,j,k,0) += ax;
+                vel_f(i,j,k,1) += ay;
+                vel_f(i,j,k,2) += az;
+                
+            });
+        }
+        
+        if(m_use_abl_forcing){
+            const Real dudt = (u-umean)/dt;// fixme make sure this is the correct dt and not dt/2
+            const Real dvdt = (v-vmean)/dt;
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                vel_f(i,j,k,0) += dudt;
+                vel_f(i,j,k,1) += dvdt;
+                // vel_f(i,j,k,2) -= 0.0; // assuming periodic in x,y-dir so do not drive flow in z-dir
+            });
+        }
+        
+    }    
 }
