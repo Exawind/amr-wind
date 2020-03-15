@@ -247,28 +247,65 @@ void incflo::init_boussinesq_bubble (Box const& vbx, Box const& gbx,
                                      GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                      GpuArray<Real, AMREX_SPACEDIM> const& probhi)
 {
-    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (111 == m_probtype)
     {
-        vel(i,j,k,0) = 0.0;
-        vel(i,j,k,1) = 0.0;
-        vel(i,j,k,2) = 0.0;
-        density(i,j,k) = 1.0;
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            vel(i,j,k,0) = 0.0;
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 0.0;
+            density(i,j,k) = 1.0;
 
-        Real r;
+            Real x = (i+0.5)*dx[0];
+            Real y = (j+0.5)*dx[1];
+            Real z = (k+0.5)*dx[2];
 
-        Real x = (i+0.5)*dx[0];
-        Real y = (j+0.5)*dx[1];
-        Real z = (k+0.5)*dx[2];
+            Real r = std::sqrt((x-0.5 )*(x-0.5 ) + (y-0.25)*(y-0.25) + (z-0.25)*(z-0.25));
 
-        if (111 == m_probtype) r = std::sqrt((x-0.5 )*(x-0.5 ) + (y-0.25)*(y-0.25) + (z-0.25)*(z-0.25));
-        if (112 == m_probtype) r = std::sqrt((x-0.25)*(x-0.25) + (y-0.5 )*(y-0.5 ) + (z-0.25)*(z-0.25));
-        if (113 == m_probtype) r = std::sqrt((x-0.25)*(x-0.25) + (y-0.25)*(y-0.25) + (z-0.5 )*(z-0.5 ));
+            if(r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
+        });
+    } else if (112 == m_probtype) {
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            vel(i,j,k,0) = 0.0;
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 0.0;
+            density(i,j,k) = 1.0;
 
-        if(r < .1)
-            tracer(i,j,k,0) = 0.0;
-        else
-            tracer(i,j,k,0) = 0.01;
-    });
+            Real x = (i+0.5)*dx[0];
+            Real y = (j+0.5)*dx[1];
+            Real z = (k+0.5)*dx[2];
+
+            Real r = std::sqrt((x-0.25)*(x-0.25) + (y-0.5 )*(y-0.5 ) + (z-0.25)*(z-0.25));
+
+            if(r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
+        });
+    } else if (113 == m_probtype) {
+        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            vel(i,j,k,0) = 0.0;
+            vel(i,j,k,1) = 0.0;
+            vel(i,j,k,2) = 0.0;
+            density(i,j,k) = 1.0;
+
+            Real x = (i+0.5)*dx[0];
+            Real y = (j+0.5)*dx[1];
+            Real z = (k+0.5)*dx[2];
+
+            Real r = std::sqrt((x-0.25)*(x-0.25) + (y-0.25)*(y-0.25) + (z-0.5 )*(z-0.5 ));
+
+            if(r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
+        });
+    }
 }
 
 void incflo::init_periodic_tracer (Box const& vbx, Box const& gbx,
