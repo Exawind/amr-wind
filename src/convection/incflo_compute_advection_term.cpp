@@ -78,7 +78,12 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
 }
 
 void
-incflo::compute_convective_term (Box const& bx, int lev, MFIter const& mfi,
+incflo::compute_convective_term (Box const& bx, int lev,
+#ifdef AMREX_USE_EB
+                                 MFIter const& mfi,
+#else
+                                 MFIter const&,
+#endif
                                  Array4<Real> const& dvdt, // velocity
                                  Array4<Real> const& drdt, // density
                                  Array4<Real> const& dtdt, // tracer

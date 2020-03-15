@@ -119,15 +119,15 @@ void incflo::prob_init_fluid (int lev)
     }
 }
 
-void incflo::init_taylor_green (Box const& vbx, Box const& gbx,
-                                Array4<Real> const& p,
+void incflo::init_taylor_green (Box const& vbx, Box const& /* gbx */,
+                                Array4<Real> const& /* p */,
                                 Array4<Real> const& vel,
-                                Array4<Real> const& density,
-                                Array4<Real> const& tracer,
-                                Box const& domain,
+                                Array4<Real> const& /* density */,
+                                Array4<Real> const& /* tracer */,
+                                Box const& /* domain */,
                                 GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                                GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                                GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
@@ -140,15 +140,15 @@ void incflo::init_taylor_green (Box const& vbx, Box const& gbx,
     });
 }
 
-void incflo::init_taylor_green3d (Box const& vbx, Box const& gbx,
-                                  Array4<Real> const& p,
+void incflo::init_taylor_green3d (Box const& vbx, Box const& /* gbx */,
+                                  Array4<Real> const& /* p */,
                                   Array4<Real> const& vel,
-                                  Array4<Real> const& density,
-                                  Array4<Real> const& tracer,
-                                  Box const& domain,
+                                  Array4<Real> const& /* density */,
+                                  Array4<Real> const& /* tracer */,
+                                  Box const& /* domain */,
                                   GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                  GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                  GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                                  GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                                  GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
@@ -162,15 +162,15 @@ void incflo::init_taylor_green3d (Box const& vbx, Box const& gbx,
     });
 }
 
-void incflo::init_couette (Box const& vbx, Box const& gbx,
-                           Array4<Real> const& p,
+void incflo::init_couette (Box const& vbx, Box const& /* gbx */,
+                           Array4<Real> const& /* p */,
                            Array4<Real> const& vel,
-                           Array4<Real> const& density,
-                           Array4<Real> const& tracer,
+                           Array4<Real> const& /* density */,
+                           Array4<Real> const& /* tracer  */,
                            Box const& domain,
-                           GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                           GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                           GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                           GpuArray<Real, AMREX_SPACEDIM> const& /* dx */,
+                           GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                           GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     Real num_cells_y = static_cast<Real>(domain.length(1));
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -183,12 +183,12 @@ void incflo::init_couette (Box const& vbx, Box const& gbx,
 }
 
 
-void incflo::init_rayleigh_taylor (Box const& vbx, Box const& gbx,
-                                   Array4<Real> const& p,
+void incflo::init_rayleigh_taylor (Box const& vbx, Box const& /* gbx */,
+                                   Array4<Real> const& /* p */,
                                    Array4<Real> const& vel,
                                    Array4<Real> const& density,
-                                   Array4<Real> const& tracer,
-                                   Box const& domain,
+                                   Array4<Real> const& /* tracer */,
+                                   Box const& /* domain */,
                                    GpuArray<Real, AMREX_SPACEDIM> const& dx,
                                    GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                    GpuArray<Real, AMREX_SPACEDIM> const& probhi)
@@ -214,15 +214,15 @@ void incflo::init_rayleigh_taylor (Box const& vbx, Box const& gbx,
     });
 }
 
-void incflo::init_tuscan (Box const& vbx, Box const& gbx,
-                          Array4<Real> const& p,
+void incflo::init_tuscan (Box const& vbx, Box const& /* gbx */,
+                          Array4<Real> const& /* p */,
                           Array4<Real> const& vel,
                           Array4<Real> const& density,
                           Array4<Real> const& tracer,
                           Box const& domain,
-                          GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                          GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                          GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                          GpuArray<Real, AMREX_SPACEDIM> const& /* dx */,
+                          GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                          GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     int half_num_cells = domain.length(2) / 2;
     Real T0 = .01;
@@ -239,12 +239,12 @@ void incflo::init_tuscan (Box const& vbx, Box const& gbx,
         }
     });
 }
-void incflo::init_periodic_tracer (Box const& vbx, Box const& gbx,
-                                   Array4<Real> const& p,
+void incflo::init_periodic_tracer (Box const& vbx, Box const& /* gbx */,
+                                   Array4<Real> const& /* p */,
                                    Array4<Real> const& vel,
-                                   Array4<Real> const& density,
+                                   Array4<Real> const& /* density */,
                                    Array4<Real> const& tracer,
-                                   Box const& domain,
+                                   Box const& /* domain */,
                                    GpuArray<Real, AMREX_SPACEDIM> const& dx,
                                    GpuArray<Real, AMREX_SPACEDIM> const& problo,
                                    GpuArray<Real, AMREX_SPACEDIM> const& probhi)
@@ -264,15 +264,15 @@ void incflo::init_periodic_tracer (Box const& vbx, Box const& gbx,
     });
 }
 
-void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
-                                      Array4<Real> const& p,
+void incflo::init_double_shear_layer (Box const& vbx, Box const& /* gbx */,
+                                      Array4<Real> const& /* p */,
                                       Array4<Real> const& vel,
-                                      Array4<Real> const& density,
-                                      Array4<Real> const& tracer,
-                                      Box const& domain,
+                                      Array4<Real> const& /* density */,
+                                      Array4<Real> const& /* tracer */,
+                                      Box const& /* domain */,
                                       GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                      GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                      GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                                      GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                                      GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     static constexpr Real twopi = 2.0 * 3.1415926535897932;
      if (21 == m_probtype)
@@ -314,20 +314,19 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
     };
 }
 
-void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
-                                    Array4<Real> const& p,
+void incflo::init_plane_poiseuille (Box const& vbx, Box const& /* gbx */,
+                                    Array4<Real> const& /* p */,
                                     Array4<Real> const& vel,
-                                    Array4<Real> const& density,
+                                    Array4<Real> const& /* density */,
                                     Array4<Real> const& tracer,
                                     Box const& domain,
-                                    GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                    GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                    GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                                    GpuArray<Real, AMREX_SPACEDIM> const& /* dx */,
+                                    GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                                    GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     Real dxinv = 1.0 / domain.length(0);
     Real dyinv = 1.0 / domain.length(1);
     Real dzinv = 1.0 / domain.length(2);
-    const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
 
     if (31 == m_probtype)
@@ -370,7 +369,6 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
     }
     else if (41 == m_probtype)
     {
-        Real u = m_ic_u;
         amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             Real z = (k+0.5)*dzinv;
@@ -470,25 +468,23 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& gbx,
 }
 
 
-void incflo::init_abl (Box const& vbx, Box const& gbx,
-                       Array4<Real> const& p,
+void incflo::init_abl (Box const& vbx, Box const& /* gbx */,
+                       Array4<Real> const& /* p */,
                        Array4<Real> const& vel,
                        Array4<Real> const& density,
                        Array4<Real> const& tracer,
-                       Box const& domain,
+                       Box const& /* domain */,
                        GpuArray<Real, AMREX_SPACEDIM> const& dx,
                        GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                       GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                       GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
-    
-    
-    const Real cutoff_height = m_cutoff_height;
+    // const Real cutoff_height = m_cutoff_height;
     const Real Uperiods = m_Uperiods;
     const Real Vperiods = m_Vperiods;
     const Real deltaU = m_deltaU;
     const Real deltaV = m_deltaV;
     const Real zRefHeight = m_zRefHeight;
-    const Real theta_amplitude = m_theta_amplitude;
+    // const Real theta_amplitude = m_theta_amplitude;
     
     const Real pi = std::acos(-1.0);
     const Real aval = Uperiods*2.0*pi/(geom[0].ProbHi(1) - geom[0].ProbLo(1));

@@ -5,7 +5,7 @@
 
 using namespace amrex;
 
-void incflo::ComputeDivU(Real time_in)
+void incflo::ComputeDivU(Real /* time_in */)
 {
 #if 0
 
@@ -40,7 +40,7 @@ void incflo::ComputeDivU(Real time_in)
 #endif
 }
 
-void incflo::ComputeStrainrate(Real time_in)
+void incflo::ComputeStrainrate(Real /* time_in */)
 {
 #if 0
     BL_PROFILE("incflo::ComputeStrainrate");
@@ -313,7 +313,7 @@ Real incflo::ComputeKineticEnergy () const
 
 }
 
-void incflo::ComputeVorticity (int lev, Real t, MultiFab& vort, MultiFab const& vel)
+void incflo::ComputeVorticity (int lev, Real /* t */, MultiFab& vort, MultiFab const& vel)
 {
     BL_PROFILE("incflo::ComputeVorticity");
 

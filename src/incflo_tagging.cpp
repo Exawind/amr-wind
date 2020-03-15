@@ -8,7 +8,7 @@ using namespace amrex;
 
 // tag cells for refinement
 // overrides the pure virtual function in AmrCore
-void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
+void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int /* ngrow */)
 {
     BL_PROFILE("incflo::ErrorEst()");
 
@@ -61,7 +61,7 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
             Real rhoerr = tag_rho ? rhoerr_v[lev]: std::numeric_limits<Real>::max();
             Real gradrhoerr = tag_gradrho ? gradrhoerr_v[lev] : std::numeric_limits<Real>::max();
             amrex::ParallelFor(bx,
-            [tag_rho,tag_gradrho,rhoerr,gradrhoerr,tagval,rho,tag]
+            [tag_rho,tag_gradrho,rhoerr,gradrhoerr,rho,tag]
             AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
                 if (tag_rho and rho(i,j,k) > rhoerr) {

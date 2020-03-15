@@ -686,13 +686,13 @@ void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
                               const amrex::Array4<const amrex::Real> &s, 
                                     amrex::Real &lo,
                                     amrex::Real &hi,
-                                    amrex::Real &uedge,
+                                    amrex::Real & /* uedge */,
                               const int bclo, const int bchi, 
                               const int domlo, const int domhi)
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low X
     if (i <= domlo)
@@ -743,16 +743,16 @@ void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
-                              const amrex::Array4<const amrex::Real> &s, 
-                                    amrex::Real &lo,
-                                    amrex::Real &hi,
-                                    amrex::Real vedge,
-                              const int bclo, const int bchi, 
-                              const int domlo, const int domhi)
+                       const amrex::Array4<const amrex::Real> &s,
+                       amrex::Real &lo,
+                       amrex::Real &hi,
+                       amrex::Real /* vedge */,
+                       const int bclo, const int bchi,
+                       const int domlo, const int domhi)
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low Y 
     if (j <= domlo)
@@ -803,16 +803,16 @@ void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
-                              const amrex::Array4<const amrex::Real> &s, 
-                                    amrex::Real &lo,
-                                    amrex::Real &hi,
-                                    amrex::Real wedge,
-                              const int bclo, const int bchi, 
-                              const int domlo, const int domhi)
+                       const amrex::Array4<const amrex::Real> &s,
+                       amrex::Real &lo,
+                       amrex::Real &hi,
+                       amrex::Real /* wedge */,
+                       const int bclo, const int bchi,
+                       const int domlo, const int domhi)
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
+    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low Z
     if (k <= domlo)
