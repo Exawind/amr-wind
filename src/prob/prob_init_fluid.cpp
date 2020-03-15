@@ -316,6 +316,12 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
             vel(i,j,k,0) = std::tanh(30.0*(0.25-std::abs(y-0.5)));
             vel(i,j,k,1) = 0.05*std::sin(twopi*x);
             vel(i,j,k,2) = 0.0;
+
+            Real r = std::sqrt((x-0.5)*(x-0.5) + (y-0.25)*(y-0.25));
+            if (r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
         });
     }
     else if (22 == m_probtype)
@@ -327,6 +333,12 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
             vel(i,j,k,1) = std::tanh(30.0*(0.25-std::abs(z-0.5)));
             vel(i,j,k,2) = 0.05*std::sin(twopi*y);
             vel(i,j,k,0) = 0.0;
+
+            Real r = std::sqrt((y-0.5)*(y-0.5) + (z-0.5)*(z-0.5));
+            if (r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
         });
     }
     else if (23 == m_probtype)
@@ -338,6 +350,12 @@ void incflo::init_double_shear_layer (Box const& vbx, Box const& gbx,
             vel(i,j,k,2) = std::tanh(30.0*(0.25-std::abs(x-0.5)));
             vel(i,j,k,0) = 0.05*std::sin(twopi*z);
             vel(i,j,k,1) = 0.0;
+
+            Real r = std::sqrt((x-0.5)*(x-0.5) + (z-0.5)*(z-0.5));
+            if (r < .1)
+                tracer(i,j,k,0) = 0.0;
+            else
+                tracer(i,j,k,0) = 0.01;
         });
     }
     else
