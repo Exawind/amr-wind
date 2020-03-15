@@ -15,17 +15,20 @@ void incflo::compute_tra_forces (Vector<MultiFab*> const& tra_forces)
 void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
                                  Vector<MultiFab const*> const& velocity,
                                  Vector<MultiFab const*> const& density,
-                                 Vector<MultiFab const*> const& tracer)
+                                 Vector<MultiFab const*> const& tracer_old,
+                                 Vector<MultiFab const*> const& tracer_new)
 {
     for (int lev = 0; lev <= finest_level; ++lev)  
-       compute_vel_forces_on_level (lev, *vel_forces[lev], *velocity[lev], *density[lev], *tracer[lev]);
+       compute_vel_forces_on_level (lev, *vel_forces[lev], *velocity[lev], *density[lev], 
+                                         *tracer_old[lev], *tracer_new[lev]);
 }
 
 void incflo::compute_vel_forces_on_level (int lev,
                                                 MultiFab& vel_forces,
                                           const MultiFab& velocity,
                                           const MultiFab& density,
-                                          const MultiFab& tracer)
+                                          const MultiFab& tracer_old,
+                                          const MultiFab& tracer_new)
 {
     const Real* dx = geom[lev].CellSize();
 
@@ -46,11 +49,12 @@ void incflo::compute_vel_forces_on_level (int lev,
             if (m_use_boussinesq) {
                 // This uses a Boussinesq approximation where the buoyancy depends on
                 //      first tracer rather than density
-                Array4<Real const> const& tra = tracer.const_array(mfi);
+                Array4<Real const> const& tra_o = tracer_old.const_array(mfi);
+                Array4<Real const> const& tra_n = tracer_new.const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     Real rhoinv = 1.0/rho(i,j,k);
-                    Real ft = tra(i,j,k);
+                    Real ft = 0.5 * (tra_o(i,j,k) + tra_n(i,j,k));
 
                     vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
                     vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;

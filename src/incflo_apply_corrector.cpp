@@ -270,7 +270,8 @@ void incflo::ApplyCorrector()
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
     compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(), 
-                       GetVecOfConstPtrs(density_nph), get_tracer_new_const());
+                       GetVecOfConstPtrs(density_nph), 
+                       get_tracer_old_const(), get_tracer_new_const());
 
     // *************************************************************************************
     // Update velocity
@@ -291,13 +292,32 @@ void incflo::ApplyCorrector()
             Array4<Real const> const& dvdt_o = ld.conv_velocity_o.const_array(mfi);
             Array4<Real const> const& vel_f = vel_forces[lev].const_array(mfi);
 
-            if (m_diff_type == DiffusionType::Explicit) {
+            if (m_diff_type == DiffusionType::Implicit) 
+            {
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
+                            (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim));
+                    }
+                });
+            } 
+            else if (m_diff_type == DiffusionType::Crank_Nicolson)
+            { 
+                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
+                            (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim) 
+                                +divtau_o(i,j,k,idim));
+                    }
+                });
+            }
+            else if (m_diff_type == DiffusionType::Explicit)
+            {
                 Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
                 Array4<Real const> const& divtau   = ld.divtau.const_array(mfi);
-                Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                 : Array4<Real const>{};
-                Array4<Real const> const& laps   = (l_ntrac > 0) ? ld.laps.const_array(mfi)
-                                                                 : Array4<Real const>{};
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
@@ -307,27 +327,7 @@ void incflo::ApplyCorrector()
                              +vel_f(i,j,k,idim));
                     }
                 });
-            } else if (m_diff_type == DiffusionType::Crank_Nicolson) {
-                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
-                Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                 : Array4<Real const>{};
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
-                            (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim) 
-                                +divtau_o(i,j,k,idim));
-                    }
-                });
-            } else {
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
-                            (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim));
-                    }
-                });
-            }
+            } 
         }
     }
 

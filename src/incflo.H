@@ -70,13 +70,14 @@ public: // for cuda
     void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                              amrex::Vector<amrex::MultiFab const*> const& velocity,
                              amrex::Vector<amrex::MultiFab const*> const& density,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer);
+                             amrex::Vector<amrex::MultiFab const*> const& tracer_old,
+                             amrex::Vector<amrex::MultiFab const*> const& tracer_new);
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
                                        const amrex::MultiFab& velocity,
                                        const amrex::MultiFab& density,
-                                       const amrex::MultiFab& tracer);
-
+                                       const amrex::MultiFab& tracer_old,
+                                       const amrex::MultiFab& tracer_new);
 
     ///////////////////////////////////////////////////////////////////////////
     //

@@ -468,6 +468,7 @@ void incflo::WritePlotFile()
             compute_vel_forces_on_level(lev, forcing, 
                                         m_leveldata[lev]->velocity,
                                         m_leveldata[lev]->density,
+                                        m_leveldata[lev]->tracer,
                                         m_leveldata[lev]->tracer);
         }
         pltscaVarsName.push_back("forcing_x");
