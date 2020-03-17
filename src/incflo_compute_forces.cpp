@@ -72,8 +72,10 @@ void incflo::compute_vel_forces_on_level (int lev,
                 Array4<Real const> const& tra_n = tracer_new.const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
+                    int n = 0; // Potential temperature
+
                     Real rhoinv = 1.0/rho(i,j,k);
-                    Real ft = 0.5 * (tra_o(i,j,k) + tra_n(i,j,k));
+                    Real ft = 0.5 * (tra_o(i,j,k,n) + tra_n(i,j,k,n));
 
                     vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
                     vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;

@@ -235,7 +235,7 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
                                 ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
                                  +0.5*(laps_o(i,j,k,n) +   laps(i,j,k,n))
                                    +    tra_f(i,j,k,n) );
@@ -252,7 +252,7 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
                                 ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
                                  +0.5*(laps_o(i,j,k,n)                  )
                                    +    tra_f(i,j,k,n) );
@@ -267,7 +267,7 @@ void incflo::ApplyCorrector()
                     {
                         for (int n = 0; n < l_ntrac; ++n) 
                         {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k) + l_dt *
+                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
                                 ( 0.5*( dtdt(i,j,k,n)+dtdt_o(i,j,k,n))
                                    +   tra_f(i,j,k,n) );
 
