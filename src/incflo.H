@@ -356,14 +356,6 @@ public: // for cuda
                                     amrex::Vector<amrex::MultiFab const*> const& tra,
                                     amrex::Real time, int nghost);
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // utilities
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    bool SteadyStateReached ();
-
 private:
 
     //
