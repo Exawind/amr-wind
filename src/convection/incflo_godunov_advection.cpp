@@ -26,7 +26,7 @@ incflo::compute_godunov_advection (int lev, Box const& bx, int ncomp,
     const Real dx = geom[lev].CellSize(0);
     const Real dy = geom[lev].CellSize(1);
     const Real dz = geom[lev].CellSize(2);
-    Real l_dt = m_dt;
+    Real l_dt = m_time.deltaT();
     Real dtdx = l_dt/dx;
     Real dtdy = l_dt/dy;
     Real dtdz = l_dt/dz;

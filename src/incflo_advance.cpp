@@ -19,16 +19,8 @@ void incflo::Advance()
     // Set new and old time to correctly use in fillpatching
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        m_t_old[lev] = m_cur_time;
-        m_t_new[lev] = m_cur_time + m_dt;
-    }
-
-    if (m_verbose > 0)
-    {
-        amrex::Print() << "\nStep " << m_nstep + 1
-                       << ": from old_time " << m_cur_time
-                       << " to new time " << m_cur_time + m_dt
-                       << " with dt = " << m_dt << ".\n" << std::endl;
+        m_t_old[lev] = m_time.current_time();
+        m_t_new[lev] = m_time.new_time();
     }
 
     copy_from_new_to_old_velocity();
@@ -57,9 +49,9 @@ void incflo::Advance()
        m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
        m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
 
-       if(m_line_plot_int > 0 and m_nstep % m_line_plot_int == 0)
+       if(m_line_plot_int > 0 and m_time.time_index() % m_line_plot_int == 0)
        {
-           pa.plot_line_text("line_plot.txt", m_nstep, m_cur_time);
+           pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
        }
    }
     
@@ -82,7 +74,7 @@ void incflo::Advance()
         amrex::Print() << "End of time step: " << std::endl;
 #if 0
         // xxxxx
-        PrintMaxValues(m_cur_time + dt);
+        PrintMaxValues(m_time.current_time() + dt);
         if(m_probtype%10 == 3 or m_probtype == 5)
         {
             ComputeDrag();
@@ -93,7 +85,7 @@ void incflo::Advance()
 
 #if 0
     if (m_test_tracer_conservation) {
-        amrex::Print() << "Sum tracer volume wgt = " << m_cur_time+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
+        amrex::Print() << "Sum tracer volume wgt = " << m_time.current_time()+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
     }
 #endif
 
@@ -114,7 +106,7 @@ void incflo::Advance()
 //      conv_u  = - u grad u
 //      conv_r  = - div( u rho  )
 //      conv_t  = - div( u trac )
-//      eta_old     = visosity at m_cur_time
+//      eta_old     = visosity at m_time.current_time()
 //      if (m_diff_type == DiffusionType::Explicit)
 //         divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho
 //         rhs = u + dt * ( conv + divtau_old )
@@ -169,7 +161,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     BL_PROFILE("incflo::ApplyPredictor");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = m_cur_time + m_dt;
+    Real new_time = m_time.new_time();
 
     if (m_verbose > 2)
     {
@@ -200,14 +192,14 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
                       get_density_old_const(), get_velocity_old_const(), get_tracer_old_const(),
-                      m_cur_time, 1);
+                      m_time.current_time(), 1);
 
     if (need_divtau()) {
         get_diffusion_tensor_op()->compute_divtau(get_divtau_old(),
                                                   get_velocity_old_const(),
                                                   get_density_old_const(),
                                                   GetVecOfConstPtrs(vel_eta),
-                                                  m_cur_time);
+                                                  m_time.current_time());
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Add(vel_forces[lev], m_leveldata[lev]->divtau_o, 0, 0, AMREX_SPACEDIM, 0);
         }
@@ -217,7 +209,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                     get_tracer_old_const(),
                                                     get_density_old_const(),
                                                     GetVecOfConstPtrs(tra_eta),
-                                                    m_cur_time);
+                                                    m_time.current_time());
             for (int lev = 0; lev <= finest_level; ++lev) {
                 MultiFab::Add(tra_forces[lev], m_leveldata[lev]->laps_o, 0, 0, m_ntrac, 0);
             }
@@ -225,9 +217,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     if (m_use_godunov and nghost_force() > 0) {
-        fillpatch_force(m_cur_time, GetVecOfPtrs(vel_forces), nghost_force());
+        fillpatch_force(m_time.current_time(), GetVecOfPtrs(vel_forces), nghost_force());
         if (m_advect_tracer) {
-            fillpatch_force(m_cur_time, GetVecOfPtrs(tra_forces), nghost_force());
+            fillpatch_force(m_time.current_time(), GetVecOfPtrs(tra_forces), nghost_force());
         }
     }
 
@@ -255,10 +247,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
                             GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
                             GetVecOfPtrs(w_mac), 
                             GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
-                            m_cur_time);
+                            m_time.current_time());
 
     // Define local variables for lambda to capture.
-    Real l_dt = m_dt;
+    Real l_dt = m_time.deltaT();
     bool l_constant_density = m_constant_density;
     int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
     for (int lev = 0; lev <= finest_level; lev++)
@@ -332,16 +324,16 @@ void incflo::ApplyPredictor (bool incremental_projection)
             }
         }
 
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new_const(),
                                                     GetVecOfConstPtrs(vel_eta),
-                                                    m_cur_time, dt_diff);
+                                                    m_time.current_time(), dt_diff);
         if (m_advect_tracer) {
             get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
                                                       get_density_new(),
                                                       GetVecOfConstPtrs(tra_eta),
-                                                      m_cur_time, dt_diff);
+                                                      m_time.current_time(), dt_diff);
         }
     }
 
@@ -350,7 +342,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Project velocity field, update pressure
     // 
     // **********************************************************************************************
-    ApplyProjection(new_time, m_dt, incremental_projection);
+    ApplyProjection(new_time, m_time.deltaT(), incremental_projection);
 
     // **********************************************************************************************
     // 
@@ -428,7 +420,7 @@ void incflo::ApplyCorrector()
     BL_PROFILE("incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
-    Real new_time = m_cur_time + m_dt;
+    Real new_time = m_time.new_time();
 
     if (m_verbose > 2)
     {
@@ -500,18 +492,18 @@ void incflo::ApplyCorrector()
                                                   get_velocity_new_const(),
                                                   get_density_new_const(),
                                                   GetVecOfConstPtrs(vel_eta),
-                                                  m_cur_time);
+                                                  m_time.current_time());
         if (m_advect_tracer) {
             get_diffusion_scalar_op()->compute_laps(get_laps_new(),
                                                     get_tracer_new_const(),
                                                     get_density_new_const(),
                                                     GetVecOfConstPtrs(tra_eta),
-                                                    m_cur_time);
+                                                    m_time.current_time());
         }
     }
 
     // Define local variables for lambda to capture.
-    Real l_dt = m_dt;
+    Real l_dt = m_time.deltaT();
     bool l_constant_density = m_constant_density;
     int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
     for (int lev = 0; lev <= finest_level; ++lev)
@@ -625,7 +617,7 @@ void incflo::ApplyCorrector()
             }
         }
 
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_dt : 0.5*m_dt;
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new_const(),
                                                     GetVecOfConstPtrs(vel_eta),
@@ -642,7 +634,7 @@ void incflo::ApplyCorrector()
     // 
     // Project velocity field, update pressure
     bool incremental = false;
-    ApplyProjection(new_time, m_dt, incremental);
+    ApplyProjection(new_time, m_time.deltaT(), incremental);
 
     // **********************************************************************************************
     // 

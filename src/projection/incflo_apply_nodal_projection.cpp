@@ -63,7 +63,7 @@ void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
     // use a different form of the approximate projection that
     // projects (U^*-U^n + dt Gp) rather than (U^* + dt Gp)
 
-    bool proj_for_small_dt = (time > 0.0 and m_dt < 0.1 * m_prev_dt);
+    bool proj_for_small_dt = (time > 0.0 and m_time.deltaT() < 0.1 * m_time.deltaTNm1());
 
     if (m_verbose > 2)
     {
