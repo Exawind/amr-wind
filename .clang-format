@@ -22,7 +22,7 @@ AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
-BinPackParameters: true
+BinPackParameters: false
 BraceWrapping:   
   AfterCaseLabel:  false
   AfterClass:      true
