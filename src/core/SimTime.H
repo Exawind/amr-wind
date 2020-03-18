@@ -148,6 +148,6 @@ private:
     bool m_is_init{true};
 };
 
-}
+} // namespace amr_wind
 
 #endif /* SIMTIME_H */

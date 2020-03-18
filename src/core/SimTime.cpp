@@ -8,7 +8,7 @@ namespace amr_wind {
 void SimTime::parse_parameters()
 {
     // Initialize deltaT to negative values
-    for (int i=0; i < max_time_states; ++i) {
+    for (int i = 0; i < max_time_states; ++i) {
         m_dt[i] = -1.0;
     }
 
@@ -50,19 +50,19 @@ bool SimTime::new_timestep()
     // Toggle initialization state and enter evolution phase
     m_is_init = false;
     if (continue_sim) {
-        for (int i=max_time_states-1; i > 0; --i) {
-            m_dt[i] = m_dt[i-1];
+        for (int i = max_time_states - 1; i > 0; --i) {
+            m_dt[i] = m_dt[i - 1];
         }
 
         m_time_index++;
         m_cur_time = m_new_time;
         m_new_time += m_dt[0];
 
+        // clang-format off
         amrex::Print()
             << "\n========================================================================\n"
-            << "Step: " << m_time_index
-            << " Time: " << m_cur_time
-            << std::endl;
+            << "Step: " << m_time_index << " Time: " << m_cur_time << std::endl;
+        // clang-format on
     }
 
     return continue_sim;
@@ -73,23 +73,19 @@ void SimTime::set_current_cfl(amrex::Real cfl_unit_time)
     amrex::Real dt_new = 2.0 * m_max_cfl / cfl_unit_time;
 
     // Restrict timestep during initialization phase
-    if (m_is_init)
-        dt_new *= m_init_shrink;
+    if (m_is_init) dt_new *= m_init_shrink;
 
     // Limit timestep growth to 10% per timestep
-    if (m_dt[0] > 0.0)
-        dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
+    if (m_dt[0] > 0.0) dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
 
     // Don't overshoot stop time
-    if ((m_stop_time > 0.0) &&
-        ((m_cur_time + dt_new) > m_stop_time))
+    if ((m_stop_time > 0.0) && ((m_cur_time + dt_new) > m_stop_time))
         dt_new = m_stop_time - m_cur_time;
 
     if (m_adaptive) {
         m_dt[0] = dt_new;
 
-        if (!m_is_init)
-            m_new_time = m_cur_time + m_dt[0];
+        if (!m_is_init) m_new_time = m_cur_time + m_dt[0];
 
     } else {
         // If user has specified fixed DT then issue a warning if the timestep
@@ -103,23 +99,20 @@ void SimTime::set_current_cfl(amrex::Real cfl_unit_time)
     }
 
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
-    amrex::Print()
-        << "CFL: " <<  m_current_cfl
-        << " dt: " << m_dt[0] << std::endl;
+    amrex::Print() << "CFL: " << m_current_cfl << " dt: " << m_dt[0]
+                   << std::endl;
 }
 
 bool SimTime::continue_simulation()
 {
     bool stop_simulation = false;
 
-    if (m_stop_time_index == 0)
-        return stop_simulation;
+    if (m_stop_time_index == 0) return stop_simulation;
 
     if ((m_stop_time > 0.0) && (m_cur_time >= m_stop_time))
         return stop_simulation;
 
-    if ((m_stop_time_index > 0) &&
-        (m_time_index >= m_stop_time_index))
+    if ((m_stop_time_index > 0) && (m_time_index >= m_stop_time_index))
         return stop_simulation;
 
     return !(stop_simulation);
@@ -127,21 +120,19 @@ bool SimTime::continue_simulation()
 
 bool SimTime::do_regrid()
 {
-    return ((m_regrid_interval > 0) &&
-            (m_time_index > 0) &&
-            (m_time_index % m_regrid_interval == 0));
+    return (
+        (m_regrid_interval > 0) && (m_time_index > 0) &&
+        (m_time_index % m_regrid_interval == 0));
 }
 
 bool SimTime::write_plot_file()
 {
-    return ((m_plt_interval > 0) &&
-            (m_time_index % m_plt_interval == 0));
+    return ((m_plt_interval > 0) && (m_time_index % m_plt_interval == 0));
 }
 
 bool SimTime::write_checkpoint()
 {
-    return ((m_chkpt_interval > 0) &&
-            (m_time_index % m_chkpt_interval == 0));
+    return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval == 0));
 }
 
 void SimTime::set_restart_time(int tidx, amrex::Real time)
@@ -153,4 +144,4 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
     m_start_time = time;
 }
 
-}
+} // namespace amr_wind
