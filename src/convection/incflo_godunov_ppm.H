@@ -17,11 +17,13 @@ namespace {
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 amrex::Real vanLeer(const amrex::Real a, const amrex::Real b, const amrex::Real c)
 {
+    constexpr amrex::Real small_qty_sq = (1.e-10)*(1.e-10);
+
     amrex::Real dsc = 0.5e0*(b - c);
     amrex::Real dsl = 2.e0*(a - c);
     amrex::Real dsr = 2.e0*(b - a);
-    return (dsl*dsr > 0.)? std::copysign(1., dsc)*amrex::min(std::abs(dsc),
-                                 amrex::min(std::abs(dsl), std::abs(dsr))) : 0.;
+    return (dsl*dsr > small_qty_sq) ? 
+        std::copysign(1., dsc)*amrex::min(std::abs(dsc),amrex::min(std::abs(dsl), std::abs(dsr))) : 0.;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
@@ -532,7 +534,7 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
     Real s6 = 6.0*s0 - 3.0*(sm + sp);
 
     Real sigmap = std::abs(vel_edge(i+1,j,k))*dt/dx;
-    Real sigmam = std::abs(vel_edge(i,j,k))*dt/dx;
+    Real sigmam = std::abs(vel_edge(i  ,j,k))*dt/dx;
 
     if (vel_edge(i+1,j,k) > small_vel) 
         Ip = sp - (0.5*sigmap)*((sp - sm) - (1.e0 -2.e0/3.e0*sigmap)*s6);
