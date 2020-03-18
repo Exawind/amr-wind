@@ -3,18 +3,28 @@
 
 #include <memory>
 
+#include "Physics.H"
 #include "ABLFieldInit.H"
 
 namespace amr_wind {
 
 /** Atmospheric Boundary Layer physics
  */
-class ABL
+class ABL : public Physics
 {
 public:
     ABL();
 
-    void add_abl_source_terms();
+    ~ABL() = default;
+
+    std::string physics_name() const override { return "ABL"; }
+
+    void initialize_fields(
+        const amrex::Geometry& geom,
+        amrex::MultiFab& density,
+        amrex::MultiFab& velocity,
+        amrex::MultiFab& pressure,
+        amrex::MultiFab& scalars) const override;
 
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }
 

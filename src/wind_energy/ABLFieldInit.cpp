@@ -1,8 +1,8 @@
 #include <cmath>
 
 #include "ABLFieldInit.H"
-#include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
+#include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
@@ -39,16 +39,16 @@ ABLFieldInit::ABLFieldInit()
 }
 
 void ABLFieldInit::operator()(
-    const amrex::Box& vbx, const amrex::Box& /* gbx */,
-    const amrex::Array4<amrex::Real>& /* pressure */,
+    const amrex::Box& vbx,
+    const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
     const amrex::Array4<amrex::Real>& density,
-    const amrex::Array4<amrex::Real>& tracer, const amrex::Box& /* domain */,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& probhi) const
+    const amrex::Array4<amrex::Real>& tracer) const
 {
     const amrex::Real pi = M_PI;
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
 
     // TODO: Is there a way to avoid creating this array for every box
     amrex::AsyncArray<amrex::Real> theta_heights_d(

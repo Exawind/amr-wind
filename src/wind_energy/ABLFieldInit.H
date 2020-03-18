@@ -4,6 +4,7 @@
 #include "AMReX_Array.H"
 #include "AMReX_Array4.H"
 #include "AMReX_Box.H"
+#include "AMReX_Geometry.H"
 #include "AMReX_REAL.H"
 #include "AMReX_Vector.H"
 
@@ -19,14 +20,11 @@ public:
     ABLFieldInit();
 
     void operator()(
-        const amrex::Box& vbx, const amrex::Box& gbx,
-        const amrex::Array4<amrex::Real>& pressure,
+        const amrex::Box& vbx,
+        const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& tracer, const amrex::Box& domain,
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& probhi) const;
+        const amrex::Array4<amrex::Real>& tracer) const;
 
 private:
     //! Initial velocity components
