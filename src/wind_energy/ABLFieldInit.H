@@ -1,0 +1,69 @@
+#ifndef ABLFIELDINIT_H
+#define ABLFIELDINIT_H
+
+#include "AMReX_Array.H"
+#include "AMReX_Array4.H"
+#include "AMReX_Box.H"
+#include "AMReX_REAL.H"
+#include "AMReX_Vector.H"
+
+namespace amr_wind {
+
+/** Initialize ABL fields
+ */
+class ABLFieldInit
+{
+    static_assert(AMREX_SPACEDIM == 3, "ABL requires 3 dimensional mesh");
+
+public:
+    ABLFieldInit();
+
+    void operator()(
+        const amrex::Box& vbx, const amrex::Box& gbx,
+        const amrex::Array4<amrex::Real>& pressure,
+        const amrex::Array4<amrex::Real>& velocity,
+        const amrex::Array4<amrex::Real>& density,
+        const amrex::Array4<amrex::Real>& tracer, const amrex::Box& domain,
+        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
+        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
+        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& probhi) const;
+
+private:
+    //! Initial velocity components
+    amrex::Real m_vel[AMREX_SPACEDIM];
+
+    ///@{
+    //! Lookup table containing temperature variation w.r.t. height above
+    //! terrain
+    amrex::Vector<amrex::Real> m_theta_heights;
+    amrex::Vector<amrex::Real> m_theta_values;
+    ///@}
+
+    //! Initial density field
+    amrex::Real m_rho;
+
+    //! Amplitude of fluctuations in x-direction
+    amrex::Real m_deltaU{1.0};
+
+    //! Amplitude of fluctuations in y-direction
+    amrex::Real m_deltaV{1.0};
+
+    //! Number of sinusoidal waves in x-direction
+    amrex::Real m_Uperiods{4.0};
+
+    //! Number of sinusoidal waves in y-direction
+    amrex::Real m_Vperiods{4.0};
+
+    //! Reference height for velocity perturbations
+    amrex::Real m_ref_height{50.0};
+
+    //! Perturb initial velocity field with sinusoidal fluctuations
+    bool m_perturb_vel{true};
+
+    //! Perturb temperature field with random fluctuations
+    bool m_perturb_theta{false};
+};
+
+} // namespace amr_wind
+
+#endif /* ABLFIELDINIT_H */
