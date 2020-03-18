@@ -83,7 +83,7 @@ void ABLFieldInit::operator()(
         velocity(i, j, k, 2) = wmean;
 
         amrex::Real theta = tv[0];
-        for (int iz = 0; iz < ntvals; ++iz) {
+        for (int iz = 0; iz < ntvals - 1; ++iz) {
             if ((z > th[iz]) && (z <= th[iz + 1])) {
                 const amrex::Real slope =
                     (tv[iz + 1] - tv[iz]) / (th[iz + 1] - th[iz]);

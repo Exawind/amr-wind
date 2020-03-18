@@ -3,6 +3,7 @@
 
 #include "AMReX_MultiFab.H"
 #include "AMReX_Geometry.H"
+#include "LevelData.H"
 
 namespace amr_wind {
 
@@ -16,10 +17,16 @@ public:
     //! Initialize the fields for the physics/problem
     virtual void initialize_fields(
         const amrex::Geometry& geom,
-        amrex::MultiFab& density,
-        amrex::MultiFab& velocity,
-        amrex::MultiFab& pressure,
-        amrex::MultiFab& scalars) const = 0;
+        LevelData& leveldata) const = 0;
+
+    //! Perform tasks necessary before advancing timestep
+    virtual void pre_advance_work() = 0;
+
+    //! Add momentum source terms
+    virtual void add_momentum_sources(
+        const amrex::Geometry& geom,
+        const LevelData& leveldata,
+        amrex::MultiFab& vel_forces) const = 0;
 };
 
 }

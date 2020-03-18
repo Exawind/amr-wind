@@ -2,6 +2,8 @@ target_sources(${amr_wind_exe_name}
   PRIVATE
 
   ABLFieldInit.cpp
+  ABLForcing.cpp
+  ABLWallFunction.cpp
   ABL.cpp
   )
 
