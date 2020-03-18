@@ -37,33 +37,6 @@ void incflo::Advance()
         }
     }
 
-#if 0
-   if(m_plane_averaging){
-       const int axis=2;
-       PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
-
-       Real vx = pa.line_velocity_xdir(m_ground_height);
-       Real vy = pa.line_velocity_ydir(m_ground_height);
-
-       m_velocity_mean_ground = std::sqrt(vx*vx + vy*vy);
-       m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
-
-       m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
-       m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
-
-       amrex::Print()
-           << m_velocity_mean_ground << "; "
-           << m_utau_mean_ground << "; "
-           << m_vx_mean_forcing << "; "
-           << m_vy_mean_forcing << "; "
-           << m_ground_height << std::endl;
-       if(m_line_plot_int > 0 and m_time.time_index() % m_line_plot_int == 0)
-       {
-           pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
-       }
-   }
-#endif
-
    for (auto& pp: m_physics)
        pp->pre_advance_work();
     

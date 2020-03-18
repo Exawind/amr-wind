@@ -55,6 +55,7 @@ void ABL::pre_advance_work()
     constexpr int direction = 2;
     const auto& geom = m_incflo->Geom(0);
 
+    // TODO: Promote this to a class member
     PlaneAveraging pa(geom, *m_incflo->leveldata_vec()[0], direction);
     {
         // First cell height
@@ -73,6 +74,17 @@ void ABL::pre_advance_work()
         const amrex::Real vy = pa.line_velocity_ydir(zh);
         m_incflo->set_mean_abl_vel(vx, vy);
         m_abl_forcing->set_mean_velocities(vx, vy);
+    }
+
+    {
+        // TODO: This should be handled by PlaneAveraging
+        int output_interval = 1;
+        amrex::ParmParse pp("amr");
+        pp.query("line_plot_int", output_interval);
+
+        if ((output_interval > 0) && (m_time.time_index() % output_interval == 0)) {
+            pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
+        }
     }
 }
 

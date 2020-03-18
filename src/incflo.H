@@ -319,9 +319,6 @@ public: // for cuda
 
     
     
-    //fixme move these and clean up
-    bool m_plane_averaging = false;
-
     void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
     bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
     
@@ -469,13 +466,6 @@ private:
     amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
     amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
 
-    // amrex::Real m_cutoff_height = 600.0;
-    // amrex::Real m_Uperiods = 4.0;
-    // amrex::Real m_Vperiods = 4.0;
-    // amrex::Real m_deltaU = 1.0;
-    // amrex::Real m_deltaV = 1.0;
-    // amrex::Real m_zRefHeight = 50.0;
-    // amrex::Real m_theta_amplitude = 0.0;//0.8;
     amrex::Real m_abl_forcing_height = 90.0;
     amrex::Real m_kappa = 0.41; //von Karman constant
     amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]
@@ -498,8 +488,7 @@ private:
 
     int m_last_chk = -1;
     int m_KE_int = -1;
-    int m_line_plot_int = 1;
-    
+
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
 

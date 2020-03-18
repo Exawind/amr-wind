@@ -297,6 +297,8 @@ PlaneAveraging::PlaneAveraging(
     const IntVect dom_lo(domain.loVect());
     const IntVect dom_hi(domain.hiVect());
 
+    ncell_line = dom_hi[axis]-dom_lo[axis]+1;
+
     // count number of cells in plane
     ncell_plane = 1;
     for(int i=0;i<AMREX_SPACEDIM;++i){
