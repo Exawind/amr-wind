@@ -3,6 +3,10 @@
 #include <incflo.H>
 #include <cmath>
 
+
+#include "Physics.H"
+#include "ABL.H"
+
 using namespace amrex;
 
 void incflo::ReadParameters ()
@@ -118,7 +122,13 @@ void incflo::ReadParameters ()
         pp_mac.query( "mg_atol"      , m_nodal_proj_mg_atol );
     } // end prefix nodal_proj
     
-    ReadABLParameters();
+
+    // FIXME: clean up WIP logic
+    if (m_probtype == 35) {
+        ReadABLParameters();
+
+        m_physics.emplace_back(std::make_unique<amr_wind::ABL>(m_time, this));
+    }
 
 }
 
@@ -220,13 +230,6 @@ void incflo::ReadABLParameters()
     pp.query("coriolis_effect", m_use_coriolis);
     pp.query("abl_forcing", m_use_abl_forcing);
     
-    pp.query("cutoff_height",m_cutoff_height);
-    pp.query("Uperiods",m_Uperiods);
-    pp.query("Vperiods",m_Vperiods);
-    pp.query("deltaU",m_deltaU);
-    pp.query("deltaV",m_deltaV);
-    pp.query("zRefHeight",m_zRefHeight);
-    pp.query("theta_amplitude",m_theta_amplitude);
     pp.query("abl_forcing_height",m_abl_forcing_height);
     pp.query("kappa",m_kappa);
     pp.query("surface_roughness_z0",m_surface_roughness_z0);

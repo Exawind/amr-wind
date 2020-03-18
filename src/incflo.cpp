@@ -1,6 +1,8 @@
 
 #include <incflo.H>
 
+#include "ABL.H"
+
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
 #include <AMReX_EBAmrUtil.H>
@@ -169,7 +171,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     m_factory[lev] = makeEBFabFactory(geom[lev], grids[lev], dmap[lev],
                                       {nghost_eb_basic(),
                                        nghost_eb_volume(),
-                                       nghost_eb_full()},
+                                       ngost_eb_full()},
                                        EBSupport::full);
 #else
     m_factory[lev].reset(new FArrayBoxFactory());
@@ -186,6 +188,10 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     if (m_restart_file.empty()) {
         prob_init_fluid(lev);
+
+        for (auto& pp: m_physics) {
+            pp->initialize_fields(Geom(lev), *m_leveldata[lev]);
+        }
     }
 }
 

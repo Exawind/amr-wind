@@ -13,8 +13,13 @@
 
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
+#include <LevelData.H>
 
 #include "SimTime.H"
+
+namespace amr_wind {
+class Physics;
+}
 
 class incflo : public amrex::AmrCore
 {
@@ -63,6 +68,21 @@ public:
 
     // Delete level data
     virtual void ClearLevel (int lev) override;
+
+    const amrex::Vector<std::unique_ptr<LevelData>>& leveldata_vec()
+    { return m_leveldata; }
+
+    void set_mean_abl_vel(amrex::Real ux, amrex::Real uy)
+    {
+        m_vx_mean_forcing = ux;
+        m_vy_mean_forcing = uy;
+    }
+
+    void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
+    {
+        m_velocity_mean_ground = uground;
+        m_utau_mean_ground = ustar;
+    }
 
 public: // for cuda
 
@@ -364,6 +384,8 @@ private:
 
     amr_wind::SimTime m_time;
 
+    amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
+
     // Be verbose?
     int m_verbose = 0;
 
@@ -447,13 +469,13 @@ private:
     amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
     amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
 
-    amrex::Real m_cutoff_height = 600.0;
-    amrex::Real m_Uperiods = 4.0;
-    amrex::Real m_Vperiods = 4.0;
-    amrex::Real m_deltaU = 1.0;
-    amrex::Real m_deltaV = 1.0;
-    amrex::Real m_zRefHeight = 50.0;
-    amrex::Real m_theta_amplitude = 0.0;//0.8;
+    // amrex::Real m_cutoff_height = 600.0;
+    // amrex::Real m_Uperiods = 4.0;
+    // amrex::Real m_Vperiods = 4.0;
+    // amrex::Real m_deltaU = 1.0;
+    // amrex::Real m_deltaV = 1.0;
+    // amrex::Real m_zRefHeight = 50.0;
+    // amrex::Real m_theta_amplitude = 0.0;//0.8;
     amrex::Real m_abl_forcing_height = 90.0;
     amrex::Real m_kappa = 0.41; //von Karman constant
     amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]

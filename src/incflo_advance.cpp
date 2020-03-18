@@ -1,5 +1,6 @@
 #include <incflo.H>
 #include "PlaneAveraging.H"
+#include "Physics.H"
 #include <cmath>
 
 using namespace amrex;
@@ -36,6 +37,7 @@ void incflo::Advance()
         }
     }
 
+#if 0
    if(m_plane_averaging){
        const int axis=2;
        PlaneAveraging pa(Geom(), get_velocity_new(), get_tracer_new(), axis);
@@ -49,11 +51,21 @@ void incflo::Advance()
        m_vx_mean_forcing = pa.line_velocity_xdir(m_abl_forcing_height);
        m_vy_mean_forcing = pa.line_velocity_ydir(m_abl_forcing_height);
 
+       amrex::Print()
+           << m_velocity_mean_ground << "; "
+           << m_utau_mean_ground << "; "
+           << m_vx_mean_forcing << "; "
+           << m_vy_mean_forcing << "; "
+           << m_ground_height << std::endl;
        if(m_line_plot_int > 0 and m_time.time_index() % m_line_plot_int == 0)
        {
            pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
        }
    }
+#endif
+
+   for (auto& pp: m_physics)
+       pp->pre_advance_work();
     
     ApplyPredictor();
 
@@ -69,9 +81,10 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
-    if (m_verbose > 2)
+    if (m_verbose > 1)
     {
         amrex::Print() << "End of time step: " << std::endl;
+        PrintMaxValues(m_time.new_time());
 #if 0
         // xxxxx
         PrintMaxValues(m_time.current_time() + dt);
