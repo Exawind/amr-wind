@@ -55,8 +55,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'AMR-Wind'
-copyright = u'Copywrite here.'
-author = u'Team here.'
+copyright = u''
+author = u'ExaWind team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -212,7 +212,7 @@ html_static_path = ['_static']
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #
-# html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -345,3 +345,8 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #
 # texinfo_no_detailmenu = False
+
+def setup(app):
+    app.add_object_type("cmakeval", "cmakeval",
+                        objname="CMake configuration value",
+                        indextemplate="pair: %s; CMake configuration")
