@@ -35,10 +35,10 @@ private:
     const SimTime& m_time;
 
     //! Target velocity
-    amrex::RealArray m_target_vel{0.0, 0.0, 0.0};
+    amrex::RealArray m_target_vel{{0.0, 0.0, 0.0}};
 
     //! Current mean vel
-    amrex::RealArray m_mean_vel{0.0, 0.0, 0.0};
+    amrex::RealArray m_mean_vel{{0.0, 0.0, 0.0}};
 
     //! Height at which the velocities are forcing
     amrex::Real m_forcing_height;

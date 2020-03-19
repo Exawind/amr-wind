@@ -171,7 +171,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     m_factory[lev] = makeEBFabFactory(geom[lev], grids[lev], dmap[lev],
                                       {nghost_eb_basic(),
                                        nghost_eb_volume(),
-                                       ngost_eb_full()},
+                                       nghost_eb_full()},
                                        EBSupport::full);
 #else
     m_factory[lev].reset(new FArrayBoxFactory());
