@@ -14,6 +14,8 @@
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
 
+#include "SimTime.H"
+
 class incflo : public amrex::AmrCore
 {
 public:
@@ -354,19 +356,13 @@ public: // for cuda
                                     amrex::Vector<amrex::MultiFab const*> const& tra,
                                     amrex::Real time, int nghost);
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // utilities
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    bool SteadyStateReached ();
-
 private:
 
     //
     // member variables
     //
+
+    amr_wind::SimTime m_time;
 
     // Be verbose?
     int m_verbose = 0;
@@ -381,27 +377,6 @@ private:
     amrex::Vector<amrex::Real> m_t_old;
     amrex::Vector<amrex::Real> m_t_new;
 
-    // Times
-    amrex::Real m_cur_time     = 0.0;
-    amrex::Real m_dt           = -1.0;
-    amrex::Real m_prev_dt      = -1.0;
-    amrex::Real m_prev_prev_dt = -1.0;
-
-    // Time step counter
-    int m_nstep         = -1;
-
-    // Stop simulation if cur_time reaches stop_time OR nstep reaches max_step
-    // OR steady_state = true AND steady_state_tol is reached
-    amrex::Real m_stop_time = -1.0;
-    int m_max_step = -1;
-    bool m_steady_state = false;
-    amrex::Real m_steady_state_tol = 1.0e-5;
-
-    // Options to control time stepping
-    amrex::Real m_cfl = 0.5;
-    amrex::Real m_fixed_dt = -1.;
-    amrex::Real m_init_shrink = 0.1;
-
     // Initial projection / iterations
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
@@ -411,7 +386,6 @@ private:
 
     // AMR / refinement settings
     int m_refine_cutcells = 1;
-    int m_regrid_int = -1;
 
     int m_mac_mg_verbose = 0;
     int m_mac_mg_cg_verbose = 0;
@@ -496,19 +470,10 @@ private:
     amrex::Real m_ground_height;
     amrex::Real m_vx_mean_forcing;
     amrex::Real m_vy_mean_forcing;
-    
-    int m_plot_int = -1;
-
-    // Dump plotfiles at as close as possible to the designated period *without* changing dt
-    amrex::Real m_plot_per_approx = -1.0;
-    
-    // Dump plotfiles at exactcly the designated period by changing dt
-    amrex::Real m_plot_per_exact  = -1.0;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};
 
-    int m_check_int = -1;
     int m_last_chk = -1;
     int m_KE_int = -1;
     int m_line_plot_int = 1;
@@ -749,7 +714,6 @@ private:
     void copy_from_old_to_new_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
 
     void Advance ();
-    bool writeNow ();
     void AverageDown ();
     void AverageDownTo (int crse_lev);
 

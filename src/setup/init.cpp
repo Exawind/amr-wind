@@ -7,22 +7,12 @@ using namespace amrex;
 
 void incflo::ReadParameters ()
 {
-    {
-        // Variables without prefix in inputs file
-	ParmParse pp;
-
-	pp.query("stop_time", m_stop_time);
-	pp.query("max_step", m_max_step);
-	pp.query("steady_state", m_steady_state);
-    }
-
     ReadIOParameters();
     ReadRheologyParameters();
 
     { // Prefix amr
         ParmParse pp("amr");
 
-        pp.query("regrid_int", m_regrid_int);
 #ifdef AMREX_USE_EB
         pp.query("refine_cutcells", m_refine_cutcells);
 #endif
@@ -44,18 +34,8 @@ void incflo::ReadParameters ()
 
         pp.query("verbose", m_verbose);
 
-	pp.query("steady_state_tol", m_steady_state_tol);
         pp.query("initial_iterations", m_initial_iterations);
         pp.query("do_initial_proj", m_do_initial_proj);
-
-	pp.query("fixed_dt", m_fixed_dt);
-	pp.query("cfl", m_cfl);
-
-        // This will multiply the time-step in the very first step only
-	pp.query("init_shrink", m_init_shrink);
-        if (m_init_shrink > 1.0) {
-            amrex::Abort("We require m_init_shrink <= 1.0");
-        }
 
         // Physics
 	pp.queryarr("delp", m_delp, 0, AMREX_SPACEDIM);
@@ -81,10 +61,10 @@ void incflo::ReadParameters ()
             amrex::Abort("We currently require diffusion_type = 0 for explicit, 1 for Crank-Nicolson or 2 for implicit");
         }
 
-        if (!m_use_godunov && m_cfl > 0.5) {
+        if (!m_use_godunov && m_time.max_cfl() > 0.5) {
             amrex::Abort("We currently require cfl <= 0.5 when using the MOL advection scheme");
         }
-        if (m_use_godunov && m_cfl > 1.0) {
+        if (m_use_godunov && m_time.max_cfl() > 1.0) {
             amrex::Abort("We currently require cfl <= 1.0 when using the Godunov advection scheme");
         }
 
@@ -148,18 +128,9 @@ void incflo::ReadIOParameters()
     ParmParse pp("amr");
 
     pp.query("check_file", m_check_file);
-    pp.query("check_int", m_check_int);
     pp.query("restart", m_restart_file);
 
     pp.query("plot_file", m_plot_file);
-    pp.query("plot_int"       , m_plot_int);
-    pp.query("plot_per_exact" , m_plot_per_exact);
-    pp.query("plot_per_approx", m_plot_per_approx);
-
-    if ( (m_plot_int       > 0 && m_plot_per_exact  > 0) ||
-         (m_plot_int       > 0 && m_plot_per_approx > 0) ||
-         (m_plot_per_exact > 0 && m_plot_per_approx > 0) )
-       amrex::Abort("Must choose only one of plot_int or plot_per_exact or plot_per_approx");
 
     // The plt_ccse_regtest resets the defaults,
     //     but we can over-ride those below
@@ -300,7 +271,8 @@ void incflo::InitialIterations ()
 
     if (m_verbose)
     {
-        amrex::Print() << "Doing initial pressure iterations with dt = " << m_dt << std::endl;
+        amrex::Print() << "Doing initial pressure iterations with dt = "
+                       << m_time.deltaT() << std::endl;
     }
 
     copy_from_new_to_old_velocity();
@@ -319,7 +291,7 @@ void incflo::InitialIterations ()
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
-        if (m_verbose) amrex::Print() << "\n In initial_iterations: iter = " << iter << "\n";
+        if (m_verbose) amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
 
  	ApplyPredictor(true);
 
@@ -344,7 +316,7 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(m_cur_time, dummy_dt, incremental);
+    ApplyProjection(m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)

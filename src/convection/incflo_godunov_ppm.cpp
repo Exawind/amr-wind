@@ -18,9 +18,9 @@ void incflo::predict_ppm (int lev, Box const& bx, int /* ncomp */,
     const Dim3 dlo = amrex::lbound(domain);
     const Dim3 dhi = amrex::ubound(domain);
 
-    Real l_dtdx = m_dt / dx[0];
-    Real l_dtdy = m_dt / dx[1];
-    Real l_dtdz = m_dt / dx[2];
+    Real l_dtdx = m_time.deltaT() / dx[0];
+    Real l_dtdy = m_time.deltaT() / dx[1];
+    Real l_dtdz = m_time.deltaT() / dx[2];
 
     BCRec const* pbc = get_velocity_bcrec_device_ptr();
 

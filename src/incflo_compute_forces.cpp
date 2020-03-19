@@ -48,7 +48,7 @@ void incflo::compute_vel_forces_on_level (int lev,
     const Real thermalExpansionCoeff = m_thermalExpansionCoeff;
     AMREX_ALWAYS_ASSERT(thermalExpansionCoeff>0.0);
         
-    const Real dt = m_dt;
+    const Real dt = m_time.deltaT();
     
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())

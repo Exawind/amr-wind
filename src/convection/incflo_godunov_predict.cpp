@@ -90,7 +90,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
                                     Array4<Real const> const& vel,
                                     Array4<Real const> const& f)
 {
-    Real l_dt = m_dt;
+    Real l_dt = m_time.deltaT();
     bool l_use_forces_in_trans = m_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();
@@ -189,7 +189,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
                               Array4<Real const> const& f,
                               Real* p)
 {
-    Real l_dt = m_dt;
+    Real l_dt = m_time.deltaT();
     bool l_use_forces_in_trans = m_use_forces_in_trans;
 
     const Box& domain = Geom(lev).Domain();

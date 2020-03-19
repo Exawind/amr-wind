@@ -41,11 +41,11 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
         HeaderFile << finest_level << "\n";
 
         // Time stepping controls
-        HeaderFile << m_nstep << "\n";
-        HeaderFile << m_cur_time << "\n";
-        HeaderFile << m_dt << "\n";
-        HeaderFile << m_prev_dt << "\n";
-        HeaderFile << m_prev_prev_dt << "\n";
+        HeaderFile << m_time.time_index() << "\n";
+        HeaderFile << m_time.current_time() << "\n";
+        HeaderFile << m_time.deltaT() << "\n";
+        HeaderFile << m_time.deltaTNm1() << "\n";
+        HeaderFile << m_time.deltaTNm2() << "\n";
 
         // Geometry
         for(int i = 0; i < BL_SPACEDIM; ++i) {
@@ -70,7 +70,7 @@ void incflo::WriteCheckPointFile() const
 {
     BL_PROFILE("incflo::WriteCheckPointFile()");
 
-    const std::string& checkpointname = amrex::Concatenate(m_check_file, m_nstep);
+    const std::string& checkpointname = amrex::Concatenate(m_check_file, m_time.time_index());
 
     amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
 
@@ -136,22 +136,26 @@ void incflo::ReadCheckpointFile()
     is >> finest_level;
     GotoNextLine(is);
 
+    int nstep;
+    amrex::Real cur_time;
     // Step count
-    is >> m_nstep;
+    is >> nstep;
     GotoNextLine(is);
 
     // Current time
-    is >> m_cur_time;
+    is >> cur_time;
     GotoNextLine(is);
+
+    m_time.set_restart_time(nstep, cur_time);
 
     // Time step size
-    is >> m_dt;
+    is >> m_time.deltaT();
     GotoNextLine(is);
 
-    is >> m_prev_dt;
+    is >> m_time.deltaTNm1();
     GotoNextLine(is);
 
-    is >> m_prev_prev_dt;
+    is >> m_time.deltaTNm2();
     GotoNextLine(is);
 
     // Low coordinates of domain bounding box
@@ -194,7 +198,7 @@ void incflo::ReadCheckpointFile()
         // Create distribution mapping
         DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
 
-        MakeNewLevelFromScratch(lev, m_cur_time, ba, dm);
+        MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }
 
     /***************************************************************************
@@ -323,15 +327,15 @@ void incflo::WritePlotFile()
 #else
             const int ng = 1;
 #endif
-            fillpatch_velocity(lev, m_cur_time, m_leveldata[lev]->velocity, ng);
-            fillpatch_density(lev, m_cur_time, m_leveldata[lev]->density, ng);
-            fillpatch_tracer(lev, m_cur_time, m_leveldata[lev]->tracer, ng);
+            fillpatch_velocity(lev, m_time.current_time(), m_leveldata[lev]->velocity, ng);
+            fillpatch_density(lev, m_time.current_time(), m_leveldata[lev]->density, ng);
+            fillpatch_tracer(lev, m_time.current_time(), m_leveldata[lev]->tracer, ng);
         }
     }
 
-    const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_nstep);
+    const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
 
-    amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_cur_time << std::endl;
+    amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_time.current_time() << std::endl;
 
     int ncomp = 0;
 
@@ -457,7 +461,7 @@ void incflo::WritePlotFile()
     if (m_plt_vort) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab vort(mf[lev], amrex::make_alias, icomp, 1);
-            ComputeVorticity(lev, m_cur_time, vort, m_leveldata[lev]->velocity);
+            ComputeVorticity(lev, m_time.current_time(), vort, m_leveldata[lev]->velocity);
         }
         pltscaVarsName.push_back("vort");
         ++icomp;
@@ -511,10 +515,10 @@ void incflo::WritePlotFile()
     // This needs to be defined in order to use amrex::WriteMultiLevelPlotfile, 
     // but will never change unless we use subcycling. 
     // If we do use subcycling, this should be a incflo class member. 
-    Vector<int> istep(finest_level + 1, m_nstep);
+    Vector<int> istep(finest_level + 1, m_time.time_index());
 
     // Write the plotfile
     amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, GetVecOfConstPtrs(mf), 
-                                   pltscaVarsName, Geom(), m_cur_time, istep, refRatio());
+                                   pltscaVarsName, Geom(), m_time.current_time(), istep, refRatio());
     WriteJobInfo(plotfilename);
 }

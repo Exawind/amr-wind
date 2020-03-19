@@ -14,6 +14,7 @@ incflo::incflo ()
     // constructor. No valid BoxArray and DistributionMapping have been defined.
     // But the arrays for them have been resized.
 
+    m_time.parse_parameters();
     // Read inputs file using ParmParse
     ReadParameters();
 
@@ -52,7 +53,7 @@ void incflo::InitData ()
 
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
-        InitFromScratch(m_cur_time);
+        InitFromScratch(m_time.current_time());
         
         if (m_do_initial_proj) {
             InitialProjection();
@@ -61,12 +62,9 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        // Set m_nstep to 0 before entering time loop
-        m_nstep = 0;
-
         // xxxxx TODO averagedown ???
 
-        if (m_check_int > 0) { WriteCheckPointFile(); }
+        if (m_time.write_checkpoint()) { WriteCheckPointFile(); }
     }
     else
     {
@@ -76,14 +74,14 @@ void incflo::InitData ()
     }
 
     // Plot initial distribution
-    if((m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0) && !restart_flag)
+    if(m_time.write_plot_file() && !restart_flag)
     {
         WritePlotFile();
         m_last_plt = 0;
     }
     if(m_KE_int > 0 && !restart_flag)
     {
-        amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
+        amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time() << ", " << ComputeKineticEnergy() << std::endl;
     }
 
 #ifdef AMREX_USE_EB
@@ -102,20 +100,12 @@ void incflo::Evolve()
 {
     BL_PROFILE("incflo::Evolve()");
 
-    bool do_not_evolve = ((m_max_step == 0) || ((m_stop_time >= 0.) && (m_cur_time > m_stop_time)) ||
-   					     ((m_stop_time <= 0.) && (m_max_step <= 0))) && !m_steady_state;
-
-    while(!do_not_evolve)
+    while(m_time.new_timestep())
     {
-        if (m_verbose > 0)
-        {
-            amrex::Print() << "\n ============   NEW TIME STEP   ============ \n";
-        }
-
-        if (m_regrid_int > 0 and m_nstep > 0 and m_nstep%m_regrid_int == 0)
+        if (m_time.do_regrid())
         {
             if (m_verbose > 0) amrex::Print() << "Regriding...\n";
-            regrid(0, m_cur_time);
+            regrid(0, m_time.current_time());
             if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
                 printGridSummary(amrex::OutStream(), 0, finest_level);
             }
@@ -123,41 +113,37 @@ void incflo::Evolve()
 
         // Advance to time t + dt
         Advance();
-        m_nstep++;
-        m_cur_time += m_dt;
 
-        if (writeNow())
+        if (m_time.write_plot_file())
         {
             WritePlotFile();
-            m_last_plt = m_nstep;
+            m_last_plt = m_time.time_index();
         }
 
-        if(m_check_int > 0 && (m_nstep % m_check_int == 0))
+        if(m_time.write_checkpoint())
         {
             WriteCheckPointFile();
-            m_last_chk = m_nstep;
+            m_last_chk = m_time.time_index();
         }
         
-        if(m_KE_int > 0 && (m_nstep % m_KE_int == 0))
+        if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
         {
-            amrex::Print() << "Time, Kinetic Energy: " << m_cur_time << ", " << ComputeKineticEnergy() << std::endl;
+            amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time() << ", " << ComputeKineticEnergy() << std::endl;
         }
-
-        // Mechanism to terminate incflo normally.
-        do_not_evolve = (m_steady_state && SteadyStateReached()) ||
-                        ((m_stop_time > 0. && (m_cur_time >= m_stop_time - 1.e-12 * m_dt)) ||
-                         (m_max_step >= 0 && m_nstep >= m_max_step));
     }
 
+#if 0
+    // TODO: Fix last checkpoint/plot output
 	// Output at the final time
-    if( m_check_int > 0 && m_nstep != m_last_chk) {
+    if( m_check_int > 0 && m_time.time_index() != m_last_chk) {
         WriteCheckPointFile();
     }
     if( (m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0)
-        && m_nstep != m_last_plt)
+        && m_time.time_index() != m_last_plt)
     {
         WritePlotFile();
     }
+#endif
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
@@ -218,53 +204,6 @@ void incflo::AverageDown()
 void incflo::AverageDownTo(int /* crse_lev */)
 {
     amrex::Abort("xxxxx TODO AverageDownTo");
-}
-
-bool
-incflo::writeNow()
-{
-    bool write_now = false;
-
-    if ( m_plot_int > 0 && (m_nstep % m_plot_int == 0) ) 
-        write_now = true;
-
-    else if ( m_plot_per_exact  > 0 && (std::abs(std::remainder(m_cur_time, m_plot_per_exact)) < 1.e-12) ) 
-        write_now = true;
-
-    else if (m_plot_per_approx > 0.0)
-    {
-        // Check to see if we've crossed a m_plot_per_approx interval by comparing
-        // the number of intervals that have elapsed for both the current
-        // time and the time at the beginning of this timestep.
-
-        int num_per_old = (m_cur_time-m_dt) / m_plot_per_approx;
-        int num_per_new = (m_cur_time     ) / m_plot_per_approx;
-
-        // Before using these, however, we must test for the case where we're
-        // within machine epsilon of the next interval. In that case, increment
-        // the counter, because we have indeed reached the next m_plot_per_approx interval
-        // at this point.
-
-        const Real eps = std::numeric_limits<Real>::epsilon() * 10.0 * std::abs(m_cur_time);
-        const Real next_plot_time = (num_per_old + 1) * m_plot_per_approx;
-
-        if ((num_per_new == num_per_old) && std::abs(m_cur_time - next_plot_time) <= eps)
-        {
-            num_per_new += 1;
-        }
-
-        // Similarly, we have to account for the case where the old time is within
-        // machine epsilon of the beginning of this interval, so that we don't double
-        // count that time threshold -- we already plotted at that time on the last timestep.
-
-        if ((num_per_new != num_per_old) && std::abs((m_cur_time - m_dt) - next_plot_time) <= eps)
-            num_per_old += 1;
-
-        if (num_per_old != num_per_new)
-            write_now = true;
-    }
-
-    return write_now;
 }
 
 Vector<MultiFab*> incflo::get_velocity_old () noexcept
