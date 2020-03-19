@@ -14,10 +14,11 @@ void incflo::compute_tra_forces (Vector<MultiFab*> const& tra_forces)
 }
 
 void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
-                                 Vector<MultiFab const*> const& velocity,
+                                 Vector<MultiFab const*> const& ,
                                  Vector<MultiFab const*> const& density,
                                  Vector<MultiFab const*> const& tracer)
 {
+    // FIXME: Clean up problem type specific logic
     if (m_probtype == 35) {
         for (int lev=0; lev <= finest_level; ++lev) {
             compute_vel_pressure_terms(lev, *vel_forces[lev]);
@@ -30,7 +31,7 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
     } else {
         for (int lev = 0; lev <= finest_level; ++lev)
             compute_vel_forces_on_level(
-                lev, *vel_forces[lev], *velocity[lev], *density[lev], *tracer[lev]);
+                lev, *vel_forces[lev], *density[lev], *tracer[lev]);
     }
 }
 
@@ -59,7 +60,6 @@ void incflo::compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces)
 
 void incflo::compute_vel_forces_on_level (int lev,
                                                 MultiFab& vel_forces,
-                                          const MultiFab& velocity,
                                           const MultiFab& density,
                                           const MultiFab& tracer)
 {

@@ -119,7 +119,6 @@ void ABL::pre_advance_work()
         const amrex::Real zh = m_abl_forcing->forcing_height();
         const amrex::Real vx = pa.line_velocity_xdir(zh);
         const amrex::Real vy = pa.line_velocity_ydir(zh);
-        m_incflo->set_mean_abl_vel(vx, vy);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);

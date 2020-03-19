@@ -72,12 +72,6 @@ public:
     const amrex::Vector<std::unique_ptr<LevelData>>& leveldata_vec()
     { return m_leveldata; }
 
-    void set_mean_abl_vel(amrex::Real ux, amrex::Real uy)
-    {
-        m_vx_mean_forcing = ux;
-        m_vy_mean_forcing = uy;
-    }
-
     void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
     {
         m_velocity_mean_ground = uground;
@@ -95,7 +89,6 @@ public: // for cuda
                              amrex::Vector<amrex::MultiFab const*> const& tracer);
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
-                                       const amrex::MultiFab& velocity,
                                        const amrex::MultiFab& density,
                                        const amrex::MultiFab& tracer);
     void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces);
@@ -453,35 +446,15 @@ private:
     
     
     void ReadABLParameters();
-    
-    // fixme move these somewhere else
-    bool m_use_coriolis = false;
-    bool m_use_abl_forcing = false;
-    
-    int m_ntemperature = 1;
-    amrex::Vector<amrex::Real> m_temperature_heights;
-    amrex::Vector<amrex::Real> m_temperature_values;
-    
-    amrex::Vector<amrex::Real> m_east{{1.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
-    amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
 
-    amrex::Real m_abl_forcing_height = 90.0;
     amrex::Real m_kappa = 0.41; //von Karman constant
     amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]
-    amrex::Real m_corfac = 1.45842318e-4; // 2*earth_angular_velocity
-    amrex::Real m_latitude = 0.7208209811; // radians
-    amrex::Real m_sinphi;
-    amrex::Real m_cosphi;
-    amrex::Real m_thermalExpansionCoeff; // initialized in the readABLparameters now
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
      
     // fixme this is sloppy and are being used as global variables...
     amrex::Real m_velocity_mean_ground;
     amrex::Real m_utau_mean_ground;
     amrex::Real m_ground_height;
-    amrex::Real m_vx_mean_forcing;
-    amrex::Real m_vy_mean_forcing;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};

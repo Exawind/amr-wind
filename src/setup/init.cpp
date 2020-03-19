@@ -184,71 +184,18 @@ void incflo::ReadABLParameters()
 {
     ParmParse pp("abl");
 
-    // ABL Physics
-    pp.query("ntemperature", m_ntemperature);
-    AMREX_ALWAYS_ASSERT(m_ntemperature > 0);
-
-    m_temperature_values.resize(m_ntemperature);
-    m_temperature_heights.resize(m_ntemperature);
-    for (int i = 0; i < m_ntemperature; i++) {
-        m_temperature_heights[i] = 650.0;
-        m_temperature_values[i] = 300.0;
-    }
-    
-    pp.queryarr("temperature_heights", m_temperature_heights,0,m_ntemperature);
-    pp.queryarr("temperature_values", m_temperature_values,0,m_ntemperature);
-
-    pp.queryarr("east_vector", m_east,0,3);
-    // normalize vector just in case
-    const Real emag = sqrt(m_east[0]*m_east[0] + m_east[1]*m_east[1] + m_east[2]*m_east[2]);
-    m_east[0] /= emag;
-    m_east[1] /= emag;
-    m_east[2] /= emag;
-
-    pp.queryarr("north_vector",m_north,0,3);
-    // normalize vector just in case
-    const Real nmag = sqrt(m_north[0]*m_north[0] + m_north[1]*m_north[1] + m_north[2]*m_north[2]);
-    m_north[0] /= nmag;
-    m_north[1] /= nmag;
-    m_north[2] /= nmag;
-
-    // up = east x north
-    m_up[0] = m_east[1]*m_north[2] - m_east[2]*m_north[1];
-    m_up[1] = m_east[2]*m_north[0] - m_east[0]*m_north[2];
-    m_up[2] = m_east[0]*m_north[1] - m_east[1]*m_north[0];
-    
-    pp.query("use_boussinesq", m_use_boussinesq);
-    pp.query("coriolis_effect", m_use_coriolis);
-    pp.query("abl_forcing", m_use_abl_forcing);
-    
-    pp.query("abl_forcing_height",m_abl_forcing_height);
     pp.query("kappa",m_kappa);
     pp.query("surface_roughness_z0",m_surface_roughness_z0);
-    pp.query("corfac",m_corfac);
-    pp.query("latitude",m_latitude);
-
-    m_sinphi = std::sin(m_latitude);
-    m_cosphi = std::cos(m_latitude);
-
-    // set the default to be 1/T0 unless it exists and then it will override
-    AMREX_ALWAYS_ASSERT(m_temperature_values[0] > 0.0);
-    m_thermalExpansionCoeff = 1.0/m_temperature_values[0];
-    pp.query("thermalExpansionCoeff",m_thermalExpansionCoeff);
-
     pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);
-    
+
     // fixme do we want to default this at first half cell always?
     int lev = 0;
     int dir = 2;
-    
+
     // initialize these so we do not have to call planar averages before initial iterations
     m_ground_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
     m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_u + m_ic_v*m_ic_v);
     m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
-
-    m_vx_mean_forcing = m_ic_u;
-    m_vy_mean_forcing = m_ic_v;
-    
 }
 
 
