@@ -7,6 +7,8 @@
 #include "ABLFieldInit.H"
 #include "ABLWallFunction.H"
 #include "ABLForcing.H"
+#include "BoussinesqBuoyancy.H"
+#include "CoriolisForcing.H"
 #include "SimTime.H"
 
 class incflo;
@@ -54,6 +56,12 @@ private:
 
     //! ABL forcing function instance
     std::unique_ptr<ABLForcing> m_abl_forcing;
+
+    //! Boussinesq buoyancy forcing term
+    std::unique_ptr<BoussinesqBuoyancy> m_boussinesq;
+
+    //! Coriolis forcing instance
+    std::unique_ptr<CoriolisForcing> m_coriolis;
 
     //! True if Boussinesq buoyancy term is active
     bool m_has_boussinesq{true};

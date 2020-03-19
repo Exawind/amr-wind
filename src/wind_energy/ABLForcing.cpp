@@ -1,6 +1,7 @@
 #include "ABLForcing.H"
 
 #include "AMReX_ParmParse.H"
+#include "AMReX_Gpu.H"
 
 namespace amr_wind {
 
@@ -20,11 +21,19 @@ ABLForcing::ABLForcing(const SimTime& time)
 }
 
 void ABLForcing::operator()(
-    const amrex::Box& vbx,
-    const amrex::Array4<amrex::Real>& velocity,
-    amrex::Array4<amrex::Real>& vel_forces) const
+    const amrex::Box& bx,
+    const amrex::Array4<amrex::Real>& vel_forces) const
 {
     const auto& dt = m_time.deltaT();
-}
 
+    const amrex::Real dudt = (m_target_vel[0] - m_mean_vel[0]) / dt;
+    const amrex::Real dvdt = (m_target_vel[1] - m_mean_vel[1]) / dt;
+
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        vel_forces(i, j, k, 0) += dudt;
+        vel_forces(i, j, k, 1) += dvdt;
+
+        // No forcing in z-direction
+    });
+}
 }

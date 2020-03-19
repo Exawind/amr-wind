@@ -19,8 +19,7 @@ public:
 
     void operator()(
         const amrex::Box& vbx,
-        const amrex::Array4<amrex::Real>& velocity,
-        amrex::Array4<amrex::Real>& vel_forces) const;
+        const amrex::Array4<amrex::Real>& vel_forces) const;
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
     {

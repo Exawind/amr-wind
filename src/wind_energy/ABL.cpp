@@ -21,10 +21,21 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
     m_field_init = std::make_unique<ABLFieldInit>();
     m_abl_wall_func = std::make_unique<ABLWallFunction>();
 
+    if (m_has_boussinesq)
+        m_boussinesq = std::make_unique<BoussinesqBuoyancy>();
+
     if (m_has_driving_dpdx)
         m_abl_forcing = std::make_unique<ABLForcing>(m_time);
+
+    if (m_has_coriolis)
+        m_coriolis = std::make_unique<CoriolisForcing>();
 }
 
+/** Initialize the velocity and temperature fields at the beginning of the
+ *  simulation.
+ *
+ *  \sa amr_wind::ABLFieldInit
+ */
 void ABL::initialize_fields(
     const amrex::Geometry& geom,
     LevelData& leveldata) const
@@ -42,13 +53,48 @@ void ABL::initialize_fields(
     }
 }
 
+/** Add ABL-related source terms to the momentum equation
+ */
 void ABL::add_momentum_sources(
-    const amrex::Geometry& geom,
+    const amrex::Geometry& /* geom */,
     const LevelData& leveldata,
     amrex::MultiFab& vel_forces) const
 {
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vel_forces, amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& vf = vel_forces.array(mfi);
+
+        // Boussinesq buoyancy term
+        if (m_has_boussinesq) {
+            const auto& scalars = leveldata.tracer.const_array(mfi);
+            (*m_boussinesq)(bx, scalars, vf);
+        }
+
+        // Coriolis term
+        if (m_has_coriolis) {
+            const auto& vel = leveldata.velocity.const_array(mfi);
+            (*m_coriolis)(bx, vel, vf);
+        }
+
+        // Driving pressure gradient term
+        if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
+    }
 }
 
+/** Perform tasks at the beginning of a new timestep
+ *
+ *  For ABL simulations this method invokes the PlaneAveraging class to
+ *  compute spatial averages at all z-levels on the coarsest mesh (level 0).
+ *
+ *  The spatially averaged velocity is used to determine the current mean
+ *  velocity at the forcing height (if driving pressure gradient term is active)
+ *  and also determines the average friction velocity for use in the ABL wall
+ *  function computation.
+ */
 void ABL::pre_advance_work()
 {
     // Spatial averaging on z-planes
@@ -65,6 +111,7 @@ void ABL::pre_advance_work()
 
         const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
         const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
+        // TODO: For now retain wall function logic in incflo
         m_incflo->set_abl_friction_vels(uground, utau);
     }
 
@@ -73,6 +120,8 @@ void ABL::pre_advance_work()
         const amrex::Real vx = pa.line_velocity_xdir(zh);
         const amrex::Real vy = pa.line_velocity_ydir(zh);
         m_incflo->set_mean_abl_vel(vx, vy);
+        // Set the mean velocities at the forcing height so that the source
+        // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 

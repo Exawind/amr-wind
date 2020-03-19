@@ -90,6 +90,8 @@ void ABLFieldInit::operator()(
                 theta = tv[iz] + (z - th[iz]) * slope;
             }
         }
+
+        // FIXME: Remove first tracer is temperature assumption
         tracer(i, j, k, 0) = theta;
 
         if (m_perturb_vel) {
