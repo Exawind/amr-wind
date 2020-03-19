@@ -2,7 +2,7 @@
 #define TRIG_OPS_H
 
 #include <cmath>
-#include "AMREX_REAL.H"
+#include "AMReX_REAL.H"
 
 namespace amr_wind {
 namespace utils {
