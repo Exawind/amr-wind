@@ -2,6 +2,7 @@
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_buildInfo.H>
 #include <incflo.H>
+#include <Physics.H>
 
 using namespace amrex;
 
@@ -469,10 +470,19 @@ void incflo::WritePlotFile()
     if (m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
-            compute_vel_forces_on_level(lev, forcing, 
-                                        m_leveldata[lev]->velocity,
-                                        m_leveldata[lev]->density,
-                                        m_leveldata[lev]->tracer);
+            if (m_probtype == 35) {
+                compute_vel_pressure_terms(lev, forcing, m_leveldata[lev]->density);
+
+                for (auto& pp: m_physics) {
+                    pp->add_momentum_sources(
+                        Geom(lev), *m_leveldata[lev], forcing);
+                }
+
+            } else {
+                compute_vel_forces_on_level(lev, forcing,
+                                            m_leveldata[lev]->density,
+                                            m_leveldata[lev]->tracer);
+            }
         }
         pltscaVarsName.push_back("forcing_x");
         pltscaVarsName.push_back("forcing_y");

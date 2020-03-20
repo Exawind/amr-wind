@@ -13,8 +13,13 @@
 
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
+#include <LevelData.H>
 
 #include "SimTime.H"
+
+namespace amr_wind {
+class Physics;
+}
 
 class incflo : public amrex::AmrCore
 {
@@ -64,6 +69,15 @@ public:
     // Delete level data
     virtual void ClearLevel (int lev) override;
 
+    const amrex::Vector<std::unique_ptr<LevelData>>& leveldata_vec()
+    { return m_leveldata; }
+
+    void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
+    {
+        m_velocity_mean_ground = uground;
+        m_utau_mean_ground = ustar;
+    }
+
 public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);
@@ -75,10 +89,10 @@ public: // for cuda
                              amrex::Vector<amrex::MultiFab const*> const& tracer);
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
-                                       const amrex::MultiFab& velocity,
                                        const amrex::MultiFab& density,
                                        const amrex::MultiFab& tracer);
-
+    void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
+                                    const amrex::MultiFab& density);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -299,9 +313,6 @@ public: // for cuda
 
     
     
-    //fixme move these and clean up
-    bool m_plane_averaging = false;
-
     void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
     bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
     
@@ -363,6 +374,8 @@ private:
     //
 
     amr_wind::SimTime m_time;
+
+    amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
 
     // Be verbose?
     int m_verbose = 0;
@@ -434,50 +447,22 @@ private:
     
     
     void ReadABLParameters();
-    
-    // fixme move these somewhere else
-    bool m_use_coriolis = false;
-    bool m_use_abl_forcing = false;
-    
-    int m_ntemperature = 1;
-    amrex::Vector<amrex::Real> m_temperature_heights;
-    amrex::Vector<amrex::Real> m_temperature_values;
-    
-    amrex::Vector<amrex::Real> m_east{{1.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_north{{0.0, 1.0, 0.0}};
-    amrex::Vector<amrex::Real> m_up{{0.0, 0.0, 1.0}};
 
-    amrex::Real m_cutoff_height = 600.0;
-    amrex::Real m_Uperiods = 4.0;
-    amrex::Real m_Vperiods = 4.0;
-    amrex::Real m_deltaU = 1.0;
-    amrex::Real m_deltaV = 1.0;
-    amrex::Real m_zRefHeight = 50.0;
-    amrex::Real m_theta_amplitude = 0.0;//0.8;
-    amrex::Real m_abl_forcing_height = 90.0;
     amrex::Real m_kappa = 0.41; //von Karman constant
     amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]
-    amrex::Real m_corfac = 1.45842318e-4; // 2*earth_angular_velocity
-    amrex::Real m_latitude = 0.7208209811; // radians
-    amrex::Real m_sinphi;
-    amrex::Real m_cosphi;
-    amrex::Real m_thermalExpansionCoeff; // initialized in the readABLparameters now
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
      
     // fixme this is sloppy and are being used as global variables...
     amrex::Real m_velocity_mean_ground;
     amrex::Real m_utau_mean_ground;
     amrex::Real m_ground_height;
-    amrex::Real m_vx_mean_forcing;
-    amrex::Real m_vy_mean_forcing;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};
 
     int m_last_chk = -1;
     int m_KE_int = -1;
-    int m_line_plot_int = 1;
-    
+
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
 
@@ -498,37 +483,6 @@ private:
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
-
-    struct LevelData {
-        LevelData () = default;
-        LevelData (amrex::BoxArray const& ba,
-                   amrex::DistributionMapping const& dm,
-                   amrex::FabFactory<amrex::FArrayBox> const& fact,
-                   int ntrac, int ng_state,
-                   bool use_godunov, bool implicit_diffusion, bool advect_tracer);
-        // cell-centered multifabs
-        amrex::MultiFab velocity;
-        amrex::MultiFab velocity_o;
-        amrex::MultiFab density;
-        amrex::MultiFab density_o;
-        amrex::MultiFab tracer;
-        amrex::MultiFab tracer_o;
-        amrex::MultiFab gp; // pressure gradient
-        // nodal multifabs
-        amrex::MultiFab p;
-        //
-        amrex::MultiFab conv_velocity;
-        amrex::MultiFab conv_velocity_o;
-        amrex::MultiFab conv_density;
-        amrex::MultiFab conv_density_o;
-        amrex::MultiFab conv_tracer;
-        amrex::MultiFab conv_tracer_o;
-        //
-        amrex::MultiFab divtau;
-        amrex::MultiFab divtau_o;
-        amrex::MultiFab laps;
-        amrex::MultiFab laps_o;
-    };
 
     amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
 

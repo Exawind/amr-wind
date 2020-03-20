@@ -1,6 +1,8 @@
 
 #include <incflo.H>
 
+#include "ABL.H"
+
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
 #include <AMReX_EBAmrUtil.H>
@@ -186,6 +188,10 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     if (m_restart_file.empty()) {
         prob_init_fluid(lev);
+
+        for (auto& pp: m_physics) {
+            pp->initialize_fields(Geom(lev), *m_leveldata[lev]);
+        }
     }
 }
 

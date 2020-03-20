@@ -9,6 +9,7 @@
 
 #include <AMReX_AmrCore.H>
 #include "DirectionSelector.H"
+#include "LevelData.H"
 
 class incflo;
 
@@ -20,6 +21,10 @@ public:
     PlaneAveraging(amrex::Vector<amrex::Geometry>& Geom,
                    amrex::Vector<amrex::MultiFab*> const& velocity,
                    amrex::Vector<amrex::MultiFab*> const& tracer,
+                   int axis=2);
+
+    PlaneAveraging(const amrex::Geometry& geom,
+                   const LevelData& leveldata,
                    int axis=2);
     
     ~PlaneAveraging(){};

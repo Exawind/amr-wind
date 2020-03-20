@@ -2,6 +2,8 @@
 #include <random>
 #include <AMReX_Random.H>
 
+#include "ABL.H"
+
 using namespace amrex;
 
 void incflo::prob_init_fluid (int lev)
@@ -22,6 +24,9 @@ void incflo::prob_init_fluid (int lev)
     ld.velocity.setVal(m_ic_v, 1, 1);
     ld.velocity.setVal(m_ic_w, 2, 1);
     if (m_ntrac > 0) ld.tracer.setVal(0.0);
+
+    // FIXME: Ongoing refactor handle ABL/wind physics through physics interface
+    if (m_probtype == 35) return;
 
     for (MFIter mfi(ld.density); mfi.isValid(); ++mfi)
     {
@@ -105,15 +110,8 @@ void incflo::prob_init_fluid (int lev)
         }
         else if (35 == m_probtype)
         {
-            init_abl(vbx, gbx,
-                     ld.p.array(mfi),
-                     ld.velocity.array(mfi),
-                     ld.density.array(mfi),
-                     ld.tracer.array(mfi),
-                     domain, dx, problo, probhi);
-        }
-        else
-        {
+            // Should never reach here
+        } else {
             amrex::Abort("prob_init_fluid: unknown m_probtype");
         };
     }
@@ -465,91 +463,4 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& /* gbx */,
     {
         amrex::Abort("Unknown plane poiseuille m_probtype");
     };
-}
-
-
-void incflo::init_abl (Box const& vbx, Box const& /* gbx */,
-                       Array4<Real> const& /* p */,
-                       Array4<Real> const& vel,
-                       Array4<Real> const& density,
-                       Array4<Real> const& tracer,
-                       Box const& /* domain */,
-                       GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                       GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                       GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
-{
-    // const Real cutoff_height = m_cutoff_height;
-    const Real Uperiods = m_Uperiods;
-    const Real Vperiods = m_Vperiods;
-    const Real deltaU = m_deltaU;
-    const Real deltaV = m_deltaV;
-    const Real zRefHeight = m_zRefHeight;
-    // const Real theta_amplitude = m_theta_amplitude;
-    
-    const Real pi = std::acos(-1.0);
-    const Real aval = Uperiods*2.0*pi/(geom[0].ProbHi(1) - geom[0].ProbLo(1));
-    const Real bval = Vperiods*2.0*pi/(geom[0].ProbHi(0) - geom[0].ProbLo(0));
-    const Real ufac = deltaU*std::exp(0.5)/zRefHeight;
-    const Real vfac = deltaV*std::exp(0.5)/zRefHeight;
-    
-    const Real ro_0 = m_ro_0;
-    
-    const Real u = m_ic_u;
-    const Real v = m_ic_v;
-    const Real w = m_ic_w;
-
-    AsyncArray<Real> th(m_temperature_heights.data(), m_temperature_heights.size());
-    AsyncArray<Real> tv(m_temperature_values.data(), m_temperature_values.size());
-    Real* m_temperature_heights_d = th.data();
-    Real* m_temperature_values_d = tv.data();
-    
-    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-    {
-    
-        // physical location of cell center
-        const Real x = problo[0] + (i+0.5)*dx[0];
-        const Real y = problo[1] + (j+0.5)*dx[1];
-        const Real z = problo[2] + (k+0.5)*dx[2];
-        
-        // constant density
-        density(i,j,k) = ro_0;
-        
-        // velocity field plus perturbations
-        vel(i,j,k,0) = u;
-        vel(i,j,k,1) = v;
-        vel(i,j,k,2) = w;
-        
-        if(z < fabs(u)) vel(i,j,k,0) = copysign(z,u);
-        if(z < fabs(v)) vel(i,j,k,1) = copysign(z,v);
-        
-        const Real zl = z/zRefHeight;
-        const Real damp = std::exp(-0.5*zl*zl);
-        
-        vel(i,j,k,0) += ufac*damp*z*std::cos(aval*y);
-        vel(i,j,k,1) += vfac*damp*z*std::sin(bval*x);
-        
-        // potential temperature
-        Real theta = m_temperature_values_d[0];
-        for(int t = 0; t < m_ntemperature-1; ++t){
-            const Real slope = (m_temperature_values_d[t+1]-m_temperature_values_d[t])/(m_temperature_heights_d[t+1]-m_temperature_heights_d[t]);
-            if(z > m_temperature_heights_d[t] && z <= m_temperature_heights_d[t+1]){
-              theta = m_temperature_values_d[t] + (z-m_temperature_heights_d[t])*slope;
-            }
-        }
-#if 0 
- figure out how to get on device       
-        // add perturbations to potential temperature
-        if(z < cutoff_height){
-            // Random number generator for adding temperature perturbations
-            const Real thetaGaussMean_ = 0.0;
-            const Real thetaGaussVar_ = 1.0;
-            std::random_device rd{};
-            std::mt19937 gen{rd()};
-            std::normal_distribution<Real> gaussNormal(thetaGaussMean_, thetaGaussVar_);
-            theta += theta_amplitude*gaussNormal(gen);
-        }
-#endif        
-        tracer(i,j,k,0) = theta;
-        
-    });
 }

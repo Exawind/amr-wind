@@ -2,7 +2,7 @@
 
 using namespace amrex;
 
-incflo::LevelData::LevelData (amrex::BoxArray const& ba,
+LevelData::LevelData (amrex::BoxArray const& ba,
                               amrex::DistributionMapping const& dm,
                               amrex::FabFactory<FArrayBox> const& fact,
                               int ntrac, int ng_state,
