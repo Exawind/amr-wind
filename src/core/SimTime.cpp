@@ -135,6 +135,16 @@ bool SimTime::write_checkpoint()
     return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval == 0));
 }
 
+bool SimTime::write_last_plot_file()
+{
+    return ((m_plt_interval > 0) && (m_time_index % m_plt_interval != 0));
+}
+
+bool SimTime::write_last_checkpoint()
+{
+    return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval != 0));
+}
+
 void SimTime::set_restart_time(int tidx, amrex::Real time)
 {
     m_time_index = tidx;

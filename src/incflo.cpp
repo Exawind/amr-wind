@@ -134,18 +134,15 @@ void incflo::Evolve()
         }
     }
 
-#if 0
     // TODO: Fix last checkpoint/plot output
-	// Output at the final time
-    if( m_check_int > 0 && m_time.time_index() != m_last_chk) {
+    // Output at the final time
+    if( m_time.write_last_checkpoint()) {
         WriteCheckPointFile();
     }
-    if( (m_plot_int > 0 || m_plot_per_exact > 0 || m_plot_per_approx > 0)
-        && m_time.time_index() != m_last_plt)
+    if( m_time.write_last_plot_file())
     {
         WritePlotFile();
     }
-#endif
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
