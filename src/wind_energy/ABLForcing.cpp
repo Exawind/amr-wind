@@ -18,6 +18,10 @@ ABLForcing::ABLForcing(const SimTime& time)
         pp.get("ic_v", m_target_vel[1]);
         pp.get("ic_w", m_target_vel[2]);
     }
+
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+        m_mean_vel[i] = m_target_vel[i];
+    }
 }
 
 void ABLForcing::operator()(
