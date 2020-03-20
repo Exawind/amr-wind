@@ -33,7 +33,8 @@ public:
         const amrex::Geometry& geom,
         const amrex::MultiFab& density,
         const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
+        const amrex::MultiFab& scalars_old,
+        const amrex::MultiFab& scalars_new,
         amrex::MultiFab& vel_forces) const = 0;
 };
 

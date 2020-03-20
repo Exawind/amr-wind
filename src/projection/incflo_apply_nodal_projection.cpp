@@ -55,7 +55,8 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
 //
 // Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
 //
-void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
+void incflo::ApplyProjection (Vector<MultiFab const*> density,
+                              Real time, Real scaling_factor, bool incremental)
 {
     BL_PROFILE("incflo::ApplyProjection");
 
@@ -88,7 +89,7 @@ void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
             {
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& u = ld.velocity.array(mfi);
-                Array4<Real const> const& rho = ld.density.const_array(mfi);
+                Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& gp = ld.gp.const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -123,7 +124,7 @@ void incflo::ApplyProjection (Real time, Real scaling_factor, bool incremental)
         {
             Box const& bx = mfi.tilebox();
             Array4<Real> const& sig = sigma[lev].array(mfi);
-            Array4<Real const> const& rho = ld.density.const_array(mfi);
+            Array4<Real const> const& rho = density[lev]->const_array(mfi);
             amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
                 sig(i,j,k) = scaling_factor / rho(i,j,k);

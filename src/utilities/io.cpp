@@ -481,6 +481,7 @@ void incflo::WritePlotFile()
             } else {
                 compute_vel_forces_on_level(lev, forcing,
                                             m_leveldata[lev]->density,
+                                            m_leveldata[lev]->tracer,
                                             m_leveldata[lev]->tracer);
             }
         }

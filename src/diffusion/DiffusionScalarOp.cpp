@@ -86,7 +86,7 @@ void
 DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
                                    Vector<MultiFab*> const& density,
                                    Vector<MultiFab const*> const& eta,
-                                   Real /* t */, Real dt)
+                                   Real dt)
 {
     //
     //      alpha a - beta div ( b grad )   <--->   rho - dt div ( mu grad )
@@ -200,8 +200,7 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
 void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                                       Vector<MultiFab const*> const& a_tracer,
                                       Vector<MultiFab const*> const& a_density,
-                                      Vector<MultiFab const*> const& a_eta,
-                                      Real /* t */)
+                                      Vector<MultiFab const*> const& a_eta)
 {
     BL_PROFILE("DiffusionScalarOp::compute_laps");
 
@@ -230,6 +229,8 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
 
         // We want to return div (mu grad)) phi
         m_eb_apply_op->setScalars(0.0, -1.0);
+
+        // This should have no effect since the first scalar is 0
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_eb_apply_op->setACoeffs(lev, *a_density[lev]);
         }
@@ -262,6 +263,8 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
     {
         // We want to return div (mu grad)) phi
         m_reg_apply_op->setScalars(0.0, -1.0);
+
+        // This should have no effect since the first scalar is 0
         for (int lev = 0; lev <= finest_level; ++lev) {
             m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
         }
@@ -286,22 +289,6 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
 
             MLMG mlmg(*m_reg_apply_op);
             mlmg.apply(GetVecOfPtrs(laps_comp), GetVecOfPtrs(tracer_comp));
-        }
-    }
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion());
-#endif
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        for (MFIter mfi(*a_laps[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& laps_arr = a_laps[lev]->array(mfi);
-            Array4<Real const> const& rho_arr = a_density[lev]->const_array(mfi);
-            amrex::ParallelFor(bx, m_incflo->m_ntrac,
-            [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-            {
-                laps_arr(i,j,k,n) /= rho_arr(i,j,k);
-            });
         }
     }
 }

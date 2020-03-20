@@ -40,8 +40,6 @@ int main(int argc, char* argv[])
         // Initialize data, parameters, arrays and derived internals
         my_incflo.InitData();
 
-        // my_incflo.WriteMyEBSurface();
-
         // Time spent on initialization
         Real init_time = ParallelDescriptor::second() - start_time;
 

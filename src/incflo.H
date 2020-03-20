@@ -82,17 +82,21 @@ public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);
 
-    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces);
+    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
+                             amrex::Vector<amrex::MultiFab const*> const& density);
     void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                              amrex::Vector<amrex::MultiFab const*> const& velocity,
                              amrex::Vector<amrex::MultiFab const*> const& density,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer);
+                             amrex::Vector<amrex::MultiFab const*> const& tracer_old,
+                             amrex::Vector<amrex::MultiFab const*> const& tracer_new);
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
                                        const amrex::MultiFab& density,
-                                       const amrex::MultiFab& tracer);
+                                       const amrex::MultiFab& tracer_old,
+                                       const amrex::MultiFab& tracer_new);
     void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
                                     const amrex::MultiFab& density);
+
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -352,7 +356,8 @@ public: // for cuda
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void ApplyProjection(amrex::Real time, amrex::Real scaling_factor, bool incremental);
+    void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
+                         amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -428,9 +433,19 @@ private:
     bool m_advect_tracer    = false;
     bool m_test_tracer_conservation = false;
 
+    // Default to MOL (not Godunov)
     bool m_use_godunov         = false;
-    bool m_ppm                 = true;
-    bool m_use_forces_in_trans = false;
+
+    // If using Godunov, default to PPM (not PLM)
+    bool m_godunov_ppm         = true;
+
+    // If using Godunov, default to including viscous/diffusive
+    //    terms in the forcing terms
+    bool m_godunov_include_diff_in_forcing = true;
+
+    // If using Godunov, when to add the forcing terms in 
+    //    the construction of the "trans" velocities
+    bool m_godunov_use_forces_in_trans = false;
 
     enum struct DiffusionType {
         Invalid, Explicit, Crank_Nicolson, Implicit
@@ -466,6 +481,9 @@ private:
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
 
+    amrex::Vector<amrex::Real> tag_region_lo;
+    amrex::Vector<amrex::Real> tag_region_hi;
+
     // Flags for saving fluid data in plot files
     int m_plt_velx        = 1;
     int m_plt_vely        = 1;
@@ -478,7 +496,7 @@ private:
     int m_plt_p           = 0;
     int m_plt_eta         = 0;
     int m_plt_vort        = 1;
-    int m_plt_forcing     = 1;
+    int m_plt_forcing     = 0;
     int m_plt_strainrate  = 0;
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
@@ -570,7 +588,7 @@ private:
 #endif
 
     bool need_divtau () const {
-        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
+        return !(!m_godunov_include_diff_in_forcing and DiffusionType::Implicit == m_diff_type);
     }
 
     DiffusionTensorOp* get_diffusion_tensor_op ();

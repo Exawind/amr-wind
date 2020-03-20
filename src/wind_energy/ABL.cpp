@@ -70,8 +70,9 @@ void ABL::add_momentum_sources(
 
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
-            const auto& scalars = leveldata.tracer.const_array(mfi);
-            (*m_boussinesq)(bx, scalars, vf);
+            const auto& scalars_old = leveldata.tracer_o.const_array(mfi);
+            const auto& scalars_new = leveldata.tracer.const_array(mfi);
+            (*m_boussinesq)(bx, scalars_old, scalars_new, vf);
         }
 
         // Coriolis term
@@ -89,7 +90,8 @@ void ABL::add_momentum_sources(
     const amrex::Geometry& /* geom */,
     const amrex::MultiFab& /* density */,
     const amrex::MultiFab& velocity,
-    const amrex::MultiFab& scalars,
+    const amrex::MultiFab& scalars_old,
+    const amrex::MultiFab& scalars_new,
     amrex::MultiFab& vel_forces) const
 {
 #ifdef _OPENMP
@@ -102,8 +104,9 @@ void ABL::add_momentum_sources(
 
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
-            const auto& scal = scalars.const_array(mfi);
-            (*m_boussinesq)(bx, scal, vf);
+            const auto& scal_o = scalars_old.const_array(mfi);
+            const auto& scal_n = scalars_new.const_array(mfi);
+            (*m_boussinesq)(bx, scal_o, scal_n, vf);
         }
 
         // Coriolis term

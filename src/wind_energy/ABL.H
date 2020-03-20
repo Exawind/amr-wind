@@ -45,7 +45,8 @@ public:
         const amrex::Geometry& geom,
         const amrex::MultiFab& density,
         const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
+        const amrex::MultiFab& scalars_old,
+        const amrex::MultiFab& scalars_new,
         amrex::MultiFab& vel_forces) const override;
 
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }

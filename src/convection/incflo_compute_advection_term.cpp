@@ -181,7 +181,7 @@ incflo::compute_convective_term (Box const& bx, int lev,
         }
         if (m_advect_tracer) {
             compute_godunov_advection(lev, bx, m_ntrac,
-                                      dtdt, tra,
+                                      dtdt, rhotrac,
                                       umac, vmac, wmac, ftra,
                                       get_tracer_bcrec_device_ptr(),
                                       get_tracer_iconserv_device_ptr(),

@@ -39,6 +39,8 @@ incflo.ic_w = 0.0
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #             ABL PHYSICS               #
 #.......................................#
+abl.reference_temperature = 300.0
+abl.latitude = 41.30000000150928
 abl.Smagorinsky_Lilly_SGS_constant = .135
 abl.use_boussinesq = 1 
 abl.coriolis_effect = 1

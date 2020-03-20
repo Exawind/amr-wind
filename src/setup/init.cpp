@@ -25,7 +25,7 @@ void incflo::ReadParameters ()
     } // end prefix amr
 
     { // Prefix incflo
-	ParmParse pp("incflo");
+        ParmParse pp("incflo");
 
         pp.query("verbose", m_verbose);
 
@@ -33,15 +33,20 @@ void incflo::ReadParameters ()
         pp.query("do_initial_proj", m_do_initial_proj);
 
         // Physics
-	pp.queryarr("delp", m_delp, 0, AMREX_SPACEDIM);
-	pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
+        pp.queryarr("delp", m_delp, 0, AMREX_SPACEDIM);
+        pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
 
-        pp.query("constant_density", m_constant_density);
-        pp.query("advect_tracer"   , m_advect_tracer);
+        pp.query("constant_density"         , m_constant_density);
+        pp.query("advect_tracer"            , m_advect_tracer);
         pp.query("test_tracer_conservation" , m_test_tracer_conservation);
-        pp.query("use_godunov"        , m_use_godunov);
-        pp.query("use_ppm"            , m_ppm);
-        pp.query("use_forces_in_trans", m_use_forces_in_trans);
+
+        // Godunov-related flags
+        pp.query("use_godunov"                      , m_use_godunov);
+        pp.query("use_ppm"                          , m_godunov_ppm);
+        pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
+        pp.query("godunov_include_diff_in_forcing"  , m_godunov_include_diff_in_forcing);
+
+        if (!m_use_godunov) m_godunov_include_diff_in_forcing = false;
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;
@@ -260,7 +265,7 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(m_time.current_time(), dummy_dt, incremental);
+    ApplyProjection(get_density_new_const(), m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)
