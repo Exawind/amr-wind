@@ -85,6 +85,39 @@ void ABL::add_momentum_sources(
     }
 }
 
+void ABL::add_momentum_sources(
+    const amrex::Geometry& /* geom */,
+    const amrex::MultiFab& /* density */,
+    const amrex::MultiFab& velocity,
+    const amrex::MultiFab& scalars,
+    amrex::MultiFab& vel_forces) const
+{
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(vel_forces, amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& vf = vel_forces.array(mfi);
+
+        // Boussinesq buoyancy term
+        if (m_has_boussinesq) {
+            const auto& scal = scalars.const_array(mfi);
+            (*m_boussinesq)(bx, scal, vf);
+        }
+
+        // Coriolis term
+        if (m_has_coriolis) {
+            const auto& vel = velocity.const_array(mfi);
+            (*m_coriolis)(bx, vel, vf);
+        }
+
+        // Driving pressure gradient term
+        if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
+    }
+}
+
+
 /** Perform tasks at the beginning of a new timestep
  *
  *  For ABL simulations this method invokes the PlaneAveraging class to

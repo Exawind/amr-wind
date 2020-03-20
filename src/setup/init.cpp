@@ -184,6 +184,9 @@ void incflo::ReadABLParameters()
 {
     ParmParse pp("abl");
 
+    // Inject Boussinesq flag in incflo to handle background pressure logic correctly
+    pp.query("use_boussinesq", m_use_boussinesq);
+
     pp.query("kappa",m_kappa);
     pp.query("surface_roughness_z0",m_surface_roughness_z0);
     pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);

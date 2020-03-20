@@ -91,7 +91,8 @@ public: // for cuda
                                        amrex::MultiFab& vel_forces,
                                        const amrex::MultiFab& density,
                                        const amrex::MultiFab& tracer);
-    void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces);
+    void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
+                                    const amrex::MultiFab& density);
 
     ///////////////////////////////////////////////////////////////////////////
     //
