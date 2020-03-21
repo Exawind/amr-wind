@@ -40,6 +40,14 @@ public:
      */
     bool write_checkpoint();
 
+    /** Return true if plot files should be written at this timestep
+     */
+    bool write_last_plot_file();
+
+    /** Return true if checkpoint files should be written at this timestep
+     */
+    bool write_last_checkpoint();
+
     /** Set current CFL and update timestep based on CFL
      *
      *  @param cfl_unit_time `(U / dx)`, i.e., CFL assuming unit dt
