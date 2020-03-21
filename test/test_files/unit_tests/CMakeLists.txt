@@ -3,9 +3,7 @@ add_dependencies(${amr_wind_unit_test_exe_name} generate_build_info_${amr_wind_e
 
 target_sources(${amr_wind_unit_test_exe_name}
    PRIVATE
-      #C++
-      unit_tests_3d.C
-      unit_test_3d_1.C
+   utest_main.cpp
    )
 
 
