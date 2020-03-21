@@ -1,4 +1,4 @@
-target_sources(${amr_wind_exe_name}
+target_sources(${amr_wind_lib_name}
   PRIVATE
 
   ABL.cpp
@@ -10,4 +10,4 @@ target_sources(${amr_wind_exe_name}
   )
 
 target_include_directories(
-  ${amr_wind_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  ${amr_wind_lib_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

@@ -19,18 +19,22 @@ endif()
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
 separate_arguments(AMR_WIND_Fortran_FLAGS)
-target_compile_options(${amr_wind_exe_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
-target_compile_options(${amr_wind_exe_name} PUBLIC $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+target_compile_options(${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
+target_compile_options(${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
 
 if (AMR_WIND_ENABLE_CUDA)
-  set(AMR_WIND_CUDA_FLAGS "--expt-relaxed-constexpr --expt-extended-lambda --Wno-deprecated-gpu-targets -m64 -dc")
+  set(AMR_WIND_CUDA_FLAGS "--expt-relaxed-constexpr --expt-extended-lambda --Wno-deprecated-gpu-targets -m64")
   if (ENABLE_CUDA_FASTMATH)
     set(AMR_WIND_CUDA_FLAGS "${AMR_WIND_CUDA_FLAGS} --use_fast_math")
   endif()
   separate_arguments(AMR_WIND_CUDA_FLAGS)
-  target_compile_options(${amr_wind_exe_name}
+  target_compile_options(${amr_wind_lib_name}
     PUBLIC
     $<$<COMPILE_LANGUAGE:CUDA>:${AMR_WIND_CUDA_FLAGS}>)
   # Add arch flags to both compile and linker to avoid warnings about missing arch
   set(CMAKE_CUDA_FLAGS ${NVCC_ARCH_FLAGS})
+  set_target_properties(
+    ${amr_wind_lib_name} PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS OFF)
 endif()

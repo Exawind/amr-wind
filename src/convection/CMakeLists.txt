@@ -1,4 +1,4 @@
-target_sources(${amr_wind_exe_name}
+target_sources(${amr_wind_lib_name}
    PRIVATE
       #C++
       incflo_MAC_bcs.cpp
@@ -15,4 +15,4 @@ target_sources(${amr_wind_exe_name}
       incflo_mol_predict_eb.cpp
    )
 
-target_include_directories(${amr_wind_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${amr_wind_lib_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

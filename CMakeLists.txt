@@ -74,25 +74,26 @@ IF("${isSystemDir}" STREQUAL "-1")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 #Create target names
+set(amr_wind_lib_name "amrwind")
 set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 
 #Create main target executable
-add_executable(${amr_wind_exe_name} "")
+add_library(${amr_wind_lib_name})
+add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
 #Keep our Fortran module files confined to a unique directory for each executable 
-set_target_properties(${amr_wind_exe_name} PROPERTIES Fortran_MODULE_DIRECTORY
-                     "${CMAKE_BINARY_DIR}/fortran_modules/${amr_wind_exe_name}_fortran_modules")
+set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
+                     "${CMAKE_BINARY_DIR}/fortran_modules/")
 
 #Create directory unique to executable to store generated files
-set(GENERATED_FILES_DIR ${CMAKE_BINARY_DIR}/generated_files/${amr_wind_exe_name}_generated_files)
-file(MAKE_DIRECTORY ${GENERATED_FILES_DIR})
+set(GENERATED_FILES_DIR ${CMAKE_BINARY_DIR})
 
 #Generate the AMReX_buildInfo.cpp file with Python
-add_custom_target(generate_build_info_${amr_wind_exe_name} ALL
+add_custom_target(generate_build_info ALL
    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}/Tools/C_scripts/makebuildinfo_C.py
    --amrex_home "${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
    --COMP ${CMAKE_CXX_COMPILER_ID} --COMP_VERSION ${CMAKE_CXX_COMPILER_VERSION}
@@ -100,18 +101,22 @@ add_custom_target(generate_build_info_${amr_wind_exe_name} ALL
    --GIT "${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
    WORKING_DIRECTORY ${GENERATED_FILES_DIR} BYPRODUCTS ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
    COMMENT "Generating AMReX_buildInfo.cpp"
-)                  
-  
-#Set the dependencies on targets so the generated source code files are there before we try to build the executable 
-add_dependencies(${amr_wind_exe_name} generate_build_info_${amr_wind_exe_name})
+   )
+
+#Set the dependencies on targets so the generated source code files are there
+#before we try to build the executable
+add_dependencies(${amr_wind_lib_name} generate_build_info)
 
 #Build amr-wind and link to amrex library
 add_subdirectory(src)
 
 if (AMR_WIND_ENABLE_CUDA)
-  get_target_property(AMR_WIND_SOURCES ${amr_wind_exe_name} SOURCES)
-  list(FILTER AMR_WIND_SOURCES INCLUDE REGEX "\\.cpp")
-  set_source_files_properties(${AMR_WIND_SOURCES} PROPERTIES LANGUAGE CUDA)
+  set(awtargets "${amr_wind_lib_name};${amr_wind_exe_name}")
+  foreach(tgt IN LISTS awtargets)
+    get_target_property(AMR_WIND_SOURCES ${tgt} SOURCES)
+    list(FILTER AMR_WIND_SOURCES INCLUDE REGEX "\\.cpp")
+    set_source_files_properties(${AMR_WIND_SOURCES} PROPERTIES LANGUAGE CUDA)
+  endforeach()
 endif()
 
 if(AMR_WIND_ENABLE_TESTS)
@@ -125,7 +130,8 @@ if(AMR_WIND_ENABLE_DOCUMENTATION)
 endif()
 
 #Define what we want to be installed during a make install 
-install(TARGETS ${amr_wind_exe_name}
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+install(
+  TARGETS ${amr_wind_exe_name} ${amr_wind_lib_name}
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib)

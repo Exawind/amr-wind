@@ -1,18 +1,10 @@
 add_executable(${amr_wind_unit_test_exe_name} "")
-add_dependencies(${amr_wind_unit_test_exe_name} generate_build_info_${amr_wind_exe_name})
 
 target_sources(${amr_wind_unit_test_exe_name}
    PRIVATE
    utest_main.cpp
    )
 
-
-#Add generated source files
-set_property(SOURCE ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp PROPERTY GENERATED 1)
-target_sources(${amr_wind_unit_test_exe_name}
-   PRIVATE
-      ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
-)
 
 #AMR-Wind include directories
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

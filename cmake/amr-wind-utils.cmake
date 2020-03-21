@@ -7,11 +7,11 @@
 #
 # https://stackoverflow.com/questions/52135983/cmake-target-link-libraries-include-as-system-to-suppress-compiler-warnings/52136398#52136398
 #
-function(target_link_libraries_system target)
+function(target_link_libraries_system target visibility)
   set(libs ${ARGN})
   foreach(lib ${libs})
     get_target_property(lib_include_dirs ${lib} INTERFACE_INCLUDE_DIRECTORIES)
-    target_include_directories(${target} SYSTEM PRIVATE ${lib_include_dirs})
-    target_link_libraries(${target} ${lib})
+    target_include_directories(${target} SYSTEM ${visibility} ${lib_include_dirs})
+    target_link_libraries(${target} ${visibility} ${lib})
   endforeach(lib)
 endfunction(target_link_libraries_system)
