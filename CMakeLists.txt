@@ -20,11 +20,16 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
+option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(AMR_WIND_ENABLE_CUDA)
+  enable_language(CUDA)
+endif()
 
 ########################### AMReX #####################################
 
@@ -102,6 +107,12 @@ add_dependencies(${amr_wind_exe_name} generate_build_info_${amr_wind_exe_name})
 
 #Build amr-wind and link to amrex library
 add_subdirectory(src)
+
+if (AMR_WIND_ENABLE_CUDA)
+  get_target_property(AMR_WIND_SOURCES ${amr_wind_exe_name} SOURCES)
+  list(FILTER AMR_WIND_SOURCES INCLUDE REGEX "\\.cpp")
+  set_source_files_properties(${AMR_WIND_SOURCES} PROPERTIES LANGUAGE CUDA)
+endif()
 
 if(AMR_WIND_ENABLE_TESTS)
   enable_testing()
