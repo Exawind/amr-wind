@@ -91,7 +91,7 @@ function(add_test_u TEST_NAME NP)
       unset(MPI_COMMANDS)
     endif()
     # Add test and commands to CTest database
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CURRENT_TEST_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
+    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "unit")
 endfunction(add_test_u)

@@ -14,6 +14,7 @@ option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 
 #Enabling tests overrides the executable options
+option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 
@@ -117,6 +118,16 @@ if (AMR_WIND_ENABLE_CUDA)
     list(FILTER AMR_WIND_SOURCES INCLUDE REGEX "\\.cpp")
     set_source_files_properties(${AMR_WIND_SOURCES} PROPERTIES LANGUAGE CUDA)
   endforeach()
+endif()
+
+if (AMR_WIND_ENABLE_UNIT_TESTING OR AMR_WIND_ENABLE_TESTS)
+  add_executable(${amr_wind_unit_test_exe_name})
+  add_subdirectory("submods/googletest")
+  add_subdirectory("unit_tests")
+  if (AMR_WIND_ENABLE_CUDA)
+    get_target_property(UTEST_SOURCES ${amr_wind_unit_test_exe_name} SOURCES)
+    set_source_files_properties(${UTEST_SOURCES} PROPERTIES LANGUAGE CUDA)
+  endif()
 endif()
 
 if(AMR_WIND_ENABLE_TESTS)
