@@ -1,6 +1,7 @@
 target_sources(${amr_wind_unit_test_exe_name}
   PRIVATE
   utest_main.cpp
+  test_config.cpp
   )
 
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
