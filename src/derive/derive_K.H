@@ -6,7 +6,7 @@
 
 struct StencilInterior
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5, 0.0, -0.5},
         {0.5, 0.0, -0.5},
         {0.5, 0.0, -0.5}
@@ -15,7 +15,7 @@ struct StencilInterior
 
 struct StencilILO
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5, 0.5, -1.0},
         {0.5, 0.0, -0.5},
         {0.5, 0.0, -0.5}
@@ -24,7 +24,7 @@ struct StencilILO
 
 struct StencilJLO
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5, 0.0, -0.5},
         {0.5, 0.5, -1.0},
         {0.5, 0.0, -0.5}
@@ -33,7 +33,7 @@ struct StencilJLO
 
 struct StencilKLO
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5, 0.0, -0.5},
         {0.5, 0.0, -0.5},
         {0.5, 0.5, -1.0}
@@ -42,7 +42,7 @@ struct StencilKLO
 
 struct StencilIHI
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {1.0, -0.5, -0.5},
         {0.5,  0.0, -0.5},
         {0.5,  0.0, -0.5}
@@ -51,7 +51,7 @@ struct StencilIHI
 
 struct StencilJHI
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5,  0.0, -0.5},
         {1.0, -0.5, -0.5},
         {0.5,  0.0, -0.5}
@@ -60,7 +60,7 @@ struct StencilJHI
 
 struct StencilKHI
 {
-    static const amrex::Real constexpr coeffs[3][3] = {
+    static constexpr amrex::Real coeffs[3][3] = {
         {0.5,  0.0, -0.5},
         {0.5,  0.0, -0.5},
         {1.0, -0.5, -0.5}
