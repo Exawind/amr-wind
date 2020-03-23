@@ -18,17 +18,17 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
     pp.query("abl_forcing", m_has_driving_dpdx);
 
     // Instantiate the ABL field initializer
-    m_field_init = std::make_unique<ABLFieldInit>();
-    m_abl_wall_func = std::make_unique<ABLWallFunction>();
+    m_field_init.reset(new ABLFieldInit());
+    m_abl_wall_func.reset(new ABLWallFunction());
 
     if (m_has_boussinesq)
-        m_boussinesq = std::make_unique<BoussinesqBuoyancy>();
+        m_boussinesq.reset(new BoussinesqBuoyancy());
 
     if (m_has_driving_dpdx)
-        m_abl_forcing = std::make_unique<ABLForcing>(m_time);
+        m_abl_forcing.reset(new ABLForcing(m_time));
 
     if (m_has_coriolis)
-        m_coriolis = std::make_unique<CoriolisForcing>();
+        m_coriolis.reset(new CoriolisForcing());
 }
 
 /** Initialize the velocity and temperature fields at the beginning of the
