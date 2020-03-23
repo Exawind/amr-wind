@@ -4,6 +4,8 @@ target_sources(${amr_wind_unit_test_exe_name}
   test_config.cpp
   )
 
+add_subdirectory(core)
+
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #Link our unit test executable with GoogleTest
