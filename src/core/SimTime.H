@@ -149,6 +149,9 @@ private:
     //! Time interval for regridding
     int m_regrid_interval{-1};
 
+    //! Verbosity
+    int m_verbose{0};
+
     //! Flag indicating whether timestep is adaptive
     bool m_adaptive{false};
 

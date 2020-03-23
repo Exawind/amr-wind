@@ -16,6 +16,7 @@ void SimTime::parse_parameters()
         // Parse global parameters
         amrex::ParmParse pp;
 
+        pp.query("verbose", m_verbose);
         pp.query("stop_time", m_stop_time);
         pp.query("max_step", m_stop_time_index);
     }
@@ -59,10 +60,13 @@ bool SimTime::new_timestep()
         m_new_time += m_dt[0];
 
         // clang-format off
-        amrex::Print()
-            << "\n========================================================================\n"
-            << "Step: " << m_time_index << " Time: " << m_cur_time << std::endl;
+        if (m_verbose >= 0)
+            amrex::Print()
+                << "\n========================================================================\n"
+                << "Step: " << m_time_index << " Time: " << m_cur_time << std::endl;
         // clang-format on
+    } else {
+        m_cur_time = m_new_time;
     }
 
     return continue_sim;
@@ -99,17 +103,19 @@ void SimTime::set_current_cfl(amrex::Real cfl_unit_time)
     }
 
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
-    amrex::Print() << "CFL: " << m_current_cfl << " dt: " << m_dt[0]
-                   << std::endl;
+    if (m_verbose >= 0)
+        amrex::Print() << "CFL: " << m_current_cfl << " dt: " << m_dt[0]
+                       << std::endl;
 }
 
 bool SimTime::continue_simulation()
 {
+    constexpr double eps = 1.0e-12;
     bool stop_simulation = false;
 
     if (m_stop_time_index == 0) return stop_simulation;
 
-    if ((m_stop_time > 0.0) && (m_cur_time >= m_stop_time))
+    if ((m_stop_time > 0.0) && ((m_new_time + eps) >= m_stop_time))
         return stop_simulation;
 
     if ((m_stop_time_index > 0) && (m_time_index >= m_stop_time_index))
