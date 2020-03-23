@@ -4,6 +4,70 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
+struct StencilInterior
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5, 0.0, -0.5},
+        {0.5, 0.0, -0.5},
+        {0.5, 0.0, -0.5}
+    };
+};
+
+struct StencilILO
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5, 0.5, -1.0},
+        {0.5, 0.0, -0.5},
+        {0.5, 0.0, -0.5}
+    };
+};
+
+struct StencilJLO
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5, 0.0, -0.5},
+        {0.5, 0.5, -1.0},
+        {0.5, 0.0, -0.5}
+    };
+};
+
+struct StencilKLO
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5, 0.0, -0.5},
+        {0.5, 0.0, -0.5},
+        {0.5, 0.5, -1.0}
+    };
+};
+
+struct StencilIHI
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {1.0, -0.5, -0.5},
+        {0.5,  0.0, -0.5},
+        {0.5,  0.0, -0.5}
+    };
+};
+
+struct StencilJHI
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5,  0.0, -0.5},
+        {1.0, -0.5, -0.5},
+        {0.5,  0.0, -0.5}
+    };
+};
+
+struct StencilKHI
+{
+    static const amrex::Real constexpr coeffs[3][3] = {
+        {0.5,  0.0, -0.5},
+        {0.5,  0.0, -0.5},
+        {1.0, -0.5, -0.5}
+    };
+};
+
+template<typename Stencil>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 amrex::Real incflo_strainrate (int i, int j, int k,
                                amrex::Real idx, amrex::Real idy, amrex::Real idz,
@@ -11,167 +75,31 @@ amrex::Real incflo_strainrate (int i, int j, int k,
 {
     using namespace amrex;
     
-    const Real ux = 0.5 * (vel(i+1,j,k,0) - vel(i-1,j,k,0)) * idx;
-    const Real vx = 0.5 * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx;
-    const Real wx = 0.5 * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx;
-
-    const Real uy = 0.5 * (vel(i,j+1,k,0) - vel(i,j-1,k,0)) * idy;
-    const Real vy = 0.5 * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy;
-    const Real wy = 0.5 * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy;
-
-    const Real uz = 0.5 * (vel(i,j,k+1,0) - vel(i,j,k-1,0)) * idz;
-    const Real vz = 0.5 * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz;
-    const Real wz = 0.5 * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz;
-
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
-
-// i = 0 first cell
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_ilo (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
-
-    // average velocity to face i+1/2 and take derivative about cell center between interior face and boundary face i-1
-    const Real ux = (0.5 * (vel(i+1,j,k,0) + vel(i,j,k,0)) - vel(i-1,j,k,0)) * idx;
-    const Real vx = (0.5 * (vel(i+1,j,k,1) + vel(i,j,k,1)) - vel(i-1,j,k,1)) * idx;
-    const Real wx = (0.5 * (vel(i+1,j,k,2) + vel(i,j,k,2)) - vel(i-1,j,k,2)) * idx;
+    Real cp1, c, cm1;
     
-    const Real uy = 0.5 * (vel(i,j+1,k,0) - vel(i,j-1,k,0)) * idy;
-    const Real vy = 0.5 * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy;
-    const Real wy = 0.5 * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy;
-
-    const Real uz = 0.5 * (vel(i,j,k+1,0) - vel(i,j,k-1,0)) * idz;
-    const Real vz = 0.5 * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz;
-    const Real wz = 0.5 * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz;
-
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
-
-// j = 0 first cell
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_jlo (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
-
-    const Real ux = 0.5 * (vel(i+1,j,k,0) - vel(i-1,j,k,0)) * idx;
-    const Real vx = 0.5 * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx;
-    const Real wx = 0.5 * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx;
-
-    // average velocity to face k+1/2 and take derivative about cell center between interior face and boundary face k-1
-    const Real uy = (0.5 * (vel(i,j+1,k,0) + vel(i,j,k,0)) - vel(i,j-1,k,0)) * idy;
-    const Real vy = (0.5 * (vel(i,j+1,k,1) + vel(i,j,k,1)) - vel(i,j-1,k,1)) * idy;
-    const Real wy = (0.5 * (vel(i,j+1,k,2) + vel(i,j,k,2)) - vel(i,j-1,k,2)) * idy;
-   
-    const Real uz = 0.5 * (vel(i,j,k+1,0) - vel(i,j,k-1,0)) * idz;
-    const Real vz = 0.5 * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz;
-    const Real wz = 0.5 * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz;
+    cp1 = Stencil::coeffs[0][0];
+    c   = Stencil::coeffs[0][1];
+    cm1 = Stencil::coeffs[0][2];
     
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
+    const Real ux = (cp1*vel(i+1,j,k,0) + c*vel(i,j,k,0) + cm1*vel(i-1,j,k,0)) * idx;
+    const Real vx = (cp1*vel(i+1,j,k,1) + c*vel(i,j,k,1) + cm1*vel(i-1,j,k,1)) * idx;
+    const Real wx = (cp1*vel(i+1,j,k,2) + c*vel(i,j,k,2) + cm1*vel(i-1,j,k,2)) * idx;
 
-// k = 0 first cell
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_klo (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
+    cp1 = Stencil::coeffs[1][0];
+    c   = Stencil::coeffs[1][1];
+    cm1 = Stencil::coeffs[1][2];
+    
+    const Real uy = (cp1*vel(i,j+1,k,0) + c*vel(i,j,k,0) + cm1*vel(i,j-1,k,0)) * idy;
+    const Real vy = (cp1*vel(i,j+1,k,1) + c*vel(i,j,k,1) + cm1*vel(i,j-1,k,1)) * idy;
+    const Real wy = (cp1*vel(i,j+1,k,2) + c*vel(i,j,k,2) + cm1*vel(i,j-1,k,2)) * idy;
 
-    const Real ux = 0.5 * (vel(i+1,j,k,0) - vel(i-1,j,k,0)) * idx;
-    const Real vx = 0.5 * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx;
-    const Real wx = 0.5 * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx;
-
-    const Real uy = 0.5 * (vel(i,j+1,k,0) - vel(i,j-1,k,0)) * idy;
-    const Real vy = 0.5 * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy;
-    const Real wy = 0.5 * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy;
-
-    // average velocity to face k+1/2 and take derivative about cell center between interior face and boundary face k-1
-    const Real uz = (0.5 * (vel(i,j,k+1,0) + vel(i,j,k,0)) - vel(i,j,k-1,0)) * idz;
-    const Real vz = (0.5 * (vel(i,j,k+1,1) + vel(i,j,k,1)) - vel(i,j,k-1,1)) * idz;
-    const Real wz = (0.5 * (vel(i,j,k+1,2) + vel(i,j,k,2)) - vel(i,j,k-1,2)) * idz;
-
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
-
-// i = ncell-1
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_ihi (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
-
-    // average velocity to face i-1/2 and take derivative about cell center between interior face and boundary face i+1
-    const Real ux = (vel(i+1,j,k,0) - 0.5 * (vel(i,j,k,0) + vel(i-1,j,k,0))) * idx;
-    const Real vx = (vel(i+1,j,k,1) - 0.5 * (vel(i,j,k,1) + vel(i-1,j,k,1))) * idx;
-    const Real wx = (vel(i+1,j,k,2) - 0.5 * (vel(i,j,k,2) + vel(i-1,j,k,2))) * idx;
-
-    const Real uy = 0.5 * (vel(i,j+1,k,0) - vel(i,j-1,k,0)) * idy;
-    const Real vy = 0.5 * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy;
-    const Real wy = 0.5 * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy;
-
-    const Real uz = 0.5 * (vel(i,j,k+1,0) - vel(i,j,k-1,0)) * idz;
-    const Real vz = 0.5 * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz;
-    const Real wz = 0.5 * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz;
-
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
-
-// j = ncell-1
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_jhi (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
-
-    const Real ux = 0.5 * (vel(i+1,j,k,0) - vel(i-1,j,k,0)) * idx;
-    const Real vx = 0.5 * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx;
-    const Real wx = 0.5 * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx;
-
-    // average velocity to face j-1/2 and take derivative about cell center between interior face and boundary face j+1
-    const Real uy = (vel(i,j+1,k,0) - 0.5 * (vel(i,j,k,0) + vel(i,j-1,k,0))) * idy;
-    const Real vy = (vel(i,j+1,k,1) - 0.5 * (vel(i,j,k,1) + vel(i,j-1,k,1))) * idy;
-    const Real wy = (vel(i,j+1,k,2) - 0.5 * (vel(i,j,k,2) + vel(i,j-1,k,2))) * idy;
-
-    const Real uz = 0.5 * (vel(i,j,k+1,0) - vel(i,j,k-1,0)) * idz;
-    const Real vz = 0.5 * (vel(i,j,k+1,1) - vel(i,j,k-1,1)) * idz;
-    const Real wz = 0.5 * (vel(i,j,k+1,2) - vel(i,j,k-1,2)) * idz;
-
-    return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
-                     + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
-}
-
-// k = ncell-1
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate_khi (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
-{
-    using namespace amrex;
-
-    const Real ux = 0.5 * (vel(i+1,j,k,0) - vel(i-1,j,k,0)) * idx;
-    const Real vx = 0.5 * (vel(i+1,j,k,1) - vel(i-1,j,k,1)) * idx;
-    const Real wx = 0.5 * (vel(i+1,j,k,2) - vel(i-1,j,k,2)) * idx;
-
-    const Real uy = 0.5 * (vel(i,j+1,k,0) - vel(i,j-1,k,0)) * idy;
-    const Real vy = 0.5 * (vel(i,j+1,k,1) - vel(i,j-1,k,1)) * idy;
-    const Real wy = 0.5 * (vel(i,j+1,k,2) - vel(i,j-1,k,2)) * idy;
-
-    // average velocity to face k-1/2 and take derivative about cell center between interior face and boundary face k+1
-    const Real uz = (vel(i,j,k+1,0) - 0.5 * (vel(i,j,k,0) + vel(i,j,k-1,0))) * idz;
-    const Real vz = (vel(i,j,k+1,1) - 0.5 * (vel(i,j,k,1) + vel(i,j,k-1,1))) * idz;
-    const Real wz = (vel(i,j,k+1,2) - 0.5 * (vel(i,j,k,2) + vel(i,j,k-1,2))) * idz;
+    cp1 = Stencil::coeffs[2][0];
+    c   = Stencil::coeffs[2][1];
+    cm1 = Stencil::coeffs[2][2];
+    
+    const Real uz = (cp1*vel(i,j,k+1,0) + c*vel(i,j,k,0) + cm1*vel(i,j,k-1,0)) * idz;
+    const Real vz = (cp1*vel(i,j,k+1,1) + c*vel(i,j,k,1) + cm1*vel(i,j,k-1,1)) * idz;
+    const Real wz = (cp1*vel(i,j,k+1,2) + c*vel(i,j,k,2) + cm1*vel(i,j,k-1,2)) * idz;
 
     return std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz
                      + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
