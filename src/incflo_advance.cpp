@@ -277,9 +277,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
                             GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
                             m_time.current_time());
 
-    // velocity at n+1/2
+    // average face velocity at n+1/2 to cell center
     for (int lev = 0; lev <= finest_level; lev++){
-        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&u_mac[lev],&u_mac[lev]});
+        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&v_mac[lev],&w_mac[lev]});
     }
     
     // *************************************************************************************
@@ -666,7 +666,7 @@ void incflo::ApplyCorrector()
                             {}, {}, new_time);
 
     for (int lev = 0; lev <= finest_level; lev++){
-        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&u_mac[lev],&u_mac[lev]});
+        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&v_mac[lev],&w_mac[lev]});
     }
     
     // *************************************************************************************
@@ -756,7 +756,6 @@ void incflo::ApplyCorrector()
                 Array4<Real const> const& rho_o   = ld.density_o.const_array(mfi);
                 Array4<Real      > const& tra     = ld.tracer.array(mfi);
                 Array4<Real const> const& rho     = ld.density.const_array(mfi);
-                Array4<Real const> const& rho_nph = density_nph[lev].const_array(mfi);
                 Array4<Real const> const& dtdt_o  = ld.conv_tracer_o.const_array(mfi);
                 Array4<Real const> const& dtdt    = ld.conv_tracer.const_array(mfi);
                 Array4<Real const> const& tra_f   = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
