@@ -177,12 +177,18 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     // *************************************************************************************
-    // Allocate space for half-time density
+    // Allocate space for half-time density, velocity, tracer
     // *************************************************************************************
     Vector<MultiFab> density_nph;
-    for (int lev = 0; lev <= finest_level; ++lev)
+    Vector<MultiFab> velocity_nph;
+    Vector<MultiFab> tracer_nph;
+    
+    for (int lev = 0; lev <= finest_level; ++lev){
         density_nph.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
-
+        velocity_nph.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(), Factory(lev));
+        tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
+    }
+    
     // Forcing terms
     Vector<MultiFab> vel_forces, tra_forces;
 
@@ -212,7 +218,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
                            get_density_old_const(),
-                           get_tracer_old_const(), get_tracer_old_const());
+                           get_tracer_old_const());
 
         // Note this is forcing for (rho s), not for s
         if (m_advect_tracer)
@@ -271,6 +277,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
                             GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
                             m_time.current_time());
 
+    // velocity at n+1/2
+    for (int lev = 0; lev <= finest_level; lev++){
+        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&u_mac[lev],&u_mac[lev]});
+    }
+    
     // *************************************************************************************
     // Define local variables for lambda to capture.
     // *************************************************************************************
@@ -405,13 +416,30 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                   dt_diff);
     } // if (m_advect_tracer)
 
+
+    if (m_advect_tracer) {
+        // tracer_nph = (tracer_old+tracer_new)/2
+        for (int lev = 0; lev <= finest_level; lev++) {
+            MultiFab::LinComb(tracer_nph[lev],
+                              0.5, m_leveldata[lev]->tracer_o, 0,
+                              0.5, m_leveldata[lev]->tracer, 0,
+                              0, m_ntrac, 1);
+        }
+    } else {
+        // tracer not advecting so just copy in
+        // fixme we could instead put an if statement on compute_vel_forces and pass in tracer_o or tracer_nph depending on m_advect_trace
+        for (int lev = 0; lev <= finest_level; lev++) {
+            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
+        }
+    }
+    
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
-    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
+    compute_vel_forces(GetVecOfPtrs(vel_forces), GetVecOfConstPtrs(velocity_nph),
                        GetVecOfConstPtrs(density_nph),
-                       get_tracer_old_const(), get_tracer_new_const());
+                       GetVecOfConstPtrs(tracer_nph));
 
 
     // *************************************************************************************
@@ -599,8 +627,13 @@ void incflo::ApplyCorrector()
     // Allocate space for half-time density
     // *************************************************************************************
     Vector<MultiFab> density_nph;
+    Vector<MultiFab> velocity_nph;
+    Vector<MultiFab> tracer_nph;
+
     for (int lev = 0; lev <= finest_level; ++lev) {
         density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+        velocity_nph.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(), Factory(lev));
+        tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
     }
 
     // **********************************************************************************************
@@ -632,6 +665,10 @@ void incflo::ApplyCorrector()
                             GetVecOfPtrs(w_mac),
                             {}, {}, new_time);
 
+    for (int lev = 0; lev <= finest_level; lev++){
+        amrex::average_face_to_cellcenter(velocity_nph[lev],0,Vector<const MultiFab*> {&u_mac[lev],&u_mac[lev],&u_mac[lev]});
+    }
+    
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
@@ -796,12 +833,27 @@ void incflo::ApplyCorrector()
                                                   dt_diff);
     }
 
+    if (m_advect_tracer) {
+        // tracer_nph = (tracer_old+tracer_new)/2
+        for (int lev = 0; lev <= finest_level; lev++) {
+            MultiFab::LinComb(tracer_nph[lev],
+                              0.5, m_leveldata[lev]->tracer_o, 0,
+                              0.5, m_leveldata[lev]->tracer, 0,
+                              0, m_ntrac, 1);
+        }
+    } else {
+        // tracer not advecting so just copy in
+        for (int lev = 0; lev <= finest_level; lev++) {
+            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
+        }
+    }
+    
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
-    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(),
+    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(), //fixme should this be velocity n+1/2??
                        GetVecOfConstPtrs(density_nph),
-                       get_tracer_old_const(), get_tracer_new_const());
+                       GetVecOfConstPtrs(tracer_nph));
 
     // *************************************************************************************
     // Update velocity

@@ -87,13 +87,11 @@ public: // for cuda
     void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                              amrex::Vector<amrex::MultiFab const*> const& velocity,
                              amrex::Vector<amrex::MultiFab const*> const& density,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer_old,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer_new);
+                             amrex::Vector<amrex::MultiFab const*> const& tracer);
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
                                        const amrex::MultiFab& density,
-                                       const amrex::MultiFab& tracer_old,
-                                       const amrex::MultiFab& tracer_new);
+                                       const amrex::MultiFab& tracer);
     void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
                                     const amrex::MultiFab& density);
 

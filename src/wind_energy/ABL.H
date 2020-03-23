@@ -32,21 +32,15 @@ public:
         const amrex::Geometry& geom,
         LevelData& leveldata) const override;
 
+    //! Perform tasks necessary before advancing timestep
     void pre_advance_work() override;
-
-    //! Add momentum source terms
-    void add_momentum_sources(
-        const amrex::Geometry& geom,
-        const LevelData& leveldata,
-        amrex::MultiFab& vel_forces) const override;
 
     //! Add momentum source terms
     void add_momentum_sources(
         const amrex::Geometry& geom,
         const amrex::MultiFab& density,
         const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars_old,
-        const amrex::MultiFab& scalars_new,
+        const amrex::MultiFab& scalars,
         amrex::MultiFab& vel_forces) const override;
 
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }

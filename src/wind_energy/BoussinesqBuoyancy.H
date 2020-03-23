@@ -16,8 +16,7 @@ public:
 
     void operator()(
         const amrex::Box& bx,
-        const amrex::Array4<const amrex::Real>& scalars_old,
-        const amrex::Array4<const amrex::Real>& scalars_new,
+        const amrex::Array4<const amrex::Real>& scalars,
         const amrex::Array4<amrex::Real>& vel_forces) const;
 
 private:
