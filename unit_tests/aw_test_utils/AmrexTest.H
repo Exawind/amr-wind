@@ -15,9 +15,9 @@ class AmrexTest : public ::testing::Test
 public:
     AmrexTest() = default;
 
-    ~AmrexTest() = default;
+    virtual ~AmrexTest() = default;
 
-    void SetUp() override
+    virtual void SetUp() override
     {
         amrex::ParmParse pp("utest");
         pp.query("keep_parameters", m_keep_parameters);
@@ -26,7 +26,7 @@ public:
             amrex::ParmParse::Initialize(0, nullptr, nullptr);
     }
 
-    void TearDown() override
+    virtual void TearDown() override
     {
         if (!m_keep_parameters) amrex::ParmParse::Finalize();
     }
