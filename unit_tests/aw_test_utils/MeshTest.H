@@ -1,0 +1,56 @@
+#ifndef MESHTEST_H
+#define MESHTEST_H
+
+#include <memory>
+
+#include "aw_test_utils/AmrexTest.H"
+#include "aw_test_utils/AmrTestMesh.H"
+#include "SimTime.H"
+
+namespace amr_wind_tests {
+
+/** Base class for test fixtures that require a valid AmrMesh instance
+ */
+class MeshTest : public AmrexTest
+{
+public:
+    MeshTest() = default;
+
+    virtual ~MeshTest() = default;
+
+    /** Populate the ParmParse instance with all the necessary input variables
+     *  for this test fixture
+     */
+    virtual void populate_parameters();
+
+    //! Create the mesh instance
+    virtual void create_mesh_instance();
+
+    //! Perform initialization actions
+    virtual void initialize_mesh();
+
+    amr_wind::SimTime& time()
+    {
+        if (!m_time)
+            m_time.reset(new amr_wind::SimTime());
+        return *m_time;
+    }
+
+    AmrTestMesh& mesh() { return *m_mesh; }
+
+    template <typename T>
+    T& mesh()
+    {
+        return dynamic_cast<T*>(*m_mesh);
+    }
+
+protected:
+    std::unique_ptr<AmrTestMesh> m_mesh;
+    std::unique_ptr<amr_wind::SimTime> m_time;
+
+    bool m_need_params{true};
+};
+
+}
+
+#endif /* MESHTEST_H */
