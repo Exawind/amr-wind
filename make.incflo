@@ -28,6 +28,8 @@ Bdirs += $(INCFLO_HOME)src/projection
 Bdirs += $(INCFLO_HOME)src/rheology
 Bdirs += $(INCFLO_HOME)src/setup
 Bdirs += $(INCFLO_HOME)src/utilities
+Bdirs += $(INCFLO_HOME)src/core
+Bdirs += $(INCFLO_HOME)src/wind_energy
 
 ifeq ($(USE_EB), TRUE)
 Bdirs 	+= $(INCFLO_HOME)src/embedded_boundaries

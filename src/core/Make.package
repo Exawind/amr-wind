@@ -1,0 +1,4 @@
+CEXE_sources += SimTime.cpp
+CEXE_headers += SimTime.H
+CEXE_headers += Physics.H
+
