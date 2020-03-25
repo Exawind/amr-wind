@@ -633,7 +633,6 @@ void incflo::ApplyCorrector()
     // Allocate space for half-time density
     // *************************************************************************************
     Vector<MultiFab> density_nph;
-    Vector<MultiFab> velocity_nph;
     Vector<MultiFab> tracer_nph;
 
     for (int lev = 0; lev <= finest_level; ++lev) {
