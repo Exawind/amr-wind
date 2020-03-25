@@ -63,7 +63,7 @@ void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real
     }
 
     for(int i=0;i<ncell_line;++i){
-        outfile << step << ", " << std::scientific << time << ", " << line_xcentroid[i];
+        outfile << step << ", " << std::scientific << std::setprecision(10) << time << ", " << line_xcentroid[i];
         for(int n=0;n<navg;++n){
             outfile <<  ", " << std::scientific << line_average[navg*i+n];
         }
