@@ -121,6 +121,21 @@ TEST_F(ABLTest, coriolis_const_vel)
     }
 }
 
+namespace {
+
+void cor_height_init_vel_field(
+    amrex::Box& bx,
+    amrex::FArrayBox& velocity)
+{
+    // Set y velocity as a function of height with (dx = 1.0)
+    auto vel = velocity.array();
+    amrex::ParallelFor(bx, [vel] AMREX_GPU_DEVICE(int i, int j, int k) {
+        vel(i, j, k, 1) = static_cast<amrex::Real>(k);
+    });
+}
+
+}
+
 TEST_F(ABLTest, coriolis_height_variation)
 {
     constexpr int kdim = 16;
@@ -141,13 +156,7 @@ TEST_F(ABLTest, coriolis_height_variation)
 
     velocity.setVal(0.0);
     vel_src.setVal(0.0);
-    {
-        // Set y velocity as a function of height with (dx = 1.0)
-        auto vel = velocity.array();
-        amrex::ParallelFor(bx, [vel] AMREX_GPU_DEVICE(int i, int j, int k) {
-            vel(i, j, k, 1) = static_cast<amrex::Real>(k);
-        });
-    }
+    cor_height_init_vel_field(bx, velocity);
 
     coriolis(bx, velocity.array(), vel_src.array());
 
