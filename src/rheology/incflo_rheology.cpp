@@ -130,7 +130,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
                         // fixme strainrate does not account for one sided stencils near walls
-                        Real sr = incflo_strainrate<StencilInterior>(i,j,k,idx,idy,idz,vel_arr);
+                        Real sr = incflo_strainrate(i,j,k,idx,idy,idz,vel_arr);
                         Real den = rho_arr(i,j,k);
                         eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
 
@@ -157,7 +157,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxlo,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                                Real sr = incflo_strainrate<StencilILO>(i,j,k,idx,idy,idz,vel_arr);
+                                Real sr = incflo_strainrate_ilo(i,j,k,idx,idy,idz,vel_arr);
                                 Real den = rho_arr(i,j,k);
                                 eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
@@ -176,7 +176,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxhi,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                               Real sr = incflo_strainrate<StencilIHI>(i,j,k,idx,idy,idz,vel_arr);
+                               Real sr = incflo_strainrate_ihi(i,j,k,idx,idy,idz,vel_arr);
                                Real den = rho_arr(i,j,k);
                                eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
@@ -198,7 +198,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxlo,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                                Real sr = incflo_strainrate<StencilJLO>(i,j,k,idx,idy,idz,vel_arr);
+                                Real sr = incflo_strainrate_jlo(i,j,k,idx,idy,idz,vel_arr);
                                 Real den = rho_arr(i,j,k);
                                 eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
@@ -217,7 +217,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxhi,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                               Real sr = incflo_strainrate<StencilJHI>(i,j,k,idx,idy,idz,vel_arr);
+                               Real sr = incflo_strainrate_jhi(i,j,k,idx,idy,idz,vel_arr);
                                Real den = rho_arr(i,j,k);
                                eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
@@ -239,7 +239,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxlo,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                                Real sr = incflo_strainrate<StencilKLO>(i,j,k,idx,idy,idz,vel_arr);
+                                Real sr = incflo_strainrate_klo(i,j,k,idx,idy,idz,vel_arr);
                                 Real den = rho_arr(i,j,k);
                                 eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
@@ -258,7 +258,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                             amrex::ParallelFor(bxhi,
                             [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                             {
-                               Real sr = incflo_strainrate<StencilKHI>(i,j,k,idx,idy,idz,vel_arr);
+                               Real sr = incflo_strainrate_khi(i,j,k,idx,idy,idz,vel_arr);
                                Real den = rho_arr(i,j,k);
                                eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
                             });
