@@ -101,6 +101,8 @@ endfunction(add_test_u)
 #=============================================================================
 add_test_r(tgv_mol 4)
 add_test_r(tgv_godunov 4)
+add_test_r(boussinesq_bubble_godunov 4)
+add_test_r(boussinesq_bubble_mol 4)
 
 #=============================================================================
 # Verification tests
