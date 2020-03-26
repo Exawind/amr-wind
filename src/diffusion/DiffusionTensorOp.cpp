@@ -273,7 +273,7 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
     }
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion());
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
     for (int lev = 0; lev <= finest_level; ++lev) {
         for (MFIter mfi(*a_divtau[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) {

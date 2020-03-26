@@ -95,7 +95,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
             const Box& domain = gm.Domain();
 
 #ifdef _OPENMP
-#pragma omp parallel omp if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
             for (MFIter mfi(*vel_eta[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {

@@ -471,9 +471,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev) {
             fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-            if (m_advect_tracer) {
-                fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
-            }
+            fillphysbc_density (lev, new_time, m_leveldata[lev]->density , ng_diffusion);
         }
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
@@ -871,8 +869,10 @@ void incflo::ApplyCorrector()
     {
         const int ng_diffusion = 1;
         for (int lev = 0; lev <= finest_level; ++lev)
+        {
             fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-
+            fillphysbc_density (lev, new_time, m_leveldata[lev]->density , ng_diffusion);
+        }
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
                                                     get_density_new_const(),
