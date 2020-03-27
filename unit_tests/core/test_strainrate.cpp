@@ -111,20 +111,20 @@ TEST_F(StrainrateTest, ilo)
                 amrex::Real y = 2.5 + j*dy;
                 amrex::Real z = 5.2 + k*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 7.8;
+                vel_arr(i,j,k,0) = 3.0*x - 2.6*y*z + 2.9*z*z + 7.8;
                 amrex::Real ux =  3.0;
-                amrex::Real uy = -2.6;
-                amrex::Real uz =  2.9;
+                amrex::Real uy = -2.6*z;
+                amrex::Real uz = -2.6*y + 5.8*z;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.8;
+                vel_arr(i,j,k,1) = 3.9*x + 0.6*y*y - 9.9*z + 3.8;
                 amrex::Real vx = 3.9;
-                amrex::Real vy = 0.6;
+                amrex::Real vy = 1.2*y;
                 amrex::Real vz = -9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
+                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z*y + 1.0;
                 amrex::Real wx = -5.6;
-                amrex::Real wy = 2.8;
-                amrex::Real wz = 4.5;
+                amrex::Real wy = 2.8 + 4.5*z;
+                amrex::Real wz = 4.5*y;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
                 
@@ -178,20 +178,20 @@ TEST_F(StrainrateTest, ihi)
                 amrex::Real y = 2.5 + j*dy;
                 amrex::Real z = 5.2 + k*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 7.8;
+                vel_arr(i,j,k,0) = 3.0*x - 2.6*y*z + 2.9*z*z + 7.8;
                 amrex::Real ux =  3.0;
-                amrex::Real uy = -2.6;
-                amrex::Real uz =  2.9;
+                amrex::Real uy = -2.6*z;
+                amrex::Real uz = -2.6*y + 5.8*z;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.8;
+                vel_arr(i,j,k,1) = 3.9*x + 0.6*y*y - 9.9*z + 3.8;
                 amrex::Real vx = 3.9;
-                amrex::Real vy = 0.6;
+                amrex::Real vy = 1.2*y;
                 amrex::Real vz = -9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
+                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z*y + 1.0;
                 amrex::Real wx = -5.6;
-                amrex::Real wy = 2.8;
-                amrex::Real wz = 4.5;
+                amrex::Real wy = 2.8 + 4.5*z;
+                amrex::Real wz = 4.5*y;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
                 
@@ -244,20 +244,20 @@ TEST_F(StrainrateTest, jlo)
                 
                 amrex::Real z = 5.2 + k*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 2.3;
-                amrex::Real ux =  3.0;
+                vel_arr(i,j,k,0) = 3.0*x*x - 2.6*y + 2.9*z + 2.3;
+                amrex::Real ux =  6.0*x;
                 amrex::Real uy = -2.6;
                 amrex::Real uz =  2.9;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.8;
-                amrex::Real vx = 3.9;
+                vel_arr(i,j,k,1) = 3.9*x*z + 0.6*y - 9.9*z + 3.8;
+                amrex::Real vx = 3.9*z;
                 amrex::Real vy = 0.6;
-                amrex::Real vz = -9.9;
+                amrex::Real vz = 3.9*x - 9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
+                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 2.3*z*z + 1.0;
                 amrex::Real wx = -5.6;
                 amrex::Real wy = 2.8;
-                amrex::Real wz = 4.5;
+                amrex::Real wz = 4.5 + 4.6*z;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
                 
@@ -309,20 +309,20 @@ TEST_F(StrainrateTest, jhi)
                 if(j==2) y += 1.5*dy;
                 amrex::Real z = 5.2 + k*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 7.8;
-                amrex::Real ux =  3.0;
+                vel_arr(i,j,k,0) = 3.0*x*x - 2.6*y + 2.9*z + 2.3;
+                amrex::Real ux =  6.0*x;
                 amrex::Real uy = -2.6;
                 amrex::Real uz =  2.9;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.4;
-                amrex::Real vx = 3.9;
+                vel_arr(i,j,k,1) = 3.9*x*z + 0.6*y - 9.9*z + 3.8;
+                amrex::Real vx = 3.9*z;
                 amrex::Real vy = 0.6;
-                amrex::Real vz = -9.9;
+                amrex::Real vz = 3.9*x - 9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
+                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 2.3*z*z + 1.0;
                 amrex::Real wx = -5.6;
                 amrex::Real wy = 2.8;
-                amrex::Real wz = 4.5;
+                amrex::Real wz = 4.5 + 4.6*z;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
                 
@@ -375,19 +375,19 @@ TEST_F(StrainrateTest, klo)
                 if(k==1) z += 0.5*dz;
                 if(k==2) z += 1.5*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 2.3;
-                amrex::Real ux =  3.0;
-                amrex::Real uy = -2.6;
+                vel_arr(i,j,k,0) = 3.0*x*x - 3.4*x*y + 2.6*y + 2.9*z + 2.3;
+                amrex::Real ux =  6.0*x - 3.4*y;
+                amrex::Real uy =  -3.4*x + 2.6;
                 amrex::Real uz =  2.9;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.8;
+                vel_arr(i,j,k,1) = 3.9*x + 0.6*y*y - 9.9*z + 3.8;
                 amrex::Real vx = 3.9;
-                amrex::Real vy = 0.6;
+                amrex::Real vy = 1.2*y;
                 amrex::Real vz = -9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
-                amrex::Real wx = -5.6;
-                amrex::Real wy = 2.8;
+                vel_arr(i,j,k,2) = -5.6*x*y + 2.8*y + 4.5*z + 1.0;
+                amrex::Real wx = -5.6*y;
+                amrex::Real wy = -5.6*x + 2.8;
                 amrex::Real wz = 4.5;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
@@ -440,19 +440,19 @@ TEST_F(StrainrateTest, khi)
                 if(k==1) z += dz;
                 if(k==2) z += 1.5*dz;
                 
-                vel_arr(i,j,k,0) = 3.0*x - 2.6*y + 2.9*z + 7.8;
-                amrex::Real ux =  3.0;
-                amrex::Real uy = -2.6;
+                vel_arr(i,j,k,0) = 3.0*x*x - 3.4*x*y + 2.6*y + 2.9*z + 2.3;
+                amrex::Real ux =  6.0*x - 3.4*y;
+                amrex::Real uy =  -3.4*x + 2.6;
                 amrex::Real uz =  2.9;
                 
-                vel_arr(i,j,k,1) = 3.9*x + 0.6*y - 9.9*z + 3.4;
+                vel_arr(i,j,k,1) = 3.9*x + 0.6*y*y - 9.9*z + 3.8;
                 amrex::Real vx = 3.9;
-                amrex::Real vy = 0.6;
+                amrex::Real vy = 1.2*y;
                 amrex::Real vz = -9.9;
                 
-                vel_arr(i,j,k,2) = -5.6*x + 2.8*y + 4.5*z + 1.0;
-                amrex::Real wx = -5.6;
-                amrex::Real wy = 2.8;
+                vel_arr(i,j,k,2) = -5.6*x*y + 2.8*y + 4.5*z + 1.0;
+                amrex::Real wx = -5.6*y;
+                amrex::Real wy = -5.6*x + 2.8;
                 amrex::Real wz = 4.5;
 
                 sr_arr(i,j,k) = std::sqrt(2.0 * ux*ux + 2.0 * vy*vy + 2.0 * wz*wz + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
