@@ -1,11 +1,6 @@
 #include <AMReX_REAL.H>
 #include <AMReX_BLFort.H>
 #include <AMReX_SPACE.H>
-
-#ifdef AMREX_USE_EB
-#include <AMReX_EBFArrayBox.H>
-#endif
-
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
 

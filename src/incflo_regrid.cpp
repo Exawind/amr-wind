@@ -16,15 +16,8 @@ void incflo::MakeNewLevelFromCoarse (int lev,
         amrex::Print() << "Making new level " << lev << " from coarse" << std::endl;
     }
 
-#ifdef AMREX_USE_EB
-    std::unique_ptr<FabFactory<FArrayBox> > new_fact = makeEBFabFactory(geom[lev], ba, dm,
-                                                                        {nghost_eb_basic(),
-                                                                         nghost_eb_volume(),
-                                                                         nghost_eb_full()},
-                                                                        EBSupport::full);
-#else
     std::unique_ptr<FabFactory<FArrayBox> > new_fact(new FArrayBoxFactory());
-#endif
+
     std::unique_ptr<LevelData> new_leveldata
         (new LevelData(ba, dm, *new_fact, m_ntrac, nghost_state(),
                        m_use_godunov,
@@ -57,15 +50,8 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
         amrex::Print() << "Remaking level " << lev << std::endl;
     }
 
-#ifdef AMREX_USE_EB
-    std::unique_ptr<FabFactory<FArrayBox> > new_fact = makeEBFabFactory(geom[lev], ba, dm,
-                                                                        {nghost_eb_basic(),
-                                                                         nghost_eb_volume(),
-                                                                         nghost_eb_full()},
-                                                                        EBSupport::full);
-#else
     std::unique_ptr<FabFactory<FArrayBox> > new_fact(new FArrayBoxFactory());
-#endif
+
     std::unique_ptr<LevelData> new_leveldata
         (new LevelData(ba, dm, *new_fact, m_ntrac, nghost_state(),
                        m_use_godunov,

@@ -16,11 +16,6 @@ void incflo::ReadParameters ()
 
     { // Prefix amr
         ParmParse pp("amr");
-
-#ifdef AMREX_USE_EB
-        pp.query("refine_cutcells", m_refine_cutcells);
-#endif
-
         pp.query("KE_int", m_KE_int);
     } // end prefix amr
 

@@ -2,10 +2,6 @@
 #include <DiffusionScalarOp.H>
 #include <AMReX_ParmParse.H>
 
-#ifdef AMREX_USE_EB
-#include <AMReX_EB_utils.H>
-#endif
-
 using namespace amrex;
 
 DiffusionScalarOp::DiffusionScalarOp (incflo* a_incflo)
@@ -17,51 +13,24 @@ DiffusionScalarOp::DiffusionScalarOp (incflo* a_incflo)
     info_solve.setMaxCoarseningLevel(m_mg_max_coarsening_level);
     LPInfo info_apply;
     info_apply.setMaxCoarseningLevel(0);
-#ifdef AMREX_USE_EB
-    int finest_level = m_incflo->finestLevel();
-    if (!m_incflo->EBFactory(0).isAllRegular())
-    {
-        Vector<EBFArrayBoxFactory const*> ebfact;
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            ebfact.push_back(&(m_incflo->EBFactory(lev)));
-        }
-        m_eb_solve_op.reset(new MLEBABecLap(m_incflo->Geom(0,finest_level),
-                                            m_incflo->boxArray(0,finest_level),
-                                            m_incflo->DistributionMap(0,finest_level),
-                                            info_solve, ebfact));
-        m_eb_solve_op->setMaxOrder(m_mg_maxorder);
-        m_eb_solve_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
-                                   m_incflo->get_diffuse_scalar_bc(Orientation::high));
-        if (m_incflo->need_divtau()) {
-            m_eb_apply_op.reset(new MLEBABecLap(m_incflo->Geom(0,finest_level),
-                                                m_incflo->boxArray(0,finest_level),
-                                                m_incflo->DistributionMap(0,finest_level),
-                                                info_apply, ebfact));
-            m_eb_apply_op->setMaxOrder(m_mg_maxorder);
-            m_eb_apply_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
-                                       m_incflo->get_diffuse_scalar_bc(Orientation::high));
-        }
-    }
-    else
-#endif
-    {
-        m_reg_solve_op.reset(new MLABecLaplacian(m_incflo->Geom(0,m_incflo->finestLevel()),
+
+    m_reg_solve_op.reset(new MLABecLaplacian(m_incflo->Geom(0,m_incflo->finestLevel()),
+                                             m_incflo->boxArray(0,m_incflo->finestLevel()),
+                                             m_incflo->DistributionMap(0,m_incflo->finestLevel()),
+                                             info_solve));
+    m_reg_solve_op->setMaxOrder(m_mg_maxorder);
+    m_reg_solve_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
+                                m_incflo->get_diffuse_scalar_bc(Orientation::high));
+    if (m_incflo->need_divtau()) {
+        m_reg_apply_op.reset(new MLABecLaplacian(m_incflo->Geom(0,m_incflo->finestLevel()),
                                                  m_incflo->boxArray(0,m_incflo->finestLevel()),
                                                  m_incflo->DistributionMap(0,m_incflo->finestLevel()),
-                                                 info_solve));
-        m_reg_solve_op->setMaxOrder(m_mg_maxorder);
-        m_reg_solve_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
+                                                 info_apply));
+        m_reg_apply_op->setMaxOrder(m_mg_maxorder);
+        m_reg_apply_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
                                     m_incflo->get_diffuse_scalar_bc(Orientation::high));
-        if (m_incflo->need_divtau()) {
-            m_reg_apply_op.reset(new MLABecLaplacian(m_incflo->Geom(0,m_incflo->finestLevel()),
-                                                     m_incflo->boxArray(0,m_incflo->finestLevel()),
-                                                     m_incflo->DistributionMap(0,m_incflo->finestLevel()),
-                                                     info_apply));
-            m_reg_apply_op->setMaxOrder(m_mg_maxorder);
-            m_reg_apply_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
-                                        m_incflo->get_diffuse_scalar_bc(Orientation::high));
-        }
     }
+    
 }
 
 void
@@ -108,23 +77,12 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
     for (int lev = 0; lev <= finest_level; ++lev) {
         rhs[lev].define(tracer[lev]->boxArray(), tracer[lev]->DistributionMap(), 1, 0);
     }
-
-#ifdef AMREX_USE_EB
-    if (m_eb_solve_op)
-    {
-        m_eb_solve_op->setScalars(1.0, dt);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_eb_solve_op->setACoeffs(lev, *density[lev]);
-        }
+    
+    m_reg_solve_op->setScalars(1.0, dt);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        m_reg_solve_op->setACoeffs(lev, *density[lev]);
     }
-    else
-#endif
-    {
-        m_reg_solve_op->setScalars(1.0, dt);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_reg_solve_op->setACoeffs(lev, *density[lev]);
-        }
-    }
+    
 
     for (int comp = 0; comp < tracer[0]->nComp(); ++comp)
     {
@@ -132,27 +90,18 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
         Vector<MultiFab> phi;
         for (int lev = 0; lev <= finest_level; ++lev) {
             phi.emplace_back(*tracer[lev], amrex::make_alias, comp, 1);
-#ifdef AMREX_USE_EB
-            if (m_eb_solve_op)
-            {
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
-                m_eb_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_eb_solve_op->setLevelBC(lev, &phi[lev]);
-            }
-            else
-#endif
-            {
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
-                m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                
-                MultiFab bc(phi[lev].boxArray(),phi[lev].DistributionMap(),1, 1, MFInfo(),phi[lev].Factory());
 
-                // copy tracer into bc in case there is a periodic bc
-                // fixme this seems inefficient
-                MultiFab::Copy(bc, phi[lev], 0, 0, 1, 1);
-                m_incflo->heat_flux_model_bc(lev, comp, bc);
-                m_reg_solve_op->setLevelBC(lev, &bc);
-            }
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+            m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
+            
+            MultiFab bc(phi[lev].boxArray(),phi[lev].DistributionMap(),1, 1, MFInfo(),phi[lev].Factory());
+
+            // copy tracer into bc in case there is a periodic bc
+            // fixme this seems inefficient
+            MultiFab::Copy(bc, phi[lev], 0, 0, 1, 1);
+            m_incflo->heat_flux_model_bc(lev, comp, bc);
+            m_reg_solve_op->setLevelBC(lev, &bc);
+            
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -169,11 +118,7 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
             }
         }
 
-#ifdef AMREX_USE_EB
-        MLMG mlmg(m_eb_solve_op ? static_cast<MLLinOp&>(*m_eb_solve_op) : static_cast<MLLinOp&>(*m_reg_solve_op));
-#else
         MLMG mlmg(*m_reg_solve_op);
-#endif
 
         // The default bottom solver is BiCG
         if (m_bottom_solver_type == "smoother")
@@ -214,81 +159,35 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
                            a_tracer[lev]->Factory());
         MultiFab::Copy(tracer[lev], *a_tracer[lev], 0, 0, m_incflo->m_ntrac, 1);
     }
+    
+    // We want to return div (mu grad)) phi
+    m_reg_apply_op->setScalars(0.0, -1.0);
 
-#ifdef AMREX_USE_EB
-    if (m_eb_apply_op)
-    {
-        Vector<MultiFab> laps_tmp(finest_level+1);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            laps_tmp[lev].define(a_laps[lev]->boxArray(),
-                                 a_laps[lev]->DistributionMap(),
-                                 m_incflo->m_ntrac, 2, MFInfo(),
-                                 a_laps[lev]->Factory());
-            laps_tmp[lev].setVal(0.0);
-        }
-
-        // We want to return div (mu grad)) phi
-        m_eb_apply_op->setScalars(0.0, -1.0);
-
-        // This should have no effect since the first scalar is 0
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_eb_apply_op->setACoeffs(lev, *a_density[lev]);
-        }
-
-        for (int comp = 0; comp < m_incflo->m_ntrac; ++comp) {
-            Vector<MultiFab> laps_comp;
-            Vector<MultiFab> tracer_comp;
-            for (int lev = 0; lev <= finest_level; ++lev) {
-                laps_comp.emplace_back(laps_tmp[lev],amrex::make_alias,comp,1);
-                tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
-                m_eb_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                m_eb_apply_op->setLevelBC(lev, &tracer_comp[lev]);
-            }
-
-            MLMG mlmg(*m_eb_apply_op);
-            mlmg.apply(GetVecOfPtrs(laps_comp), GetVecOfPtrs(tracer_comp));
-        }
-
-        for(int lev = 0; lev <= finest_level; lev++)
-        {
-            // xxxxx TODO
-            amrex::single_level_redistribute(lev, laps_tmp[lev],
-                                             *a_laps[lev], 0, m_incflo->m_ntrac,
-                                             m_incflo->Geom());
-        }
+    // This should have no effect since the first scalar is 0
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
     }
-    else
-#endif
-    {
-        // We want to return div (mu grad)) phi
-        m_reg_apply_op->setScalars(0.0, -1.0);
 
-        // This should have no effect since the first scalar is 0
+    for (int comp = 0; comp < m_incflo->m_ntrac; ++comp) {
+        Vector<MultiFab> laps_comp;
+        Vector<MultiFab> tracer_comp;
         for (int lev = 0; lev <= finest_level; ++lev) {
-            m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
+            laps_comp.emplace_back(*a_laps[lev],amrex::make_alias,comp,1);
+            tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
+            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
+            m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
+            
+            MultiFab bc(tracer_comp[lev].boxArray(), tracer_comp[lev].DistributionMap(), 1, 1, MFInfo(), tracer_comp[lev].Factory());
+            // copy tracer into bc in case there is a periodic bc
+            // fixme this seems inefficient
+            MultiFab::Copy(bc, tracer_comp[lev], 0, 0, 1, 1);
+
+            m_incflo->heat_flux_model_bc(lev, comp, bc);
+            m_reg_apply_op->setLevelBC(lev, &bc);
         }
 
-        for (int comp = 0; comp < m_incflo->m_ntrac; ++comp) {
-            Vector<MultiFab> laps_comp;
-            Vector<MultiFab> tracer_comp;
-            for (int lev = 0; lev <= finest_level; ++lev) {
-                laps_comp.emplace_back(*a_laps[lev],amrex::make_alias,comp,1);
-                tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
-                Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
-                m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-                
-                MultiFab bc(tracer_comp[lev].boxArray(), tracer_comp[lev].DistributionMap(), 1, 1, MFInfo(), tracer_comp[lev].Factory());
-                // copy tracer into bc in case there is a periodic bc
-                // fixme this seems inefficient
-                MultiFab::Copy(bc, tracer_comp[lev], 0, 0, 1, 1);
-
-                m_incflo->heat_flux_model_bc(lev, comp, bc);
-                m_reg_apply_op->setLevelBC(lev, &bc);
-            }
-
-            MLMG mlmg(*m_reg_apply_op);
-            mlmg.apply(GetVecOfPtrs(laps_comp), GetVecOfPtrs(tracer_comp));
-        }
+        MLMG mlmg(*m_reg_apply_op);
+        mlmg.apply(GetVecOfPtrs(laps_comp), GetVecOfPtrs(tracer_comp));
     }
+    
 }

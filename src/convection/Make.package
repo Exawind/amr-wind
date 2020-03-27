@@ -1,5 +1,4 @@
 CEXE_sources += incflo_compute_advection_term.cpp
-CEXE_sources += incflo_correct_small_cells.cpp
 CEXE_sources += incflo_MAC_projection.cpp
 
 CEXE_headers += incflo_convection_K.H
