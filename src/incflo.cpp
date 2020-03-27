@@ -2,6 +2,7 @@
 #include <incflo.H>
 
 #include "ABL.H"
+#include "RefinementCriteria.H"
 
 // Need this for TagCutCells
 #ifdef AMREX_USE_EB
