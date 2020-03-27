@@ -39,9 +39,9 @@ public:
     AmrTestMesh& mesh() { return *m_mesh; }
 
     template <typename T>
-    T& mesh()
+    T* mesh()
     {
-        return dynamic_cast<T*>(*m_mesh);
+        return dynamic_cast<T*>(m_mesh.get());
     }
 
 protected:
