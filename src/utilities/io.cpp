@@ -323,11 +323,9 @@ void incflo::WritePlotFile()
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-#ifdef AMREX_USE_EB
-            const int ng = (EBFactory(0).isAllRegular()) ? 1 : 2;
-#else
+
             const int ng = 1;
-#endif
+            
             fillpatch_velocity(lev, m_time.current_time(), m_leveldata[lev]->velocity, ng);
             fillpatch_density(lev, m_time.current_time(), m_leveldata[lev]->density, ng);
             fillpatch_tracer(lev, m_time.current_time(), m_leveldata[lev]->tracer, ng);
@@ -376,11 +374,6 @@ void incflo::WritePlotFile()
 
     // Divergence of velocity field
     if(m_plt_divu) ++ncomp;
-
-#ifdef AMREX_USE_EB
-    // Cut cell volume fraction
-    if(m_plt_vfrac) ++ncomp;
-#endif
 
     Vector<MultiFab> mf(finest_level + 1);
     for (int lev = 0; lev <= finest_level; ++lev) {
@@ -505,21 +498,6 @@ void incflo::WritePlotFile()
         pltscaVarsName.push_back("divu");
         ++icomp;
     }
-#ifdef AMREX_USE_EB
-    if (m_plt_vfrac) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], EBFactory(lev).getVolFrac(), 0, icomp, 1, 0);
-        }
-        pltscaVarsName.push_back("vfrac");
-        ++icomp;
-    }
-#endif
-
-#ifdef AMREX_USE_EB
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        EB_set_covered(mf[lev], 0.0);
-    }
-#endif
 
     AMREX_ALWAYS_ASSERT(ncomp == static_cast<int>(pltscaVarsName.size()));
 

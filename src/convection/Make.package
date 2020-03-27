@@ -1,5 +1,4 @@
 CEXE_sources += incflo_compute_advection_term.cpp
-CEXE_sources += incflo_correct_small_cells.cpp
 CEXE_sources += incflo_MAC_projection.cpp
 
 CEXE_headers += incflo_convection_K.H
@@ -7,10 +6,7 @@ CEXE_headers += incflo_convection_K.H
 CEXE_sources += incflo_MAC_bcs.cpp
 CEXE_headers += incflo_MAC_bcs.H
 
-CEXE_sources += incflo_mol_predict_eb.cpp
 CEXE_sources += incflo_mol_predict.cpp
-
-CEXE_sources += incflo_mol_fluxes_eb.cpp
 CEXE_sources += incflo_mol_fluxes.cpp
 
 CEXE_sources += incflo_godunov_predict.cpp

@@ -1,9 +1,5 @@
 #include <incflo.H>
 
-#ifdef AMREX_USE_EB
-#include <AMReX_EBAmrUtil.H>
-#endif
-
 using namespace amrex;
 
 // tag cells for refinement
@@ -46,10 +42,6 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int /* ngrow */)
     const auto   tagval = TagBox::SET;
 //    const auto clearval = TagBox::CLEAR;
 
-#ifdef AMREX_USE_EB
-    auto const& factory = EBFactory(lev);
-    auto const& flags = factory.getMultiEBCellFlagFab();
-#endif
 
 //    const auto prob_lo = geom[lev].ProbLoArray();
 
@@ -124,12 +116,4 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int /* ngrow */)
         } 
     }
 
-#ifdef AMREX_USE_EB
-    m_refine_cutcells = true;
-    // Refine on cut cells
-    if (m_refine_cutcells)
-    {
-        amrex::TagCutCells(tags, m_leveldata[lev]->velocity);
-    }
-#endif
 }

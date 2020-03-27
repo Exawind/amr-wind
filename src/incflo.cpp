@@ -3,11 +3,6 @@
 
 #include "ABL.H"
 
-// Need this for TagCutCells
-#ifdef AMREX_USE_EB
-#include <AMReX_EBAmrUtil.H>
-#endif
-
 using namespace amrex;
 
 incflo::incflo ()
@@ -19,11 +14,6 @@ incflo::incflo ()
     m_time.parse_parameters();
     // Read inputs file using ParmParse
     ReadParameters();
-
-#ifdef AMREX_USE_EB
-    // This is needed before initializing level MultiFab
-    MakeEBGeometry();
-#endif
 
     // Initialize memory for data-array internals
     ResizeArrays();
@@ -86,12 +76,6 @@ void incflo::InitData ()
         amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time() << ", " << ComputeKineticEnergy() << std::endl;
     }
 
-#ifdef AMREX_USE_EB
-    ParmParse pp("incflo");
-    bool write_eb_surface = false;
-    pp.query("write_eb_surface", write_eb_surface);
-    if (write_eb_surface) WriteMyEBSurface();
-#endif
 
     if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
         printGridSummary(amrex::OutStream(), 0, finest_level);
@@ -164,15 +148,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     SetBoxArray(lev, new_grids);
     SetDistributionMap(lev, new_dmap);
 
-#ifdef AMREX_USE_EB
-    m_factory[lev] = makeEBFabFactory(geom[lev], grids[lev], dmap[lev],
-                                      {nghost_eb_basic(),
-                                       nghost_eb_volume(),
-                                       nghost_eb_full()},
-                                       EBSupport::full);
-#else
     m_factory[lev].reset(new FArrayBoxFactory());
-#endif
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
                                          m_ntrac, nghost_state(),

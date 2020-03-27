@@ -8,10 +8,6 @@ using namespace amrex;
 void incflo::PrintMaxValues(Real /* time_in */)
 {
     
-#if AMREX_USE_EB
-    amrex::Print << "Warning PrintMaxValues() does not work with EB yet" << std::endl;
-    return; // xxxxx TODO
-#endif
     
 //    ComputeDivU(time_in);
 

@@ -1,7 +1,3 @@
-#ifdef AMREX_USE_EB
-#include <AMReX_EBMultiFabUtil.H>
-#endif
-
 #include <incflo.H>
 
 using namespace amrex;

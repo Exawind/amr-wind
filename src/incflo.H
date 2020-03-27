@@ -7,10 +7,6 @@
 #include <AMReX_iMultiFab.H>
 #include <AMReX_NodalProjector.H>
 
-#ifdef AMREX_USE_EB
-#include <AMReX_EBMultiFabUtil.H>
-#endif
-
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
 #include <LevelData.H>
@@ -37,10 +33,6 @@ public:
 
     // Initialize multilevel AMR data
     void InitData ();
-
-#ifdef AMREX_USE_EB
-    void WriteMyEBSurface ();
-#endif
 
     // Evolve solution to final time through repeated calls to Advance()
     void Evolve ();
@@ -227,28 +219,6 @@ public: // for cuda
                                 amrex::Array4<amrex::Real> const& w,
                                 amrex::Array4<amrex::Real const> const& vcc);
 
-#ifdef AMREX_USE_EB
-    void predict_vels_on_faces_eb (int lev,
-                                   amrex::Box const& ccbx,
-                                   amrex::Box const& ubx,
-                                   amrex::Box const& vbx,
-                                   amrex::Box const& wbx,
-                                   amrex::Array4<amrex::Real> const& u,
-                                   amrex::Array4<amrex::Real> const& v,
-                                   amrex::Array4<amrex::Real> const& w,
-                                   amrex::Array4<amrex::Real const> const& vcc,
-                                   amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                   amrex::Array4<amrex::Real const> const& fcx,
-                                   amrex::Array4<amrex::Real const> const& fcy,
-                                   amrex::Array4<amrex::Real const> const& fcz, 
-                                   amrex::Array4<amrex::Real const> const& ccc);
-#endif
-     
-    void incflo_correct_small_cells (amrex::Vector<amrex::MultiFab*      > const& cc_vel,
-                                     amrex::Vector<amrex::MultiFab const*> const& u_mac,
-                                     amrex::Vector<amrex::MultiFab const*> const& v_mac,
-                                     amrex::Vector<amrex::MultiFab const*> const& w_mac);
-
     void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
                                     amrex::Array4<amrex::Real> const& fx,
                                     amrex::Array4<amrex::Real> const& fy,
@@ -266,42 +236,6 @@ public: // for cuda
                                   amrex::Array4<amrex::Real const> const& fy,
                                   amrex::Array4<amrex::Real const> const& fz);
 
-#ifdef AMREX_USE_EB
-    void compute_convective_fluxes_eb (int lev, amrex::Box const& bx, int ncomp,
-                                       amrex::Array4<amrex::Real> const& fx,
-                                       amrex::Array4<amrex::Real> const& fy,
-                                       amrex::Array4<amrex::Real> const& fz,
-                                       amrex::Array4<amrex::Real const> const& q,
-                                       amrex::Array4<amrex::Real const> const& umac,
-                                       amrex::Array4<amrex::Real const> const& vmac,
-                                       amrex::Array4<amrex::Real const> const& wmac,
-                                       amrex::BCRec const* h_bcrec,
-                                       amrex::BCRec const* d_bcrec,
-                                       amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                       amrex::Array4<amrex::Real const> const& fcx,
-                                       amrex::Array4<amrex::Real const> const& fcy,
-                                       amrex::Array4<amrex::Real const> const& fcz,
-                                       amrex::Array4<amrex::Real const> const& ccc);
-
-    void compute_convective_rate_eb (int lev, amrex::Box const& bx, int ncomp,
-                                     amrex::Array4<amrex::Real> const& dUdt,
-                                     amrex::Array4<amrex::Real const> const& fx,
-                                     amrex::Array4<amrex::Real const> const& fy,
-                                     amrex::Array4<amrex::Real const> const& fz,
-                                     amrex::Array4<amrex::EBCellFlag const> const& flag,
-                                     amrex::Array4<amrex::Real const> const& vfrac,
-                                     amrex::Array4<amrex::Real const> const& apx,
-                                     amrex::Array4<amrex::Real const> const& apy,
-                                     amrex::Array4<amrex::Real const> const& apz);
-
-    void redistribute_eb (int lev, amrex::Box const& bx, int ncomp,
-                          amrex::Array4<amrex::Real> const& dUdt,
-                          amrex::Array4<amrex::Real const> const& dUdt_in,
-                          amrex::Array4<amrex::Real> const& scratch,
-                          amrex::Array4<amrex::EBCellFlag const> const& flag,
-                          amrex::Array4<amrex::Real const> const& vfrac);
-#endif
-
     ///////////////////////////////////////////////////////////////////////////
     //
     // derive
@@ -312,7 +246,6 @@ public: // for cuda
     void ComputeVorticity (int lev, amrex::Real time, amrex::MultiFab& vort,
                            amrex::MultiFab const& vel);
     void ComputeDivU (amrex::Real time);
-    void ComputeDrag ();
     amrex::Real ComputeKineticEnergy () const;
 
     
@@ -549,43 +482,19 @@ private:
 
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return *m_factory[lev]; }
-#ifdef AMREX_USE_EB
-    amrex::EBFArrayBoxFactory const&
-    EBFactory (int lev) const noexcept {
-        return static_cast<amrex::EBFArrayBoxFactory const&>(*m_factory[lev]);
-    }
-#endif
 
     // Number of ghost cells for field arrays.
     int nghost_state () const {
-#ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) return (m_use_godunov) ? 5 : 4;
-#endif
         return (m_use_godunov) ? 3 : 2;
     }
 
-    int nghost_force () const { return (m_use_godunov) ? 1 : 0; }
-
-    int nghost_mac () const {
-#ifdef AMREX_USE_EB
-        if (!EBFactory(0).isAllRegular()) return (m_use_godunov) ? 4 : 3;
-#endif
+    int nghost_force () const {
         return (m_use_godunov) ? 1 : 0;
     }
 
-#ifdef AMREX_USE_EB
-    int nghost_eb_basic () const {
-        return (m_use_godunov) ? 5 : 4;
+    int nghost_mac () const {
+        return (m_use_godunov) ? 1 : 0;
     }
-
-    int nghost_eb_volume () const {
-        return (m_use_godunov) ? 5 : 4;
-    }
-
-    int nghost_eb_full () const {
-        return (m_use_godunov) ? 3 : 2;
-    }
-#endif
 
     bool need_divtau () const {
         return !(!m_godunov_include_diff_in_forcing and DiffusionType::Implicit == m_diff_type);
@@ -710,25 +619,6 @@ private:
                                amrex::Vector<amrex::MultiFab*> const& w_mac,
                                amrex::Vector<amrex::MultiFab const*> const& density,
                                amrex::Real time);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // embedded_boundaries
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-#ifdef AMREX_USE_EB
-    void MakeEBGeometry ();
-    void make_eb_annulus ();
-    void make_eb_box ();
-    void make_eb_cylinder ();
-    void make_eb_twocylinders ();
-    void make_eb_regular ();
-    void make_eb_sphere ();
-    void make_eb_spherecube ();
-    void make_eb_cyl_tuscan ();
-    void make_eb_tuscan ();
-#endif
 
     ///////////////////////////////////////////////////////////////////////////
     //

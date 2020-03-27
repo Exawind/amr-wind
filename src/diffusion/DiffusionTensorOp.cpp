@@ -2,10 +2,6 @@
 #include <DiffusionTensorOp.H>
 #include <AMReX_ParmParse.H>
 
-#ifdef AMREX_USE_EB
-#include <AMReX_EB_utils.H>
-#endif
-
 using namespace amrex;
 
 DiffusionTensorOp::DiffusionTensorOp (incflo* a_incflo)
@@ -19,50 +15,24 @@ DiffusionTensorOp::DiffusionTensorOp (incflo* a_incflo)
     info_solve.setMaxCoarseningLevel(m_mg_max_coarsening_level);
     LPInfo info_apply;
     info_apply.setMaxCoarseningLevel(0);
-#ifdef AMREX_USE_EB
-    if (!m_incflo->EBFactory(0).isAllRegular())
-    {
-        Vector<EBFArrayBoxFactory const*> ebfact;
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            ebfact.push_back(&(m_incflo->EBFactory(lev)));
-        }
-        m_eb_solve_op.reset(new MLEBTensorOp(m_incflo->Geom(0,finest_level),
-                                             m_incflo->boxArray(0,finest_level),
-                                             m_incflo->DistributionMap(0,finest_level),
-                                             info_solve, ebfact));
-        m_eb_solve_op->setMaxOrder(m_mg_maxorder);
-        m_eb_solve_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
-                                   m_incflo->get_diffuse_tensor_bc(Orientation::high));
-        if (m_incflo->need_divtau()) {
-            m_eb_apply_op.reset(new MLEBTensorOp(m_incflo->Geom(0,finest_level),
-                                                 m_incflo->boxArray(0,finest_level),
-                                                 m_incflo->DistributionMap(0,finest_level),
-                                                 info_apply, ebfact));
-            m_eb_apply_op->setMaxOrder(m_mg_maxorder);
-            m_eb_apply_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
-                                       m_incflo->get_diffuse_tensor_bc(Orientation::high));
-        }
-    }
-    else
-#endif
-    {
-        m_reg_solve_op.reset(new MLTensorOp(m_incflo->Geom(0,finest_level),
+    
+    m_reg_solve_op.reset(new MLTensorOp(m_incflo->Geom(0,finest_level),
+                                        m_incflo->boxArray(0,finest_level),
+                                        m_incflo->DistributionMap(0,finest_level),
+                                        info_solve));
+    m_reg_solve_op->setMaxOrder(m_mg_maxorder);
+    m_reg_solve_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
+                                m_incflo->get_diffuse_tensor_bc(Orientation::high));
+    if (m_incflo->need_divtau()) {
+        m_reg_apply_op.reset(new MLTensorOp(m_incflo->Geom(0,finest_level),
                                             m_incflo->boxArray(0,finest_level),
                                             m_incflo->DistributionMap(0,finest_level),
-                                            info_solve));
-        m_reg_solve_op->setMaxOrder(m_mg_maxorder);
-        m_reg_solve_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
+                                            info_apply));
+        m_reg_apply_op->setMaxOrder(m_mg_maxorder);
+        m_reg_apply_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
                                     m_incflo->get_diffuse_tensor_bc(Orientation::high));
-        if (m_incflo->need_divtau()) {
-            m_reg_apply_op.reset(new MLTensorOp(m_incflo->Geom(0,finest_level),
-                                                m_incflo->boxArray(0,finest_level),
-                                                m_incflo->DistributionMap(0,finest_level),
-                                                info_apply));
-            m_reg_apply_op->setMaxOrder(m_mg_maxorder);
-            m_reg_apply_op->setDomainBC(m_incflo->get_diffuse_tensor_bc(Orientation::low),
-                                        m_incflo->get_diffuse_tensor_bc(Orientation::high));
-        }
     }
+    
 }
 
 void
@@ -105,44 +75,30 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
 
     const int finest_level = m_incflo->finestLevel();
 
-#ifdef AMREX_USE_EB
-    if (m_eb_solve_op)
-    {
-        m_eb_solve_op->setScalars(1.0, dt);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_eb_solve_op->setACoeffs(lev, *density[lev]);
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
-            m_eb_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
-            m_eb_solve_op->setEBShearViscosity(lev, *eta[lev]);
-            m_eb_solve_op->setLevelBC(lev, velocity[lev]);
-        }
-    }
-    else
-#endif
-    {
-        m_reg_solve_op->setScalars(1.0, dt);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_reg_solve_op->setACoeffs(lev, *density[lev]);
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
-            m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
+    
+    m_reg_solve_op->setScalars(1.0, dt);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        m_reg_solve_op->setACoeffs(lev, *density[lev]);
+        Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *eta[lev]);
+        m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
-            // if at least one boundary is a wall model
-            if(m_incflo->m_wall_model_flag){
-              
-                MultiFab bc(velocity[lev]->boxArray(),velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),velocity[lev]->Factory());
-                // copy velocity into bc in case there is a periodic bc
-                // fixme this seems inefficient
-                MultiFab::Copy(bc, *velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
-                m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b),*density[lev],*velocity[lev],bc);
-                m_reg_solve_op->setLevelBC(lev, &bc);
-                
-            } else {
-                // bc's are stored in the ghost cells of velocity
-                m_reg_solve_op->setLevelBC(lev, velocity[lev]);
-            }
+        // if at least one boundary is a wall model
+        if(m_incflo->m_wall_model_flag){
+          
+            MultiFab bc(velocity[lev]->boxArray(),velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),velocity[lev]->Factory());
+            // copy velocity into bc in case there is a periodic bc
+            // fixme this seems inefficient
+            MultiFab::Copy(bc, *velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
+            m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b),*density[lev],*velocity[lev],bc);
+            m_reg_solve_op->setLevelBC(lev, &bc);
             
+        } else {
+            // bc's are stored in the ghost cells of velocity
+            m_reg_solve_op->setLevelBC(lev, velocity[lev]);
         }
+        
     }
+    
 
     Vector<MultiFab> rhs(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev) {
@@ -166,12 +122,7 @@ DiffusionTensorOp::diffuse_velocity (Vector<MultiFab*> const& velocity,
 
     }
 
-#ifdef AMREX_USE_EB
-    MLMG mlmg(m_eb_solve_op ? static_cast<MLLinOp&>(*m_eb_solve_op)
-              :               static_cast<MLLinOp&>(*m_reg_solve_op));
-#else
     MLMG mlmg(*m_reg_solve_op);
-#endif
 
     // The default bottom solver is BiCG
     if (m_bottom_solver_type == "smoother")
@@ -211,66 +162,30 @@ void DiffusionTensorOp::compute_divtau (Vector<MultiFab*> const& a_divtau,
                              a_velocity[lev]->Factory());
         MultiFab::Copy(velocity[lev], *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
     }
+    
+    // We want to return div (mu grad)) phi
+    m_reg_apply_op->setScalars(0.0, -1.0);
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
+        Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
+        m_reg_apply_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
-#ifdef AMREX_USE_EB
-    if (m_eb_apply_op)
-    {
-        Vector<MultiFab> divtau_tmp(finest_level+1);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            divtau_tmp[lev].define(a_divtau[lev]->boxArray(),
-                                   a_divtau[lev]->DistributionMap(),
-                                   AMREX_SPACEDIM, 2, MFInfo(),
-                                   a_divtau[lev]->Factory());
-            divtau_tmp[lev].setVal(0.0);
-        }
+        if(m_incflo->m_wall_model_flag){
+            MultiFab bc(a_velocity[lev]->boxArray(),a_velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),a_velocity[lev]->Factory());
+            // copy velocity into bc in case there is a periodic bc
+            // fixme this seems inefficient
+            MultiFab::Copy(bc, *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
+            m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b), *a_density[lev], *a_velocity[lev], bc);
+            m_reg_apply_op->setLevelBC(lev, &bc);
 
-        // We want to return div (mu grad)) phi
-        m_eb_apply_op->setScalars(0.0, -1.0);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_eb_apply_op->setACoeffs(lev, *a_density[lev]);
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
-            m_eb_apply_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
-            m_eb_apply_op->setEBShearViscosity(lev, *a_eta[lev]);
-            m_eb_apply_op->setLevelBC(lev, &velocity[lev]);
-        }
-
-        MLMG mlmg(*m_eb_apply_op);
-        mlmg.apply(GetVecOfPtrs(divtau_tmp), GetVecOfPtrs(velocity));
-
-        for(int lev = 0; lev <= finest_level; lev++)
-        {
-            // xxxxx TODO
-            amrex::single_level_redistribute(lev, divtau_tmp[lev],
-                                             *a_divtau[lev], 0, 3,
-                                             m_incflo->Geom());
+        } else {
+            m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
         }
     }
-    else
-#endif
-    {
-        // We want to return div (mu grad)) phi
-        m_reg_apply_op->setScalars(0.0, -1.0);
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            m_reg_apply_op->setACoeffs(lev, *a_density[lev]);
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_velocity_eta_to_faces(lev, *a_eta[lev]);
-            m_reg_apply_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
 
-            if(m_incflo->m_wall_model_flag){
-                MultiFab bc(a_velocity[lev]->boxArray(),a_velocity[lev]->DistributionMap(),AMREX_SPACEDIM, 1, MFInfo(),a_velocity[lev]->Factory());
-                // copy velocity into bc in case there is a periodic bc
-                // fixme this seems inefficient
-                MultiFab::Copy(bc, *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
-                m_incflo->wall_model_bc(lev,m_incflo->m_utau_mean_ground,m_incflo->m_velocity_mean_ground,GetArrOfConstPtrs(b), *a_density[lev], *a_velocity[lev], bc);
-                m_reg_apply_op->setLevelBC(lev, &bc);
-
-            } else {
-                m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
-            }
-        }
-
-        MLMG mlmg(*m_reg_apply_op);
-        mlmg.apply(a_divtau, GetVecOfPtrs(velocity));
-    }
+    MLMG mlmg(*m_reg_apply_op);
+    mlmg.apply(a_divtau, GetVecOfPtrs(velocity));
+    
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())

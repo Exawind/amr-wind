@@ -2,10 +2,6 @@
 #define DIFFUSION_SCALAR_OP_H_
 
 #include <AMReX_MLMG.H>
-
-#ifdef AMREX_USE_EB
-#include <AMReX_MLEBABecLap.H>
-#endif
 #include <AMReX_MLABecLaplacian.H>
 
 class incflo;
@@ -31,10 +27,6 @@ private:
 
     incflo* m_incflo;
 
-#ifdef AMREX_USE_EB
-    std::unique_ptr<amrex::MLEBABecLap> m_eb_solve_op;
-    std::unique_ptr<amrex::MLEBABecLap> m_eb_apply_op;
-#endif
     std::unique_ptr<amrex::MLABecLaplacian> m_reg_solve_op;
     std::unique_ptr<amrex::MLABecLaplacian> m_reg_apply_op;
 

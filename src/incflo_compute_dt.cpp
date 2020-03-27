@@ -35,73 +35,35 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
         MultiFab const& rho = m_leveldata[lev]->density;
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
-#ifdef AMREX_USE_EB
-        if (!vel.isAllRegular()) {
-            auto const& flag = EBFactory(lev).getMultiEBCellFlagFab();
-            conv_lev = amrex::ReduceMax(vel, flag, 0,
+
+        conv_lev = amrex::ReduceMax(vel, 0,
+                   [=] AMREX_GPU_HOST_DEVICE (Box const& b,
+                                              Array4<Real const> const& v) -> Real
+                   {
+                       Real mx = -1.0;
+                       amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
+                       {
+                           mx = amrex::max(std::abs(v(i,j,k,0))*dxinv[0],
+                                           std::abs(v(i,j,k,1))*dxinv[1],
+                                           std::abs(v(i,j,k,2))*dxinv[2], mx);
+                       });
+                       return mx;
+                   });
+        if (explicit_diffusion) {
+            diff_lev = amrex::ReduceMax(rho, 0,
                        [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                  Array4<Real const> const& v,
-                                                  Array4<EBCellFlag const> const& f) -> Real
+                                                  Array4<Real const> const& r) -> Real
                        {
                            Real mx = -1.0;
                            amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
                            {
-                               if (!f(i,j,k).isCovered()) {
-                                   mx = amrex::max(std::abs(v(i,j,k,0))*dxinv[0],
-                                                   std::abs(v(i,j,k,1))*dxinv[1],
-                                                   std::abs(v(i,j,k,2))*dxinv[2], mx);
-                               }
+                               mx = amrex::max(1.0/r(i,j,k), mx);
                            });
                            return mx;
                        });
-            if (explicit_diffusion) {
-                diff_lev = amrex::ReduceMax(rho, flag, 0,
-                           [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                      Array4<Real const> const& r,
-                                                      Array4<EBCellFlag const> const& f) -> Real
-                          {
-                              Real mx = -1.0;
-                              amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
-                              {
-                                  if (!f(i,j,k).isCovered()) {
-                                      mx = amrex::max(1.0/r(i,j,k), mx);
-                                  }
-                              });
-                              return mx;
-                          });
-                diff_lev *= m_mu;
-            }
-        } else
-#endif
-        {
-            conv_lev = amrex::ReduceMax(vel, 0,
-                       [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                  Array4<Real const> const& v) -> Real
-                       {
-                           Real mx = -1.0;
-                           amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
-                           {
-                               mx = amrex::max(std::abs(v(i,j,k,0))*dxinv[0],
-                                               std::abs(v(i,j,k,1))*dxinv[1],
-                                               std::abs(v(i,j,k,2))*dxinv[2], mx);
-                           });
-                           return mx;
-                       });
-            if (explicit_diffusion) {
-                diff_lev = amrex::ReduceMax(rho, 0,
-                           [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                      Array4<Real const> const& r) -> Real
-                           {
-                               Real mx = -1.0;
-                               amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
-                               {
-                                   mx = amrex::max(1.0/r(i,j,k), mx);
-                               });
-                               return mx;
-                           });
-                diff_lev *= m_mu;
-            }
+            diff_lev *= m_mu;
         }
+        
         conv_cfl = std::max(conv_cfl, conv_lev);
         diff_cfl = std::max(diff_cfl, diff_lev*2.*(dxinv[0]*dxinv[0]+dxinv[1]*dxinv[1]+
                                                    dxinv[2]*dxinv[2]));

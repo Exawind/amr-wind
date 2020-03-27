@@ -58,15 +58,6 @@ void incflo::Advance()
     {
         amrex::Print() << "End of time step: " << std::endl;
         PrintMaxValues(m_time.new_time());
-#if 0
-        // xxxxx
-        PrintMaxValues(m_time.current_time() + dt);
-        if(m_probtype%10 == 3 or m_probtype == 5)
-        {
-            ComputeDrag();
-            amrex::Print() << "Drag force = " << (*drag[0]).sum(0, false) << std::endl;
-        }
-#endif
     }
 
 #if 0
@@ -488,14 +479,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // **********************************************************************************************
     ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_time.deltaT(), incremental_projection);
 
-    // **********************************************************************************************
-    //
-    // Over-write velocity in cells with vfrac < 1e-4
-    //
-    // **********************************************************************************************
-    incflo_correct_small_cells(get_velocity_new(),
-                               GetVecOfConstPtrs(u_mac), GetVecOfConstPtrs(v_mac),
-                               GetVecOfConstPtrs(w_mac));
 }
 
 
@@ -886,12 +869,4 @@ void incflo::ApplyCorrector()
     bool incremental = false;
     ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_time.deltaT(), incremental);
 
-    // **********************************************************************************************
-    //
-    // Over-write velocity in cells with vfrac < 1e-4
-    //
-    // **********************************************************************************************
-    incflo_correct_small_cells(get_velocity_new(),
-                               GetVecOfConstPtrs(u_mac), GetVecOfConstPtrs(v_mac),
-                               GetVecOfConstPtrs(w_mac));
 }
