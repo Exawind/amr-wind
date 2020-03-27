@@ -8,6 +8,7 @@ add_subdirectory(aw_test_utils)
 add_subdirectory(core)
 add_subdirectory(wind_energy)
 add_subdirectory(derive)
+add_subdirectory(utilities)
 
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

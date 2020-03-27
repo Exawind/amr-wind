@@ -6,6 +6,8 @@
 
 #include "Physics.H"
 #include "ABL.H"
+#include "RefinementCriteria.H"
+#include "CartBoxRefinement.H"
 
 using namespace amrex;
 
@@ -119,6 +121,19 @@ void incflo::ReadParameters ()
         ReadABLParameters();
 
         m_physics.emplace_back(new amr_wind::ABL(m_time, this));
+    }
+
+    {
+        // tagging options
+        ParmParse pp("tagging");
+        bool static_refine = false;
+        pp.query("static_refinement", static_refine);
+        if (static_refine) {
+            std::unique_ptr<amr_wind::CartBoxRefinement> obj(new amr_wind::CartBoxRefinement);
+            obj->initialize(*this);
+
+            m_refine_criteria.push_back(std::move(obj));
+        }
     }
 
 }

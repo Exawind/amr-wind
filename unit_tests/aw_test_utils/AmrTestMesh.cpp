@@ -81,7 +81,8 @@ void AmrTestMesh::MakeNewLevelFromCoarse(
     SetBoxArray(lev, ba);
     SetDistributionMap(lev, dm);
 
-    amrex::Abort("Not implemented");
+    // Concrete test fixtures must override and initialize field data if
+    // necessary
 }
 
 void AmrTestMesh::RemakeLevel(

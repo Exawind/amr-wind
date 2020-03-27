@@ -2,6 +2,7 @@
 #include <incflo.H>
 
 #include "ABL.H"
+#include "RefinementCriteria.H"
 
 using namespace amrex;
 

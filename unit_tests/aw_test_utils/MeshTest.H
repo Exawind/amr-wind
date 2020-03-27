@@ -26,8 +26,20 @@ public:
     //! Create the mesh instance
     virtual void create_mesh_instance();
 
+    template<typename T>
+    void create_mesh_instance()
+    {
+        if (!m_mesh) {
+            reset_prob_domain();
+            m_mesh.reset(new T());
+        }
+    }
+
     //! Perform initialization actions
     virtual void initialize_mesh();
+
+    //! Reset the problem domain for this test
+    virtual void reset_prob_domain();
 
     amr_wind::SimTime& time()
     {
@@ -39,9 +51,9 @@ public:
     AmrTestMesh& mesh() { return *m_mesh; }
 
     template <typename T>
-    T& mesh()
+    T* mesh()
     {
-        return dynamic_cast<T*>(*m_mesh);
+        return dynamic_cast<T*>(m_mesh.get());
     }
 
 protected:

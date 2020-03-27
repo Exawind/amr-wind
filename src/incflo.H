@@ -15,6 +15,7 @@
 
 namespace amr_wind {
 class Physics;
+class RefinementCriteria;
 }
 
 class incflo : public amrex::AmrCore
@@ -314,6 +315,7 @@ private:
     amr_wind::SimTime m_time;
 
     amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
+    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
 
     // Be verbose?
     int m_verbose = 0;
@@ -413,9 +415,6 @@ private:
 
     std::string m_check_file{"chk"};
     std::string m_restart_file{""};
-
-    amrex::Vector<amrex::Real> tag_region_lo;
-    amrex::Vector<amrex::Real> tag_region_hi;
 
     // Flags for saving fluid data in plot files
     int m_plt_velx        = 1;
