@@ -69,10 +69,7 @@ void incflo::ComputeStrainrate(Real /* time_in */)
 
             // Cell-centered strain-rate magnitude
             const auto& sr_fab = strainrate[lev]->array(mfi);
-
-
             
-            // No cut cells in tile + 1-cell witdh halo -> use non-eb routine
             amrex::ParallelFor(bx,
               [idx,idy,idz,sr_fab,ccvel_fab] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
             {
