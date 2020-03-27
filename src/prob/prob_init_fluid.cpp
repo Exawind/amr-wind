@@ -247,15 +247,15 @@ void incflo::init_tuscan (Box const& vbx, Box const& /* gbx */,
     });
 }
 
-void incflo::init_boussinesq_bubble (Box const& vbx, Box const& gbx,
-                                     Array4<Real> const& p,
+void incflo::init_boussinesq_bubble (Box const& vbx, Box const& /* gbx */,
+                                     Array4<Real> const& /* p */,
                                      Array4<Real> const& vel,
                                      Array4<Real> const& density,
                                      Array4<Real> const& tracer,
-                                     Box const& domain,
+                                     Box const& /* domain */,
                                      GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                     GpuArray<Real, AMREX_SPACEDIM> const& problo,
-                                     GpuArray<Real, AMREX_SPACEDIM> const& probhi)
+                                     GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
+                                     GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
 {
     m_use_boussinesq = true;
     if (111 == m_probtype)

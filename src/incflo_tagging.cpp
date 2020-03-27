@@ -42,10 +42,6 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
         fillpatch_density(lev, time, m_leveldata[lev]->density, 1);
     }
 
-    const Real l_dx = geom[lev].CellSize(0);
-    const Real l_dy = geom[lev].CellSize(1);
-    const Real l_dz = geom[lev].CellSize(2);
-
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
