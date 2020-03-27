@@ -5,7 +5,10 @@ namespace amr_wind_tests {
 
 void MeshTest::create_mesh_instance()
 {
-    if (!m_mesh) m_mesh.reset(new AmrTestMesh());
+    if (!m_mesh) {
+        reset_prob_domain();
+        m_mesh.reset(new AmrTestMesh());
+    }
 }
 
 void MeshTest::initialize_mesh()
@@ -14,6 +17,22 @@ void MeshTest::initialize_mesh()
     create_mesh_instance();
 
     m_mesh->initialize_mesh(0.0);
+}
+
+void MeshTest::reset_prob_domain()
+{
+    amrex::Vector<amrex::Real> problo(3), probhi(3);
+
+    amrex::ParmParse pp("geometry");
+    pp.getarr("prob_lo",problo,0,AMREX_SPACEDIM);
+    pp.getarr("prob_hi",probhi,0,AMREX_SPACEDIM);
+
+    amrex::RealBox rb(problo.data(), probhi.data());
+    amrex::Geometry* gg = amrex::AMReX::top()->getDefaultGeometry();
+
+    if (gg != nullptr) {
+        gg->ResetDefaultProbDomain(rb);
+    }
 }
 
 void MeshTest::populate_parameters()

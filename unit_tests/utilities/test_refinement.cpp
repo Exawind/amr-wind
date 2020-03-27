@@ -38,13 +38,7 @@ private:
 
 //! Custom test fixture for Cartesian Box refinement
 class NestRefineTest : public MeshTest
-{
-public:
-    void create_mesh_instance() override
-    {
-        if (!m_mesh) m_mesh.reset(new NestRefineMesh());
-    }
-};
+{};
 
 TEST_F(NestRefineTest, box_refine)
 {
@@ -75,7 +69,7 @@ TEST_F(NestRefineTest, box_refine)
     ss << "-10.0  25.0 0.0 15.0  35.0 20.0" << std::endl;
     ss << "-10.0  65.0 0.0 15.0  75.0 20.0" << std::endl;
 
-    create_mesh_instance();
+    create_mesh_instance<NestRefineMesh>();
     std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(new amr_wind::CartBoxRefinement);
     box_refine->read_inputs(mesh(), ss);
 
