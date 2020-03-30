@@ -3,6 +3,39 @@
 
 namespace amr_wind {
 
+void FieldInfo::copy_bc_to_device()
+{
+    amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
+
+    // Copy data to a flat array for transfer to device
+    {
+        amrex::Real* hp = h_data.data();
+        for (const auto& v: m_bc_values) {
+            for (const auto& x: v)
+                *(hp++) = x;
+        }
+    }
+
+    // Transfer BC values to device
+    amrex::Real* ptr = m_bc_values_dview.data();
+#ifdef AMREX_USE_GPU
+    Gpu::htod_memcpy(ptr, h_data.data(), sizeof(amrex::Real)*h_data.size());
+#else
+    std::memcpy(ptr, h_data.data(), sizeof(amrex::Real)*h_data.size());
+#endif
+
+    for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
+        m_bc_values_d[i] = ptr;
+        ptr += m_ncomp;
+    }
+
+#ifdef AMREX_USE_GPU
+    Gpu::htod_memcpy(m_bcrec_d.data(), m_bcrec.data(), sizeof(amrex::BCRec) * AMREX_SPACEDIM);
+#else
+    std::memcpy(m_bcrec_d.data(), m_bcrec.data(), sizeof(amrex::BCRec) * AMREX_SPACEDIM);
+#endif
+}
+
 Field::Field(
     FieldRepo& repo,
     const std::string& name,
