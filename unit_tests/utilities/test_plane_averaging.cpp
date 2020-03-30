@@ -222,4 +222,79 @@ TEST_F(PlaneAveragingTest, test_zdir)
     test_dir(2);
 }
 
+TEST_F(PlaneAveragingTest, test_leveldata_zdir)
+{
+    
+    constexpr double tol = 1.0e-12;
+    constexpr amrex::Real u0 = 2.3, v0 = 3.5, w0 = 5.6, t0 = 3.2;
+    constexpr int periods = 3;
+    constexpr int dir = 2;
+    
+    populate_parameters();
+    initialize_mesh();
+
+    auto tracer = mesh().declare_field("tracer");
+    
+    std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > new_fact(new amrex::FArrayBoxFactory());
+    std::unique_ptr<LevelData> ld (new LevelData(tracer[0]->boxArray(), tracer[0]->DistributionMap(), *new_fact, 1, 1,0,1,1));
+  
+    ld->tracer.setVal(t0);
+ 
+    const auto& problo = mesh().Geom(0).ProbLoArray();
+    const auto& probhi = mesh().Geom(0).ProbHiArray();
+    
+    amrex::Real cx[3];
+    cx[0] = periods * amr_wind::utils::two_pi() / (probhi[0] - problo[0]);
+    cx[1] = periods * amr_wind::utils::two_pi() / (probhi[1] - problo[1]);
+    cx[2] = periods * amr_wind::utils::two_pi() / (probhi[2] - problo[2]);
+   
+    amrex::Vector<amrex::MultiFab*> r(1);
+    r[0] = &(ld->tracer);
+    
+    run_algorithm(1, r,
+        [&](const int lev, const amrex::MFIter& mfi) {
+        
+        auto vel = ld->velocity.array(mfi);
+        const auto& bx = mfi.validbox();
+        const auto& dx = mesh().Geom(lev).CellSizeArray();
+        
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            
+            amrex::Real x[3];
+            
+            x[0] = problo[0] + (i + 0.5) * dx[0];
+            x[1] = problo[1] + (j + 0.5) * dx[1];
+            x[2] = problo[2] + (k + 0.5) * dx[2];
+            
+            vel(i,j,k,0) = u0;
+            vel(i,j,k,1) = v0;
+            vel(i,j,k,2) = w0;
+
+            for(int d=0;d<3;++d){
+                if(d!=dir){
+                    vel(i,j,k,0) += std::cos(cx[d]*x[d]);
+                    vel(i,j,k,1) += std::sin(cx[d]*x[d]);
+                    vel(i,j,k,2) += std::sin(cx[d]*x[d])*cos(cx[d]*x[d]);
+                }
+            }
+            
+        });
+        
+    });
+    
+    PlaneAveraging pa(mesh().Geom(0), *ld, dir);
+    
+    amrex::Real x = 0.5*(problo[dir] + probhi[dir]);
+    amrex::Real u = pa.line_velocity_xdir(x);
+    amrex::Real v = pa.line_velocity_ydir(x);
+    amrex::Real w = pa.line_velocity_zdir(x);
+
+    // test that a periodic function orthogonal to dir
+    // averages out to a constant
+    EXPECT_NEAR(u0, u, tol);
+    EXPECT_NEAR(v0, v, tol);
+    EXPECT_NEAR(w0, w, tol);
+        
+}
+
 }  // amr_wind_tests
