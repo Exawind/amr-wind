@@ -60,9 +60,13 @@ Field::Field(
     FieldRepo& repo,
     const std::string& name,
     const std::shared_ptr<FieldInfo>& info,
+    const unsigned fid,
     const FieldState state)
-    : m_repo(repo), m_name(name), m_info(info), m_state(state)
-{}
+    : m_repo(repo), m_name(name), m_info(info), m_id(fid), m_state(state)
+{
+}
+
+Field::~Field() = default;
 
 Field& Field::state(const FieldState fstate)
 {
@@ -85,17 +89,13 @@ const Field& Field::state(const FieldState fstate) const
 amrex::MultiFab& Field::operator()(int lev) noexcept
 {
     BL_ASSERT(lev < m_repo.num_active_levels());
-    auto* mfab = m_repo.get_multifab(name(), lev);
-    BL_ASSERT(mfab != nullptr);
-    return *mfab;
+    return  m_repo.get_multifab(m_id, lev);
 }
 
 const amrex::MultiFab& Field::operator()(int lev) const noexcept
 {
     BL_ASSERT(lev < m_repo.num_active_levels());
-    auto* mfab = m_repo.get_multifab(name(), lev);
-    BL_ASSERT(mfab != nullptr);
-    return *mfab;
+    return m_repo.get_multifab(m_id, lev);
 }
 
 amrex::Vector<amrex::MultiFab*> Field::vec_ptrs() noexcept
@@ -104,7 +104,7 @@ amrex::Vector<amrex::MultiFab*> Field::vec_ptrs() noexcept
     amrex::Vector<amrex::MultiFab*> ret;
     ret.reserve(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
-        ret.push_back(m_repo.get_multifab(m_name, lev));
+        ret.push_back(&m_repo.get_multifab(m_id, lev));
     }
     return ret;
 }
@@ -116,7 +116,7 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
     ret.reserve(nlevels);
     for (int lev = 0; lev < nlevels; ++lev) {
         ret.push_back(static_cast<const amrex::MultiFab*>(
-            m_repo.get_multifab(m_name, lev)));
+            &m_repo.get_multifab(m_id, lev)));
     }
     return ret;
 }
@@ -143,7 +143,7 @@ void Field::fillpatch(amrex::Real time)
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, *m_repo.get_multifab(name(), lev));
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev));
     }
 }
 
@@ -153,7 +153,7 @@ void Field::fillphysbc(amrex::Real time)
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillphysbc(lev, time, *m_repo.get_multifab(name(), lev));
+        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev));
     }
 }
 

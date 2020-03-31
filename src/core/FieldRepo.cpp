@@ -27,13 +27,12 @@ void FieldRepo::make_new_level_from_coarse(
 
     allocate_field_data(ba, dm, *ldata, *fact);
 
-    for (auto& it: m_fields) {
-        auto& field = *(it.second);
-        if ((field.field_state() != FieldState::New) ||
-            !(field.m_info->m_fillpatch_op))
+    for (auto& field: m_field_vec) {
+        if ((field->field_state() != FieldState::New) ||
+            !(field->m_info->m_fillpatch_op))
             continue;
 
-        field.fillpatch_from_coarse(lev, time, *ldata->m_data[field.name()]);
+        field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()]);
     }
 
     m_leveldata[lev] = std::move(ldata);
@@ -53,13 +52,12 @@ void FieldRepo::remake_level(
 
     allocate_field_data(ba, dm, *ldata, *fact);
 
-    for (auto& it: m_fields) {
-        auto& field = *(it.second);
-        if ((field.field_state() != FieldState::New) ||
-            !(field.m_info->m_fillpatch_op))
+    for (auto& field: m_field_vec) {
+        if ((field->field_state() != FieldState::New) ||
+            !(field->m_info->m_fillpatch_op))
             continue;
 
-        field.fillpatch(lev, time, *ldata->m_data[field.name()]);
+        field->fillpatch(lev, time, ldata->m_mfabs[field->id()]);
     }
 
     m_leveldata[lev] = std::move(ldata);
@@ -84,13 +82,27 @@ Field& FieldRepo::declare_field(
 {
     // If the field is already registered check and return the fields
     {
-        auto found = m_fields.find(name);
-        if (found != m_fields.end()) *m_fields[name];
+        auto found = m_fid_map.find(name);
+        if (found != m_fid_map.end()) {
+            auto& field = *m_field_vec[found->second];
+
+            if ((ncomp != field.num_comp()) ||
+                (nstates != field.num_states()) ||
+                (floc != field.field_location())) {
+                amrex::Abort("Attempt to reregister field with inconsistent parameters: "
+                             + name);
+            }
+            return field;
+        }
     }
 
     // Only allow states to be at times and not half steps
     if (nstates > (static_cast<int>(FieldState::NM1) + 1)) {
         amrex::Abort("Invalid number of states specified for field: " + name);
+    }
+
+    if (!field_impl::is_valid_field_name(name)) {
+        amrex::Abort("Attempt to use reserved field name: " + name);
     }
 
     // Create the field data structures
@@ -100,30 +112,37 @@ Field& FieldRepo::declare_field(
         const auto fstate = static_cast<FieldState>(i);
         const std::string fname =
             field_impl::field_name_with_state(name, fstate);
-        std::unique_ptr<Field> field(new Field(*this, fname, finfo, fstate));
+        const unsigned fid = m_field_vec.size();
 
-        finfo->m_states[fstate] = field.get();
-
+        // Create new field instance
+        std::unique_ptr<Field> field(new Field(*this, fname, finfo, fid, fstate));
         // If declare field is called after mesh has been initialized create field multifabs
         if (m_is_initialized)
             allocate_field_data(*field);
 
-        m_fields[fname] = std::move(field);
+        // Add reference to states lookup
+        finfo->m_states[fstate] = field.get();
+        // Store the field instance
+        m_field_vec.emplace_back(std::move(field));
+        // Name to ID lookup map
+        m_fid_map[fname] = fid;
     }
 
-    return *m_fields[name];
+    // We want the New state returned when we have multiple states involved
+    return *m_field_vec[m_fid_map[name]];
 }
 
 Field& FieldRepo::get_field(
-    const std::string& name, const FieldState fstate)
+    const std::string& name, const FieldState fstate) const
 {
     const auto fname = field_impl::field_name_with_state(name, fstate);
-    const auto found = m_fields.find(fname);
-    if (found == m_fields.end()) {
+    const auto found = m_fid_map.find(fname);
+    if (found == m_fid_map.end()) {
         amrex::Abort("Cannot find field: " + name);
     }
 
-    return *m_fields[fname];
+    AMREX_ASSERT(found->second < static_cast<unsigned>(m_field_vec.size()));
+    return *m_field_vec[found->second];
 }
 
 void FieldRepo::allocate_field_data(
@@ -132,17 +151,15 @@ void FieldRepo::allocate_field_data(
     LevelDataHolder& level_data,
     const amrex::FabFactory<amrex::FArrayBox>& factory)
 {
-    for (auto& it: m_fields) {
-        const auto& fname = it.first;
-        const auto& field = *(it.second);
+    auto& mfab_vec = level_data.m_mfabs;
 
-        auto ba1 = amrex::convert(ba, field_impl::index_type(field.field_location()));
-        std::unique_ptr<amrex::MultiFab> mfab(new amrex::MultiFab);
-        mfab->define(
-            ba1, dm, field.num_comp(), field.num_grow(), amrex::MFInfo(), factory);
+    for (auto& field : m_field_vec) {
+        auto ba1 =
+            amrex::convert(ba, field_impl::index_type(field->field_location()));
 
-        auto& fdata = level_data.m_data[fname];
-        fdata = std::move(mfab);
+        mfab_vec.emplace_back(
+            ba1, dm, field->num_comp(), field->num_grow(), amrex::MFInfo(),
+            factory);
     }
 }
 
@@ -152,16 +169,14 @@ void FieldRepo::allocate_field_data(
     LevelDataHolder& level_data,
     const amrex::FabFactory<amrex::FArrayBox>& factory)
 {
-    std::unique_ptr<amrex::MultiFab> mfab(new amrex::MultiFab);
-    auto ba = amrex::convert(
+    auto& mfab_vec = level_data.m_mfabs;
+    AMREX_ASSERT(mfab_vec.size() == field.id());
+    const auto ba = amrex::convert(
         m_mesh.boxArray(lev), field_impl::index_type(field.field_location()));
-    mfab->define(
+
+    mfab_vec.emplace_back(
         ba, m_mesh.DistributionMap(lev), field.num_comp(), field.num_grow(),
         amrex::MFInfo(), factory);
-
-    const std::string& fname = field.name();
-    auto& fdata = level_data.m_data[fname];
-    fdata = std::move(mfab);
 }
 
 void FieldRepo::allocate_field_data(Field& field)

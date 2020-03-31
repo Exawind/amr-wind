@@ -15,7 +15,7 @@ namespace amr_wind {
 
 struct LevelDataHolder
 {
-    std::unordered_map<std::string, std::unique_ptr<amrex::MultiFab>> m_data;
+    amrex::Vector<amrex::MultiFab> m_mfabs;
 };
 
 class FieldRepo
@@ -33,6 +33,7 @@ public:
 
     FieldRepo(const FieldRepo&) = delete;
     FieldRepo& operator=(const FieldRepo&) = delete;
+    ~FieldRepo() = default;
 
     void make_new_level_from_scratch(
         int lev, amrex::Real time,
@@ -118,17 +119,19 @@ public:
     }
 
     Field& get_field(
-        const std::string& name, const FieldState fstate = FieldState::New);
+        const std::string& name, const FieldState fstate = FieldState::New) const;
 
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
-    const FieldMap& fields() const { return m_fields; }
+    int num_fields() const noexcept { return m_field_vec.size(); }
+
+    const amrex::Vector<std::unique_ptr<Field>>& fields() const noexcept { return m_field_vec; }
 
 protected:
-    inline amrex::MultiFab* get_multifab(const std::string& name, int lev) noexcept
+    inline amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
-        return m_leveldata[lev]->m_data[name].get();
+        return m_leveldata[lev]->m_mfabs[fid];
     }
 
     void allocate_field_data(
@@ -150,7 +153,8 @@ protected:
     amrex::Vector<std::unique_ptr<LevelDataHolder>> m_leveldata;
     amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>>> m_factory;
 
-    FieldMap m_fields;
+    mutable amrex::Vector<std::unique_ptr<Field>> m_field_vec;
+    std::unordered_map<std::string, size_t> m_fid_map;
 
     bool m_is_initialized{false};
 };

@@ -74,9 +74,12 @@ public:
 
     Field(const Field&) = delete;
     Field& operator=(const Field&) = delete;
+    ~Field();
 
     //! Name of this field (including state information)
     inline const std::string& name() const { return m_name; }
+
+    inline unsigned id() const { return m_id; }
 
     //! Number of components for this field
     inline int num_comp() const { return m_info->m_ncomp; }
@@ -147,22 +150,23 @@ protected:
         FieldRepo& repo,
         const std::string& name,
         const std::shared_ptr<FieldInfo>& finfo,
+        const unsigned fid,
         FieldState state);
 
     //! Reference to the FieldRepository instance
     FieldRepo& m_repo;
 
     //! Name of the field
-    std::string m_name;
+    const std::string m_name;
 
     //! Common data for all field states
     std::shared_ptr<FieldInfo> m_info;
 
     //! Unique ID for this field
-    unsigned m_id;
+    const unsigned m_id;
 
     //! State for this field
-    FieldState m_state;
+    const FieldState m_state;
 };
 
 } // namespace amr_wind
