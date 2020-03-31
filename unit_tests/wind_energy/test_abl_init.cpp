@@ -21,9 +21,14 @@ TEST_F(ABLMeshTest, abl_initialization)
     }
 
     initialize_mesh();
-    auto velocity = mesh().declare_field("velocity", 3, 0);
-    auto density = mesh().declare_field("density");
-    auto temperature = mesh().declare_field("temperature");
+    auto& frepo = mesh().field_repo();
+    auto& velocityf = frepo.declare_field("velocity", 3, 0);
+    auto& densityf = frepo.declare_field("density");
+    auto& temperaturef = frepo.declare_field("temperature");
+
+    auto velocity = velocityf.vec_ptrs();
+    auto density = densityf.vec_ptrs();
+    auto temperature = temperaturef.vec_ptrs();
 
     amr_wind::ABLFieldInit ablinit;
     run_algorithm(
