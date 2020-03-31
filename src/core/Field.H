@@ -15,6 +15,7 @@ namespace amr_wind {
 
 class Field;
 class FieldRepo;
+class FieldFillPatchOpsBase;
 
 /** Information common to a field that has multiple states
  */
@@ -25,20 +26,9 @@ struct FieldInfo
         const int ncomp,
         const int ngrow,
         const int nstates,
-        const FieldLoc floc)
-        : m_basename(basename)
-        , m_ncomp(ncomp)
-        , m_ngrow(ngrow)
-        , m_nstates(nstates)
-        , m_floc(floc)
-        , m_bc_values(AMREX_SPACEDIM*2, amrex::Vector<amrex::Real>(ncomp))
-        , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
-        , m_bcrec(ncomp)
-        , m_bcrec_d(ncomp)
-    {
-    }
+        const FieldLoc floc);
 
-    ~FieldInfo() = default;
+    ~FieldInfo();
 
     //! Copy the BC information to device data structures
     void copy_bc_to_device() noexcept;
@@ -66,6 +56,8 @@ struct FieldInfo
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_d;
 
     std::unordered_map<FieldState, Field*> m_states;
+
+    std::unique_ptr<FieldFillPatchOpsBase> m_fillpatch_op;
 };
 
 /** Computational field
@@ -138,6 +130,18 @@ public:
 
     amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept;
 
+    template<typename T, class... Args>
+    void register_fill_patch_op(Args&&... args)
+    {
+        m_info->m_fillpatch_op.reset(new T(std::forward<Args>(args)...));
+    }
+
+    void fillpatch(amrex::Real time);
+    void fillphysbc(amrex::Real time);
+
+    void fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab);
+    void fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab);
+
 protected:
     Field(
         FieldRepo& repo,
@@ -153,6 +157,9 @@ protected:
 
     //! Common data for all field states
     std::shared_ptr<FieldInfo> m_info;
+
+    //! Unique ID for this field
+    unsigned m_id;
 
     //! State for this field
     FieldState m_state;

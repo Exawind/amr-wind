@@ -1,9 +1,29 @@
 #include "Field.H"
 #include "FieldRepo.H"
+#include "FieldFillPatchOps.H"
 
 namespace amr_wind {
 
-void FieldInfo::copy_bc_to_device()
+FieldInfo::FieldInfo(
+    const std::string& basename,
+    const int ncomp,
+    const int ngrow,
+    const int nstates,
+    const FieldLoc floc)
+    : m_basename(basename)
+    , m_ncomp(ncomp)
+    , m_ngrow(ngrow)
+    , m_nstates(nstates)
+    , m_floc(floc)
+    , m_bc_values(AMREX_SPACEDIM*2, amrex::Vector<amrex::Real>(ncomp, 0.0))
+    , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
+    , m_bcrec(ncomp)
+    , m_bcrec_d(ncomp)
+{}
+
+FieldInfo::~FieldInfo() = default;
+
+void FieldInfo::copy_bc_to_device() noexcept
 {
     amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
 
@@ -99,6 +119,42 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
             m_repo.get_multifab(m_name, lev)));
     }
     return ret;
+}
+
+void Field::fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab)
+{
+    BL_ASSERT(m_info->m_fillpatch_op);
+    auto& fop = *(m_info->m_fillpatch_op);
+
+    fop.fillpatch(lev, time, mfab);
+}
+
+void Field::fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab)
+{
+    BL_ASSERT(m_info->m_fillpatch_op);
+    auto& fop = *(m_info->m_fillpatch_op);
+
+    fop.fillpatch_coarse(lev, time, mfab);
+}
+
+void Field::fillpatch(amrex::Real time)
+{
+    BL_ASSERT(m_info->m_fillpatch_op);
+    auto& fop = *(m_info->m_fillpatch_op);
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        fop.fillpatch(lev, time, *m_repo.get_multifab(name(), lev));
+    }
+}
+
+void Field::fillphysbc(amrex::Real time)
+{
+    BL_ASSERT(m_info->m_fillpatch_op);
+    auto& fop = *(m_info->m_fillpatch_op);
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        fop.fillphysbc(lev, time, *m_repo.get_multifab(name(), lev));
+    }
 }
 
 } // namespace amr_wind

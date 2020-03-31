@@ -17,7 +17,7 @@ void FieldRepo::make_new_level_from_scratch(
 }
 
 void FieldRepo::make_new_level_from_coarse(
-    int lev, amrex::Real ,
+    int lev, amrex::Real time,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
@@ -27,7 +27,14 @@ void FieldRepo::make_new_level_from_coarse(
 
     allocate_field_data(ba, dm, *ldata, *fact);
 
-    // TODO: Fill patch logic
+    for (auto& it: m_fields) {
+        auto& field = *(it.second);
+        if ((field.field_state() != FieldState::New) ||
+            !(field.m_info->m_fillpatch_op))
+            continue;
+
+        field.fillpatch_from_coarse(lev, time, *ldata->m_data[field.name()]);
+    }
 
     m_leveldata[lev] = std::move(ldata);
     m_factory[lev] = std::move(fact);
@@ -36,7 +43,7 @@ void FieldRepo::make_new_level_from_coarse(
 }
 
 void FieldRepo::remake_level(
-    int lev, amrex::Real ,
+    int lev, amrex::Real time,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
@@ -46,7 +53,14 @@ void FieldRepo::remake_level(
 
     allocate_field_data(ba, dm, *ldata, *fact);
 
-    // TODO: Fill patch logic
+    for (auto& it: m_fields) {
+        auto& field = *(it.second);
+        if ((field.field_state() != FieldState::New) ||
+            !(field.m_info->m_fillpatch_op))
+            continue;
+
+        field.fillpatch(lev, time, *ldata->m_data[field.name()]);
+    }
 
     m_leveldata[lev] = std::move(ldata);
     m_factory[lev] = std::move(fact);
