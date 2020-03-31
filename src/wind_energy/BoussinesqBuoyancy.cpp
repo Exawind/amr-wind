@@ -34,7 +34,6 @@ BoussinesqBuoyancy::BoussinesqBuoyancy()
 /** Add the Boussinesq source term to the forcing array
  *
  *  @param bx Box to operate on
- *  @param rho Density
  *  @param scalars Transported scalars (first one is assumed to be temperature)
  *  @param vel_forces Forcing source term where Boussinesq term is added
  */

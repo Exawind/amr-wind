@@ -16,9 +16,7 @@ void populate_abl_params()
     pp.add("perturb_ref_height", 50.0);
 
     // Boussinesq Buoyancy
-    const amrex::Real tecoeff = 1.0 / 300.0;
     pp.add("reference_temperature", 300.0);
-    pp.add("thermal_expansion_coeff", tecoeff);
 
     // ABL Forcing
     pp.add("abl_forcing_height", 90.0);
@@ -36,6 +34,9 @@ void populate_abl_params()
         pp.add("ic_u", 20.0);  // Ux
         pp.add("ic_v", 10.0);   // Uy
         pp.add("ic_w", 0.0);   // Uw
+        amrex::Vector<amrex::Real> grav{{0.0,0.0,-9.81}};
+        pp.addarr("gravity",grav);
+        
     }
 
     // Adjust computational domain to be more like ABL mesh in the z direction

@@ -5,6 +5,7 @@
 #include "AMReX_Random.H"
 #include "ABLForcing.H"
 #include "CoriolisForcing.H"
+#include "BoussinesqBuoyancy.H"
 
 namespace amr_wind_tests {
 
@@ -170,5 +171,67 @@ TEST_F(ABLTest, coriolis_height_variation)
         EXPECT_NEAR(min_src, max_src, tol);
     }
 }
+
+namespace {
+
+void init_abl_temperature_field(int kdim,
+                           amrex::Box& bx,
+                           amrex::FArrayBox& tracer)
+{
+    // Set tracer as a function of height with (dx = 1.0)
+    auto trac = tracer.array();
+    const amrex::Real dz = 1000.0/((amrex::Real) kdim+1);
+    
+    amrex::ParallelFor(bx, [dz,trac] AMREX_GPU_DEVICE(int i, int j, int k) {
+
+        const amrex::Real z = (k+0.5)*dz;
+        
+        // potential temperature profile
+        if(z < 650.0){
+            trac(i, j, k, 0) = 300.0;
+        } else if(z < 750.0){
+            trac(i, j, k, 0) = 300.0 + (z-650.0)/(750.0-650.0)*8.0;
+        } else {
+            trac(i, j, k, 0) = 308.0;
+        }
+        
+    });
+}
+
+}
+
+TEST_F(ABLTest, boussinesq)
+{
+    constexpr int kdim = 16;
+    constexpr amrex::Real tol = 1.0e-12;
+
+    // Initialize parameters
+    utils::populate_abl_params();
+
+    // Create velocity and source terms fields
+    amrex::Box bx{{0, 0, 0}, {2, 2, kdim}};
+    amrex::FArrayBox temperature(bx, 1);
+    amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
+
+    amr_wind::BoussinesqBuoyancy bb;
+    
+    temperature.setVal(0.0);
+    vel_src.setVal(0.0);
+    init_abl_temperature_field(kdim, bx, temperature);
+
+    bb(bx, temperature.array(), vel_src.array());
+
+    // should be no forcing in x and y directions
+    EXPECT_NEAR(vel_src.min(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.max(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.min(1), 0.0, tol);
+    EXPECT_NEAR(vel_src.max(1), 0.0, tol);
+
+//    f = beta * (T0 - T)*g
+    EXPECT_NEAR(vel_src.min(2), 0.0, tol);
+    EXPECT_NEAR(vel_src.max(2), -9.81*(300.0-308.0)/300.0, tol);
+
+}
+
 
 } // namespace amr_wind_tests
