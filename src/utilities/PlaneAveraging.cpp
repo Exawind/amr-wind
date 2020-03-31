@@ -231,8 +231,13 @@ Real PlaneAveraging::eval_line_average(Real x, int comp)
         const Real x1 = xlo + (ind+0.5)*dx;
         c = (x-x1)/dx;
     }
+    
+    if( ind+1 >= ncell_line){
+        ind = ncell_line-2;
+        c = 1.0;
+    }
 
-    AMREX_ALWAYS_ASSERT(ind>=0 and ind<ncell_line);
+    AMREX_ALWAYS_ASSERT(ind>=0 and ind+1<ncell_line);
 
     return line_average[navg*ind+comp]*(1.0-c) + line_average[navg*(ind+1)+comp]*c;
     
