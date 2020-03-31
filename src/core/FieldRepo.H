@@ -7,6 +7,7 @@
 #include "FieldDescTypes.H"
 #include "FieldUtils.H"
 #include "Field.H"
+#include "ScratchField.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -120,6 +121,17 @@ public:
 
     Field& get_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
+
+    std::unique_ptr<ScratchField> create_scratch_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
+
+    std::unique_ptr<ScratchField> create_scratch_field(
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const FieldLoc floc = FieldLoc::CELL) const;
 
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 

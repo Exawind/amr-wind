@@ -196,4 +196,38 @@ TEST_F(FieldRepoTest, field_location)
     }
 }
 
+TEST_F(FieldRepoTest, scratch_fields)
+{
+    populate_parameters();
+    create_mesh_instance();
+
+    auto& frepo = mesh().field_repo();
+    auto& rho = frepo.declare_field("rho", 1, 0, 1);
+
+    // Check that scratch field creation is disallowed before mesh is created
+    EXPECT_THROW(
+        frepo.create_scratch_field(3, 0),
+        amrex::RuntimeError
+    );
+
+    initialize_mesh();
+    auto umac = frepo.create_scratch_field(3, 0, amr_wind::FieldLoc::XFACE);
+    auto rho_nph = frepo.create_scratch_field(1, 0);
+
+    const auto xf = amrex::IndexType(amrex::IntVect::TheDimensionVector(0));
+    const int nlevels = frepo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        EXPECT_EQ((*umac)(lev).ixType(), xf);
+
+        rho(lev).setVal(1.225);
+    }
+
+    amr_wind::field_ops::copy(*rho_nph, rho, 0, 0, 1, 0);
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        EXPECT_NEAR((*rho_nph)(lev).min(0), 1.225, 1.0e-12);
+        EXPECT_NEAR((*rho_nph)(lev).max(0), 1.225, 1.0e-12);
+    }
+}
+
 }

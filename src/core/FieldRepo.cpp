@@ -145,6 +145,31 @@ Field& FieldRepo::get_field(
     return *m_field_vec[found->second];
 }
 
+std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
+    const std::string& name, const int ncomp, const int nghost, const FieldLoc floc) const
+{
+    if (!m_is_initialized) {
+        amrex::Abort("Scratch field creation is not permitted before mesh is initialized");
+    }
+
+    std::unique_ptr<ScratchField> field(new ScratchField(*this, name, ncomp, nghost, floc));
+
+    for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
+        const auto ba = amrex::convert(
+            m_mesh.boxArray(lev), field_impl::index_type(floc));
+
+        field->m_data.emplace_back(
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost, amrex::MFInfo(), *m_factory[lev]);
+    }
+    return field;
+}
+
+std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
+    const int ncomp, const int nghost, const FieldLoc floc) const
+{
+    return create_scratch_field("scratch_field", ncomp, nghost, floc);
+}
+
 void FieldRepo::allocate_field_data(
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm,
