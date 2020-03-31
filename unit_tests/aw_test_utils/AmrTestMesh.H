@@ -5,7 +5,8 @@
 #include <unordered_map>
 
 #include "AMReX_AmrCore.H"
-#include "LevelData.H"
+#include "FieldRepo.H"
+#include "Field.H"
 
 namespace amr_wind_tests {
 
@@ -83,6 +84,8 @@ public:
     //! Return the total number of existing levels in AMR hierarchy
     int num_levels() const { return finest_level + 1; }
 
+    amr_wind::FieldRepo& field_repo() { return m_repo; }
+
 protected:
     virtual void MakeNewLevelFromScratch(
         int lev, amrex::Real time, const amrex::BoxArray& ba,
@@ -103,6 +106,8 @@ protected:
         override;
 
     amrex::Vector<std::unique_ptr<TestLevelData>> m_leveldata;
+
+    amr_wind::FieldRepo m_repo;
 };
 
 }

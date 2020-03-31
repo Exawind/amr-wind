@@ -58,6 +58,65 @@ public:
         const int nstates = 1,
         const FieldLoc floc = FieldLoc::CELL);
 
+    inline Field& declare_cc_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        return declare_field(name, ncomp, ngrow, nstates, FieldLoc::CELL);
+    }
+
+    inline Field& declare_nd_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        return declare_field(name, ncomp, ngrow, nstates, FieldLoc::NODE);
+    }
+
+    inline Field& declare_xf_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        return declare_field(name, ncomp, ngrow, nstates, FieldLoc::XFACE);
+    }
+
+    inline Field& declare_yf_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        return declare_field(name, ncomp, ngrow, nstates, FieldLoc::YFACE);
+    }
+
+    inline Field& declare_zf_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        return declare_field(name, ncomp, ngrow, nstates, FieldLoc::ZFACE);
+    }
+
+    inline amrex::Vector<Field*> declare_face_normal_field(
+        const amrex::Vector<std::string>& names,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1)
+    {
+        AMREX_ASSERT(names.size() == AMREX_SPACEDIM);
+        return {
+            &declare_field(names[0], ncomp, ngrow, nstates, FieldLoc::XFACE),
+            &declare_field(names[1], ncomp, ngrow, nstates, FieldLoc::YFACE),
+            &declare_field(names[2], ncomp, ngrow, nstates, FieldLoc::ZFACE),
+        };
+    }
+
     Field& get_field(
         const std::string& name, const FieldState fstate = FieldState::New);
 
