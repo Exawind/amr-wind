@@ -34,14 +34,12 @@ BoussinesqBuoyancy::BoussinesqBuoyancy()
 /** Add the Boussinesq source term to the forcing array
  *
  *  @param bx Box to operate on
- *  @param rho Density
  *  @param scalars Transported scalars (first one is assumed to be temperature)
  *  @param vel_forces Forcing source term where Boussinesq term is added
  */
 void BoussinesqBuoyancy::operator()(
     const amrex::Box& bx,
-    const amrex::Array4<const amrex::Real>& scalars_old,
-    const amrex::Array4<const amrex::Real>& scalars_new,
+    const amrex::Array4<const amrex::Real>& scalars,
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
     const amrex::Real T0 = m_ref_theta;
@@ -50,7 +48,7 @@ void BoussinesqBuoyancy::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real T = 0.5*(scalars_old(i, j, k, 0) + scalars_new(i, j, k, 0));
+        const amrex::Real T = scalars(i, j, k, 0);
         const amrex::Real fac = beta * (T0 - T);
 
         vel_forces(i, j, k, 0) += gravity[0] * fac;

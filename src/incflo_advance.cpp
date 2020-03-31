@@ -171,8 +171,12 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Allocate space for half-time density
     // *************************************************************************************
     Vector<MultiFab> density_nph;
+    Vector<MultiFab> tracer_nph;
     for (int lev = 0; lev <= finest_level; ++lev)
+    {
         density_nph.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
+        if (m_ntrac) tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
+    }
 
     // Forcing terms
     Vector<MultiFab> vel_forces, tra_forces;
@@ -203,7 +207,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
                            get_density_old_const(),
-                           get_tracer_old_const(), get_tracer_old_const());
+                           get_tracer_old_const());
 
         // Note this is forcing for (rho s), not for s
         if (m_advect_tracer)
@@ -396,15 +400,47 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                   dt_diff);
     } // if (m_advect_tracer)
 
+    
+    // *************************************************************************************
+    // Update tracer at n+1/2
+    // *************************************************************************************
+    if (!m_advect_tracer)
+    {
+        for (int lev = 0; lev <= finest_level; lev++){
+            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
+        }
+    } else {
+        for (int lev = 0; lev <= finest_level; lev++)
+        {
+            auto& ld = *m_leveldata[lev];
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box const& bx = mfi.tilebox();
+                Array4<Real const> const& tracer_o  = ld.tracer_o.const_array(mfi);
+                Array4<Real const> const& tracer_n  = ld.tracer.const_array(mfi);
+                Array4<Real> const& tra_nph   = tracer_nph[lev].array(mfi);
+
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    tra_nph(i,j,k) = 0.5 * (tracer_o(i,j,k) + tracer_n(i,j,k));
+                });
+            } // mfi
+        } // lev
+
+    }
+    
+    
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
     compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
                        GetVecOfConstPtrs(density_nph),
-                       get_tracer_old_const(), get_tracer_new_const());
-
-
+                       GetVecOfConstPtrs(tracer_nph));
+    
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
@@ -580,8 +616,11 @@ void incflo::ApplyCorrector()
     // Allocate space for half-time density
     // *************************************************************************************
     Vector<MultiFab> density_nph;
+    Vector<MultiFab> tracer_nph;
     for (int lev = 0; lev <= finest_level; ++lev) {
         density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+        if (m_ntrac) tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
+
     }
 
     // **********************************************************************************************
@@ -700,7 +739,6 @@ void incflo::ApplyCorrector()
                 Array4<Real const> const& rho_o   = ld.density_o.const_array(mfi);
                 Array4<Real      > const& tra     = ld.tracer.array(mfi);
                 Array4<Real const> const& rho     = ld.density.const_array(mfi);
-                Array4<Real const> const& rho_nph = density_nph[lev].const_array(mfi);
                 Array4<Real const> const& dtdt_o  = ld.conv_tracer_o.const_array(mfi);
                 Array4<Real const> const& dtdt    = ld.conv_tracer.const_array(mfi);
                 Array4<Real const> const& tra_f   = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
@@ -778,11 +816,42 @@ void incflo::ApplyCorrector()
     }
 
     // *************************************************************************************
+    // Update tracer at n+1/2
+    // *************************************************************************************
+    if (!m_advect_tracer)
+    {
+        for (int lev = 0; lev <= finest_level; lev++){
+            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
+        }
+    } else {
+        for (int lev = 0; lev <= finest_level; lev++)
+        {
+            auto& ld = *m_leveldata[lev];
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box const& bx = mfi.tilebox();
+                Array4<Real const> const& tracer_o  = ld.tracer_o.const_array(mfi);
+                Array4<Real const> const& tracer_n  = ld.tracer.const_array(mfi);
+                Array4<Real> const& tra_nph   = tracer_nph[lev].array(mfi);
+
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                {
+                    tra_nph(i,j,k) = 0.5 * (tracer_o(i,j,k) + tracer_n(i,j,k));
+                });
+            } // mfi
+        } // lev
+
+    }
+    
+    // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
     compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(),
                        GetVecOfConstPtrs(density_nph),
-                       get_tracer_old_const(), get_tracer_new_const());
+                       GetVecOfConstPtrs(tracer_nph));
 
     // *************************************************************************************
     // Update velocity
