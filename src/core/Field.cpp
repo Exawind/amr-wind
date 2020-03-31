@@ -39,7 +39,8 @@ void FieldInfo::copy_bc_to_device() noexcept
     // Transfer BC values to device
     amrex::Real* ptr = m_bc_values_dview.data();
 #ifdef AMREX_USE_GPU
-    Gpu::htod_memcpy(ptr, h_data.data(), sizeof(amrex::Real)*h_data.size());
+    amrex::Gpu::htod_memcpy(
+        ptr, h_data.data(), sizeof(amrex::Real) * h_data.size());
 #else
     std::memcpy(ptr, h_data.data(), sizeof(amrex::Real)*h_data.size());
 #endif
@@ -50,7 +51,9 @@ void FieldInfo::copy_bc_to_device() noexcept
     }
 
 #ifdef AMREX_USE_GPU
-    Gpu::htod_memcpy(m_bcrec_d.data(), m_bcrec.data(), sizeof(amrex::BCRec) * AMREX_SPACEDIM);
+    amrex::Gpu::htod_memcpy(
+        m_bcrec_d.data(), m_bcrec.data(),
+        sizeof(amrex::BCRec) * AMREX_SPACEDIM);
 #else
     std::memcpy(m_bcrec_d.data(), m_bcrec.data(), sizeof(amrex::BCRec) * AMREX_SPACEDIM);
 #endif
