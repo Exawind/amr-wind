@@ -467,14 +467,16 @@ void incflo::WritePlotFile()
                 compute_vel_pressure_terms(lev, forcing, m_leveldata[lev]->density);
 
                 for (auto& pp: m_physics) {
-                    pp->add_momentum_sources(
-                        Geom(lev), *m_leveldata[lev], forcing);
+                    pp->add_momentum_sources(Geom(lev),
+                                             m_leveldata[lev]->density,
+                                             m_leveldata[lev]->velocity,
+                                             m_leveldata[lev]->tracer,
+                                             forcing);
                 }
 
             } else {
                 compute_vel_forces_on_level(lev, forcing,
                                             m_leveldata[lev]->density,
-                                            m_leveldata[lev]->tracer,
                                             m_leveldata[lev]->tracer);
             }
         }

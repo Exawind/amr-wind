@@ -25,16 +25,9 @@ public:
     //! Add momentum source terms
     virtual void add_momentum_sources(
         const amrex::Geometry& geom,
-        const LevelData& leveldata,
-        amrex::MultiFab& vel_forces) const = 0;
-
-    //! Add momentum source terms
-    virtual void add_momentum_sources(
-        const amrex::Geometry& geom,
         const amrex::MultiFab& density,
         const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars_old,
-        const amrex::MultiFab& scalars_new,
+        const amrex::MultiFab& scalars,
         amrex::MultiFab& vel_forces) const = 0;
 };
 
