@@ -71,19 +71,15 @@ Field::~Field() = default;
 Field& Field::state(const FieldState fstate)
 {
     auto& fstates = m_info->m_states;
-    auto found = fstates.find(fstate);
-    if (found == fstates.end())
-        amrex::Abort("Cannot find requested state for field: " + m_name);
-    return *fstates[fstate];
+    const int fint = static_cast<int>(fstate);
+    return *fstates[fint];
 }
 
 const Field& Field::state(const FieldState fstate) const
 {
     auto& fstates = m_info->m_states;
-    auto found = fstates.find(fstate);
-    if (found == fstates.end())
-        amrex::Abort("Cannot find requested state for field: " + m_name);
-    return *fstates[fstate];
+    const int fint = static_cast<int>(fstate);
+    return *fstates[fint];
 }
 
 amrex::MultiFab& Field::operator()(int lev) noexcept

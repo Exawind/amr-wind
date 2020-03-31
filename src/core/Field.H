@@ -55,7 +55,7 @@ struct FieldInfo
     amrex::Vector<amrex::BCRec> m_bcrec;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_d;
 
-    std::unordered_map<FieldState, Field*> m_states;
+    amrex::Vector<Field*> m_states;
 
     std::unique_ptr<FieldFillPatchOpsBase> m_fillpatch_op;
 };

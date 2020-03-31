@@ -121,7 +121,7 @@ Field& FieldRepo::declare_field(
             allocate_field_data(*field);
 
         // Add reference to states lookup
-        finfo->m_states[fstate] = field.get();
+        finfo->m_states.push_back(field.get());
         // Store the field instance
         m_field_vec.emplace_back(std::move(field));
         // Name to ID lookup map
