@@ -1,21 +1,21 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   3.183098861837907   # Max (simulated) time to evolve
-max_step                =   20          # Max number of time steps
+time.stop_time               =   3.183098861837907   # Max (simulated) time to evolve
+time.max_step                =   20          # Max number of time steps
 steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.005        # Use this constant dt if > 0
-incflo.cfl              =   0.45        # CFL factor
+time.fixed_dt         =   0.005        # Use this constant dt if > 0
+time.cfl              =   0.45        # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.plot_int  =  20   # Steps between plot files
-amr.check_int =   -1  # Steps between checkpoint files
+time.plot_interval  =  20   # Steps between plot files
+time.checkpoint_interval =   -1  # Steps between checkpoint files
 amr.restart   =   ""  # Checkpoint to restart from 
 amr.KE_int = 1        # calculate kinetic energy 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

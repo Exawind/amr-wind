@@ -62,7 +62,7 @@ function(add_test_r TEST_NAME NP)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")

@@ -1,16 +1,16 @@
-max_step                = 20
+time.max_step                = 20
 
-incflo.fixed_dt         = 0.1
-incflo.cfl              = 0.9           # CFL factor
-incflo.init_shrink      = 1.0
+time.fixed_dt         = 0.1
+time.cfl              = 0.9           # CFL factor
+time.init_shrink      = 1.0
 
-amr.plot_int            =   10          # Steps between plot files
-amr.check_int           =  -100         # Steps between checkpoint files
+time.plot_interval            =   10          # Steps between plot files
+time.checkpoint_interval           =  -100         # Steps between checkpoint files
 incflo.mu               =   0.001       # Dynamic viscosity coefficient
 incflo.mu_s             =   0.001       # Scalar diffusion coefficient mu (mu = rho * nu)
 
 amr.max_level           =   2
-amr.regrid_int          =   2
+time.regrid_interval          =   2
 
 amr.n_cell              =   16 16 32    # Grid cells at coarsest AMRlevel
 amr.max_grid_size       =   8 8 8       # Max grid size at AMR levels

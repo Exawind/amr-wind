@@ -1,16 +1,16 @@
-max_step                = 140 
-stop_time               = 100.0           # Max (simulated) time to evolve
+time.max_step                = 140 
+time.stop_time               = 100.0           # Max (simulated) time to evolve
 
 incflo.use_godunov                     = true
 incflo.godunov_include_diff_in_forcing = true
 
-incflo.fixed_dt = 0.2
+time.fixed_dt = 0.2
 
-incflo.cfl              = 0.49           # CFL factor
-incflo.init_shrink      = 1.0
+time.cfl              = 0.49           # CFL factor
+time.init_shrink      = 1.0
 
-amr.plot_int            =   140         # Steps between plot files
-amr.check_int           =  -100         # Steps between checkpoint files
+time.plot_interval            =   140         # Steps between plot files
+time.checkpoint_interval           =  -100         # Steps between checkpoint files
 
 incflo.mu               =   0.00001       # Dynamic viscosity coefficient
 incflo.mu_s = 0.00003

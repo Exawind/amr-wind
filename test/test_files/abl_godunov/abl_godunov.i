@@ -1,14 +1,14 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-stop_time               =   22000.0     # Max (simulated) time to evolve
-max_step                =   -1          # Max number of time steps
+time.stop_time               =   22000.0     # Max (simulated) time to evolve
+time.max_step                =   -1          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-incflo.fixed_dt         =   0.5        # Use this constant dt if > 0
-incflo.cfl              =   0.95         # CFL factor
+time.fixed_dt         =   0.5        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
@@ -16,9 +16,9 @@ incflo.cfl              =   0.95         # CFL factor
 amr.KE_int = 1
 amr.plane_averaging = 1
 amr.line_plot_int = 1
-amr.plot_int            =   500       # Steps between plot files
+time.plot_interval            =   500       # Steps between plot files
 amr.plot_per            =   -1          # Steps between plot files
-amr.check_int           =  -1000       # Steps between checkpoint files
+time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
 
