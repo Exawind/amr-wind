@@ -56,6 +56,7 @@ void ABLFieldInit::operator()(
     amrex::AsyncArray<amrex::Real> theta_values_d(
         m_theta_values.data(), m_theta_values.size());
 
+    const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
     const amrex::Real umean = m_vel[0];
     const amrex::Real vmean = m_vel[1];
@@ -76,7 +77,6 @@ void ABLFieldInit::operator()(
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho_init;
-
         // Mean velocity field
         velocity(i, j, k, 0) = umean;
         velocity(i, j, k, 1) = vmean;
@@ -94,7 +94,7 @@ void ABLFieldInit::operator()(
         // FIXME: Remove first tracer is temperature assumption
         tracer(i, j, k, 0) = theta;
 
-        if (m_perturb_vel) {
+        if (perturb_vel) {
             const amrex::Real xl = x - problo[0];
             const amrex::Real yl = y - problo[1];
             const amrex::Real zl = z / ref_height;
