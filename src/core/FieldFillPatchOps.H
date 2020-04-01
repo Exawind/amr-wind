@@ -29,12 +29,39 @@ public:
     fillphysbc(int lev, amrex::Real time, amrex::MultiFab& mfab) = 0;
 };
 
+class FieldFillConstScalar: public FieldFillPatchOpsBase
+{
+public:
+    FieldFillConstScalar(Field&, amrex::Real fill_val)
+        : m_fill_val(fill_val)
+    {}
+
+    void fillpatch(int, amrex::Real, amrex::MultiFab& mfab) override
+    {
+        mfab.setVal(m_fill_val);
+    }
+
+    void fillpatch_from_coarse(
+        int, amrex::Real, amrex::MultiFab& mfab) override
+    {
+        mfab.setVal(m_fill_val);
+    }
+
+    void fillphysbc(int, amrex::Real, amrex::MultiFab& mfab) override
+    {
+        mfab.setVal(m_fill_val);
+    }
+
+private:
+    amrex::Real m_fill_val;
+};
+
 template <typename Functor>
 class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
     FieldFillPatchOps(
-        const SimTime& time, amrex::AmrCore& mesh, Field& field, int probtype)
+        Field& field, amrex::AmrCore& mesh, const SimTime& time,  int probtype)
         : m_time(time), m_mesh(mesh), m_field(field), m_probtype(probtype)
     {
     }

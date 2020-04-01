@@ -136,7 +136,7 @@ public:
     template<typename T, class... Args>
     void register_fill_patch_op(Args&&... args)
     {
-        m_info->m_fillpatch_op.reset(new T(std::forward<Args>(args)...));
+        m_info->m_fillpatch_op.reset(new T(*this, std::forward<Args>(args)...));
     }
 
     void fillpatch(amrex::Real time);
