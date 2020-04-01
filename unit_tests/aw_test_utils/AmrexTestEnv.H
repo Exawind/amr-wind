@@ -34,6 +34,9 @@ public:
                 pp.add("verbose", -1);
                 pp.add("v", -1);
             }
+
+            pp.add("throw_exception", 1);
+            pp.add("signal_handling", 0);
         });
 
         // Call ParmParse::Finalize immediately to allow unit tests to start
