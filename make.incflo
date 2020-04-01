@@ -18,7 +18,6 @@ include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 #These are the directories in incflo/src
 Bdirs := $(INCFLO_HOME)src
-#Bdirs += $(INCFLO_HOME)src/atmospheric_boundary_layer
 Bdirs += $(INCFLO_HOME)src/boundary_conditions
 Bdirs += $(INCFLO_HOME)src/convection
 Bdirs += $(INCFLO_HOME)src/derive
@@ -28,12 +27,9 @@ Bdirs += $(INCFLO_HOME)src/projection
 Bdirs += $(INCFLO_HOME)src/rheology
 Bdirs += $(INCFLO_HOME)src/setup
 Bdirs += $(INCFLO_HOME)src/utilities
+Bdirs += $(INCFLO_HOME)src/utilities/tagging
 Bdirs += $(INCFLO_HOME)src/core
 Bdirs += $(INCFLO_HOME)src/wind_energy
-
-ifeq ($(USE_EB), TRUE)
-Bdirs 	+= $(INCFLO_HOME)src/embedded_boundaries
-endif
 
 Bpack += $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(TOP)/$(dir))
