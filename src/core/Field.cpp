@@ -126,7 +126,7 @@ void Field::fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mf
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch_coarse(lev, time, mfab);
+    fop.fillpatch_from_coarse(lev, time, mfab);
 }
 
 void Field::fillpatch(amrex::Real time)

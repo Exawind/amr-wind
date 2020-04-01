@@ -23,14 +23,14 @@ public:
     fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab) = 0;
 
     virtual void
-    fillpatch_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab) = 0;
+    fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab) = 0;
 
     virtual void
     fillphysbc(int lev, amrex::Real time, amrex::MultiFab& mfab) = 0;
 };
 
 template <typename Functor>
-class FieldFillPatchOps : FieldFillPatchOpsBase
+class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
     FieldFillPatchOps(
@@ -50,13 +50,13 @@ public:
         return ret;
     }
 
-    void fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab)
+    void fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab) override
     {
         auto mfab_vec_lev = get_mfab_vec(lev);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
                 m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.bc_values_device()});
+                Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
 
             amrex::FillPatchSingleLevel(
                 mfab, m_field.num_grow(), time,
@@ -66,11 +66,11 @@ public:
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
                 m_mesh.Geom(lev - 1), m_field.bcrec(),
-                Functor{m_probtype, m_field.bc_values_device()});
+                Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
                 m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.bc_values_device()});
+                Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
 
             amrex::Interpolater* mapper = &amrex::cell_cons_interp;
             auto mfab_vec_levm1 = get_mfab_vec(lev - 1);
@@ -87,15 +87,15 @@ public:
         }
     }
 
-    void fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab)
+    void fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
             m_mesh.Geom(lev - 1), m_field.bcrec(),
-            Functor{m_probtype, m_field.bc_values_device()});
+            Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
 
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
             m_mesh.Geom(lev), m_field.bcrec(),
-            Functor{m_probtype, m_field.bc_values_device()});
+            Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
 
         amrex::Interpolater* mapper = &amrex::cell_cons_interp;
 
@@ -106,11 +106,11 @@ public:
             0);
     }
 
-    void fillphysbc(int lev, amrex::Real time, amrex::MultiFab& mfab)
+    void fillphysbc(int lev, amrex::Real time, amrex::MultiFab& mfab) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
             m_mesh.Geom(lev), m_field.bcrec(),
-            Functor{m_probtype, m_field.bc_values_device()});
+            Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()});
         physbc.FillBoundary(
             mfab, 0, m_field.num_comp(), m_field.num_grow(), time, 0);
     }
