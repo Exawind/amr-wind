@@ -60,7 +60,7 @@ TEST_F(PlaneAveragingTest, test_constant)
 namespace {
 
 void add_linear(int dir,
-                amrex::Real a[3],
+                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
                 amrex::Geometry geom,
                 const amrex::Box& bx,
                 amrex::Array4<amrex::Real>& velocity)
@@ -90,7 +90,7 @@ TEST_F(PlaneAveragingTest, test_linear)
     
     constexpr double tol = 1.0e-12;
 
-    amrex::Real u0[3] = {1.0, 3.5, 5.6};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> u0 = {{1.0, 3.5, 5.6}};
     amrex::Real t0 = 3.2;
 
     populate_parameters();
@@ -163,7 +163,7 @@ TEST_F(PlaneAveragingTest, test_linear)
 namespace {
 
 void add_periodic(int dir,
-                  amrex::Real a[3],
+                  amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
                   amrex::Geometry geom,
                   const amrex::Box& bx,
                   amrex::Array4<amrex::Real>& velocity)
@@ -214,7 +214,7 @@ void PlaneAveragingTest::test_dir(int dir)
     const auto& problo = mesh().Geom(0).ProbLoArray();
     const auto& probhi = mesh().Geom(0).ProbHiArray();
     
-    amrex::Real a[3];
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a;
     a[0] = periods * amr_wind::utils::two_pi() / (probhi[0] - problo[0]);
     a[1] = periods * amr_wind::utils::two_pi() / (probhi[1] - problo[1]);
     a[2] = periods * amr_wind::utils::two_pi() / (probhi[2] - problo[2]);
@@ -284,7 +284,7 @@ TEST_F(PlaneAveragingTest, test_leveldata_zdir)
     const auto& problo = mesh().Geom(0).ProbLoArray();
     const auto& probhi = mesh().Geom(0).ProbHiArray();
     
-    amrex::Real a[3];
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a;
     a[0] = periods * amr_wind::utils::two_pi() / (probhi[0] - problo[0]);
     a[1] = periods * amr_wind::utils::two_pi() / (probhi[1] - problo[1]);
     a[2] = periods * amr_wind::utils::two_pi() / (probhi[2] - problo[2]);
