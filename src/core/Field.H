@@ -136,6 +136,33 @@ public:
     //! Return vector of `const MultiFab*` for all levels
     amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept;
 
+    //! Advance timestep for fields with multiple states
+    void advance_states() noexcept;
+
+    /** \defgroup These methods wrappers to MultiFab methods
+     *
+     *  @{
+     */
+
+    // NOTE: We break naming rules for methods here to provide 1-1 mapping with
+    // the underlying MultiFab method names.
+
+    //! Set the field to a constant value at all levels
+    void setVal(amrex::Real value) noexcept;
+
+    /** Set specific components of a multi-component field to a given value
+     *
+     *  \param value Constant value for initialization
+     *  \param start_comp Starting component index (0-based)
+     *  \param num_comp Number of components from starting component to initialize
+     *  \param num_ghost Number of ghost cells to include
+     */
+    void setVal(amrex::Real value, int start_comp, int num_comp=1, int nghost=0) noexcept;
+
+    /** Set components to those in the vector for a multi-component field
+     */
+    void setVal(const amrex::Vector<amrex::Real>& values, int nghost=0) noexcept;
+
     /** Register a custom fillpatch class instance for this field
      *
      *  The class must be a subclass of amr_wind::FieldFillPatchOpsBase

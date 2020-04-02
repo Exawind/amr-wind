@@ -103,13 +103,11 @@ TEST_F(FieldRepoTest, field_get)
     const amrex::Real vx = 30.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vy = 30.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vz = 30.0 + 5.0 * (amrex::Random() - 0.5);
-    auto mf_vel = velf.vec_ptrs();
-    for (auto* it: mf_vel) {
-        it->setVal(vx, 0, 1);
-        it->setVal(vy, 1, 1);
-        it->setVal(vz, 2, 1);
-    }
+    velf.setVal(vx, 0);
+    velf.setVal(vy, 1);
+    velf.setVal(vz, 2);
 
+    auto mf_vel = velf.vec_ptrs();
     amrex::Vector<amrex::Real> golds{{vx, vy, vz}};
     for (auto* it: mf_vel) {
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
@@ -138,21 +136,12 @@ TEST_F(FieldRepoTest, field_multiple_states)
     const amrex::Real vy_old = 20.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vz_old = 20.0 + 5.0 * (amrex::Random() - 0.5);
 
-    const int nlevels = mesh().finestLevel() + 1;
-    for (int lev = 0; lev < nlevels; ++lev) {
-        auto& mf1 = velocity(lev);
-        auto& mf2 = vel_old(lev);
-
-        mf1.setVal(vx, 0, 1);
-        mf1.setVal(vy, 1, 1);
-        mf1.setVal(vz, 2, 1);
-        mf2.setVal(vx_old, 0, 1);
-        mf2.setVal(vy_old, 1, 1);
-        mf2.setVal(vz_old, 2, 1);
-    }
+    velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
+    vel_old.setVal(amrex::Vector<amrex::Real>{vx_old, vy_old, vz_old});
 
     amr_wind::field_ops::lincomb(veldiff, 1.0, velocity, 0, -1.0, vel_old, 0, 0, 3, 0);
 
+    const int nlevels = mesh().finestLevel() + 1;
     amrex::Vector<amrex::Real> golds{{(vx - vx_old), (vy - vy_old), (vz - vz_old)}};
     for (int lev=0; lev < nlevels; ++lev) {
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
@@ -193,6 +182,35 @@ TEST_F(FieldRepoTest, field_location)
         EXPECT_EQ(umac(lev).ixType(), xf);
         EXPECT_EQ(vmac(lev).ixType(), yf);
         EXPECT_EQ(wmac(lev).ixType(), zf);
+    }
+}
+
+TEST_F(FieldRepoTest, field_advance_states)
+{
+    initialize_mesh();
+
+    auto& field_repo = mesh().field_repo();
+    auto& velocity = field_repo.declare_field("vel", 3, 0, 2);
+    auto& vel_old = velocity.state(amr_wind::FieldState::Old);
+    EXPECT_EQ(velocity.num_states(), 2);
+
+    const amrex::Real vx = 30.0 + 5.0 * (amrex::Random() - 0.5);
+    const amrex::Real vy = 30.0 + 5.0 * (amrex::Random() - 0.5);
+    const amrex::Real vz = 30.0 + 5.0 * (amrex::Random() - 0.5);
+
+    velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
+    velocity.advance_states();
+
+    const int nlevels = field_repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+            const auto old_min = vel_old(lev).min(i);
+            const auto old_max = vel_old(lev).max(i);
+            const auto new_min = velocity(lev).min(i);
+            const auto new_max = velocity(lev).max(i);
+            EXPECT_NEAR(old_min, new_min, 1.0e-12);
+            EXPECT_NEAR(old_max, new_max, 1.0e-12);
+        }
     }
 }
 

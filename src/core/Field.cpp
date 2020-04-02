@@ -160,4 +160,49 @@ void Field::fillphysbc(amrex::Real time) noexcept
     }
 }
 
+void Field::advance_states() noexcept
+{
+    if (num_states() < 2) return;
+
+    for (int i=num_states() - 1; i > 0; --i) {
+        const auto sold = static_cast<FieldState>(i);
+        const auto snew = static_cast<FieldState>(i - 1);
+        auto& old_field = state(sold);
+        auto& new_field = state(snew);
+        for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+            amrex::MultiFab::Copy(
+                old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());
+        }
+    }
+}
+
+void Field::setVal(amrex::Real value) noexcept
+{
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        operator()(lev).setVal(value);
+    }
+}
+
+void Field::setVal(amrex::Real value, int start_comp, int num_comp, int nghost) noexcept
+{
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        operator()(lev).setVal(value, start_comp, num_comp, nghost);
+    }
+}
+
+void Field::setVal(const amrex::Vector<amrex::Real>& values, int nghost) noexcept
+{
+    AMREX_ASSERT(num_comp() == static_cast<int>(values.size()));
+
+    // Update 1 component at a time
+    const int ncomp = 1;
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        auto& mf = operator()(lev);
+        for (int ic=0; ic < num_comp(); ++ic) {
+            amrex::Real value = values[ic];
+            mf.setVal(value, ic, ncomp, nghost);
+        }
+    }
+}
+
 } // namespace amr_wind
