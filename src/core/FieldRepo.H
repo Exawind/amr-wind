@@ -139,6 +139,9 @@ public:
 
     const amrex::Vector<std::unique_ptr<Field>>& fields() const noexcept { return m_field_vec; }
 
+    inline const amrex::FabFactory<amrex::FArrayBox>&
+    factory(int lev) const noexcept { return *m_factory[lev]; }
+
 protected:
     inline amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
     {
