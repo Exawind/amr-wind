@@ -271,7 +271,7 @@ TEST_F(PlaneAveragingTest, test_zdir)
 }
 
 
-
+#if 0
 TEST_F(PlaneAveragingTest, test_leveldata_zdir)
 {
     
@@ -330,5 +330,6 @@ TEST_F(PlaneAveragingTest, test_leveldata_zdir)
     EXPECT_NEAR(w0, w, tol);
         
 }
+#endif
 
 }  // amr_wind_tests
