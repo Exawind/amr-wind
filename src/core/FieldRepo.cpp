@@ -178,6 +178,14 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     return create_scratch_field("scratch_field", ncomp, nghost, floc);
 }
 
+void FieldRepo::advance_states() noexcept
+{
+    for (auto& it: m_field_vec) {
+        if (it->field_state() != FieldState::New) continue;
+        it->advance_states();
+    }
+}
+
 void FieldRepo::allocate_field_data(
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm,

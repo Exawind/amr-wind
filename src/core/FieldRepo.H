@@ -136,6 +136,8 @@ public:
         const int ngrow = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
+    void advance_states() noexcept;
+
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
     int num_fields() const noexcept { return m_field_vec.size(); }

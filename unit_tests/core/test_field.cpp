@@ -199,7 +199,8 @@ TEST_F(FieldRepoTest, field_advance_states)
     const amrex::Real vz = 30.0 + 5.0 * (amrex::Random() - 0.5);
 
     velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
-    velocity.advance_states();
+    vel_old.setVal(std::numeric_limits<amrex::Real>::max());
+    field_repo.advance_states();
 
     const int nlevels = field_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
