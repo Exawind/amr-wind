@@ -6,26 +6,16 @@ namespace pp_utils {
 
 void default_time_inputs()
 {
-    {
-        amrex::ParmParse pp;
-        pp.add("verbose", -1);
-        pp.add("stop_time", 2.0);
-        pp.add("max_step", 10.0);
-    }
-
-    {
-        amrex::ParmParse pp("amr");
-        pp.add("regrid_int", 3);
-        pp.add("plot_int", 1);
-        pp.add("check_int", 2);
-    }
-
-    {
-        amrex::ParmParse pp("incflo");
-        pp.add("fixed_dt", 0.1);
-        pp.add("cfl", 0.5);
-        pp.add("m_init_shrink", 0.1);
-    }
+    amrex::ParmParse pp("time");
+    pp.add("stop_time", 2.0);
+    pp.add("max_step", 10);
+    pp.add("fixed_dt", 0.1);
+    pp.add("init_shrink", 0.1);
+    pp.add("cfl", 0.5);
+    pp.add("verbose", -1);
+    pp.add("regrid_interval", 3);
+    pp.add("plot_interval", 1);
+    pp.add("checkpoint_interval", 2);
 }
 
 void default_mesh_inputs()

@@ -12,30 +12,17 @@ void SimTime::parse_parameters()
         m_dt[i] = -1.0;
     }
 
-    {
-        // Parse global parameters
-        amrex::ParmParse pp;
-
-        pp.query("verbose", m_verbose);
-        pp.query("stop_time", m_stop_time);
-        pp.query("max_step", m_stop_time_index);
-    }
-
-    {
-        // Parse options in "amr" namespace
-        amrex::ParmParse pp("amr");
-        pp.query("regrid_int", m_regrid_interval);
-        pp.query("plot_int", m_plt_interval);
-        pp.query("check_int", m_chkpt_interval);
-    }
-
-    {
-        // Parse options in incflo namespace
-        amrex::ParmParse pp("incflo");
-        pp.query("fixed_dt", m_fixed_dt);
-        pp.query("cfl", m_max_cfl);
-        pp.query("m_init_shrink", m_init_shrink);
-    }
+    // Parse options in "time" namespace
+    amrex::ParmParse pp("time");
+    pp.query("stop_time", m_stop_time);
+    pp.query("max_step", m_stop_time_index);
+    pp.query("fixed_dt", m_fixed_dt);
+    pp.query("init_shrink", m_init_shrink);
+    pp.query("cfl", m_max_cfl);
+    pp.query("verbose", m_verbose);
+    pp.query("regrid_interval", m_regrid_interval);
+    pp.query("plot_interval", m_plt_interval);
+    pp.query("checkpoint_interval", m_chkpt_interval);
 
     if (m_fixed_dt > 0.0) {
         m_dt[0] = m_fixed_dt;
