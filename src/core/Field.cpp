@@ -113,39 +113,47 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
     return ret;
 }
 
-void Field::fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab)
+void Field::fillpatch(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& nghost) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch(lev, time, mfab);
+    fop.fillpatch(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab)
+void Field::fillpatch_from_coarse(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& nghost) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch_from_coarse(lev, time, mfab);
+    fop.fillpatch_from_coarse(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch(amrex::Real time)
+void Field::fillpatch(amrex::Real time) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev));
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
     }
 }
 
-void Field::fillphysbc(amrex::Real time)
+void Field::fillphysbc(amrex::Real time) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev));
+        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
     }
 }
 

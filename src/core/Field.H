@@ -139,11 +139,38 @@ public:
         m_info->m_fillpatch_op.reset(new T(*this, std::forward<Args>(args)...));
     }
 
-    void fillpatch(amrex::Real time);
-    void fillphysbc(amrex::Real time);
+    void fillpatch(amrex::Real time) noexcept;
+    void fillphysbc(amrex::Real time) noexcept;
 
-    void fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab);
-    void fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab);
+    void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) noexcept;
+
+    void fillpatch_from_coarse(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) noexcept;
+
+    inline void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const int nghost) noexcept
+    {
+        fillpatch(lev, time, mfab, amrex::IntVect(nghost));
+    }
+
+    inline void fillpatch_from_coarse(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        int nghost) noexcept
+    {
+        fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
+    }
 
 protected:
     Field(

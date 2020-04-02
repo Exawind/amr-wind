@@ -32,7 +32,7 @@ void FieldRepo::make_new_level_from_coarse(
             !(field->m_info->m_fillpatch_op))
             continue;
 
-        field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()]);
+        field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()], 0);
     }
 
     m_leveldata[lev] = std::move(ldata);
@@ -57,7 +57,7 @@ void FieldRepo::remake_level(
             !(field->m_info->m_fillpatch_op))
             continue;
 
-        field->fillpatch(lev, time, ldata->m_mfabs[field->id()]);
+        field->fillpatch(lev, time, ldata->m_mfabs[field->id()], 0);
     }
 
     m_leveldata[lev] = std::move(ldata);
