@@ -19,6 +19,7 @@ FieldInfo::FieldInfo(
     , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
+    , m_states(FieldInfo::max_field_states, nullptr)
 {}
 
 FieldInfo::~FieldInfo() = default;
@@ -68,6 +69,7 @@ Field& Field::state(const FieldState fstate)
 {
     auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
+    AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];
 }
 
@@ -75,6 +77,7 @@ const Field& Field::state(const FieldState fstate) const
 {
     auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
+    AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];
 }
 

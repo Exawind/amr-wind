@@ -21,6 +21,8 @@ class FieldFillPatchOpsBase;
  */
 struct FieldInfo
 {
+    static constexpr int max_field_states = 5;
+
     FieldInfo(
         const std::string& basename,
         const int ncomp,
