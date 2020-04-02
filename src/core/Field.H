@@ -133,8 +133,13 @@ public:
     //! Return a vector of MultiFab pointers for all levels
     amrex::Vector<amrex::MultiFab*> vec_ptrs() noexcept;
 
+    //! Return vector of `const MultiFab*` for all levels
     amrex::Vector<const amrex::MultiFab*> vec_const_ptrs() const noexcept;
 
+    /** Register a custom fillpatch class instance for this field
+     *
+     *  The class must be a subclass of amr_wind::FieldFillPatchOpsBase
+     */
     template<typename T, class... Args>
     void register_fill_patch_op(Args&&... args)
     {
