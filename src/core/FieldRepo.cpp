@@ -145,6 +145,14 @@ Field& FieldRepo::get_field(
     return *m_field_vec[found->second];
 }
 
+bool FieldRepo::field_exists(
+    const std::string& name, const FieldState fstate) const
+{
+    const auto fname = field_impl::field_name_with_state(name, fstate);
+    const auto found = m_fid_map.find(fname);
+    return (found != m_fid_map.end());
+}
+
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     const std::string& name, const int ncomp, const int nghost, const FieldLoc floc) const
 {

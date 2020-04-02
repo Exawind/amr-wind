@@ -122,6 +122,9 @@ public:
     Field& get_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    bool field_exists(
+        const std::string& name, const FieldState fstate = FieldState::New) const;
+
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
