@@ -94,6 +94,49 @@ public:
         return ret;
     }
 
+#if 1
+    // Version that does no interpolation in time
+
+    void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) override
+    {
+        if (lev == 0) {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
+                m_mesh.Geom(lev), m_field.bcrec(),
+                Functor{m_probtype, m_field.num_comp(),
+                        m_field.bc_values_device()});
+
+            amrex::FillPatchSingleLevel(
+                mfab, nghost, time, {&m_field(lev)}, {time}, 0, 0,
+                m_field.num_comp(), m_mesh.Geom(lev), physbc, 0);
+        } else {
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
+                m_mesh.Geom(lev - 1), m_field.bcrec(),
+                Functor{m_probtype, m_field.num_comp(),
+                        m_field.bc_values_device()});
+
+            amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
+                m_mesh.Geom(lev), m_field.bcrec(),
+                Functor{m_probtype, m_field.num_comp(),
+                        m_field.bc_values_device()});
+
+            amrex::Interpolater* mapper = &amrex::cell_cons_interp;
+
+            amrex::FillPatchTwoLevels(
+                mfab, nghost, time, {&m_field(lev - 1)}, {time},
+                {&m_field(lev)}, {time}, 0, 0, m_field.num_comp(),
+                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
+                m_mesh.refRatio(lev - 1), mapper, m_field.bcrec(), 0);
+        }
+    }
+
+#else
+    // Version that handles fields at two states and performs interpolation in
+    // time.
+
     void fillpatch(
         int lev,
         amrex::Real time,
@@ -133,7 +176,10 @@ public:
                 cphysbc, 0, fphysbc, 0, m_mesh.refRatio(lev - 1), mapper,
                 m_field.bcrec(), 0);
         }
+        amrex::Print() << lev << " " << m_time.current_time()
+                       << " " << m_time.new_time() << std::endl;
     }
+#endif
 
     void fillpatch_from_coarse(
         int lev,
