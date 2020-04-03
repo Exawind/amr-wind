@@ -54,6 +54,7 @@ TEST_F(FieldRepoTest, field_declare_checks)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     // Ensure that reserved field names aren't used
     EXPECT_THROW(
         frepo.declare_field("new_field__FS_Old", 1),
@@ -64,17 +65,20 @@ TEST_F(FieldRepoTest, field_declare_checks)
         frepo.declare_field("new_field", 1, 0, 5),
         amrex::RuntimeError
     );
+#endif
 
     // Check that redeclaration returns the same field
     auto& velocity = frepo.declare_field("vel", 3);
     auto& vel1 = frepo.declare_field("vel", 3);
     EXPECT_EQ(&velocity, &vel1);
 
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     // Ensure that attempt to reregister field checks consistency
     EXPECT_THROW(
         frepo.declare_field("vel", 1, 1),
         amrex::RuntimeError
     );
+#endif
 }
 
 TEST_F(FieldRepoTest, field_post_declare)
@@ -224,10 +228,12 @@ TEST_F(FieldRepoTest, scratch_fields)
     auto& rho = frepo.declare_field("rho", 1, 0, 1);
 
     // Check that scratch field creation is disallowed before mesh is created
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     EXPECT_THROW(
         frepo.create_scratch_field(3, 0),
         amrex::RuntimeError
     );
+#endif
 
     initialize_mesh();
     auto umac = frepo.create_scratch_field(3, 0, amr_wind::FieldLoc::XFACE);
