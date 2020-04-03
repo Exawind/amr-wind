@@ -54,6 +54,7 @@ TEST_F(FieldRepoTest, field_declare_checks)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     // Ensure that reserved field names aren't used
     EXPECT_THROW(
         frepo.declare_field("new_field__FS_Old", 1),
@@ -64,17 +65,20 @@ TEST_F(FieldRepoTest, field_declare_checks)
         frepo.declare_field("new_field", 1, 0, 5),
         amrex::RuntimeError
     );
+#endif
 
     // Check that redeclaration returns the same field
     auto& velocity = frepo.declare_field("vel", 3);
     auto& vel1 = frepo.declare_field("vel", 3);
     EXPECT_EQ(&velocity, &vel1);
 
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     // Ensure that attempt to reregister field checks consistency
     EXPECT_THROW(
         frepo.declare_field("vel", 1, 1),
         amrex::RuntimeError
     );
+#endif
 }
 
 TEST_F(FieldRepoTest, field_post_declare)
@@ -103,13 +107,11 @@ TEST_F(FieldRepoTest, field_get)
     const amrex::Real vx = 30.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vy = 30.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vz = 30.0 + 5.0 * (amrex::Random() - 0.5);
-    auto mf_vel = velf.vec_ptrs();
-    for (auto* it: mf_vel) {
-        it->setVal(vx, 0, 1);
-        it->setVal(vy, 1, 1);
-        it->setVal(vz, 2, 1);
-    }
+    velf.setVal(vx, 0);
+    velf.setVal(vy, 1);
+    velf.setVal(vz, 2);
 
+    auto mf_vel = velf.vec_ptrs();
     amrex::Vector<amrex::Real> golds{{vx, vy, vz}};
     for (auto* it: mf_vel) {
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
@@ -138,21 +140,12 @@ TEST_F(FieldRepoTest, field_multiple_states)
     const amrex::Real vy_old = 20.0 + 5.0 * (amrex::Random() - 0.5);
     const amrex::Real vz_old = 20.0 + 5.0 * (amrex::Random() - 0.5);
 
-    const int nlevels = mesh().finestLevel() + 1;
-    for (int lev = 0; lev < nlevels; ++lev) {
-        auto& mf1 = velocity(lev);
-        auto& mf2 = vel_old(lev);
-
-        mf1.setVal(vx, 0, 1);
-        mf1.setVal(vy, 1, 1);
-        mf1.setVal(vz, 2, 1);
-        mf2.setVal(vx_old, 0, 1);
-        mf2.setVal(vy_old, 1, 1);
-        mf2.setVal(vz_old, 2, 1);
-    }
+    velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
+    vel_old.setVal(amrex::Vector<amrex::Real>{vx_old, vy_old, vz_old});
 
     amr_wind::field_ops::lincomb(veldiff, 1.0, velocity, 0, -1.0, vel_old, 0, 0, 3, 0);
 
+    const int nlevels = mesh().finestLevel() + 1;
     amrex::Vector<amrex::Real> golds{{(vx - vx_old), (vy - vy_old), (vz - vz_old)}};
     for (int lev=0; lev < nlevels; ++lev) {
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
@@ -196,6 +189,36 @@ TEST_F(FieldRepoTest, field_location)
     }
 }
 
+TEST_F(FieldRepoTest, field_advance_states)
+{
+    initialize_mesh();
+
+    auto& field_repo = mesh().field_repo();
+    auto& velocity = field_repo.declare_field("vel", 3, 0, 2);
+    auto& vel_old = velocity.state(amr_wind::FieldState::Old);
+    EXPECT_EQ(velocity.num_states(), 2);
+
+    const amrex::Real vx = 30.0 + 5.0 * (amrex::Random() - 0.5);
+    const amrex::Real vy = 30.0 + 5.0 * (amrex::Random() - 0.5);
+    const amrex::Real vz = 30.0 + 5.0 * (amrex::Random() - 0.5);
+
+    velocity.setVal(amrex::Vector<amrex::Real>{vx, vy, vz});
+    vel_old.setVal(std::numeric_limits<amrex::Real>::max());
+    field_repo.advance_states();
+
+    const int nlevels = field_repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+            const auto old_min = vel_old(lev).min(i);
+            const auto old_max = vel_old(lev).max(i);
+            const auto new_min = velocity(lev).min(i);
+            const auto new_max = velocity(lev).max(i);
+            EXPECT_NEAR(old_min, new_min, 1.0e-12);
+            EXPECT_NEAR(old_max, new_max, 1.0e-12);
+        }
+    }
+}
+
 TEST_F(FieldRepoTest, scratch_fields)
 {
     populate_parameters();
@@ -205,10 +228,12 @@ TEST_F(FieldRepoTest, scratch_fields)
     auto& rho = frepo.declare_field("rho", 1, 0, 1);
 
     // Check that scratch field creation is disallowed before mesh is created
+#if !(defined(AMREX_USE_MPI) && defined(__APPLE__))
     EXPECT_THROW(
         frepo.create_scratch_field(3, 0),
         amrex::RuntimeError
     );
+#endif
 
     initialize_mesh();
     auto umac = frepo.create_scratch_field(3, 0, amr_wind::FieldLoc::XFACE);

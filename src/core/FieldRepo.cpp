@@ -32,7 +32,7 @@ void FieldRepo::make_new_level_from_coarse(
             !(field->m_info->m_fillpatch_op))
             continue;
 
-        field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()]);
+        field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()], 0);
     }
 
     m_leveldata[lev] = std::move(ldata);
@@ -57,7 +57,7 @@ void FieldRepo::remake_level(
             !(field->m_info->m_fillpatch_op))
             continue;
 
-        field->fillpatch(lev, time, ldata->m_mfabs[field->id()]);
+        field->fillpatch(lev, time, ldata->m_mfabs[field->id()], 0);
     }
 
     m_leveldata[lev] = std::move(ldata);
@@ -121,7 +121,7 @@ Field& FieldRepo::declare_field(
             allocate_field_data(*field);
 
         // Add reference to states lookup
-        finfo->m_states.push_back(field.get());
+        finfo->m_states[i] = field.get();
         // Store the field instance
         m_field_vec.emplace_back(std::move(field));
         // Name to ID lookup map
@@ -143,6 +143,14 @@ Field& FieldRepo::get_field(
 
     AMREX_ASSERT(found->second < static_cast<unsigned>(m_field_vec.size()));
     return *m_field_vec[found->second];
+}
+
+bool FieldRepo::field_exists(
+    const std::string& name, const FieldState fstate) const
+{
+    const auto fname = field_impl::field_name_with_state(name, fstate);
+    const auto found = m_fid_map.find(fname);
+    return (found != m_fid_map.end());
 }
 
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
@@ -168,6 +176,14 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
     const int ncomp, const int nghost, const FieldLoc floc) const
 {
     return create_scratch_field("scratch_field", ncomp, nghost, floc);
+}
+
+void FieldRepo::advance_states() noexcept
+{
+    for (auto& it: m_field_vec) {
+        if (it->field_state() != FieldState::New) continue;
+        it->advance_states();
+    }
 }
 
 void FieldRepo::allocate_field_data(

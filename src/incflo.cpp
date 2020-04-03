@@ -7,6 +7,7 @@
 using namespace amrex;
 
 incflo::incflo ()
+    : m_repo(*this)
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -19,7 +20,10 @@ incflo::incflo ()
     // Initialize memory for data-array internals
     ResizeArrays();
 
+    declare_fields();
+
     init_bcs();
+    init_field_bcs();
 
     init_advection();
 
@@ -47,7 +51,7 @@ void incflo::InitData ()
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
         InitFromScratch(m_time.current_time());
-        
+
         if (m_do_initial_proj) {
             InitialProjection();
         }
@@ -149,6 +153,8 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     SetBoxArray(lev, new_grids);
     SetDistributionMap(lev, new_dmap);
 
+    m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
+#if 0
     m_factory[lev].reset(new FArrayBoxFactory());
 
     m_leveldata[lev].reset(new LevelData(grids[lev], dmap[lev], *m_factory[lev],
@@ -156,9 +162,12 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
                                          m_use_godunov,
                                          m_diff_type==DiffusionType::Implicit,
                                          m_advect_tracer));
+#endif
 
-    m_t_new[lev] = time;
-    m_t_old[lev] = time - 1.e200;
+    m_leveldata[lev].reset(new LevelData(lev, m_repo));
+
+    m_t_new[lev] = m_time.current_time();
+    m_t_old[lev] = m_time.current_time() - 1.e200;
 
     if (m_restart_file.empty()) {
         prob_init_fluid(lev);

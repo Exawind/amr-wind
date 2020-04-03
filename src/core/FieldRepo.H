@@ -122,6 +122,9 @@ public:
     Field& get_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    bool field_exists(
+        const std::string& name, const FieldState fstate = FieldState::New) const;
+
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
@@ -133,11 +136,16 @@ public:
         const int ngrow = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
+    void advance_states() noexcept;
+
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
     int num_fields() const noexcept { return m_field_vec.size(); }
 
     const amrex::Vector<std::unique_ptr<Field>>& fields() const noexcept { return m_field_vec; }
+
+    inline const amrex::FabFactory<amrex::FArrayBox>&
+    factory(int lev) const noexcept { return *m_factory[lev]; }
 
 protected:
     inline amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept

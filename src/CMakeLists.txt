@@ -6,6 +6,7 @@ target_sources(${amr_wind_lib_name}
   incflo_tagging.cpp
   incflo_regrid.cpp
   incflo_compute_forces.cpp
+  incflo_field_repo.cpp
   )
 
 target_sources(${amr_wind_exe_name} PRIVATE main.cpp)

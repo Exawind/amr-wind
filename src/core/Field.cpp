@@ -19,6 +19,7 @@ FieldInfo::FieldInfo(
     , m_bc_values_dview(ncomp * AMREX_SPACEDIM * 2)
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
+    , m_states(FieldInfo::max_field_states, nullptr)
 {}
 
 FieldInfo::~FieldInfo() = default;
@@ -38,25 +39,18 @@ void FieldInfo::copy_bc_to_device() noexcept
 
     // Transfer BC values to device
     amrex::Real* ptr = m_bc_values_dview.data();
-#ifdef AMREX_USE_GPU
-    amrex::Gpu::htod_memcpy(
-        ptr, h_data.data(), sizeof(amrex::Real) * h_data.size());
-#else
-    std::memcpy(ptr, h_data.data(), sizeof(amrex::Real)*h_data.size());
-#endif
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, h_data.begin(), h_data.end(),
+        m_bc_values_dview.begin());
 
     for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
         m_bc_values_d[i] = ptr;
         ptr += m_ncomp;
     }
 
-#ifdef AMREX_USE_GPU
-    amrex::Gpu::htod_memcpy(
-        m_bcrec_d.data(), m_bcrec.data(),
-        sizeof(amrex::BCRec) * AMREX_SPACEDIM);
-#else
-    std::memcpy(m_bcrec_d.data(), m_bcrec.data(), sizeof(amrex::BCRec) * AMREX_SPACEDIM);
-#endif
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_bcrec.begin(), m_bcrec.end(),
+        m_bcrec_d.begin());
 }
 
 Field::Field(
@@ -75,6 +69,7 @@ Field& Field::state(const FieldState fstate)
 {
     auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
+    AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];
 }
 
@@ -82,6 +77,7 @@ const Field& Field::state(const FieldState fstate) const
 {
     auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
+    AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];
 }
 
@@ -120,39 +116,92 @@ amrex::Vector<const amrex::MultiFab*> Field::vec_const_ptrs() const noexcept
     return ret;
 }
 
-void Field::fillpatch(int lev, amrex::Real time, amrex::MultiFab& mfab)
+void Field::fillpatch(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& nghost) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch(lev, time, mfab);
+    fop.fillpatch(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch_from_coarse(int lev, amrex::Real time, amrex::MultiFab& mfab)
+void Field::fillpatch_from_coarse(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& nghost) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch_coarse(lev, time, mfab);
+    fop.fillpatch_from_coarse(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch(amrex::Real time)
+void Field::fillpatch(amrex::Real time) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev));
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
     }
 }
 
-void Field::fillphysbc(amrex::Real time)
+void Field::fillphysbc(amrex::Real time) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev));
+        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
+    }
+}
+
+void Field::advance_states() noexcept
+{
+    if (num_states() < 2) return;
+
+    for (int i=num_states() - 1; i > 0; --i) {
+        const auto sold = static_cast<FieldState>(i);
+        const auto snew = static_cast<FieldState>(i - 1);
+        auto& old_field = state(sold);
+        auto& new_field = state(snew);
+        for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+            amrex::MultiFab::Copy(
+                old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());
+        }
+    }
+}
+
+void Field::setVal(amrex::Real value) noexcept
+{
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        operator()(lev).setVal(value);
+    }
+}
+
+void Field::setVal(amrex::Real value, int start_comp, int num_comp, int nghost) noexcept
+{
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        operator()(lev).setVal(value, start_comp, num_comp, nghost);
+    }
+}
+
+void Field::setVal(const amrex::Vector<amrex::Real>& values, int nghost) noexcept
+{
+    AMREX_ASSERT(num_comp() == static_cast<int>(values.size()));
+
+    // Update 1 component at a time
+    const int ncomp = 1;
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        auto& mf = operator()(lev);
+        for (int ic=0; ic < num_comp(); ++ic) {
+            amrex::Real value = values[ic];
+            mf.setVal(value, ic, ncomp, nghost);
+        }
     }
 }
 

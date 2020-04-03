@@ -16,6 +16,9 @@ void incflo::MakeNewLevelFromCoarse (int lev,
         amrex::Print() << "Making new level " << lev << " from coarse" << std::endl;
     }
 
+    m_repo.make_new_level_from_coarse(lev, time, ba, dm);
+    m_leveldata[lev].reset(new LevelData(lev, m_repo));
+#if 0
     std::unique_ptr<FabFactory<FArrayBox> > new_fact(new FArrayBoxFactory());
 
     std::unique_ptr<LevelData> new_leveldata
@@ -33,6 +36,7 @@ void incflo::MakeNewLevelFromCoarse (int lev,
 
     m_leveldata[lev] = std::move(new_leveldata);
     m_factory[lev] = std::move(new_fact);
+#endif
 
     m_diffusion_tensor_op.reset();
     m_diffusion_scalar_op.reset();
@@ -50,6 +54,10 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
         amrex::Print() << "Remaking level " << lev << std::endl;
     }
 
+    m_repo.remake_level(lev, time, ba, dm);
+    m_leveldata[lev].reset(new LevelData(lev, m_repo));
+
+#if 0
     std::unique_ptr<FabFactory<FArrayBox> > new_fact(new FArrayBoxFactory());
 
     std::unique_ptr<LevelData> new_leveldata
@@ -67,6 +75,7 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
 
     m_leveldata[lev] = std::move(new_leveldata);
     m_factory[lev] = std::move(new_fact);
+#endif
 
     m_diffusion_tensor_op.reset();
     m_diffusion_scalar_op.reset();
@@ -77,6 +86,7 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
 void incflo::ClearLevel (int lev)
 {
     BL_PROFILE("incflo::ClearLevel()");
+    m_repo.clear_level(lev);
     m_leveldata[lev].reset();
     m_factory[lev].reset();
     m_diffusion_tensor_op.reset();
