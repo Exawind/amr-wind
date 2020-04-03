@@ -62,7 +62,7 @@ function(add_test_r TEST_NAME NP)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
@@ -97,12 +97,20 @@ function(add_test_u TEST_NAME NP)
 endfunction(add_test_u)
 
 #=============================================================================
+# Unit tests
+#=============================================================================
+add_test_u(unit_tests 1)
+
+#=============================================================================
 # Regression tests
 #=============================================================================
 add_test_r(tgv_mol 4)
 add_test_r(tgv_godunov 4)
-add_test_r(boussinesq_bubble_godunov 4)
 add_test_r(boussinesq_bubble_mol 4)
+add_test_r(boussinesq_bubble_godunov 4)
+add_test_r(abl_mol 4)
+add_test_r(abl_godunov 4)
+add_test_r(rayleigh_taylor_godunov 4)
 
 #=============================================================================
 # Verification tests
@@ -111,9 +119,4 @@ add_test_r(boussinesq_bubble_mol 4)
 #=============================================================================
 # Performance tests
 #=============================================================================
-
-#=============================================================================
-# Unit tests
-#=============================================================================
-add_test_u(unit_tests 1)
 

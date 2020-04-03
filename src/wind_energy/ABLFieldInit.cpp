@@ -36,6 +36,25 @@ ABLFieldInit::ABLFieldInit()
         pp.get("ic_v", m_vel[1]);
         pp.get("ic_w", m_vel[2]);
     }
+
+    m_thht_d.resize(num_theta_values);
+    m_thvv_d.resize(num_theta_values);
+
+#ifdef AMREX_USE_GPU
+    amrex::Gpu::htod_memcpy
+#else
+    std::memcpy
+#endif
+    (m_thht_d.data(), m_theta_heights.data(), 
+     sizeof(amrex::Real) * num_theta_values);
+
+#ifdef AMREX_USE_GPU
+    amrex::Gpu::htod_memcpy
+#else
+    std::memcpy
+#endif
+    (m_thvv_d.data(), m_theta_values.data(), 
+     sizeof(amrex::Real) * num_theta_values);
 }
 
 void ABLFieldInit::operator()(
@@ -50,12 +69,7 @@ void ABLFieldInit::operator()(
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
 
-    // TODO: Is there a way to avoid creating this array for every box
-    amrex::AsyncArray<amrex::Real> theta_heights_d(
-        m_theta_heights.data(), m_theta_heights.size());
-    amrex::AsyncArray<amrex::Real> theta_values_d(
-        m_theta_values.data(), m_theta_values.size());
-
+    const bool perturb_vel = m_perturb_vel;
     const amrex::Real rho_init = m_rho;
     const amrex::Real umean = m_vel[0];
     const amrex::Real vmean = m_vel[1];
@@ -67,8 +81,8 @@ void ABLFieldInit::operator()(
     const amrex::Real ref_height = m_ref_height;
 
     const int ntvals = m_theta_heights.size();
-    amrex::Real* th = theta_heights_d.data();
-    amrex::Real* tv = theta_values_d.data();
+    const amrex::Real* th = m_thht_d.data();
+    const amrex::Real* tv = m_thvv_d.data();
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -76,7 +90,6 @@ void ABLFieldInit::operator()(
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho_init;
-
         // Mean velocity field
         velocity(i, j, k, 0) = umean;
         velocity(i, j, k, 1) = vmean;
@@ -94,7 +107,7 @@ void ABLFieldInit::operator()(
         // FIXME: Remove first tracer is temperature assumption
         tracer(i, j, k, 0) = theta;
 
-        if (m_perturb_vel) {
+        if (perturb_vel) {
             const amrex::Real xl = x - problo[0];
             const amrex::Real yl = y - problo[1];
             const amrex::Real zl = z / ref_height;

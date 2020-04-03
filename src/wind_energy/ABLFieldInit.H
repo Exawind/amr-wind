@@ -7,6 +7,7 @@
 #include "AMReX_Geometry.H"
 #include "AMReX_REAL.H"
 #include "AMReX_Vector.H"
+#include "AMReX_Gpu.H"
 
 namespace amr_wind {
 
@@ -36,6 +37,10 @@ private:
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
     ///@}
+
+    // Device copies of the above arrays
+    amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
 
     //! Initial density field
     amrex::Real m_rho;
