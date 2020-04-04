@@ -26,10 +26,8 @@ inline amrex::IndexType index_type(const FieldLoc floc)
         return amrex::IndexType(amrex::IntVect::TheDimensionVector(2));
     }
 
-#ifdef AMREX_USE_GPU
     // Suppress warnings when compiling with CUDA
     return amrex::IndexType::TheCellType();
-#endif
 }
 
 inline std::string
