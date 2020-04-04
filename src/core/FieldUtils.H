@@ -52,10 +52,8 @@ field_name_with_state(const std::string& fname, const FieldState fstate)
         return fname + "__FS_NMH";
     }
 
-#ifdef AMREX_USE_GPU
     // Suppress warnings when compiling with CUDA
     return fname;
-#endif
 }
 
 inline bool is_valid_field_name(const std::string& name)
