@@ -1,0 +1,33 @@
+name: AMR-Wind-CI
+
+on:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+env:
+  #CXX_COMPILER: g++-8
+  #C_COMPILER: gcc-8
+  #FORTRAN_COMPILER: gfortran-8
+  CXX_COMPILER: mpicxx
+  C_COMPILER: mpicc
+  FORTRAN_COMPILER: mpifort
+  BUILD_TYPE: RelWithDebInfo
+  NUM_PROCS: 16
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        submodules: true
+    - name: dependencies
+      run: sudo apt-get install mpich libmpich-dev
+    - name: configure
+      run: mkdir ci_build && cd ci_build && cmake --version && cmake -DCMAKE_INSTALL_PREFIX:PATH=./install -DCMAKE_BUILD_TYPE:STRING=${{ env.BUILD_TYPE }} -DCMAKE_CXX_COMPILER:STRING=${{ env.CXX_COMPILER }} -DCMAKE_C_COMPILER:STRING=${{ env.C_COMPILER }} -DCMAKE_Fortran_COMPILER:STRING=${{ env.FORTRAN_COMPILER }} -DAMR_WIND_ENABLE_MPI:BOOL=ON -DAMR_WIND_ENABLE_TESTS:BOOL=ON -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF ..
+    - name: make
+      run: cmake --build ci_build -- -j ${{ env.NUM_PROCS }}
+    - name: test
+      run: cd ci_build && ctest -j ${{ env.NUM_PROCS }} --output-on-failure
