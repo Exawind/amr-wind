@@ -148,7 +148,7 @@ incflo::wall_model_bc(const int lev,
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(density,mfi_info); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
+        const Box& bx = mfi.tilebox();
         auto vel = velocity.array(mfi);
         auto den = density.array(mfi);
         auto bc_a = bc.array(mfi);
@@ -264,7 +264,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
 #endif
     for (MFIter mfi(bc,mfi_info); mfi.isValid(); ++mfi) {
         
-        Box const& bx = mfi.validbox();
+        Box const& bx = mfi.tilebox();
         Array4<Real> const& bc_a = bc.array(mfi);
         
         int idim = 0;
@@ -272,20 +272,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         // fixme this assume periodic
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[0][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdx
-                    bc_a(i-1,j,k) = m_bc_tracer_d[0][comp];
+                    bc_a(i-1,j,k) = captured_value;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[3][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdx
-                    bc_a(i,j,k) = m_bc_tracer_d[3][comp];
+                    bc_a(i,j,k) = captured_value;
                     
                 });
             }
@@ -294,20 +296,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 1;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[1][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j-1,k) = m_bc_tracer_d[1][comp];
+                    bc_a(i,j-1,k) = captured_value;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[4][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j,k) = m_bc_tracer_d[4][comp];
+                    bc_a(i,j,k) = captured_value;
                     
                 });
             }
@@ -316,20 +320,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 2;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[2][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k-1) = m_bc_tracer_d[2][comp];
+                    bc_a(i,j,k-1) = captured_value;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real captured_value = m_bc_tracer_d[5][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k) = m_bc_tracer_d[5][comp];
+                    bc_a(i,j,k) = captured_value;
                 });
             }
         }

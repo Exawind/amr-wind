@@ -25,11 +25,11 @@ TEST_F(ABLTest, abl_forcing)
     amr_wind::ABLForcing abl_forcing(time);
 
     // During initialization ensure that the source terms are zero
-    vel_src.setVal(0.0);
+    vel_src.setVal<amrex::RunOn::Device>(0.0);
     abl_forcing(bx, vel_src.array());
     for (int i=0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_src = vel_src.min(i);
-        const auto max_src = vel_src.max(i);
+        const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
+        const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
         // Ensure that the source term is zero for initialization
         EXPECT_NEAR(min_src, 0.0, tol);
         // Ensure that the source term is constant throughout the domain
@@ -42,7 +42,7 @@ TEST_F(ABLTest, abl_forcing)
         time.set_current_cfl(2.0);
         EXPECT_NEAR(time.deltaT(), 0.1, tol);
 
-        vel_src.setVal(0.0);
+        vel_src.setVal<amrex::RunOn::Device>(0.0);
         abl_forcing.set_mean_velocities(10.0, 5.0);
         abl_forcing(bx, vel_src.array());
 
@@ -51,8 +51,8 @@ TEST_F(ABLTest, abl_forcing)
         // deltaT (set above) dt = 0.1
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{{100.0, 50.0, 0.0}};
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
-            const auto min_src = vel_src.min(i);
-            const auto max_src = vel_src.max(i);
+            const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
+            const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
             EXPECT_NEAR(min_src, golds[i], tol);
             // Ensure that the source term is constant throughout the domain
             EXPECT_NEAR(min_src, max_src, tol);
@@ -85,16 +85,16 @@ TEST_F(ABLTest, coriolis_const_vel)
         amrex::Real golds[AMREX_SPACEDIM] = {0.0, -corfac * latfac * vel_comp,
                                              corfac * latfac * vel_comp};
         // Reset fields
-        velocity.setVal(0.0);
-        vel_src.setVal(0.0);
+        velocity.setVal<amrex::RunOn::Device>(0.0);
+        vel_src.setVal<amrex::RunOn::Device>(0.0);
         // set x component
-        velocity.setVal(vel_comp, 0);
+        velocity.setVal<amrex::RunOn::Device>(vel_comp, 0);
 
         coriolis(bx, velocity.array(), vel_src.array());
 
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
-            const auto min_src = vel_src.min(i);
-            const auto max_src = vel_src.max(i);
+            const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
+            const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
             EXPECT_NEAR(min_src, golds[i], tol);
             // Ensure that the source term is constant throughout the domain
             EXPECT_NEAR(min_src, max_src, tol);
@@ -105,16 +105,16 @@ TEST_F(ABLTest, coriolis_const_vel)
     {
         amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0, 0.0};
         // Reset fields
-        velocity.setVal(0.0);
-        vel_src.setVal(0.0);
+        velocity.setVal<amrex::RunOn::Device>(0.0);
+        vel_src.setVal<amrex::RunOn::Device>(0.0);
         // Set y component
-        velocity.setVal(vel_comp, 1);
+        velocity.setVal<amrex::RunOn::Device>(vel_comp, 1);
 
         coriolis(bx, velocity.array(), vel_src.array());
 
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
-            const auto min_src = vel_src.min(i);
-            const auto max_src = vel_src.max(i);
+            const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
+            const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
             EXPECT_NEAR(min_src, golds[i], tol);
             // Ensure that the source term is constant throughout the domain
             EXPECT_NEAR(min_src, max_src, tol);
@@ -155,18 +155,18 @@ TEST_F(ABLTest, coriolis_height_variation)
 
     amr_wind::CoriolisForcing coriolis;
 
-    velocity.setVal(0.0);
-    vel_src.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Device>(0.0);
+    vel_src.setVal<amrex::RunOn::Device>(0.0);
     cor_height_init_vel_field(bx, velocity);
 
     coriolis(bx, velocity.array(), vel_src.array());
 
-    EXPECT_NEAR(vel_src.min(0), 0.0, tol);
-    EXPECT_NEAR(vel_src.max(0), corfac * latfac * kdim, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(0), corfac * latfac * kdim, tol);
 
     for (int i=1; i < AMREX_SPACEDIM; ++i) {
-        const auto min_src = vel_src.min(i);
-        const auto max_src = vel_src.max(i);
+        const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
+        const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
         EXPECT_NEAR(min_src, 0.0, tol);
         EXPECT_NEAR(min_src, max_src, tol);
     }
@@ -215,21 +215,21 @@ TEST_F(ABLTest, boussinesq)
 
     amr_wind::BoussinesqBuoyancy bb;
     
-    temperature.setVal(0.0);
-    vel_src.setVal(0.0);
+    temperature.setVal<amrex::RunOn::Device>(0.0);
+    vel_src.setVal<amrex::RunOn::Device>(0.0);
     init_abl_temperature_field(kdim, bx, temperature);
 
     bb(bx, temperature.array(), vel_src.array());
 
     // should be no forcing in x and y directions
-    EXPECT_NEAR(vel_src.min(0), 0.0, tol);
-    EXPECT_NEAR(vel_src.max(0), 0.0, tol);
-    EXPECT_NEAR(vel_src.min(1), 0.0, tol);
-    EXPECT_NEAR(vel_src.max(1), 0.0, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(1), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(1), 0.0, tol);
 
 //    f = beta * (T0 - T)*g
-    EXPECT_NEAR(vel_src.min(2), 0.0, tol);
-    EXPECT_NEAR(vel_src.max(2), -9.81*(300.0-308.0)/300.0, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(2), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(2), -9.81*(300.0-308.0)/300.0, tol);
 
 }
 
