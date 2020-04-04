@@ -148,7 +148,7 @@ incflo::wall_model_bc(const int lev,
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(density,mfi_info); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.tilebox();
+        const Box& bx = mfi.validbox();
         auto vel = velocity.array(mfi);
         auto den = density.array(mfi);
         auto bc_a = bc.array(mfi);
@@ -264,7 +264,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
 #endif
     for (MFIter mfi(bc,mfi_info); mfi.isValid(); ++mfi) {
         
-        Box const& bx = mfi.tilebox();
+        Box const& bx = mfi.validbox();
         Array4<Real> const& bc_a = bc.array(mfi);
         
         int idim = 0;
