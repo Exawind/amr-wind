@@ -15,16 +15,29 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: macos-latest
+            install_deps: brew install open-mpi
+          - os: ubuntu-latest
+            install_deps: sudo apt-get install mpich libmpich-dev
     steps:
     - uses: actions/checkout@v2
       with: 
         submodules: true
     - name: dependencies
-      run: sudo apt-get install mpich libmpich-dev
+      run: ${{ matrix.install_deps }}
+    - name: setup
+      run: cmake -E make_directory ${{runner.workspace}}/build-ci
     - name: configure
-      run: mkdir ci_build && cd ci_build && cmake --version && cmake -DCMAKE_INSTALL_PREFIX:PATH=./install -DCMAKE_BUILD_TYPE:STRING=${{ env.BUILD_TYPE }} -DCMAKE_CXX_COMPILER:STRING=${{ env.CXX_COMPILER }} -DCMAKE_C_COMPILER:STRING=${{ env.C_COMPILER }} -DCMAKE_Fortran_COMPILER:STRING=${{ env.FORTRAN_COMPILER }} -DAMR_WIND_ENABLE_MPI:BOOL=ON -DAMR_WIND_ENABLE_TESTS:BOOL=ON -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF ..
+      working-directory: ${{runner.workspace}}/build-ci
+      run: cmake -DCMAKE_INSTALL_PREFIX:PATH=./install -DCMAKE_BUILD_TYPE:STRING=${{ env.BUILD_TYPE }} -DCMAKE_CXX_COMPILER:STRING=${{ env.CXX_COMPILER }} -DCMAKE_C_COMPILER:STRING=${{ env.C_COMPILER }} -DCMAKE_Fortran_COMPILER:STRING=${{ env.FORTRAN_COMPILER }} -DAMR_WIND_ENABLE_MPI:BOOL=ON -DAMR_WIND_ENABLE_TESTS:BOOL=ON -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF ${GITHUB_WORKSPACE}
     - name: make
-      run: cmake --build ci_build -- -j ${{ env.NUM_PROCS }}
+      working-directory: ${{runner.workspace}}/build-ci
+      run: cmake --build . -- -j ${{ env.NUM_PROCS }}
     - name: test
-      run: cd ci_build && ctest -j ${{ env.NUM_PROCS }} --output-on-failure
+      working-directory: ${{runner.workspace}}/build-ci
+      run: ctest -j ${{ env.NUM_PROCS }} --output-on-failure
