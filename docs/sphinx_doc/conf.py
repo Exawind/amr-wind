@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'AMR-Wind'
-copyright = u''
+copyright = u'ExaWind team'
 author = u'ExaWind team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -350,3 +350,6 @@ def setup(app):
     app.add_object_type("cmakeval", "cmakeval",
                         objname="CMake configuration value",
                         indextemplate="pair: %s; CMake configuration")
+    app.add_object_type("input_param", "input_param",
+                        objname="AMR-Wind input parameter",
+                        indextemplate="pair: %s; AMR-Wind input parameter")
