@@ -120,8 +120,7 @@ if(AMR_WIND_ENABLE_VERIFICATION)
     message(STATUS "Found MASA = ${MASA_DIR}")
   endif()
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_MASA)
-  target_include_directories(${amr_wind_lib_name} SYSTEM PUBLIC ${MASA_INCLUDE_DIRS})
-  target_link_libraries(${amr_wind_lib_name} PUBLIC ${MASA_LIBRARY})
+  target_link_libraries(${amr_wind_lib_name} PUBLIC MASA::MASA)
 endif()
 
 #Build amr-wind and link to amrex library
