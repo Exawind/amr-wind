@@ -3,8 +3,24 @@ name: AMR-Wind-CI
 on:
   push:
     branches: [ development ]
+    paths:
+      - 'cmake/**'
+      - 'src/**'
+      - 'submods/**'
+      - 'test/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: [ development ]
+    paths:
+      - 'cmake/**'
+      - 'src/**'
+      - 'submods/**'
+      - 'test/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/**'
 
 env:
   CXX_COMPILER: mpicxx
