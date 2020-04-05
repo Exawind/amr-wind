@@ -2,7 +2,7 @@ name: AMR-Wind-CI
 
 on:
   push:
-    branches: [ development ]
+    branches: [development]
     paths:
       - 'cmake/**'
       - 'src/**'
@@ -12,7 +12,7 @@ on:
       - 'CMakeLists.txt'
       - '.github/workflows/ci.yml'
   pull_request:
-    branches: [ development ]
+    branches: [development]
     paths:
       - 'cmake/**'
       - 'src/**'
@@ -31,7 +31,7 @@ env:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -45,15 +45,25 @@ jobs:
       with: 
         submodules: true
     - name: dependencies
-      run: ${{ matrix.install_deps }}
+      run: ${{matrix.install_deps}}
     - name: setup
       run: cmake -E make_directory ${{runner.workspace}}/build-ci
     - name: configure
       working-directory: ${{runner.workspace}}/build-ci
-      run: cmake -DCMAKE_INSTALL_PREFIX:PATH=./install -DCMAKE_BUILD_TYPE:STRING=${{ env.BUILD_TYPE }} -DCMAKE_CXX_COMPILER:STRING=${{ env.CXX_COMPILER }} -DCMAKE_C_COMPILER:STRING=${{ env.C_COMPILER }} -DCMAKE_Fortran_COMPILER:STRING=${{ env.FORTRAN_COMPILER }} -DAMR_WIND_ENABLE_MPI:BOOL=ON -DAMR_WIND_ENABLE_TESTS:BOOL=ON -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF ${GITHUB_WORKSPACE}
+      run: |
+        cmake \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install \
+          -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} \
+          -DCMAKE_CXX_COMPILER:STRING=${{env.CXX_COMPILER}} \
+          -DCMAKE_C_COMPILER:STRING=${{env.C_COMPILER}} \
+          -DCMAKE_Fortran_COMPILER:STRING=${{env.FORTRAN_COMPILER}} \
+          -DAMR_WIND_ENABLE_MPI:BOOL=ON \
+          -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
+          -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+          ${GITHUB_WORKSPACE}
     - name: make
       working-directory: ${{runner.workspace}}/build-ci
-      run: cmake --build . -- -j ${{ env.NUM_PROCS }}
+      run: cmake --build . -- -j ${{env.NUM_PROCS}}
     - name: test
       working-directory: ${{runner.workspace}}/build-ci
-      run: ctest -j ${{ env.NUM_PROCS }} -LE no_ci --output-on-failure
+      run: ctest -j ${{env.NUM_PROCS}} -LE no_ci --output-on-failure
