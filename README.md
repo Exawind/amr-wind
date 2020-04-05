@@ -2,7 +2,7 @@
 
 [Website](https://www.exawind.org/) | [Documentation](https://amr-wind.readthedocs.io) | [Nightly test dashboard](http://my.cdash.org/index.php?project=AMR-Wind) 
 
-[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://travis-ci.org/Exawind/amr-wind.svg?branch=development)](https://travis-ci.org/Exawind/amr-wind) [![Docs Status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://amr-wind.readthedocs.io)
+[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![Docs Status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://amr-wind.readthedocs.io)
 
 
 AMR-Wind is a massively parallel, block-structured adaptive-mesh, incompressible
@@ -64,6 +64,6 @@ through pull-requests on GitHub.
 ## License
 
 AMR-Wind is licensed under BSD 3-clause license. Please see the
-[LICENSE](https://github.com/Exawind/nalu-wind/blob/master/LICENSE) included in
+[LICENSE](https://github.com/Exawind/amr-wind/blob/development/LICENSE) included in
 the source code repository for more details.
 

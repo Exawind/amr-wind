@@ -12,6 +12,7 @@
 #include <LevelData.H>
 
 #include "SimTime.H"
+#include "FieldRepo.H"
 
 namespace amr_wind {
 class Physics;
@@ -304,6 +305,11 @@ public: // for cuda
                                     amrex::Vector<amrex::MultiFab const*> const& tra,
                                     amrex::Real time, int nghost);
 
+    // TODO: Transition
+    void declare_fields();
+
+    void init_field_bcs();
+
 private:
 
     //
@@ -311,6 +317,7 @@ private:
     //
 
     amr_wind::SimTime m_time;
+    amr_wind::FieldRepo m_repo;
 
     amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
@@ -478,7 +485,7 @@ private:
     //
 
     amrex::FabFactory<amrex::FArrayBox> const&
-    Factory (int lev) const noexcept { return *m_factory[lev]; }
+    Factory (int lev) const noexcept { return m_repo.factory(lev); }
 
     // Number of ghost cells for field arrays.
     int nghost_state () const {

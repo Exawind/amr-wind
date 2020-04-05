@@ -3,16 +3,17 @@
  AMR-Wind
 ==========
 
-AMR-Wind is a massively parallel, block-structured adaptive-mesh, incompressible
-flow sover for wind turbine and wind farm simulations. The codebase is a
-wind-focused fork of `incflo <https://github.com/AMReX-Codes/incflo>`_. The
-solver is built on top of the `AMReX library
-<https://amrex-codes.github.io/amrex>`_. AMReX library provides the mesh data
-structures, mesh adaptivity, as well as the linear solvers used for solving the
-governing equations. AMR-Wind is actively developed and maintained by a
-dedicated multi-institutional team from `Lawrence Berkeley National Laboratory
-<https://www.lbl.gov/>`_, `National Renewable Energy Laboratory
-<https://nrel.gov>`_, and `Sandia National Laboratories <https://sandia.gov>`_.
+`AMR-Wind <https://github.com/exawind/amr-wind>`_ is a massively parallel,
+block-structured adaptive-mesh, incompressible flow sover for wind turbine and
+wind farm simulations. The codebase is a wind-focused fork of `incflo
+<https://github.com/AMReX-Codes/incflo>`_. The solver is built on top of the
+`AMReX library <https://amrex-codes.github.io/amrex>`_. AMReX library provides
+the mesh data structures, mesh adaptivity, as well as the linear solvers used
+for solving the governing equations. AMR-Wind is actively developed and
+maintained by a dedicated multi-institutional team from `Lawrence Berkeley
+National Laboratory <https://www.lbl.gov/>`_, `National Renewable Energy
+Laboratory <https://nrel.gov>`_, and `Sandia National Laboratories
+<https://sandia.gov>`_.
 
 The primary applications for AMR-Wind are: performing large-eddy simulations
 (LES) of atmospheric boundary layer (ABL) flows, simulating wind farm
@@ -42,6 +43,7 @@ objectives:
 
    build
    getting_started
+   user/inputs
 
 
 Indices and tables

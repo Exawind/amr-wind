@@ -75,8 +75,14 @@ function(add_test_r TEST_NAME NP)
     # Add test and actual test commands to CTest database
     add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FCOMPARE_COMMAND}")
     # Set properties for test
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 1500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
+    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 3000 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
 endfunction(add_test_r)
+
+# Regression tests excluded from CI
+function(add_test_re TEST_NAME NP)
+    add_test_r(${TEST_NAME} ${NP})
+    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
+endfunction(add_test_re)
 
 # Standard unit test
 function(add_test_u TEST_NAME NP)
@@ -110,7 +116,11 @@ add_test_r(boussinesq_bubble_mol 4)
 add_test_r(boussinesq_bubble_godunov 4)
 add_test_r(abl_mol 4)
 add_test_r(abl_godunov 4)
-add_test_r(rayleigh_taylor_godunov 4)
+
+#=============================================================================
+# Regression tests excluded from CI
+#=============================================================================
+add_test_re(rayleigh_taylor_godunov 4)
 
 #=============================================================================
 # Verification tests

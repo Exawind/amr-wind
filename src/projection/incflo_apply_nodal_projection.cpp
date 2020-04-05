@@ -115,8 +115,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     Vector<amrex::MultiFab> sigma(finest_level+1);
     for (int lev = 0; lev <= finest_level; ++lev )
     {
-        auto const& ld = *m_leveldata[lev];
-        sigma[lev].define(grids[lev], dmap[lev], 1, 0, MFInfo(), *m_factory[lev]);
+        sigma[lev].define(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif

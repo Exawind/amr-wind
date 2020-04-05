@@ -1,0 +1,49 @@
+# AMR-Wind example input file
+#
+# Atmospheric boundary layer (precursor) simulation
+#
+
+# Problem domain definition
+geometry.prob_lo           = 0.0 0.0 0.0
+geometry.prob_hi           = 5120.0 5120.0 1280.0
+geometry.is_periodic       = 1 1 0
+
+# Mesh resolution and AMR definitions
+amr.n_cell                 = 512 512 128
+amr.max_level              = 0
+
+# Simulation control parameters
+time.stop_time             = 20000.0
+time.max_step              = -1
+time.fixed_dt              = 0.5
+time.cfl                   = -0.45
+time.plot_interval         = 1000
+time.checkpoint_interval   = 10000
+time.regrid_interval       = -1
+time.verbose               = 0
+
+# Atmospheric boundary layer
+abl.ntemperature           = 3
+abl.temperature_heights    = 650.0 750.0 1000.0
+abl.temperature_values     = 300.0 308.0 308.75
+abl.surface_roughness_z0   = 0.15
+abl.use_boussinesq         = 1
+abl.reference_temperature  = 300.0
+abl.coriolis_effect        = 1
+abl.latitude               = 41.3
+abl.abl_forcing            = 1
+abl.abl_forcing_height     = 90.0
+
+# incflo
+incflo.probtype            = 35
+incflo.ro_0                = 1.225
+incflo.mu                  = 1.0e-5
+incflo.ic_u                = 6.0
+incflo.ic_v                = 5.0
+incflo.ic_w                = 0.0
+
+# Boundary conditions
+zlo.type                   = "wall_model"
+zlo.tracer                 = 0.0
+zhi.type                   = "slip_wall"
+zlo.tracer                 = 0.003
