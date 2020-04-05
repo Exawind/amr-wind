@@ -78,6 +78,12 @@ function(add_test_r TEST_NAME NP)
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 3000 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
 endfunction(add_test_r)
 
+# Regression tests excluded from CI
+function(add_test_re TEST_NAME NP)
+    add_test_r(${TEST_NAME} ${NP})
+    set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
+endfunction(add_test_re)
+
 # Standard unit test
 function(add_test_u TEST_NAME NP)
     # Set variables for respective binary and source directories for the test
@@ -110,7 +116,11 @@ add_test_r(boussinesq_bubble_mol 4)
 add_test_r(boussinesq_bubble_godunov 4)
 add_test_r(abl_mol 4)
 add_test_r(abl_godunov 4)
-add_test_r(rayleigh_taylor_godunov 4)
+
+#=============================================================================
+# Regression tests excluded from CI
+#=============================================================================
+add_test_re(rayleigh_taylor_godunov 4)
 
 #=============================================================================
 # Verification tests
