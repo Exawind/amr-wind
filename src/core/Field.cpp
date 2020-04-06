@@ -183,6 +183,17 @@ void Field::advance_states() noexcept
     }
 }
 
+void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
+{
+    auto& to_field = state(to_state);
+    auto& from_field = state(from_state);
+
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        amrex::MultiFab::Copy(
+            to_field(lev), from_field(lev), 0, 0, num_comp(), num_grow());
+    }
+}
+
 void Field::setVal(amrex::Real value) noexcept
 {
     for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {

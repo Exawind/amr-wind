@@ -25,9 +25,9 @@ void incflo::Advance()
         m_t_new[lev] = m_time.new_time();
     }
 
-    m_repo.get_field("velocity").advance_states();
-    m_repo.get_field("density").advance_states();
-    m_repo.get_field("tracer").advance_states();
+    velocity().advance_states();
+    density().advance_states();
+    tracer().advance_states();
 
     m_repo.get_field("velocity",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
     m_repo.get_field("density",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
