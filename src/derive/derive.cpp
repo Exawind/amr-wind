@@ -115,7 +115,7 @@ Real incflo::ComputeKineticEnergy () const
 
         const Real cell_vol = geom[lev].CellSize()[0]*geom[lev].CellSize()[1]*geom[lev].CellSize()[2];
 
-        KE += amrex::ReduceSum(m_leveldata[lev]->density, m_leveldata[lev]->velocity, level_mask, 0,
+        KE += amrex::ReduceSum(density()(lev), velocity()(lev), level_mask, 0,
         [=] AMREX_GPU_HOST_DEVICE (Box const& bx,
                                    Array4<Real const> const& den_arr,
                                    Array4<Real const> const& vel_arr,

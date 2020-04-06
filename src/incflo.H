@@ -72,6 +72,13 @@ public:
         m_utau_mean_ground = ustar;
     }
 
+    amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
+    amr_wind::Field& density() const { return m_repo.get_field("density"); }
+    amr_wind::Field& tracer() const { return m_repo.get_field("tracer"); }
+    amr_wind::Field& temperature() const { return m_repo.get_field("temperature"); }
+    amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
+    amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
+
 public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);
@@ -548,20 +555,6 @@ private:
     void fillphysbc_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
     void fillphysbc_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
     void fillphysbc_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
-
-    void copy_from_new_to_old_velocity (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_new_to_old_velocity (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_new_to_old_density  (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_new_to_old_density  (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_new_to_old_tracer   (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_new_to_old_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
-    //
-    void copy_from_old_to_new_velocity (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_old_to_new_velocity (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_old_to_new_density  (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_old_to_new_density  (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_old_to_new_tracer   (         amrex::IntVect const& ng = amrex::IntVect{0});
-    void copy_from_old_to_new_tracer   (int lev, amrex::IntVect const& ng = amrex::IntVect{0});
 
     void Advance ();
     void AverageDown ();
