@@ -41,9 +41,6 @@ void incflo::ReadParameters ()
         pp.query("use_godunov"                      , m_use_godunov);
         pp.query("use_ppm"                          , m_godunov_ppm);
         pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
-        pp.query("godunov_include_diff_in_forcing"  , m_godunov_include_diff_in_forcing);
-
-        if (!m_use_godunov) m_godunov_include_diff_in_forcing = false;
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;

@@ -4,8 +4,8 @@
 using namespace amrex;
 
 LevelData::LevelData(int lev, amr_wind::FieldRepo& repo)
-    : velocity(repo.get_field("vel")(lev))
-    , velocity_o(repo.get_field("vel", amr_wind::FieldState::Old)(lev))
+    : velocity(repo.get_field("velocity")(lev))
+    , velocity_o(repo.get_field("velocity", amr_wind::FieldState::Old)(lev))
     , density(repo.get_field("density")(lev))
     , density_o(repo.get_field("density", amr_wind::FieldState::Old)(lev))
     , tracer(repo.get_field("tracer")(lev))

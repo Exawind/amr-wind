@@ -8,7 +8,7 @@ void incflo::declare_fields()
     const int nstates = 2;
     const int ng = nghost_state();
 
-    auto& vel = m_repo.declare_cc_field("vel", AMREX_SPACEDIM, ng, nstates);
+    auto& vel = m_repo.declare_cc_field("velocity", AMREX_SPACEDIM, ng, nstates);
     auto& rho = m_repo.declare_cc_field("density", 1, ng, nstates);
     auto& trac = m_repo.declare_cc_field("tracer", m_ntrac, ng, nstates);
     auto& gp = m_repo.declare_cc_field("gp", AMREX_SPACEDIM, 0, 1);
@@ -20,6 +20,8 @@ void incflo::declare_fields()
 
     m_repo.declare_cc_field("divtau", AMREX_SPACEDIM, 0, nstates);
     m_repo.declare_cc_field("laps", m_ntrac, 0, nstates);
+
+    m_repo.declare_face_normal_field({"u_mac","v_mac","w_mac"}, 1, nghost_mac(), 1);
 
     vel.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
         *this, m_time, m_probtype);
@@ -36,7 +38,7 @@ void incflo::declare_fields()
 void incflo::init_field_bcs ()
 {
     using namespace amrex;
-    auto& velocity = m_repo.get_field("vel");
+    auto& velocity = m_repo.get_field("velocity");
     auto& density = m_repo.get_field("density");
     auto& tracer = m_repo.get_field("tracer");
     auto& bc_velocity = velocity.bc_values();
