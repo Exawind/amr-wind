@@ -225,7 +225,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                                 density_old.vec_const_ptrs(),
                                                 (*tra_eta).vec_const_ptrs());
         if (m_use_godunov)
-            amr_wind::field_ops::add(*tra_forces, laps, 0, 0, AMREX_SPACEDIM, 0);
+            amr_wind::field_ops::add(*tra_forces, laps, 0, 0, m_ntrac, 0);
 
     }
 
