@@ -98,8 +98,13 @@ void ABL::pre_advance_work()
     constexpr int direction = 2;
     const auto& geom = m_incflo->Geom(0);
 
+    auto& velocity = m_repo.get_field("vel");
+    auto& temperature = m_repo.get_field("tracer");
+
     // TODO: Promote this to a class member
-    PlaneAveraging pa(geom, *m_incflo->leveldata_vec()[0], direction);
+    PlaneAveraging pa(
+        m_incflo->Geom(), velocity.vec_ptrs(), temperature.vec_ptrs(),
+        direction);
     {
         // First cell height
         const amrex::Real fch = geom.ProbLo(direction) + 0.5 * geom.CellSize(direction);
