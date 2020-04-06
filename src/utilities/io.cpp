@@ -2,7 +2,7 @@
 #include <AMReX_PlotFileUtil.H>
 #include <AMReX_buildInfo.H>
 #include <incflo.H>
-#include <Physics.H>
+#include "PhysicsTerm.H"
 
 using namespace amrex;
 
@@ -467,11 +467,7 @@ void incflo::WritePlotFile()
                 compute_vel_pressure_terms(lev, forcing, m_leveldata[lev]->density);
 
                 for (auto& pp: m_physics) {
-                    pp->add_momentum_sources(Geom(lev),
-                                             m_leveldata[lev]->density,
-                                             m_leveldata[lev]->velocity,
-                                             m_leveldata[lev]->tracer,
-                                             forcing);
+                    pp->add_momentum_sources(lev, forcing);
                 }
 
             } else {

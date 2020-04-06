@@ -15,7 +15,7 @@
 #include "FieldRepo.H"
 
 namespace amr_wind {
-class Physics;
+class PhysicsTerm;
 class RefinementCriteria;
 }
 
@@ -319,7 +319,7 @@ private:
     amr_wind::SimTime m_time;
     amr_wind::FieldRepo m_repo;
 
-    amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
+    amrex::Vector<std::unique_ptr<amr_wind::PhysicsTerm>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
 
     // Be verbose?

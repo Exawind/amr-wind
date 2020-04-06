@@ -1,5 +1,5 @@
 #include <incflo.H>
-#include "Physics.H"
+#include "PhysicsTerm.H"
 
 using namespace amrex;
 
@@ -33,7 +33,7 @@ void incflo::compute_tra_forces (Vector<MultiFab*> const& tra_forces,
 }
 
 void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
-                                 Vector<MultiFab const*> const& velocity,
+                                 Vector<MultiFab const*> const& /* velocity */,
                                  Vector<MultiFab const*> const& density,
                                  Vector<MultiFab const*> const& tracer)
 {
@@ -43,8 +43,7 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
             compute_vel_pressure_terms(lev, *vel_forces[lev], *density[lev]);
 
             for (auto& pp: m_physics) {
-                pp->add_momentum_sources(
-                    Geom(lev), *density[lev], *velocity[lev], *tracer[lev], *vel_forces[lev]);
+                pp->add_momentum_sources(lev, *vel_forces[lev]);
             }
         }
     } else {

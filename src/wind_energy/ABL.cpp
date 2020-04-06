@@ -8,8 +8,8 @@
 
 namespace amr_wind {
 
-ABL::ABL(const SimTime& time, incflo* incflo_in)
-    : m_time(time), m_incflo(incflo_in)
+ABL::ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo)
+    : m_time(time), m_incflo(incflo_in), m_repo(repo)
 {
     amrex::ParmParse pp("abl");
 
@@ -36,30 +36,27 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
  *
  *  \sa amr_wind::ABLFieldInit
  */
-void ABL::initialize_fields(
-    const amrex::Geometry& geom,
-    LevelData& leveldata) const
+void ABL::initialize_fields(const int lev)
 {
-    auto& velocity = leveldata.velocity;
-    auto& density = leveldata.density;
-    auto& scalars = leveldata.tracer;
+    const auto& geom = m_incflo->Geom(lev);
+    auto& velocity = m_repo.get_field("vel")(lev);
+    auto& density = m_repo.get_field("density")(lev);
+    auto& temperature = m_repo.get_field("tracer")(lev);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi),
-            scalars.array(mfi));
+            temperature.array(mfi));
     }
 }
 
-void ABL::add_momentum_sources(
-    const amrex::Geometry& /* geom */,
-    const amrex::MultiFab& /* density */,
-    const amrex::MultiFab& velocity,
-    const amrex::MultiFab& scalars,
-    amrex::MultiFab& vel_forces) const
+void ABL::add_momentum_sources(const int lev, amrex::MultiFab& vel_forces) const
 {
+    const auto& velocity = m_repo.get_field("vel")(lev);
+    const auto& temperature = m_repo.get_field("tracer")(lev);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -70,7 +67,7 @@ void ABL::add_momentum_sources(
 
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
-            const auto& scal = scalars.const_array(mfi);
+            const auto& scal = temperature.const_array(mfi);
             (*m_boussinesq)(bx, scal, vf);
         }
 
@@ -84,7 +81,6 @@ void ABL::add_momentum_sources(
         if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
     }
 }
-
 
 /** Perform tasks at the beginning of a new timestep
  *

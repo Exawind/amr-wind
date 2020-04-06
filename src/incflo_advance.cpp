@@ -1,6 +1,6 @@
 #include <incflo.H>
 #include "PlaneAveraging.H"
-#include "Physics.H"
+#include "PhysicsTerm.H"
 #include <cmath>
 
 using namespace amrex;

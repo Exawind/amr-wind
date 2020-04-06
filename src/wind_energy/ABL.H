@@ -3,12 +3,13 @@
 
 #include <memory>
 
-#include "Physics.H"
+#include "PhysicsTerm.H"
 #include "ABLFieldInit.H"
 #include "ABLWallFunction.H"
 #include "ABLForcing.H"
 #include "BoussinesqBuoyancy.H"
 #include "CoriolisForcing.H"
+#include "FieldRepo.H"
 #include "SimTime.H"
 
 class incflo;
@@ -17,29 +18,22 @@ namespace amr_wind {
 
 /** Atmospheric Boundary Layer physics
  */
-class ABL : public Physics
+class ABL : public PhysicsTerm
 {
 public:
-    ABL(const SimTime& time, incflo* incflo_in);
+    ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo);
 
     ~ABL() = default;
 
     //! Unique name indentifying this physics set for debugging
     std::string physics_name() const override { return "ABL"; }
 
-    //! Initialize the temperature and velocity fields for ABL simulations
-    void initialize_fields(
-        const amrex::Geometry& geom,
-        LevelData& leveldata) const override;
+    void initialize_fields(const int lev) override;
 
     void pre_advance_work() override;
 
-    //! Add momentum source terms
     void add_momentum_sources(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& density,
-        const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
+        const int lev,
         amrex::MultiFab& vel_forces) const override;
 
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }
@@ -49,6 +43,8 @@ private:
 
     // TODO: deprecate this
     incflo* m_incflo;
+
+    FieldRepo& m_repo;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;

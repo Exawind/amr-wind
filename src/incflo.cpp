@@ -173,7 +173,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
         prob_init_fluid(lev);
 
         for (auto& pp: m_physics) {
-            pp->initialize_fields(Geom(lev), *m_leveldata[lev]);
+            pp->initialize_fields(lev);
         }
     }
 }

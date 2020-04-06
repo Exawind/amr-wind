@@ -4,7 +4,7 @@
 #include <cmath>
 
 
-#include "Physics.H"
+#include "PhysicsTerm.H"
 #include "ABL.H"
 #include "RefinementCriteria.H"
 #include "CartBoxRefinement.H"
@@ -120,7 +120,7 @@ void incflo::ReadParameters ()
     if (m_probtype == 35) {
         ReadABLParameters();
 
-        m_physics.emplace_back(new amr_wind::ABL(m_time, this));
+        m_physics.emplace_back(new amr_wind::ABL(m_time, this, m_repo));
     }
 
     {
