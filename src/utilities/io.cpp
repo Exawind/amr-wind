@@ -83,21 +83,21 @@ void incflo::WriteCheckPointFile() const
 
     for(int lev = 0; lev <= finest_level; ++lev)
     {
-        VisMF::Write(m_leveldata[lev]->velocity,
+        VisMF::Write(velocity()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "velocity"));
 
-        VisMF::Write(m_leveldata[lev]->density,
+        VisMF::Write(density()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "density"));
 
         if (m_ntrac > 0) {
-            VisMF::Write(m_leveldata[lev]->tracer,
+            VisMF::Write(tracer()(lev),
                          amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
         }
 
-        VisMF::Write(m_leveldata[lev]->gp,
+        VisMF::Write(grad_p()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "gradp"));
 
-        VisMF::Write(m_leveldata[lev]->p,
+        VisMF::Write(pressure()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "p"));
     }
 }
@@ -209,21 +209,21 @@ void incflo::ReadCheckpointFile()
     // Load the field data
     for(int lev = 0; lev <= finest_level; ++lev)
     {
-        VisMF::Read(m_leveldata[lev]->velocity,
+        VisMF::Read(velocity()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "velocity"));
 
-        VisMF::Read(m_leveldata[lev]->density,
+        VisMF::Read(density()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "density"));
 
         if (m_ntrac > 0) {
-            VisMF::Read(m_leveldata[lev]->tracer,
+            VisMF::Read(tracer()(lev),
                         amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
         }
 
-        VisMF::Read(m_leveldata[lev]->gp,
+        VisMF::Read(grad_p()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "gradp"));
 
-        VisMF::Read(m_leveldata[lev]->p,
+        VisMF::Read(pressure()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "p"));
     }
 
@@ -322,14 +322,9 @@ void incflo::WritePlotFile()
     BL_PROFILE("incflo::WritePlotFile()");
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-
-            const int ng = 1;
-            
-            fillpatch_velocity(lev, m_time.current_time(), m_leveldata[lev]->velocity, ng);
-            fillpatch_density(lev, m_time.current_time(), m_leveldata[lev]->density, ng);
-            fillpatch_tracer(lev, m_time.current_time(), m_leveldata[lev]->tracer, ng);
-        }
+        velocity().fillpatch(m_time.current_time());
+        density().fillpatch(m_time.current_time());
+        tracer().fillpatch(m_time.current_time());
     }
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
@@ -384,56 +379,56 @@ void incflo::WritePlotFile()
     int icomp = 0;
     if (m_plt_velx) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 0, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], velocity()(lev), 0, icomp, 1, 0);
         }
         pltscaVarsName.push_back("velx");
         ++icomp;
     }
     if (m_plt_vely) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 1, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], velocity()(lev), 1, icomp, 1, 0);
         }
         pltscaVarsName.push_back("vely");
         ++icomp;
     }
     if (m_plt_velz) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->velocity, 2, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], velocity()(lev), 2, icomp, 1, 0);
         }
         pltscaVarsName.push_back("velz");
         ++icomp;
     }
     if (m_plt_gpx) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 0, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], grad_p()(lev), 0, icomp, 1, 0);
         }
         pltscaVarsName.push_back("gpx");
         ++icomp;
     }
     if (m_plt_gpy) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 1, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], grad_p()(lev), 1, icomp, 1, 0);
         }
         pltscaVarsName.push_back("gpy");
         ++icomp;
     }
     if (m_plt_gpz) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->gp, 2, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], grad_p()(lev), 2, icomp, 1, 0);
         }
         pltscaVarsName.push_back("gpz");
         ++icomp;
     }
     if (m_plt_rho) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->density, 0, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], density()(lev), 0, icomp, 1, 0);
         }
         pltscaVarsName.push_back("density");
         ++icomp;
     }
     if (m_plt_tracer) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], m_leveldata[lev]->tracer, 0, icomp, m_ntrac, 0);
+            MultiFab::Copy(mf[lev], tracer()(lev), 0, icomp, m_ntrac, 0);
         }
         for (int i = 0; i < m_ntrac; ++i) {
             pltscaVarsName.push_back("tracer"+std::to_string(i));
@@ -442,7 +437,7 @@ void incflo::WritePlotFile()
     }
     if (m_plt_p) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            amrex::average_node_to_cellcenter(mf[lev], icomp, m_leveldata[lev]->p, 0, 1);
+            amrex::average_node_to_cellcenter(mf[lev], icomp, pressure()(lev), 0, 1);
         }
         pltscaVarsName.push_back("p");
         ++icomp;
@@ -455,7 +450,7 @@ void incflo::WritePlotFile()
     if (m_plt_vort) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab vort(mf[lev], amrex::make_alias, icomp, 1);
-            ComputeVorticity(lev, m_time.current_time(), vort, m_leveldata[lev]->velocity);
+            ComputeVorticity(lev, m_time.current_time(), vort, velocity()(lev));
         }
         pltscaVarsName.push_back("vort");
         ++icomp;
@@ -464,7 +459,7 @@ void incflo::WritePlotFile()
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
             if (m_probtype == 35) {
-                compute_vel_pressure_terms(lev, forcing, m_leveldata[lev]->density);
+                compute_vel_pressure_terms(lev, forcing, density()(lev));
 
                 for (auto& pp: m_physics) {
                     pp->add_momentum_sources(lev, forcing);
@@ -472,8 +467,8 @@ void incflo::WritePlotFile()
 
             } else {
                 compute_vel_forces_on_level(lev, forcing,
-                                            m_leveldata[lev]->density,
-                                            m_leveldata[lev]->tracer);
+                                            density()(lev),
+                                            tracer()(lev));
             }
         }
         pltscaVarsName.push_back("forcing_x");

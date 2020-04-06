@@ -63,21 +63,18 @@ public:
     // Delete level data
     virtual void ClearLevel (int lev) override;
 
-    const amrex::Vector<std::unique_ptr<LevelData>>& leveldata_vec()
-    { return m_leveldata; }
-
     void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
     {
         m_velocity_mean_ground = uground;
         m_utau_mean_ground = ustar;
     }
 
-    amr_wind::Field& velocity() { return m_repo.get_field("vel"); }
-    amr_wind::Field& density() { return m_repo.get_field("density"); }
-    amr_wind::Field& tracer() { return m_repo.get_field("tracer"); }
-    amr_wind::Field& temperature() { return m_repo.get_field("temperature"); }
-    amr_wind::Field& pressure() { return m_repo.get_field("p"); }
-    amr_wind::Field& grad_p() { return m_repo.get_field("gp"); }
+    amr_wind::Field& velocity() const { return m_repo.get_field("vel"); }
+    amr_wind::Field& density() const { return m_repo.get_field("density"); }
+    amr_wind::Field& tracer() const { return m_repo.get_field("tracer"); }
+    amr_wind::Field& temperature() const { return m_repo.get_field("temperature"); }
+    amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
+    amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
 
 public: // for cuda
 
