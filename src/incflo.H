@@ -72,6 +72,13 @@ public:
         m_utau_mean_ground = ustar;
     }
 
+    amr_wind::Field& velocity() { return m_repo.get_field("vel"); }
+    amr_wind::Field& density() { return m_repo.get_field("density"); }
+    amr_wind::Field& tracer() { return m_repo.get_field("tracer"); }
+    amr_wind::Field& temperature() { return m_repo.get_field("temperature"); }
+    amr_wind::Field& pressure() { return m_repo.get_field("p"); }
+    amr_wind::Field& grad_p() { return m_repo.get_field("gp"); }
+
 public: // for cuda
 
     void ComputeDt (int initialisation, bool explicit_diffusion);

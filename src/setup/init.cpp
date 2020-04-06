@@ -234,19 +234,18 @@ void incflo::InitialIterations ()
                        << m_time.deltaT() << std::endl;
     }
 
-    copy_from_new_to_old_velocity();
-    copy_from_new_to_old_density();
-    copy_from_new_to_old_tracer();
+    auto& vel = velocity();
+    auto& rho = density();
+    auto& trac = tracer();
+
+    vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+    rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+    trac.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
     for(int lev = 0; lev <= finest_level; ++lev) m_t_old[lev] = m_t_new[lev];
 
-    int ng = nghost_state();
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
-        fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (m_advect_tracer) {
-            fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
-        }
-    }
+    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    trac.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
@@ -254,9 +253,9 @@ void incflo::InitialIterations ()
 
  	ApplyPredictor(true);
 
-        copy_from_old_to_new_velocity();
-        copy_from_old_to_new_density();
-        copy_from_old_to_new_tracer();
+        vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        trac.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
     }
 }
 
@@ -278,11 +277,8 @@ void incflo::InitialProjection()
     ApplyProjection(get_density_new_const(), m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
-    for (int lev = 0; lev <= finest_level; lev++)
-    {
-        m_leveldata[lev]->p.setVal(0.0);
-        m_leveldata[lev]->gp.setVal(0.0);
-    }
+    pressure().setVal(0.0);
+    grad_p().setVal(0.0);
 
     if (m_verbose)
     {

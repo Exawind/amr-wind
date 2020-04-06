@@ -139,6 +139,9 @@ public:
     //! Advance timestep for fields with multiple states
     void advance_states() noexcept;
 
+    //! Copy a user-specified "from_state" to "to_state"
+    void copy_state(FieldState to_state, FieldState from_state) noexcept;
+
     /** \defgroup These methods wrappers to MultiFab methods
      *
      *  @{

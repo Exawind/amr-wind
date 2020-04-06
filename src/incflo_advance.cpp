@@ -24,9 +24,9 @@ void incflo::Advance()
         m_t_new[lev] = m_time.new_time();
     }
 
-    copy_from_new_to_old_velocity();
-    copy_from_new_to_old_density();
-    copy_from_new_to_old_tracer();
+    velocity().advance_states();
+    density().advance_states();
+    tracer().advance_states();
 
     int ng = nghost_state();
     for (int lev = 0; lev <= finest_level; ++lev) {
