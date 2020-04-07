@@ -29,10 +29,8 @@ inline amrex::IndexType index_type(const FieldLoc floc)
         return amrex::IndexType(amrex::IntVect::TheDimensionVector(2));
     }
 
-#ifdef AMREX_USE_GPU
     // Suppress warnings when compiling with CUDA
     return amrex::IndexType::TheCellType();
-#endif
 }
 
 /** Given a base field name and a state, return a unique string that identifies
@@ -58,10 +56,8 @@ field_name_with_state(const std::string& fname, const FieldState fstate)
         return fname + "__FS_NMH";
     }
 
-#ifdef AMREX_USE_GPU
     // Suppress warnings when compiling with CUDA
     return fname;
-#endif
 }
 
 /** Check if the field is not a reserved field name
