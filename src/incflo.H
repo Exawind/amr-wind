@@ -112,9 +112,6 @@ public: // for cuda
                                   amrex::Vector<amrex::MultiFab const*> const& vel,
                                   amrex::Vector<amrex::MultiFab const*> const& density,
                                   amrex::Vector<amrex::MultiFab const*> const& tracer,
-//                                amrex::Vector<amrex::MultiFab const*> const& u_mac,
-//                                amrex::Vector<amrex::MultiFab const*> const& v_mac,
-//                                amrex::Vector<amrex::MultiFab const*> const& w_mac,
                                   amrex::Vector<amrex::MultiFab*> const& u_mac,
                                   amrex::Vector<amrex::MultiFab*> const& v_mac,
                                   amrex::Vector<amrex::MultiFab*> const& w_mac,
@@ -379,10 +376,6 @@ private:
     // If using Godunov, default to PPM (not PLM)
     bool m_godunov_ppm         = true;
 
-    // If using Godunov, default to including viscous/diffusive
-    //    terms in the forcing terms
-    bool m_godunov_include_diff_in_forcing = true;
-
     // If using Godunov, when to add the forcing terms in 
     //    the construction of the "trans" velocities
     bool m_godunov_use_forces_in_trans = false;
@@ -501,39 +494,11 @@ private:
     }
 
     bool need_divtau () const {
-        return !(!m_godunov_include_diff_in_forcing and DiffusionType::Implicit == m_diff_type);
+        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
     }
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
     DiffusionScalarOp* get_diffusion_scalar_op ();
-
-    amrex::Vector<amrex::MultiFab*> get_velocity_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_velocity_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_density_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_density_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_tracer_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_tracer_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_vel_forces () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_tra_forces () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_velocity_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_velocity_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_density_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_density_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_tracer_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_conv_tracer_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_divtau_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_divtau_new () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_laps_old () noexcept;
-    amrex::Vector<amrex::MultiFab*> get_laps_new () noexcept;
-    //
-    amrex::Vector<amrex::MultiFab const*> get_velocity_old_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_velocity_new_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_density_old_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_density_new_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_tracer_old_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_tracer_new_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_vel_forces_const () const noexcept;
-    amrex::Vector<amrex::MultiFab const*> get_tra_forces_const () const noexcept;
 
     amrex::Vector<int> const& get_velocity_iconserv () const noexcept { return m_iconserv_velocity; }
     amrex::Vector<int> const& get_density_iconserv () const noexcept { return m_iconserv_density; }

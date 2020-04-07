@@ -150,15 +150,22 @@ void Field::fillpatch(amrex::Real time) noexcept
     }
 }
 
+void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
+{
+  BL_ASSERT(m_info->m_fillpatch_op);
+  auto& fop = *(m_info->m_fillpatch_op);
+  const int nlevels = m_repo.num_active_levels();
+  for (int lev=0; lev < nlevels; ++lev) {
+      fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), ng);
+  }
+}
+
 void Field::fillphysbc(amrex::Real time) noexcept
 {
-    BL_ASSERT(m_info->m_fillpatch_op);
-    auto& fop = *(m_info->m_fillpatch_op);
-    const int nlevels = m_repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
-    }
+    fillphysbc(time,num_grow());
 }
+
+
 
 void Field::advance_states() noexcept
 {

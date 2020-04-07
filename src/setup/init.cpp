@@ -41,9 +41,6 @@ void incflo::ReadParameters ()
         pp.query("use_godunov"                      , m_use_godunov);
         pp.query("use_ppm"                          , m_godunov_ppm);
         pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
-        pp.query("godunov_include_diff_in_forcing"  , m_godunov_include_diff_in_forcing);
-
-        if (!m_use_godunov) m_godunov_include_diff_in_forcing = false;
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;
@@ -275,7 +272,8 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(get_density_new_const(), m_time.current_time(), dummy_dt, incremental);
+    ApplyProjection(m_repo.get_field("density", amr_wind::FieldState::New).vec_const_ptrs(),
+                    m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     for (int lev = 0; lev <= finest_level; lev++)
