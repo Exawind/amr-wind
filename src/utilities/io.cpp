@@ -324,9 +324,9 @@ void incflo::WritePlotFile()
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             const int ng = 1;
-            fillpatch_velocity(lev, m_time.current_time(), velocity()(lev), ng);
-            fillpatch_density(lev, m_time.current_time(), density()(lev), ng);
-            fillpatch_tracer(lev, m_time.current_time(), tracer()(lev), ng);
+            velocity().fillpatch(lev, m_time.current_time(), velocity()(lev), ng);
+            density().fillpatch(lev, m_time.current_time(), density()(lev), ng);
+            tracer().fillpatch(lev, m_time.current_time(), tracer()(lev), ng);
         }
     }
 
@@ -466,9 +466,9 @@ void incflo::WritePlotFile()
 
                 for (auto& pp: m_physics) {
                     pp->add_momentum_sources(Geom(lev),
-                                             m_leveldata[lev]->density,
-                                             m_leveldata[lev]->velocity,
-                                             m_leveldata[lev]->tracer,
+                                             density()(lev),
+                                             velocity()(lev),
+                                             tracer()(lev),
                                              forcing);
                 }
 

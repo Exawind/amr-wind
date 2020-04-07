@@ -66,7 +66,7 @@ void incflo::compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
         Box const& bx = mfi.tilebox();
         Array4<Real> const& vel_f = vel_forces.array(mfi);
         Array4<Real const> const& rho = density.const_array(mfi);
-        Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
+        Array4<Real const> const& gradp = grad_p()(lev).const_array(mfi);
 
         amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
             amrex::Real rhoinv = 1.0 / rho(i, j, k);
@@ -93,7 +93,7 @@ void incflo::compute_vel_forces_on_level (int lev,
         Box const& bx = mfi.tilebox();
         Array4<Real> const& vel_f = vel_forces.array(mfi);
         Array4<Real const> const& rho = density.const_array(mfi);
-        Array4<Real const> const& gradp = m_leveldata[lev]->gp.const_array(mfi);
+        Array4<Real const> const& gradp = grad_p()(lev).const_array(mfi);
 
         if (m_use_boussinesq) {
             // This uses a Boussinesq approximation where the buoyancy depends on

@@ -81,16 +81,16 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     {
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(velocity()(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real> const& u = ld.velocity.array(mfi);
+                Array4<Real> const& u = velocity()(lev).array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real const> const& gp = ld.gp.const_array(mfi);
+                Array4<Real const> const& gp = grad_p()(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     Real soverrho = scaling_factor / rho(i,j,k);
@@ -106,8 +106,9 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (proj_for_small_dt || incremental)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Subtract(m_leveldata[lev]->velocity,
-                               m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
+            MultiFab::Subtract(velocity()(lev),
+                               velocity().state(amr_wind::FieldState::Old)(lev),
+                               0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
@@ -139,7 +140,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
 
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
-        vel.push_back(&(m_leveldata[lev]->velocity));
+        vel.push_back(&(velocity()(lev)));
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
@@ -156,8 +157,8 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (proj_for_small_dt || incremental)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Add(m_leveldata[lev]->velocity,
-                          m_leveldata[lev]->velocity_o, 0, 0, AMREX_SPACEDIM, 0);
+            MultiFab::Add(velocity()(lev),
+                          velocity().state(amr_wind::FieldState::Old)(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
@@ -167,15 +168,15 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(ld.gp,TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+        for (MFIter mfi(grad_p()(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi) {
             Box const& tbx = mfi.tilebox();
             Box const& nbx = mfi.nodaltilebox();
-            Array4<Real> const& gp_lev = ld.gp.array(mfi);
-            Array4<Real> const& p_lev = ld.p.array(mfi);
+            Array4<Real> const& gp_lev = grad_p()(lev).array(mfi);
+            Array4<Real> const& p_lev = pressure()(lev).array(mfi);
             Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
             Array4<Real const> const& p_proj = phi[lev]->const_array(mfi);
             if (incremental) {
@@ -203,7 +204,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     }
 
     for (int lev = finest_level-1; lev >= 0; --lev) {
-        amrex::average_down(m_leveldata[lev+1]->gp, m_leveldata[lev]->gp,
+        amrex::average_down(grad_p()(lev+1), grad_p()(lev),
                             0, AMREX_SPACEDIM, refRatio(lev));
     }
 
