@@ -40,9 +40,9 @@ void incflo::Advance()
 
     if (!m_use_godunov) {
 
-        m_repo.get_field("velocity",amr_wind::FieldState::New).fillpatch(m_time.current_time());
-        m_repo.get_field("density",amr_wind::FieldState::New).fillpatch(m_time.current_time());
-        m_repo.get_field("tracer",amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        m_repo.get_field("velocity",amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        m_repo.get_field("density",amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        m_repo.get_field("tracer",amr_wind::FieldState::New).fillpatch(m_time.new_time());
 
         ApplyCorrector();
     }
