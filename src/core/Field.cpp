@@ -140,14 +140,19 @@ void Field::fillpatch_from_coarse(
     fop.fillpatch_from_coarse(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch(amrex::Real time) noexcept
+void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), ng);
     }
+}
+
+void Field::fillpatch(amrex::Real time) noexcept
+{
+    fillpatch(time,num_grow());
 }
 
 void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept

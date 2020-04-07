@@ -17,7 +17,6 @@ void incflo::MakeNewLevelFromCoarse (int lev,
     }
 
     m_repo.make_new_level_from_coarse(lev, time, ba, dm);
-    m_leveldata[lev].reset(new LevelData(lev, m_repo));
 
     m_diffusion_tensor_op.reset();
     m_diffusion_scalar_op.reset();
@@ -36,7 +35,6 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
     }
 
     m_repo.remake_level(lev, time, ba, dm);
-    m_leveldata[lev].reset(new LevelData(lev, m_repo));
 
     m_diffusion_tensor_op.reset();
     m_diffusion_scalar_op.reset();
@@ -48,7 +46,6 @@ void incflo::ClearLevel (int lev)
 {
     BL_PROFILE("incflo::ClearLevel()");
     m_repo.clear_level(lev);
-    m_leveldata[lev].reset();
     m_factory[lev].reset();
     m_diffusion_tensor_op.reset();
     m_diffusion_scalar_op.reset();

@@ -17,9 +17,6 @@ incflo::incflo ()
     // Read inputs file using ParmParse
     ReadParameters();
 
-    // Initialize memory for data-array internals
-    ResizeArrays();
-
     declare_fields();
 
     init_bcs();
@@ -154,11 +151,6 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     SetDistributionMap(lev, new_dmap);
 
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
-
-    m_leveldata[lev].reset(new LevelData(lev, m_repo));
-
-    m_t_new[lev] = m_time.current_time();
-    m_t_old[lev] = m_time.current_time() - 1.e200;
 
     if (m_restart_file.empty()) {
         prob_init_fluid(lev);

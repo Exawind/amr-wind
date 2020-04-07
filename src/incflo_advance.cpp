@@ -18,13 +18,6 @@ void incflo::Advance()
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(initialisation, explicit_diffusion);
 
-    // Set new and old time to correctly use in fillpatching
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        m_t_old[lev] = m_time.current_time();
-        m_t_new[lev] = m_time.new_time();
-    }
-
     velocity().advance_states();
     density().advance_states();
     tracer().advance_states();

@@ -322,12 +322,10 @@ void incflo::WritePlotFile()
     BL_PROFILE("incflo::WritePlotFile()");
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            const int ng = 1;
-            velocity().fillpatch(lev, m_time.current_time(), velocity()(lev), ng);
-            density().fillpatch(lev, m_time.current_time(), density()(lev), ng);
-            tracer().fillpatch(lev, m_time.current_time(), tracer()(lev), ng);
-        }
+        IntVect ng(1);
+        velocity().fillpatch(m_time.new_time(), ng);
+        density().fillpatch(m_time.new_time(), ng);
+        tracer().fillpatch(m_time.new_time(), ng);
     }
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
