@@ -152,7 +152,7 @@ void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
 
 void Field::fillpatch(amrex::Real time) noexcept
 {
-    fillpatch(time,num_grow());
+    fillpatch(time, num_grow());
 }
 
 void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
@@ -167,7 +167,7 @@ void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
 
 void Field::fillphysbc(amrex::Real time) noexcept
 {
-    fillphysbc(time,num_grow());
+    fillphysbc(time, num_grow());
 }
 
 

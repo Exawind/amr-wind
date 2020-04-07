@@ -140,6 +140,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
     auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
 
+    auto& velocity_forces = m_repo.get_field("velocity_forces");
+    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& vel_eta = m_repo.get_field("viscosity");
+    auto& tra_eta = m_repo.get_field("tracer_viscosity");
+
     // only the old states are used in predictor
     auto& divtau = m_repo.get_field("divtau", amr_wind::FieldState::Old);
     auto& laps = m_repo.get_field("laps", amr_wind::FieldState::Old);
@@ -163,34 +168,25 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto density_nph = m_repo.create_scratch_field(1,1);
     auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
 
-    // Allocate scratch space for momentum eqns forces and viscosity
-    auto vel_forces = m_repo.create_scratch_field(AMREX_SPACEDIM, nghost_force());
-    auto vel_eta = m_repo.create_scratch_field(1, 1);
-
-    // Allocate scratch space for tracer eqns forces and viscosity
-    // fixme, should this have an if (m_advect_tracer)  statement on it like before?
-    auto tra_forces = m_repo.create_scratch_field(m_ntrac, nghost_force());
-    auto tra_eta = m_repo.create_scratch_field(m_ntrac, 1);
-
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
     if (m_use_godunov)
     {
-        compute_vel_forces((*vel_forces).vec_ptrs(),
+        compute_vel_forces(velocity_forces.vec_ptrs(),
                            velocity_old.vec_const_ptrs(),
                            density_old.vec_const_ptrs(),
                            tracer_old.vec_const_ptrs());
 
         // Note this is forcing for (rho s), not for s
         if (m_advect_tracer)
-           compute_tra_forces((*tra_forces).vec_ptrs(), density_old.vec_const_ptrs());
+           compute_tra_forces(tracer_forces.vec_ptrs(), density_old.vec_const_ptrs());
     }
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity((*vel_eta).vec_ptrs(), (*tra_eta).vec_ptrs(),
+    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
                       density_old.vec_const_ptrs(), velocity_old.vec_const_ptrs(), tracer_old.vec_const_ptrs(),
                       m_time.current_time(), 1);
 
@@ -201,9 +197,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
         get_diffusion_tensor_op()->compute_divtau(divtau.vec_ptrs(),
                                                   velocity_old.vec_const_ptrs(),
                                                   density_old.vec_const_ptrs(),
-                                                  (*vel_eta).vec_const_ptrs());
+                                                  vel_eta.vec_const_ptrs());
         if (m_use_godunov)
-            amr_wind::field_ops::add(*vel_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
+            amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
 
     }
 
@@ -216,19 +212,24 @@ void incflo::ApplyPredictor (bool incremental_projection)
         get_diffusion_scalar_op()->compute_laps(laps.vec_ptrs(),
                                                 tracer_old.vec_const_ptrs(),
                                                 density_old.vec_const_ptrs(),
-                                                (*tra_eta).vec_const_ptrs());
+                                                tra_eta.vec_const_ptrs());
         if (m_use_godunov)
-            amr_wind::field_ops::add(*tra_forces, laps, 0, 0, m_ntrac, 0);
+            amr_wind::field_ops::add(tracer_forces, laps, 0, 0, m_ntrac, 0);
 
     }
 
     if (m_use_godunov) {
+        fillpatch_force(m_time.current_time(), velocity_forces.vec_ptrs(), nghost_force());
+          if (m_advect_tracer) {
+              fillpatch_force(m_time.current_time(), tracer_forces.vec_ptrs(), nghost_force());
+          }
 
-        // fixme
-        fillpatch_force(m_time.current_time(), (*vel_forces).vec_ptrs(), nghost_force());
-        if (m_advect_tracer) {
-            fillpatch_force(m_time.current_time(), (*tra_forces).vec_ptrs(), nghost_force());
-        }
+        //fixme need to remove fillpatch_force
+//
+//        IntVect ng(nghost_force());
+//        velocity_forces.fillpatch(m_time.current_time(), ng);
+//        if (m_advect_tracer)
+//            tracer_forces.fillpatch(m_time.current_time(), ng);
     }
 
     // *************************************************************************************
@@ -245,8 +246,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
                             u_mac.vec_ptrs(),
                             v_mac.vec_ptrs(),
                             w_mac.vec_ptrs(),
-                            (*vel_forces).vec_const_ptrs(),
-                            (*tra_forces).vec_const_ptrs(),
+                            velocity_forces.vec_const_ptrs(),
+                            tracer_forces.vec_const_ptrs(),
                             m_time.current_time());
 
     // *************************************************************************************
@@ -293,7 +294,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-       compute_tra_forces((*tra_forces).vec_ptrs(), (*density_nph).vec_const_ptrs());
+       compute_tra_forces(tracer_forces.vec_ptrs(), (*density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next
@@ -316,7 +317,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                 Array4<Real> const& tra           = tracer_new(lev).array(mfi);
                 Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
                 Array4<Real const> const& dtdt_o  = conv_tracer(lev).const_array(mfi);
-                Array4<Real const> const& tra_f   = (*tra_forces)(lev).const_array(mfi);
+                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
 
                 if (m_diff_type == DiffusionType::Explicit)
                 {
@@ -377,7 +378,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
                                                   density_new.vec_ptrs(),
-                                                  (*tra_eta).vec_const_ptrs(),
+                                                  tra_eta.vec_const_ptrs(),
                                                   dt_diff);
     } // if (m_advect_tracer)
 
@@ -396,7 +397,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
-    compute_vel_forces((*vel_forces).vec_ptrs(),
+    compute_vel_forces(velocity_forces.vec_ptrs(),
                        velocity_old.vec_const_ptrs(),
                        (*density_nph).vec_const_ptrs(),
                        (*tracer_nph).vec_const_ptrs());
@@ -415,7 +416,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
             Box const& bx = mfi.tilebox();
             Array4<Real> const& vel = velocity_new(lev).array(mfi);
             Array4<Real const> const& dvdt = conv_velocity(lev).const_array(mfi);
-            Array4<Real const> const& vel_f = (*vel_forces)(lev).const_array(mfi);
+            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
 
             if (m_diff_type == DiffusionType::Implicit) {
 
@@ -462,7 +463,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
                                                     density_new.vec_const_ptrs(),
-                                                    (*vel_eta).vec_const_ptrs(),
+                                                    vel_eta.vec_const_ptrs(),
                                                     dt_diff);
     }
 
@@ -557,19 +558,14 @@ void incflo::ApplyCorrector()
     auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
     auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
 
+    auto& velocity_forces = m_repo.get_field("velocity_forces");
+    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& vel_eta = m_repo.get_field("viscosity");
+    auto& tra_eta = m_repo.get_field("tracer_viscosity");
+
     // Allocate scratch space for half time density and tracer
     auto density_nph = m_repo.create_scratch_field(1,1);
     auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
-
-    // Allocate scratch space for momentum eqns forces and viscosity
-    auto vel_forces = m_repo.create_scratch_field(AMREX_SPACEDIM, nghost_force());
-    auto vel_eta = m_repo.create_scratch_field(1, 1);
-
-    // Allocate scratch space for tracer eqns forces and viscosity
-    // fixme, should this have an if (m_advect_tracer)  statement on it like before?
-    auto tra_forces = m_repo.create_scratch_field(m_ntrac, nghost_force());
-    auto tra_eta = m_repo.create_scratch_field(m_ntrac, 1);
-
 
     // **********************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
@@ -591,7 +587,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity((*vel_eta).vec_ptrs(), (*tra_eta).vec_ptrs(),
+    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
                       density_new.vec_const_ptrs(), velocity_new.vec_const_ptrs(), tracer_new.vec_const_ptrs(),
                       new_time, 1);
 
@@ -601,12 +597,12 @@ void incflo::ApplyCorrector()
         get_diffusion_tensor_op()->compute_divtau(m_repo.get_field("divtau", amr_wind::FieldState::New).vec_ptrs(),
                                                   velocity_new.vec_const_ptrs(),
                                                   density_new.vec_const_ptrs(),
-                                                  (*vel_eta).vec_const_ptrs());
+                                                  vel_eta.vec_const_ptrs());
         if (m_advect_tracer) {
             get_diffusion_scalar_op()->compute_laps(m_repo.get_field("laps", amr_wind::FieldState::New).vec_ptrs(),
                                                     tracer_new.vec_const_ptrs(),
                                                     density_new.vec_const_ptrs(),
-                                                    (*tra_eta).vec_const_ptrs());
+                                                    tra_eta.vec_const_ptrs());
         }
     }
 
@@ -651,7 +647,7 @@ void incflo::ApplyCorrector()
     // Compute the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-        compute_tra_forces((*tra_forces).vec_ptrs(),  (*density_nph).vec_const_ptrs());
+        compute_tra_forces(tracer_forces.vec_ptrs(),  (*density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next (note that dtdt already has rho in it)
@@ -675,7 +671,7 @@ void incflo::ApplyCorrector()
                 Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
                 Array4<Real const> const& dtdt_o  = m_repo.get_field("conv_tracer", amr_wind::FieldState::Old)(lev).const_array(mfi);
                 Array4<Real const> const& dtdt    = m_repo.get_field("conv_tracer", amr_wind::FieldState::New)(lev).const_array(mfi);
-                Array4<Real const> const& tra_f   = (*tra_forces)(lev).const_array(mfi);
+                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
 
                 if (m_diff_type == DiffusionType::Explicit)
                 {
@@ -744,7 +740,7 @@ void incflo::ApplyCorrector()
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
                                                   density_new.vec_ptrs(),
-                                                  (*tra_eta).vec_const_ptrs(),
+                                                  tra_eta.vec_const_ptrs(),
                                                   dt_diff);
     }
 
@@ -760,7 +756,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
-    compute_vel_forces((*vel_forces).vec_ptrs(),velocity_new.vec_const_ptrs(),
+    compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
                        (*density_nph).vec_const_ptrs(),
                        (*tracer_nph).vec_const_ptrs());
 
@@ -780,7 +776,7 @@ void incflo::ApplyCorrector()
             Array4<Real const> const& vel_o = velocity_old(lev).const_array(mfi);
             Array4<Real const> const& dvdt = m_repo.get_field("conv_velocity", amr_wind::FieldState::New)(lev).const_array(mfi);
             Array4<Real const> const& dvdt_o = m_repo.get_field("conv_velocity", amr_wind::FieldState::Old)(lev).const_array(mfi);
-            Array4<Real const> const& vel_f = (*vel_forces)(lev).const_array(mfi);
+            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
 
             if (m_diff_type == DiffusionType::Implicit)
             {
@@ -836,7 +832,7 @@ void incflo::ApplyCorrector()
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
                                                     density_new.vec_const_ptrs(),
-                                                    (*vel_eta).vec_const_ptrs(),
+                                                    vel_eta.vec_const_ptrs(),
                                                     dt_diff);
     }
 
