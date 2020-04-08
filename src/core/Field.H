@@ -107,6 +107,9 @@ public:
     //! Name of this field (including state information)
     inline const std::string& name() const { return m_name; }
 
+    //! Base name (without state information)
+    inline const std::string& base_name() const { return m_info->m_basename; }
+
     //! Unique integer identifier for this field
     inline unsigned id() const { return m_id; }
 
@@ -116,8 +119,18 @@ public:
     //! Ghost cells
     inline const amrex::IntVect& num_grow() const { return m_info->m_ngrow; }
 
+    //! Number of exact time states available for this field
+    inline int num_time_states() const { return m_info->m_nstates; }
+
     //! Number of states available for this field
-    inline int num_states() const { return m_info->m_nstates; }
+    inline int num_states() const {
+        int ns = 0;
+        for (auto* ff: m_info->m_states) {
+            if (ff != nullptr) ++ns;
+        }
+        AMREX_ASSERT(num_time_states() <= ns);
+        return ns;
+    }
 
     //! Cell, node, or face centered field
     inline FieldLoc field_location() const { return m_info->m_floc; }
@@ -130,6 +143,13 @@ public:
 
     inline bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
     inline bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
+
+    //! Return true if the requested state exists for this field
+    inline bool query_state(const FieldState fstate) const
+    {
+        const int fid = static_cast<int>(fstate);
+        return (m_info->m_states[fid] != nullptr);
+    }
 
     //! Return reference to the host view of BC values array
     amrex::Vector<amrex::Vector<amrex::Real>>& bc_values()
@@ -171,6 +191,9 @@ public:
 
     //! Copy a user-specified "from_state" to "to_state"
     void copy_state(FieldState to_state, FieldState from_state) noexcept;
+
+    //! Create a new time state after the field has been created
+    Field& create_state(const FieldState fstate) noexcept;
 
     /** \defgroup These methods wrappers to MultiFab methods
      *

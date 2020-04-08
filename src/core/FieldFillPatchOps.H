@@ -111,7 +111,7 @@ public:
      */
     amrex::Vector<amrex::MultiFab*> get_mfab_vec(int lev)
     {
-        const int nstates = amrex::min(m_field.num_states(), 2);
+        const int nstates = amrex::min(m_field.num_time_states(), 2);
         amrex::Vector<amrex::MultiFab*> ret;
 
         // The states in the FieldInfo data are ordered from newest to oldest,

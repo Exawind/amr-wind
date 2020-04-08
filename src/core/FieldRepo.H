@@ -245,6 +245,8 @@ protected:
         return m_leveldata[lev]->m_mfabs[fid];
     }
 
+    Field& create_state(Field& field, const FieldState fstate) noexcept;
+
     //! Allocate field data for a single level outside of regrid
     void allocate_field_data(
         int lev,

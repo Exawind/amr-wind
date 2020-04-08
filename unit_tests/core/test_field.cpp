@@ -219,6 +219,49 @@ TEST_F(FieldRepoTest, field_advance_states)
     }
 }
 
+TEST_F(FieldRepoTest, field_create_state)
+{
+    initialize_mesh();
+    auto& field_repo = mesh().field_repo();
+    auto& density = field_repo.declare_field("density");
+
+    // Assert that there is no half state
+    EXPECT_TRUE(density.num_states() == 1);
+    EXPECT_FALSE(density.query_state(amr_wind::FieldState::NPH));
+
+    // Create a new state and ensure that Field information is updated to
+    // reflect this new state
+    auto& rho_nph = density.create_state(amr_wind::FieldState::NPH);
+    auto& rho_nph1 = density.state(amr_wind::FieldState::NPH);
+    // Exact time states is still one
+    EXPECT_TRUE(density.num_time_states() == 1);
+    // But total states are two
+    EXPECT_TRUE(density.num_states() == 2);
+    EXPECT_TRUE(density.query_state(amr_wind::FieldState::NPH));
+    EXPECT_EQ(&rho_nph, &rho_nph1);
+
+    // Ensure that we can still "declare_field" and get the old field back as
+    // long as the number of states is less than or equal to what has been
+    // already created
+    auto& rho_tmp = field_repo.declare_field("density");
+    EXPECT_EQ(&rho_tmp, &density);
+
+    const amrex::Real rho_val = 1.0 + (amrex::Random() - 0.5);
+    density.setVal(rho_val);
+    amr_wind::field_ops::copy(
+        rho_nph, density, 0, 0, density.num_comp(), density.num_grow());
+
+    const int nlevels = field_repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        EXPECT_NEAR(rho_nph(lev).min(0), rho_val, 1.0e-12);
+        EXPECT_NEAR(rho_nph(lev).max(0), rho_val, 1.0e-12);
+    }
+
+    // Ensure that advance states is a no op
+    EXPECT_FALSE(density.query_state(amr_wind::FieldState::Old));
+    density.advance_states();
+}
+
 TEST_F(FieldRepoTest, scratch_fields)
 {
     populate_parameters();

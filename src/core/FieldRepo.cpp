@@ -83,7 +83,7 @@ Field& FieldRepo::declare_field(
             auto& field = *m_field_vec[found->second];
 
             if ((ncomp != field.num_comp()) ||
-                (nstates != field.num_states()) ||
+                (field.num_time_states() != nstates) ||
                 (floc != field.field_location())) {
                 amrex::Abort("Attempt to reregister field with inconsistent parameters: "
                              + name);
@@ -221,6 +221,31 @@ void FieldRepo::allocate_field_data(Field& field)
     for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
         allocate_field_data(lev, field, *m_leveldata[lev], *m_factory[lev]);
     }
+}
+
+Field& FieldRepo::create_state(
+    Field& infield, const FieldState fstate) noexcept
+{
+    AMREX_ASSERT((fstate == FieldState::NPH));
+    AMREX_ASSERT(!field_exists(infield.base_name(), fstate));
+
+    auto& finfo = infield.m_info;
+    const int i = static_cast<int>(fstate);
+    const std::string fname = field_impl::field_name_with_state(
+        infield.base_name(), fstate);
+    const unsigned fid = m_field_vec.size();
+
+    // Create the half state
+    std::unique_ptr<Field> field(new Field(*this, fname, finfo, fid, fstate));
+    if (m_is_initialized)
+        allocate_field_data(*field);
+
+    // Add reference to states lookup
+    finfo->m_states[i] = field.get();
+    m_field_vec.emplace_back(std::move(field));
+    m_fid_map[fname] = fid;
+
+    return *m_field_vec.back();
 }
 
 } // namespace amr_wind
