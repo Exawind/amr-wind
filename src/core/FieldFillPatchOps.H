@@ -14,6 +14,9 @@
 
 namespace amr_wind {
 
+/** Abstract interface for classes that handle fill patch and physical boundary
+ *  condition operations for multi-level AMR meshes.
+ */
 class FieldFillPatchOpsBase
 {
 public:
@@ -21,18 +24,22 @@ public:
 
     virtual ~FieldFillPatchOpsBase() = default;
 
+    //! Implementation that handles filling patches on a single level as well as
+    //! across a coarse-fine interface.
     virtual void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) = 0;
 
+    //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) = 0;
 
+    //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
         int lev,
         amrex::Real time,
@@ -40,6 +47,8 @@ public:
         const amrex::IntVect& nghost) = 0;
 };
 
+/** Implementation that just fills a constant value on newly created grids
+ */
 class FieldFillConstScalar : public FieldFillPatchOpsBase
 {
 public:
@@ -67,10 +76,20 @@ private:
     amrex::Real m_fill_val;
 };
 
+/** Concrete implementation of filling patches and boundary conditions on
+ *  multi-level AMR meshes.
+ */
 template <typename Functor>
 class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
+    /**
+     *  @param field Field whose patches are filled by this instance
+     *  @param mesh  The mesh instance to determine amrex::Geometry at a level
+     *  @param time  Time instance
+     *  @param probtype Unique identifier indicating problem (For BC operator)
+     *  @param itype Interpolation type (default: conservative cell linear)
+     */
     FieldFillPatchOps(
         Field& field,
         amrex::AmrCore& mesh,
@@ -229,6 +248,7 @@ protected:
     Field& m_field;
     int m_probtype;
 
+    //! Function that handles interpolation from coarse to fine level
     amrex::Interpolater* m_mapper;
 };
 
