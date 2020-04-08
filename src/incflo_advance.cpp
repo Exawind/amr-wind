@@ -219,17 +219,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     if (m_use_godunov) {
-        fillpatch_force(m_time.current_time(), velocity_forces.vec_ptrs(), nghost_force());
-          if (m_advect_tracer) {
-              fillpatch_force(m_time.current_time(), tracer_forces.vec_ptrs(), nghost_force());
-          }
-
-        //fixme need to remove fillpatch_force
-//
-//        IntVect ng(nghost_force());
-//        velocity_forces.fillpatch(m_time.current_time(), ng);
-//        if (m_advect_tracer)
-//            tracer_forces.fillpatch(m_time.current_time(), ng);
+       IntVect ng(nghost_force());
+       velocity_forces.fillpatch(m_time.current_time(), ng);
+       if (m_advect_tracer)
+           tracer_forces.fillpatch(m_time.current_time(), ng);
     }
 
     // *************************************************************************************

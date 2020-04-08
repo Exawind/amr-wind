@@ -41,9 +41,9 @@ void incflo::declare_fields()
     p.register_fill_patch_op<amr_wind::FieldFillConstScalar>(0.0);
 
     vel_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype);
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
     tra_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype);
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
 
 }
 

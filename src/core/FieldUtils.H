@@ -3,6 +3,7 @@
 
 #include "FieldDescTypes.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_Interpolater.H"
 
 namespace amr_wind {
 namespace field_impl {
@@ -65,6 +66,23 @@ inline bool is_valid_field_name(const std::string& name)
     if (found != std::string::npos) return false;
 
     return true;
+}
+
+inline amrex::Interpolater*
+get_interpolation_operator(const FieldInterpolator itype)
+{
+    switch (itype) {
+    case FieldInterpolator::PiecewiseConstant:
+        return &amrex::pc_interp;
+
+    case FieldInterpolator::CellConsLinear:
+        return &amrex::cell_cons_interp;
+
+    case FieldInterpolator::NodeBilinear:
+        return &amrex::node_bilinear_interp;
+    }
+
+    return &amrex::cell_cons_interp;
 }
 
 } // namespace field_impl

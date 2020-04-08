@@ -15,6 +15,14 @@ enum class FieldState : int {
 
 enum class FieldLoc : int { CELL, NODE, XFACE, YFACE, ZFACE };
 
+//! Coarse-to-fine field interpolation options
+enum class FieldInterpolator : int
+{
+    PiecewiseConstant,
+    CellConsLinear,
+    NodeBilinear
+};
+
 } // namespace amr_wind
 
 #endif /* FIELDDESCTYPES_H */
