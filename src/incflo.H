@@ -432,8 +432,6 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-    amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
-
     enum struct BC {
         pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, slip_wall, wall_model,
         periodic, undefined
@@ -531,8 +529,6 @@ private:
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_diffuse_scalar_bc (amrex::Orientation::Side side) const noexcept;
-
-    void fillpatch_force (amrex::Real time, amrex::Vector<amrex::MultiFab*> const& force, int ng);
 
     void Advance ();
     void AverageDown ();

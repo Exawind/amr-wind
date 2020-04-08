@@ -174,9 +174,9 @@ void Field::fillphysbc(amrex::Real time) noexcept
 
 void Field::advance_states() noexcept
 {
-    if (num_states() < 2) return;
+    if (num_time_states() < 2) return;
 
-    for (int i=num_states() - 1; i > 0; --i) {
+    for (int i=num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);
         const auto snew = static_cast<FieldState>(i - 1);
         auto& old_field = state(sold);
@@ -197,6 +197,16 @@ void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
         amrex::MultiFab::Copy(
             to_field(lev), from_field(lev), 0, 0, num_comp(), num_grow());
     }
+}
+
+Field& Field::create_state(const FieldState fstate) noexcept
+{
+    const int sid = static_cast<int>(fstate);
+    if (m_info->m_states[sid] == nullptr) {
+        m_repo.create_state(*this, fstate);
+    }
+
+    return state(fstate);
 }
 
 void Field::setVal(amrex::Real value) noexcept

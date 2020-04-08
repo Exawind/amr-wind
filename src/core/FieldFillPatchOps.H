@@ -3,6 +3,8 @@
 
 #include "Field.H"
 #include "SimTime.H"
+#include "FieldDescTypes.H"
+#include "FieldUtils.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
@@ -12,6 +14,9 @@
 
 namespace amr_wind {
 
+/** Abstract interface for classes that handle fill patch and physical boundary
+ *  condition operations for multi-level AMR meshes.
+ */
 class FieldFillPatchOpsBase
 {
 public:
@@ -19,18 +24,22 @@ public:
 
     virtual ~FieldFillPatchOpsBase() = default;
 
+    //! Implementation that handles filling patches on a single level as well as
+    //! across a coarse-fine interface.
     virtual void fillpatch(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) = 0;
 
+    //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) = 0;
 
+    //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
         int lev,
         amrex::Real time,
@@ -38,6 +47,8 @@ public:
         const amrex::IntVect& nghost) = 0;
 };
 
+/** Implementation that just fills a constant value on newly created grids
+ */
 class FieldFillConstScalar : public FieldFillPatchOpsBase
 {
 public:
@@ -65,13 +76,31 @@ private:
     amrex::Real m_fill_val;
 };
 
+/** Concrete implementation of filling patches and boundary conditions on
+ *  multi-level AMR meshes.
+ */
 template <typename Functor>
 class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
+    /**
+     *  @param field Field whose patches are filled by this instance
+     *  @param mesh  The mesh instance to determine amrex::Geometry at a level
+     *  @param time  Time instance
+     *  @param probtype Unique identifier indicating problem (For BC operator)
+     *  @param itype Interpolation type (default: conservative cell linear)
+     */
     FieldFillPatchOps(
-        Field& field, amrex::AmrCore& mesh, const SimTime& time, int probtype)
-        : m_time(time), m_mesh(mesh), m_field(field), m_probtype(probtype)
+        Field& field,
+        amrex::AmrCore& mesh,
+        const SimTime& time,
+        int probtype,
+        FieldInterpolator itype = FieldInterpolator::CellConsLinear)
+        : m_time(time)
+        , m_mesh(mesh)
+        , m_field(field)
+        , m_probtype(probtype)
+        , m_mapper(field_impl::get_interpolation_operator(itype))
     {}
 
     /** Utility function to get a vector of multifabs for over states
@@ -82,7 +111,7 @@ public:
      */
     amrex::Vector<amrex::MultiFab*> get_mfab_vec(int lev)
     {
-        const int nstates = amrex::min(m_field.num_states(), 2);
+        const int nstates = amrex::min(m_field.num_time_states(), 2);
         amrex::Vector<amrex::MultiFab*> ret;
 
         // The states in the FieldInfo data are ordered from newest to oldest,
@@ -123,13 +152,11 @@ public:
                 Functor{m_probtype, m_field.num_comp(),
                         m_field.bc_values_device()});
 
-            amrex::Interpolater* mapper = &amrex::cell_cons_interp;
-
             amrex::FillPatchTwoLevels(
                 mfab, nghost, time, {&m_field(lev - 1)}, {time},
                 {&m_field(lev)}, {time}, 0, 0, m_field.num_comp(),
                 m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
-                m_mesh.refRatio(lev - 1), mapper, m_field.bcrec(), 0);
+                m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
         }
     }
 
@@ -165,7 +192,6 @@ public:
                 Functor{m_probtype, m_field.num_comp(),
                         m_field.bc_values_device()});
 
-            amrex::Interpolater* mapper = &amrex::cell_cons_interp;
             auto mfab_vec_levm1 = get_mfab_vec(lev - 1);
 
             amrex::FillPatchTwoLevels(
@@ -173,7 +199,7 @@ public:
                 {m_time.current_time(), m_time.new_time()}, mfab_vec_lev,
                 {m_time.current_time(), m_time.new_time()}, 0, 0,
                 m_field.num_comp(), m_mesh.Geom(lev - 1), m_mesh.Geom(lev),
-                cphysbc, 0, fphysbc, 0, m_mesh.refRatio(lev - 1), mapper,
+                cphysbc, 0, fphysbc, 0, m_mesh.refRatio(lev - 1), m_mapper,
                 m_field.bcrec(), 0);
         }
         amrex::Print() << lev << " " << m_time.current_time()
@@ -197,12 +223,10 @@ public:
             Functor{m_probtype, m_field.num_comp(),
                     m_field.bc_values_device()});
 
-        amrex::Interpolater* mapper = &amrex::cell_cons_interp;
-
         amrex::InterpFromCoarseLevel(
             mfab, nghost, time, m_field(lev - 1), 0, 0, m_field.num_comp(),
             m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
-            m_mesh.refRatio(lev - 1), mapper, m_field.bcrec(), 0);
+            m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
     }
 
     void fillphysbc(
@@ -223,6 +247,9 @@ protected:
     const amrex::AmrCore& m_mesh;
     Field& m_field;
     int m_probtype;
+
+    //! Function that handles interpolation from coarse to fine level
+    amrex::Interpolater* m_mapper;
 };
 
 } // namespace amr_wind

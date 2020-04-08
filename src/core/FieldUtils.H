@@ -3,10 +3,13 @@
 
 #include "FieldDescTypes.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_Interpolater.H"
 
 namespace amr_wind {
 namespace field_impl {
 
+/** Convert amr_wind::FieldLoc to index type for use with AMReX objects.
+ */
 inline amrex::IndexType index_type(const FieldLoc floc)
 {
     switch (floc) {
@@ -32,6 +35,9 @@ inline amrex::IndexType index_type(const FieldLoc floc)
 #endif
 }
 
+/** Given a base field name and a state, return a unique string that identifies
+ *  this state in the field repository.
+ */
 inline std::string
 field_name_with_state(const std::string& fname, const FieldState fstate)
 {
@@ -58,6 +64,14 @@ field_name_with_state(const std::string& fname, const FieldState fstate)
 #endif
 }
 
+/** Check if the field is not a reserved field name
+ *
+ *  In amr_wind::FieldRepo, field with states are stored using suffixes that
+ *  create a unique string to identify different states. This function checks if
+ *  the user specified field name matches any of those reserved suffixes.
+ *
+ *. \return True if the field is not a reserved field name
+ */
 inline bool is_valid_field_name(const std::string& name)
 {
     // Else make sure that our guard is not in the last 8 characters
@@ -65,6 +79,26 @@ inline bool is_valid_field_name(const std::string& name)
     if (found != std::string::npos) return false;
 
     return true;
+}
+
+/** Return an AMReX coarse-to-fine field interpolation object based on
+ *  amr_wind::FieldInterpolator
+ */
+inline amrex::Interpolater*
+get_interpolation_operator(const FieldInterpolator itype)
+{
+    switch (itype) {
+    case FieldInterpolator::PiecewiseConstant:
+        return &amrex::pc_interp;
+
+    case FieldInterpolator::CellConsLinear:
+        return &amrex::cell_cons_interp;
+
+    case FieldInterpolator::NodeBilinear:
+        return &amrex::node_bilinear_interp;
+    }
+
+    return &amrex::cell_cons_interp;
 }
 
 } // namespace field_impl

@@ -41,10 +41,16 @@ void incflo::declare_fields()
     p.register_fill_patch_op<amr_wind::FieldFillConstScalar>(0.0);
 
     vel_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype);
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
     tra_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype);
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
 
+    // Inform field repo which fields need fillpatch operations on regrid
+    vel.fillpatch_on_regrid() = true;
+    rho.fillpatch_on_regrid() = true;
+    trac.fillpatch_on_regrid() = true;
+    gp.fillpatch_on_regrid() = true;
+    p.fillpatch_on_regrid() = true;
 }
 
 void incflo::init_field_bcs ()
