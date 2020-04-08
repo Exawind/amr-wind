@@ -226,6 +226,9 @@ public:
     //! Number of fields registered in the database
     int num_fields() const noexcept { return m_field_vec.size(); }
 
+    //! Return list of fields registered (for unit-test purposes only)
+    const amrex::Vector<std::unique_ptr<Field>>& fields() const { return m_field_vec; }
+
     //! Return factory instance at a given level
     inline const amrex::FabFactory<amrex::FArrayBox>&
     factory(int lev) const noexcept { return *m_factory[lev]; }
