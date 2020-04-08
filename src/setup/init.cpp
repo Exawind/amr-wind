@@ -238,7 +238,6 @@ void incflo::InitialIterations ()
     vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
     rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
     trac.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-    for(int lev = 0; lev <= finest_level; ++lev) m_t_old[lev] = m_t_new[lev];
 
     vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
     rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());

@@ -177,6 +177,8 @@ public:
     }
 
     void fillpatch(amrex::Real time) noexcept;
+    void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
 

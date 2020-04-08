@@ -37,12 +37,12 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
  *  \sa amr_wind::ABLFieldInit
  */
 void ABL::initialize_fields(
-    const amrex::Geometry& geom,
-    LevelData& leveldata) const
+    int level,
+    const amrex::Geometry& geom) const
 {
-    auto& velocity = leveldata.velocity;
-    auto& density = leveldata.density;
-    auto& scalars = leveldata.tracer;
+    auto& velocity = m_incflo->velocity()(level);
+    auto& density = m_incflo->density()(level);
+    auto& scalars = m_incflo->tracer()(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -100,13 +100,16 @@ void ABL::pre_advance_work()
 {
     // Spatial averaging on z-planes
     constexpr int direction = 2;
-    const auto& geom = m_incflo->Geom(0);
+    auto geom = m_incflo->Geom();
 
-    // TODO: Promote this to a class member
-    PlaneAveraging pa(geom, *m_incflo->leveldata_vec()[0], direction);
+    PlaneAveraging pa(geom,
+                      m_incflo->velocity().vec_ptrs(),
+                      m_incflo->tracer().vec_ptrs(),
+                      direction);
+
     {
         // First cell height
-        const amrex::Real fch = geom.ProbLo(direction) + 0.5 * geom.CellSize(direction);
+        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
         const amrex::Real vx = pa.line_velocity_xdir(fch);
         const amrex::Real vy = pa.line_velocity_ydir(fch);
 

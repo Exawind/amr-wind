@@ -9,7 +9,6 @@
 
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
-#include <LevelData.H>
 
 #include "SimTime.H"
 #include "FieldRepo.H"
@@ -62,9 +61,6 @@ public:
 
     // Delete level data
     virtual void ClearLevel (int lev) override;
-
-    const amrex::Vector<std::unique_ptr<LevelData>>& leveldata_vec()
-    { return m_leveldata; }
 
     void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
     {
@@ -336,9 +332,6 @@ private:
     amrex::Real m_ic_w = 0.0;
     amrex::Real m_ic_p = 0.0;
 
-    amrex::Vector<amrex::Real> m_t_old;
-    amrex::Vector<amrex::Real> m_t_new;
-
     // Initial projection / iterations
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
@@ -438,8 +431,6 @@ private:
     int m_plt_stress      = 0;
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
-
-    amrex::Vector<std::unique_ptr<LevelData> > m_leveldata;
 
     amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox> > > m_factory;
 
@@ -541,20 +532,7 @@ private:
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_diffuse_scalar_bc (amrex::Orientation::Side side) const noexcept;
 
-    void fillpatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
-    void fillpatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
-    void fillpatch_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
-    void fillpatch_gradp (int lev, amrex::Real time, amrex::MultiFab& gradp, int ng);
     void fillpatch_force (amrex::Real time, amrex::Vector<amrex::MultiFab*> const& force, int ng);
-
-    void fillcoarsepatch_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
-    void fillcoarsepatch_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
-    void fillcoarsepatch_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
-    void fillcoarsepatch_gradp (int lev, amrex::Real time, amrex::MultiFab& gradp, int ng);
-
-    void fillphysbc_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int ng);
-    void fillphysbc_density (int lev, amrex::Real time, amrex::MultiFab& density, int ng);
-    void fillphysbc_tracer (int lev, amrex::Real time, amrex::MultiFab& tracer, int ng);
 
     void Advance ();
     void AverageDown ();

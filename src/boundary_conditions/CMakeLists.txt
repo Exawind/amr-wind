@@ -3,7 +3,6 @@ target_sources(${amr_wind_lib_name}
       #C++
       boundary_conditions.cpp
       incflo_fillpatch.cpp
-      incflo_fillphysbc.cpp
       incflo_set_velocity_bcs.cpp
    )
 
