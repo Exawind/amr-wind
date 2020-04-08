@@ -28,9 +28,7 @@ void FieldRepo::make_new_level_from_coarse(
     allocate_field_data(ba, dm, *ldata, *fact);
 
     for (auto& field: m_field_vec) {
-        if ((field->field_state() != FieldState::New) ||
-            !(field->m_info->m_fillpatch_op))
-            continue;
+        if (!field->fillpatch_on_regrid()) continue;
 
         field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()], 0);
     }
@@ -53,9 +51,7 @@ void FieldRepo::remake_level(
     allocate_field_data(ba, dm, *ldata, *fact);
 
     for (auto& field: m_field_vec) {
-        if ((field->field_state() != FieldState::New) ||
-            !(field->m_info->m_fillpatch_op))
-            continue;
+        if (!field->fillpatch_on_regrid()) continue;
 
         field->fillpatch(lev, time, ldata->m_mfabs[field->id()], 0);
     }

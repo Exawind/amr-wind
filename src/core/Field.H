@@ -128,6 +128,9 @@ public:
     //! FieldRepo instance that manages this field
     inline FieldRepo& repo() const { return m_repo; }
 
+    inline bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
+    inline bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
+
     //! Return reference to the host view of BC values array
     amrex::Vector<amrex::Vector<amrex::Real>>& bc_values()
     {
@@ -261,6 +264,10 @@ protected:
 
     //! State for this field
     const FieldState m_state;
+
+    //! Flag indicating whether fill patch operation must be performed for this
+    //! field during regrid
+    bool m_fillpatch_on_regrid{false};
 };
 
 } // namespace amr_wind
