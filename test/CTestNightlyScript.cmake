@@ -58,6 +58,14 @@ ctest_start("Nightly" TRACK "Nightly")
 message("\n -- Update - ${CTEST_BUILD_NAME} --")
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}" RETURN_VALUE result)
 message(" -- Update exit code = ${result} --")
+if(USE_LATEST_AMREX)
+  execute_process (
+    COMMAND ${CTEST_GIT_COMMAND} checkout development
+    COMMAND ${CTEST_GIT_COMMAND} pull origin development
+    COMMAND ${CTEST_GIT_COMMAND} log -1 --pretty=oneline
+    WORKING_DIRECTORY ${CTEST_SOURCE_DIRECTORY}/submods/amrex
+  )
+endif()
 if(result GREATER -1)
   message("\n -- Configure - ${CTEST_BUILD_NAME} --")
   ctest_configure(BUILD "${CTEST_BINARY_DIRECTORY}" RETURN_VALUE result)
