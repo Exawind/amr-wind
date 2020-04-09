@@ -385,11 +385,6 @@ private:
     // Fluid properties
     FluidModel m_fluid_model;
     amrex::Real m_mu = 1.0;
-    amrex::Real m_n_0 = 1.0;
-    amrex::Real m_tau_0 = 1.0;
-    amrex::Real m_papa_reg = 1.0;
-    amrex::Real m_eta_0 = 1.0;
-
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
      
     // fixme this is sloppy and are being used as global variables...
