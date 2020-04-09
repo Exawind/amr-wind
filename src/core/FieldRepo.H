@@ -220,6 +220,8 @@ public:
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
 
+    const amrex::AmrCore& mesh() const { return m_mesh; }
+
     //! Total number of levels currently active in the AMR mesh
     int num_active_levels() const noexcept { return m_mesh.finestLevel() + 1; }
 
