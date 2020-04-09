@@ -120,7 +120,7 @@ void incflo::ReadParameters ()
     }
     
     if (m_probtype == 11) {
-        m_physics.emplace_back(new amr_wind::BoussinesqBubble(m_time, this));
+        m_physics.emplace_back(new amr_wind::BoussinesqBubble(this));
     }
 
     {

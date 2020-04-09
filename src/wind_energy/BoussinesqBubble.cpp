@@ -7,8 +7,8 @@
 
 namespace amr_wind {
 
-BoussinesqBubble::BoussinesqBubble(const SimTime& time, incflo* incflo_in)
-    : m_time(time), m_incflo(incflo_in)
+BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
+    : m_incflo(incflo_in)
 {
     amrex::ParmParse pp("bb");
 

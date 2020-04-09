@@ -17,7 +17,7 @@ namespace amr_wind {
 class BoussinesqBubble : public Physics
 {
 public:
-    BoussinesqBubble(const SimTime& time, incflo* incflo_in);
+    BoussinesqBubble(incflo* incflo_in);
 
     ~BoussinesqBubble() = default;
 
@@ -42,7 +42,6 @@ public:
     const BoussinesqBubbleFieldInit& BoussinesqBubble_initializer() const { return *m_field_init; }
 
 private:
-    const SimTime& m_time;
 
     // TODO: deprecate this
     incflo* m_incflo;
