@@ -9,8 +9,8 @@ void incflo::predict_vels_on_faces (int lev, MultiFab& u_mac, MultiFab& v_mac,
 {
 
     Box const& domain = Geom(lev).Domain();
-    Vector<BCRec> const& h_bcrec = get_velocity_bcrec();
-    BCRec const* d_bcrec = get_velocity_bcrec_device_ptr();
+    Vector<BCRec> const& h_bcrec = velocity().bcrec();
+    BCRec const* d_bcrec = velocity().bcrec_device().data();//get_velocity_bcrec_device_ptr();
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())

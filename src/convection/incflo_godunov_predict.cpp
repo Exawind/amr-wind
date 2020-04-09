@@ -12,8 +12,8 @@ void incflo::predict_godunov (int lev, Real /* time */, MultiFab& u_mac, MultiFa
                               MultiFab& w_mac, MultiFab const& vel, MultiFab const& vel_forces)
 {
     Box const& domain = Geom(lev).Domain();
-    Vector<BCRec> const& h_bcrec = get_velocity_bcrec();
-    BCRec const* d_bcrec = get_velocity_bcrec_device_ptr();
+    Vector<BCRec> const& h_bcrec = velocity().bcrec();
+    BCRec const* d_bcrec = velocity().bcrec_device().data();
 
     const int ncomp = AMREX_SPACEDIM;
 #ifdef _OPENMP
@@ -97,7 +97,7 @@ void incflo::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box
     const Dim3 dlo = amrex::lbound(domain);
     const Dim3 dhi = amrex::ubound(domain);
 
-    BCRec const* pbc = get_velocity_bcrec_device_ptr();
+    BCRec const* pbc = velocity().bcrec_device().data();
 
     amrex::ParallelFor(xbx, ybx, zbx,
     [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -199,7 +199,7 @@ void incflo::predict_godunov (int lev, Box const& bx, int ncomp,
     Real dy = Geom(lev).CellSize(1);
     Real dz = Geom(lev).CellSize(2);
 
-    BCRec const* pbc = get_velocity_bcrec_device_ptr();
+    BCRec const* pbc = velocity().bcrec_device().data();
 
     Box xebox = Box(bx).grow(1,1).grow(2,1).surroundingNodes(0);
     Box yebox = Box(bx).grow(0,1).grow(2,1).surroundingNodes(1);

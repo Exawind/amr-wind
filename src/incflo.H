@@ -431,23 +431,6 @@ private:
 
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
-    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_density;
-    amrex::GpuArray<amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
-                                               , AMREX_SPACEDIM*2> m_bc_velocity;
-    amrex::GpuArray<amrex::Vector<amrex::Real> , AMREX_SPACEDIM*2> m_bc_tracer;
-
-    // amrex::Vector cannot be used on gpu, so ...
-    amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> m_bc_tracer_d;
-    amrex::Gpu::DeviceVector<amrex::Real> m_bc_tracer_raii;
-    //
-    amrex::Vector<amrex::BCRec> m_bcrec_velocity;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_velocity_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_density;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_density_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_tracer;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_force;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_force_d;
 
     amrex::Vector<int> m_iconserv_velocity;
     amrex::Gpu::DeviceVector<int> m_iconserv_velocity_d;
@@ -498,20 +481,6 @@ private:
         return m_iconserv_density_d.data(); }
     int const* get_tracer_iconserv_device_ptr () const noexcept {
         return m_iconserv_tracer_d.data(); }
-
-    amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
-    amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
-    amrex::Vector<amrex::BCRec> const& get_tracer_bcrec () const noexcept { return m_bcrec_tracer; }
-    amrex::Vector<amrex::BCRec> const& get_force_bcrec () const noexcept { return m_bcrec_force; }
-    //
-    amrex::BCRec const* get_velocity_bcrec_device_ptr () const noexcept {
-        return m_bcrec_velocity_d.data(); }
-    amrex::BCRec const* get_density_bcrec_device_ptr () const noexcept {
-        return m_bcrec_density_d.data(); }
-    amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
-        return m_bcrec_tracer_d.data(); }
-    amrex::BCRec const* get_force_bcrec_device_ptr () const noexcept {
-        return m_bcrec_force_d.data(); }
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;

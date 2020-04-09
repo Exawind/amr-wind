@@ -85,7 +85,7 @@ void incflo::compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
 void incflo::compute_vel_forces_on_level (int lev,
                                                 MultiFab& vel_forces,
                                           const MultiFab& density,
-                                          const MultiFab& tracer)
+                                          const MultiFab& /* tracer */)
 {
     GpuArray<Real,3> l_gravity{m_gravity[0],m_gravity[1],m_gravity[2]};
     GpuArray<Real,3> l_gp0{m_gp0[0] - m_gravity[0] * m_ro_0,

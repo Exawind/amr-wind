@@ -272,7 +272,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         // fixme this assume periodic
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[0][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[0][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -282,7 +282,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[3][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[3][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -296,7 +296,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 1;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[1][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[1][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -306,7 +306,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[4][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[4][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -320,7 +320,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 2;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[2][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[2][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -330,7 +330,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = m_bc_tracer_d[5][comp];
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[5][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
