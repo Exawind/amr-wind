@@ -14,6 +14,7 @@ namespace amr_wind {
  */
 BoussinesqBuoyancy::BoussinesqBuoyancy()
 {
+    // fixme: do we want to use abl namespace if it can be used by other physics?
     amrex::ParmParse pp("abl");
 
     pp.get("reference_temperature", m_ref_theta);

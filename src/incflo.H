@@ -77,7 +77,7 @@ public:
 
 public: // for cuda
 
-    void ComputeDt (int initialisation, bool explicit_diffusion);
+    void ComputeDt (bool explicit_diffusion);
 
     void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
                              amrex::Vector<amrex::MultiFab const*> const& density);
@@ -336,9 +336,6 @@ private:
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    // Use Boussinesq approximation for buoyancy?
-    bool m_use_boussinesq = false;
-
     // AMR / refinement settings
     int m_refine_cutcells = 1;
 
@@ -388,16 +385,6 @@ private:
     // Fluid properties
     FluidModel m_fluid_model;
     amrex::Real m_mu = 1.0;
-    amrex::Real m_n_0 = 1.0;
-    amrex::Real m_tau_0 = 1.0;
-    amrex::Real m_papa_reg = 1.0;
-    amrex::Real m_eta_0 = 1.0;
-    
-    
-    void ReadABLParameters();
-
-    amrex::Real m_kappa = 0.41; //von Karman constant
-    amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
      
     // fixme this is sloppy and are being used as global variables...
@@ -439,23 +426,6 @@ private:
 
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
-    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_density;
-    amrex::GpuArray<amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
-                                               , AMREX_SPACEDIM*2> m_bc_velocity;
-    amrex::GpuArray<amrex::Vector<amrex::Real> , AMREX_SPACEDIM*2> m_bc_tracer;
-
-    // amrex::Vector cannot be used on gpu, so ...
-    amrex::GpuArray<amrex::Real const*, AMREX_SPACEDIM*2> m_bc_tracer_d;
-    amrex::Gpu::DeviceVector<amrex::Real> m_bc_tracer_raii;
-    //
-    amrex::Vector<amrex::BCRec> m_bcrec_velocity;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_velocity_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_density;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_density_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_tracer;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_tracer_d;
-    amrex::Vector<amrex::BCRec> m_bcrec_force;
-    amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_force_d;
 
     amrex::Vector<int> m_iconserv_velocity;
     amrex::Gpu::DeviceVector<int> m_iconserv_velocity_d;
@@ -506,20 +476,6 @@ private:
         return m_iconserv_density_d.data(); }
     int const* get_tracer_iconserv_device_ptr () const noexcept {
         return m_iconserv_tracer_d.data(); }
-
-    amrex::Vector<amrex::BCRec> const& get_velocity_bcrec () const noexcept { return m_bcrec_velocity; }
-    amrex::Vector<amrex::BCRec> const& get_density_bcrec () const noexcept { return m_bcrec_density; }
-    amrex::Vector<amrex::BCRec> const& get_tracer_bcrec () const noexcept { return m_bcrec_tracer; }
-    amrex::Vector<amrex::BCRec> const& get_force_bcrec () const noexcept { return m_bcrec_force; }
-    //
-    amrex::BCRec const* get_velocity_bcrec_device_ptr () const noexcept {
-        return m_bcrec_velocity_d.data(); }
-    amrex::BCRec const* get_density_bcrec_device_ptr () const noexcept {
-        return m_bcrec_density_d.data(); }
-    amrex::BCRec const* get_tracer_bcrec_device_ptr () const noexcept {
-        return m_bcrec_tracer_d.data(); }
-    amrex::BCRec const* get_force_bcrec_device_ptr () const noexcept {
-        return m_bcrec_force_d.data(); }
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;

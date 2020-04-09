@@ -29,6 +29,24 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
 
     if (m_has_coriolis)
         m_coriolis.reset(new CoriolisForcing());
+
+    {
+        // fixme keeping this around to maintain perfect
+        // machine zero reg tests
+        // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
+        constexpr int direction = 2;
+        auto geom = m_incflo->Geom();
+        // First cell height
+        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
+        amrex::Real vx = 0.0;
+        amrex::Real vy = 0.0;
+        amrex::ParmParse pp("incflo");
+        pp.query("ic_u", vx);
+        pp.query("ic_v", vy);
+        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
+        const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
+        m_incflo->set_abl_friction_vels(uground, utau);
+    }
 }
 
 /** Initialize the velocity and temperature fields at the beginning of the

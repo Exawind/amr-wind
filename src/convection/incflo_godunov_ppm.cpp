@@ -22,7 +22,7 @@ void incflo::predict_ppm (int lev, Box const& bx, int /* ncomp */,
     Real l_dtdy = m_time.deltaT() / dx[1];
     Real l_dtdz = m_time.deltaT() / dx[2];
 
-    BCRec const* pbc = get_velocity_bcrec_device_ptr();
+    BCRec const* pbc = velocity().bcrec_device().data();
 
     amrex::ParallelFor(bx, AMREX_SPACEDIM, 
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept

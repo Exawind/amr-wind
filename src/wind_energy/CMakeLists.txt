@@ -7,6 +7,8 @@ target_sources(${amr_wind_lib_name}
   ABLWallFunction.cpp
   BoussinesqBuoyancy.cpp
   CoriolisForcing.cpp
+  BoussinesqBubble.cpp
+  BoussinesqBubbleFieldInit.cpp
   )
 
 target_include_directories(
