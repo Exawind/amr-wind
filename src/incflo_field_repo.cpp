@@ -50,7 +50,7 @@ void incflo::declare_fields()
     rho.fillpatch_on_regrid() = true;
     trac.fillpatch_on_regrid() = true;
     gp.fillpatch_on_regrid() = true;
-    p.fillpatch_on_regrid() = true;
+
 }
 
 void incflo::init_field_bcs ()

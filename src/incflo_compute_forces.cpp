@@ -38,7 +38,7 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
                                  Vector<MultiFab const*> const& tracer)
 {
     // FIXME: Clean up problem type specific logic
-    if (m_probtype == 35) {
+    if (m_probtype != 5) {
         for (int lev=0; lev <= finest_level; ++lev) {
             compute_vel_pressure_terms(lev, *vel_forces[lev], *density[lev]);
 
@@ -48,6 +48,11 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
             }
         }
     } else {
+        // fixme this is the non boussinesq pathway and this could go away except that rayleigh-taylor needs it
+        // there might be a bug in here since gravity is added twice
+        // it's added twice because background pressure used to put it in m_gp0
+        // need verification to know for sure
+        // vel_f += - dpdx/rho + g*rho_0/rho + g
         for (int lev = 0; lev <= finest_level; ++lev)
             compute_vel_forces_on_level(
                 lev, *vel_forces[lev], *density[lev], *tracer[lev]);
@@ -83,7 +88,9 @@ void incflo::compute_vel_forces_on_level (int lev,
                                           const MultiFab& tracer)
 {
     GpuArray<Real,3> l_gravity{m_gravity[0],m_gravity[1],m_gravity[2]};
-    GpuArray<Real,3> l_gp0{m_gp0[0], m_gp0[1], m_gp0[2]};
+    GpuArray<Real,3> l_gp0{m_gp0[0] - m_gravity[0] * m_ro_0,
+                           m_gp0[1] - m_gravity[1] * m_ro_0,
+                           m_gp0[2] - m_gravity[2] * m_ro_0};
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -95,27 +102,12 @@ void incflo::compute_vel_forces_on_level (int lev,
         Array4<Real const> const& rho = density.const_array(mfi);
         Array4<Real const> const& gradp = grad_p()(lev).const_array(mfi);
 
-        if (m_use_boussinesq) {
-            // This uses a Boussinesq approximation where the buoyancy depends on
-            //      first tracer rather than density
-            Array4<Real const> const& tra = tracer.const_array(mfi);
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-            {
-                const int n = 0;
-                Real rhoinv = 1.0/rho(i,j,k);
-                Real ft = tra(i,j,k,n);
-                vel_f(i,j,k,0) = -gradp(i,j,k,0)*rhoinv + l_gravity[0] * ft;
-                vel_f(i,j,k,1) = -gradp(i,j,k,1)*rhoinv + l_gravity[1] * ft;
-                vel_f(i,j,k,2) = -gradp(i,j,k,2)*rhoinv + l_gravity[2] * ft;
-            });
-        } else {
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-            {
-                Real rhoinv = 1.0/rho(i,j,k);
-                vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
-                vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
-                vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
-            });
-        }
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            Real rhoinv = 1.0/rho(i,j,k);
+            vel_f(i,j,k,0) = -(gradp(i,j,k,0)+l_gp0[0])*rhoinv + l_gravity[0];
+            vel_f(i,j,k,1) = -(gradp(i,j,k,1)+l_gp0[1])*rhoinv + l_gravity[1];
+            vel_f(i,j,k,2) = -(gradp(i,j,k,2)+l_gp0[2])*rhoinv + l_gravity[2];
+        });
     }
 }

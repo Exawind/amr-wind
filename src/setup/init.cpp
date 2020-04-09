@@ -6,6 +6,7 @@
 
 #include "Physics.H"
 #include "ABL.H"
+#include "BoussinesqBubble.H"
 #include "RefinementCriteria.H"
 #include "CartBoxRefinement.H"
 
@@ -115,9 +116,11 @@ void incflo::ReadParameters ()
 
     // FIXME: clean up WIP logic
     if (m_probtype == 35) {
-        ReadABLParameters();
-
         m_physics.emplace_back(new amr_wind::ABL(m_time, this));
+    }
+    
+    if (m_probtype == 11) {
+        m_physics.emplace_back(new amr_wind::BoussinesqBubble(m_time, this));
     }
 
     {
@@ -192,28 +195,6 @@ void incflo::ReadIOParameters()
     pp.query("plt_forcing",    m_plt_forcing );
 }
 
-void incflo::ReadABLParameters()
-{
-    ParmParse pp("abl");
-
-    // Inject Boussinesq flag in incflo to handle background pressure logic correctly
-    pp.query("use_boussinesq", m_use_boussinesq);
-
-    pp.query("kappa",m_kappa);
-    pp.query("surface_roughness_z0",m_surface_roughness_z0);
-    pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);
-
-    // fixme do we want to default this at first half cell always?
-    int lev = 0;
-    int dir = 2;
-
-    // initialize these so we do not have to call planar averages before initial iterations
-    m_ground_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
-    m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_u + m_ic_v*m_ic_v);
-    m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
-}
-
-
 //
 // Perform initial pressure iterations
 //
@@ -221,9 +202,8 @@ void incflo::InitialIterations ()
 {
     BL_PROFILE("incflo::InitialIterations()");
 
-    int initialisation = 1;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(initialisation, explicit_diffusion);
+    ComputeDt(explicit_diffusion);
 
     if (m_verbose)
     {
@@ -247,7 +227,11 @@ void incflo::InitialIterations ()
     {
         if (m_verbose) amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
 
- 	ApplyPredictor(true);
+        // fixme turn this on later and delete stuff in ABL.cpp but will have to rebless gold files
+//        for (auto& pp: m_physics)
+//            pp->pre_advance_work();
+
+        ApplyPredictor(true);
 
         vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
         rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);

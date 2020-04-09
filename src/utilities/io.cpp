@@ -459,7 +459,7 @@ void incflo::WritePlotFile()
     if (m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
-            if (m_probtype == 35) {
+            if (m_probtype == 35 || m_probtype == 11) {
                 compute_vel_pressure_terms(lev, forcing, density()(lev));
 
                 for (auto& pp: m_physics) {

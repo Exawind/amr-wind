@@ -77,7 +77,7 @@ public:
 
 public: // for cuda
 
-    void ComputeDt (int initialisation, bool explicit_diffusion);
+    void ComputeDt (bool explicit_diffusion);
 
     void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
                              amrex::Vector<amrex::MultiFab const*> const& density);
@@ -336,9 +336,6 @@ private:
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    // Use Boussinesq approximation for buoyancy?
-    bool m_use_boussinesq = false;
-
     // AMR / refinement settings
     int m_refine_cutcells = 1;
 
@@ -392,12 +389,7 @@ private:
     amrex::Real m_tau_0 = 1.0;
     amrex::Real m_papa_reg = 1.0;
     amrex::Real m_eta_0 = 1.0;
-    
-    
-    void ReadABLParameters();
 
-    amrex::Real m_kappa = 0.41; //von Karman constant
-    amrex::Real m_surface_roughness_z0 = 0.15; // surface roughness [m]
     amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
      
     // fixme this is sloppy and are being used as global variables...

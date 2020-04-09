@@ -14,9 +14,8 @@ void incflo::Advance()
     Real strt_step = ParallelDescriptor::second();
 
     // Compute time step size
-    int initialisation = 0;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(initialisation, explicit_diffusion);
+    ComputeDt(explicit_diffusion);
 
     velocity().advance_states();
     density().advance_states();

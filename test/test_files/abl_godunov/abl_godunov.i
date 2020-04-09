@@ -29,10 +29,10 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.ro_0             = 1.0          # Reference density 
 
 incflo.fluid_model      =   "SmagorinskyLillySGS" # Fluid model (rheology)
+incflo.SmagorinskyLillyConstant = .135
 incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.use_godunov = 1
 
-abl.Smagorinsky_Lilly_SGS_constant = .135
 abl.use_boussinesq = 1 
 abl.coriolis_effect = 1 
 abl.abl_forcing = 1
