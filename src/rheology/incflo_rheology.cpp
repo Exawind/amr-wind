@@ -5,38 +5,15 @@ using namespace amrex;
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real expterm (amrex::Real nu) noexcept
-{
-    return (nu < 1.e-9) ? (1.0-0.5*nu+nu*nu*(1.0/6.0)-(nu*nu*nu)*(1./24.))
-                        : -std::expm1(-nu)/nu;
-}
-
 struct NonNewtonianViscosity
 {
     incflo::FluidModel fluid_model;
-    amrex::Real mu, n_flow, tau_0, eta_0, papa_reg, smag_const;
+    amrex::Real mu, smag_const;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     amrex::Real operator() (amrex::Real sr, amrex::Real den, amrex::Real ds) const noexcept {
         switch (fluid_model)
         {
-        case incflo::FluidModel::powerlaw:
-        {
-            return mu * std::pow(sr,n_flow-1.0);
-        }
-        case incflo::FluidModel::Bingham:
-        {
-            return mu + tau_0 * expterm(sr/papa_reg) / papa_reg;
-        }
-        case incflo::FluidModel::HerschelBulkley:
-        {
-            return (mu*std::pow(sr,n_flow)+tau_0)*expterm(sr/papa_reg)/papa_reg;
-        }
-        case incflo::FluidModel::deSouzaMendesDutra:
-        {
-            return (mu*std::pow(sr,n_flow)+tau_0)*expterm(sr*(eta_0/tau_0))*(eta_0/tau_0);
-        }
         case incflo::FluidModel::SmagorinskyLillySGS:
         {
             // fixme this is not good place for Smagorinsky move to an ABL specific location
@@ -70,10 +47,6 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
         NonNewtonianViscosity non_newtonian_viscosity;
         non_newtonian_viscosity.fluid_model = m_fluid_model;
         non_newtonian_viscosity.mu = m_mu;
-        non_newtonian_viscosity.n_flow = m_n_0;
-        non_newtonian_viscosity.tau_0 = m_tau_0;
-        non_newtonian_viscosity.eta_0 = m_eta_0;
-        non_newtonian_viscosity.papa_reg = m_papa_reg;
         non_newtonian_viscosity.smag_const = m_Smagorinsky_Lilly_SGS_constant;
 
         for (int lev = 0; lev <= finest_level; ++lev) {

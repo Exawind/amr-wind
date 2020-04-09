@@ -322,12 +322,10 @@ void incflo::WritePlotFile()
     BL_PROFILE("incflo::WritePlotFile()");
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            const int ng = 1;
-            fillpatch_velocity(lev, m_time.current_time(), velocity()(lev), ng);
-            fillpatch_density(lev, m_time.current_time(), density()(lev), ng);
-            fillpatch_tracer(lev, m_time.current_time(), tracer()(lev), ng);
-        }
+        IntVect ng(1);
+        velocity().fillpatch(m_time.new_time(), ng);
+        density().fillpatch(m_time.new_time(), ng);
+        tracer().fillpatch(m_time.new_time(), ng);
     }
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
@@ -461,14 +459,14 @@ void incflo::WritePlotFile()
     if (m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
-            if (m_probtype == 35) {
+            if (m_probtype == 35 || m_probtype == 11) {
                 compute_vel_pressure_terms(lev, forcing, density()(lev));
 
                 for (auto& pp: m_physics) {
                     pp->add_momentum_sources(Geom(lev),
-                                             m_leveldata[lev]->density,
-                                             m_leveldata[lev]->velocity,
-                                             m_leveldata[lev]->tracer,
+                                             density()(lev),
+                                             velocity()(lev),
+                                             tracer()(lev),
                                              forcing);
                 }
 

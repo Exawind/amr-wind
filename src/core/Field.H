@@ -21,6 +21,7 @@ class FieldFillPatchOpsBase;
  */
 struct FieldInfo
 {
+    //! Maximum number of states allowed for a field
     static constexpr int max_field_states = 5;
 
     FieldInfo(
@@ -50,15 +51,20 @@ struct FieldInfo
     //! Cell, node, face centered field type
     FieldLoc m_floc;
 
+    ///@{
+    //! Boundary condition data
     amrex::Vector<amrex::Vector<amrex::Real>> m_bc_values;
-    amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM*2> m_bc_values_d;
+    amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bc_values_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_bc_values_dview;
 
     amrex::Vector<amrex::BCRec> m_bcrec;
     amrex::Gpu::DeviceVector<amrex::BCRec> m_bcrec_d;
+    ///@}
 
+    //! Vector holding references to available states for this field
     amrex::Vector<Field*> m_states;
 
+    //! Function that handles filling patch and physics BC data for this field
     std::unique_ptr<FieldFillPatchOpsBase> m_fillpatch_op;
 };
 
@@ -67,7 +73,27 @@ struct FieldInfo
  *  This is an abstraction of a collection of MultiFabs over multiple levels,
  *  and allows operations on the field as a whole. The Field cannot be
  *  constructed directly but instead must be created using field creation
- *  functions in amr_wind::FieldRepo
+ *  functions in amr_wind::FieldRepo. This indirection is necessary to allow
+ *  different parts of the code to hold a reference to the Field instance
+ *  without having to worry about the changes in underlynig MultiFab data during
+ *  regrid operations.
+ *
+ *  Field data is split into two groups: information that is unique to a
+ *  particular field at a given time state, and data that is common to a given
+ *  field with multiple timestates. The latter is held within
+ *  amr_wind::FieldInfo object that is common to all time instances of a given
+ *  Field (which are themselves Field instances). Different time instances of a
+ *  Field can access other states through this FieldInfo instance, as well as
+ *  access boundary conditions and fill patch operators applicable to all
+ *  states.
+ *
+ *  As Field does not hold any data itself, but instead is just a thin wrapper
+ *  to data held by amr_wind::FieldRepo, Field instance cannot be created
+ *  directly. Instead the user must use amr_wind::FieldRepo::declare_field to
+ *  create and initialize the field. This also ensures that the FieldInfo
+ *  instance is managed properly during field creation. Once a field is created,
+ *  the user can customize the behavior (e.g., registering fill patch operator,
+ *  handling I/O on a per-field basis).
  */
 class Field
 {
@@ -81,6 +107,10 @@ public:
     //! Name of this field (including state information)
     inline const std::string& name() const { return m_name; }
 
+    //! Base name (without state information)
+    inline const std::string& base_name() const { return m_info->m_basename; }
+
+    //! Unique integer identifier for this field
     inline unsigned id() const { return m_id; }
 
     //! Number of components for this field
@@ -89,8 +119,18 @@ public:
     //! Ghost cells
     inline const amrex::IntVect& num_grow() const { return m_info->m_ngrow; }
 
+    //! Number of exact time states available for this field
+    inline int num_time_states() const { return m_info->m_nstates; }
+
     //! Number of states available for this field
-    inline int num_states() const { return m_info->m_nstates; }
+    inline int num_states() const {
+        int ns = 0;
+        for (auto* ff: m_info->m_states) {
+            if (ff != nullptr) ++ns;
+        }
+        AMREX_ASSERT(num_time_states() <= ns);
+        return ns;
+    }
 
     //! Cell, node, or face centered field
     inline FieldLoc field_location() const { return m_info->m_floc; }
@@ -100,6 +140,16 @@ public:
 
     //! FieldRepo instance that manages this field
     inline FieldRepo& repo() const { return m_repo; }
+
+    inline bool& fillpatch_on_regrid() { return m_fillpatch_on_regrid; }
+    inline bool fillpatch_on_regrid() const { return m_fillpatch_on_regrid; }
+
+    //! Return true if the requested state exists for this field
+    inline bool query_state(const FieldState fstate) const
+    {
+        const int fid = static_cast<int>(fstate);
+        return (m_info->m_states[fid] != nullptr);
+    }
 
     //! Return reference to the host view of BC values array
     amrex::Vector<amrex::Vector<amrex::Real>>& bc_values()
@@ -142,6 +192,9 @@ public:
     //! Copy a user-specified "from_state" to "to_state"
     void copy_state(FieldState to_state, FieldState from_state) noexcept;
 
+    //! Create a new time state after the field has been created
+    Field& create_state(const FieldState fstate) noexcept;
+
     /** \defgroup These methods wrappers to MultiFab methods
      *
      *  @{
@@ -177,6 +230,8 @@ public:
     }
 
     void fillpatch(amrex::Real time) noexcept;
+    void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
+
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
 
@@ -232,6 +287,10 @@ protected:
 
     //! State for this field
     const FieldState m_state;
+
+    //! Flag indicating whether fill patch operation must be performed for this
+    //! field during regrid
+    bool m_fillpatch_on_regrid{false};
 };
 
 } // namespace amr_wind

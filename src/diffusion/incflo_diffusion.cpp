@@ -272,20 +272,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         // fixme this assume periodic
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[0][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdx
-                    bc_a(i-1,j,k) = m_bc_tracer_d[0][comp];
+                    bc_a(i-1,j,k) = local_m_bc_tracer_d;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[3][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdx
-                    bc_a(i,j,k) = m_bc_tracer_d[3][comp];
+                    bc_a(i,j,k) = local_m_bc_tracer_d ;
                     
                 });
             }
@@ -294,20 +296,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 1;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[1][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j-1,k) = m_bc_tracer_d[1][comp];
+                    bc_a(i,j-1,k) = local_m_bc_tracer_d;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[4][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j,k) = m_bc_tracer_d[4][comp];
+                    bc_a(i,j,k) = local_m_bc_tracer_d;
                     
                 });
             }
@@ -316,20 +320,22 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         idim = 2;
         if (!gm.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[2][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k-1) = m_bc_tracer_d[2][comp];
+                    bc_a(i,j,k-1) = local_m_bc_tracer_d;
                     
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                const Real local_m_bc_tracer_d = tracer().bc_values_device()[5][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k) = m_bc_tracer_d[5][comp];
+                    bc_a(i,j,k) = local_m_bc_tracer_d;
                 });
             }
         }

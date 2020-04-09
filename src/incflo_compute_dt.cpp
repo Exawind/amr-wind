@@ -22,7 +22,7 @@ using namespace amrex;
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::ComputeDt (int initialization, bool explicit_diffusion)
+void incflo::ComputeDt (bool explicit_diffusion)
 {
     BL_PROFILE("incflo::ComputeDt");
 
@@ -31,8 +31,8 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
     for (int lev = 0; lev <= finest_level; ++lev)
     {
         auto const dxinv = geom[lev].InvCellSizeArray();
-        MultiFab const& vel = m_leveldata[lev]->velocity;
-        MultiFab const& rho = m_leveldata[lev]->density;
+        MultiFab const& vel = velocity()(lev);
+        MultiFab const& rho = density()(lev);
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
 
@@ -82,6 +82,8 @@ void incflo::ComputeDt (int initialization, bool explicit_diffusion)
 
     // Forcing term
     const auto dxinv_finest = Geom(finest_level).InvCellSizeArray();
+    // fixme should we use forces in our dt estimate?
+    // abl_godunov_explicit regression test will fail if this is deleted
     Real forc_cfl = std::abs(m_gravity[0] - std::abs(m_gp0[0])) * dxinv_finest[0]
                   + std::abs(m_gravity[1] - std::abs(m_gp0[1])) * dxinv_finest[1]
                   + std::abs(m_gravity[2] - std::abs(m_gp0[2])) * dxinv_finest[2];
