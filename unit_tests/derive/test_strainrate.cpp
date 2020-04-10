@@ -22,7 +22,7 @@ TEST_F(StrainrateTest, interior)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 2, j = 2, k = 2;
     amrex::Real dx = 0.1, dy = 0.2 + 0.01*amrex::Random(), dz = 0.3;
@@ -86,7 +86,7 @@ TEST_F(StrainrateTest, ilo)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 1, j = 2, k = 2;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
@@ -153,7 +153,7 @@ TEST_F(StrainrateTest, ihi)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 1, j = 2, k = 2;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
@@ -220,7 +220,7 @@ TEST_F(StrainrateTest, jlo)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 2, j = 1, k = 2;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
@@ -286,7 +286,7 @@ TEST_F(StrainrateTest, jhi)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 2, j = 1, k = 2;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
@@ -351,7 +351,7 @@ TEST_F(StrainrateTest, klo)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 2, j = 2, k = 1;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
@@ -417,7 +417,7 @@ TEST_F(StrainrateTest, khi)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox strainrate(bx, 1);
 
-    velocity.setVal(0.0);
+    velocity.setVal<amrex::RunOn::Host>(0.0);
 
     int i = 2, j = 2, k = 1;
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
