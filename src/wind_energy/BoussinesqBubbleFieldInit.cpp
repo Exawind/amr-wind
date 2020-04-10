@@ -30,7 +30,6 @@ void BoussinesqBubbleFieldInit::operator()(
 {
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
-    const auto& probhi = geom.ProbHiArray();
 
     const amrex::Real ti = m_tracer_inner;
     const amrex::Real to = m_tracer_outer;
