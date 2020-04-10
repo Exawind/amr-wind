@@ -110,32 +110,6 @@ public: // for cuda
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
     
-    void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
-                                  amrex::Vector<amrex::MultiFab*> const& conv_r,
-                                  amrex::Vector<amrex::MultiFab*> const& conv_t,
-                                  amrex::Vector<amrex::MultiFab const*> const& vel,
-                                  amrex::Vector<amrex::MultiFab const*> const& density,
-                                  amrex::Vector<amrex::MultiFab const*> const& tracer,
-                                  amrex::Vector<amrex::MultiFab*> const& u_mac,
-                                  amrex::Vector<amrex::MultiFab*> const& v_mac,
-                                  amrex::Vector<amrex::MultiFab*> const& w_mac,
-                                  amrex::Vector<amrex::MultiFab const*> const& vel_forces,
-                                  amrex::Vector<amrex::MultiFab const*> const& tra_forces,
-                                  amrex::Real time);
-
-    void compute_convective_term (amrex::Box const& bx, int lev, amrex::MFIter const& mfi,
-                                  amrex::Array4<amrex::Real> const& dvdt, // velocity
-                                  amrex::Array4<amrex::Real> const& drdt, // density
-                                  amrex::Array4<amrex::Real> const& dtdt, // tracer
-                                  amrex::Array4<amrex::Real const> const& vel,
-                                  amrex::Array4<amrex::Real const> const& rho,
-                                  amrex::Array4<amrex::Real const> const& tra,
-                                  amrex::Array4<amrex::Real const> const& umac,
-                                  amrex::Array4<amrex::Real const> const& vmac,
-                                  amrex::Array4<amrex::Real const> const& wmac,
-                                  amrex::Array4<amrex::Real const> const& fv,
-                                  amrex::Array4<amrex::Real const> const& ft);
-
     //
     // Godunov
     //
