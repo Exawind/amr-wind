@@ -19,11 +19,11 @@ using namespace amrex;
 
 void
 godunov::compute_convective_term (amr_wind::FieldRepo& repo,
-                                 Real dt,
-                                 const amr_wind::FieldState fstate,
-                                 bool constant_density,
-                                 bool advect_tracer,
-                                 bool godunov_ppm)
+                                  const amr_wind::FieldState fstate,
+                                  Real dt,
+                                  bool constant_density,
+                                  bool advect_tracer,
+                                  bool godunov_ppm)
 {
 
     // single state fields
@@ -34,7 +34,7 @@ godunov::compute_convective_term (amr_wind::FieldRepo& repo,
     auto& tra_forces = repo.get_field("tracer_forces");
 
     // state dependent fields
-    auto& vel = repo.get_field("velocity",fstate);
+    auto& vel = repo.get_field("velocity",fstate);//fixme this is godunov so always old state?
     auto& den = repo.get_field("density",fstate);
     auto& tra = repo.get_field("tracer",fstate);
     auto& conv_u = repo.get_field("conv_velocity",fstate);

@@ -232,16 +232,17 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if(m_use_godunov){
 
-        // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
-        //    returned from this call are on face CENTROIDS
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            predict_godunov(lev, u_mac(lev), v_mac(lev), w_mac(lev), velocity_old(lev), velocity_forces(lev));
-        }
+        godunov::predict_godunov(m_repo,
+                                 amr_wind::FieldState::Old,
+                                 m_time.deltaT(),
+                                 m_godunov_ppm,
+                                 m_godunov_use_forces_in_trans);
 
-        apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density().vec_const_ptrs());
+        apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density_old.vec_const_ptrs());
 
-        godunov::compute_convective_term(m_repo, m_time.deltaT(),
+        godunov::compute_convective_term(m_repo,
                                          amr_wind::FieldState::Old,
+                                         m_time.deltaT(),
                                          m_constant_density, m_advect_tracer, m_godunov_ppm);
         
     } else{
