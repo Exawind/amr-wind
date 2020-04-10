@@ -1,4 +1,6 @@
 #include <incflo.H>
+#include "Godunov.H"
+#include "MOL.H"
 
 using namespace amrex;
 
@@ -120,27 +122,30 @@ incflo::compute_convective_term (Box const& bx, int lev,
         FArrayBox tmpfab(amrex::grow(bx,1), nmaxcomp*14+1);
 //        Elixir eli = tmpfab.elixir();
 
-        compute_godunov_advection(lev, bx, AMREX_SPACEDIM,
+        godunov::compute_advection(lev, bx, AMREX_SPACEDIM,
                                   dvdt, vel,
                                   umac, vmac, wmac, fvel,
                                   velocity().bcrec_device().data(),
                                   get_velocity_iconserv_device_ptr(),
-                                  tmpfab.dataPtr());
+                                  tmpfab.dataPtr(),
+                                  Geom(),m_time.deltaT(),m_godunov_ppm);
         if (!m_constant_density) {
-            compute_godunov_advection(lev, bx, 1,
+            godunov::compute_advection(lev, bx, 1,
                                       drdt, rho,
                                       umac, vmac, wmac, {},
                                       density().bcrec_device().data(),
                                       get_density_iconserv_device_ptr(),
-                                      tmpfab.dataPtr());
+                                      tmpfab.dataPtr(),
+                                      Geom(),m_time.deltaT(),m_godunov_ppm);
         }
         if (m_advect_tracer) {
-            compute_godunov_advection(lev, bx, m_ntrac,
+            godunov::compute_advection(lev, bx, m_ntrac,
                                       dtdt, rhotrac,
                                       umac, vmac, wmac, ftra,
                                       tracer().bcrec_device().data(),
                                       get_tracer_iconserv_device_ptr(),
-                                      tmpfab.dataPtr());
+                                      tmpfab.dataPtr(),
+                                      Geom(),m_time.deltaT(),m_godunov_ppm);
         }
         Gpu::streamSynchronize();
     }
@@ -157,45 +162,31 @@ incflo::compute_convective_term (Box const& bx, int lev,
         Array4<Real> fz = tmpfab.array(nmaxcomp*2);
 
         // velocity
-        compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel,
+        mol::compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel,
                                   umac, vmac, wmac,
                                   velocity().bcrec().data(),
-                                  velocity().bcrec_device().data());
-        compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
+                                  velocity().bcrec_device().data(),Geom());
+        mol::compute_convective_rate(bx, AMREX_SPACEDIM, dvdt, fx, fy, fz, Geom(lev).InvCellSizeArray());
 
         // density
         if (!m_constant_density) {
-            compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho,
+            mol::compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho,
                                       umac, vmac, wmac,
                                       density().bcrec().data(),
-                                      density().bcrec_device().data());
-            compute_convective_rate(lev, bx, 1, drdt, fx, fy, fz);
+                                      density().bcrec_device().data(),Geom());
+            mol::compute_convective_rate(bx, 1, drdt, fx, fy, fz, Geom(lev).InvCellSizeArray());
         }
 
         // tracer
         if (m_advect_tracer) {
-            compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac,
+            mol::compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac,
                                       umac, vmac, wmac,
                                       tracer().bcrec().data(),
-                                      tracer().bcrec_device().data());
-            compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
+                                      tracer().bcrec_device().data(),Geom());
+            mol::compute_convective_rate(bx, m_ntrac, dtdt, fx, fy, fz, Geom(lev).InvCellSizeArray());
         }
         
     }
 }
 
-void incflo::compute_convective_rate (int lev, Box const& bx, int ncomp,
-                                      Array4<Real> const& dUdt,
-                                      Array4<Real const> const& fx,
-                                      Array4<Real const> const& fy,
-                                      Array4<Real const> const& fz)
-{
-    const auto dxinv = Geom(lev).InvCellSizeArray();
-    amrex::ParallelFor(bx, ncomp,
-    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-    {
-        dUdt(i,j,k,n) = dxinv[0] * (fx(i,j,k,n) - fx(i+1,j,k,n))
-            +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
-            +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
-    });
-}
+
