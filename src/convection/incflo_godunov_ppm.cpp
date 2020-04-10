@@ -1,5 +1,4 @@
 #include <incflo_godunov_ppm.H>
-#include <incflo.H>
 #include "Godunov.H"
 
 using namespace amrex;

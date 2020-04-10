@@ -2,7 +2,6 @@
 //  MOL.H
 //  amr-wind
 //
-//
 
 #ifndef MOL_H
 #define MOL_H

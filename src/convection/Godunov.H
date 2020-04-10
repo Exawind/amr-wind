@@ -3,8 +3,6 @@
 //  amr-wind
 //
 
-//
-
 #ifndef Godunov_H
 #define Godunov_H
 
