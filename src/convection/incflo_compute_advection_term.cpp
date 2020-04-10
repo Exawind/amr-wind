@@ -4,16 +4,140 @@
 
 using namespace amrex;
 
-void incflo::init_advection ()
+//void incflo::init_advection ()
+//{
+//    m_iconserv_velocity.resize(AMREX_SPACEDIM, 0);
+//    m_iconserv_velocity_d.resize(AMREX_SPACEDIM, 0);
+//
+//    m_iconserv_density.resize(1, 1);
+//    m_iconserv_density_d.resize(1, 1);
+//
+//    m_iconserv_tracer.resize(m_ntrac, 1);
+//    m_iconserv_tracer_d.resize(m_ntrac, 1);
+//}
+
+
+void
+godunov::compute_convective_term (amr_wind::FieldRepo& repo,
+                                 Real dt,
+                                 const amr_wind::FieldState fstate,
+                                 bool constant_density,
+                                 bool advect_tracer,
+                                 bool godunov_ppm)
 {
-    m_iconserv_velocity.resize(AMREX_SPACEDIM, 0);
-    m_iconserv_velocity_d.resize(AMREX_SPACEDIM, 0);
 
-    m_iconserv_density.resize(1, 1);
-    m_iconserv_density_d.resize(1, 1);
+    // single state fields
+    auto& u_mac = repo.get_field("u_mac");
+    auto& v_mac = repo.get_field("v_mac");
+    auto& w_mac = repo.get_field("w_mac");
+    auto& vel_forces = repo.get_field("velocity_forces");
+    auto& tra_forces = repo.get_field("tracer_forces");
 
-    m_iconserv_tracer.resize(m_ntrac, 1);
-    m_iconserv_tracer_d.resize(m_ntrac, 1);
+    // state dependent fields
+    auto& vel = repo.get_field("velocity",fstate);
+    auto& den = repo.get_field("density",fstate);
+    auto& tra = repo.get_field("tracer",fstate);
+    auto& conv_u = repo.get_field("conv_velocity",fstate);
+    auto& conv_r = repo.get_field("conv_density",fstate);
+    auto& conv_t = repo.get_field("conv_tracer",fstate);
+
+    const int ntrac = tra.num_comp();
+    auto& geom = repo.mesh().Geom();
+
+    // fixme moved from init_advection
+    // need to add ability to change with input file
+    // could also save this somewhere else instead of creating each time
+    amrex::Gpu::DeviceVector<int> iconserv_velocity_d;
+    amrex::Gpu::DeviceVector<int> iconserv_density_d;
+    amrex::Gpu::DeviceVector<int> iconserv_tracer_d;
+    iconserv_velocity_d.resize(AMREX_SPACEDIM, 0);
+    iconserv_density_d.resize(1, 1);
+    iconserv_tracer_d.resize(ntrac, 1);
+
+
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev)
+    {
+        u_mac(lev).FillBoundary(geom[lev].periodicity());
+        v_mac(lev).FillBoundary(geom[lev].periodicity());
+        w_mac(lev).FillBoundary(geom[lev].periodicity());
+
+        MFItInfo mfi_info;
+        // if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
+        if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,1024,1024)).SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(den(lev),mfi_info); mfi.isValid(); ++mfi)
+        {
+            Box const& bx = mfi.tilebox();
+
+            auto rho_arr = den(lev).array(mfi);
+            auto tra_arr = tra(lev).array(mfi);
+            
+            // fixme would it be easier to just make a scratch rhotrac?
+            Box rhotrac_box = amrex::grow(bx,2);
+            rhotrac_box.grow(1);
+
+            FArrayBox rhotracfab;
+            Array4<Real> rhotrac;
+            if (advect_tracer) {
+                rhotracfab.resize(rhotrac_box, ntrac);
+                rhotrac = rhotracfab.array();
+                amrex::ParallelFor(rhotrac_box, ntrac,
+                [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+                {
+                    rhotrac(i,j,k,n) = rho_arr(i,j,k) * tra_arr(i,j,k,n);
+                });
+            }
+
+            int nmaxcomp = AMREX_SPACEDIM;
+            if (advect_tracer) nmaxcomp = std::max(nmaxcomp, ntrac);
+
+            FArrayBox tmpfab(amrex::grow(bx,1), nmaxcomp*14+1);
+
+            godunov::compute_advection(lev, bx, AMREX_SPACEDIM,
+                                      conv_u(lev).array(mfi),
+                                      vel(lev).const_array(mfi),
+                                      u_mac(lev).const_array(mfi),
+                                      v_mac(lev).const_array(mfi),
+                                      w_mac(lev).const_array(mfi),
+                                      vel_forces(lev).const_array(mfi),
+                                      vel.bcrec_device().data(),
+                                      iconserv_velocity_d.data(),
+                                      tmpfab.dataPtr(),
+                                      geom, dt, godunov_ppm);
+
+            if(!constant_density) {
+                godunov::compute_advection(lev, bx, 1,
+                                      conv_r(lev).array(mfi),
+                                      den(lev).const_array(mfi),
+                                      u_mac(lev).const_array(mfi),
+                                      v_mac(lev).const_array(mfi),
+                                      w_mac(lev).const_array(mfi),
+                                      {},
+                                      den.bcrec_device().data(),
+                                      iconserv_density_d.data(),
+                                      tmpfab.dataPtr(),
+                                      geom, dt, godunov_ppm);
+            }
+            if (advect_tracer) {
+                godunov::compute_advection(lev, bx, ntrac,
+                                          conv_t(lev).array(mfi),
+                                          rhotrac,
+                                          u_mac(lev).const_array(mfi),
+                                          v_mac(lev).const_array(mfi),
+                                          w_mac(lev).const_array(mfi),
+                                          tra_forces(lev).const_array(mfi),
+                                          tra.bcrec_device().data(),
+                                          iconserv_tracer_d.data(),
+                                          tmpfab.dataPtr(),
+                                          geom, dt, godunov_ppm);
+            }
+
+            Gpu::streamSynchronize();
+
+        }
+    }
 }
 
 void
@@ -30,27 +154,17 @@ incflo::compute_convective_term (Vector<MultiFab*> const& conv_u,
                                  Vector<MultiFab const*> const& tra_forces,
                                  Real time)
 {
-    int ngmac = nghost_mac();
 
+    // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
+    //    returned from this call are on face CENTROIDS
     for (int lev = 0; lev <= finest_level; ++lev) {
-        // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
-        //    returned from this call are on face CENTROIDS
-        if (m_use_godunov) {
-            predict_godunov(lev, time, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev], *vel_forces[lev]);
-        } else {
-            predict_vels_on_faces(lev, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev]);
-        }
+        predict_vels_on_faces(lev, *u_mac[lev], *v_mac[lev], *w_mac[lev], *vel[lev]);
     }
 
-    apply_MAC_projection(u_mac, v_mac, w_mac, density, time);
+    apply_MAC_projection(u_mac, v_mac, w_mac, density);
 
     for (int lev = 0; lev <= finest_level; ++lev)
     {
-        if (ngmac > 0) {
-            u_mac[lev]->FillBoundary(geom[lev].periodicity());
-            v_mac[lev]->FillBoundary(geom[lev].periodicity());
-            w_mac[lev]->FillBoundary(geom[lev].periodicity());
-        }
 
         MFItInfo mfi_info;
         // if (Gpu::notInLaunchRegion()) mfi_info.EnableTiling(IntVect(1024,16,16)).SetDynamic(true);
@@ -96,16 +210,14 @@ incflo::compute_convective_term (Box const& bx, int lev,
 {
 
     Box rhotrac_box = amrex::grow(bx,2);
-    if (m_use_godunov) rhotrac_box.grow(1);
 
     FArrayBox rhotracfab;
     Elixir eli_rt;
     Array4<Real> rhotrac;
     if (m_advect_tracer) {
         rhotracfab.resize(rhotrac_box, m_ntrac);
-        if (!m_use_godunov) {
-            eli_rt = rhotracfab.elixir();
-        }
+        eli_rt = rhotracfab.elixir();
+
         rhotrac = rhotracfab.array();
         amrex::ParallelFor(rhotrac_box, m_ntrac,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -117,39 +229,6 @@ incflo::compute_convective_term (Box const& bx, int lev,
     int nmaxcomp = AMREX_SPACEDIM;
     if (m_advect_tracer) nmaxcomp = std::max(nmaxcomp,m_ntrac);
 
-    if (m_use_godunov)
-    {
-        FArrayBox tmpfab(amrex::grow(bx,1), nmaxcomp*14+1);
-//        Elixir eli = tmpfab.elixir();
-
-        godunov::compute_advection(lev, bx, AMREX_SPACEDIM,
-                                  dvdt, vel,
-                                  umac, vmac, wmac, fvel,
-                                  velocity().bcrec_device().data(),
-                                  get_velocity_iconserv_device_ptr(),
-                                  tmpfab.dataPtr(),
-                                  Geom(),m_time.deltaT(),m_godunov_ppm);
-        if (!m_constant_density) {
-            godunov::compute_advection(lev, bx, 1,
-                                      drdt, rho,
-                                      umac, vmac, wmac, {},
-                                      density().bcrec_device().data(),
-                                      get_density_iconserv_device_ptr(),
-                                      tmpfab.dataPtr(),
-                                      Geom(),m_time.deltaT(),m_godunov_ppm);
-        }
-        if (m_advect_tracer) {
-            godunov::compute_advection(lev, bx, m_ntrac,
-                                      dtdt, rhotrac,
-                                      umac, vmac, wmac, ftra,
-                                      tracer().bcrec_device().data(),
-                                      get_tracer_iconserv_device_ptr(),
-                                      tmpfab.dataPtr(),
-                                      Geom(),m_time.deltaT(),m_godunov_ppm);
-        }
-        Gpu::streamSynchronize();
-    }
-    else
     {
         Box tmpbox = amrex::surroundingNodes(bx);
         int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
@@ -185,7 +264,7 @@ incflo::compute_convective_term (Box const& bx, int lev,
                                       tracer().bcrec_device().data(),Geom());
             mol::compute_convective_rate(bx, m_ntrac, dtdt, fx, fy, fz, Geom(lev).InvCellSizeArray());
         }
-        
+
     }
 }
 

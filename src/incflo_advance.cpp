@@ -3,6 +3,7 @@
 #include "Physics.H"
 #include <cmath>
 #include "field_ops.H"
+#include "Godunov.H"
 
 using namespace amrex;
 
@@ -229,18 +230,34 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     // Note that "get_conv_tracer_old" returns div(rho u tracer)
     // *************************************************************************************
-    compute_convective_term(conv_velocity.vec_ptrs(),
-                            conv_density.vec_ptrs(),
-                            conv_tracer.vec_ptrs(),
-                            velocity_old.vec_const_ptrs(),
-                            density_old.vec_const_ptrs(),
-                            tracer_old.vec_const_ptrs(),
-                            u_mac.vec_ptrs(),
-                            v_mac.vec_ptrs(),
-                            w_mac.vec_ptrs(),
-                            velocity_forces.vec_const_ptrs(),
-                            tracer_forces.vec_const_ptrs(),
-                            m_time.current_time());
+    if(m_use_godunov){
+
+        // Predict normal velocity to faces -- note that the {u_mac, v_mac, w_mac}
+        //    returned from this call are on face CENTROIDS
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            predict_godunov(lev, u_mac(lev), v_mac(lev), w_mac(lev), velocity_old(lev), velocity_forces(lev));
+        }
+
+        apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density().vec_const_ptrs());
+
+        godunov::compute_convective_term(m_repo, m_time.deltaT(),
+                                         amr_wind::FieldState::Old,
+                                         m_constant_density, m_advect_tracer, m_godunov_ppm);
+        
+    } else{
+        compute_convective_term(conv_velocity.vec_ptrs(),
+                                conv_density.vec_ptrs(),
+                                conv_tracer.vec_ptrs(),
+                                velocity_old.vec_const_ptrs(),
+                                density_old.vec_const_ptrs(),
+                                tracer_old.vec_const_ptrs(),
+                                u_mac.vec_ptrs(),
+                                v_mac.vec_ptrs(),
+                                w_mac.vec_ptrs(),
+                                velocity_forces.vec_const_ptrs(),
+                                tracer_forces.vec_const_ptrs(),
+                                m_time.current_time());
+    }
 
     // *************************************************************************************
     // Define local variables for lambda to capture.

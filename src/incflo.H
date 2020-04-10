@@ -109,6 +109,7 @@ public: // for cuda
 
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
+    
     void compute_convective_term (amrex::Vector<amrex::MultiFab*> const& conv_u,
                                   amrex::Vector<amrex::MultiFab*> const& conv_r,
                                   amrex::Vector<amrex::MultiFab*> const& conv_t,
@@ -138,7 +139,7 @@ public: // for cuda
     //
     // Godunov
     //
-    void predict_godunov (int lev, amrex::Real time, amrex::MultiFab& u_mac,
+    void predict_godunov (int lev, amrex::MultiFab& u_mac,
                           amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
                           amrex::MultiFab const& vel, 
                           amrex::MultiFab const& vel_forces);
@@ -400,13 +401,6 @@ private:
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
     amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
 
-    amrex::Vector<int> m_iconserv_velocity;
-    amrex::Gpu::DeviceVector<int> m_iconserv_velocity_d;
-    amrex::Vector<int> m_iconserv_density;
-    amrex::Gpu::DeviceVector<int> m_iconserv_density_d;
-    amrex::Vector<int> m_iconserv_tracer;
-    amrex::Gpu::DeviceVector<int> m_iconserv_tracer_d;
-
     int m_ntrac = 1;
 
     std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
@@ -438,17 +432,6 @@ private:
 
     DiffusionTensorOp* get_diffusion_tensor_op ();
     DiffusionScalarOp* get_diffusion_scalar_op ();
-
-    amrex::Vector<int> const& get_velocity_iconserv () const noexcept { return m_iconserv_velocity; }
-    amrex::Vector<int> const& get_density_iconserv () const noexcept { return m_iconserv_density; }
-    amrex::Vector<int> const& get_tracer_iconserv () const noexcept { return m_iconserv_tracer; }
-    //
-    int const* get_velocity_iconserv_device_ptr () const noexcept {
-        return m_iconserv_velocity_d.data(); }
-    int const* get_density_iconserv_device_ptr () const noexcept {
-        return m_iconserv_density_d.data(); }
-    int const* get_tracer_iconserv_device_ptr () const noexcept {
-        return m_iconserv_tracer_d.data(); }
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
@@ -482,8 +465,7 @@ private:
     void apply_MAC_projection (amrex::Vector<amrex::MultiFab*> const& u_mac,
                                amrex::Vector<amrex::MultiFab*> const& v_mac,
                                amrex::Vector<amrex::MultiFab*> const& w_mac,
-                               amrex::Vector<amrex::MultiFab const*> const& density,
-                               amrex::Real time);
+                               amrex::Vector<amrex::MultiFab const*> const& density);
 
     ///////////////////////////////////////////////////////////////////////////
     //

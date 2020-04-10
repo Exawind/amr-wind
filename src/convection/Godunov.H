@@ -8,8 +8,17 @@
 #ifndef Godunov_H
 #define Godunov_H
 
+#include "FieldRepo.H"
+
 
 namespace godunov {
+
+    void compute_convective_term (amr_wind::FieldRepo& repo,
+                                  amrex::Real dt,
+                                  const amr_wind::FieldState fstate,
+                                  bool constant_density,
+                                  bool advect_tracer,
+                                  bool godunov_ppm);
 
     void compute_advection(int lev, amrex::Box const& bx, int ncomp,
                            amrex::Array4<amrex::Real> const& dqdt,

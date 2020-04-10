@@ -8,7 +8,7 @@
 
 using namespace amrex;
 
-void incflo::predict_godunov (int lev, Real /* time */, MultiFab& u_mac, MultiFab& v_mac,
+void incflo::predict_godunov (int lev, MultiFab& u_mac, MultiFab& v_mac,
                               MultiFab& w_mac, MultiFab const& vel, MultiFab const& vel_forces)
 {
     Box const& domain = Geom(lev).Domain();
