@@ -92,7 +92,7 @@ public:
      */
     FieldFillPatchOps(
         Field& field,
-        amrex::AmrCore& mesh,
+        const amrex::AmrCore& mesh,
         const SimTime& time,
         int probtype,
         FieldInterpolator itype = FieldInterpolator::CellConsLinear)
