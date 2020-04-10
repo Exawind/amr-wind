@@ -139,11 +139,6 @@ public: // for cuda
     //
     // Godunov
     //
-    void predict_godunov (amrex::Vector<amrex::MultiFab*> const& u_mac,
-                          amrex::Vector<amrex::MultiFab*> const& v_mac,
-                          amrex::Vector<amrex::MultiFab*> const& w_mac,
-                          amrex::Vector<amrex::MultiFab const*> const& vel,
-                          amrex::Vector<amrex::MultiFab const*> const& vel_forces);
 
    void predict_plm (int lev, amrex::Box const& bx, int ncomp,
                       amrex::Array4<amrex::Real> const& Imx, amrex::Array4<amrex::Real> const& Ipx,
@@ -156,49 +151,6 @@ public: // for cuda
                       amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
 
 
-    void predict_ppm (int lev, amrex::Box const& bx, int ncomp,
-                      amrex::Array4<amrex::Real> const& Imx,
-                      amrex::Array4<amrex::Real> const& Ipx,
-                      amrex::Array4<amrex::Real> const& Imy,
-                      amrex::Array4<amrex::Real> const& Ipy,
-                      amrex::Array4<amrex::Real> const& Imz,
-                      amrex::Array4<amrex::Real> const& Ipz,
-                      amrex::Array4<amrex::Real const> const& q,
-                      amrex::Array4<amrex::Real const> const& vel,
-                      amrex::Vector<amrex::Geometry> geom,
-                      amrex::Real dt);
-
-    void make_trans_velocities (int lev, amrex::Box const& xbx,
-                                amrex::Box const& ybx, amrex::Box const& zbx,
-                                amrex::Array4<amrex::Real> const& u_ad,
-                                amrex::Array4<amrex::Real> const& v_ad,
-                                amrex::Array4<amrex::Real> const& w_ad,
-                                amrex::Array4<amrex::Real const> const& Imx,
-                                amrex::Array4<amrex::Real const> const& Ipx,
-                                amrex::Array4<amrex::Real const> const& Imy,
-                                amrex::Array4<amrex::Real const> const& Ipy,
-                                amrex::Array4<amrex::Real const> const& Imz,
-                                amrex::Array4<amrex::Real const> const& Ipz,
-                                amrex::Array4<amrex::Real const> const& vel,
-                                amrex::Array4<amrex::Real const> const& f);
-
-//    void predict_godunov (int lev, amrex::Box const& bx, int ncomp,
-//                          amrex::Box const& xbx, amrex::Box const& ybx, amrex::Box const& zbx,
-//                          amrex::Array4<amrex::Real> const& qx,
-//                          amrex::Array4<amrex::Real> const& qy,
-//                          amrex::Array4<amrex::Real> const& qz,
-//                          amrex::Array4<amrex::Real const> const& q,
-//                          amrex::Array4<amrex::Real const> const& u_ad,
-//                          amrex::Array4<amrex::Real const> const& v_ad,
-//                          amrex::Array4<amrex::Real const> const& w_ad,
-//                          amrex::Array4<amrex::Real> const& Imx,
-//                          amrex::Array4<amrex::Real> const& Ipx,
-//                          amrex::Array4<amrex::Real> const& Imy,
-//                          amrex::Array4<amrex::Real> const& Ipy,
-//                          amrex::Array4<amrex::Real> const& Imz,
-//                          amrex::Array4<amrex::Real> const& Ipz,
-//                          amrex::Array4<amrex::Real const> const& f,
-//                          amrex::Real* p);
 
     //
     // MOL
