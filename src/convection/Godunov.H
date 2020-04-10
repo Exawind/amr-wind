@@ -10,7 +10,6 @@
 
 #include "FieldRepo.H"
 
-
 namespace godunov {
 
     void predict_godunov (amr_wind::FieldRepo& repo,

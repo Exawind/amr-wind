@@ -7,7 +7,14 @@
 #ifndef MOL_H
 #define MOL_H
 
+#include "FieldRepo.H"
+
 namespace mol {
+
+    void compute_convective_term (amr_wind::FieldRepo& repo,
+                                  const amr_wind::FieldState fstate,
+                                  bool constant_density,
+                                  bool advect_tracer);
 
     void compute_convective_fluxes (int lev, amrex::Box const& bx, int ncomp,
                                     amrex::Array4<amrex::Real> const& fx,
