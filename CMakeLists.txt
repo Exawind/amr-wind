@@ -16,6 +16,7 @@ option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
+option(AMR_WIND_ENABLE_VERIFICATION "Enable testing and verification suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 
 #Options for the executable
@@ -30,6 +31,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(AMR_WIND_ENABLE_CUDA)
   enable_language(CUDA)
+  if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "10.0")
+    message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
+      "Please use CUDA toolkit version 10.0 or newer.")
+  endif()
+endif()
+
+if(AMR_WIND_ENABLE_VERIFICATION)
+  set(AMR_WIND_ENABLE_TESTS ON)
 endif()
 
 ########################### AMReX #####################################
@@ -86,11 +95,11 @@ add_executable(${amr_wind_exe_name})
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
-#Keep our Fortran module files confined to a unique directory for each executable 
+#Keep our Fortran module files confined to a directory
 set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
                      "${CMAKE_BINARY_DIR}/fortran_modules/")
 
-#Create directory unique to executable to store generated files
+#Create directory to store generated files
 set(GENERATED_FILES_DIR ${CMAKE_BINARY_DIR})
 
 #Generate the AMReX_buildInfo.cpp file with Python
@@ -107,6 +116,16 @@ add_custom_target(generate_build_info ALL
 #Set the dependencies on targets so the generated source code files are there
 #before we try to build the executable
 add_dependencies(${amr_wind_lib_name} generate_build_info)
+
+if(AMR_WIND_ENABLE_VERIFICATION)
+  set(CMAKE_PREFIX_PATH ${MASA_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(MASA QUIET REQUIRED)
+  if(MASA_FOUND)
+    message(STATUS "Found MASA = ${MASA_DIR}")
+  endif()
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_MASA)
+  target_link_libraries(${amr_wind_lib_name} PUBLIC MASA::MASA)
+endif()
 
 #Build amr-wind and link to amrex library
 add_subdirectory(src)

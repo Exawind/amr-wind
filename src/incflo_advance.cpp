@@ -2,6 +2,7 @@
 #include "PlaneAveraging.H"
 #include "Physics.H"
 #include <cmath>
+#include "field_ops.H"
 
 using namespace amrex;
 
@@ -13,43 +14,27 @@ void incflo::Advance()
     Real strt_step = ParallelDescriptor::second();
 
     // Compute time step size
-    int initialisation = 0;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(initialisation, explicit_diffusion);
+    ComputeDt(explicit_diffusion);
 
-    // Set new and old time to correctly use in fillpatching
-    for(int lev = 0; lev <= finest_level; lev++)
-    {
-        m_t_old[lev] = m_time.current_time();
-        m_t_new[lev] = m_time.new_time();
-    }
+    velocity().advance_states();
+    density().advance_states();
+    tracer().advance_states();
 
-    copy_from_new_to_old_velocity();
-    copy_from_new_to_old_density();
-    copy_from_new_to_old_tracer();
+    m_repo.get_field("velocity",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    m_repo.get_field("density",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    m_repo.get_field("tracer",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
-    int ng = nghost_state();
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
-        fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (m_advect_tracer) {
-            fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
-        }
-    }
-
-   for (auto& pp: m_physics)
-       pp->pre_advance_work();
+    for (auto& pp: m_physics)
+        pp->pre_advance_work();
     
     ApplyPredictor();
 
     if (!m_use_godunov) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            fillpatch_velocity(lev, m_t_new[lev], m_leveldata[lev]->velocity, ng);
-            fillpatch_density(lev, m_t_new[lev], m_leveldata[lev]->density, ng);
-            if (m_advect_tracer) {
-                fillpatch_tracer(lev, m_t_new[lev], m_leveldata[lev]->tracer, ng);
-            }
-        }
+
+        m_repo.get_field("velocity",amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        m_repo.get_field("density",amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        m_repo.get_field("tracer",amr_wind::FieldState::New).fillpatch(m_time.new_time());
 
         ApplyCorrector();
     }
@@ -147,111 +132,96 @@ void incflo::ApplyPredictor (bool incremental_projection)
         PrintMaxValues(new_time);
     }
 
-    // *************************************************************************************
-    // Allocate space for the MAC velocities
-    // *************************************************************************************
-    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
-    int ngmac = nghost_mac();
+    auto& velocity_old = m_repo.get_field("velocity", amr_wind::FieldState::Old);
+    auto& velocity_new = m_repo.get_field("velocity", amr_wind::FieldState::New);
+    auto& density_old = m_repo.get_field("density", amr_wind::FieldState::Old);
+    auto& density_new = m_repo.get_field("density", amr_wind::FieldState::New);
+    auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
+    auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
 
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        u_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(0)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        v_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(1)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        w_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(2)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        if (ngmac > 0) {
-            u_mac[lev].setBndry(0.0);
-            v_mac[lev].setBndry(0.0);
-            w_mac[lev].setBndry(0.0);
+    auto& velocity_forces = m_repo.get_field("velocity_forces");
+    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& vel_eta = m_repo.get_field("viscosity");
+    auto& tra_eta = m_repo.get_field("tracer_viscosity");
+
+    // only the old states are used in predictor
+    auto& divtau = m_repo.get_field("divtau", amr_wind::FieldState::Old);
+    auto& laps = m_repo.get_field("laps", amr_wind::FieldState::Old);
+    auto& conv_velocity = m_repo.get_field("conv_velocity", amr_wind::FieldState::Old);
+    auto& conv_density = m_repo.get_field("conv_density", amr_wind::FieldState::Old);
+    auto& conv_tracer = m_repo.get_field("conv_tracer", amr_wind::FieldState::Old);
+
+    auto& u_mac = m_repo.get_field("u_mac");
+    auto& v_mac = m_repo.get_field("v_mac");
+    auto& w_mac = m_repo.get_field("w_mac");
+
+    if (nghost_mac() > 0) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            u_mac(lev).setBndry(0.0);
+            v_mac(lev).setBndry(0.0);
+            w_mac(lev).setBndry(0.0);
         }
     }
 
-    // *************************************************************************************
-    // Allocate space for half-time density
-    // *************************************************************************************
-    Vector<MultiFab> density_nph;
-    Vector<MultiFab> tracer_nph;
-    for (int lev = 0; lev <= finest_level; ++lev)
-    {
-        density_nph.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
-        if (m_ntrac) tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
-    }
-
-    // Forcing terms
-    Vector<MultiFab> vel_forces, tra_forces;
-
-    Vector<MultiFab> vel_eta, tra_eta;
-
-    // *************************************************************************************
-    // Allocate space for the forcing terms
-    // *************************************************************************************
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
-                                MFInfo(), Factory(lev));
-
-        if (m_advect_tracer) {
-            tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
-                                    MFInfo(), Factory(lev));
-        }
-        vel_eta.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
-        if (m_advect_tracer) {
-            tra_eta.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
-        }
-    }
+    // Allocate scratch space for half time density and tracer
+    auto density_nph = m_repo.create_scratch_field(1,1);
+    auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
     if (m_use_godunov)
     {
-        compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
-                           get_density_old_const(),
-                           get_tracer_old_const());
+        compute_vel_forces(velocity_forces.vec_ptrs(),
+                           velocity_old.vec_const_ptrs(),
+                           density_old.vec_const_ptrs(),
+                           tracer_old.vec_const_ptrs());
 
         // Note this is forcing for (rho s), not for s
         if (m_advect_tracer)
-           compute_tra_forces(GetVecOfPtrs(tra_forces), get_density_old_const());
+           compute_tra_forces(tracer_forces.vec_ptrs(), density_old.vec_const_ptrs());
     }
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
-                      get_density_old_const(), get_velocity_old_const(), get_tracer_old_const(),
+    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
+                      density_old.vec_const_ptrs(), velocity_old.vec_const_ptrs(), tracer_old.vec_const_ptrs(),
                       m_time.current_time(), 1);
 
     // *************************************************************************************
     // Compute explicit viscous term
     // *************************************************************************************
     if (need_divtau()) {
-        get_diffusion_tensor_op()->compute_divtau(get_divtau_old(),
-                                                  get_velocity_old_const(),
-                                                  get_density_old_const(),
-                                                  GetVecOfConstPtrs(vel_eta));
-        if (m_godunov_include_diff_in_forcing)
-            for (int lev = 0; lev <= finest_level; ++lev)
-                MultiFab::Add(vel_forces[lev], m_leveldata[lev]->divtau_o, 0, 0, AMREX_SPACEDIM, 0);
+        get_diffusion_tensor_op()->compute_divtau(divtau.vec_ptrs(),
+                                                  velocity_old.vec_const_ptrs(),
+                                                  density_old.vec_const_ptrs(),
+                                                  vel_eta.vec_const_ptrs());
+        if (m_use_godunov)
+            amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
+
     }
+
+
 
     // *************************************************************************************
     // Compute explicit diffusive terms
     // *************************************************************************************
     if (m_advect_tracer && need_divtau()) {
-        get_diffusion_scalar_op()->compute_laps(get_laps_old(),
-                                                get_tracer_old_const(),
-                                                get_density_old_const(),
-                                                GetVecOfConstPtrs(tra_eta));
-        if (m_godunov_include_diff_in_forcing)
-            for (int lev = 0; lev <= finest_level; ++lev)
-                MultiFab::Add(tra_forces[lev], m_leveldata[lev]->laps_o, 0, 0, m_ntrac, 0);
+        get_diffusion_scalar_op()->compute_laps(laps.vec_ptrs(),
+                                                tracer_old.vec_const_ptrs(),
+                                                density_old.vec_const_ptrs(),
+                                                tra_eta.vec_const_ptrs());
+        if (m_use_godunov)
+            amr_wind::field_ops::add(tracer_forces, laps, 0, 0, m_ntrac, 0);
+
     }
 
-    if (m_use_godunov and nghost_force() > 0) {
-        fillpatch_force(m_time.current_time(), GetVecOfPtrs(vel_forces), nghost_force());
-        if (m_advect_tracer) {
-            fillpatch_force(m_time.current_time(), GetVecOfPtrs(tra_forces), nghost_force());
-        }
+    if (m_use_godunov) {
+       IntVect ng(nghost_force());
+       velocity_forces.fillpatch(m_time.current_time(), ng);
+       if (m_advect_tracer)
+           tracer_forces.fillpatch(m_time.current_time(), ng);
     }
 
     // *************************************************************************************
@@ -259,11 +229,17 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     // Note that "get_conv_tracer_old" returns div(rho u tracer)
     // *************************************************************************************
-    compute_convective_term(get_conv_velocity_old(), get_conv_density_old(), get_conv_tracer_old(),
-                            get_velocity_old_const(), get_density_old_const(), get_tracer_old_const(),
-                            GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
-                            GetVecOfPtrs(w_mac),
-                            GetVecOfConstPtrs(vel_forces), GetVecOfConstPtrs(tra_forces),
+    compute_convective_term(conv_velocity.vec_ptrs(),
+                            conv_density.vec_ptrs(),
+                            conv_tracer.vec_ptrs(),
+                            velocity_old.vec_const_ptrs(),
+                            density_old.vec_const_ptrs(),
+                            tracer_old.vec_const_ptrs(),
+                            u_mac.vec_ptrs(),
+                            v_mac.vec_ptrs(),
+                            w_mac.vec_ptrs(),
+                            velocity_forces.vec_const_ptrs(),
+                            tracer_forces.vec_const_ptrs(),
                             m_time.current_time());
 
     // *************************************************************************************
@@ -277,22 +253,24 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (l_constant_density)
     {
-        for (int lev = 0; lev <= finest_level; lev++)
-            MultiFab::Copy(density_nph[lev], m_leveldata[lev]->density_o, 0, 0, 1, 1);
-    } else {
+        amr_wind::field_ops::copy(*density_nph, density_old, 0, 0, 1, 1);
+    }
+    else
+    {
+
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(density_old(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real  const> const& rho_o  = ld.density_o.const_array(mfi);
-                Array4<Real> const& rho_new       = ld.density.array(mfi);
-                Array4<Real> const& rho_nph       = density_nph[lev].array(mfi);
-                Array4<Real const> const& drdt    = ld.conv_density_o.const_array(mfi);
+                Array4<Real  const> const& rho_o  = density_old(lev).const_array(mfi);
+                Array4<Real> const& rho_new       = density_new(lev).array(mfi);
+                Array4<Real> const& rho_nph       = (*density_nph)(lev).array(mfi);
+                Array4<Real const> const& drdt    = conv_density(lev).const_array(mfi);
 
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -308,7 +286,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-       compute_tra_forces(GetVecOfPtrs(tra_forces), GetVecOfConstPtrs(density_nph));
+       compute_tra_forces(tracer_forces.vec_ptrs(), (*density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next
@@ -319,25 +297,23 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(ld.tracer,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(tracer_old(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tra_o   = ld.tracer_o.const_array(mfi);
-                Array4<Real const> const& rho_o   = ld.density_o.const_array(mfi);
-                Array4<Real> const& tra           = ld.tracer.array(mfi);
-                Array4<Real const> const& rho     = ld.density.const_array(mfi);
-                Array4<Real const> const& dtdt_o  = ld.conv_tracer_o.const_array(mfi);
-                Array4<Real const> const& tra_f   = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
-                                                                  : Array4<Real const>{};
+                Array4<Real const> const& tra_o   = tracer_old(lev).const_array(mfi);
+                Array4<Real const> const& rho_o   = density_old(lev).const_array(mfi);
+                Array4<Real> const& tra           = tracer_new(lev).array(mfi);
+                Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
+                Array4<Real const> const& dtdt_o  = conv_tracer(lev).const_array(mfi);
+                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
 
                 if (m_diff_type == DiffusionType::Explicit)
                 {
-                    Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                     : Array4<Real const>{};
+                    Array4<Real const> const& laps_o = laps(lev).const_array(mfi);
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
                         // (rho trac)^new = (rho trac)^old + dt * (
@@ -353,8 +329,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                 }
                 else if (m_diff_type == DiffusionType::Crank_Nicolson)
                 {
-                    Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                     : Array4<Real const>{};
+                    Array4<Real const> const& laps_o = laps(lev).const_array(mfi);
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
                         for (int n = 0; n < l_ntrac; ++n)
@@ -389,14 +364,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if ( m_advect_tracer &&
         (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit) )
     {
-        const int ng_diffusion = 1;
-        for (int lev = 0; lev <= finest_level; ++lev)
-            fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
+        IntVect ng_diffusion(1);
+        tracer_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                  get_density_new(),
-                                                  GetVecOfConstPtrs(tra_eta),
+        get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
+                                                  density_new.vec_ptrs(),
+                                                  tra_eta.vec_const_ptrs(),
                                                   dt_diff);
     } // if (m_advect_tracer)
 
@@ -404,58 +378,37 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Update tracer at n+1/2
     // *************************************************************************************
-    if (!m_advect_tracer)
-    {
-        for (int lev = 0; lev <= finest_level; lev++){
-            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
-        }
-    } else {
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-            auto& ld = *m_leveldata[lev];
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tracer_o  = ld.tracer_o.const_array(mfi);
-                Array4<Real const> const& tracer_n  = ld.tracer.const_array(mfi);
-                Array4<Real> const& tra_nph   = tracer_nph[lev].array(mfi);
+    if (m_advect_tracer)
+        amr_wind::field_ops::lincomb(*tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
+    else
+        amr_wind::field_ops::copy(*tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
 
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    tra_nph(i,j,k) = 0.5 * (tracer_o(i,j,k) + tracer_n(i,j,k));
-                });
-            } // mfi
-        } // lev
-
-    }
     
     
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
-    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_old_const(),
-                       GetVecOfConstPtrs(density_nph),
-                       GetVecOfConstPtrs(tracer_nph));
+    compute_vel_forces(velocity_forces.vec_ptrs(),
+                       velocity_old.vec_const_ptrs(),
+                       (*density_nph).vec_const_ptrs(),
+                       (*tracer_nph).vec_const_ptrs());
     
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
     for (int lev = 0; lev <= finest_level; lev++)
     {
-        auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(velocity_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             Box const& bx = mfi.tilebox();
-            Array4<Real> const& vel = ld.velocity.array(mfi);
-            Array4<Real const> const& dvdt = ld.conv_velocity_o.const_array(mfi);
-            Array4<Real const> const& vel_f = vel_forces[lev].const_array(mfi);
+            Array4<Real> const& vel = velocity_new(lev).array(mfi);
+            Array4<Real const> const& dvdt = conv_velocity(lev).const_array(mfi);
+            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
 
             if (m_diff_type == DiffusionType::Implicit) {
 
@@ -469,7 +422,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
             else if (m_diff_type == DiffusionType::Crank_Nicolson)
             {
 
-                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
+                Array4<Real const> const& divtau_o = divtau(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+0.5*divtau_o(i,j,k,0));
@@ -479,7 +432,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
             }
             else if (m_diff_type == DiffusionType::Explicit)
             {
-                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
+                Array4<Real const> const& divtau_o = divtau(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+divtau_o(i,j,k,0));
@@ -495,16 +448,14 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
-        const int ng_diffusion = 1;
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-            fillphysbc_density (lev, new_time, m_leveldata[lev]->density , ng_diffusion);
-        }
+        IntVect ng_diffusion(1);
+        velocity_new.fillphysbc(new_time, ng_diffusion);
+        density_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new_const(),
-                                                    GetVecOfConstPtrs(vel_eta),
+        get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
+                                                    density_new.vec_const_ptrs(),
+                                                    vel_eta.vec_const_ptrs(),
                                                     dt_diff);
     }
 
@@ -513,7 +464,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Project velocity field, update pressure
     //
     // **********************************************************************************************
-    ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_time.deltaT(), incremental_projection);
+    ApplyProjection((*density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental_projection);
 
 }
 
@@ -592,85 +543,58 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    // *************************************************************************************
-    // Allocate space for the MAC velocities
-    // *************************************************************************************
-    Vector<MultiFab> u_mac(finest_level+1), v_mac(finest_level+1), w_mac(finest_level+1);
-    int ngmac = nghost_mac();
+    auto& velocity_old = m_repo.get_field("velocity", amr_wind::FieldState::Old);
+    auto& velocity_new = m_repo.get_field("velocity", amr_wind::FieldState::New);
+    auto& density_old = m_repo.get_field("density", amr_wind::FieldState::Old);
+    auto& density_new = m_repo.get_field("density", amr_wind::FieldState::New);
+    auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
+    auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
 
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        u_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(0)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        v_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(1)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        w_mac[lev].define(amrex::convert(grids[lev],IntVect::TheDimensionVector(2)), dmap[lev],
-                          1, ngmac, MFInfo(), Factory(lev));
-        if (ngmac > 0) {
-            u_mac[lev].setBndry(0.0);
-            v_mac[lev].setBndry(0.0);
-            w_mac[lev].setBndry(0.0);
-        }
-    }
+    auto& velocity_forces = m_repo.get_field("velocity_forces");
+    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& vel_eta = m_repo.get_field("viscosity");
+    auto& tra_eta = m_repo.get_field("tracer_viscosity");
 
-    // *************************************************************************************
-    // Allocate space for half-time density
-    // *************************************************************************************
-    Vector<MultiFab> density_nph;
-    Vector<MultiFab> tracer_nph;
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        density_nph.emplace_back(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
-        if (m_ntrac) tracer_nph.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
-
-    }
-
-    // **********************************************************************************************
-    // We only reach the corrector if !m_use_godunov which means we don't use the forces
-    //    in constructing the advection term
-    // **********************************************************************************************
-    Vector<MultiFab> vel_forces, tra_forces;
-    Vector<MultiFab> vel_eta, tra_eta;
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        vel_forces.emplace_back(grids[lev], dmap[lev], AMREX_SPACEDIM, nghost_force(),
-                                MFInfo(), Factory(lev));
-        if (m_advect_tracer) {
-            tra_forces.emplace_back(grids[lev], dmap[lev], m_ntrac, nghost_force(),
-                                    MFInfo(), Factory(lev));
-        }
-        vel_eta.emplace_back(grids[lev], dmap[lev], 1, 1, MFInfo(), Factory(lev));
-        if (m_advect_tracer) {
-            tra_eta.emplace_back(grids[lev], dmap[lev], m_ntrac, 1, MFInfo(), Factory(lev));
-        }
-    }
+    // Allocate scratch space for half time density and tracer
+    auto density_nph = m_repo.create_scratch_field(1,1);
+    auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
 
     // **********************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
     // Note that "get_conv_tracer_new" returns div(rho u tracer)
+    // We only reach the corrector if !m_use_godunov which means we don't use the forces
+    // in constructing the advection term
     // *************************************************************************************
-    compute_convective_term(get_conv_velocity_new(), get_conv_density_new(), get_conv_tracer_new(),
-                            get_velocity_new_const(), get_density_new_const(), get_tracer_new_const(),
-                            GetVecOfPtrs(u_mac), GetVecOfPtrs(v_mac),
-                            GetVecOfPtrs(w_mac),
+    compute_convective_term(m_repo.get_field("conv_velocity", amr_wind::FieldState::New).vec_ptrs(),
+                            m_repo.get_field("conv_density", amr_wind::FieldState::New).vec_ptrs(),
+                            m_repo.get_field("conv_tracer", amr_wind::FieldState::New).vec_ptrs(),
+                            velocity_new.vec_const_ptrs(),
+                            density_new.vec_const_ptrs(),
+                            tracer_new.vec_const_ptrs(),
+                            m_repo.get_field("u_mac").vec_ptrs(),
+                            m_repo.get_field("v_mac").vec_ptrs(),
+                            m_repo.get_field("w_mac").vec_ptrs(),
                             {}, {}, new_time);
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity(GetVecOfPtrs(vel_eta), GetVecOfPtrs(tra_eta),
-                      get_density_new_const(), get_velocity_new_const(), get_tracer_new_const(),
+    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
+                      density_new.vec_const_ptrs(), velocity_new.vec_const_ptrs(), tracer_new.vec_const_ptrs(),
                       new_time, 1);
 
     // Here we create divtau of the (n+1,*) state that was computed in the predictor;
     //      we use this laps only if DiffusionType::Explicit
     if (m_diff_type == DiffusionType::Explicit) {
-        get_diffusion_tensor_op()->compute_divtau(get_divtau_new(),
-                                                  get_velocity_new_const(),
-                                                  get_density_new_const(),
-                                                  GetVecOfConstPtrs(vel_eta));
+        get_diffusion_tensor_op()->compute_divtau(m_repo.get_field("divtau", amr_wind::FieldState::New).vec_ptrs(),
+                                                  velocity_new.vec_const_ptrs(),
+                                                  density_new.vec_const_ptrs(),
+                                                  vel_eta.vec_const_ptrs());
         if (m_advect_tracer) {
-            get_diffusion_scalar_op()->compute_laps(get_laps_new(),
-                                                    get_tracer_new_const(),
-                                                    get_density_new_const(),
-                                                    GetVecOfConstPtrs(tra_eta));
+            get_diffusion_scalar_op()->compute_laps(m_repo.get_field("laps", amr_wind::FieldState::New).vec_ptrs(),
+                                                    tracer_new.vec_const_ptrs(),
+                                                    density_new.vec_const_ptrs(),
+                                                    tra_eta.vec_const_ptrs());
         }
     }
 
@@ -684,25 +608,23 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (l_constant_density)
-    {
-        for (int lev = 0; lev <= finest_level; lev++)
-            MultiFab::Copy(density_nph[lev], m_leveldata[lev]->density_o, 0, 0, 1, 0);
+    if (l_constant_density) {
+        amr_wind::field_ops::copy(*density_nph, density_old, 0, 0, 1, 1);
     } else {
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(density_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real const> const& rho_o  = ld.density_o.const_array(mfi);
-                Array4<Real> const& rho_n        = ld.density.array(mfi);
-                Array4<Real> const& rho_nph      = density_nph[lev].array(mfi);
-                Array4<Real const> const& drdt_o = ld.conv_density_o.const_array(mfi);
-                Array4<Real const> const& drdt   = ld.conv_density.const_array(mfi);
+                Array4<Real const> const& rho_o  = density_old(lev).const_array(mfi);
+                Array4<Real> const& rho_n        = density_new(lev).array(mfi);
+                Array4<Real> const& rho_nph      = (*density_nph)(lev).array(mfi);
+                Array4<Real const> const& drdt_o = m_repo.get_field("conv_density", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                Array4<Real const> const& drdt   = m_repo.get_field("conv_density", amr_wind::FieldState::New)(lev).const_array(mfi);
 
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -717,7 +639,7 @@ void incflo::ApplyCorrector()
     // Compute the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-        compute_tra_forces(GetVecOfPtrs(tra_forces),  GetVecOfConstPtrs(density_nph));
+        compute_tra_forces(tracer_forces.vec_ptrs(),  (*density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next (note that dtdt already has rho in it)
@@ -728,28 +650,27 @@ void incflo::ApplyCorrector()
     {
         for (int lev = 0; lev <= finest_level; lev++)
         {
-            auto& ld = *m_leveldata[lev];
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(ld.tracer,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(tracer_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tra_o   = ld.tracer_o.const_array(mfi);
-                Array4<Real const> const& rho_o   = ld.density_o.const_array(mfi);
-                Array4<Real      > const& tra     = ld.tracer.array(mfi);
-                Array4<Real const> const& rho     = ld.density.const_array(mfi);
-                Array4<Real const> const& dtdt_o  = ld.conv_tracer_o.const_array(mfi);
-                Array4<Real const> const& dtdt    = ld.conv_tracer.const_array(mfi);
-                Array4<Real const> const& tra_f   = (l_ntrac > 0) ? tra_forces[lev].const_array(mfi)
-                                                                : Array4<Real const>{};
+                Array4<Real const> const& tra_o   = tracer_old(lev).const_array(mfi);
+                Array4<Real const> const& rho_o   = density_old(lev).const_array(mfi);
+                Array4<Real      > const& tra     = tracer_new(lev).array(mfi);
+                Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
+                Array4<Real const> const& dtdt_o  = m_repo.get_field("conv_tracer", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                Array4<Real const> const& dtdt    = m_repo.get_field("conv_tracer", amr_wind::FieldState::New)(lev).const_array(mfi);
+                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
 
                 if (m_diff_type == DiffusionType::Explicit)
                 {
-                    Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                     : Array4<Real const>{};
-                    Array4<Real const> const& laps   = (l_ntrac > 0) ? ld.laps.const_array(mfi)
-                                                                     : Array4<Real const>{};
+
+                    Array4<Real const> const& laps_o = m_repo.get_field("laps", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                    Array4<Real const> const& laps   = m_repo.get_field("laps", amr_wind::FieldState::New)(lev).const_array(mfi);
+
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
                         for (int n = 0; n < l_ntrac; ++n)
@@ -765,8 +686,8 @@ void incflo::ApplyCorrector()
                 }
                 else if (m_diff_type == DiffusionType::Crank_Nicolson)
                 {
-                    Array4<Real const> const& laps_o = (l_ntrac > 0) ? ld.laps_o.const_array(mfi)
-                                                                     : Array4<Real const>{};
+                    Array4<Real const> const& laps_o = m_repo.get_field("laps", amr_wind::FieldState::Old)(lev).const_array(mfi);
+
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
                         for (int n = 0; n < l_ntrac; ++n)
@@ -804,73 +725,50 @@ void incflo::ApplyCorrector()
     if ( m_advect_tracer &&
         (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit) )
     {
-        const int ng_diffusion = 1;
-        for (int lev = 0; lev <= finest_level; ++lev)
-            fillphysbc_tracer(lev, new_time, m_leveldata[lev]->tracer, ng_diffusion);
+
+        IntVect ng_diffusion(1);
+        tracer_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        get_diffusion_scalar_op()->diffuse_scalar(get_tracer_new(),
-                                                  get_density_new(),
-                                                  GetVecOfConstPtrs(tra_eta),
+        get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
+                                                  density_new.vec_ptrs(),
+                                                  tra_eta.vec_const_ptrs(),
                                                   dt_diff);
     }
 
     // *************************************************************************************
     // Update tracer at n+1/2
     // *************************************************************************************
-    if (!m_advect_tracer)
-    {
-        for (int lev = 0; lev <= finest_level; lev++){
-            MultiFab::Copy(tracer_nph[lev], m_leveldata[lev]->tracer_o, 0, 0, m_ntrac, 1);
-        }
-    } else {
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-            auto& ld = *m_leveldata[lev];
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tracer_o  = ld.tracer_o.const_array(mfi);
-                Array4<Real const> const& tracer_n  = ld.tracer.const_array(mfi);
-                Array4<Real> const& tra_nph   = tracer_nph[lev].array(mfi);
+    if (m_advect_tracer)
+        amr_wind::field_ops::lincomb(*tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
+    else
+        amr_wind::field_ops::copy(*tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
 
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    tra_nph(i,j,k) = 0.5 * (tracer_o(i,j,k) + tracer_n(i,j,k));
-                });
-            } // mfi
-        } // lev
 
-    }
-    
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
-    compute_vel_forces(GetVecOfPtrs(vel_forces), get_velocity_new_const(),
-                       GetVecOfConstPtrs(density_nph),
-                       GetVecOfConstPtrs(tracer_nph));
+    compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
+                       (*density_nph).vec_const_ptrs(),
+                       (*tracer_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update velocity
     // *************************************************************************************
     for (int lev = 0; lev <= finest_level; ++lev)
     {
-        auto& ld = *m_leveldata[lev];
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(ld.velocity,TilingIfNotGPU()); mfi.isValid(); ++mfi)
+        for (MFIter mfi(velocity_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             Box const& bx = mfi.tilebox();
-            Array4<Real> const& vel = ld.velocity.array(mfi);
-            Array4<Real const> const& vel_o = ld.velocity_o.const_array(mfi);
-            Array4<Real const> const& dvdt = ld.conv_velocity.const_array(mfi);
-            Array4<Real const> const& dvdt_o = ld.conv_velocity_o.const_array(mfi);
-            Array4<Real const> const& vel_f = vel_forces[lev].const_array(mfi);
+            Array4<Real> const& vel = velocity_new(lev).array(mfi);
+            Array4<Real const> const& vel_o = velocity_old(lev).const_array(mfi);
+            Array4<Real const> const& dvdt = m_repo.get_field("conv_velocity", amr_wind::FieldState::New)(lev).const_array(mfi);
+            Array4<Real const> const& dvdt_o = m_repo.get_field("conv_velocity", amr_wind::FieldState::Old)(lev).const_array(mfi);
+            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
 
             if (m_diff_type == DiffusionType::Implicit)
             {
@@ -884,7 +782,7 @@ void incflo::ApplyCorrector()
             }
             else if (m_diff_type == DiffusionType::Crank_Nicolson)
             {
-                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
+                Array4<Real const> const& divtau_o = m_repo.get_field("divtau", amr_wind::FieldState::Old)(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
@@ -896,8 +794,8 @@ void incflo::ApplyCorrector()
             }
             else if (m_diff_type == DiffusionType::Explicit)
             {
-                Array4<Real const> const& divtau_o = ld.divtau_o.const_array(mfi);
-                Array4<Real const> const& divtau   = ld.divtau.const_array(mfi);
+                Array4<Real const> const& divtau_o = m_repo.get_field("divtau", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                Array4<Real const> const& divtau   = m_repo.get_field("divtau", amr_wind::FieldState::New)(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
@@ -919,16 +817,14 @@ void incflo::ApplyCorrector()
 
     if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
-        const int ng_diffusion = 1;
-        for (int lev = 0; lev <= finest_level; ++lev)
-        {
-            fillphysbc_velocity(lev, new_time, m_leveldata[lev]->velocity, ng_diffusion);
-            fillphysbc_density (lev, new_time, m_leveldata[lev]->density , ng_diffusion);
-        }
+        IntVect ng_diffusion(1);
+        velocity_new.fillphysbc(new_time, ng_diffusion);
+        density_new.fillphysbc(new_time, ng_diffusion);
+
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        get_diffusion_tensor_op()->diffuse_velocity(get_velocity_new(),
-                                                    get_density_new_const(),
-                                                    GetVecOfConstPtrs(vel_eta),
+        get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
+                                                    density_new.vec_const_ptrs(),
+                                                    vel_eta.vec_const_ptrs(),
                                                     dt_diff);
     }
 
@@ -936,6 +832,6 @@ void incflo::ApplyCorrector()
     //
     // Project velocity field, update pressure
     bool incremental = false;
-    ApplyProjection(GetVecOfConstPtrs(density_nph),new_time, m_time.deltaT(), incremental);
+    ApplyProjection((*density_nph).vec_const_ptrs(),new_time, m_time.deltaT(), incremental);
 
 }

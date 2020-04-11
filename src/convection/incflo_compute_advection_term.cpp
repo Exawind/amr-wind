@@ -123,14 +123,14 @@ incflo::compute_convective_term (Box const& bx, int lev,
         compute_godunov_advection(lev, bx, AMREX_SPACEDIM,
                                   dvdt, vel,
                                   umac, vmac, wmac, fvel,
-                                  get_velocity_bcrec_device_ptr(),
+                                  velocity().bcrec_device().data(),
                                   get_velocity_iconserv_device_ptr(),
                                   tmpfab.dataPtr());
         if (!m_constant_density) {
             compute_godunov_advection(lev, bx, 1,
                                       drdt, rho,
                                       umac, vmac, wmac, {},
-                                      get_density_bcrec_device_ptr(),
+                                      density().bcrec_device().data(),
                                       get_density_iconserv_device_ptr(),
                                       tmpfab.dataPtr());
         }
@@ -138,7 +138,7 @@ incflo::compute_convective_term (Box const& bx, int lev,
             compute_godunov_advection(lev, bx, m_ntrac,
                                       dtdt, rhotrac,
                                       umac, vmac, wmac, ftra,
-                                      get_tracer_bcrec_device_ptr(),
+                                      tracer().bcrec_device().data(),
                                       get_tracer_iconserv_device_ptr(),
                                       tmpfab.dataPtr());
         }
@@ -159,16 +159,16 @@ incflo::compute_convective_term (Box const& bx, int lev,
         // velocity
         compute_convective_fluxes(lev, bx, AMREX_SPACEDIM, fx, fy, fz, vel,
                                   umac, vmac, wmac,
-                                  get_velocity_bcrec().data(),
-                                  get_velocity_bcrec_device_ptr());
+                                  velocity().bcrec().data(),
+                                  velocity().bcrec_device().data());
         compute_convective_rate(lev, bx, AMREX_SPACEDIM, dvdt, fx, fy, fz);
 
         // density
         if (!m_constant_density) {
             compute_convective_fluxes(lev, bx, 1, fx, fy, fz, rho,
                                       umac, vmac, wmac,
-                                      get_density_bcrec().data(),
-                                      get_density_bcrec_device_ptr());
+                                      density().bcrec().data(),
+                                      density().bcrec_device().data());
             compute_convective_rate(lev, bx, 1, drdt, fx, fy, fz);
         }
 
@@ -176,8 +176,8 @@ incflo::compute_convective_term (Box const& bx, int lev,
         if (m_advect_tracer) {
             compute_convective_fluxes(lev, bx, m_ntrac, fx, fy, fz, rhotrac,
                                       umac, vmac, wmac,
-                                      get_tracer_bcrec().data(),
-                                      get_tracer_bcrec_device_ptr());
+                                      tracer().bcrec().data(),
+                                      tracer().bcrec_device().data());
             compute_convective_rate(lev, bx, m_ntrac, dtdt, fx, fy, fz);
         }
         

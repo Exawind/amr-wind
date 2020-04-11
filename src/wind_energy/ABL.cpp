@@ -29,6 +29,24 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
 
     if (m_has_coriolis)
         m_coriolis.reset(new CoriolisForcing());
+
+    {
+        // fixme keeping this around to maintain perfect
+        // machine zero reg tests
+        // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
+        constexpr int direction = 2;
+        auto geom = m_incflo->Geom();
+        // First cell height
+        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
+        amrex::Real vx = 0.0;
+        amrex::Real vy = 0.0;
+        amrex::ParmParse pp("incflo");
+        pp.query("ic_u", vx);
+        pp.query("ic_v", vy);
+        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
+        const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
+        m_incflo->set_abl_friction_vels(uground, utau);
+    }
 }
 
 /** Initialize the velocity and temperature fields at the beginning of the
@@ -37,12 +55,12 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
  *  \sa amr_wind::ABLFieldInit
  */
 void ABL::initialize_fields(
-    const amrex::Geometry& geom,
-    LevelData& leveldata) const
+    int level,
+    const amrex::Geometry& geom) const
 {
-    auto& velocity = leveldata.velocity;
-    auto& density = leveldata.density;
-    auto& scalars = leveldata.tracer;
+    auto& velocity = m_incflo->velocity()(level);
+    auto& density = m_incflo->density()(level);
+    auto& scalars = m_incflo->tracer()(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -100,13 +118,16 @@ void ABL::pre_advance_work()
 {
     // Spatial averaging on z-planes
     constexpr int direction = 2;
-    const auto& geom = m_incflo->Geom(0);
+    auto geom = m_incflo->Geom();
 
-    // TODO: Promote this to a class member
-    PlaneAveraging pa(geom, *m_incflo->leveldata_vec()[0], direction);
+    PlaneAveraging pa(geom,
+                      m_incflo->velocity().vec_ptrs(),
+                      m_incflo->tracer().vec_ptrs(),
+                      direction);
+
     {
         // First cell height
-        const amrex::Real fch = geom.ProbLo(direction) + 0.5 * geom.CellSize(direction);
+        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
         const amrex::Real vx = pa.line_velocity_xdir(fch);
         const amrex::Real vy = pa.line_velocity_ydir(fch);
 

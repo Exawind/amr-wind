@@ -26,20 +26,18 @@ void incflo::PrintMaxValues(Real /* time_in */)
 //
 void incflo::PrintMaxVel(int lev)
 {
-
-    LevelData &ld = *m_leveldata[lev];
-    
     amrex::Print() << "max(abs(u/v/w))  = "
-                   << ld.velocity.norm0(0) << "  "
-                   << ld.velocity.norm0(1)  << "  "
-                   << ld.velocity.norm0(2)  << "  "
+                   << velocity()(lev).norm0(0) << "  "
+                   << velocity()(lev).norm0(1)  << "  "
+                   << velocity()(lev).norm0(2)  << "  "
                    << std::endl;
     if (m_ntrac > 0)
     {
        for (int i = 0; i < m_ntrac; i++)
-          amrex::Print() << "max tracer" << i << " = " << ld.tracer.norm0(i) << std::endl;;
+           amrex::Print() << "max tracer" << i << " = "
+                          << tracer()(lev).norm0(i) << std::endl;
+       ;
     }
-
 }
 
 //
@@ -47,27 +45,21 @@ void incflo::PrintMaxVel(int lev)
 //
 void incflo::PrintMaxGp(int lev)
 {
-
-    LevelData &ld = *m_leveldata[lev];
-
     amrex::Print() << "max(abs(gpx/gpy/gpz/p))  = "
-                   << ld.gp.norm0(0) << "  "
-                   << ld.gp.norm0(1) << "  "
-                   << ld.gp.norm0(2) << "  "
-		           << ld.p.norm0(0) << "  " << std::endl;
+                   << grad_p()(lev).norm0(0) << "  "
+                   << grad_p()(lev).norm0(1) << "  "
+                   << grad_p()(lev).norm0(2) << "  "
+                   << pressure()(lev).norm0(0) << "  " << std::endl;
 
 }
 
 void incflo::CheckForNans(int lev)
 {
-
-    LevelData &ld = *m_leveldata[lev];
-
-    bool ro_has_nans = ld.density.contains_nan(0);
-    bool ug_has_nans = ld.velocity.contains_nan(0);
-    bool vg_has_nans = ld.velocity.contains_nan(1);
-    bool wg_has_nans = ld.velocity.contains_nan(2);
-    bool pg_has_nans = ld.p.contains_nan(0);
+    bool ro_has_nans = density()(lev).contains_nan(0);
+    bool ug_has_nans = velocity()(lev).contains_nan(0);
+    bool vg_has_nans = velocity()(lev).contains_nan(1);
+    bool wg_has_nans = velocity()(lev).contains_nan(2);
+    bool pg_has_nans = pressure()(lev).contains_nan(0);
 
     if (ro_has_nans)
 	amrex::Print() << "WARNING: ro contains NaNs!!!";

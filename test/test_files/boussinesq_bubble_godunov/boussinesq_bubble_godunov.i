@@ -25,8 +25,11 @@ geometry.prob_hi        =  0.5 0.5 1.0  # Hi corner coordinates
 
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
-incflo.probtype         =  113
-incflo.gravity          = 0. 0. -0.5
+incflo.probtype         =  11
+incflo.gravity          = 0. 0. 0.5
+abl.thermal_expansion_coeff = 1.0
+abl.reference_temperature = 0.0
+bb.use_boussinesq = 1
 
 zlo.type                = "sw"
 zhi.type                = "sw"

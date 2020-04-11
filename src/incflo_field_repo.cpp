@@ -8,11 +8,17 @@ void incflo::declare_fields()
     const int nstates = 2;
     const int ng = nghost_state();
 
-    auto& vel = m_repo.declare_cc_field("vel", AMREX_SPACEDIM, ng, nstates);
+    auto& vel = m_repo.declare_cc_field("velocity", AMREX_SPACEDIM, ng, nstates);
     auto& rho = m_repo.declare_cc_field("density", 1, ng, nstates);
     auto& trac = m_repo.declare_cc_field("tracer", m_ntrac, ng, nstates);
     auto& gp = m_repo.declare_cc_field("gp", AMREX_SPACEDIM, 0, 1);
     auto& p = m_repo.declare_nd_field("p", 1, 0, 1);
+
+    auto& vel_for = m_repo.declare_cc_field("velocity_forces", AMREX_SPACEDIM, nghost_force(), 1);
+    auto& tra_for = m_repo.declare_cc_field("tracer_forces", m_ntrac, nghost_force(), 1);
+
+    m_repo.declare_cc_field("viscosity", 1, 1, 1);
+    m_repo.declare_cc_field("tracer_viscosity", m_ntrac, 1, 1);
 
     m_repo.declare_cc_field("conv_velocity", AMREX_SPACEDIM, 0, nstates);
     m_repo.declare_cc_field("conv_density", 1, 0, nstates);
@@ -20,6 +26,8 @@ void incflo::declare_fields()
 
     m_repo.declare_cc_field("divtau", AMREX_SPACEDIM, 0, nstates);
     m_repo.declare_cc_field("laps", m_ntrac, 0, nstates);
+
+    m_repo.declare_face_normal_field({"u_mac","v_mac","w_mac"}, 1, nghost_mac(), 1);
 
     vel.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
         *this, m_time, m_probtype);
@@ -31,20 +39,37 @@ void incflo::declare_fields()
         *this, m_time, m_probtype);
 
     p.register_fill_patch_op<amr_wind::FieldFillConstScalar>(0.0);
+
+    vel_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
+    tra_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
+        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
+
+    // Inform field repo which fields need fillpatch operations on regrid
+    vel.fillpatch_on_regrid() = true;
+    rho.fillpatch_on_regrid() = true;
+    trac.fillpatch_on_regrid() = true;
+    gp.fillpatch_on_regrid() = true;
+
 }
 
 void incflo::init_field_bcs ()
 {
     using namespace amrex;
-    auto& velocity = m_repo.get_field("vel");
+    auto& velocity = m_repo.get_field("velocity");
     auto& density = m_repo.get_field("density");
     auto& tracer = m_repo.get_field("tracer");
+    auto& vel_for = m_repo.get_field("velocity_forces");
+    auto& tra_for = m_repo.get_field("tracer_forces");
+
     auto& bc_velocity = velocity.bc_values();
     auto& bcrec_velocity = velocity.bcrec();
     auto& bc_density = density.bc_values();
     auto& bcrec_density = density.bcrec();
     auto& bc_tracer = tracer.bc_values();
     auto& bcrec_tracer = tracer.bcrec();
+    auto& bcrec_vel_for = vel_for.bcrec();
+    auto& bcrec_tra_for = tra_for.bcrec();
 
     auto f = [&] (std::string const& bcid, Orientation ori)
     {
@@ -251,7 +276,61 @@ void incflo::init_field_bcs ()
         }
     }
 
+    {
+        for (OrientationIter oit; oit; ++oit) {
+            Orientation ori = oit();
+            int dir = ori.coordDir();
+            Orientation::Side side = ori.faceDir();
+            auto const bct = m_bc_type[ori];
+            if (bct == BC::periodic)
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : bcrec_vel_for) b.setLo(dir, BCType::int_dir);
+                } else {
+                    for (auto& b : bcrec_vel_for) b.setHi(dir, BCType::int_dir);
+                }
+            }
+            else
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : bcrec_vel_for) b.setLo(dir, BCType::foextrap);
+                } else {
+                    for (auto& b : bcrec_vel_for) b.setHi(dir, BCType::foextrap);
+                }
+            }
+        }
+    }
+
+    if (m_ntrac > 0)
+    {
+        for (OrientationIter oit; oit; ++oit) {
+            Orientation ori = oit();
+            int dir = ori.coordDir();
+            Orientation::Side side = ori.faceDir();
+            auto const bct = m_bc_type[ori];
+            if (bct == BC::periodic)
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : bcrec_tra_for) b.setLo(dir, BCType::int_dir);
+                } else {
+                    for (auto& b : bcrec_tra_for) b.setHi(dir, BCType::int_dir);
+                }
+            }
+            else
+            {
+                if (side == Orientation::low) {
+                    for (auto& b : bcrec_tra_for) b.setLo(dir, BCType::foextrap);
+                } else {
+                    for (auto& b : bcrec_tra_for) b.setHi(dir, BCType::foextrap);
+                }
+            }
+        }
+    }
+
     velocity.copy_bc_to_device();
     density.copy_bc_to_device();
     tracer.copy_bc_to_device();
+    vel_for.copy_bc_to_device();
+    tra_for.copy_bc_to_device();
+
 }

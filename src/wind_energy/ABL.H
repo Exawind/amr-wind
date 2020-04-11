@@ -29,8 +29,8 @@ public:
 
     //! Initialize the temperature and velocity fields for ABL simulations
     void initialize_fields(
-        const amrex::Geometry& geom,
-        LevelData& leveldata) const override;
+        int level,
+        const amrex::Geometry& geom) const override;
 
     void pre_advance_work() override;
 

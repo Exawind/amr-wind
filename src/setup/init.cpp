@@ -6,6 +6,7 @@
 
 #include "Physics.H"
 #include "ABL.H"
+#include "BoussinesqBubble.H"
 #include "RefinementCriteria.H"
 #include "CartBoxRefinement.H"
 
@@ -41,9 +42,6 @@ void incflo::ReadParameters ()
         pp.query("use_godunov"                      , m_use_godunov);
         pp.query("use_ppm"                          , m_godunov_ppm);
         pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
-        pp.query("godunov_include_diff_in_forcing"  , m_godunov_include_diff_in_forcing);
-
-        if (!m_use_godunov) m_godunov_include_diff_in_forcing = false;
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;
@@ -118,9 +116,11 @@ void incflo::ReadParameters ()
 
     // FIXME: clean up WIP logic
     if (m_probtype == 35) {
-        ReadABLParameters();
-
         m_physics.emplace_back(new amr_wind::ABL(m_time, this));
+    }
+    
+    if (m_probtype == 11) {
+        m_physics.emplace_back(new amr_wind::BoussinesqBubble(this));
     }
 
     {
@@ -195,28 +195,6 @@ void incflo::ReadIOParameters()
     pp.query("plt_forcing",    m_plt_forcing );
 }
 
-void incflo::ReadABLParameters()
-{
-    ParmParse pp("abl");
-
-    // Inject Boussinesq flag in incflo to handle background pressure logic correctly
-    pp.query("use_boussinesq", m_use_boussinesq);
-
-    pp.query("kappa",m_kappa);
-    pp.query("surface_roughness_z0",m_surface_roughness_z0);
-    pp.query("Smagorinsky_Lilly_SGS_constant",m_Smagorinsky_Lilly_SGS_constant);
-
-    // fixme do we want to default this at first half cell always?
-    int lev = 0;
-    int dir = 2;
-
-    // initialize these so we do not have to call planar averages before initial iterations
-    m_ground_height = geom[lev].ProbLoArray()[dir] + 0.5*geom[lev].CellSizeArray()[dir];
-    m_velocity_mean_ground = std::sqrt(m_ic_u*m_ic_u + m_ic_v*m_ic_v);
-    m_utau_mean_ground = m_kappa*m_velocity_mean_ground/log(m_ground_height/m_surface_roughness_z0);
-}
-
-
 //
 // Perform initial pressure iterations
 //
@@ -224,9 +202,8 @@ void incflo::InitialIterations ()
 {
     BL_PROFILE("incflo::InitialIterations()");
 
-    int initialisation = 1;
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(initialisation, explicit_diffusion);
+    ComputeDt(explicit_diffusion);
 
     if (m_verbose)
     {
@@ -234,29 +211,31 @@ void incflo::InitialIterations ()
                        << m_time.deltaT() << std::endl;
     }
 
-    copy_from_new_to_old_velocity();
-    copy_from_new_to_old_density();
-    copy_from_new_to_old_tracer();
-    for(int lev = 0; lev <= finest_level; ++lev) m_t_old[lev] = m_t_new[lev];
+    auto& vel = velocity();
+    auto& rho = density();
+    auto& trac = tracer();
 
-    int ng = nghost_state();
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        fillpatch_velocity(lev, m_t_old[lev], m_leveldata[lev]->velocity_o, ng);
-        fillpatch_density(lev, m_t_old[lev], m_leveldata[lev]->density_o, ng);
-        if (m_advect_tracer) {
-            fillpatch_tracer(lev, m_t_old[lev], m_leveldata[lev]->tracer_o, ng);
-        }
-    }
+    vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+    rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+    trac.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+
+    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    trac.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
         if (m_verbose) amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
 
- 	ApplyPredictor(true);
+        // fixme turn this on later and delete stuff in ABL.cpp but will have to rebless gold files
+//        for (auto& pp: m_physics)
+//            pp->pre_advance_work();
 
-        copy_from_old_to_new_velocity();
-        copy_from_old_to_new_density();
-        copy_from_old_to_new_tracer();
+        ApplyPredictor(true);
+
+        vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        trac.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
     }
 }
 
@@ -275,14 +254,12 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(get_density_new_const(), m_time.current_time(), dummy_dt, incremental);
+    ApplyProjection(m_repo.get_field("density", amr_wind::FieldState::New).vec_const_ptrs(),
+                    m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
-    for (int lev = 0; lev <= finest_level; lev++)
-    {
-        m_leveldata[lev]->p.setVal(0.0);
-        m_leveldata[lev]->gp.setVal(0.0);
-    }
+    pressure().setVal(0.0);
+    grad_p().setVal(0.0);
 
     if (m_verbose)
     {

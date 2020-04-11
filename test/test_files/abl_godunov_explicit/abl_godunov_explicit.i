@@ -7,8 +7,8 @@ time.max_step                =   -1          # Max number of time steps
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.5        # Use this constant dt if > 0
-time.cfl              =   0.45         # CFL factor
+time.fixed_dt         =   -0.5        # Use this constant dt if > 0
+time.cfl              =   0.95         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
@@ -29,9 +29,11 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.ro_0             = 1.0          # Reference density 
 
 incflo.fluid_model      =   "SmagorinskyLillySGS" # Fluid model (rheology)
-incflo.SmagorinskyLillyConstant = .135
 incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
+incflo.use_godunov = 1
+incflo.diffusion_type = 0
 
+abl.Smagorinsky_Lilly_SGS_constant = .135
 abl.use_boussinesq = 1 
 abl.coriolis_effect = 1 
 abl.abl_forcing = 1
@@ -79,7 +81,7 @@ zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
-incflo.verbose          =   0           # incflo_level
+incflo.verbose          =   0          # incflo_level
 diffusion.verbose       =   0           # DiffusionEquation
 mac.verbose             =   0           # MacProjector
 

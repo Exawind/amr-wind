@@ -8,27 +8,31 @@ using namespace amrex;
 
 void incflo::prob_init_fluid (int lev)
 {
-    auto& ld = *m_leveldata[lev];
     Box const& domain = geom[lev].Domain();
     auto const& dx = geom[lev].CellSizeArray();
     auto const& problo = geom[lev].ProbLoArray();
     auto const& probhi = geom[lev].ProbHiArray();
 
-    ld.p.setVal(0.0);
-    ld.gp.setVal(0.0);
+    auto& vel = velocity()(lev);
+    auto& rho = density()(lev);
+    auto& trac = tracer()(lev);
+    auto& pres = pressure()(lev);
 
-    ld.density.setVal(m_ro_0);
-    ld.density_o.setVal(m_ro_0);
+    pressure()(lev).setVal(0.0);
+    grad_p()(lev).setVal(0.0);
 
-    ld.velocity.setVal(m_ic_u, 0, 1);
-    ld.velocity.setVal(m_ic_v, 1, 1);
-    ld.velocity.setVal(m_ic_w, 2, 1);
-    if (m_ntrac > 0) ld.tracer.setVal(0.0);
+    rho.setVal(m_ro_0);
+    density().state(amr_wind::FieldState::Old)(lev).setVal(m_ro_0);
+
+    vel.setVal(m_ic_u, 0, 1);
+    vel.setVal(m_ic_v, 1, 1);
+    vel.setVal(m_ic_w, 2, 1);
+    if (m_ntrac > 0) trac.setVal(0.0);
 
     // FIXME: Ongoing refactor handle ABL/wind physics through physics interface
-    if (m_probtype == 35) return;
+    if (m_probtype == 35 || m_probtype == 11) return;
 
-    for (MFIter mfi(ld.density); mfi.isValid(); ++mfi)
+    for (MFIter mfi(rho); mfi.isValid(); ++mfi)
     {
         const Box& vbx = mfi.validbox();
         const Box& gbx = mfi.fabbox();
@@ -37,73 +41,55 @@ void incflo::prob_init_fluid (int lev)
         else if (1 == m_probtype)
         {
             init_taylor_green(vbx, gbx,
-                              ld.p.array(mfi),
-                              ld.velocity.array(mfi),
-                              ld.density.array(mfi),
-                              ld.tracer.array(mfi),
+                              pres.array(mfi),
+                              vel.array(mfi),
+                              rho.array(mfi),
+                              trac.array(mfi),
                               domain, dx, problo, probhi);
         }
         else if (3 == m_probtype)
         {
             init_taylor_green3d(vbx, gbx,
-                                ld.p.array(mfi),
-                                ld.velocity.array(mfi),
-                                ld.density.array(mfi),
-                                ld.tracer.array(mfi),
+                                pres.array(mfi),
+                                vel.array(mfi),
+                                rho.array(mfi),
+                                trac.array(mfi),
                                 domain, dx, problo, probhi);
         }
         else if (4 == m_probtype)
         {
             init_couette(vbx, gbx,
-                         ld.p.array(mfi),
-                         ld.velocity.array(mfi),
-                         ld.density.array(mfi),
-                         ld.tracer.array(mfi),
+                         pres.array(mfi),
+                         vel.array(mfi),
+                         rho.array(mfi),
+                         trac.array(mfi),
                          domain, dx, problo, probhi);
         }
         else if (5 == m_probtype)
         {
             init_rayleigh_taylor(vbx, gbx,
-                                 ld.p.array(mfi),
-                                 ld.velocity.array(mfi),
-                                 ld.density.array(mfi),
-                                 ld.tracer.array(mfi),
+                                 pres.array(mfi),
+                                 vel.array(mfi),
+                                 rho.array(mfi),
+                                 trac.array(mfi),
                                  domain, dx, problo, probhi);
-        }
-        else if (11 == m_probtype)
-        {
-            init_tuscan(vbx, gbx,
-                        ld.p.array(mfi),
-                        ld.velocity.array(mfi),
-                        ld.density.array(mfi),
-                        ld.tracer.array(mfi),
-                        domain, dx, problo, probhi);
-        }
-        else if (111 == m_probtype || 112 == m_probtype || 113 == m_probtype)
-        {
-            init_boussinesq_bubble(vbx, gbx,
-                                   ld.p.array(mfi),
-                                   ld.velocity.array(mfi),
-                                   ld.density.array(mfi),
-                                   ld.tracer.array(mfi),
-                                   domain, dx, problo, probhi);
         }
         else if (12 == m_probtype)
         {
             init_periodic_tracer(vbx, gbx,
-                                 ld.p.array(mfi),
-                                 ld.velocity.array(mfi),
-                                 ld.density.array(mfi),
-                                 ld.tracer.array(mfi),
+                                 pres.array(mfi),
+                                 vel.array(mfi),
+                                 rho.array(mfi),
+                                 trac.array(mfi),
                                  domain, dx, problo, probhi);
         }
         else if (21 == m_probtype or 22 == m_probtype or 23 == m_probtype)
         {
             init_double_shear_layer(vbx, gbx,
-                                    ld.p.array(mfi),
-                                    ld.velocity.array(mfi),
-                                    ld.density.array(mfi),
-                                    ld.tracer.array(mfi),
+                                    pres.array(mfi),
+                                    vel.array(mfi),
+                                    rho.array(mfi),
+                                    trac.array(mfi),
                                     domain, dx, problo, probhi);
         }
         else if (31  == m_probtype or 32  == m_probtype or 33  == m_probtype or 
@@ -111,15 +97,11 @@ void incflo::prob_init_fluid (int lev)
                  41  == m_probtype)
         {
             init_plane_poiseuille(vbx, gbx,
-                                  ld.p.array(mfi),
-                                  ld.velocity.array(mfi),
-                                  ld.density.array(mfi),
-                                  ld.tracer.array(mfi),
+                                  pres.array(mfi),
+                                  vel.array(mfi),
+                                  rho.array(mfi),
+                                  trac.array(mfi),
                                   domain, dx, problo, probhi);
-        }
-        else if (35 == m_probtype)
-        {
-            // Should never reach here
         } else {
             amrex::Abort("prob_init_fluid: unknown m_probtype");
         };
@@ -219,104 +201,6 @@ void incflo::init_rayleigh_taylor (Box const& vbx, Box const& /* gbx */,
         vel(i,j,k,1) = 0.0;
         vel(i,j,k,2) = 0.0;
     });
-}
-
-void incflo::init_tuscan (Box const& vbx, Box const& /* gbx */,
-                          Array4<Real> const& /* p */,
-                          Array4<Real> const& vel,
-                          Array4<Real> const& density,
-                          Array4<Real> const& tracer,
-                          Box const& domain,
-                          GpuArray<Real, AMREX_SPACEDIM> const& /* dx */,
-                          GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
-                          GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
-{
-    int half_num_cells = domain.length(2) / 2;
-    Real T0 = .01;
-    amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-    {
-        vel(i,j,k,0) = 0.0;
-        vel(i,j,k,1) = 0.0;
-        vel(i,j,k,2) = 0.0;
-        density(i,j,k) = 1.0;
-        if (k <= half_num_cells) {
-            tracer(i,j,k) = T0;
-        } else {
-            tracer(i,j,k) = T0*(1.0+T0);
-        }
-    });
-}
-
-void incflo::init_boussinesq_bubble (Box const& vbx, Box const& /* gbx */,
-                                     Array4<Real> const& /* p */,
-                                     Array4<Real> const& vel,
-                                     Array4<Real> const& density,
-                                     Array4<Real> const& tracer,
-                                     Box const& /* domain */,
-                                     GpuArray<Real, AMREX_SPACEDIM> const& dx,
-                                     GpuArray<Real, AMREX_SPACEDIM> const& /* problo */,
-                                     GpuArray<Real, AMREX_SPACEDIM> const& /* probhi */)
-{
-    m_use_boussinesq = true;
-    if (111 == m_probtype)
-    {
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        {
-            vel(i,j,k,0) = 0.0;
-            vel(i,j,k,1) = 0.0;
-            vel(i,j,k,2) = 0.0;
-            density(i,j,k) = 1.0;
-
-            Real x = (i+0.5)*dx[0];
-            Real y = (j+0.5)*dx[1];
-            Real z = (k+0.5)*dx[2];
-
-            Real r = std::sqrt((x-0.5 )*(x-0.5 ) + (y-0.25)*(y-0.25) + (z-0.25)*(z-0.25));
-
-            if(r < .1)
-                tracer(i,j,k,0) = 0.0;
-            else
-                tracer(i,j,k,0) = 0.01;
-        });
-    } else if (112 == m_probtype) {
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        {
-            vel(i,j,k,0) = 0.0;
-            vel(i,j,k,1) = 0.0;
-            vel(i,j,k,2) = 0.0;
-            density(i,j,k) = 1.0;
-
-            Real x = (i+0.5)*dx[0];
-            Real y = (j+0.5)*dx[1];
-            Real z = (k+0.5)*dx[2];
-
-            Real r = std::sqrt((x-0.25)*(x-0.25) + (y-0.5 )*(y-0.5 ) + (z-0.25)*(z-0.25));
-
-            if(r < .1)
-                tracer(i,j,k,0) = 0.0;
-            else
-                tracer(i,j,k,0) = 0.01;
-        });
-    } else if (113 == m_probtype) {
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        {
-            vel(i,j,k,0) = 0.0;
-            vel(i,j,k,1) = 0.0;
-            vel(i,j,k,2) = 0.0;
-            density(i,j,k) = 1.0;
-
-            Real x = (i+0.5)*dx[0];
-            Real y = (j+0.5)*dx[1];
-            Real z = (k+0.5)*dx[2];
-
-            Real r = std::sqrt((x-0.25)*(x-0.25) + (y-0.25)*(y-0.25) + (z-0.5 )*(z-0.5 ));
-
-            if(r < .1)
-                tracer(i,j,k,0) = 0.0;
-            else
-                tracer(i,j,k,0) = 0.01;
-        });
-    }
 }
 
 void incflo::init_periodic_tracer (Box const& vbx, Box const& /* gbx */,

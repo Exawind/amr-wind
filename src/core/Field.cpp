@@ -140,31 +140,43 @@ void Field::fillpatch_from_coarse(
     fop.fillpatch_from_coarse(lev, time, mfab, nghost);
 }
 
-void Field::fillpatch(amrex::Real time) noexcept
+void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
 {
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), ng);
     }
+}
+
+void Field::fillpatch(amrex::Real time) noexcept
+{
+    fillpatch(time, num_grow());
+}
+
+void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
+{
+  BL_ASSERT(m_info->m_fillpatch_op);
+  auto& fop = *(m_info->m_fillpatch_op);
+  const int nlevels = m_repo.num_active_levels();
+  for (int lev=0; lev < nlevels; ++lev) {
+      fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), ng);
+  }
 }
 
 void Field::fillphysbc(amrex::Real time) noexcept
 {
-    BL_ASSERT(m_info->m_fillpatch_op);
-    auto& fop = *(m_info->m_fillpatch_op);
-    const int nlevels = m_repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), num_grow());
-    }
+    fillphysbc(time, num_grow());
 }
+
+
 
 void Field::advance_states() noexcept
 {
-    if (num_states() < 2) return;
+    if (num_time_states() < 2) return;
 
-    for (int i=num_states() - 1; i > 0; --i) {
+    for (int i=num_time_states() - 1; i > 0; --i) {
         const auto sold = static_cast<FieldState>(i);
         const auto snew = static_cast<FieldState>(i - 1);
         auto& old_field = state(sold);
@@ -174,6 +186,27 @@ void Field::advance_states() noexcept
                 old_field(lev), new_field(lev), 0, 0, num_comp(), num_grow());
         }
     }
+}
+
+void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
+{
+    auto& to_field = state(to_state);
+    auto& from_field = state(from_state);
+
+    for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
+        amrex::MultiFab::Copy(
+            to_field(lev), from_field(lev), 0, 0, num_comp(), num_grow());
+    }
+}
+
+Field& Field::create_state(const FieldState fstate) noexcept
+{
+    const int sid = static_cast<int>(fstate);
+    if (m_info->m_states[sid] == nullptr) {
+        m_repo.create_state(*this, fstate);
+    }
+
+    return state(fstate);
 }
 
 void Field::setVal(amrex::Real value) noexcept
