@@ -67,3 +67,6 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build-ci
       run: ctest -j ${{env.NUM_PROCS}} -LE no_ci --output-on-failure
+    - name: gnumake
+      working-directory: ${GITHUB_WORKSPACE}/exec
+      run: make -j16 USE_MPI=TRUE
