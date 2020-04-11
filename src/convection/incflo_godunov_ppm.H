@@ -1,12 +1,8 @@
 #ifndef GODUNOV_PPM_H
 #define GODUNOV_PPM_H
-#include <incflo.H> 
+
 #include <AMReX_Gpu.H> 
-#include <AMReX_FArrayBox.H>
-#include <AMReX_BCRec.H> 
-#include <AMReX_BC_TYPES.H>
-#include <AMReX_Array.H>
-#include <iomanip>
+#include <AMReX_BCRec.H>
 
 /* This header file contains the inlined __host__ __device__ functions required for 
    the scalar advection routines for 3D Godunov. It also contains function declarations 

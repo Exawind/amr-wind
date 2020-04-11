@@ -28,12 +28,9 @@ void BoussinesqBubbleFieldInit::operator()(
     const amrex::Array4<amrex::Real>& density,
     const amrex::Array4<amrex::Real>& tracer) const
 {
-    const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
-    const auto& probhi = geom.ProbHiArray();
 
-    const amrex::Real rho_init = m_rho;
     const amrex::Real ti = m_tracer_inner;
     const amrex::Real to = m_tracer_outer;
     const amrex::Real rho = m_rho;

@@ -1,9 +1,9 @@
 #include <incflo_godunov_ppm.H>
-#include <incflo.H>
+#include "Godunov.H"
 
 using namespace amrex;
 
-void incflo::predict_ppm (int lev, Box const& bx, int /* ncomp */,
+void godunov::predict_ppm (int lev, Box const& bx, int /* ncomp */,
                           Array4<Real> const& Imx,
                           Array4<Real> const& Ipx,
                           Array4<Real> const& Imy,
@@ -11,18 +11,21 @@ void incflo::predict_ppm (int lev, Box const& bx, int /* ncomp */,
                           Array4<Real> const& Imz,
                           Array4<Real> const& Ipz,
                           Array4<Real const> const& q,
-                          Array4<Real const> const& vel)
+                          Array4<Real const> const& vel,
+                          Vector<Geometry> geom,
+                          Real dt,
+                          amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
-    const auto dx = Geom(lev).CellSizeArray();
-    const Box& domain = Geom(lev).Domain();
+    const auto dx = geom[lev].CellSizeArray();
+    const Box& domain = geom[lev].Domain();
     const Dim3 dlo = amrex::lbound(domain);
     const Dim3 dhi = amrex::ubound(domain);
 
-    Real l_dtdx = m_time.deltaT() / dx[0];
-    Real l_dtdy = m_time.deltaT() / dx[1];
-    Real l_dtdz = m_time.deltaT() / dx[2];
+    Real l_dtdx = dt / dx[0];
+    Real l_dtdy = dt / dx[1];
+    Real l_dtdz = dt / dx[2];
 
-    BCRec const* pbc = velocity().bcrec_device().data();
+    BCRec const* pbc = bcrec_device.data();
 
     amrex::ParallelFor(bx, AMREX_SPACEDIM, 
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept

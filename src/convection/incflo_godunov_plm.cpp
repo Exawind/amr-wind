@@ -8,15 +8,17 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real> const& Imy, Array4<Real> const& Ipy,
                           Array4<Real> const& Imz, Array4<Real> const& Ipz,
                           Array4<Real const> const& q,
-                          Array4<Real const> const& vcc)
+                          Array4<Real const> const& vcc,
+                          Vector<Geometry> geom,
+                          Real dt,
+                          amrex::Gpu::DeviceVector<amrex::BCRec>& /*bcrec_device */)
 {
     const Real dx = geom[lev].CellSize(0);
     const Real dy = geom[lev].CellSize(1);
     const Real dz = geom[lev].CellSize(2);
-    Real l_dt = m_time.deltaT();
-    Real dtdx = l_dt/dx;
-    Real dtdy = l_dt/dy;
-    Real dtdz = l_dt/dz;
+    Real dtdx = dt/dx;
+    Real dtdy = dt/dy;
+    Real dtdz = dt/dz;
 
     const Box& domain_box = geom[lev].Domain();
     const int domain_ilo = domain_box.smallEnd(0);
@@ -33,6 +35,7 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
     auto const bc_klo = m_bc_type[Orientation(Direction::z,Orientation::low)];
     auto const bc_khi = m_bc_type[Orientation(Direction::z,Orientation::high)];
 
+    //fixme I think this should be using ext_dir directly like ppm does
     bool extdir_ilo = (bc_ilo == BC::mass_inflow) or (bc_ilo == BC::no_slip_wall);
     bool extdir_ihi = (bc_ihi == BC::mass_inflow) or (bc_ihi == BC::no_slip_wall);
     bool extdir_jlo = (bc_jlo == BC::mass_inflow) or (bc_jlo == BC::no_slip_wall);

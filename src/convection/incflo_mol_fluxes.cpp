@@ -1,8 +1,26 @@
-#include <incflo_convection_K.H>
-#include <incflo.H>
-#include <utility>
+#include <AMReX_BCRec.H>
+#include <AMReX_Geometry.H>
+#include "incflo_convection_K.H"
+#include "MOL.H"
 
 using namespace amrex;
+
+void mol::compute_convective_rate (Box const& bx, int ncomp,
+                                      Array4<Real> const& dUdt,
+                                      Array4<Real const> const& fx,
+                                      Array4<Real const> const& fy,
+                                      Array4<Real const> const& fz,
+                                      GpuArray<Real, AMREX_SPACEDIM> dxi)
+{
+    const auto dxinv = dxi;
+    amrex::ParallelFor(bx, ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+    {
+        dUdt(i,j,k,n) = dxinv[0] * (fx(i,j,k,n) - fx(i+1,j,k,n))
+            +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
+            +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
+    });
+}
 
 namespace {
     std::pair<bool,bool> has_extdir (BCRec const* bcrec, int ncomp, int dir)
@@ -17,7 +35,7 @@ namespace {
 }
 
 void
-incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
+mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real> const& fx,
                                    Array4<Real> const& fy,
                                    Array4<Real> const& fz,
@@ -25,7 +43,8 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real const> const& umac,
                                    Array4<Real const> const& vmac,
                                    Array4<Real const> const& wmac,
-                                   BCRec const* h_bcrec, BCRec const* d_bcrec)
+                                   BCRec const* h_bcrec, BCRec const* d_bcrec,
+                                   Vector<Geometry> geom)
 {
     constexpr Real small_vel = 1.e-10;
 
