@@ -10,7 +10,6 @@ void incflo::predict_vels_on_faces (int lev, MultiFab& u_mac, MultiFab& v_mac,
 
     Box const& domain = Geom(lev).Domain();
     Vector<BCRec> const& h_bcrec = velocity().bcrec();
-    BCRec const* d_bcrec = velocity().bcrec_device().data();
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -28,7 +27,7 @@ void incflo::predict_vels_on_faces (int lev, MultiFab& u_mac, MultiFab& v_mac,
             
             predict_vels_on_faces(lev,ubx,vbx,wbx,u,v,w,vcc);
 
-            incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec,d_bcrec);
+            incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec);
         }
     }
 }
@@ -54,6 +53,7 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     auto const bc_klo = m_bc_type[Orientation(Direction::z,Orientation::low)];
     auto const bc_khi = m_bc_type[Orientation(Direction::z,Orientation::high)];
 
+    //fixme I think this should be using ext_dir directly look at how ppm does this
     bool extdir_ilo = (bc_ilo == BC::mass_inflow) or (bc_ilo == BC::no_slip_wall);
     bool extdir_ihi = (bc_ihi == BC::mass_inflow) or (bc_ihi == BC::no_slip_wall);
     bool extdir_jlo = (bc_jlo == BC::mass_inflow) or (bc_jlo == BC::no_slip_wall);

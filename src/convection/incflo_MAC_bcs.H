@@ -10,6 +10,5 @@ void incflo_set_mac_bcs (amrex::Box const& domain,
                          amrex::Array4<amrex::Real> const& v,
                          amrex::Array4<amrex::Real> const& w,
                          amrex::Array4<amrex::Real const> const& vel,
-                         amrex::Vector<amrex::BCRec> const& h_bcrec,
-                         amrex::BCRec const* d_bcrec);
+                         amrex::Vector<amrex::BCRec> const& h_bcrec);
 
