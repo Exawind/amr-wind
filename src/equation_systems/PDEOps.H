@@ -25,11 +25,6 @@ struct SrcTermOpBase
 {
     SrcTermOpBase(PDEFields& fields_in) : fields(fields_in) {}
 
-    void zero_source_term()
-    {
-        fields.src_term.setVal(0.0);
-    }
-
     void multiply_rho(const FieldState fstate)
     {
         const auto rhostate = field_impl::phi_state(fstate);
@@ -67,8 +62,8 @@ struct SrcTermOp : SrcTermOpBase<PDE>
 
     void operator()(const FieldState fstate)
     {
-        // Zero out the source term
-        SrcTermOpBase<PDE>::zero_source_term();
+        // Zero out source term
+        this->fields.src_term.setVal(0.0);
 
         // Return early if there are no source terms to process
         if (this->sources.size() == 0) return;

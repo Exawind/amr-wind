@@ -1,11 +1,15 @@
 #ifndef SCHEMETRAITS_H
 #define SCHEMETRAITS_H
 
+#include <string>
+
 namespace amr_wind {
 namespace fvm {
 
 struct Godunov
 {
+    static std::string scheme_name() { return "Godunov"; }
+
     static constexpr int num_states = 2;
     static constexpr int nghost_state = 3;
     static constexpr int nghost_src = 1;
@@ -17,6 +21,8 @@ struct Godunov
 
 struct MOL
 {
+    static std::string scheme_name() { return "MOL"; }
+
     static constexpr int num_states = 2;
     static constexpr int nghost_state = 2;
     static constexpr int nghost_src = 0;

@@ -59,7 +59,7 @@ struct SDR : ScalarTransport
     static std::string var_name() { return "sdr"; }
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* PDETRAITS_H */

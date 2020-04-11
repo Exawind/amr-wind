@@ -1,8 +1,10 @@
 #ifndef SOURCETERM_H
 #define SOURCETERM_H
 
+#include "Factory.H"
 #include "FieldDescTypes.H"
 #include "FieldUtils.H"
+#include "FieldRepo.H"
 #include "AMReX_MultiFab.H"
 
 namespace amr_wind {
@@ -22,7 +24,7 @@ public:
     ) const = 0;
 };
 
-class MomentumSource
+class MomentumSource : public Factory<MomentumSource, FieldRepo&>
 {
 public:
     virtual ~MomentumSource() = default;
