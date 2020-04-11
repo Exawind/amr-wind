@@ -71,4 +71,4 @@ jobs:
       run: ctest -j ${{env.NUM_PROCS}} -LE no_ci --output-on-failure
     - name: gnumake
       working-directory: ./exec
-      run: make -j16 COMP=${{matrix.comp}} USE_MPI=TRUE
+      run: make -j ${{env.NUM_PROCS}} COMP=${{matrix.comp}} USE_MPI=TRUE
