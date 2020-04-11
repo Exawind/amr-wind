@@ -23,9 +23,9 @@ void incflo::Advance()
     density().advance_states();
     tracer().advance_states();
 
-    m_repo.get_field("velocity",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    m_repo.get_field("density",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    m_repo.get_field("tracer",amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    velocity().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    tracer().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
     for (auto& pp: m_physics)
         pp->pre_advance_work();
@@ -34,9 +34,9 @@ void incflo::Advance()
 
     if (!m_use_godunov) {
 
-        m_repo.get_field("velocity",amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        m_repo.get_field("density",amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        m_repo.get_field("tracer",amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        velocity().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        density().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        tracer().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
 
         ApplyCorrector();
     }
@@ -134,12 +134,12 @@ void incflo::ApplyPredictor (bool incremental_projection)
         PrintMaxValues(new_time);
     }
 
-    auto& velocity_old = m_repo.get_field("velocity", amr_wind::FieldState::Old);
-    auto& velocity_new = m_repo.get_field("velocity", amr_wind::FieldState::New);
-    auto& density_old = m_repo.get_field("density", amr_wind::FieldState::Old);
-    auto& density_new = m_repo.get_field("density", amr_wind::FieldState::New);
-    auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
-    auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
+    auto& velocity_old = velocity().state(amr_wind::FieldState::Old);
+    auto& velocity_new = velocity().state(amr_wind::FieldState::New);
+    auto& density_old = density().state(amr_wind::FieldState::Old);
+    auto& density_new = density().state(amr_wind::FieldState::New);
+    auto& tracer_old = tracer().state(amr_wind::FieldState::Old);
+    auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_forces");
     auto& tracer_forces = m_repo.get_field("tracer_forces");
@@ -559,12 +559,12 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    auto& velocity_old = m_repo.get_field("velocity", amr_wind::FieldState::Old);
-    auto& velocity_new = m_repo.get_field("velocity", amr_wind::FieldState::New);
-    auto& density_old = m_repo.get_field("density", amr_wind::FieldState::Old);
-    auto& density_new = m_repo.get_field("density", amr_wind::FieldState::New);
-    auto& tracer_old = m_repo.get_field("tracer", amr_wind::FieldState::Old);
-    auto& tracer_new = m_repo.get_field("tracer", amr_wind::FieldState::New);
+    auto& velocity_old = velocity().state(amr_wind::FieldState::Old);
+    auto& velocity_new = velocity().state(amr_wind::FieldState::New);
+    auto& density_old = density().state(amr_wind::FieldState::Old);
+    auto& density_new = density().state(amr_wind::FieldState::New);
+    auto& tracer_old = tracer().state(amr_wind::FieldState::Old);
+    auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_forces");
     auto& tracer_forces = m_repo.get_field("tracer_forces");
