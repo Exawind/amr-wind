@@ -1,7 +1,4 @@
-#include "PDETraits.H"
-#include "SchemeTraits.H"
-#include "PDEHelpers.H"
-#include "PDE.H"
+#include "icns/icns.H"
 #include "icns/icns_ops.H"
 
 namespace amr_wind {

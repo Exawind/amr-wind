@@ -1,5 +1,5 @@
-#ifndef SOURCETERM_H
-#define SOURCETERM_H
+#ifndef MOMENTUMSOURCE_H
+#define MOMENTUMSOURCE_H
 
 #include "Factory.H"
 #include "FieldDescTypes.H"
@@ -10,22 +10,20 @@
 namespace amr_wind {
 namespace pde {
 
-class SourceTerm
+class MomentumSource : public Factory<MomentumSource, FieldRepo&>
 {
 public:
-    virtual ~SourceTerm() = default;
+    virtual ~MomentumSource() = default;
 
     virtual void operator()(
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
-        const amrex::Array4<amrex::Real>& src_term
-    ) const = 0;
+        const amrex::Array4<amrex::Real>& src_term) const = 0;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
-
-#endif /* SOURCETERM_H */
+#endif /* MOMENTUMSOURCE_H */

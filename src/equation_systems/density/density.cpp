@@ -1,7 +1,4 @@
-#include "PDETraits.H"
-#include "SchemeTraits.H"
-#include "PDEHelpers.H"
-#include "PDE.H"
+#include "density/density.H"
 
 namespace amr_wind {
 namespace pde {

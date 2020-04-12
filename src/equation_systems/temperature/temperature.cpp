@@ -1,7 +1,4 @@
-#include "PDETraits.H"
-#include "SchemeTraits.H"
-#include "PDEHelpers.H"
-#include "PDE.H"
+#include "temperature/temperature.H"
 
 namespace amr_wind {
 namespace pde {

@@ -4,6 +4,7 @@
 #include "PDETraits.H"
 #include "PDEOps.H"
 #include "PDEHelpers.H"
+#include "icns/icns.H"
 
 namespace amr_wind {
 namespace pde {
