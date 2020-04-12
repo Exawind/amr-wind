@@ -15,6 +15,9 @@
 #include "FieldRepo.H"
 
 namespace amr_wind {
+namespace pde {
+class PDEBase;
+}
 class Physics;
 class RefinementCriteria;
 }
@@ -221,6 +224,9 @@ private:
 
     amr_wind::SimTime m_time;
     amr_wind::FieldRepo m_repo;
+
+    std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
+    amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
 
     amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;

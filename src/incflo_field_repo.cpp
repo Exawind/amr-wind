@@ -2,55 +2,37 @@
 #include "FieldFillPatchOps.H"
 #include "FieldBCOps.H"
 #include "prob_bc.H"
+#include "PDE.H"
+#include "SchemeTraits.H"
 
 void incflo::declare_fields()
 {
+    const std::string scheme = m_use_godunov
+                                   ? amr_wind::fvm::Godunov::scheme_name()
+                                   : amr_wind::fvm::MOL::scheme_name();
+    m_icns = amr_wind::pde::PDEBase::create(
+        "ICNS-" + scheme, m_time, m_repo, m_probtype);
+
     const int nstates = 2;
     const int ng = nghost_state();
 
-    auto& vel = m_repo.declare_cc_field("velocity", AMREX_SPACEDIM, ng, nstates);
-    auto& rho = m_repo.declare_cc_field("density", 1, ng, nstates);
     auto& trac = m_repo.declare_cc_field("tracer", m_ntrac, ng, nstates);
-    auto& gp = m_repo.declare_cc_field("gp", AMREX_SPACEDIM, 0, 1);
-    auto& p = m_repo.declare_nd_field("p", 1, 0, 1);
-
-    auto& vel_for = m_repo.declare_cc_field("velocity_forces", AMREX_SPACEDIM, nghost_force(), 1);
     auto& tra_for = m_repo.declare_cc_field("tracer_forces", m_ntrac, nghost_force(), 1);
 
-    m_repo.declare_cc_field("viscosity", 1, 1, 1);
     m_repo.declare_cc_field("tracer_viscosity", m_ntrac, 1, 1);
 
-    m_repo.declare_cc_field("conv_velocity", AMREX_SPACEDIM, 0, nstates);
     m_repo.declare_cc_field("conv_density", 1, 0, nstates);
     m_repo.declare_cc_field("conv_tracer", m_ntrac, 0, nstates);
 
-    m_repo.declare_cc_field("divtau", AMREX_SPACEDIM, 0, nstates);
     m_repo.declare_cc_field("laps", m_ntrac, 0, nstates);
 
-    m_repo.declare_face_normal_field({"u_mac","v_mac","w_mac"}, 1, nghost_mac(), 1);
-
-    vel.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
-        *this, m_time, m_probtype);
-    rho.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
-        *this, m_time, m_probtype);
     trac.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
         *this, m_time, m_probtype);
-    gp.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype);
-
-    p.register_fill_patch_op<amr_wind::FieldFillConstScalar>(0.0);
-
-    vel_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
     tra_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
         *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
 
     // Inform field repo which fields need fillpatch operations on regrid
-    vel.fillpatch_on_regrid() = true;
-    rho.fillpatch_on_regrid() = true;
     trac.fillpatch_on_regrid() = true;
-    gp.fillpatch_on_regrid() = true;
-
 }
 
 void incflo::init_field_bcs ()
@@ -59,7 +41,7 @@ void incflo::init_field_bcs ()
     auto& velocity = m_repo.get_field("velocity");
     auto& density = m_repo.get_field("density");
     auto& tracer = m_repo.get_field("tracer");
-    auto& vel_for = m_repo.get_field("velocity_forces");
+    auto& vel_for = m_repo.get_field("velocity_src_term");
     auto& tra_for = m_repo.get_field("tracer_forces");
 
     auto& bc_velocity = velocity.bc_values();

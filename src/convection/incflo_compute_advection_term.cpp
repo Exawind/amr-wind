@@ -16,14 +16,14 @@ godunov::compute_convective_term (amr_wind::FieldRepo& repo,
     auto& u_mac = repo.get_field("u_mac");
     auto& v_mac = repo.get_field("v_mac");
     auto& w_mac = repo.get_field("w_mac");
-    auto& vel_forces = repo.get_field("velocity_forces");
+    auto& vel_forces = repo.get_field("velocity_src_term");
     auto& tra_forces = repo.get_field("tracer_forces");
 
     // state dependent fields
     auto& vel = repo.get_field("velocity",fstate);//fixme this is godunov so always old state?
     auto& den = repo.get_field("density",fstate);
     auto& tra = repo.get_field("tracer",fstate);
-    auto& conv_u = repo.get_field("conv_velocity",fstate);
+    auto& conv_u = repo.get_field("velocity_conv_term");
     auto& conv_r = repo.get_field("conv_density",fstate);
     auto& conv_t = repo.get_field("conv_tracer",fstate);
 
@@ -143,7 +143,7 @@ mol::compute_convective_term (amr_wind::FieldRepo& repo,
     auto& vel = repo.get_field("velocity",fstate);//fixme this is godunov so always old state?
     auto& den = repo.get_field("density",fstate);
     auto& tra = repo.get_field("tracer",fstate);
-    auto& conv_u = repo.get_field("conv_velocity",fstate);
+    auto& conv_u = repo.get_field("velocity_conv_term",fstate);
     auto& conv_r = repo.get_field("conv_density",fstate);
     auto& conv_t = repo.get_field("conv_tracer",fstate);
 

@@ -20,7 +20,7 @@ void godunov::predict_godunov (amr_wind::FieldRepo& repo,
     auto& u_mac = repo.get_field("u_mac");
     auto& v_mac = repo.get_field("v_mac");
     auto& w_mac = repo.get_field("w_mac");
-    auto& vel_forces = repo.get_field("velocity_forces");
+    auto& vel_forces = repo.get_field("velocity_src_term");
     auto& vel = repo.get_field("velocity",fstate);
     Vector<BCRec> const& h_bcrec = vel.bcrec();
     
