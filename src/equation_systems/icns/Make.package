@@ -1,0 +1,4 @@
+CEXE_headers += icns.H
+CEXE_headers += icns_ops.H
+
+CEXE_sources += icns.cpp
