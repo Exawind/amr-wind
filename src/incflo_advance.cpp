@@ -174,8 +174,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     // Allocate scratch space for half time density and tracer
-    auto density_nph = m_repo.create_scratch_field(1,1);
-    auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
+    auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
+    auto& tracer_nph = tracer_new.create_state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
@@ -277,7 +277,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (l_constant_density)
     {
-        amr_wind::field_ops::copy(*density_nph, density_old, 0, 0, 1, 1);
+        amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
     else
     {
@@ -293,7 +293,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                 Box const& bx = mfi.tilebox();
                 Array4<Real  const> const& rho_o  = density_old(lev).const_array(mfi);
                 Array4<Real> const& rho_new       = density_new(lev).array(mfi);
-                Array4<Real> const& rho_nph       = (*density_nph)(lev).array(mfi);
+                Array4<Real> const& rho_nph       = (density_nph)(lev).array(mfi);
                 Array4<Real const> const& drdt    = conv_density(lev).const_array(mfi);
 
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
@@ -310,7 +310,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-       compute_tra_forces(tracer_forces.vec_ptrs(), (*density_nph).vec_const_ptrs());
+       compute_tra_forces(tracer_forces.vec_ptrs(), (density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next
@@ -403,9 +403,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Update tracer at n+1/2
     // *************************************************************************************
     if (m_advect_tracer)
-        amr_wind::field_ops::lincomb(*tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
+        amr_wind::field_ops::lincomb(tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
     else
-        amr_wind::field_ops::copy(*tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
+        amr_wind::field_ops::copy(tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
 
     
     
@@ -415,8 +415,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     compute_vel_forces(velocity_forces.vec_ptrs(),
                        velocity_old.vec_const_ptrs(),
-                       (*density_nph).vec_const_ptrs(),
-                       (*tracer_nph).vec_const_ptrs());
+                       (density_nph).vec_const_ptrs(),
+                       (tracer_nph).vec_const_ptrs());
     
     // *************************************************************************************
     // Update the velocity
@@ -488,7 +488,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Project velocity field, update pressure
     //
     // **********************************************************************************************
-    ApplyProjection((*density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental_projection);
+    ApplyProjection((density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental_projection);
 
 }
 
@@ -584,8 +584,8 @@ void incflo::ApplyCorrector()
     auto& w_mac = m_repo.get_field("w_mac");
 
     // Allocate scratch space for half time density and tracer
-    auto density_nph = m_repo.create_scratch_field(1,1);
-    auto tracer_nph = m_repo.create_scratch_field(m_ntrac,1);
+    auto& density_nph = density().state(amr_wind::FieldState::NPH);
+    auto& tracer_nph = tracer().state(amr_wind::FieldState::NPH);
 
     // **********************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
@@ -634,7 +634,7 @@ void incflo::ApplyCorrector()
     // Update density first
     // *************************************************************************************
     if (l_constant_density) {
-        amr_wind::field_ops::copy(*density_nph, density_old, 0, 0, 1, 1);
+        amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     } else {
         for (int lev = 0; lev <= finest_level; lev++)
         {
@@ -647,7 +647,7 @@ void incflo::ApplyCorrector()
                 Box const& bx = mfi.tilebox();
                 Array4<Real const> const& rho_o  = density_old(lev).const_array(mfi);
                 Array4<Real> const& rho_n        = density_new(lev).array(mfi);
-                Array4<Real> const& rho_nph      = (*density_nph)(lev).array(mfi);
+                Array4<Real> const& rho_nph      = (density_nph)(lev).array(mfi);
                 Array4<Real const> const& drdt_o = m_repo.get_field("conv_density", amr_wind::FieldState::Old)(lev).const_array(mfi);
                 Array4<Real const> const& drdt   = m_repo.get_field("conv_density", amr_wind::FieldState::New)(lev).const_array(mfi);
 
@@ -664,7 +664,7 @@ void incflo::ApplyCorrector()
     // Compute the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
     if (m_advect_tracer)
-        compute_tra_forces(tracer_forces.vec_ptrs(),  (*density_nph).vec_const_ptrs());
+        compute_tra_forces(tracer_forces.vec_ptrs(),  (density_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update the tracer next (note that dtdt already has rho in it)
@@ -765,17 +765,17 @@ void incflo::ApplyCorrector()
     // Update tracer at n+1/2
     // *************************************************************************************
     if (m_advect_tracer)
-        amr_wind::field_ops::lincomb(*tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
+        amr_wind::field_ops::lincomb(tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
     else
-        amr_wind::field_ops::copy(*tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
+        amr_wind::field_ops::copy(tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
 
 
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
     compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
-                       (*density_nph).vec_const_ptrs(),
-                       (*tracer_nph).vec_const_ptrs());
+                       (density_nph).vec_const_ptrs(),
+                       (tracer_nph).vec_const_ptrs());
 
     // *************************************************************************************
     // Update velocity
@@ -857,6 +857,6 @@ void incflo::ApplyCorrector()
     //
     // Project velocity field, update pressure
     bool incremental = false;
-    ApplyProjection((*density_nph).vec_const_ptrs(),new_time, m_time.deltaT(), incremental);
+    ApplyProjection((density_nph).vec_const_ptrs(),new_time, m_time.deltaT(), incremental);
 
 }
