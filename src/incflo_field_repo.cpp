@@ -12,27 +12,11 @@ void incflo::declare_fields()
                                    : amr_wind::fvm::MOL::scheme_name();
     m_icns = amr_wind::pde::PDEBase::create(
         "ICNS-" + scheme, m_time, m_repo, m_probtype);
+    m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
+        "Temperature-" + scheme, m_time, m_repo, m_probtype));
 
     const int nstates = 2;
-    const int ng = nghost_state();
-
-    auto& trac = m_repo.declare_cc_field("tracer", m_ntrac, ng, nstates);
-    auto& tra_for = m_repo.declare_cc_field("tracer_forces", m_ntrac, nghost_force(), 1);
-
-    m_repo.declare_cc_field("tracer_viscosity", m_ntrac, 1, 1);
-
     m_repo.declare_cc_field("conv_density", 1, 0, nstates);
-    m_repo.declare_cc_field("conv_tracer", m_ntrac, 0, nstates);
-
-    m_repo.declare_cc_field("laps", m_ntrac, 0, nstates);
-
-    trac.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCDirichlet>>(
-        *this, m_time, m_probtype);
-    tra_for.register_fill_patch_op<amr_wind::FieldFillPatchOps<amr_wind::FieldBCNoOp>>(
-        *this, m_time, m_probtype, amr_wind::FieldInterpolator::PiecewiseConstant);
-
-    // Inform field repo which fields need fillpatch operations on regrid
-    trac.fillpatch_on_regrid() = true;
 }
 
 void incflo::init_field_bcs ()
@@ -40,9 +24,9 @@ void incflo::init_field_bcs ()
     using namespace amrex;
     auto& velocity = m_repo.get_field("velocity");
     auto& density = m_repo.get_field("density");
-    auto& tracer = m_repo.get_field("tracer");
+    auto& tracer = m_repo.get_field("temperature");
     auto& vel_for = m_repo.get_field("velocity_src_term");
-    auto& tra_for = m_repo.get_field("tracer_forces");
+    auto& tra_for = m_repo.get_field("temperature_src_term");
 
     auto& bc_velocity = velocity.bc_values();
     auto& bcrec_velocity = velocity.bcrec();

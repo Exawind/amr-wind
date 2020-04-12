@@ -70,7 +70,7 @@ public:
 
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
     amr_wind::Field& density() const { return m_repo.get_field("density"); }
-    amr_wind::Field& tracer() const { return m_repo.get_field("tracer"); }
+    amr_wind::Field& tracer() const { return m_repo.get_field("temperature"); }
     amr_wind::Field& temperature() const { return m_repo.get_field("temperature"); }
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }

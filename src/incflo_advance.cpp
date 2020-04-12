@@ -144,21 +144,22 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = icns_fields.src_term;
-    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& tracer_forces = m_repo.get_field("temperature_src_term");
     auto& vel_eta = icns_fields.nueff;
-    auto& tra_eta = m_repo.get_field("tracer_viscosity");
+    auto& tra_eta = m_repo.get_field("temperature_nueff");
 
     // only the old states are used in predictor
     auto& divtau = m_use_godunov
                        ? icns_fields.diff_term
                        : icns_fields.diff_term.state(amr_wind::FieldState::Old);
-    auto& laps = m_repo.get_field("laps", amr_wind::FieldState::Old);
+    auto pred_state = m_use_godunov ? amr_wind::FieldState::New : amr_wind::FieldState::Old;
+    auto& laps = m_repo.get_field("temperature_diff_term", pred_state);
     auto& conv_velocity =
         m_use_godunov ? icns_fields.conv_term
                       : icns_fields.conv_term.state(amr_wind::FieldState::Old);
     auto& conv_density =
         m_repo.get_field("conv_density", amr_wind::FieldState::Old);
-    auto& conv_tracer = m_repo.get_field("conv_tracer", amr_wind::FieldState::Old);
+    auto& conv_tracer = m_repo.get_field("temperature_conv_term", pred_state);
 
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");
@@ -574,9 +575,9 @@ void incflo::ApplyCorrector()
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_src_term");
-    auto& tracer_forces = m_repo.get_field("tracer_forces");
+    auto& tracer_forces = m_repo.get_field("temperature_src_term");
     auto& vel_eta = m_repo.get_field("velocity_nueff");
-    auto& tra_eta = m_repo.get_field("tracer_viscosity");
+    auto& tra_eta = m_repo.get_field("temperature_nueff");
 
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");
@@ -615,7 +616,7 @@ void incflo::ApplyCorrector()
                                                   density_new.vec_const_ptrs(),
                                                   vel_eta.vec_const_ptrs());
         if (m_advect_tracer) {
-            get_diffusion_scalar_op()->compute_laps(m_repo.get_field("laps", amr_wind::FieldState::New).vec_ptrs(),
+            get_diffusion_scalar_op()->compute_laps(m_repo.get_field("temperature_diff_term", amr_wind::FieldState::New).vec_ptrs(),
                                                     tracer_new.vec_const_ptrs(),
                                                     density_new.vec_const_ptrs(),
                                                     tra_eta.vec_const_ptrs());
@@ -685,15 +686,15 @@ void incflo::ApplyCorrector()
                 Array4<Real const> const& rho_o   = density_old(lev).const_array(mfi);
                 Array4<Real      > const& tra     = tracer_new(lev).array(mfi);
                 Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
-                Array4<Real const> const& dtdt_o  = m_repo.get_field("conv_tracer", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                Array4<Real const> const& dtdt    = m_repo.get_field("conv_tracer", amr_wind::FieldState::New)(lev).const_array(mfi);
+                Array4<Real const> const& dtdt_o  = m_repo.get_field("temperature_conv_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                Array4<Real const> const& dtdt    = m_repo.get_field("temperature_conv_term", amr_wind::FieldState::New)(lev).const_array(mfi);
                 Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
 
                 if (m_diff_type == DiffusionType::Explicit)
                 {
 
-                    Array4<Real const> const& laps_o = m_repo.get_field("laps", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                    Array4<Real const> const& laps   = m_repo.get_field("laps", amr_wind::FieldState::New)(lev).const_array(mfi);
+                    Array4<Real const> const& laps_o = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                    Array4<Real const> const& laps   = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::New)(lev).const_array(mfi);
 
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
@@ -710,7 +711,7 @@ void incflo::ApplyCorrector()
                 }
                 else if (m_diff_type == DiffusionType::Crank_Nicolson)
                 {
-                    Array4<Real const> const& laps_o = m_repo.get_field("laps", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                    Array4<Real const> const& laps_o = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
 
                     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                     {
