@@ -173,7 +173,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         }
     }
 
-    // Allocate scratch space for half time density and tracer
+    // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
     auto& tracer_nph = tracer_new.create_state(amr_wind::FieldState::NPH);
 
@@ -187,9 +187,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
                            density_old.vec_const_ptrs(),
                            tracer_old.vec_const_ptrs());
 
-        // Note this is forcing for (rho s), not for s
-        if (m_advect_tracer)
-           compute_tra_forces(tracer_forces.vec_ptrs(), density_old.vec_const_ptrs());
+        for (auto& seqn: m_scalar_eqns) {
+            seqn->compute_source_term(amr_wind::FieldState::Old);
+        }
     }
 
     // *************************************************************************************
@@ -309,8 +309,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
-    if (m_advect_tracer)
-       compute_tra_forces(tracer_forces.vec_ptrs(), (density_nph).vec_const_ptrs());
+    for (auto& seqn: m_scalar_eqns) {
+        seqn->compute_source_term(amr_wind::FieldState::NPH);
+    }
 
     // *************************************************************************************
     // Update the tracer next
@@ -663,8 +664,9 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Compute the tracer forcing terms (forcing for (rho s), not for s)
     // *************************************************************************************
-    if (m_advect_tracer)
-        compute_tra_forces(tracer_forces.vec_ptrs(),  (density_nph).vec_const_ptrs());
+    for (auto& seqn: m_scalar_eqns) {
+        seqn->compute_source_term(amr_wind::FieldState::New);
+    }
 
     // *************************************************************************************
     // Update the tracer next (note that dtdt already has rho in it)
