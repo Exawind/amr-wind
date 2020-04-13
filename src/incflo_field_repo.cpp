@@ -72,6 +72,9 @@ void incflo::init_field_bcs ()
     auto& bcrec_tra_for = tra_for.bcrec();
     auto& bc_pressure = pressure().bc_values();
 
+    // store temporary array to copy into each field below
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2> bc_temp;
+
     auto f = [&] (std::string const& bcid, Orientation ori)
     {
         bc_density[ori][0] = 1.0;
@@ -86,14 +89,18 @@ void incflo::init_field_bcs ()
 
         if (bc_type == "pressure_inflow" or bc_type == "pi")
         {
+            bc_temp[ori] = BC::pressure_inflow;
             pp.get("pressure", bc_pressure[ori][0]);
         }
         else if (bc_type == "pressure_outflow" or bc_type == "po")
         {
+            bc_temp[ori] = BC::pressure_outflow;
             pp.get("pressure", bc_pressure[ori][0]);
         }
         else if (bc_type == "mass_inflow" or bc_type == "mi")
         {
+            bc_temp[ori] = BC::mass_inflow;
+
             std::vector<Real> v;
             if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
                bc_velocity[ori] = {v[0],v[1],v[2]};
@@ -105,6 +112,8 @@ void incflo::init_field_bcs ()
         }
         else if (bc_type == "no_slip_wall" or bc_type == "nsw")
         {
+            bc_temp[ori] = BC::no_slip_wall;
+
             std::vector<Real> v;
             if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
                 v[ori.coordDir()] = 0.0;
@@ -113,12 +122,26 @@ void incflo::init_field_bcs ()
         }
         else if (bc_type == "slip_wall" or bc_type == "sw")
         {
+            bc_temp[ori] = BC::slip_wall;
             pp.queryarr("tracer", bc_tracer[ori], 0, m_ntrac);
-
         }
         else if (bc_type == "wall_model" or bc_type == "wm")
         {
+            bc_temp[ori] = BC::wall_model;
+            m_wall_model_flag = true;
             pp.queryarr("tracer", bc_tracer[ori], 0, m_ntrac);
+        }
+        else
+        {
+            bc_temp[ori] = BC::undefined;
+        }
+
+        if (geom[0].isPeriodic(ori.coordDir())) {
+            if (bc_temp[ori] == BC::undefined) {
+                bc_temp[ori] = BC::periodic;
+            } else {
+                amrex::Abort("Wrong BC type for periodic boundary");
+            }
         }
     };
 
@@ -129,12 +152,19 @@ void incflo::init_field_bcs ()
     f("zlo", Orientation(Direction::z,Orientation::low));
     f("zhi", Orientation(Direction::z,Orientation::high));
 
+    for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
+        velocity.bc_type()[i] = bc_temp[i];
+        tracer.bc_type()[i] = bc_temp[i];
+        density.bc_type()[i] = bc_temp[i];
+        pressure().bc_type()[i] = bc_temp[i];
+    }
+
     {
         for (OrientationIter oit; oit; ++oit) {
             Orientation ori = oit();
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
-            auto const bct = m_bc_type[ori];
+            auto const bct = bc_temp[ori];
             if (bct == BC::pressure_inflow or
                 bct == BC::pressure_outflow)
             {
@@ -201,7 +231,7 @@ void incflo::init_field_bcs ()
             Orientation ori = oit();
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
-            auto const bct = m_bc_type[ori];
+            auto const bct = bc_temp[ori];
             if (bct == BC::pressure_inflow  or
                 bct == BC::pressure_outflow or
                 bct == BC::no_slip_wall)
@@ -246,7 +276,7 @@ void incflo::init_field_bcs ()
             Orientation ori = oit();
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
-            auto const bct = m_bc_type[ori];
+            auto const bct = bc_temp[ori];
             if (bct == BC::pressure_inflow  or
                 bct == BC::pressure_outflow or
                 bct == BC::no_slip_wall)
@@ -290,7 +320,7 @@ void incflo::init_field_bcs ()
             Orientation ori = oit();
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
-            auto const bct = m_bc_type[ori];
+            auto const bct = bc_temp[ori];
             if (bct == BC::periodic)
             {
                 if (side == Orientation::low) {
@@ -316,7 +346,7 @@ void incflo::init_field_bcs ()
             Orientation ori = oit();
             int dir = ori.coordDir();
             Orientation::Side side = ori.faceDir();
-            auto const bct = m_bc_type[ori];
+            auto const bct = bc_temp[ori];
             if (bct == BC::periodic)
             {
                 if (side == Orientation::low) {
@@ -342,10 +372,4 @@ void incflo::init_field_bcs ()
     vel_for.copy_bc_to_device();
     tra_for.copy_bc_to_device();
 
-    for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
-        velocity.bc_type()[i] = m_bc_type[i];
-        tracer.bc_type()[i] = m_bc_type[i];
-        density.bc_type()[i] = m_bc_type[i];
-        pressure().bc_type()[i] = m_bc_type[i];
-    }
 }
