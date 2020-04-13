@@ -9,6 +9,7 @@
 #include "AMReX_BCRec.H"
 #include "AMReX_Gpu.H"
 
+#include "incflo_enums.H"
 #include "FieldDescTypes.H"
 
 namespace amr_wind {
@@ -53,6 +54,7 @@ struct FieldInfo
 
     ///@{
     //! Boundary condition data
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2> m_bc_type;
     amrex::Vector<amrex::Vector<amrex::Real>> m_bc_values;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bc_values_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_bc_values_dview;
@@ -149,6 +151,11 @@ public:
     {
         const int fid = static_cast<int>(fstate);
         return (m_info->m_states[fid] != nullptr);
+    }
+
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2>& bc_type()
+    {
+        return m_info->m_bc_type;
     }
 
     //! Return reference to the host view of BC values array

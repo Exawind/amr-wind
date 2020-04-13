@@ -6,12 +6,13 @@ using namespace amrex;
 Array<amrex::LinOpBCType,AMREX_SPACEDIM>
 incflo::get_projection_bc (Orientation::Side side) const noexcept
 {
+    auto& bctype = pressure().bc_type();
     Array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom[0].isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = m_bc_type[Orientation(dir,side)];
+            auto bc = bctype[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:

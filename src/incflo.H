@@ -10,6 +10,7 @@
 #include <DiffusionTensorOp.H>
 #include <DiffusionScalarOp.H>
 
+#include "incflo_enums.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
 
@@ -24,10 +25,6 @@ public:
 
     friend DiffusionTensorOp;
     friend DiffusionScalarOp;
-
-    enum struct FluidModel {
-        Newtonian, powerlaw, Bingham, HerschelBulkley, deSouzaMendesDutra, SmagorinskyLillySGS
-    };
 
     incflo ();
     virtual ~incflo ();
@@ -283,9 +280,6 @@ private:
     //    the construction of the "trans" velocities
     bool m_godunov_use_forces_in_trans = false;
 
-    enum struct DiffusionType {
-        Invalid, Explicit, Crank_Nicolson, Implicit
-    };
     DiffusionType m_diff_type = DiffusionType::Implicit;
 
     // Fluid properties
@@ -325,13 +319,7 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-    enum struct BC {
-        pressure_inflow, pressure_outflow, mass_inflow, no_slip_wall, slip_wall, wall_model,
-        periodic, undefined
-    };
-
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
-    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
 
     int m_ntrac = 1;
 
