@@ -19,10 +19,7 @@ incflo::incflo ()
 
     declare_fields();
 
-    init_bcs();
     init_field_bcs();
-
-//    init_advection();
 
     set_background_pressure();
 }

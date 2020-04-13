@@ -319,7 +319,7 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-    amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
+//    amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
 
     int m_ntrac = 1;
 
@@ -366,13 +366,6 @@ private:
     void AverageDown ();
     void AverageDownTo (int crse_lev);
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // boundary_conditions
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    void init_bcs ();
 
     ///////////////////////////////////////////////////////////////////////////
     //
