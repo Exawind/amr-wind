@@ -28,12 +28,13 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
     const int domain_klo = domain_box.smallEnd(2);
     const int domain_khi = domain_box.bigEnd(2);
 
-    auto const bc_ilo = m_bc_type[Orientation(Direction::x,Orientation::low)];
-    auto const bc_ihi = m_bc_type[Orientation(Direction::x,Orientation::high)];
-    auto const bc_jlo = m_bc_type[Orientation(Direction::y,Orientation::low)];
-    auto const bc_jhi = m_bc_type[Orientation(Direction::y,Orientation::high)];
-    auto const bc_klo = m_bc_type[Orientation(Direction::z,Orientation::low)];
-    auto const bc_khi = m_bc_type[Orientation(Direction::z,Orientation::high)];
+    auto& bctype = velocity().bc_type();
+    auto const bc_ilo = bctype[Orientation(Direction::x,Orientation::low)];
+    auto const bc_ihi = bctype[Orientation(Direction::x,Orientation::high)];
+    auto const bc_jlo = bctype[Orientation(Direction::y,Orientation::low)];
+    auto const bc_jhi = bctype[Orientation(Direction::y,Orientation::high)];
+    auto const bc_klo = bctype[Orientation(Direction::z,Orientation::low)];
+    auto const bc_khi = bctype[Orientation(Direction::z,Orientation::high)];
 
     //fixme I think this should be using ext_dir directly like ppm does
     bool extdir_ilo = (bc_ilo == BC::mass_inflow) or (bc_ilo == BC::no_slip_wall);

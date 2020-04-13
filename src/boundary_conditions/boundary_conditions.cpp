@@ -21,16 +21,12 @@ void incflo::init_bcs ()
             amrex::Print() << bcid << " set to pressure inflow.\n";
 
             m_bc_type[ori] = BC::pressure_inflow;
-
-            pp.get("pressure", m_bc_pressure[ori]);
         }
         else if (bc_type == "pressure_outflow" or bc_type == "po")
         {
             amrex::Print() << bcid << " set to pressure outflow.\n";
 
             m_bc_type[ori] = BC::pressure_outflow;
-
-            pp.get("pressure", m_bc_pressure[ori]);
         }
         else if (bc_type == "mass_inflow" or bc_type == "mi")
         {

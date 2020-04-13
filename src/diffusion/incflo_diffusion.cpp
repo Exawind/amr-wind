@@ -28,7 +28,7 @@ incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
             r[1][dir] = LinOpBCType::Periodic;
             r[2][dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = m_bc_type[Orientation(dir,side)];
+            auto bc = velocity().bc_type()[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:
@@ -87,7 +87,7 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
         if (Geom(0).isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = m_bc_type[Orientation(dir,side)];
+            auto bc = tracer().bc_type()[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:

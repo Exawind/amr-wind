@@ -25,16 +25,21 @@ void incflo::set_background_pressure ()
         }
     }
     // (2) pressure inflow and pressure outflow
+    auto& bctype = pressure().bc_type();
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if ((m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_inflow and
-             m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_outflow) or
-            (m_bc_type[Orientation(dir,Orientation::high)] == BC::pressure_inflow and
-             m_bc_type[Orientation(dir,Orientation::low)] == BC::pressure_outflow))
+        if ((bctype[Orientation(dir,Orientation::low)] == BC::pressure_inflow and
+             bctype[Orientation(dir,Orientation::high)] == BC::pressure_outflow) or
+            (bctype[Orientation(dir,Orientation::high)] == BC::pressure_inflow and
+             bctype[Orientation(dir,Orientation::low)] == BC::pressure_outflow))
         {
             if (delp_dir == -1) {
                 delp_dir = dir;
-                m_gp0[dir] = (m_bc_pressure[Orientation(dir,Orientation::high)]
-                            - m_bc_pressure[Orientation(dir,Orientation::low)]) / problen[dir];
+                m_gp0[dir] =
+                    (pressure()
+                         .bc_values()[Orientation(dir, Orientation::high)][0] -
+                     pressure()
+                         .bc_values()[Orientation(dir, Orientation::low)][0]) /
+                    problen[dir];
             } else {
                 amrex::Abort("set_background_pressure: how did this happen?");
             }

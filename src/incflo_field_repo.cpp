@@ -70,6 +70,7 @@ void incflo::init_field_bcs ()
     auto& bcrec_tracer = tracer.bcrec();
     auto& bcrec_vel_for = vel_for.bcrec();
     auto& bcrec_tra_for = tra_for.bcrec();
+    auto& bc_pressure = pressure().bc_values();
 
     auto f = [&] (std::string const& bcid, Orientation ori)
     {
@@ -83,7 +84,15 @@ void incflo::init_field_bcs ()
         pp.query("type", bc_type_in);
         std::string bc_type = amrex::toLower(bc_type_in);
 
-        if (bc_type == "mass_inflow" or bc_type == "mi")
+        if (bc_type == "pressure_inflow" or bc_type == "pi")
+        {
+            pp.get("pressure", bc_pressure[ori][0]);
+        }
+        else if (bc_type == "pressure_outflow" or bc_type == "po")
+        {
+            pp.get("pressure", bc_pressure[ori][0]);
+        }
+        else if (bc_type == "mass_inflow" or bc_type == "mi")
         {
             std::vector<Real> v;
             if (pp.queryarr("velocity", v, 0, AMREX_SPACEDIM)) {
@@ -333,4 +342,10 @@ void incflo::init_field_bcs ()
     vel_for.copy_bc_to_device();
     tra_for.copy_bc_to_device();
 
+    for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
+        velocity.bc_type()[i] = m_bc_type[i];
+        tracer.bc_type()[i] = m_bc_type[i];
+        density.bc_type()[i] = m_bc_type[i];
+        pressure().bc_type()[i] = m_bc_type[i];
+    }
 }

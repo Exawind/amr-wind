@@ -320,7 +320,6 @@ private:
     int m_plt_vfrac       = 1;
 
     amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
-    amrex::GpuArray<amrex::Real                , AMREX_SPACEDIM*2> m_bc_pressure;
 
     int m_ntrac = 1;
 
