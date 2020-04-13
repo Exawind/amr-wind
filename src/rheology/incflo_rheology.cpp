@@ -7,14 +7,14 @@ namespace {
 
 struct NonNewtonianViscosity
 {
-    incflo::FluidModel fluid_model;
+    FluidModel fluid_model;
     amrex::Real mu, smag_const;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     amrex::Real operator() (amrex::Real sr, amrex::Real den, amrex::Real ds) const noexcept {
         switch (fluid_model)
         {
-        case incflo::FluidModel::SmagorinskyLillySGS:
+        case FluidModel::SmagorinskyLillySGS:
         {
             // fixme this is not good place for Smagorinsky move to an ABL specific location
             return mu + den*smag_const*smag_const*ds*ds*sr;
@@ -213,7 +213,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
     }
 
     switch(m_fluid_model){
-        case incflo::FluidModel::SmagorinskyLillySGS:
+        case FluidModel::SmagorinskyLillySGS:
         {
 
             for (auto mf : tra_eta) {
