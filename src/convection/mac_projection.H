@@ -17,10 +17,7 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 void apply_MAC_projection(
     amr_wind::FieldRepo& repo,
-    amr_wind::FieldState fstate,
-    int max_coarsening_level,
-    amrex::Real mac_mg_rtol,
-    amrex::Real mac_mg_atol);
+    amr_wind::FieldState fstate);
 
 } // namespace mac
 

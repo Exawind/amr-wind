@@ -95,17 +95,6 @@ void incflo::ReadParameters ()
         }
     } // end prefix incflo
 
-    { // Prefix mac
-        ParmParse pp_mac("mac_proj");
-        pp_mac.query( "mg_verbose"   , m_mac_mg_verbose );
-        pp_mac.query( "mg_cg_verbose", m_mac_mg_cg_verbose );
-        pp_mac.query( "mg_rtol"      , m_mac_mg_rtol );
-        pp_mac.query( "mg_atol"      , m_mac_mg_atol );
-        pp_mac.query( "mg_maxiter"   , m_mac_mg_maxiter );
-        pp_mac.query( "mg_cg_maxiter", m_mac_mg_cg_maxiter );
-        pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
-    } // end prefix mac
-    
     { // Prefix nodal_proj
         ParmParse pp_mac("nodal_proj");
         pp_mac.query( "mg_verbose"   , m_nodal_proj_mg_verbose );

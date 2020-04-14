@@ -6,6 +6,7 @@
 #include <AMReX_Vector.H>
 
 #include <mac_projection.H>
+#include <MLMGOptions.H>
 
 using namespace amrex;
 
@@ -65,10 +66,7 @@ mac::get_projection_bc (Orientation::Side side, GpuArray<BC, AMREX_SPACEDIM*2> b
 // 
 void 
 mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
-                           amr_wind::FieldState fstate,
-                           int mac_mg_max_coarsening_level,
-                           Real m_mac_mg_rtol,
-                           Real m_mac_mg_atol)
+                           amr_wind::FieldState fstate)
 {
     BL_PROFILE("incflo::apply_MAC_projection()");
 
@@ -110,11 +108,12 @@ mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
         mac_vec[lev][2] = &w_mac(lev);
     }
 
+    amr_wind::MLMGOptions options("mac_proj");
     //
     // If we want to set max_coarsening_level we have to send it in to the constructor
     //
     LPInfo lp_info;
-    lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
+    lp_info.setMaxCoarseningLevel(options.max_coarsen_level);
 
     //
     // Perform MAC projection
@@ -130,7 +129,6 @@ mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
     macproj.setDomainBC(get_projection_bc(Orientation::low, bctype, repo.mesh().Geom()),
                         get_projection_bc(Orientation::high, bctype, repo.mesh().Geom()));
 
-    macproj.project(m_mac_mg_rtol,
-                    m_mac_mg_atol,
-                    MLMG::Location::FaceCentroid);
+    macproj.project(
+        options.rel_tol, options.abs_tol, MLMG::Location::FaceCentroid);
 }

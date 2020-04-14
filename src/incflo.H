@@ -216,15 +216,6 @@ private:
     // AMR / refinement settings
     int m_refine_cutcells = 1;
 
-    int m_mac_mg_verbose = 0;
-    int m_mac_mg_cg_verbose = 0;
-    int m_mac_mg_maxiter = 200;
-    int m_mac_mg_cg_maxiter = 200;
-    int m_mac_mg_max_coarsening_level = 100;
-    amrex::Real m_mac_mg_rtol = 1.0e-11;
-    amrex::Real m_mac_mg_atol = 1.0e-14;
-    std::string m_mac_bottom_solver_type;
-    
     int m_nodal_proj_mg_verbose = 0;
     amrex::Real m_nodal_proj_mg_rtol = 1.0e-11;
     amrex::Real m_nodal_proj_mg_atol = 1.0e-14;
