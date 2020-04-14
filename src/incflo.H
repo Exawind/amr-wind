@@ -111,22 +111,6 @@ public: // for cuda
     void ApplyCorrector();
     
     //
-    // Godunov
-    //
-
-   void predict_plm (int lev, amrex::Box const& bx, int ncomp,
-                      amrex::Array4<amrex::Real> const& Imx, amrex::Array4<amrex::Real> const& Ipx,
-                      amrex::Array4<amrex::Real> const& Imy, amrex::Array4<amrex::Real> const& Ipy,
-                      amrex::Array4<amrex::Real> const& Imz, amrex::Array4<amrex::Real> const& Ipz,
-                      amrex::Array4<amrex::Real const> const& q,
-                      amrex::Array4<amrex::Real  const> const& vcc,
-                      amrex::Vector<amrex::Geometry> geom,
-                      amrex::Real dt,
-                      amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
-
-
-
-    //
     // MOL
     //
     void predict_vels_on_faces (int lev,  amrex::MultiFab& u_mac,

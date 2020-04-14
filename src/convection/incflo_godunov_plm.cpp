@@ -1,9 +1,9 @@
 #include <incflo_convection_K.H>
-#include <incflo.H>
+#include "Godunov.H"
 
 using namespace amrex;
 
-void incflo::predict_plm (int lev, Box const& bx, int ncomp,
+void godunov::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real> const& Imx, Array4<Real> const& Ipx,
                           Array4<Real> const& Imy, Array4<Real> const& Ipy,
                           Array4<Real> const& Imz, Array4<Real> const& Ipz,
@@ -11,7 +11,7 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real const> const& vcc,
                           Vector<Geometry> geom,
                           Real dt,
-                          amrex::Gpu::DeviceVector<amrex::BCRec>& /*bcrec_device */)
+                          amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
     const Real dx = geom[lev].CellSize(0);
     const Real dy = geom[lev].CellSize(1);
@@ -28,30 +28,19 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
     const int domain_klo = domain_box.smallEnd(2);
     const int domain_khi = domain_box.bigEnd(2);
 
-    auto& bctype = velocity().bc_type();
-    auto const bc_ilo = bctype[Orientation(Direction::x,Orientation::low)];
-    auto const bc_ihi = bctype[Orientation(Direction::x,Orientation::high)];
-    auto const bc_jlo = bctype[Orientation(Direction::y,Orientation::low)];
-    auto const bc_jhi = bctype[Orientation(Direction::y,Orientation::high)];
-    auto const bc_klo = bctype[Orientation(Direction::z,Orientation::low)];
-    auto const bc_khi = bctype[Orientation(Direction::z,Orientation::high)];
-
-    //fixme I think this should be using ext_dir directly like ppm does
-    bool extdir_ilo = (bc_ilo == BC::mass_inflow) or (bc_ilo == BC::no_slip_wall);
-    bool extdir_ihi = (bc_ihi == BC::mass_inflow) or (bc_ihi == BC::no_slip_wall);
-    bool extdir_jlo = (bc_jlo == BC::mass_inflow) or (bc_jlo == BC::no_slip_wall);
-    bool extdir_jhi = (bc_jhi == BC::mass_inflow) or (bc_jhi == BC::no_slip_wall);
-    bool extdir_klo = (bc_klo == BC::mass_inflow) or (bc_klo == BC::no_slip_wall);
-    bool extdir_khi = (bc_khi == BC::mass_inflow) or (bc_khi == BC::no_slip_wall);
-
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
 
-    if ((extdir_ilo and domain_ilo >= bx.smallEnd(0)-1) or
-        (extdir_ihi and domain_ihi <= bx.bigEnd(0)))
+    BCRec const* pbc = bcrec_device.data();
+
+    if ((domain_ilo >= bx.smallEnd(0)-1) or (domain_ihi <= bx.bigEnd(0)))
     {
-        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_ilo,extdir_ihi,domain_ilo,domain_ihi,Imx,Ipx,dtdx]
+        amrex::ParallelFor(bx, ncomp, [q,vcc,domain_ilo,domain_ihi,Imx,Ipx,dtdx,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
+            const auto& bc = pbc[n];
+            bool extdir_ilo = bc.lo(0) == BCType::ext_dir;
+            bool extdir_ihi = bc.hi(0) == BCType::ext_dir;
+
             Real upls = q(i  ,j,k,n) + 0.5 * (-1.0 - vcc(i  ,j,k,0) * dtdx) * 
                 incflo_ho_xslope_extdir(i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
             Real umns = q(i-1,j,k,n) + 0.5 * ( 1.0 - vcc(i-1,j,k,0) * dtdx) * 
@@ -84,13 +73,16 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
         });
     }
 
-    if ((extdir_jlo and domain_jlo >= bx.smallEnd(1)-1) or
-        (extdir_jhi and domain_jhi <= bx.bigEnd(1)))
+    if ((domain_jlo >= bx.smallEnd(1)-1) or (domain_jhi <= bx.bigEnd(1)))
     {
-        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_jlo,extdir_jhi,domain_jlo,domain_jhi,Imy,Ipy,dtdy]
+        amrex::ParallelFor(bx, ncomp, [q,vcc,domain_jlo,domain_jhi,Imy,Ipy,dtdy,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            Real vpls = q(i,j  ,k,n) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) * 
+            const auto& bc = pbc[n];
+            bool extdir_jlo = bc.lo(0) == BCType::ext_dir;
+            bool extdir_jhi = bc.hi(0) == BCType::ext_dir;
+
+            Real vpls = q(i,j  ,k,n) + 0.5 * (-1.0 - vcc(i,j  ,k,1) * dtdy) *
                 incflo_ho_yslope_extdir(i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
             Real vmns = q(i,j-1,k,n) + 0.5 * ( 1.0 - vcc(i,j-1,k,1) * dtdy) * 
                 incflo_ho_yslope_extdir(i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
@@ -122,12 +114,15 @@ void incflo::predict_plm (int lev, Box const& bx, int ncomp,
         });
     }
 
-    if ((extdir_klo and domain_klo >= bx.smallEnd(2)-1) or
-        (extdir_khi and domain_khi <= bx.bigEnd(2)))
+    if ((domain_klo >= bx.smallEnd(2)-1) or (domain_khi <= bx.bigEnd(2)))
     {
-        amrex::ParallelFor(bx, ncomp, [q,vcc,extdir_klo,extdir_khi,domain_klo,domain_khi,Ipz,Imz,dtdz]
+        amrex::ParallelFor(bx, ncomp, [q,vcc,domain_klo,domain_khi,Ipz,Imz,dtdz,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
+            const auto& bc = pbc[n];
+            bool extdir_klo = bc.lo(0) == BCType::ext_dir;
+            bool extdir_khi = bc.hi(0) == BCType::ext_dir;
+
             Real wpls = q(i,j,k  ,n) + 0.5 * (-1.0 - vcc(i,j,k  ,2) * dtdz) * 
                 incflo_ho_zslope_extdir(i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
             Real wmns = q(i,j,k-1,n) + 0.5 * ( 1.0 - vcc(i,j,k-1,2) * dtdz) * 
