@@ -125,6 +125,7 @@ add_test_re(abl_godunov_explicit 4)
 add_test_re(abl_godunov_cn 4)
 add_test_re(abl_mol_explicit 4)
 add_test_re(abl_mol_cn 4)
+add_test_re(tgv_godunov_plm 4)
 
 #=============================================================================
 # Verification tests

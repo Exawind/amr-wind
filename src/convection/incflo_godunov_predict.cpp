@@ -74,9 +74,8 @@ void godunov::predict_godunov (amr_wind::FieldRepo& repo,
                     godunov::predict_ppm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
                                           geom, dt, vel.bcrec_device());
                 } else {
-                    amrex::Abort("need to finish moving predict_plm");
-//                    predict_plm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
-//                                 Geom(), m_time.deltaT(), velocity().bcrec_device());
+                    godunov::predict_plm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                                 geom, dt, vel.bcrec_device());
                 }
 
                 godunov::make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),

@@ -58,8 +58,6 @@ void predict_ppm(
     amrex::Real dt,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
 
-// fixme finish this, need to test and make regression test
-#if 0
 void predict_plm(
     int lev,
     amrex::Box const& bx,
@@ -75,7 +73,6 @@ void predict_plm(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
-#endif
 
 void make_trans_velocities(
     int lev,
