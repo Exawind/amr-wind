@@ -86,9 +86,11 @@ mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
     auto rho_zf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
 
     Vector<Array<MultiFab*,AMREX_SPACEDIM>> rho_face(repo.num_active_levels());
+    Vector<Array<MultiFab*,AMREX_SPACEDIM>> mac_vec(repo.num_active_levels());
+
+    //fixme todo clean this up, this was done to replace GetVecOfArrOfConstPtrs() below
     Vector<Array<MultiFab const*,AMREX_SPACEDIM>> rho_face_const;
     rho_face_const.reserve(repo.num_active_levels());
-    Vector<Array<MultiFab*,AMREX_SPACEDIM>> mac_vec(repo.num_active_levels());
 
     for (int lev=0; lev < repo.num_active_levels(); ++lev)
     {
@@ -122,9 +124,9 @@ mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
                          repo.mesh().Geom(0,repo.num_active_levels()-1),
                          lp_info);
 
+    // get the bc types from pressure field
     auto& bctype = repo.get_field("p").bc_type();
     
-//    macproj.setDomainBC(mac::get_projection_bc(Orientation::low, bctype), get_projection_bc(Orientation::high, bctype));
     macproj.setDomainBC(get_projection_bc(Orientation::low, bctype, repo.mesh().Geom()),
                         get_projection_bc(Orientation::high, bctype, repo.mesh().Geom()));
 
