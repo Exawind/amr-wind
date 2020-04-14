@@ -50,6 +50,7 @@ public:
         , m_repo(repo)
         , m_fields(FieldRegOp<PDE, Scheme>(repo)(time, probtype))
         , m_src_op(m_fields)
+        , m_adv_op(m_fields)
     {}
 
     PDEFields& fields() override { return m_fields; }
@@ -69,9 +70,9 @@ public:
         // m_diff_op(fstate);
     }
 
-    void compute_advection_term(const FieldState ) override
+    void compute_advection_term(const FieldState fstate) override
     {
-        // m_adv_op(fstate);
+        m_adv_op(fstate, m_time.deltaT());
     }
 
     void solve(const FieldState ) override
@@ -89,7 +90,6 @@ protected:
     SrcTermOp<PDE> m_src_op;
     AdvectionOp<PDE, Scheme> m_adv_op;
     DiffusionOp<PDE> m_diff_op;
-    LinSysSolve<PDE> m_linsys_solver;
 };
 
 } // namespace pde

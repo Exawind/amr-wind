@@ -4,6 +4,7 @@
 #include "PDETraits.H"
 #include "PDEOps.H"
 #include "PDEHelpers.H"
+#include "AdvOp_Godunov.H"
 #include "icns/icns.H"
 
 namespace amr_wind {
@@ -78,6 +79,82 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
             }
         }
     }
+};
+
+template<>
+struct AdvectionOp<ICNS, fvm::Godunov>
+{
+    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    {
+        amrex::ParmParse pp("incflo");
+        pp.query("godunov_ppm", godunov_ppm);
+
+        // TODO: Need iconserv flag to be adjusted???
+        iconserv.resize(ICNS::ndim, 1);
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real dt)
+    {
+        auto& repo = fields.repo;
+        auto& geom = repo.mesh().Geom();
+        auto& u_mac = repo.get_field("u_mac");
+        auto& v_mac = repo.get_field("v_mac");
+        auto& w_mac = repo.get_field("w_mac");
+
+        auto& src_term = fields.src_term;
+        auto& conv_term = fields.conv_term;
+        auto& dof_field = fields.field.state(fstate);
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            u_mac(lev).FillBoundary(geom[lev].periodicity());
+            v_mac(lev).FillBoundary(geom[lev].periodicity());
+            w_mac(lev).FillBoundary(geom[lev].periodicity());
+
+            amrex::MFItInfo mfi_info;
+            if (amrex::Gpu::notInLaunchRegion())
+                mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
+                    .SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(dof_field(lev),mfi_info); mfi.isValid(); ++mfi)
+            {
+                const auto& bx = mfi.tilebox();
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), ICNS::ndim * 14 + 1);
+
+                godunov::compute_advection(lev, bx, ICNS::ndim,
+                                           conv_term(lev).array(mfi),
+                                           dof_field(lev).const_array(mfi),
+                                           u_mac(lev).const_array(mfi),
+                                           v_mac(lev).const_array(mfi),
+                                           w_mac(lev).const_array(mfi),
+                                           src_term(lev).const_array(mfi),
+                                           dof_field.bcrec_device().data(),
+                                           iconserv.data(),
+                                           tmpfab.dataPtr(),
+                                           geom, dt, godunov_ppm);
+
+                amrex::Gpu::streamSynchronize();
+            }
+        }
+    }
+
+    PDEFields& fields;
+    amrex::Gpu::DeviceVector<int> iconserv;
+
+    bool godunov_ppm{true};
+};
+
+template<>
+struct AdvectionOp<ICNS, fvm::MOL>
+{
+    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    {}
+
+    void operator()(const FieldState , const amrex::Real )
+    {}
+
+    PDEFields& fields;
 };
 
 }
