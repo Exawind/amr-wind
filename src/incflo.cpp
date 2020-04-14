@@ -3,6 +3,7 @@
 
 #include "ABL.H"
 #include "RefinementCriteria.H"
+#include "PDE.H"
 
 using namespace amrex;
 

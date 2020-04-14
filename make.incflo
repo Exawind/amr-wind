@@ -30,6 +30,10 @@ Bdirs += $(INCFLO_HOME)src/utilities
 Bdirs += $(INCFLO_HOME)src/utilities/tagging
 Bdirs += $(INCFLO_HOME)src/core
 Bdirs += $(INCFLO_HOME)src/wind_energy
+Bdirs += $(INCFLO_HOME)src/equation_systems
+Bdirs += $(INCFLO_HOME)src/equation_systems/icns
+Bdirs += $(INCFLO_HOME)src/equation_systems/temperature
+Bdirs += $(INCFLO_HOME)src/equation_systems/density
 
 Bpack += $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(TOP)/$(dir))

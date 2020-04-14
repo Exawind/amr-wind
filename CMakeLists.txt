@@ -89,7 +89,7 @@ set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 
 #Create main target executable
-add_library(${amr_wind_lib_name})
+add_library(${amr_wind_lib_name} OBJECT)
 add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
