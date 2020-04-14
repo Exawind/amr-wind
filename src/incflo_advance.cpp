@@ -6,6 +6,7 @@
 #include "Godunov.H"
 #include "MOL.H"
 #include "PDE.H"
+#include "mac_projection.H"
 
 using namespace amrex;
 
@@ -247,7 +248,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                  m_godunov_ppm,
                                  m_godunov_use_forces_in_trans);
 
-        apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density_old.vec_const_ptrs());
+        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
 
         godunov::compute_convective_term(m_repo,
                                          amr_wind::FieldState::Old,
@@ -256,11 +257,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
         
     } else{
 
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            predict_vels_on_faces(lev, u_mac(lev), v_mac(lev), w_mac(lev), velocity_old(lev));
-        }
+        mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::Old);
 
-        apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density_old.vec_const_ptrs());
+        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
 
         mol::compute_convective_term(m_repo, amr_wind::FieldState::Old, m_constant_density, m_advect_tracer);
 
@@ -580,10 +579,6 @@ void incflo::ApplyCorrector()
     auto& vel_eta = m_repo.get_field("velocity_nueff");
     auto& tra_eta = m_repo.get_field("temperature_nueff");
 
-    auto& u_mac = m_repo.get_field("u_mac");
-    auto& v_mac = m_repo.get_field("v_mac");
-    auto& w_mac = m_repo.get_field("w_mac");
-
     // Allocate scratch space for half time density and tracer
     auto& density_nph = density().state(amr_wind::FieldState::NPH);
     auto& tracer_nph = tracer().state(amr_wind::FieldState::NPH);
@@ -594,13 +589,9 @@ void incflo::ApplyCorrector()
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
     // in constructing the advection term
     // *************************************************************************************
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        predict_vels_on_faces(lev, u_mac(lev), v_mac(lev), w_mac(lev), velocity_new(lev));
-    }
-
-    apply_MAC_projection(u_mac.vec_ptrs(), v_mac.vec_ptrs(), w_mac.vec_ptrs(), density_new.vec_const_ptrs());
-
-    mol::compute_convective_term (m_repo,amr_wind::FieldState::New,m_constant_density,m_advect_tracer);
+    mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::New);
+    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
+    mol::compute_convective_term (m_repo,amr_wind::FieldState::New, m_constant_density, m_advect_tracer);
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients

@@ -3,10 +3,45 @@
 #include <AMReX_SPACE.H>
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
+#include <AMReX_Vector.H>
 
-#include <incflo.H>
+#include <mac_projection.H>
 
 using namespace amrex;
+
+Array<amrex::LinOpBCType,AMREX_SPACEDIM>
+mac::get_projection_bc (Orientation::Side side, GpuArray<BC, AMREX_SPACEDIM*2> bctype, Vector<Geometry> geom) noexcept
+{
+
+    Array<LinOpBCType,AMREX_SPACEDIM> r;
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        if (geom[0].isPeriodic(dir)) {
+            r[dir] = LinOpBCType::Periodic;
+        } else {
+            auto bc = bctype[Orientation(dir,side)];
+            switch (bc)
+            {
+            case BC::pressure_inflow:
+            case BC::pressure_outflow:
+            {
+                r[dir] = LinOpBCType::Dirichlet;
+                break;
+            }
+            case BC::mass_inflow:
+            case BC::slip_wall:
+            case BC::no_slip_wall:
+            case BC::wall_model:
+            {
+                r[dir] = LinOpBCType::Neumann;
+                break;
+            }
+            default:
+                amrex::Abort("mac get_projection_bc: undefined BC type");
+            };
+        }
+    }
+    return r;
+}
 
 //
 // Computes the following decomposition:
@@ -29,46 +64,71 @@ using namespace amrex;
 //       div(ep*grad(phi)/rho) = div(ep * u*)
 // 
 void 
-incflo::apply_MAC_projection (Vector<MultiFab*> const& u_mac,
-                              Vector<MultiFab*> const& v_mac,
-                              Vector<MultiFab*> const& w_mac,
-                              Vector<MultiFab const*> const& density)
+mac::apply_MAC_projection (amr_wind::FieldRepo& repo,
+                           amr_wind::FieldState fstate,
+                           int mac_mg_max_coarsening_level,
+                           Real m_mac_mg_rtol,
+                           Real m_mac_mg_atol)
 {
     BL_PROFILE("incflo::apply_MAC_projection()");
 
-    if (m_verbose > 2) amrex::Print() << "MAC Projection:\n";
+    auto& u_mac = repo.get_field("u_mac");
+    auto& v_mac = repo.get_field("v_mac");
+    auto& w_mac = repo.get_field("w_mac");
+    auto& density = repo.get_field("density", fstate);
+    auto& geom = repo.mesh().Geom();
+
+//    if (m_verbose > 2) amrex::Print() << "MAC Projection:\n";
 
     // This will hold (1/rho) on faces
-    Vector<Array<MultiFab ,AMREX_SPACEDIM> > rho_face(finest_level+1);
-    Vector<Array<MultiFab*,AMREX_SPACEDIM> > mac_vec(finest_level+1);
-    for (int lev=0; lev <= finest_level; ++lev)
-    {
-        rho_face[lev][0].define(u_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
-        rho_face[lev][1].define(v_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
-        rho_face[lev][2].define(w_mac[lev]->boxArray(),dmap[lev],1,0,MFInfo(),Factory(lev));
+    auto rho_xf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+    auto rho_yf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+    auto rho_zf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
 
-        amrex::average_cellcenter_to_face(GetArrOfPtrs(rho_face[lev]), *density[lev], geom[lev]);
+    Vector<Array<MultiFab*,AMREX_SPACEDIM>> rho_face(repo.num_active_levels());
+    Vector<Array<MultiFab const*,AMREX_SPACEDIM>> rho_face_const;
+    rho_face_const.reserve(repo.num_active_levels());
+    Vector<Array<MultiFab*,AMREX_SPACEDIM>> mac_vec(repo.num_active_levels());
+
+    for (int lev=0; lev < repo.num_active_levels(); ++lev)
+    {
+        rho_face[lev][0] = &(*rho_xf)(lev);
+        rho_face[lev][1] = &(*rho_yf)(lev);
+        rho_face[lev][2] = &(*rho_zf)(lev);
+
+        amrex::average_cellcenter_to_face(rho_face[lev], density(lev), geom[lev]);
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-            rho_face[lev][idim].invert(1.0, 0);
+            rho_face[lev][idim]->invert(1.0, 0);
         }
 
-        mac_vec[lev][0] = u_mac[lev];
-        mac_vec[lev][1] = v_mac[lev];
-        mac_vec[lev][2] = w_mac[lev];
+        rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
+
+        mac_vec[lev][0] = &u_mac(lev);
+        mac_vec[lev][1] = &v_mac(lev);
+        mac_vec[lev][2] = &w_mac(lev);
     }
 
     //
     // If we want to set max_coarsening_level we have to send it in to the constructor
     //
     LPInfo lp_info;
-    lp_info.setMaxCoarseningLevel(m_mac_mg_max_coarsening_level);
+    lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
 
     //
     // Perform MAC projection
     //
-    MacProjector macproj(mac_vec, GetVecOfArrOfConstPtrs(rho_face), Geom(0,finest_level), lp_info);
+    MacProjector macproj(mac_vec,
+                         rho_face_const,
+                         repo.mesh().Geom(0,repo.num_active_levels()-1),
+                         lp_info);
 
-    macproj.setDomainBC(get_projection_bc(Orientation::low), get_projection_bc(Orientation::high));
+    auto& bctype = repo.get_field("p").bc_type();
+    
+//    macproj.setDomainBC(mac::get_projection_bc(Orientation::low, bctype), get_projection_bc(Orientation::high, bctype));
+    macproj.setDomainBC(get_projection_bc(Orientation::low, bctype, repo.mesh().Geom()),
+                        get_projection_bc(Orientation::high, bctype, repo.mesh().Geom()));
 
-    macproj.project(m_mac_mg_rtol,m_mac_mg_atol,MLMG::Location::FaceCentroid);
+    macproj.project(m_mac_mg_rtol,
+                    m_mac_mg_atol,
+                    MLMG::Location::FaceCentroid);
 }
