@@ -43,7 +43,17 @@ struct Factory
             return true;
         }
 
-        virtual ~Register() = default;
+        virtual ~Register()
+        {
+            if (registered) {
+                auto& tbl = Factory::table();
+                const auto& it = tbl.find(T::identifier());
+                if (it != tbl.end()) {
+                    tbl.erase(T::identifier());
+                    registered = false;
+                }
+            }
+        }
 
     private:
         Register() { (void)registered; }
