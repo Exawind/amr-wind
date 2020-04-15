@@ -248,7 +248,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                  m_godunov_ppm,
                                  m_godunov_use_forces_in_trans);
 
-        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
+        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old);
 
         godunov::compute_convective_term(m_repo,
                                          amr_wind::FieldState::Old,
@@ -259,7 +259,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
         mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::Old);
 
-        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
+        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old);
 
         mol::compute_convective_term(m_repo, amr_wind::FieldState::Old, m_constant_density, m_advect_tracer);
 
@@ -590,7 +590,7 @@ void incflo::ApplyCorrector()
     // in constructing the advection term
     // *************************************************************************************
     mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::New);
-    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
+    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New);
     mol::compute_convective_term (m_repo,amr_wind::FieldState::New, m_constant_density, m_advect_tracer);
 
     // *************************************************************************************

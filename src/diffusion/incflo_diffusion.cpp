@@ -1,4 +1,5 @@
-#include <incflo.H>
+#include "incflo.H"
+#include "diffusion.H"
 
 using namespace amrex;
 
@@ -18,17 +19,20 @@ incflo::get_diffusion_scalar_op ()
     return m_diffusion_scalar_op.get();
 }
 
-Vector<Array<LinOpBCType,AMREX_SPACEDIM> >
-incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
+namespace diffusion {
+
+Vector<Array<LinOpBCType, AMREX_SPACEDIM>>
+get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcept
 {
+    const auto& geom = velocity.repo().mesh().Geom(0);
     Vector<Array<LinOpBCType,AMREX_SPACEDIM>> r(3);
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (Geom(0).isPeriodic(dir)) {
+        if (geom.isPeriodic(dir)) {
             r[0][dir] = LinOpBCType::Periodic;
             r[1][dir] = LinOpBCType::Periodic;
             r[2][dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = velocity().bc_type()[Orientation(dir,side)];
+            auto bc = velocity.bc_type()[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:
@@ -79,15 +83,15 @@ incflo::get_diffuse_tensor_bc (Orientation::Side side) const noexcept
     return r;
 }
 
-Array<LinOpBCType,AMREX_SPACEDIM>
-incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
+Array<LinOpBCType, AMREX_SPACEDIM>
+get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
 {
     Array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (Geom(0).isPeriodic(dir)) {
+        if (scalar.repo().mesh().Geom(0).isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = tracer().bc_type()[Orientation(dir,side)];
+            auto bc = scalar.bc_type()[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:
@@ -116,21 +120,24 @@ incflo::get_diffuse_scalar_bc (Orientation::Side side) const noexcept
     return r;
 }
 
-void
-incflo::wall_model_bc(const int lev,
-                      const amrex::Real utau,
-                      const amrex::Real umag,
-                      const amrex::Array<amrex::MultiFab const*, AMREX_SPACEDIM>& fc_eta,
-                      const amrex::MultiFab& density,
-                      const amrex::MultiFab& velocity,
-                      amrex::MultiFab& bc) const
+void wall_model_bc(
+    const int lev,
+    amr_wind::FieldRepo& repo,
+    const amrex::Real utau,
+    const amrex::Real umag,
+    const amrex::Array<amrex::MultiFab const*, AMREX_SPACEDIM>& fc_eta,
+    amrex::MultiFab& bc)
 {
 
-    amrex::Print() << "warning wall model being called with hard coded bc's, wall model is assumed on bottom and slip on top" << std::endl;
+    amrex::Print() << "warning wall model being called with hard coded bc's, "
+                      "wall model is assumed on bottom and slip on top"
+                   << std::endl;
 
-    const Geometry& gm = Geom(lev);
-    const Box& domain = gm.Domain();
+    const Geometry& geom = repo.mesh().Geom(lev);
+    const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
+    auto& density = repo.get_field("density")(lev);
+    auto& velocity = repo.get_field("velocity")(lev);
 
     // copies cell center to face
     Real c0 = 1.0;
@@ -155,7 +162,7 @@ incflo::wall_model_bc(const int lev,
         
         int idim = 0;
         // fixme this assume periodic
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
@@ -173,7 +180,7 @@ incflo::wall_model_bc(const int lev,
         }
 
         idim = 1;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int , int , int ) noexcept
@@ -192,7 +199,7 @@ incflo::wall_model_bc(const int lev,
 
             
         idim = 2;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             Array4<Real const> const& eta = fc_eta[idim]->const_array(mfi);
             
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
@@ -243,21 +250,16 @@ incflo::wall_model_bc(const int lev,
             }
         }
     }
-    
 }
 
-
 void
-incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const
+heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex::MultiFab& bc)
 {
 
-    const Geometry& gm = Geom(lev);
-    const Box& domain = gm.Domain();
+    const Geometry& geom = scalar.repo().mesh().Geom(lev);
+    const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
  
-    // fixme still hard coding that potential temperature is the first tracer
-    AMREX_ALWAYS_ASSERT(m_ntrac==1);
-    
     if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -270,9 +272,9 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         int idim = 0;
         
         // fixme this assume periodic
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[0][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[0][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -282,7 +284,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[3][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[3][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -294,9 +296,9 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         }
 
         idim = 1;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[1][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[1][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -306,7 +308,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[4][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[4][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -318,9 +320,9 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
         }
 
         idim = 2;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[2][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[2][comp];
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -330,7 +332,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = tracer().bc_values_device()[5][comp];
+                const Real local_m_bc_tracer_d = scalar.bc_values_device()[5][comp];
                 amrex::ParallelFor(amrex::bdryHi(bx, idim),
                 [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
@@ -345,7 +347,7 @@ incflo::heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) c
 
 
 Array<MultiFab,AMREX_SPACEDIM>
-incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta) const
+average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
@@ -356,13 +358,13 @@ incflo::average_velocity_eta_to_faces (int lev, MultiFab const& cc_eta) const
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
                                               dm, 1, 0, MFInfo(), fact)};
-    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, Geom(lev));
-    fixup_eta_on_domain_faces(lev, r, cc_eta);
+    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, geom);
+    fixup_eta_on_domain_faces(geom, r, cc_eta);
     return r;
 }
 
 Array<MultiFab,AMREX_SPACEDIM>
-incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta) const
+average_tracer_eta_to_faces (int comp, const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
@@ -374,14 +376,14 @@ incflo::average_tracer_eta_to_faces (int lev, int comp, MultiFab const& cc_eta) 
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
                                               dm, 1, 0, MFInfo(), fact)};
-    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, Geom(lev));
-    fixup_eta_on_domain_faces(lev, r, cc);
+    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, geom);
+    fixup_eta_on_domain_faces(geom, r, cc);
     return r;
 }
 
 void
-incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
-                                   MultiFab const& cc) const
+fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPACEDIM>& fc,
+                                   MultiFab const& cc)
 {
     
     // copies cell center to face
@@ -395,8 +397,7 @@ incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
         c1 = -0.5;
     }
     
-    const Geometry& gm = Geom(lev);
-    const Box& domain = gm.Domain();
+    const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
     if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
 #ifdef _OPENMP
@@ -407,7 +408,7 @@ incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
         Array4<Real const> const& cca = cc.const_array(mfi);
 
         int idim = 0;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
@@ -426,7 +427,7 @@ incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
         }
 
         idim = 1;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
@@ -446,7 +447,7 @@ incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
         }
 
         idim = 2;
-        if (!gm.isPeriodic(idim)) {
+        if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
                 amrex::ParallelFor(amrex::bdryLo(bx, idim),
@@ -456,12 +457,14 @@ incflo::fixup_eta_on_domain_faces (int lev, Array<MultiFab,AMREX_SPACEDIM>& fc,
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i,j,k-1) + c1*cca(i,j,k-2);
-                });
+                amrex::ParallelFor(
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i, j, k - 1) + c1 * cca(i, j, k - 2);
+                    });
             }
         }
     }
 }
+} // namespace diffusion
