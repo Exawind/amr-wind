@@ -7,6 +7,7 @@
 
 using namespace amrex;
 
+#if 0
 void godunov::predict_godunov (amr_wind::FieldRepo& repo,
                                amr_wind::FieldState fstate,
                                Real dt,
@@ -75,7 +76,7 @@ void godunov::predict_godunov (amr_wind::FieldRepo& repo,
                                           geom, dt, vel.bcrec_device());
                 } else {
                     godunov::predict_plm (lev, bxg1, AMREX_SPACEDIM, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
-                                 geom, dt, vel.bcrec_device());
+                                 geom, dt, vel.bcrec(), vel.bcrec_device());
                 }
 
                 godunov::make_trans_velocities(lev, Box(u_ad), Box(v_ad), Box(w_ad),
@@ -95,6 +96,7 @@ void godunov::predict_godunov (amr_wind::FieldRepo& repo,
     }
         
 }
+#endif
 
 void godunov::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Box const& zbx,
                                     Array4<Real> const& u_ad,

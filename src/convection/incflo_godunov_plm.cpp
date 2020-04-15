@@ -3,6 +3,18 @@
 
 using namespace amrex;
 
+namespace {
+    std::pair<bool,bool> has_extdir (BCRec const* bcrec, int ncomp, int dir)
+    {
+        std::pair<bool,bool> r{false,false};
+        for (int n = 0; n < ncomp; ++n) {
+            r.first = r.first or bcrec[n].lo(dir) == BCType::ext_dir;
+            r.second = r.second or bcrec[n].hi(dir) == BCType::ext_dir;
+        }
+        return r;
+    }
+}
+
 void godunov::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real> const& Imx, Array4<Real> const& Ipx,
                           Array4<Real> const& Imy, Array4<Real> const& Ipy,
@@ -11,6 +23,7 @@ void godunov::predict_plm (int lev, Box const& bx, int ncomp,
                           Array4<Real const> const& vcc,
                           Vector<Geometry> geom,
                           Real dt,
+                          Vector<BCRec> const& h_bcrec,
                           amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
     const Real dx = geom[lev].CellSize(0);
@@ -32,7 +45,11 @@ void godunov::predict_plm (int lev, Box const& bx, int ncomp,
 
     BCRec const* pbc = bcrec_device.data();
 
-    if ((domain_ilo >= bx.smallEnd(0)-1) or (domain_ihi <= bx.bigEnd(0)))
+    auto extdir_lohi = has_extdir(h_bcrec.data(), ncomp, static_cast<int>(Direction::x));
+    bool has_extdir_lo = extdir_lohi.first;
+    bool has_extdir_hi = extdir_lohi.second;
+    if ((has_extdir_lo and domain_ilo >= bx.smallEnd(0)-1) or
+        (has_extdir_hi and domain_ihi <= bx.bigEnd(0)))
     {
         amrex::ParallelFor(bx, ncomp, [q,vcc,domain_ilo,domain_ihi,Imx,Ipx,dtdx,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -73,7 +90,12 @@ void godunov::predict_plm (int lev, Box const& bx, int ncomp,
         });
     }
 
-    if ((domain_jlo >= bx.smallEnd(1)-1) or (domain_jhi <= bx.bigEnd(1)))
+    extdir_lohi = has_extdir(h_bcrec.data(), ncomp,  static_cast<int>(Direction::y));
+    has_extdir_lo = extdir_lohi.first;
+    has_extdir_hi = extdir_lohi.second;
+
+    if ((has_extdir_lo and domain_jlo >= bx.smallEnd(1)-1) or
+        (has_extdir_hi and domain_jhi <= bx.bigEnd(1)))
     {
         amrex::ParallelFor(bx, ncomp, [q,vcc,domain_jlo,domain_jhi,Imy,Ipy,dtdy,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -114,7 +136,12 @@ void godunov::predict_plm (int lev, Box const& bx, int ncomp,
         });
     }
 
-    if ((domain_klo >= bx.smallEnd(2)-1) or (domain_khi <= bx.bigEnd(2)))
+    extdir_lohi = has_extdir(h_bcrec.data(), ncomp, static_cast<int>(Direction::z));
+    has_extdir_lo = extdir_lohi.first;
+    has_extdir_hi = extdir_lohi.second;
+
+    if ((has_extdir_lo and domain_klo >= bx.smallEnd(2)-1) or
+        (has_extdir_hi and domain_khi <= bx.bigEnd(2)))
     {
         amrex::ParallelFor(bx, ncomp, [q,vcc,domain_klo,domain_khi,Ipz,Imz,dtdz,pbc]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept

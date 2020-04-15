@@ -95,7 +95,7 @@ void incflo::ReadParameters ()
         }
     } // end prefix incflo
 
-    { // Prefix mac
+    { // Prefix mac //fixme I think this can go now that it is absorbed inside advectionOp
         ParmParse pp_mac("mac_proj");
         pp_mac.query( "mg_verbose"   , m_mac_mg_verbose );
         pp_mac.query( "mg_cg_verbose", m_mac_mg_cg_verbose );

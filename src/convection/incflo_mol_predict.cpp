@@ -5,6 +5,7 @@
 
 using namespace amrex;
 
+#if 0
 void mol::predict_vels_on_faces(amr_wind::FieldRepo& repo, const amr_wind::FieldState fstate)
 {
 
@@ -40,6 +41,7 @@ void mol::predict_vels_on_faces(amr_wind::FieldRepo& repo, const amr_wind::Field
         }
     }
 }
+#endif
 
 void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
                                  Array4<Real> const& u, Array4<Real> const& v, Array4<Real> const& w,

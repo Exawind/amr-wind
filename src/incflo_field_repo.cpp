@@ -14,9 +14,8 @@ void incflo::declare_fields()
         "ICNS-" + scheme, m_time, m_repo, m_probtype);
     m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
         "Temperature-" + scheme, m_time, m_repo, m_probtype));
-
-    const int nstates = 2;
-    m_repo.declare_cc_field("conv_density", 1, 0, nstates);
+    m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
+        "Density-" + scheme, m_time, m_repo, m_probtype));
 }
 
 void incflo::init_field_bcs ()

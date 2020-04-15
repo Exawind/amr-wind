@@ -3,6 +3,7 @@
 
 using namespace amrex;
 
+#if 0
 void
 godunov::compute_convective_term (amr_wind::FieldRepo& repo,
                                   const amr_wind::FieldState fstate,
@@ -226,3 +227,4 @@ mol::compute_convective_term (amr_wind::FieldRepo& repo,
 }
 
 
+#endif

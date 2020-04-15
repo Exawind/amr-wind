@@ -41,6 +41,8 @@ struct AdvectionOp<
         auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
+
+        // only needed if multiplying by rho below
         auto& den = repo.get_field("density", fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
@@ -49,9 +51,9 @@ struct AdvectionOp<
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
                     .SetDynamic(true);
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (amrex::MFIter mfi(den(lev),mfi_info); mfi.isValid(); ++mfi)
+            for (amrex::MFIter mfi(dof_field(lev),mfi_info); mfi.isValid(); ++mfi)
             {
                 const auto& bx = mfi.tilebox();
                 auto rho_arr = den(lev).array(mfi);
@@ -64,10 +66,10 @@ struct AdvectionOp<
                     rhotrac = rhotracfab.array();
 
                     amrex::ParallelFor(
-                        rhotrac_box,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            rhotrac(i, j, k) =
-                                rho_arr(i, j, k) * tra_arr(i, j, k);
+                        rhotrac_box, PDE::ndim,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                            rhotrac(i, j, k, n) =
+                                rho_arr(i, j, k) * tra_arr(i, j, k, n);
                         });
                 }
 

@@ -158,8 +158,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& conv_velocity =
         m_use_godunov ? icns_fields.conv_term
                       : icns_fields.conv_term.state(amr_wind::FieldState::Old);
-    auto& conv_density =
-        m_repo.get_field("conv_density", amr_wind::FieldState::Old);
+    auto& conv_density = m_repo.get_field("density_conv_term", pred_state);
     auto& conv_tracer = m_repo.get_field("temperature_conv_term", pred_state);
 
     auto& u_mac = m_repo.get_field("u_mac");
@@ -240,29 +239,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
     // Note that "get_conv_tracer_old" returns div(rho u tracer)
     // *************************************************************************************
-    if(m_use_godunov){
 
-        godunov::predict_godunov(m_repo,
-                                 amr_wind::FieldState::Old,
-                                 m_time.deltaT(),
-                                 m_godunov_ppm,
-                                 m_godunov_use_forces_in_trans);
+    m_icns->compute_advection_term(amr_wind::FieldState::Old);
 
-        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
-
-        godunov::compute_convective_term(m_repo,
-                                         amr_wind::FieldState::Old,
-                                         m_time.deltaT(),
-                                         m_constant_density, m_advect_tracer, m_godunov_ppm);
-        
-    } else{
-
-        mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::Old);
-
-        mac::apply_MAC_projection(m_repo, amr_wind::FieldState::Old, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
-
-        mol::compute_convective_term(m_repo, amr_wind::FieldState::Old, m_constant_density, m_advect_tracer);
-
+    for (auto& seqn: m_scalar_eqns) {
+        seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
 
     // *************************************************************************************
@@ -589,9 +570,15 @@ void incflo::ApplyCorrector()
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
     // in constructing the advection term
     // *************************************************************************************
-    mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::New);
-    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
-    mol::compute_convective_term (m_repo,amr_wind::FieldState::New, m_constant_density, m_advect_tracer);
+//    mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::New);
+//    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
+
+    m_icns->compute_advection_term(amr_wind::FieldState::New);
+
+    for (auto& seqn: m_scalar_eqns) {
+        seqn->compute_advection_term(amr_wind::FieldState::New);
+    }
+
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
@@ -640,8 +627,8 @@ void incflo::ApplyCorrector()
                 Array4<Real const> const& rho_o  = density_old(lev).const_array(mfi);
                 Array4<Real> const& rho_n        = density_new(lev).array(mfi);
                 Array4<Real> const& rho_nph      = (density_nph)(lev).array(mfi);
-                Array4<Real const> const& drdt_o = m_repo.get_field("conv_density", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                Array4<Real const> const& drdt   = m_repo.get_field("conv_density", amr_wind::FieldState::New)(lev).const_array(mfi);
+                Array4<Real const> const& drdt_o = m_repo.get_field("density_conv_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
+                Array4<Real const> const& drdt   = m_repo.get_field("density_conv_term", amr_wind::FieldState::New)(lev).const_array(mfi);
 
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {

@@ -10,6 +10,7 @@
 
 namespace godunov {
 
+#if 0
 void predict_godunov(
     amr_wind::FieldRepo& repo,
     const amr_wind::FieldState fstate,
@@ -24,6 +25,7 @@ void compute_convective_term(
     bool constant_density,
     bool advect_tracer,
     bool godunov_ppm);
+#endif
 
 void compute_advection(
     int lev,
@@ -72,6 +74,7 @@ void predict_plm(
     amrex::Array4<amrex::Real const> const& vcc,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
+    amrex::Vector<amrex::BCRec> const& h_bcrec,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
 
 void make_trans_velocities(
