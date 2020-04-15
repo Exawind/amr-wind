@@ -95,14 +95,6 @@ void incflo::ReadParameters ()
         }
     } // end prefix incflo
 
-    { // Prefix nodal_proj
-        ParmParse pp_mac("nodal_proj");
-        pp_mac.query( "mg_verbose"   , m_nodal_proj_mg_verbose );
-        pp_mac.query( "mg_rtol"      , m_nodal_proj_mg_rtol );
-        pp_mac.query( "mg_atol"      , m_nodal_proj_mg_atol );
-    } // end prefix nodal_proj
-    
-
     // FIXME: clean up WIP logic
     if (m_probtype == 35) {
         m_physics.emplace_back(new amr_wind::ABL(m_time, this));

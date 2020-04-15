@@ -198,10 +198,6 @@ private:
     // AMR / refinement settings
     int m_refine_cutcells = 1;
 
-    int m_nodal_proj_mg_verbose = 0;
-    amrex::Real m_nodal_proj_mg_rtol = 1.0e-11;
-    amrex::Real m_nodal_proj_mg_atol = 1.0e-14;
-
     amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
@@ -266,8 +262,6 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-//    amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
-
     int m_ntrac = 1;
 
     std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
@@ -302,12 +296,6 @@ private:
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
-
-    amrex::Vector<amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM> >
-    get_diffuse_tensor_bc (amrex::Orientation::Side side) const noexcept;
-
-    amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
-    get_diffuse_scalar_bc (amrex::Orientation::Side side) const noexcept;
 
     void Advance ();
     void AverageDown ();
