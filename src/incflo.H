@@ -68,6 +68,9 @@ public:
         m_utau_mean_ground = ustar;
     }
 
+    const amr_wind::SimTime& time() const { return m_time; }
+    amr_wind::FieldRepo& repo() { return m_repo; }
+    const amr_wind::FieldRepo& repo() const { return m_repo; }
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
     amr_wind::Field& density() const { return m_repo.get_field("density"); }
     amr_wind::Field& tracer() const { return m_repo.get_field("temperature"); }
@@ -122,28 +125,7 @@ public: // for cuda
     void ComputeDivU (amrex::Real time);
     amrex::Real ComputeKineticEnergy () const;
 
-    
-    
-    void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
     bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
-    
-    void heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const;
-  
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // diffusion
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_velocity_eta_to_faces (int lev, amrex::MultiFab const& cc_eta) const;
-
-    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_tracer_eta_to_faces (int lev, int comp, amrex::MultiFab const& cc_eta) const;
-
-    void fixup_eta_on_domain_faces (int lev,
-                                    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>& fc,
-                                    amrex::MultiFab const& cc) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //
