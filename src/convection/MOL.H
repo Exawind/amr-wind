@@ -10,6 +10,22 @@
 
 namespace mol {
 
+void predict_vels_on_faces(
+    amr_wind::FieldRepo& repo,
+    const amr_wind::FieldState fstate);
+
+void predict_vels_on_faces(
+    int lev,
+    amrex::Box const& ubx,
+    amrex::Box const& vbx,
+    amrex::Box const& wbx,
+    amrex::Array4<amrex::Real> const& u,
+    amrex::Array4<amrex::Real> const& v,
+    amrex::Array4<amrex::Real> const& w,
+    amrex::Array4<amrex::Real const> const& vcc,
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2> bctype,
+    amrex::Vector<amrex::Geometry> geom);
+
 void compute_convective_term(
     amr_wind::FieldRepo& repo,
     const amr_wind::FieldState fstate,

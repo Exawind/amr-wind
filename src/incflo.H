@@ -109,22 +109,6 @@ public: // for cuda
 
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
-    
-    //
-    // MOL
-    //
-    void predict_vels_on_faces (int lev,  amrex::MultiFab& u_mac,
-                                amrex::MultiFab& v_mac, amrex::MultiFab& w_mac,
-                                amrex::MultiFab const& vel);
-
-    void predict_vels_on_faces (int lev,
-                                amrex::Box const& ubx,
-                                amrex::Box const& vbx,
-                                amrex::Box const& wbx,
-                                amrex::Array4<amrex::Real> const& u,
-                                amrex::Array4<amrex::Real> const& v,
-                                amrex::Array4<amrex::Real> const& w,
-                                amrex::Array4<amrex::Real const> const& vcc);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -355,20 +339,6 @@ private:
     void Advance ();
     void AverageDown ();
     void AverageDownTo (int crse_lev);
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // convection
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    void init_advection ();
-
-    void apply_MAC_projection (amrex::Vector<amrex::MultiFab*> const& u_mac,
-                               amrex::Vector<amrex::MultiFab*> const& v_mac,
-                               amrex::Vector<amrex::MultiFab*> const& w_mac,
-                               amrex::Vector<amrex::MultiFab const*> const& density);
 
     ///////////////////////////////////////////////////////////////////////////
     //

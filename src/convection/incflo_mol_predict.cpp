@@ -1,40 +1,51 @@
-#include <incflo.H>
+//#include <incflo.H>
 #include <incflo_convection_K.H>
 #include <incflo_MAC_bcs.H>
+#include "MOL.H"
 
 using namespace amrex;
 
-void incflo::predict_vels_on_faces (int lev, MultiFab& u_mac, MultiFab& v_mac,
-                                    MultiFab& w_mac, MultiFab const& vel)
+void mol::predict_vels_on_faces(amr_wind::FieldRepo& repo, const amr_wind::FieldState fstate)
 {
 
-    Box const& domain = Geom(lev).Domain();
-    Vector<BCRec> const& h_bcrec = velocity().bcrec();
+    auto& u_mac = repo.get_field("u_mac");
+    auto& v_mac = repo.get_field("v_mac");
+    auto& w_mac = repo.get_field("w_mac");
+    auto& vel = repo.get_field("velocity",fstate);
+    auto& bctype = vel.bc_type();
+
+    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+
+        Box const& domain = repo.mesh().Geom(lev).Domain();
+        Vector<BCRec> const& h_bcrec = vel.bcrec();
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    {
-        for (MFIter mfi(vel, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
-            Box const& ubx = mfi.nodaltilebox(0);
-            Box const& vbx = mfi.nodaltilebox(1);
-            Box const& wbx = mfi.nodaltilebox(2);
-            Array4<Real> const& u = u_mac.array(mfi);
-            Array4<Real> const& v = v_mac.array(mfi);
-            Array4<Real> const& w = w_mac.array(mfi);
-            Array4<Real const> const& vcc = vel.const_array(mfi);
-            
-            predict_vels_on_faces(lev,ubx,vbx,wbx,u,v,w,vcc);
+            for (MFIter mfi(vel(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                Box const& ubx = mfi.nodaltilebox(0);
+                Box const& vbx = mfi.nodaltilebox(1);
+                Box const& wbx = mfi.nodaltilebox(2);
+                Array4<Real> const& u = u_mac(lev).array(mfi);
+                Array4<Real> const& v = v_mac(lev).array(mfi);
+                Array4<Real> const& w = w_mac(lev).array(mfi);
+                Array4<Real const> const& vcc = vel(lev).const_array(mfi);
 
-            incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec);
+                predict_vels_on_faces(lev,ubx,vbx,wbx,u,v,w,vcc,bctype,repo.mesh().Geom());
+
+                incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec);
+            }
         }
     }
 }
 
-void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
-                                    Array4<Real> const& u, Array4<Real> const& v,
-                                    Array4<Real> const& w, Array4<Real const> const& vcc)
+void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
+                                 Array4<Real> const& u, Array4<Real> const& v, Array4<Real> const& w,
+                                 Array4<Real const> const& vcc,
+                                 amrex::GpuArray<BC, AMREX_SPACEDIM*2> bctype,
+                                 Vector<Geometry> geom)
 {
     constexpr Real small_vel = 1.e-10;
 
@@ -46,7 +57,6 @@ void incflo::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box
     const int domain_klo = domain_box.smallEnd(2);
     const int domain_khi = domain_box.bigEnd(2);
 
-    auto& bctype = velocity().bc_type();
     auto const bc_ilo = bctype[Orientation(Direction::x,Orientation::low)];
     auto const bc_ihi = bctype[Orientation(Direction::x,Orientation::high)];
     auto const bc_jlo = bctype[Orientation(Direction::y,Orientation::low)];
