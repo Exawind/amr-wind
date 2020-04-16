@@ -68,6 +68,9 @@ public:
         m_utau_mean_ground = ustar;
     }
 
+    const amr_wind::SimTime& time() const { return m_time; }
+    amr_wind::FieldRepo& repo() { return m_repo; }
+    const amr_wind::FieldRepo& repo() const { return m_repo; }
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
     amr_wind::Field& density() const { return m_repo.get_field("density"); }
     amr_wind::Field& tracer() const { return m_repo.get_field("temperature"); }
@@ -122,28 +125,7 @@ public: // for cuda
     void ComputeDivU (amrex::Real time);
     amrex::Real ComputeKineticEnergy () const;
 
-    
-    
-    void wall_model_bc(const int lev, const amrex::Real utau, const amrex::Real umag, const amrex::Array<amrex::MultiFab const*,AMREX_SPACEDIM>& fc_eta, const amrex::MultiFab& density, const amrex::MultiFab& velocity, amrex::MultiFab& bc) const;
     bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
-    
-    void heat_flux_model_bc(const int lev, const int comp, amrex::MultiFab& bc) const;
-  
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // diffusion
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_velocity_eta_to_faces (int lev, amrex::MultiFab const& cc_eta) const;
-
-    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>
-    average_tracer_eta_to_faces (int lev, int comp, amrex::MultiFab const& cc_eta) const;
-
-    void fixup_eta_on_domain_faces (int lev,
-                                    amrex::Array<amrex::MultiFab,AMREX_SPACEDIM>& fc,
-                                    amrex::MultiFab const& cc) const;
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -216,19 +198,6 @@ private:
     // AMR / refinement settings
     int m_refine_cutcells = 1;
 
-    int m_mac_mg_verbose = 0;
-    int m_mac_mg_cg_verbose = 0;
-    int m_mac_mg_maxiter = 200;
-    int m_mac_mg_cg_maxiter = 200;
-    int m_mac_mg_max_coarsening_level = 100;
-    amrex::Real m_mac_mg_rtol = 1.0e-11;
-    amrex::Real m_mac_mg_atol = 1.0e-14;
-    std::string m_mac_bottom_solver_type;
-    
-    int m_nodal_proj_mg_verbose = 0;
-    amrex::Real m_nodal_proj_mg_rtol = 1.0e-11;
-    amrex::Real m_nodal_proj_mg_atol = 1.0e-14;
-
     amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
@@ -293,8 +262,6 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-//    amrex::GpuArray<BC                         , AMREX_SPACEDIM*2> m_bc_type;
-
     int m_ntrac = 1;
 
     std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
@@ -329,12 +296,6 @@ private:
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
-
-    amrex::Vector<amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM> >
-    get_diffuse_tensor_bc (amrex::Orientation::Side side) const noexcept;
-
-    amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
-    get_diffuse_scalar_bc (amrex::Orientation::Side side) const noexcept;
 
     void Advance ();
     void AverageDown ();

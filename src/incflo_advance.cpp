@@ -570,15 +570,12 @@ void incflo::ApplyCorrector()
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
     // in constructing the advection term
     // *************************************************************************************
-//    mol::predict_vels_on_faces(m_repo, amr_wind::FieldState::New);
-//    mac::apply_MAC_projection(m_repo, amr_wind::FieldState::New, m_mac_mg_max_coarsening_level, m_mac_mg_rtol, m_mac_mg_atol);
 
     m_icns->compute_advection_term(amr_wind::FieldState::New);
 
     for (auto& seqn: m_scalar_eqns) {
         seqn->compute_advection_term(amr_wind::FieldState::New);
     }
-
 
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients

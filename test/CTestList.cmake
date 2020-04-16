@@ -75,7 +75,12 @@ function(add_test_r TEST_NAME NP)
     # Add test and actual test commands to CTest database
     add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${FCOMPARE_COMMAND}")
     # Set properties for test
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 5400 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
+    set_tests_properties(${TEST_NAME} PROPERTIES
+                         TIMEOUT 5400
+                         PROCESSORS ${NP}
+                         WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
+                         LABELS "regression"
+                         ATTACHED_FILES_ON_FAIL "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
 endfunction(add_test_r)
 
 # Regression tests excluded from CI
@@ -99,7 +104,11 @@ function(add_test_u TEST_NAME NP)
     # Add test and commands to CTest database
     add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
     # Set properties for test
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "unit")
+    set_tests_properties(${TEST_NAME} PROPERTIES
+                         TIMEOUT 500
+                         PROCESSORS ${NP}
+                         WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
+                         LABELS "unit")
 endfunction(add_test_u)
 
 #=============================================================================

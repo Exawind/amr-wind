@@ -41,6 +41,10 @@ if(AMR_WIND_ENABLE_VERIFICATION)
   set(AMR_WIND_ENABLE_TESTS ON)
 endif()
 
+if(AMR_WIND_TEST_WITH_FCOMPARE)
+  set(AMR_WIND_ENABLE_FCOMPARE ON)
+endif()
+
 ########################### AMReX #####################################
 
 set(AMREX_SUBMOD_LOCATION "submods/amrex")

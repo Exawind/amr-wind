@@ -1,6 +1,7 @@
 #include <incflo.H>
 #include <DiffusionScalarOp.H>
 #include <AMReX_ParmParse.H>
+#include "diffusion.H"
 
 using namespace amrex;
 
@@ -19,18 +20,22 @@ DiffusionScalarOp::DiffusionScalarOp (incflo* a_incflo)
                                              m_incflo->DistributionMap(0,m_incflo->finestLevel()),
                                              info_solve));
     m_reg_solve_op->setMaxOrder(m_mg_maxorder);
-    m_reg_solve_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
-                                m_incflo->get_diffuse_scalar_bc(Orientation::high));
+    m_reg_solve_op->setDomainBC(
+        diffusion::get_diffuse_scalar_bc(m_incflo->tracer(), Orientation::low),
+        diffusion::get_diffuse_scalar_bc(
+            m_incflo->tracer(), Orientation::high));
     if (m_incflo->need_divtau()) {
         m_reg_apply_op.reset(new MLABecLaplacian(m_incflo->Geom(0,m_incflo->finestLevel()),
                                                  m_incflo->boxArray(0,m_incflo->finestLevel()),
                                                  m_incflo->DistributionMap(0,m_incflo->finestLevel()),
                                                  info_apply));
         m_reg_apply_op->setMaxOrder(m_mg_maxorder);
-        m_reg_apply_op->setDomainBC(m_incflo->get_diffuse_scalar_bc(Orientation::low),
-                                    m_incflo->get_diffuse_scalar_bc(Orientation::high));
+        m_reg_apply_op->setDomainBC(
+            diffusion::get_diffuse_scalar_bc(
+                m_incflo->tracer(), Orientation::low),
+            diffusion::get_diffuse_scalar_bc(
+                m_incflo->tracer(), Orientation::high));
     }
-    
 }
 
 void
@@ -91,15 +96,17 @@ DiffusionScalarOp::diffuse_scalar (Vector<MultiFab*> const& tracer,
         for (int lev = 0; lev <= finest_level; ++lev) {
             phi.emplace_back(*tracer[lev], amrex::make_alias, comp, 1);
 
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *eta[lev]);
+            Array<MultiFab, AMREX_SPACEDIM> b =
+                diffusion::average_tracer_eta_to_faces(
+                    comp, m_incflo->Geom(lev), *eta[lev]);
             m_reg_solve_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-            
+
             MultiFab bc(phi[lev].boxArray(),phi[lev].DistributionMap(),1, 1, MFInfo(),phi[lev].Factory());
 
             // copy tracer into bc in case there is a periodic bc
             // fixme this seems inefficient
             MultiFab::Copy(bc, phi[lev], 0, 0, 1, 1);
-            m_incflo->heat_flux_model_bc(lev, comp, bc);
+            diffusion::heat_flux_model_bc(lev, m_incflo->tracer(), comp, bc);
             m_reg_solve_op->setLevelBC(lev, &bc);
             
 #ifdef _OPENMP
@@ -174,15 +181,17 @@ void DiffusionScalarOp::compute_laps (Vector<MultiFab*> const& a_laps,
         for (int lev = 0; lev <= finest_level; ++lev) {
             laps_comp.emplace_back(*a_laps[lev],amrex::make_alias,comp,1);
             tracer_comp.emplace_back(tracer[lev],amrex::make_alias,comp,1);
-            Array<MultiFab,AMREX_SPACEDIM> b = m_incflo->average_tracer_eta_to_faces(lev, comp, *a_eta[lev]);
+            Array<MultiFab, AMREX_SPACEDIM> b =
+                diffusion::average_tracer_eta_to_faces(
+                    comp, m_incflo->Geom(lev), *a_eta[lev]);
             m_reg_apply_op->setBCoeffs(lev, GetArrOfConstPtrs(b));
-            
+
             MultiFab bc(tracer_comp[lev].boxArray(), tracer_comp[lev].DistributionMap(), 1, 1, MFInfo(), tracer_comp[lev].Factory());
             // copy tracer into bc in case there is a periodic bc
             // fixme this seems inefficient
             MultiFab::Copy(bc, tracer_comp[lev], 0, 0, 1, 1);
 
-            m_incflo->heat_flux_model_bc(lev, comp, bc);
+            diffusion::heat_flux_model_bc(lev, m_incflo->tracer(), comp, bc);
             m_reg_apply_op->setLevelBC(lev, &bc);
         }
 
