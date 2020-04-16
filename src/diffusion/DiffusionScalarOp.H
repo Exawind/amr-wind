@@ -17,7 +17,7 @@ public:
                          amrex::Real dt);
 
     void compute_laps (amrex::Vector<amrex::MultiFab*> const& laps,
-                       amrex::Vector<amrex::MultiFab const*> const& phi,
+                       amrex::Vector<amrex::MultiFab*> const& phi,
                        amrex::Vector<amrex::MultiFab const*> const& density,
                        amrex::Vector<amrex::MultiFab const*> const& eta);
 

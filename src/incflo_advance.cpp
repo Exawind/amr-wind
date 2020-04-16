@@ -227,8 +227,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute explicit diffusive terms
     // *************************************************************************************
     if (m_advect_tracer && need_divtau()) {
+        // Reuse existing buffer to avoid creating new multifabs
+        amr_wind::field_ops::copy(tracer_new, tracer_old, 0, 0, tracer_new.num_comp(), 1);
+        diffusion::heat_flux_bc(tracer_new);
         get_diffusion_scalar_op()->compute_laps(laps.vec_ptrs(),
-                                                tracer_old.vec_const_ptrs(),
+                                                tracer_new.vec_ptrs(),
                                                 density_old.vec_const_ptrs(),
                                                 tra_eta.vec_const_ptrs());
         if (m_use_godunov)
@@ -400,6 +403,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         tracer_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
+        diffusion::heat_flux_bc(tracer_new);
         get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
                                                   density_new.vec_ptrs(),
                                                   tra_eta.vec_const_ptrs(),
@@ -626,8 +630,9 @@ void incflo::ApplyCorrector()
                                                   density_new.vec_const_ptrs(),
                                                   vel_eta.vec_const_ptrs());
         if (m_advect_tracer) {
+            diffusion::heat_flux_bc(tracer_new);
             get_diffusion_scalar_op()->compute_laps(m_repo.get_field("temperature_diff_term", amr_wind::FieldState::New).vec_ptrs(),
-                                                    tracer_new.vec_const_ptrs(),
+                                                    tracer_new.vec_ptrs(),
                                                     density_new.vec_const_ptrs(),
                                                     tra_eta.vec_const_ptrs());
         }
@@ -766,6 +771,7 @@ void incflo::ApplyCorrector()
         tracer_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
+        diffusion::heat_flux_bc(tracer_new);
         get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
                                                   density_new.vec_ptrs(),
                                                   tra_eta.vec_const_ptrs(),

@@ -333,8 +333,17 @@ void wall_model_bc(
     }
 }
 
+void heat_flux_bc(amr_wind::Field& scalar)
+{
+    AMREX_ALWAYS_ASSERT(scalar.num_comp() == 1);
+    const int nlevels = scalar.repo().num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        heat_flux_model_bc(lev, scalar, 0);
+    }
+}
+
 void
-heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex::MultiFab& bc)
+heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp)
 {
 
     const Geometry& geom = scalar.repo().mesh().Geom(lev);
@@ -345,13 +354,11 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(bc,mfi_info); mfi.isValid(); ++mfi) {
-        
+    for (MFIter mfi(scalar(lev),mfi_info); mfi.isValid(); ++mfi) {
         Box const& bx = mfi.validbox();
-        Array4<Real> const& bc_a = bc.array(mfi);
-        
+        Array4<Real> const& bc_a = scalar(lev).array(mfi);
         int idim = 0;
-        
+
         // fixme this assume periodic
         if (!geom.isPeriodic(idim)) {
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
@@ -361,7 +368,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
                 {
                     // inhomogeneous Neumann BC's dTdx
                     bc_a(i-1,j,k) = local_m_bc_tracer_d;
-                    
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -371,7 +377,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
                 {
                     // inhomogeneous Neumann BC's dTdx
                     bc_a(i,j,k) = local_m_bc_tracer_d ;
-                    
                 });
             }
         }
@@ -385,7 +390,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
                 {
                     // inhomogeneous Neumann BC's dTdy
                     bc_a(i,j-1,k) = local_m_bc_tracer_d;
-                    
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -395,7 +399,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
                 {
                     // inhomogeneous Neumann BC's dTdy
                     bc_a(i,j,k) = local_m_bc_tracer_d;
-                    
                 });
             }
         }
@@ -409,7 +412,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
                 {
                     // inhomogeneous Neumann BC's dTdz
                     bc_a(i,j,k-1) = local_m_bc_tracer_d;
-                    
                 });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
@@ -423,7 +425,6 @@ heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp, amrex
             }
         }
     }
-    
 }
 
 
