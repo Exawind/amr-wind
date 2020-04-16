@@ -7,6 +7,7 @@
 #include "MOL.H"
 #include "PDE.H"
 #include "mac_projection.H"
+#include "diffusion.H"
 
 using namespace amrex;
 
@@ -204,8 +205,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute explicit viscous term
     // *************************************************************************************
     if (need_divtau()) {
+        // Reuse existing buffer to avoid creating new multifabs
+        amr_wind::field_ops::copy(velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
+        if (m_wall_model_flag) {
+            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+                                     m_velocity_mean_ground,
+                                     amr_wind::FieldState::Old);
+        }
         get_diffusion_tensor_op()->compute_divtau(divtau.vec_ptrs(),
-                                                  velocity_old.vec_const_ptrs(),
+                                                  velocity_new.vec_ptrs(),
                                                   density_old.vec_const_ptrs(),
                                                   vel_eta.vec_const_ptrs());
         if (m_use_godunov)
@@ -477,6 +485,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
         density_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
+        if (m_wall_model_flag) {
+            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+                                     m_velocity_mean_ground,
+                                     amr_wind::FieldState::New);
+        }
         get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
                                                     density_new.vec_const_ptrs(),
                                                     vel_eta.vec_const_ptrs(),
@@ -603,8 +616,13 @@ void incflo::ApplyCorrector()
     // Here we create divtau of the (n+1,*) state that was computed in the predictor;
     //      we use this laps only if DiffusionType::Explicit
     if (m_diff_type == DiffusionType::Explicit) {
+        if (m_wall_model_flag) {
+            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+                                     m_velocity_mean_ground,
+                                     amr_wind::FieldState::New);
+        }
         get_diffusion_tensor_op()->compute_divtau(m_repo.get_field("velocity_diff_term", amr_wind::FieldState::New).vec_ptrs(),
-                                                  velocity_new.vec_const_ptrs(),
+                                                  velocity_new.vec_ptrs(),
                                                   density_new.vec_const_ptrs(),
                                                   vel_eta.vec_const_ptrs());
         if (m_advect_tracer) {
@@ -840,6 +858,11 @@ void incflo::ApplyCorrector()
         density_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
+        if (m_wall_model_flag) {
+            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+                                     m_velocity_mean_ground,
+                                     amr_wind::FieldState::New);
+        }
         get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
                                                     density_new.vec_const_ptrs(),
                                                     vel_eta.vec_const_ptrs(),

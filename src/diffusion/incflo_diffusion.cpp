@@ -121,6 +121,87 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
 }
 
 void wall_model_bc(
+    amr_wind::Field& velocity,
+    const amrex::Real utau,
+    const amrex::Real umag,
+    const amr_wind::FieldState fstate)
+{
+    auto& repo = velocity.repo();
+    auto& density = repo.get_field("density", fstate);
+    auto& viscosity = repo.get_field("velocity_nueff");
+    const int nlevels = repo.num_active_levels();
+
+    // Wall model hard coded to be only in the zlo direction
+    const int idim = 2;
+    amrex::Orientation olo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation ohi(amrex::Direction::z, amrex::Orientation::high);
+    AMREX_ALWAYS_ASSERT(velocity.bc_type()[olo] ==  BC::wall_model);
+    AMREX_ALWAYS_ASSERT(velocity.bc_type()[ohi] != BC::wall_model);
+
+    // copies cell center to face
+    Real c0 = 1.0;
+    Real c1 = 0.0;
+
+    // linear extrapolate onto face
+    if(extrapolate)
+    {
+        c0 =  1.5;
+        c1 = -0.5;
+    }
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        AMREX_ALWAYS_ASSERT(!geom.isPeriodic(idim));
+        const auto& domain = geom.Domain();
+        MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& vel_lev = velocity(lev);
+        auto& eta_lev = viscosity(lev);
+
+        if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto vel = vel_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto eta = eta_lev.array(mfi);
+
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        // density and velocity are cell centered
+                        // viscosity eta is face centered
+                        Real rho =
+                            c0 * den(i, j, k) + c1 * den(i, j, k + 1);
+                        Real mu = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                        Real vx =
+                            c0 * vel(i, j, k, 0) + c1 * vel(i, j, k + 1, 0);
+                        Real vy =
+                            c0 * vel(i, j, k, 1) + c1 * vel(i, j, k + 1, 1);
+
+                        // inhomogeneous Neumann BC's
+                        // mu dudz = rho utau^2
+                        // dudz(x,y,z=0)
+                        vel(i, j, k - 1, 0) =
+                            rho * utau * utau * vx / umag / mu;
+                        // dvdz(x,y,z=0)
+                        vel(i, j, k - 1, 1) =
+                            rho * utau * utau * vy / umag / mu;
+
+                        // Dirichlet BC's
+                        // w(x,y,z=0)
+                        vel(i, j, k - 1, 2) = 0.0;
+                    });
+            }
+        }
+    }
+}
+
+void wall_model_bc(
     const int lev,
     amr_wind::FieldRepo& repo,
     const amrex::Real utau,

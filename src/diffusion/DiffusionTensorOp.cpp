@@ -81,25 +81,7 @@ void DiffusionTensorOp::diffuse_velocity(
         Array<MultiFab, AMREX_SPACEDIM> b =
             diffusion::average_velocity_eta_to_faces(m_incflo->Geom(lev), *eta[lev]);
         m_reg_solve_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
-
-        // if at least one boundary is a wall model
-        if (m_incflo->m_wall_model_flag) {
-
-            MultiFab bc(
-                velocity[lev]->boxArray(), velocity[lev]->DistributionMap(),
-                AMREX_SPACEDIM, 1, MFInfo(), velocity[lev]->Factory());
-            // copy velocity into bc in case there is a periodic bc
-            // fixme this seems inefficient
-            MultiFab::Copy(bc, *velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
-            diffusion::wall_model_bc(
-                lev, m_incflo->repo(), m_incflo->m_utau_mean_ground,
-                m_incflo->m_velocity_mean_ground, GetArrOfConstPtrs(b), bc);
-            m_reg_solve_op->setLevelBC(lev, &bc);
-
-        } else {
-            // bc's are stored in the ghost cells of velocity
-            m_reg_solve_op->setLevelBC(lev, velocity[lev]);
-        }
+        m_reg_solve_op->setLevelBC(lev, velocity[lev]);
     }
 
     Vector<MultiFab> rhs(finest_level + 1);
@@ -145,22 +127,13 @@ void DiffusionTensorOp::diffuse_velocity(
 
 void DiffusionTensorOp::compute_divtau(
     Vector<MultiFab*> const& a_divtau,
-    Vector<MultiFab const*> const& a_velocity,
+    Vector<MultiFab*> const& velocity,
     Vector<MultiFab const*> const& a_density,
     Vector<MultiFab const*> const& a_eta)
 {
     BL_PROFILE("DiffusionTensorOp::compute_divtau");
 
     int finest_level = m_incflo->finestLevel();
-
-    Vector<MultiFab> velocity(finest_level + 1);
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        velocity[lev].define(
-            a_velocity[lev]->boxArray(), a_velocity[lev]->DistributionMap(),
-            AMREX_SPACEDIM, 1, MFInfo(), a_velocity[lev]->Factory());
-        MultiFab::Copy(
-            velocity[lev], *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
-    }
 
     // We want to return div (mu grad)) phi
     m_reg_apply_op->setScalars(0.0, -1.0);
@@ -169,26 +142,11 @@ void DiffusionTensorOp::compute_divtau(
         Array<MultiFab, AMREX_SPACEDIM> b =
             diffusion::average_velocity_eta_to_faces(m_incflo->Geom(lev), *a_eta[lev]);
         m_reg_apply_op->setShearViscosity(lev, GetArrOfConstPtrs(b));
-
-        if (m_incflo->m_wall_model_flag) {
-            MultiFab bc(
-                a_velocity[lev]->boxArray(), a_velocity[lev]->DistributionMap(),
-                AMREX_SPACEDIM, 1, MFInfo(), a_velocity[lev]->Factory());
-            // copy velocity into bc in case there is a periodic bc
-            // fixme this seems inefficient
-            MultiFab::Copy(bc, *a_velocity[lev], 0, 0, AMREX_SPACEDIM, 1);
-            diffusion::wall_model_bc(
-                lev, m_incflo->repo(), m_incflo->m_utau_mean_ground,
-                m_incflo->m_velocity_mean_ground, GetArrOfConstPtrs(b), bc);
-            m_reg_apply_op->setLevelBC(lev, &bc);
-
-        } else {
-            m_reg_apply_op->setLevelBC(lev, &velocity[lev]);
-        }
+        m_reg_apply_op->setLevelBC(lev, velocity[lev]);
     }
 
     MLMG mlmg(*m_reg_apply_op);
-    mlmg.apply(a_divtau, GetVecOfPtrs(velocity));
+    mlmg.apply(a_divtau, velocity);
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
