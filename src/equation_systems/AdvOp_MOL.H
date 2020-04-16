@@ -51,8 +51,8 @@ struct AdvectionOp<
             {
 
                 amrex::Box const& bx = mfi.tilebox();
-                auto rho_arr = density(lev).array(mfi);
-                auto tra_arr = dof_field(lev).array(mfi);
+                auto rho_arr = density(lev).const_array(mfi);
+                auto tra_arr = dof_field(lev).const_array(mfi);
                 amrex::Array4<amrex::Real> rhotrac;
 
                 if (PDE::multiply_rho) {
@@ -83,7 +83,8 @@ struct AdvectionOp<
                     amrex::Array4<amrex::Real> fz = tmpfab.array(PDE::ndim*2);
 
                     mol::compute_convective_fluxes(lev, bx, PDE::ndim,
-                                                   fx, fy, fz, rhotrac,
+                                                   fx, fy, fz,
+                                                   (PDE::multiply_rho ? rhotrac : tra_arr),
                                                    u_mac(lev).const_array(mfi),
                                                    v_mac(lev).const_array(mfi),
                                                    w_mac(lev).const_array(mfi),

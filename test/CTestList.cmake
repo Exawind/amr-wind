@@ -121,6 +121,8 @@ add_test_r(abl_godunov 4)
 # Regression tests excluded from CI
 #=============================================================================
 add_test_re(rayleigh_taylor_godunov 4)
+add_test_re(rayleigh_taylor_mol 4)
+add_test_re(abl_godunov_plm 4)
 add_test_re(abl_godunov_explicit 4)
 add_test_re(abl_godunov_cn 4)
 add_test_re(abl_mol_explicit 4)
