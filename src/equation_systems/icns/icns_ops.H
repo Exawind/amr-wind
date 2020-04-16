@@ -11,6 +11,7 @@
 #include <AMReX_MultiFabUtil.H>
 #include <AMReX_MacProjector.H>
 #include <mac_projection.H>
+#include <MLMGOptions.H>
 
 namespace amr_wind {
 namespace pde {
@@ -98,12 +99,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
         }
 
-        { // Prefix mac
-            amrex::ParmParse pp_mac("mac_proj");
-            pp_mac.query( "mg_rtol", mac_mg_rtol);
-            pp_mac.query( "mg_atol", mac_mg_atol);
-            pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level);
-        }
+        amr_wind::MLMGOptions options("mac_proj");
+
+        max_coarsen_level = options.max_coarsen_level;
+        rel_tol = options.rel_tol;
+        abs_tol = options.abs_tol;
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(ICNS::ndim, 0);
@@ -235,9 +235,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
          }
 
 
+        amr_wind::MLMGOptions options("mac_proj");
+
          // If we want to set max_coarsening_level we have to send it in to the constructor
          amrex::LPInfo lp_info;
-         lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
+         lp_info.setMaxCoarseningLevel(max_coarsen_level);
 
 
          // Perform MAC projection
@@ -252,8 +254,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
          macproj.setDomainBC(mac::get_projection_bc(amrex::Orientation::low, bctype, repo.mesh().Geom()),
                              mac::get_projection_bc(amrex::Orientation::high, bctype, repo.mesh().Geom()));
 
-         macproj.project(mac_mg_rtol,
-                         mac_mg_atol,
+         macproj.project(rel_tol,
+                         abs_tol,
                          amrex::MLMG::Location::FaceCentroid);
 
 
@@ -304,9 +306,10 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_ppm{true};
     bool godunov_use_forces_in_trans{false};
 
-    int mac_mg_max_coarsening_level{100};
-    amrex::Real mac_mg_rtol{1.0e-11};
-    amrex::Real mac_mg_atol{1.0e-14};
+    int max_coarsen_level;
+    amrex::Real rel_tol;
+    amrex::Real abs_tol;
+
 
 
 };
@@ -316,10 +319,11 @@ struct AdvectionOp<ICNS, fvm::MOL>
 {
     AdvectionOp(PDEFields& fields_in) : fields(fields_in)
     {
-        amrex::ParmParse pp_mac("mac_proj");
-        pp_mac.query( "mg_rtol", mac_mg_rtol);
-        pp_mac.query( "mg_atol", mac_mg_atol);
-        pp_mac.query( "mg_max_coarsening_level", mac_mg_max_coarsening_level);
+        amr_wind::MLMGOptions options("mac_proj");
+
+        max_coarsen_level = options.max_coarsen_level;
+        rel_tol = options.rel_tol;
+        abs_tol = options.abs_tol;
     }
 
     void operator()(const FieldState fstate, const amrex::Real )
@@ -412,7 +416,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         // If we want to set max_coarsening_level we have to send it in to the constructor
         amrex::LPInfo lp_info;
-        lp_info.setMaxCoarseningLevel(mac_mg_max_coarsening_level);
+        lp_info.setMaxCoarseningLevel(max_coarsen_level);
 
 
         // Perform MAC projection
@@ -427,8 +431,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
         macproj.setDomainBC(mac::get_projection_bc(amrex::Orientation::low, bctype, repo.mesh().Geom()),
                             mac::get_projection_bc(amrex::Orientation::high, bctype, repo.mesh().Geom()));
 
-        macproj.project(mac_mg_rtol,
-                        mac_mg_atol,
+        macproj.project(rel_tol,
+                        abs_tol,
                         amrex::MLMG::Location::FaceCentroid);
 
 
@@ -488,9 +492,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
     PDEFields& fields;
 
-    int mac_mg_max_coarsening_level{100};
-    amrex::Real mac_mg_rtol{1.0e-11};
-    amrex::Real mac_mg_atol{1.0e-14};
+    int max_coarsen_level;
+    amrex::Real rel_tol;
+    amrex::Real abs_tol;
 
 };
 
