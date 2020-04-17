@@ -47,14 +47,13 @@ endif()
 
 ########################### AMReX #####################################
 
-set(AMREX_SUBMOD_LOCATION "submods/amrex")
+set(AMREX_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/amrex")
 include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
+list(APPEND CMAKE_MODULE_PATH "${AMREX_SUBMOD_LOCATION}/Tools/CMake")
 add_subdirectory(${AMREX_SUBMOD_LOCATION})
 
 ########################### AMR-Wind #####################################
 
-find_package(Python REQUIRED)
-find_package(Threads REQUIRED) # Needed this for the Travis CI system
 if(AMR_WIND_ENABLE_MPI)
   find_package(MPI REQUIRED)
 endif()
@@ -66,22 +65,7 @@ message(STATUS "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
-# Use, i.e. don't skip the full RPATH for the build tree
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-# When building, don't use the install RPATH already (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-# Add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# The RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-ENDIF("${isSystemDir}" STREQUAL "-1")
+include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
 #Create target names
 set(amr_wind_lib_name "amrwind")
@@ -98,24 +82,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 #Keep our Fortran module files confined to a directory
 set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
                      "${CMAKE_BINARY_DIR}/fortran_modules/")
-
-#Create directory to store generated files
-set(GENERATED_FILES_DIR ${CMAKE_BINARY_DIR})
-
-#Generate the AMReX_buildInfo.cpp file with Python
-add_custom_target(generate_build_info ALL
-   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}/Tools/C_scripts/makebuildinfo_C.py
-   --amrex_home "${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
-   --COMP ${CMAKE_CXX_COMPILER_ID} --COMP_VERSION ${CMAKE_CXX_COMPILER_VERSION}
-   --FCOMP ${CMAKE_Fortran_COMPILER_ID} --FCOMP_VERSION ${CMAKE_Fortran_COMPILER_VERSION}
-   --GIT "${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/${AMREX_SUBMOD_LOCATION}"
-   WORKING_DIRECTORY ${GENERATED_FILES_DIR} BYPRODUCTS ${GENERATED_FILES_DIR}/AMReX_buildInfo.cpp
-   COMMENT "Generating AMReX_buildInfo.cpp"
-   )
-
-#Set the dependencies on targets so the generated source code files are there
-#before we try to build the executable
-add_dependencies(${amr_wind_lib_name} generate_build_info)
 
 if(AMR_WIND_ENABLE_VERIFICATION)
   set(CMAKE_PREFIX_PATH ${MASA_DIR} ${CMAKE_PREFIX_PATH})
