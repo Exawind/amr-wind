@@ -162,18 +162,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& conv_density = m_repo.get_field("density_conv_term", pred_state);
     auto& conv_tracer = m_repo.get_field("temperature_conv_term", pred_state);
 
-    auto& u_mac = m_repo.get_field("u_mac");
-    auto& v_mac = m_repo.get_field("v_mac");
-    auto& w_mac = m_repo.get_field("w_mac");
-
-    if (nghost_mac() > 0) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            u_mac(lev).setBndry(0.0);
-            v_mac(lev).setBndry(0.0);
-            w_mac(lev).setBndry(0.0);
-        }
-    }
-
     // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
     auto& tracer_nph = tracer_new.create_state(amr_wind::FieldState::NPH);
