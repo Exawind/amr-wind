@@ -6,18 +6,21 @@
 #include "AMReX_REAL.H"
 #include "AMReX_Vector.H"
 #include "AMReX_MultiFab.H"
+#include "FieldRepo.H"
 
 namespace amr_wind {
 
 class BoussinesqBuoyancy
 {
 public:
-    BoussinesqBuoyancy();
+    BoussinesqBuoyancy(FieldRepo& repo_in);
 
     void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        const amrex::Array4<const amrex::Real>& scalars,
-        const amrex::Array4<amrex::Real>& vel_forces) const;
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const;
 
 private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
@@ -27,6 +30,9 @@ private:
 
     //! Thermal expansion coefficient
     amrex::Real m_beta{0.0};
+
+    FieldRepo& m_repo;
+
 };
 
 }

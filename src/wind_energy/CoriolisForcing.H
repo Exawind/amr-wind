@@ -5,17 +5,23 @@
 #include "AMReX_Box.H"
 #include "AMReX_REAL.H"
 #include "AMReX_Vector.H"
+#include "AMReX_MultiFab.H"
+
+#include "FieldRepo.H"
+
 
 namespace amr_wind {
 
 class CoriolisForcing
 {
 public:
-    CoriolisForcing();
+    CoriolisForcing(FieldRepo& repo_in);
 
     void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        const amrex::Array4<amrex::Real const>& velocity,
+        const FieldState fstate,
         const amrex::Array4<amrex::Real>& vel_forces) const;
 
 private:
@@ -35,6 +41,8 @@ private:
 
     //! `2.0 * \Omega`
     amrex::Real m_coriolis_factor{0.0};
+
+    FieldRepo& m_repo;
 };
 
 }

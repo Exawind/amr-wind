@@ -3,6 +3,7 @@
 #include <AMReX_buildInfo.H>
 #include <incflo.H>
 #include <Physics.H>
+#include "PDE.H"
 
 using namespace amrex;
 
@@ -460,13 +461,12 @@ void incflo::WritePlotFile()
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
             if (m_probtype == 35 || m_probtype == 11) {
-                compute_vel_pressure_terms(lev, forcing, density()(lev));
+
+                m_icns->compute_source_term(amr_wind::FieldState::New);
 
                 for (auto& pp: m_physics) {
-                    pp->add_momentum_sources(Geom(lev),
-                                             density()(lev),
-                                             velocity()(lev),
-                                             tracer()(lev),
+                    pp->add_momentum_sources(lev,
+                                             amr_wind::FieldState::New,
                                              forcing);
                 }
 

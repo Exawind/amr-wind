@@ -9,6 +9,7 @@
 
 namespace amr_wind_tests {
 
+#if 0
 TEST_F(ABLTest, abl_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
@@ -232,6 +233,6 @@ TEST_F(ABLTest, boussinesq)
     EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(2), -9.81*(300.0-308.0)/300.0, tol);
 
 }
-
+#endif
 
 } // namespace amr_wind_tests

@@ -97,11 +97,11 @@ void incflo::ReadParameters ()
 
     // FIXME: clean up WIP logic
     if (m_probtype == 35) {
-        m_physics.emplace_back(new amr_wind::ABL(m_time, this));
+        m_physics.emplace_back(new amr_wind::ABL(m_time, this, m_repo));
     }
     
     if (m_probtype == 11) {
-        m_physics.emplace_back(new amr_wind::BoussinesqBubble(this));
+        m_physics.emplace_back(new amr_wind::BoussinesqBubble(m_repo));
     }
 
     {

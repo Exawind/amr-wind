@@ -163,10 +163,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (m_use_godunov)
     {
-        compute_vel_forces(velocity_forces.vec_ptrs(),
-                           velocity_old.vec_const_ptrs(),
-                           density_old.vec_const_ptrs(),
-                           tracer_old.vec_const_ptrs());
+        m_icns->compute_source_term(amr_wind::FieldState::Old); // this only does dpdx right now
+        compute_vel_forces(amr_wind::FieldState::Old);
 
         for (auto& seqn: m_scalar_eqns) {
             seqn->compute_source_term(amr_wind::FieldState::Old);
@@ -288,10 +286,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
-    compute_vel_forces(velocity_forces.vec_ptrs(),
-                       velocity_old.vec_const_ptrs(),
-                       (density_nph).vec_const_ptrs(),
-                       (tracer_nph).vec_const_ptrs());
+
+    m_icns->compute_source_term(amr_wind::FieldState::NPH);// this only does dpdx right now
+    compute_vel_forces(amr_wind::FieldState::NPH);
     
     // *************************************************************************************
     // Update the velocity
@@ -497,9 +494,10 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
-    compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
-                       (density_nph).vec_const_ptrs(),
-                       (tracer_nph).vec_const_ptrs());
+
+
+    m_icns->compute_source_term(amr_wind::FieldState::New); // this only does dpdx right now
+    compute_vel_forces(amr_wind::FieldState::New);
 
     // *************************************************************************************
     // Update velocity
