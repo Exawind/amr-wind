@@ -72,7 +72,7 @@ struct AdvectionOp<
                 }
 
                 {
-                    const int nmaxcomp = PDE:ndim;
+                    const int nmaxcomp = PDE::ndim;
 
                     amrex::Box tmpbox = amrex::surroundingNodes(bx);
                     const int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
