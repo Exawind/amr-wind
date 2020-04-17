@@ -6,6 +6,7 @@
 #include "ABLForcing.H"
 #include "CoriolisForcing.H"
 #include "BoussinesqBuoyancy.H"
+#include "DensityBuoyancy.H"
 
 namespace amr_wind_tests {
 
@@ -233,5 +234,80 @@ TEST_F(ABLTest, boussinesq)
 
 }
 
+
+namespace {
+
+void init_density_field(int kdim,
+                           amrex::Box& bx,
+                           amrex::FArrayBox& density)
+{
+    // Set density as a function of height with (dz = 1.0)
+    auto den = density.array();
+    const amrex::Real dz = 1.0/((amrex::Real) kdim+1);
+
+    amrex::ParallelFor(bx, [dz,den] AMREX_GPU_DEVICE(int i, int j, int k) {
+
+        const amrex::Real z = (k+0.5)*dz;
+
+        if(z < 0.3){
+            den(i, j, k) = 0.5;
+        } else if(z > 0.7){
+            den(i, j, k) = 2.0;
+        } else {
+            den(i, j, k) = 1.0;
+        }
+
+    });
+}
+
+}
+
+TEST_F(ABLTest, densitybuoyancy)
+{
+    constexpr int kdim = 16;
+    constexpr amrex::Real tol = 1.0e-12;
+
+    // Initialize parameters
+    utils::populate_abl_params();
+
+    // Create velocity and source terms fields
+    amrex::Box bx{{0, 0, 0}, {2, 2, kdim}};
+    amrex::FArrayBox density(bx, 1);
+    amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
+
+    amr_wind::DensityBuoyancy db;
+
+    density.setVal<amrex::RunOn::Device>(1.0);
+    vel_src.setVal<amrex::RunOn::Device>(0.0);
+
+    db(bx, density.array(), vel_src.array());
+
+    // first test constant density field
+
+    // should be no forcing in x and y directions
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(1), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(1), 0.0, tol);
+
+    // f = (1-rho_0/rho)*g
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(2), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(2), 0.0, tol);
+
+    init_density_field(kdim, bx, density);
+    vel_src.setVal<amrex::RunOn::Device>(0.0);
+    db(bx, density.array(), vel_src.array());
+
+    // should be no forcing in x and y directions
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(0), 0.0, tol);
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(1), 0.0, tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(1), 0.0, tol);
+
+    // f = g*(1-rho_0/rho)
+    EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(2), -9.81*(1.0-1.0/2.0), tol);
+    EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(2), -9.81*(1.0-1.0/0.5), tol);
+
+}
 
 } // namespace amr_wind_tests
