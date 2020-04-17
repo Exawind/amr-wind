@@ -8,8 +8,8 @@
 
 namespace amr_wind {
 
-ABL::ABL(const SimTime& time, incflo* incflo_in)
-    : m_time(time), m_incflo(incflo_in)
+ABL::ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo_in)
+    : m_time(time), m_incflo(incflo_in), m_repo(repo_in)
 {
     amrex::ParmParse pp("abl");
 
@@ -22,20 +22,20 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
     m_abl_wall_func.reset(new ABLWallFunction());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy());
+        m_boussinesq.reset(new BoussinesqBuoyancy(repo_in));
 
     if (m_has_driving_dpdx)
         m_abl_forcing.reset(new ABLForcing(m_time));
 
     if (m_has_coriolis)
-        m_coriolis.reset(new CoriolisForcing());
+        m_coriolis.reset(new CoriolisForcing(repo_in));
 
     {
         // fixme keeping this around to maintain perfect
         // machine zero reg tests
         // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
         constexpr int direction = 2;
-        auto geom = m_incflo->Geom();
+        auto geom = m_repo.mesh().Geom();
         // First cell height
         const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
         amrex::Real vx = 0.0;
@@ -45,7 +45,7 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
         pp.query("ic_v", vy);
         const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
         const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
-        m_incflo->set_abl_friction_vels(uground, utau);
+        m_incflo->set_abl_friction_vels(uground, utau); //fixme remove this and incflo can go away
     }
 }
 
@@ -58,24 +58,22 @@ void ABL::initialize_fields(
     int level,
     const amrex::Geometry& geom) const
 {
-    auto& velocity = m_incflo->velocity()(level);
-    auto& density = m_incflo->density()(level);
-    auto& scalars = m_incflo->tracer()(level);
+    auto& velocity = m_repo.get_field("velocity")(level);
+    auto& density = m_repo.get_field("density")(level);
+    auto& temperature = m_repo.get_field("temperature")(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi),
-            scalars.array(mfi));
+            temperature.array(mfi));
     }
 }
 
 void ABL::add_momentum_sources(
-    const amrex::Geometry& /* geom */,
-    const amrex::MultiFab& /* density */,
-    const amrex::MultiFab& velocity,
-    const amrex::MultiFab& scalars,
+    int level,
+    FieldState fstate,
     amrex::MultiFab& vel_forces) const
 {
 #ifdef _OPENMP
@@ -88,18 +86,17 @@ void ABL::add_momentum_sources(
 
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
-            const auto& scal = scalars.const_array(mfi);
-            (*m_boussinesq)(bx, scal, vf);
+            (*m_boussinesq)(level, mfi, bx, fstate, vf);
+
         }
 
         // Coriolis term
         if (m_has_coriolis) {
-            const auto& vel = velocity.const_array(mfi);
-            (*m_coriolis)(bx, vel, vf);
+            (*m_coriolis)(level, mfi, bx, fstate, vf);
         }
 
         // Driving pressure gradient term
-        if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
+        if (m_has_driving_dpdx) (*m_abl_forcing)(level, mfi, bx, fstate, vf);
     }
 }
 
@@ -118,11 +115,11 @@ void ABL::pre_advance_work()
 {
     // Spatial averaging on z-planes
     constexpr int direction = 2;
-    auto geom = m_incflo->Geom();
+    auto geom = m_repo.mesh().Geom();
 
     PlaneAveraging pa(geom,
-                      m_incflo->velocity().vec_ptrs(),
-                      m_incflo->tracer().vec_ptrs(),
+                      m_repo.get_field("velocity").vec_ptrs(),
+                      m_repo.get_field("temperature").vec_ptrs(),
                       direction);
 
     {
@@ -134,7 +131,7 @@ void ABL::pre_advance_work()
         const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
         const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
         // TODO: For now retain wall function logic in incflo
-        m_incflo->set_abl_friction_vels(uground, utau);
+        m_incflo->set_abl_friction_vels(uground, utau); //fixme remove this and incflo can go away
     }
 
     if (m_has_driving_dpdx) {

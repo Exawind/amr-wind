@@ -7,8 +7,8 @@
 
 namespace amr_wind {
 
-BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
-    : m_incflo(incflo_in)
+BoussinesqBubble::BoussinesqBubble(amr_wind::FieldRepo& repo_in)
+    : m_repo(repo_in)
 {
     amrex::ParmParse pp("bb");
 
@@ -18,7 +18,7 @@ BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
     m_field_init.reset(new BoussinesqBubbleFieldInit());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy());
+        m_boussinesq.reset(new BoussinesqBuoyancy(repo_in));
 
 }
 
@@ -31,9 +31,9 @@ void BoussinesqBubble::initialize_fields(
     int level,
     const amrex::Geometry& geom) const
 {
-    auto& velocity = m_incflo->velocity()(level);
-    auto& density = m_incflo->density()(level);
-    auto& scalars = m_incflo->tracer()(level);
+    auto& velocity = m_repo.get_field("velocity")(level);
+    auto& density = m_repo.get_field("density")(level);
+    auto& scalars = m_repo.get_field("temperature")(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -45,27 +45,24 @@ void BoussinesqBubble::initialize_fields(
 }
 
 void BoussinesqBubble::add_momentum_sources(
-    const amrex::Geometry& /* geom */,
-    const amrex::MultiFab& /* density */,
-    const amrex::MultiFab& /* velocity */,
-    const amrex::MultiFab& scalars,
+    int lev,
+    FieldState fstate,
     amrex::MultiFab& vel_forces) const
 {
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (amrex::MFIter mfi(vel_forces, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
+    for (amrex::MFIter mfi(vel_forces, amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& vf = vel_forces.array(mfi);
 
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
-            const auto& scal = scalars.const_array(mfi);
-            (*m_boussinesq)(bx, scal, vf);
+            (*m_boussinesq)(lev, mfi, bx, fstate, vf);
         }
 
     }
 }
 
 } // namespace amr_wind
+

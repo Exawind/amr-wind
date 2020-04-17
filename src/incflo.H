@@ -75,19 +75,12 @@ public: // for cuda
 
     void ComputeDt (bool explicit_diffusion);
 
-    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
-                             amrex::Vector<amrex::MultiFab const*> const& density);
-    void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
-                             amrex::Vector<amrex::MultiFab const*> const& velocity,
-                             amrex::Vector<amrex::MultiFab const*> const& density,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer);
+    void compute_vel_forces (amr_wind::FieldState fstate);
+    
     void compute_vel_forces_on_level ( int lev,
                                        amrex::MultiFab& vel_forces,
                                        const amrex::MultiFab& density,
                                        const amrex::MultiFab& tracer);
-    void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
-                                    const amrex::MultiFab& density);
-
 
     ///////////////////////////////////////////////////////////////////////////
     //

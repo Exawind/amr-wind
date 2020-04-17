@@ -1,50 +1,23 @@
 #include <incflo.H>
 #include "Physics.H"
+#include "PDE.H"
 
 using namespace amrex;
 
-void incflo::compute_tra_forces (Vector<MultiFab*> const& tra_forces,
-                                 Vector<MultiFab const*> const& density)
-{
-    // NOTE: this routine must return the force term for the update of (rho s), NOT just s.
-    if (m_advect_tracer) {
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            for (MFIter mfi(*tra_forces[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) 
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real>       const& tra_f = tra_forces[lev]->array(mfi);
-                Array4<Real const> const& rho   =    density[lev]->const_array(mfi);
-
-                amrex::ParallelFor(bx, m_ntrac,
-                [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-                {
-                    // For now we don't have any external forces on the scalars
-                    tra_f(i,j,k,n) = 0.0;
-    
-                    // Return the force term for the update of (rho s), NOT just s.
-                    tra_f(i,j,k,n) *= rho(i,j,k);
-                });
-            }
-        }
-    }
-}
-
-void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
-                                 Vector<MultiFab const*> const& velocity,
-                                 Vector<MultiFab const*> const& density,
-                                 Vector<MultiFab const*> const& tracer)
+void incflo::compute_vel_forces (amr_wind::FieldState fstate)
 {
     // FIXME: Clean up problem type specific logic
+
+    auto& icns_fields = m_icns->fields();
+    auto& vel_forces = icns_fields.src_term;
+    auto& density = m_repo.get_field("density", amr_wind::field_impl::phi_state(fstate));
+    auto& tracer = m_repo.get_field("temperature", amr_wind::field_impl::phi_state(fstate));
+
     if (m_probtype != 5) {
         for (int lev=0; lev <= finest_level; ++lev) {
-            compute_vel_pressure_terms(lev, *vel_forces[lev], *density[lev]);
 
             for (auto& pp: m_physics) {
-                pp->add_momentum_sources(
-                    Geom(lev), *density[lev], *velocity[lev], *tracer[lev], *vel_forces[lev]);
+                pp->add_momentum_sources(lev, fstate, vel_forces(lev));
             }
         }
     } else {
@@ -55,30 +28,7 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
         // vel_f += - dpdx/rho + g*rho_0/rho + g
         for (int lev = 0; lev <= finest_level; ++lev)
             compute_vel_forces_on_level(
-                lev, *vel_forces[lev], *density[lev], *tracer[lev]);
-    }
-}
-
-void incflo::compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
-                                        const amrex::MultiFab& density)
-{
-    const amrex::GpuArray<amrex::Real, 3> l_gp0{m_gp0[0], m_gp0[1], m_gp0[2]};
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (MFIter mfi(vel_forces, TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-        Box const& bx = mfi.tilebox();
-        Array4<Real> const& vel_f = vel_forces.array(mfi);
-        Array4<Real const> const& rho = density.const_array(mfi);
-        Array4<Real const> const& gradp = grad_p()(lev).const_array(mfi);
-
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-            amrex::Real rhoinv = 1.0 / rho(i, j, k);
-            vel_f(i, j, k, 0) = -(gradp(i, j, k, 0) + l_gp0[0]) * rhoinv;
-            vel_f(i, j, k, 1) = -(gradp(i, j, k, 1) + l_gp0[1]) * rhoinv;
-            vel_f(i, j, k, 2) = -(gradp(i, j, k, 2) + l_gp0[2]) * rhoinv;
-        });
+                lev, vel_forces(lev), density(lev), tracer(lev));
     }
 }
 

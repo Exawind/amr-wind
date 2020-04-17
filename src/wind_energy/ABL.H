@@ -10,6 +10,7 @@
 #include "BoussinesqBuoyancy.H"
 #include "CoriolisForcing.H"
 #include "SimTime.H"
+#include "FieldRepo.H"
 
 class incflo;
 
@@ -20,7 +21,7 @@ namespace amr_wind {
 class ABL : public Physics
 {
 public:
-    ABL(const SimTime& time, incflo* incflo_in);
+    ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo_in);
 
     ~ABL() = default;
 
@@ -36,10 +37,8 @@ public:
 
     //! Add momentum source terms
     void add_momentum_sources(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& density,
-        const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
+        int level,
+        FieldState fstate,
         amrex::MultiFab& vel_forces) const override;
 
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }
@@ -49,6 +48,7 @@ private:
 
     // TODO: deprecate this
     incflo* m_incflo;
+    amr_wind::FieldRepo& m_repo;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;

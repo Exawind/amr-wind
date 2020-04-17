@@ -7,6 +7,7 @@
 #include "BoussinesqBubbleFieldInit.H"
 #include "BoussinesqBuoyancy.H"
 #include "SimTime.H"
+#include "FieldRepo.H"
 
 class incflo;
 
@@ -17,7 +18,7 @@ namespace amr_wind {
 class BoussinesqBubble : public Physics
 {
 public:
-    BoussinesqBubble(incflo* incflo_in);
+    BoussinesqBubble(FieldRepo& repo_in);
 
     ~BoussinesqBubble() = default;
 
@@ -33,18 +34,15 @@ public:
 
     //! Add momentum source terms
     void add_momentum_sources(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& density,
-        const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
+        int level,
+        FieldState fstate,
         amrex::MultiFab& vel_forces) const override;
 
     const BoussinesqBubbleFieldInit& BoussinesqBubble_initializer() const { return *m_field_init; }
 
 private:
 
-    // TODO: deprecate this
-    incflo* m_incflo;
+    amr_wind::FieldRepo& m_repo;
 
     //! BoussinesqBubble field initializer instance
     std::unique_ptr<BoussinesqBubbleFieldInit> m_field_init;

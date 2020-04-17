@@ -1,6 +1,7 @@
 #include "CoriolisForcing.H"
 #include "tensor_ops.H"
 #include "trig_ops.H"
+#include "FieldUtils.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -22,7 +23,8 @@ namespace amr_wind {
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
  */
-CoriolisForcing::CoriolisForcing()
+CoriolisForcing::CoriolisForcing(FieldRepo& repo_in)
+    : m_repo(repo_in)
 {
     static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
     amrex::ParmParse pp("abl");
@@ -47,8 +49,10 @@ CoriolisForcing::CoriolisForcing()
 }
 
 void CoriolisForcing::operator()(
+    const int lev,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const amrex::Array4<const amrex::Real>& vel,
+    const FieldState fstate,
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> east{{m_east[0], m_east[1], m_east[2]}};
@@ -58,6 +62,11 @@ void CoriolisForcing::operator()(
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
+
+    // fixme this will be phi_state if we use coriolis at n+1/2 in the future at least for Godunov not sure about MOL
+    FieldState vel_state = field_impl::dof_state(fstate);
+    const auto& vel = m_repo.get_field("velocity", vel_state)(lev).const_array(mfi);
+
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
         const amrex::Real ue = east[0] * vel(i, j, k, 0) +
