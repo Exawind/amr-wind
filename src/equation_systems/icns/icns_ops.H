@@ -6,6 +6,7 @@
 #include "PDEHelpers.H"
 #include "AdvOp_Godunov.H"
 #include "AdvOp_MOL.H"
+#include "DiffusionOps.H"
 #include "icns/icns.H"
 #include <incflo_MAC_bcs.H>
 #include <AMReX_MultiFabUtil.H>
