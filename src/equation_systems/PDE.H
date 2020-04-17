@@ -6,6 +6,7 @@
 #include "Factory.H"
 #include "PDEHelpers.H"
 #include "PDEOps.H"
+#include "DiffusionOps.H"
 
 namespace amr_wind {
 namespace pde {
@@ -17,6 +18,10 @@ public:
 
     virtual PDEFields& fields() = 0;
 
+    virtual void initialize() = 0;
+
+    virtual void post_regrid_actions() = 0;
+
     virtual void compute_source_term(const FieldState fstate) = 0;
 
     virtual void compute_nueff(const FieldState fstate) = 0;
@@ -25,7 +30,7 @@ public:
 
     virtual void compute_advection_term(const FieldState fstate) = 0;
 
-    virtual void solve(const FieldState fstate) = 0;
+    virtual void solve(const amrex::Real dt) = 0;
 
     static std::string base_identifier()
     {
@@ -53,6 +58,18 @@ public:
         , m_adv_op(m_fields)
     {}
 
+    void initialize() override
+    {
+        if (PDE::has_diffusion)
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+    }
+
+    void post_regrid_actions() override
+    {
+        if (PDE::has_diffusion)
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+    }
+
     PDEFields& fields() override { return m_fields; }
 
     void compute_source_term(const FieldState fstate) override
@@ -65,9 +82,10 @@ public:
         // TBD
     }
 
-    void compute_diffusion_term(const FieldState ) override
+    void compute_diffusion_term(const FieldState fstate) override
     {
-        // m_diff_op(fstate);
+        if (PDE::has_diffusion)
+            m_diff_op->compute_diff_term(fstate);
     }
 
     void compute_advection_term(const FieldState fstate) override
@@ -75,9 +93,10 @@ public:
         m_adv_op(fstate, m_time.deltaT());
     }
 
-    void solve(const FieldState ) override
+    void solve(const amrex::Real dt) override
     {
-        // m_linsys_solver(fstate);
+        if (PDE::has_diffusion)
+            m_diff_op->linsys_solve(dt);
     }
 
 protected:
@@ -89,7 +108,7 @@ protected:
 
     SrcTermOp<PDE> m_src_op;
     AdvectionOp<PDE, Scheme> m_adv_op;
-    DiffusionOp<PDE> m_diff_op;
+    std::unique_ptr<DiffusionOp<PDE, Scheme>> m_diff_op;
 };
 
 } // namespace pde

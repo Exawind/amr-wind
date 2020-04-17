@@ -93,7 +93,7 @@ template<typename PDE, typename Scheme, typename = void>
 struct AdvectionOp
 {};
 
-template<typename PDE>
+template<typename PDE, typename Scheme, typename = void>
 struct DiffusionOp
 {};
 

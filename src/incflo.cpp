@@ -46,6 +46,8 @@ void incflo::InitData ()
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
         InitFromScratch(m_time.current_time());
+        m_icns->initialize();
+        for (auto& eqn: m_scalar_eqns) eqn->initialize();
 
         if (m_do_initial_proj) {
             InitialProjection();
@@ -63,6 +65,9 @@ void incflo::InitData ()
         restart_flag = 1;
         // Read starting configuration from chk file.
         ReadCheckpointFile();
+
+        m_icns->initialize();
+        for (auto& eqn: m_scalar_eqns) eqn->initialize();
     }
 
     // Plot initial distribution
@@ -95,6 +100,8 @@ void incflo::Evolve()
             if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
                 printGridSummary(amrex::OutStream(), 0, finest_level);
             }
+            m_icns->post_regrid_actions();
+            for (auto& eqn: m_scalar_eqns) eqn->post_regrid_actions();
         }
 
         // Advance to time t + dt

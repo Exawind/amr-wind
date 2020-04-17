@@ -211,10 +211,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                      m_velocity_mean_ground,
                                      amr_wind::FieldState::Old);
         }
-        get_diffusion_tensor_op()->compute_divtau(divtau.vec_ptrs(),
-                                                  velocity_new.vec_ptrs(),
-                                                  density_old.vec_const_ptrs(),
-                                                  vel_eta.vec_const_ptrs());
+        m_icns->compute_diffusion_term(amr_wind::FieldState::Old);
         if (m_use_godunov)
             amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
 
@@ -229,10 +226,9 @@ void incflo::ApplyPredictor (bool incremental_projection)
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(tracer_new, tracer_old, 0, 0, tracer_new.num_comp(), 1);
         diffusion::heat_flux_bc(tracer_new);
-        get_diffusion_scalar_op()->compute_laps(laps.vec_ptrs(),
-                                                tracer_new.vec_ptrs(),
-                                                density_old.vec_const_ptrs(),
-                                                tra_eta.vec_const_ptrs());
+        for (auto& eqn: m_scalar_eqns) {
+            eqn->compute_diffusion_term(amr_wind::FieldState::Old);
+        }
         if (m_use_godunov)
             amr_wind::field_ops::add(tracer_forces, laps, 0, 0, m_ntrac, 0);
 
@@ -385,10 +381,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         diffusion::heat_flux_bc(tracer_new);
-        get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
-                                                  density_new.vec_ptrs(),
-                                                  tra_eta.vec_const_ptrs(),
-                                                  dt_diff);
+        for (auto& eqn: m_scalar_eqns)
+            eqn->solve(dt_diff);
     } // if (m_advect_tracer)
 
     
@@ -475,10 +469,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
                                      m_velocity_mean_ground,
                                      amr_wind::FieldState::New);
         }
-        get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
-                                                    density_new.vec_const_ptrs(),
-                                                    vel_eta.vec_const_ptrs(),
-                                                    dt_diff);
+        m_icns->solve(dt_diff);
     }
 
     // **********************************************************************************************
@@ -609,16 +600,11 @@ void incflo::ApplyCorrector()
                                      m_velocity_mean_ground,
                                      amr_wind::FieldState::New);
         }
-        get_diffusion_tensor_op()->compute_divtau(m_repo.get_field("velocity_diff_term", amr_wind::FieldState::New).vec_ptrs(),
-                                                  velocity_new.vec_ptrs(),
-                                                  density_new.vec_const_ptrs(),
-                                                  vel_eta.vec_const_ptrs());
+        m_icns->compute_diffusion_term(amr_wind::FieldState::New);
         if (m_advect_tracer) {
             diffusion::heat_flux_bc(tracer_new);
-            get_diffusion_scalar_op()->compute_laps(m_repo.get_field("temperature_diff_term", amr_wind::FieldState::New).vec_ptrs(),
-                                                    tracer_new.vec_ptrs(),
-                                                    density_new.vec_const_ptrs(),
-                                                    tra_eta.vec_const_ptrs());
+            for (auto& eqns: m_scalar_eqns)
+                eqns->compute_diffusion_term(amr_wind::FieldState::New);
         }
     }
 
@@ -756,10 +742,8 @@ void incflo::ApplyCorrector()
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
         diffusion::heat_flux_bc(tracer_new);
-        get_diffusion_scalar_op()->diffuse_scalar(tracer_new.vec_ptrs(),
-                                                  density_new.vec_ptrs(),
-                                                  tra_eta.vec_const_ptrs(),
-                                                  dt_diff);
+        for (auto& eqns: m_scalar_eqns)
+            eqns->solve(dt_diff);
     }
 
     // *************************************************************************************
@@ -853,10 +837,7 @@ void incflo::ApplyCorrector()
                                      m_velocity_mean_ground,
                                      amr_wind::FieldState::New);
         }
-        get_diffusion_tensor_op()->diffuse_velocity(velocity_new.vec_ptrs(),
-                                                    density_new.vec_const_ptrs(),
-                                                    vel_eta.vec_const_ptrs(),
-                                                    dt_diff);
+        m_icns->solve(dt_diff);
     }
 
     // **********************************************************************************************

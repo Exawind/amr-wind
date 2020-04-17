@@ -1,5 +1,6 @@
 #include "icns/icns.H"
 #include "icns/icns_ops.H"
+#include "icns/icns_diffusion.H"
 
 namespace amr_wind {
 namespace pde {

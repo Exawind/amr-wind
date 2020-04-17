@@ -15,6 +15,7 @@ struct Density : ScalarTransport
     static std::string var_name() { return "density"; }
 
     static constexpr bool multiply_rho = false;
+    static constexpr bool has_diffusion = false;
 };
 
 } // namespace pde

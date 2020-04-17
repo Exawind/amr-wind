@@ -1,3 +1,6 @@
+target_sources(${amr_wind_lib_name} PRIVATE
+  DiffusionOps.cpp
+  )
 
 add_subdirectory(icns)
 add_subdirectory(temperature)
