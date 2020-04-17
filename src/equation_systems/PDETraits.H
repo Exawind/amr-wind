@@ -5,7 +5,6 @@
 #include "AMReX_MLTensorOp.H"
 
 #include "SourceTerm.H"
-#include "DiffusionScalarOp.H"
 
 namespace amr_wind {
 namespace pde {

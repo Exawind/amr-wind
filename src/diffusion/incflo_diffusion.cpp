@@ -5,20 +5,6 @@ using namespace amrex;
 
 bool extrapolate=false;// fixme make an input maybe? extrapolate could cause negative viscosity if not used carefully
 
-DiffusionTensorOp*
-incflo::get_diffusion_tensor_op ()
-{
-    if (!m_diffusion_tensor_op) m_diffusion_tensor_op.reset(new DiffusionTensorOp(this));
-    return m_diffusion_tensor_op.get();
-}
-
-DiffusionScalarOp*
-incflo::get_diffusion_scalar_op ()
-{
-    if (!m_diffusion_scalar_op) m_diffusion_scalar_op.reset(new DiffusionScalarOp(this));
-    return m_diffusion_scalar_op.get();
-}
-
 namespace diffusion {
 
 Vector<Array<LinOpBCType, AMREX_SPACEDIM>>

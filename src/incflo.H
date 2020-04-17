@@ -7,9 +7,6 @@
 #include <AMReX_iMultiFab.H>
 #include <AMReX_NodalProjector.H>
 
-#include <DiffusionTensorOp.H>
-#include <DiffusionScalarOp.H>
-
 #include "incflo_enums.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
@@ -25,10 +22,6 @@ class RefinementCriteria;
 class incflo : public amrex::AmrCore
 {
 public:
-
-    friend DiffusionTensorOp;
-    friend DiffusionScalarOp;
-
     incflo ();
     virtual ~incflo ();
 
@@ -264,9 +257,6 @@ private:
 
     int m_ntrac = 1;
 
-    std::unique_ptr<DiffusionTensorOp> m_diffusion_tensor_op;
-    std::unique_ptr<DiffusionScalarOp> m_diffusion_scalar_op;
-
     //
     // end of member variables
     //
@@ -290,9 +280,6 @@ private:
     bool need_divtau () const {
         return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
     }
-
-    DiffusionTensorOp* get_diffusion_tensor_op ();
-    DiffusionScalarOp* get_diffusion_scalar_op ();
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
