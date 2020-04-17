@@ -89,16 +89,12 @@ struct SrcTermOp : SrcTermOpBase<PDE>
     }
 };
 
-template<typename PDE, typename Scheme>
+template<typename PDE, typename Scheme, typename = void>
 struct AdvectionOp
 {};
 
 template<typename PDE>
 struct DiffusionOp
-{};
-
-template<typename PDE>
-struct LinSysSolve
 {};
 
 }

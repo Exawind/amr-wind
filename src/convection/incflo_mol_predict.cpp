@@ -5,41 +5,6 @@
 
 using namespace amrex;
 
-void mol::predict_vels_on_faces(amr_wind::FieldRepo& repo, const amr_wind::FieldState fstate)
-{
-
-    auto& u_mac = repo.get_field("u_mac");
-    auto& v_mac = repo.get_field("v_mac");
-    auto& w_mac = repo.get_field("w_mac");
-    auto& vel = repo.get_field("velocity",fstate);
-    auto& bctype = vel.bc_type();
-
-    for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-
-        Box const& domain = repo.mesh().Geom(lev).Domain();
-        Vector<BCRec> const& h_bcrec = vel.bcrec();
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        {
-            for (MFIter mfi(vel(lev), TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& ubx = mfi.nodaltilebox(0);
-                Box const& vbx = mfi.nodaltilebox(1);
-                Box const& wbx = mfi.nodaltilebox(2);
-                Array4<Real> const& u = u_mac(lev).array(mfi);
-                Array4<Real> const& v = v_mac(lev).array(mfi);
-                Array4<Real> const& w = w_mac(lev).array(mfi);
-                Array4<Real const> const& vcc = vel(lev).const_array(mfi);
-
-                predict_vels_on_faces(lev,ubx,vbx,wbx,u,v,w,vcc,bctype,repo.mesh().Geom());
-
-                incflo_set_mac_bcs(domain,ubx,vbx,wbx,u,v,w,vcc,h_bcrec);
-            }
-        }
-    }
-}
 
 void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box const& wbx,
                                  Array4<Real> const& u, Array4<Real> const& v, Array4<Real> const& w,

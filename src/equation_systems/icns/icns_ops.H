@@ -4,7 +4,14 @@
 #include "PDETraits.H"
 #include "PDEOps.H"
 #include "PDEHelpers.H"
+#include "AdvOp_Godunov.H"
+#include "AdvOp_MOL.H"
 #include "icns/icns.H"
+#include <incflo_MAC_bcs.H>
+#include <AMReX_MultiFabUtil.H>
+#include <AMReX_MacProjector.H>
+#include <mac_projection.H>
+#include <MLMGOptions.H>
 
 namespace amr_wind {
 namespace pde {
@@ -78,6 +85,417 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
             }
         }
     }
+};
+
+template<>
+struct AdvectionOp<ICNS, fvm::Godunov>
+{
+    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    {
+
+        { // Prefix incflo
+            amrex::ParmParse pp("incflo");
+            pp.query("use_ppm", godunov_ppm);
+            pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
+        }
+
+        amr_wind::MLMGOptions options("mac_proj");
+
+        max_coarsen_level = options.max_coarsen_level;
+        rel_tol = options.rel_tol;
+        abs_tol = options.abs_tol;
+
+        // TODO: Need iconserv flag to be adjusted???
+        iconserv.resize(ICNS::ndim, 0);
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real dt)
+    {
+        auto& repo = fields.repo;
+        auto& geom = repo.mesh().Geom();
+        auto& u_mac = repo.get_field("u_mac");
+        auto& v_mac = repo.get_field("v_mac");
+        auto& w_mac = repo.get_field("w_mac");
+        auto& density = repo.get_field("density", fstate);
+
+        auto& src_term = fields.src_term;
+        auto& conv_term = fields.conv_term;
+        auto& dof_field = fields.field.state(fstate);
+
+        auto bcrec_device = dof_field.bcrec_device();
+
+
+        //
+        // Predict
+        //
+
+        for(int lev = 0; lev < repo.num_active_levels(); ++lev){
+
+            amrex::Box const& domain = geom[lev].Domain();
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            {
+                amrex::FArrayBox scratch;
+                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi)
+                {
+                    amrex::Box const& bx = mfi.tilebox();
+                    amrex::Box const& bxg1 = amrex::grow(bx,1);
+                    amrex::Box const& xbx = mfi.nodaltilebox(0);
+                    amrex::Box const& ybx = mfi.nodaltilebox(1);
+                    amrex::Box const& zbx = mfi.nodaltilebox(2);
+
+                    amrex::Array4<amrex::Real> const& a_umac = u_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_vmac = v_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_wmac = w_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_vel = dof_field(lev).const_array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_f = src_term(lev).const_array(mfi);
+
+                    scratch.resize(bxg1, ICNS::ndim*12+3);
+    //                Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
+                    amrex::Real* p = scratch.dataPtr();
+
+                    amrex::Array4<amrex::Real> Imx = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imx.size();
+                    amrex::Array4<amrex::Real> Ipx = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipx.size();
+                    amrex::Array4<amrex::Real> Imy = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imy.size();
+                    amrex::Array4<amrex::Real> Ipy = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipy.size();
+                    amrex::Array4<amrex::Real> Imz = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imz.size();
+                    amrex::Array4<amrex::Real> Ipz = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipz.size();
+                    amrex::Array4<amrex::Real> u_ad = makeArray4(p,amrex::Box(bx).grow(1,1).grow(2,1).surroundingNodes(0),1);
+                    p +=         u_ad.size();
+                    amrex::Array4<amrex::Real> v_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(2,1).surroundingNodes(1),1);
+                    p +=         v_ad.size();
+                    amrex::Array4<amrex::Real> w_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
+                    p +=         w_ad.size();
+
+                    if (godunov_ppm){
+                        godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                                              geom, dt, bcrec_device);
+                    } else {
+                        godunov::predict_plm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
+                    }
+
+                    godunov::make_trans_velocities(lev, amrex::Box(u_ad), amrex::Box(v_ad), amrex::Box(w_ad),
+                                                   u_ad, v_ad, w_ad,
+                                                   Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f,
+                                                   geom, dt, bcrec_device, godunov_use_forces_in_trans);
+
+                    godunov::predict_godunov(lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
+                                             a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p,
+                                             geom, dt, bcrec_device, godunov_use_forces_in_trans);
+
+                    incflo_set_mac_bcs(domain, xbx, ybx, zbx, a_umac, a_vmac, a_wmac, a_vel, dof_field.bcrec());
+
+                    amrex::Gpu::streamSynchronize();  // otherwise we might be using too much memory
+                }
+            }
+        }
+        
+
+        //
+        // MAC
+        //
+
+        // This will hold (1/rho) on faces
+        auto rho_xf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        auto rho_yf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        auto rho_zf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+
+        amrex::Vector<amrex::Array<amrex::MultiFab*,ICNS::ndim>> rho_face(repo.num_active_levels());
+        amrex::Vector<amrex::Array<amrex::MultiFab*,ICNS::ndim>> mac_vec(repo.num_active_levels());
+
+        //fixme todo clean this up, this was done to replace GetVecOfArrOfConstPtrs() below
+        amrex::Vector<amrex::Array<amrex::MultiFab const*,ICNS::ndim>> rho_face_const;
+        rho_face_const.reserve(repo.num_active_levels());
+
+        for (int lev=0; lev < repo.num_active_levels(); ++lev)
+        {
+             rho_face[lev][0] = &(*rho_xf)(lev);
+             rho_face[lev][1] = &(*rho_yf)(lev);
+             rho_face[lev][2] = &(*rho_zf)(lev);
+
+             amrex::average_cellcenter_to_face(rho_face[lev], density(lev), geom[lev]);
+             for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                 rho_face[lev][idim]->invert(1.0, 0);
+             }
+
+             rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
+
+             mac_vec[lev][0] = &u_mac(lev);
+             mac_vec[lev][1] = &v_mac(lev);
+             mac_vec[lev][2] = &w_mac(lev);
+         }
+
+
+        amr_wind::MLMGOptions options("mac_proj");
+
+         // If we want to set max_coarsening_level we have to send it in to the constructor
+         amrex::LPInfo lp_info;
+         lp_info.setMaxCoarseningLevel(max_coarsen_level);
+
+
+         // Perform MAC projection
+         amrex::MacProjector macproj(mac_vec,
+                              rho_face_const,
+                              repo.mesh().Geom(0,repo.num_active_levels()-1),
+                              lp_info);
+
+         // get the bc types from pressure field
+         auto& bctype = repo.get_field("p").bc_type();
+
+         macproj.setDomainBC(mac::get_projection_bc(amrex::Orientation::low, bctype, repo.mesh().Geom()),
+                             mac::get_projection_bc(amrex::Orientation::high, bctype, repo.mesh().Geom()));
+
+         macproj.project(rel_tol,
+                         abs_tol,
+                         amrex::MLMG::Location::FaceCentroid);
+
+
+
+
+
+        //
+        // Advect momentum eqns
+        //
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            u_mac(lev).FillBoundary(geom[lev].periodicity());
+            v_mac(lev).FillBoundary(geom[lev].periodicity());
+            w_mac(lev).FillBoundary(geom[lev].periodicity());
+
+            amrex::MFItInfo mfi_info;
+            if (amrex::Gpu::notInLaunchRegion())
+                mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
+                    .SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(dof_field(lev),mfi_info); mfi.isValid(); ++mfi)
+            {
+                const auto& bx = mfi.tilebox();
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), ICNS::ndim * 14 + 1);
+
+                godunov::compute_advection(lev, bx, ICNS::ndim,
+                                           conv_term(lev).array(mfi),
+                                           dof_field(lev).const_array(mfi),
+                                           u_mac(lev).const_array(mfi),
+                                           v_mac(lev).const_array(mfi),
+                                           w_mac(lev).const_array(mfi),
+                                           src_term(lev).const_array(mfi),
+                                           dof_field.bcrec_device().data(),
+                                           iconserv.data(),
+                                           tmpfab.dataPtr(),
+                                           geom, dt, godunov_ppm);
+
+                amrex::Gpu::streamSynchronize();
+            }
+        }
+    }
+
+    PDEFields& fields;
+    amrex::Gpu::DeviceVector<int> iconserv;
+
+    bool godunov_ppm{true};
+    bool godunov_use_forces_in_trans{false};
+
+    int max_coarsen_level;
+    amrex::Real rel_tol;
+    amrex::Real abs_tol;
+
+
+
+};
+
+template<>
+struct AdvectionOp<ICNS, fvm::MOL>
+{
+    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    {
+        amr_wind::MLMGOptions options("mac_proj");
+
+        max_coarsen_level = options.max_coarsen_level;
+        rel_tol = options.rel_tol;
+        abs_tol = options.abs_tol;
+    }
+
+    void operator()(const FieldState fstate, const amrex::Real )
+    {
+
+        auto& repo = fields.repo;
+        auto& u_mac = repo.get_field("u_mac");
+        auto& v_mac = repo.get_field("v_mac");
+        auto& w_mac = repo.get_field("w_mac");
+        auto& density = repo.get_field("density", fstate);
+
+        auto& conv_term = fields.conv_term.state(fstate);
+        auto& dof_field = fields.field.state(fstate);
+
+        //
+        // Predict velocities
+        //
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+
+            amrex::Box const& domain = repo.mesh().Geom(lev).Domain();
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            {
+                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi)
+                {
+                    amrex::Box const& ubx = mfi.nodaltilebox(0);
+                    amrex::Box const& vbx = mfi.nodaltilebox(1);
+                    amrex::Box const& wbx = mfi.nodaltilebox(2);
+                    amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real const> const& vcc = dof_field(lev).const_array(mfi);
+
+                    mol::predict_vels_on_faces(lev,
+                                               ubx, vbx, wbx,
+                                               u, v, w,
+                                               vcc,
+                                               dof_field.bc_type(),
+                                               repo.mesh().Geom());
+
+                    incflo_set_mac_bcs(domain,
+                                       ubx, vbx, wbx,
+                                       u, v, w,
+                                       vcc,
+                                       dof_field.bcrec());
+                }
+            }
+        }
+
+
+        //
+        // MAC fixme there is duplication with godunov in mac projection below
+        //
+
+        // This will hold (1/rho) on faces
+        auto rho_xf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        auto rho_yf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        auto rho_zf = repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+
+        amrex::Vector<amrex::Array<amrex::MultiFab*,ICNS::ndim>> rho_face(repo.num_active_levels());
+        amrex::Vector<amrex::Array<amrex::MultiFab*,ICNS::ndim>> mac_vec(repo.num_active_levels());
+
+        //fixme todo clean this up, this was done to replace GetVecOfArrOfConstPtrs() below
+        amrex::Vector<amrex::Array<amrex::MultiFab const*,ICNS::ndim>> rho_face_const;
+        rho_face_const.reserve(repo.num_active_levels());
+        auto geom = repo.mesh().Geom();
+
+        for (int lev=0; lev < repo.num_active_levels(); ++lev)
+        {
+            rho_face[lev][0] = &(*rho_xf)(lev);
+            rho_face[lev][1] = &(*rho_yf)(lev);
+            rho_face[lev][2] = &(*rho_zf)(lev);
+
+            amrex::average_cellcenter_to_face(rho_face[lev], density(lev), geom[lev]);
+            for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                rho_face[lev][idim]->invert(1.0, 0);
+            }
+
+            rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
+
+            mac_vec[lev][0] = &u_mac(lev);
+            mac_vec[lev][1] = &v_mac(lev);
+            mac_vec[lev][2] = &w_mac(lev);
+
+        }
+
+
+        // If we want to set max_coarsening_level we have to send it in to the constructor
+        amrex::LPInfo lp_info;
+        lp_info.setMaxCoarseningLevel(max_coarsen_level);
+
+
+        // Perform MAC projection
+        amrex::MacProjector macproj(mac_vec,
+                                    rho_face_const,
+                                    repo.mesh().Geom(0,repo.num_active_levels()-1),
+                                    lp_info);
+
+        // get the bc types from pressure field
+        auto& bctype = repo.get_field("p").bc_type();
+
+        macproj.setDomainBC(mac::get_projection_bc(amrex::Orientation::low, bctype, repo.mesh().Geom()),
+                            mac::get_projection_bc(amrex::Orientation::high, bctype, repo.mesh().Geom()));
+
+        macproj.project(rel_tol,
+                        abs_tol,
+                        amrex::MLMG::Location::FaceCentroid);
+
+
+
+        //
+        // Advect velocity
+        //
+
+        int nmaxcomp = AMREX_SPACEDIM;
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev)
+        {
+            amrex::MFItInfo mfi_info;
+            // if (amrex::Gpu::notInLaunchRegion()) mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
+            if (amrex::Gpu::notInLaunchRegion()) mfi_info.EnableTiling(amrex::IntVect(1024,1024,1024)).SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(dof_field(lev),mfi_info); mfi.isValid(); ++mfi)
+            {
+
+                amrex::Box const& bx = mfi.tilebox();
+
+                {
+                    amrex::Box tmpbox = amrex::surroundingNodes(bx);
+                    const int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
+
+                    amrex::FArrayBox tmpfab(tmpbox, tmpcomp);
+                    amrex::Elixir eli = tmpfab.elixir();
+
+                    amrex::Array4<amrex::Real> fx = tmpfab.array(nmaxcomp*0);
+                    amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp*1);
+                    amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp*2);
+
+                    mol::compute_convective_fluxes(lev, bx, AMREX_SPACEDIM,
+                                                   fx, fy, fz,
+                                                   dof_field(lev).const_array(mfi),
+                                                   u_mac(lev).const_array(mfi),
+                                                   v_mac(lev).const_array(mfi),
+                                                   w_mac(lev).const_array(mfi),
+                                                   dof_field.bcrec().data(),
+                                                   dof_field.bcrec_device().data(),geom);
+
+                    mol::compute_convective_rate(bx, AMREX_SPACEDIM,
+                                                 conv_term(lev).array(mfi),
+                                                 fx, fy, fz,
+                                                 geom[lev].InvCellSizeArray());
+
+
+                }
+
+            }
+        }
+
+
+    }
+
+    PDEFields& fields;
+
+    int max_coarsen_level;
+    amrex::Real rel_tol;
+    amrex::Real abs_tol;
+
 };
 
 }

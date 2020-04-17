@@ -1,0 +1,119 @@
+#ifndef ADVOP_MOL_H
+#define ADVOP_MOL_H
+
+#include <type_traits>
+
+#include "MOL.H"
+#include "SchemeTraits.H"
+#include "PDETraits.H"
+#include "PDEOps.H"
+
+#include "AMReX_Gpu.H"
+#include "AMReX_ParmParse.H"
+
+namespace amr_wind {
+namespace pde {
+
+template <typename PDE>
+struct AdvectionOp<
+    PDE,
+    fvm::MOL,
+    typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
+{
+    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    {}
+
+    void operator()(const FieldState fstate, const amrex::Real )
+    {
+        static_assert(PDE::ndim == 1, "Invalid number of components for scalar");
+
+        auto& repo = fields.repo;
+        auto& geom = repo.mesh().Geom();
+
+        auto& u_mac = repo.get_field("u_mac");
+        auto& v_mac = repo.get_field("v_mac");
+        auto& w_mac = repo.get_field("w_mac");
+
+        auto& conv_term = fields.conv_term.state(fstate);
+        auto& dof_field = fields.field.state(fstate);
+        auto& density = repo.get_field("density", fstate);
+
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev)
+        {
+            amrex::MFItInfo mfi_info;
+            // if (amrex::Gpu::notInLaunchRegion()) mfi_info.EnableTiling(amrex::IntVect(1024,16,16)).SetDynamic(true);
+            if (amrex::Gpu::notInLaunchRegion()) mfi_info.EnableTiling(amrex::IntVect(1024,1024,1024)).SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(density(lev),mfi_info); mfi.isValid(); ++mfi)
+            {
+
+                amrex::Box const& bx = mfi.tilebox();
+                auto rho_arr = density(lev).const_array(mfi);
+                auto tra_arr = dof_field(lev).const_array(mfi);
+                amrex::FArrayBox rhotracfab;
+                amrex::Elixir eli_rt;
+                amrex::Array4<amrex::Real> rhotrac;
+
+                if (PDE::multiply_rho) {
+
+                    amrex::Box rhotrac_box = amrex::grow(bx, fvm::MOL::nghost_state);
+                    rhotracfab.resize(rhotrac_box, PDE::ndim);
+                    eli_rt = rhotracfab.elixir();
+                    rhotrac = rhotracfab.array();
+
+                    amrex::ParallelFor(rhotrac_box, PDE::ndim,
+                    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+                    {
+                        rhotrac(i,j,k,n) = rho_arr(i,j,k) * tra_arr(i,j,k,n);
+                    });
+                }
+
+                {
+                    const int nmaxcomp = PDE::ndim;
+
+                    amrex::Box tmpbox = amrex::surroundingNodes(bx);
+                    const int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
+
+                    amrex::FArrayBox tmpfab(tmpbox, tmpcomp);
+                    amrex::Elixir eli = tmpfab.elixir();
+
+                    amrex::Array4<amrex::Real> fx = tmpfab.array(nmaxcomp*0);
+                    amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp*1);
+                    amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp*2);
+
+                    mol::compute_convective_fluxes(lev, bx, PDE::ndim,
+                                                   fx, fy, fz,
+                                                   (PDE::multiply_rho ? rhotrac : tra_arr),
+                                                   u_mac(lev).const_array(mfi),
+                                                   v_mac(lev).const_array(mfi),
+                                                   w_mac(lev).const_array(mfi),
+                                                   dof_field.bcrec().data(),
+                                                   dof_field.bcrec_device().data(),
+                                                   geom);
+
+                    mol::compute_convective_rate(bx, PDE::ndim,
+                                                 conv_term(lev).array(mfi),
+                                                 fx, fy, fz,
+                                                 geom[lev].InvCellSizeArray());
+
+
+                }
+
+            }
+        }
+
+
+    }
+
+    PDEFields& fields;
+};
+
+} // namespace pde
+} // namespace amr_wind
+
+
+
+#endif /* ADVOP_MOL_H */

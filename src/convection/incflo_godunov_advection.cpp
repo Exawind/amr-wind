@@ -85,7 +85,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         });
 
     // Use PLM to generate Im and Ip */
-    } else {   
+    } else {
         amrex::ParallelFor(bxg1, ncomp,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {

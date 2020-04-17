@@ -5,6 +5,7 @@
 #include "AMReX_MLTensorOp.H"
 
 #include "SourceTerm.H"
+#include "DiffusionScalarOp.H"
 
 namespace amr_wind {
 namespace pde {
@@ -22,18 +23,6 @@ struct ScalarTransport
 
     static constexpr int ndim = 1;
     static constexpr bool multiply_rho = true;
-};
-
-struct TKE : ScalarTransport
-{
-    static std::string pde_name() { return "TKE"; }
-    static std::string var_name() { return "tke"; }
-};
-
-struct SDR : ScalarTransport
-{
-    static std::string pde_name() { return "SDR"; }
-    static std::string var_name() { return "sdr"; }
 };
 
 } // namespace pde
