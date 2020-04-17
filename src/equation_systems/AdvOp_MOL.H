@@ -53,14 +53,14 @@ struct AdvectionOp<
                 amrex::Box const& bx = mfi.tilebox();
                 auto rho_arr = density(lev).const_array(mfi);
                 auto tra_arr = dof_field(lev).const_array(mfi);
+                amrex::FArrayBox rhotracfab;
+                amrex::Elixir eli_rt;
                 amrex::Array4<amrex::Real> rhotrac;
 
                 if (PDE::multiply_rho) {
 
                     amrex::Box rhotrac_box = amrex::grow(bx,2);
-
-                    amrex::FArrayBox rhotracfab(rhotrac_box, PDE::ndim);
-                    amrex::Elixir eli_rt;
+                    rhotracfab.resize(rhotrac_box, PDE::ndim);
                     eli_rt = rhotracfab.elixir();
                     rhotrac = rhotracfab.array();
 
@@ -72,15 +72,17 @@ struct AdvectionOp<
                 }
 
                 {
+                    const int nmaxcomp = AMREX_SPACEDIM;
+
                     amrex::Box tmpbox = amrex::surroundingNodes(bx);
-                    const int tmpcomp = PDE::ndim*AMREX_SPACEDIM;
+                    const int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
 
                     amrex::FArrayBox tmpfab(tmpbox, tmpcomp);
                     amrex::Elixir eli = tmpfab.elixir();
 
-                    amrex::Array4<amrex::Real> fx = tmpfab.array(PDE::ndim*0);
-                    amrex::Array4<amrex::Real> fy = tmpfab.array(PDE::ndim*1);
-                    amrex::Array4<amrex::Real> fz = tmpfab.array(PDE::ndim*2);
+                    amrex::Array4<amrex::Real> fx = tmpfab.array(nmaxcomp*0);
+                    amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp*1);
+                    amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp*2);
 
                     mol::compute_convective_fluxes(lev, bx, PDE::ndim,
                                                    fx, fy, fz,
