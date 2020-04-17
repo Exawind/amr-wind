@@ -59,7 +59,7 @@ struct AdvectionOp<
 
                 if (PDE::multiply_rho) {
 
-                    amrex::Box rhotrac_box = amrex::grow(bx,2);
+                    amrex::Box rhotrac_box = amrex::grow(bx, fvm::MOL::nghost_state);
                     rhotracfab.resize(rhotrac_box, PDE::ndim);
                     eli_rt = rhotracfab.elixir();
                     rhotrac = rhotracfab.array();
@@ -72,7 +72,7 @@ struct AdvectionOp<
                 }
 
                 {
-                    const int nmaxcomp = AMREX_SPACEDIM;
+                    const int nmaxcomp = PDE:ndim;
 
                     amrex::Box tmpbox = amrex::surroundingNodes(bx);
                     const int tmpcomp = nmaxcomp*AMREX_SPACEDIM;
