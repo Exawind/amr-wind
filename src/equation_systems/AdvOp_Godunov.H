@@ -58,11 +58,12 @@ struct AdvectionOp<
                 const auto& bx = mfi.tilebox();
                 auto rho_arr = den(lev).array(mfi);
                 auto tra_arr = dof_field(lev).array(mfi);
+                amrex::FArrayBox rhotracfab;
                 amrex::Array4<amrex::Real> rhotrac;
 
                 if (PDE::multiply_rho) {
                     auto rhotrac_box = amrex::grow(bx, fvm::Godunov::nghost_state);
-                    amrex::FArrayBox rhotracfab(rhotrac_box, PDE::ndim);
+                    rhotracfab.resize(rhotrac_box, PDE::ndim);
                     rhotrac = rhotracfab.array();
 
                     amrex::ParallelFor(
