@@ -52,6 +52,9 @@ struct DiffusionOp<ICNS, Scheme>
         const int nlevels = repo.num_active_levels();
         const auto& density = repo.get_field("density", fstate);
 
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {

@@ -85,6 +85,9 @@ void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& rhs = (*rhs_ptr)(lev);
 
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
         for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
              ++mfi) {
             const auto& bx = mfi.tilebox();
