@@ -22,7 +22,6 @@ struct ComputeRHSOp<Density, Scheme>
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
-        auto& den_nph = field.state(FieldState::NPH);
         auto& conv_term = fields.conv_term.state(fstate);
 
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -32,7 +31,6 @@ struct ComputeRHSOp<Density, Scheme>
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto rho = field(lev).array(mfi);
-                auto rho_nph = den_nph(lev).array(mfi);
                 const auto rho_o = field_old(lev).const_array(mfi);
                 const auto ddt_o = conv_term(lev).const_array(mfi);
 
@@ -40,7 +38,8 @@ struct ComputeRHSOp<Density, Scheme>
                     bx,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         rho(i, j, k) = rho_o(i, j, k) + dt * ddt_o(i, j, k);
-                        rho_nph(i, j, k) = 0.5 * (rho(i, j, k) + rho_o(i, j, k));
+                        // Defer n+1/2 update to the time-stepping algorithm
+                        // rho_nph(i, j, k) = 0.5 * (rho(i, j, k) + rho_o(i, j, k));
                     });
             }
         }
@@ -51,7 +50,6 @@ struct ComputeRHSOp<Density, Scheme>
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
-        auto& den_nph = field.state(FieldState::NPH);
         auto& conv_term = fields.conv_term;
         auto& conv_term_old = fields.conv_term.state(FieldState::Old);
 
@@ -62,7 +60,6 @@ struct ComputeRHSOp<Density, Scheme>
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto rho = field(lev).array(mfi);
-                auto rho_nph = den_nph(lev).array(mfi);
                 const auto rho_o = field_old(lev).const_array(mfi);
                 const auto ddt = conv_term(lev).const_array(mfi);
                 const auto ddt_o = conv_term_old(lev).const_array(mfi);
@@ -72,8 +69,9 @@ struct ComputeRHSOp<Density, Scheme>
                         rho(i, j, k) =
                             rho_o(i, j, k) +
                             dt * 0.5 * (ddt_o(i, j, k) + ddt(i, j, k));
-                        rho_nph(i, j, k) =
-                            0.5 * (rho(i, j, k) + rho_o(i, j, k));
+                        // Defer n+1/2 update to time-stepping algorithm
+                        // rho_nph(i, j, k) =
+                        //     0.5 * (rho(i, j, k) + rho_o(i, j, k));
                     });
             }
         }
