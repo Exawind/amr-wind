@@ -146,7 +146,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = icns_fields.src_term;
-    auto& tracer_forces = m_repo.get_field("temperature_src_term");
     auto& vel_eta = icns_fields.nueff;
     auto& tra_eta = m_repo.get_field("temperature_nueff");
 
@@ -154,8 +153,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& divtau = m_use_godunov
                        ? icns_fields.diff_term
                        : icns_fields.diff_term.state(amr_wind::FieldState::Old);
-    auto pred_state = m_use_godunov ? amr_wind::FieldState::New : amr_wind::FieldState::Old;
-    auto& laps = m_repo.get_field("temperature_diff_term", pred_state);
 
     // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
@@ -205,16 +202,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Compute explicit diffusive terms
     // *************************************************************************************
     if (need_divtau()) {
-#if 0
-        // Reuse existing buffer to avoid creating new multifabs
-        amr_wind::field_ops::copy(tracer_new, tracer_old, 0, 0, tracer_new.num_comp(), 1);
-        diffusion::heat_flux_bc(tracer_new);
-        for (auto& eqn: m_scalar_eqns) {
-            eqn->compute_diffusion_term(amr_wind::FieldState::Old);
-        }
-        if (m_use_godunov)
-            amr_wind::field_ops::add(tracer_forces, laps, 0, 0, m_ntrac, 0);
-#else
         for (auto& eqn: m_scalar_eqns) {
             auto& field = eqn->fields().field;
             // Reuse existing buffer to avoid creating new multifabs
@@ -233,14 +220,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
                     eqn->fields().diff_term, 0, 0,
                     field.num_comp(), 0);
         }
-#endif
     }
 
     if (m_use_godunov) {
        IntVect ng(nghost_force());
        m_icns->fields().src_term.fillpatch(m_time.current_time(), ng);
-       // if (m_advect_tracer)
-       //     tracer_forces.fillpatch(m_time.current_time(), ng);
 
        for (auto& eqn: m_scalar_eqns) {
            eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
@@ -267,44 +251,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
-#if 0
-    // *************************************************************************************
-    // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
-    // *************************************************************************************
-    for (auto& seqn: m_scalar_eqns) {
-        seqn->compute_source_term(amr_wind::FieldState::NPH);
-    }
-
-    // *************************************************************************************
-    // Update the tracer next
-    // *************************************************************************************
-    for (auto& eqn: m_scalar_eqns)
-        eqn->compute_predictor_rhs(m_diff_type);
-
-    // *************************************************************************************
-    // Solve diffusion equation for tracer
-    // *************************************************************************************
-    if ( m_advect_tracer &&
-        (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit) )
-    {
-        IntVect ng_diffusion(1);
-        tracer_new.fillphysbc(new_time, ng_diffusion);
-
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        diffusion::heat_flux_bc(tracer_new);
-        for (auto& eqn: m_scalar_eqns)
-            eqn->solve(dt_diff);
-    } // if (m_advect_tracer)
-
-    
-    // *************************************************************************************
-    // Update tracer at n+1/2
-    // *************************************************************************************
-    if (m_advect_tracer)
-        amr_wind::field_ops::lincomb(tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
-    else
-        amr_wind::field_ops::copy(tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
-#else
     // Perform scalar update one at a time. This is to allow an updated density
     // at `n+1/2` to be computed before other scalars use it when computing
     // their source terms.
@@ -337,9 +283,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
             0.5, field.state(amr_wind::FieldState::Old), 0,
             0.5, field, 0, 0, field.num_comp(), 1);
     }
-#endif
-    
-    
+
     // *************************************************************************************
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
@@ -459,7 +403,6 @@ void incflo::ApplyCorrector()
     auto& velocity_new = velocity().state(amr_wind::FieldState::New);
     auto& density_old = density().state(amr_wind::FieldState::Old);
     auto& density_new = density().state(amr_wind::FieldState::New);
-    auto& tracer_old = tracer().state(amr_wind::FieldState::Old);
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_src_term");
@@ -499,11 +442,6 @@ void incflo::ApplyCorrector()
                                      amr_wind::FieldState::New);
         }
         m_icns->compute_diffusion_term(amr_wind::FieldState::New);
-        // if (m_advect_tracer) {
-        //     diffusion::heat_flux_bc(tracer_new);
-        //     for (auto& eqns: m_scalar_eqns)
-        //         eqns->compute_diffusion_term(amr_wind::FieldState::New);
-        // }
 
         for (auto& eqns: m_scalar_eqns) {
             // FIXME: Hard-coded BC
@@ -520,46 +458,6 @@ void incflo::ApplyCorrector()
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
 
-#if 0
-    // *************************************************************************************
-    // Compute the tracer forcing terms (forcing for (rho s), not for s)
-    // *************************************************************************************
-    for (auto& seqn: m_scalar_eqns) {
-        seqn->compute_source_term(amr_wind::FieldState::New);
-    }
-
-    // *************************************************************************************
-    // Update the tracer next (note that dtdt already has rho in it)
-    // (rho trac)^new = (rho trac)^old + dt * (
-    //                   div(rho trac u) + div (mu grad trac) + rho * f_t
-    // *************************************************************************************
-    for (auto& eqn: m_scalar_eqns)
-        eqn->compute_corrector_rhs(m_diff_type);
-
-    // *************************************************************************************
-    // Solve diffusion equation for tracer
-    // *************************************************************************************
-    if ( m_advect_tracer &&
-        (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit) )
-    {
-
-        IntVect ng_diffusion(1);
-        tracer_new.fillphysbc(new_time, ng_diffusion);
-
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        diffusion::heat_flux_bc(tracer_new);
-        for (auto& eqns: m_scalar_eqns)
-            eqns->solve(dt_diff);
-    }
-
-    // *************************************************************************************
-    // Update tracer at n+1/2
-    // *************************************************************************************
-    if (m_advect_tracer)
-        amr_wind::field_ops::lincomb(tracer_nph, 0.5, tracer_old, 0, 0.5, tracer_new, 0, 0, m_ntrac, 1);
-    else
-        amr_wind::field_ops::copy(tracer_nph, tracer_old, 0, 0, m_ntrac, 1);
-#else
     // Perform scalar update one at a time. This is to allow an updated density
     // at `n+1/2` to be computed before other scalars use it when computing
     // their source terms.
@@ -595,7 +493,6 @@ void incflo::ApplyCorrector()
             0.5, field.state(amr_wind::FieldState::Old), 0,
             0.5, field, 0, 0, field.num_comp(), 1);
     }
-#endif
 
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
