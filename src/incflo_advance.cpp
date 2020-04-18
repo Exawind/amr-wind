@@ -237,46 +237,12 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     // *************************************************************************************
-    // Define local variables for lambda to capture.
-    // *************************************************************************************
-    Real l_dt = m_time.deltaT();
-    bool l_constant_density = m_constant_density;
-
-    // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (l_constant_density)
+    if (m_constant_density)
     {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
-#if 0
-    else
-    {
-        auto& conv_density = m_repo.get_field("density_conv_term", pred_state);
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(density_old(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real  const> const& rho_o  = density_old(lev).const_array(mfi);
-                Array4<Real> const& rho_new       = density_new(lev).array(mfi);
-                Array4<Real> const& rho_nph       = (density_nph)(lev).array(mfi);
-                Array4<Real const> const& drdt    = conv_density(lev).const_array(mfi);
-
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    rho_new(i,j,k) = rho_o(i,j,k) + l_dt * drdt(i,j,k);
-                    rho_nph(i,j,k) = 0.5 * (rho_o(i,j,k) + rho_new(i,j,k));
-                });
-            } // mfi
-        } // lev
-
-    } // not constant density
-#endif
 
     // *************************************************************************************
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
@@ -288,75 +254,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Update the tracer next
     // *************************************************************************************
-#if 0
-    int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
-
-    if (m_advect_tracer)
-    {
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(tracer_old(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tra_o   = tracer_old(lev).const_array(mfi);
-                Array4<Real const> const& rho_o   = density_old(lev).const_array(mfi);
-                Array4<Real> const& tra           = tracer_new(lev).array(mfi);
-                Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
-                Array4<Real const> const& dtdt_o  = conv_tracer(lev).const_array(mfi);
-                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
-
-                if (m_diff_type == DiffusionType::Explicit)
-                {
-                    Array4<Real const> const& laps_o = laps(lev).const_array(mfi);
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        // (rho trac)^new = (rho trac)^old + dt * (
-                        //                   div(rho trac u) + div (mu grad trac) + rho * f_t
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( dtdt_o(i,j,k,n) + tra_f(i,j,k,n) + laps_o(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-                else if (m_diff_type == DiffusionType::Crank_Nicolson)
-                {
-                    Array4<Real const> const& laps_o = laps(lev).const_array(mfi);
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( dtdt_o(i,j,k,n) + tra_f(i,j,k,n) + 0.5 * laps_o(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-                else if (m_diff_type == DiffusionType::Implicit)
-                {
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( dtdt_o(i,j,k,n) + tra_f(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-            } // mfi
-        } // lev
-    } // if (m_advect_tracer)
-#endif
-
     for (auto& eqn: m_scalar_eqns)
         eqn->compute_predictor_rhs(m_diff_type);
 
@@ -398,53 +295,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
-#if 0
-    for (int lev = 0; lev <= finest_level; lev++)
-    {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(velocity_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& vel = velocity_new(lev).array(mfi);
-            Array4<Real const> const& dvdt = conv_velocity(lev).const_array(mfi);
-            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
-
-            if (m_diff_type == DiffusionType::Implicit) {
-
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0));
-                    vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1));
-                    vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2));
-                });
-            }
-            else if (m_diff_type == DiffusionType::Crank_Nicolson)
-            {
-
-                Array4<Real const> const& divtau_o = divtau(lev).const_array(mfi);
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+0.5*divtau_o(i,j,k,0));
-                    vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1)+0.5*divtau_o(i,j,k,1));
-                    vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2)+0.5*divtau_o(i,j,k,2));
-                });
-            }
-            else if (m_diff_type == DiffusionType::Explicit)
-            {
-                Array4<Real const> const& divtau_o = divtau(lev).const_array(mfi);
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    vel(i,j,k,0) += l_dt*(dvdt(i,j,k,0)+vel_f(i,j,k,0)+divtau_o(i,j,k,0));
-                    vel(i,j,k,1) += l_dt*(dvdt(i,j,k,1)+vel_f(i,j,k,1)+divtau_o(i,j,k,1));
-                    vel(i,j,k,2) += l_dt*(dvdt(i,j,k,2)+vel_f(i,j,k,2)+divtau_o(i,j,k,2));
-                });
-            }
-        } // mfi
-    } // lev
-#endif
     m_icns->compute_predictor_rhs(m_diff_type);
 
     // *************************************************************************************
