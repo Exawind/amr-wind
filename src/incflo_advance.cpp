@@ -156,11 +156,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
                        : icns_fields.diff_term.state(amr_wind::FieldState::Old);
     auto pred_state = m_use_godunov ? amr_wind::FieldState::New : amr_wind::FieldState::Old;
     auto& laps = m_repo.get_field("temperature_diff_term", pred_state);
-    auto& conv_velocity =
-        m_use_godunov ? icns_fields.conv_term
-                      : icns_fields.conv_term.state(amr_wind::FieldState::Old);
-    auto& conv_density = m_repo.get_field("density_conv_term", pred_state);
-    auto& conv_tracer = m_repo.get_field("temperature_conv_term", pred_state);
 
     // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
@@ -254,9 +249,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
+#if 0
     else
     {
-
+        auto& conv_density = m_repo.get_field("density_conv_term", pred_state);
         for (int lev = 0; lev <= finest_level; lev++)
         {
 
@@ -280,6 +276,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
         } // lev
 
     } // not constant density
+#endif
 
     // *************************************************************************************
     // Compute (or if Godunov, re-compute) the tracer forcing terms (forcing for (rho s), not for s)
@@ -291,6 +288,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Update the tracer next
     // *************************************************************************************
+#if 0
     int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
 
     if (m_advect_tracer)
@@ -357,6 +355,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
             } // mfi
         } // lev
     } // if (m_advect_tracer)
+#endif
+
+    for (auto& eqn: m_scalar_eqns)
+        eqn->compute_predictor_rhs(m_diff_type);
 
     // *************************************************************************************
     // Solve diffusion equation for tracer
@@ -396,6 +398,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
+#if 0
     for (int lev = 0; lev <= finest_level; lev++)
     {
 
@@ -441,6 +444,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
             }
         } // mfi
     } // lev
+#endif
+    m_icns->compute_predictor_rhs(m_diff_type);
 
     // *************************************************************************************
     // Solve diffusion equation for u* but using eta_old at old time
