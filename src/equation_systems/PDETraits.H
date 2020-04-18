@@ -14,6 +14,7 @@ struct VectorTransport
     using MLDiffOp = amrex::MLABecLaplacian;
     static constexpr int ndim = AMREX_SPACEDIM;
 
+    static constexpr bool multiply_rho = true;
     static constexpr bool has_diffusion = true;
 };
 

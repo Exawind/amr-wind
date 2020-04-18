@@ -17,6 +17,9 @@ struct ICNS : VectorTransport
 
     static std::string pde_name() { return "ICNS"; }
     static std::string var_name() { return "velocity"; }
+
+    static constexpr bool multiply_rho = false;
+    static constexpr bool has_diffusion = true;
 };
 
 } // namespace pde
