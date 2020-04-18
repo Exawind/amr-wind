@@ -399,7 +399,6 @@ void incflo::ApplyCorrector()
         PrintMaxValues(new_time);
     }
 
-    auto& velocity_old = velocity().state(amr_wind::FieldState::Old);
     auto& velocity_new = velocity().state(amr_wind::FieldState::New);
     auto& density_old = density().state(amr_wind::FieldState::Old);
     auto& density_new = density().state(amr_wind::FieldState::New);
@@ -407,7 +406,6 @@ void incflo::ApplyCorrector()
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_src_term");
-    auto& tracer_forces = m_repo.get_field("temperature_src_term");
     auto& vel_eta = m_repo.get_field("velocity_nueff");
     auto& tra_eta = m_repo.get_field("temperature_nueff");
 
@@ -452,41 +450,11 @@ void incflo::ApplyCorrector()
     }
 
     // *************************************************************************************
-    // Define local variables for lambda to capture.
-    // *************************************************************************************
-    Real l_dt = m_time.deltaT();
-    bool l_constant_density = m_constant_density;
-    int l_ntrac = (m_advect_tracer) ? m_ntrac : 0;
-
-    // *************************************************************************************
     // Update density first
     // *************************************************************************************
-    if (l_constant_density) {
+    if (m_constant_density) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
-    } else {
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(density_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real const> const& rho_o  = density_old(lev).const_array(mfi);
-                Array4<Real> const& rho_n        = density_new(lev).array(mfi);
-                Array4<Real> const& rho_nph      = (density_nph)(lev).array(mfi);
-                Array4<Real const> const& drdt_o = m_repo.get_field("density_conv_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                Array4<Real const> const& drdt   = m_repo.get_field("density_conv_term", amr_wind::FieldState::New)(lev).const_array(mfi);
-
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                        rho_n  (i,j,k) = rho_o(i,j,k) + l_dt * 0.5*(drdt(i,j,k)+drdt_o(i,j,k));
-                        rho_nph(i,j,k) = 0.5 * (rho_o(i,j,k) + rho_n(i,j,k));
-                });
-            } // mfi
-        } // lev
-    } // not constant density
+    }
 
     // *************************************************************************************
     // Compute the tracer forcing terms (forcing for (rho s), not for s)
@@ -500,78 +468,8 @@ void incflo::ApplyCorrector()
     // (rho trac)^new = (rho trac)^old + dt * (
     //                   div(rho trac u) + div (mu grad trac) + rho * f_t
     // *************************************************************************************
-    if (m_advect_tracer)
-    {
-        for (int lev = 0; lev <= finest_level; lev++)
-        {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-            for (MFIter mfi(tracer_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real const> const& tra_o   = tracer_old(lev).const_array(mfi);
-                Array4<Real const> const& rho_o   = density_old(lev).const_array(mfi);
-                Array4<Real      > const& tra     = tracer_new(lev).array(mfi);
-                Array4<Real const> const& rho     = density_new(lev).const_array(mfi);
-                Array4<Real const> const& dtdt_o  = m_repo.get_field("temperature_conv_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                Array4<Real const> const& dtdt    = m_repo.get_field("temperature_conv_term", amr_wind::FieldState::New)(lev).const_array(mfi);
-                Array4<Real const> const& tra_f   = tracer_forces(lev).const_array(mfi);
-
-                if (m_diff_type == DiffusionType::Explicit)
-                {
-
-                    Array4<Real const> const& laps_o = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                    Array4<Real const> const& laps   = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::New)(lev).const_array(mfi);
-
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
-                                 +0.5*(laps_o(i,j,k,n) +   laps(i,j,k,n))
-                                   +    tra_f(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-                else if (m_diff_type == DiffusionType::Crank_Nicolson)
-                {
-                    Array4<Real const> const& laps_o = m_repo.get_field("temperature_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( 0.5*(  dtdt(i,j,k,n) + dtdt_o(i,j,k,n))
-                                 +0.5*(laps_o(i,j,k,n)                  )
-                                   +    tra_f(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-                else if (m_diff_type == DiffusionType::Implicit)
-                {
-                    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                    {
-                        for (int n = 0; n < l_ntrac; ++n)
-                        {
-                            tra(i,j,k,n) = rho_o(i,j,k)*tra_o(i,j,k,n) + l_dt *
-                                ( 0.5*( dtdt(i,j,k,n)+dtdt_o(i,j,k,n))
-                                   +   tra_f(i,j,k,n) );
-
-                            tra(i,j,k,n) /= rho(i,j,k);
-                        }
-                    });
-                }
-            } // mfi
-        } // lev
-    } // if (m_advect_tracer)
+    for (auto& eqn: m_scalar_eqns)
+        eqn->compute_corrector_rhs(m_diff_type);
 
     // *************************************************************************************
     // Solve diffusion equation for tracer
@@ -608,60 +506,7 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Update velocity
     // *************************************************************************************
-    for (int lev = 0; lev <= finest_level; ++lev)
-    {
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(velocity_new(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
-        {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& vel = velocity_new(lev).array(mfi);
-            Array4<Real const> const& vel_o = velocity_old(lev).const_array(mfi);
-            Array4<Real const> const& dvdt = m_repo.get_field("velocity_conv_term", amr_wind::FieldState::New)(lev).const_array(mfi);
-            Array4<Real const> const& dvdt_o = m_repo.get_field("velocity_conv_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-            Array4<Real const> const& vel_f = velocity_forces(lev).const_array(mfi);
-
-            if (m_diff_type == DiffusionType::Implicit)
-            {
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
-                            (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim));
-                    }
-                });
-            }
-            else if (m_diff_type == DiffusionType::Crank_Nicolson)
-            {
-                Array4<Real const> const& divtau_o = m_repo.get_field("velocity_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
-                            (0.5 * (dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim)) +
-                             0.5 * (divtau_o(i,j,k,idim)               )
-                             +vel_f(i,j,k,idim));
-                    }
-                });
-            }
-            else if (m_diff_type == DiffusionType::Explicit)
-            {
-                Array4<Real const> const& divtau_o = m_repo.get_field("velocity_diff_term", amr_wind::FieldState::Old)(lev).const_array(mfi);
-                Array4<Real const> const& divtau   = m_repo.get_field("velocity_diff_term", amr_wind::FieldState::New)(lev).const_array(mfi);
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
-                        vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
-                            (0.5 * (dvdt_o(i,j,k,idim)  + dvdt(i,j,k,idim)) +
-                             0.5 * divtau_o(i,j,k,idim) + 0.5 * divtau(i,j,k,idim)
-                             +vel_f(i,j,k,idim));
-                    }
-                });
-            }
-        }
-    }
+    m_icns->compute_corrector_rhs(m_diff_type);
 
     // **********************************************************************************************
     //

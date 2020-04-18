@@ -151,9 +151,11 @@ struct ComputeRHSOp
                             int i, int j, int k, int n) noexcept {
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * fld_o(i, j, k, n) +
-                                dt * (0.5 * (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
-                                      src(i, j, k, n) + nfac * diff(i, j, k, n) +
-                                      ofac * diff_o(i, j, k, n));
+                                dt *
+                                    (0.5 *
+                                         (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
+                                     ofac * diff_o(i, j, k, n) +
+                                     nfac * diff(i, j, k, n) + src(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
                         });
@@ -162,12 +164,12 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
-                            fld(i, j, k, n) =
-                                fld_o(i, j, k, n) +
-                                dt * (0.5 * (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
-                                      src(i, j, k, n) + nfac * diff(i, j, k, n) +
-                                      ofac * diff_o(i, j, k, n));
-
+                            fld(i, j, k, n) = fld_o(i, j, k, n) +
+                                              dt * (0.5 * (ddt_o(i, j, k, n) +
+                                                           ddt(i, j, k, n)) +
+                                                    ofac * diff_o(i, j, k, n) +
+                                                    nfac * diff(i, j, k, n) +
+                                                    src(i, j, k, n));
                         });
                 }
             }
