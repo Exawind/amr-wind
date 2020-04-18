@@ -798,7 +798,7 @@ void incflo::ApplyCorrector()
                     for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
                         vel(i,j,k,idim) = vel_o(i,j,k,idim) + l_dt*
                             (0.5*(dvdt_o(i,j,k,idim)+dvdt(i,j,k,idim))+vel_f(i,j,k,idim)
-                                +divtau_o(i,j,k,idim));
+                                + 0.5 * divtau_o(i,j,k,idim));
                     }
                 });
             }
