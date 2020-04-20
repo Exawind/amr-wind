@@ -5,7 +5,7 @@ using namespace amrex;
 
 namespace {
 
-struct NonNewtonianViscosity
+struct NonNewtonianEddyViscosity
 {
     FluidModel fluid_model;
     amrex::Real mu, smag_const;
@@ -17,7 +17,7 @@ struct NonNewtonianViscosity
         case FluidModel::SmagorinskyLillySGS:
         {
             // fixme this is not good place for Smagorinsky move to an ABL specific location
-            return mu + den*smag_const*smag_const*ds*ds*sr;
+            return den*smag_const*smag_const*ds*ds*sr;
         }
         default:
         {
@@ -44,10 +44,10 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
     }
     else
     {
-        NonNewtonianViscosity non_newtonian_viscosity;
-        non_newtonian_viscosity.fluid_model = m_fluid_model;
-        non_newtonian_viscosity.mu = m_mu;
-        non_newtonian_viscosity.smag_const = m_Smagorinsky_Lilly_SGS_constant;
+        NonNewtonianEddyViscosity non_newtonian_eddy_viscosity;
+        non_newtonian_eddy_viscosity.fluid_model = m_fluid_model;
+        non_newtonian_eddy_viscosity.mu = m_mu;
+        non_newtonian_eddy_viscosity.smag_const = m_Smagorinsky_Lilly_SGS_constant;
 
         for (int lev = 0; lev <= finest_level; ++lev) {
 
@@ -78,7 +78,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                 {
                     Real sr = incflo_strainrate<StencilInterior>(i,j,k,idx,idy,idz,vel_arr);
                     Real den = rho_arr(i,j,k);
-                    eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                    eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
 
                 });
                 
@@ -103,7 +103,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                             Real sr = incflo_strainrate<StencilILO>(i,j,k,idx,idy,idz,vel_arr);
                             Real den = rho_arr(i,j,k);
-                            eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                            eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                     
@@ -122,7 +122,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                            Real sr = incflo_strainrate<StencilIHI>(i,j,k,idx,idy,idz,vel_arr);
                            Real den = rho_arr(i,j,k);
-                           eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                           eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                 }
@@ -144,7 +144,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                             Real sr = incflo_strainrate<StencilJLO>(i,j,k,idx,idy,idz,vel_arr);
                             Real den = rho_arr(i,j,k);
-                            eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                            eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                     
@@ -163,7 +163,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                            Real sr = incflo_strainrate<StencilJHI>(i,j,k,idx,idy,idz,vel_arr);
                            Real den = rho_arr(i,j,k);
-                           eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                           eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                 }
@@ -185,7 +185,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                             Real sr = incflo_strainrate<StencilKLO>(i,j,k,idx,idy,idz,vel_arr);
                             Real den = rho_arr(i,j,k);
-                            eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                            eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                     
@@ -204,7 +204,7 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
                         {
                            Real sr = incflo_strainrate<StencilKHI>(i,j,k,idx,idy,idz,vel_arr);
                            Real den = rho_arr(i,j,k);
-                           eta_arr(i,j,k) = non_newtonian_viscosity(sr,den,ds);
+                           eta_arr(i,j,k) = non_newtonian_eddy_viscosity(sr,den,ds);
                         });
                     }
                 }
@@ -223,14 +223,37 @@ void incflo::compute_viscosity (Vector<MultiFab*> const& vel_eta,
             }
 
             if(m_ntrac && m_advect_tracer){
+
                 AMREX_ALWAYS_ASSERT_WITH_MESSAGE(m_ntrac == 1,"SmagorinskyLillySGS only implemented for 1 tracer");
 
-                Real iPrandtl_turb = 3.0;//fixme make an input
+
+                const Real Pr = 0.70; // fixme make an input
+                const Real Pr_t = 0.3333; // fixme make an input
+
                 for (int lev = 0; lev <= finest_level; ++lev) {
-                    // tra_eta += iPrandtl_turb*vel_eta
-                    MultiFab::Saxpy(*tra_eta[lev], iPrandtl_turb, *vel_eta[lev], 0, 0, 1, nghost);                    
+
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+                    for (MFIter mfi(*vel_eta[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi)
+                    {
+                        Box const& bx = mfi.growntilebox(nghost);
+                        Array4<Real> const& vel_eta_arr = vel_eta[lev]->array(mfi);
+                        Array4<Real> const& tra_eta_arr = tra_eta[lev]->array(mfi);
+
+                        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+                        {
+
+                            const Real mu_t = vel_eta_arr(i,j,k);
+                            tra_eta_arr(i,j,k) = m_mu/Pr + mu_t/Pr_t;
+                            vel_eta_arr(i,j,k) = m_mu + mu_t;
+
+                        });
+                    }
                 }
             }
+
+
             break;
         }
         default:
