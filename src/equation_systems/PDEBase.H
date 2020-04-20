@@ -51,7 +51,7 @@ public:
     virtual void compute_source_term(const FieldState fstate) = 0;
 
     //! Compute the effective dynamic viscosity for this PDE
-    virtual void compute_nueff(const FieldState fstate) = 0;
+    virtual void compute_mueff(const FieldState fstate) = 0;
 
     //! Compute the diffusion term used in the RHS of the PDE system
     virtual void compute_diffusion_term(const FieldState fstate) = 0;

@@ -146,8 +146,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = icns_fields.src_term;
-    auto& vel_eta = icns_fields.nueff;
-    auto& tra_eta = m_repo.get_field("temperature_nueff");
+    auto& vel_eta = icns_fields.mueff;
+    auto& tra_eta = m_repo.get_field("temperature_mueff");
 
     // only the old states are used in predictor
     auto& divtau = m_use_godunov
@@ -406,8 +406,8 @@ void incflo::ApplyCorrector()
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_src_term");
-    auto& vel_eta = m_repo.get_field("velocity_nueff");
-    auto& tra_eta = m_repo.get_field("temperature_nueff");
+    auto& vel_eta = m_repo.get_field("velocity_mueff");
+    auto& tra_eta = m_repo.get_field("temperature_mueff");
 
     // Allocate scratch space for half time density and tracer
     auto& density_nph = density().state(amr_wind::FieldState::NPH);

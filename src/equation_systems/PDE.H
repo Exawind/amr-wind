@@ -65,7 +65,7 @@ public:
         m_src_op(fstate);
     }
 
-    void compute_nueff(const FieldState ) override
+    void compute_mueff(const FieldState ) override
     {
         // TBD
     }
