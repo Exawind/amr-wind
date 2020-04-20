@@ -8,7 +8,9 @@
 using namespace amrex;
 
 incflo::incflo ()
-    : m_repo(*this)
+    : m_sim(*this)
+    , m_time(m_sim.time())
+    , m_repo(m_sim.repo())
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.

@@ -8,6 +8,7 @@
 #include <AMReX_NodalProjector.H>
 
 #include "incflo_enums.H"
+#include "CFDSim.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
 
@@ -165,8 +166,9 @@ private:
     // member variables
     //
 
-    amr_wind::SimTime m_time;
-    amr_wind::FieldRepo m_repo;
+    amr_wind::CFDSim m_sim;
+    amr_wind::SimTime& m_time;
+    amr_wind::FieldRepo& m_repo;
 
     std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
     amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
