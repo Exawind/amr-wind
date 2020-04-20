@@ -3,10 +3,6 @@
 
 enum struct FluidModel {
     Newtonian,
-    powerlaw,
-    Bingham,
-    HerschelBulkley,
-    deSouzaMendesDutra,
     SmagorinskyLillySGS
 };
 
