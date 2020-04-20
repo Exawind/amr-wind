@@ -39,6 +39,11 @@ void default_mesh_inputs()
         pp.addarr("prob_hi", probhi);
         pp.addarr("is_periodic", periodic);
     }
+
+    {
+        amrex::ParmParse pp("incflo");
+        pp.add("probtype", 35);
+    }
 }
 
 }

@@ -11,6 +11,14 @@
 namespace amr_wind {
 namespace pde {
 
+/** Implementation of the PDE interface for transport equations
+ *
+ *  This class takes two traits, one describing the PDE type and the other
+ *  describing the numerical scheme (e.g., Godunov, MOL) to generate a family of
+ *  PDE systems and its solution process. Each operation is performed by a
+ *  separate operator object that can be customized based on the different
+ *  traits as necessary.
+ */
 template<typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
 {
@@ -18,6 +26,8 @@ public:
     using PDEType = PDE;
     using SchemeType = Scheme;
 
+    //! Unique identifier used to register and create this instance on-demand
+    //! through the factor iterface
     static std::string identifier()
     {
         return PDE::pde_name() + "-"  + Scheme::scheme_name();
@@ -33,18 +43,21 @@ public:
         , m_rhs_op(m_fields)
     {}
 
+    //! Perform initialization actions after the mesh is created
     void initialize() override
     {
         if (PDE::has_diffusion)
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
     }
 
+    //! Perform update actions after a regrid is performed
     void post_regrid_actions() override
     {
         if (PDE::has_diffusion)
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
     }
 
+    //! Return the object holding the fields necessary for solving this PDE
     PDEFields& fields() override { return m_fields; }
 
     void compute_source_term(const FieldState fstate) override
@@ -85,17 +98,27 @@ public:
     }
 
 protected:
+    //! CFD simulation controller instance
     CFDSim& m_sim;
 
+    //! Time controls instance
     const SimTime& m_time;
 
+    //! Field repository
     FieldRepo& m_repo;
 
     PDEFields m_fields;
 
+    //! Source term computation operator
     SrcTermOp<PDE> m_src_op;
+
+    //! Advection term computation operator
     AdvectionOp<PDE, Scheme> m_adv_op;
+
+    //! RHS computation operator
     ComputeRHSOp<PDE, Scheme> m_rhs_op;
+
+    //! Diffusion term computation operator
     std::unique_ptr<DiffusionOp<PDE, Scheme>> m_diff_op;
 };
 

@@ -16,11 +16,14 @@ namespace amr_wind {
  *  - mesh (amrex::AmrCore) The AMR mesh hierarchy data structure
  *  - time (SimTime)        The time object
  *  - repo (FieldRepo)      The field repository
+ *  - pde_manager (PDEMgr)  PDE manager interface
  */
 class CFDSim
 {
 public:
-    CFDSim(amrex::AmrCore& mesh) : m_mesh(mesh), m_time(), m_repo(m_mesh) {}
+    CFDSim(amrex::AmrCore& mesh)
+        : m_mesh(mesh), m_time(), m_repo(m_mesh), m_pde_mgr(*this)
+    {}
 
     ~CFDSim() = default;
 
@@ -36,12 +39,17 @@ public:
     FieldRepo& repo() { return m_repo; }
     const FieldRepo& repo() const { return m_repo; }
 
+    pde::PDEMgr& pde_manager() { return m_pde_mgr; }
+    const pde::PDEMgr& pde_manager() const { return m_pde_mgr; }
+
 private:
     amrex::AmrCore& m_mesh;
 
     SimTime m_time;
 
     FieldRepo m_repo;
+
+    pde::PDEMgr m_pde_mgr;
 };
 
 }
