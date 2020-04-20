@@ -197,6 +197,8 @@ void FieldRepo::allocate_field_data(
         mfab_vec.emplace_back(
             ba1, dm, field->num_comp(), field->num_grow(), amrex::MFInfo(),
             factory);
+
+        mfab_vec.back().setVal(0.0);
     }
 }
 
@@ -214,6 +216,8 @@ void FieldRepo::allocate_field_data(
     mfab_vec.emplace_back(
         ba, m_mesh.DistributionMap(lev), field.num_comp(), field.num_grow(),
         amrex::MFInfo(), factory);
+
+    mfab_vec.back().setVal(0.0);
 }
 
 void FieldRepo::allocate_field_data(Field& field)

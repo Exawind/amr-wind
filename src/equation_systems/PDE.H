@@ -3,9 +3,11 @@
 
 #include <string>
 
+#include "incflo_enums.H"
 #include "Factory.H"
 #include "PDEHelpers.H"
 #include "PDEOps.H"
+#include "CompRHSOps.H"
 #include "DiffusionOps.H"
 
 namespace amr_wind {
@@ -29,6 +31,10 @@ public:
     virtual void compute_diffusion_term(const FieldState fstate) = 0;
 
     virtual void compute_advection_term(const FieldState fstate) = 0;
+
+    virtual void compute_predictor_rhs(const DiffusionType difftype) = 0;
+
+    virtual void compute_corrector_rhs(const DiffusionType difftype) = 0;
 
     virtual void solve(const amrex::Real dt) = 0;
 
@@ -56,6 +62,7 @@ public:
         , m_fields(FieldRegOp<PDE, Scheme>(repo)(time, probtype))
         , m_src_op(m_fields)
         , m_adv_op(m_fields)
+        , m_rhs_op(m_fields)
     {}
 
     void initialize() override
@@ -93,6 +100,16 @@ public:
         m_adv_op(fstate, m_time.deltaT());
     }
 
+    virtual void compute_predictor_rhs(const DiffusionType difftype) override
+    {
+        m_rhs_op.predictor_rhs(difftype, m_time.deltaT());
+    }
+
+    virtual void compute_corrector_rhs(const DiffusionType difftype) override
+    {
+        m_rhs_op.corrector_rhs(difftype, m_time.deltaT());
+    }
+
     void solve(const amrex::Real dt) override
     {
         if (PDE::has_diffusion)
@@ -108,6 +125,7 @@ protected:
 
     SrcTermOp<PDE> m_src_op;
     AdvectionOp<PDE, Scheme> m_adv_op;
+    ComputeRHSOp<PDE, Scheme> m_rhs_op;
     std::unique_ptr<DiffusionOp<PDE, Scheme>> m_diff_op;
 };
 
