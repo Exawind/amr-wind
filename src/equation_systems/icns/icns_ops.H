@@ -371,7 +371,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
                                                ubx, vbx, wbx,
                                                u, v, w,
                                                vcc,
-                                               dof_field.bc_type(),
+                                               dof_field.bcrec(),
+                                               dof_field.bcrec_device().data(),
                                                repo.mesh().Geom());
 
                     incflo_set_mac_bcs(domain,

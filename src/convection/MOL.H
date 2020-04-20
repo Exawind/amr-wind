@@ -19,7 +19,8 @@ void predict_vels_on_faces(
     amrex::Array4<amrex::Real> const& v,
     amrex::Array4<amrex::Real> const& w,
     amrex::Array4<amrex::Real const> const& vcc,
-    amrex::GpuArray<BC, AMREX_SPACEDIM*2> bctype,
+    amrex::Vector<amrex::BCRec> const& h_bcrec,
+    amrex::BCRec const* d_bcrec,
     amrex::Vector<amrex::Geometry> geom);
 
 
