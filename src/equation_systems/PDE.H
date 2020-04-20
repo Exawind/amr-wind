@@ -2,47 +2,14 @@
 #define PDE_H
 
 #include <string>
-
-#include "incflo_enums.H"
-#include "Factory.H"
-#include "PDEHelpers.H"
+#include "CFDSim.H"
+#include "PDEBase.H"
 #include "PDEOps.H"
 #include "CompRHSOps.H"
 #include "DiffusionOps.H"
 
 namespace amr_wind {
 namespace pde {
-
-class PDEBase : public Factory<PDEBase, const SimTime&, FieldRepo&, const int>
-{
-public:
-    virtual ~PDEBase() = default;
-
-    virtual PDEFields& fields() = 0;
-
-    virtual void initialize() = 0;
-
-    virtual void post_regrid_actions() = 0;
-
-    virtual void compute_source_term(const FieldState fstate) = 0;
-
-    virtual void compute_nueff(const FieldState fstate) = 0;
-
-    virtual void compute_diffusion_term(const FieldState fstate) = 0;
-
-    virtual void compute_advection_term(const FieldState fstate) = 0;
-
-    virtual void compute_predictor_rhs(const DiffusionType difftype) = 0;
-
-    virtual void compute_corrector_rhs(const DiffusionType difftype) = 0;
-
-    virtual void solve(const amrex::Real dt) = 0;
-
-    static std::string base_identifier()
-    {
-        return "PDESystem";
-    }
-};
 
 template<typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
@@ -56,10 +23,11 @@ public:
         return PDE::pde_name() + "-"  + Scheme::scheme_name();
     }
 
-    PDESystem(const SimTime& time, FieldRepo& repo, const int probtype)
-        : m_time(time)
-        , m_repo(repo)
-        , m_fields(FieldRegOp<PDE, Scheme>(repo)(time, probtype))
+    PDESystem(CFDSim& sim, const int probtype)
+        : m_sim(sim)
+        , m_time(sim.time())
+        , m_repo(sim.repo())
+        , m_fields(FieldRegOp<PDE, Scheme>(m_repo)(m_time, probtype))
         , m_src_op(m_fields)
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
@@ -117,6 +85,8 @@ public:
     }
 
 protected:
+    CFDSim& m_sim;
+
     const SimTime& m_time;
 
     FieldRepo& m_repo;

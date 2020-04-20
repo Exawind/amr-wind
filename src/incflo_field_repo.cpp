@@ -11,7 +11,7 @@ void incflo::declare_fields()
                                    ? amr_wind::fvm::Godunov::scheme_name()
                                    : amr_wind::fvm::MOL::scheme_name();
     m_icns = amr_wind::pde::PDEBase::create(
-        "ICNS-" + scheme, m_time, m_repo, m_probtype);
+        "ICNS-" + scheme, m_sim, m_probtype);
 
     // Register density first so that we can compute its `n+1/2` state before
     // other scalars attempt to use it in their computations.
@@ -21,11 +21,11 @@ void incflo::declare_fields()
                 "For non-constant density, it must be the first equation "
                 "registered for the scalar equations");
         m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
-            "Density-" + scheme, m_time, m_repo, m_probtype));
+            "Density-" + scheme, m_sim, m_probtype));
     }
 
     m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
-        "Temperature-" + scheme, m_time, m_repo, m_probtype));
+        "Temperature-" + scheme, m_sim, m_probtype));
 }
 
 void incflo::init_field_bcs ()

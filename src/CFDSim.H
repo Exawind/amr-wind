@@ -4,7 +4,7 @@
 #include "AMReX_AmrCore.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
-#include "PDE.H"
+#include "PDEBase.H"
 
 namespace amr_wind {
 
@@ -24,12 +24,15 @@ public:
 
     ~CFDSim() = default;
 
+    //! Return the AMR mesh hierarchy
     amrex::AmrCore& mesh() { return m_mesh; }
     const amrex::AmrCore& mesh() const { return m_mesh; }
 
+    //! Return simulation time control
     SimTime& time() { return m_time; }
     const SimTime& time() const { return m_time; }
 
+    //! Return the field repository
     FieldRepo& repo() { return m_repo; }
     const FieldRepo& repo() const { return m_repo; }
 

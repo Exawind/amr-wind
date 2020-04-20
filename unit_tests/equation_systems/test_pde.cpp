@@ -17,9 +17,9 @@ TEST_F(PDETest, test_pde_create_godunov)
     amr_wind::SimTime time;
 
     auto lowmach = amr_wind::pde::PDEBase::create(
-        "ICNS-Godunov", time, mesh().field_repo(), 35);
+        "ICNS-Godunov", mesh().sim(), 35);
     auto theta = amr_wind::pde::PDEBase::create(
-        "Temperature-Godunov", time, mesh().field_repo(), 35);
+        "Temperature-Godunov", mesh().sim(), 35);
 
     EXPECT_EQ(mesh().field_repo().num_fields(), 19);
 }
@@ -30,9 +30,9 @@ TEST_F(PDETest, test_pde_create_mol)
     amr_wind::SimTime time;
 
     auto lowmach = amr_wind::pde::PDEBase::create(
-        "ICNS-MOL", time, mesh().field_repo(), 35);
+        "ICNS-MOL", mesh().sim(), 35);
     auto theta = amr_wind::pde::PDEBase::create(
-        "Temperature-MOL", time, mesh().field_repo(), 35);
+        "Temperature-MOL", mesh().sim(), 35);
 
     EXPECT_EQ(mesh().field_repo().num_fields(), 23);
 }
