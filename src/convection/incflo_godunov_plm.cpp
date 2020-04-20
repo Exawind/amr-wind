@@ -1,19 +1,8 @@
 #include <incflo_convection_K.H>
 #include "Godunov.H"
+#include "bc_ops.H"
 
 using namespace amrex;
-
-namespace {
-std::pair<bool, bool> has_extdir(BCRec const* bcrec, int ncomp, int dir)
-{
-    std::pair<bool, bool> r{false, false};
-    for (int n = 0; n < ncomp; ++n) {
-        r.first = r.first or bcrec[n].lo(dir) == BCType::ext_dir;
-        r.second = r.second or bcrec[n].hi(dir) == BCType::ext_dir;
-    }
-    return r;
-}
-} // namespace
 
 void godunov::predict_plm_x(
     int lev,
@@ -40,8 +29,8 @@ void godunov::predict_plm_x(
 
     BCRec const* pbc = bcrec_device.data();
 
-    auto extdir_lohi =
-        has_extdir(h_bcrec.data(), ncomp, static_cast<int>(Direction::x));
+    auto extdir_lohi = amr_wind::utils::has_extdir(
+        h_bcrec.data(), ncomp, static_cast<int>(Direction::x));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
 
@@ -122,8 +111,8 @@ void godunov::predict_plm_y(
 
     BCRec const* pbc = bcrec_device.data();
 
-    auto extdir_lohi =
-        has_extdir(h_bcrec.data(), ncomp, static_cast<int>(Direction::y));
+    auto extdir_lohi = amr_wind::utils::has_extdir(
+        h_bcrec.data(), ncomp, static_cast<int>(Direction::y));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
 
@@ -205,8 +194,8 @@ void godunov::predict_plm_z(
 
     BCRec const* pbc = bcrec_device.data();
 
-    auto extdir_lohi =
-        has_extdir(h_bcrec.data(), ncomp, static_cast<int>(Direction::z));
+    auto extdir_lohi = amr_wind::utils::has_extdir(
+        h_bcrec.data(), ncomp, static_cast<int>(Direction::z));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
 

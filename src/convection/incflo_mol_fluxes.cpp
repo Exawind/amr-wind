@@ -1,7 +1,7 @@
-#include <AMReX_BCRec.H>
 #include <AMReX_Geometry.H>
 #include "incflo_convection_K.H"
 #include "MOL.H"
+#include "bc_ops.H"
 
 using namespace amrex;
 
@@ -20,18 +20,6 @@ void mol::compute_convective_rate (Box const& bx, int ncomp,
             +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
             +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
     });
-}
-
-namespace {
-    std::pair<bool,bool> has_extdir (BCRec const* bcrec, int ncomp, int dir)
-    {
-        std::pair<bool,bool> r{false,false};
-        for (int n = 0; n < ncomp; ++n) {
-            r.first = r.first or bcrec[n].lo(dir) == BCType::ext_dir;
-            r.second = r.second or bcrec[n].hi(dir) == BCType::ext_dir;
-        }
-        return r;
-    }
 }
 
 void
@@ -61,7 +49,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     Box const& zbx = amrex::surroundingNodes(bx,2);
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
-    auto extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
+    auto extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
@@ -112,7 +100,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
+    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
@@ -163,7 +151,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
+    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
