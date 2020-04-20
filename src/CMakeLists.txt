@@ -27,6 +27,8 @@ add_subdirectory(utilities)
 add_subdirectory(prob)
 add_subdirectory(wind_energy)
 add_subdirectory(equation_systems)
+add_subdirectory(transport_models)
+add_subdirectory(turbulence)
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${AMREX_SUBMOD_LOCATION})
