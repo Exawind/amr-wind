@@ -127,7 +127,7 @@ private:
     int m_probtype;
 
     //! Flag indicating whether Godunov scheme is active
-    bool m_use_godunov{true};
+    bool m_use_godunov{false};
 };
 
 } // namespace pde
