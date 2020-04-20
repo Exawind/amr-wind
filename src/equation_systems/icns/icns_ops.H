@@ -129,76 +129,75 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::Box const& domain = geom[lev].Domain();
 
+            {
+                amrex::FArrayBox scratch;
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            amrex::FArrayBox scratch;
-            for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
-                 mfi.isValid(); ++mfi) {
-                amrex::Box const& bx = mfi.tilebox();
-                amrex::Box const& bxg1 = amrex::grow(bx, 1);
-                amrex::Box const& xbx = mfi.nodaltilebox(0);
-                amrex::Box const& ybx = mfi.nodaltilebox(1);
-                amrex::Box const& zbx = mfi.nodaltilebox(2);
 
-                // clang-format off
-                amrex::Array4<amrex::Real> const& a_umac = u_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real> const& a_vmac = v_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real> const& a_wmac = w_mac(lev).array(mfi);
-                amrex::Array4<amrex::Real const> const& a_vel = dof_field(lev).const_array(mfi);
-                amrex::Array4<amrex::Real const> const& a_f = src_term(lev).const_array(mfi);
+                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi)
+                {
+                    amrex::Box const& bx = mfi.tilebox();
+                    amrex::Box const& bxg1 = amrex::grow(bx,1);
+                    amrex::Box const& xbx = mfi.nodaltilebox(0);
+                    amrex::Box const& ybx = mfi.nodaltilebox(1);
+                    amrex::Box const& zbx = mfi.nodaltilebox(2);
 
-                scratch.resize(bxg1, ICNS::ndim * 12 + 3);
-                // Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
-                amrex::Real* p = scratch.dataPtr();
+                    amrex::Array4<amrex::Real> const& a_umac = u_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_vmac = v_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_wmac = w_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_vel = dof_field(lev).const_array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_f = src_term(lev).const_array(mfi);
 
-                amrex::Array4<amrex::Real> Imx = makeArray4(p, bxg1, ICNS::ndim);
-                p += Imx.size();
-                amrex::Array4<amrex::Real> Ipx = makeArray4(p, bxg1, ICNS::ndim);
-                p += Ipx.size();
-                amrex::Array4<amrex::Real> Imy = makeArray4(p, bxg1, ICNS::ndim);
-                p += Imy.size();
-                amrex::Array4<amrex::Real> Ipy = makeArray4(p, bxg1, ICNS::ndim);
-                p += Ipy.size();
-                amrex::Array4<amrex::Real> Imz = makeArray4(p, bxg1, ICNS::ndim);
-                p += Imz.size();
-                amrex::Array4<amrex::Real> Ipz = makeArray4(p, bxg1, ICNS::ndim);
-                p += Ipz.size();
-                amrex::Array4<amrex::Real> u_ad = makeArray4(p, amrex::Box(bx).grow(1, 1).grow(2, 1).surroundingNodes(0), 1);
-                p += u_ad.size();
-                amrex::Array4<amrex::Real> v_ad = makeArray4(p, amrex::Box(bx).grow(0, 1).grow(2, 1).surroundingNodes(1), 1);
-                p += v_ad.size();
-                amrex::Array4<amrex::Real> w_ad = makeArray4(p, amrex::Box(bx).grow(0, 1).grow(1, 1).surroundingNodes(2), 1);
-                p += w_ad.size();
-                // clang-format on
+                    scratch.resize(bxg1, ICNS::ndim*12+3);
+    //                Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
+                    amrex::Real* p = scratch.dataPtr();
 
-                if (godunov_ppm) {
-                    godunov::predict_ppm(
-                        lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
-                        a_vel, a_vel, geom, dt, bcrec_device);
-                } else {
-                    godunov::predict_plm(
-                        lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
-                        a_vel, a_vel, geom, dt, dof_field.bcrec(),
-                        bcrec_device);
-                }
+                    amrex::Array4<amrex::Real> Imx = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imx.size();
+                    amrex::Array4<amrex::Real> Ipx = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipx.size();
+                    amrex::Array4<amrex::Real> Imy = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imy.size();
+                    amrex::Array4<amrex::Real> Ipy = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipy.size();
+                    amrex::Array4<amrex::Real> Imz = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Imz.size();
+                    amrex::Array4<amrex::Real> Ipz = makeArray4(p,bxg1,ICNS::ndim);
+                    p +=         Ipz.size();
+                    amrex::Array4<amrex::Real> u_ad = makeArray4(p,amrex::Box(bx).grow(1,1).grow(2,1).surroundingNodes(0),1);
+                    p +=         u_ad.size();
+                    amrex::Array4<amrex::Real> v_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(2,1).surroundingNodes(1),1);
+                    p +=         v_ad.size();
+                    amrex::Array4<amrex::Real> w_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
+                    p +=         w_ad.size();
 
-                godunov::make_trans_velocities(
-                    lev, amrex::Box(u_ad), amrex::Box(v_ad), amrex::Box(w_ad),
-                    u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f,
-                    geom, dt, bcrec_device, godunov_use_forces_in_trans);
+                    if (godunov_ppm){
+                        godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                                              geom, dt, bcrec_device);
+                    } else {
+                        godunov::predict_plm_x (lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
 
-                godunov::predict_godunov(
-                    lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
-                    a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f,
-                    p, geom, dt, bcrec_device, godunov_use_forces_in_trans);
+                        godunov::predict_plm_y (lev, bx, ICNS::ndim, Imy, Ipy, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
 
-                incflo_set_mac_bcs(
-                    domain, xbx, ybx, zbx, a_umac, a_vmac, a_wmac, a_vel,
-                    dof_field.bcrec());
+                        godunov::predict_plm_z (lev, bx, ICNS::ndim, Imz, Ipz, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
+                    }
 
-                amrex::Gpu::streamSynchronize(); // otherwise we might be using
-                                                 // too much memory
+                    godunov::make_trans_velocities(lev, amrex::Box(u_ad), amrex::Box(v_ad), amrex::Box(w_ad),
+                                                   u_ad, v_ad, w_ad,
+                                                   Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f,
+                                                   geom, dt, bcrec_device, godunov_use_forces_in_trans);
+
+                    godunov::predict_godunov(lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
+                                             a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p,
+                                             geom, dt, bcrec_device, godunov_use_forces_in_trans);
+
+                    incflo_set_mac_bcs(domain, xbx, ybx, zbx, a_umac, a_vmac, a_wmac, a_vel, dof_field.bcrec());
+
+                    amrex::Gpu::streamSynchronize();  // otherwise we might be using too much memory
             }
         }
 

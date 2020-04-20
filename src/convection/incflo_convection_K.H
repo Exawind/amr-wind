@@ -380,7 +380,7 @@ amrex::Real incflo_ho_zslope_extdir (int i, int j, int k, int n,
        drgt = 2.*(q(i,j,k+1,n)-q(i  ,j,k,n));
        dlim = (dlft*drgt >= 0.0) ? 2.0*amrex::min(std::abs(dlft), std::abs(drgt)) : 0.0;
        dsgn = std::copysign(1.e0, dtemp);
-    } else if (edlo and j == domlo+1) {
+    } else if (edlo and k == domlo+1) {
        dfm  = -16./15.*q(i,j,domlo-1,n) + .5*q(i,j,domlo,n) + 2./3.*q(i,j,domlo+1,n) -  0.1*q(i,j,domlo+2,n);
        dlft = 2.*(q(i  ,j,domlo,n)-q(i,j,domlo-1,n));
        drgt = 2.*(q(i,j,domlo+1,n)-q(i  ,j,domlo,n));
