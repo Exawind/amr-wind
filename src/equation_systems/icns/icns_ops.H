@@ -180,7 +180,13 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
                                               geom, dt, bcrec_device);
                     } else {
-                        godunov::predict_plm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                        godunov::predict_plm_x (lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
+
+                        godunov::predict_plm_y (lev, bx, ICNS::ndim, Imy, Ipy, a_vel, a_vel,
+                                     geom, dt, dof_field.bcrec(), bcrec_device);
+
+                        godunov::predict_plm_z (lev, bx, ICNS::ndim, Imz, Ipz, a_vel, a_vel,
                                      geom, dt, dof_field.bcrec(), bcrec_device);
                     }
 
