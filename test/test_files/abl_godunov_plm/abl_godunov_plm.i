@@ -33,6 +33,12 @@ incflo.SmagorinskyLillyConstant = .135
 incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.use_godunov = 1
 incflo.use_ppm = 0
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Smagorinsky
+Smagorinsky_coeffs.Cs = 0.135
+
 
 abl.use_boussinesq = 1 
 abl.coriolis_effect = 1 
