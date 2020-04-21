@@ -24,6 +24,8 @@ void incflo::declare_fields()
 
     // TODO: This should be customized based on Physics
     pde_mgr.register_transport_pde("Temperature");
+
+    m_sim.create_turbulence_model();
 }
 
 void incflo::init_field_bcs ()

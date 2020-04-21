@@ -8,6 +8,7 @@
 #include "PDEBase.H"
 #include "mac_projection.H"
 #include "diffusion.H"
+#include "TurbulenceModel.H"
 
 using namespace amrex;
 
@@ -146,9 +147,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = icns_fields.src_term;
-    auto& vel_eta = icns_fields.mueff;
-    auto& tra_eta = m_repo.get_field("temperature_mueff");
-
     // only the old states are used in predictor
     auto& divtau = m_use_godunov
                        ? icns_fields.diff_term
@@ -176,9 +174,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
-                      density_old.vec_const_ptrs(), velocity_old.vec_const_ptrs(), tracer_old.vec_const_ptrs(),
-                      m_time.current_time(), 1);
+    m_sim.turbulence_model().update_turbulent_viscosity(amr_wind::FieldState::Old);
+    icns().compute_mueff(amr_wind::FieldState::Old);
+    for (auto& eqns: scalar_eqns())
+        eqns->compute_mueff(amr_wind::FieldState::Old);
 
     // *************************************************************************************
     // Compute explicit viscous term
@@ -403,11 +402,8 @@ void incflo::ApplyCorrector()
     auto& velocity_new = velocity().state(amr_wind::FieldState::New);
     auto& density_old = density().state(amr_wind::FieldState::Old);
     auto& density_new = density().state(amr_wind::FieldState::New);
-    auto& tracer_new = tracer().state(amr_wind::FieldState::New);
 
     auto& velocity_forces = m_repo.get_field("velocity_src_term");
-    auto& vel_eta = m_repo.get_field("velocity_mueff");
-    auto& tra_eta = m_repo.get_field("temperature_mueff");
 
     // Allocate scratch space for half time density and tracer
     auto& density_nph = density().state(amr_wind::FieldState::NPH);
@@ -429,9 +425,10 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
-    compute_viscosity(vel_eta.vec_ptrs(), tra_eta.vec_ptrs(),
-                      density_new.vec_const_ptrs(), velocity_new.vec_const_ptrs(), tracer_new.vec_const_ptrs(),
-                      new_time, 1);
+    m_sim.turbulence_model().update_turbulent_viscosity(amr_wind::FieldState::New);
+    icns().compute_mueff(amr_wind::FieldState::New);
+    for (auto& eqns: scalar_eqns())
+        eqns->compute_mueff(amr_wind::FieldState::New);
 
     // Here we create divtau of the (n+1,*) state that was computed in the predictor;
     //      we use this laps only if DiffusionType::Explicit
