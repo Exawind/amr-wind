@@ -17,7 +17,7 @@ public:
     ConstTransport(FieldRepo& repo) : m_repo(repo)
     {
         amrex::ParmParse pp("transport");
-        pp.get("viscosity", m_mu);
+        pp.query("viscosity", m_mu);
         pp.query("laminar_prandtl", m_Pr);
         pp.query("turbulent_prandtl", m_Prt);
     }
