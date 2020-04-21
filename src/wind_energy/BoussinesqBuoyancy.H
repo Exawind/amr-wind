@@ -7,13 +7,15 @@
 #include "AMReX_Vector.H"
 #include "AMReX_MultiFab.H"
 #include "FieldRepo.H"
+#include "icns/MomentumSource.H"
+#include "SimTime.H"
 
 namespace amr_wind {
 
-class BoussinesqBuoyancy
+class BoussinesqBuoyancy : public pde::MomentumSource
 {
 public:
-    BoussinesqBuoyancy(FieldRepo& repo_in);
+    BoussinesqBuoyancy(const SimTime& time_in, const FieldRepo& repo_in);
 
     void operator()(
         const int lev,
@@ -31,7 +33,7 @@ private:
     //! Thermal expansion coefficient
     amrex::Real m_beta{0.0};
 
-    FieldRepo& m_repo;
+    Field& m_temperature;
 
 };
 

@@ -13,8 +13,8 @@ namespace amr_wind {
  *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
  *  - `gravity` acceleration due to gravity (m/s)
  */
-BoussinesqBuoyancy::BoussinesqBuoyancy(FieldRepo& repo_in)
-    : m_repo(repo_in)
+BoussinesqBuoyancy::BoussinesqBuoyancy(const SimTime& /* time_in */, const FieldRepo& repo_in)
+    : m_temperature(repo_in.get_field("temperature"))
 {
     // fixme: do we want to use abl namespace if it can be used by other physics?
     amrex::ParmParse pp("abl");
@@ -53,7 +53,7 @@ void BoussinesqBuoyancy::operator()(
         m_gravity[0], m_gravity[1], m_gravity[2]};
 
     FieldState tstate = field_impl::phi_state(fstate);
-    const auto& scalars = m_repo.get_field("temperature", tstate)(lev).const_array(mfi);
+    const auto& scalars = m_temperature.state(tstate)(lev).const_array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real T = scalars(i, j, k, 0);

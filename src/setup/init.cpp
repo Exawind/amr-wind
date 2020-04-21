@@ -5,8 +5,6 @@
 
 
 #include "Physics.H"
-#include "ABL.H"
-#include "BoussinesqBubble.H"
 #include "RefinementCriteria.H"
 #include "CartBoxRefinement.H"
 
@@ -94,15 +92,6 @@ void incflo::ReadParameters ()
             amrex::Print() << "Tracer" << i << ":" << m_mu_s[i] << std::endl;
         }
     } // end prefix incflo
-
-    // FIXME: clean up WIP logic
-    if (m_probtype == 35) {
-        m_physics.emplace_back(new amr_wind::ABL(m_time, this, m_repo));
-    }
-    
-    if (m_probtype == 11) {
-        m_physics.emplace_back(new amr_wind::BoussinesqBubble(m_repo));
-    }
 
     {
         // tagging options

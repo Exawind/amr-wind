@@ -4,6 +4,7 @@
 #include "ABL.H"
 #include "RefinementCriteria.H"
 #include "PDE.H"
+#include "BoussinesqBubble.H"
 
 using namespace amrex;
 
@@ -19,6 +20,15 @@ incflo::incflo ()
     ReadParameters();
 
     declare_fields();
+
+    // FIXME: clean up WIP logic
+    if (m_probtype == 35) {
+        m_physics.emplace_back(new amr_wind::ABL(m_time, m_repo, this));
+    }
+
+    if (m_probtype == 11) {
+        m_physics.emplace_back(new amr_wind::BoussinesqBubble(m_time, m_repo));
+    }
 
     init_field_bcs();
 

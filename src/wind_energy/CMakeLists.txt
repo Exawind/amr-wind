@@ -9,6 +9,7 @@ target_sources(${amr_wind_lib_name}
   CoriolisForcing.cpp
   BoussinesqBubble.cpp
   BoussinesqBubbleFieldInit.cpp
+  DensityBuoyancy.cpp
   )
 
 target_include_directories(

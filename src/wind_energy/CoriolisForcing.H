@@ -8,14 +8,15 @@
 #include "AMReX_MultiFab.H"
 
 #include "FieldRepo.H"
-
+#include "icns/MomentumSource.H"
+#include "SimTime.H"
 
 namespace amr_wind {
 
-class CoriolisForcing
+class CoriolisForcing : public pde::MomentumSource
 {
 public:
-    CoriolisForcing(FieldRepo& repo_in);
+    CoriolisForcing(const SimTime& time_in, const FieldRepo& repo_in);
 
     void operator()(
         const int lev,
@@ -42,7 +43,8 @@ private:
     //! `2.0 * \Omega`
     amrex::Real m_coriolis_factor{0.0};
 
-    FieldRepo& m_repo;
+    Field& m_velocity;
+    
 };
 
 }

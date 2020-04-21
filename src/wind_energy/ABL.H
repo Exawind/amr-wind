@@ -21,7 +21,7 @@ namespace amr_wind {
 class ABL : public Physics
 {
 public:
-    ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo_in);
+    ABL(const SimTime& time, const FieldRepo& repo_in, incflo* incflo_in);
 
     ~ABL() = default;
 
@@ -44,11 +44,12 @@ public:
     const ABLFieldInit& abl_initializer() const { return *m_field_init; }
 
 private:
+
     const SimTime& m_time;
+    const FieldRepo& m_repo;
 
     // TODO: deprecate this
     incflo* m_incflo;
-    amr_wind::FieldRepo& m_repo;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;

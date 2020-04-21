@@ -10,13 +10,14 @@
 
 #include "SimTime.H"
 #include "FieldDescTypes.H"
+#include "icns/MomentumSource.H"
 
 namespace amr_wind {
 
-class ABLForcing
+class ABLForcing : public pde::MomentumSource
 {
 public:
-    ABLForcing(const SimTime& time);
+    ABLForcing(const SimTime& time, const FieldRepo& repo_in);
 
     void operator()(
         const int lev,

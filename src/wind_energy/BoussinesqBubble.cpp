@@ -7,7 +7,7 @@
 
 namespace amr_wind {
 
-BoussinesqBubble::BoussinesqBubble(amr_wind::FieldRepo& repo_in)
+BoussinesqBubble::BoussinesqBubble(const SimTime& time_in, const FieldRepo& repo_in)
     : m_repo(repo_in)
 {
     amrex::ParmParse pp("bb");
@@ -18,7 +18,7 @@ BoussinesqBubble::BoussinesqBubble(amr_wind::FieldRepo& repo_in)
     m_field_init.reset(new BoussinesqBubbleFieldInit());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy(repo_in));
+        m_boussinesq.reset(new BoussinesqBuoyancy(time_in, repo_in));
 
 }
 

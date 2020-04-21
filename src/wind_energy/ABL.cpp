@@ -8,8 +8,8 @@
 
 namespace amr_wind {
 
-ABL::ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo_in)
-    : m_time(time), m_incflo(incflo_in), m_repo(repo_in)
+ABL::ABL(const SimTime& time, const FieldRepo& repo_in, incflo* incflo_in)
+    : m_time(time), m_repo(repo_in), m_incflo(incflo_in)
 {
     amrex::ParmParse pp("abl");
 
@@ -22,13 +22,13 @@ ABL::ABL(const SimTime& time, incflo* incflo_in, FieldRepo& repo_in)
     m_abl_wall_func.reset(new ABLWallFunction());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy(repo_in));
+        m_boussinesq.reset(new BoussinesqBuoyancy(m_time, m_repo));
 
     if (m_has_driving_dpdx)
-        m_abl_forcing.reset(new ABLForcing(m_time));
+        m_abl_forcing.reset(new ABLForcing(m_time, m_repo));
 
     if (m_has_coriolis)
-        m_coriolis.reset(new CoriolisForcing(repo_in));
+        m_coriolis.reset(new CoriolisForcing(m_time, m_repo));
 
     {
         // fixme keeping this around to maintain perfect

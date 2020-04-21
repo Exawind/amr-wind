@@ -5,7 +5,7 @@
 
 namespace amr_wind {
 
-ABLForcing::ABLForcing(const SimTime& time)
+ABLForcing::ABLForcing(const SimTime& time, const FieldRepo& /* repo_in */)
     : m_time(time)
 {
     amrex::ParmParse pp("abl");

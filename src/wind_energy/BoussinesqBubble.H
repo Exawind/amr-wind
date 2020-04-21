@@ -18,7 +18,7 @@ namespace amr_wind {
 class BoussinesqBubble : public Physics
 {
 public:
-    BoussinesqBubble(FieldRepo& repo_in);
+    BoussinesqBubble(const SimTime& time_in, const FieldRepo& repo_in);
 
     ~BoussinesqBubble() = default;
 
@@ -42,7 +42,7 @@ public:
 
 private:
 
-    amr_wind::FieldRepo& m_repo;
+    const FieldRepo& m_repo;
 
     //! BoussinesqBubble field initializer instance
     std::unique_ptr<BoussinesqBubbleFieldInit> m_field_init;
