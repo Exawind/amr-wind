@@ -15,6 +15,22 @@ struct Temperature : ScalarTransport
     static std::string var_name() { return "temperature"; }
 };
 
+template<>
+struct TurbulenceOp<Temperature>
+{
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
+                 PDEFields& fields)
+        : m_tmodel(tmodel), m_fields(fields)
+    {}
+
+    void operator()()
+    {
+        m_tmodel.update_alphaeff(m_fields.mueff);
+    }
+
+    turbulence::TurbulenceModel& m_tmodel;
+    PDEFields& m_fields;
+};
 
 } // namespace pde
 } // namespace amr_wind

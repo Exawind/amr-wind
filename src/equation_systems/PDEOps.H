@@ -3,6 +3,7 @@
 
 #include "FieldUtils.H"
 #include "PDEHelpers.H"
+#include "TurbulenceModel.H"
 
 namespace amr_wind {
 namespace pde {
@@ -96,6 +97,23 @@ struct AdvectionOp
 template<typename PDE, typename Scheme, typename = void>
 struct DiffusionOp
 {};
+
+template<typename PDE>
+struct TurbulenceOp
+{
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
+                 PDEFields& fields)
+        : m_tmodel(tmodel), m_fields(fields)
+    {}
+
+    void operator()()
+    {
+        m_tmodel.update_scalar_diff(m_fields.mueff, m_fields.field.name());
+    }
+
+    turbulence::TurbulenceModel& m_tmodel;
+    PDEFields& m_fields;
+};
 
 }
 }

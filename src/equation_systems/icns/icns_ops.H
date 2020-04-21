@@ -349,6 +349,23 @@ struct AdvectionOp<ICNS, fvm::MOL>
     PDEFields& fields;
 };
 
+template<>
+struct TurbulenceOp<ICNS>
+{
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
+                 PDEFields& fields)
+        : m_tmodel(tmodel), m_fields(fields)
+    {}
+
+    void operator()()
+    {
+        m_tmodel.update_mueff(m_fields.mueff);
+    }
+
+    turbulence::TurbulenceModel& m_tmodel;
+    PDEFields& m_fields;
+};
+
 }
 }
 

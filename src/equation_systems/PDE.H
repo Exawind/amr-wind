@@ -46,8 +46,10 @@ public:
     //! Perform initialization actions after the mesh is created
     void initialize() override
     {
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion) {
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
+        }
     }
 
     //! Perform update actions after a regrid is performed
@@ -67,7 +69,8 @@ public:
 
     void compute_mueff(const FieldState ) override
     {
-        // TBD
+        if (PDE::has_diffusion)
+            (*m_turb_op)();
     }
 
     void compute_diffusion_term(const FieldState fstate) override
@@ -120,6 +123,9 @@ protected:
 
     //! Diffusion term computation operator
     std::unique_ptr<DiffusionOp<PDE, Scheme>> m_diff_op;
+
+    //! Turbulence operator
+    std::unique_ptr<TurbulenceOp<PDE>> m_turb_op;
 };
 
 } // namespace pde
