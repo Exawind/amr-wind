@@ -36,7 +36,7 @@ Bdirs += $(INCFLO_HOME)src/equation_systems/temperature
 Bdirs += $(INCFLO_HOME)src/equation_systems/density
 Bdirs += $(INCFLO_HOME)src/turbulence
 Bdirs += $(INCFLO_HOME)src/turbulence/LES
-Bdirs += $(INCFLO_HOME)src/transport
+Bdirs += $(INCFLO_HOME)src/transport_models
 
 Bpack += $(foreach dir, $(Bdirs), $(TOP)/$(dir)/Make.package)
 Blocs += $(foreach dir, $(Bdirs), $(TOP)/$(dir))
