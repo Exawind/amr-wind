@@ -18,10 +18,10 @@ public:
 
     virtual ~Laminar() = default;
 
-    virtual std::string model_name() { return "laminar"; }
+    virtual std::string model_name() override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field
-    virtual void update_turbulent_viscosity() override;
+    virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! Return the turbulent viscosity field (just the same as the effective field)
     virtual Field& mu_turb() override { return this->mueff(); }
@@ -31,6 +31,15 @@ public:
 
     //! Indicate that this model is not a turbulent model type
     virtual bool is_turbulent() const override { return false; }
+
+    //! Interface to update effective viscosity (mu_eff = mu + mu_t)
+    virtual void update_mueff(Field& mueff) override;
+
+    //! Interface to update effective thermal diffusivity
+    virtual void update_alphaeff(Field& alphaeff) override;
+
+    //! Interface to update scalar diffusivity based on Schmidt number
+    virtual void update_scalar_diff(Field& deff, const std::string& name) override;
 };
 
 }

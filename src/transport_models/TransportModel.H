@@ -21,9 +21,9 @@ public:
     virtual std::unique_ptr<ScratchField> alpha() = 0;
 
     //! Scalar diffusivity based on Schmidt number
-    std::unique_ptr<ScratchField> scalar_diffusivity(const std::string& scalar_name);
+    virtual std::unique_ptr<ScratchField>
+    scalar_diffusivity(const std::string& scalar_name) = 0;
 };
-
 }
 }
 

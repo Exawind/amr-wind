@@ -18,7 +18,7 @@ template <
     typename Transport,
     typename std::enable_if<Transport::constant_properties>::type* = nullptr>
 inline void
-laminar_visc_update(Field& evisc, ScratchField&, const Transport& transport)
+laminar_visc_update(Field& evisc, Laminar<Transport>&, const Transport& transport)
 {
     evisc.setVal(transport.viscosity());
 }
@@ -26,16 +26,16 @@ laminar_visc_update(Field& evisc, ScratchField&, const Transport& transport)
 template <
     typename Transport,
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
-inline void laminar_visc_update(Field& evisc, ScratchField& visc)
+inline void laminar_visc_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
 {
-    field_ops::copy(evisc, visc, 0, 0, evisc.num_comp(), evisc.num_grow());
+    field_ops::copy(evisc, lam.mu(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
 template <
     typename Transport,
     typename std::enable_if<Transport::constant_properties>::type* = nullptr>
 inline void
-laminar_alpha_update(Field& evisc, ScratchField&, const Transport& transport)
+laminar_alpha_update(Field& evisc, Laminar<Transport>&, const Transport& transport)
 {
     evisc.setVal(transport.thermal_diffusivity());
 }
@@ -43,22 +43,56 @@ laminar_alpha_update(Field& evisc, ScratchField&, const Transport& transport)
 template <
     typename Transport,
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
-inline void laminar_alpha_update(Field& evisc, ScratchField& visc)
+inline void laminar_alpha_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
 {
-    field_ops::copy(evisc, visc, 0, 0, evisc.num_comp(), evisc.num_grow());
+    field_ops::copy(evisc, lam.alpha(), 0, 0, evisc.num_comp(), evisc.num_grow());
+}
+
+template <
+    typename Transport,
+    typename std::enable_if<Transport::constant_properties>::type* = nullptr>
+inline void
+laminar_scal_diff_update(Field& evisc, Laminar<Transport>&, const Transport& transport,
+                         const std::string& name)
+{
+    evisc.setVal(transport.viscosity() / transport.laminar_schmidt(name));
+}
+
+template <
+    typename Transport,
+    typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
+inline void laminar_scal_diff_update(Field& evisc, Laminar<Transport>& lam, const Transport&,
+                                     const std::string& name)
+{
+    field_ops::copy(
+        evisc, lam.scalar_diffusivity(name), 0, 0, evisc.num_comp(),
+        evisc.num_grow());
 }
 
 } // namespace
 
 template <typename Transport>
-void Laminar<Transport>::update_turbulent_viscosity()
+void Laminar<Transport>::update_turbulent_viscosity(const FieldState /* fstate */)
 {
-    AMREX_ASSERT(this->m_mueff != nullptr);
-    laminar_visc_update(*this->m_mueff, *this->mu(), this->m_transport);
+    // Empty function as there is no turbulent field
+}
 
-    if (this->m_alphaeff != nullptr)
-        laminar_alpha_update(
-            *this->m_alphaeff, *this->alpha(), this->m_transport);
+template<typename Transport>
+void Laminar<Transport>::update_mueff(Field& mueff)
+{
+    laminar_visc_update(mueff, *this, this->m_transport);
+}
+
+template<typename Transport>
+void Laminar<Transport>::update_alphaeff(Field& alphaeff)
+{
+    laminar_alpha_update(alphaeff, *this, this->m_transport);
+}
+
+template<typename Transport>
+void Laminar<Transport>::update_scalar_diff(Field& deff, const std::string& name)
+{
+    laminar_scal_diff_update(deff, *this, this->m_transport, name);
 }
 
 } // namespace turbulence

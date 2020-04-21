@@ -2,6 +2,7 @@
 #define TURBULENCEMODEL_H
 
 #include "Factory.H"
+#include "FieldDescTypes.H"
 
 namespace amr_wind {
 
@@ -18,7 +19,7 @@ public:
 
     virtual ~TurbulenceModel() = default;
 
-    virtual void update_turbulent_viscosity() = 0;
+    virtual void update_turbulent_viscosity(const FieldState fstate) = 0;
 
     virtual void register_mueff_field(Field& mueff) = 0;
 
@@ -49,6 +50,15 @@ public:
 
     //! Flag indicating whether the model is turbulent
     virtual bool is_turbulent() const { return true; }
+
+    //! Interface to update effective viscosity (mu_eff = mu + mu_t)
+    virtual void update_mueff(Field& mueff) = 0;
+
+    //! Interface to update effective thermal diffusivity
+    virtual void update_alphaeff(Field& alphaeff) = 0;
+
+    //! Interface to update scalar diffusivity based on Schmidt number
+    virtual void update_scalar_diff(Field& deff, const std::string& name) = 0;
 };
 
 }
