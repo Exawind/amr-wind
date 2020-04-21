@@ -7,6 +7,9 @@
 #include "PDEBase.H"
 
 namespace amr_wind {
+namespace turbulence {
+class TurbulenceModel;
+}
 
 /** Data structures for a CFD simulation
  *
@@ -21,11 +24,9 @@ namespace amr_wind {
 class CFDSim
 {
 public:
-    CFDSim(amrex::AmrCore& mesh)
-        : m_mesh(mesh), m_time(), m_repo(m_mesh), m_pde_mgr(*this)
-    {}
+    CFDSim(amrex::AmrCore& mesh);
 
-    ~CFDSim() = default;
+    ~CFDSim();
 
     //! Return the AMR mesh hierarchy
     amrex::AmrCore& mesh() { return m_mesh; }
@@ -42,6 +43,12 @@ public:
     pde::PDEMgr& pde_manager() { return m_pde_mgr; }
     const pde::PDEMgr& pde_manager() const { return m_pde_mgr; }
 
+    turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
+    const turbulence::TurbulenceModel& turbulence_model() const
+    { return *m_turbulence; }
+
+    void create_turbulence_model();
+
 private:
     amrex::AmrCore& m_mesh;
 
@@ -50,6 +57,8 @@ private:
     FieldRepo m_repo;
 
     pde::PDEMgr m_pde_mgr;
+
+    std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 };
 
 }
