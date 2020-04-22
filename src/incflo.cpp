@@ -101,6 +101,7 @@ void incflo::Evolve()
 
     while(m_time.new_timestep())
     {
+        amrex::Real time0 = amrex::ParallelDescriptor::second();
         if (m_time.do_regrid())
         {
             amrex::Print() << "Regrid mesh ... " ;
@@ -142,8 +143,9 @@ void incflo::Evolve()
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime: " << m_time.time_index()
-                       << " Solve: " << (time2 - time1)
-                       << " Misc: " << (time3 - time2) << std::endl;
+                       << " Solve: " << std::setprecision(8) << (time2 - time1)
+                       << " Misc: " << std::setprecision(6) << (time3 - time2)
+                       << " Total: " << std::setprecision(8) << (time3 - time0) << std::endl;
     }
     amrex::Print()
         << "\n==============================================================================\n"
