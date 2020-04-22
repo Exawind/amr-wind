@@ -33,7 +33,7 @@ add_subdirectory(transport_models)
 add_subdirectory(turbulence)
 
 include(AMReXBuildInfo)
-generate_buildinfo(${amr_wind_lib_name} ${AMREX_SUBMOD_LOCATION})
+generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 target_include_directories(${amr_wind_lib_name} PUBLIC ${AMREX_SUBMOD_LOCATION}/Tools/C_scripts)
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex)
