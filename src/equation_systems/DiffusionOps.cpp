@@ -1,5 +1,6 @@
 #include "DiffusionOps.H"
 #include "diffusion.H"
+#include "console_io.H"
 
 #include "AMReX_MLTensorOp.H"
 
@@ -109,6 +110,8 @@ void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
     mlmg.solve(
         field.vec_ptrs(), rhs_ptr->vec_const_ptrs(), this->m_options.rel_tol,
         this->m_options.abs_tol);
+
+    io::print_mlmg_info(field.name() + "_solve", mlmg);
 }
 
 template class DiffSolverIface<amrex::MLABecLaplacian>;

@@ -73,7 +73,7 @@ void incflo::WriteCheckPointFile() const
 
     const std::string& checkpointname = amrex::Concatenate(m_check_file, m_time.time_index());
 
-    amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
+    amrex::Print() << "Writing checkpoint " << checkpointname << std::endl;
 
     amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
@@ -330,7 +330,7 @@ void incflo::WritePlotFile()
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
 
-    amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_time.current_time() << std::endl;
+    amrex::Print() << "Writing plotfile " << plotfilename << " at time " << m_time.current_time() << std::endl;
 
     int ncomp = 0;
 

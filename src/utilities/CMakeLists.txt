@@ -6,6 +6,7 @@ target_sources(${amr_wind_lib_name}
       io.cpp
       PlaneAveraging.cpp
       bc_ops.cpp
+      console_io.cpp
    )
 
 target_include_directories(${amr_wind_lib_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -35,6 +35,14 @@ bool SimTime::new_timestep()
 {
     bool continue_sim = continue_simulation();
 
+    if (m_is_init) {
+        amrex::Print() << "\nBegin simulation: ";
+        if (m_stop_time > 0)
+            amrex::Print() << "run till " << m_stop_time << " seconds" << std::endl;
+        else if (m_stop_time_index >= 0)
+            amrex::Print() << "run for " << m_stop_time_index << " timesteps" << std::endl;
+    }
+
     // Toggle initialization state and enter evolution phase
     m_is_init = false;
     if (continue_sim) {
@@ -49,7 +57,7 @@ bool SimTime::new_timestep()
         // clang-format off
         if (m_verbose >= 0)
             amrex::Print()
-                << "\n========================================================================\n"
+                << "\n==============================================================================\n"
                 << "Step: " << m_time_index << " Time: " << m_cur_time << std::endl;
         // clang-format on
     } else {

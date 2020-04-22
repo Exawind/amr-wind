@@ -3,6 +3,7 @@
 #include "AMReX_MacProjector.H"
 #include "mac_projection.H"
 #include "MLMGOptions.H"
+#include "console_io.H"
 
 namespace amr_wind {
 namespace pde {
@@ -71,6 +72,8 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate)
             amrex::Orientation::high, bctype, repo.mesh().Geom()));
 
     macproj.project(options.rel_tol, options.abs_tol, amrex::MLMG::Location::FaceCentroid);
+
+    io::print_mlmg_info("MAC_projection", macproj.getMLMG());
 }
 
 } // namespace pde

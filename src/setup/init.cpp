@@ -171,15 +171,11 @@ void incflo::ReadIOParameters()
 void incflo::InitialIterations ()
 {
     BL_PROFILE("incflo::InitialIterations()");
+    amrex::Print() << "Begin initial pressure iterations. Num. iters = "
+                   << m_initial_iterations << std::endl;
 
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
-
-    if (m_verbose)
-    {
-        amrex::Print() << "Doing initial pressure iterations with dt = "
-                       << m_time.deltaT() << std::endl;
-    }
 
     auto& vel = velocity();
     auto& rho = density();
@@ -207,6 +203,7 @@ void incflo::InitialIterations ()
         rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
         trac.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
     }
+    amrex::Print() << "Completed initial pressure iterations" << std::endl << std::endl;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
@@ -216,9 +213,9 @@ void incflo::InitialProjection()
 
     Real time = 0.0;
 
+    amrex::Print() << "Begin initial projection" << std::endl;
     if (m_verbose)
     {
-        amrex::Print() << "Initial projection:" << std::endl;
         PrintMaxValues(time);
     }
 
@@ -236,4 +233,5 @@ void incflo::InitialProjection()
         amrex::Print() << "After initial projection:" << std::endl;
         PrintMaxValues(time);
     }
+    amrex::Print() << "Completed initial projection" << std::endl << std::endl;
 }

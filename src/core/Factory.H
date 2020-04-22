@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <iostream>
 
+#include "AMReX_Print.H"
+
 namespace amr_wind {
 
 template<class Base, class ... Args>
@@ -14,7 +16,10 @@ struct Factory
     create(const std::string& key, Args... args)
     {
         // TODO: Add error diagnostics
-        return table().at(key)(std::forward<Args>(args)...);
+        auto ptr = table().at(key)(std::forward<Args>(args)...);
+        amrex::Print() << "Creating " << Base::base_identifier() << " instance: "
+                       << key << std::endl;
+        return ptr;
     }
 
     static void print(std::ostream& os)
