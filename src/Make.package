@@ -5,4 +5,4 @@ CEXE_sources += incflo_compute_forces.cpp
 CEXE_sources += incflo_tagging.cpp
 CEXE_sources += incflo_regrid.cpp
 CEXE_sources += main.cpp
-CEXE_sources += incflo_field_repo.cpp
+CEXE_sources += incflo_field_repo.cpp CFDSim.cpp

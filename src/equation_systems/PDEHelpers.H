@@ -30,7 +30,7 @@ inline std::string src_term_name(const std::string& var)
 }
 
 //! Effective viscosity for the transport equation
-inline std::string nueff_name(const std::string& var) { return var + "_nueff"; }
+inline std::string mueff_name(const std::string& var) { return var + "_mueff"; }
 
 } // namespace pde_impl
 
@@ -41,7 +41,7 @@ struct PDEFields
     PDEFields(FieldRepo& repo_in, const std::string& var_name)
         : repo(repo_in)
         , field(repo.get_field(var_name))
-        , nueff(repo.get_field(pde_impl::nueff_name(var_name)))
+        , mueff(repo.get_field(pde_impl::mueff_name(var_name)))
         , src_term(repo.get_field(pde_impl::src_term_name(var_name)))
         , diff_term(repo.get_field(pde_impl::diff_term_name(var_name)))
         , conv_term(repo.get_field(pde_impl::conv_term_name(var_name)))
@@ -49,7 +49,7 @@ struct PDEFields
 
     FieldRepo& repo;
     Field& field;
-    Field& nueff;
+    Field& mueff;
 
     Field& src_term;
     Field& diff_term;
@@ -60,7 +60,7 @@ template<typename PDE, typename Scheme>
 PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
 {
     repo.declare_field(PDE::var_name(), PDE::ndim, Scheme::nghost_state, Scheme::num_states);
-    repo.declare_field(pde_impl::nueff_name(PDE::var_name()), 1, 1, 1);
+    repo.declare_field(pde_impl::mueff_name(PDE::var_name()), 1, 1, 1);
     repo.declare_field(
         pde_impl::src_term_name(PDE::var_name()), PDE::ndim,
         Scheme::nghost_src, 1);

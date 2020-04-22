@@ -114,7 +114,7 @@ void wall_model_bc(
 {
     auto& repo = velocity.repo();
     auto& density = repo.get_field("density", fstate);
-    auto& viscosity = repo.get_field("velocity_nueff");
+    auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
 
     // Wall model hard coded to be only in the zlo direction

@@ -9,6 +9,10 @@ time.checkpoint_interval           =  -100         # Steps between checkpoint fi
 incflo.mu               =   0.001       # Dynamic viscosity coefficient
 incflo.mu_s             =   0.001       # Scalar diffusion coefficient mu (mu = rho * nu)
 
+transport.viscosity = 0.001
+transport.laminar_prandtl = 1.0
+turbulence.model = Laminar
+
 amr.max_level           =   2
 time.regrid_interval          =   2
 

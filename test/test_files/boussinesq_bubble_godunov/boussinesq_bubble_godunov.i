@@ -14,6 +14,9 @@ time.checkpoint_interval           =  -100         # Steps between checkpoint fi
 
 incflo.mu               =   0.00001       # Dynamic viscosity coefficient
 incflo.mu_s = 0.00003
+transport.viscosity = 0.00001
+transport.laminar_prandtl = 0.33333333333333337
+turbulence.model = Laminar
 
 amr.max_level           =   1
 amr.n_cell              =   32 32 64     # Grid cells at coarsest AMRlevel

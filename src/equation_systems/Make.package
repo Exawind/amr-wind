@@ -4,4 +4,4 @@ CEXE_headers += PDEOps.H
 CEXE_headers += PDETraits.H
 CEXE_headers += SchemeTraits.H
 CEXE_headers += SourceTerm.H
-CEXE_sources += DiffusionOps.cpp
+CEXE_sources += DiffusionOps.cpp PDEBase.cpp

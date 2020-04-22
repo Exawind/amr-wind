@@ -41,7 +41,7 @@ protected:
             std::is_same<L, amrex::MLTensorOp>::value>::type* = 0)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
-        auto& viscosity = m_pdefields.nueff;
+        auto& viscosity = m_pdefields.mueff;
         auto& geom = m_pdefields.repo.mesh().Geom();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(
@@ -57,7 +57,7 @@ protected:
             std::is_same<L, amrex::MLABecLaplacian>::value>::type* = 0)
     {
         const int nlevels = m_pdefields.repo.num_active_levels();
-        auto& viscosity = m_pdefields.nueff;
+        auto& viscosity = m_pdefields.mueff;
         auto& geom = m_pdefields.repo.mesh().Geom();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto b = diffusion::average_velocity_eta_to_faces(

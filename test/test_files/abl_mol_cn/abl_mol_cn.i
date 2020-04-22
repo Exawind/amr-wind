@@ -31,6 +31,11 @@ incflo.ro_0             = 1.0          # Reference density
 incflo.fluid_model      =   "SmagorinskyLillySGS" # Fluid model (rheology)
 incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.diffusion_type = 1
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Smagorinsky
+Smagorinsky_coeffs.Cs = 0.135
 
 abl.Smagorinsky_Lilly_SGS_constant = .135
 abl.use_boussinesq = 1 

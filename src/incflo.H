@@ -8,6 +8,7 @@
 #include <AMReX_NodalProjector.H>
 
 #include "incflo_enums.H"
+#include "CFDSim.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
 
@@ -61,9 +62,15 @@ public:
         m_utau_mean_ground = ustar;
     }
 
+    amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
     amr_wind::FieldRepo& repo() { return m_repo; }
     const amr_wind::FieldRepo& repo() const { return m_repo; }
+
+    amr_wind::pde::PDEBase& icns() { return m_sim.pde_manager().icns(); }
+    amr_wind::pde::PDEMgr::TypeVector& scalar_eqns()
+    { return m_sim.pde_manager().scalar_eqns(); }
+
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
     amr_wind::Field& density() const { return m_repo.get_field("density"); }
     amr_wind::Field& tracer() const { return m_repo.get_field("temperature"); }
@@ -165,11 +172,12 @@ private:
     // member variables
     //
 
-    amr_wind::SimTime m_time;
-    amr_wind::FieldRepo m_repo;
+    amr_wind::CFDSim m_sim;
+    amr_wind::SimTime& m_time;
+    amr_wind::FieldRepo& m_repo;
 
-    std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
-    amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
+    // std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
+    // amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
 
     amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;

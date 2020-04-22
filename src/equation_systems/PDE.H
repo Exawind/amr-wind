@@ -2,10 +2,8 @@
 #define PDE_H
 
 #include <string>
-
-#include "incflo_enums.H"
-#include "Factory.H"
-#include "PDEHelpers.H"
+#include "CFDSim.H"
+#include "PDEBase.H"
 #include "PDEOps.H"
 #include "CompRHSOps.H"
 #include "DiffusionOps.H"
@@ -13,37 +11,14 @@
 namespace amr_wind {
 namespace pde {
 
-class PDEBase : public Factory<PDEBase, const SimTime&, FieldRepo&, const int>
-{
-public:
-    virtual ~PDEBase() = default;
-
-    virtual PDEFields& fields() = 0;
-
-    virtual void initialize() = 0;
-
-    virtual void post_regrid_actions() = 0;
-
-    virtual void compute_source_term(const FieldState fstate) = 0;
-
-    virtual void compute_nueff(const FieldState fstate) = 0;
-
-    virtual void compute_diffusion_term(const FieldState fstate) = 0;
-
-    virtual void compute_advection_term(const FieldState fstate) = 0;
-
-    virtual void compute_predictor_rhs(const DiffusionType difftype) = 0;
-
-    virtual void compute_corrector_rhs(const DiffusionType difftype) = 0;
-
-    virtual void solve(const amrex::Real dt) = 0;
-
-    static std::string base_identifier()
-    {
-        return "PDESystem";
-    }
-};
-
+/** Implementation of the PDE interface for transport equations
+ *
+ *  This class takes two traits, one describing the PDE type and the other
+ *  describing the numerical scheme (e.g., Godunov, MOL) to generate a family of
+ *  PDE systems and its solution process. Each operation is performed by a
+ *  separate operator object that can be customized based on the different
+ *  traits as necessary.
+ */
 template<typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
 {
@@ -51,32 +26,40 @@ public:
     using PDEType = PDE;
     using SchemeType = Scheme;
 
+    //! Unique identifier used to register and create this instance on-demand
+    //! through the factor iterface
     static std::string identifier()
     {
         return PDE::pde_name() + "-"  + Scheme::scheme_name();
     }
 
-    PDESystem(const SimTime& time, FieldRepo& repo, const int probtype)
-        : m_time(time)
-        , m_repo(repo)
-        , m_fields(FieldRegOp<PDE, Scheme>(repo)(time, probtype))
+    PDESystem(CFDSim& sim, const int probtype)
+        : m_sim(sim)
+        , m_time(sim.time())
+        , m_repo(sim.repo())
+        , m_fields(FieldRegOp<PDE, Scheme>(m_repo)(m_time, probtype))
         , m_src_op(m_fields)
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
     {}
 
+    //! Perform initialization actions after the mesh is created
     void initialize() override
     {
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion) {
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
+        }
     }
 
+    //! Perform update actions after a regrid is performed
     void post_regrid_actions() override
     {
         if (PDE::has_diffusion)
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
     }
 
+    //! Return the object holding the fields necessary for solving this PDE
     PDEFields& fields() override { return m_fields; }
 
     void compute_source_term(const FieldState fstate) override
@@ -84,9 +67,10 @@ public:
         m_src_op(fstate);
     }
 
-    void compute_nueff(const FieldState ) override
+    void compute_mueff(const FieldState ) override
     {
-        // TBD
+        if (PDE::has_diffusion)
+            (*m_turb_op)();
     }
 
     void compute_diffusion_term(const FieldState fstate) override
@@ -117,16 +101,31 @@ public:
     }
 
 protected:
+    //! CFD simulation controller instance
+    CFDSim& m_sim;
+
+    //! Time controls instance
     const SimTime& m_time;
 
+    //! Field repository
     FieldRepo& m_repo;
 
     PDEFields m_fields;
 
+    //! Source term computation operator
     SrcTermOp<PDE> m_src_op;
+
+    //! Advection term computation operator
     AdvectionOp<PDE, Scheme> m_adv_op;
+
+    //! RHS computation operator
     ComputeRHSOp<PDE, Scheme> m_rhs_op;
+
+    //! Diffusion term computation operator
     std::unique_ptr<DiffusionOp<PDE, Scheme>> m_diff_op;
+
+    //! Turbulence operator
+    std::unique_ptr<TurbulenceOp<PDE>> m_turb_op;
 };
 
 } // namespace pde

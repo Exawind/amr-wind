@@ -25,6 +25,10 @@ incflo.gravity          = 0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             = 1.          # Reference density 
 incflo.mu               = 0.00009947183943        # Dynamic viscosity coefficient
 incflo.use_godunov      = 1
+transport.viscosity = 0.00009947183943 
+transport.laminar_prandtl = 1.0
+turbulence.model = Laminar
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#

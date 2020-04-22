@@ -7,25 +7,25 @@
 
 void incflo::declare_fields()
 {
-    const std::string scheme = m_use_godunov
-                                   ? amr_wind::fvm::Godunov::scheme_name()
-                                   : amr_wind::fvm::MOL::scheme_name();
-    m_icns = amr_wind::pde::PDEBase::create(
-        "ICNS-" + scheme, m_time, m_repo, m_probtype);
+    auto& pde_mgr = m_sim.pde_manager();
+
+    // Always register incompressible Navier-Stokes equation
+    pde_mgr.register_icns();
 
     // Register density first so that we can compute its `n+1/2` state before
     // other scalars attempt to use it in their computations.
     if (!m_constant_density) {
-        if (m_scalar_eqns.size() > 0)
+        if (pde_mgr.scalar_eqns().size() > 0)
             amrex::Abort(
                 "For non-constant density, it must be the first equation "
                 "registered for the scalar equations");
-        m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
-            "Density-" + scheme, m_time, m_repo, m_probtype));
+        pde_mgr.register_transport_pde("Density");
     }
 
-    m_scalar_eqns.emplace_back(amr_wind::pde::PDEBase::create(
-        "Temperature-" + scheme, m_time, m_repo, m_probtype));
+    // TODO: This should be customized based on Physics
+    pde_mgr.register_transport_pde("Temperature");
+
+    m_sim.create_turbulence_model();
 }
 
 void incflo::init_field_bcs ()
