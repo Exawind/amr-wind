@@ -6,8 +6,6 @@ time.init_shrink      = 1.0
 
 time.plot_interval            =   10          # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
-incflo.mu               =   0.001       # Dynamic viscosity coefficient
-incflo.mu_s             =   0.001       # Scalar diffusion coefficient mu (mu = rho * nu)
 
 transport.viscosity = 0.001
 transport.laminar_prandtl = 1.0

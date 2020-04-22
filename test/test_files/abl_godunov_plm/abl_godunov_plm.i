@@ -14,10 +14,8 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 amr.KE_int = 1
-amr.plane_averaging = 1
 amr.line_plot_int = 1
 time.plot_interval            =   500       # Steps between plot files
-amr.plot_per            =   -1          # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
@@ -28,9 +26,6 @@ amr.plt_tracer = 1
 incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.ro_0             = 1.0          # Reference density 
 
-incflo.fluid_model      =   "SmagorinskyLillySGS" # Fluid model (rheology)
-incflo.SmagorinskyLillyConstant = .135
-incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.use_godunov = 1
 incflo.use_ppm = 0
 transport.viscosity = 1.0e-5
@@ -88,8 +83,6 @@ zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-diffusion.verbose       =   0           # DiffusionEquation
-mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              DEBUGGING                #
