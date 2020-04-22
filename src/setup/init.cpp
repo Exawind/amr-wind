@@ -82,14 +82,6 @@ void incflo::ReadParameters ()
             amrex::Abort("We currently require at least one tracer");
         }
 
-        // Scalar diffusion coefficients
-        m_mu_s.resize(m_ntrac, 0.0);
-        pp.queryarr("mu_s", m_mu_s, 0, m_ntrac );
-
-        amrex::Print() << "Scalar diffusion coefficients " << std::endl;
-        for (int i = 0; i < m_ntrac; i++) {
-            amrex::Print() << "Tracer" << i << ":" << m_mu_s[i] << std::endl;
-        }
     } // end prefix incflo
 
     // FIXME: clean up WIP logic

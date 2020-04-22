@@ -187,9 +187,6 @@ private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_delp{{0.0, 0.0, 0.0}};
 
-    // Scalar diffusive coefficient
-    amrex::Vector<amrex::Real> m_mu_s;
-
     // Density (if constant)
     amrex::Real m_ro_0 = 1.0;
 

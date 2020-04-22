@@ -10,8 +10,6 @@ time.init_shrink      = 1.0
 time.plot_interval            =   140         # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
 
-incflo.mu               =   0.00001       # Dynamic viscosity coefficient
-incflo.mu_s = 0.00003
 transport.viscosity = 0.00001
 transport.laminar_prandtl = 0.33333333333333337
 turbulence.model = Laminar
@@ -46,7 +44,6 @@ incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = 
 incflo.verbose          =   1           # incflo_level
 mac_proj.verbose        =   0           # MAC Projector
 nodal_proj.verbose      =   0           # Nodal Projector
-diffusion.verbose       =   0           # Diffusion
 diffusion.mg_verbose    =   0           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12
