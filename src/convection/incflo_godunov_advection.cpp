@@ -86,21 +86,21 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
 
     // Use PLM to generate Im and Ip */
     } else {
-        amrex::ParallelFor(xbx, ncomp,
+        amrex::ParallelFor(xebox, ncomp,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Godunov_plm_fpu_x(i, j, k, n, l_dt, dx, Imx(i,j,k,n), Ipx(i-1,j,k,n),
                               q, umac(i,j,k), pbc[n], dlo.x, dhi.x);
         });
 
-        amrex::ParallelFor(ybx, ncomp,
+        amrex::ParallelFor(yebox, ncomp,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Godunov_plm_fpu_y(i, j, k, n, l_dt, dy, Imy(i,j,k,n), Ipy(i,j-1,k,n),
                               q, vmac(i,j,k), pbc[n], dlo.y, dhi.y);
         });
 
-        amrex::ParallelFor(zbx, ncomp,
+        amrex::ParallelFor(zebox, ncomp,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             Godunov_plm_fpu_z(i, j, k, n, l_dt, dz, Imz(i,j,k,n), Ipz(i,j,k-1,n),
