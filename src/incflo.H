@@ -196,9 +196,6 @@ private:
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    // AMR / refinement settings
-    int m_refine_cutcells = 1;
-
     amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};

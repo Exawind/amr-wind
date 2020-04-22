@@ -1,6 +1,7 @@
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
 #include <MLMGOptions.H>
+#include "console_io.H"
 
 using namespace amrex;
 
@@ -155,6 +156,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     nodal_projector->setDomainBC(bclo, bchi);
     nodal_projector->setVerbose(options.verbose);
     nodal_projector->project(options.rel_tol, options.abs_tol);
+    amr_wind::io::print_mlmg_info("Nodal_projection", nodal_projector->getMLMG());
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)

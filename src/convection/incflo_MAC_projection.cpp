@@ -7,6 +7,7 @@
 
 #include <mac_projection.H>
 #include <MLMGOptions.H>
+#include "console_io.H"
 
 using namespace amrex;
 

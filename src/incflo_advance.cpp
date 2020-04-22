@@ -9,6 +9,7 @@
 #include "mac_projection.H"
 #include "diffusion.H"
 #include "TurbulenceModel.H"
+#include "console_io.H"
 
 using namespace amrex;
 
@@ -137,6 +138,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
         amrex::Print() << "Before predictor step:" << std::endl;
         PrintMaxValues(new_time);
     }
+
+    if (m_use_godunov)
+        amr_wind::io::print_mlmg_header("Godunov:");
+    else
+        amr_wind::io::print_mlmg_header("Predictor:");
 
     auto& icns_fields = icns().fields();
     auto& velocity_old = velocity().state(amr_wind::FieldState::Old);
@@ -398,6 +404,8 @@ void incflo::ApplyCorrector()
         amrex::Print() << "Before corrector step:" << std::endl;
         PrintMaxValues(new_time);
     }
+
+    amr_wind::io::print_mlmg_header("Corrector:");
 
     auto& velocity_new = velocity().state(amr_wind::FieldState::New);
     auto& density_old = density().state(amr_wind::FieldState::Old);
