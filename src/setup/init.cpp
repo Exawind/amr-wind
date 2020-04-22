@@ -15,7 +15,6 @@ using namespace amrex;
 void incflo::ReadParameters ()
 {
     ReadIOParameters();
-    ReadRheologyParameters();
 
     { // Prefix amr
         ParmParse pp("amr");
@@ -40,8 +39,6 @@ void incflo::ReadParameters ()
 
         // Godunov-related flags
         pp.query("use_godunov"                      , m_use_godunov);
-        pp.query("use_ppm"                          , m_godunov_ppm);
-        pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;

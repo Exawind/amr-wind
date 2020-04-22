@@ -3,35 +3,6 @@
 
 using namespace amrex;
 
-void incflo::compute_tra_forces (Vector<MultiFab*> const& tra_forces,
-                                 Vector<MultiFab const*> const& density)
-{
-    // NOTE: this routine must return the force term for the update of (rho s), NOT just s.
-    if (m_advect_tracer) {
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (int lev = 0; lev <= finest_level; ++lev) {
-            for (MFIter mfi(*tra_forces[lev],TilingIfNotGPU()); mfi.isValid(); ++mfi) 
-            {
-                Box const& bx = mfi.tilebox();
-                Array4<Real>       const& tra_f = tra_forces[lev]->array(mfi);
-                Array4<Real const> const& rho   =    density[lev]->const_array(mfi);
-
-                amrex::ParallelFor(bx, m_ntrac,
-                [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-                {
-                    // For now we don't have any external forces on the scalars
-                    tra_f(i,j,k,n) = 0.0;
-    
-                    // Return the force term for the update of (rho s), NOT just s.
-                    tra_f(i,j,k,n) *= rho(i,j,k);
-                });
-            }
-        }
-    }
-}
-
 void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
                                  Vector<MultiFab const*> const& velocity,
                                  Vector<MultiFab const*> const& density,

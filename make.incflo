@@ -24,7 +24,6 @@ Bdirs += $(INCFLO_HOME)src/derive
 Bdirs += $(INCFLO_HOME)src/diffusion
 Bdirs += $(INCFLO_HOME)src/prob
 Bdirs += $(INCFLO_HOME)src/projection
-Bdirs += $(INCFLO_HOME)src/rheology
 Bdirs += $(INCFLO_HOME)src/setup
 Bdirs += $(INCFLO_HOME)src/utilities
 Bdirs += $(INCFLO_HOME)src/utilities/tagging

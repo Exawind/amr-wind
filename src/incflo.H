@@ -82,8 +82,6 @@ public: // for cuda
 
     void ComputeDt (bool explicit_diffusion);
 
-    void compute_tra_forces (amrex::Vector<amrex::MultiFab*> const& tra_forces,
-                             amrex::Vector<amrex::MultiFab const*> const& density);
     void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
                              amrex::Vector<amrex::MultiFab const*> const& velocity,
                              amrex::Vector<amrex::MultiFab const*> const& density,
@@ -125,7 +123,7 @@ public: // for cuda
     void ComputeDivU (amrex::Real time);
     amrex::Real ComputeKineticEnergy () const;
 
-    bool m_wall_model_flag = false; /** if a wall model is detected on 1 of 6 boundaries it is set to true */
+    bool m_wall_model_flag = false; /** if a wall model is detected on at least 1 of 6 boundaries it is set to true */
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -148,18 +146,6 @@ public: // for cuda
     void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
                          amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // rheology
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    virtual void compute_viscosity (amrex::Vector<amrex::MultiFab*> const& vel_eta,
-                                    amrex::Vector<amrex::MultiFab*> const& tra_eta,
-                                    amrex::Vector<amrex::MultiFab const*> const& rho,
-                                    amrex::Vector<amrex::MultiFab const*> const& vel,
-                                    amrex::Vector<amrex::MultiFab const*> const& tra,
-                                    amrex::Real time, int nghost);
 
     // TODO: Transition
     void declare_fields();
@@ -196,9 +182,6 @@ private:
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    // AMR / refinement settings
-    int m_refine_cutcells = 1;
-
     amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
@@ -217,20 +200,11 @@ private:
     // Default to MOL (not Godunov)
     bool m_use_godunov         = false;
 
-    // If using Godunov, default to PPM (not PLM)
-    bool m_godunov_ppm         = true;
-
-    // If using Godunov, when to add the forcing terms in 
-    //    the construction of the "trans" velocities
-    bool m_godunov_use_forces_in_trans = false;
-
     DiffusionType m_diff_type = DiffusionType::Implicit;
 
     // Fluid properties
-    FluidModel m_fluid_model;
     amrex::Real m_mu = 1.0;
-    amrex::Real m_Smagorinsky_Lilly_SGS_constant = 0.135;
-     
+
     // fixme this is sloppy and are being used as global variables...
     amrex::Real m_velocity_mean_ground;
     amrex::Real m_utau_mean_ground;
@@ -272,16 +246,8 @@ private:
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return m_repo.factory(lev); }
 
-    // Number of ghost cells for field arrays.
-    int nghost_state () const {
-        return (m_use_godunov) ? 3 : 2;
-    }
-
+    // Number of ghost cells for force field arrays.
     int nghost_force () const {
-        return (m_use_godunov) ? 1 : 0;
-    }
-
-    int nghost_mac () const {
         return (m_use_godunov) ? 1 : 0;
     }
 
@@ -295,14 +261,6 @@ private:
     void Advance ();
     void AverageDown ();
     void AverageDownTo (int crse_lev);
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // rheology
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    void ReadRheologyParameters ();
 
     ///////////////////////////////////////////////////////////////////////////
     //
