@@ -9,7 +9,7 @@
 namespace amr_wind {
 
 ABL::ABL(const SimTime& time, incflo* incflo_in)
-    : m_time(time), m_incflo(incflo_in)
+    : m_time(time), m_incflo(incflo_in), m_pa(2)
 {
     amrex::ParmParse pp("abl");
 
@@ -121,16 +121,13 @@ void ABL::pre_advance_work()
     constexpr int direction = 2;
     auto geom = m_incflo->Geom();
 
-    PlaneAveraging pa(geom,
-                      m_incflo->velocity().vec_ptrs(),
-                      m_incflo->tracer().vec_ptrs(),
-                      direction);
+    m_pa(geom, m_incflo->velocity().vec_ptrs(), m_incflo->tracer().vec_ptrs());
 
     {
         // First cell height
         const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
-        const amrex::Real vx = pa.line_velocity_xdir(fch);
-        const amrex::Real vy = pa.line_velocity_ydir(fch);
+        const amrex::Real vx = m_pa.line_velocity_xdir(fch);
+        const amrex::Real vy = m_pa.line_velocity_ydir(fch);
 
         const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
         const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
@@ -140,8 +137,8 @@ void ABL::pre_advance_work()
 
     if (m_has_driving_dpdx) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
-        const amrex::Real vx = pa.line_velocity_xdir(zh);
-        const amrex::Real vy = pa.line_velocity_ydir(zh);
+        const amrex::Real vx = m_pa.line_velocity_xdir(zh);
+        const amrex::Real vy = m_pa.line_velocity_ydir(zh);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);
@@ -154,7 +151,7 @@ void ABL::pre_advance_work()
         pp.query("line_plot_int", output_interval);
 
         if ((output_interval > 0) && (m_time.time_index() % output_interval == 0)) {
-            pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
+            m_pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
         }
     }
 }

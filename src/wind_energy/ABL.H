@@ -10,6 +10,7 @@
 #include "BoussinesqBuoyancy.H"
 #include "CoriolisForcing.H"
 #include "SimTime.H"
+#include "PlaneAveraging.H"
 
 class incflo;
 
@@ -49,6 +50,8 @@ private:
 
     // TODO: deprecate this
     incflo* m_incflo;
+
+    PlaneAveraging m_pa;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;
