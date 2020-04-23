@@ -1,8 +1,11 @@
 #ifndef DERIVE_K_H_
 #define DERIVE_K_H_
 
+#include "Field.H"
 #include <AMReX_FArrayBox.H>
 #include <cmath>
+
+namespace amr_wind {
 
 struct StencilInterior
 {
@@ -95,16 +98,20 @@ struct StencilKHI
     static constexpr amrex::Real c22 = -0.5;
 };
 
-template<typename Stencil>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-amrex::Real incflo_strainrate (int i, int j, int k,
-                               amrex::Real idx, amrex::Real idy, amrex::Real idz,
-                               amrex::Array4<amrex::Real const> const& vel) noexcept
+template <typename Stencil>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
+    int i,
+    int j,
+    int k,
+    amrex::Real idx,
+    amrex::Real idy,
+    amrex::Real idz,
+    amrex::Array4<amrex::Real const> const& vel) noexcept
 {
     using namespace amrex;
-    
+
     Real cp1, c, cm1;
-    
+
     cp1 = Stencil::c00;
     c   = Stencil::c01;
     cm1 = Stencil::c02;
@@ -116,7 +123,7 @@ amrex::Real incflo_strainrate (int i, int j, int k,
     cp1 = Stencil::c10;
     c   = Stencil::c11;
     cm1 = Stencil::c12;
-    
+
     const Real uy = (cp1*vel(i,j+1,k,0) + c*vel(i,j,k,0) + cm1*vel(i,j-1,k,0)) * idy;
     const Real vy = (cp1*vel(i,j+1,k,1) + c*vel(i,j,k,1) + cm1*vel(i,j-1,k,1)) * idy;
     const Real wy = (cp1*vel(i,j+1,k,2) + c*vel(i,j,k,2) + cm1*vel(i,j-1,k,2)) * idy;
@@ -124,7 +131,7 @@ amrex::Real incflo_strainrate (int i, int j, int k,
     cp1 = Stencil::c20;
     c   = Stencil::c21;
     cm1 = Stencil::c22;
-    
+
     const Real uz = (cp1*vel(i,j,k+1,0) + c*vel(i,j,k,0) + cm1*vel(i,j,k-1,0)) * idz;
     const Real vz = (cp1*vel(i,j,k+1,1) + c*vel(i,j,k,1) + cm1*vel(i,j,k-1,1)) * idz;
     const Real wz = (cp1*vel(i,j,k+1,2) + c*vel(i,j,k,2) + cm1*vel(i,j,k-1,2)) * idz;
@@ -133,4 +140,8 @@ amrex::Real incflo_strainrate (int i, int j, int k,
                      + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
 }
 
+template<typename FType>
+void compute_strainrate(FType& field, const Field& velocity);
+
+} // namespace amr_wind
 #endif

@@ -29,7 +29,7 @@ TEST_F(StrainrateTest, interior)
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
     
-    amrex::Real sr = incflo_strainrate<StencilInterior>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -67,7 +67,7 @@ TEST_F(StrainrateTest, interior)
     for(i = 1; i < n; ++i){
         for(j = 1; j < n; ++j){
             for(k = 1; k < n; ++k){
-                sr = incflo_strainrate<StencilInterior>(i,j,k,idx,idy,idz,velocity.array());
+                sr = amr_wind::strainrate<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,velocity.array());
                 EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
             }
         }
@@ -92,7 +92,7 @@ TEST_F(StrainrateTest, ilo)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilILO>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilILO>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -135,7 +135,7 @@ TEST_F(StrainrateTest, ilo)
     i = 1;
     for(j = 1; j < n; ++j){
         for(k = 1; k < n; ++k){
-            sr = incflo_strainrate<StencilILO>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilILO>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }
@@ -159,7 +159,7 @@ TEST_F(StrainrateTest, ihi)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilILO>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilILO>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -202,7 +202,7 @@ TEST_F(StrainrateTest, ihi)
     i = 1;
     for(j = 1; j < n; ++j){
         for(k = 1; k < n; ++k){
-            sr = incflo_strainrate<StencilIHI>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilIHI>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }
@@ -226,7 +226,7 @@ TEST_F(StrainrateTest, jlo)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilJLO>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilJLO>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -268,7 +268,7 @@ TEST_F(StrainrateTest, jlo)
     j = 1;
     for(i = 1; i < n; ++i){
         for(k = 1; k < n; ++k){
-            sr = incflo_strainrate<StencilJLO>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilJLO>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }
@@ -292,7 +292,7 @@ TEST_F(StrainrateTest, jhi)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilJHI>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilJHI>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -333,7 +333,7 @@ TEST_F(StrainrateTest, jhi)
     j = 1;
     for(i = 1; i < n; ++i){
         for(k = 1; k < n; ++k){
-            sr = incflo_strainrate<StencilJHI>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilJHI>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }
@@ -357,7 +357,7 @@ TEST_F(StrainrateTest, klo)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilKLO>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilKLO>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -399,7 +399,7 @@ TEST_F(StrainrateTest, klo)
     k = 1;
     for(i = 1; i < n; ++i){
         for(j = 1; j < n; ++j){
-            sr = incflo_strainrate<StencilKLO>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilKLO>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }
@@ -423,7 +423,7 @@ TEST_F(StrainrateTest, khi)
     amrex::Real dx = 0.1, dy = 0.2, dz = 0.3 + 0.01*amrex::Random();
     amrex::Real idx = 1.0/dx, idy = 1.0/dy, idz = 1.0/dz;
     
-    amrex::Real sr = incflo_strainrate<StencilKHI>(i,j,k,idx,idy,idz,velocity.array());
+    amrex::Real sr = amr_wind::strainrate<amr_wind::StencilKHI>(i,j,k,idx,idy,idz,velocity.array());
     EXPECT_NEAR(sr, 0.0, tol);
     
     auto vel_arr = velocity.array();
@@ -464,7 +464,7 @@ TEST_F(StrainrateTest, khi)
     k = 1;
     for(i = 1; i < n; ++i){
         for(j = 1; j < n; ++j){
-            sr = incflo_strainrate<StencilKHI>(i,j,k,idx,idy,idz,velocity.array());
+            sr = amr_wind::strainrate<amr_wind::StencilKHI>(i,j,k,idx,idy,idz,velocity.array());
             EXPECT_NEAR(sr_arr(i,j,k), sr, tol);
         }
     }

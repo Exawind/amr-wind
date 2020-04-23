@@ -14,6 +14,8 @@ namespace turbulence {
 template<typename Transport>
 Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
+    , m_vel(sim.repo().get_field("velocity"))
+    , m_rho(sim.repo().get_field("density"))
 {
     const std::string coeffs_dict = this->model_name() + "_coeffs";
     amrex::ParmParse pp(coeffs_dict);
@@ -27,10 +29,14 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& mu_turb = this->mu_turb();
     auto& repo = mu_turb.repo();
-    auto& vel = repo.get_field("velocity", fstate);
-    auto& den = repo.get_field("density", fstate);
+    auto& vel = m_vel.state(fstate);
+    auto& den = m_rho.state(fstate);
     auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
+
+    // Populate strainrate into the turbulent viscosity arrays to avoid creating
+    // a temporary buffer
+    compute_strainrate(mu_turb, vel);
 
     const int nlevels = repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
@@ -42,143 +48,18 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
         const amrex::Real dz = geom.CellSize()[2];
         const amrex::Real ds = std::cbrt(dx * dy * dz);
         const amrex::Real ds_sqr = ds * ds;
-
-        const amrex::Real idx = 1.0 / dx;
-        const amrex::Real idy = 1.0 / dy;
-        const amrex::Real idz = 1.0 / dz;
+        const amrex::Real smag_factor = Cs_sqr * ds_sqr;
 
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox(mu_turb.num_grow());
             const auto& mu_arr = mu_turb(lev).array(mfi);
-            const auto& vel_arr = vel(lev).const_array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real rho = rho_arr(i, j, k);
-                    const amrex::Real sr = incflo_strainrate<StencilInterior>(
-                        i, j, k, idx, idy, idz, vel_arr);
-                    mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
+                    mu_arr(i, j, k) *= rho * smag_factor;
                 });
-
-            // TODO: Check if the following is correct for `foextrap` BC types
-            const auto& bxi = mfi.tilebox();
-            int idim = 0;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi).grow({0, 1, 1});
-
-                    amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilILO>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi).grow({0, 1, 1});
-
-                    amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilIHI>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 1;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi).grow({1, 0, 1});
-
-                    amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilJLO>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi).grow({1, 0, 1});
-
-                    amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilJHI>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-            } // if (!geom.isPeriodic)
-
-            idim = 2;
-            if (!geom.isPeriodic(idim)) {
-                if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
-                    amrex::IntVect low(bxi.smallEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxlo = amrex::Box(low, hi).grow({1, 1, 0});
-
-                    amrex::ParallelFor(
-                        bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilKLO>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-
-                if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
-                    amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
-                    low.setVal(idim, sm);
-                    hi.setVal(idim, sm);
-
-                    auto bxhi = amrex::Box(low, hi).grow({1, 1, 0});
-
-                    amrex::ParallelFor(
-                        bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const amrex::Real rho = rho_arr(i, j, k);
-                            const amrex::Real sr = incflo_strainrate<StencilKHI>(
-                                i, j, k, idx, idy, idz, vel_arr);
-                            mu_arr(i, j, k) = rho * Cs_sqr * ds_sqr * sr;
-                        });
-                }
-            } // if (!geom.isPeriodic)
         }
     }
 }
