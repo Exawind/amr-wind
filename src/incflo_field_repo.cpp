@@ -83,7 +83,7 @@ void incflo::init_field_bcs ()
 
             pp.queryarr("density", bc_density[ori], 0, 1);
 
-            pp.queryarr("tracer", bc_tracer[ori], 0, m_ntrac);
+            pp.queryarr("tracer", bc_tracer[ori], 0, 1);
         }
         else if (bc_type == "no_slip_wall" or bc_type == "nsw")
         {
@@ -98,13 +98,13 @@ void incflo::init_field_bcs ()
         else if (bc_type == "slip_wall" or bc_type == "sw")
         {
             bc_temp[ori] = BC::slip_wall;
-            pp.queryarr("tracer", bc_tracer[ori], 0, m_ntrac);
+            pp.queryarr("tracer", bc_tracer[ori], 0, 1);
         }
         else if (bc_type == "wall_model" or bc_type == "wm")
         {
             bc_temp[ori] = BC::wall_model;
             m_wall_model_flag = true;
-            pp.queryarr("tracer", bc_tracer[ori], 0, m_ntrac);
+            pp.queryarr("tracer", bc_tracer[ori], 0, 1);
         }
         else
         {
@@ -245,7 +245,6 @@ void incflo::init_field_bcs ()
         }
     }
 
-    if (m_ntrac > 0)
     {
         for (OrientationIter oit; oit; ++oit) {
             Orientation ori = oit();
@@ -315,7 +314,6 @@ void incflo::init_field_bcs ()
         }
     }
 
-    if (m_ntrac > 0)
     {
         for (OrientationIter oit; oit; ++oit) {
             Orientation ori = oit();

@@ -89,10 +89,8 @@ void incflo::WriteCheckPointFile() const
         VisMF::Write(density()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "density"));
 
-        if (m_ntrac > 0) {
-            VisMF::Write(tracer()(lev),
-                         amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
-        }
+        VisMF::Write(tracer()(lev),
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
 
         VisMF::Write(grad_p()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "gradp"));
@@ -215,10 +213,9 @@ void incflo::ReadCheckpointFile()
         VisMF::Read(density()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "density"));
 
-        if (m_ntrac > 0) {
-            VisMF::Read(tracer()(lev),
-                        amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
-        }
+        VisMF::Read(tracer()(lev),
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
+
 
         VisMF::Read(grad_p()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "gradp"));
@@ -348,7 +345,7 @@ void incflo::WritePlotFile()
     if (m_plt_rho) ++ncomp;
 
     // Tracers
-    if (m_plt_tracer) ncomp += m_ntrac;
+    if (m_plt_tracer) ncomp += 1;
 
     // Pressure
     if(m_plt_p) ++ncomp;
@@ -429,12 +426,10 @@ void incflo::WritePlotFile()
     }
     if (m_plt_tracer) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], tracer()(lev), 0, icomp, m_ntrac, 0);
+            MultiFab::Copy(mf[lev], tracer()(lev), 0, icomp, 1, 0);
         }
-        for (int i = 0; i < m_ntrac; ++i) {
-            pltscaVarsName.push_back("tracer"+std::to_string(i));
-        }
-        icomp += m_ntrac;
+        pltscaVarsName.push_back("tracer0");
+        ++icomp;
     }
     if (m_plt_p) {
         for (int lev = 0; lev <= finest_level; ++lev) {
