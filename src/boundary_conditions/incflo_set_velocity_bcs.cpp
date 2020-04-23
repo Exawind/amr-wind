@@ -5,7 +5,8 @@ using namespace amrex;
 void
 incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
-    auto& bctype = velocity().bc_type();
+    auto& velocity = icns().fields().field;
+    auto& bctype = velocity.bc_type();
     Geometry const& gm = Geom(lev);
     Box const& domain = gm.growPeriodicDomain(nghost);
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
@@ -24,10 +25,12 @@ incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghos
                 Array4<Real> const& v = vel[mfi].array();
                 int gid = mfi.index();
                 if (blo.ok()) {
-                    prob_set_inflow_velocity(gid, olo, blo, v, lev, time);
+                    const Real bcv = velocity.bc_values()[olo][dir];
+                    prob_set_inflow_velocity(gid, olo, blo, v, lev, time, bcv);
                 }
                 if (bhi.ok()) {
-                    prob_set_inflow_velocity(gid, ohi, bhi, v, lev, time);
+                    const Real bcv = velocity.bc_values()[ohi][dir];
+                    prob_set_inflow_velocity(gid, ohi, bhi, v, lev, time, bcv);
                 }
             }
         }
