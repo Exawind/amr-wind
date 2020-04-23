@@ -6,10 +6,10 @@
 
 namespace amr_wind {
 
-class Physics
+class PhysicsOld
 {
 public:
-    virtual ~Physics() = default;
+    virtual ~PhysicsOld() = default;
 
     virtual std::string physics_name() const = 0;
 

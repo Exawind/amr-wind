@@ -17,7 +17,7 @@ namespace amr_wind {
 
 /** Atmospheric Boundary Layer physics
  */
-class ABL : public Physics
+class ABL : public PhysicsOld
 {
 public:
     ABL(const SimTime& time, incflo* incflo_in);

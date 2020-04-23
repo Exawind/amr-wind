@@ -16,7 +16,7 @@ namespace amr_wind {
 namespace pde {
 class PDEBase;
 }
-class Physics;
+class PhysicsOld;
 class RefinementCriteria;
 }
 
@@ -166,7 +166,7 @@ private:
     // std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
     // amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
 
-    amrex::Vector<std::unique_ptr<amr_wind::Physics>> m_physics;
+    amrex::Vector<std::unique_ptr<amr_wind::PhysicsOld>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
 
     // Be verbose?

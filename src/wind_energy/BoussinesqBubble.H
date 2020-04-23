@@ -14,7 +14,7 @@ namespace amr_wind {
 
 /** Boussinesq Bubble physics
  */
-class BoussinesqBubble : public Physics
+class BoussinesqBubble : public PhysicsOld
 {
 public:
     BoussinesqBubble(incflo* incflo_in);
