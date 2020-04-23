@@ -51,6 +51,8 @@ public:
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
+
+        m_src_op.init_source_terms(m_sim);
     }
 
     //! Perform update actions after a regrid is performed
