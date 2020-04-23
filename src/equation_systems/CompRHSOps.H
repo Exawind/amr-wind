@@ -11,7 +11,10 @@ namespace pde {
 template<typename PDE, typename Scheme>
 struct ComputeRHSOp
 {
-    ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
+    ComputeRHSOp(PDEFields& fields_in)
+    : fields(fields_in)
+    , density(fields_in.repo.get_field("density"))
+    {}
 
     void predictor_rhs(const DiffusionType difftype, const amrex::Real dt)
     {
@@ -42,8 +45,8 @@ struct ComputeRHSOp
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
-        auto& den_new = fields.repo.get_field("density");
-        auto& den_old = den_new.state(FieldState::Old);
+        auto& den_new = density.state(FieldState::New);
+        auto& den_old = density.state(FieldState::Old);
         auto& src_term = fields.src_term;
         auto& diff_term = fields.diff_term.state(fstate);
         auto& conv_term = fields.conv_term.state(fstate);
@@ -118,8 +121,8 @@ struct ComputeRHSOp
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
-        auto& den_new = fields.repo.get_field("density");
-        auto& den_old = den_new.state(FieldState::Old);
+        auto& den_new = density.state(FieldState::New);
+        auto& den_old = density.state(FieldState::Old);
         auto& src_term = fields.src_term;
         auto& diff_term = fields.diff_term;
         auto& conv_term = fields.conv_term;
@@ -178,6 +181,7 @@ struct ComputeRHSOp
 
     // data members
     PDEFields& fields;
+    Field& density;
 };
 
 }

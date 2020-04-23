@@ -221,7 +221,7 @@ void incflo::InitialProjection()
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(m_repo.get_field("density", amr_wind::FieldState::New).vec_const_ptrs(),
+    ApplyProjection(density().vec_const_ptrs(),
                     m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)

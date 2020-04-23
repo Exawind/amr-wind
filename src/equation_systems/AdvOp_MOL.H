@@ -20,7 +20,12 @@ struct AdvectionOp<
     fvm::MOL,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
-    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    AdvectionOp(PDEFields& fields_in)
+    : fields(fields_in)
+    , density(fields_in.repo.get_field("density"))
+    , u_mac(fields_in.repo.get_field("u_mac"))
+    , v_mac(fields_in.repo.get_field("v_mac"))
+    , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
     void operator()(const FieldState fstate, const amrex::Real )
@@ -30,13 +35,9 @@ struct AdvectionOp<
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
 
-        auto& u_mac = repo.get_field("u_mac");
-        auto& v_mac = repo.get_field("v_mac");
-        auto& w_mac = repo.get_field("w_mac");
-
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
-        auto& density = repo.get_field("density", fstate);
+        auto& den = density.state(fstate);
 
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev)
@@ -51,7 +52,7 @@ struct AdvectionOp<
             {
 
                 amrex::Box const& bx = mfi.tilebox();
-                auto rho_arr = density(lev).const_array(mfi);
+                auto rho_arr = den(lev).const_array(mfi);
                 auto tra_arr = dof_field(lev).const_array(mfi);
                 amrex::FArrayBox rhotracfab;
                 amrex::Elixir eli_rt;
@@ -109,6 +110,10 @@ struct AdvectionOp<
     }
 
     PDEFields& fields;
+    Field& density;
+    Field& u_mac;
+    Field& v_mac;
+    Field& w_mac;
 };
 
 } // namespace pde

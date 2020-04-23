@@ -20,7 +20,12 @@ struct AdvectionOp<
     fvm::Godunov,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
-    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    AdvectionOp(PDEFields& fields_in)
+    : fields(fields_in)
+    , density(fields_in.repo.get_field("density"))
+    , u_mac(fields_in.repo.get_field("u_mac"))
+    , v_mac(fields_in.repo.get_field("v_mac"))
+    , w_mac(fields_in.repo.get_field("w_mac"))
     {
         amrex::ParmParse pp("incflo");
         pp.query("godunov_ppm", godunov_ppm);
@@ -34,16 +39,13 @@ struct AdvectionOp<
         static_assert(PDE::ndim == 1, "Invalid number of components for scalar");
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
-        auto& u_mac = repo.get_field("u_mac");
-        auto& v_mac = repo.get_field("v_mac");
-        auto& w_mac = repo.get_field("w_mac");
 
         auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 
         // only needed if multiplying by rho below
-        auto& den = repo.get_field("density", fstate);
+        auto& den = density.state(fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
@@ -94,6 +96,10 @@ struct AdvectionOp<
     }
 
     PDEFields& fields;
+    Field& density;
+    Field& u_mac;
+    Field& v_mac;
+    Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
     bool godunov_ppm{true};

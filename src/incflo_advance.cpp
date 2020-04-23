@@ -145,12 +145,12 @@ void incflo::ApplyPredictor (bool incremental_projection)
         amr_wind::io::print_mlmg_header("Predictor:");
 
     auto& icns_fields = icns().fields();
-    auto& velocity_old = velocity().state(amr_wind::FieldState::Old);
-    auto& velocity_new = velocity().state(amr_wind::FieldState::New);
-    auto& density_old = density().state(amr_wind::FieldState::Old);
-    auto& density_new = density().state(amr_wind::FieldState::New);
-    auto& tracer_old = tracer().state(amr_wind::FieldState::Old);
-    auto& tracer_new = tracer().state(amr_wind::FieldState::New);
+    auto& velocity_new = icns_fields.field;
+    auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
+    auto& density_new = density();
+    auto& density_old = density_new.state(amr_wind::FieldState::Old);
+    auto& tracer_new = tracer();
+    auto& tracer_old = tracer_new.state(amr_wind::FieldState::Old);
 
     auto& velocity_forces = icns_fields.src_term;
     // only the old states are used in predictor
@@ -407,14 +407,15 @@ void incflo::ApplyCorrector()
 
     amr_wind::io::print_mlmg_header("Corrector:");
 
-    auto& velocity_new = velocity().state(amr_wind::FieldState::New);
-    auto& density_old = density().state(amr_wind::FieldState::Old);
-    auto& density_new = density().state(amr_wind::FieldState::New);
+    auto& icns_fields = icns().fields();
+    auto& velocity_new = icns_fields.field;
+    auto& density_new = density();
+    auto& density_old = density_new.state(amr_wind::FieldState::Old);
 
-    auto& velocity_forces = m_repo.get_field("velocity_src_term");
+    auto& velocity_forces = icns_fields.src_term;
 
     // Allocate scratch space for half time density and tracer
-    auto& density_nph = density().state(amr_wind::FieldState::NPH);
+    auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
     auto& tracer_nph = tracer().state(amr_wind::FieldState::NPH);
 
     // **********************************************************************************************

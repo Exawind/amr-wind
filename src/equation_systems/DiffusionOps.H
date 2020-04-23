@@ -67,7 +67,8 @@ protected:
     }
 
     PDEFields& m_pdefields;
-
+    Field& m_density;
+    
     MLMGOptions m_options;
 
     std::unique_ptr<LinOp> m_solver;
