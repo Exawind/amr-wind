@@ -15,10 +15,6 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
     amrex::GpuArray<BC, AMREX_SPACEDIM * 2> bctype,
     amrex::Vector<amrex::Geometry> geom) noexcept;
 
-void apply_MAC_projection(
-    amr_wind::FieldRepo& repo,
-    amr_wind::FieldState fstate);
-
 } // namespace mac
 
 #endif /* mac_projection_h */

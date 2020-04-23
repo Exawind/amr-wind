@@ -1,11 +1,6 @@
 #ifndef INCFLO_ENUMS_H
 #define INCFLO_ENUMS_H
 
-enum struct FluidModel {
-    Newtonian,
-    SmagorinskyLillySGS
-};
-
 enum struct DiffusionType { Invalid, Explicit, Crank_Nicolson, Implicit };
 
 enum struct BC {
