@@ -47,6 +47,7 @@ public:
     void initialize() override
     {
         if (PDE::has_diffusion) {
+            BL_PROFILE("amr-wind::" + this->identifier() + "::initialize")
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
@@ -55,9 +56,10 @@ public:
     //! Perform update actions after a regrid is performed
     void post_regrid_actions() override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " post_regrid_actions")
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion){
+            BL_PROFILE("amr-wind::" + this->identifier() + "::post_regrid_actions")
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+        }
     }
 
     //! Return the object holding the fields necessary for solving this PDE
@@ -65,47 +67,50 @@ public:
 
     void compute_source_term(const FieldState fstate) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_source_term")
+        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_source_term")
         m_src_op(fstate);
     }
 
     void compute_mueff(const FieldState ) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_mueff")
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion){
+            BL_PROFILE("amr-wind::" + this->identifier() + "::compute_mueff")
             (*m_turb_op)();
+        }
     }
 
     void compute_diffusion_term(const FieldState fstate) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_diffusion_term")
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion){
+            BL_PROFILE("amr-wind::" + this->identifier() + "::compute_diffusion_term")
             m_diff_op->compute_diff_term(fstate);
+        }
     }
 
     void compute_advection_term(const FieldState fstate) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_advection_term")
+        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_advection_term")
         m_adv_op(fstate, m_time.deltaT());
     }
 
     virtual void compute_predictor_rhs(const DiffusionType difftype) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_predictor_rhs")
+        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_predictor_rhs")
         m_rhs_op.predictor_rhs(difftype, m_time.deltaT());
     }
 
     virtual void compute_corrector_rhs(const DiffusionType difftype) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " compute_corrector_rhs")
+        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_corrector_rhs")
         m_rhs_op.corrector_rhs(difftype, m_time.deltaT());
     }
 
     void solve(const amrex::Real dt) override
     {
-        BL_PROFILE("<amr-wind> " + this->identifier() + " linsys_solve")
-        if (PDE::has_diffusion)
+        if (PDE::has_diffusion){
+            BL_PROFILE("amr-wind::" + this->identifier() + "::linsys_solve")
             m_diff_op->linsys_solve(dt);
+        }
     }
 
 protected:
