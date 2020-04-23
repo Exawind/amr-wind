@@ -234,8 +234,6 @@ private:
     int m_plt_divu        = 0;
     int m_plt_vfrac       = 1;
 
-    int m_ntrac = 1;
-
     //
     // end of member variables
     //

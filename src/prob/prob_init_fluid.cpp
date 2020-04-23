@@ -27,7 +27,7 @@ void incflo::prob_init_fluid (int lev)
     vel.setVal(m_ic_u, 0, 1);
     vel.setVal(m_ic_v, 1, 1);
     vel.setVal(m_ic_w, 2, 1);
-    if (m_ntrac > 0) trac.setVal(0.0);
+    trac.setVal(0.0);
 
     // FIXME: Ongoing refactor handle ABL/wind physics through physics interface
     if (m_probtype == 35 || m_probtype == 11) return;

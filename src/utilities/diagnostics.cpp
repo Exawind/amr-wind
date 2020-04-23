@@ -33,13 +33,10 @@ void incflo::PrintMaxVel(int lev)
                    << velocity()(lev).norm0(1)  << "  "
                    << velocity()(lev).norm0(2)  << "  "
                    << std::endl;
-    if (m_ntrac > 0)
-    {
-       for (int i = 0; i < m_ntrac; i++)
-           amrex::Print() << "max tracer" << i << " = "
-                          << tracer()(lev).norm0(i) << std::endl;
-       ;
-    }
+
+    amrex::Print() << "max tracer = "
+                   << tracer()(lev).norm0(0) << std::endl;
+       
 }
 
 //
