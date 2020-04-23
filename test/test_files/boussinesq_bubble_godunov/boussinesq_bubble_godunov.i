@@ -32,6 +32,11 @@ abl.thermal_expansion_coeff = 1.0
 abl.reference_temperature = 0.0
 bb.use_boussinesq = 1
 
+incflo.physics = BoussinesqBubble
+ICNS.source_terms = BoussinesqBuoyancy
+BoussinesqBuoyancy.thermal_expansion_coeff = 1.0
+BoussinesqBuoyancy.reference_temperature = 0.0
+
 zlo.type                = "sw"
 zhi.type                = "sw"
 

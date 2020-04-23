@@ -39,6 +39,12 @@ abl.abl_forcing = 1
 abl.reference_temperature = 300.0
 abl.latitude = 41.3
 
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature = 300.0
+CoriolisForcing.latitude = 41.3
+ABLForcing.abl_forcing_height = 90
+
 incflo.advect_tracer = 1
 incflo.ntrac = 1 
 

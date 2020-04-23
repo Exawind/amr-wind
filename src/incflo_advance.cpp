@@ -169,10 +169,14 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (m_use_godunov)
     {
+#if 0
         compute_vel_forces(velocity_forces.vec_ptrs(),
                            velocity_old.vec_const_ptrs(),
                            density_old.vec_const_ptrs(),
                            tracer_old.vec_const_ptrs());
+#else
+        icns().compute_source_term(amr_wind::FieldState::Old);
+#endif
 
         for (auto& seqn: scalar_eqns()) {
             seqn->compute_source_term(amr_wind::FieldState::Old);
@@ -295,11 +299,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
+#if 0
     compute_vel_forces(velocity_forces.vec_ptrs(),
                        velocity_old.vec_const_ptrs(),
                        (density_nph).vec_const_ptrs(),
                        (tracer_nph).vec_const_ptrs());
-    
+#else
+    icns().compute_source_term(amr_wind::FieldState::New);
+#endif
+
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
@@ -505,9 +513,13 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
+#if 0
     compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
                        (density_nph).vec_const_ptrs(),
                        (tracer_nph).vec_const_ptrs());
+#else
+    icns().compute_source_term(amr_wind::FieldState::New);
+#endif
 
     // *************************************************************************************
     // Update velocity
