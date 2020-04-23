@@ -8,6 +8,7 @@ using namespace amrex;
 void incflo::ComputeDivU(Real /* time_in */)
 {
 #if 0 //fixme
+    BL_PROFILE("amr-wind::incflo::ComputeDivU")
 
     incflo_set_velocity_bcs(time_in, vel);
 
@@ -40,7 +41,7 @@ void incflo::ComputeDivU(Real /* time_in */)
 void incflo::ComputeStrainrate(Real /* time_in */)
 {
 #if 0
-    BL_PROFILE("incflo::ComputeStrainrate");
+    BL_PROFILE("amr-wind::incflo::ComputeStrainrate")
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -97,7 +98,7 @@ void incflo::ComputeStrainrate(Real /* time_in */)
 
 Real incflo::ComputeKineticEnergy () const
 {
-    BL_PROFILE("incflo::ComputeKineticEnergy");
+    BL_PROFILE("amr-wind::incflo::ComputeKineticEnergy")
 
     // integrated total Kinetic energy
     Real KE = 0.0;
@@ -148,7 +149,7 @@ Real incflo::ComputeKineticEnergy () const
 
 void incflo::ComputeVorticity (int lev, Real /* t */, MultiFab& vort, MultiFab const& vel)
 {
-    BL_PROFILE("incflo::ComputeVorticity");
+    BL_PROFILE("amr-wind::incflo::ComputeVorticity");
 
     const Real idx = Geom(lev).InvCellSize(0);
     const Real idy = Geom(lev).InvCellSize(1);

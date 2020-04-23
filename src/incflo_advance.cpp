@@ -15,7 +15,7 @@ using namespace amrex;
 
 void incflo::Advance()
 {
-    BL_PROFILE("incflo::Advance");
+    BL_PROFILE("amr-wind::incflo::Advance")
 
     // Start timing current time step
     Real strt_step = ParallelDescriptor::second();
@@ -128,7 +128,7 @@ void incflo::Advance()
 //
 void incflo::ApplyPredictor (bool incremental_projection)
 {
-    BL_PROFILE("incflo::ApplyPredictor");
+    BL_PROFILE("amr-wind::incflo::ApplyPredictor")
 
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
@@ -394,7 +394,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 //
 void incflo::ApplyCorrector()
 {
-    BL_PROFILE("incflo::ApplyCorrector");
+    BL_PROFILE("amr-wind::incflo::ApplyCorrector")
 
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();

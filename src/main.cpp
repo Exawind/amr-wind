@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     { /* These braces are necessary to ensure amrex::Finalize() can be called without explicitly
         deleting all the incflo member MultiFabs */
 
-        BL_PROFILE("main()");
+        BL_PROFILE("amr-wind::main()")
 
         // Issue an error if input file is not given 
         if(argc < 2) amrex::Abort("Input file must be given as command-line argument.");

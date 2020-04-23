@@ -25,6 +25,7 @@ void godunov::make_trans_velocities (int lev, Box const& xbx, Box const& ybx, Bo
                                     bool godunov_use_forces_in_trans)
 
 {
+    BL_PROFILE("amr-wind::godunov::make_trans_velocities")
     Real l_dt = dt;
     bool l_use_forces_in_trans = godunov_use_forces_in_trans;
 
@@ -128,6 +129,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
                               amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
                               bool godunov_use_forces_in_trans)
 {
+    BL_PROFILE("amr-wind::godunov::predict_godunov")
     Real l_dt = dt;
     bool l_use_forces_in_trans = godunov_use_forces_in_trans;
 

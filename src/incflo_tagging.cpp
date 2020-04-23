@@ -7,7 +7,7 @@ using namespace amrex;
 // overrides the pure virtual function in AmrCore
 void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
 {
-    BL_PROFILE("incflo::ErrorEst()");
+    BL_PROFILE("amr-wind::incflo::ErrorEst()")
 
     static bool first = true;
     static Vector<Real> rhoerr_v, gradrhoerr_v;

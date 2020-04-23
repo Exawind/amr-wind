@@ -24,7 +24,7 @@ using namespace amrex;
 //
 void incflo::ComputeDt (bool explicit_diffusion)
 {
-    BL_PROFILE("incflo::ComputeDt");
+    BL_PROFILE("amr-wind::incflo::ComputeDt")
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;

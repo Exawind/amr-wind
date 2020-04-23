@@ -12,6 +12,7 @@ void mol::compute_convective_rate (Box const& bx, int ncomp,
                                       Array4<Real const> const& fz,
                                       GpuArray<Real, AMREX_SPACEDIM> dxi)
 {
+    BL_PROFILE("amr-wind::mol::compute_convective_rate")
     const auto dxinv = dxi;
     amrex::ParallelFor(bx, ncomp,
     [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -34,6 +35,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    BCRec const* h_bcrec, BCRec const* d_bcrec,
                                    Vector<Geometry> geom)
 {
+    BL_PROFILE("amr-wind::mol::compute_convective_fluxes")
     constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();

@@ -116,6 +116,7 @@ void ABL::add_momentum_sources(
  */
 void ABL::pre_advance_work()
 {
+    BL_PROFILE("amr-wind::ABL::pre_advance_work")
     // Spatial averaging on z-planes
     constexpr int direction = 2;
     auto geom = m_incflo->Geom();

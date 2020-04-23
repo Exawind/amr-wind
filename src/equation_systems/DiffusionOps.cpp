@@ -39,6 +39,7 @@ template <typename LinOp>
 void DiffSolverIface<LinOp>::setup_operator(
     LinOp& linop, const amrex::Real alpha, const amrex::Real beta, const FieldState fstate)
 {
+    BL_PROFILE("amr-wind::setup_operator")
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
     auto& density = repo.get_field("density", fstate);
@@ -54,6 +55,7 @@ void DiffSolverIface<LinOp>::setup_operator(
 template<typename LinOp>
 void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 {
+    BL_PROFILE("amr-wind::setup_solver")
     auto& opts = m_options;
 
     if (opts.bottom_solver_type == "smoother") {

@@ -19,6 +19,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
                            Real dt,
                            bool godunov_ppm)
 {
+    BL_PROFILE("amr-wind::godunov::compute_advection")
     Box const& xbx = amrex::surroundingNodes(bx,0);
     Box const& ybx = amrex::surroundingNodes(bx,1);
     Box const& zbx = amrex::surroundingNodes(bx,2);

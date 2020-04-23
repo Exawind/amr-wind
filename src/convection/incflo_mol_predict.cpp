@@ -14,6 +14,8 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                                  BCRec const* d_bcrec,
                                  Vector<Geometry> geom)
 {
+    BL_PROFILE("amr-wind::mol::predict_vels_on_faces")
+
     constexpr Real small_vel = 1.e-10;
 
     const int ncomp = AMREX_SPACEDIM; // This is only used because h_bcrec and d_bcrec hold the

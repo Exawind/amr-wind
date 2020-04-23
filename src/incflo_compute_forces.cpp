@@ -8,6 +8,7 @@ void incflo::compute_vel_forces (Vector<MultiFab*> const& vel_forces,
                                  Vector<MultiFab const*> const& density,
                                  Vector<MultiFab const*> const& tracer)
 {
+    BL_PROFILE("amr-wind::incflo::compute_vel_forces")
     // FIXME: Clean up problem type specific logic
     if (m_probtype != 5) {
         for (int lev=0; lev <= finest_level; ++lev) {

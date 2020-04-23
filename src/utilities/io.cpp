@@ -69,7 +69,7 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 
 void incflo::WriteCheckPointFile() const
 {
-    BL_PROFILE("incflo::WriteCheckPointFile()");
+    BL_PROFILE("amr-wind::incflo::WriteCheckPointFile()")
 
     const std::string& checkpointname = amrex::Concatenate(m_check_file, m_time.time_index());
 
@@ -104,7 +104,7 @@ void incflo::WriteCheckPointFile() const
 
 void incflo::ReadCheckpointFile()
 {
-    BL_PROFILE("incflo::ReadCheckpointFile()");
+    BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()")
 
     amrex::Print() << "Restarting from checkpoint " << m_restart_file << std::endl;
 
@@ -319,7 +319,7 @@ void incflo::WriteJobInfo(const std::string& path) const
 
 void incflo::WritePlotFile() 
 {
-    BL_PROFILE("incflo::WritePlotFile()");
+    BL_PROFILE("amr-wind::incflo::WritePlotFile()")
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
         IntVect ng(1);

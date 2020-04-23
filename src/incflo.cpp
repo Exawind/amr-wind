@@ -32,7 +32,7 @@ incflo::~incflo ()
 
 void incflo::InitData ()
 {
-    BL_PROFILE("incflo::InitData()");
+    BL_PROFILE("amr-wind::incflo::InitData()")
 
     int restart_flag = 0;
     if(m_restart_file.empty())
@@ -92,7 +92,7 @@ void incflo::InitData ()
 
 void incflo::Evolve()
 {
-    BL_PROFILE("incflo::Evolve()");
+    BL_PROFILE("amr-wind::incflo::Evolve()")
 
     if (m_KE_int > 0 && m_restart_file.empty()) {
         amrex::Print() << "\nTime, Kinetic Energy: " << m_time.current_time()
@@ -168,7 +168,7 @@ void incflo::Evolve()
 void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_grids,
                                       const DistributionMapping& new_dmap)
 {
-    BL_PROFILE("incflo::MakeNewLevelFromScratch()");
+    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()")
 
     if (m_verbose > 0)
     {
@@ -196,7 +196,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 // TODO: Move somewhere else, for example setup/incflo_arrays.cpp
 void incflo::AverageDown()
 {
-    BL_PROFILE("incflo::AverageDown()");
+    BL_PROFILE("amr-wind::incflo::AverageDown()")
 
     for (int lev = finest_level - 1; lev >= 0; --lev)
     {
