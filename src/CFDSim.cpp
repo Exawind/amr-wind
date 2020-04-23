@@ -28,4 +28,14 @@ void CFDSim::create_turbulence_model()
     m_turbulence = turbulence::TurbulenceModel::create(identifier, *this);
 }
 
+void CFDSim::init_physics()
+{
+    amrex::ParmParse pp("incflo");
+    amrex::Vector<std::string> phys_names;
+    pp.queryarr("physics", phys_names);
+
+    for (auto& phy: phys_names)
+        m_physics_mgr.create(phy, *this);
+}
+
 } // namespace amr_wind

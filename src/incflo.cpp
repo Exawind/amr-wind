@@ -189,6 +189,9 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
         for (auto& pp: m_physics) {
             pp->initialize_fields(lev, Geom(lev));
         }
+        for (auto& pp: m_sim.physics()) {
+            pp->initialize_fields(lev, Geom(lev));
+        }
     }
 }
 

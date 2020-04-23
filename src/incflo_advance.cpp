@@ -34,6 +34,8 @@ void incflo::Advance()
 
     for (auto& pp: m_physics)
         pp->pre_advance_work();
+    for (auto& pp: m_sim.physics())
+        pp->pre_advance_work();
     
     ApplyPredictor();
 

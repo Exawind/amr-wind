@@ -38,6 +38,7 @@ public:
 
     //! Return a vector of the registered objects
     TypeVector& objects() { return m_obj_vec; }
+    const TypeVector& objects() const { return m_obj_vec; }
 
     //! Query if an object exists using the lookup key
     bool contains(const std::string& key) const

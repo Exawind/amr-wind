@@ -25,6 +25,7 @@ void incflo::declare_fields()
     pde_mgr.register_transport_pde("Temperature");
 
     m_sim.create_turbulence_model();
+    m_sim.init_physics();
 }
 
 void incflo::init_field_bcs ()
