@@ -50,13 +50,14 @@ struct FieldRegOp<ICNS, Scheme>
 template<>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
-    SrcTermOp(PDEFields& fields_in) : SrcTermOpBase<ICNS>(fields_in) {}
+    SrcTermOp(PDEFields& fields_in)
+    : SrcTermOpBase<ICNS>(fields_in)
+    , grad_p(fields_in.repo.get_field("gp")) {}
 
     void operator()(const FieldState fstate)
     {
         const auto rhostate = field_impl::phi_state(fstate);
-        auto& density = fields.repo.get_field("density", rhostate);
-        auto& grad_p = fields.repo.get_field("gp");
+        auto& density = m_density.state(rhostate);
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev=0; lev < nlevels; ++lev) {
@@ -85,12 +86,19 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
             }
         }
     }
+
+    Field& grad_p;
+
 };
 
 template<>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    AdvectionOp(PDEFields& fields_in)
+    : fields(fields_in)
+    , u_mac(fields_in.repo.get_field("u_mac"))
+    , v_mac(fields_in.repo.get_field("v_mac"))
+    , w_mac(fields_in.repo.get_field("w_mac"))
     {
 
         { // Prefix incflo
@@ -107,9 +115,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     {
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
-        auto& u_mac = repo.get_field("u_mac");
-        auto& v_mac = repo.get_field("v_mac");
-        auto& w_mac = repo.get_field("w_mac");
 
         auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
@@ -239,6 +244,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     }
 
     PDEFields& fields;
+    Field& u_mac;
+    Field& v_mac;
+    Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
     bool godunov_ppm{true};
@@ -248,7 +256,11 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 template<>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
-    AdvectionOp(PDEFields& fields_in) : fields(fields_in)
+    AdvectionOp(PDEFields& fields_in)
+    : fields(fields_in)
+    , u_mac(fields_in.repo.get_field("u_mac"))
+    , v_mac(fields_in.repo.get_field("v_mac"))
+    , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
     void operator()(const FieldState fstate, const amrex::Real )
@@ -256,10 +268,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
-        auto& u_mac = repo.get_field("u_mac");
-        auto& v_mac = repo.get_field("v_mac");
-        auto& w_mac = repo.get_field("w_mac");
-
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
 
@@ -347,6 +355,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
     }
 
     PDEFields& fields;
+    Field& u_mac;
+    Field& v_mac;
+    Field& w_mac;
 };
 
 template<>

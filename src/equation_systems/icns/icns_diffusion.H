@@ -50,7 +50,7 @@ struct DiffusionOp<ICNS, Scheme>
 
         const auto& repo = this->m_pdefields.repo;
         const int nlevels = repo.num_active_levels();
-        const auto& density = repo.get_field("density", fstate);
+        const auto& density = m_density.state(fstate);
 
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())

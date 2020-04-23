@@ -24,13 +24,15 @@ struct FieldRegOp
 template<typename PDE>
 struct SrcTermOpBase
 {
-    SrcTermOpBase(PDEFields& fields_in) : fields(fields_in) {}
+    SrcTermOpBase(PDEFields& fields_in)
+    : fields(fields_in)
+    , m_density(fields_in.repo.get_field("density")) {}
 
     void multiply_rho(const FieldState fstate)
     {
         BL_PROFILE("amr-wind::" + PDE::pde_name() + "::multiply_rho")
         const auto rhostate = field_impl::phi_state(fstate);
-        auto& density = fields.repo.get_field("density", rhostate);
+        auto& density = m_density.state(rhostate);
 
         const int nlevels = fields.repo.num_active_levels();
         for (int lev=0; lev < nlevels; ++lev) {
@@ -54,6 +56,7 @@ struct SrcTermOpBase
     }
 
     PDEFields& fields;
+    Field& m_density;
     amrex::Vector<std::unique_ptr<typename PDE::SrcTerm>> sources;
 };
 

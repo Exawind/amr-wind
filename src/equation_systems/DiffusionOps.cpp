@@ -10,7 +10,9 @@ namespace pde {
 template <typename LinOp>
 DiffSolverIface<LinOp>::DiffSolverIface(
     PDEFields& fields, const std::string& prefix)
-    : m_pdefields(fields), m_options(prefix)
+    : m_pdefields(fields)
+    , m_density(fields.repo.get_field("density"))
+    , m_options(prefix)
 {
     amrex::LPInfo isolve;
     amrex::LPInfo iapply;
@@ -42,7 +44,7 @@ void DiffSolverIface<LinOp>::setup_operator(
     BL_PROFILE("amr-wind::setup_operator")
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
-    auto& density = repo.get_field("density", fstate);
+    auto& density = m_density.state(fstate);
 
     linop.setScalars(alpha, beta);
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -75,11 +77,12 @@ void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 template<typename LinOp>
 void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 {
-    this->setup_operator(*this->m_solver, 1.0, dt, FieldState::New);
+    FieldState fstate = FieldState::New;
+    this->setup_operator(*this->m_solver, 1.0, dt, fstate);
 
     auto& repo = this->m_pdefields.repo;
     auto& field = this->m_pdefields.field;
-    auto& density = repo.get_field("density");
+    auto& density = m_density.state(fstate);
     const int nlevels = repo.num_active_levels();
     const int ndim = field.num_comp();
     auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
