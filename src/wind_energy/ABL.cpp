@@ -78,6 +78,7 @@ void ABLOld::add_momentum_sources(
     const amrex::MultiFab& scalars,
     amrex::MultiFab& vel_forces) const
 {
+#if 0
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -85,7 +86,6 @@ void ABLOld::add_momentum_sources(
          ++mfi) {
         const auto& bx = mfi.tilebox();
         const auto& vf = vel_forces.array(mfi);
-
         // Boussinesq buoyancy term
         if (m_has_boussinesq) {
             const auto& scal = scalars.const_array(mfi);
@@ -101,6 +101,7 @@ void ABLOld::add_momentum_sources(
         // Driving pressure gradient term
         if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
     }
+#endif
 }
 
 
@@ -144,6 +145,7 @@ void ABLOld::pre_advance_work()
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
+#if 0
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
@@ -152,6 +154,79 @@ void ABLOld::pre_advance_work()
 
         if ((output_interval > 0) && (m_time.time_index() % output_interval == 0)) {
             m_pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
+        }
+    }
+#endif
+}
+
+ABL::ABL(const CFDSim& sim)
+    : m_sim(sim)
+    , m_velocity(sim.repo().get_field("velocity"))
+    , m_density(sim.repo().get_field("density"))
+    , m_temperature(sim.repo().get_field("temperature"))
+    , m_pa(2)
+{
+    // Instantiate the ABL field initializer
+    m_field_init.reset(new ABLFieldInit());
+}
+
+ABL::~ABL() = default;
+
+/** Initialize the velocity and temperature fields at the beginning of the
+ *  simulation.
+ *
+ *  \sa amr_wind::ABLFieldInit
+ */
+void ABL::initialize_fields(
+    int level,
+    const amrex::Geometry& geom)
+{
+    auto& velocity = m_velocity(level);
+    auto& density = m_density(level);
+    auto& temp = m_temperature(level);
+
+    for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+        const auto& vbx = mfi.validbox();
+
+        (*m_field_init)(
+            vbx, geom, velocity.array(mfi), density.array(mfi),
+            temp.array(mfi));
+    }
+}
+
+/** Perform tasks at the beginning of a new timestep
+ *
+ *  For ABL simulations this method invokes the PlaneAveraging class to
+ *  compute spatial averages at all z-levels on the coarsest mesh (level 0).
+ *
+ *  The spatially averaged velocity is used to determine the current mean
+ *  velocity at the forcing height (if driving pressure gradient term is active)
+ *  and also determines the average friction velocity for use in the ABL wall
+ *  function computation.
+ */
+void ABL::pre_advance_work()
+{
+    const auto& time = m_sim.time();
+    const auto& geom = m_sim.mesh().Geom();
+    m_pa(geom, m_velocity.vec_ptrs(), m_temperature.vec_ptrs());
+
+    if (m_abl_forcing != nullptr) {
+        const amrex::Real zh = m_abl_forcing->forcing_height();
+        const amrex::Real vx = m_pa.line_velocity_xdir(zh);
+        const amrex::Real vy = m_pa.line_velocity_ydir(zh);
+        // Set the mean velocities at the forcing height so that the source
+        // terms can be computed during the time integration calls
+        m_abl_forcing->set_mean_velocities(vx, vy);
+    }
+
+    {
+        // TODO: This should be handled by PlaneAveraging
+        int output_interval = 1;
+        amrex::ParmParse pp("amr");
+        pp.query("line_plot_int", output_interval);
+
+        if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
+            m_pa.plot_line_text("line_plot.txt", time.time_index(), time.current_time());
         }
     }
 }

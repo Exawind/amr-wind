@@ -220,7 +220,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
 
 }
 
-Real PlaneAveraging::eval_line_average(Real x, int comp)
+Real PlaneAveraging::eval_line_average(Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
     Real c = 0.0;
@@ -250,7 +250,7 @@ PlaneAveraging::PlaneAveraging(int axis_in)
     AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
 }
 
-void PlaneAveraging::operator()(amrex::Vector<amrex::Geometry>& geom,
+void PlaneAveraging::operator()(const amrex::Vector<amrex::Geometry>& geom,
                 amrex::Vector<amrex::MultiFab*> const& velocity,
                 amrex::Vector<amrex::MultiFab*> const& tracer)
 {

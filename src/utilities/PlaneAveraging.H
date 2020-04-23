@@ -19,24 +19,24 @@ public:
 
     ~PlaneAveraging(){};
 
-    void operator()(amrex::Vector<amrex::Geometry>& Geom,
+    void operator()(const amrex::Vector<amrex::Geometry>& Geom,
                amrex::Vector<amrex::MultiFab*> const& velocity,
                amrex::Vector<amrex::MultiFab*> const& tracer);
 
     /** evaluate line average at specific location for velocity xdir*/
-    amrex::Real line_velocity_xdir(amrex::Real x)
+    amrex::Real line_velocity_xdir(amrex::Real x) const
     {
         return eval_line_average(x, u_avg);
     };
 
     /** evaluate line average at specific location for velocity ydir*/
-    amrex::Real line_velocity_ydir(amrex::Real x)
+    amrex::Real line_velocity_ydir(amrex::Real x) const
     {
         return eval_line_average(x, v_avg);
     };
 
     /** evaluate line average at specific location for velocity zdir*/
-    amrex::Real line_velocity_zdir(amrex::Real x)
+    amrex::Real line_velocity_zdir(amrex::Real x) const
     {
         return eval_line_average(x, w_avg);
     };
@@ -102,7 +102,7 @@ private:
 
     const int axis;
 
-    amrex::Real eval_line_average(amrex::Real x, int comp); /** evaluate line average at specific location for any average component */
+    amrex::Real eval_line_average(amrex::Real x, int comp) const; /** evaluate line average at specific location for any average component */
 
 
 public: // public for GPU 

@@ -44,6 +44,9 @@ public:
     pde::PDEMgr& pde_manager() { return m_pde_mgr; }
     const pde::PDEMgr& pde_manager() const { return m_pde_mgr; }
 
+    PhysicsMgr& physics_manager() { return m_physics_mgr; }
+    const PhysicsMgr& physics_manager() const { return m_physics_mgr; }
+
     PhysicsMgr::TypeVector& physics() { return m_physics_mgr.objects(); }
     const PhysicsMgr::TypeVector& physics() const { return m_physics_mgr.objects(); }
 
