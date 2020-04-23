@@ -12,7 +12,7 @@ namespace amr_wind {
  *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
  *  - `gravity` acceleration due to gravity (m/s)
  */
-BoussinesqBuoyancy::BoussinesqBuoyancy()
+BoussinesqBuoyancyOld::BoussinesqBuoyancyOld()
 {
     // fixme: do we want to use abl namespace if it can be used by other physics?
     amrex::ParmParse pp("abl");
@@ -38,7 +38,7 @@ BoussinesqBuoyancy::BoussinesqBuoyancy()
  *  @param scalars Transported scalars (first one is assumed to be temperature)
  *  @param vel_forces Forcing source term where Boussinesq term is added
  */
-void BoussinesqBuoyancy::operator()(
+void BoussinesqBuoyancyOld::operator()(
     const amrex::Box& bx,
     const amrex::Array4<const amrex::Real>& scalars,
     const amrex::Array4<amrex::Real>& vel_forces) const

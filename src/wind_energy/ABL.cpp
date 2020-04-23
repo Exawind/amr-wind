@@ -8,7 +8,7 @@
 
 namespace amr_wind {
 
-ABL::ABL(const SimTime& time, incflo* incflo_in)
+ABLOld::ABLOld(const SimTime& time, incflo* incflo_in)
     : m_time(time), m_incflo(incflo_in), m_pa(2)
 {
     amrex::ParmParse pp("abl");
@@ -22,13 +22,13 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
     m_abl_wall_func.reset(new ABLWallFunction());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy());
+        m_boussinesq.reset(new BoussinesqBuoyancyOld());
 
     if (m_has_driving_dpdx)
-        m_abl_forcing.reset(new ABLForcing(m_time));
+        m_abl_forcing.reset(new ABLForcingOld(m_time));
 
     if (m_has_coriolis)
-        m_coriolis.reset(new CoriolisForcing());
+        m_coriolis.reset(new CoriolisForcingOld());
 
     {
         // fixme keeping this around to maintain perfect
@@ -54,7 +54,7 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
  *
  *  \sa amr_wind::ABLFieldInit
  */
-void ABL::initialize_fields(
+void ABLOld::initialize_fields(
     int level,
     const amrex::Geometry& geom) const
 {
@@ -71,7 +71,7 @@ void ABL::initialize_fields(
     }
 }
 
-void ABL::add_momentum_sources(
+void ABLOld::add_momentum_sources(
     const amrex::Geometry& /* geom */,
     const amrex::MultiFab& /* density */,
     const amrex::MultiFab& velocity,
@@ -114,7 +114,7 @@ void ABL::add_momentum_sources(
  *  and also determines the average friction velocity for use in the ABL wall
  *  function computation.
  */
-void ABL::pre_advance_work()
+void ABLOld::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ABL::pre_advance_work")
     // Spatial averaging on z-planes

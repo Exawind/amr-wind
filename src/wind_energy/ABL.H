@@ -18,12 +18,12 @@ namespace amr_wind {
 
 /** Atmospheric Boundary Layer physics
  */
-class ABL : public PhysicsOld
+class ABLOld : public PhysicsOld
 {
 public:
-    ABL(const SimTime& time, incflo* incflo_in);
+    ABLOld(const SimTime& time, incflo* incflo_in);
 
-    ~ABL() = default;
+    ~ABLOld() = default;
 
     //! Unique name indentifying this physics set for debugging
     std::string physics_name() const override { return "ABL"; }
@@ -60,13 +60,13 @@ private:
     std::unique_ptr<ABLWallFunction> m_abl_wall_func;
 
     //! ABL forcing function instance
-    std::unique_ptr<ABLForcing> m_abl_forcing;
+    std::unique_ptr<ABLForcingOld> m_abl_forcing;
 
     //! Boussinesq buoyancy forcing term
-    std::unique_ptr<BoussinesqBuoyancy> m_boussinesq;
+    std::unique_ptr<BoussinesqBuoyancyOld> m_boussinesq;
 
     //! Coriolis forcing instance
-    std::unique_ptr<CoriolisForcing> m_coriolis;
+    std::unique_ptr<CoriolisForcingOld> m_coriolis;
 
     //! True if Boussinesq buoyancy term is active
     bool m_has_boussinesq{true};

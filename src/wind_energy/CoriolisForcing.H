@@ -8,10 +8,10 @@
 
 namespace amr_wind {
 
-class CoriolisForcing
+class CoriolisForcingOld
 {
 public:
-    CoriolisForcing();
+    CoriolisForcingOld();
 
     void operator()(
         const amrex::Box& bx,

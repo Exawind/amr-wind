@@ -14,12 +14,12 @@ namespace amr_wind {
 
 /** Boussinesq Bubble physics
  */
-class BoussinesqBubble : public PhysicsOld
+class BoussinesqBubbleOld : public PhysicsOld
 {
 public:
-    BoussinesqBubble(incflo* incflo_in);
+    BoussinesqBubbleOld(incflo* incflo_in);
 
-    ~BoussinesqBubble() = default;
+    ~BoussinesqBubbleOld() = default;
 
     //! Unique name indentifying this physics set for debugging
     std::string physics_name() const override { return "BoussinesqBubble"; }
@@ -50,7 +50,7 @@ private:
     std::unique_ptr<BoussinesqBubbleFieldInit> m_field_init;
 
     //! Boussinesq buoyancy forcing term
-    std::unique_ptr<BoussinesqBuoyancy> m_boussinesq;
+    std::unique_ptr<BoussinesqBuoyancyOld> m_boussinesq;
 
     //! True if Boussinesq buoyancy term is active
     bool m_has_boussinesq{true};

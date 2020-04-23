@@ -22,7 +22,7 @@ TEST_F(ABLTest, abl_forcing)
     amr_wind::SimTime time;
     time.parse_parameters();
 
-    amr_wind::ABLForcing abl_forcing(time);
+    amr_wind::ABLForcingOld abl_forcing(time);
 
     // During initialization ensure that the source terms are zero
     vel_src.setVal<amrex::RunOn::Device>(0.0);
@@ -77,7 +77,7 @@ TEST_F(ABLTest, coriolis_const_vel)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
 
-    amr_wind::CoriolisForcing coriolis;
+    amr_wind::CoriolisForcingOld coriolis;
 
 
     // Velocity in x-direction test
@@ -153,7 +153,7 @@ TEST_F(ABLTest, coriolis_height_variation)
     amrex::FArrayBox velocity(bx, AMREX_SPACEDIM);
     amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
 
-    amr_wind::CoriolisForcing coriolis;
+    amr_wind::CoriolisForcingOld coriolis;
 
     velocity.setVal<amrex::RunOn::Device>(0.0);
     vel_src.setVal<amrex::RunOn::Device>(0.0);
@@ -213,7 +213,7 @@ TEST_F(ABLTest, boussinesq)
     amrex::FArrayBox temperature(bx, 1);
     amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
 
-    amr_wind::BoussinesqBuoyancy bb;
+    amr_wind::BoussinesqBuoyancyOld bb;
     
     temperature.setVal<amrex::RunOn::Device>(0.0);
     vel_src.setVal<amrex::RunOn::Device>(0.0);

@@ -9,10 +9,10 @@
 
 namespace amr_wind {
 
-class BoussinesqBuoyancy
+class BoussinesqBuoyancyOld
 {
 public:
-    BoussinesqBuoyancy();
+    BoussinesqBuoyancyOld();
 
     void operator()(
         const amrex::Box& bx,

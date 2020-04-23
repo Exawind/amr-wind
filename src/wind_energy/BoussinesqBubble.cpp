@@ -7,7 +7,7 @@
 
 namespace amr_wind {
 
-BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
+BoussinesqBubbleOld::BoussinesqBubbleOld(incflo* incflo_in)
     : m_incflo(incflo_in)
 {
     amrex::ParmParse pp("bb");
@@ -18,7 +18,7 @@ BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
     m_field_init.reset(new BoussinesqBubbleFieldInit());
 
     if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy());
+        m_boussinesq.reset(new BoussinesqBuoyancyOld());
 
 }
 
@@ -27,7 +27,7 @@ BoussinesqBubble::BoussinesqBubble(incflo* incflo_in)
  *
  *  \sa amr_wind::BoussinesqBubbleFieldInit
  */
-void BoussinesqBubble::initialize_fields(
+void BoussinesqBubbleOld::initialize_fields(
     int level,
     const amrex::Geometry& geom) const
 {
@@ -44,7 +44,7 @@ void BoussinesqBubble::initialize_fields(
     }
 }
 
-void BoussinesqBubble::add_momentum_sources(
+void BoussinesqBubbleOld::add_momentum_sources(
     const amrex::Geometry& /* geom */,
     const amrex::MultiFab& /* density */,
     const amrex::MultiFab& /* velocity */,

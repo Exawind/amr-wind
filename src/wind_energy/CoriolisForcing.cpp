@@ -22,7 +22,7 @@ namespace amr_wind {
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
  */
-CoriolisForcing::CoriolisForcing()
+CoriolisForcingOld::CoriolisForcingOld()
 {
     static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
     amrex::ParmParse pp("abl");
@@ -46,7 +46,7 @@ CoriolisForcing::CoriolisForcing()
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
 }
 
-void CoriolisForcing::operator()(
+void CoriolisForcingOld::operator()(
     const amrex::Box& bx,
     const amrex::Array4<const amrex::Real>& vel,
     const amrex::Array4<amrex::Real>& vel_forces) const

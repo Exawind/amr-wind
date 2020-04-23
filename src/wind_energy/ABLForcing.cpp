@@ -5,7 +5,7 @@
 
 namespace amr_wind {
 
-ABLForcing::ABLForcing(const SimTime& time)
+ABLForcingOld::ABLForcingOld(const SimTime& time)
     : m_time(time)
 {
     amrex::ParmParse pp("abl");
@@ -24,7 +24,7 @@ ABLForcing::ABLForcing(const SimTime& time)
     }
 }
 
-void ABLForcing::operator()(
+void ABLForcingOld::operator()(
     const amrex::Box& bx,
     const amrex::Array4<amrex::Real>& vel_forces) const
 {

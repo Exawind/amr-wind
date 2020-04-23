@@ -12,10 +12,10 @@
 
 namespace amr_wind {
 
-class ABLForcing
+class ABLForcingOld
 {
 public:
-    ABLForcing(const SimTime& time);
+    ABLForcingOld(const SimTime& time);
 
     void operator()(
         const amrex::Box& vbx,
