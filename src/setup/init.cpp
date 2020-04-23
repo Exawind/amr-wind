@@ -79,10 +79,6 @@ void incflo::ReadParameters ()
     if (m_probtype == 35) {
         m_physics.emplace_back(new amr_wind::ABLOld(m_time, this));
     }
-    
-    // if (m_probtype == 11) {
-    //     m_physics.emplace_back(new amr_wind::BoussinesqBubbleOld(this));
-    // }
 
     {
         // tagging options
