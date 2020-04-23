@@ -42,17 +42,19 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
         density().fillpatch(lev,time,density()(lev),1);
     }
 
+    const auto& den = density()(lev);
+
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(density()(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
+    for (MFIter mfi(den,TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
         Box const& bx = mfi.tilebox();
         auto const& tag = tags.array(mfi);
 
         if (tag_rho or tag_gradrho) 
         {
-            Array4<Real const> const& rho = density()(lev).const_array(mfi);
+            Array4<Real const> const& rho = den.const_array(mfi);
             Real rhoerr = tag_rho ? rhoerr_v[lev]: std::numeric_limits<Real>::max();
             Real gradrhoerr = tag_gradrho ? gradrhoerr_v[lev] : std::numeric_limits<Real>::max();
             amrex::ParallelFor(bx,

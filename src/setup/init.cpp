@@ -34,7 +34,6 @@ void incflo::ReadParameters ()
         pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
 
         pp.query("constant_density"         , m_constant_density);
-        pp.query("advect_tracer"            , m_advect_tracer);
         pp.query("test_tracer_conservation" , m_test_tracer_conservation);
 
         // Godunov-related flags
