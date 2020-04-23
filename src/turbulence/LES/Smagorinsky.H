@@ -3,6 +3,7 @@
 
 #include <string>
 #include "TurbModelBase.H"
+#include "FieldRepo.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -27,6 +28,9 @@ public:
 private:
     //! Smagorinsky coefficient (default value set for ABL simulations)
     amrex::Real m_Cs{0.135};
+
+    const Field& m_vel;
+    const Field& m_rho;
 };
 
 } // namespace turbulence
