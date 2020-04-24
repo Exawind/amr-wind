@@ -12,6 +12,7 @@ target_sources(${amr_wind_lib_name}
   DensityBuoyancy.cpp
   RayleighTaylor.cpp
   RayleighTaylorFieldInit.cpp
+  TaylorGreenVortex.cpp
   )
 
 target_include_directories(
