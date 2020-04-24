@@ -20,12 +20,22 @@ struct VectorTransport
 
 struct ScalarTransport
 {
+    //! AMReX linear operator used to solve the diffusion equation
     using MLDiffOp = amrex::MLABecLaplacian;
+    //! Base class of the source term used to create specific instances
     using SrcTerm = SourceTerm;
 
+    //! Number of components for the PDE
     static constexpr int ndim = 1;
+
+    //! Do the PDE terms have to be multiplied by density
     static constexpr bool multiply_rho = true;
+
+    //! Does this PDE have a diffusion term
     static constexpr bool has_diffusion = true;
+
+    //! Default value to initialize the BC array
+    static constexpr amrex::Real default_bc_value = 0.0;
 };
 
 } // namespace pde

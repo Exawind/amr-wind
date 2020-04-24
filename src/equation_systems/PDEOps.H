@@ -133,6 +133,9 @@ struct TurbulenceOp
     PDEFields& m_fields;
 };
 
+template<typename PDE, typename = void>
+struct BCOp;
+
 }
 }
 
