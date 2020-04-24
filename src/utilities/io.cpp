@@ -90,7 +90,7 @@ void incflo::WriteCheckPointFile() const
         VisMF::Write(density()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "density"));
 
-        VisMF::Write(tracer()(lev),
+        VisMF::Write(temperature()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
 
         VisMF::Write(grad_p()(lev),
@@ -214,7 +214,7 @@ void incflo::ReadCheckpointFile()
         VisMF::Read(density()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "density"));
 
-        VisMF::Read(tracer()(lev),
+        VisMF::Read(temperature()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
 
 
@@ -279,7 +279,7 @@ void incflo::WritePlotFile()
         IntVect ng(1);
         velocity().fillpatch(m_time.new_time(), ng);
         density().fillpatch(m_time.new_time(), ng);
-        tracer().fillpatch(m_time.new_time(), ng);
+        temperature().fillpatch(m_time.new_time(), ng);
     }
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
@@ -383,7 +383,7 @@ void incflo::WritePlotFile()
     }
     if (m_plt_tracer) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], tracer()(lev), 0, icomp, 1, 0);
+            MultiFab::Copy(mf[lev], temperature()(lev), 0, icomp, 1, 0);
         }
         pltscaVarsName.push_back("tracer0");
         ++icomp;
@@ -418,14 +418,14 @@ void incflo::WritePlotFile()
                     pp->add_momentum_sources(Geom(lev),
                                              density()(lev),
                                              velocity()(lev),
-                                             tracer()(lev),
+                                             temperature()(lev),
                                              forcing);
                 }
 
             } else {
                 compute_vel_forces_on_level(lev, forcing,
                                             density()(lev),
-                                            tracer()(lev));
+                                            temperature()(lev));
             }
         }
         pltscaVarsName.push_back("forcing_x");

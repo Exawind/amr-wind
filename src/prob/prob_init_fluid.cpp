@@ -16,7 +16,7 @@ void incflo::prob_init_fluid (int lev)
 
     auto& vel = velocity()(lev);
     auto& rho = density()(lev);
-    auto& trac = tracer()(lev);
+    auto& trac = temperature()(lev);
     auto& pres = pressure()(lev);
 
     pressure()(lev).setVal(0.0);
