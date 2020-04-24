@@ -19,7 +19,7 @@ TEST_F(PDETest, test_pde_create_godunov)
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 19);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 21);
 }
 
 TEST_F(PDETest, test_pde_create_mol)
@@ -35,7 +35,7 @@ TEST_F(PDETest, test_pde_create_mol)
 
     EXPECT_EQ(pde_mgr.scalar_eqns().size(), 1);
 
-    EXPECT_EQ(mesh().field_repo().num_fields(), 23);
+    EXPECT_EQ(mesh().field_repo().num_fields(), 25);
 }
 
 }
