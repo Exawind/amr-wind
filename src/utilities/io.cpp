@@ -410,23 +410,7 @@ void incflo::WritePlotFile()
     }
     if (m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
-            if (m_probtype == 35 || m_probtype == 11) {
-                compute_vel_pressure_terms(lev, forcing, density()(lev));
-
-                for (auto& pp: m_physics) {
-                    pp->add_momentum_sources(Geom(lev),
-                                             density()(lev),
-                                             velocity()(lev),
-                                             temperature()(lev),
-                                             forcing);
-                }
-
-            } else {
-                compute_vel_forces_on_level(lev, forcing,
-                                            density()(lev),
-                                            temperature()(lev));
-            }
+            MultiFab::Copy(mf[lev], icns().fields().src_term(lev), 0, icomp, AMREX_SPACEDIM, 0);
         }
         pltscaVarsName.push_back("forcing_x");
         pltscaVarsName.push_back("forcing_y");

@@ -5,7 +5,6 @@ target_sources(${amr_wind_lib_name}
   incflo_compute_dt.cpp
   incflo_tagging.cpp
   incflo_regrid.cpp
-  incflo_compute_forces.cpp
   incflo_field_repo.cpp
 
   CFDSim.cpp
