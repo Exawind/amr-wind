@@ -281,7 +281,7 @@ private:
     void WritePlotFile ();
     void ReadCheckpointFile ();
 
-    void PrintMaxValues (amrex::Real time);
+    void PrintMaxValues (const std::string& header);
     void PrintMaxVel (int lev);
     void PrintMaxGp (int lev);
     void CheckForNans (int lev);

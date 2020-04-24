@@ -5,20 +5,41 @@ using namespace amrex;
 //
 // Print maximum values (useful for tracking evolution)
 //
-void incflo::PrintMaxValues(Real /* time_in */)
+void incflo::PrintMaxValues(const std::string& header)
 {
-    
-    BL_PROFILE("amr-wind::incflo::PrintMaxValues")
+    BL_PROFILE("amr-wind::incflo::PrintMaxValues");
 
-//    ComputeDivU(time_in);
+    amrex::Print()
+        << "\nL-inf norm summary: " << header << std::endl
+        << "..............................................................................";
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
-        amrex::Print() << "Level " << lev << std::endl;
-        PrintMaxVel(lev);
-        PrintMaxGp(lev);
+        amrex::Print() << "\nLevel " << lev << std::endl;
+
+        auto& vel = icns().fields().field;
+        amrex::Print() << "  " << std::setw(16) << std::left << vel.name();
+        for (int i=0; i < vel.num_comp(); ++i)
+            amrex::Print() << std::setw(20) << std::right << vel(lev).norm0(i);
+        amrex::Print() << std::endl;
+
+        auto& gradp = grad_p();
+        amrex::Print() << "  " << std::setw(16) << std::left << gradp.name();
+        for (int i=0; i < gradp.num_comp(); ++i)
+            amrex::Print() << std::setw(20) << std::right << gradp(lev).norm0(i);
+        amrex::Print() << std::endl;
+
+        for (auto& eqn: scalar_eqns()) {
+            auto& field = eqn->fields().field;
+            amrex::Print() << "  " << std::setw(16) << std::left << field.name();
+            for (int i=0; i < field.num_comp(); ++i)
+                amrex::Print() << std::setw(20) << std::right << field(lev).norm0(i);
+            amrex::Print() << std::endl;
+        }
     }
-    amrex::Print() << std::endl;
+    amrex::Print()
+        << ".............................................................................."
+        << std::endl << std::endl;
 
 }
 
@@ -33,10 +54,6 @@ void incflo::PrintMaxVel(int lev)
                    << velocity()(lev).norm0(1)  << "  "
                    << velocity()(lev).norm0(2)  << "  "
                    << std::endl;
-
-    amrex::Print() << "max tracer = "
-                   << tracer()(lev).norm0(0) << std::endl;
-       
 }
 
 //

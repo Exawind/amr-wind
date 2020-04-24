@@ -72,11 +72,10 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
-            amrex::Print() << "Before projection (with small dt modification):" << std::endl;
+            PrintMaxValues("before projection (small dt mod)");
         } else {
-            amrex::Print() << "Before projection:" << std::endl;
+            PrintMaxValues("before projection");
         }
-        PrintMaxValues(time);
     }
 
     auto& grad_p = m_repo.get_field("gp");
@@ -220,10 +219,9 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
-            amrex::Print() << "After  projection (with small dt modification):" << std::endl;
+            PrintMaxValues("after projection (small dt mod)");
         } else {
-            amrex::Print() << "After  projection:" << std::endl;
+            PrintMaxValues("after projection");
         }
-        PrintMaxValues(time);
     }
 }

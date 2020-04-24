@@ -198,12 +198,9 @@ void incflo::InitialProjection()
 {
     BL_PROFILE("amr-wind::incflo::InitialProjection()")
 
-    Real time = 0.0;
-
     amrex::Print() << "Begin initial projection" << std::endl;
-    if (m_verbose)
-    {
-        PrintMaxValues(time);
+    if (m_verbose) {
+        PrintMaxValues("before initial projection");
     }
 
     Real dummy_dt = 1.0;
@@ -215,10 +212,8 @@ void incflo::InitialProjection()
     pressure().setVal(0.0);
     grad_p().setVal(0.0);
 
-    if (m_verbose)
-    {
-        amrex::Print() << "After initial projection:" << std::endl;
-        PrintMaxValues(time);
+    if (m_verbose) {
+        PrintMaxValues("after initial projection");
     }
     amrex::Print() << "Completed initial projection" << std::endl << std::endl;
 }
