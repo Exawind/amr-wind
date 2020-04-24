@@ -3,6 +3,7 @@
 #include <AMReX_buildInfo.H>
 #include <incflo.H>
 #include <Physics.H>
+#include "console_io.H"
 
 using namespace amrex;
 
@@ -237,52 +238,10 @@ void incflo::WriteJobInfo(const std::string& path) const
         std::string PrettyLine =
             "===============================================================================\n";
 
-        FullPathJobInfoFile += "/incflo_job_info";
+        FullPathJobInfoFile += "/amr_wind_info";
         jobInfoFile.open(FullPathJobInfoFile.c_str(), std::ios::out);
 
-        // job information
-        jobInfoFile << PrettyLine;
-        jobInfoFile << " incflo Job Information\n";
-        jobInfoFile << PrettyLine;
-
-        jobInfoFile << "number of MPI processes: " << ParallelDescriptor::NProcs() << "\n";
-#ifdef _OPENMP
-        jobInfoFile << "number of threads:       " << omp_get_max_threads() << "\n";
-#endif
-
-        jobInfoFile << "\n\n";
-
-        // build information
-        jobInfoFile << PrettyLine;
-        jobInfoFile << " Build Information\n";
-        jobInfoFile << PrettyLine;
-
-        jobInfoFile << "build date:    " << buildInfoGetBuildDate() << "\n";
-        jobInfoFile << "build machine: " << buildInfoGetBuildMachine() << "\n";
-        jobInfoFile << "build dir:     " << buildInfoGetBuildDir() << "\n";
-        jobInfoFile << "AMReX dir:     " << buildInfoGetAMReXDir() << "\n";
-
-        jobInfoFile << "\n";
-
-        jobInfoFile << "COMP:          " << buildInfoGetComp() << "\n";
-        jobInfoFile << "COMP version:  " << buildInfoGetCompVersion() << "\n";
-        jobInfoFile << "FCOMP:         " << buildInfoGetFcomp() << "\n";
-        jobInfoFile << "FCOMP version: " << buildInfoGetFcompVersion() << "\n";
-
-        jobInfoFile << "\n";
-
-        const char* githash1 = buildInfoGetGitHash(1);
-        const char* githash2 = buildInfoGetGitHash(2);
-        if(std::strlen(githash1) > 0)
-        {
-            jobInfoFile << "incflo git hash: " << githash1 << "\n";
-        }
-        if(std::strlen(githash2) > 0)
-        {
-            jobInfoFile << "AMReX git hash: " << githash2 << "\n";
-        }
-
-        jobInfoFile << "\n\n";
+        amr_wind::io::print_banner(jobInfoFile);
 
         // grid information
         jobInfoFile << PrettyLine;
@@ -300,8 +259,6 @@ void incflo::WriteJobInfo(const std::string& path) const
             }
             jobInfoFile << "\n\n";
         }
-
-        jobInfoFile << "\n\n";
 
         // runtime parameters
         jobInfoFile << PrettyLine;
