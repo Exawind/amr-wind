@@ -14,12 +14,12 @@ namespace pde {
 namespace icns {
 
 /** Density based buoyancy source term
-*
-*  Reads in the following parameters from `incflo` namespace:
-*
-*  - `gravity` acceleration due to gravity (m/s)
-*  - `reference density` Optional, default = `1.0`
-*/
+ *
+ *  Reads in the following parameters from `incflo` namespace:
+ *
+ *  - `gravity` acceleration due to gravity (m/s)
+ *  - `reference density` Optional, default = `1.0`
+ */
 DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     : m_density(sim.repo().get_field("density"))
 {
@@ -35,14 +35,14 @@ DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
 
 DensityBuoyancy::~DensityBuoyancy() = default;
 
-
 /** Add the Boussinesq source term to the forcing array
  *
  *  @param lev AMR level
  *  @param mfi multiFab index
  *  @param bx Box to operate on
  *  @param fstate field state
- *  @param vel_forces Forcing source term, activated when density varies from rho_0
+ *  @param vel_forces Forcing source term, activated when density varies from
+ * rho_0
  */
 void DensityBuoyancy::operator()(
     const int lev,
@@ -59,7 +59,6 @@ void DensityBuoyancy::operator()(
     const auto& density = m_density.state(den_state)(lev).const_array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
         const amrex::Real fac = 1.0 - density_0 / density(i, j, k);
 
         vel_forces(i, j, k, 0) += gravity[0] * fac;
