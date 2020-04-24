@@ -20,6 +20,9 @@ struct ICNS : VectorTransport
 
     static constexpr bool multiply_rho = false;
     static constexpr bool has_diffusion = true;
+
+    // No n+1/2 state for velocity for now
+    static constexpr bool need_nph_state = false;
 };
 
 } // namespace pde

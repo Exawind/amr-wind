@@ -60,7 +60,7 @@ void ABLOld::initialize_fields(
 {
     auto& velocity = m_incflo->velocity()(level);
     auto& density = m_incflo->density()(level);
-    auto& scalars = m_incflo->tracer()(level);
+    auto& scalars = m_incflo->temperature()(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -122,7 +122,7 @@ void ABLOld::pre_advance_work()
     constexpr int direction = 2;
     auto geom = m_incflo->Geom();
 
-    m_pa(geom, m_incflo->velocity().vec_ptrs(), m_incflo->tracer().vec_ptrs());
+    m_pa(geom, m_incflo->velocity().vec_ptrs(), m_incflo->temperature().vec_ptrs());
 
     {
         // First cell height

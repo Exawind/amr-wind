@@ -73,7 +73,6 @@ public:
 
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
     amr_wind::Field& density() const { return m_repo.get_field("density"); }
-    amr_wind::Field& tracer() const { return m_repo.get_field("temperature"); }
     amr_wind::Field& temperature() const { return m_repo.get_field("temperature"); }
     amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
     amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
@@ -81,24 +80,6 @@ public:
 public: // for cuda
 
     void ComputeDt (bool explicit_diffusion);
-
-    void compute_vel_forces (amrex::Vector<amrex::MultiFab*> const& vel_forces,
-                             amrex::Vector<amrex::MultiFab const*> const& velocity,
-                             amrex::Vector<amrex::MultiFab const*> const& density,
-                             amrex::Vector<amrex::MultiFab const*> const& tracer);
-    void compute_vel_forces_on_level ( int lev,
-                                       amrex::MultiFab& vel_forces,
-                                       const amrex::MultiFab& density,
-                                       const amrex::MultiFab& tracer);
-    void compute_vel_pressure_terms(int lev, amrex::MultiFab& vel_forces,
-                                    const amrex::MultiFab& density);
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // boundary_conditions
-    //
-    ///////////////////////////////////////////////////////////////////////////
 
     void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
@@ -281,7 +262,7 @@ private:
     void WritePlotFile ();
     void ReadCheckpointFile ();
 
-    void PrintMaxValues (amrex::Real time);
+    void PrintMaxValues (const std::string& header);
     void PrintMaxVel (int lev);
     void PrintMaxGp (int lev);
     void CheckForNans (int lev);

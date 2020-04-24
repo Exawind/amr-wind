@@ -14,6 +14,7 @@ struct VectorTransport
     using MLDiffOp = amrex::MLABecLaplacian;
     static constexpr int ndim = AMREX_SPACEDIM;
 
+    static constexpr bool need_nph_state = true;
     static constexpr bool multiply_rho = true;
     static constexpr bool has_diffusion = true;
 };
@@ -36,6 +37,9 @@ struct ScalarTransport
 
     //! Default value to initialize the BC array
     static constexpr amrex::Real default_bc_value = 0.0;
+
+    //! Does this scalar need an NPH state
+    static constexpr bool need_nph_state = true;
 };
 
 } // namespace pde

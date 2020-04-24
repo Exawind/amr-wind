@@ -41,6 +41,9 @@ struct FieldRegOp<ICNS, Scheme>
         rho.fillpatch_on_regrid() = true;
         grad_p.fillpatch_on_regrid() = true;
 
+        // Density always requires half state
+        rho.create_state(FieldState::NPH);
+
         return fields;
     }
 

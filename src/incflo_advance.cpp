@@ -17,55 +17,45 @@ void incflo::Advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance")
 
-    // Start timing current time step
-    Real strt_step = ParallelDescriptor::second();
-
     // Compute time step size
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
 
-    velocity().advance_states();
-    density().advance_states();
-    tracer().advance_states();
+    if (m_constant_density) {
+        density().advance_states();
+        density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
 
-    velocity().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    tracer().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    auto& vel = icns().fields().field;
+    vel.advance_states();
+    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    for (auto& eqn: scalar_eqns()) {
+        auto& field = eqn->fields().field;
+        field.advance_states();
+        field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
 
     for (auto& pp: m_physics)
         pp->pre_advance_work();
     for (auto& pp: m_sim.physics())
         pp->pre_advance_work();
-    
+
     ApplyPredictor();
 
     if (!m_use_godunov) {
-
-        velocity().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        density().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        tracer().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        auto& vel = icns().fields().field;
+        vel.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        for (auto& eqn: scalar_eqns()) {
+            auto& field = eqn->fields().field;
+            field.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        }
 
         ApplyCorrector();
     }
 
     if (m_verbose > 1)
     {
-        amrex::Print() << "End of time step: " << std::endl;
-        PrintMaxValues(m_time.new_time());
-    }
-
-#if 0
-    if (m_test_tracer_conservation) {
-        amrex::Print() << "Sum tracer volume wgt = " << m_time.current_time()+dt << "   " << volWgtSum(0,*tracer[0],0) << std::endl;
-    }
-#endif
-
-    // Stop timing current time step
-    Real end_step = ParallelDescriptor::second() - strt_step;
-    ParallelDescriptor::ReduceRealMax(end_step, ParallelDescriptor::IOProcessorNumber());
-    if (m_verbose > 0)
-    {
-        amrex::Print() << "Time per step " << end_step << std::endl;
+        PrintMaxValues("end of timestep");
     }
 }
 
@@ -137,8 +127,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     if (m_verbose > 2)
     {
-        amrex::Print() << "Before predictor step:" << std::endl;
-        PrintMaxValues(new_time);
+        PrintMaxValues("before predictor step");
     }
 
     if (m_use_godunov)
@@ -151,17 +140,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
-    auto& tracer_new = tracer();
+    auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
     auto& velocity_forces = icns_fields.src_term;
     // only the old states are used in predictor
     auto& divtau = m_use_godunov
                        ? icns_fields.diff_term
                        : icns_fields.diff_term.state(amr_wind::FieldState::Old);
-
-    // Ensure that density and tracer exists at half time
-    auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
-    tracer_new.create_state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
@@ -410,8 +395,7 @@ void incflo::ApplyCorrector()
 
     if (m_verbose > 2)
     {
-        amrex::Print() << "Before corrector step:" << std::endl;
-        PrintMaxValues(new_time);
+        PrintMaxValues("before corrector step");
     }
 
     amr_wind::io::print_mlmg_header("Corrector:");

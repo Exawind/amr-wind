@@ -79,6 +79,9 @@ PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int
 
     fields.field.fillpatch_on_regrid() = true;
 
+    if (PDE::need_nph_state)
+        fields.field.create_state(FieldState::NPH);
+
     return fields;
 }
 
