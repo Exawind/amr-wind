@@ -164,17 +164,23 @@ void incflo::InitialIterations ()
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
 
-    auto& vel = velocity();
-    auto& rho = density();
-    auto& trac = tracer();
+    {
+        auto& vel = icns().fields().field;
+        vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+        vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
-    vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-    rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-    trac.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+        if (m_constant_density) {
+            auto& rho = density();
+            rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+            rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        }
 
-    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    trac.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        for (auto& eqn: scalar_eqns()) {
+            auto& scal = eqn->fields().field;
+            scal.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+            scal.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        }
+    }
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
@@ -186,9 +192,20 @@ void incflo::InitialIterations ()
 
         ApplyPredictor(true);
 
-        vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
-        rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
-        trac.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        {
+            auto& vel = icns().fields().field;
+            vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+
+            if (m_constant_density) {
+                auto& rho = density();
+                rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+            }
+
+            for (auto& eqn: scalar_eqns()) {
+                auto& scal = eqn->fields().field;
+                scal.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+            }
+        }
     }
     amrex::Print() << "Completed initial pressure iterations" << std::endl << std::endl;
 }

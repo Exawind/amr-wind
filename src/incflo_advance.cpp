@@ -21,13 +21,19 @@ void incflo::Advance()
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
 
-    velocity().advance_states();
-    density().advance_states();
-    tracer().advance_states();
+    if (m_constant_density) {
+        density().advance_states();
+        density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
 
-    velocity().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    tracer().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    auto& vel = icns().fields().field;
+    vel.advance_states();
+    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    for (auto& eqn: scalar_eqns()) {
+        auto& field = eqn->fields().field;
+        field.advance_states();
+        field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
 
     for (auto& pp: m_physics)
         pp->pre_advance_work();
@@ -37,9 +43,12 @@ void incflo::Advance()
     ApplyPredictor();
 
     if (!m_use_godunov) {
-        velocity().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        density().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
-        tracer().state(amr_wind::FieldState::New).fillpatch(m_time.new_time());
+        auto& vel = icns().fields().field;
+        vel.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        for (auto& eqn: scalar_eqns()) {
+            auto& field = eqn->fields().field;
+            field.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        }
 
         ApplyCorrector();
     }
@@ -131,17 +140,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
-    auto& tracer_new = tracer();
+    auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
     auto& velocity_forces = icns_fields.src_term;
     // only the old states are used in predictor
     auto& divtau = m_use_godunov
                        ? icns_fields.diff_term
                        : icns_fields.diff_term.state(amr_wind::FieldState::Old);
-
-    // Ensure that density and tracer exists at half time
-    auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
-    tracer_new.create_state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
