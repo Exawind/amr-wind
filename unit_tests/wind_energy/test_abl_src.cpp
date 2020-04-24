@@ -233,6 +233,7 @@ TEST_F(ABLTest, boussinesq)
 
 }
 
+#if 0
 
 namespace {
 
@@ -273,7 +274,6 @@ TEST_F(ABLTest, densitybuoyancy)
     amrex::Box bx{{0, 0, 0}, {2, 2, kdim}};
     amrex::FArrayBox density(bx, 1);
     amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
-#if 0
     amr_wind::DensityBuoyancy db;
 
     density.setVal<amrex::RunOn::Device>(1.0);
@@ -306,7 +306,7 @@ TEST_F(ABLTest, densitybuoyancy)
     // f = g*(1-rho_0/rho)
     EXPECT_NEAR(vel_src.min<amrex::RunOn::Device>(2), -9.81*(1.0-1.0/2.0), tol);
     EXPECT_NEAR(vel_src.max<amrex::RunOn::Device>(2), -9.81*(1.0-1.0/0.5), tol);
-#endif
 }
+#endif
 
 } // namespace amr_wind_tests

@@ -74,9 +74,9 @@ void ABLOld::initialize_fields(
 void ABLOld::add_momentum_sources(
     const amrex::Geometry& /* geom */,
     const amrex::MultiFab& /* density */,
-    const amrex::MultiFab& velocity,
-    const amrex::MultiFab& scalars,
-    amrex::MultiFab& vel_forces) const
+    const amrex::MultiFab& ,
+    const amrex::MultiFab& ,
+    amrex::MultiFab& ) const
 {
 #if 0
 #ifdef _OPENMP

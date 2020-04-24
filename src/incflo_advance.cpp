@@ -152,7 +152,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& tracer_new = tracer();
-    auto& tracer_old = tracer_new.state(amr_wind::FieldState::Old);
 
     auto& velocity_forces = icns_fields.src_term;
     // only the old states are used in predictor
@@ -162,7 +161,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
-    auto& tracer_nph = tracer_new.create_state(amr_wind::FieldState::NPH);
+    tracer_new.create_state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
@@ -422,11 +421,8 @@ void incflo::ApplyCorrector()
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
 
-    auto& velocity_forces = icns_fields.src_term;
-
     // Allocate scratch space for half time density and tracer
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
-    auto& tracer_nph = tracer().state(amr_wind::FieldState::NPH);
 
     // **********************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
