@@ -24,9 +24,7 @@ public:
     void operator()(
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
-        const amrex::Array4<amrex::Real>& velocity,
-        const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& tracer) const;
+        const amrex::Array4<amrex::Real>& density) const;
 
 private:
     //! density value for lower layer

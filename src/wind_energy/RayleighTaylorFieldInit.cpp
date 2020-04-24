@@ -16,9 +16,7 @@ RayleighTaylorFieldInit::RayleighTaylorFieldInit()
 void RayleighTaylorFieldInit::operator()(
     const amrex::Box& vbx,
     const amrex::Geometry& geom,
-    const amrex::Array4<amrex::Real>& vel,
-    const amrex::Array4<amrex::Real>& density,
-    const amrex::Array4<amrex::Real>& tracer) const
+    const amrex::Array4<amrex::Real>& density) const
 {
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -43,10 +41,6 @@ void RayleighTaylorFieldInit::operator()(
         density(i, j, k) =
             rho_1 + ((rho_2 - rho_1) / 2.0) *
                         (1.0 + std::tanh((z - pertheight) / 0.005));
-        vel(i, j, k, 0) = 0.0;
-        vel(i, j, k, 1) = 0.0;
-        vel(i, j, k, 2) = 0.0;
-        tracer(i, j, k) = 0.0;
     });
 }
 

@@ -29,7 +29,6 @@ public:
 private:
     Field& m_velocity;
     Field& m_density;
-    Field& m_temperature;
 
     //! RayleighTaylor field initializer instance
     std::unique_ptr<RayleighTaylorFieldInit> m_field_init;
