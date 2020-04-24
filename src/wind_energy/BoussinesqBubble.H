@@ -1,14 +1,9 @@
 #ifndef BoussinesqBubble_H
 #define BoussinesqBubble_H
 
-#include <memory>
-
 #include "Physics.H"
 #include "BoussinesqBubbleFieldInit.H"
-#include "BoussinesqBuoyancy.H"
-#include "SimTime.H"
-
-class incflo;
+#include "Field.H"
 
 namespace amr_wind {
 

@@ -10,6 +10,8 @@ target_sources(${amr_wind_lib_name}
   BoussinesqBubble.cpp
   BoussinesqBubbleFieldInit.cpp
   DensityBuoyancy.cpp
+  RayleighTaylor.cpp
+  RayleighTaylorFieldInit.cpp
   )
 
 target_include_directories(
