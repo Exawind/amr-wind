@@ -5,6 +5,7 @@
 #include "SimTime.H"
 #include "FieldRepo.H"
 #include "PDEBase.H"
+#include "Physics.H"
 
 namespace amr_wind {
 namespace turbulence {
@@ -43,11 +44,19 @@ public:
     pde::PDEMgr& pde_manager() { return m_pde_mgr; }
     const pde::PDEMgr& pde_manager() const { return m_pde_mgr; }
 
+    PhysicsMgr& physics_manager() { return m_physics_mgr; }
+    const PhysicsMgr& physics_manager() const { return m_physics_mgr; }
+
+    PhysicsMgr::TypeVector& physics() { return m_physics_mgr.objects(); }
+    const PhysicsMgr::TypeVector& physics() const { return m_physics_mgr.objects(); }
+
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
     const turbulence::TurbulenceModel& turbulence_model() const
     { return *m_turbulence; }
 
     void create_turbulence_model();
+
+    void init_physics();
 
 private:
     amrex::AmrCore& m_mesh;
@@ -57,6 +66,8 @@ private:
     FieldRepo m_repo;
 
     pde::PDEMgr m_pde_mgr;
+
+    PhysicsMgr m_physics_mgr;
 
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 };

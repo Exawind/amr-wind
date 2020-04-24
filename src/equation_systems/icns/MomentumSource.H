@@ -8,11 +8,16 @@
 #include "AMReX_MultiFab.H"
 
 namespace amr_wind {
+
+class CFDSim;
+
 namespace pde {
 
-class MomentumSource : public Factory<MomentumSource, FieldRepo&>
+class MomentumSource : public Factory<MomentumSource, const CFDSim&>
 {
 public:
+    static const std::string base_identifier() { return "MomentumSource"; }
+
     virtual ~MomentumSource() = default;
 
     virtual void operator()(

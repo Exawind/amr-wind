@@ -3,7 +3,7 @@
 //  incflo
 //
 
-
+#include <algorithm>
 #include "PlaneAveraging.H"
 #include "incflo.H"
 
@@ -220,7 +220,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
 
 }
 
-Real PlaneAveraging::eval_line_average(Real x, int comp)
+Real PlaneAveraging::eval_line_average(Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
     Real c = 0.0;
@@ -244,25 +244,28 @@ Real PlaneAveraging::eval_line_average(Real x, int comp)
 }
 
 
+PlaneAveraging::PlaneAveraging(int axis_in)
+    : axis(axis_in)
+{
+    AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
+}
 
-PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
-                               amrex::Vector<amrex::MultiFab*> const& velocity,
-                               amrex::Vector<amrex::MultiFab*> const& tracer,
-                               int axis)
+void PlaneAveraging::operator()(const amrex::Vector<amrex::Geometry>& geom,
+                amrex::Vector<amrex::MultiFab*> const& velocity,
+                amrex::Vector<amrex::MultiFab*> const& tracer)
 {
     BL_PROFILE("amr-wind::PlaneAveraging::PlaneAveraging")
 
-    AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
-    
+
     // level=0 is default, could later make this an input. Might only makes sense for fully covered levels
-    
+
     xlo = geom[level].ProbLo(axis);
     dx = geom[level].CellSize(axis);
-    
+
     const Box& domain = geom[level].Domain();
     const IntVect dom_lo(domain.loVect());
     const IntVect dom_hi(domain.hiVect());
-    
+
     ncell_line = dom_hi[axis]-dom_lo[axis]+1;
 
     // count number of cells in plane
@@ -270,11 +273,14 @@ PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
     for(int i=0;i<AMREX_SPACEDIM;++i){
         if(i!=axis) ncell_plane *= (dom_hi[i]-dom_lo[i]+1);
     }
-    
-    line_average.resize(ncell_line*navg,0.0);
-    line_fluctuation.resize(ncell_line*nfluc,0.0);
-    line_xcentroid.resize(ncell_line,0.0);
-    
+
+    line_average.resize(ncell_line*navg);
+    line_fluctuation.resize(ncell_line*nfluc);
+    line_xcentroid.resize(ncell_line);
+    std::fill(line_average.begin(), line_average.end(), 0.0);
+    std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
+    std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
+
     switch (axis) {
         case 0:
             fill_line(XDir(),*velocity[level],*tracer[level]);
@@ -289,5 +295,5 @@ PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
             amrex::Abort("axis must be equal to 0, 1, or 2");
             break;
     }
-    
+
 }

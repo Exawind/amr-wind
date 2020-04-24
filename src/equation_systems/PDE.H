@@ -41,6 +41,7 @@ public:
         , m_src_op(m_fields)
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
+        , m_bc_op(m_fields, m_time)
     {}
 
     //! Perform initialization actions after the mesh is created
@@ -51,6 +52,8 @@ public:
             m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
+
+        m_src_op.init_source_terms(m_sim);
     }
 
     //! Perform update actions after a regrid is performed
@@ -113,6 +116,11 @@ public:
         }
     }
 
+    void init_bcs(const amrex::GpuArray<BC, AMREX_SPACEDIM*2>& ibc_type) override
+    {
+        m_bc_op.init_bcs(ibc_type);
+    }
+
 protected:
     //! CFD simulation controller instance
     CFDSim& m_sim;
@@ -139,6 +147,8 @@ protected:
 
     //! Turbulence operator
     std::unique_ptr<TurbulenceOp<PDE>> m_turb_op;
+
+    BCOp<PDE> m_bc_op;
 };
 
 } // namespace pde

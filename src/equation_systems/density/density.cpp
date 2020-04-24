@@ -1,7 +1,9 @@
 #include "density/density.H"
 #include "AdvOp_Godunov.H"
 #include "AdvOp_MOL.H"
+#include "BCOps.H"
 #include "density/density_ops.H"
+
 
 namespace amr_wind {
 namespace pde {

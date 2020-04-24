@@ -34,6 +34,8 @@ void incflo::Advance()
 
     for (auto& pp: m_physics)
         pp->pre_advance_work();
+    for (auto& pp: m_sim.physics())
+        pp->pre_advance_work();
     
     ApplyPredictor();
 
@@ -150,7 +152,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& tracer_new = tracer();
-    auto& tracer_old = tracer_new.state(amr_wind::FieldState::Old);
 
     auto& velocity_forces = icns_fields.src_term;
     // only the old states are used in predictor
@@ -160,17 +161,21 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
     // Ensure that density and tracer exists at half time
     auto& density_nph = density_new.create_state(amr_wind::FieldState::NPH);
-    auto& tracer_nph = tracer_new.create_state(amr_wind::FieldState::NPH);
+    tracer_new.create_state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
     if (m_use_godunov)
     {
+#if 0
         compute_vel_forces(velocity_forces.vec_ptrs(),
                            velocity_old.vec_const_ptrs(),
                            density_old.vec_const_ptrs(),
                            tracer_old.vec_const_ptrs());
+#else
+        icns().compute_source_term(amr_wind::FieldState::Old);
+#endif
 
         for (auto& seqn: scalar_eqns()) {
             seqn->compute_source_term(amr_wind::FieldState::Old);
@@ -293,11 +298,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
+#if 0
     compute_vel_forces(velocity_forces.vec_ptrs(),
                        velocity_old.vec_const_ptrs(),
                        (density_nph).vec_const_ptrs(),
                        (tracer_nph).vec_const_ptrs());
-    
+#else
+    icns().compute_source_term(amr_wind::FieldState::New);
+#endif
+
     // *************************************************************************************
     // Update the velocity
     // *************************************************************************************
@@ -412,11 +421,8 @@ void incflo::ApplyCorrector()
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
 
-    auto& velocity_forces = icns_fields.src_term;
-
     // Allocate scratch space for half time density and tracer
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
-    auto& tracer_nph = tracer().state(amr_wind::FieldState::NPH);
 
     // **********************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
@@ -503,9 +509,13 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
+#if 0
     compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
                        (density_nph).vec_const_ptrs(),
                        (tracer_nph).vec_const_ptrs());
+#else
+    icns().compute_source_term(amr_wind::FieldState::New);
+#endif
 
     // *************************************************************************************
     // Update velocity

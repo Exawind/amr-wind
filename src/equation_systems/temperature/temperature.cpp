@@ -1,6 +1,7 @@
 #include "temperature/temperature.H"
 #include "AdvOp_Godunov.H"
 #include "AdvOp_MOL.H"
+#include "BCOps.H"
 
 namespace amr_wind {
 namespace pde {

@@ -24,6 +24,9 @@ public:
 
     ~CollMgr() = default;
 
+    CollMgr(const CollMgr&) = delete;
+    CollMgr& operator=(const CollMgr&) = delete;
+
     /** Create a new object and register it in the vector and setup lookup options
      */
     template<class ... Args>
@@ -31,13 +34,14 @@ public:
     {
         m_obj_vec.emplace_back(
             Type::create(key, std::forward<Args>(args)...));
-        m_obj_map[key] = m_obj_vec.size();
+        m_obj_map[key] = m_obj_vec.size() - 1;
 
         return *m_obj_vec.back();
     }
 
     //! Return a vector of the registered objects
     TypeVector& objects() { return m_obj_vec; }
+    const TypeVector& objects() const { return m_obj_vec; }
 
     //! Query if an object exists using the lookup key
     bool contains(const std::string& key) const
@@ -48,6 +52,11 @@ public:
 
     //! Return the object corresponding to a lookup key
     Type& operator()(const std::string& key)
+    {
+        return *m_obj_vec[m_obj_map.at(key)];
+    }
+
+    const Type& operator()(const std::string& key) const
     {
         return *m_obj_vec[m_obj_map.at(key)];
     }

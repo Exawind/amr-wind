@@ -46,7 +46,8 @@ TEST_F(PlaneAveragingTest, test_constant)
     // test the average of a constant is the same constant
     for(int dir=0;dir<3;++dir){
         
-        PlaneAveraging pa(mesh().Geom(), velocity, tracer, dir);
+        PlaneAveraging pa(dir);
+        pa(mesh().Geom(), velocity, tracer);
         
         amrex::Real z = 0.5*(problo[dir] + probhi[dir]);
 
@@ -127,8 +128,9 @@ TEST_F(PlaneAveragingTest, test_linear)
     });
     
 
-    PlaneAveraging pa(mesh().Geom(), velocity, tracer, dir);
-    
+    PlaneAveraging pa(dir);
+    pa(mesh().Geom(), velocity, tracer);
+
     constexpr int n = 20;
     const amrex::Real L = probhi[dir] - problo[dir];
     const amrex::Real dx = L/((amrex::Real) n);
@@ -242,8 +244,9 @@ void PlaneAveragingTest::test_dir(int dir)
     });
     
 
-    PlaneAveraging pa(mesh().Geom(), velocity, tracer, dir);
-    
+    PlaneAveraging pa(dir);
+    pa(mesh().Geom(), velocity, tracer);
+
     amrex::Real x = 0.5*(problo[dir] + probhi[dir]);
     amrex::Real u = pa.line_velocity_xdir(x);
     amrex::Real v = pa.line_velocity_ydir(x);

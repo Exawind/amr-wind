@@ -8,11 +8,15 @@
 #include "AMReX_MultiFab.H"
 
 namespace amr_wind {
+class CFDSim;
+
 namespace pde {
 
-class SourceTerm
+class SourceTerm : public Factory<SourceTerm, const CFDSim&>
 {
 public:
+    static const std::string base_identifier() { return "SourceTerm"; }
+
     virtual ~SourceTerm() = default;
 
     virtual void operator()(

@@ -41,7 +41,6 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const int nlevels = repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
-        const auto& domain = geom.Domain();
 
         const amrex::Real dx = geom.CellSize()[0];
         const amrex::Real dy = geom.CellSize()[1];

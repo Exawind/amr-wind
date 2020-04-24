@@ -34,15 +34,16 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
-
-abl.use_boussinesq = 1 
-abl.coriolis_effect = 1 
-abl.abl_forcing = 1
 abl.reference_temperature = 300.0
 abl.latitude = 41.3
 
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature = 300.0
+CoriolisForcing.latitude = 41.3
+ABLForcing.abl_forcing_height = 90
+
 incflo.advect_tracer = 1
-incflo.ntrac = 1 
 
 incflo.probtype = 35
 incflo.ic_u = 6.128355544951824
@@ -74,10 +75,10 @@ incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 zlo.type =   "wall_model"
-zlo.tracer = 0.0
+zlo.temperature = 0.0
 
 zhi.type =   "slip_wall"
-zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
+zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #

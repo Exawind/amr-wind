@@ -26,11 +26,13 @@ geometry.prob_hi        =  0.5 0.5 1.0  # Hi corner coordinates
 
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
-incflo.probtype         =  11
+incflo.probtype         =  0
 incflo.gravity          = 0. 0. 0.5
-abl.thermal_expansion_coeff = 1.0
-abl.reference_temperature = 0.0
-bb.use_boussinesq = 1
+
+incflo.physics = BoussinesqBubble
+ICNS.source_terms = BoussinesqBuoyancy
+BoussinesqBuoyancy.thermal_expansion_coeff = 1.0
+BoussinesqBuoyancy.reference_temperature = 0.0
 
 zlo.type                = "sw"
 zhi.type                = "sw"

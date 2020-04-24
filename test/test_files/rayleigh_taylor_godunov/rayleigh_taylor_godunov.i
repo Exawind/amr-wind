@@ -28,7 +28,11 @@ geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 zlo.type                = "sw"
 zhi.type                = "sw"
 
-incflo.probtype         =  5
+incflo.probtype         =  0
+incflo.physics = RayleighTaylor
+ICNS.source_terms = DensityBuoyancy
+RayleighTaylor.rho_lo = 0.5
+RayleighTaylor.rho_hi = 2.0
 
 incflo.gravity          = 0. 0. -0.3
 
