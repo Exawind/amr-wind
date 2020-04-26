@@ -181,11 +181,11 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if (need_divtau()) {
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
-        if (m_wall_model_flag) {
-            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-                                     m_velocity_mean_ground,
-                                     amr_wind::FieldState::Old);
-        }
+        // if (m_wall_model_flag) {
+        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+        //                              m_velocity_mean_ground,
+        //                              amr_wind::FieldState::Old);
+        // }
         icns().compute_diffusion_term(amr_wind::FieldState::Old);
         if (m_use_godunov)
             amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
@@ -258,15 +258,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
-            IntVect ng_diffusion(1);
-            field.fillphysbc(new_time, ng_diffusion);
+            // IntVect ng_diffusion(1);
+            // field.fillphysbc(new_time, ng_diffusion);
 
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
                 ? m_time.deltaT() : 0.5 * m_time.deltaT();
 
-            // FIXME: Hardcoded BC
-            if (field.name() == "temperature")
-                diffusion::heat_flux_bc(field);
+            // // FIXME: Hardcoded BC
+            // if (field.name() == "temperature")
+            //     diffusion::heat_flux_bc(field);
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -302,16 +302,16 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
-        IntVect ng_diffusion(1);
-        velocity_new.fillphysbc(new_time, ng_diffusion);
-        density_new.fillphysbc(new_time, ng_diffusion);
+        // IntVect ng_diffusion(1);
+        // velocity_new.fillphysbc(new_time, ng_diffusion);
+        // density_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        if (m_wall_model_flag) {
-            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-                                     m_velocity_mean_ground,
-                                     amr_wind::FieldState::New);
-        }
+        // if (m_wall_model_flag) {
+        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+        //                              m_velocity_mean_ground,
+        //                              amr_wind::FieldState::New);
+        // }
         icns().solve(dt_diff);
     }
 
@@ -432,11 +432,11 @@ void incflo::ApplyCorrector()
     // Here we create divtau of the (n+1,*) state that was computed in the predictor;
     //      we use this laps only if DiffusionType::Explicit
     if (m_diff_type == DiffusionType::Explicit) {
-        if (m_wall_model_flag) {
-            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-                                     m_velocity_mean_ground,
-                                     amr_wind::FieldState::New);
-        }
+        // if (m_wall_model_flag) {
+        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+        //                              m_velocity_mean_ground,
+        //                              amr_wind::FieldState::New);
+        // }
         icns().compute_diffusion_term(amr_wind::FieldState::New);
 
         for (auto& eqns: scalar_eqns()) {
@@ -469,15 +469,15 @@ void incflo::ApplyCorrector()
 
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
-            IntVect ng_diffusion(1);
-            field.fillphysbc(new_time, ng_diffusion);
+            // IntVect ng_diffusion(1);
+            // field.fillphysbc(new_time, ng_diffusion);
 
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
                 ? m_time.deltaT() : 0.5 * m_time.deltaT();
 
-            // FIXME: Hardcoded BC
-            if (field.name() == "temperature")
-                diffusion::heat_flux_bc(field);
+            // // FIXME: Hardcoded BC
+            // if (field.name() == "temperature")
+            //     diffusion::heat_flux_bc(field);
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -514,16 +514,16 @@ void incflo::ApplyCorrector()
 
     if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
     {
-        IntVect ng_diffusion(1);
-        velocity_new.fillphysbc(new_time, ng_diffusion);
-        density_new.fillphysbc(new_time, ng_diffusion);
+        // IntVect ng_diffusion(1);
+        // velocity_new.fillphysbc(new_time, ng_diffusion);
+        // density_new.fillphysbc(new_time, ng_diffusion);
 
         Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        if (m_wall_model_flag) {
-            diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-                                     m_velocity_mean_ground,
-                                     amr_wind::FieldState::New);
-        }
+        // if (m_wall_model_flag) {
+        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
+        //                              m_velocity_mean_ground,
+        //                              amr_wind::FieldState::New);
+        // }
         icns().solve(dt_diff);
     }
 
