@@ -41,11 +41,14 @@ public:
     //! Reset the problem domain for this test
     virtual void reset_prob_domain();
 
+    amr_wind::CFDSim& sim()
+    {
+        return mesh().sim();
+    }
+
     amr_wind::SimTime& time()
     {
-        if (!m_time)
-            m_time.reset(new amr_wind::SimTime());
-        return *m_time;
+        return sim().time();
     }
 
     AmrTestMesh& mesh() { return *m_mesh; }
@@ -58,7 +61,6 @@ public:
 
 protected:
     std::unique_ptr<AmrTestMesh> m_mesh;
-    std::unique_ptr<amr_wind::SimTime> m_time;
 
     bool m_need_params{true};
 };
