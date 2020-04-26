@@ -19,7 +19,7 @@ ABLOld::ABLOld(const SimTime& time, incflo* incflo_in)
 
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
-    m_abl_wall_func.reset(new ABLWallFunction());
+    m_abl_wall_func.reset(new ABLWallFunctionOld());
 
     if (m_has_boussinesq)
         m_boussinesq.reset(new BoussinesqBuoyancyOld());
@@ -165,6 +165,7 @@ ABL::ABL(const CFDSim& sim)
     , m_density(sim.repo().get_field("density"))
     , m_temperature(sim.repo().get_field("temperature"))
     , m_pa(2)
+    , m_abl_wall_func(sim)
 {
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
@@ -194,6 +195,19 @@ void ABL::initialize_fields(
     }
 }
 
+void ABL::post_init_actions()
+{
+    m_abl_wall_func.init_log_law_height();
+
+    // Register ABL wall function for velocity
+    auto& vel = m_sim.repo().get_field("velocity");
+    vel.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
+
+    // Register temperature top BC gradient function
+    auto& temp = m_sim.repo().get_field("temperature");
+    temp.register_custom_bc<ABLThetaTopBC>();
+}
+
 /** Perform tasks at the beginning of a new timestep
  *
  *  For ABL simulations this method invokes the PlaneAveraging class to
@@ -209,6 +223,8 @@ void ABL::pre_advance_work()
     const auto& time = m_sim.time();
     const auto& geom = m_sim.mesh().Geom();
     m_pa(geom, m_velocity.vec_ptrs(), m_temperature.vec_ptrs());
+
+    m_abl_wall_func.update_umean(m_pa);
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();

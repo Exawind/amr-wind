@@ -63,7 +63,7 @@ private:
     std::unique_ptr<ABLFieldInit> m_field_init;
 
     //! Wall function instance
-    std::unique_ptr<ABLWallFunction> m_abl_wall_func;
+    std::unique_ptr<ABLWallFunctionOld> m_abl_wall_func;
 
     //! ABL forcing function instance
     std::unique_ptr<ABLForcingOld> m_abl_forcing;
@@ -93,6 +93,11 @@ public:
 
     virtual ~ABL();
 
+    const ABLWallFunction& abl_wall_function() const
+    { return m_abl_wall_func; }
+
+    void post_init_actions() override;
+
     void initialize_fields(
         int level,
         const amrex::Geometry& geom) override;
@@ -112,6 +117,7 @@ private:
     Field& m_temperature;
 
     PlaneAveraging m_pa;
+    ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;

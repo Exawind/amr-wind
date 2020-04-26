@@ -44,6 +44,9 @@ public:
     //! Initialize the fields for a given level during init/regrid
     virtual void initialize_fields(int level, const amrex::Geometry& geom) = 0;
 
+    //! Actions to perform post initialization
+    virtual void post_init_actions() = 0;
+
     //! Perform tasks necessary before advancing timestep
     virtual void pre_advance_work() = 0;
 };
