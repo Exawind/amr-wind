@@ -55,12 +55,6 @@ public:
     // Delete level data
     virtual void ClearLevel (int lev) override;
 
-    void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
-    {
-        m_velocity_mean_ground = uground;
-        m_utau_mean_ground = ustar;
-    }
-
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
     amr_wind::FieldRepo& repo() { return m_repo; }
@@ -177,11 +171,6 @@ private:
 
     // Fluid properties
     amrex::Real m_mu = 1.0;
-
-    // fixme this is sloppy and are being used as global variables...
-    amrex::Real m_velocity_mean_ground;
-    amrex::Real m_utau_mean_ground;
-    amrex::Real m_ground_height;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};
