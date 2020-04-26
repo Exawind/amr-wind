@@ -1,6 +1,7 @@
 #include "Field.H"
 #include "FieldRepo.H"
 #include "FieldFillPatchOps.H"
+#include "FieldBCOps.H"
 
 namespace amr_wind {
 
@@ -174,7 +175,11 @@ void Field::fillphysbc(amrex::Real time) noexcept
     fillphysbc(time, num_grow());
 }
 
-
+void Field::apply_bc_funcs(const FieldState rho_state) noexcept
+{
+    for (auto& func: m_info->m_bc_func)
+        (*func)(*this, rho_state);
+}
 
 void Field::advance_states() noexcept
 {
