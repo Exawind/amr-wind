@@ -10,20 +10,6 @@
 
 namespace amr_wind {
 
-ABLWallFunctionOld::ABLWallFunctionOld()
-{
-    amrex::ParmParse pp("abl");
-
-    pp.query("kappa", m_kappa);
-    pp.query("surface_roughness_z0", m_z0);
-}
-
-amrex::Real
-ABLWallFunctionOld::utau(const amrex::Real uvel, const amrex::Real zh) const
-{
-    return m_kappa * uvel / std::log(zh / m_z0);
-}
-
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_mesh(sim.mesh())
 {

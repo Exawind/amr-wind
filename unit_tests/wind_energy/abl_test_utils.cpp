@@ -16,13 +16,22 @@ void populate_abl_params()
     pp.add("perturb_ref_height", 50.0);
 
     // Boussinesq Buoyancy
-    pp.add("reference_temperature", 300.0);
+    {
+        amrex::ParmParse pp("BoussinesqBuoyancy");
+        pp.add("reference_temperature", 300.0);
+    }
 
     // ABL Forcing
-    pp.add("abl_forcing_height", 90.0);
+    {
+        amrex::ParmParse pp("ABLForcing");
+        pp.add("abl_forcing_height", 90.0);
+    }
 
     // Coriolis term
-    pp.add("latitude", 45.0);
+    {
+        amrex::ParmParse pp("CoriolisForcing");
+        pp.add("latitude", 45.0);
+    }
 
     pp.add("kappa", 0.41);
     pp.add("surface_roughness_z0", 0.1);
@@ -30,6 +39,11 @@ void populate_abl_params()
     // Needed for initial conditions
     {
         amrex::ParmParse pp("incflo");
+        pp.add("probtype", 35);
+        pp.add("use_godunov", 1);
+        amrex::Vector<std::string> physics{"ABL"};
+        pp.addarr("physics", physics);
+
         pp.add("ro_0", 1.0);   // Density
         pp.add("ic_u", 20.0);  // Ux
         pp.add("ic_v", 10.0);   // Uy

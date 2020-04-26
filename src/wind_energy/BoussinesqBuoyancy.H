@@ -5,27 +5,6 @@
 #include "icns/MomentumSource.H"
 
 namespace amr_wind {
-
-class BoussinesqBuoyancyOld
-{
-public:
-    BoussinesqBuoyancyOld();
-
-    void operator()(
-        const amrex::Box& bx,
-        const amrex::Array4<const amrex::Real>& scalars,
-        const amrex::Array4<amrex::Real>& vel_forces) const;
-
-private:
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
-
-    //! Reference temperature (Kelvin)
-    amrex::Real m_ref_theta{300.0};
-
-    //! Thermal expansion coefficient
-    amrex::Real m_beta{0.0};
-};
-
 namespace pde {
 namespace icns {
 
