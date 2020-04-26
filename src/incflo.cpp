@@ -187,11 +187,6 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
     if (m_restart_file.empty()) {
-        prob_init_fluid(lev);
-
-        for (auto& pp: m_physics) {
-            pp->initialize_fields(lev, Geom(lev));
-        }
         for (auto& pp: m_sim.physics()) {
             pp->initialize_fields(lev, Geom(lev));
         }
