@@ -153,15 +153,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     if (m_use_godunov)
     {
-#if 0
-        compute_vel_forces(velocity_forces.vec_ptrs(),
-                           velocity_old.vec_const_ptrs(),
-                           density_old.vec_const_ptrs(),
-                           tracer_old.vec_const_ptrs());
-#else
         icns().compute_source_term(amr_wind::FieldState::Old);
-#endif
-
         for (auto& seqn: scalar_eqns()) {
             seqn->compute_source_term(amr_wind::FieldState::Old);
         }
@@ -181,11 +173,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     if (need_divtau()) {
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
-        // if (m_wall_model_flag) {
-        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-        //                              m_velocity_mean_ground,
-        //                              amr_wind::FieldState::Old);
-        // }
         icns().compute_diffusion_term(amr_wind::FieldState::Old);
         if (m_use_godunov)
             amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
@@ -202,10 +189,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
             // Reuse existing buffer to avoid creating new multifabs
             amr_wind::field_ops::copy(field, field.state(amr_wind::FieldState::Old),
                                       0, 0, field.num_comp(), 1);
-
-            // FIXME: Hard-coded BC
-            if (field.name() == "temperature")
-                diffusion::heat_flux_bc(field);
 
             eqn->compute_diffusion_term(amr_wind::FieldState::Old);
 
@@ -258,15 +241,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
-            // IntVect ng_diffusion(1);
-            // field.fillphysbc(new_time, ng_diffusion);
-
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
                 ? m_time.deltaT() : 0.5 * m_time.deltaT();
-
-            // // FIXME: Hardcoded BC
-            // if (field.name() == "temperature")
-            //     diffusion::heat_flux_bc(field);
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -283,14 +259,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // Define (or if use_godunov, re-define) the forcing terms, without the viscous terms
     //    and using the half-time density
     // *************************************************************************************
-#if 0
-    compute_vel_forces(velocity_forces.vec_ptrs(),
-                       velocity_old.vec_const_ptrs(),
-                       (density_nph).vec_const_ptrs(),
-                       (tracer_nph).vec_const_ptrs());
-#else
     icns().compute_source_term(amr_wind::FieldState::New);
-#endif
 
     // *************************************************************************************
     // Update the velocity
@@ -300,28 +269,22 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // *************************************************************************************
     // Solve diffusion equation for u* but using eta_old at old time
     // *************************************************************************************
-    if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
-    {
-        // IntVect ng_diffusion(1);
-        // velocity_new.fillphysbc(new_time, ng_diffusion);
-        // density_new.fillphysbc(new_time, ng_diffusion);
-
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        // if (m_wall_model_flag) {
-        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-        //                              m_velocity_mean_ground,
-        //                              amr_wind::FieldState::New);
-        // }
+    if (m_diff_type == DiffusionType::Crank_Nicolson ||
+        m_diff_type == DiffusionType::Implicit) {
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                           ? m_time.deltaT()
+                           : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
     }
 
-    // **********************************************************************************************
+    // ************************************************************************************
     //
     // Project velocity field, update pressure
     //
-    // **********************************************************************************************
-    ApplyProjection((density_nph).vec_const_ptrs(), new_time, m_time.deltaT(), incremental_projection);
-
+    // ************************************************************************************
+    ApplyProjection(
+        (density_nph).vec_const_ptrs(), new_time, m_time.deltaT(),
+        incremental_projection);
 }
 
 
@@ -400,15 +363,11 @@ void incflo::ApplyCorrector()
 
     amr_wind::io::print_mlmg_header("Corrector:");
 
-    auto& icns_fields = icns().fields();
-    auto& velocity_new = icns_fields.field;
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
-
-    // Allocate scratch space for half time density and tracer
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    // **********************************************************************************************
+    // *************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
     // Note that "get_conv_tracer_new" returns div(rho u tracer)
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
@@ -432,17 +391,9 @@ void incflo::ApplyCorrector()
     // Here we create divtau of the (n+1,*) state that was computed in the predictor;
     //      we use this laps only if DiffusionType::Explicit
     if (m_diff_type == DiffusionType::Explicit) {
-        // if (m_wall_model_flag) {
-        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-        //                              m_velocity_mean_ground,
-        //                              amr_wind::FieldState::New);
-        // }
         icns().compute_diffusion_term(amr_wind::FieldState::New);
 
         for (auto& eqns: scalar_eqns()) {
-            // FIXME: Hard-coded BC
-            if (eqns->fields().field.name() == "temperature")
-                diffusion::heat_flux_bc(eqns->fields().field);
             eqns->compute_diffusion_term(amr_wind::FieldState::New);
         }
     }
@@ -469,15 +420,8 @@ void incflo::ApplyCorrector()
 
         auto& field = eqn->fields().field;
         if (m_diff_type != DiffusionType::Explicit) {
-            // IntVect ng_diffusion(1);
-            // field.fillphysbc(new_time, ng_diffusion);
-
             amrex::Real dt_diff = (m_diff_type == DiffusionType::Implicit)
                 ? m_time.deltaT() : 0.5 * m_time.deltaT();
-
-            // // FIXME: Hardcoded BC
-            // if (field.name() == "temperature")
-            //     diffusion::heat_flux_bc(field);
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
@@ -493,41 +437,28 @@ void incflo::ApplyCorrector()
     // *************************************************************************************
     // Define the forcing terms to use in the final update (using half-time density)
     // *************************************************************************************
-#if 0
-    compute_vel_forces(velocity_forces.vec_ptrs(),velocity_new.vec_const_ptrs(),
-                       (density_nph).vec_const_ptrs(),
-                       (tracer_nph).vec_const_ptrs());
-#else
     icns().compute_source_term(amr_wind::FieldState::New);
-#endif
 
     // *************************************************************************************
     // Update velocity
     // *************************************************************************************
     icns().compute_corrector_rhs(m_diff_type);
 
-    // **********************************************************************************************
+    // *************************************************************************************
     //
     // Solve diffusion equation for u* at t^{n+1} but using eta at predicted new time
     //
-    // **********************************************************************************************
+    // *************************************************************************************
 
-    if (m_diff_type == DiffusionType::Crank_Nicolson || m_diff_type == DiffusionType::Implicit)
-    {
-        // IntVect ng_diffusion(1);
-        // velocity_new.fillphysbc(new_time, ng_diffusion);
-        // density_new.fillphysbc(new_time, ng_diffusion);
-
-        Real dt_diff = (m_diff_type == DiffusionType::Implicit) ? m_time.deltaT() : 0.5*m_time.deltaT();
-        // if (m_wall_model_flag) {
-        //     diffusion::wall_model_bc(velocity_new, m_utau_mean_ground,
-        //                              m_velocity_mean_ground,
-        //                              amr_wind::FieldState::New);
-        // }
+    if (m_diff_type == DiffusionType::Crank_Nicolson ||
+        m_diff_type == DiffusionType::Implicit) {
+        Real dt_diff = (m_diff_type == DiffusionType::Implicit)
+                           ? m_time.deltaT()
+                           : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
     }
 
-    // **********************************************************************************************
+    // *************************************************************************************
     //
     // Project velocity field, update pressure
     bool incremental = false;
