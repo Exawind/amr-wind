@@ -31,6 +31,10 @@ add_subdirectory(transport_models)
 add_subdirectory(turbulence)
 add_subdirectory(physics)
 
+if(AMR_WIND_ENABLE_MASA)
+  add_subdirectory(mms)
+endif()
+
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 target_include_directories(${amr_wind_lib_name} PUBLIC ${AMREX_SUBMOD_LOCATION}/Tools/C_scripts)

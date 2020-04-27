@@ -116,6 +116,7 @@ void incflo::Evolve()
             }
             icns().post_regrid_actions();
             for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
+            for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
         }
 
         // Advance to time t + dt

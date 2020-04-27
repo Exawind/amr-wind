@@ -50,6 +50,9 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
+    for (auto& pp: m_sim.physics())
+        pp->post_advance_work();
+
     if (m_verbose > 1) PrintMaxValues("end of timestep");
 }
 
