@@ -75,11 +75,6 @@ void incflo::ReadParameters ()
 
     } // end prefix incflo
 
-    // FIXME: clean up WIP logic
-    if (m_probtype == 35) {
-        m_physics.emplace_back(new amr_wind::ABLOld(m_time, this));
-    }
-
     {
         // tagging options
         ParmParse pp("tagging");
@@ -185,10 +180,6 @@ void incflo::InitialIterations ()
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
         if (m_verbose) amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
-
-        // fixme turn this on later and delete stuff in ABL.cpp but will have to rebless gold files
-//        for (auto& pp: m_physics)
-//            pp->pre_advance_work();
 
         ApplyPredictor(true);
 

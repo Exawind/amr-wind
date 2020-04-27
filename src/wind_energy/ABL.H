@@ -24,66 +24,6 @@ class ABLForcing;
 
 /** Atmospheric Boundary Layer physics
  */
-class ABLOld : public PhysicsOld
-{
-public:
-    ABLOld(const SimTime& time, incflo* incflo_in);
-
-    ~ABLOld() = default;
-
-    //! Unique name indentifying this physics set for debugging
-    std::string physics_name() const override { return "ABL"; }
-
-    //! Initialize the temperature and velocity fields for ABL simulations
-    void initialize_fields(
-        int level,
-        const amrex::Geometry& geom) const override;
-
-    void pre_advance_work() override;
-
-    //! Add momentum source terms
-    void add_momentum_sources(
-        const amrex::Geometry& geom,
-        const amrex::MultiFab& density,
-        const amrex::MultiFab& velocity,
-        const amrex::MultiFab& scalars,
-        amrex::MultiFab& vel_forces) const override;
-
-    const ABLFieldInit& abl_initializer() const { return *m_field_init; }
-
-private:
-    const SimTime& m_time;
-
-    // TODO: deprecate this
-    incflo* m_incflo;
-
-    PlaneAveraging m_pa;
-
-    //! ABL field initializer instance
-    std::unique_ptr<ABLFieldInit> m_field_init;
-
-    //! Wall function instance
-    std::unique_ptr<ABLWallFunction> m_abl_wall_func;
-
-    //! ABL forcing function instance
-    std::unique_ptr<ABLForcingOld> m_abl_forcing;
-
-    //! Boussinesq buoyancy forcing term
-    std::unique_ptr<BoussinesqBuoyancyOld> m_boussinesq;
-
-    //! Coriolis forcing instance
-    std::unique_ptr<CoriolisForcingOld> m_coriolis;
-
-    //! True if Boussinesq buoyancy term is active
-    bool m_has_boussinesq{true};
-
-    //! True if Coriolis forcing term is active
-    bool m_has_coriolis{true};
-
-    //! True if driving pressure gradient term is activate
-    bool m_has_driving_dpdx{true};
-};
-
 class ABL : public Physics::Register<ABL>
 {
 public:
@@ -92,6 +32,11 @@ public:
     ABL(const CFDSim& sim);
 
     virtual ~ABL();
+
+    const ABLWallFunction& abl_wall_function() const
+    { return m_abl_wall_func; }
+
+    void post_init_actions() override;
 
     void initialize_fields(
         int level,
@@ -112,6 +57,7 @@ private:
     Field& m_temperature;
 
     PlaneAveraging m_pa;
+    ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;

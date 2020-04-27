@@ -16,7 +16,6 @@ namespace amr_wind {
 namespace pde {
 class PDEBase;
 }
-class PhysicsOld;
 class RefinementCriteria;
 }
 
@@ -55,12 +54,6 @@ public:
 
     // Delete level data
     virtual void ClearLevel (int lev) override;
-
-    void set_abl_friction_vels(amrex::Real uground, amrex::Real ustar)
-    {
-        m_velocity_mean_ground = uground;
-        m_utau_mean_ground = ustar;
-    }
 
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
@@ -144,10 +137,6 @@ private:
     amr_wind::SimTime& m_time;
     amr_wind::FieldRepo& m_repo;
 
-    // std::unique_ptr<amr_wind::pde::PDEBase> m_icns;
-    // amrex::Vector<std::unique_ptr<amr_wind::pde::PDEBase>> m_scalar_eqns;
-
-    amrex::Vector<std::unique_ptr<amr_wind::PhysicsOld>> m_physics;
     amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
 
     // Be verbose?
@@ -182,11 +171,6 @@ private:
 
     // Fluid properties
     amrex::Real m_mu = 1.0;
-
-    // fixme this is sloppy and are being used as global variables...
-    amrex::Real m_velocity_mean_ground;
-    amrex::Real m_utau_mean_ground;
-    amrex::Real m_ground_height;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};

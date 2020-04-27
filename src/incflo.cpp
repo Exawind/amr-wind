@@ -54,6 +54,9 @@ void incflo::InitData ()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+        for (auto& pp: m_sim.physics())
+            pp->post_init_actions();
+
         icns().initialize();
         for (auto& eqn: scalar_eqns()) eqn->initialize();
 
@@ -184,11 +187,6 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
     if (m_restart_file.empty()) {
-        prob_init_fluid(lev);
-
-        for (auto& pp: m_physics) {
-            pp->initialize_fields(lev, Geom(lev));
-        }
         for (auto& pp: m_sim.physics()) {
             pp->initialize_fields(lev, Geom(lev));
         }

@@ -23,6 +23,8 @@ public:
         int level,
         const amrex::Geometry& geom) override;
 
+    void post_init_actions() override;
+
     void pre_advance_work() override {}
 
 private:

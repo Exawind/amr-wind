@@ -33,11 +33,12 @@ struct BCOp<
 
     /**
      */
-    void apply_bcs()
+    void apply_bcs(const FieldState rho_state)
     {
         amrex::IntVect ng_diff(1);
         auto& field = m_fields.field;
         field.fillphysbc(m_time.new_time(), ng_diff);
+        field.apply_bc_funcs(rho_state);
     }
 
     PDEFields& m_fields;

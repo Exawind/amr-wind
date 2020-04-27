@@ -1,6 +1,7 @@
 #include "BoussinesqBubble.H"
 #include "BoussinesqBubbleFieldInit.H"
 #include "CFDSim.H"
+#include "ABLWallFunction.H"
 
 namespace amr_wind {
 
@@ -33,6 +34,11 @@ void BoussinesqBubble::initialize_fields(
             vbx, geom, velocity.array(mfi), density.array(mfi),
             scalars.array(mfi));
     }
+}
+
+void BoussinesqBubble::post_init_actions()
+{
+    m_temperature.register_custom_bc<ABLThetaTopBC>();
 }
 
 } // namespace amr_wind

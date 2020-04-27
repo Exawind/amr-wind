@@ -112,6 +112,7 @@ public:
     {
         if (PDE::has_diffusion){
             BL_PROFILE("amr-wind::" + this->identifier() + "::linsys_solve")
+            m_bc_op.apply_bcs(FieldState::New);
             m_diff_op->linsys_solve(dt);
         }
     }

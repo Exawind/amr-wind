@@ -1,65 +1,147 @@
 #include "abl_test_utils.H"
 #include "trig_ops.H"
+#include "aw_test_utils/iter_tools.H"
+#include "aw_test_utils/test_utils.H"
 
 #include "AMReX_Gpu.H"
 #include "AMReX_Random.H"
 #include "ABLForcing.H"
+#include "icns/icns.H"
+#include "icns/icns_ops.H"
 #include "CoriolisForcing.H"
 #include "BoussinesqBuoyancy.H"
 
 namespace amr_wind_tests {
 
-TEST_F(ABLTest, abl_forcing)
+using ICNSFields = amr_wind::pde::FieldRegOp<amr_wind::pde::ICNS, amr_wind::fvm::Godunov>;
+
+TEST_F(ABLMeshTest, abl_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
-
-    pp_utils::default_time_inputs();
     utils::populate_abl_params();
+    initialize_mesh();
 
-    amrex::Box bx{{0, 0, 0}, {2, 2, 2}};
-    amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    pde_mgr.register_transport_pde("Temperature");
+    sim().init_physics();
 
-    amr_wind::SimTime time;
-    time.parse_parameters();
+    auto& src_term = pde_mgr.icns().fields().src_term;
 
-    amr_wind::ABLForcingOld abl_forcing(time);
+    amr_wind::pde::icns::ABLForcing abl_forcing(sim());
 
-    // During initialization ensure that the source terms are zero
-    vel_src.setVal<amrex::RunOn::Device>(0.0);
-    abl_forcing(bx, vel_src.array());
+    src_term.setVal(0.0);
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        abl_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
     for (int i=0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
-        const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
-        // Ensure that the source term is zero for initialization
-        EXPECT_NEAR(min_src, 0.0, tol);
-        // Ensure that the source term is constant throughout the domain
-        EXPECT_NEAR(min_src, max_src, tol);
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, 0.0, tol);
+        EXPECT_NEAR(min_val, max_val, tol);
     }
 
     // Mimic source term at later timesteps
     {
+        auto& time = sim().time();
         time.new_timestep();
         time.set_current_cfl(2.0);
         EXPECT_NEAR(time.deltaT(), 0.1, tol);
 
-        vel_src.setVal<amrex::RunOn::Device>(0.0);
+        src_term.setVal(0.0);
         abl_forcing.set_mean_velocities(10.0, 5.0);
-        abl_forcing(bx, vel_src.array());
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
+
+            abl_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
 
         // Targets are U = (20.0, 10.0, 0.0) set in initial conditions
         // Means (set above) V = (10.0, 5.0, 0.0)
         // deltaT (set above) dt = 0.1
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{{100.0, 50.0, 0.0}};
         for (int i=0; i < AMREX_SPACEDIM; ++i) {
-            const auto min_src = vel_src.min<amrex::RunOn::Device>(i);
-            const auto max_src = vel_src.max<amrex::RunOn::Device>(i);
-            EXPECT_NEAR(min_src, golds[i], tol);
+            const auto min_val = utils::field_min(src_term, i);
+            const auto max_val = utils::field_max(src_term, i);
+            EXPECT_NEAR(min_val, golds[i], tol);
             // Ensure that the source term is constant throughout the domain
-            EXPECT_NEAR(min_src, max_src, tol);
+            EXPECT_NEAR(min_val, max_val, tol);
         }
     }
 }
 
+TEST_F(ABLMeshTest, coriolis_const_vel)
+{
+    constexpr amrex::Real tol = 1.0e-12;
+    constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
+    // Latitude is set to 45 degrees in the input file so sinphi = cosphi
+    const amrex::Real latfac = std::sin(amr_wind::utils::radians(45.0));
+    // Initialize a random value for the velocity component
+    const amrex::Real vel_comp = 10.0 + 5.0 * (amrex::Random() - 0.5);
+
+    // Initialize parameters
+    utils::populate_abl_params();
+    initialize_mesh();
+
+    auto fields = ICNSFields(sim().repo())(sim().time(), 0);
+    auto& vel = fields.field;
+    auto& src_term = fields.src_term;
+    amr_wind::pde::icns::CoriolisForcing coriolis(sim());
+
+    // Velocity in x-direction test
+    {
+        amrex::Real golds[AMREX_SPACEDIM] = {0.0, -corfac * latfac * vel_comp,
+                                             corfac * latfac * vel_comp};
+        vel.setVal(0.0);
+        src_term.setVal(0.0);
+        vel.setVal(vel_comp, 0);
+
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
+
+            coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
+
+        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+            const auto min_val = utils::field_min(src_term, i);
+            const auto max_val = utils::field_max(src_term, i);
+            EXPECT_NEAR(min_val, golds[i], tol);
+            // Ensure that the source term is constant throughout the domain
+            EXPECT_NEAR(min_val, max_val, tol);
+        }
+    }
+
+    // Velocity in y-direction test
+    {
+        amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0, 0.0};
+        vel.setVal(0.0);
+        src_term.setVal(0.0);
+        vel.setVal(vel_comp, 1);
+
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
+
+            coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
+
+        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+            const auto min_val = utils::field_min(src_term, i);
+            const auto max_val = utils::field_max(src_term, i);
+            EXPECT_NEAR(min_val, golds[i], tol);
+            // Ensure that the source term is constant throughout the domain
+            EXPECT_NEAR(min_val, max_val, tol);
+        }
+    }
+}
+
+#if 0
 TEST_F(ABLTest, coriolis_const_vel)
 {
     constexpr amrex::Real tol = 1.0e-12;
@@ -181,11 +263,11 @@ void init_abl_temperature_field(int kdim,
     // Set tracer as a function of height with (dx = 1.0)
     auto trac = tracer.array();
     const amrex::Real dz = 1000.0/((amrex::Real) kdim+1);
-    
+
     amrex::ParallelFor(bx, [dz,trac] AMREX_GPU_DEVICE(int i, int j, int k) {
 
         const amrex::Real z = (k+0.5)*dz;
-        
+
         // potential temperature profile
         if(z < 650.0){
             trac(i, j, k, 0) = 300.0;
@@ -194,7 +276,7 @@ void init_abl_temperature_field(int kdim,
         } else {
             trac(i, j, k, 0) = 308.0;
         }
-        
+
     });
 }
 
@@ -214,7 +296,7 @@ TEST_F(ABLTest, boussinesq)
     amrex::FArrayBox vel_src(bx, AMREX_SPACEDIM);
 
     amr_wind::BoussinesqBuoyancyOld bb;
-    
+
     temperature.setVal<amrex::RunOn::Device>(0.0);
     vel_src.setVal<amrex::RunOn::Device>(0.0);
     init_abl_temperature_field(kdim, bx, temperature);
@@ -233,7 +315,6 @@ TEST_F(ABLTest, boussinesq)
 
 }
 
-#if 0
 
 namespace {
 

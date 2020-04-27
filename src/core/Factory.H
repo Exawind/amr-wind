@@ -53,10 +53,7 @@ struct Factory
             if (registered) {
                 auto& tbl = Factory::table();
                 const auto& it = tbl.find(T::identifier());
-                if (it != tbl.end()) {
-                    tbl.erase(T::identifier());
-                    registered = false;
-                }
+                registered = (it != tbl.end());
             }
         }
 
