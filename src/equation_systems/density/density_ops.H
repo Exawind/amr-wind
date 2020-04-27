@@ -26,7 +26,7 @@ struct ComputeRHSOp<Density, Scheme>
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -55,7 +55,7 @@ struct ComputeRHSOp<Density, Scheme>
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();

@@ -66,7 +66,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
         for (int lev=0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             for (amrex::MFIter mfi(src_term, amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {
