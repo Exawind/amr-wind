@@ -51,10 +51,7 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
-    if (m_verbose > 1)
-    {
-        PrintMaxValues("end of timestep");
-    }
+    if (m_verbose > 1) PrintMaxValues("end of timestep");
 }
 
 //
@@ -123,10 +120,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
-    if (m_verbose > 2)
-    {
-        PrintMaxValues("before predictor step");
-    }
+    if (m_verbose > 2) PrintMaxValues("before predictor step");
 
     if (m_use_godunov)
         amr_wind::io::print_mlmg_header("Godunov:");
@@ -208,13 +202,12 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     // *************************************************************************************
-    // if ( m_use_godunov) Compute the explicit advective terms R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
-    // if (!m_use_godunov) Compute the explicit advective terms R_u^n      , R_s^n       and R_t^n
-    // Note that "get_conv_tracer_old" returns div(rho u tracer)
+    // if ( m_use_godunov) Compute the explicit advective terms
+    //                     R_u^(n+1/2), R_s^(n+1/2) and R_t^(n+1/2)
+    // if (!m_use_godunov) Compute the explicit advective terms
+    //                     R_u^n      , R_s^n       and R_t^n
     // *************************************************************************************
-
     icns().compute_advection_term(amr_wind::FieldState::Old);
-
     for (auto& seqn: scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
@@ -354,10 +347,7 @@ void incflo::ApplyCorrector()
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
 
-    if (m_verbose > 2)
-    {
-        PrintMaxValues("before corrector step");
-    }
+    if (m_verbose > 2) PrintMaxValues("before corrector step");
 
     amr_wind::io::print_mlmg_header("Corrector:");
 
@@ -367,13 +357,10 @@ void incflo::ApplyCorrector()
 
     // *************************************************************************************
     // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and R_t^(n+1,*)
-    // Note that "get_conv_tracer_new" returns div(rho u tracer)
     // We only reach the corrector if !m_use_godunov which means we don't use the forces
     // in constructing the advection term
     // *************************************************************************************
-
     icns().compute_advection_term(amr_wind::FieldState::New);
-
     for (auto& seqn: scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::New);
     }
@@ -457,8 +444,8 @@ void incflo::ApplyCorrector()
     }
 
     // *************************************************************************************
-    //
     // Project velocity field, update pressure
+    // *************************************************************************************
     bool incremental = false;
     ApplyProjection((density_nph).vec_const_ptrs(),new_time, m_time.deltaT(), incremental);
 
