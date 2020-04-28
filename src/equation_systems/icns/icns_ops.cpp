@@ -93,7 +93,7 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate)
         mac::get_projection_bc(
             amrex::Orientation::high, bctype, repo.mesh().Geom()));
 
-    macproj.project(options.rel_tol, options.abs_tol, amrex::MLMG::Location::FaceCentroid);
+    macproj.project(options.rel_tol, options.abs_tol);
 
     io::print_mlmg_info("MAC_projection", macproj.getMLMG());
 }
