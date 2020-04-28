@@ -60,10 +60,7 @@ void DensityBuoyancy::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
-//        fixme this has the wrong sign but keeping it this way until aftor refactor
-        const amrex::Real fac = 1.0 + density_0 / density(i, j, k);
-//        fixme this has the correct sign but keeping it this way until aftor refactor
-//        const amrex::Real fac = 1.0 - density_0 / density(i, j, k);
+        const amrex::Real fac = 1.0 - density_0 / density(i, j, k);
 
         vel_forces(i, j, k, 0) += gravity[0] * fac;
         vel_forces(i, j, k, 1) += gravity[1] * fac;
