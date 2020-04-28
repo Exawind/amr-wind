@@ -5,12 +5,15 @@
 #include "SchemeTraits.H"
 #include "PDEHelpers.H"
 #include "PDE.H"
+#include "temperature/TemperatureSource.H"
 
 namespace amr_wind {
 namespace pde {
 
 struct Temperature : ScalarTransport
 {
+    using SrcTerm = TemperatureSource;
+
     static std::string pde_name() { return "Temperature"; }
     static std::string var_name() { return "temperature"; }
 };
