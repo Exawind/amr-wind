@@ -288,7 +288,7 @@ TEST_F(ABLMeshTest, boussinesq_nph)
 
     auto& src_term = pde_mgr.icns().fields().src_term;
 
-    auto& temperature = sim().repo().get_field("temperature").create_state(amr_wind::FieldState::NPH);
+    auto& temperature = sim().repo().get_field("temperature", amr_wind::FieldState::NPH);
 
     src_term.setVal(0.0);
 
