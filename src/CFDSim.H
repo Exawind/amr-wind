@@ -39,7 +39,7 @@ public:
 
     //! Return the field repository
     FieldRepo& repo() { return m_repo; }
-    const FieldRepo& repo() const { return m_repo; }
+    FieldRepo& repo() const { return m_repo; }
 
     pde::PDEMgr& pde_manager() { return m_pde_mgr; }
     const pde::PDEMgr& pde_manager() const { return m_pde_mgr; }
@@ -63,7 +63,7 @@ private:
 
     SimTime m_time;
 
-    FieldRepo m_repo;
+    mutable FieldRepo m_repo;
 
     pde::PDEMgr m_pde_mgr;
 

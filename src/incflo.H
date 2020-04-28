@@ -61,7 +61,10 @@ public:
     const amr_wind::FieldRepo& repo() const { return m_repo; }
 
     amr_wind::pde::PDEBase& icns() { return m_sim.pde_manager().icns(); }
+    const amr_wind::pde::PDEBase& icns() const { return m_sim.pde_manager().icns(); }
     amr_wind::pde::PDEMgr::TypeVector& scalar_eqns()
+    { return m_sim.pde_manager().scalar_eqns(); }
+    const amr_wind::pde::PDEMgr::TypeVector& scalar_eqns() const
     { return m_sim.pde_manager().scalar_eqns(); }
 
     amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }

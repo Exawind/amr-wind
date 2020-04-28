@@ -40,6 +40,7 @@ public:
 
     //! Return the object that holds references to fields for this PDE system
     virtual PDEFields& fields() = 0;
+    virtual const PDEFields& fields() const = 0;
 
     //! Perform initialization actions for a PDE after the mesh is generated
     virtual void initialize() = 0;
@@ -103,6 +104,7 @@ public:
 
     //! Return the incompressible Navier-Stokes instance
     PDEBase& icns() { return *m_icns; }
+    const PDEBase& icns() const { return *m_icns; }
 
     //! Create the incompressible Navier-Stokes instance and return its reference
     PDEBase& register_icns();
@@ -116,6 +118,7 @@ public:
      *  separately for algorithmic reasons.
      */
     TypeVector& scalar_eqns() { return m_obj_vec; }
+    const TypeVector& scalar_eqns() const { return m_obj_vec; }
 
 private:
     //! Instance of the CFD simulation controller
