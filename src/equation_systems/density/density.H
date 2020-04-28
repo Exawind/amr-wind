@@ -5,12 +5,15 @@
 #include "SchemeTraits.H"
 #include "PDEHelpers.H"
 #include "PDE.H"
+#include "density/DensitySource.H"
 
 namespace amr_wind {
 namespace pde {
 
 struct Density : ScalarTransport
 {
+    using SrcTerm = DensitySource;
+
     static std::string pde_name() { return "Density"; }
     static std::string var_name() { return "density"; }
 
