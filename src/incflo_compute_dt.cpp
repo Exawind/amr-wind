@@ -22,74 +22,103 @@ using namespace amrex;
 //
 // WARNING: We use a slightly modified version of C in the implementation below
 //
-void incflo::ComputeDt (bool explicit_diffusion)
+void incflo::ComputeDt(bool explicit_diffusion)
 {
     BL_PROFILE("amr-wind::incflo::ComputeDt")
 
     Real conv_cfl = 0.0;
     Real diff_cfl = 0.0;
-    for (int lev = 0; lev <= finest_level; ++lev)
-    {
+    Real force_cfl = 0.0;
+
+    const auto& den = density();
+
+    for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();
-        MultiFab const& vel = velocity()(lev);
-        MultiFab const& rho = density()(lev);
+        MultiFab const& vel = icns().fields().field(lev);
+        MultiFab const& vel_force = icns().fields().src_term(lev);
+        MultiFab const& mu = icns().fields().mueff(lev);
+        MultiFab const& rho = den(lev);
+
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
+        Real force_lev = 0.0;
 
-        conv_lev = amrex::ReduceMax(vel, 0,
-                   [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                              Array4<Real const> const& v) -> Real
-                   {
-                       Real mx = -1.0;
-                       amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
-                       {
-                           mx = amrex::max(std::abs(v(i,j,k,0))*dxinv[0],
-                                           std::abs(v(i,j,k,1))*dxinv[1],
-                                           std::abs(v(i,j,k,2))*dxinv[2], mx);
-                       });
-                       return mx;
-                   });
+        conv_lev = amrex::ReduceMax(
+            vel, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                Box const& b, Array4<Real const> const& v) -> Real {
+                Real mx = -1.0;
+                amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                    mx = amrex::max(
+                        std::abs(v(i, j, k, 0)) * dxinv[0],
+                        std::abs(v(i, j, k, 1)) * dxinv[1],
+                        std::abs(v(i, j, k, 2)) * dxinv[2], mx);
+                });
+                return mx;
+            });
+
         if (explicit_diffusion) {
-            diff_lev = amrex::ReduceMax(rho, 0,
-                       [=] AMREX_GPU_HOST_DEVICE (Box const& b,
-                                                  Array4<Real const> const& r) -> Real
-                       {
-                           Real mx = -1.0;
-                           amrex::Loop(b, [=,&mx] (int i, int j, int k) noexcept
-                           {
-                               mx = amrex::max(1.0/r(i,j,k), mx);
-                           });
-                           return mx;
-                       });
-            diff_lev *= m_mu;
+
+            const Real dxinv2 =
+                2.0 * (dxinv[0] * dxinv[0] + dxinv[1] * dxinv[1] +
+                       dxinv[2] * dxinv[2]);
+
+            diff_lev = amrex::ReduceMax(
+                rho, mu, 0,
+                [=] AMREX_GPU_HOST_DEVICE(
+                    Box const& b, Array4<Real const> const& rho_arr,
+                    Array4<Real const> const& mu_arr) -> Real {
+                    Real mx = -1.0;
+                    amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                        mx = amrex::max(
+                            mu_arr(i, j, k) * dxinv2 / rho_arr(i, j, k), mx);
+                    });
+                    return mx;
+                });
         }
-        
+
+        if (m_time.use_force_cfl()) {
+            force_lev = amrex::ReduceMax(
+                vel_force, 0,
+                [=] AMREX_GPU_HOST_DEVICE(
+                    Box const& b, Array4<Real const> const& vf) -> Real {
+                    Real mx = -1.0;
+                    amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                        mx = amrex::max(
+                            std::abs(vf(i, j, k, 0)) * dxinv[0],
+                            std::abs(vf(i, j, k, 1)) * dxinv[1],
+                            std::abs(vf(i, j, k, 2)) * dxinv[2], mx);
+                    });
+                    return mx;
+                });
+        }
+
         conv_cfl = std::max(conv_cfl, conv_lev);
-        diff_cfl = std::max(diff_cfl, diff_lev*2.*(dxinv[0]*dxinv[0]+dxinv[1]*dxinv[1]+
-                                                   dxinv[2]*dxinv[2]));
+        diff_cfl = std::max(diff_cfl, diff_lev);
+        force_cfl = std::max(force_cfl, force_lev);
     }
 
-    Real cd_cfl;
+    ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
     if (explicit_diffusion) {
-        ParallelAllReduce::Max<Real>({conv_cfl,diff_cfl},
-                                     ParallelContext::CommunicatorSub());
-        cd_cfl = conv_cfl + diff_cfl;
-    } else {
-        ParallelAllReduce::Max<Real>(conv_cfl,
-                                     ParallelContext::CommunicatorSub());
-        cd_cfl = conv_cfl;
+        ParallelAllReduce::Max<Real>(
+            diff_cfl, ParallelContext::CommunicatorSub());
+    }
+    if (m_time.use_force_cfl()) {
+        ParallelAllReduce::Max<Real>(
+            force_cfl, ParallelContext::CommunicatorSub());
     }
 
-    // Forcing term
-    const auto dxinv_finest = Geom(finest_level).InvCellSizeArray();
-    // fixme should we use forces in our dt estimate?
-    // abl_godunov_explicit regression test will fail if this is deleted
-    Real forc_cfl = std::abs(m_gravity[0] - std::abs(m_gp0[0])) * dxinv_finest[0]
-                  + std::abs(m_gravity[1] - std::abs(m_gp0[1])) * dxinv_finest[1]
-                  + std::abs(m_gravity[2] - std::abs(m_gp0[2])) * dxinv_finest[2];
+    const Real cd_cfl = conv_cfl + diff_cfl;
 
     // Combined CFL conditioner
-    Real comb_cfl = cd_cfl + std::sqrt(cd_cfl*cd_cfl + 4.0 * forc_cfl);
+    const Real comb_cfl =
+        2.0 * cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * force_cfl);
+
+    if (m_verbose > 2) {
+        amrex::Print() << "conv_cfl: " << conv_cfl << " diff_cfl: " << diff_cfl
+                       << " force_cfl: " << force_cfl
+                       << " comb_cfl: " << comb_cfl << std::endl;
+    }
 
     m_time.set_current_cfl(comb_cfl);
 }
