@@ -10,7 +10,8 @@ namespace amr_wind {
 
 ABL::ABL(const CFDSim& sim)
     : m_sim(sim)
-    , m_velocity(sim.repo().get_field("velocity"))
+    , m_velocity(sim.pde_manager().icns().fields().field)
+    , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
     , m_temperature(sim.repo().get_field("temperature"))
     , m_pa(2)
@@ -69,7 +70,7 @@ void ABL::pre_advance_work()
 {
     const auto& time = m_sim.time();
     const auto& geom = m_sim.mesh().Geom();
-    m_pa(geom, m_velocity.vec_ptrs(), m_temperature.vec_ptrs());
+    m_pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature.vec_ptrs());
 
     m_abl_wall_func.update_umean(m_pa);
 

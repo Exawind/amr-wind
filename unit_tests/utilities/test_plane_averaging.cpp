@@ -28,10 +28,14 @@ TEST_F(PlaneAveragingTest, test_constant)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+    auto& densityf = frepo.declare_field("density");
     auto& velocityf = frepo.declare_field("velocity", 3);
+    auto& muefff = frepo.declare_field("mueff");
     auto& tracerf = frepo.declare_field("tracer");
 
+    auto density = densityf.vec_ptrs();
     auto velocity = velocityf.vec_ptrs();
+    auto mueff = muefff.vec_ptrs();
     auto tracer = tracerf.vec_ptrs();
 
     // initialize level 0 to a constant
@@ -47,7 +51,7 @@ TEST_F(PlaneAveragingTest, test_constant)
     for(int dir=0;dir<3;++dir){
         
         PlaneAveraging pa(dir);
-        pa(mesh().Geom(), velocity, tracer);
+        pa(mesh().Geom(), density, velocity, mueff, tracer);
         
         amrex::Real z = 0.5*(problo[dir] + probhi[dir]);
 
@@ -102,10 +106,14 @@ TEST_F(PlaneAveragingTest, test_linear)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+    auto& densityf = frepo.declare_field("density");
     auto& velocityf = frepo.declare_field("velocity", 3);
+    auto& muefff = frepo.declare_field("mueff");
     auto& tracerf = frepo.declare_field("tracer");
 
+    auto density = densityf.vec_ptrs();
     auto velocity = velocityf.vec_ptrs();
+    auto mueff = muefff.vec_ptrs();
     auto tracer = tracerf.vec_ptrs();
 
     velocity[0]->setVal(u0[0],0,1);
@@ -129,7 +137,7 @@ TEST_F(PlaneAveragingTest, test_linear)
     
 
     PlaneAveraging pa(dir);
-    pa(mesh().Geom(), velocity, tracer);
+    pa(mesh().Geom(), density, velocity, mueff, tracer);
 
     constexpr int n = 20;
     const amrex::Real L = probhi[dir] - problo[dir];
@@ -212,10 +220,14 @@ void PlaneAveragingTest::test_dir(int dir)
     initialize_mesh();
 
     auto& frepo = mesh().field_repo();
+    auto& densityf = frepo.declare_field("density");
     auto& velocityf = frepo.declare_field("velocity", 3);
+    auto& muefff = frepo.declare_field("mueff");
     auto& tracerf = frepo.declare_field("tracer");
 
+    auto density = densityf.vec_ptrs();
     auto velocity = velocityf.vec_ptrs();
+    auto mueff = muefff.vec_ptrs();
     auto tracer = tracerf.vec_ptrs();
 
     velocity[0]->setVal(u0,0,1);
@@ -245,7 +257,7 @@ void PlaneAveragingTest::test_dir(int dir)
     
 
     PlaneAveraging pa(dir);
-    pa(mesh().Geom(), velocity, tracer);
+    pa(mesh().Geom(), density, velocity, mueff, tracer);
 
     amrex::Real x = 0.5*(problo[dir] + probhi[dir]);
     amrex::Real u = pa.line_velocity_xdir(x);
