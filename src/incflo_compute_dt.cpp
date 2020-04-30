@@ -58,6 +58,11 @@ void incflo::ComputeDt(bool explicit_diffusion)
             });
 
         if (explicit_diffusion) {
+
+            const Real dxinv2 =
+                2.0 * (dxinv[0] * dxinv[0] + dxinv[1] * dxinv[1] +
+                       dxinv[2] * dxinv[2]);
+
             diff_lev = amrex::ReduceMax(
                 rho, mu, 0,
                 [=] AMREX_GPU_HOST_DEVICE(
@@ -66,11 +71,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         mx = amrex::max(
-                            2.0 * mu_arr(i, j, k) *
-                                (dxinv[0] * dxinv[0] + dxinv[1] * dxinv[1] +
-                                 dxinv[2] * dxinv[2]) /
-                                rho_arr(i, j, k),
-                            mx);
+                            mu_arr(i, j, k) * dxinv2 / rho_arr(i, j, k), mx);
                     });
                     return mx;
                 });
@@ -113,8 +114,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
     const Real comb_cfl =
         2.0 * cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * force_cfl);
 
-    if (m_verbose > 2)
-    {
+    if (m_verbose > 2) {
         amrex::Print() << "conv_cfl: " << conv_cfl << " diff_cfl: " << diff_cfl
                        << " force_cfl: " << force_cfl
                        << " comb_cfl: " << comb_cfl << std::endl;
