@@ -20,7 +20,9 @@ public:
     ~PlaneAveraging(){};
 
     void operator()(const amrex::Vector<amrex::Geometry>& Geom,
+               amrex::Vector<amrex::MultiFab*> const& density,
                amrex::Vector<amrex::MultiFab*> const& velocity,
+               amrex::Vector<amrex::MultiFab*> const& mueff,
                amrex::Vector<amrex::MultiFab*> const& tracer);
 
     /** evaluate line average at specific location for velocity xdir*/
@@ -112,7 +114,9 @@ public: // public for GPU
     template <typename IndexSelector>
     void fill_line(
         const IndexSelector& idxOp,
+        const amrex::MultiFab& density,
         const amrex::MultiFab& velocity,
+        const amrex::MultiFab& mueff,
         const amrex::MultiFab& tracer);
 };
 

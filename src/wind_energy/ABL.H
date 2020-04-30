@@ -53,6 +53,7 @@ private:
     const CFDSim& m_sim;
 
     Field& m_velocity;
+    Field& m_mueff;
     Field& m_density;
     Field& m_temperature;
 

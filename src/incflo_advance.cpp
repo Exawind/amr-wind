@@ -1,5 +1,4 @@
 #include <incflo.H>
-#include "PlaneAveraging.H"
 #include "Physics.H"
 #include <cmath>
 #include "field_ops.H"
