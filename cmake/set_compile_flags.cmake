@@ -1,5 +1,4 @@
 # Logic for handling warnings
-list(APPEND AMR_WIND_CXX_FLAGS "-Wno-pass-failed") # Ignore loop not vectorized warnings
 if(AMR_WIND_ENABLE_ALL_WARNINGS)
   # GCC, Clang, and Intel seem to accept these
   list(APPEND AMR_WIND_CXX_FLAGS "-Wall" "-Wextra" "-pedantic")
@@ -19,9 +18,14 @@ endif()
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
 separate_arguments(AMR_WIND_Fortran_FLAGS)
-target_compile_options(${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
-target_compile_options(${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+target_compile_options(
+  ${amr_wind_lib_name} PUBLIC
+  $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
+target_compile_options(
+  ${amr_wind_lib_name} PUBLIC
+  $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
 
+# Building on CUDA requires additional considerations
 if (AMR_WIND_ENABLE_CUDA)
   set(AMR_WIND_CUDA_FLAGS "--expt-relaxed-constexpr --expt-extended-lambda --Wno-deprecated-gpu-targets -m64")
   if (ENABLE_CUDA_FASTMATH)
@@ -37,4 +41,13 @@ if (AMR_WIND_ENABLE_CUDA)
     ${amr_wind_lib_name} PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RESOLVE_DEVICE_SYMBOLS OFF)
+endif()
+
+# Disable loop not vectorized warnings on Clang. This generates a lot of
+# diagnostic messages when compiling AMReX that we can't do anything about
+# within amr-wind
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR
+    ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+  target_compile_options(
+    amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
 endif()
