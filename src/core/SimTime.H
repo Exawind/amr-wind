@@ -100,6 +100,9 @@ public:
     AMREX_FORCE_INLINE
     bool adaptive_timestep() const { return m_adaptive; }
 
+    AMREX_FORCE_INLINE
+    bool use_force_cfl() const { return m_use_force_cfl; }
+
     //! Read user defined options from input file
     void parse_parameters();
 
@@ -157,6 +160,10 @@ private:
 
     //! Flag indicating if this is initialization
     bool m_is_init{true};
+
+    //! Flag indicating if forcing should be included in CFL calculation
+    bool m_use_force_cfl{false};
+
 };
 
 } // namespace amr_wind
