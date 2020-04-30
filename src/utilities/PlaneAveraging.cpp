@@ -183,19 +183,19 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp,
         Box bx = mfi.tilebox();
 
         auto vel_arr = velocity.const_array(mfi);
-        auto tracer_arr = temperature.const_array(mfi);
+        auto temp_arr = temperature.const_array(mfi);
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             const int ind = idxOp(i,j,k);
+            
             // velocity fluctuation
             const Real up = vel_arr(i,j,k,0) - line_average_[navg_*ind+u_avg_];
             const Real vp = vel_arr(i,j,k,1) - line_average_[navg_*ind+v_avg_];
             const Real wp = vel_arr(i,j,k,2) - line_average_[navg_*ind+w_avg_];
             
-            //fixme need to enumerate tracer variables too
-            // tracer fluctuation
-            const Real Tp = tracer_arr(i,j,k,0) - line_average_[navg_*ind+T_avg_];
+            // temperature fluctuation
+            const Real Tp = temp_arr(i,j,k) - line_average_[navg_*ind+T_avg_];
 
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uu_], up*up*denom);
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uv_], up*vp*denom);
