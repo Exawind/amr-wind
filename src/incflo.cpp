@@ -67,8 +67,6 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        // xxxxx TODO averagedown ???
-
         if (m_time.write_checkpoint()) { WriteCheckPointFile(); }
     }
     else
@@ -191,21 +189,4 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
             pp->initialize_fields(lev, Geom(lev));
         }
     }
-}
-
-// Set covered coarse cells to be the average of overlying fine cells
-// TODO: Move somewhere else, for example setup/incflo_arrays.cpp
-void incflo::AverageDown()
-{
-    BL_PROFILE("amr-wind::incflo::AverageDown()")
-
-    for (int lev = finest_level - 1; lev >= 0; --lev)
-    {
-        AverageDownTo(lev);
-    }
-}
-
-void incflo::AverageDownTo(int /* crse_lev */)
-{
-    amrex::Abort("xxxxx TODO AverageDownTo");
 }

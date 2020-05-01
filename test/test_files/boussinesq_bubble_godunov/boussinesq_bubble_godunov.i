@@ -26,7 +26,6 @@ geometry.prob_hi        =  0.5 0.5 1.0  # Hi corner coordinates
 
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
-incflo.probtype         =  0
 incflo.gravity          = 0. 0. 0.5
 
 incflo.physics = BoussinesqBubble
@@ -42,7 +41,6 @@ incflo.gradrhoerr       = 0.1
 amr.plt_ccse_regtest    =  1
 amr.plt_vort            =  1
 
-incflo.advect_tracer = true
 incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 
 incflo.verbose          =   1           # incflo_level

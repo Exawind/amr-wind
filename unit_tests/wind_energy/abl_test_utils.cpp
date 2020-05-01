@@ -39,7 +39,7 @@ void populate_abl_params()
     // Needed for initial conditions
     {
         amrex::ParmParse pp("incflo");
-        pp.add("probtype", 35);
+        pp.add("probtype", 0);
         pp.add("use_godunov", 1);
         amrex::Vector<std::string> physics{"ABL"};
         pp.addarr("physics", physics);

@@ -27,7 +27,6 @@ geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 zlo.type                = "sw"
 zhi.type                = "sw"
 
-incflo.probtype =  0
 incflo.physics = RayleighTaylor
 ICNS.source_terms = DensityBuoyancy
 RayleighTaylor.rho_lo = 0.5
@@ -42,7 +41,6 @@ amr.plt_vort            =  1
 
 incflo.use_godunov      = false
 incflo.constant_density = false
-incflo.advect_tracer    = true
 
 incflo.diffusion_type   = 1             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 

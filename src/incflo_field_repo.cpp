@@ -65,7 +65,6 @@ void incflo::init_field_bcs ()
         else if (bc_type == "wall_model" or bc_type == "wm")
         {
             bc_temp[ori] = BC::wall_model;
-            m_wall_model_flag = true;
         }
         else
         {

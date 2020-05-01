@@ -9,10 +9,10 @@ namespace pde {
 
 PDEMgr::PDEMgr(CFDSim& sim)
     : m_sim(sim)
-    , m_probtype(35)
+    , m_probtype(0)
 {
     amrex::ParmParse pp("incflo");
-    pp.get("probtype", m_probtype);
+    pp.query("probtype", m_probtype);
     pp.query("use_godunov", m_use_godunov);
 
     m_scheme = m_use_godunov

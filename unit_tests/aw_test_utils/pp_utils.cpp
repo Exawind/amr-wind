@@ -42,7 +42,7 @@ void default_mesh_inputs()
 
     {
         amrex::ParmParse pp("incflo");
-        pp.add("probtype", 35);
+        pp.add("probtype", 0);
     }
 }
 

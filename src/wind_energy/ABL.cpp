@@ -86,7 +86,7 @@ void ABL::pre_advance_work()
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
-        amrex::ParmParse pp("amr");
+        amrex::ParmParse pp("io");
         pp.query("line_plot_int", output_interval);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {

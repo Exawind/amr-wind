@@ -14,7 +14,7 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 amr.KE_int = 1
-amr.line_plot_int = 1
+io.line_plot_int = 1
 time.plot_interval            =   500       # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
@@ -36,9 +36,6 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Smagorinsky
 Smagorinsky_coeffs.Cs = 0.135
 
-abl.reference_temperature = 300.0
-abl.latitude = 41.3
-
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
 BoussinesqBuoyancy.reference_temperature = 300.0
@@ -51,9 +48,6 @@ BoussinesqBuoyancy.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
-incflo.advect_tracer = 1
-
-incflo.probtype = 35
 incflo.ic_u = 6.128355544951824
 incflo.ic_v = 5.142300877492314
 incflo.ic_w = 0.0
@@ -64,7 +58,6 @@ abl.temperature_values = 300.0 308.0 308.75
 
 abl.kappa = .41
 abl.surface_roughness_z0 = 0.15
-abl.abl_forcing_height = 90
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
