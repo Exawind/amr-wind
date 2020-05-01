@@ -1,25 +1,32 @@
 #ifndef BOUSSINESQBUOYANCY_H
 #define BOUSSINESQBUOYANCY_H
 
-#include "AMReX_Array4.H"
-#include "AMReX_Box.H"
-#include "AMReX_REAL.H"
-#include "AMReX_Vector.H"
-#include "AMReX_MultiFab.H"
+#include "FieldRepo.H"
+#include "icns/MomentumSource.H"
 
 namespace amr_wind {
+namespace pde {
+namespace icns {
 
-class BoussinesqBuoyancy
+class BoussinesqBuoyancy : public MomentumSource::Register<BoussinesqBuoyancy>
 {
 public:
-    BoussinesqBuoyancy();
+    static const std::string identifier() { return "BoussinesqBuoyancy"; }
 
-    void operator()(
+    BoussinesqBuoyancy(const CFDSim& sim);
+
+    virtual ~BoussinesqBuoyancy();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        const amrex::Array4<const amrex::Real>& scalars,
-        const amrex::Array4<amrex::Real>& vel_forces) const;
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    const Field& m_temperature;
+
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
     //! Reference temperature (Kelvin)
@@ -28,7 +35,9 @@ private:
     //! Thermal expansion coefficient
     amrex::Real m_beta{0.0};
 };
+} // namespace icns
 
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* BOUSSINESQBUOYANCY_H */

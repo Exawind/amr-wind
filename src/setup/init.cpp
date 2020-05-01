@@ -15,7 +15,6 @@ using namespace amrex;
 void incflo::ReadParameters ()
 {
     ReadIOParameters();
-    ReadRheologyParameters();
 
     { // Prefix amr
         ParmParse pp("amr");
@@ -35,13 +34,10 @@ void incflo::ReadParameters ()
         pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
 
         pp.query("constant_density"         , m_constant_density);
-        pp.query("advect_tracer"            , m_advect_tracer);
         pp.query("test_tracer_conservation" , m_test_tracer_conservation);
 
         // Godunov-related flags
         pp.query("use_godunov"                      , m_use_godunov);
-        pp.query("use_ppm"                          , m_godunov_ppm);
-        pp.query("godunov_use_forces_in_trans"      , m_godunov_use_forces_in_trans);
 
         // The default for diffusion_type is 2, i.e. the default m_diff_type is DiffusionType::Implicit
         int diffusion_type = 2;
@@ -77,51 +73,7 @@ void incflo::ReadParameters ()
         pp.query("ro_0", m_ro_0);
         AMREX_ALWAYS_ASSERT(m_ro_0 >= 0.0);
 
-        pp.query("ntrac", m_ntrac);
-
-        if (m_ntrac <= 0) m_advect_tracer = 0;
-
-        if (m_ntrac < 1) {
-            amrex::Abort("We currently require at least one tracer");
-        }
-
-        // Scalar diffusion coefficients
-        m_mu_s.resize(m_ntrac, 0.0);
-        pp.queryarr("mu_s", m_mu_s, 0, m_ntrac );
-
-        amrex::Print() << "Scalar diffusion coefficients " << std::endl;
-        for (int i = 0; i < m_ntrac; i++) {
-            amrex::Print() << "Tracer" << i << ":" << m_mu_s[i] << std::endl;
-        }
     } // end prefix incflo
-
-    { // Prefix mac
-        ParmParse pp_mac("mac_proj");
-        pp_mac.query( "mg_verbose"   , m_mac_mg_verbose );
-        pp_mac.query( "mg_cg_verbose", m_mac_mg_cg_verbose );
-        pp_mac.query( "mg_rtol"      , m_mac_mg_rtol );
-        pp_mac.query( "mg_atol"      , m_mac_mg_atol );
-        pp_mac.query( "mg_maxiter"   , m_mac_mg_maxiter );
-        pp_mac.query( "mg_cg_maxiter", m_mac_mg_cg_maxiter );
-        pp_mac.query( "mg_max_coarsening_level", m_mac_mg_max_coarsening_level );
-    } // end prefix mac
-    
-    { // Prefix nodal_proj
-        ParmParse pp_mac("nodal_proj");
-        pp_mac.query( "mg_verbose"   , m_nodal_proj_mg_verbose );
-        pp_mac.query( "mg_rtol"      , m_nodal_proj_mg_rtol );
-        pp_mac.query( "mg_atol"      , m_nodal_proj_mg_atol );
-    } // end prefix nodal_proj
-    
-
-    // FIXME: clean up WIP logic
-    if (m_probtype == 35) {
-        m_physics.emplace_back(new amr_wind::ABL(m_time, this));
-    }
-    
-    if (m_probtype == 11) {
-        m_physics.emplace_back(new amr_wind::BoussinesqBubble(this));
-    }
 
     {
         // tagging options
@@ -200,70 +152,76 @@ void incflo::ReadIOParameters()
 //
 void incflo::InitialIterations ()
 {
-    BL_PROFILE("incflo::InitialIterations()");
+    BL_PROFILE("amr-wind::incflo::InitialIterations()")
+    amrex::Print() << "Begin initial pressure iterations. Num. iters = "
+                   << m_initial_iterations << std::endl;
 
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
 
-    if (m_verbose)
     {
-        amrex::Print() << "Doing initial pressure iterations with dt = "
-                       << m_time.deltaT() << std::endl;
+        auto& vel = icns().fields().field;
+        vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+        vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+
+        if (m_constant_density) {
+            auto& rho = density();
+            rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+            rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        }
+
+        for (auto& eqn: scalar_eqns()) {
+            auto& scal = eqn->fields().field;
+            scal.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
+            scal.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+        }
     }
-
-    auto& vel = velocity();
-    auto& rho = density();
-    auto& trac = tracer();
-
-    vel.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-    rho.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-    trac.copy_state(amr_wind::FieldState::Old, amr_wind::FieldState::New);
-
-    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    rho.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    trac.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
 
     for (int iter = 0; iter < m_initial_iterations; ++iter)
     {
         if (m_verbose) amrex::Print() << "In initial_iterations: iter = " << iter << "\n";
 
-        // fixme turn this on later and delete stuff in ABL.cpp but will have to rebless gold files
-//        for (auto& pp: m_physics)
-//            pp->pre_advance_work();
-
         ApplyPredictor(true);
 
-        vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
-        rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
-        trac.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+        {
+            auto& vel = icns().fields().field;
+            vel.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+
+            if (m_constant_density) {
+                auto& rho = density();
+                rho.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+            }
+
+            for (auto& eqn: scalar_eqns()) {
+                auto& scal = eqn->fields().field;
+                scal.copy_state(amr_wind::FieldState::New, amr_wind::FieldState::Old);
+            }
+        }
     }
+    amrex::Print() << "Completed initial pressure iterations" << std::endl << std::endl;
 }
 
 // Project velocity field to make sure initial velocity is divergence-free
 void incflo::InitialProjection()
 {
-    BL_PROFILE("incflo::InitialProjection()");
+    BL_PROFILE("amr-wind::incflo::InitialProjection()")
 
-    Real time = 0.0;
-
-    if (m_verbose)
-    {
-        amrex::Print() << "Initial projection:" << std::endl;
-        PrintMaxValues(time);
+    amrex::Print() << "Begin initial projection" << std::endl;
+    if (m_verbose) {
+        PrintMaxValues("before initial projection");
     }
 
     Real dummy_dt = 1.0;
     bool incremental = false;
-    ApplyProjection(m_repo.get_field("density", amr_wind::FieldState::New).vec_const_ptrs(),
+    ApplyProjection(density().vec_const_ptrs(),
                     m_time.current_time(), dummy_dt, incremental);
 
     // We set p and gp back to zero (p0 may still be still non-zero)
     pressure().setVal(0.0);
     grad_p().setVal(0.0);
 
-    if (m_verbose)
-    {
-        amrex::Print() << "After initial projection:" << std::endl;
-        PrintMaxValues(time);
+    if (m_verbose) {
+        PrintMaxValues("after initial projection");
     }
+    amrex::Print() << "Completed initial projection" << std::endl << std::endl;
 }

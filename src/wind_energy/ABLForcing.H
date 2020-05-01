@@ -1,25 +1,30 @@
 #ifndef ABLFORCING_H
 #define ABLFORCING_H
 
-#include "AMReX_Array.H"
-#include "AMReX_Array4.H"
-#include "AMReX_Box.H"
-#include "AMReX_Geometry.H"
-#include "AMReX_REAL.H"
-#include "AMReX_Vector.H"
-
+#include "icns/MomentumSource.H"
 #include "SimTime.H"
 
-namespace amr_wind {
+class PlaneAveraging;
 
-class ABLForcing
+namespace amr_wind {
+namespace pde {
+namespace icns {
+
+class ABLForcing : public MomentumSource::Register<ABLForcing>
 {
 public:
-    ABLForcing(const SimTime& time);
+    static const std::string identifier() { return "ABLForcing"; }
 
-    void operator()(
-        const amrex::Box& vbx,
-        const amrex::Array4<amrex::Real>& vel_forces) const;
+    ABLForcing(const CFDSim& sim);
+
+    virtual ~ABLForcing();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
     inline void set_mean_velocities(amrex::Real ux, amrex::Real uy)
     {
@@ -28,8 +33,6 @@ public:
     }
 
     amrex::Real forcing_height() const { return m_forcing_height; }
-
-    const amrex::RealArray& target_velocity() const { return m_target_vel; }
 
 private:
     const SimTime& m_time;
@@ -44,6 +47,8 @@ private:
     amrex::Real m_forcing_height;
 };
 
-}
+} // namespace icns
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* ABLFORCING_H */

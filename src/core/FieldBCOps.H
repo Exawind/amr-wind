@@ -1,12 +1,26 @@
 #ifndef FIELDBCOPS_H
 #define FIELDBCOPS_H
 
+#include "FieldDescTypes.H"
+
 #include "AMReX_Gpu.H"
 #include "AMReX_FArrayBox.H"
 #include "AMReX_Geometry.H"
 #include "AMReX_PhysBCFunct.H"
 
 namespace amr_wind {
+
+class Field;
+
+/** Interface to setup up boundary conditions on a field
+ */
+class FieldBCIface
+{
+public:
+    virtual ~FieldBCIface() = default;
+
+    virtual void operator()(Field& field, const FieldState rho_state) = 0;
+};
 
 struct FieldBCNoOp
 {

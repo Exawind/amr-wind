@@ -97,6 +97,16 @@ get_interpolation_operator(const FieldInterpolator itype)
     return &amrex::cell_cons_interp;
 }
 
+inline FieldState dof_state(const FieldState fstate)
+{
+    return (fstate == FieldState::New) ? FieldState::New : FieldState::Old;
+}
+
+inline FieldState phi_state(const FieldState fstate)
+{
+    return (fstate == FieldState::Old) ? FieldState::Old : FieldState::NPH;
+}
+
 } // namespace field_impl
 } // namespace amr_wind
 

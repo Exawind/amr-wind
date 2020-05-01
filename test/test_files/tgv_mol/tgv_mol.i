@@ -3,7 +3,6 @@
 #.......................................#
 time.stop_time               =   3.183098861837907   # Max (simulated) time to evolve
 time.max_step                =   20          # Max number of time steps
-steady_state            =   0           # Steady-state solver? 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -23,7 +22,9 @@ amr.KE_int = 1        # calculate kinetic energy
 #.......................................#
 incflo.gravity          =   0.  0.  0.  # Gravitational force (3D)
 incflo.ro_0             =   1.          # Reference density 
-incflo.mu               =   0.00009947183943        # Dynamic viscosity coefficient
+transport.viscosity = 0.00009947183943
+transport.laminar_prandtl = 1.0
+turbulence.model = Laminar
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
@@ -41,4 +42,6 @@ geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          INITIAL CONDITIONS           #
 #.......................................#
-incflo.probtype         =   3
+incflo.probtype         =   0
+incflo.physics = TaylorGreenVortex
+

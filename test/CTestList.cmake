@@ -53,7 +53,7 @@ function(add_test_r TEST_NAME NP)
     set(PLOT_TEST ${CURRENT_TEST_BINARY_DIR}/plt00010)
     # Find fcompare
     if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE ${CMAKE_BINARY_DIR}/${AMREX_SUBMOD_LOCATION}/Tools/Plotfile/fcompare)
+      set(FCOMPARE ${CMAKE_BINARY_DIR}/submods/amrex/Tools/Plotfile/fcompare)
     endif()
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
@@ -62,7 +62,7 @@ function(add_test_r TEST_NAME NP)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1")
+    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1 amrex.throw_exception=1 amrex.signal_handling=0")
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
@@ -73,9 +73,14 @@ function(add_test_r TEST_NAME NP)
       unset(MPI_COMMANDS)
     endif()
     # Add test and actual test commands to CTest database
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} ${FCOMPARE_COMMAND}")
+    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${FCOMPARE_COMMAND}")
     # Set properties for test
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 3000 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "regression")
+    set_tests_properties(${TEST_NAME} PROPERTIES
+                         TIMEOUT 5400
+                         PROCESSORS ${NP}
+                         WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
+                         LABELS "regression"
+                         ATTACHED_FILES_ON_FAIL "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
 endfunction(add_test_r)
 
 # Regression tests excluded from CI
@@ -99,7 +104,11 @@ function(add_test_u TEST_NAME NP)
     # Add test and commands to CTest database
     add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_unit_test_exe_name}")
     # Set properties for test
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 500 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "unit")
+    set_tests_properties(${TEST_NAME} PROPERTIES
+                         TIMEOUT 500
+                         PROCESSORS ${NP}
+                         WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/"
+                         LABELS "unit")
 endfunction(add_test_u)
 
 #=============================================================================
@@ -121,10 +130,13 @@ add_test_r(abl_godunov 4)
 # Regression tests excluded from CI
 #=============================================================================
 add_test_re(rayleigh_taylor_godunov 4)
+add_test_re(rayleigh_taylor_mol 4)
+add_test_re(abl_godunov_plm 4)
 add_test_re(abl_godunov_explicit 4)
 add_test_re(abl_godunov_cn 4)
 add_test_re(abl_mol_explicit 4)
 add_test_re(abl_mol_cn 4)
+add_test_re(tgv_godunov_plm 4)
 
 #=============================================================================
 # Verification tests

@@ -5,8 +5,11 @@
 namespace amr_wind_tests {
 
 AmrTestMesh::AmrTestMesh()
-    : m_repo(*this)
-{}
+    : m_sim(*this)
+    , m_repo(m_sim.repo())
+{
+    m_sim.time().parse_parameters();
+}
 
 void AmrTestMesh::initialize_mesh(amrex::Real current_time)
 {

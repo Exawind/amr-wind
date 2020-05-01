@@ -6,8 +6,11 @@ time.init_shrink      = 1.0
 
 time.plot_interval            =   10          # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
-incflo.mu               =   0.001       # Dynamic viscosity coefficient
-incflo.mu_s             =   0.001       # Scalar diffusion coefficient mu (mu = rho * nu)
+
+transport.viscosity = 0.001
+transport.laminar_prandtl = 1.0
+transport.turbulent_prandtl = 1.0
+turbulence.model = Laminar
 
 amr.max_level           =   2
 time.regrid_interval          =   2
@@ -25,7 +28,11 @@ geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 zlo.type                = "sw"
 zhi.type                = "sw"
 
-incflo.probtype         =  5
+incflo.probtype         =  0
+incflo.physics = RayleighTaylor
+ICNS.source_terms = DensityBuoyancy
+RayleighTaylor.rho_lo = 0.5
+RayleighTaylor.rho_hi = 2.0
 
 incflo.gravity          = 0. 0. -0.3
 

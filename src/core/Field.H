@@ -9,6 +9,7 @@
 #include "AMReX_BCRec.H"
 #include "AMReX_Gpu.H"
 
+#include "incflo_enums.H"
 #include "FieldDescTypes.H"
 
 namespace amr_wind {
@@ -16,6 +17,7 @@ namespace amr_wind {
 class Field;
 class FieldRepo;
 class FieldFillPatchOpsBase;
+class FieldBCIface;
 
 /** Information common to a field that has multiple states
  */
@@ -53,6 +55,7 @@ struct FieldInfo
 
     ///@{
     //! Boundary condition data
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2> m_bc_type;
     amrex::Vector<amrex::Vector<amrex::Real>> m_bc_values;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bc_values_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_bc_values_dview;
@@ -66,6 +69,9 @@ struct FieldInfo
 
     //! Function that handles filling patch and physics BC data for this field
     std::unique_ptr<FieldFillPatchOpsBase> m_fillpatch_op;
+
+    //! Custom boundary condition actions for this field
+    amrex::Vector<std::unique_ptr<FieldBCIface>> m_bc_func;
 };
 
 /** Computational field
@@ -151,6 +157,11 @@ public:
         return (m_info->m_states[fid] != nullptr);
     }
 
+    amrex::GpuArray<BC, AMREX_SPACEDIM*2>& bc_type()
+    {
+        return m_info->m_bc_type;
+    }
+
     //! Return reference to the host view of BC values array
     amrex::Vector<amrex::Vector<amrex::Real>>& bc_values()
     {
@@ -229,11 +240,21 @@ public:
         m_info->m_fillpatch_op.reset(new T(*this, std::forward<Args>(args)...));
     }
 
+    /** Register a custom boundary conditions class
+     */
+    template<typename T, class... Args>
+    void register_custom_bc(Args&&... args)
+    {
+        m_info->m_bc_func.emplace_back(new T(*this, std::forward<Args>(args)...));
+    }
+
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, amrex::IntVect ng) noexcept;
 
     void fillphysbc(amrex::Real time) noexcept;
     void fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept;
+
+    void apply_bc_funcs(const FieldState rho_state) noexcept;
 
     void fillpatch(
         int lev,

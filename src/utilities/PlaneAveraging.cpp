@@ -3,7 +3,7 @@
 //  incflo
 //
 
-
+#include <algorithm>
 #include "PlaneAveraging.H"
 #include "incflo.H"
 
@@ -11,14 +11,14 @@ using namespace amrex;
 
 void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 {
-    BL_PROFILE("PlaneAveraging::plot_line_text()");
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_text()")
 
     if(!ParallelDescriptor::IOProcessor()) return;
     
     std::ofstream outfile;
     outfile.precision(precision);
 
-    if(step == 0){
+    if(step == 1){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
         outfile << "#ncell,ncomp" << std::endl;
@@ -44,14 +44,14 @@ void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 
 void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real time)
 {
-    BL_PROFILE("PlaneAveraging::plot_line_average_text()");
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_average_text()")
 
     if(!ParallelDescriptor::IOProcessor()) return;
 
     std::ofstream outfile;
     outfile.precision(precision);
     
-    if(step == 0){
+    if(step == 1){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out);
         outfile << "#ncell,ncomp" << std::endl;
@@ -74,13 +74,13 @@ void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real
 
 void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
 {
-    BL_PROFILE("PlaneAveraging::plot_line_binary()");
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_binary()")
 
     if(!ParallelDescriptor::IOProcessor()) return;
 
     std::ofstream outfile;
     
-    if(step == 0){
+    if(step == 1){
         // make new file
         outfile.open(filename.c_str(),std::ios_base::out|std::ios_base::binary);
 
@@ -100,10 +100,14 @@ void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
 }
 
 template<typename IndexSelector>
-void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab& velocity,  const amrex::MultiFab& tracer)
+void PlaneAveraging::fill_line(const IndexSelector &idxOp,
+                               const amrex::MultiFab& density,
+                               const amrex::MultiFab& velocity,
+                               const amrex::MultiFab& mueff,
+                               const amrex::MultiFab& temperature)
 {
 
-    BL_PROFILE("PlaneAveraging::fill_line()");
+    BL_PROFILE("amr-wind::PlaneAveraging::fill_line()")
     
     for(int i=0;i<ncell_line;++i){
         line_xcentroid[i] = xlo + (i+0.5)*dx;
@@ -123,6 +127,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
     int v_avg_ = v_avg;
     int w_avg_ = w_avg;
     int T_avg_ = T_avg;
+    int nu_avg_ = nu_avg;
     int uu_ = uu;
     int uv_ = uv;
     int uw_ = uw;
@@ -147,9 +152,9 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
         Box bx = mfi.tilebox();
 
         auto vel_arr = velocity.const_array(mfi);
-        auto tracer_arr = tracer.const_array(mfi);
-//        auto den_arr = density.const_array(mfi);
-//        auto eta_arr = eta.const_array(mfi); //fixme eta no longer in global storage, this function could be moved to predictor/corrector functions
+        auto temp_arr = temperature.const_array(mfi);
+        auto den_arr = density.const_array(mfi);
+        auto mueff_arr = mueff.const_array(mfi);
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
@@ -157,9 +162,9 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
             HostDevice::Atomic::Add(&line_average_[navg_*ind+u_avg_], vel_arr(i,j,k,0)*denom);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+v_avg_], vel_arr(i,j,k,1)*denom);
             HostDevice::Atomic::Add(&line_average_[navg_*ind+w_avg_], vel_arr(i,j,k,2)*denom);
-            HostDevice::Atomic::Add(&line_average_[navg_*ind+T_avg_], tracer_arr(i,j,k,0)*denom);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+T_avg_], temp_arr(i,j,k,0)*denom);
             // nu+nut = (mu+mut)/rho
-//            HostDevice::Atomic::Add(&line_average_[navg_*ind+nu_avg_], eta_arr(i,j,k)/den_arr(i,j,k)*denom);
+            HostDevice::Atomic::Add(&line_average_[navg_*ind+nu_avg_], mueff_arr(i,j,k)/den_arr(i,j,k)*denom);
         });
         
     }
@@ -178,19 +183,19 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
         Box bx = mfi.tilebox();
 
         auto vel_arr = velocity.const_array(mfi);
-        auto tracer_arr = tracer.const_array(mfi);
+        auto temp_arr = temperature.const_array(mfi);
 
         amrex::ParallelFor(bx,[=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
         {
             const int ind = idxOp(i,j,k);
+            
             // velocity fluctuation
             const Real up = vel_arr(i,j,k,0) - line_average_[navg_*ind+u_avg_];
             const Real vp = vel_arr(i,j,k,1) - line_average_[navg_*ind+v_avg_];
             const Real wp = vel_arr(i,j,k,2) - line_average_[navg_*ind+w_avg_];
             
-            //fixme need to enumerate tracer variables too
-            // tracer fluctuation
-            const Real Tp = tracer_arr(i,j,k,0) - line_average_[navg_*ind+T_avg_];
+            // temperature fluctuation
+            const Real Tp = temp_arr(i,j,k) - line_average_[navg_*ind+T_avg_];
 
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uu_], up*up*denom);
             HostDevice::Atomic::Add(&line_fluctuation_[nfluc_*ind+uv_], up*vp*denom);
@@ -220,9 +225,9 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp, const amrex::MultiFab
 
 }
 
-Real PlaneAveraging::eval_line_average(Real x, int comp)
+Real PlaneAveraging::eval_line_average(Real x, int comp) const
 {
-    
+    BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
     Real c = 0.0;
     int ind = 0;
     
@@ -244,24 +249,30 @@ Real PlaneAveraging::eval_line_average(Real x, int comp)
 }
 
 
-
-PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
-                               amrex::Vector<amrex::MultiFab*> const& velocity,
-                               amrex::Vector<amrex::MultiFab*> const& tracer,
-                               int axis)
+PlaneAveraging::PlaneAveraging(int axis_in)
+    : axis(axis_in)
 {
-    
     AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
-    
+}
+
+void PlaneAveraging::operator()(const amrex::Vector<amrex::Geometry>& geom,
+                amrex::Vector<amrex::MultiFab*> const& density,
+                amrex::Vector<amrex::MultiFab*> const& velocity,
+                amrex::Vector<amrex::MultiFab*> const& mueff,
+                amrex::Vector<amrex::MultiFab*> const& temperature)
+{
+    BL_PROFILE("amr-wind::PlaneAveraging::PlaneAveraging")
+
+
     // level=0 is default, could later make this an input. Might only makes sense for fully covered levels
-    
+
     xlo = geom[level].ProbLo(axis);
     dx = geom[level].CellSize(axis);
-    
+
     const Box& domain = geom[level].Domain();
     const IntVect dom_lo(domain.loVect());
     const IntVect dom_hi(domain.hiVect());
-    
+
     ncell_line = dom_hi[axis]-dom_lo[axis]+1;
 
     // count number of cells in plane
@@ -269,24 +280,27 @@ PlaneAveraging::PlaneAveraging(amrex::Vector<amrex::Geometry>& geom,
     for(int i=0;i<AMREX_SPACEDIM;++i){
         if(i!=axis) ncell_plane *= (dom_hi[i]-dom_lo[i]+1);
     }
-    
-    line_average.resize(ncell_line*navg,0.0);
-    line_fluctuation.resize(ncell_line*nfluc,0.0);
-    line_xcentroid.resize(ncell_line,0.0);
-    
+
+    line_average.resize(ncell_line*navg);
+    line_fluctuation.resize(ncell_line*nfluc);
+    line_xcentroid.resize(ncell_line);
+    std::fill(line_average.begin(), line_average.end(), 0.0);
+    std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
+    std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
+
     switch (axis) {
         case 0:
-            fill_line(XDir(),*velocity[level],*tracer[level]);
+            fill_line(XDir(), *density[level], *velocity[level], *mueff[level], *temperature[level]);
             break;
         case 1:
-            fill_line(YDir(),*velocity[level],*tracer[level]);
+            fill_line(YDir(), *density[level], *velocity[level], *mueff[level], *temperature[level]);
             break;
         case 2:
-            fill_line(ZDir(),*velocity[level],*tracer[level]);
+            fill_line(ZDir(), *density[level], *velocity[level], *mueff[level], *temperature[level]);
             break;
         default:
             amrex::Abort("axis must be equal to 0, 1, or 2");
             break;
     }
-    
+
 }

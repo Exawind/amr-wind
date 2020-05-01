@@ -44,6 +44,7 @@ objectives:
    build
    getting_started
    user/inputs
+   dev/index
 
 
 Indices and tables

@@ -1,17 +1,20 @@
 #include <AMReX_BC_TYPES.H>
 #include <incflo.H>
+#include <MLMGOptions.H>
+#include "console_io.H"
 
 using namespace amrex;
 
 Array<amrex::LinOpBCType,AMREX_SPACEDIM>
 incflo::get_projection_bc (Orientation::Side side) const noexcept
 {
+    auto& bctype = pressure().bc_type();
     Array<LinOpBCType,AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom[0].isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = m_bc_type[Orientation(dir,side)];
+            auto bc = bctype[Orientation(dir,side)];
             switch (bc)
             {
             case BC::pressure_inflow:
@@ -58,7 +61,7 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
 void incflo::ApplyProjection (Vector<MultiFab const*> density,
                               Real time, Real scaling_factor, bool incremental)
 {
-    BL_PROFILE("incflo::ApplyProjection");
+    BL_PROFILE("amr-wind::incflo::ApplyProjection")
 
     // If we have dropped the dt substantially for whatever reason,
     // use a different form of the approximate projection that
@@ -69,12 +72,15 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
-            amrex::Print() << "Before projection (with small dt modification):" << std::endl;
+            PrintMaxValues("before projection (small dt mod)");
         } else {
-            amrex::Print() << "Before projection:" << std::endl;
+            PrintMaxValues("before projection");
         }
-        PrintMaxValues(time);
     }
+
+    auto& grad_p = m_repo.get_field("gp");
+    auto& pressure = m_repo.get_field("p");
+    auto& velocity = icns().fields().field;
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental)
@@ -85,12 +91,12 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            for (MFIter mfi(velocity()(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            for (MFIter mfi(velocity(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi)
             {
                 Box const& bx = mfi.tilebox();
-                Array4<Real> const& u = velocity()(lev).array(mfi);
+                Array4<Real> const& u = velocity(lev).array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real const> const& gp = grad_p()(lev).const_array(mfi);
+                Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
                 amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
                 {
                     Real soverrho = scaling_factor / rho(i,j,k);
@@ -106,8 +112,8 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     if (proj_for_small_dt || incremental)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Subtract(velocity()(lev),
-                               velocity().state(amr_wind::FieldState::Old)(lev),
+            MultiFab::Subtract(velocity(lev),
+                               velocity.state(amr_wind::FieldState::Old)(lev),
                                0, 0, AMREX_SPACEDIM, 0);
         }
     }
@@ -140,25 +146,27 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
 
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
-        vel.push_back(&(velocity()(lev)));
+        vel.push_back(&(velocity(lev)));
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
         }
     }
 
+    amr_wind::MLMGOptions options("nodal_proj");
     nodal_projector.reset(new NodalProjector(vel, GetVecOfConstPtrs(sigma),
                                              Geom(0,finest_level), LPInfo()));
     nodal_projector->setDomainBC(bclo, bchi);
-    nodal_projector->setVerbose(m_nodal_proj_mg_verbose);
-    nodal_projector->project(m_nodal_proj_mg_rtol,m_nodal_proj_mg_atol);
+    nodal_projector->setVerbose(options.verbose);
+    nodal_projector->project(options.rel_tol, options.abs_tol);
+    amr_wind::io::print_mlmg_info("Nodal_projection", nodal_projector->getMLMG());
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Add(velocity()(lev),
-                          velocity().state(amr_wind::FieldState::Old)(lev), 0, 0, AMREX_SPACEDIM, 0);
+            MultiFab::Add(velocity(lev),
+                          velocity.state(amr_wind::FieldState::Old)(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
@@ -172,11 +180,11 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(grad_p()(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+        for (MFIter mfi(grad_p(lev),TilingIfNotGPU()); mfi.isValid(); ++mfi) {
             Box const& tbx = mfi.tilebox();
             Box const& nbx = mfi.nodaltilebox();
-            Array4<Real> const& gp_lev = grad_p()(lev).array(mfi);
-            Array4<Real> const& p_lev = pressure()(lev).array(mfi);
+            Array4<Real> const& gp_lev = grad_p(lev).array(mfi);
+            Array4<Real> const& p_lev = pressure(lev).array(mfi);
             Array4<Real const> const& gp_proj = gradphi[lev]->const_array(mfi);
             Array4<Real const> const& p_proj = phi[lev]->const_array(mfi);
             if (incremental) {
@@ -204,17 +212,16 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     }
 
     for (int lev = finest_level-1; lev >= 0; --lev) {
-        amrex::average_down(grad_p()(lev+1), grad_p()(lev),
+        amrex::average_down(grad_p(lev+1), grad_p(lev),
                             0, AMREX_SPACEDIM, refRatio(lev));
     }
 
     if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
-            amrex::Print() << "After  projection (with small dt modification):" << std::endl;
+            PrintMaxValues("after projection (small dt mod)");
         } else {
-            amrex::Print() << "After  projection:" << std::endl;
+            PrintMaxValues("after projection");
         }
-        PrintMaxValues(time);
     }
 }

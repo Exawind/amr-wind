@@ -1,0 +1,3 @@
+CEXE_headers += temperature.H
+
+CEXE_sources += temperature.cpp

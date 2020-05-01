@@ -3,6 +3,7 @@
 #include <AMReX_buildInfo.H>
 #include <incflo.H>
 #include <Physics.H>
+#include "console_io.H"
 
 using namespace amrex;
 
@@ -69,11 +70,11 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 
 void incflo::WriteCheckPointFile() const
 {
-    BL_PROFILE("incflo::WriteCheckPointFile()");
+    BL_PROFILE("amr-wind::incflo::WriteCheckPointFile()")
 
     const std::string& checkpointname = amrex::Concatenate(m_check_file, m_time.time_index());
 
-    amrex::Print() << "\n\t Writing checkpoint " << checkpointname << std::endl;
+    amrex::Print() << "Writing checkpoint " << checkpointname << std::endl;
 
     amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
@@ -89,10 +90,8 @@ void incflo::WriteCheckPointFile() const
         VisMF::Write(density()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "density"));
 
-        if (m_ntrac > 0) {
-            VisMF::Write(tracer()(lev),
-                         amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
-        }
+        VisMF::Write(temperature()(lev),
+                     amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "tracer"));
 
         VisMF::Write(grad_p()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "gradp"));
@@ -104,7 +103,7 @@ void incflo::WriteCheckPointFile() const
 
 void incflo::ReadCheckpointFile()
 {
-    BL_PROFILE("incflo::ReadCheckpointFile()");
+    BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()")
 
     amrex::Print() << "Restarting from checkpoint " << m_restart_file << std::endl;
 
@@ -215,10 +214,9 @@ void incflo::ReadCheckpointFile()
         VisMF::Read(density()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "density"));
 
-        if (m_ntrac > 0) {
-            VisMF::Read(tracer()(lev),
-                        amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
-        }
+        VisMF::Read(temperature()(lev),
+                    amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "tracer"));
+
 
         VisMF::Read(grad_p()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "gradp"));
@@ -240,52 +238,10 @@ void incflo::WriteJobInfo(const std::string& path) const
         std::string PrettyLine =
             "===============================================================================\n";
 
-        FullPathJobInfoFile += "/incflo_job_info";
+        FullPathJobInfoFile += "/amr_wind_info";
         jobInfoFile.open(FullPathJobInfoFile.c_str(), std::ios::out);
 
-        // job information
-        jobInfoFile << PrettyLine;
-        jobInfoFile << " incflo Job Information\n";
-        jobInfoFile << PrettyLine;
-
-        jobInfoFile << "number of MPI processes: " << ParallelDescriptor::NProcs() << "\n";
-#ifdef _OPENMP
-        jobInfoFile << "number of threads:       " << omp_get_max_threads() << "\n";
-#endif
-
-        jobInfoFile << "\n\n";
-
-        // build information
-        jobInfoFile << PrettyLine;
-        jobInfoFile << " Build Information\n";
-        jobInfoFile << PrettyLine;
-
-        jobInfoFile << "build date:    " << buildInfoGetBuildDate() << "\n";
-        jobInfoFile << "build machine: " << buildInfoGetBuildMachine() << "\n";
-        jobInfoFile << "build dir:     " << buildInfoGetBuildDir() << "\n";
-        jobInfoFile << "AMReX dir:     " << buildInfoGetAMReXDir() << "\n";
-
-        jobInfoFile << "\n";
-
-        jobInfoFile << "COMP:          " << buildInfoGetComp() << "\n";
-        jobInfoFile << "COMP version:  " << buildInfoGetCompVersion() << "\n";
-        jobInfoFile << "FCOMP:         " << buildInfoGetFcomp() << "\n";
-        jobInfoFile << "FCOMP version: " << buildInfoGetFcompVersion() << "\n";
-
-        jobInfoFile << "\n";
-
-        const char* githash1 = buildInfoGetGitHash(1);
-        const char* githash2 = buildInfoGetGitHash(2);
-        if(std::strlen(githash1) > 0)
-        {
-            jobInfoFile << "incflo git hash: " << githash1 << "\n";
-        }
-        if(std::strlen(githash2) > 0)
-        {
-            jobInfoFile << "AMReX git hash: " << githash2 << "\n";
-        }
-
-        jobInfoFile << "\n\n";
+        amr_wind::io::print_banner(jobInfoFile);
 
         // grid information
         jobInfoFile << PrettyLine;
@@ -304,8 +260,6 @@ void incflo::WriteJobInfo(const std::string& path) const
             jobInfoFile << "\n\n";
         }
 
-        jobInfoFile << "\n\n";
-
         // runtime parameters
         jobInfoFile << PrettyLine;
         jobInfoFile << " Inputs File Parameters\n";
@@ -319,18 +273,18 @@ void incflo::WriteJobInfo(const std::string& path) const
 
 void incflo::WritePlotFile() 
 {
-    BL_PROFILE("incflo::WritePlotFile()");
+    BL_PROFILE("amr-wind::incflo::WritePlotFile()")
 
     if (m_plt_vort or m_plt_divu or m_plt_forcing) {
         IntVect ng(1);
         velocity().fillpatch(m_time.new_time(), ng);
         density().fillpatch(m_time.new_time(), ng);
-        tracer().fillpatch(m_time.new_time(), ng);
+        temperature().fillpatch(m_time.new_time(), ng);
     }
 
     const std::string& plotfilename = amrex::Concatenate(m_plot_file, m_time.time_index());
 
-    amrex::Print() << "  Writing plotfile " << plotfilename << " at time " << m_time.current_time() << std::endl;
+    amrex::Print() << "Writing plotfile " << plotfilename << " at time " << m_time.current_time() << std::endl;
 
     int ncomp = 0;
 
@@ -348,7 +302,7 @@ void incflo::WritePlotFile()
     if (m_plt_rho) ++ncomp;
 
     // Tracers
-    if (m_plt_tracer) ncomp += m_ntrac;
+    if (m_plt_tracer) ncomp += 1;
 
     // Pressure
     if(m_plt_p) ++ncomp;
@@ -429,12 +383,10 @@ void incflo::WritePlotFile()
     }
     if (m_plt_tracer) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab::Copy(mf[lev], tracer()(lev), 0, icomp, m_ntrac, 0);
+            MultiFab::Copy(mf[lev], temperature()(lev), 0, icomp, 1, 0);
         }
-        for (int i = 0; i < m_ntrac; ++i) {
-            pltscaVarsName.push_back("tracer"+std::to_string(i));
-        }
-        icomp += m_ntrac;
+        pltscaVarsName.push_back("tracer0");
+        ++icomp;
     }
     if (m_plt_p) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -458,23 +410,7 @@ void incflo::WritePlotFile()
     }
     if (m_plt_forcing) {
         for (int lev = 0; lev <= finest_level; ++lev) {
-            MultiFab forcing(mf[lev], amrex::make_alias, icomp, 3);
-            if (m_probtype == 35 || m_probtype == 11) {
-                compute_vel_pressure_terms(lev, forcing, density()(lev));
-
-                for (auto& pp: m_physics) {
-                    pp->add_momentum_sources(Geom(lev),
-                                             density()(lev),
-                                             velocity()(lev),
-                                             tracer()(lev),
-                                             forcing);
-                }
-
-            } else {
-                compute_vel_forces_on_level(lev, forcing,
-                                            density()(lev),
-                                            tracer()(lev));
-            }
+            MultiFab::Copy(mf[lev], icns().fields().src_term(lev), 0, icomp, AMREX_SPACEDIM, 0);
         }
         pltscaVarsName.push_back("forcing_x");
         pltscaVarsName.push_back("forcing_y");

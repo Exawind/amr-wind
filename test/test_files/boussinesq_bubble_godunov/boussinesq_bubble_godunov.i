@@ -12,8 +12,9 @@ time.init_shrink      = 1.0
 time.plot_interval            =   140         # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
 
-incflo.mu               =   0.00001       # Dynamic viscosity coefficient
-incflo.mu_s = 0.00003
+transport.viscosity = 0.00001
+transport.laminar_prandtl = 0.33333333333333337
+turbulence.model = Laminar
 
 amr.max_level           =   1
 amr.n_cell              =   32 32 64     # Grid cells at coarsest AMRlevel
@@ -25,11 +26,13 @@ geometry.prob_hi        =  0.5 0.5 1.0  # Hi corner coordinates
 
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
-incflo.probtype         =  11
+incflo.probtype         =  0
 incflo.gravity          = 0. 0. 0.5
-abl.thermal_expansion_coeff = 1.0
-abl.reference_temperature = 0.0
-bb.use_boussinesq = 1
+
+incflo.physics = BoussinesqBubble
+ICNS.source_terms = BoussinesqBuoyancy
+BoussinesqBuoyancy.thermal_expansion_coeff = 1.0
+BoussinesqBuoyancy.reference_temperature = 0.0
 
 zlo.type                = "sw"
 zhi.type                = "sw"
@@ -45,7 +48,6 @@ incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = 
 incflo.verbose          =   1           # incflo_level
 mac_proj.verbose        =   0           # MAC Projector
 nodal_proj.verbose      =   0           # Nodal Projector
-diffusion.verbose       =   0           # Diffusion
 diffusion.mg_verbose    =   0           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12

@@ -3,6 +3,7 @@
 
 #include "AMReX_MultiFab.H"
 #include "AMReX_Vector.H"
+#include "FieldRepo.H"
 
 /** \file iter_tools.H
  *  Iteration utilities
@@ -25,6 +26,19 @@ void run_algorithm(
 {
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = *field[lev];
+
+        for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
+            func(lev, mfi);
+        }
+    }
+}
+
+template <typename Functor>
+void run_algorithm(amr_wind::Field& field, Functor func)
+{
+    const int nlevels = field.repo().num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        auto& lfab = field(lev);
 
         for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {
             func(lev, mfi);

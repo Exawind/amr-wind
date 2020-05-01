@@ -71,6 +71,10 @@ CMake configuration reference
 
    Enable CTest testing. Default: OFF
 
+.. cmakeval:: AMR_WIND_TEST_WITH_FCOMPARE
+
+   Enable checking test results against gold files using :program:`fcompare`. Default: OFF
+
 .. cmakeval:: AMR_WIND_ENABLE_ALL_WARNINGS
 
    Enable compiler warnings during build. Default: OFF

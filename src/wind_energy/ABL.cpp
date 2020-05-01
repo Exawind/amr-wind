@@ -8,46 +8,20 @@
 
 namespace amr_wind {
 
-ABL::ABL(const SimTime& time, incflo* incflo_in)
-    : m_time(time), m_incflo(incflo_in)
+ABL::ABL(const CFDSim& sim)
+    : m_sim(sim)
+    , m_velocity(sim.pde_manager().icns().fields().field)
+    , m_mueff(sim.pde_manager().icns().fields().mueff)
+    , m_density(sim.repo().get_field("density"))
+    , m_temperature(sim.repo().get_field("temperature"))
+    , m_pa(2)
+    , m_abl_wall_func(sim)
 {
-    amrex::ParmParse pp("abl");
-
-    pp.query("use_boussinesq", m_has_boussinesq);
-    pp.query("coriolis_effect", m_has_coriolis);
-    pp.query("abl_forcing", m_has_driving_dpdx);
-
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
-    m_abl_wall_func.reset(new ABLWallFunction());
-
-    if (m_has_boussinesq)
-        m_boussinesq.reset(new BoussinesqBuoyancy());
-
-    if (m_has_driving_dpdx)
-        m_abl_forcing.reset(new ABLForcing(m_time));
-
-    if (m_has_coriolis)
-        m_coriolis.reset(new CoriolisForcing());
-
-    {
-        // fixme keeping this around to maintain perfect
-        // machine zero reg tests
-        // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
-        constexpr int direction = 2;
-        auto geom = m_incflo->Geom();
-        // First cell height
-        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
-        amrex::Real vx = 0.0;
-        amrex::Real vy = 0.0;
-        amrex::ParmParse pp("incflo");
-        pp.query("ic_u", vx);
-        pp.query("ic_v", vy);
-        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
-        const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
-        m_incflo->set_abl_friction_vels(uground, utau);
-    }
 }
+
+ABL::~ABL() = default;
 
 /** Initialize the velocity and temperature fields at the beginning of the
  *  simulation.
@@ -56,53 +30,31 @@ ABL::ABL(const SimTime& time, incflo* incflo_in)
  */
 void ABL::initialize_fields(
     int level,
-    const amrex::Geometry& geom) const
+    const amrex::Geometry& geom)
 {
-    auto& velocity = m_incflo->velocity()(level);
-    auto& density = m_incflo->density()(level);
-    auto& scalars = m_incflo->tracer()(level);
+    auto& velocity = m_velocity(level);
+    auto& density = m_density(level);
+    auto& temp = m_temperature(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
             vbx, geom, velocity.array(mfi), density.array(mfi),
-            scalars.array(mfi));
+            temp.array(mfi));
     }
 }
 
-void ABL::add_momentum_sources(
-    const amrex::Geometry& /* geom */,
-    const amrex::MultiFab& /* density */,
-    const amrex::MultiFab& velocity,
-    const amrex::MultiFab& scalars,
-    amrex::MultiFab& vel_forces) const
+void ABL::post_init_actions()
 {
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (amrex::MFIter mfi(vel_forces, amrex::TilingIfNotGPU()); mfi.isValid();
-         ++mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& vf = vel_forces.array(mfi);
+    m_abl_wall_func.init_log_law_height();
 
-        // Boussinesq buoyancy term
-        if (m_has_boussinesq) {
-            const auto& scal = scalars.const_array(mfi);
-            (*m_boussinesq)(bx, scal, vf);
-        }
+    // Register ABL wall function for velocity
+    m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
 
-        // Coriolis term
-        if (m_has_coriolis) {
-            const auto& vel = velocity.const_array(mfi);
-            (*m_coriolis)(bx, vel, vf);
-        }
-
-        // Driving pressure gradient term
-        if (m_has_driving_dpdx) (*m_abl_forcing)(bx, vf);
-    }
+    // Register temperature top BC gradient function
+    m_temperature.register_custom_bc<ABLThetaTopBC>();
 }
-
 
 /** Perform tasks at the beginning of a new timestep
  *
@@ -116,31 +68,16 @@ void ABL::add_momentum_sources(
  */
 void ABL::pre_advance_work()
 {
-    // Spatial averaging on z-planes
-    constexpr int direction = 2;
-    auto geom = m_incflo->Geom();
+    const auto& time = m_sim.time();
+    const auto& geom = m_sim.mesh().Geom();
+    m_pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature.vec_ptrs());
 
-    PlaneAveraging pa(geom,
-                      m_incflo->velocity().vec_ptrs(),
-                      m_incflo->tracer().vec_ptrs(),
-                      direction);
+    m_abl_wall_func.update_umean(m_pa);
 
-    {
-        // First cell height
-        const amrex::Real fch = geom[0].ProbLo(direction) + 0.5 * geom[0].CellSize(direction);
-        const amrex::Real vx = pa.line_velocity_xdir(fch);
-        const amrex::Real vy = pa.line_velocity_ydir(fch);
-
-        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
-        const amrex::Real utau = m_abl_wall_func->utau(uground, fch);
-        // TODO: For now retain wall function logic in incflo
-        m_incflo->set_abl_friction_vels(uground, utau);
-    }
-
-    if (m_has_driving_dpdx) {
+    if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
-        const amrex::Real vx = pa.line_velocity_xdir(zh);
-        const amrex::Real vy = pa.line_velocity_ydir(zh);
+        const amrex::Real vx = m_pa.line_velocity_xdir(zh);
+        const amrex::Real vy = m_pa.line_velocity_ydir(zh);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);
@@ -152,8 +89,8 @@ void ABL::pre_advance_work()
         amrex::ParmParse pp("amr");
         pp.query("line_plot_int", output_interval);
 
-        if ((output_interval > 0) && (m_time.time_index() % output_interval == 0)) {
-            pa.plot_line_text("line_plot.txt", m_time.time_index(), m_time.current_time());
+        if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
+            m_pa.plot_line_text("line_plot.txt", time.time_index(), time.current_time());
         }
     }
 }

@@ -1,10 +1,13 @@
 #include "CoriolisForcing.H"
+#include "CFDSim.H"
 #include "tensor_ops.H"
 #include "trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
+namespace pde {
+namespace icns {
 
 /** Coriolis term for planetary rotation
  *
@@ -22,10 +25,11 @@ namespace amr_wind {
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds)
  */
-CoriolisForcing::CoriolisForcing()
+CoriolisForcing::CoriolisForcing(const CFDSim& sim)
+    : m_velocity(sim.repo().get_field("velocity"))
 {
     static_assert(AMREX_SPACEDIM == 3, "ABL implementation requires 3D domain");
-    amrex::ParmParse pp("abl");
+    amrex::ParmParse pp("CoriolisForcing");
 
     // Latitude is mandatory, everything else is optional
     // Latitude is read in degrees
@@ -46,10 +50,14 @@ CoriolisForcing::CoriolisForcing()
     utils::cross_prod(m_east.data(), m_north.data(), m_up.data());
 }
 
+CoriolisForcing::~CoriolisForcing() = default;
+
 void CoriolisForcing::operator()(
+    const int lev,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const amrex::Array4<const amrex::Real>& vel,
-    const amrex::Array4<amrex::Real>& vel_forces) const
+    const FieldState fstate,
+    const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> east{{m_east[0], m_east[1], m_east[2]}};
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> north{{m_north[0], m_north[1], m_north[2]}};
@@ -58,6 +66,7 @@ void CoriolisForcing::operator()(
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
+    const auto& vel = m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
         const amrex::Real ue = east[0] * vel(i, j, k, 0) +
@@ -78,10 +87,12 @@ void CoriolisForcing::operator()(
         const amrex::Real ay = ae * east[1] + an * north[1] + au * up[1];
         const amrex::Real az = ae * east[2] + an * north[2] + au * up[2];
 
-        vel_forces(i, j, k, 0) += ax;
-        vel_forces(i, j, k, 1) += ay;
-        vel_forces(i, j, k, 2) += az;
+        src_term(i, j, k, 0) += ax;
+        src_term(i, j, k, 1) += ay;
+        src_term(i, j, k, 2) += az;
     });
 }
 
+} // namespace icns
+} // namespace pde
 } // namespace amr_wind

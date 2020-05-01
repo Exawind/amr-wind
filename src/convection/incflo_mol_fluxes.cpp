@@ -1,23 +1,30 @@
-#include <incflo_convection_K.H>
-#include <incflo.H>
-#include <utility>
+#include <AMReX_Geometry.H>
+#include "incflo_convection_K.H"
+#include "MOL.H"
+#include "bc_ops.H"
 
 using namespace amrex;
 
-namespace {
-    std::pair<bool,bool> has_extdir (BCRec const* bcrec, int ncomp, int dir)
+void mol::compute_convective_rate (Box const& bx, int ncomp,
+                                      Array4<Real> const& dUdt,
+                                      Array4<Real const> const& fx,
+                                      Array4<Real const> const& fy,
+                                      Array4<Real const> const& fz,
+                                      GpuArray<Real, AMREX_SPACEDIM> dxi)
+{
+    BL_PROFILE("amr-wind::mol::compute_convective_rate")
+    const auto dxinv = dxi;
+    amrex::ParallelFor(bx, ncomp,
+    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
     {
-        std::pair<bool,bool> r{false,false};
-        for (int n = 0; n < ncomp; ++n) {
-            r.first = r.first or bcrec[n].lo(dir) == BCType::ext_dir;
-            r.second = r.second or bcrec[n].hi(dir) == BCType::ext_dir;
-        }
-        return r;
-    }
+        dUdt(i,j,k,n) = dxinv[0] * (fx(i,j,k,n) - fx(i+1,j,k,n))
+            +           dxinv[1] * (fy(i,j,k,n) - fy(i,j+1,k,n))
+            +           dxinv[2] * (fz(i,j,k,n) - fz(i,j,k+1,n));
+    });
 }
 
 void
-incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
+mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real> const& fx,
                                    Array4<Real> const& fy,
                                    Array4<Real> const& fz,
@@ -25,8 +32,10 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                                    Array4<Real const> const& umac,
                                    Array4<Real const> const& vmac,
                                    Array4<Real const> const& wmac,
-                                   BCRec const* h_bcrec, BCRec const* d_bcrec)
+                                   BCRec const* h_bcrec, BCRec const* d_bcrec,
+                                   Vector<Geometry> geom)
 {
+    BL_PROFILE("amr-wind::mol::compute_convective_fluxes")
     constexpr Real small_vel = 1.e-10;
 
     const Box& domain_box = geom[lev].Domain();
@@ -42,7 +51,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     Box const& zbx = amrex::surroundingNodes(bx,2);
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
-    auto extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
+    auto extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
@@ -93,7 +102,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
+    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
@@ -144,7 +153,7 @@ incflo::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
+    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or

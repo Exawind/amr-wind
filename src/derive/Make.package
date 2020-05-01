@@ -1,2 +1,2 @@
-CEXE_sources += derive.cpp
+CEXE_sources += derive.cpp compute_strainrate.cpp
 CEXE_headers += derive_K.H

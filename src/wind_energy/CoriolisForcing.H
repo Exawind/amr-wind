@@ -1,24 +1,32 @@
 #ifndef CORIOLISFORCING_H
 #define CORIOLISFORCING_H
 
-#include "AMReX_Array4.H"
-#include "AMReX_Box.H"
-#include "AMReX_REAL.H"
-#include "AMReX_Vector.H"
+#include "FieldRepo.H"
+#include "icns/MomentumSource.H"
 
 namespace amr_wind {
+namespace pde {
+namespace icns {
 
-class CoriolisForcing
+class CoriolisForcing : public MomentumSource::Register<CoriolisForcing>
 {
 public:
-    CoriolisForcing();
+    static const std::string identifier() { return "CoriolisForcing"; }
 
-    void operator()(
+    CoriolisForcing(const CFDSim&);
+
+    virtual ~CoriolisForcing();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
         const amrex::Box& bx,
-        const amrex::Array4<amrex::Real const>& velocity,
-        const amrex::Array4<amrex::Real>& vel_forces) const;
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
+    const Field& m_velocity;
+
     ///@{
     /** Orientation of the grid w.r.t. to planetary coordinate system
      */
@@ -27,7 +35,8 @@ private:
     amrex::Vector<amrex::Real> m_up{{1.0, 0.0, 1.0}};
     ///@}
 
-    //! Latitude where the Coriolis forcing is computed (+ve northern hemisphere)
+    //! Latitude where the Coriolis forcing is computed (+ve northern
+    //! hemisphere)
     amrex::Real m_latitude{0.0};
 
     amrex::Real m_sinphi{0.0};
@@ -37,6 +46,8 @@ private:
     amrex::Real m_coriolis_factor{0.0};
 };
 
-}
+} // namespace icns
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* CORIOLISFORCING_H */

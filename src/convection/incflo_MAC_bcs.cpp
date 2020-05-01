@@ -10,9 +10,9 @@ void incflo_set_mac_bcs (Box const& domain,
                          Array4<Real> const& v,
                          Array4<Real> const& w,
                          Array4<Real const> const& vel,
-                         Vector<BCRec> const& h_bcrec,
-                         BCRec const* /* d_bcrec */)
+                         Vector<BCRec> const& h_bcrec)
 {
+    BL_PROFILE("amr-wind::incflo_set_mac_bcs")
     int idim = 0;
     if (h_bcrec[idim].lo(idim) == BCType::ext_dir and
         domain.smallEnd(idim) == ubx.smallEnd(idim))

@@ -3,11 +3,14 @@
 
 #include "ABL.H"
 #include "RefinementCriteria.H"
+#include "PDEBase.H"
 
 using namespace amrex;
 
 incflo::incflo ()
-    : m_repo(*this)
+    : m_sim(*this)
+    , m_time(m_sim.time())
+    , m_repo(m_sim.repo())
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -19,10 +22,7 @@ incflo::incflo ()
 
     declare_fields();
 
-    init_bcs();
     init_field_bcs();
-
-    init_advection();
 
     set_background_pressure();
 }
@@ -32,7 +32,7 @@ incflo::~incflo ()
 
 void incflo::InitData ()
 {
-    BL_PROFILE("incflo::InitData()");
+    BL_PROFILE("amr-wind::incflo::InitData()")
 
     int restart_flag = 0;
     if(m_restart_file.empty())
@@ -47,7 +47,18 @@ void incflo::InitData ()
 
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
+        amrex::Print() << "Creating mesh... " ;
         InitFromScratch(m_time.current_time());
+        amrex::Print() << "done" << std::endl;
+        if (ParallelDescriptor::IOProcessor()) {
+            amrex::Print() << "Grid summary: " << std::endl;
+            printGridSummary(amrex::OutStream(), 0, finest_level);
+        }
+        for (auto& pp: m_sim.physics())
+            pp->post_init_actions();
+
+        icns().initialize();
+        for (auto& eqn: scalar_eqns()) eqn->initialize();
 
         if (m_do_initial_proj) {
             InitialProjection();
@@ -65,6 +76,13 @@ void incflo::InitData ()
         restart_flag = 1;
         // Read starting configuration from chk file.
         ReadCheckpointFile();
+        if (ParallelDescriptor::IOProcessor()) {
+            amrex::Print() << "Grid summary: " << std::endl;
+            printGridSummary(amrex::OutStream(), 0, finest_level);
+        }
+
+        icns().initialize();
+        for (auto& eqn: scalar_eqns()) eqn->initialize();
     }
 
     // Plot initial distribution
@@ -73,34 +91,40 @@ void incflo::InitData ()
         WritePlotFile();
         m_last_plt = 0;
     }
-    if(m_KE_int > 0 && !restart_flag)
-    {
-        amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time() << ", " << ComputeKineticEnergy() << std::endl;
-    }
-
-
-    if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
-        printGridSummary(amrex::OutStream(), 0, finest_level);
-    }
 }
 
 void incflo::Evolve()
 {
-    BL_PROFILE("incflo::Evolve()");
+    BL_PROFILE("amr-wind::incflo::Evolve()")
+
+    if (m_KE_int > 0 && m_restart_file.empty()) {
+        amrex::Print() << "\nTime, Kinetic Energy: " << m_time.current_time()
+                       << ", " << ComputeKineticEnergy() << std::endl;
+    }
 
     while(m_time.new_timestep())
     {
+        amrex::Real time0 = amrex::ParallelDescriptor::second();
         if (m_time.do_regrid())
         {
-            if (m_verbose > 0) amrex::Print() << "Regriding...\n";
+            amrex::Print() << "Regrid mesh ... " ;
+            amrex::Real rstart = amrex::ParallelDescriptor::second();
             regrid(0, m_time.current_time());
-            if (m_verbose > 0 and ParallelDescriptor::IOProcessor()) {
+            amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
+            amrex::Print() << "time elapsed = " << rend << std::endl;
+            if (ParallelDescriptor::IOProcessor()) {
+                amrex::Print() << "Grid summary: " << std::endl;
                 printGridSummary(amrex::OutStream(), 0, finest_level);
             }
+            icns().post_regrid_actions();
+            for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
         }
 
         // Advance to time t + dt
+        amrex::Real time1 = amrex::ParallelDescriptor::second();
         Advance();
+        amrex::Print() << std::endl;
+        amrex::Real time2 = amrex::ParallelDescriptor::second();
 
         if (m_time.write_plot_file())
         {
@@ -116,9 +140,19 @@ void incflo::Evolve()
         
         if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
         {
-            amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time() << ", " << ComputeKineticEnergy() << std::endl;
+            amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time()
+                           << ", " << ComputeKineticEnergy() << std::endl;
         }
+        amrex::Real time3 = amrex::ParallelDescriptor::second();
+
+        amrex::Print() << "WallClockTime: " << m_time.time_index()
+                       << " Solve: " << std::setprecision(8) << (time2 - time1)
+                       << " Misc: " << std::setprecision(6) << (time3 - time2)
+                       << " Total: " << std::setprecision(8) << (time3 - time0) << std::endl;
     }
+    amrex::Print()
+        << "\n==============================================================================\n"
+        << std::endl;
 
     // TODO: Fix last checkpoint/plot output
     // Output at the final time
@@ -137,7 +171,7 @@ void incflo::Evolve()
 void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_grids,
                                       const DistributionMapping& new_dmap)
 {
-    BL_PROFILE("incflo::MakeNewLevelFromScratch()");
+    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()")
 
     if (m_verbose > 0)
     {
@@ -153,9 +187,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
     if (m_restart_file.empty()) {
-        prob_init_fluid(lev);
-
-        for (auto& pp: m_physics) {
+        for (auto& pp: m_sim.physics()) {
             pp->initialize_fields(lev, Geom(lev));
         }
     }
@@ -165,7 +197,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 // TODO: Move somewhere else, for example setup/incflo_arrays.cpp
 void incflo::AverageDown()
 {
-    BL_PROFILE("incflo::AverageDown()");
+    BL_PROFILE("amr-wind::incflo::AverageDown()")
 
     for (int lev = finest_level - 1; lev >= 0; --lev)
     {

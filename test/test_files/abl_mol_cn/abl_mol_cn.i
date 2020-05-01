@@ -14,10 +14,8 @@ time.cfl              =   0.45         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 amr.KE_int = 1
-amr.plane_averaging = 1
 amr.line_plot_int = 1
 time.plot_interval            =   500       # Steps between plot files
-amr.plot_per            =   -1          # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
@@ -28,19 +26,23 @@ amr.plt_tracer = 1
 incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.ro_0             = 1.0          # Reference density 
 
-incflo.fluid_model      =   "SmagorinskyLillySGS" # Fluid model (rheology)
-incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.diffusion_type = 1
+transport.viscosity = 1.0e-5
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Smagorinsky
+Smagorinsky_coeffs.Cs = 0.135
 
-abl.Smagorinsky_Lilly_SGS_constant = .135
-abl.use_boussinesq = 1 
-abl.coriolis_effect = 1 
-abl.abl_forcing = 1
 abl.reference_temperature = 300.0
 abl.latitude = 41.3
 
+incflo.physics = ABL
+ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature = 300.0
+CoriolisForcing.latitude = 41.3
+ABLForcing.abl_forcing_height = 90
+
 incflo.advect_tracer = 1
-incflo.ntrac = 1 
 
 incflo.probtype = 35
 incflo.ic_u = 6.128355544951824
@@ -72,17 +74,15 @@ incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 zlo.type =   "wall_model"
-zlo.tracer = 0.0
+zlo.temperature = 0.0
 
 zhi.type =   "slip_wall"
-zhi.tracer = 0.003 # tracer is used to specify potential temperature gradient
+zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0           # incflo_level
-diffusion.verbose       =   0           # DiffusionEquation
-mac.verbose             =   0           # MacProjector
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              DEBUGGING                #

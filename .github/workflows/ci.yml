@@ -38,8 +38,10 @@ jobs:
         include:
           - os: macos-latest
             install_deps: brew install open-mpi
+            comp: llvm
           - os: ubuntu-latest
             install_deps: sudo apt-get install mpich libmpich-dev
+            comp: gnu
     steps:
     - uses: actions/checkout@v2
       with: 
@@ -67,3 +69,6 @@ jobs:
     - name: test
       working-directory: ${{runner.workspace}}/build-ci
       run: ctest -j ${{env.NUM_PROCS}} -LE no_ci --output-on-failure
+    - name: gnumake
+      working-directory: ./exec
+      run: make -j ${{env.NUM_PROCS}} COMP=${{matrix.comp}} USE_MPI=TRUE
