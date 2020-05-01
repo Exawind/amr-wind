@@ -30,11 +30,8 @@ void incflo::ReadParameters ()
         pp.query("do_initial_proj", m_do_initial_proj);
 
         // Physics
-        pp.queryarr("delp", m_delp, 0, AMREX_SPACEDIM);
-        pp.queryarr("gravity", m_gravity, 0, AMREX_SPACEDIM);
 
         pp.query("constant_density"         , m_constant_density);
-        pp.query("test_tracer_conservation" , m_test_tracer_conservation);
 
         // Godunov-related flags
         pp.query("use_godunov"                      , m_use_godunov);
@@ -59,19 +56,9 @@ void incflo::ReadParameters ()
             amrex::Abort("We currently require cfl <= 1.0 when using the Godunov advection scheme");
         }
 
-        // Initial conditions
+        // Initial conditions only kept around for
         pp.query("probtype", m_probtype);
-        pp.query("ic_u", m_ic_u);
-        pp.query("ic_v", m_ic_v);
-        pp.query("ic_w", m_ic_w);
-        pp.query("ic_p", m_ic_p);
 
-        // Viscosity (if constant)
-        pp.query("mu", m_mu);
-
-        // Density (if constant)
-        pp.query("ro_0", m_ro_0);
-        AMREX_ALWAYS_ASSERT(m_ro_0 >= 0.0);
 
     } // end prefix incflo
 

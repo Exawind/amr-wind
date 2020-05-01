@@ -22,17 +22,6 @@ void incflo::prob_init_fluid (int lev)
     pressure()(lev).setVal(0.0);
     grad_p()(lev).setVal(0.0);
 
-    rho.setVal(m_ro_0);
-    density().state(amr_wind::FieldState::Old)(lev).setVal(m_ro_0);
-
-    vel.setVal(m_ic_u, 0, 1);
-    vel.setVal(m_ic_v, 1, 1);
-    vel.setVal(m_ic_w, 2, 1);
-    trac.setVal(0.0);
-
-    // FIXME: Ongoing refactor handle ABL/wind physics through physics interface
-    if (m_probtype == 35) return;
-
     for (MFIter mfi(rho); mfi.isValid(); ++mfi)
     {
         const Box& vbx = mfi.validbox();
@@ -66,7 +55,7 @@ void incflo::init_plane_poiseuille (Box const& vbx, Box const& /* gbx */,
     Real dyinv = 1.0 / domain.length(1);
     const auto dhi = amrex::ubound(domain);
 
-    Real u = m_ic_u;
+    Real u = 1.0;
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
     {
         Real y = (j+0.5)*dyinv;

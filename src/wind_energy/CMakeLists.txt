@@ -13,6 +13,7 @@ target_sources(${amr_wind_lib_name}
   RayleighTaylor.cpp
   RayleighTaylorFieldInit.cpp
   TaylorGreenVortex.cpp
+  FreeStream.cpp
   )
 
 target_include_directories(

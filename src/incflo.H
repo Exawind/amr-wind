@@ -100,8 +100,6 @@ public: // for cuda
     void ComputeDivU (amrex::Real time);
     amrex::Real ComputeKineticEnergy () const;
 
-    bool m_wall_model_flag = false; /** if a wall model is detected on at least 1 of 6 boundaries it is set to true */
-
     ///////////////////////////////////////////////////////////////////////////
     //
     // prob
@@ -147,33 +145,17 @@ private:
 
     // Member variables for initial conditions
     int m_probtype = 0;
-    amrex::Real m_ic_u = 0.0;
-    amrex::Real m_ic_v = 0.0;
-    amrex::Real m_ic_w = 0.0;
-    amrex::Real m_ic_p = 0.0;
 
     // Initial projection / iterations
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
-    amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_delp{{0.0, 0.0, 0.0}};
-
-    // Density (if constant)
-    amrex::Real m_ro_0 = 1.0;
-
     bool m_constant_density = true;
-    bool m_test_tracer_conservation = false;
 
     // Default to MOL (not Godunov)
     bool m_use_godunov         = false;
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
-
-    // Fluid properties
-    amrex::Real m_mu = 1.0;
 
     int m_last_plt = -1;
     std::string m_plot_file{"plt"};
@@ -209,11 +191,6 @@ private:
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return m_repo.factory(lev); }
 
-    // Number of ghost cells for force field arrays.
-    int nghost_force () const {
-        return (m_use_godunov) ? 1 : 0;
-    }
-
     bool need_divtau () const {
         return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
     }
@@ -222,8 +199,6 @@ private:
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
 
     void Advance ();
-    void AverageDown ();
-    void AverageDownTo (int crse_lev);
 
     ///////////////////////////////////////////////////////////////////////////
     //

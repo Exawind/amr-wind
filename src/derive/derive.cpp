@@ -139,7 +139,7 @@ Real incflo::ComputeKineticEnergy () const
     // total volume of grid on level 0
     const Real total_vol = geom[0].ProbDomain().volume();
 
-    KE *= 0.5/total_vol/m_ro_0;
+    KE *= 0.5/total_vol;
 
     ParallelDescriptor::ReduceRealSum(KE);
 

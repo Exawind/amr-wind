@@ -43,5 +43,4 @@ geometry.is_periodic    =   1   1   1   # Periodicity x y z (0/1)
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #          INITIAL CONDITIONS           #
 #.......................................#
-incflo.probtype         =   0
 incflo.physics = TaylorGreenVortex
