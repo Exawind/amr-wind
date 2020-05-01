@@ -16,8 +16,8 @@ void incflo::ReadParameters ()
 {
     ReadIOParameters();
 
-    { // Prefix amr
-        ParmParse pp("amr");
+    { // Prefix io
+        ParmParse pp("io");
         pp.query("KE_int", m_KE_int);
     } // end prefix amr
 
@@ -30,7 +30,6 @@ void incflo::ReadParameters ()
         pp.query("do_initial_proj", m_do_initial_proj);
 
         // Physics
-
         pp.query("constant_density"         , m_constant_density);
 
         // Godunov-related flags
@@ -56,7 +55,7 @@ void incflo::ReadParameters ()
             amrex::Abort("We currently require cfl <= 1.0 when using the Godunov advection scheme");
         }
 
-        // Initial conditions only kept around for
+        // probtype only kept around for probtype=31 otherwise default=0 works for all other physics
         pp.query("probtype", m_probtype);
 
 
