@@ -9,8 +9,11 @@ FreeStream::FreeStream(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {
-    amrex::ParmParse pp("FreeStream");
 
+    // no freestream inputs yet
+    // amrex::ParmParse pp(this->identifier());
+
+    // fixme rho,u,v,w in incflo class
     {
         amrex::ParmParse pp("incflo");
         pp.query("ro_0", m_rho);

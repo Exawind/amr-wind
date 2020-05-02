@@ -23,7 +23,7 @@ namespace icns {
 DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     : m_density(sim.repo().get_field("density"))
 {
-    amrex::ParmParse pp(this->identifier());
+//    amrex::ParmParse pp(identifier());
 
     // FIXME: gravity in `incflo` namespace
     {

@@ -17,7 +17,6 @@ amr.KE_int = 1
 io.line_plot_int = 1
 time.plot_interval            =   500       # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
-amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#

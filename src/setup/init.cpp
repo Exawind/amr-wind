@@ -78,7 +78,14 @@ void incflo::ReadParameters ()
 
 void incflo::ReadIOParameters()
 {
-    // Prefix amr
+    {
+        // Prefix amr
+        ParmParse pp("io");
+        pp.query("check_file", m_check_file);
+        pp.query("restart_file", m_restart_file);
+        pp.query("plot_file", m_plot_file);
+    }
+
     ParmParse pp("amr");
 
     pp.query("check_file", m_check_file);
