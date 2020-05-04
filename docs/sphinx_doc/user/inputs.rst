@@ -48,7 +48,7 @@ This section documents the parameters available within each section.
 
 .. note::
 
-   Boolean flags (``true/false``) are indicated using integers in the text file
+   Boolean flags (``true/false``) can also be indicated using integers in the text file
    and uses the convention ``0 = False`` and ``1 = True``.
 
 Section: ``geometry``

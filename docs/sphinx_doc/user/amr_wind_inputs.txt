@@ -12,13 +12,6 @@ geometry.is_periodic       = 1 1 0
 amr.n_cell                 = 512 512 128
 amr.max_level              = 0
 
-# input/output settings
-io.line_plot_int           =  2
-io.KE_int                  = -1
-io.check_file              = chk
-io.restart_file            = ""
-io.plot_file               = "plt"
-
 # Simulation control parameters
 time.stop_time             = 20000.0
 time.max_step              = -1
@@ -29,6 +22,12 @@ time.regrid_interval       = -1
 time.cfl                   = 0.95
 time.use_force_cfl         = false
 
+# input/output settings
+io.line_plot_int           =  2
+io.KE_int                  = -1
+io.check_file              = chk
+io.restart_file            = ""
+io.plot_file               = "plt"
 
 # incflo
 incflo.physics             = ABL
