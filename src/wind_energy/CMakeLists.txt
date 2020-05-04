@@ -3,17 +3,7 @@ target_sources(${amr_wind_lib_name}
 
   ABL.cpp
   ABLFieldInit.cpp
-  ABLForcing.cpp
   ABLWallFunction.cpp
-  BoussinesqBuoyancy.cpp
-  CoriolisForcing.cpp
-  BoussinesqBubble.cpp
-  BoussinesqBubbleFieldInit.cpp
-  DensityBuoyancy.cpp
-  RayleighTaylor.cpp
-  RayleighTaylorFieldInit.cpp
-  TaylorGreenVortex.cpp
-  FreeStream.cpp
   )
 
 target_include_directories(

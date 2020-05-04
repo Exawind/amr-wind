@@ -1,2 +1,0 @@
-CEXE_headers += Smagorinsky.H
-CEXE_sources += Smagorinsky.cpp

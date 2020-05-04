@@ -1,3 +1,0 @@
-CEXE_sources += CartBoxRefinement.cpp
-CEXE_headers += CartBoxRefinement.H
-CEXE_headers += RefinementCriteria.H

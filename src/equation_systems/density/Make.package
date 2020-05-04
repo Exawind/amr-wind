@@ -1,3 +1,0 @@
-CEXE_headers += density.H
-
-CEXE_sources += density.cpp
