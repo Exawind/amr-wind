@@ -51,6 +51,9 @@ public:
     /** output a single binary file with averages and fluctuations */
     void plot_line_binary(std::string filename, int step, amrex::Real time);
 
+    /** output a line plot file based on the plot type */
+    void plot_line(int step, amrex::Real time, int plot_type = 0);
+
     /** change precision of text file output */
     void set_precision(int p)
     {

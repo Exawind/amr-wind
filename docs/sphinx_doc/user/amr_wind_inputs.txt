@@ -16,34 +16,107 @@ amr.max_level              = 0
 time.stop_time             = 20000.0
 time.max_step              = -1
 time.fixed_dt              = 0.5
-time.cfl                   = -0.45
+time.cfl                   = 0.95
+time.init_shrink           = 0.1
+time.regrid_interval       = -1
 time.plot_interval         = 1000
 time.checkpoint_interval   = 10000
-time.regrid_interval       = -1
-time.verbose               = 0
+time.use_force_cfl         = false
 
-# Atmospheric boundary layer
-abl.ntemperature           = 3
-abl.temperature_heights    = 650.0 750.0 1000.0
-abl.temperature_values     = 300.0 308.0 308.75
-abl.surface_roughness_z0   = 0.15
-abl.use_boussinesq         = 1
-abl.reference_temperature  = 300.0
-abl.coriolis_effect        = 1
-abl.latitude               = 41.3
-abl.abl_forcing            = 1
-abl.abl_forcing_height     = 90.0
+# input/output settings
+io.line_plot_int           =  2
+io.KE_int                  = -1
+io.check_file              = "chk"
+io.plot_file               = "plt"
+io.restart_file            = ""
 
 # incflo
-incflo.probtype            = 35
+incflo.physics             = ABL
 incflo.ro_0                = 1.225
-incflo.mu                  = 1.0e-5
 incflo.ic_u                = 6.0
 incflo.ic_v                = 5.0
 incflo.ic_w                = 0.0
+incflo.delp                = 0.0 0.0 0.0
+incflo.verbose             = 0
+incflo.initial_iterations  = 3
+incflo.do_initial_proj     = true
+incflo.constant_density    = true
+incflo.use_godunov         = true
+incflo.use_ppm             = true
+incflo.godunov_use_forces_in_trans = false
+incflo.diffusion_type      = 2
+incflo.rhoerr              = 0.9 # can also be specified per level
+incflo.gradrhoerr          = 0.01
+
+
+# transport equation parameters
+transport.model             = ConstTransport
+transport.viscosity         = 1.0e-5
+transport.laminar_prandtl   = 0.7
+transport.turbulent_prandtl = 0.333
+
+
+# turbulence equation parameters
+turbulence.model           = Smagorinsky
+Smagorinsky_coeffs.Cs      = 0.135
+
+# Atmospheric boundary layer
+ABL.kappa                  = 0.41
+ABL.surface_roughness_z0   = 0.1
+ABL.normal_direction       = 2
+#ABL.log_law_height        = 10.0
+ABL.ntemperature           = 3
+ABL.temperature_heights    = 650.0 750.0 1000.0
+ABL.temperature_values     = 300.0 308.0 308.75
+ABL.perturb_velocity       = true
+ABL.perturb_ref_height     = 50.0
+ABL.Uperiods               = 4.0
+ABL.Vperiods               = 4.0
+ABL.deltaU                 = 1.0
+ABL.deltaV                 = 1.0
+ABL.perturb_temperature    = false
+
+# momentum source term parameters
+ICNS.source_terms                          = BoussinesqBuoyancy CoriolisForcing ABLForcing
+BoussinesqBuoyancy.reference_temperature   = 300.0
+BoussinesqBuoyancy.thermal_expansion_coeff = 0.003333333333 # optional 
+CoriolisForcing.latitude                   = 41.3
+CoriolisForcing.rotational_time_period     = 86400.0
+CoriolisForcing.east_vector                = 1.0 0.0 0.0
+CoriolisForcing.north_vector               = 0.0 1.0 0.0
+ABLForcing.abl_forcing_height              = 90.0
+
+# tagging for mesh refinement
+tagging.static_refinement     = false
+tagging.static_refinement_def = ""
 
 # Boundary conditions
 zlo.type                   = "wall_model"
-zlo.tracer                 = 0.0
+zlo.temperature            = 0.0
 zhi.type                   = "slip_wall"
-zlo.tracer                 = 0.003
+zhi.temperature            = 0.003
+
+# MLMG options for cell-centered diffusion solve
+diffusion.mg_verbose              = 0 
+diffusion.mg_cg_verbose           = 0 
+diffusion.mg_max_iter             = 200
+diffusion.mg_cg_max_iter          = 200
+diffusion.mg_fmg_max_iter         = 0 
+diffusion.mg_max_coarsening_level = 100 
+diffusion.mg_max_order            = 2
+diffusion.mg_rtol                 = 1.0e-6
+diffusion.mg_atol                 = 1.0e-12
+diffusion.bottom_solver_type      = "bicgstab"
+
+# MLMG options for MAC Projection 
+mac_proj.mg_rtol                 = 1.0e-6
+mac_proj.mg_atol                 = 1.0e-12
+
+# MLMG options for Nodal Projection
+nodal_proj.mg_rtol               = 1.0e-6
+nodal_proj.mg_atol               = 1.0e-12
+
+
+
+
+

@@ -13,11 +13,10 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-amr.KE_int = 1
+io.KE_int = 1
 io.line_plot_int = 1
 time.plot_interval            =   500       # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
-amr.restart             =   ""          # Checkpoint to restart from 
 amr.plt_tracer = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -44,12 +43,12 @@ incflo.ic_u = 6.128355544951824
 incflo.ic_v = 5.142300877492314
 incflo.ic_w = 0.0
 
-abl.ntemperature = 3
-abl.temperature_heights = 650.0 750.0 1000.0
-abl.temperature_values = 300.0 308.0 308.75
+ABL.ntemperature = 3
+ABL.temperature_heights = 650.0 750.0 1000.0
+ABL.temperature_values = 300.0 308.0 308.75
 
-abl.kappa = .41
-abl.surface_roughness_z0 = 0.15
+ABL.kappa = .41
+ABL.surface_roughness_z0 = 0.15
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

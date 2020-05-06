@@ -15,8 +15,7 @@ time.cfl              =   0.45        # CFL factor
 #.......................................#
 time.plot_interval  =  20   # Steps between plot files
 time.checkpoint_interval =   -1  # Steps between checkpoint files
-amr.restart   =   ""  # Checkpoint to restart from 
-amr.KE_int = 1        # calculate kinetic energy 
+io.KE_int = 1        # calculate kinetic energy 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#

@@ -9,6 +9,21 @@
 
 using namespace amrex;
 
+void PlaneAveraging::plot_line(int step, amrex::Real time, int plot_type)
+{
+    switch (plot_type) {
+        case 0:
+            plot_line_text("line_plot.txt", step, time);
+            break;
+        case 1:
+            plot_line_average_text("line_plot_average.txt", step, time);
+            break;
+        case 2:
+            plot_line_binary("line_plot.bin", step, time);
+            break;
+    }
+}
+
 void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 {
     BL_PROFILE("amr-wind::PlaneAveraging::plot_line_text()")

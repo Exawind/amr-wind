@@ -78,13 +78,15 @@ void incflo::ReadParameters ()
 
 void incflo::ReadIOParameters()
 {
-    // Prefix amr
+    {
+        // Prefix amr
+        ParmParse pp("io");
+        pp.query("check_file", m_check_file);
+        pp.query("restart_file", m_restart_file);
+        pp.query("plot_file", m_plot_file);
+    }
+
     ParmParse pp("amr");
-
-    pp.query("check_file", m_check_file);
-    pp.query("restart", m_restart_file);
-
-    pp.query("plot_file", m_plot_file);
 
     // The plt_ccse_regtest resets the defaults,
     //     but we can over-ride those below

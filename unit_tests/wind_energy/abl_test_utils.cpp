@@ -5,7 +5,7 @@ namespace utils {
 
 void populate_abl_params()
 {
-    amrex::ParmParse pp("abl");
+    amrex::ParmParse pp("ABL");
 
     // Initial conditions (Temperature)
     amrex::Vector<amrex::Real> theights{{0.0, 650.0, 750.0, 1000.0}};

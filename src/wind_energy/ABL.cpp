@@ -86,11 +86,13 @@ void ABL::pre_advance_work()
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
+        int plot_type = 0;
         amrex::ParmParse pp("io");
         pp.query("line_plot_int", output_interval);
+        pp.query("line_plot_type", plot_type);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
-            m_pa.plot_line_text("line_plot.txt", time.time_index(), time.current_time());
+            m_pa.plot_line(time.time_index(), time.current_time(), plot_type);
         }
     }
 }
