@@ -13,7 +13,7 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_mesh(sim.mesh())
 {
-    amrex::ParmParse pp("abl");
+    amrex::ParmParse pp("ABL");
 
     pp.query("kappa", m_kappa);
     pp.query("surface_roughness_z0", m_z0);

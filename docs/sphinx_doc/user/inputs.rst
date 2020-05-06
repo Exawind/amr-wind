@@ -42,13 +42,13 @@ Section                 Description
 ``time``                Simulation time controls
 ``io``                  Input/Output controls
 ``incflo``              CFD algorithm and physics controls
-``transport``
-``turbulence``
-``abl``                 Atmospheric boundary layer (ABL) controls
-``Momentum sources``
-``Static Refinement``
-``Boundary conditions``
-``MLMG options``
+``transport``           Transport equation controls
+``turbulence``          Turbulence model controls 
+``ABL``                 Atmospheric boundary layer (ABL) controls
+``Momentum sources``    Activate Momentum source terms and their parameters
+``Static Refinement``   Cartesian static refinement options
+``Boundary conditions`` Boundary condition types and gradients
+``MLMG options``        Multi-Level Multi-Grid Linear solver options
 ======================= ============================================================
 
 This section documents the parameters available within each section.
@@ -415,25 +415,25 @@ Section: ``ABL``
 
 This section is for setting atmospheric boundary layer parameters.
 
-.. input_param:: abl.kappa
+.. input_param:: ABL.kappa
 
    **type:** Real, optional, default = 0.41
    
    Wall model coefficient.
    
-.. input_param:: abl.surface_roughness_z0
+.. input_param:: ABL.surface_roughness_z0
 
    **type:** Real, optional, default = 0.1
    
    Wall model surface roughness. 
    
-.. input_param:: abl.normal_direction
+.. input_param:: ABL.normal_direction
 
    **type:** Integer, optional, default = 2
    
    Wall model normal direction. x-direction = 0, y-direction = 1, z-direction = 2.
 
-.. input_param:: abl.log_law_height
+.. input_param:: ABL.log_law_height
 
    **type:** Real, optional
    
@@ -445,72 +445,67 @@ This section is for setting atmospheric boundary layer parameters.
    Note: currently the fluctuating velocity terms in the shear stress model are only 
    available at the first cell center above the wall. This limitation will be removed soon.
    
-.. input_param:: abl.ntemperature
+   
+.. input_param:: `ABL.temperature_heights`
 
-   **type:** Integer, mandatory 
-   
-   Number of specified temperature values in the ABL initial condition. 
-   
-   
-.. input_param:: abl.temperature_heights
-
-   **type:** List of Reals of length ``abl.ntemperature``, mandatory 
+   **type:** List of Reals, mandatory 
    
    Height(s) in meters at which temperature values are prescribed. 
    
-.. input_param:: abl.temperature_values
+.. input_param:: ABL.temperature_values
 
-   **type:** List of Reals of length ``abl.ntemperature``, mandatory 
+   **type:** List of Reals (has to be same length as ``ABL.temperature_heights``), mandatory 
    
-   Temperature values in Kelvin at the corresponding ``abl.temperature_heights``. 
-   The temperature below the first height is assumed to be constant and equal to the first temperature value. 
+   Temperature values in Kelvin at the corresponding ``ABL.temperature_heights``. 
+   The temperature below the first height is assumed to be constant and equal to the 
+   first temperature value. 
    The temperature between values is initialized to have linear variation. 
    The final temperature is constant above the last specified height. 
    
       
-.. input_param:: abl.perturb_velocity
+.. input_param:: ABL.perturb_velocity
 
    **type:** Boolean, optional, default = true
    
    If true this flag turns on perturbations to the freestream flow. 
    
-.. input_param:: abl.pertub_ref_height
+.. input_param:: ABL.pertub_ref_height
 
    **type:** Real, optional, default = 50.0
    
    Reference height for velocity perturbations, 
    perturbations exist below this height and decay above this height.
-   Only active when ``abl.perturb_velocity = true``.
+   Only active when ``ABL.perturb_velocity = true``.
    
-.. input_param:: abl.Uperiods
+.. input_param:: ABL.Uperiods
 
    **type:** Real, optional, default = 4.0
    
    Number of sinusoidal waves in x-direction.
-   Only active when ``abl.perturb_velocity = true``.
+   Only active when ``ABL.perturb_velocity = true``.
    
-.. input_param:: abl.Vperiods
+.. input_param:: ABL.Vperiods
 
    **type:** Real, optional, default = 4.0
    
    Number of sinusoidal waves in y-direction.
-   Only active when ``abl.perturb_velocity = true``.
+   Only active when ``ABL.perturb_velocity = true``.
    
-.. input_param:: abl.deltaU
+.. input_param:: ABL.deltaU
 
    **type:** Real, optional, default = 1.0
    
    Amplitude of fluctuations in x-direction.
-   Only active when ``abl.perturb_velocity = true``.
+   Only active when ``ABL.perturb_velocity = true``.
    
-.. input_param:: abl.deltaV
+.. input_param:: ABL.deltaV
 
    **type:** Real, optional, default = 1.0
    
    Amplitude of fluctuations in y-direction.
-   Only active when ``abl.perturb_velocity = true``.
+   Only active when ``ABL.perturb_velocity = true``.
    
-.. input_param:: abl.perturb_temperature
+.. input_param:: ABL.perturb_temperature
 
    **type:** Boolean, optional, default = false
    

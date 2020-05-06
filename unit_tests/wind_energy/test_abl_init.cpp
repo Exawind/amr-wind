@@ -15,7 +15,7 @@ TEST_F(ABLMeshTest, abl_initialization)
 
     // For the first test disable velocity perturbations
     {
-        amrex::ParmParse pp("abl");
+        amrex::ParmParse pp("ABL");
         bool perturb_velocity = false;
         pp.add("perturb_velocity", static_cast<int>(perturb_velocity));
     }

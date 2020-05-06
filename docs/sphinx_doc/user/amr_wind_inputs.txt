@@ -61,20 +61,20 @@ turbulence.model           = Smagorinsky
 Smagorinsky_coeffs.Cs      = 0.135
 
 # Atmospheric boundary layer
-abl.kappa                  = 0.41
-abl.surface_roughness_z0   = 0.1
-abl.normal_direction       = 2
-#abl.log_law_height        = 10.0
-abl.ntemperature           = 3
-abl.temperature_heights    = 650.0 750.0 1000.0
-abl.temperature_values     = 300.0 308.0 308.75
-abl.perturb_velocity       = true
-abl.perturb_ref_height     = 50.0
-abl.Uperiods               = 4.0
-abl.Vperiods               = 4.0
-abl.deltaU                 = 1.0
-abl.deltaV                 = 1.0
-abl.perturb_temperature    = false
+ABL.kappa                  = 0.41
+ABL.surface_roughness_z0   = 0.1
+ABL.normal_direction       = 2
+#ABL.log_law_height        = 10.0
+ABL.ntemperature           = 3
+ABL.temperature_heights    = 650.0 750.0 1000.0
+ABL.temperature_values     = 300.0 308.0 308.75
+ABL.perturb_velocity       = true
+ABL.perturb_ref_height     = 50.0
+ABL.Uperiods               = 4.0
+ABL.Vperiods               = 4.0
+ABL.deltaU                 = 1.0
+ABL.deltaV                 = 1.0
+ABL.perturb_temperature    = false
 
 # momentum source term parameters
 ICNS.source_terms                          = BoussinesqBuoyancy CoriolisForcing ABLForcing
