@@ -16,22 +16,22 @@ amr.max_level              = 0
 time.stop_time             = 20000.0
 time.max_step              = -1
 time.fixed_dt              = 0.5
+time.cfl                   = 0.95
+time.init_shrink           = 0.1
+time.regrid_interval       = -1
 time.plot_interval         = 1000
 time.checkpoint_interval   = 10000
-time.regrid_interval       = -1
-time.cfl                   = 0.95
 time.use_force_cfl         = false
 
 # input/output settings
 io.line_plot_int           =  2
 io.KE_int                  = -1
-io.check_file              = chk
-io.restart_file            = ""
+io.check_file              = "chk"
 io.plot_file               = "plt"
+io.restart_file            = ""
 
 # incflo
 incflo.physics             = ABL
-incflo.probtype            = 0
 incflo.ro_0                = 1.225
 incflo.ic_u                = 6.0
 incflo.ic_v                = 5.0
@@ -42,7 +42,7 @@ incflo.initial_iterations  = 3
 incflo.do_initial_proj     = true
 incflo.constant_density    = true
 incflo.use_godunov         = true
-incflo.use_ppm             = 1
+incflo.use_ppm             = true
 incflo.godunov_use_forces_in_trans = false
 incflo.diffusion_type      = 2
 incflo.rhoerr              = 0.9 # can also be specified per level
@@ -50,20 +50,21 @@ incflo.gradrhoerr          = 0.01
 
 
 # transport equation parameters
-transport.model                         = ConstTransport
-transport.viscosity                     = 1.0e-5
-transport.laminar_prandtl               = 0.7
-transport.turbulent_prandtl             = 0.333
+transport.model             = ConstTransport
+transport.viscosity         = 1.0e-5
+transport.laminar_prandtl   = 0.7
+transport.turbulent_prandtl = 0.333
 
 
 # turbulence equation parameters
 turbulence.model           = Smagorinsky
+Smagorinsky_coeffs.Cs      = 0.135
 
 # Atmospheric boundary layer
 abl.kappa                  = 0.41
 abl.surface_roughness_z0   = 0.1
 abl.normal_direction       = 2
-#abl.log_law_height        = 10.0 # if specified it overrides setting it to first cell height
+#abl.log_law_height        = 10.0
 abl.ntemperature           = 3
 abl.temperature_heights    = 650.0 750.0 1000.0
 abl.temperature_values     = 300.0 308.0 308.75
@@ -86,14 +87,14 @@ CoriolisForcing.north_vector               = 0.0 1.0 0.0
 ABLForcing.abl_forcing_height              = 90.0
 
 # tagging for mesh refinement
-tagging.static_refinement = false
+tagging.static_refinement     = false
 tagging.static_refinement_def = ""
 
 # Boundary conditions
 zlo.type                   = "wall_model"
 zlo.temperature            = 0.0
 zhi.type                   = "slip_wall"
-zlo.temperature            = 0.003
+zhi.temperature            = 0.003
 
 # MLMG options for cell-centered diffusion solve
 diffusion.mg_verbose              = 0 
@@ -112,8 +113,8 @@ mac_proj.mg_rtol                 = 1.0e-6
 mac_proj.mg_atol                 = 1.0e-12
 
 # MLMG options for Nodal Projection
-nodal_proj.mg_rtol                 = 1.0e-6
-nodal_proj.mg_atol                 = 1.0e-12
+nodal_proj.mg_rtol               = 1.0e-6
+nodal_proj.mg_atol               = 1.0e-12
 
 
 
