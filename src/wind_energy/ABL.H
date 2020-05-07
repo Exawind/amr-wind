@@ -38,11 +38,15 @@ public:
 
     void post_init_actions() override;
 
+    void post_regrid_actions() override {}
+
     void initialize_fields(
         int level,
         const amrex::Geometry& geom) override;
 
     void pre_advance_work() override;
+
+    void post_advance_work() override {}
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const
     {

@@ -47,8 +47,14 @@ public:
     //! Actions to perform post initialization
     virtual void post_init_actions() = 0;
 
+    //! Actions to perform post regrid
+    virtual void post_regrid_actions() = 0;
+
     //! Perform tasks necessary before advancing timestep
     virtual void pre_advance_work() = 0;
+
+    //! Perform tasks necessary after advancing timestep
+    virtual void post_advance_work() = 0;
 };
 
 class PhysicsMgr : public CollMgr<PhysicsMgr, Physics>
