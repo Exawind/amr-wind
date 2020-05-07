@@ -10,7 +10,6 @@ void populate_abl_params()
     // Initial conditions (Temperature)
     amrex::Vector<amrex::Real> theights{{0.0, 650.0, 750.0, 1000.0}};
     amrex::Vector<amrex::Real> tvalues{{300.0, 300.0, 308.0, 308.75}};
-    pp.add("ntemperature", theights.size());
     pp.addarr("temperature_heights", theights);
     pp.addarr("temperature_values", tvalues);
     pp.add("perturb_ref_height", 50.0);

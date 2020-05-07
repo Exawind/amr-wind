@@ -43,7 +43,6 @@ incflo.ic_u = 6.128355544951824
 incflo.ic_v = 5.142300877492314
 incflo.ic_w = 0.0
 
-ABL.ntemperature = 3
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75
 
