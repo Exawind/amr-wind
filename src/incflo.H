@@ -218,10 +218,6 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void WriteHeader (const std::string& name, bool is_checkpoint) const;
-    void WriteJobInfo (const std::string& dir) const;
-    void WriteCheckPointFile () const;
-    void WritePlotFile ();
     void ReadCheckpointFile ();
 
     void PrintMaxValues (const std::string& header);
