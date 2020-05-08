@@ -4,6 +4,7 @@
 #include <incflo.H>
 #include <Physics.H>
 #include "console_io.H"
+#include "IOManager.H"
 
 using namespace amrex;
 
@@ -228,6 +229,9 @@ void incflo::ReadCheckpointFile()
         MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }
 
+    m_sim.io_manager().read_checkpoint_fields(m_restart_file);
+
+#if 0
     /***************************************************************************
      * Load fluid data                                                         *
      ***************************************************************************/
@@ -279,6 +283,7 @@ void incflo::ReadCheckpointFile()
     }
 
     amrex::Print() << "Restart complete" << std::endl;
+#endif
 }
 
 void incflo::WriteJobInfo(const std::string& path) const

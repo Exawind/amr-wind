@@ -4,6 +4,7 @@
 #include "ABL.H"
 #include "RefinementCriteria.H"
 #include "PDEBase.H"
+#include "IOManager.H"
 
 using namespace amrex;
 
@@ -33,6 +34,9 @@ incflo::~incflo ()
 void incflo::InitData ()
 {
     BL_PROFILE("amr-wind::incflo::InitData()")
+
+    // Initialize I/O manager to enable restart and outputs
+    m_sim.io_manager().initialize_io();
 
     int restart_flag = 0;
     if(m_restart_file.empty())
@@ -86,8 +90,9 @@ void incflo::InitData ()
     // Plot initial distribution
     if(m_time.write_plot_file() && !restart_flag)
     {
-        WritePlotFile();
-        m_last_plt = 0;
+        // WritePlotFile();
+        // m_last_plt = 0;
+        m_sim.io_manager().write_plot_file();
     }
 }
 
@@ -127,16 +132,18 @@ void incflo::Evolve()
 
         if (m_time.write_plot_file())
         {
-            WritePlotFile();
-            m_last_plt = m_time.time_index();
+            // WritePlotFile();
+            // m_last_plt = m_time.time_index();
+            m_sim.io_manager().write_plot_file();
         }
 
         if(m_time.write_checkpoint())
         {
-            WriteCheckPointFile();
-            m_last_chk = m_time.time_index();
+            // WriteCheckPointFile();
+            // m_last_chk = m_time.time_index();
+            m_sim.io_manager().write_checkpoint_file();
         }
-        
+
         if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
         {
             amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time()
@@ -153,14 +160,15 @@ void incflo::Evolve()
         << "\n==============================================================================\n"
         << std::endl;
 
-    // TODO: Fix last checkpoint/plot output
-    // Output at the final time
-    if( m_time.write_last_checkpoint()) {
-        WriteCheckPointFile();
-    }
+    // Output at final time
     if( m_time.write_last_plot_file())
     {
-        WritePlotFile();
+        // WritePlotFile();
+        m_sim.io_manager().write_plot_file();
+    }
+    if( m_time.write_last_checkpoint()) {
+        // WriteCheckPointFile();
+        m_sim.io_manager().write_checkpoint_file();
     }
 }
 
