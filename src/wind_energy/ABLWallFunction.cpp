@@ -42,7 +42,8 @@ void ABLWallFunction::init_log_law_height()
         pp.queryarr("velocity", vel);
         m_umean[0] = vel[0];
         m_umean[1] = vel[1];
-        const amrex::Real uground = std::sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
+        m_umean[2] = vel[2];
+        const amrex::Real uground = utils::vec_mag(m_umean.data());
         m_utau = m_kappa * uground / std::log(m_log_law_height / m_z0);
     }
 }
