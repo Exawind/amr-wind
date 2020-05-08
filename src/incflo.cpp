@@ -71,7 +71,8 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        if (m_time.write_checkpoint()) { WriteCheckPointFile(); }
+        if (m_time.write_checkpoint())
+            m_sim.io_manager().write_checkpoint_file();
     }
     else
     {
@@ -89,11 +90,8 @@ void incflo::InitData ()
 
     // Plot initial distribution
     if(m_time.write_plot_file() && !restart_flag)
-    {
-        // WritePlotFile();
-        // m_last_plt = 0;
         m_sim.io_manager().write_plot_file();
-    }
+
 }
 
 void incflo::Evolve()
@@ -132,15 +130,11 @@ void incflo::Evolve()
 
         if (m_time.write_plot_file())
         {
-            // WritePlotFile();
-            // m_last_plt = m_time.time_index();
             m_sim.io_manager().write_plot_file();
         }
 
         if(m_time.write_checkpoint())
         {
-            // WriteCheckPointFile();
-            // m_last_chk = m_time.time_index();
             m_sim.io_manager().write_checkpoint_file();
         }
 
@@ -162,14 +156,11 @@ void incflo::Evolve()
 
     // Output at final time
     if( m_time.write_last_plot_file())
-    {
-        // WritePlotFile();
         m_sim.io_manager().write_plot_file();
-    }
-    if( m_time.write_last_checkpoint()) {
-        // WriteCheckPointFile();
+
+    if( m_time.write_last_checkpoint())
         m_sim.io_manager().write_checkpoint_file();
-    }
+
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
