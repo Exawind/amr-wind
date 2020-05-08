@@ -37,7 +37,7 @@ public:
         : m_sim(sim)
         , m_time(sim.time())
         , m_repo(sim.repo())
-        , m_fields(FieldRegOp<PDE, Scheme>(m_repo)(m_time, probtype))
+        , m_fields(FieldRegOp<PDE, Scheme>(m_sim)(m_time, probtype))
         , m_src_op(m_fields)
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
