@@ -44,7 +44,7 @@ void incflo::WriteHeader(const std::string& name, bool is_checkpoint) const
 
         // Time stepping controls
         HeaderFile << m_time.time_index() << "\n";
-        HeaderFile << m_time.current_time() << "\n";
+        HeaderFile << m_time.new_time() << "\n";
         HeaderFile << m_time.deltaT() << "\n";
         HeaderFile << m_time.deltaTNm1() << "\n";
         HeaderFile << m_time.deltaTNm2() << "\n";
@@ -73,15 +73,41 @@ void incflo::WriteCheckPointFile() const
     BL_PROFILE("amr-wind::incflo::WriteCheckPointFile()")
 
     const std::string& checkpointname = amrex::Concatenate(m_check_file, m_time.time_index());
-
     amrex::Print() << "Writing checkpoint " << checkpointname << std::endl;
-
     amrex::PreBuildDirectorHierarchy(checkpointname, level_prefix, finest_level + 1, true);
 
     bool is_checkpoint = true;
     WriteHeader(checkpointname, is_checkpoint);
     WriteJobInfo(checkpointname);
 
+    auto& den = density();
+    auto& pres = pressure();
+    auto& gradp = grad_p();
+    for (int lev = 0; lev <= finest_level; ++lev) {
+        const auto& vel = icns().fields().field;
+        VisMF::Write(
+            vel(lev), amrex::MultiFabFileFullPrefix(
+                          lev, checkpointname, level_prefix, vel.name()));
+        VisMF::Write(
+            den(lev), amrex::MultiFabFileFullPrefix(
+                          lev, checkpointname, level_prefix, den.name()));
+        VisMF::Write(
+            pres(lev), amrex::MultiFabFileFullPrefix(
+                           lev, checkpointname, level_prefix, pres.name()));
+        VisMF::Write(
+            gradp(lev), amrex::MultiFabFileFullPrefix(
+                            lev, checkpointname, level_prefix, gradp.name()));
+
+        for (const auto& eqn : scalar_eqns()) {
+            const auto& field = eqn->fields().field;
+            VisMF::Write(
+                field(lev),
+                amrex::MultiFabFileFullPrefix(
+                    lev, checkpointname, level_prefix, field.name()));
+        }
+    }
+
+#if 0
     for(int lev = 0; lev <= finest_level; ++lev)
     {
         VisMF::Write(velocity()(lev),
@@ -99,6 +125,7 @@ void incflo::WriteCheckPointFile() const
         VisMF::Write(pressure()(lev),
                      amrex::MultiFabFileFullPrefix(lev, checkpointname, level_prefix, "p"));
     }
+#endif
 }
 
 void incflo::ReadCheckpointFile()
@@ -208,6 +235,31 @@ void incflo::ReadCheckpointFile()
     // Load the field data
     for(int lev = 0; lev <= finest_level; ++lev)
     {
+        VisMF::Read(
+            velocity()(lev),
+            amrex::MultiFabFileFullPrefix(
+                lev, m_restart_file, level_prefix, velocity().name()));
+        VisMF::Read(
+            density()(lev),
+            amrex::MultiFabFileFullPrefix(
+                lev, m_restart_file, level_prefix, density().name()));
+        VisMF::Read(
+            pressure()(lev),
+            amrex::MultiFabFileFullPrefix(
+                lev, m_restart_file, level_prefix, pressure().name()));
+        VisMF::Read(
+            grad_p()(lev),
+            amrex::MultiFabFileFullPrefix(
+                lev, m_restart_file, level_prefix, grad_p().name()));
+
+        for (auto& eqn : scalar_eqns()) {
+            auto& field = eqn->fields().field;
+            VisMF::Read(
+                field(lev),
+                amrex::MultiFabFileFullPrefix(
+                    lev, m_restart_file, level_prefix, field.name()));
+        }
+#if 0
         VisMF::Read(velocity()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "velocity"));
 
@@ -223,6 +275,7 @@ void incflo::ReadCheckpointFile()
 
         VisMF::Read(pressure()(lev),
                     amrex::MultiFabFileFullPrefix(lev, m_restart_file, level_prefix, "p"));
+#endif
     }
 
     amrex::Print() << "Restart complete" << std::endl;
