@@ -8,6 +8,8 @@
 #include "Physics.H"
 
 namespace amr_wind {
+class IOManager;
+
 namespace turbulence {
 class TurbulenceModel;
 }
@@ -54,6 +56,9 @@ public:
     const turbulence::TurbulenceModel& turbulence_model() const
     { return *m_turbulence; }
 
+    IOManager& io_manager() { return *m_io_mgr; }
+    const IOManager& io_manager() const { return * m_io_mgr; }
+
     void create_turbulence_model();
 
     void init_physics();
@@ -70,6 +75,8 @@ private:
     PhysicsMgr m_physics_mgr;
 
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
+
+    std::unique_ptr<IOManager> m_io_mgr;
 };
 
 }
