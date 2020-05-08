@@ -158,8 +158,6 @@ private:
     DiffusionType m_diff_type = DiffusionType::Implicit;
     int m_KE_int = -1;
 
-    std::string m_restart_file{""};
-
     //
     // end of member variables
     //
@@ -184,7 +182,6 @@ private:
 
     void set_background_pressure ();
     void ReadParameters ();
-    void ReadIOParameters ();
     void InitialProjection ();
     void InitialIterations ();
 

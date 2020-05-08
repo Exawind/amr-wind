@@ -20,7 +20,8 @@ void incflo::ReadCheckpointFile()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()")
 
-    amrex::Print() << "Restarting from checkpoint " << m_restart_file << std::endl;
+    const std::string& restart_file = m_sim.io_manager().restart_file();
+    amrex::Print() << "Restarting from checkpoint " << restart_file << std::endl;
 
     Real prob_lo[BL_SPACEDIM];
     Real prob_hi[BL_SPACEDIM];
@@ -31,7 +32,7 @@ void incflo::ReadCheckpointFile()
      *              (by calling MakeNewLevelFromScratch)
      ***************************************************************************/
 
-    std::string File(m_restart_file + "/Header");
+    std::string File(restart_file + "/Header");
 
     VisMF::IO_Buffer io_buffer(VisMF::GetIOBufferSize());
 
@@ -116,5 +117,5 @@ void incflo::ReadCheckpointFile()
         MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }
 
-    m_sim.io_manager().read_checkpoint_fields(m_restart_file);
+    m_sim.io_manager().read_checkpoint_fields(restart_file);
 }

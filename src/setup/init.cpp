@@ -14,8 +14,6 @@ using namespace amrex;
 
 void incflo::ReadParameters ()
 {
-    ReadIOParameters();
-
     { // Prefix io
         ParmParse pp("io");
         pp.query("KE_int", m_KE_int);
@@ -74,12 +72,6 @@ void incflo::ReadParameters ()
         }
     }
 
-}
-
-void incflo::ReadIOParameters()
-{
-    ParmParse pp("io");
-    pp.query("restart_file", m_restart_file);
 }
 
 //

@@ -53,6 +53,9 @@ public:
         m_chkvars.insert(fname);
     }
 
+    const std::string& restart_file()
+    { return m_restart_file; }
+
 private:
     void write_header(const std::string&);
 
@@ -80,6 +83,9 @@ private:
 
     //! Prefix used for the restart file directories
     std::string m_chk_prefix{"chk"};
+
+    //! Restart file name
+    std::string m_restart_file{""};
 
     //! Total number of variables (including components) output to plot file
     int m_plt_num_comp{0};

@@ -55,6 +55,7 @@ void IOManager::initialize_io()
     pp.query("output_default_variables", m_output_default_vars);
     pp.query("plot_file", m_plt_prefix);
     pp.query("check_file", m_chk_prefix);
+    pp.query("restart_file", m_restart_file);
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);

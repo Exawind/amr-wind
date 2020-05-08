@@ -36,11 +36,11 @@ void incflo::InitData ()
     BL_PROFILE("amr-wind::incflo::InitData()")
 
     // Initialize I/O manager to enable restart and outputs
-    m_sim.io_manager().initialize_io();
+    auto& io_mgr = m_sim.io_manager();
+    io_mgr.initialize_io();
 
     int restart_flag = 0;
-    if(m_restart_file.empty())
-    {
+    if(io_mgr.restart_file().empty()) {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
         // SetIterateToFalse();
@@ -98,7 +98,7 @@ void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()")
 
-    if (m_KE_int > 0 && m_restart_file.empty()) {
+    if (m_KE_int > 0 && m_sim.io_manager().restart_file().empty()) {
         amrex::Print() << "\nTime, Kinetic Energy: " << m_time.current_time()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
@@ -184,9 +184,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
-    if (m_restart_file.empty()) {
-        for (auto& pp: m_sim.physics()) {
-            pp->initialize_fields(lev, Geom(lev));
-        }
+    for (auto& pp: m_sim.physics()) {
+        pp->initialize_fields(lev, Geom(lev));
     }
 }
