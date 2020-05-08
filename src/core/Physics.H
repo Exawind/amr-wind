@@ -34,7 +34,7 @@ public:
         amrex::MultiFab& vel_forces) const = 0;
 };
 
-class Physics : public Factory<Physics, const CFDSim&>
+class Physics : public Factory<Physics, CFDSim&>
 {
 public:
     static const std::string base_identifier() { return "Physics"; }
