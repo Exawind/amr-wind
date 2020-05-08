@@ -29,7 +29,7 @@ DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     {
         amrex::ParmParse pp("incflo");
         pp.queryarr("gravity", m_gravity);
-        pp.query("ro_0", rho_0);
+        pp.query("density", rho_0);
     }
 }
 

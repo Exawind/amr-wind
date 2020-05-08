@@ -22,9 +22,7 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
 
     {
         amrex::ParmParse pp("incflo");
-        pp.get("ic_u", m_target_vel[0]);
-        pp.get("ic_v", m_target_vel[1]);
-        pp.get("ic_w", m_target_vel[2]);
+        pp.getarr("velocity", m_target_vel);
     }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

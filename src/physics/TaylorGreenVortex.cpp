@@ -11,7 +11,7 @@ TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
     , m_density(sim.repo().get_field("density"))
 {
     amrex::ParmParse pp("incflo");
-    pp.query("ro_0", m_rho);
+    pp.query("density", m_rho);
 }
 
 /** Initialize the velocity and density fields at the beginning of the

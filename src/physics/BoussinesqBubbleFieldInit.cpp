@@ -16,7 +16,7 @@ BoussinesqBubbleFieldInit::BoussinesqBubbleFieldInit()
 
     {
         amrex::ParmParse pp("incflo");
-        pp.query("ro_0", m_rho);
+        pp.query("density", m_rho);
     }
 
 }

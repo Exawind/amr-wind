@@ -37,9 +37,7 @@ private:
 
     //! initial density value
     amrex::Real m_rho{1.0};
-    amrex::Real m_u{1.0};
-    amrex::Real m_v{0.0};
-    amrex::Real m_w{0.0};
+    amrex::Vector<amrex::Real> m_vel{{1.0, 0.0, 0.0}};
 
 };
 

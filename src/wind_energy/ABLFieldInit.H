@@ -29,7 +29,8 @@ public:
 
 private:
     //! Initial velocity components
-    amrex::Real m_vel[AMREX_SPACEDIM];
+    amrex::Vector<amrex::Real> m_vel;
+
 
     ///@{
     //! Lookup table containing temperature variation w.r.t. height above

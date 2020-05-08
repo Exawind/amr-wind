@@ -16,10 +16,9 @@ FreeStream::FreeStream(const CFDSim& sim)
     // fixme rho,u,v,w in incflo class
     {
         amrex::ParmParse pp("incflo");
-        pp.query("ro_0", m_rho);
-        pp.query("ic_u", m_u);
-        pp.query("ic_v", m_v);
-        pp.query("ic_w", m_w);
+        pp.query("density", m_rho);
+        pp.queryarr("velocity",m_vel);
+
     }
 }
 
@@ -34,9 +33,9 @@ void FreeStream::initialize_fields(
     auto& density = m_density(level);
 
     density.setVal(m_rho);
-    velocity.setVal(m_u, 0, 1);
-    velocity.setVal(m_v, 1, 1);
-    velocity.setVal(m_w, 2, 1);
+    velocity.setVal(m_vel[0], 0, 1);
+    velocity.setVal(m_vel[1], 1, 1);
+    velocity.setVal(m_vel[2], 2, 1);
 
 }
 
