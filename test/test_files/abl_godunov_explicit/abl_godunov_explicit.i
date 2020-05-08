@@ -25,8 +25,6 @@ amr.plt_tracer = 1
 incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.density             = 1.0          # Reference density 
 
-# fixme this has to stay since compute dt uses mu still
-incflo.mu               =   1.0e-5      # Dynamic viscosity coefficient
 incflo.use_godunov = 1
 incflo.diffusion_type = 0
 transport.viscosity = 1.0e-5
