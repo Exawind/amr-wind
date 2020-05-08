@@ -38,7 +38,7 @@ private:
     const SimTime& m_time;
 
     //! Target velocity
-    amrex::RealArray m_target_vel{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_target_vel{{0.0, 0.0, 0.0}};
 
     //! Current mean vel
     amrex::RealArray m_mean_vel{{0.0, 0.0, 0.0}};

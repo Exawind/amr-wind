@@ -37,14 +37,13 @@ void ABLWallFunction::init_log_law_height()
         // machine zero reg tests
         // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
         auto geom = m_mesh.Geom();
-        amrex::Real vx = 0.0;
-        amrex::Real vy = 0.0;
         amrex::ParmParse pp("incflo");
-        pp.query("ic_u", vx);
-        pp.query("ic_v", vy);
-        m_umean[0] = vx;
-        m_umean[1] = vy;
-        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
+        amrex::Vector<amrex::Real> vel{{0.0, 0.0, 0.0}};
+        pp.queryarr("velocity", vel);
+        m_umean[0] = vel[0];
+        m_umean[1] = vel[1];
+        m_umean[2] = vel[2];
+        const amrex::Real uground = utils::vec_mag(m_umean.data());
         m_utau = m_kappa * uground / std::log(m_log_law_height / m_z0);
     }
 }

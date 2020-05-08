@@ -23,7 +23,7 @@ amr.plt_tracer = 1
 #               PHYSICS                 #
 #.......................................#
 incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
-incflo.ro_0             = 1.0          # Reference density 
+incflo.density             = 1.0          # Reference density 
 
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
@@ -37,9 +37,7 @@ BoussinesqBuoyancy.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 
-incflo.ic_u = 6.128355544951824
-incflo.ic_v = 5.142300877492314
-incflo.ic_w = 0.0
+incflo.velocity = 6.128355544951824 5.142300877492314 0.0
 
 ABL.temperature_heights = 650.0 750.0 1000.0
 ABL.temperature_values = 300.0 308.0 308.75

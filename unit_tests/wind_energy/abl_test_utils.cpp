@@ -43,12 +43,11 @@ void populate_abl_params()
         amrex::Vector<std::string> physics{"ABL"};
         pp.addarr("physics", physics);
 
-        pp.add("ro_0", 1.0);   // Density
-        pp.add("ic_u", 20.0);  // Ux
-        pp.add("ic_v", 10.0);   // Uy
-        pp.add("ic_w", 0.0);   // Uw
+        pp.add("density", 1.0);   // Density
+        amrex::Vector<amrex::Real> vel{{20.0, 10.0, 0.0}};
+        pp.addarr("velocity", vel);
         amrex::Vector<amrex::Real> grav{{0.0,0.0,-9.81}};
-        pp.addarr("gravity",grav);
+        pp.addarr("gravity", grav);
         
     }
 

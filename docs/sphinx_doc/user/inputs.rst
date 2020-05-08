@@ -26,7 +26,7 @@ domain are prefixed with ``geometry.`` and so on. A sample input file is shown b
 
 .. literalinclude:: ./amr_wind_inputs.txt
    :linenos:
-   :emphasize-lines: 6, 11, 15, 25, 37, 45
+   :emphasize-lines: 6, 11, 15, 26, 33, 49, 55, 59, 75, 85, 89, 95, 107, 111
 
 
 Input file reference
@@ -55,8 +55,12 @@ This section documents the parameters available within each section.
 
 .. note::
 
-   Boolean flags (``true/false``) can also be indicated using integers in the text file
-   and uses the convention ``0 = False`` and ``1 = True``.
+   - Boolean flags (``true/false``) can also be indicated using integers in the text file
+     and uses the convention ``0 = False`` and ``1 = True``.
+
+   - Quotes around strings are optional.
+
+   - If an input is repeated only the last one is used.
 
 Section: ``geometry``
 ~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +71,7 @@ This section deals with inputs related to the problem domain.
 
    **type:** List of 3 real numbers, mandatory
 
-   The coordiates of *lower corner* of the computational domain bounding box.
+   The coordinates of *lower corner* of the computational domain bounding box.
 
 .. input_param:: geometry.prob_hi
 
@@ -101,6 +105,22 @@ This section mostly contains inputs the adaptive mesh refinement capabilities of
    The maximum AMR level in the refinement hierarchy. Default value is ``0``
    indicating a single mesh level with uniform resolution in the three
    directions.
+
+.. input_param:: amr.max_grid_size
+
+   **type:** Integer, optional, default: 32
+
+   Maximum number of cells at level 0 in each grid.
+   There are also options to specify this value in each direction,
+   please refer to AMReX documentation.
+
+.. input_param:: amr.blocking_factor
+
+   **type:** Integer, optional, default: 8
+
+   Each grid must be divisible by ``amr.blocking_factor``.
+   There are also options to specify this value in each direction,
+   please refer to AMReX documentation.
 
 Section: ``time``
 ~~~~~~~~~~~~~~~~~
@@ -136,7 +156,7 @@ This section deals with parameters that control the simulation.
 
 .. input_param:: time.cfl
 
-   **type:** Real number
+   **type:** Real number, optional, default = 0.5
 
    The maximum CFL allowed during the simulation. Adaptive timestepping algorithm is 
    used to ensure that the maximum CFL condition is not violated while using the largest
@@ -217,14 +237,14 @@ This section deals with parameters that control input/output to the simulation.
 
    **type:** String, optional, default = "chk"
 
-   If `time.checkpoint_interval` is greater than zero this is the name of the checkpoint 
+   If :input_param:`time.checkpoint_interval` is greater than zero this is the name of the checkpoint 
    file appended with the current timestep
    
 .. input_param:: io.plot_file
 
    **type:** String, optional, default = "plt"
 
-   If `time.plot_interval` is greater than zero this is the name of the plot 
+   If :input_param:`time.plot_interval` is greater than zero this is the name of the plot
    file appended with the current timestep
    
 .. input_param:: io.restart_file
@@ -242,41 +262,28 @@ as initial conditions and discretization options.
 
 .. input_param:: incflo.physics
 
-   **type:** String
+   **type:** List of strings
 
-   This string specifies the type of physics to initialize and simulate.
+   Specify a string or a list of strings for each type of physics to initialize and simulate.
+   Physics is additive and more than one type of physics may be used.
    Current implemented physics are FreeStream, ABL, RayleighTaylor, BoussinesqBubble, 
    and TaylorGreenVortex
    
-.. input_param:: incflo.ro_0
+.. input_param:: incflo.density
 
    **type:** Real
 
    Specify reference density. 
-   For the most part if `incflo.constant_density = true` then `incflo.ro_0` sets a constant density everywhere. 
-   Refer to the field initializer for your chosen `incflo.physics` for how `incflo.ro_0` is used. 
+   For the most part if :input_param:`incflo.constant_density` = true then `incflo.density` sets a constant density everywhere.
+   Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.density` is used.
    
-.. input_param:: incflo.ic_u
+.. input_param:: incflo.velocity
 
-   **type:** Real
+   **type:** List of three Real numbers, sometimes mandatory depending on the :input_param:`incflo.physics`
 
-   Specify reference velocity in the x-direction. 
-   Refer to the field initializer for your chosen `incflo.physics` for how `incflo.ic_u` is used. 
+   Specify reference velocity in the "x-", "y-", "z-direction". 
+   Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.velocity` is used.
    
-.. input_param:: incflo.ic_v
-
-   **type:** Real
-
-   Specify reference velocity in the y-direction. 
-   Refer to the field initializer for your chosen `incflo.physics` for how `incflo.ic_v` is used. 
-   
-.. input_param:: incflo.ic_w
-
-   **type:** Real
-
-   Specify reference velocity in the z-direction. 
-   Refer to the field initializer for your chosen `incflo.physics` for how `incflo.ic_w` is used. 
-      
 .. input_param:: incflo.delp
 
    **type:** List of 3 real numbers
@@ -312,7 +319,6 @@ as initial conditions and discretization options.
    If the flag is true then a constant density field is used, the density field is copied from old to new time steps. 
    If the flag is false then density is not constant and an extra advection equation is solved to evolve density.
    
-   
 .. input_param:: incflo.use_godunov
 
    **type:** Boolean, optional, default = false
@@ -327,14 +333,14 @@ as initial conditions and discretization options.
 
    When estimating the two states in a Godunov scheme a piecewise parabolic method (PPM) is used when this flag is true
    or when the flag is false a less accurate piecewise linear method (PLM) is used instead.
-   Note: only used when `incflo.use_godunov = true`.
+   Note: only used when :input_param:`incflo.use_godunov` = true.
    
 .. input_param:: incflo.godunov_use_forces_in_trans
 
    **type:** Boolean, optional, default = false
 
    Specifies if body forces are included in the transverse velocity prediction.
-   Note: only used when `incflo.use_godunov = true`.
+   Note: only used when :input_param:`incflo.use_godunov` = true.
    
 .. input_param:: incflo.diffusion_type
 
@@ -350,14 +356,14 @@ as initial conditions and discretization options.
 
    **type:** Real number or a list of Real numbers
 
-   When `amr.max_level > 0` this will trigger mesh adaption for density that is greater than `incflo.rhoerr`. 
+   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption for density that is greater than `incflo.rhoerr`.
    This maybe specified as a single number for all levels or a value per AMR level.
    
 .. input_param:: incflo.gradrhoerr
 
    **type:** Real number or a list of Real numbers
 
-   When `amr.max_level > 0` this will trigger mesh adaption if the difference 
+   When :input_param:`amr.max_level` > 0 this will trigger mesh adaption if the difference
    between density at a cell center and its neighbors is greater than `incflo.gradrhoerr`. 
    This maybe specified as a single number for all levels or a value per AMR level.
    
@@ -399,16 +405,16 @@ This section is for setting turbulence model parameters
 
    **type:** String, optional, default = Laminar
 
-   Specifies which turbulence model to use, by default ``Laminar`` is chosen 
+   Specifies which turbulence model to use, by default "Laminar" is chosen 
    (effectively no turbulence model). 
-   Currently the only turbulence model is ``Smagorinsky``
+   Currently the only turbulence model is "Smagorinsky"
 
    
 .. input_param:: Smagorinsky_coeffs.Cs
 
    **type:** Real, optional, default = 0.135
 
-   Specifies the coefficient used in the Smagorinsky turbulence model. 
+   Specifies the coefficient used in the `Smagorinsky` turbulence model. 
    
 Section: ``ABL``
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -446,7 +452,7 @@ This section is for setting atmospheric boundary layer parameters.
    available at the first cell center above the wall. This limitation will be removed soon.
    
    
-.. input_param:: `ABL.temperature_heights`
+.. input_param:: ABL.temperature_heights
 
    **type:** List of Reals, mandatory 
    
@@ -454,10 +460,10 @@ This section is for setting atmospheric boundary layer parameters.
    
 .. input_param:: ABL.temperature_values
 
-   **type:** List of Reals (has to be same length as ``ABL.temperature_heights``), mandatory 
+   **type:** List of Reals (has to be same length as :input_param:`ABL.temperature_heights`), mandatory
    
-   Temperature values in Kelvin at the corresponding ``ABL.temperature_heights``. 
-   The temperature below the first height is assumed to be constant and equal to the 
+   Temperature values in Kelvin at the corresponding :input_param:`ABL.temperature_heights`.
+   The temperature below the first height is assumed to be constant and equal to the
    first temperature value. 
    The temperature between values is initialized to have linear variation. 
    The final temperature is constant above the last specified height. 
@@ -475,35 +481,35 @@ This section is for setting atmospheric boundary layer parameters.
    
    Reference height for velocity perturbations, 
    perturbations exist below this height and decay above this height.
-   Only active when ``ABL.perturb_velocity = true``.
+   Only active when :input_param:`ABL.perturb_velocity` = true.
    
 .. input_param:: ABL.Uperiods
 
    **type:** Real, optional, default = 4.0
    
    Number of sinusoidal waves in x-direction.
-   Only active when ``ABL.perturb_velocity = true``.
+   Only active when :input_param:`ABL.perturb_velocity` = true.
    
 .. input_param:: ABL.Vperiods
 
    **type:** Real, optional, default = 4.0
    
    Number of sinusoidal waves in y-direction.
-   Only active when ``ABL.perturb_velocity = true``.
+   Only active when :input_param:`ABL.perturb_velocity` = true.
    
 .. input_param:: ABL.deltaU
 
    **type:** Real, optional, default = 1.0
    
    Amplitude of fluctuations in x-direction.
-   Only active when ``ABL.perturb_velocity = true``.
+   Only active when :input_param:`ABL.perturb_velocity` = true.
    
 .. input_param:: ABL.deltaV
 
    **type:** Real, optional, default = 1.0
    
    Amplitude of fluctuations in y-direction.
-   Only active when ``ABL.perturb_velocity = true``.
+   Only active when :input_param:`ABL.perturb_velocity` = true.
    
 .. input_param:: ABL.perturb_temperature
 
@@ -539,7 +545,7 @@ Section: ``Momentum Sources``
    **type:** Real, optional, default = ``1/BoussinesqBuoyancy.reference_temperature``
    
    Thermal expansion coefficient, if not specified this value is set to the inverse of the
-   ``BoussinesqBuoyancy.reference_temperature`` value.  
+   :input_param:`BoussinesqBuoyancy.reference_temperature` value.
    
 .. input_param:: CoriolisForcing.latitude 
 
@@ -551,7 +557,7 @@ Section: ``Momentum Sources``
 
    **type:** Real, optional, default = 86400.0
    
-   rotational time period of a day in seconds.
+   Rotational time period of a day in seconds.
    
 .. input_param:: CoriolisForcing.east_vector
 
