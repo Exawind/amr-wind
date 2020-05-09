@@ -2,6 +2,7 @@
 #define TURBMODELBASE_H
 
 #include "TurbModel.H"
+#include "IOManager.H"
 #include "field_ops.H"
 
 namespace amr_wind {
@@ -91,7 +92,13 @@ public:
     TurbModelBase(CFDSim& sim)
         : TurbModel<Transport>(sim)
         , m_mu_turb(sim.repo().declare_field("mu_turb", 1, 1, 1))
-    {}
+    {
+        this->m_sim.io_manager().register_io_var("mu_turb");
+
+        // Effective viscosity field
+        auto& fields = this->m_sim.pde_manager().icns().fields();
+        this->m_sim.io_manager().register_io_var(fields.mueff.name());
+    }
 
     virtual Field& mu_turb() override { return m_mu_turb; }
 

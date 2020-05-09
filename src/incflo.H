@@ -156,33 +156,7 @@ private:
     bool m_use_godunov         = false;
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
-
-    int m_last_plt = -1;
-    std::string m_plot_file{"plt"};
-
-    int m_last_chk = -1;
     int m_KE_int = -1;
-
-    std::string m_check_file{"chk"};
-    std::string m_restart_file{""};
-
-    // Flags for saving fluid data in plot files
-    int m_plt_velx        = 1;
-    int m_plt_vely        = 1;
-    int m_plt_velz        = 1;
-    int m_plt_gpx         = 1;
-    int m_plt_gpy         = 1;
-    int m_plt_gpz         = 1;
-    int m_plt_rho         = 1;
-    int m_plt_tracer      = 1;
-    int m_plt_p           = 0;
-    int m_plt_eta         = 0;
-    int m_plt_vort        = 1;
-    int m_plt_forcing     = 0;
-    int m_plt_strainrate  = 0;
-    int m_plt_stress      = 0;
-    int m_plt_divu        = 0;
-    int m_plt_vfrac       = 1;
 
     //
     // end of member variables
@@ -208,7 +182,6 @@ private:
 
     void set_background_pressure ();
     void ReadParameters ();
-    void ReadIOParameters ();
     void InitialProjection ();
     void InitialIterations ();
 
@@ -218,10 +191,6 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void WriteHeader (const std::string& name, bool is_checkpoint) const;
-    void WriteJobInfo (const std::string& dir) const;
-    void WriteCheckPointFile () const;
-    void WritePlotFile ();
     void ReadCheckpointFile ();
 
     void PrintMaxValues (const std::string& header);

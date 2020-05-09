@@ -152,6 +152,7 @@ void SimTime::set_restart_time(int tidx, amrex::Real time)
     m_time_index = tidx;
     m_start_time_index = tidx;
 
+    m_new_time = time;
     m_cur_time = time;
     m_start_time = time;
 }

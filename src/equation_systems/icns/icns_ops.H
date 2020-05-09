@@ -19,10 +19,11 @@ void advection_mac_project(FieldRepo& repo, FieldState fstate);
 template<typename Scheme>
 struct FieldRegOp<ICNS, Scheme>
 {
-    FieldRegOp(FieldRepo& repo_in) : repo(repo_in) {}
+    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {
+        auto& repo = sim.repo();
         auto fields = create_fields_instance<ICNS, Scheme>(time, repo, probtype);
 
         auto& rho = repo.declare_cc_field(
@@ -44,10 +45,16 @@ struct FieldRegOp<ICNS, Scheme>
         // Density always requires half state
         rho.create_state(FieldState::NPH);
 
+        // Register fields for output/restart
+        auto& iomgr = sim.io_manager();
+        iomgr.register_io_var(fields.field.name());
+        iomgr.register_io_var(rho.name());
+        iomgr.register_io_var(pressure.name());
+        iomgr.register_io_var(grad_p.name());
         return fields;
     }
 
-    FieldRepo& repo;
+    CFDSim& sim;
 };
 
 template<>

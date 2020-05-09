@@ -14,8 +14,6 @@ using namespace amrex;
 
 void incflo::ReadParameters ()
 {
-    ReadIOParameters();
-
     { // Prefix io
         ParmParse pp("io");
         pp.query("KE_int", m_KE_int);
@@ -74,65 +72,6 @@ void incflo::ReadParameters ()
         }
     }
 
-}
-
-void incflo::ReadIOParameters()
-{
-    {
-        // Prefix amr
-        ParmParse pp("io");
-        pp.query("check_file", m_check_file);
-        pp.query("restart_file", m_restart_file);
-        pp.query("plot_file", m_plot_file);
-    }
-
-    ParmParse pp("amr");
-
-    // The plt_ccse_regtest resets the defaults,
-    //     but we can over-ride those below
-    int plt_ccse_regtest = 0;
-    pp.query("plt_ccse_regtest", plt_ccse_regtest);
-
-    if (plt_ccse_regtest != 0)
-    {
-        m_plt_velx       = 1;
-        m_plt_vely       = 1;
-        m_plt_velz       = 1;
-        m_plt_gpx        = 1;
-        m_plt_gpy        = 1;
-        m_plt_gpz        = 1;
-        m_plt_rho        = 1;
-        m_plt_tracer     = 1;
-        m_plt_p          = 0;
-        m_plt_eta        = 0;
-        m_plt_vort       = 0;
-        m_plt_strainrate = 0;
-        m_plt_stress     = 0;
-        m_plt_divu       = 0;
-        m_plt_vfrac      = 0;
-    }
-
-    // Which variables to write to plotfile
-
-    pp.query("plt_velx",       m_plt_velx  );
-    pp.query("plt_vely",       m_plt_vely  );
-    pp.query("plt_velz",       m_plt_velz  );
-
-    pp.query("plt_gpx",        m_plt_gpx );
-    pp.query("plt_gpy",        m_plt_gpy );
-    pp.query("plt_gpz",        m_plt_gpz );
-
-    pp.query("plt_rho",        m_plt_rho   );
-    pp.query("plt_tracer",     m_plt_tracer);
-    pp.query("plt_p",          m_plt_p     );
-    pp.query("plt_eta",        m_plt_eta   );
-    pp.query("plt_vort",       m_plt_vort  );
-    pp.query("plt_strainrate", m_plt_strainrate);
-    pp.query("plt_stress"    , m_plt_stress);
-    pp.query("plt_divu",       m_plt_divu  );
-    pp.query("plt_vfrac",      m_plt_vfrac );
-
-    pp.query("plt_forcing",    m_plt_forcing );
 }
 
 //
