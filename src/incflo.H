@@ -122,11 +122,8 @@ public: // for cuda
     void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
                          amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
-
-    // TODO: Transition
-    void declare_fields();
-
-    void init_field_bcs();
+    //! Initialize Physics instances as well as PDEs (include turbulence models)
+    void init_physics_and_pde();
 
 private:
 
