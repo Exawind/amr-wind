@@ -7,7 +7,7 @@ namespace {
 amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
 }
 
-BCIface::BCIface(Field& field, const IncfloBC&)
+BCIface::BCIface(Field& field)
     : m_field(field)
 {}
 

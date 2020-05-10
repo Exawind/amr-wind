@@ -21,13 +21,13 @@ struct BCOp<
 
     /** Initialize the BCs for the PDE variable as well as its source term
      */
-    void init_bcs(const BCIface::IncfloBC ibc_type)
+    void init_bcs()
     {
-        BCScalar bc(m_fields.field, ibc_type);
+        BCScalar bc(m_fields.field);
         bc(PDE::default_bc_value);
 
         // Used for fillpatch operation on the source term
-        BCScalar bc_src(m_fields.src_term, ibc_type);
+        BCScalar bc_src(m_fields.src_term);
         bc_src();
     }
 

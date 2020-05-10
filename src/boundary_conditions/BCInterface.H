@@ -15,7 +15,7 @@ class BCIface
 public:
     using IncfloBC = amrex::GpuArray<BC, AMREX_SPACEDIM * 2>;
 
-    BCIface(Field& field, const IncfloBC& ibc_type);
+    BCIface(Field& field);
 
     virtual ~BCIface() = default;
 
@@ -50,7 +50,7 @@ protected:
 class BCVelocity : public BCIface
 {
 public:
-    BCVelocity(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCVelocity(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -60,7 +60,7 @@ protected:
 class BCScalar : public BCIface
 {
 public:
-    BCScalar(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCScalar(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -70,7 +70,7 @@ protected:
 class BCPressure : public BCScalar
 {
 public:
-    BCPressure(Field& field, const IncfloBC& ibc_type) : BCScalar(field, ibc_type) {}
+    BCPressure(Field& field) : BCScalar(field) {}
 
 protected:
     virtual void read_values() override;
@@ -79,7 +79,7 @@ protected:
 class BCSrcTerm : public BCIface
 {
 public:
-    BCSrcTerm(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCSrcTerm(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;

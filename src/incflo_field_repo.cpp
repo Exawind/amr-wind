@@ -90,8 +90,8 @@ void incflo::init_field_bcs ()
     f("zlo", Orientation(Direction::z,Orientation::low));
     f("zhi", Orientation(Direction::z,Orientation::high));
 
-    icns().init_bcs(bc_temp);
-    for (auto& eqn: scalar_eqns()) {
-        eqn->init_bcs(bc_temp);
-    }
+    // icns().init_bcs(bc_temp);
+    // for (auto& eqn: scalar_eqns()) {
+    //     eqn->init_bcs(bc_temp);
+    // }
 }
