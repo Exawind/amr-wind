@@ -35,9 +35,6 @@ protected:
     //! Set default BC values for the field
     inline void set_default_value(const amrex::Real value);
 
-    //! Set the incflo BC enums
-    inline void set_incflo_bc();
-
     //! Set AMReX mathematical boundary types for the lower boundaries
     inline void set_bcrec_lo(
         int dir, amrex::BCType::mathematicalBndryTypes bcrec);
@@ -48,9 +45,6 @@ protected:
 
     //! Field instance where BC is being set
     Field& m_field;
-
-    //! Incflo BC enums that control BC behavior
-    const IncfloBC m_ibc_type;
 };
 
 class BCVelocity : public BCIface

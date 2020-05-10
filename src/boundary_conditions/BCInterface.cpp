@@ -7,15 +7,9 @@ namespace {
 amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
 }
 
-BCIface::BCIface(Field& field, const IncfloBC& ibc_type)
-    : m_field(field), m_ibc_type(ibc_type)
+BCIface::BCIface(Field& field, const IncfloBC&)
+    : m_field(field)
 {}
-
-inline void BCIface::set_incflo_bc()
-{
-    auto& ibctype = m_field.bc_type();
-    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) ibctype[i] = m_ibc_type[i];
-}
 
 inline void BCIface::set_bcrec_lo(
     int dir, amrex::BCType::mathematicalBndryTypes bcrec)
@@ -35,7 +29,6 @@ void BCIface::operator()(const amrex::Real value)
 {
     amrex::Print() << "Initializing boundary conditions for " << m_field.name()
                    << std::endl;
-    set_incflo_bc();
     set_default_value(value);
     read_bctype();
     set_bcrec();
@@ -98,12 +91,13 @@ void BCIface::read_bctype()
 
 void BCVelocity::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     auto& bcrec = m_field.bcrec();
 
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {
@@ -182,10 +176,11 @@ void BCVelocity::read_values()
 
 void BCScalar::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {
@@ -278,10 +273,11 @@ void BCPressure::read_values()
 
 void BCSrcTerm::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {
