@@ -1,5 +1,6 @@
 #include "BCInterface.H"
 #include "FieldRepo.H"
+#include "FixedGradientBC.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -33,6 +34,7 @@ void BCIface::operator()(const amrex::Real value)
     read_bctype();
     set_bcrec();
     read_values();
+    set_bcfuncs();
     m_field.copy_bc_to_device();
 }
 
@@ -87,6 +89,24 @@ void BCIface::read_bctype()
 
         if (ibctype[ori] == BC::undefined)  {
             amrex::Abort("No BC specified for non-periodic boundary");
+        }
+    }
+}
+
+void BCIface::set_bcfuncs()
+{
+    auto& ibctype = m_field.bc_type();
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        const auto bct = ibctype[ori];
+
+        switch(bct) {
+        case BC::fixed_gradient:
+            m_field.register_custom_bc<FixedGradientBC>(ori);
+            break;
+
+        default:
+            break;
         }
     }
 }

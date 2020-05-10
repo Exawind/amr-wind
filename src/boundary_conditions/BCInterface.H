@@ -32,6 +32,8 @@ protected:
     //! Parse custom BCs specified for this field
     virtual void read_bctype();
 
+    virtual void set_bcfuncs();
+
     //! Set default BC values for the field
     inline void set_default_value(const amrex::Real value);
 
