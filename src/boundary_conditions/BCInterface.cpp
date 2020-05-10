@@ -209,6 +209,7 @@ void BCScalar::set_bcrec()
 
         case BC::slip_wall:
         case BC::wall_model:
+        case BC::fixed_gradient:
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::hoextrap);
             } else {
@@ -238,6 +239,7 @@ void BCScalar::read_values()
         case BC::mass_inflow:
         case BC::slip_wall:
         case BC::wall_model:
+        case BC::fixed_gradient:
             pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
 

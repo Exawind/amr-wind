@@ -89,6 +89,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             }
             case BC::slip_wall:
             case BC::wall_model:
+            case BC::fixed_gradient:
             {
                 r[dir] = LinOpBCType::inhomogNeumann;
                 break;
