@@ -83,11 +83,11 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::no_slip_wall:
+            case BC::slip_wall:
             {
                 r[dir] = LinOpBCType::Neumann;
                 break;
             }
-            case BC::slip_wall:
             case BC::wall_model:
             case BC::fixed_gradient:
             {
