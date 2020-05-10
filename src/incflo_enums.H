@@ -10,6 +10,7 @@ enum struct BC {
     no_slip_wall,
     slip_wall,
     wall_model,
+    fixed_gradient,
     periodic,
     undefined
 };

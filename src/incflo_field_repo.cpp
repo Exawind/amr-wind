@@ -66,6 +66,9 @@ void incflo::init_field_bcs ()
         {
             bc_temp[ori] = BC::wall_model;
         }
+        else if ((bc_type == "fixed_gradient") || (bc_type == "fg")) {
+            bc_temp[ori] = BC::fixed_gradient;
+        }
         else
         {
             bc_temp[ori] = BC::undefined;
