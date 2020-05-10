@@ -7,6 +7,7 @@ enum struct BC {
     pressure_inflow,
     pressure_outflow,
     mass_inflow,
+    zero_gradient,
     no_slip_wall,
     slip_wall,
     wall_model,

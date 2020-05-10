@@ -23,6 +23,7 @@ get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcep
             {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
+            case BC::zero_gradient:
             {
                 // All three components are Neumann
                 r[0][dir] = LinOpBCType::Neumann;
@@ -82,7 +83,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
-            case BC::no_slip_wall:
+            case BC::zero_gradient:
             case BC::slip_wall:
             {
                 r[dir] = LinOpBCType::Neumann;
@@ -95,6 +96,7 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
                 break;
             }
             case BC::mass_inflow:
+            case BC::no_slip_wall:
             {
                 r[dir] = LinOpBCType::Dirichlet;
                 break;

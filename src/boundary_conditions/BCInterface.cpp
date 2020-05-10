@@ -77,6 +77,8 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::slip_wall;
         } else if ((bcstr == "wall_model") || (bcstr == "wm")) {
             ibctype[ori] = BC::wall_model;
+        } else if ((bcstr == "zero_gradient") || (bcstr == "zg")) {
+            ibctype[ori] = BC::zero_gradient;
         } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
             ibctype[ori] = BC::fixed_gradient;
         } else {
@@ -110,6 +112,7 @@ void BCVelocity::set_bcrec()
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
+        case BC::zero_gradient:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             else
@@ -169,6 +172,7 @@ void BCVelocity::read_values()
             break;
 
         default:
+            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
         }
     }
@@ -193,7 +197,7 @@ void BCScalar::set_bcrec()
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
-        case BC::no_slip_wall:
+        case BC::zero_gradient:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             else
@@ -201,6 +205,7 @@ void BCScalar::set_bcrec()
             break;
 
         case BC::mass_inflow:
+        case BC::no_slip_wall:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);
             else
@@ -237,13 +242,11 @@ void BCScalar::read_values()
         amrex::ParmParse pp(bcid);
         switch (bct) {
         case BC::mass_inflow:
-        case BC::slip_wall:
-        case BC::wall_model:
-        case BC::fixed_gradient:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+            pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
 
         default:
+            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
         }
     }
