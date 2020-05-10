@@ -1,4 +1,5 @@
 #include "BCInterface.H"
+#include "FieldRepo.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -36,6 +37,7 @@ void BCIface::operator()(const amrex::Real value)
                    << std::endl;
     set_incflo_bc();
     set_default_value(value);
+    read_bctype();
     set_bcrec();
     read_values();
     m_field.copy_bc_to_device();
@@ -47,6 +49,50 @@ inline void BCIface::set_default_value(const amrex::Real value)
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         for (int i = 0; i < m_field.num_comp(); ++i) bcval[ori][i] = value;
+    }
+}
+
+void BCIface::read_bctype()
+{
+    const std::string key = m_field.name() + "_type";
+    auto& ibctype = m_field.bc_type();
+    auto& geom = m_field.repo().mesh().Geom(0);
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        // Process and quit early if this face is periodic
+        if (geom.isPeriodic(ori.coordDir())) {
+            ibctype[ori] = BC::periodic;
+            continue;
+        }
+
+        const auto& bcid = bcnames[ori];
+        amrex::ParmParse pp(bcid);
+        std::string bcstr = "null";
+        pp.query("type", bcstr);
+        pp.query(key.c_str(), bcstr);
+        bcstr = amrex::toLower(bcstr);
+
+        if ((bcstr == "pressure_inflow") || (bcstr == "pi")) {
+            ibctype[ori] = BC::pressure_inflow;
+        } else if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
+            ibctype[ori] = BC::pressure_outflow;
+        } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
+            ibctype[ori] = BC::mass_inflow;
+        } else if ((bcstr == "no_slip_wall") || (bcstr == "nsw")) {
+            ibctype[ori] = BC::no_slip_wall;
+        } else if ((bcstr == "slip_wall") || (bcstr == "sw")) {
+            ibctype[ori] = BC::slip_wall;
+        } else if ((bcstr == "wall_model") || (bcstr == "wm")) {
+            ibctype[ori] = BC::wall_model;
+        } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
+            ibctype[ori] = BC::fixed_gradient;
+        } else {
+            ibctype[ori] = BC::undefined;
+        }
+
+        if (ibctype[ori] == BC::undefined)  {
+            amrex::Abort("No BC specified for non-periodic boundary");
+        }
     }
 }
 

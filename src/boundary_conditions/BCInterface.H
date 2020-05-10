@@ -29,6 +29,9 @@ protected:
     //! Read input data for specific fields based on BC types
     virtual void read_values() = 0;
 
+    //! Parse custom BCs specified for this field
+    virtual void read_bctype();
+
     //! Set default BC values for the field
     inline void set_default_value(const amrex::Real value);
 
