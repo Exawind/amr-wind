@@ -204,9 +204,6 @@ void incflo::init_physics_and_pde()
         pde_mgr.register_transport_pde("Density");
     }
 
-    // TODO: This should be customized based on Physics
-    pde_mgr.register_transport_pde("Temperature");
-
     m_sim.init_physics();
     m_sim.create_turbulence_model();
 }

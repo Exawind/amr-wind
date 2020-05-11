@@ -14,7 +14,7 @@ class BoussinesqBubble : public Physics::Register<BoussinesqBubble>
 public:
     static const std::string identifier() { return "BoussinesqBubble"; }
 
-    BoussinesqBubble(const CFDSim& sim);
+    BoussinesqBubble(CFDSim& sim);
 
     virtual ~BoussinesqBubble() = default;
 
@@ -34,7 +34,9 @@ public:
 private:
     Field& m_velocity;
     Field& m_density;
-    Field& m_temperature;
+
+    //! Temperature field
+    Field* m_temperature{nullptr};
 
     //! BoussinesqBubble field initializer instance
     std::unique_ptr<BoussinesqBubbleFieldInit> m_field_init;
