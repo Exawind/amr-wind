@@ -38,7 +38,7 @@ void BoussinesqBubble::initialize_fields(
 
 void BoussinesqBubble::post_init_actions()
 {
-    m_temperature.register_custom_bc<ABLThetaTopBC>();
+    // m_temperature.register_custom_bc<ABLThetaTopBC>();
 }
 
 } // namespace amr_wind
