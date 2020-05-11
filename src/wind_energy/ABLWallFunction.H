@@ -51,14 +51,6 @@ private:
     const ABLWallFunction& m_wall_func;
 };
 
-class ABLThetaTopBC : public FieldBCIface
-{
-public:
-    ABLThetaTopBC(Field&) {}
-
-    void operator()(Field& theta, const FieldState rho_state) override;
-};
-
 }
 
 #endif /* ABLWALLFUNCTION_H */

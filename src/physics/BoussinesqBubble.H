@@ -23,7 +23,7 @@ public:
         int level,
         const amrex::Geometry& geom) override;
 
-    void post_init_actions() override;
+    void post_init_actions() override {}
 
     void post_regrid_actions() override {}
 

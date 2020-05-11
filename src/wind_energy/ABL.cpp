@@ -51,9 +51,6 @@ void ABL::post_init_actions()
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-
-    // Register temperature top BC gradient function
-    // m_temperature.register_custom_bc<ABLThetaTopBC>();
 }
 
 /** Perform tasks at the beginning of a new timestep
