@@ -32,20 +32,6 @@ void ABLWallFunction::init_log_law_height()
         const auto& geom = m_mesh.Geom(0);
         m_log_law_height = (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     }
-    {
-        // fixme keeping this around to maintain perfect
-        // machine zero reg tests
-        // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
-        auto geom = m_mesh.Geom();
-        amrex::ParmParse pp("incflo");
-        amrex::Vector<amrex::Real> vel{{0.0, 0.0, 0.0}};
-        pp.queryarr("velocity", vel);
-        m_umean[0] = vel[0];
-        m_umean[1] = vel[1];
-        m_umean[2] = vel[2];
-        const amrex::Real uground = utils::vec_mag(m_umean.data());
-        m_utau = m_kappa * uground / std::log(m_log_law_height / m_z0);
-    }
 }
 
 void ABLWallFunction::update_umean(const PlaneAveraging& pa)
