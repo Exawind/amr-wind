@@ -1,5 +1,6 @@
 #include "ABL.H"
 #include "ABLFieldInit.H"
+#include "ABLForcing.H"
 #include "incflo.H"
 
 #include "AMReX_ParmParse.H"
@@ -8,15 +9,19 @@
 
 namespace amr_wind {
 
-ABL::ABL(const CFDSim& sim)
+ABL::ABL(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
-    , m_temperature(sim.repo().get_field("temperature"))
     , m_pa(2)
     , m_abl_wall_func(sim)
 {
+    // Register temperature equation
+    // FIXME: this should be optional?
+    auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
+    m_temperature = &(teqn.fields().field);
+
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
 }
@@ -34,7 +39,7 @@ void ABL::initialize_fields(
 {
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
-    auto& temp = m_temperature(level);
+    auto& temp = (*m_temperature)(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -67,7 +72,9 @@ void ABL::pre_advance_work()
 {
     const auto& time = m_sim.time();
     const auto& geom = m_sim.mesh().Geom();
-    m_pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature.vec_ptrs());
+    m_pa(
+        geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
+        m_temperature->vec_ptrs());
 
     m_abl_wall_func.update_umean(m_pa);
 
