@@ -54,6 +54,12 @@ void ABL::post_init_actions()
 {
     m_abl_wall_func.init_log_law_height();
 
+    m_pa(
+        m_sim.mesh().Geom(), m_density.vec_ptrs(), m_velocity.vec_ptrs(),
+        m_mueff.vec_ptrs(), m_temperature->vec_ptrs());
+
+    m_abl_wall_func.update_umean(m_pa);
+
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
 }
