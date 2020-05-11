@@ -116,6 +116,9 @@ public:
     TypeVector& scalar_eqns() { return m_obj_vec; }
     const TypeVector& scalar_eqns() const { return m_obj_vec; }
 
+    //! Query if a PDE has already been registered
+    bool has_pde(const std::string& pde_name) const;
+
 private:
     //! Instance of the CFD simulation controller
     CFDSim& m_sim;
