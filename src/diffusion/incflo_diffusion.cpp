@@ -23,6 +23,7 @@ get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcep
             {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
+            case BC::zero_gradient:
             {
                 // All three components are Neumann
                 r[0][dir] = LinOpBCType::Neumann;
@@ -82,18 +83,20 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
             {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
-            case BC::no_slip_wall:
+            case BC::zero_gradient:
+            case BC::slip_wall:
             {
                 r[dir] = LinOpBCType::Neumann;
                 break;
             }
-            case BC::slip_wall:
             case BC::wall_model:
+            case BC::fixed_gradient:
             {
                 r[dir] = LinOpBCType::inhomogNeumann;
                 break;
             }
             case BC::mass_inflow:
+            case BC::no_slip_wall:
             {
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
@@ -187,103 +190,6 @@ void wall_model_bc(
         }
     }
 }
-
-void heat_flux_bc(amr_wind::Field& scalar)
-{
-    BL_PROFILE("amr-wind::diffusion::heat_flux_bc")
-    AMREX_ALWAYS_ASSERT(scalar.num_comp() == 1);
-    const int nlevels = scalar.repo().num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
-        heat_flux_model_bc(lev, scalar, 0);
-    }
-}
-
-void
-heat_flux_model_bc(const int lev, amr_wind::Field& scalar, const int comp)
-{
-
-    BL_PROFILE("amr-wind::diffusion::heat_flux_model_bc")
-    const Geometry& geom = scalar.repo().mesh().Geom(lev);
-    const Box& domain = geom.Domain();
-    MFItInfo mfi_info{};
- 
-    if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-    for (MFIter mfi(scalar(lev),mfi_info); mfi.isValid(); ++mfi) {
-        Box const& bx = mfi.validbox();
-        Array4<Real> const& bc_a = scalar(lev).array(mfi);
-        int idim = 0;
-
-        // fixme this assume periodic
-        if (!geom.isPeriodic(idim)) {
-            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[0][comp];
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdx
-                    bc_a(i-1,j,k) = local_m_bc_tracer_d;
-                });
-            }
-            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[3][comp];
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdx
-                    bc_a(i,j,k) = local_m_bc_tracer_d ;
-                });
-            }
-        }
-
-        idim = 1;
-        if (!geom.isPeriodic(idim)) {
-            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[1][comp];
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j-1,k) = local_m_bc_tracer_d;
-                });
-            }
-            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[4][comp];
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdy
-                    bc_a(i,j,k) = local_m_bc_tracer_d;
-                });
-            }
-        }
-
-        idim = 2;
-        if (!geom.isPeriodic(idim)) {
-            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[2][comp];
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k-1) = local_m_bc_tracer_d;
-                });
-            }
-            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                const Real local_m_bc_tracer_d = scalar.bc_values_device()[5][comp];
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    // inhomogeneous Neumann BC's dTdz
-                    bc_a(i,j,k) = local_m_bc_tracer_d;
-                });
-            }
-        }
-    }
-}
-
 
 Array<MultiFab,AMREX_SPACEDIM>
 average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_eta)

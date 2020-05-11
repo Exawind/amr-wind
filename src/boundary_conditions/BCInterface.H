@@ -15,7 +15,7 @@ class BCIface
 public:
     using IncfloBC = amrex::GpuArray<BC, AMREX_SPACEDIM * 2>;
 
-    BCIface(Field& field, const IncfloBC& ibc_type);
+    BCIface(Field& field);
 
     virtual ~BCIface() = default;
 
@@ -29,11 +29,13 @@ protected:
     //! Read input data for specific fields based on BC types
     virtual void read_values() = 0;
 
+    //! Parse custom BCs specified for this field
+    virtual void read_bctype();
+
+    virtual void set_bcfuncs();
+
     //! Set default BC values for the field
     inline void set_default_value(const amrex::Real value);
-
-    //! Set the incflo BC enums
-    inline void set_incflo_bc();
 
     //! Set AMReX mathematical boundary types for the lower boundaries
     inline void set_bcrec_lo(
@@ -45,15 +47,12 @@ protected:
 
     //! Field instance where BC is being set
     Field& m_field;
-
-    //! Incflo BC enums that control BC behavior
-    const IncfloBC m_ibc_type;
 };
 
 class BCVelocity : public BCIface
 {
 public:
-    BCVelocity(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCVelocity(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -63,7 +62,7 @@ protected:
 class BCScalar : public BCIface
 {
 public:
-    BCScalar(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCScalar(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -73,7 +72,7 @@ protected:
 class BCPressure : public BCScalar
 {
 public:
-    BCPressure(Field& field, const IncfloBC& ibc_type) : BCScalar(field, ibc_type) {}
+    BCPressure(Field& field) : BCScalar(field) {}
 
 protected:
     virtual void read_values() override;
@@ -82,7 +81,7 @@ protected:
 class BCSrcTerm : public BCIface
 {
 public:
-    BCSrcTerm(Field& field, const IncfloBC& ibc_type) : BCIface(field, ibc_type) {}
+    BCSrcTerm(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;

@@ -21,9 +21,7 @@ incflo::incflo ()
     // Read inputs file using ParmParse
     ReadParameters();
 
-    declare_fields();
-
-    init_field_bcs();
+    init_physics_and_pde();
 
     set_background_pressure();
 }
@@ -187,4 +185,28 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
     for (auto& pp: m_sim.physics()) {
         pp->initialize_fields(lev, Geom(lev));
     }
+}
+
+void incflo::init_physics_and_pde()
+{
+    auto& pde_mgr = m_sim.pde_manager();
+
+    // Always register incompressible Navier-Stokes equation
+    pde_mgr.register_icns();
+
+    // Register density first so that we can compute its `n+1/2` state before
+    // other scalars attempt to use it in their computations.
+    if (!m_constant_density) {
+        if (pde_mgr.scalar_eqns().size() > 0)
+            amrex::Abort(
+                "For non-constant density, it must be the first equation "
+                "registered for the scalar equations");
+        pde_mgr.register_transport_pde("Density");
+    }
+
+    // TODO: This should be customized based on Physics
+    pde_mgr.register_transport_pde("Temperature");
+
+    m_sim.init_physics();
+    m_sim.create_turbulence_model();
 }

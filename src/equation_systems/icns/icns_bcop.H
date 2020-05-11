@@ -18,22 +18,22 @@ struct BCOp<ICNS>
 
     /** Initialize the BCs for the PDE variable as well as its source term
      */
-    void init_bcs(const BCIface::IncfloBC& ibc_type)
+    void init_bcs()
     {
-        BCVelocity bc(m_fields.field, ibc_type);
+        BCVelocity bc(m_fields.field);
         bc();
 
         auto& density = m_fields.repo.get_field("density");
         const amrex::Real density_default = 1.0;
-        BCScalar bc_den(density, ibc_type);
+        BCScalar bc_den(density);
         bc_den(density_default);
 
         auto& pressure = m_fields.repo.get_field("p");
-        BCPressure bc_pres(pressure, ibc_type);
+        BCPressure bc_pres(pressure);
         bc_pres();
 
         // Used for fillpatch operation on the source term
-        BCSrcTerm bc_src(m_fields.src_term, ibc_type);
+        BCSrcTerm bc_src(m_fields.src_term);
         bc_src();
     }
 

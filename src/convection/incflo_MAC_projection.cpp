@@ -29,16 +29,9 @@ mac::get_projection_bc (Orientation::Side side, GpuArray<BC, AMREX_SPACEDIM*2> b
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
-            case BC::mass_inflow:
-            case BC::slip_wall:
-            case BC::no_slip_wall:
-            case BC::wall_model:
-            {
+            default:
                 r[dir] = LinOpBCType::Neumann;
                 break;
-            }
-            default:
-                amrex::Abort("mac get_projection_bc: undefined BC type");
             };
         }
     }

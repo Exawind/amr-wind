@@ -35,6 +35,8 @@ BoussinesqBuoyancy.reference_temperature = 0.0
 
 zlo.type                = "sw"
 zhi.type                = "sw"
+zlo.temperature_type = "fixed_gradient"
+zhi.temperature_type = "fixed_gradient"
 
 incflo.gradrhoerr       = 0.1
 

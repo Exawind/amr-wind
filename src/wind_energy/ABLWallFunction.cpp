@@ -88,9 +88,4 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
         rho_state);
 }
 
-void ABLThetaTopBC::operator()(Field& theta, const FieldState)
-{
-    diffusion::heat_flux_bc(theta);
-}
-
 } // namespace amr_wind

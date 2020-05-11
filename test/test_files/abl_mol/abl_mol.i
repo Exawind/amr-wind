@@ -62,9 +62,11 @@ incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
 
 # Boundary conditions
 zlo.type =   "wall_model"
+zlo.temperature_type = "fixed_gradient"
 zlo.temperature = 0.0
 
 zhi.type =   "slip_wall"
+zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.003 # tracer is used to specify potential temperature gradient
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
