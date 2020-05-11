@@ -167,11 +167,10 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i, j, k)    + c1 * den(i + 1, j, k);
-                            const Real mu  = c0 * eta(i, j, k)    + c1 * eta(i + 1, j, k);
-                            const Real vy  = c0 * vel(i, j, k, 1) + c1 * vel(i + 1, j, k, 1);
-                            const Real vz =  c0 * vel(i, j, k, 2) + c1 * vel(i + 1, j, k, 2);
+                            const Real rho = den(i, j, k);
+                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i + 1, j, k);
+                            const Real vy  = vel(i, j, k, 1);
+                            const Real vz =  vel(i, j, k, 2);
 
                             // inhomogeneous Neumann BC's: mu*dudx = rho*utau^2
                             // dvdx(x=lo,y,z)
@@ -182,7 +181,6 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // u(x=lo,y,z)
                             bc(i - 1, j, k, 0) = 0.0;
-                            // clang-format on
                         });
                 }
 
@@ -191,11 +189,10 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i - 1, j, k)    + c1 * den(i - 2, j, k);
-                            const Real mu  = c0 * eta(i - 1, j, k)    + c1 * eta(i - 2, j, k);
-                            const Real vy  = c0 * vel(i - 1, j, k, 1) + c1 * vel(i - 2, j, k, 1);
-                            const Real vz =  c0 * vel(i - 1, j, k, 2) + c1 * vel(i - 2, j, k, 2);
+                            const Real rho = den(i - 1, j, k);
+                            const Real mu  = c0 * eta(i - 1, j, k) + c1 * eta(i - 2, j, k);
+                            const Real vy  = vel(i - 1, j, k, 1);
+                            const Real vz =  vel(i - 1, j, k, 2);
 
                             // inhomogeneous Neumann BC's: mu*dudx = rho*utau^2
                             // dvdx(x=hi,y,z)
@@ -206,23 +203,22 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // u(x=0,y,z)
                             bc(i, j, k, 0) = 0.0;
-                            // clang-format on
                         });
                 }
-            } // x-periodic if-statement
+            }
 
             idim = 1;
+
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                     velocity.bc_type()[ylo] ==  BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i, j, k)    + c1 * den(i, j + 1, k);
-                            const Real mu  = c0 * eta(i, j, k)    + c1 * eta(i, j + 1, k);
-                            const Real vx  = c0 * vel(i, j, k, 0) + c1 * vel(i, j + 1, k, 0);
-                            const Real vz  = c0 * vel(i, j, k, 2) + c1 * vel(i, j + 1, k, 2);
+                            const Real rho = den(i, j, k);
+                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
+                            const Real vx  = vel(i, j, k, 0);
+                            const Real vz  = vel(i, j, k, 2);
 
                             // inhomogeneous Neumann BC's: mu*dudy = rho*utau^2
                             // dudy(x,y=lo,z)
@@ -233,7 +229,6 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // v(x,y=lo,z)
                             bc(i, j - 1, k, 1) = 0.0;
-                            // clang-format on
                         });
                 }
 
@@ -242,11 +237,10 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i, j - 1, k)    + c1 * den(i, j - 2, k);
-                            const Real mu  = c0 * eta(i, j - 1, k)    + c1 * eta(i, j - 2, k);
-                            const Real vx  = c0 * vel(i, j - 1, k, 0) + c1 * vel(i, j - 2, k, 0);
-                            const Real vz  = c0 * vel(i, j - 1, k, 2) + c1 * vel(i, j - 2, k, 2);
+                            const Real rho = den(i, j - 1, k);
+                            const Real mu  = c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
+                            const Real vx  = vel(i, j - 1, k, 0);
+                            const Real vz  = vel(i, j - 1, k, 2);
 
                             // inhomogeneous Neumann BC's: mu*dudy = rho*utau^2
                             // dudy(x,y=hi,z)
@@ -257,23 +251,22 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // v(x,y=hi,z)
                             bc(i, j, k, 1) = 0.0;
-                            // clang-format on
                         });
                 }
-            } // y-periodic if-statement
+            }
 
             idim = 2;
+
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
                     velocity.bc_type()[zlo] ==  BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i, j, k)    + c1 * den(i, j, k + 1);
-                            const Real mu  = c0 * eta(i, j, k)    + c1 * eta(i, j, k + 1);
-                            const Real vx  = c0 * vel(i, j, k, 0) + c1 * vel(i, j, k + 1, 0);
-                            const Real vy  = c0 * vel(i, j, k, 1) + c1 * vel(i, j, k + 1, 1);
+                            const Real rho = den(i, j, k);
+                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            const Real vx  = vel(i, j, k, 0);
+                            const Real vy  = vel(i, j, k, 1);
 
                             // inhomogeneous Neumann BC's: mu*dudz = rho*utau^2
                             // dudz(x,y,z=lo)
@@ -284,7 +277,6 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // w(x,y,z=lo)
                             bc(i, j, k - 1, 2) = 0.0;
-                            // clang-format on
                         });
                 }
 
@@ -293,11 +285,10 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            // clang-format off
-                            const Real rho = c0 * den(i, j, k - 1)    + c1 * den(i, j, k - 2);
-                            const Real mu  = c0 * eta(i, j, k - 1)    + c1 * eta(i, j, k - 2);
-                            const Real vx  = c0 * vel(i, j, k - 1, 0) + c1 * vel(i, j, k - 2, 0);
-                            const Real vy  = c0 * vel(i, j, k - 1, 1) + c1 * vel(i, j, k - 2, 1);
+                            const Real rho = den(i, j, k - 1);
+                            const Real mu  = c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
+                            const Real vx  = vel(i, j, k - 1, 0);
+                            const Real vy  = vel(i, j, k - 1, 1);
                             // inhomogeneous Neumann BC's: mu*dudz = rho*utau^2
                             // dudz(x,y,z=hi)
                             bc(i, j, k, 0) = rho * utau * utau * vx / umag / mu;
@@ -307,10 +298,10 @@ void wall_model_bc(
                             // Dirichlet BC's
                             // w(x,y,z=hi)
                             bc(i, j, k, 2) = 0.0;
-                            // clang-format on
                         });
                 }
-            } // z-periodic if-statement
+            }
+
         } // MFIter loop
     } // level loop
 }
