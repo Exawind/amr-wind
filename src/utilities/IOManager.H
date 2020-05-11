@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 
 #include "AMReX_Vector.H"
 
@@ -64,10 +64,10 @@ private:
     CFDSim& m_sim;
 
     //! Default output variables registered automatically in the code
-    std::unordered_set<std::string> m_pltvars_default;
+    std::set<std::string> m_pltvars_default;
 
     //! Variables for output in checkpoint/restart files
-    std::unordered_set<std::string> m_chkvars;
+    std::set<std::string> m_chkvars;
 
     //! Final list of fields to be output
     amrex::Vector<Field*> m_plt_fields;

@@ -49,7 +49,7 @@ IOManager::~IOManager() = default;
 void IOManager::initialize_io()
 {
     amrex::Vector<std::string> out_vars;
-    std::unordered_set<std::string> outputs;
+    std::set<std::string> outputs;
 
     amrex::ParmParse pp("io");
     pp.query("output_default_variables", m_output_default_vars);
