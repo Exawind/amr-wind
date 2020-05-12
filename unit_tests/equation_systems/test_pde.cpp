@@ -9,7 +9,7 @@ class PDETest : public MeshTest
 TEST_F(PDETest, test_pde_create_godunov)
 {
     amrex::ParmParse pp("incflo");
-    pp.add("probtype", 35);
+    pp.add("probtype", 0);
     pp.add("use_godunov", 1);
 
     initialize_mesh();
@@ -25,7 +25,7 @@ TEST_F(PDETest, test_pde_create_godunov)
 TEST_F(PDETest, test_pde_create_mol)
 {
     amrex::ParmParse pp("incflo");
-    pp.add("probtype", 35);
+    pp.add("probtype", 0);
     pp.add("use_godunov", 0);
 
     initialize_mesh();

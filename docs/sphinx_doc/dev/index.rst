@@ -12,4 +12,5 @@ and extending the ``amr-wind`` source code for their own use cases.
    documentation
    unit_testing
    regression_testing
+   verification
    coding_guidelines

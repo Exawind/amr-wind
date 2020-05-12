@@ -8,15 +8,15 @@ namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
 {
-    amrex::ParmParse pp("abl");
+    amrex::ParmParse pp("ABL");
 
     // Temperature variation as a function of height
-    int num_theta_values = 0;
-    pp.get("ntemperature", num_theta_values);
-    m_theta_heights.resize(num_theta_values);
-    m_theta_values.resize(num_theta_values);
-    pp.getarr("temperature_heights", m_theta_heights, 0, num_theta_values);
-    pp.getarr("temperature_values", m_theta_values, 0, num_theta_values);
+    pp.getarr("temperature_heights", m_theta_heights);
+    pp.getarr("temperature_values", m_theta_values);
+
+    AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
+    
+    int num_theta_values = m_theta_heights.size();
 
     pp.query("perturb_velocity", m_perturb_vel);
     pp.query("perturb_ref_height", m_ref_height);
@@ -31,10 +31,8 @@ ABLFieldInit::ABLFieldInit()
         // TODO: Modify this to accept velocity as a function of height
         // Extract velocity field from incflo
         amrex::ParmParse pp("incflo");
-        pp.get("ro_0", m_rho);
-        pp.get("ic_u", m_vel[0]);
-        pp.get("ic_v", m_vel[1]);
-        pp.get("ic_w", m_vel[2]);
+        pp.get("density", m_rho);
+        pp.getarr("velocity", m_vel);
     }
 
     m_thht_d.resize(num_theta_values);

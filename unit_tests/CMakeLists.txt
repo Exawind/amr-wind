@@ -11,6 +11,9 @@ add_subdirectory(derive)
 add_subdirectory(utilities)
 add_subdirectory(equation_systems)
 add_subdirectory(turbulence)
+if(AMR_WIND_ENABLE_MASA)
+  add_subdirectory(mms)
+endif()
 
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 

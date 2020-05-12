@@ -4,6 +4,7 @@
 #include "ABL.H"
 #include "RefinementCriteria.H"
 #include "PDEBase.H"
+#include "IOManager.H"
 
 using namespace amrex;
 
@@ -20,9 +21,7 @@ incflo::incflo ()
     // Read inputs file using ParmParse
     ReadParameters();
 
-    declare_fields();
-
-    init_field_bcs();
+    init_physics_and_pde();
 
     set_background_pressure();
 }
@@ -34,9 +33,12 @@ void incflo::InitData ()
 {
     BL_PROFILE("amr-wind::incflo::InitData()")
 
+    // Initialize I/O manager to enable restart and outputs
+    auto& io_mgr = m_sim.io_manager();
+    io_mgr.initialize_io();
+
     int restart_flag = 0;
-    if(m_restart_file.empty())
-    {
+    if(io_mgr.restart_file().empty()) {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
         // SetIterateToFalse();
@@ -67,9 +69,8 @@ void incflo::InitData ()
             InitialIterations();
         }
 
-        // xxxxx TODO averagedown ???
-
-        if (m_time.write_checkpoint()) { WriteCheckPointFile(); }
+        if (m_time.write_checkpoint())
+            m_sim.io_manager().write_checkpoint_file();
     }
     else
     {
@@ -87,17 +88,15 @@ void incflo::InitData ()
 
     // Plot initial distribution
     if(m_time.write_plot_file() && !restart_flag)
-    {
-        WritePlotFile();
-        m_last_plt = 0;
-    }
+        m_sim.io_manager().write_plot_file();
+
 }
 
 void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()")
 
-    if (m_KE_int > 0 && m_restart_file.empty()) {
+    if (m_KE_int > 0 && m_sim.io_manager().restart_file().empty()) {
         amrex::Print() << "\nTime, Kinetic Energy: " << m_time.current_time()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
@@ -118,6 +117,7 @@ void incflo::Evolve()
             }
             icns().post_regrid_actions();
             for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
+            for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
         }
 
         // Advance to time t + dt
@@ -128,16 +128,14 @@ void incflo::Evolve()
 
         if (m_time.write_plot_file())
         {
-            WritePlotFile();
-            m_last_plt = m_time.time_index();
+            m_sim.io_manager().write_plot_file();
         }
 
         if(m_time.write_checkpoint())
         {
-            WriteCheckPointFile();
-            m_last_chk = m_time.time_index();
+            m_sim.io_manager().write_checkpoint_file();
         }
-        
+
         if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
         {
             amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time()
@@ -154,15 +152,13 @@ void incflo::Evolve()
         << "\n==============================================================================\n"
         << std::endl;
 
-    // TODO: Fix last checkpoint/plot output
-    // Output at the final time
-    if( m_time.write_last_checkpoint()) {
-        WriteCheckPointFile();
-    }
+    // Output at final time
     if( m_time.write_last_plot_file())
-    {
-        WritePlotFile();
-    }
+        m_sim.io_manager().write_plot_file();
+
+    if( m_time.write_last_checkpoint())
+        m_sim.io_manager().write_checkpoint_file();
+
 }
 
 // Make a new level from scratch using provided BoxArray and DistributionMapping.
@@ -186,26 +182,28 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
-    if (m_restart_file.empty()) {
-        for (auto& pp: m_sim.physics()) {
-            pp->initialize_fields(lev, Geom(lev));
-        }
+    for (auto& pp: m_sim.physics()) {
+        pp->initialize_fields(lev, Geom(lev));
     }
 }
 
-// Set covered coarse cells to be the average of overlying fine cells
-// TODO: Move somewhere else, for example setup/incflo_arrays.cpp
-void incflo::AverageDown()
+void incflo::init_physics_and_pde()
 {
-    BL_PROFILE("amr-wind::incflo::AverageDown()")
+    auto& pde_mgr = m_sim.pde_manager();
 
-    for (int lev = finest_level - 1; lev >= 0; --lev)
-    {
-        AverageDownTo(lev);
+    // Always register incompressible Navier-Stokes equation
+    pde_mgr.register_icns();
+
+    // Register density first so that we can compute its `n+1/2` state before
+    // other scalars attempt to use it in their computations.
+    if (!m_constant_density) {
+        if (pde_mgr.scalar_eqns().size() > 0)
+            amrex::Abort(
+                "For non-constant density, it must be the first equation "
+                "registered for the scalar equations");
+        pde_mgr.register_transport_pde("Density");
     }
-}
 
-void incflo::AverageDownTo(int /* crse_lev */)
-{
-    amrex::Abort("xxxxx TODO AverageDownTo");
+    m_sim.init_physics();
+    m_sim.create_turbulence_model();
 }

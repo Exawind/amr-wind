@@ -1,12 +1,17 @@
 #include "CFDSim.H"
 #include "TurbulenceModel.H"
+#include "IOManager.H"
 
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 
 CFDSim::CFDSim(amrex::AmrCore& mesh)
-    : m_mesh(mesh), m_time(), m_repo(m_mesh), m_pde_mgr(*this)
+    : m_mesh(mesh)
+    , m_time()
+    , m_repo(m_mesh)
+    , m_pde_mgr(*this)
+    , m_io_mgr(new IOManager(*this))
 {}
 
 CFDSim::~CFDSim() = default;

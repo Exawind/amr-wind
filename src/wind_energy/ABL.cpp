@@ -1,5 +1,6 @@
 #include "ABL.H"
 #include "ABLFieldInit.H"
+#include "ABLForcing.H"
 #include "incflo.H"
 
 #include "AMReX_ParmParse.H"
@@ -8,15 +9,19 @@
 
 namespace amr_wind {
 
-ABL::ABL(const CFDSim& sim)
+ABL::ABL(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
-    , m_temperature(sim.repo().get_field("temperature"))
     , m_pa(2)
     , m_abl_wall_func(sim)
 {
+    // Register temperature equation
+    // FIXME: this should be optional?
+    auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
+    m_temperature = &(teqn.fields().field);
+
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
 }
@@ -34,7 +39,7 @@ void ABL::initialize_fields(
 {
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
-    auto& temp = m_temperature(level);
+    auto& temp = (*m_temperature)(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -51,9 +56,6 @@ void ABL::post_init_actions()
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-
-    // Register temperature top BC gradient function
-    m_temperature.register_custom_bc<ABLThetaTopBC>();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -70,7 +72,9 @@ void ABL::pre_advance_work()
 {
     const auto& time = m_sim.time();
     const auto& geom = m_sim.mesh().Geom();
-    m_pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature.vec_ptrs());
+    m_pa(
+        geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
+        m_temperature->vec_ptrs());
 
     m_abl_wall_func.update_umean(m_pa);
 
@@ -86,11 +90,13 @@ void ABL::pre_advance_work()
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
-        amrex::ParmParse pp("amr");
+        int plot_type = 0;
+        amrex::ParmParse pp("io");
         pp.query("line_plot_int", output_interval);
+        pp.query("line_plot_type", plot_type);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
-            m_pa.plot_line_text("line_plot.txt", time.time_index(), time.current_time());
+            m_pa.plot_line(time.time_index(), time.current_time(), plot_type);
         }
     }
 }

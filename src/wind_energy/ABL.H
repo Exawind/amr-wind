@@ -6,9 +6,6 @@
 #include "Physics.H"
 #include "ABLFieldInit.H"
 #include "ABLWallFunction.H"
-#include "ABLForcing.H"
-#include "BoussinesqBuoyancy.H"
-#include "CoriolisForcing.H"
 #include "SimTime.H"
 #include "PlaneAveraging.H"
 
@@ -29,7 +26,7 @@ class ABL : public Physics::Register<ABL>
 public:
     static const std::string identifier() { return "ABL"; }
 
-    ABL(const CFDSim& sim);
+    ABL(CFDSim& sim);
 
     virtual ~ABL();
 
@@ -38,11 +35,15 @@ public:
 
     void post_init_actions() override;
 
+    void post_regrid_actions() override {}
+
     void initialize_fields(
         int level,
         const amrex::Geometry& geom) override;
 
     void pre_advance_work() override;
+
+    void post_advance_work() override {}
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const
     {
@@ -55,7 +56,7 @@ private:
     Field& m_velocity;
     Field& m_mueff;
     Field& m_density;
-    Field& m_temperature;
+    Field* m_temperature{nullptr};
 
     PlaneAveraging m_pa;
     ABLWallFunction m_abl_wall_func;

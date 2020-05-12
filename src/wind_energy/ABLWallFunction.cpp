@@ -13,7 +13,7 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_mesh(sim.mesh())
 {
-    amrex::ParmParse pp("abl");
+    amrex::ParmParse pp("ABL");
 
     pp.query("kappa", m_kappa);
     pp.query("surface_roughness_z0", m_z0);
@@ -37,14 +37,13 @@ void ABLWallFunction::init_log_law_height()
         // machine zero reg tests
         // eventually turn on pre_advance_work in InitialIterations() and delete this... or make a pre_timestep_work function?
         auto geom = m_mesh.Geom();
-        amrex::Real vx = 0.0;
-        amrex::Real vy = 0.0;
         amrex::ParmParse pp("incflo");
-        pp.query("ic_u", vx);
-        pp.query("ic_v", vy);
-        m_umean[0] = vx;
-        m_umean[1] = vy;
-        const amrex::Real uground = std::sqrt(vx * vx + vy * vy);
+        amrex::Vector<amrex::Real> vel{{0.0, 0.0, 0.0}};
+        pp.queryarr("velocity", vel);
+        m_umean[0] = vel[0];
+        m_umean[1] = vel[1];
+        m_umean[2] = vel[2];
+        const amrex::Real uground = utils::vec_mag(m_umean.data());
         m_utau = m_kappa * uground / std::log(m_log_law_height / m_z0);
     }
 }
@@ -87,11 +86,6 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     diffusion::wall_model_bc(
         velocity, m_wall_func.utau(), utils::vec_mag(m_wall_func.umean().data()),
         rho_state);
-}
-
-void ABLThetaTopBC::operator()(Field& theta, const FieldState)
-{
-    diffusion::heat_flux_bc(theta);
 }
 
 } // namespace amr_wind

@@ -1,4 +1,6 @@
 #include "BCInterface.H"
+#include "FieldRepo.H"
+#include "FixedGradientBC.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -6,15 +8,9 @@ namespace {
 amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
 }
 
-BCIface::BCIface(Field& field, const IncfloBC& ibc_type)
-    : m_field(field), m_ibc_type(ibc_type)
+BCIface::BCIface(Field& field)
+    : m_field(field)
 {}
-
-inline void BCIface::set_incflo_bc()
-{
-    auto& ibctype = m_field.bc_type();
-    for (int i = 0; i < AMREX_SPACEDIM * 2; ++i) ibctype[i] = m_ibc_type[i];
-}
 
 inline void BCIface::set_bcrec_lo(
     int dir, amrex::BCType::mathematicalBndryTypes bcrec)
@@ -34,10 +30,11 @@ void BCIface::operator()(const amrex::Real value)
 {
     amrex::Print() << "Initializing boundary conditions for " << m_field.name()
                    << std::endl;
-    set_incflo_bc();
     set_default_value(value);
+    read_bctype();
     set_bcrec();
     read_values();
+    set_bcfuncs();
     m_field.copy_bc_to_device();
 }
 
@@ -50,14 +47,79 @@ inline void BCIface::set_default_value(const amrex::Real value)
     }
 }
 
+void BCIface::read_bctype()
+{
+    const std::string key = m_field.name() + "_type";
+    auto& ibctype = m_field.bc_type();
+    auto& geom = m_field.repo().mesh().Geom(0);
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        // Process and quit early if this face is periodic
+        if (geom.isPeriodic(ori.coordDir())) {
+            ibctype[ori] = BC::periodic;
+            continue;
+        }
+
+        const auto& bcid = bcnames[ori];
+        amrex::ParmParse pp(bcid);
+        std::string bcstr = "null";
+        pp.query("type", bcstr);
+        pp.query(key.c_str(), bcstr);
+        bcstr = amrex::toLower(bcstr);
+
+        if ((bcstr == "pressure_inflow") || (bcstr == "pi")) {
+            ibctype[ori] = BC::pressure_inflow;
+        } else if ((bcstr == "pressure_outflow") || (bcstr == "po")) {
+            ibctype[ori] = BC::pressure_outflow;
+        } else if ((bcstr == "mass_inflow") || (bcstr == "mi")) {
+            ibctype[ori] = BC::mass_inflow;
+        } else if ((bcstr == "no_slip_wall") || (bcstr == "nsw")) {
+            ibctype[ori] = BC::no_slip_wall;
+        } else if ((bcstr == "slip_wall") || (bcstr == "sw")) {
+            ibctype[ori] = BC::slip_wall;
+        } else if ((bcstr == "wall_model") || (bcstr == "wm")) {
+            ibctype[ori] = BC::wall_model;
+        } else if ((bcstr == "zero_gradient") || (bcstr == "zg")) {
+            ibctype[ori] = BC::zero_gradient;
+        } else if ((bcstr == "fixed_gradient") || (bcstr == "fg")) {
+            ibctype[ori] = BC::fixed_gradient;
+        } else {
+            ibctype[ori] = BC::undefined;
+        }
+
+        if (ibctype[ori] == BC::undefined)  {
+            amrex::Abort("No BC specified for non-periodic boundary");
+        }
+    }
+}
+
+void BCIface::set_bcfuncs()
+{
+    auto& ibctype = m_field.bc_type();
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        const auto bct = ibctype[ori];
+
+        switch(bct) {
+        case BC::fixed_gradient:
+            m_field.register_custom_bc<FixedGradientBC>(ori);
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 void BCVelocity::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     auto& bcrec = m_field.bcrec();
 
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {
@@ -70,6 +132,7 @@ void BCVelocity::set_bcrec()
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
+        case BC::zero_gradient:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             else
@@ -129,6 +192,7 @@ void BCVelocity::read_values()
             break;
 
         default:
+            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
         }
     }
@@ -136,10 +200,11 @@ void BCVelocity::read_values()
 
 void BCScalar::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {
@@ -152,7 +217,7 @@ void BCScalar::set_bcrec()
 
         case BC::pressure_inflow:
         case BC::pressure_outflow:
-        case BC::no_slip_wall:
+        case BC::zero_gradient:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::foextrap);
             else
@@ -160,6 +225,7 @@ void BCScalar::set_bcrec()
             break;
 
         case BC::mass_inflow:
+        case BC::no_slip_wall:
             if (side == amrex::Orientation::low)
                 set_bcrec_lo(dir, amrex::BCType::ext_dir);
             else
@@ -168,6 +234,7 @@ void BCScalar::set_bcrec()
 
         case BC::slip_wall:
         case BC::wall_model:
+        case BC::fixed_gradient:
             if (side == amrex::Orientation::low) {
                 set_bcrec_lo(dir, amrex::BCType::hoextrap);
             } else {
@@ -195,12 +262,11 @@ void BCScalar::read_values()
         amrex::ParmParse pp(bcid);
         switch (bct) {
         case BC::mass_inflow:
-        case BC::slip_wall:
-        case BC::wall_model:
-            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
+            pp.getarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
 
         default:
+            pp.queryarr(fname.c_str(), bcval[ori], 0, ndim);
             break;
         }
     }
@@ -232,10 +298,11 @@ void BCPressure::read_values()
 
 void BCSrcTerm::set_bcrec()
 {
+    auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
-        const auto bct = m_ibc_type[ori];
+        const auto bct = ibctype[ori];
         const int dir = ori.coordDir();
 
         switch (bct) {

@@ -4,6 +4,7 @@
 #include "FieldUtils.H"
 #include "PDEHelpers.H"
 #include "TurbulenceModel.H"
+#include "IOManager.H"
 #include "CFDSim.H"
 
 #include "AMReX_ParmParse.H"
@@ -14,14 +15,18 @@ namespace pde {
 template<typename PDE, typename Scheme>
 struct FieldRegOp
 {
-    FieldRegOp(FieldRepo& repo_in) : repo(repo_in) {}
+    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {
-        return create_fields_instance<PDE, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
+
+        // Register solution variable for this PDE as output/restart variable
+        sim.io_manager().register_io_var(fields.field.name());
+        return fields;
     }
 
-    FieldRepo& repo;
+    CFDSim& sim;
 };
 
 template<typename PDE>

@@ -80,10 +80,6 @@ public:
     //! Solve the diffusion linear system and update the field
     virtual void solve(const amrex::Real dt) = 0;
 
-    //! Initialize boundary conditions for the PDE variable and any related
-    //! quanitities
-    virtual void init_bcs(const amrex::GpuArray<BC, AMREX_SPACEDIM*2>&) = 0;
-
     //! Base class identifier used for factory registration interface
     static std::string base_identifier() { return "PDESystem"; }
 };
@@ -119,6 +115,9 @@ public:
      */
     TypeVector& scalar_eqns() { return m_obj_vec; }
     const TypeVector& scalar_eqns() const { return m_obj_vec; }
+
+    //! Query if a PDE has already been registered
+    bool has_pde(const std::string& pde_name) const;
 
 private:
     //! Instance of the CFD simulation controller

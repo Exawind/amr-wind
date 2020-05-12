@@ -5,7 +5,6 @@ target_sources(${amr_wind_lib_name}
   incflo_compute_dt.cpp
   incflo_tagging.cpp
   incflo_regrid.cpp
-  incflo_field_repo.cpp
 
   CFDSim.cpp
   )
@@ -29,6 +28,11 @@ add_subdirectory(wind_energy)
 add_subdirectory(equation_systems)
 add_subdirectory(transport_models)
 add_subdirectory(turbulence)
+add_subdirectory(physics)
+
+if(AMR_WIND_ENABLE_MASA)
+  add_subdirectory(mms)
+endif()
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})

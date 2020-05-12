@@ -100,8 +100,6 @@ public: // for cuda
     void ComputeDivU (amrex::Real time);
     amrex::Real ComputeKineticEnergy () const;
 
-    bool m_wall_model_flag = false; /** if a wall model is detected on at least 1 of 6 boundaries it is set to true */
-
     ///////////////////////////////////////////////////////////////////////////
     //
     // prob
@@ -124,11 +122,8 @@ public: // for cuda
     void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
                          amrex::Real time, amrex::Real scaling_factor, bool incremental);
 
-
-    // TODO: Transition
-    void declare_fields();
-
-    void init_field_bcs();
+    //! Initialize Physics instances as well as PDEs (include turbulence models)
+    void init_physics_and_pde();
 
 private:
 
@@ -147,60 +142,18 @@ private:
 
     // Member variables for initial conditions
     int m_probtype = 0;
-    amrex::Real m_ic_u = 0.0;
-    amrex::Real m_ic_v = 0.0;
-    amrex::Real m_ic_w = 0.0;
-    amrex::Real m_ic_p = 0.0;
 
     // Initial projection / iterations
     bool m_do_initial_proj    = true;
     int  m_initial_iterations = 3;
 
-    amrex::Real m_p000 = 0.0; // background pressure at node (0,0,0).
-    amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, 0.0}};
-    amrex::Vector<amrex::Real> m_delp{{0.0, 0.0, 0.0}};
-
-    // Density (if constant)
-    amrex::Real m_ro_0 = 1.0;
-
     bool m_constant_density = true;
-    bool m_test_tracer_conservation = false;
 
     // Default to MOL (not Godunov)
     bool m_use_godunov         = false;
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
-
-    // Fluid properties
-    amrex::Real m_mu = 1.0;
-
-    int m_last_plt = -1;
-    std::string m_plot_file{"plt"};
-
-    int m_last_chk = -1;
     int m_KE_int = -1;
-
-    std::string m_check_file{"chk"};
-    std::string m_restart_file{""};
-
-    // Flags for saving fluid data in plot files
-    int m_plt_velx        = 1;
-    int m_plt_vely        = 1;
-    int m_plt_velz        = 1;
-    int m_plt_gpx         = 1;
-    int m_plt_gpy         = 1;
-    int m_plt_gpz         = 1;
-    int m_plt_rho         = 1;
-    int m_plt_tracer      = 1;
-    int m_plt_p           = 0;
-    int m_plt_eta         = 0;
-    int m_plt_vort        = 1;
-    int m_plt_forcing     = 0;
-    int m_plt_strainrate  = 0;
-    int m_plt_stress      = 0;
-    int m_plt_divu        = 0;
-    int m_plt_vfrac       = 1;
 
     //
     // end of member variables
@@ -208,11 +161,6 @@ private:
 
     amrex::FabFactory<amrex::FArrayBox> const&
     Factory (int lev) const noexcept { return m_repo.factory(lev); }
-
-    // Number of ghost cells for force field arrays.
-    int nghost_force () const {
-        return (m_use_godunov) ? 1 : 0;
-    }
 
     bool need_divtau () const {
         return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
@@ -222,8 +170,6 @@ private:
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
 
     void Advance ();
-    void AverageDown ();
-    void AverageDownTo (int crse_lev);
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -233,7 +179,6 @@ private:
 
     void set_background_pressure ();
     void ReadParameters ();
-    void ReadIOParameters ();
     void InitialProjection ();
     void InitialIterations ();
 
@@ -243,10 +188,6 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
 
-    void WriteHeader (const std::string& name, bool is_checkpoint) const;
-    void WriteJobInfo (const std::string& dir) const;
-    void WriteCheckPointFile () const;
-    void WritePlotFile ();
     void ReadCheckpointFile ();
 
     void PrintMaxValues (const std::string& header);

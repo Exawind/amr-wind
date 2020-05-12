@@ -50,6 +50,9 @@ void incflo::Advance()
         ApplyCorrector();
     }
 
+    for (auto& pp: m_sim.physics())
+        pp->post_advance_work();
+
     if (m_verbose > 1) PrintMaxValues("end of timestep");
 }
 
@@ -192,12 +195,13 @@ void incflo::ApplyPredictor (bool incremental_projection)
     }
 
     if (m_use_godunov) {
-       IntVect ng(nghost_force());
-       icns().fields().src_term.fillpatch(m_time.current_time(), ng);
+        const int nghost_force = 1;
+        IntVect ng(nghost_force);
+        icns().fields().src_term.fillpatch(m_time.current_time(), ng);
 
-       for (auto& eqn: scalar_eqns()) {
-           eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
-       }
+        for (auto& eqn: scalar_eqns()) {
+            eqn->fields().src_term.fillpatch(m_time.current_time(), ng);
+        }
     }
 
     // *************************************************************************************

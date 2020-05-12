@@ -9,10 +9,10 @@ namespace pde {
 
 PDEMgr::PDEMgr(CFDSim& sim)
     : m_sim(sim)
-    , m_probtype(35)
+    , m_probtype(0)
 {
     amrex::ParmParse pp("incflo");
-    pp.get("probtype", m_probtype);
+    pp.query("probtype", m_probtype);
     pp.query("use_godunov", m_use_godunov);
 
     m_scheme = m_use_godunov
@@ -32,7 +32,20 @@ PDEBase& PDEMgr::register_transport_pde(const std::string& pde_name)
 {
     const std::string name = pde_name + "-" + m_scheme;
 
+    if (contains(name)) {
+        amrex::Print()
+            << "WARNING: Multiple requests to register PDE: " << pde_name
+            << std::endl;
+        return operator()(name);
+    }
+
     return create(name, m_sim, m_probtype);
+}
+
+bool PDEMgr::has_pde(const std::string &pde_name) const
+{
+    const std::string name = pde_name + "-" + m_scheme;
+    return contains(name);
 }
 
 }
