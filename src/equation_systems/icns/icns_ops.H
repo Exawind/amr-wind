@@ -8,7 +8,6 @@
 #include "AdvOp_MOL.H"
 #include "DiffusionOps.H"
 #include "icns/icns.H"
-#include "incflo_MAC_bcs.H"
 #include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {
@@ -142,8 +141,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         // Predict
         //
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            amrex::Box const& domain = geom[lev].Domain();
-
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -208,8 +205,6 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     godunov::predict_godunov(lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
                                              a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p,
                                              geom, dt, bcrec_device, godunov_use_forces_in_trans);
-
-                    incflo_set_mac_bcs(domain, xbx, ybx, zbx, a_umac, a_vmac, a_wmac, a_vel, dof_field.bcrec());
 
                     amrex::Gpu::streamSynchronize();  // otherwise we might be using too much memory
                 }
@@ -286,8 +281,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
         //
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            amrex::Box const& domain = repo.mesh().Geom(lev).Domain();
-
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
@@ -309,12 +302,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
                                                dof_field.bcrec(),
                                                dof_field.bcrec_device().data(),
                                                repo.mesh().Geom());
-
-                    incflo_set_mac_bcs(domain,
-                                       ubx, vbx, wbx,
-                                       u, v, w,
-                                       vcc,
-                                       dof_field.bcrec());
+                    
                 }
             }
         }
