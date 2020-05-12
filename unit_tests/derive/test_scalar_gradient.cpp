@@ -21,19 +21,20 @@ TEST_F(ScalarGradientTest, interior)
     const int n = 4;
     amrex::Box bx{{0, 0, 0}, {n, n, n}};
     
-    AnalyticalFunctions func(n,bx); 
+    AnalyticalFunctions func(n,bx);
+    func.quadratic();
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
     
-    amrex::Real idx = 1.0/func.dx, idy = 1.0/func.dy, idz = 1.0/func.dz;
+    amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
     
     for(int i = 1; i < n; ++i){
         for(int j = 1; j < n; ++j){
             for(int k = 1; k < n; ++k){
-                amr_wind::gradient<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,func.scalar.array(),scalargradient.array(),1);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,0), func.scalargrad.array()(i,j,k,0), tol);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,1), func.scalargrad.array()(i,j,k,1), tol);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,2), func.scalargrad.array()(i,j,k,2), tol);
+                amr_wind::gradient<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,func.scalar_.array(),scalargradient.array(),1);
+                EXPECT_NEAR(scalargradient.array()(i,j,k,0), func.scalargrad_.array()(i,j,k,0), tol);
+                EXPECT_NEAR(scalargradient.array()(i,j,k,1), func.scalargrad_.array()(i,j,k,1), tol);
+                EXPECT_NEAR(scalargradient.array()(i,j,k,2), func.scalargrad_.array()(i,j,k,2), tol);
             }
         }
     } 
