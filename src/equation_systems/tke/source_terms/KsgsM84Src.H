@@ -1,0 +1,34 @@
+#ifndef KSGSM84SRC_H
+#define KSGSM84SRC_H
+
+#include "tke/TKESource.H"
+
+namespace amr_wind {
+namespace pde {
+namespace tke {
+
+class KsgsM84Src : public TKESource::Register<KsgsM84Src>
+{
+public:
+    static const std::string identifier() { return "KsgsM84Src"; }
+
+    KsgsM84Src(const CFDSim&);
+
+    virtual ~KsgsM84Src();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
+
+private:
+    amrex::Real m_Ceps{0.93};
+};
+
+} // namespace tke
+} // namespace pde
+} // namespace amr_wind
+
+#endif /* KSGSM84SRC_H */
