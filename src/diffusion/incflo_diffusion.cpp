@@ -188,8 +188,8 @@ void wall_model_bc(
                             // Dirichlet BC
                             bc(i - 1, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i - 1, j, k, 1) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 1) / mu;
-                            bc(i - 1, j, k, 2) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 2) / mu;
+                            bc(i - 1, j, k, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
+                            bc(i - 1, j, k, 2) = shear_stress(i, j, k, utau2, umag, den, vel, 2) / mu;
                         });
                 }
 
@@ -202,8 +202,8 @@ void wall_model_bc(
                             // Dirichlet BC's
                             bc(i, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 1) = shear_stress(i - 1, j, k, utau2, umag, mu, den, vel, 1) / mu;
-                            bc(i, j, k, 2) = shear_stress(i - 1, j, k, utau2, umag, mu, den, vel, 2) / mu;
+                            bc(i, j, k, 1) = shear_stress(i - 1, j, k, utau2, umag, den, vel, 1) / mu;
+                            bc(i, j, k, 2) = shear_stress(i - 1, j, k, utau2, umag, den, vel, 2) / mu;
                         });
                 }
             }
@@ -218,11 +218,11 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
                             // Inhomogeneous Neumann BC
-                            bc(i, j - 1, k, 0) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 0) / mu;
+                            bc(i, j - 1, k, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
                             // Dirichlet BC
                             bc(i, j - 1, k, 1) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j - 1, k, 2) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 2) / mu;
+                            bc(i, j - 1, k, 2) = shear_stress(i, j, k, utau2, umag, den, vel, 2) / mu;
                         });
                 }
 
@@ -233,11 +233,11 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 0) = shear_stress(i, j - 1, k, utau2, umag, mu, den, vel, 0) / mu;
+                            bc(i, j, k, 0) = shear_stress(i, j - 1, k, utau2, umag, den, vel, 0) / mu;
                             // Dirichlet BC
                             bc(i, j, k, 1) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 2) = shear_stress(i, j - 1, k, utau2, umag, mu, den, vel, 2) / mu;
+                            bc(i, j, k, 2) = shear_stress(i, j - 1, k, utau2, umag, den, vel, 2) / mu;
                         });
                 }
             }
@@ -252,8 +252,8 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 0) / mu;
-                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 1) / mu;
+                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
+                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
                         });
@@ -266,8 +266,8 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 0) = shear_stress(i, j, k - 1, utau2, umag, mu, den, vel, 0) / mu;
-                            bc(i, j, k, 1) = shear_stress(i, j, k - 1, utau2, umag, mu, den, vel, 1) / mu;
+                            bc(i, j, k, 0) = shear_stress(i, j, k - 1, utau2, umag, den, vel, 0) / mu;
+                            bc(i, j, k, 1) = shear_stress(i, j, k - 1, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k, 2) = 0.0;
                         });
