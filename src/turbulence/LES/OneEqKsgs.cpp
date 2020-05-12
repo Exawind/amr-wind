@@ -1,4 +1,5 @@
 #include "OneEqKsgs.H"
+#include "PDEBase.H"
 #include "TurbModelDefs.H"
 #include "turb_utils.H"
 #include "tke/TKE.H"
@@ -11,7 +12,9 @@ namespace turbulence {
 template <typename Transport>
 OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
     : TurbModelBase<Transport>(sim), m_vel(sim.repo().get_field("velocity"))
-{}
+{
+    sim.pde_manager().register_transport_pde(pde::TKE::pde_name());
+}
 
 template <typename Transport>
 OneEqKsgs<Transport>::~OneEqKsgs() = default;
