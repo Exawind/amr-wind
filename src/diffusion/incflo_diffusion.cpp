@@ -109,6 +109,21 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
     return r;
 }
 
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real shear_stress(
+    int i,
+    int j,
+    int k,
+    amrex::Real utau2,
+    amrex::Real umag,
+    amrex::Array4<amrex::Real const> const& rho,
+    amrex::Array4<amrex::Real const> const& vel,
+    int comp) noexcept
+{
+    return rho(i, j, k) * utau2 * vel(i, j, k, comp) / umag;
+}
+
+
 void wall_model_bc(
     amr_wind::Field& velocity,
     const amrex::Real utau,
@@ -139,6 +154,8 @@ void wall_model_bc(
         c1 = -0.5;
     }
 
+    const Real utau2 = utau*utau;
+
     for (int lev=0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -167,20 +184,12 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i, j, k);
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i + 1, j, k);
-                            const Real vy  = vel(i, j, k, 1);
-                            const Real vz =  vel(i, j, k, 2);
-
-                            // inhomogeneous Neumann BC's: mu*dudx = rho*utau^2
-                            // dvdx(x=lo,y,z)
-                            bc(i - 1, j, k, 1) = rho * utau * utau * vy / umag / mu;
-                            // dwdx(x=lo,y,z)
-                            bc(i - 1, j, k, 2) = rho * utau * utau * vz / umag / mu;
-
-                            // Dirichlet BC's
-                            // u(x=lo,y,z)
+                            // Dirichlet BC
                             bc(i - 1, j, k, 0) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i - 1, j, k, 1) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 1) / mu;
+                            bc(i - 1, j, k, 2) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 2) / mu;
                         });
                 }
 
@@ -189,20 +198,12 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i - 1, j, k);
                             const Real mu  = c0 * eta(i - 1, j, k) + c1 * eta(i - 2, j, k);
-                            const Real vy  = vel(i - 1, j, k, 1);
-                            const Real vz =  vel(i - 1, j, k, 2);
-
-                            // inhomogeneous Neumann BC's: mu*dudx = rho*utau^2
-                            // dvdx(x=hi,y,z)
-                            bc(i, j, k, 1) = rho * utau * utau * vy / umag / mu;
-                            // dwdx(x=hi,y,z)
-                            bc(i, j, k, 2) = rho * utau * utau * vz / umag / mu;
-
                             // Dirichlet BC's
-                            // u(x=0,y,z)
                             bc(i, j, k, 0) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k, 1) = shear_stress(i - 1, j, k, utau2, umag, mu, den, vel, 1) / mu;
+                            bc(i, j, k, 2) = shear_stress(i - 1, j, k, utau2, umag, mu, den, vel, 2) / mu;
                         });
                 }
             }
@@ -215,20 +216,13 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i, j, k);
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
-                            const Real vx  = vel(i, j, k, 0);
-                            const Real vz  = vel(i, j, k, 2);
-
-                            // inhomogeneous Neumann BC's: mu*dudy = rho*utau^2
-                            // dudy(x,y=lo,z)
-                            bc(i, j - 1, k, 0) = rho * utau * utau * vx / umag / mu;
-                            // dwdy(x,y=lo,z)
-                            bc(i, j - 1, k, 2) = rho * utau * utau * vz / umag / mu;
-
-                            // Dirichlet BC's
-                            // v(x,y=lo,z)
+                            // Inhomogeneous Neumann BC
+                            bc(i, j - 1, k, 0) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 0) / mu;
+                            // Dirichlet BC
                             bc(i, j - 1, k, 1) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i, j - 1, k, 2) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 2) / mu;
                         });
                 }
 
@@ -237,20 +231,13 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i, j - 1, k);
                             const Real mu  = c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
-                            const Real vx  = vel(i, j - 1, k, 0);
-                            const Real vz  = vel(i, j - 1, k, 2);
-
-                            // inhomogeneous Neumann BC's: mu*dudy = rho*utau^2
-                            // dudy(x,y=hi,z)
-                            bc(i, j, k, 0) = rho * utau * utau * vx / umag / mu;
-                            // dwdy(x,y=hi,z)
-                            bc(i, j, k, 2) = rho * utau * utau * vz / umag / mu;
-
-                            // Dirichlet BC's
-                            // v(x,y=hi,z)
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k, 0) = shear_stress(i, j - 1, k, utau2, umag, mu, den, vel, 0) / mu;
+                            // Dirichlet BC
                             bc(i, j, k, 1) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k, 2) = shear_stress(i, j - 1, k, utau2, umag, mu, den, vel, 2) / mu;
                         });
                 }
             }
@@ -263,19 +250,11 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i, j, k);
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
-                            const Real vx  = vel(i, j, k, 0);
-                            const Real vy  = vel(i, j, k, 1);
-
-                            // inhomogeneous Neumann BC's: mu*dudz = rho*utau^2
-                            // dudz(x,y,z=lo)
-                            bc(i, j, k - 1, 0) = rho * utau * utau * vx / umag / mu;
-                            // dvdz(x,y,z=lo)
-                            bc(i, j, k - 1, 1) = rho * utau * utau * vy / umag / mu;
-
-                            // Dirichlet BC's
-                            // w(x,y,z=lo)
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 0) / mu;
+                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, mu, den, vel, 1) / mu;
+                            // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
                         });
                 }
@@ -285,18 +264,11 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real rho = den(i, j, k - 1);
                             const Real mu  = c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
-                            const Real vx  = vel(i, j, k - 1, 0);
-                            const Real vy  = vel(i, j, k - 1, 1);
-                            // inhomogeneous Neumann BC's: mu*dudz = rho*utau^2
-                            // dudz(x,y,z=hi)
-                            bc(i, j, k, 0) = rho * utau * utau * vx / umag / mu;
-                            // dvdz(x,y,z=hi)
-                            bc(i, j, k, 1) = rho * utau * utau * vy / umag / mu;
-
-                            // Dirichlet BC's
-                            // w(x,y,z=hi)
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k, 0) = shear_stress(i, j, k - 1, utau2, umag, mu, den, vel, 0) / mu;
+                            bc(i, j, k, 1) = shear_stress(i, j, k - 1, utau2, umag, mu, den, vel, 1) / mu;
+                            // Dirichlet BC
                             bc(i, j, k, 2) = 0.0;
                         });
                 }
