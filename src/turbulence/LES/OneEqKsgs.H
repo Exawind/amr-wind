@@ -37,10 +37,13 @@ public:
 
     virtual ~OneEqKsgsM84();
 
-    virtual std::string model_name() override { return "OneEqKsgsM84"; }
+    virtual std::string model_name() const override { return "OneEqKsgsM84"; }
 
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
+
+    //! Return turbulence model coefficients
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
 template <typename Transport>
@@ -56,10 +59,13 @@ public:
 
     virtual ~OneEqKsgsS94();
 
-    virtual std::string model_name() override { return "OneEqKsgsS94"; }
+    virtual std::string model_name() const override { return "OneEqKsgsS94"; }
 
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
+
+    //! Return turbulence model coefficients
+    TurbulenceModel::CoeffsDictType model_coeffs() const override;
 };
 
 } // namespace turbulence

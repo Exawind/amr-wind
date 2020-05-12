@@ -31,12 +31,18 @@ template <typename Transport>
 OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
 
 template <typename Transport>
+TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
+{
+    return TurbulenceModel::CoeffsDictType{{"Ceps", this->m_Ceps}};
+}
+
+template <typename Transport>
 void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     const FieldState fstate)
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
-        auto& mu_turb = this->mu_turb();
+    auto& mu_turb = this->mu_turb();
     auto& vel = this->m_vel.state(fstate);
 }
 
@@ -55,10 +61,17 @@ template <typename Transport>
 OneEqKsgsS94<Transport>::~OneEqKsgsS94() = default;
 
 template <typename Transport>
+TurbulenceModel::CoeffsDictType OneEqKsgsS94<Transport>::model_coeffs() const
+{
+    return TurbulenceModel::CoeffsDictType{{"Ceps", this->m_Ceps}};
+}
+
+template <typename Transport>
 void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
     const FieldState fstate)
 {
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+    BL_PROFILE(
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
     auto& mu_turb = this->mu_turb();
     auto& vel = this->m_vel.state(fstate);
