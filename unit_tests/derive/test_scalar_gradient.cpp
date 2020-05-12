@@ -30,7 +30,7 @@ TEST_F(ScalarGradientTest, interior)
     for(int i = 1; i < n; ++i){
         for(int j = 1; j < n; ++j){
             for(int k = 1; k < n; ++k){
-                amr_wind::compute_gradient_scalar<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,func.scalar.array(),scalargradient.array());
+                amr_wind::gradient<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,func.scalar.array(),scalargradient.array(),1);
                 EXPECT_NEAR(scalargradient.array()(i,j,k,0), func.scalargrad.array()(i,j,k,0), tol);
                 EXPECT_NEAR(scalargradient.array()(i,j,k,1), func.scalargrad.array()(i,j,k,1), tol);
                 EXPECT_NEAR(scalargradient.array()(i,j,k,2), func.scalargrad.array()(i,j,k,2), tol);
