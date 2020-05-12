@@ -25,7 +25,7 @@ TEST_F(MMSMeshTest, mms_forcing)
     sim().init_physics();
     for (auto& pp : sim().physics()) pp->post_init_actions();
 
-    auto fields = ICNSFields(sim().repo())(sim().time(), 0);
+    auto fields = ICNSFields(sim())(sim().time(), 0);
     auto& src_term = fields.src_term;
     amr_wind::pde::icns::mms::MMSForcing mmsforcing(sim());
 
