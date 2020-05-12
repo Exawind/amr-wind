@@ -114,7 +114,7 @@ struct StencilKHI
 
 
 template <typename Stencil>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void compute_gradient_scalar(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void gradient(
     int i,
     int j,
     int k,
@@ -122,27 +122,31 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void compute_gradient_scalar(
     amrex::Real idy,
     amrex::Real idz,
     amrex::Array4<amrex::Real const> const& phi,
-    amrex::Array4<amrex::Real> const& gradphi) noexcept
+    amrex::Array4<amrex::Real> const& gradphi,
+    int ncomp) noexcept
 {
     using namespace amrex;
 
     Real cp1, c, cm1;
+    int gradphidim = ncomp * AMREX_SPACEDIM;
 
-    cp1 = Stencil::c00;
-    c   = Stencil::c01;
-    cm1 = Stencil::c02;
-
-    gradphi(i,j,k,0) = (cp1*phi(i+1,j,k) + c*phi(i,j,k) + cm1*phi(i-1,j,k)) * idx;
-    cp1 = Stencil::c10;
-    c   = Stencil::c11;
-    cm1 = Stencil::c12;
-    gradphi(i,j,k,1) = (cp1*phi(i,j+1,k) + c*phi(i,j,k) + cm1*phi(i,j-1,k)) * idy;
-    cp1 = Stencil::c20;
-    c   = Stencil::c21;
-    cm1 = Stencil::c22;
-    gradphi(i,j,k,2) = (cp1*phi(i,j,k+1) + c*phi(i,j,k) + cm1*phi(i,j,k-1)) * idz;
+    for (int icomp=0; icomp < ncomp; icomp++) {
+        cp1 = Stencil::c00;
+        c   = Stencil::c01;
+        cm1 = Stencil::c02;
+        gradphi(i,j,k,icomp*gradphidim+0) = (cp1*phi(i+1,j,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i-1,j,k,icomp)) * idx;
+        cp1 = Stencil::c10;
+        c   = Stencil::c11;
+        cm1 = Stencil::c12;
+        gradphi(i,j,k,icomp*gradphidim+1) = (cp1*phi(i,j+1,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j-1,k,icomp)) * idy;
+        cp1 = Stencil::c20;
+        c   = Stencil::c21;
+        cm1 = Stencil::c22;
+        gradphi(i,j,k,icomp*gradphidim+2) = (cp1*phi(i,j,k+1,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j,k-1,icomp)) * idz;
+    }
 
 }
+
 
 template <typename Stencil>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
@@ -232,6 +236,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
 template<typename FType>
 void compute_strainrate(FType& field, const Field& velocity);
 
+template<typename FType>
+void compute_gradient(FType& gradf, const Field& field);
 
 } // namespace amr_wind
 #endif
