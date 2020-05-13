@@ -53,7 +53,7 @@ The following CMake options enable MASA in AMR-Wind:
 
 .. code-block:: bash
 
-   -DAMR_WIND_ENABLE_VERIFICATION=ON -DAMR_WIND_ENABLE_MASA=ON -DMASA_DIR=$MASA_ROOT_DIR
+   -DAMR_WIND_ENABLE_MASA=ON -DMASA_DIR=$MASA_ROOT_DIR
 
 where ``MASA_ROOT_DIR`` is the MASA install location.
 

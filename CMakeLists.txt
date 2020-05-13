@@ -16,13 +16,15 @@ option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 #Enabling tests overrides the executable options
 option(AMR_WIND_ENABLE_UNIT_TESTS "Enable unit testing" ON)
 option(AMR_WIND_ENABLE_TESTS "Enable testing suite" OFF)
-option(AMR_WIND_ENABLE_VERIFICATION "Enable testing and verification suite" OFF)
 option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 
 #Options for the executable
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
+
+# Third party libraries
+option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 14)
@@ -35,10 +37,6 @@ if(AMR_WIND_ENABLE_CUDA)
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
   endif()
-endif()
-
-if(AMR_WIND_ENABLE_VERIFICATION)
-  set(AMR_WIND_ENABLE_TESTS ON)
 endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
@@ -83,7 +81,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
                      "${CMAKE_BINARY_DIR}/fortran_modules/")
 
-if(AMR_WIND_ENABLE_VERIFICATION)
+if(AMR_WIND_ENABLE_MASA)
   set(CMAKE_PREFIX_PATH ${MASA_DIR} ${CMAKE_PREFIX_PATH})
   find_package(MASA QUIET REQUIRED)
   if(MASA_FOUND)
