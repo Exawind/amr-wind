@@ -7,6 +7,26 @@
 #include "MMS.H"
 
 namespace amr_wind_tests {
+
+namespace {
+void perturb_vel_field(
+    const amrex::Box& bx,
+    const amrex::Array4<amrex::Real>& vel,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo)
+{
+    amrex::ParallelFor(
+        bx, [vel, dx, problo] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+            const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+            vel(i, j, k, 0) += std::sin(amr_wind::utils::two_pi() * x);
+            vel(i, j, k, 1) += std::sin(amr_wind::utils::two_pi() * 2.0 * y);
+            vel(i, j, k, 2) += std::cos(amr_wind::utils::two_pi() * z);
+        });
+}
+} // namespace
+
 TEST_F(MMSMeshTest, mms_error)
 {
     populate_parameters();
@@ -34,16 +54,7 @@ TEST_F(MMSMeshTest, mms_error)
             const auto& dx = mesh().Geom(lev).CellSizeArray();
             const auto& problo = mesh().Geom(lev).ProbLoArray();
 
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    vel(i, j, k, 0) += std::sin(amr_wind::utils::two_pi() * x);
-                    vel(i, j, k, 1) +=
-                        std::sin(amr_wind::utils::two_pi() * 2.0 * y);
-                    vel(i, j, k, 2) += std::cos(amr_wind::utils::two_pi() * z);
-                });
+            perturb_vel_field(bx, vel, dx, problo);
         });
 
     const amrex::Real u_mms_err =

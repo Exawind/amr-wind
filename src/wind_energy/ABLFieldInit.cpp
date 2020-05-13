@@ -15,7 +15,6 @@ ABLFieldInit::ABLFieldInit()
     pp.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
-    
     int num_theta_values = m_theta_heights.size();
 
     pp.query("perturb_velocity", m_perturb_vel);
@@ -38,21 +37,12 @@ ABLFieldInit::ABLFieldInit()
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);
 
-#ifdef AMREX_USE_GPU
-    amrex::Gpu::htod_memcpy
-#else
-    std::memcpy
-#endif
-    (m_thht_d.data(), m_theta_heights.data(), 
-     sizeof(amrex::Real) * num_theta_values);
-
-#ifdef AMREX_USE_GPU
-    amrex::Gpu::htod_memcpy
-#else
-    std::memcpy
-#endif
-    (m_thvv_d.data(), m_theta_values.data(), 
-     sizeof(amrex::Real) * num_theta_values);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_theta_heights.begin(),
+        m_theta_heights.end(), m_thht_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_theta_values.begin(),
+        m_theta_values.end(), m_thvv_d.begin());
 }
 
 void ABLFieldInit::operator()(
@@ -60,7 +50,7 @@ void ABLFieldInit::operator()(
     const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
     const amrex::Array4<amrex::Real>& density,
-    const amrex::Array4<amrex::Real>& tracer) const
+    const amrex::Array4<amrex::Real>& temperature) const
 {
     const amrex::Real pi = M_PI;
     const auto& dx = geom.CellSizeArray();
@@ -102,8 +92,7 @@ void ABLFieldInit::operator()(
             }
         }
 
-        // FIXME: Remove first tracer is temperature assumption
-        tracer(i, j, k, 0) = theta;
+        temperature(i, j, k, 0) = theta;
 
         if (perturb_vel) {
             const amrex::Real xl = x - problo[0];

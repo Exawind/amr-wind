@@ -34,9 +34,13 @@ if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
 
+# Generate AMReX build information file
 include(AMReXBuildInfo)
-generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
+# Create an internal target as amrwind library is an OBJECT library and cannot have
+# PRE_BUILD etc.
+add_library(amrwind_buildinfo)
+generate_buildinfo(amrwind_buildinfo ${CMAKE_SOURCE_DIR})
 target_include_directories(${amr_wind_lib_name} PUBLIC ${AMREX_SUBMOD_LOCATION}/Tools/C_scripts)
 
-target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex)
+target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})

@@ -3,7 +3,11 @@
 Verification
 ============
 
-Verification of AMR-WIND uses `MASA <https://github.com/manufactured-solutions/MASA>`_ and auto-differention tools to implement the Method of Manufactured Solutions.
+Verification of AMR-WIND uses `MASA
+<https://github.com/manufactured-solutions/MASA>`_ and
+auto-differention tools to implement the Method of Manufactured
+Solutions. MMS verification has been performed for both CPU and GPU
+architectures.
 
 Building and linking MASA
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +57,7 @@ The following CMake options enable MASA in AMR-Wind:
 
 .. code-block:: bash
 
-   -DAMR_WIND_ENABLE_VERIFICATION=ON -DAMR_WIND_ENABLE_MASA=ON -DMASA_DIR=$MASA_ROOT_DIR
+   -DAMR_WIND_ENABLE_MASA=ON -DMASA_DIR=$MASA_ROOT_DIR
 
 where ``MASA_ROOT_DIR`` is the MASA install location.
 
