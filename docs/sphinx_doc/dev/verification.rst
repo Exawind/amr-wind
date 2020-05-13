@@ -3,7 +3,11 @@
 Verification
 ============
 
-Verification of AMR-WIND uses `MASA <https://github.com/manufactured-solutions/MASA>`_ and auto-differention tools to implement the Method of Manufactured Solutions.
+Verification of AMR-WIND uses `MASA
+<https://github.com/manufactured-solutions/MASA>`_ and
+auto-differention tools to implement the Method of Manufactured
+Solutions. MMS verification has been performed for both CPU and GPU
+architectures.
 
 Building and linking MASA
 ~~~~~~~~~~~~~~~~~~~~~~~~~
