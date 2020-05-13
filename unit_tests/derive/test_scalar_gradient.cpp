@@ -1,6 +1,6 @@
 /** \file test_scalar_gradient.cpp
  *
- *  Unit tests for amr_wind::Strainrate
+ *  Unit tests for amr_wind::gradient
  */
 
 #include "aw_test_utils/AmrexTest.H"
@@ -9,19 +9,16 @@
 
 namespace amr_wind_tests {
 
-//! Create unique namespace for this test fixture
 class ScalarGradientTest : public AmrexTest
 {};
 
 TEST_F(ScalarGradientTest, interior)
 {
-    using namespace std;
     constexpr double tol = 1.0e-12;
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    AnalyticalFunctions func(n,bx);
-    func.quadratic();
+    QuadraticAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
@@ -47,8 +44,7 @@ TEST_F(ScalarGradientTest, ihilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    AnalyticalFunctions func(n,bx);
-    func.linear();
+    LinearAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
@@ -79,8 +75,7 @@ TEST_F(ScalarGradientTest, jhilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    AnalyticalFunctions func(n,bx);
-    func.linear();
+    LinearAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
@@ -111,8 +106,7 @@ TEST_F(ScalarGradientTest, khilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    AnalyticalFunctions func(n,bx);
-    func.linear();
+    LinearAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  

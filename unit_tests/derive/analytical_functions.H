@@ -1,25 +1,14 @@
-/** \file analytical_functions.cpp
- *
- */
-
 #include "aw_test_utils/AmrexTest.H"
 #include "derive_K.H"
 
 namespace amr_wind_tests {
 
-//! Create unique namespace for this test fixture
-class AnalyticalFunctions  
+class AnalyticalFunctions 
 {
-
 public:
-
     AnalyticalFunctions(int n, amrex::Box);
 
     ~AnalyticalFunctions();
-
-    void linear();
-    
-    void quadratic();
 
     int ncells_;
     amrex::Real dx_,dy_,dz_;
@@ -29,7 +18,9 @@ public:
 
 };
 
-AnalyticalFunctions::AnalyticalFunctions(int n,amrex::Box bx)
+AnalyticalFunctions::AnalyticalFunctions(
+    int n,
+    amrex::Box bx)
   : ncells_(n),
     dx_(0.1),
     dy_(0.2 + 0.01*amrex::Random()),
@@ -51,32 +42,20 @@ AnalyticalFunctions::AnalyticalFunctions(int n,amrex::Box bx)
     }
 }
 
-void AnalyticalFunctions::quadratic()
+AnalyticalFunctions::~AnalyticalFunctions()=default;
+
+class LinearAnalyticalFunctions
+    : public AnalyticalFunctions
 {
-    // Define scalar fields and gradient
-    auto phi = scalar_.array();
-    auto gradphi = scalargrad_.array();
-    
-    // Interior stencil should be exact for quadratic polynomials
-    for(int i = 0; i <= ncells_+1; ++i){
-        for(int j = 0; j <= ncells_+1; ++j){
-            for(int k = 0; k <= ncells_+1; ++k){
-                amrex::Real x = x_[i];
-                amrex::Real y = y_[j];
-                amrex::Real z = z_[k];
-                
-                phi(i,j,k) = 5.0*x*y*z + 4.0*x*x + 3.0*y*y - 2.3*z*z + 1.3*y*z + 3.8*x*z + 9.4*x*y + 3.4*x+ 2.0*x + 3.14;
-                gradphi(i,j,k,0) = 5.0*y*z + 8.0*x + 3.8*z + 9.4*y + 3.4 + 2.0; 
-                gradphi(i,j,k,1) = 5.0*x*z + 6.0*y + 1.3*z + 9.4*x; 
-                gradphi(i,j,k,2) = 5.0*x*y -4.6*z + 1.3*y + 3.8*x;
-            }
-        }
-    }
+public: 
+    LinearAnalyticalFunctions(int n, amrex::Box);
+    ~LinearAnalyticalFunctions();
+};
 
-    
-}
-
-void AnalyticalFunctions::linear()
+LinearAnalyticalFunctions::LinearAnalyticalFunctions(
+    int n,
+    amrex::Box bx)
+    : AnalyticalFunctions(n,bx)
 {
     // Define scalar fields and gradient
     auto phi = scalar_.array();
@@ -91,8 +70,41 @@ void AnalyticalFunctions::linear()
             }
         }
     }
-    
 }
-AnalyticalFunctions::~AnalyticalFunctions()=default;
+LinearAnalyticalFunctions::~LinearAnalyticalFunctions()=default;
+    
+class QuadraticAnalyticalFunctions :
+        public AnalyticalFunctions
+{
+public: 
+    QuadraticAnalyticalFunctions(int n, amrex::Box);
+    ~QuadraticAnalyticalFunctions();
+};
+
+QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
+    int n,
+    amrex::Box bx)
+    : AnalyticalFunctions(n,bx)
+{
+    // Define scalar fields and gradient
+    auto phi = scalar_.array();
+    auto gradphi = scalargrad_.array();
+    for(int i = 0; i <= ncells_+1; ++i){
+        for(int j = 0; j <= ncells_+1; ++j){
+            for(int k = 0; k <= ncells_+1; ++k){
+                amrex::Real x = x_[i];
+                amrex::Real y = y_[j];
+                amrex::Real z = z_[k];
+                phi(i,j,k) = 5.0*x*y*z + 4.0*x*x + 3.0*y*y - 2.3*z*z + 1.3*y*z + 3.8*x*z + 9.4*x*y + 3.4*x+ 2.0*x + 3.14;
+                gradphi(i,j,k,0) = 5.0*y*z + 8.0*x + 3.8*z + 9.4*y + 3.4 + 2.0; 
+                gradphi(i,j,k,1) = 5.0*x*z + 6.0*y + 1.3*z + 9.4*x; 
+                gradphi(i,j,k,2) = 5.0*x*y -4.6*z + 1.3*y + 3.8*x;
+            }
+        }
+    }
+}
+
+QuadraticAnalyticalFunctions::~QuadraticAnalyticalFunctions()=default;
+
 
 }
