@@ -17,9 +17,9 @@ TEST_F(VectorGradientTest, interior)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    LinearAnalyticalFunctions func(n,bx);
+    QuadraticAnalyticalFunctions func(n,bx);
     
-    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM);   
+    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM*AMREX_SPACEDIM);   
     vectorgrad.setVal<amrex::RunOn::Host>(0.0);
     
     amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
@@ -47,7 +47,7 @@ TEST_F(VectorGradientTest, ihilo)
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
     LinearAnalyticalFunctions func(n,bx);
     
-    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM);   
+    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM*AMREX_SPACEDIM);   
     vectorgrad.setVal<amrex::RunOn::Host>(0.0);  
     
     amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
@@ -88,7 +88,7 @@ TEST_F(VectorGradientTest, jhilo)
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
     LinearAnalyticalFunctions func(n,bx);
     
-    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM);   
+    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM*AMREX_SPACEDIM);   
     vectorgrad.setVal<amrex::RunOn::Host>(0.0);  
     
     amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
@@ -129,7 +129,7 @@ TEST_F(VectorGradientTest, khilo)
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
     LinearAnalyticalFunctions func(n,bx);
     
-    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM);   
+    amrex::FArrayBox vectorgrad(bx, AMREX_SPACEDIM*AMREX_SPACEDIM);   
     vectorgrad.setVal<amrex::RunOn::Host>(0.0);  
     
     amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
