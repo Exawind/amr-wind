@@ -1,11 +1,10 @@
-/** \file test_scalar_gradient.cpp
- *
+/** 
  *  Unit tests for amr_wind::gradient
  */
 
 #include "aw_test_utils/AmrexTest.H"
 #include "derive_K.H"
-#include "analytical_functions.H"
+#include "AnalyticalFunctions.H"
 
 namespace amr_wind_tests {
 

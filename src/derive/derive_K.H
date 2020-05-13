@@ -128,21 +128,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void gradient(
     using namespace amrex;
 
     Real cp1, c, cm1;
-    int gradphidim = ncomp * AMREX_SPACEDIM;
-
     for (int icomp=0; icomp < ncomp; icomp++) {
         cp1 = Stencil::c00;
         c   = Stencil::c01;
         cm1 = Stencil::c02;
-        gradphi(i,j,k,icomp*gradphidim+0) = (cp1*phi(i+1,j,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i-1,j,k,icomp)) * idx;
+        gradphi(i,j,k,icomp*AMREX_SPACEDIM+0) = (cp1*phi(i+1,j,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i-1,j,k,icomp)) * idx;
         cp1 = Stencil::c10;
         c   = Stencil::c11;
         cm1 = Stencil::c12;
-        gradphi(i,j,k,icomp*gradphidim+1) = (cp1*phi(i,j+1,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j-1,k,icomp)) * idy;
+        gradphi(i,j,k,icomp*AMREX_SPACEDIM+1) = (cp1*phi(i,j+1,k,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j-1,k,icomp)) * idy;
         cp1 = Stencil::c20;
         c   = Stencil::c21;
         cm1 = Stencil::c22;
-        gradphi(i,j,k,icomp*gradphidim+2) = (cp1*phi(i,j,k+1,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j,k-1,icomp)) * idz;
+        gradphi(i,j,k,icomp*AMREX_SPACEDIM+2) = (cp1*phi(i,j,k+1,icomp) + c*phi(i,j,k,icomp) + cm1*phi(i,j,k-1,icomp)) * idz;
     }
 
 }
