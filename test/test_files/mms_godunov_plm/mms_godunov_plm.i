@@ -3,7 +3,6 @@ time.stop_time               = 5.0           # Max (simulated) time to evolve
 
 incflo.use_godunov                     = true
 incflo.use_ppm                         = false
-incflo.godunov_include_diff_in_forcing = true
 
 time.fixed_dt = 0.05
 time.cfl              = 0.49           # CFL factor
@@ -33,13 +32,6 @@ incflo.physics = MMS
 MMS.masa_name = "navierstokes_3d_incompressible_homogeneous"
 ICNS.source_terms = MMSForcing
 
-incflo.gradrhoerr       = 0.1
-
-amr.plt_ccse_regtest    =  1
-amr.plt_vort            =  1
-amr.plt_p               =  1
-
-incflo.advect_tracer = true
 incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 
 incflo.verbose          =   1           # incflo_level
