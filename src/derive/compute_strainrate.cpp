@@ -34,7 +34,7 @@ void compute_strainrate(FType& field, const Field& vel)
                 });
 
             // TODO: Check if the following is correct for `foextrap` BC types
-            const auto& bxi = mfi.tilebox();
+            const auto& bxi = mfi.validbox();
             int idim = 0;
             if (!geom.isPeriodic(idim)) {
                 if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
@@ -54,9 +54,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
@@ -89,9 +89,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
@@ -124,9 +124,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
