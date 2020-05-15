@@ -159,8 +159,7 @@ This section deals with parameters that control the simulation.
    **type:** Real number
 
    Initial timestep size (in seconds) used to initialize the simulation. 
-   Only activated if :input_param:`time.cfl` = true and parameter is positive, 
-   if this parameter is negative it is ignored.
+   Only activated if :input_param:`time.cfl` = true and if ``time.initial_dt`` is positive.
    This parameter can be useful for starting CFL-controlled simulations like 
    Rayleigh-Taylor flow that initialize with zero velocity.
 
