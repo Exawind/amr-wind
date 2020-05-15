@@ -128,6 +128,9 @@ private:
     //! Fixed deltaT indicated by user
     amrex::Real m_fixed_dt{-1.0};
 
+    //! Initial deltaT indicated by user
+    amrex::Real m_initial_dt{-1.0};
+
     //! Current CFL
     amrex::Real m_current_cfl{0.0};
 
@@ -162,7 +165,7 @@ private:
     bool m_is_init{true};
 
     //! Flag indicating if forcing should be included in CFL calculation
-    bool m_use_force_cfl{false};
+    bool m_use_force_cfl{true};
 
 };
 

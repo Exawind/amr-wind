@@ -17,6 +17,7 @@ void SimTime::parse_parameters()
     pp.query("stop_time", m_stop_time);
     pp.query("max_step", m_stop_time_index);
     pp.query("fixed_dt", m_fixed_dt);
+    pp.query("initial_dt", m_initial_dt);
     pp.query("init_shrink", m_init_shrink);
     pp.query("cfl", m_max_cfl);
     pp.query("verbose", m_verbose);
@@ -84,6 +85,8 @@ void SimTime::set_current_cfl(amrex::Real cfl_unit_time)
 
     if (m_adaptive) {
         m_dt[0] = dt_new;
+
+        if(m_is_init && m_initial_dt > 0.0) m_dt[0] = m_initial_dt;
 
         if (!m_is_init) m_new_time = m_cur_time + m_dt[0];
 
