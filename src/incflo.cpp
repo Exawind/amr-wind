@@ -82,6 +82,9 @@ void incflo::InitData ()
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
 
+        for (auto& pp: m_sim.physics())
+            pp->post_init_actions();
+
         icns().initialize();
         for (auto& eqn: scalar_eqns()) eqn->initialize();
     }
