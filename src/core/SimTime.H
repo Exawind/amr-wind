@@ -165,7 +165,7 @@ private:
     bool m_is_init{true};
 
     //! Flag indicating if forcing should be included in CFL calculation
-    bool m_use_force_cfl{false};
+    bool m_use_force_cfl{true};
 
 };
 
