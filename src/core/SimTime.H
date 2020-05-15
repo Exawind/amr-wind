@@ -128,6 +128,9 @@ private:
     //! Fixed deltaT indicated by user
     amrex::Real m_fixed_dt{-1.0};
 
+    //! Initial deltaT indicated by user
+    amrex::Real m_initial_dt{-1.0};
+
     //! Current CFL
     amrex::Real m_current_cfl{0.0};
 
