@@ -34,7 +34,7 @@ void compute_strainrate(FType& field, const Field& vel)
                 });
 
             // TODO: Check if the following is correct for `foextrap` BC types
-            const auto& bxi = mfi.validbox();
+            const auto& bxi = mfi.tilebox();
             int idim = 0;
             if (!geom.isPeriodic(idim)) {
                 if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
