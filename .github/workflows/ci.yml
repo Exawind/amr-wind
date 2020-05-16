@@ -26,7 +26,6 @@ env:
   CXX_COMPILER: mpicxx
   C_COMPILER: mpicc
   FORTRAN_COMPILER: mpifort
-  BUILD_TYPE: RelWithDebInfo
   NUM_PROCS: 16
 
 jobs:
@@ -35,6 +34,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        build_type: [RelWithDebInfo, Debug]
         include:
           - os: macos-latest
             install_deps: brew install open-mpi
@@ -42,6 +42,14 @@ jobs:
           - os: ubuntu-latest
             install_deps: sudo apt-get install mpich libmpich-dev
             comp: gnu
+          - build_type: RelWithDebInfo
+            ctest_args: -LE no-ci
+          - build_type: Debug
+            ctest_args: -L unit
+        exclude:
+          - os: macos-latest
+            build_type: Debug
+
     steps:
     - uses: actions/checkout@v2
       with: 
@@ -49,13 +57,13 @@ jobs:
     - name: dependencies
       run: ${{matrix.install_deps}}
     - name: setup
-      run: cmake -E make_directory ${{runner.workspace}}/build-ci
+      run: cmake -E make_directory ${{runner.workspace}}/build-ci-${{matrix.build_type}}
     - name: configure
-      working-directory: ${{runner.workspace}}/build-ci
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         cmake \
-          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install \
-          -DCMAKE_BUILD_TYPE:STRING=${{env.BUILD_TYPE}} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
+          -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DCMAKE_CXX_COMPILER:STRING=${{env.CXX_COMPILER}} \
           -DCMAKE_C_COMPILER:STRING=${{env.C_COMPILER}} \
           -DCMAKE_Fortran_COMPILER:STRING=${{env.FORTRAN_COMPILER}} \
@@ -64,8 +72,8 @@ jobs:
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           ${GITHUB_WORKSPACE}
     - name: make
-      working-directory: ${{runner.workspace}}/build-ci
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: cmake --build . -- -j ${{env.NUM_PROCS}}
     - name: test
-      working-directory: ${{runner.workspace}}/build-ci
-      run: ctest -j ${{env.NUM_PROCS}} -LE no_ci --output-on-failure
+      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      run: ctest -j ${{env.NUM_PROCS}} ${{matrix.ctest_args}} --output-on-failure
