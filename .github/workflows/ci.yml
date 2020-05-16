@@ -46,6 +46,9 @@ jobs:
             ctest_args: -LE no-ci
           - build_type: Debug
             ctest_args: -L unit
+        exclude:
+          - os: macos-latest
+            build_type: Debug
 
     steps:
     - uses: actions/checkout@v2
