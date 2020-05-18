@@ -153,6 +153,16 @@ This section deals with parameters that control the simulation.
    Fixed timestep size (in seconds) used to advance the simulation. If this
    parameter is negative, then :input_param:`time.cfl` is used to determine the
    adaptive timestep during the simulation.
+   
+.. input_param:: time.initial_dt
+
+   **type:** Real number
+
+   Initial timestep size (in seconds) used to initialize the simulation. 
+   Only activated if :input_param:`time.fixed_dt` is negative 
+   (signalling CFL controlled time stepping) and if ``time.initial_dt`` is positive.
+   This parameter can be useful for starting CFL-controlled simulations like 
+   Rayleigh-Taylor flow that initialize with zero velocity.
 
 .. input_param:: time.cfl
 
@@ -197,7 +207,7 @@ This section deals with parameters that control the simulation.
 
 .. input_param:: time.use_force_cfl
 
-   **type:** Boolean, optional, default = false
+   **type:** Boolean, optional, default = true
 
    If this flag is true then the forces (including the pressure gradient) are included
    in the CFL calculation.

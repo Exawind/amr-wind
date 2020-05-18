@@ -89,6 +89,7 @@ public:
     {
         if (PDE::has_diffusion){
             BL_PROFILE("amr-wind::" + this->identifier() + "::compute_diffusion_term")
+            m_bc_op.apply_bcs(fstate);
             m_diff_op->compute_diff_term(fstate);
         }
     }

@@ -9,6 +9,7 @@ time.max_step                =   -1          # Max number of time steps
 #.......................................#
 time.fixed_dt         =   -0.5        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
+time.use_force_cfl    = false
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #

@@ -54,9 +54,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
@@ -89,9 +89,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
@@ -124,9 +124,9 @@ void compute_strainrate(FType& field, const Field& vel)
                 }
 
                 if (bxi.bigEnd(idim) == domain.bigEnd(idim)) {
-                    amrex::IntVect low(bxi.bigEnd());
+                    amrex::IntVect low(bxi.smallEnd());
                     amrex::IntVect hi(bxi.bigEnd());
-                    int sm = low[idim];
+                    int sm = hi[idim];
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
