@@ -5,6 +5,8 @@ target_sources(${amr_wind_lib_name}
       incflo_build_info.cpp
       io.cpp
       PlaneAveraging.cpp
+      FieldPlaneAveraging.cpp
+      SecondMoment.cpp
       bc_ops.cpp
       console_io.cpp
       IOManager.cpp

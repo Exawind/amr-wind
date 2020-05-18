@@ -4,7 +4,7 @@
 #include "icns/MomentumSource.H"
 #include "SimTime.H"
 
-class PlaneAveraging;
+class FieldPlaneAveraging;
 
 namespace amr_wind {
 namespace pde {
