@@ -39,18 +39,18 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     m_umean[m_direction] = 0.0;
     switch (m_direction) {
     case 0:
-        m_umean[1] = pa.eval_line_average(m_log_law_height, 1);
-        m_umean[2] = pa.eval_line_average(m_log_law_height, 2);
+        m_umean[1] = pa.line_average_interpolated(m_log_law_height, 1);
+        m_umean[2] = pa.line_average_interpolated(m_log_law_height, 2);
         break;
 
     case 1:
-        m_umean[0] = pa.eval_line_average(m_log_law_height, 0);
-        m_umean[2] = pa.eval_line_average(m_log_law_height, 2);
+        m_umean[0] = pa.line_average_interpolated(m_log_law_height, 0);
+        m_umean[2] = pa.line_average_interpolated(m_log_law_height, 2);
         break;
 
     case 2:
-        m_umean[0] = pa.eval_line_average(m_log_law_height, 0);
-        m_umean[1] = pa.eval_line_average(m_log_law_height, 1);
+        m_umean[0] = pa.line_average_interpolated(m_log_law_height, 0);
+        m_umean[1] = pa.line_average_interpolated(m_log_law_height, 1);
         break;
 
     default:

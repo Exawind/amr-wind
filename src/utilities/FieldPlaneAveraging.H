@@ -11,7 +11,7 @@
 #include "DirectionSelector.H"
 #include "Field.H"
 
-class incflo;
+namespace amr_wind {
 
 class FieldPlaneAveraging
 {
@@ -22,60 +22,55 @@ public:
 
     void operator()();
 
-    amrex::Real eval_line_average(amrex::Real x, int comp) const; /** evaluate line average at specific location for any average component */
-    amrex::Real eval_line_average(int cell, int comp) const; /** evaluate line average at specific for any average component */
-
-    /** output a single text file with averages only */
-//    void
-//    plot_line_average_text(std::string filename, int step, amrex::Real time);
-//    /** output a single text file with averages and fluctuations */
-//    void plot_line_text(std::string filename, int step, amrex::Real time);
-//    /** output a single binary file with averages and fluctuations */
-//    void plot_line_binary(std::string filename, int step, amrex::Real time);
-//
-//    /** output a line plot file based on the plot type */
-//    void plot_line(int step, amrex::Real time, int plot_type = 0);
+    /** evaluate line average at specific location for any average component */
+    amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
+    /** evaluate line average at specific cell for any average component */
+    amrex::Real line_average_cell(int cell, int comp) const;
 
     /** change precision of text file output */
-    void set_precision(int p) {precision = p;};
+    void set_precision(int p) {m_precision = p;};
 
-    amrex::Real get_dx(){return dx;};
-    amrex::Real get_xlo(){return xlo;};
-    int get_axis(){return axis;};
-    int get_level(){return level;};
-    int get_line_avg_size() {return line_average.size();};
-    int get_ncell_plane(){return ncell_plane;};
-    int get_ncell_line(){return ncell_line;};
-    amrex::Real * get_line_avg_data() {return line_average.data();};
-    amr_wind::Field & get_field() {return field;};
+    amrex::Real dx() const {return m_dx;};
+    amrex::Real xlo() const {return m_xlo;};
+
+    int axis() const {return m_axis;};
+    int level() const {return m_level;};
+    int ncomp() const {return m_ncomp;};
+    int ncell_plane() const {return m_ncell_plane;};
+    int ncell_line() const {return m_ncell_line;};
+
+    const amrex::Vector<amrex::Real> & line_average() {return m_line_average;};
+
+    amr_wind::Field & field() const {return m_field;};
 
 private:
 
-    int ncomp; /** number of average components */
+    int m_ncomp; /** number of average components */
 
-    amrex::Vector<amrex::Real> line_average; /** line storage for the average velocity and tracer variables */
-    amrex::Vector<amrex::Real> line_xcentroid; /** line storage for centroids of each cell along a line*/
+    amrex::Vector<amrex::Real> m_line_average; /** line storage for the average velocity and tracer variables */
+    amrex::Vector<amrex::Real> m_line_xcentroid; /** line storage for centroids of each cell along a line*/
 
-    amrex::Real dx; /** mesh spacing in axis direction*/
-    amrex::Real xlo; /** bottom of domain in axis direction */
+    amrex::Real m_dx; /** mesh spacing in axis direction*/
+    amrex::Real m_xlo; /** bottom of domain in axis direction */
 
-    int ncell_plane; /** number of cells in plane */
-    int ncell_line; /** number of cells along line */
+    int m_ncell_plane; /** number of cells in plane */
+    int m_ncell_line; /** number of cells along line */
 
-    int precision = 4; /** precision for line plot text file */
-    const int level = 0; /** level for plane averaging for now fixed at level=0 */
+    int m_precision = 4; /** precision for line plot text file */
+    const int m_level = 0; /** level for plane averaging for now fixed at level=0 */
 
 
-    amr_wind::Field& field;
-    const int axis;
+    amr_wind::Field& m_field;
+    const int m_axis;
 
 public: // public for GPU
 
     /** fill line storage with averages */
     template <typename IndexSelector>
-    void avg_line(
-        const IndexSelector& idxOp,
-        const amrex::MultiFab& mfab);
+    void compute_averages(const IndexSelector& idxOp,
+                          const amrex::MultiFab& mfab);
 };
+
+}
 
 #endif /* FieldPlaneAveraging_H */

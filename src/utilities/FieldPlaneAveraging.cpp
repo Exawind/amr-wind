@@ -8,79 +8,79 @@
 #include "incflo.H"
 
 using namespace amrex;
+using namespace amr_wind;
 
-
-Real FieldPlaneAveraging::eval_line_average(Real x, int comp) const
+Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < ncomp);
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
 
     Real c = 0.0;
     int ind = 0;
 
-    if(x > xlo + 0.5*dx){
-        ind = floor((x - xlo)/dx - 0.5);
-        const Real x1 = xlo + (ind+0.5)*dx;
-        c = (x-x1)/dx;
+    if(x > m_xlo + 0.5*m_dx){
+        ind = floor((x - m_xlo)/m_dx - 0.5);
+        const Real x1 = m_xlo + (ind+0.5)*m_dx;
+        c = (x-x1)/m_dx;
     }
 
-    if( ind+1 >= ncell_line){
-        ind = ncell_line-2;
+    if( ind+1 >= m_ncell_line){
+        ind = m_ncell_line-2;
         c = 1.0;
     }
 
-    AMREX_ALWAYS_ASSERT(ind>=0 and ind+1<ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
 
-    return line_average[ncomp*ind+comp]*(1.0-c) + line_average[ncomp*(ind+1)+comp]*c;
+    return m_line_average[m_ncomp*ind+comp]*(1.0-c) + m_line_average[m_ncomp*(ind+1)+comp]*c;
 
 }
 
-Real FieldPlaneAveraging::eval_line_average(int ind, int comp) const
+Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
 
-    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < ncomp);
-    AMREX_ALWAYS_ASSERT(ind>=0 and ind+1<ncell_line);
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT(ind >= 0 and ind+1 < m_ncell_line);
 
-    return line_average[ncomp*ind+comp];
+    return m_line_average[m_ncomp*ind+comp];
 
 }
 
 
 FieldPlaneAveraging::FieldPlaneAveraging(amr_wind::Field &field_in, int axis_in)
-    : field(field_in)
-    , axis(axis_in)
+    : m_field(field_in)
+    , m_axis(axis_in)
 {
-    AMREX_ALWAYS_ASSERT(axis >=0 and axis <= 2);
+    AMREX_ALWAYS_ASSERT(m_axis >=0 and m_axis <= 2);
 
-    auto geom = field.repo().mesh().Geom();
+    auto geom = m_field.repo().mesh().Geom();
 
     // level=0 is default, could later make this an input.
     // Might only makes sense for fully covered levels
 
-    xlo = geom[level].ProbLo(axis);
-    dx = geom[level].CellSize(axis);
+    m_xlo = geom[m_level].ProbLo(m_axis);
+    m_dx = geom[m_level].CellSize(m_axis);
 
-    ncomp = field.num_comp();
+    m_ncomp = m_field.num_comp();
 
-    const Box& domain = geom[level].Domain();
+    const Box& domain = geom[m_level].Domain();
     const IntVect dom_lo(domain.loVect());
     const IntVect dom_hi(domain.hiVect());
 
-    ncell_line = dom_hi[axis] - dom_lo[axis] + 1;
+    m_ncell_line = dom_hi[m_axis] - dom_lo[m_axis] + 1;
 
     // count number of cells in plane
-    ncell_plane = 1;
+    m_ncell_plane = 1;
     for(int i=0;i<AMREX_SPACEDIM;++i){
-        if(i!=axis) ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
+        if(i!=m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
     }
 
-    line_average.resize(ncell_line*ncomp);
-    line_xcentroid.resize(ncell_line);
+    m_line_average.resize(m_ncell_line*m_ncomp);
+    m_line_xcentroid.resize(m_ncell_line);
 
-    for(int i=0;i<ncell_line;++i){
-        line_xcentroid[i] = xlo + (i + 0.5) * dx;
+    for(int i=0;i<m_ncell_line;++i){
+        m_line_xcentroid[i] = m_xlo + (i + 0.5) * m_dx;
     }
 
 }
@@ -89,17 +89,17 @@ void FieldPlaneAveraging::operator()()
 {
     BL_PROFILE("amr-wind::FieldPlaneAveraging::operator")
 
-    std::fill(line_average.begin(), line_average.end(), 0.0);
+    std::fill(m_line_average.begin(), m_line_average.end(), 0.0);
 
-    switch (axis) {
+    switch (m_axis) {
         case 0:
-            avg_line(XDir(), field(level));
+            compute_averages(XDir(), m_field(m_level));
             break;
         case 1:
-            avg_line(YDir(), field(level));
+            compute_averages(YDir(), m_field(m_level));
             break;
         case 2:
-            avg_line(ZDir(), field(level));
+            compute_averages(ZDir(), m_field(m_level));
             break;
         default:
             amrex::Abort("axis must be equal to 0, 1, or 2");
@@ -109,14 +109,14 @@ void FieldPlaneAveraging::operator()()
 }
 
 template<typename IndexSelector>
-void FieldPlaneAveraging::avg_line(const IndexSelector &idxOp,
+void FieldPlaneAveraging::compute_averages(const IndexSelector &idxOp,
                                    const amrex::MultiFab& mfab)
 {
     BL_PROFILE("amr-wind::PlaneAveraging::avg_line")
 
-    const Real denom = 1.0/(Real) ncell_plane;
+    const Real denom = 1.0/(Real) m_ncell_plane;
 
-    AsyncArray<Real> lavg(line_average.data(), line_average.size());
+    AsyncArray<Real> lavg(m_line_average.data(), m_line_average.size());
 
     Real *line_avg = lavg.data();
 
@@ -129,15 +129,15 @@ void FieldPlaneAveraging::avg_line(const IndexSelector &idxOp,
 
         auto fab_arr = mfab.const_array(mfi);
 
-        amrex::ParallelFor(bx, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
+        amrex::ParallelFor(bx, m_ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
             const int ind = idxOp(i,j,k);
-            HostDevice::Atomic::Add(&line_avg[ncomp * ind + n], fab_arr(i, j, k, n) * denom);
+            HostDevice::Atomic::Add(&line_avg[m_ncomp * ind + n], fab_arr(i, j, k, n) * denom);
         });
 
     }
 
-    lavg.copyToHost(line_average.data(), line_average.size());
-    ParallelDescriptor::ReduceRealSum(line_average.data(), line_average.size());
+    lavg.copyToHost(m_line_average.data(), m_line_average.size());
+    ParallelDescriptor::ReduceRealSum(m_line_average.data(), m_line_average.size());
 
 }

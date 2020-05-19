@@ -1,0 +1,60 @@
+//
+//  SecondMomentAveraging.H
+//  amr-wind
+//
+
+
+#ifndef SecondMomentAveraging_H
+#define SecondMomentAveraging_H
+
+
+#include <AMReX_AmrCore.H>
+#include "DirectionSelector.H"
+#include "Field.H"
+#include "FieldPlaneAveraging.H"
+
+namespace amr_wind {
+
+class SecondMomentAveraging
+{
+public:
+    
+    SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlaneAveraging& pa2);
+
+    ~SecondMomentAveraging(){};
+
+    /** evaluate second moment at specific location for both components */
+    amrex::Real line_average_interpolated(amrex::Real x, int comp1, int comp2) const;
+    /** evaluate second moment at specific location for each component */
+    amrex::Real line_average_interpolated(amrex::Real x, int comp) const;
+    /** evaluate second moment at specific cell for both components */
+    amrex::Real line_average_cell(int cell, int comp1, int comp2) const;
+    /** evaluate second moment at specific cell for each component */
+    amrex::Real line_average_cell(int cell, int comp) const;
+
+    /** change precision of text file output */
+    void set_precision(int p) {m_precision = p;};
+
+private:
+
+    int m_num_moments; /** outer product of components */
+    amrex::Vector<amrex::Real> m_second_moments_line; /** line storage for fluctuations */
+
+    int m_precision = 4; /** precision for line plot text file */
+
+    FieldPlaneAveraging& m_plane_average1;
+    FieldPlaneAveraging& m_plane_average2;
+
+public: // public for GPU
+
+    /** fill line storage with averages */
+    template <typename IndexSelector>
+    void compute_average(
+        const IndexSelector& idxOp,
+        const amrex::MultiFab& mfab1,
+        const amrex::MultiFab& mfab2);
+};
+
+}
+
+#endif /* SecondMomentAveraging_H */

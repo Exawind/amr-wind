@@ -7,7 +7,7 @@
 #include "AMReX_MultiFab.H"
 #include "FieldPlaneAveraging.H"
 #include "PlaneAveraging.H"
-#include "SecondMoment.H"
+
 namespace amr_wind {
 
 ABL::ABL(CFDSim& sim)
@@ -83,8 +83,8 @@ void ABL::pre_advance_work()
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
-        const amrex::Real vx = m_pa.eval_line_average(zh, 0);
-        const amrex::Real vy = m_pa.eval_line_average(zh, 1);
+        const amrex::Real vx = m_pa.line_average_interpolated(zh, 0);
+        const amrex::Real vy = m_pa.line_average_interpolated(zh, 1);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);
@@ -99,40 +99,12 @@ void ABL::pre_advance_work()
         pp.query("line_plot_type", plot_type);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
+            // fixme this is old interface to plane averaging
             PlaneAveraging pa(2);
             const auto& geom = m_sim.mesh().Geom();
             pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
                m_temperature->vec_ptrs());
             pa.plot_line(time.time_index(), time.current_time(), plot_type);
-
-
-            //fixme remove
-            FieldPlaneAveraging pa_vel(m_velocity,2); pa_vel();
-
-            SecondMoment reynolds_stress(pa_vel, pa_vel);
-            amrex::Real z = 10.416666666666666;
-            amrex::Print() << "u: " << pa_vel.eval_line_average(z,0) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,0,0) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,0,1) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,0,2) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,1,0) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,1,1) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,1,2) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,2,0) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,2,1) << std::endl;
-            amrex::Print() << reynolds_stress.eval_second_moment(z,2,2) << std::endl;
-
-
-            if(m_temperature != nullptr){
-                FieldPlaneAveraging pa_temp(*m_temperature,2); pa_temp();
-                SecondMoment tprime_uprime(pa_temp, pa_vel);
-                amrex::Print() << tprime_uprime.eval_second_moment(z,0) << std::endl;
-                amrex::Print() << tprime_uprime.eval_second_moment(z,1) << std::endl;
-                amrex::Print() << tprime_uprime.eval_second_moment(z,2) << std::endl;
-                SecondMoment tprime_tprime(pa_temp, pa_temp);
-            }
-            // fixme remove
-
 
         }
     }
