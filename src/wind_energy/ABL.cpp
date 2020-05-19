@@ -100,14 +100,15 @@ void ABL::pre_advance_work()
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
 
-//            // fixme this is old interface to plane averaging, delete?
-//            int plot_type = 0;
-//            pp.query("line_plot_type", plot_type);
-//            PlaneAveraging pa(2);
-//            const auto& geom = m_sim.mesh().Geom();
-//            pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
-//               m_temperature->vec_ptrs());
-//            pa.plot_line(time.time_index(), time.current_time(), plot_type);
+            // fixme this is the old interface to plane averaging, delete?
+            int plot_type = 0;
+            pp.query("line_plot_type", plot_type);
+            PlaneAveraging pa(2);
+            const auto& geom = m_sim.mesh().Geom();
+            pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
+               m_temperature->vec_ptrs());
+            pa.plot_line(time.time_index(), time.current_time(), plot_type);
+
 
             // new way
             m_pa.output_line_average_ascii(time.time_index(), time.current_time());
