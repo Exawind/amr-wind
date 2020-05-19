@@ -4,6 +4,7 @@ target_sources(${amr_wind_lib_name}
       derive.cpp
       compute_strainrate.cpp
       compute_gradient.cpp
+      compute_laplacian.cpp
       compute_curvature.cpp
    )
 
