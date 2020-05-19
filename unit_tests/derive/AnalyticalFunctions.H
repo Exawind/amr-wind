@@ -17,7 +17,7 @@ public:
     amrex::FArrayBox scalargrad_;
     amrex::FArrayBox vector_;
     amrex::FArrayBox vectorgrad_;
-
+    amrex::FArrayBox curvature_;
 };
 
 class LinearAnalyticalFunctions
@@ -34,6 +34,14 @@ class QuadraticAnalyticalFunctions :
 public: 
     QuadraticAnalyticalFunctions(int n, amrex::Box);
     ~QuadraticAnalyticalFunctions();
+};
+
+class SphereAnalyticalFunction :
+        public AnalyticalFunctions
+{
+public:
+    SphereAnalyticalFunction(int n, amrex::Box);
+    ~SphereAnalyticalFunction();
 };
 
 }

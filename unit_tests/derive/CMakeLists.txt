@@ -5,5 +5,5 @@ target_sources(
   AnalyticalFunctions.cpp
   test_scalar_gradient.cpp
   test_vector_gradient.cpp
-
+  test_curvature.cpp
   )

@@ -10,27 +10,49 @@ namespace amr_wind {
 struct StencilInterior
 {
     // First derivatives
-    static constexpr amrex::Real c00 =  0.5;
-    static constexpr amrex::Real c01 =  0.0;
-    static constexpr amrex::Real c02 = -0.5;
-    static constexpr amrex::Real c10 =  c00;
-    static constexpr amrex::Real c11 =  c01;
-    static constexpr amrex::Real c12 =  c02;
-    static constexpr amrex::Real c20 =  c00;
-    static constexpr amrex::Real c21 =  c01;
-    static constexpr amrex::Real c22 =  c02;
+    // fx= (ax*f_{i+1,j,k}+bx*f_{i,j,k}+cx*f_{i-1,j,k})/dx
+    // fy= (ay*f_{i,j+1,k}+by*f_{i,j,k}+cy*f_{i,j-1,k})/dy
+    // fz= (az*f_{i,j,k+1}+bz*f_{i,j,k}+cz*f_{i,j,k-1})/dz
+    static constexpr amrex::Real c00 =  0.5; // ax 
+    static constexpr amrex::Real c01 =  0.0; // bx
+    static constexpr amrex::Real c02 = -0.5; // cx
+    static constexpr amrex::Real c10 =  c00; // ay
+    static constexpr amrex::Real c11 =  c01; // by
+    static constexpr amrex::Real c12 =  c02; // cy
+    static constexpr amrex::Real c20 =  c00; // az
+    static constexpr amrex::Real c21 =  c01; // bz
+    static constexpr amrex::Real c22 =  c02; // cz
 
     // Second derivatives
-    static constexpr amrex::Real s00 =  1.0;
-    static constexpr amrex::Real s01 = -2.0;
-    static constexpr amrex::Real s02 =  1.0;
-    static constexpr amrex::Real s10 =  s00;
-    static constexpr amrex::Real s11 =  s01;
-    static constexpr amrex::Real s12 =  s02;
-    static constexpr amrex::Real s20 =  s00;
-    static constexpr amrex::Real s21 =  s01;
-    static constexpr amrex::Real s22 =  s02;
+    // fxx= (axx*f_{i+1,j,k}+bxx*f_{i,j,k}+cxx*f_{i-1,j,k})/dx
+    // fyy= (ayy*f_{i,j+1,k}+byy*f_{i,j,k}+cyy*f_{i,j-1,k})/dy
+    // fzz= (azz*f_{i,j,k+1}+bzz*f_{i,j,k}+czz*f_{i,j,k-1})/dz
+    static constexpr amrex::Real s00 =  1.0; // axx 
+    static constexpr amrex::Real s01 = -2.0; // bxx
+    static constexpr amrex::Real s02 =  1.0; // cxx
+    static constexpr amrex::Real s10 =  s00; // ayy
+    static constexpr amrex::Real s11 =  s01; // byy
+    static constexpr amrex::Real s12 =  s02; // cyy
+    static constexpr amrex::Real s20 =  s00; // azz
+    static constexpr amrex::Real s21 =  s01; // bzz
+    static constexpr amrex::Real s22 =  s02; // czz
 
+    // Mixed derivatives
+    // fxy = (axy*f_{i+1,j+1}+bxy*f_{i-1,j+1}+cxy*f_{i+1,j-1}+dxy*f_{i-1,j-1}
+    // fxz = (axz*f_{i+1,j+1}+bxz*f_{i-1,j+1}+cxz*f_{i+1,j-1}+dxz*f_{i-1,j-1}
+    // fyz = (ayz*f_{i+1,j+1}+byz*f_{i-1,j+1}+cyz*f_{i+1,j-1}+dyz*f_{i-1,j-1}
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
 };
 
 struct StencilILO
@@ -44,6 +66,29 @@ struct StencilILO
     static constexpr amrex::Real c20 =  c10;
     static constexpr amrex::Real c21 =  c11;
     static constexpr amrex::Real c22 =  c12;
+    
+    static constexpr amrex::Real s00 =  4./3.; // axx 
+    static constexpr amrex::Real s01 = -4.; // bxx
+    static constexpr amrex::Real s02 =  8./3.; // cxx
+    static constexpr amrex::Real s10 =  1; // ayy
+    static constexpr amrex::Real s11 =  -2; // byy
+    static constexpr amrex::Real s12 =  1; // cyy
+    static constexpr amrex::Real s20 =  s10; // azz
+    static constexpr amrex::Real s21 =  s11; // bzz
+    static constexpr amrex::Real s22 =  s12; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
 };
 
 struct StencilJLO
@@ -57,6 +102,30 @@ struct StencilJLO
     static constexpr amrex::Real c20 =  c00;
     static constexpr amrex::Real c21 =  c01;
     static constexpr amrex::Real c22 =  c02;
+
+    static constexpr amrex::Real s00 =  1.0; // axx 
+    static constexpr amrex::Real s01 = -2.0; // bxx
+    static constexpr amrex::Real s02 =  1.0; // cxx
+    static constexpr amrex::Real s10 =  4./3.; // ayy
+    static constexpr amrex::Real s11 =  -4.; // byy
+    static constexpr amrex::Real s12 =  8./3.; // cyy
+    static constexpr amrex::Real s20 =  s00; // azz
+    static constexpr amrex::Real s21 =  s01; // bzz
+    static constexpr amrex::Real s22 =  s02; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
+
 };
 
 struct StencilKLO
@@ -70,6 +139,30 @@ struct StencilKLO
     static constexpr amrex::Real c20 =  0.5;
     static constexpr amrex::Real c21 =  0.5;
     static constexpr amrex::Real c22 = -1.0;
+    
+    static constexpr amrex::Real s00 =  1.0;   // axx 
+    static constexpr amrex::Real s01 = -2.0;   // bxx
+    static constexpr amrex::Real s02 =  1.0;   // cxx
+    static constexpr amrex::Real s10 =  s00;   // ayy
+    static constexpr amrex::Real s11 =  s01;   // byy
+    static constexpr amrex::Real s12 =  s02;   // cyy
+    static constexpr amrex::Real s20 =  4./3.; // azz
+    static constexpr amrex::Real s21 =  -4.;   // bzz
+    static constexpr amrex::Real s22 =  8./3.; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
+
 };
 
 struct StencilIHI
@@ -83,6 +176,30 @@ struct StencilIHI
     static constexpr amrex::Real c20 =  c10;
     static constexpr amrex::Real c21 =  c11;
     static constexpr amrex::Real c22 =  c12;
+
+    static constexpr amrex::Real s00 = 8./3.; // axx 
+    static constexpr amrex::Real s01 = -4.; // bxx
+    static constexpr amrex::Real s02 = 4./3.; // cxx
+    static constexpr amrex::Real s10 =  1.; // ayy
+    static constexpr amrex::Real s11 = -2.; // byy
+    static constexpr amrex::Real s12 =  1.; // cyy
+    static constexpr amrex::Real s20 =  s10; // azz
+    static constexpr amrex::Real s21 =  s11; // bzz
+    static constexpr amrex::Real s22 =  s12; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
+
 };
 
 struct StencilJHI
@@ -96,6 +213,30 @@ struct StencilJHI
     static constexpr amrex::Real c20 =  c00;
     static constexpr amrex::Real c21 =  c01;
     static constexpr amrex::Real c22 =  c02;
+    
+    static constexpr amrex::Real s00 =  1.0; // axx 
+    static constexpr amrex::Real s01 = -2.0; // bxx
+    static constexpr amrex::Real s02 =  1.0; // cxx
+    static constexpr amrex::Real s10 =  8./3.; // ayy
+    static constexpr amrex::Real s11 =  -4.; // byy
+    static constexpr amrex::Real s12 =  4./3.; // cyy
+    static constexpr amrex::Real s20 =  s10; // azz
+    static constexpr amrex::Real s21 =  s11; // bzz
+    static constexpr amrex::Real s22 =  s12; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
+
 };
 
 struct StencilKHI
@@ -109,6 +250,30 @@ struct StencilKHI
     static constexpr amrex::Real c20 =  1.0;
     static constexpr amrex::Real c21 = -0.5;
     static constexpr amrex::Real c22 = -0.5;
+
+    static constexpr amrex::Real s00 =  1.0; // axx 
+    static constexpr amrex::Real s01 = -2.0; // bxx
+    static constexpr amrex::Real s02 =  1.0; // cxx
+    static constexpr amrex::Real s10 =  s00; // ayy
+    static constexpr amrex::Real s11 =  s01; // byy
+    static constexpr amrex::Real s12 =  s02; // cyy
+    static constexpr amrex::Real s20 =  8./3.; // azz
+    static constexpr amrex::Real s21 =  -4.; // bzz
+    static constexpr amrex::Real s22 =  4./3.; // czz
+
+    static constexpr amrex::Real m00  =  0.25; // axy 
+    static constexpr amrex::Real m01  = -0.25; // bxy
+    static constexpr amrex::Real m02  = -0.25; // cxy
+    static constexpr amrex::Real m03  =  0.25; // dxy
+    static constexpr amrex::Real m10  =  m00;  // axz 
+    static constexpr amrex::Real m11  =  m01;  // bxz
+    static constexpr amrex::Real m12  =  m02;  // cxz
+    static constexpr amrex::Real m13  =  m03;  // dyz
+    static constexpr amrex::Real m20  =  m00;  // ayz 
+    static constexpr amrex::Real m21  =  m01;  // byz
+    static constexpr amrex::Real m22  =  m02;  // cyz
+    static constexpr amrex::Real m23  =  m03;  // dyz
+
 };
 
 
@@ -153,40 +318,60 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
     amrex::Real idx,
     amrex::Real idy,
     amrex::Real idz,
-    amrex::Array4<amrex::Real const> const& gradphi) noexcept
+    amrex::Array4<amrex::Real const> const& phi) noexcept
 {
     using namespace amrex;
 
-    Real cp1, c, cm1;
+    Real cp1, c, cm1,sp1,s,sm1,mp1p1,mm1p1,mp1m1,mm1m1;
 
-    cp1 = Stencil::c00;
-    c   = Stencil::c01;
-    cm1 = Stencil::c02;
-    const Real phix= gradphi(i,j,k,0);
-    const Real phixx = (cp1*gradphi(i+1,j,k,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i-1,j,k,0)) * idx;
+    cp1 = Stencilx::c00;
+    c   = Stencilx::c01; 
+    cm1 = Stencilx::c02;
+    const Real phix = (cp1*phi(i+1,j,k) + c*phi(i,j,k) + cm1*phi(i-1,j,k)) * idx;
+    sp1 = Stencilx::s00;
+    s   = Stencilx::s01; 
+    sm1 = Stencilx::s02;
+    const Real phixx = (sp1*phi(i+1,j,k) + s*phi(i,j,k) + sm1*phi(i-1,j,k)) * idx*idx;
+    
     cp1 = Stencil::c10;
     c   = Stencil::c11;
     cm1 = Stencil::c12;
-    const Real phiy= gradphi(i,j,k,1);
-    const Real phixy = (cp1*gradphi(i,j+1,k,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i,j-1,k,0)) * idy;
-    const Real phiyy = (cp1*gradphi(i,j+1,k,1) + c*gradphi(i,j,k,1) + cm1*gradphi(i,j-1,k,1)) * idy;
+    const Real phiy  = (cp1*phi(i,j+1,k) + c*phi(i,j,k) + cm1*phi(i,j-1,k)) * idy;
+    sp1 = Stencil::s10;
+    s   = Stencil::s11; 
+    sm1 = Stencil::s12;
+    const Real phiyy = (sp1*phi(i,j+1,k) + s*phi(i,j,k) + sm1*phi(i,j-1,k)) *idy*idy;
+    mp1p1  = Stencil::m00; 
+    mm1p1  = Stencil::m01; 
+    mp1m1  = Stencil::m02; 
+    mm1m1  = Stencil::m03; 
+    const Real phixy = (mp1p1*phi(i+1,j+1,k) + mm1p1*phi(i-1,j+1,k) + mp1m1*phi(i+1,j-1,k) + mm1m1*phi(i-1,j-1,k)) *idx*idy;
+    
     cp1 = Stencil::c20;
     c   = Stencil::c21;
     cm1 = Stencil::c22;
-    const Real phiz= gradphi(i,j,k,2);
-    const Real phixz = (cp1*gradphi(i,j,k+1,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i,j,k-1,0)) * idz;
-    const Real phiyz = (cp1*gradphi(i,j,k+1,1) + c*gradphi(i,j,k,1) + cm1*gradphi(i,j,k-1,1)) * idz;
-    const Real phizz = (cp1*gradphi(i,j,k+1,2) + c*gradphi(i,j,k,2) + cm1*gradphi(i,j,k-1,2)) * idz;
-   
-    const Real abs_gradphi=std::sqrt(gradphi(i,j,k,0)*gradphi(i,j,k,0)+
-                          gradphi(i,j,k,1)*gradphi(i,j,k,1)+
-                          gradphi(i,j,k,2)*gradphi(i,j,k,2));
-    return (phix*phix*phiyy - 2.*phix*phiy*phixy + phiy*phiy*phixx + phix*phix*phizz
-            -2.*phix*phiz*phixz + phiz*phiz*phixx + phiy*phiy*phizz - 2*phiy*phiz*phiyz 
-            + phiz*phiz*phiyy)/(abs_gradphi*abs_gradphi*abs_gradphi);
+    const Real phiz  = (cp1*phi(i,j,k+1) + c*phi(i,j,k) + cm1*phi(i,j,k-1)) * idz;
+    sp1 = Stencil::s20;
+    s   = Stencil::s21; 
+    sm1 = Stencil::s22; 
+    const Real phizz = (sp1*phi(i,j,k+1) + s*phi(i,j,k) + sm1*phi(i,j,k-1)) *idz*idz;
+    mp1p1  = Stencil::m10; 
+    mm1p1  = Stencil::m11; 
+    mp1m1  = Stencil::m12; 
+    mm1m1  = Stencil::m13;  
+    const Real phixz = (mp1p1*phi(i+1,j,k+1) + mm1p1*phi(i-1,j,k+1) + mp1m1*phi(i+1,j,k-1) + mm1m1*phi(i-1,j,k-1)) *idx*idz;
+    mp1p1  = Stencil::m20; 
+    mm1p1  = Stencil::m21; 
+    mp1m1  = Stencil::m22; 
+    mm1m1  = Stencil::m23;  
+    const Real phiyz = (mp1p1*phi(i,j+1,k+1) + mm1p1*phi(i,j-1,k+1) + mp1m1*phi(i,j+1,k-1) + mm1m1*phi(i,j-1,k-1)) *idy*idz; 
+    
+    Real curv= -(phix*phix*phiyy - 2.*phix*phiy*phixy + phiy*phiy*phixx + phix*phix*phizz
+                -2.*phix*phiz*phixz + phiz*phiz*phixx + phiy*phiy*phizz - 2*phiy*phiz*phiyz 
+                + phiz*phiz*phiyy)/std::pow(phix*phix+phiy*phiy+phiz*phiz,1.5);
+       
+    return curv;
 }
-
-
 
 template <typename Stencil>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
@@ -235,6 +420,9 @@ void compute_strainrate(FType& field, const Field& velocity);
 
 template<typename FType>
 void compute_gradient(FType& gradf, const Field& field);
+
+template<typename FType>
+void compute_curvature(FType& curvf, const Field& field);
 
 } // namespace amr_wind
 #endif
