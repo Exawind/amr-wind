@@ -7,6 +7,8 @@
 #include "AMReX_MultiFab.H"
 #include "FieldPlaneAveraging.H"
 #include "PlaneAveraging.H"
+#include "SecondMomentAveraging.H"
+#include "ThirdMomentAveraging.H"
 
 namespace amr_wind {
 
@@ -15,7 +17,7 @@ ABL::ABL(CFDSim& sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
-    , m_pa(sim.pde_manager().icns().fields().field, 2)
+    , m_pa(sim.pde_manager().icns().fields().field, sim.time(), 2)
     , m_abl_wall_func(sim)
 {
     // Register temperature equation
@@ -93,18 +95,39 @@ void ABL::pre_advance_work()
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
-        int plot_type = 0;
         amrex::ParmParse pp("io");
         pp.query("line_plot_int", output_interval);
-        pp.query("line_plot_type", plot_type);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
-            // fixme this is old interface to plane averaging
-            PlaneAveraging pa(2);
-            const auto& geom = m_sim.mesh().Geom();
-            pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
-               m_temperature->vec_ptrs());
-            pa.plot_line(time.time_index(), time.current_time(), plot_type);
+
+//            // fixme this is old interface to plane averaging, delete?
+//            int plot_type = 0;
+//            pp.query("line_plot_type", plot_type);
+//            PlaneAveraging pa(2);
+//            const auto& geom = m_sim.mesh().Geom();
+//            pa(geom, m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(),
+//               m_temperature->vec_ptrs());
+//            pa.plot_line(time.time_index(), time.current_time(), plot_type);
+
+            // new way
+            m_pa.output_line_average_ascii(time.time_index(), time.current_time());
+
+            SecondMomentAveraging uu(m_pa, m_pa);
+            uu.output_line_average_ascii(time.time_index(), time.current_time());
+
+            ThirdMomentAveraging uuu(m_pa, m_pa, m_pa);
+            uuu.output_line_average_ascii(time.time_index(), time.current_time());
+
+            if(m_temperature != nullptr){
+                FieldPlaneAveraging pa_temp(*m_temperature, m_sim.time(), 2);
+                pa_temp.output_line_average_ascii(time.time_index(), time.current_time());
+
+                SecondMomentAveraging tu(pa_temp,m_pa);
+                tu.output_line_average_ascii(time.time_index(), time.current_time());
+            }
+
+            FieldPlaneAveraging pa_mueff(m_mueff, m_sim.time(), 2);
+            pa_mueff.output_line_average_ascii(time.time_index(), time.current_time());
 
         }
     }

@@ -10,6 +10,48 @@
 using namespace amrex;
 using namespace amr_wind;
 
+void FieldPlaneAveraging::output_line_average_ascii(std::string filename, int step, Real time)
+{
+    BL_PROFILE("amr-wind::FieldPlaneAveraging::output_line_average_ascii")
+
+    if(step != m_last_updated_index) {
+        operator()();
+    }
+
+    if(!ParallelDescriptor::IOProcessor()) return;
+
+    std::ofstream outfile;
+    outfile.precision(m_precision);
+
+    if(step == 1){
+        // make new file
+        outfile.open(filename.c_str(),std::ios_base::out);
+        outfile << "#ncell,ncomp" << std::endl;
+        outfile << m_ncell_line << ", " << m_ncomp+3 << std::endl;
+        outfile << "#step,time,z";
+        for(int i=0;i<m_ncomp;++i)
+            outfile << ",<" + m_field.base_name() + std::to_string(i) + ">";
+        outfile << std::endl;
+    }else {
+        // append file
+        outfile.open(filename.c_str(), std::ios_base::out|std::ios_base::app);
+    }
+
+    for(int i=0;i<m_ncell_line;++i){
+        outfile << step << ", " << std::scientific << time << ", " << m_line_xcentroid[i];
+        for(int n=0;n<m_ncomp;++n){
+            outfile <<  ", " << std::scientific << m_line_average[m_ncomp*i+n];
+        }
+        outfile << std::endl;
+    }
+}
+
+void FieldPlaneAveraging::output_line_average_ascii(int step, Real time)
+{
+    std::string filename = "plane_average_" + m_field.name() + ".txt";
+    output_line_average_ascii(filename, step, time);
+}
+
 Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
@@ -48,8 +90,9 @@ Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
 }
 
 
-FieldPlaneAveraging::FieldPlaneAveraging(amr_wind::Field &field_in, int axis_in)
+FieldPlaneAveraging::FieldPlaneAveraging(amr_wind::Field &field_in, const amr_wind::SimTime &time, int axis_in)
     : m_field(field_in)
+    , m_time(time)
     , m_axis(axis_in)
 {
     AMREX_ALWAYS_ASSERT(m_axis >=0 and m_axis <= 2);
@@ -76,7 +119,7 @@ FieldPlaneAveraging::FieldPlaneAveraging(amr_wind::Field &field_in, int axis_in)
         if(i!=m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
     }
 
-    m_line_average.resize(m_ncell_line*m_ncomp);
+    m_line_average.resize(m_ncell_line*m_ncomp, 0.0);
     m_line_xcentroid.resize(m_ncell_line);
 
     for(int i=0;i<m_ncell_line;++i){
@@ -88,6 +131,8 @@ FieldPlaneAveraging::FieldPlaneAveraging(amr_wind::Field &field_in, int axis_in)
 void FieldPlaneAveraging::operator()()
 {
     BL_PROFILE("amr-wind::FieldPlaneAveraging::operator")
+
+    m_last_updated_index = m_time.time_index();
 
     std::fill(m_line_average.begin(), m_line_average.end(), 0.0);
 

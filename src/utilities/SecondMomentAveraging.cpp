@@ -1,11 +1,66 @@
 //
-//  SecondMoment.cpp
+//  SecondMomentAveraging.cpp
 //  amr-wind
 //
 
 #include "SecondMomentAveraging.H"
 
 using namespace amr_wind;
+
+void SecondMomentAveraging::output_line_average_ascii(std::string filename, int step, amrex::Real time)
+{
+    BL_PROFILE("amr-wind::SecondMomentAveraging::output_line_average_ascii")
+
+    if(step != m_last_updated_index) {
+        operator()();
+    }
+
+    if(!amrex::ParallelDescriptor::IOProcessor()) return;
+
+    std::ofstream outfile;
+    outfile.precision(m_precision);
+
+    if(step == 1){
+
+        // make new file
+        outfile.open(filename.c_str(),std::ios_base::out);
+        outfile << "#ncell,ncomp" << std::endl;
+
+        outfile << m_plane_average1.ncell_line() << ", " << m_num_moments+3 << std::endl;
+        outfile << "#step,time,z";
+
+        for(int m = 0; m < m_plane_average1.ncomp(); ++m){
+            for(int n = 0; n < m_plane_average1.ncomp(); ++n){
+                outfile << ",<" + m_plane_average1.field().base_name() + std::to_string(m) + "'"
+                + m_plane_average2.field().base_name() + std::to_string(n) + "'>";
+            }
+        }
+
+        outfile << std::endl;
+        
+    } else {
+        // append file
+        outfile.open(filename.c_str(), std::ios_base::out|std::ios_base::app);
+    }
+
+    const int ncomp1 = m_plane_average1.ncomp();
+    const int ncomp2 = m_plane_average2.ncomp();
+
+    for(int i=0;i<m_plane_average1.ncell_line();++i){
+        outfile << step << ", " << std::scientific << time << ", " << m_plane_average1.line_centroids()[i];
+        for(int m = 0; m < ncomp1; ++m)
+            for(int n = 0; n < ncomp2; ++n)
+                outfile << ", " << std::scientific << m_second_moments_line[m_num_moments*i + ncomp1*m + n];
+
+        outfile << std::endl;
+    }
+}
+
+void SecondMomentAveraging::output_line_average_ascii(int step, amrex::Real time)
+{
+    std::string filename = "second_moment_" + m_plane_average1.field().name() + "_" + m_plane_average2.field().name() + ".txt";
+    output_line_average_ascii(filename, step, time);
+}
 
 SecondMomentAveraging::SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlaneAveraging& pa2)
     : m_plane_average1(pa1)
@@ -17,14 +72,24 @@ SecondMomentAveraging::SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlan
     AMREX_ALWAYS_ASSERT(m_plane_average1.ncell_plane() == m_plane_average2.ncell_plane());
     AMREX_ALWAYS_ASSERT(m_plane_average1.ncell_line() == m_plane_average2.ncell_line());
 
-    auto& field1 = m_plane_average1.field();
-    auto& field2 = m_plane_average2.field();
+    // this could be relaxed if we wanted one plane to be at a different time step than another plane
+    AMREX_ALWAYS_ASSERT(m_plane_average1.last_updated_index() == m_plane_average2.last_updated_index());
 
     m_num_moments = m_plane_average1.ncomp()*m_plane_average2.ncomp();
 
-    m_second_moments_line.resize(m_plane_average1.ncell_line()*m_num_moments);
+    m_second_moments_line.resize(m_plane_average1.ncell_line()*m_num_moments, 0.0);
+
+}
+
+void SecondMomentAveraging::operator()()
+{
+
+    m_last_updated_index = m_plane_average1.last_updated_index();
 
     std::fill(m_second_moments_line.begin(), m_second_moments_line.end(), 0.0);
+
+    auto& field1 = m_plane_average1.field();
+    auto& field2 = m_plane_average2.field();
 
     const int level = m_plane_average1.level();
 
@@ -42,7 +107,6 @@ SecondMomentAveraging::SecondMomentAveraging(FieldPlaneAveraging& pa1, FieldPlan
             amrex::Abort("axis must be equal to 0, 1, or 2");
             break;
     }
-
 }
 
 template<typename IndexSelector>

@@ -1,11 +1,74 @@
 //
-//  ThirdMoment.cpp
+//  ThirdMomentAverging.cpp
 //  amr-wind
 //
 
 #include "ThirdMomentAveraging.H"
 
 using namespace amr_wind;
+
+void ThirdMomentAveraging::output_line_average_ascii(std::string filename, int step, amrex::Real time)
+{
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::output_line_average_ascii")
+
+    if(step != m_last_updated_index) {
+        operator()();
+    }
+
+    if(!amrex::ParallelDescriptor::IOProcessor()) return;
+
+    std::ofstream outfile;
+    outfile.precision(m_precision);
+
+    if(step == 1){
+        // make new file
+        outfile.open(filename.c_str(),std::ios_base::out);
+        outfile << "#ncell,ncomp" << std::endl;
+
+        outfile << m_plane_average1.ncell_line() << ", " << m_num_moments+3 << std::endl;
+        outfile << "#step,time,z";
+
+        for(int m = 0; m < m_plane_average1.ncomp(); ++m){
+            for(int n = 0; n < m_plane_average1.ncomp(); ++n){
+                for(int p = 0; p < m_plane_average3.ncomp(); ++p){
+                    outfile << ",<" + m_plane_average1.field().base_name() + std::to_string(m) + "'"
+                        + m_plane_average2.field().base_name() + std::to_string(n) + "'"
+                        + m_plane_average3.field().base_name() + std::to_string(p) + "'>";
+                }
+            }
+        }
+        outfile << std::endl;
+
+    } else {
+        // append file
+        outfile.open(filename.c_str(), std::ios_base::out|std::ios_base::app);
+    }
+
+    const int ncomp1 = m_plane_average1.ncomp();
+    const int ncomp2 = m_plane_average2.ncomp();
+    const int ncomp3 = m_plane_average3.ncomp();
+
+    for(int i=0;i<m_plane_average1.ncell_line();++i){
+        outfile << step << ", " << std::scientific << time << ", " << m_plane_average1.line_centroids()[i];
+        for(int m = 0; m < ncomp1; ++m)
+            for(int n = 0; n < ncomp2; ++n)
+                for(int p = 0; p < ncomp3; ++p)
+                    outfile << ", " << std::scientific << m_third_moments_line[m_num_moments*i + ncomp1*ncomp2*m + ncomp2*n + p];
+
+        outfile << std::endl;
+    }
+}
+
+void ThirdMomentAveraging::output_line_average_ascii(int step, amrex::Real time)
+{
+    std::string filename = "third_moment_"
+                            + m_plane_average1.field().name() + "_"
+                            + m_plane_average2.field().name() + "_"
+                            + m_plane_average3.field().name() + ".txt";
+
+    output_line_average_ascii(filename, step, time);
+}
+
 
 ThirdMomentAveraging::ThirdMomentAveraging(FieldPlaneAveraging& pa1,
                                            FieldPlaneAveraging& pa2,
@@ -24,13 +87,24 @@ ThirdMomentAveraging::ThirdMomentAveraging(FieldPlaneAveraging& pa1,
     AMREX_ALWAYS_ASSERT(m_plane_average1.ncell_line() == m_plane_average2.ncell_line());
     AMREX_ALWAYS_ASSERT(m_plane_average1.ncell_line() == m_plane_average3.ncell_line());
 
-    auto& field1 = m_plane_average1.field();
-    auto& field2 = m_plane_average2.field();
-    auto& field3 = m_plane_average3.field();
+    // this could be relaxed if we wanted one plane to be at a different time step than another plane
+    AMREX_ALWAYS_ASSERT(m_plane_average1.last_updated_index() == m_plane_average2.last_updated_index());
+    AMREX_ALWAYS_ASSERT(m_plane_average1.last_updated_index() == m_plane_average3.last_updated_index());
 
     m_num_moments = m_plane_average1.ncomp()*m_plane_average2.ncomp()*m_plane_average3.ncomp();
 
-    m_third_moments_line.resize(m_plane_average1.ncell_line()*m_num_moments);
+    m_third_moments_line.resize(m_plane_average1.ncell_line()*m_num_moments, 0.0);
+
+}
+
+void ThirdMomentAveraging::operator()()
+{
+
+    m_last_updated_index = m_plane_average1.last_updated_index();
+
+    auto& field1 = m_plane_average1.field();
+    auto& field2 = m_plane_average2.field();
+    auto& field3 = m_plane_average3.field();
 
     std::fill(m_third_moments_line.begin(), m_third_moments_line.end(), 0.0);
 
@@ -50,7 +124,6 @@ ThirdMomentAveraging::ThirdMomentAveraging(FieldPlaneAveraging& pa1,
             amrex::Abort("axis must be equal to 0, 1, or 2");
             break;
     }
-
 }
 
 template<typename IndexSelector>
@@ -125,7 +198,9 @@ amrex::Real ThirdMomentAveraging::line_average_interpolated(amrex::Real x, int c
     AMREX_ALWAYS_ASSERT(comp2 >= 0 && comp2 < m_plane_average2.ncomp());
     AMREX_ALWAYS_ASSERT(comp3 >= 0 && comp3 < m_plane_average3.ncomp());
 
-    const int comp = m_plane_average1.ncomp()*m_plane_average2.ncomp()*comp1 + m_plane_average2.ncomp()*comp2 + comp3;
+    const int comp =   m_plane_average1.ncomp()*m_plane_average2.ncomp()*comp1
+                     + m_plane_average2.ncomp()*comp2
+                     + comp3;
     return line_average_interpolated(x,comp);
 }
 
@@ -159,26 +234,30 @@ amrex::Real ThirdMomentAveraging::line_average_interpolated(amrex::Real x, int c
 
 }
 
-//amrex::Real SecondMomentAveraging::line_average_cell(int ind, int comp) const
-//{
-//    BL_PROFILE("amr-wind::SecondMomentAveraging::line_average_cell 2")
-//
-//    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
-//    AMREX_ALWAYS_ASSERT(ind>=0 and ind+1<m_plane_average1.ncell_line());
-//
-//    return m_second_moments_line[m_num_moments*ind+comp];
-//
-//}
-//
-//amrex::Real SecondMomentAveraging::line_average_cell(int ind, int comp1, int comp2) const
-//{
-//    BL_PROFILE("amr-wind::SecondMomentAveraging::line_average_cell 1")
-//
-//    AMREX_ALWAYS_ASSERT(comp1 >= 0 && comp1 < m_plane_average1.ncomp());
-//    AMREX_ALWAYS_ASSERT(comp2 >= 0 && comp2 < m_plane_average2.ncomp());
-//
-//    const int comp = m_plane_average1.ncomp()*comp1 + comp2;
-//    return line_average_cell(ind, comp);
-//}
+amrex::Real ThirdMomentAveraging::line_average_cell(int ind, int comp) const
+{
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 2")
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
+    AMREX_ALWAYS_ASSERT(ind>=0 and ind+1<m_plane_average1.ncell_line());
+
+    return m_third_moments_line[m_num_moments*ind+comp];
+
+}
+
+amrex::Real ThirdMomentAveraging::line_average_cell(int ind, int comp1, int comp2, int comp3) const
+{
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 1")
+
+    AMREX_ALWAYS_ASSERT(comp1 >= 0 && comp1 < m_plane_average1.ncomp());
+    AMREX_ALWAYS_ASSERT(comp2 >= 0 && comp2 < m_plane_average2.ncomp());
+    AMREX_ALWAYS_ASSERT(comp3 >= 0 && comp3 < m_plane_average3.ncomp());
+
+    const int comp =   m_plane_average1.ncomp()*m_plane_average2.ncomp()*comp1
+                     + m_plane_average2.ncomp()*comp2
+                     + comp3;
+
+    return line_average_cell(ind, comp);
+}
 
 

@@ -23,6 +23,8 @@ public:
 
     ~SecondMomentAveraging(){};
 
+    void operator()();
+    
     /** evaluate second moment at specific location for both components */
     amrex::Real line_average_interpolated(amrex::Real x, int comp1, int comp2) const;
     /** evaluate second moment at specific location for each component */
@@ -31,6 +33,9 @@ public:
     amrex::Real line_average_cell(int cell, int comp1, int comp2) const;
     /** evaluate second moment at specific cell for each component */
     amrex::Real line_average_cell(int cell, int comp) const;
+
+    void output_line_average_ascii(std::string filename, int step, amrex::Real time);
+    void output_line_average_ascii(int step, amrex::Real time);
 
     /** change precision of text file output */
     void set_precision(int p) {m_precision = p;};
@@ -41,6 +46,7 @@ private:
     amrex::Vector<amrex::Real> m_second_moments_line; /** line storage for fluctuations */
 
     int m_precision = 4; /** precision for line plot text file */
+    int m_last_updated_index = -1; /** keep track of the last time index that the operator was called */
 
     FieldPlaneAveraging& m_plane_average1;
     FieldPlaneAveraging& m_plane_average2;
