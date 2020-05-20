@@ -7,7 +7,7 @@
 #include "ABLFieldInit.H"
 #include "ABLWallFunction.H"
 #include "SimTime.H"
-#include "PlaneAveraging.H"
+#include "FieldPlaneAveraging.H"
 
 class incflo;
 
@@ -58,7 +58,7 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
 
-    PlaneAveraging m_pa;
+    FieldPlaneAveraging m_pa;
     ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance

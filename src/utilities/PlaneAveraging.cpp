@@ -301,7 +301,6 @@ void PlaneAveraging::operator()(const amrex::Vector<amrex::Geometry>& geom,
     line_xcentroid.resize(ncell_line);
     std::fill(line_average.begin(), line_average.end(), 0.0);
     std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
-    std::fill(line_fluctuation.begin(), line_fluctuation.end(), 0.0);
 
     switch (axis) {
         case 0:
