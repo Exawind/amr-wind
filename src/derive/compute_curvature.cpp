@@ -71,7 +71,7 @@ void compute_curvature(FType& curvf, const Field& field)
                         });
                 }
             } // if (!geom.isPeriodic)
-            /* 
+             
             idim = 1;
             if (!geom.isPeriodic(idim)) {
                 if (bxi.smallEnd(idim) == domain.smallEnd(idim)) {
@@ -85,8 +85,8 @@ void compute_curvature(FType& curvf, const Field& field)
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilJLO>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            curvature<StencilJLO>(
+                                i, j, k, idx, idy, idz, field_arr);
                         });
                 }
 
@@ -101,8 +101,8 @@ void compute_curvature(FType& curvf, const Field& field)
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilJHI>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            curvature<StencilJHI>(
+                                i, j, k, idx, idy, idz, field_arr);
                         });
                 }
             } // if (!geom.isPeriodic)
@@ -120,8 +120,8 @@ void compute_curvature(FType& curvf, const Field& field)
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilKLO>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            curvature<StencilKLO>(
+                                i, j, k, idx, idy, idz, field_arr);
                         });
                 }
 
@@ -136,12 +136,12 @@ void compute_curvature(FType& curvf, const Field& field)
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilKHI>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            curvature<StencilKHI>(
+                                i, j, k, idx, idy, idz, field_arr);
                         });
                 }
             } // if (!geom.isPeriodic)
-            */
+            
         }
     }
 }

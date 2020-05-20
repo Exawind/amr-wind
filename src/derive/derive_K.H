@@ -37,25 +37,6 @@ struct StencilInterior
     static constexpr amrex::Real s21 =  s01; // bzz
     static constexpr amrex::Real s22 =  s02; // czz
 
-    // Mixed derivatives
-    // fxy = (axy*f_{i+1,j+1}+bxy*f_{i-1,j+1}+cxy*f_{i+1,j-1}+dxy*f_{i+1,j-1}+exy*f_{i-1,j-1}
-    // fxz = (axz*f_{i+1,j+1}+bxz*f_{i-1,j+1}+cxz*f_{i+1,j-1}+dxz*f_{i+1,j-1}+exz*f_{i-1,j-1}
-    // fyz = (ayz*f_{i+1,j+1}+byz*f_{i-1,j+1}+cyz*f_{i+1,j-1}+dyz*f_{i+1,j-1}+eyz*f_{i-1,j-1}
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =  -0.25; // dxy
-    static constexpr amrex::Real m04  =  0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
 };
 
 struct StencilILO
@@ -80,21 +61,6 @@ struct StencilILO
     static constexpr amrex::Real s21 =  s11; // bzz
     static constexpr amrex::Real s22 =  s12; // czz
 
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
 };
 
 struct StencilJLO
@@ -118,22 +84,6 @@ struct StencilJLO
     static constexpr amrex::Real s20 =  s00; // azz
     static constexpr amrex::Real s21 =  s01; // bzz
     static constexpr amrex::Real s22 =  s02; // czz
-
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
 
 };
 
@@ -159,22 +109,6 @@ struct StencilKLO
     static constexpr amrex::Real s21 =  -4.;   // bzz
     static constexpr amrex::Real s22 =  8./3.; // czz
      
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
-
 };
 
 struct StencilIHI
@@ -199,23 +133,6 @@ struct StencilIHI
     static constexpr amrex::Real s21 =  s11; // bzz
     static constexpr amrex::Real s22 =  s12; // czz
 
-
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
-
 };
 
 struct StencilJHI
@@ -239,23 +156,6 @@ struct StencilJHI
     static constexpr amrex::Real s20 =  s00; // azz
     static constexpr amrex::Real s21 =  s01; // bzz
     static constexpr amrex::Real s22 =  s02; // czz
-
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
-
 };
 
 struct StencilKHI
@@ -279,22 +179,6 @@ struct StencilKHI
     static constexpr amrex::Real s20 =  8./3.; // azz
     static constexpr amrex::Real s21 =  -4.;   // bzz
     static constexpr amrex::Real s22 =  4./3.; // czz
-
-    static constexpr amrex::Real m00  =   0.25; // axy 
-    static constexpr amrex::Real m01  =  -0.25; // bxy
-    static constexpr amrex::Real m02  =   0.;   // cxy
-    static constexpr amrex::Real m03  =   0.25; // dxy
-    static constexpr amrex::Real m04  =  -0.25; // 3xy
-    static constexpr amrex::Real m10  =  m00;   // axz 
-    static constexpr amrex::Real m11  =  m01;   // bxz
-    static constexpr amrex::Real m12  =  m02;   // cxz
-    static constexpr amrex::Real m13  =  m03;   // dyz
-    static constexpr amrex::Real m14  =  m04;   // eyz
-    static constexpr amrex::Real m20  =  m00;   // ayz 
-    static constexpr amrex::Real m21  =  m01;   // byz
-    static constexpr amrex::Real m22  =  m02;   // cyz
-    static constexpr amrex::Real m23  =  m03;   // dyz
-    static constexpr amrex::Real m24  =  m04;   // eyz
 
 };
 
@@ -374,56 +258,32 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
     amrex::Real idx,
     amrex::Real idy,
     amrex::Real idz,
-    amrex::Array4<amrex::Real const> const& phi) noexcept
+    amrex::Array4<amrex::Real const> const& gradphi) noexcept
 {
     using namespace amrex;
 
-    Real cp1, c, cm1,sp1,s,sm1,mp1p1,mm1p1,m,mp1m1,mm1m1;
+    Real cp1, c, cm1;
 
     cp1 = Stencil::c00;
     c   = Stencil::c01; 
     cm1 = Stencil::c02;
-    const Real phix = (cp1*phi(i+1,j,k) + c*phi(i,j,k) + cm1*phi(i-1,j,k)) * idx;
-    sp1 = Stencil::s00;
-    s   = Stencil::s01; 
-    sm1 = Stencil::s02;
-    const Real phixx = (sp1*phi(i+1,j,k) + s*phi(i,j,k) + sm1*phi(i-1,j,k)) * idx*idx;
+    const Real phix  = gradphi(i,j,k,0);
+    const Real phixx = (cp1*gradphi(i+1,j,k,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i-1,j,k,0)) * idx;
     
     cp1 = Stencil::c10;
     c   = Stencil::c11;
     cm1 = Stencil::c12;
-    const Real phiy  = (cp1*phi(i,j+1,k) + c*phi(i,j,k) + cm1*phi(i,j-1,k)) * idy;
-    sp1 = Stencil::s10;
-    s   = Stencil::s11; 
-    sm1 = Stencil::s12;
-    const Real phiyy = (sp1*phi(i,j+1,k) + s*phi(i,j,k) + sm1*phi(i,j-1,k)) *idy*idy;
-    mp1p1  = Stencil::m00; 
-    mm1p1  = Stencil::m01; 
-    m      = Stencil::m02;
-    mp1m1  = Stencil::m03; 
-    mm1m1  = Stencil::m04; 
-    const Real phixy = (mp1p1*phi(i+1,j+1,k) + mm1p1*phi(i-1,j+1,k) + m*phi(i,j,k)+mp1m1*phi(i+1,j-1,k) + mm1m1*phi(i-1,j-1,k)) *idx*idy;
+    const Real phiy  = gradphi(i,j,k,1);
+    const Real phixy = (cp1*gradphi(i,j+1,k,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i,j-1,k,0))*idy;
+    const Real phiyy = (cp1*gradphi(i,j+1,k,1) + c*gradphi(i,j,k,1) + cm1*gradphi(i,j-1,k,1))*idy;
     
     cp1 = Stencil::c20;
     c   = Stencil::c21;
     cm1 = Stencil::c22;
-    const Real phiz  = (cp1*phi(i,j,k+1) + c*phi(i,j,k) + cm1*phi(i,j,k-1)) * idz;
-    sp1 = Stencil::s20;
-    s   = Stencil::s21; 
-    sm1 = Stencil::s22; 
-    const Real phizz = (sp1*phi(i,j,k+1) + s*phi(i,j,k) + sm1*phi(i,j,k-1)) *idz*idz;
-    mp1p1  = Stencil::m10; 
-    mm1p1  = Stencil::m11; 
-    m      = Stencil::m12;
-    mp1m1  = Stencil::m13; 
-    mm1m1  = Stencil::m14; 
-    const Real phixz = (mp1p1*phi(i+1,j,k+1) + mm1p1*phi(i-1,j,k+1) + m*phi(i,j,k)+mp1m1*phi(i+1,j,k-1) + mm1m1*phi(i-1,j,k-1)) *idx*idz;
-    mp1p1  = Stencil::m20; 
-    mm1p1  = Stencil::m21; 
-    m      = Stencil::m22;
-    mp1m1  = Stencil::m23; 
-    mm1m1  = Stencil::m24; 
-    const Real phiyz = (mp1p1*phi(i,j+1,k+1) + mm1p1*phi(i,j-1,k+1) + m*phi(i,j,k)+mp1m1*phi(i,j+1,k-1) + mm1m1*phi(i,j-1,k-1)) *idy*idz; 
+    const Real phiz  = gradphi(i,j,k,2);
+    const Real phixz = (cp1*gradphi(i,j,k+1,0) + c*gradphi(i,j,k,0) + cm1*gradphi(i,j,k-1,0)) *idz;
+    const Real phiyz = (cp1*gradphi(i,j,k+1,1) + c*gradphi(i,j,k,1) + cm1*gradphi(i,j,k-1,1)) *idz;
+    const Real phizz = (cp1*gradphi(i,j,k+1,2) + c*gradphi(i,j,k,2) + cm1*gradphi(i,j,k-1,2)) *idz;
     
     Real curv= -(phix*phix*phiyy - 2.*phix*phiy*phixy + phiy*phiy*phixx + phix*phix*phizz
                 -2.*phix*phiz*phixz + phiz*phiz*phixx + phiy*phiy*phizz - 2*phiy*phiz*phiyz 
