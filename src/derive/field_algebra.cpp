@@ -6,7 +6,6 @@ template<typename FType>
 void normalize_field(FType& Field)
 {
     const auto& repo = Field.repo();
-    const auto& geom_vec = repo.mesh().Geom();
     const auto ncomp = Field.num_comp();
     
     const int nlevels = repo.num_active_levels();
