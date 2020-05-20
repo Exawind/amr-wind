@@ -23,7 +23,7 @@ void compute_gradient(FType& gradf, const Field& field)
         const amrex::Real idz = 1.0 / dz;
 
         for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(field.num_grow());
+            const auto& bx = mfi.growntilebox(gradf.num_grow());
             const auto& grad_arr = gradf(lev).array(mfi);
             const auto& field_arr = field(lev).const_array(mfi);
 

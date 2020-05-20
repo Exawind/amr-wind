@@ -346,5 +346,8 @@ void compute_laplacian(FType& laplacef, const Field& field);
 template<typename FType>
 void compute_curvature(FType& curvf, const Field& field);
 
+template<typename FType>
+void normalize_field(FType& field);
+
 } // namespace amr_wind
 #endif
