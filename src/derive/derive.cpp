@@ -8,7 +8,7 @@ using namespace amrex;
 void incflo::ComputeDivU(Real /* time_in */)
 {
 #if 0 //fixme
-    BL_PROFILE("amr-wind::incflo::ComputeDivU")
+    BL_PROFILE("amr-wind::incflo::ComputeDivU");
 
     incflo_set_velocity_bcs(time_in, vel);
 
@@ -41,7 +41,7 @@ void incflo::ComputeDivU(Real /* time_in */)
 void incflo::ComputeStrainrate(Real /* time_in */)
 {
 #if 0
-    BL_PROFILE("amr-wind::incflo::ComputeStrainrate")
+    BL_PROFILE("amr-wind::incflo::ComputeStrainrate");
 
     for(int lev = 0; lev <= finest_level; lev++)
     {
@@ -98,7 +98,7 @@ void incflo::ComputeStrainrate(Real /* time_in */)
 
 Real incflo::ComputeKineticEnergy () const
 {
-    BL_PROFILE("amr-wind::incflo::ComputeKineticEnergy")
+    BL_PROFILE("amr-wind::incflo::ComputeKineticEnergy");
 
     // integrated total Kinetic energy
     Real KE = 0.0;

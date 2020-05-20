@@ -96,7 +96,7 @@ void IOManager::initialize_io()
 
 void IOManager::write_plot_file()
 {
-    BL_PROFILE("amr-wind::IOManager::write_plot_file")
+    BL_PROFILE("amr-wind::IOManager::write_plot_file");
 
     amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
     auto outfield = m_sim.repo().create_scratch_field(m_plt_num_comp);
@@ -127,7 +127,7 @@ void IOManager::write_plot_file()
 
 void IOManager::write_checkpoint_file()
 {
-    BL_PROFILE("amr-wind::IOManager::write_checkpoint_file")
+    BL_PROFILE("amr-wind::IOManager::write_checkpoint_file");
     const std::string level_prefix = "Level_";
     const std::string chkname = amrex::Concatenate(m_chk_prefix, m_sim.time().time_index());
 
@@ -151,7 +151,7 @@ void IOManager::write_checkpoint_file()
 
 void IOManager::read_checkpoint_fields(const std::string& restart_file)
 {
-    BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields")
+    BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
     const std::string level_prefix = "Level_";
     const int nlevels = m_sim.mesh().finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {

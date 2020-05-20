@@ -5,7 +5,7 @@ using namespace amr_wind;
 void ThirdMomentAveraging::output_line_average_ascii(
     std::string filename, int step, amrex::Real time)
 {
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::output_line_average_ascii")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::output_line_average_ascii");
 
     if (step != m_last_updated_index) {
         operator()();
@@ -145,7 +145,7 @@ void ThirdMomentAveraging::compute_average(
     const amrex::MultiFab& mfab3)
 {
 
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::compute_average")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::compute_average");
 
     amrex::AsyncArray<amrex::Real> lfluc(
         m_third_moments_line.data(), m_third_moments_line.size());
@@ -216,7 +216,7 @@ void ThirdMomentAveraging::compute_average(
 amrex::Real ThirdMomentAveraging::line_average_interpolated(
     amrex::Real x, int comp1, int comp2, int comp3) const
 {
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_interpolated 1")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_interpolated 1");
 
     AMREX_ALWAYS_ASSERT(comp1 >= 0 && comp1 < m_plane_average1.ncomp());
     AMREX_ALWAYS_ASSERT(comp2 >= 0 && comp2 < m_plane_average2.ncomp());
@@ -231,7 +231,7 @@ amrex::Real ThirdMomentAveraging::line_average_interpolated(
 amrex::Real
 ThirdMomentAveraging::line_average_interpolated(amrex::Real x, int comp) const
 {
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_interpolated 2")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_interpolated 2");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
 
@@ -261,7 +261,7 @@ ThirdMomentAveraging::line_average_interpolated(amrex::Real x, int comp) const
 
 amrex::Real ThirdMomentAveraging::line_average_cell(int ind, int comp) const
 {
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 2")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 2");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
     AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_plane_average1.ncell_line());
@@ -272,7 +272,7 @@ amrex::Real ThirdMomentAveraging::line_average_cell(int ind, int comp) const
 amrex::Real ThirdMomentAveraging::line_average_cell(
     int ind, int comp1, int comp2, int comp3) const
 {
-    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 1")
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::line_average_cell 1");
 
     AMREX_ALWAYS_ASSERT(comp1 >= 0 && comp1 < m_plane_average1.ncomp());
     AMREX_ALWAYS_ASSERT(comp2 >= 0 && comp2 < m_plane_average2.ncomp());

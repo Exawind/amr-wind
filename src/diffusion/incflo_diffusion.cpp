@@ -130,7 +130,7 @@ void wall_model_bc(
     const amrex::Real umag,
     const amr_wind::FieldState fstate)
 {
-    BL_PROFILE("amr-wind::diffusion::wall_model_bc")
+    BL_PROFILE("amr-wind::diffusion::wall_model_bc");
     auto& repo = velocity.repo();
     auto& density = repo.get_field("density", fstate);
     auto& viscosity = repo.get_field("velocity_mueff");
@@ -281,7 +281,7 @@ void wall_model_bc(
 Array<MultiFab,AMREX_SPACEDIM>
 average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
-    BL_PROFILE("amr-wind::diffusion::average_velocity_eta_to_faces")
+    BL_PROFILE("amr-wind::diffusion::average_velocity_eta_to_faces");
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
@@ -299,7 +299,7 @@ average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_e
 Array<MultiFab,AMREX_SPACEDIM>
 average_tracer_eta_to_faces (int comp, const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
-    BL_PROFILE("amr-wind::diffusion::average_tracer_eta_to_faces")
+    BL_PROFILE("amr-wind::diffusion::average_tracer_eta_to_faces");
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
@@ -319,7 +319,7 @@ void
 fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPACEDIM>& fc,
                                    MultiFab const& cc)
 {
-    BL_PROFILE("amr-wind::diffusion::fixup_eta_on_domain_faces")
+    BL_PROFILE("amr-wind::diffusion::fixup_eta_on_domain_faces");
     // copies cell center to face
     Real c0 = 1.0;
     Real c1 = 0.0;

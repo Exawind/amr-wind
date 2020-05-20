@@ -26,7 +26,7 @@ void PlaneAveraging::plot_line(int step, amrex::Real time, int plot_type)
 
 void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_text()")
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_text()");
 
     if(!ParallelDescriptor::IOProcessor()) return;
     
@@ -59,7 +59,7 @@ void PlaneAveraging::plot_line_text(std::string filename, int step, Real time)
 
 void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real time)
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_average_text()")
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_average_text()");
 
     if(!ParallelDescriptor::IOProcessor()) return;
 
@@ -89,7 +89,7 @@ void PlaneAveraging::plot_line_average_text(std::string filename, int step, Real
 
 void PlaneAveraging::plot_line_binary(std::string filename, int step, Real time)
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_binary()")
+    BL_PROFILE("amr-wind::PlaneAveraging::plot_line_binary()");
 
     if(!ParallelDescriptor::IOProcessor()) return;
 
@@ -122,7 +122,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp,
                                const amrex::MultiFab& temperature)
 {
 
-    BL_PROFILE("amr-wind::PlaneAveraging::fill_line()")
+    BL_PROFILE("amr-wind::PlaneAveraging::fill_line()");
     
     for(int i=0;i<ncell_line;++i){
         line_xcentroid[i] = xlo + (i+0.5)*dx;
@@ -242,7 +242,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp,
 
 Real PlaneAveraging::eval_line_average(Real x, int comp) const
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average")
+    BL_PROFILE("amr-wind::PlaneAveraging::eval_line_average");
     Real c = 0.0;
     int ind = 0;
     
@@ -276,7 +276,7 @@ void PlaneAveraging::operator()(const amrex::Vector<amrex::Geometry>& geom,
                 amrex::Vector<amrex::MultiFab*> const& mueff,
                 amrex::Vector<amrex::MultiFab*> const& temperature)
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::PlaneAveraging")
+    BL_PROFILE("amr-wind::PlaneAveraging::PlaneAveraging");
 
 
     // level=0 is default, could later make this an input. Might only makes sense for fully covered levels

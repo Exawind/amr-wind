@@ -48,7 +48,7 @@ void incflo::PrintMaxValues(const std::string& header)
 //
 void incflo::PrintMaxVel(int lev)
 {
-    BL_PROFILE("amr-wind::incflo::PrintMaxVel")
+    BL_PROFILE("amr-wind::incflo::PrintMaxVel");
     amrex::Print() << "max(abs(u/v/w))  = "
                    << velocity()(lev).norm0(0) << "  "
                    << velocity()(lev).norm0(1)  << "  "
@@ -61,7 +61,7 @@ void incflo::PrintMaxVel(int lev)
 //
 void incflo::PrintMaxGp(int lev)
 {
-    BL_PROFILE("amr-wind::incflo::PrintMaxGp")
+    BL_PROFILE("amr-wind::incflo::PrintMaxGp");
     amrex::Print() << "max(abs(gpx/gpy/gpz/p))  = "
                    << grad_p()(lev).norm0(0) << "  "
                    << grad_p()(lev).norm0(1) << "  "
@@ -72,7 +72,7 @@ void incflo::PrintMaxGp(int lev)
 
 void incflo::CheckForNans(int lev)
 {
-    BL_PROFILE("amr-wind::incflo::CheckForNans")
+    BL_PROFILE("amr-wind::incflo::CheckForNans");
     bool ro_has_nans = density()(lev).contains_nan(0);
     bool ug_has_nans = velocity()(lev).contains_nan(0);
     bool vg_has_nans = velocity()(lev).contains_nan(1);

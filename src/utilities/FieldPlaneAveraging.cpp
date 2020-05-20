@@ -8,7 +8,7 @@ using namespace amr_wind;
 void FieldPlaneAveraging::output_line_average_ascii(
     std::string filename, int step, Real time)
 {
-    BL_PROFILE("amr-wind::FieldPlaneAveraging::output_line_average_ascii")
+    BL_PROFILE("amr-wind::FieldPlaneAveraging::output_line_average_ascii");
 
     if (step != m_last_updated_index) {
         operator()();
@@ -52,7 +52,7 @@ void FieldPlaneAveraging::output_line_average_ascii(int step, Real time)
 
 Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated")
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
 
@@ -78,7 +78,7 @@ Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
 
 Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell")
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
     AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
@@ -124,7 +124,7 @@ FieldPlaneAveraging::FieldPlaneAveraging(
 
 void FieldPlaneAveraging::operator()()
 {
-    BL_PROFILE("amr-wind::FieldPlaneAveraging::operator")
+    BL_PROFILE("amr-wind::FieldPlaneAveraging::operator");
 
     m_last_updated_index = m_time.time_index();
 
@@ -150,7 +150,7 @@ template <typename IndexSelector>
 void FieldPlaneAveraging::compute_averages(
     const IndexSelector& idxOp, const amrex::MultiFab& mfab)
 {
-    BL_PROFILE("amr-wind::PlaneAveraging::compute_averages")
+    BL_PROFILE("amr-wind::PlaneAveraging::compute_averages");
 
     const Real denom = 1.0 / (Real)m_ncell_plane;
 

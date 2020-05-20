@@ -79,7 +79,7 @@ void incflo::ReadParameters ()
 //
 void incflo::InitialIterations ()
 {
-    BL_PROFILE("amr-wind::incflo::InitialIterations()")
+    BL_PROFILE("amr-wind::incflo::InitialIterations()");
     amrex::Print() << "Begin initial pressure iterations. Num. iters = "
                    << m_initial_iterations << std::endl;
 
@@ -131,7 +131,7 @@ void incflo::InitialIterations ()
 // Project velocity field to make sure initial velocity is divergence-free
 void incflo::InitialProjection()
 {
-    BL_PROFILE("amr-wind::incflo::InitialProjection()")
+    BL_PROFILE("amr-wind::incflo::InitialProjection()");
 
     amrex::Print() << "Begin initial projection" << std::endl;
     if (m_verbose) {
