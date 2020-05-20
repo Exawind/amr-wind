@@ -113,6 +113,8 @@ template<typename IndexSelector>
 void SecondMomentAveraging::compute_average(const IndexSelector &idxOp, const amrex::MultiFab &mfab1, const amrex::MultiFab &mfab2)
 {
 
+    BL_PROFILE("amr-wind::SecondMomentAveraging::compute_average")
+
     amrex::AsyncArray<amrex::Real> lfluc(m_second_moments_line.data(), m_second_moments_line.size());
     amrex::Real *line_fluc = lfluc.data();
 

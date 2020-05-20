@@ -133,6 +133,8 @@ void ThirdMomentAveraging::compute_average(const IndexSelector &idxOp,
                                            const amrex::MultiFab &mfab3)
 {
 
+    BL_PROFILE("amr-wind::ThirdMomentAveraging::compute_average")
+
     amrex::AsyncArray<amrex::Real> lfluc(m_third_moments_line.data(), m_third_moments_line.size());
     amrex::Real *line_fluc = lfluc.data();
 
