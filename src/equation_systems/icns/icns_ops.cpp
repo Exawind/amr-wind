@@ -30,7 +30,7 @@ namespace pde {
 
 void advection_mac_project(FieldRepo& repo, const FieldState fstate)
 {
-    BL_PROFILE("amr-wind::ICNS::advection_mac_project")
+    BL_PROFILE("amr-wind::ICNS::advection_mac_project");
     auto& geom = repo.mesh().Geom();
     auto& u_mac = repo.get_field("u_mac");
     auto& v_mac = repo.get_field("v_mac");

@@ -49,7 +49,7 @@ struct SrcTermOpBase
 
     void multiply_rho(const FieldState fstate)
     {
-        BL_PROFILE("amr-wind::" + PDE::pde_name() + "::multiply_rho")
+        BL_PROFILE("amr-wind::" + PDE::pde_name() + "::multiply_rho");
         const auto rhostate = field_impl::phi_state(fstate);
         auto& density = m_density.state(rhostate);
 

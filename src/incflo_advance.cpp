@@ -14,7 +14,7 @@ using namespace amrex;
 
 void incflo::Advance()
 {
-    BL_PROFILE("amr-wind::incflo::Advance")
+    BL_PROFILE("amr-wind::incflo::Advance");
 
     // Compute time step size
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
@@ -117,7 +117,7 @@ void incflo::Advance()
 //
 void incflo::ApplyPredictor (bool incremental_projection)
 {
-    BL_PROFILE("amr-wind::incflo::ApplyPredictor")
+    BL_PROFILE("amr-wind::incflo::ApplyPredictor");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
@@ -345,7 +345,7 @@ void incflo::ApplyPredictor (bool incremental_projection)
 //
 void incflo::ApplyCorrector()
 {
-    BL_PROFILE("amr-wind::incflo::ApplyCorrector")
+    BL_PROFILE("amr-wind::incflo::ApplyCorrector");
 
     // We use the new time value for things computed on the "*" state
     Real new_time = m_time.new_time();
