@@ -1,20 +1,30 @@
-#ifndef FILLABLINFLOW_H
-#define FILLABLINFLOW_H
+#ifndef ABLFILLINFLOW_H
+#define ABLFILLINFLOW_H
 
 #include "amr-wind/core/FieldFillPatchOps.H"
 #include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 
 namespace amr_wind {
 
-class FillABLInflow : public FieldFillPatchOps<FieldBCNoOp>
+/** Operations to perform inflow of data from boundary planes
+ *  \ingroup we_abl
+ *
+ *  This class contains the operations necessary to interface with
+ *  ABLBoundaryPlane class and populate data at the boundaries
+ *
+ *  \sa ABLBoundaryPlane
+ */
+class ABLFillInflow : public FieldFillPatchOps<FieldBCNoOp>
 {
 public:
-    FillABLInflow(
-        Field& field, const amrex::AmrCore& mesh, const SimTime& time
-        //, const ABLBoundaryPlane
-    );
+    ABLFillInflow(
+        Field& field,
+        const amrex::AmrCore& mesh,
+        const SimTime& time,
+        const ABLBoundaryPlane& abl_bc);
 
-    virtual ~FillABLInflow();
+    virtual ~ABLFillInflow();
 
     virtual void fillpatch(
         int lev,
@@ -37,9 +47,9 @@ public:
         const amrex::IntVect& nghost) override;
 
 protected:
-    // const ABLBoundaryPlane m_abl_bc;
+    const ABLBoundaryPlane& m_bndry_plane;
 };
 
 } // namespace amr_wind
 
-#endif /* FILLABLINFLOW_H */
+#endif /* ABLFILLINFLOW_H */

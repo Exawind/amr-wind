@@ -174,8 +174,8 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
         vel.push_back(&(velocity(lev)));
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
-            // set_inflow_velocity(lev, time, *vel[lev], 1);
-            velocity.fillphysbc(lev, time, *vel[lev], 1);
+           set_inflow_velocity(lev, time, *vel[lev], 1);
+           //  velocity.fillphysbc(lev, time, *vel[lev], 1);
         }
     }
 

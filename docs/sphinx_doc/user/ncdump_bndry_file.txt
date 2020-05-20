@@ -1,0 +1,82 @@
+netcdf bndry_file {
+dimensions:
+	sdim = 1 ;
+	pdim = 2 ;
+	vdim = 3 ;
+	nt = UNLIMITED ; // (7 currently)
+variables:
+	double time(nt) ;
+
+// global attributes:
+		:title = "ABL boundary planes" ;
+
+group: xlo {
+  variables:
+  	int normal ;
+  	int side ;
+  	int perpendicular(pdim) ;
+
+  group: level_0 {
+    dimensions:
+    	nx = 48 ;
+    	ny = 48 ;
+    	nz = 48 ;
+    variables:
+    	double lengths(pdim) ;
+    	double lo(pdim) ;
+    	double hi(pdim) ;
+    	double dx(pdim) ;
+    	double velocity(nt, ny, nz, vdim) ;
+    	double temperature(nt, ny, nz) ;
+    } // group level_0
+
+  group: level_1 {
+    dimensions:
+    	nx = 96 ;
+    	ny = 96 ;
+    	nz = 56 ;
+    variables:
+    	double lengths(pdim) ;
+    	double lo(pdim) ;
+    	double hi(pdim) ;
+    	double dx(pdim) ;
+    	double velocity(nt, ny, nz, vdim) ;
+    	double temperature(nt, ny, nz) ;
+    } // group level_1
+  } // group xlo
+
+group: ylo {
+  variables:
+  	int normal ;
+  	int side ;
+  	int perpendicular(pdim) ;
+
+  group: level_0 {
+    dimensions:
+    	nx = 48 ;
+    	ny = 48 ;
+    	nz = 48 ;
+    variables:
+    	double lengths(pdim) ;
+    	double lo(pdim) ;
+    	double hi(pdim) ;
+    	double dx(pdim) ;
+    	double velocity(nt, nx, nz, vdim) ;
+    	double temperature(nt, nx, nz) ;
+    } // group level_0
+
+  group: level_1 {
+    dimensions:
+    	nx = 96 ;
+    	ny = 96 ;
+    	nz = 56 ;
+    variables:
+    	double lengths(pdim) ;
+    	double lo(pdim) ;
+    	double hi(pdim) ;
+    	double dx(pdim) ;
+    	double velocity(nt, nx, nz, vdim) ;
+    	double temperature(nt, nx, nz) ;
+    } // group level_1
+  } // group ylo
+}

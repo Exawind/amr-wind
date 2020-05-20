@@ -1,4 +1,5 @@
 #include "amr-wind/incflo.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 using namespace amrex;
 
@@ -34,5 +35,13 @@ incflo::set_inflow_velocity (int lev, amrex::Real time, MultiFab& vel, int nghos
                 }
             }
         }
+    }
+
+    // TODO fix hack for ABL
+    auto& phy_mgr = m_sim.physics_manager();
+    if (phy_mgr.contains("ABL")) {
+        auto& abl = phy_mgr.get<amr_wind::ABL>();
+        auto& bndry_plane = abl.bndry_plane();
+        bndry_plane.populate_data(lev, time, velocity, vel);
     }
 }

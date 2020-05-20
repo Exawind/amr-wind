@@ -6,6 +6,7 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
+#include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStats.H"
@@ -46,7 +47,7 @@ class ABLForcing;
  *  data to be used by wall models as well as any ABLForcing terms that might be
  *  active.
  *
- *  \sa ABLFieldInit, ABLWallFunction, FieldPlaneAveraging
+ *  \sa ABLFieldInit, ABLWallFunction, FieldPlaneAveraging, ABLBoundaryPlane
  */
 class ABL : public Physics::Register<ABL>
 {
@@ -76,7 +77,9 @@ public:
     {
         m_abl_forcing = forcing;
     }
-    
+
+    const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
+
 private:
     const CFDSim& m_sim;
 
@@ -91,12 +94,15 @@ private:
     //! ABL field initializer instance
     std::unique_ptr<ABLFieldInit> m_field_init;
 
+    //! ABL boundary plane instance
+    std::unique_ptr<ABLBoundaryPlane> m_bndry_plane;
+
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
     //! ABL integrated statistics object
     std::unique_ptr<ABLStats> m_stats;
-    
+
 };
 
 }
