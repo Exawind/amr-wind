@@ -157,6 +157,7 @@ void FieldPlaneAveraging::compute_averages(
     AsyncArray<Real> lavg(m_line_average.data(), m_line_average.size());
 
     Real* line_avg = lavg.data();
+    const int ncomp = m_ncomp;
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -167,11 +168,11 @@ void FieldPlaneAveraging::compute_averages(
         auto fab_arr = mfab.const_array(mfi);
 
         amrex::ParallelFor(
-            bx, m_ncomp,
+            bx, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 const int ind = idxOp(i, j, k);
                 HostDevice::Atomic::Add(
-                    &line_avg[m_ncomp * ind + n], fab_arr(i, j, k, n) * denom);
+                    &line_avg[ncomp * ind + n], fab_arr(i, j, k, n) * denom);
             });
     }
 

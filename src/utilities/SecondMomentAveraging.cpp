@@ -145,6 +145,7 @@ void SecondMomentAveraging::compute_average(
 
     const int ncomp1 = m_plane_average1.ncomp();
     const int ncomp2 = m_plane_average2.ncomp();
+    const int nmoments = m_num_moments;
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -168,7 +169,7 @@ void SecondMomentAveraging::compute_average(
                         const amrex::Real up2 =
                             mfab_arr2(i, j, k, n) - line_avg2[ncomp2 * ind + n];
                         amrex::HostDevice::Atomic::Add(
-                            &line_fluc[m_num_moments * ind + nf],
+                            &line_fluc[nmoments * ind + nf],
                             up1 * up2 * denom);
                         ++nf;
                     }
