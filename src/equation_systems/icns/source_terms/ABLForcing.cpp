@@ -1,5 +1,5 @@
 #include "ABLForcing.H"
-#include "FieldPlaneAveraging.H"
+#include "PlaneAveraging.H"
 #include "CFDSim.H"
 #include "ABL.H"
 

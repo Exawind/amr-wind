@@ -2,7 +2,7 @@
 #define ABLWALLFUNCTION_H
 
 #include "CFDSim.H"
-#include "FieldPlaneAveraging.H"
+#include "PlaneAveraging.H"
 #include "FieldBCOps.H"
 
 namespace amr_wind {
@@ -23,7 +23,7 @@ public:
 
     void init_log_law_height();
 
-    void update_umean(const FieldPlaneAveraging& pa);
+    void update_umean(const PlaneAveraging& pa);
 
 private:
     const amrex::AmrCore& m_mesh;
