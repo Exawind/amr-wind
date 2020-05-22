@@ -25,6 +25,12 @@ public:
 
 private:
     amrex::Real m_Ceps{0.93};
+
+    Field& m_turb_lscale;
+    Field& m_shear_prod;
+    Field& m_buoy_prod;
+    Field& m_tke;
+    
 };
 
 } // namespace tke

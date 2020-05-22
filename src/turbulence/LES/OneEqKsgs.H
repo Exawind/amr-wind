@@ -20,8 +20,17 @@ public:
 protected:
     Field& m_vel;
 
+    Field& m_turb_lscale;
+    Field& m_shear_prod;
+    Field& m_buoy_prod;
+    Field& m_rho;
+
+    Field* m_tke;
+
     //! Turbulence constant
+    amrex::Real m_Ce{0.1};
     amrex::Real m_Ceps{0.93};
+
 };
 
 template <typename Transport>
@@ -42,8 +51,22 @@ public:
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
+    //! Update the effective thermal diffusivity field
+    virtual void update_alphaeff(Field& alphaeff) override;
+    
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
+
+private:
+
+    Field& m_temperature;
+    
+    //! Gravity vector (m/s^2)
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+
+    //! Reference temperature (Kelvin)
+    amrex::Real m_ref_theta{300.0};
+    
 };
 
 template <typename Transport>
