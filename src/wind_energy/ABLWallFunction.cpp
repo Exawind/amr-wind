@@ -34,23 +34,23 @@ void ABLWallFunction::init_log_law_height()
     }
 }
 
-void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
+void ABLWallFunction::update_umean(const PlaneAveraging& pa)
 {
     m_umean[m_direction] = 0.0;
     switch (m_direction) {
     case 0:
-        m_umean[1] = pa.line_average_interpolated(m_log_law_height, 1);
-        m_umean[2] = pa.line_average_interpolated(m_log_law_height, 2);
+        m_umean[1] = pa.line_velocity_ydir(m_log_law_height);
+        m_umean[2] = pa.line_velocity_zdir(m_log_law_height);
         break;
 
     case 1:
-        m_umean[0] = pa.line_average_interpolated(m_log_law_height, 0);
-        m_umean[2] = pa.line_average_interpolated(m_log_law_height, 2);
+        m_umean[0] = pa.line_velocity_xdir(m_log_law_height);
+        m_umean[2] = pa.line_velocity_zdir(m_log_law_height);
         break;
 
     case 2:
-        m_umean[0] = pa.line_average_interpolated(m_log_law_height, 0);
-        m_umean[1] = pa.line_average_interpolated(m_log_law_height, 1);
+        m_umean[0] = pa.line_velocity_xdir(m_log_law_height);
+        m_umean[1] = pa.line_velocity_ydir(m_log_law_height);
         break;
 
     default:

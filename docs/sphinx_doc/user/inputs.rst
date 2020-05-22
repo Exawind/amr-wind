@@ -225,6 +225,17 @@ This section deals with parameters that control input/output to the simulation.
    at which line plot files are written to disk. 
    Currently line plotting is only turned on for ABL simulations.
    
+.. input_param:: io.line_plot_type
+
+   **type:** Integer, optional, default = 0
+
+   This input specifies the type of line plot output, where 0 outputs averages and
+   fluctuations in a text format, 
+   1 outputs only averages in text format, 
+   and 2 outputs averages and fluctuations in a binary format. 
+   Currently line plotting is only turned on for ABL simulations
+
+   
 .. input_param:: io.KE_int
 
    **type:** Integer, optional, default = -1
