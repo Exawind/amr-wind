@@ -8,19 +8,20 @@
 
 namespace amr_wind_tests {
 
-class ScalarGradientTest : public AmrexTest
+class CurvatureTest : public AmrexTest
 {};
 
-TEST_F(ScalarGradientTest, interior)
+TEST_F(CurvatureTest, interior)
 {
     constexpr double tol = 1.0e-12;
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    QuadraticAnalyticalFunctions func(n,bx);
-    
+    SphereAnalyticalFunction func(n,bx); 
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
+    amrex::FArrayBox curvature(bx, 1);   
+    curvature.setVal<amrex::RunOn::Host>(0.0);  
     
     amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
     
@@ -28,28 +29,9 @@ TEST_F(ScalarGradientTest, interior)
         for(int j = 2; j < n; ++j){
             for(int k = 2; k < n; ++k){
                 amr_wind::gradient<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,func.scalar_.array(),scalargradient.array(),1);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,0), func.scalargrad_.array()(i,j,k,0), tol);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,1), func.scalargrad_.array()(i,j,k,1), tol);
-                EXPECT_NEAR(scalargradient.array()(i,j,k,2), func.scalargrad_.array()(i,j,k,2), tol);
             }
         }
     }
-    
-}
-
-TEST_F(ScalarGradientTest, ihilo)
-{
-    constexpr double tol = 1.0e-12;
-    
-    const int n = 5;
-    amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    QuadraticAnalyticalFunctions func(n,bx);
-    
-    amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
-    scalargradient.setVal<amrex::RunOn::Host>(0.0);  
-    
-    amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
-
     int i=1;
     for(int j = 1; j <= n; ++j) {
       for(int k = 1; k <= n; ++k) {
@@ -66,21 +48,6 @@ TEST_F(ScalarGradientTest, ihilo)
         }
     }
     
-}
-
-TEST_F(ScalarGradientTest, jhilo)
-{
-    constexpr double tol = 1.0e-12;
-    
-    const int n = 5;
-    amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    QuadraticAnalyticalFunctions func(n,bx);
-    
-    amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
-    scalargradient.setVal<amrex::RunOn::Host>(0.0);  
-    
-    amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
-
     int j=1;
     for(int i = 1; i <= n; ++i) {
         for(int k = 1; k <= n; ++k) {
@@ -97,21 +64,6 @@ TEST_F(ScalarGradientTest, jhilo)
         }
     }
     
-}
-
-TEST_F(ScalarGradientTest, khilo)
-{
-    constexpr double tol = 1.0e-12;
-    
-    const int n = 5;
-    amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    QuadraticAnalyticalFunctions func(n,bx);
-    
-    amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
-    scalargradient.setVal<amrex::RunOn::Host>(0.0);  
-    
-    amrex::Real idx = 1.0/func.dx_, idy = 1.0/func.dy_, idz = 1.0/func.dz_;
-
     int k=1;
     for(int i = 1; i <= n; ++i) {
       for(int j = 1; j <= n; ++j) {
@@ -128,6 +80,16 @@ TEST_F(ScalarGradientTest, khilo)
         }
     }
     
+    for(int i = 2; i < n; ++i){
+        for(int j = 2; j < n; ++j){
+            for(int k = 2; k < n; ++k){
+                curvature.array()(i,j,k)=amr_wind::curvature<amr_wind::StencilInterior>(i,j,k,idx,idy,idz,scalargradient.array());
+                EXPECT_NEAR(curvature.array()(i,j,k), func.curvature_.array()(i,j,k), tol);
+            }
+        }
+    } 
 }
+
+// TODO --> ILOHI,JLOHI,KLOHI need to be tested
 
 } // namespace amr_wind_tests

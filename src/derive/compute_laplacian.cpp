@@ -3,7 +3,7 @@
 namespace amr_wind {
 
 template<typename FType>
-void compute_gradient(FType& gradf, const Field& field)
+void compute_laplacian(FType& laplacef, const Field& field)
 {
     const auto& repo = field.repo();
     const auto& geom_vec = repo.mesh().Geom();
@@ -23,14 +23,14 @@ void compute_gradient(FType& gradf, const Field& field)
         const amrex::Real idz = 1.0 / dz;
 
         for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(gradf.num_grow());
-            const auto& grad_arr = gradf(lev).array(mfi);
+            const auto& bx = mfi.growntilebox(field.num_grow());
+            const auto& laplace_arr = laplacef(lev).array(mfi);
             const auto& field_arr = field(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    gradient<StencilInterior>(
-                      i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                    laplacian<StencilInterior>(
+                      i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                 });
 
             // TODO: Check if the following is correct for `foextrap` BC types
@@ -48,8 +48,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilILO>(
-                              i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilILO>(
+                              i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
 
@@ -64,8 +64,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilIHI>(
-                              i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilIHI>(
+                              i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
             } // if (!geom.isPeriodic)
@@ -83,8 +83,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilJLO>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilJLO>(
+                                i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
 
@@ -99,8 +99,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilJHI>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilJHI>(
+                                i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
             } // if (!geom.isPeriodic)
@@ -118,8 +118,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilKLO>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilKLO>(
+                                i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
 
@@ -134,8 +134,8 @@ void compute_gradient(FType& gradf, const Field& field)
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            gradient<StencilKHI>(
-                                i, j, k, idx, idy, idz, field_arr, grad_arr, ncomp);
+                            laplacian<StencilKHI>(
+                                i, j, k, idx, idy, idz, field_arr, laplace_arr, ncomp);
                         });
                 }
             } // if (!geom.isPeriodic)
@@ -144,7 +144,7 @@ void compute_gradient(FType& gradf, const Field& field)
 }
 
 
-template void compute_gradient<Field>(Field&, const Field&);
-template void compute_gradient<ScratchField>(ScratchField&, const Field&);
+template void compute_laplacian<Field>(Field&, const Field&);
+template void compute_laplacian<ScratchField>(ScratchField&, const Field&);
 
 }

@@ -11,8 +11,11 @@ AnalyticalFunctions::AnalyticalFunctions(
       dz_(0.3),
       scalar_(bx,1),
       scalargrad_(bx,AMREX_SPACEDIM),
+      scalarlaplace_(bx,1),
       vector_(bx,AMREX_SPACEDIM),
-      vectorgrad_(bx,AMREX_SPACEDIM*AMREX_SPACEDIM)
+      vectorgrad_(bx,AMREX_SPACEDIM*AMREX_SPACEDIM),
+      vectorlaplace_(bx,AMREX_SPACEDIM),
+      curvature_(bx,1)
 {
     // Coordinates - First and last are on the boundary faces
     x_.resize(ncells_+2);
@@ -39,27 +42,38 @@ LinearAnalyticalFunctions::LinearAnalyticalFunctions(
     // Define scalar fields and gradient
     auto phi = scalar_.array();
     auto gradphi = scalargrad_.array();
+    auto laplacephi = scalarlaplace_.array();
+    auto curvphi = curvature_.array();
     auto vec = vector_.array();
     auto gradvec = vectorgrad_.array();
+    auto laplacevec = vectorlaplace_.array();
     for(int i = 0; i <= ncells_+1; ++i){
         for(int j = 0; j <= ncells_+1; ++j){
             for(int k = 0; k <= ncells_+1; ++k){
-                phi(i,j,k) = 7.8*x_[i]*y_[j]*z_[k] + 3.14;
-                gradphi(i,j,k,0) = 7.8 * y_[j] * z_[k];
-                gradphi(i,j,k,1) = 7.8 * x_[i] * z_[k];
-                gradphi(i,j,k,2) = 7.8 * x_[i] * y_[j];
-                vec(i,j,k,0) = 7.8*x_[i]*y_[j]*z_[k] + 3.14;
-                vec(i,j,k,1) = 5.1*x_[i]*y_[j]*z_[k] + 9.7123;
-                vec(i,j,k,2) = 1.923*x_[i]*y_[j]*z_[k] + 6.19826;
-                gradvec(i,j,k,0) = 7.8 * y_[j] * z_[k];
-                gradvec(i,j,k,1) = 7.8 * x_[i] * z_[k];
-                gradvec(i,j,k,2) = 7.8 * x_[i] * y_[j];
-                gradvec(i,j,k,3) = 5.1 * y_[j] * z_[k];
-                gradvec(i,j,k,4) = 5.1 * x_[i] * z_[k];
-                gradvec(i,j,k,5) = 5.1 * x_[i] * y_[j];
-                gradvec(i,j,k,6) = 1.923 * y_[j] * z_[k];
-                gradvec(i,j,k,7) = 1.923 * x_[i] * z_[k];
-                gradvec(i,j,k,8) = 1.923 * x_[i] * y_[j];
+                amrex::Real x = x_[i];
+                amrex::Real y = y_[j];
+                amrex::Real z = z_[k];
+                phi(i,j,k) = 7.8*x*y*z + 3.14;
+                gradphi(i,j,k,0) = 7.8 * y* z;
+                gradphi(i,j,k,1) = 7.8 * x* z;
+                gradphi(i,j,k,2) = 7.8 * x* y;
+                laplacephi(i,j,k)= 0.;                
+                curvphi(i,j,k) = 2*x*y*z*(x*x+y*y+z*z)/std::pow(x*x*y*y+x*x*z*z+y*y*z*z,1.5);
+                vec(i,j,k,0) = 7.8*x*y*z + 3.14;
+                vec(i,j,k,1) = 5.1*x*y*z + 9.7123;
+                vec(i,j,k,2) = 1.923*x*y*z + 6.19826;
+                gradvec(i,j,k,0) = 7.8 * y * z;
+                gradvec(i,j,k,1) = 7.8 * x * z;
+                gradvec(i,j,k,2) = 7.8 * x * y;
+                gradvec(i,j,k,3) = 5.1 * y * z;
+                gradvec(i,j,k,4) = 5.1 * x * z;
+                gradvec(i,j,k,5) = 5.1 * x * y;
+                gradvec(i,j,k,6) = 1.923 * y * z;
+                gradvec(i,j,k,7) = 1.923 * x * z;
+                gradvec(i,j,k,8) = 1.923 * x * y;
+                laplacevec(i,j,k,0) = 0.; 
+                laplacevec(i,j,k,1) = 0.; 
+                laplacevec(i,j,k,2) = 0.;
             }
         }
     }
@@ -74,8 +88,10 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
     // Define scalar fields and gradient
     auto phi = scalar_.array();
     auto gradphi = scalargrad_.array();
+    auto laplacephi = scalarlaplace_.array();
     auto vec = vector_.array();
     auto gradvec = vectorgrad_.array();
+    auto laplacevec = vectorlaplace_.array();
     for(int i = 0; i <= ncells_+1; ++i){
         for(int j = 0; j <= ncells_+1; ++j){
             for(int k = 0; k <= ncells_+1; ++k){
@@ -86,7 +102,7 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
                 gradphi(i,j,k,0) = 5.0*y*z + 8.0*x + 3.8*z + 9.4*y + 3.4 + 2.0; 
                 gradphi(i,j,k,1) = 5.0*x*z + 6.0*y + 1.3*z + 9.4*x; 
                 gradphi(i,j,k,2) = 5.0*x*y -4.6*z + 1.3*y + 3.8*x;
-                
+                laplacephi(i,j,k)= 9.4;                
                 vec(i,j,k,0) = 5.0*x*y*z + 4.0*x*x + 3.0*y*y - 2.3*z*z + 1.3*y*z + 3.8*x*z + 9.4*x*y + 3.4*x+ 2.0*x + 3.14;
                 gradvec(i,j,k,0) = 5.0*y*z + 8.0*x + 3.8*z + 9.4*y + 3.4 + 2.0; 
                 gradvec(i,j,k,1) = 5.0*x*z + 6.0*y + 1.3*z + 9.4*x; 
@@ -107,7 +123,11 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
                     + 0.37039876870122856*z + 0.7511807179790003*x; 
                 gradvec(i,j,k,8) = 0.2994917334*x*y - 2.0*0.9604194947750178*z
                     + 0.37039876870122856*y + 0.6241061971479255*x;
-                
+               
+                laplacevec(i,j,k,0)=9.4;
+                laplacevec(i,j,k,1)=-11.606;
+                laplacevec(i,j,k,2)=-0.0339998631644585;
+
             }
         }
     }
@@ -115,6 +135,33 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
 
 QuadraticAnalyticalFunctions::~QuadraticAnalyticalFunctions()=default;
 
+SphereAnalyticalFunction::SphereAnalyticalFunction(
+    int n,
+    amrex::Box bx): AnalyticalFunctions(n,bx)
+{
+    // Define scalar fields and gradient
+    auto phi = scalar_.array();
+    auto gradphi = scalargrad_.array();
+    auto laplacephi = scalarlaplace_.array();
+    auto curv = curvature_.array();
+    for(int i = 0; i <= ncells_+1; ++i){
+        for(int j = 0; j <= ncells_+1; ++j){
+            for(int k = 0; k <= ncells_+1; ++k){
+                amrex::Real x = x_[i];
+                amrex::Real y = y_[j];
+                amrex::Real z = z_[k];
+                phi(i,j,k) = x*x+y*y+z*z-1.;
+                gradphi(i,j,k,0) = 2*x; 
+                gradphi(i,j,k,1) = 2*y; 
+                gradphi(i,j,k,2) = 2*z; 
+                laplacephi(i,j,k) = 6.;
+                curv(i,j,k) = -2./std::sqrt(x*x+y*y+z*z);
+            }
+        }
+    }
+}
+
+SphereAnalyticalFunction::~SphereAnalyticalFunction()=default;
 
 
 }
