@@ -123,7 +123,7 @@ void Field::fillpatch(
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
-    BL_PROFILE("amr-wind::Field::fillpatch 2");
+    BL_PROFILE("amr-wind::Field::fillpatch 2")
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
@@ -136,7 +136,7 @@ void Field::fillpatch_from_coarse(
     amrex::MultiFab& mfab,
     const amrex::IntVect& nghost) noexcept
 {
-    BL_PROFILE("amr-wind::Field::fillpatch_from_coarse");
+    BL_PROFILE("amr-wind::Field::fillpatch_from_coarse")
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
 
@@ -145,7 +145,7 @@ void Field::fillpatch_from_coarse(
 
 void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
 {
-    BL_PROFILE("amr-wind::Field::fillpatch");
+    BL_PROFILE("amr-wind::Field::fillpatch")
     BL_ASSERT(m_info->m_fillpatch_op);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
@@ -161,7 +161,7 @@ void Field::fillpatch(amrex::Real time) noexcept
 
 void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
 {
-  BL_PROFILE("amr-wind::Field::fillphysbc");
+  BL_PROFILE("amr-wind::Field::fillphysbc")
   BL_ASSERT(m_info->m_fillpatch_op);
   auto& fop = *(m_info->m_fillpatch_op);
   const int nlevels = m_repo.num_active_levels();
@@ -183,7 +183,7 @@ void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 
 void Field::advance_states() noexcept
 {
-    BL_PROFILE("amr-wind::Field::advance_states");
+    BL_PROFILE("amr-wind::Field::advance_states")
     if (num_time_states() < 2) return;
 
     for (int i=num_time_states() - 1; i > 0; --i) {
@@ -200,7 +200,7 @@ void Field::advance_states() noexcept
 
 void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
-    BL_PROFILE("amr-wind::Field::copy_state");
+    BL_PROFILE("amr-wind::Field::copy_state")
     auto& to_field = state(to_state);
     auto& from_field = state(from_state);
 
@@ -222,7 +222,7 @@ Field& Field::create_state(const FieldState fstate) noexcept
 
 void Field::setVal(amrex::Real value) noexcept
 {
-    BL_PROFILE("amr-wind::Field::setVal 1");
+    BL_PROFILE("amr-wind::Field::setVal 1")
     for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
         operator()(lev).setVal(value);
     }
@@ -230,7 +230,7 @@ void Field::setVal(amrex::Real value) noexcept
 
 void Field::setVal(amrex::Real value, int start_comp, int num_comp, int nghost) noexcept
 {
-    BL_PROFILE("amr-wind::Field::setVal 2");
+    BL_PROFILE("amr-wind::Field::setVal 2")
     for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
         operator()(lev).setVal(value, start_comp, num_comp, nghost);
     }
@@ -238,7 +238,7 @@ void Field::setVal(amrex::Real value, int start_comp, int num_comp, int nghost) 
 
 void Field::setVal(const amrex::Vector<amrex::Real>& values, int nghost) noexcept
 {
-    BL_PROFILE("amr-wind::Field::setVal 3");
+    BL_PROFILE("amr-wind::Field::setVal 3")
     AMREX_ASSERT(num_comp() == static_cast<int>(values.size()));
 
     // Update 1 component at a time
