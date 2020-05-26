@@ -31,6 +31,34 @@ void ABLWallFunction::init_log_law_height()
     if (m_use_fch) {
         const auto& geom = m_mesh.Geom(0);
         m_log_law_height = (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
+    } else {
+
+      const auto& geom = m_mesh.Geom();
+      amrex::Box const& domain = geom[m_mesh.finestLevel()].Domain();
+      const auto dlo = amrex::lbound(domain);
+      const auto dhi = amrex::ubound(domain);
+
+      const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
+      m_z_sample_index = dlo.z + std::round((m_log_law_height - geom[m_mesh.finestLevel()].ProbLo(2))/dz);
+
+      // assuming Z is wall normal direction
+      int m_ncells_x = dhi.x-dlo.x+1;
+      int m_ncells_y = dhi.y-dlo.y+1;
+
+      amrex::Real zcellN = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index-1)*dz;
+      amrex::Real zcellP = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index)*dz;
+
+      m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
+      m_coeff_interp[1] = (m_log_law_height-zcellN)/dz;
+
+      amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
+      amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
+
+      amrex::Box m_bx_z_sample(lo, hi);
+      amrex::FArrayBox m_store_xy_vel(m_bx_z_sample, AMREX_SPACEDIM);
+
+      // amrex::Print() << "Cells in x" << m_ncells_x << "  Cells in y" << m_ncells_y <<std::endl;
+      
     }
 }
 
@@ -61,6 +89,60 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     m_utau = m_kappa * utils::vec_mag(m_umean.data()) / (
         std::log(m_log_law_height / m_z0));
 }
+
+
+void ABLWallFunction::ComputePlanar(const CFDSim& sim)
+{
+
+  amrex::MFItInfo mfi_info{};
+  const auto& frepo = sim.repo();
+  const int nlevels = m_mesh.finestLevel();
+
+  auto geom = m_mesh.Geom();
+
+  auto const& problo = geom[nlevels].ProbLoArray();
+  auto const& probhi = geom[nlevels].ProbHiArray();
+
+  const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
+  
+  auto& velf = frepo.get_field("velocity", amr_wind::FieldState::New);
+
+  m_store_xy_vel.setVal(0.0);
+
+  auto m_store_xy_vel_arr = m_store_xy_vel.array();
+
+  for (amrex::MFIter mfi(velf(nlevels),mfi_info); mfi.isValid(); ++mfi) {
+    const auto& bx = mfi.validbox();
+    
+    const auto dlo = amrex::lbound(bx);
+    const auto dhi = amrex::ubound(bx);
+
+    amrex::Real zminBox = problo[2] + dz*(dlo.z);
+    amrex::Real zmaxBox = problo[2] + dz*(dhi.z);
+
+    if((m_log_law_height - zminBox)*(zmaxBox - m_log_law_height)<= 0.0){
+      continue;
+    }
+
+    auto vel = velf(nlevels).array(mfi);
+
+    const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index);
+    const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
+    const amrex::Box z_sample_bx(lo, hi);
+
+    amrex::ParallelFor(
+          z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                         m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0) + m_coeff_interp[1]*vel(i, j, k, 0);
+                         m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1) + m_coeff_interp[1]*vel(i, j, k, 1);
+                         m_store_xy_vel_arr(i, j, k, 2) = std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*m_store_xy_vel_arr(i, j, k, 0) + m_store_xy_vel_arr(i, j, k, 1)*m_store_xy_vel_arr(i, j, k, 1));
+
+              });
+
+
+  }
+
+}
+
 
 ABLVelWallFunc::ABLVelWallFunc(
     Field&, const ABLWallFunction& wall_func)
