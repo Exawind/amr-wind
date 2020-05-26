@@ -2,6 +2,8 @@
 #include "FieldRepo.H"
 #include "FieldFillPatchOps.H"
 #include "FieldBCOps.H"
+#include "BCInterface.H"
+#include "SimTime.H"
 
 namespace amr_wind {
 
@@ -283,6 +285,22 @@ void Field::setVal(const amrex::Vector<amrex::Real>& values, int nghost) noexcep
             amrex::Real value = values[ic];
             mf.setVal(value, ic, ncomp, nghost);
         }
+    }
+}
+
+void Field::set_default_fillpatch_bc(
+    const SimTime& time,
+    amrex::BCType::mathematicalBndryTypes bctype) noexcept
+{
+    if (!m_info->bc_initialized()) {
+        BCFillPatchExtrap bc_op(*this, bctype);
+        bc_op();
+    }
+
+    if (!m_info->m_fillpatch_op) {
+        const int probtype = 0;
+        register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+            repo().mesh(), time, probtype);
     }
 }
 

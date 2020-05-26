@@ -18,6 +18,7 @@ class Field;
 class FieldRepo;
 class FieldFillPatchOpsBase;
 class FieldBCIface;
+class SimTime;
 
 /** Information common to a field that has multiple states
  */
@@ -35,6 +36,7 @@ struct FieldInfo
 
     ~FieldInfo();
 
+    //! Check indicating whether BCs are being set to sane values
     bool bc_initialized();
 
     //! Copy the BC information to device data structures
@@ -75,6 +77,7 @@ struct FieldInfo
     //! Custom boundary condition actions for this field
     amrex::Vector<std::unique_ptr<FieldBCIface>> m_bc_func;
 
+    //! Flag indicating whether BCs have been initialized and copied to device
     bool m_bc_copied_to_device{false};
 };
 
@@ -186,6 +189,30 @@ public:
     //! The data must have been created on host using the host arrays
     //!
     inline void copy_bc_to_device() { m_info->copy_bc_to_device(); }
+
+    //! Return flag indicating whether BCs have been initialized
+    inline bool bc_initialized() const
+    {
+        return m_info->m_bc_copied_to_device;
+    }
+
+    //! Return a flag indicating whether a fillpatch Op has been registered
+    inline bool has_fillpatch_op() const
+    {
+        return static_cast<bool>(m_info->m_fillpatch_op);
+    }
+
+    /** Setup default BC conditions for fillpatch operations
+     *
+     *  This method initializes the necessary BC data on the field so that a
+     *  fillpatch call will interpolations on periodic faces and extrapolation
+     *  on all the other boundaries. This method is useful for use with derived
+     *  quantities where we still require some fill patch operations.
+     */
+    void set_default_fillpatch_bc(
+        const SimTime& time,
+        const amrex::BCType::mathematicalBndryTypes bctype =
+            amrex::BCType::hoextrap) noexcept;
 
     //! Return field at a different time state
     Field& state(const FieldState fstate);
