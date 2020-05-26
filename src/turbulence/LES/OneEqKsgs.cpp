@@ -128,7 +128,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                       * tlscale_arr(i,j,k) * std::sqrt(tke_arr(i,j,k));
                   
                   buoy_prod_arr(i,j,k) =
-                      2.0 * mu_arr(i,j,k)/(1.0 + 2.0 * tlscale_arr(i,j,k)/ds)
+                      mu_arr(i,j,k) * (1.0 + 2.0 * tlscale_arr(i,j,k)/ds)
                       * stratification;
 
                   shear_prod_arr(i,j,k) *= mu_arr(i,j,k);
@@ -169,7 +169,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         alphaeff_arr(i, j, k) = lam_diff + 
                             muturb_arr(i,j,k)
-                            / (1.0 + 2.0 * tlscale_arr(i,j,k)/ds);
+                            * (1.0 + 2.0 * tlscale_arr(i,j,k)/ds);
                     });
         }
     }
@@ -184,7 +184,7 @@ OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
     pp.query("Ceps", this->m_Ceps);
 
     // TKE source term to be added to PDE
-    // turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KsgsS94Src"});
+    turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KsgsS94Src"});
 }
 
 template <typename Transport>
