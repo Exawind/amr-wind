@@ -321,4 +321,21 @@ TEST_F(FieldRepoTest, int_fields)
     }
 }
 
+TEST_F(FieldRepoTest, default_fillpatch_op)
+{
+    initialize_mesh();
+    auto& frepo = mesh().field_repo();
+
+    auto& velocity = frepo.declare_field("vel", 3, 1);
+    EXPECT_FALSE(velocity.bc_initialized());
+    EXPECT_FALSE(velocity.has_fillpatch_op());
+
+    velocity.set_default_fillpatch_bc(sim().time());
+    EXPECT_TRUE(velocity.bc_initialized());
+    EXPECT_TRUE(velocity.has_fillpatch_op());
+
+    velocity.setVal({10.0, 20.0, 30.0}, 0);
+    velocity.fillpatch(sim().time().current_time());
+}
+
 }

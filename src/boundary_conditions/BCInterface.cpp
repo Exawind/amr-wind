@@ -323,4 +323,31 @@ void BCSrcTerm::set_bcrec()
     }
 }
 
+void BCFillPatchExtrap::set_bcrec()
+{
+    auto& ibctype = m_field.bc_type();
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        const auto side = ori.faceDir();
+        const auto bct = ibctype[ori];
+        const int dir = ori.coordDir();
+
+        switch (bct) {
+        case BC::periodic:
+            if (side == amrex::Orientation::low)
+                set_bcrec_lo(dir, amrex::BCType::int_dir);
+            else
+                set_bcrec_hi(dir, amrex::BCType::int_dir);
+            break;
+
+        default:
+            if (side == amrex::Orientation::low)
+                set_bcrec_lo(dir, m_extrap_type);
+            else
+                set_bcrec_hi(dir, m_extrap_type);
+            break;
+        }
+    }
+}
+
 } // namespace amr_wind
