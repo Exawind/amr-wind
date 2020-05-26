@@ -3,6 +3,7 @@ target_sources(${amr_wind_lib_name}
   SimTime.cpp
 
   Field.cpp
+  IntField.cpp
   FieldRepo.cpp
   )
 

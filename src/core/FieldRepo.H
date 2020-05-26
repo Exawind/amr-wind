@@ -7,10 +7,12 @@
 #include "FieldDescTypes.H"
 #include "FieldUtils.H"
 #include "Field.H"
+#include "IntField.H"
 #include "ScratchField.H"
 
 #include "AMReX_AmrCore.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_iMultiFab.H"
 
 namespace amr_wind {
 
@@ -20,8 +22,14 @@ struct LevelDataHolder
 {
     LevelDataHolder();
 
+    //! real multifabs for all the known fields at this level
     amrex::Vector<amrex::MultiFab> m_mfabs;
+    //! Factory for creating new FABs
     std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>> m_factory;
+
+    //! int fabs for all known fields at this level
+    amrex::Vector<amrex::iMultiFab> m_int_fabs;
+    std::unique_ptr<amrex::FabFactory<amrex::IArrayBox>> m_int_fact;
 };
 
 /** Field Repository
@@ -60,8 +68,7 @@ class FieldRepo
 {
 public:
     friend class Field;
-
-    using FieldMap = std::unordered_map<std::string, std::unique_ptr<Field>>;
+    friend class IntField;
 
     FieldRepo(const amrex::AmrCore& mesh)
         : m_mesh(mesh)
@@ -208,6 +215,19 @@ public:
     bool field_exists(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    IntField& declare_int_field(
+        const std::string& name,
+        const int ncomp = 1,
+        const int ngrow = 0,
+        const int nstates = 1,
+        const FieldLoc floc = FieldLoc::CELL);
+
+    IntField& get_int_field(
+        const std::string& name, const FieldState fstate = FieldState::New) const;
+
+    bool int_field_exists(
+        const std::string& name, const FieldState fstate = FieldState::New) const;
+
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
@@ -249,6 +269,12 @@ protected:
         return m_leveldata[lev]->m_mfabs[fid];
     }
 
+    inline amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
+    {
+        BL_ASSERT(lev <= m_mesh.finestLevel());
+        return m_leveldata[lev]->m_int_fabs[fid];
+    }
+
     Field& create_state(Field& field, const FieldState fstate) noexcept;
 
     //! Allocate field data for a single level outside of regrid
@@ -268,6 +294,16 @@ protected:
         LevelDataHolder& fdata,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
+    void allocate_field_data(int lev, IntField& field, LevelDataHolder& fdata);
+
+    void allocate_field_data(IntField& field);
+
+    void allocate_field_data(
+        const amrex::BoxArray& ba,
+        const amrex::DistributionMapping& dm,
+        LevelDataHolder& fdata,
+        const amrex::FabFactory<amrex::IArrayBox>& factory);
+
     //! Reference to the mesh instance
     const amrex::AmrCore& m_mesh;
 
@@ -278,8 +314,14 @@ protected:
     //! References to field instances identified by unique integer
     mutable amrex::Vector<std::unique_ptr<Field>> m_field_vec;
 
+    //! Reference to integer field instances identified by unique integer
+    mutable amrex::Vector<std::unique_ptr<IntField>> m_int_field_vec;
+
     //! Map of field name to unique integer ID for lookups
     std::unordered_map<std::string, size_t> m_fid_map;
+
+    //! Map of integer field name to unique integer ID for lookups
+    std::unordered_map<std::string, size_t> m_int_fid_map;
 
     //! Flag indicating if mesh is available to allocate field data
     bool m_is_initialized{false};
