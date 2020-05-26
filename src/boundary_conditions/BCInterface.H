@@ -91,6 +91,27 @@ protected:
     }
 };
 
+class BCFillPatchExtrap : public BCIface
+{
+public:
+    BCFillPatchExtrap(
+        Field& field,
+        amrex::BCType::mathematicalBndryTypes bctype = amrex::BCType::hoextrap)
+        : BCIface(field)
+        , m_extrap_type(bctype)
+    {}
+
+protected:
+    virtual void set_bcrec() override;
+    virtual void read_values() override
+    {
+        // No values specified for source terms. empty method to satisfy
+        // inheritance
+    }
+
+    amrex::BCType::mathematicalBndryTypes m_extrap_type;
+};
+
 } // namespace amr_wind
 
 #endif /* BCINTERFACE_H */
