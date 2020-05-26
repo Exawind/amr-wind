@@ -2,16 +2,19 @@
 
 namespace amr_wind {
 
+LevelDataHolder::LevelDataHolder()
+    : m_factory(new amrex::FArrayBoxFactory())
+{}
+
 void FieldRepo::make_new_level_from_scratch(
     int lev, amrex::Real /* time */,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::FieldRepo::make_new_level_from_scratch")
-    m_factory[lev].reset(new amrex::FArrayBoxFactory());
-    m_leveldata[lev].reset(new LevelDataHolder);
+    m_leveldata[lev].reset(new LevelDataHolder());
 
-    allocate_field_data(ba, dm, *m_leveldata[lev], *m_factory[lev]);
+    allocate_field_data(ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
 
     m_is_initialized = true;
 }
@@ -22,10 +25,9 @@ void FieldRepo::make_new_level_from_coarse(
     const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::FieldRepo::make_level_from_coarse")
-    std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>> fact(new amrex::FArrayBoxFactory());
-    std::unique_ptr<LevelDataHolder> ldata(new LevelDataHolder);
+    std::unique_ptr<LevelDataHolder> ldata(new LevelDataHolder());
 
-    allocate_field_data(ba, dm, *ldata, *fact);
+    allocate_field_data(ba, dm, *ldata, *(ldata->m_factory));
 
     for (auto& field: m_field_vec) {
         if (!field->fillpatch_on_regrid()) continue;
@@ -34,8 +36,6 @@ void FieldRepo::make_new_level_from_coarse(
     }
 
     m_leveldata[lev] = std::move(ldata);
-    m_factory[lev] = std::move(fact);
-
     m_is_initialized = true;
 }
 
@@ -45,10 +45,9 @@ void FieldRepo::remake_level(
     const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::FieldRepo::remake_level")
-    std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>> fact(new amrex::FArrayBoxFactory());
-    std::unique_ptr<LevelDataHolder> ldata(new LevelDataHolder);
+    std::unique_ptr<LevelDataHolder> ldata(new LevelDataHolder());
 
-    allocate_field_data(ba, dm, *ldata, *fact);
+    allocate_field_data(ba, dm, *ldata, *(ldata->m_factory));
 
     for (auto& field: m_field_vec) {
         if (!field->fillpatch_on_regrid()) continue;
@@ -57,8 +56,6 @@ void FieldRepo::remake_level(
     }
 
     m_leveldata[lev] = std::move(ldata);
-    m_factory[lev] = std::move(fact);
-
     m_is_initialized = true;
 }
 
@@ -66,7 +63,6 @@ void FieldRepo::clear_level(int lev)
 {
     BL_PROFILE("amr-wind::FieldRepo::clear_level")
     m_leveldata[lev].reset();
-    m_factory[lev].reset();
 }
 
 Field& FieldRepo::declare_field(
@@ -166,7 +162,7 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
             m_mesh.boxArray(lev), field_impl::index_type(floc));
 
         field->m_data.emplace_back(
-            ba, m_mesh.DistributionMap(lev), ncomp, nghost, amrex::MFInfo(), *m_factory[lev]);
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost, amrex::MFInfo(), *(m_leveldata[lev]->m_factory));
     }
     return field;
 }
@@ -226,7 +222,7 @@ void FieldRepo::allocate_field_data(
 void FieldRepo::allocate_field_data(Field& field)
 {
     for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
-        allocate_field_data(lev, field, *m_leveldata[lev], *m_factory[lev]);
+        allocate_field_data(lev, field, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
     }
 }
 

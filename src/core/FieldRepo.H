@@ -18,7 +18,10 @@ namespace amr_wind {
  */
 struct LevelDataHolder
 {
+    LevelDataHolder();
+
     amrex::Vector<amrex::MultiFab> m_mfabs;
+    std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>> m_factory;
 };
 
 /** Field Repository
@@ -63,7 +66,6 @@ public:
     FieldRepo(const amrex::AmrCore& mesh)
         : m_mesh(mesh)
         , m_leveldata(mesh.maxLevel() + 1)
-        , m_factory(mesh.maxLevel() + 1)
     {}
 
     FieldRepo(const FieldRepo&) = delete;
@@ -233,7 +235,7 @@ public:
 
     //! Return factory instance at a given level
     inline const amrex::FabFactory<amrex::FArrayBox>&
-    factory(int lev) const noexcept { return *m_factory[lev]; }
+    factory(int lev) const noexcept { return *m_leveldata[lev]->m_factory; }
 
 protected:
     /** Return the amrex::MultiFab instance for a field at a given level
@@ -272,9 +274,6 @@ protected:
     //! Array (size: nlevels) of data holder that contains another array of
     //! MultiFabs for all fields at that level.
     amrex::Vector<std::unique_ptr<LevelDataHolder>> m_leveldata;
-
-    //! Array of Factory objects at all levels
-    amrex::Vector<std::unique_ptr<amrex::FabFactory<amrex::FArrayBox>>> m_factory;
 
     //! References to field instances identified by unique integer
     mutable amrex::Vector<std::unique_ptr<Field>> m_field_vec;
