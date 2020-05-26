@@ -21,12 +21,39 @@ FieldInfo::FieldInfo(
     , m_bcrec(ncomp)
     , m_bcrec_d(ncomp)
     , m_states(FieldInfo::max_field_states, nullptr)
-{}
+{
+    for (int i=0; i < AMREX_SPACEDIM*2; ++i)
+        m_bc_type[i] = BC::undefined;
+}
 
 FieldInfo::~FieldInfo() = default;
 
+bool FieldInfo::bc_initialized()
+{
+    bool has_undefined = false;
+    for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
+        if (m_bc_type[i] == BC::undefined)
+            has_undefined = true;
+    }
+
+    // Check that BC has been initialized properly
+    bool has_bogus = false;
+    for (int dir=0; dir < m_ncomp; ++dir) {
+        auto* bcrec = m_bcrec[dir].vect();
+        for (int i=0; i < AMREX_SPACEDIM*2; ++i) {
+            if (bcrec[i] == amrex::BCType::bogus) {
+                has_bogus = true;
+            }
+        }
+    }
+
+    return ((!has_undefined) && (!has_bogus));
+}
+
 void FieldInfo::copy_bc_to_device() noexcept
 {
+    if (!bc_initialized()) amrex::Abort("Invalid BC type encountered");
+
     amrex::Vector<amrex::Real> h_data(m_ncomp * AMREX_SPACEDIM * 2);
 
     // Copy data to a flat array for transfer to device
@@ -52,6 +79,8 @@ void FieldInfo::copy_bc_to_device() noexcept
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, m_bcrec.begin(), m_bcrec.end(),
         m_bcrec_d.begin());
+
+    m_bc_copied_to_device = true;
 }
 
 Field::Field(
@@ -125,6 +154,7 @@ void Field::fillpatch(
 {
     BL_PROFILE("amr-wind::Field::fillpatch 2")
     BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
 
     fop.fillpatch(lev, time, mfab, nghost);
@@ -138,6 +168,7 @@ void Field::fillpatch_from_coarse(
 {
     BL_PROFILE("amr-wind::Field::fillpatch_from_coarse")
     BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
 
     fop.fillpatch_from_coarse(lev, time, mfab, nghost);
@@ -147,6 +178,7 @@ void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
 {
     BL_PROFILE("amr-wind::Field::fillpatch")
     BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
@@ -163,6 +195,7 @@ void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
 {
   BL_PROFILE("amr-wind::Field::fillphysbc")
   BL_ASSERT(m_info->m_fillpatch_op);
+  BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
   auto& fop = *(m_info->m_fillpatch_op);
   const int nlevels = m_repo.num_active_levels();
   for (int lev=0; lev < nlevels; ++lev) {
@@ -177,6 +210,7 @@ void Field::fillphysbc(amrex::Real time) noexcept
 
 void Field::apply_bc_funcs(const FieldState rho_state) noexcept
 {
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     for (auto& func: m_info->m_bc_func)
         (*func)(*this, rho_state);
 }

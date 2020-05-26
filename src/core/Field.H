@@ -35,6 +35,8 @@ struct FieldInfo
 
     ~FieldInfo();
 
+    bool bc_initialized();
+
     //! Copy the BC information to device data structures
     void copy_bc_to_device() noexcept;
 
@@ -72,6 +74,8 @@ struct FieldInfo
 
     //! Custom boundary condition actions for this field
     amrex::Vector<std::unique_ptr<FieldBCIface>> m_bc_func;
+
+    bool m_bc_copied_to_device{false};
 };
 
 /** Computational field
@@ -171,10 +175,10 @@ public:
     //! Return reference to host view of BCRec array
     amrex::Vector<amrex::BCRec>& bcrec() { return m_info->m_bcrec; }
 
-    amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM*2>& bc_values_device()
+    const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM*2>& bc_values_device() const
     { return m_info->m_bc_values_d; }
 
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device()
+    const amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device() const
     { return m_info->m_bcrec_d; }
 
     //! Copy BC data from host to device
