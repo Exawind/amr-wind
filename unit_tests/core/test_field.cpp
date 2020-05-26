@@ -298,4 +298,27 @@ TEST_F(FieldRepoTest, scratch_fields)
     }
 }
 
+TEST_F(FieldRepoTest, int_fields)
+{
+    initialize_mesh();
+
+    auto& frepo = mesh().field_repo();
+    auto& ibcell = frepo.declare_int_field("iblank_cell", 1, 0, 1);
+    auto& ibnode = frepo.declare_int_field(
+        "iblank_node", 1, 0, 1, amr_wind::FieldLoc::NODE);
+
+    const int nlevels = frepo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        ibcell(lev).setVal(1);
+        ibnode(lev).setVal(0);
+    }
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        EXPECT_EQ(ibcell(lev).max(0), 1);
+        EXPECT_EQ(ibcell(lev).min(0), 1);
+        EXPECT_EQ(ibnode(lev).max(0), 0);
+        EXPECT_EQ(ibnode(lev).min(0), 0);
+    }
+}
+
 }
