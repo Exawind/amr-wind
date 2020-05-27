@@ -7,6 +7,7 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"
+#include "AMReX_ParallelDescriptor.H"
 
 namespace amr_wind {
 
@@ -24,6 +25,8 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     if (pp.contains("log_law_height")) {
         m_use_fch = false;
         pp.get("log_law_height", m_log_law_height);
+    } else {
+      m_use_fch = true;
     }
 }
 
@@ -93,6 +96,7 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     }
     m_utau = m_kappa * utils::vec_mag(m_umean.data()) / (
         std::log(m_log_law_height / m_z0));
+    amrex::Print() << "Print fch utau" << m_utau <<std::endl;
 
   } else{
     ComputePlanar();
@@ -151,7 +155,9 @@ void ABLWallFunction::ComputePlanar()
 
   }
 
-  // ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(), line_average.size());
+  amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
+  
+  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(), numCells*3*sizeof(amrex::Real));
 
   std::fill(m_umean.begin(), m_umean.end(), 0.0);
   m_mean_windSpeed = 0.0;
@@ -160,18 +166,18 @@ void ABLWallFunction::ComputePlanar()
       m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                        m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
                        m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
-                       m_mean_windSpeed += std::sqrt(m_umean[0]*m_umean[0] +
-                                                     m_umean[1]*m_umean[1]);
+                       m_mean_windSpeed += std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*
+                                                     m_store_xy_vel_arr(i, j, k, 0) +
+                                                     m_store_xy_vel_arr(i, j, k, 1)*
+                                                     m_store_xy_vel_arr(i, j, k, 1));
                    });
-  amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
+
   m_umean[0] = m_umean[0]/numCells;
   m_umean[1] = m_umean[1]/numCells;
   m_mean_windSpeed = m_mean_windSpeed/numCells;
 
-  amrex::Print() << "Wind speed \t" << m_umean[0] << "\t"
-                 <<m_umean[1] << "\t" << numCells << std::endl;
+  amrex::Print() << "Wind speed \t" << m_mean_windSpeed << "\t" << numCells << std::endl;
   
-
 }
 
 
