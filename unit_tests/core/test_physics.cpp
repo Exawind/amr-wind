@@ -22,7 +22,7 @@ public:
     void post_advance_work() override {}
 };
 
-TEST_F(PhysicsTest, physics_iterface)
+TEST_F(PhysicsTest, physics_interface)
 {
     initialize_mesh();
     auto& phy_mgr = sim().physics_manager();
@@ -55,6 +55,20 @@ TEST_F(PhysicsTest, physics_init_inputs)
         const auto& pex = phy_mgr.get<PhysicsEx>();
         EXPECT_NE(&pex, nullptr);
     }
+}
+
+TEST_F(PhysicsTest, physics_test_duplicates)
+{
+    initialize_mesh();
+    auto& phy_mgr = sim().physics_manager();
+
+    EXPECT_FALSE(phy_mgr.contains(PhysicsEx::identifier()));
+    auto& pex1 = phy_mgr.create("PhysicsEx", sim());
+    auto& pex2 = phy_mgr.create("PhysicsEx", sim());
+    EXPECT_EQ(phy_mgr.objects().size(), 1u);
+    EXPECT_TRUE(phy_mgr.contains(PhysicsEx::identifier()));
+
+    EXPECT_EQ(&pex1, &pex2);
 }
 
 }

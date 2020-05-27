@@ -13,7 +13,7 @@ namespace amr_wind {
  *  Provides boiler-plate code to register a collection and then query using
  *  lookup keywords
  */
-template<typename Collection, typename Type>
+template<typename Collection, typename Type, bool allow_duplicates=false>
 class CollMgr
 {
 public:
@@ -32,6 +32,10 @@ public:
     template<class ... Args>
     Type& create(const std::string& key, Args&& ... args)
     {
+        if (!allow_duplicates && contains(key)) {
+            return operator()(key);
+        }
+
         m_obj_vec.emplace_back(
             Type::create(key, std::forward<Args>(args)...));
         m_obj_map[key] = m_obj_vec.size() - 1;
