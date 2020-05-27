@@ -99,6 +99,9 @@ void SimTime::set_current_cfl(amrex::Real cfl_unit_time)
                 << "deltaT (max. CFL) = " << dt_new
                 << " fixed_dt = " << m_fixed_dt << std::endl;
         }
+        // Ensure that we use user-specified dt. Checkpoint restart might have
+        // overridden this
+        m_dt[0] = m_fixed_dt;
     }
 
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
