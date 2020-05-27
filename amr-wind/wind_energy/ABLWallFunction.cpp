@@ -64,8 +64,6 @@ void ABLWallFunction::init_log_law_height()
 
       m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
 
-      // amrex::Print() << "Print box" << m_bx_z_sample <<std::endl;
-      
     }
 }
 
@@ -96,9 +94,7 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     }
     m_utau = m_kappa * utils::vec_mag(m_umean.data()) / (
         std::log(m_log_law_height / m_z0));
-    amrex::Print() << "Print fch utau" << m_utau <<std::endl;
-
-  } else{
+  }else{
     ComputePlanar();
     m_utau = m_kappa * m_mean_windSpeed/
         (std::log(m_log_law_height/m_z0));
@@ -148,16 +144,20 @@ void ABLWallFunction::ComputePlanar()
 
     amrex::ParallelFor(
           z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                         m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0) + m_coeff_interp[1]*vel(i, j, k, 0);
-                         m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1) + m_coeff_interp[1]*vel(i, j, k, 1);
-                         m_store_xy_vel_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2) + m_coeff_interp[1]*vel(i, j, k, 2);
+                         m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0)
+                             + m_coeff_interp[1]*vel(i, j, k, 0);
+                         m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1)
+                             + m_coeff_interp[1]*vel(i, j, k, 1);
+                         m_store_xy_vel_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2)
+                             + m_coeff_interp[1]*vel(i, j, k, 2);
               });
 
   }
 
   amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
   
-  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(), numCells*3*sizeof(amrex::Real));
+  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(),
+                                           numCells*3*sizeof(amrex::Real));
 
   std::fill(m_umean.begin(), m_umean.end(), 0.0);
   m_mean_windSpeed = 0.0;
@@ -176,7 +176,6 @@ void ABLWallFunction::ComputePlanar()
   m_umean[1] = m_umean[1]/numCells;
   m_mean_windSpeed = m_mean_windSpeed/numCells;
 
-  amrex::Print() << "Wind speed \t" << m_mean_windSpeed << "\t" << numCells << std::endl;
   
 }
 
