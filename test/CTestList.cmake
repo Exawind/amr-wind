@@ -119,16 +119,16 @@ add_test_u(unit_tests 1)
 #=============================================================================
 # Regression tests
 #=============================================================================
-add_test_r(tgv_mol 4)
-add_test_r(tgv_godunov 4)
-add_test_r(boussinesq_bubble_mol 4)
-add_test_r(boussinesq_bubble_godunov 4)
-add_test_r(abl_mol 4)
 add_test_r(abl_godunov 4)
+add_test_r(boussinesq_bubble_godunov 4)
+add_test_r(tgv_godunov 4)
+add_test_r(abl_mol 4)
 
 #=============================================================================
 # Regression tests excluded from CI
 #=============================================================================
+add_test_re(tgv_mol 4)
+add_test_re(boussinesq_bubble_mol 4)
 add_test_re(rayleigh_taylor_godunov 4)
 add_test_re(rayleigh_taylor_mol 4)
 add_test_re(abl_godunov_plm 4)
