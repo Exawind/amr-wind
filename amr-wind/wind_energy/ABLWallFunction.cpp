@@ -54,10 +54,14 @@ void ABLWallFunction::init_log_law_height()
       amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
       amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
 
-      amrex::Box m_bx_z_sample(lo, hi);
-      amrex::FArrayBox m_store_xy_vel(m_bx_z_sample, AMREX_SPACEDIM);
+      m_bx_z_sample.setSmall(lo);
+      m_bx_z_sample.setBig(hi);
 
-      // amrex::Print() << "Cells in x" << m_ncells_x << "  Cells in y" << m_ncells_y <<std::endl;
+      m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
+
+      // amrex::Print() << "Cells in x" << m_ncells_x << "  Cells in y" << m_ncells_y << m_z_sample_index <<std::endl;
+
+      // amrex::Print() << "Print box" << m_bx_z_sample <<std::endl;
       
     }
 }
@@ -130,16 +134,22 @@ void ABLWallFunction::ComputePlanar(const CFDSim& sim)
     const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
     const amrex::Box z_sample_bx(lo, hi);
 
+    // amrex::Print() << z_sample_bx << std::endl ;
+
+    // amrex::Print() <<"Fab array box" << m_bx_z_sample << std::endl ;
+
     amrex::ParallelFor(
           z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                          m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0) + m_coeff_interp[1]*vel(i, j, k, 0);
                          m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1) + m_coeff_interp[1]*vel(i, j, k, 1);
                          m_store_xy_vel_arr(i, j, k, 2) = std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*m_store_xy_vel_arr(i, j, k, 0) + m_store_xy_vel_arr(i, j, k, 1)*m_store_xy_vel_arr(i, j, k, 1));
+                         
 
               });
 
-
   }
+
+  // ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(), line_average.size());
 
 }
 

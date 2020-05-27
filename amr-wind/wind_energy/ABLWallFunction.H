@@ -66,7 +66,6 @@ private:
 
     // Field& m_tau_wall;
 
-
 };
 
 /** Applies a shear-stress value at the domain boundary
