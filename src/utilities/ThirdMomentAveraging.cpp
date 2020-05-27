@@ -1,6 +1,6 @@
 #include "ThirdMomentAveraging.H"
 
-using namespace amr_wind;
+namespace amr_wind {
 
 void ThirdMomentAveraging::output_line_average_ascii(
     std::string filename, int step, amrex::Real time)
@@ -91,15 +91,6 @@ ThirdMomentAveraging::ThirdMomentAveraging(
         m_plane_average1.ncell_line() == m_plane_average2.ncell_line());
     AMREX_ALWAYS_ASSERT(
         m_plane_average1.ncell_line() == m_plane_average3.ncell_line());
-
-    // this could be relaxed if we wanted one plane to be at a different time
-    // step than another plane
-    AMREX_ALWAYS_ASSERT(
-        m_plane_average1.last_updated_index() ==
-        m_plane_average2.last_updated_index());
-    AMREX_ALWAYS_ASSERT(
-        m_plane_average1.last_updated_index() ==
-        m_plane_average3.last_updated_index());
 
     m_num_moments = m_plane_average1.ncomp() * m_plane_average2.ncomp() *
                     m_plane_average3.ncomp();
@@ -284,4 +275,6 @@ amrex::Real ThirdMomentAveraging::line_average_cell(
         m_plane_average2.ncomp() * comp2 + comp3;
 
     return line_average_cell(ind, comp);
+}
+
 }

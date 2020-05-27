@@ -2,11 +2,10 @@
 #include <algorithm>
 #include "incflo.H"
 
-using namespace amrex;
-using namespace amr_wind;
+namespace amr_wind {
 
 void FieldPlaneAveraging::output_line_average_ascii(
-    std::string filename, int step, Real time)
+    std::string filename, int step, amrex::Real time)
 {
     BL_PROFILE("amr-wind::FieldPlaneAveraging::output_line_average_ascii");
 
@@ -14,7 +13,7 @@ void FieldPlaneAveraging::output_line_average_ascii(
         operator()();
     }
 
-    if (!ParallelDescriptor::IOProcessor()) return;
+    if (!amrex::ParallelDescriptor::IOProcessor()) return;
 
     std::ofstream outfile;
     outfile.precision(m_precision);
@@ -44,24 +43,24 @@ void FieldPlaneAveraging::output_line_average_ascii(
     }
 }
 
-void FieldPlaneAveraging::output_line_average_ascii(int step, Real time)
+void FieldPlaneAveraging::output_line_average_ascii(int step, amrex::Real time)
 {
     std::string filename = "plane_average_" + m_field.name() + ".txt";
     output_line_average_ascii(filename, step, time);
 }
 
-Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
+amrex::Real FieldPlaneAveraging::line_average_interpolated(amrex::Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
 
-    Real c = 0.0;
+    amrex::Real c = 0.0;
     int ind = 0;
 
     if (x > m_xlo + 0.5 * m_dx) {
         ind = floor((x - m_xlo) / m_dx - 0.5);
-        const Real x1 = m_xlo + (ind + 0.5) * m_dx;
+        const amrex::Real x1 = m_xlo + (ind + 0.5) * m_dx;
         c = (x - x1) / m_dx;
     }
 
@@ -76,7 +75,7 @@ Real FieldPlaneAveraging::line_average_interpolated(Real x, int comp) const
            m_line_average[m_ncomp * (ind + 1) + comp] * c;
 }
 
-Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
+amrex::Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell");
 
@@ -86,21 +85,29 @@ Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
     return m_line_average[m_ncomp * ind + comp];
 }
 
-Real FieldPlaneAveraging::line_derivative_of_average_cell(int ind, int comp) const
+amrex::Real FieldPlaneAveraging::line_derivative_of_average_cell(
+    int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_derivative_of_average_cell");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
     AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
 
-    Real dudx;
+    amrex::Real dudx;
 
-    if(ind == 0)
-        dudx = (m_line_average[m_ncomp * (ind+1) + comp] - m_line_average[m_ncomp * ind + comp])/m_dx;
-    else if(ind == m_ncell_line - 1)
-        dudx = (m_line_average[m_ncomp * (ind) + comp] - m_line_average[m_ncomp * (ind-1) + comp])/m_dx;
+    if (ind == 0)
+        dudx = (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * ind + comp]) /
+               m_dx;
+    else if (ind == m_ncell_line - 1)
+        dudx = (m_line_average[m_ncomp * (ind) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
     else
-        dudx = 0.5*(m_line_average[m_ncomp * (ind+1) + comp] - m_line_average[m_ncomp * (ind-1) + comp])/m_dx;
+        dudx = 0.5 *
+               (m_line_average[m_ncomp * (ind + 1) + comp] -
+                m_line_average[m_ncomp * (ind - 1) + comp]) /
+               m_dx;
 
     return dudx;
 }
@@ -121,9 +128,9 @@ FieldPlaneAveraging::FieldPlaneAveraging(
 
     m_ncomp = m_field.num_comp();
 
-    const Box& domain = geom[m_level].Domain();
-    const IntVect dom_lo(domain.loVect());
-    const IntVect dom_hi(domain.hiVect());
+    const amrex::Box& domain = geom[m_level].Domain();
+    const amrex::IntVect dom_lo(domain.loVect());
+    const amrex::IntVect dom_hi(domain.hiVect());
 
     m_ncell_line = dom_hi[m_axis] - dom_lo[m_axis] + 1;
 
@@ -171,18 +178,18 @@ void FieldPlaneAveraging::compute_averages(
 {
     BL_PROFILE("amr-wind::PlaneAveraging::compute_averages");
 
-    const Real denom = 1.0 / (Real)m_ncell_plane;
+    const amrex::Real denom = 1.0 / (amrex::Real)m_ncell_plane;
 
-    AsyncArray<Real> lavg(m_line_average.data(), m_line_average.size());
+    amrex::AsyncArray<amrex::Real> lavg(m_line_average.data(), m_line_average.size());
 
-    Real* line_avg = lavg.data();
+    amrex::Real* line_avg = lavg.data();
     const int ncomp = m_ncomp;
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(mfab, TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-        Box bx = mfi.tilebox();
+    for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi) {
+        amrex::Box bx = mfi.tilebox();
 
         auto fab_arr = mfab.const_array(mfi);
 
@@ -190,12 +197,18 @@ void FieldPlaneAveraging::compute_averages(
             bx, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 const int ind = idxOp(i, j, k);
-                HostDevice::Atomic::Add(
-                    &line_avg[ncomp * ind + n], fab_arr(i, j, k, n) * denom);
+                amrex::HostDevice::Atomic::Add(
+                    &line_avg[ncomp * ind + n], fab_arr(i, j, k, n)*denom);
             });
     }
 
     lavg.copyToHost(m_line_average.data(), m_line_average.size());
-    ParallelDescriptor::ReduceRealSum(
+    amrex::ParallelDescriptor::ReduceRealSum(
         m_line_average.data(), m_line_average.size());
+
+    // fixme later remove denom above and replace with this
+//    std::for_each(m_line_average.begin(), m_line_average.end(), [denom](amrex::Real &el){el *= denom; });
+
+}
+
 }

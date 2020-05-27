@@ -1,6 +1,6 @@
 #include "SecondMomentAveraging.H"
 
-using namespace amr_wind;
+namespace amr_wind {
 
 void SecondMomentAveraging::output_line_average_ascii(
     std::string filename, int step, amrex::Real time)
@@ -77,12 +77,6 @@ SecondMomentAveraging::SecondMomentAveraging(
         m_plane_average1.ncell_plane() == m_plane_average2.ncell_plane());
     AMREX_ALWAYS_ASSERT(
         m_plane_average1.ncell_line() == m_plane_average2.ncell_line());
-
-    // this could be relaxed if we wanted one plane to be at a different time
-    // step than another plane
-    AMREX_ALWAYS_ASSERT(
-        m_plane_average1.last_updated_index() ==
-        m_plane_average2.last_updated_index());
 
     m_num_moments = m_plane_average1.ncomp() * m_plane_average2.ncomp();
 
@@ -246,4 +240,6 @@ SecondMomentAveraging::line_average_cell(int ind, int comp1, int comp2) const
 
     const int comp = m_plane_average1.ncomp() * comp1 + comp2;
     return line_average_cell(ind, comp);
+}
+
 }
