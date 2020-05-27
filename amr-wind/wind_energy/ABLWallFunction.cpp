@@ -11,7 +11,8 @@
 namespace amr_wind {
 
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
-    : m_mesh(sim.mesh())
+    : m_sim(sim)
+    , m_mesh(sim.mesh())
 {
     amrex::ParmParse pp("ABL");
 
@@ -39,11 +40,12 @@ void ABLWallFunction::init_log_law_height()
       const auto dhi = amrex::ubound(domain);
 
       const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
-      m_z_sample_index = dlo.z + std::round((m_log_law_height - geom[m_mesh.finestLevel()].ProbLo(2))/dz);
+      m_z_sample_index = dlo.z + std::round((m_log_law_height -
+                                             geom[m_mesh.finestLevel()].ProbLo(2))/dz);
 
       // assuming Z is wall normal direction
-      int m_ncells_x = dhi.x-dlo.x+1;
-      int m_ncells_y = dhi.y-dlo.y+1;
+      m_ncells_x = dhi.x-dlo.x+1;
+      m_ncells_y = dhi.y-dlo.y+1;
 
       amrex::Real zcellN = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index-1)*dz;
       amrex::Real zcellP = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index)*dz;
@@ -59,8 +61,6 @@ void ABLWallFunction::init_log_law_height()
 
       m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
 
-      // amrex::Print() << "Cells in x" << m_ncells_x << "  Cells in y" << m_ncells_y << m_z_sample_index <<std::endl;
-
       // amrex::Print() << "Print box" << m_bx_z_sample <<std::endl;
       
     }
@@ -68,6 +68,8 @@ void ABLWallFunction::init_log_law_height()
 
 void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
 {
+
+  if (m_use_fch) {
     m_umean[m_direction] = 0.0;
     switch (m_direction) {
     case 0:
@@ -89,17 +91,23 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
         amrex::Abort("Invalid direction specified");
         break;
     }
-
     m_utau = m_kappa * utils::vec_mag(m_umean.data()) / (
         std::log(m_log_law_height / m_z0));
+
+  } else{
+    ComputePlanar();
+    m_utau = m_kappa * m_mean_windSpeed/
+        (std::log(m_log_law_height/m_z0));
+  }
+  
 }
 
 
-void ABLWallFunction::ComputePlanar(const CFDSim& sim)
+void ABLWallFunction::ComputePlanar()
 {
 
   amrex::MFItInfo mfi_info{};
-  const auto& frepo = sim.repo();
+  const auto& frepo = m_sim.repo();
   const int nlevels = m_mesh.finestLevel();
 
   auto geom = m_mesh.Geom();
@@ -134,22 +142,35 @@ void ABLWallFunction::ComputePlanar(const CFDSim& sim)
     const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
     const amrex::Box z_sample_bx(lo, hi);
 
-    // amrex::Print() << z_sample_bx << std::endl ;
-
-    // amrex::Print() <<"Fab array box" << m_bx_z_sample << std::endl ;
-
     amrex::ParallelFor(
           z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                          m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0) + m_coeff_interp[1]*vel(i, j, k, 0);
                          m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1) + m_coeff_interp[1]*vel(i, j, k, 1);
-                         m_store_xy_vel_arr(i, j, k, 2) = std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*m_store_xy_vel_arr(i, j, k, 0) + m_store_xy_vel_arr(i, j, k, 1)*m_store_xy_vel_arr(i, j, k, 1));
-                         
-
+                         m_store_xy_vel_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2) + m_coeff_interp[1]*vel(i, j, k, 2);
               });
 
   }
 
   // ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(), line_average.size());
+
+  std::fill(m_umean.begin(), m_umean.end(), 0.0);
+  m_mean_windSpeed = 0.0;
+
+  amrex::ParallelFor(
+      m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                       m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
+                       m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
+                       m_mean_windSpeed += std::sqrt(m_umean[0]*m_umean[0] +
+                                                     m_umean[1]*m_umean[1]);
+                   });
+  amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
+  m_umean[0] = m_umean[0]/numCells;
+  m_umean[1] = m_umean[1]/numCells;
+  m_mean_windSpeed = m_mean_windSpeed/numCells;
+
+  amrex::Print() << "Wind speed \t" << m_umean[0] << "\t"
+                 <<m_umean[1] << "\t" << numCells << std::endl;
+  
 
 }
 
