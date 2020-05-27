@@ -110,27 +110,31 @@ void ABL::pre_advance_work()
             PlaneAveraging pa(2);
             pa(m_sim.mesh().Geom(), m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature->vec_ptrs());
             pa.plot_line(time.time_index(), time.current_time(), plot_type);
+
+
+            // new way
+            m_pa.output_line_average_ascii(time.time_index(), time.current_time());
+
+            SecondMomentAveraging uu(m_pa, m_pa);
+            uu.output_line_average_ascii(time.time_index(), time.current_time());
+
+            ThirdMomentAveraging uuu(m_pa, m_pa, m_pa);
+            uuu.output_line_average_ascii(time.time_index(), time.current_time());
+
+            if(m_temperature != nullptr){
+                int dir = 2;
+                FieldPlaneAveraging pa_temp(*m_temperature, m_sim.time(), dir);
+                pa_temp.line_derivative_of_average_cell(2,0);
+                pa_temp.output_line_average_ascii(time.time_index(), time.current_time());
+
+                SecondMomentAveraging tu(pa_temp,m_pa);
+                tu.output_line_average_ascii(time.time_index(), time.current_time());
+            }
+
+            FieldPlaneAveraging pa_mueff(m_mueff, m_sim.time(), 2);
+            pa_mueff.output_line_average_ascii(time.time_index(), time.current_time());
         }
 
-        // new way
-        m_pa.output_line_average_ascii(time.time_index(), time.current_time());
-
-        SecondMomentAveraging uu(m_pa, m_pa);
-        uu.output_line_average_ascii(time.time_index(), time.current_time());
-
-        ThirdMomentAveraging uuu(m_pa, m_pa, m_pa);
-        uuu.output_line_average_ascii(time.time_index(), time.current_time());
-
-        if(m_temperature != nullptr){
-            FieldPlaneAveraging pa_temp(*m_temperature, m_sim.time(), 2);
-            pa_temp.output_line_average_ascii(time.time_index(), time.current_time());
-
-            SecondMomentAveraging tu(pa_temp,m_pa);
-            tu.output_line_average_ascii(time.time_index(), time.current_time());
-        }
-
-        FieldPlaneAveraging pa_mueff(m_mueff, m_sim.time(), 2);
-        pa_mueff.output_line_average_ascii(time.time_index(), time.current_time());
     }
 }
 
