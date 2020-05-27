@@ -58,7 +58,20 @@ public:
 };
 
 class PhysicsMgr : public CollMgr<PhysicsMgr, Physics>
-{};
+{
+public:
+    template<typename T>
+    T& get()
+    {
+        return dynamic_cast<T&>(operator()(T::identifier()));
+    }
+
+    template<typename T>
+    const T& get() const
+    {
+        return dynamic_cast<const T&>(operator()(T::identifier()));
+    }
+};
 
 }
 
