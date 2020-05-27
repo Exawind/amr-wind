@@ -100,7 +100,7 @@ void incflo::Evolve()
     BL_PROFILE("amr-wind::incflo::Evolve()")
 
     if (m_KE_int > 0 && m_sim.io_manager().restart_file().empty()) {
-        amrex::Print() << "\nTime, Kinetic Energy: " << m_time.current_time()
+        amrex::Print() << "\nTime, Kinetic Energy: " << m_time.new_time()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
 
@@ -141,7 +141,7 @@ void incflo::Evolve()
 
         if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
         {
-            amrex::Print() << "Time, Kinetic Energy: " << m_time.current_time()
+            amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time()
                            << ", " << ComputeKineticEnergy() << std::endl;
         }
         amrex::Real time3 = amrex::ParallelDescriptor::second();
