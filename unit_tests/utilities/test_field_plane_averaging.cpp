@@ -55,6 +55,12 @@ TEST_F(FieldPlaneAveragingTest, test_constant)
         EXPECT_NEAR(u0, u, tol);
         EXPECT_NEAR(v0, v, tol);
         EXPECT_NEAR(w0, w, tol);
+
+        for(int i=0;i<8;++i){
+            EXPECT_NEAR(0.0, pa.line_derivative_of_average_cell(i, 0), tol);
+            EXPECT_NEAR(0.0, pa.line_derivative_of_average_cell(i, 1), tol);
+            EXPECT_NEAR(0.0, pa.line_derivative_of_average_cell(i, 2), tol);
+        }
     }
 
 }
@@ -159,6 +165,13 @@ TEST_F(FieldPlaneAveragingTest, test_linear)
             EXPECT_NEAR(u0[j]*(xtest+1.0), u[j], tol);
         }
     }
+
+    for(int i=0;i<8;++i){
+        EXPECT_NEAR(u0[0], pa.line_derivative_of_average_cell(i, 0), tol);
+        EXPECT_NEAR(u0[1], pa.line_derivative_of_average_cell(i, 1), tol);
+        EXPECT_NEAR(u0[2], pa.line_derivative_of_average_cell(i, 2), tol);
+    }
+
 
 }
 

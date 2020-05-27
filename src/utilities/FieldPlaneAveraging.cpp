@@ -81,9 +81,28 @@ Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
 
     return m_line_average[m_ncomp * ind + comp];
+}
+
+Real FieldPlaneAveraging::line_derivative_of_average_cell(int ind, int comp) const
+{
+    BL_PROFILE("amr-wind::PlaneAveraging::line_derivative_of_average_cell");
+
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
+    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
+
+    Real dudx;
+
+    if(ind == 0)
+        dudx = (m_line_average[m_ncomp * (ind+1) + comp] - m_line_average[m_ncomp * ind + comp])/m_dx;
+    else if(ind == m_ncell_line - 1)
+        dudx = (m_line_average[m_ncomp * (ind) + comp] - m_line_average[m_ncomp * (ind-1) + comp])/m_dx;
+    else
+        dudx = 0.5*(m_line_average[m_ncomp * (ind+1) + comp] - m_line_average[m_ncomp * (ind-1) + comp])/m_dx;
+
+    return dudx;
 }
 
 FieldPlaneAveraging::FieldPlaneAveraging(

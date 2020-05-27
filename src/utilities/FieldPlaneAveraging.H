@@ -23,6 +23,9 @@ public:
     /** evaluate line average at specific cell for any average component */
     amrex::Real line_average_cell(int cell, int comp) const;
 
+    /** evaluate derivative of a line average at specific cell for any component */
+    amrex::Real line_derivative_of_average_cell(int ind, int comp) const;
+
     void
     output_line_average_ascii(std::string filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);
