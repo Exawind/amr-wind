@@ -12,8 +12,6 @@ namespace icns {
 
 ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
 {
-    // const auto& abl = dynamic_cast<const amr_wind::ABL&>(
-    //     sim.physics_manager()(amr_wind::ABL::identifier()));
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_forcing_term(this);
 

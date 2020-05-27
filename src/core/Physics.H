@@ -60,15 +60,19 @@ public:
 class PhysicsMgr : public CollMgr<PhysicsMgr, Physics>
 {
 public:
+    //! Return a concrete physics instance
     template<typename T>
     T& get()
     {
+        AMREX_ASSERT(contains(T::identifier()));
         return dynamic_cast<T&>(operator()(T::identifier()));
     }
 
+    //! Return a concrete physics instance
     template<typename T>
     const T& get() const
     {
+        AMREX_ASSERT(contains(T::identifier()));
         return dynamic_cast<const T&>(operator()(T::identifier()));
     }
 };

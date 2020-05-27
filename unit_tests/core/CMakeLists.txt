@@ -3,4 +3,5 @@ target_sources(
 
   test_simtime.cpp
   test_field.cpp
+  test_physics.cpp
   )
