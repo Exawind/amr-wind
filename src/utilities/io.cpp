@@ -53,7 +53,7 @@ void incflo::ReadCheckpointFile()
     GotoNextLine(is);
 
     int nstep;
-    amrex::Real cur_time;
+    amrex::Real cur_time, dt_restart;
     // Step count
     is >> nstep;
     GotoNextLine(is);
@@ -65,7 +65,7 @@ void incflo::ReadCheckpointFile()
     m_time.set_restart_time(nstep, cur_time);
 
     // Time step size
-    is >> m_time.deltaT();
+    is >> dt_restart;
     GotoNextLine(is);
 
     is >> m_time.deltaTNm1();
