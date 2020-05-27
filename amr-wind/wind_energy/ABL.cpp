@@ -84,8 +84,6 @@ void ABL::post_init_actions()
     const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
     m_abl_wall_func.update_umean(vel_pa);
 
-    m_abl_wall_func.ComputePlanar(m_sim);
-
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
 

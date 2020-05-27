@@ -37,9 +37,12 @@ public:
     //! Update the mean velocity at a given timestep
     void update_umean(const FieldPlaneAveraging& pa);
 
-    void ComputePlanar(const CFDSim& sim);
+    void ComputePlanar();
 
 private:
+
+    const CFDSim& m_sim;
+  
     const amrex::AmrCore& m_mesh;
 
     //! Mean velocity
@@ -59,7 +62,7 @@ private:
 
     int m_ncells_x, m_ncells_y;
 
-    amrex::Real m_mean_wind, m_mean_x, m_mean_y;
+    amrex::Real m_mean_windSpeed;
 
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox  m_store_xy_vel;
