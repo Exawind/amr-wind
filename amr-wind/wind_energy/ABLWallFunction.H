@@ -39,6 +39,8 @@ public:
 
     void ComputePlanar();
 
+    void ComputeTauWall();
+
 private:
 
     const CFDSim& m_sim;
@@ -67,7 +69,7 @@ private:
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox  m_store_xy_vel;
 
-    // Field& m_tau_wall;
+    Field& m_tau_wall;
 
 };
 

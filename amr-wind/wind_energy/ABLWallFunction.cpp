@@ -14,6 +14,7 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_sim(sim)
     , m_mesh(sim.mesh())
+    , m_tau_wall(sim.repo().declare_field("tau_wall", 2, 1, 0))
 {
     amrex::ParmParse pp("ABL");
 
@@ -98,6 +99,7 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     ComputePlanar();
     m_utau = m_kappa * m_mean_windSpeed/
         (std::log(m_log_law_height/m_z0));
+    ComputeTauWall();
   }
   
 }
@@ -176,9 +178,50 @@ void ABLWallFunction::ComputePlanar()
   m_umean[1] = m_umean[1]/numCells;
   m_mean_windSpeed = m_mean_windSpeed/numCells;
 
-  
 }
 
+void ABLWallFunction::ComputeTauWall() {
+
+  amrex::MFItInfo mfi_info{};
+  const auto& frepo = m_sim.repo();
+  const int nlevels = m_mesh.finestLevel();
+
+  auto& tau_wall = frepo.get_field("tau_wall", amr_wind::FieldState::New);
+  auto& density = frepo.get_field("density", amr_wind::FieldState::New);
+
+  auto m_store_xy_vel_arr = m_store_xy_vel.array();
+
+  amrex::Real uatu2 = m_utau*m_utau;
+
+  for (amrex::MFIter mfi(tau_wall(nlevels),mfi_info); mfi.isValid(); ++mfi) {
+    const auto& bx = mfi.validbox();
+
+    auto tau_w_arr = tau_wall(nlevels).array(mfi);
+    auto rho = density(nlevels).array(mfi);
+
+    amrex::ParallelFor(
+        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+              int kk = m_z_sample_index;
+              amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, kk , 0)*
+                                                    m_store_xy_vel_arr(i, j, kk, 0) +
+                                                    m_store_xy_vel_arr(i, j, kk, 1)*
+                                                    m_store_xy_vel_arr(i, j, kk, 1));
+              
+              tau_w_arr(i, j, k, 0) = rho(i,j,k)*uatu2*
+                  m_store_xy_vel_arr(i, j, kk, 0)*instWindSpeed/
+                  (std::abs(m_umean[0])*m_mean_windSpeed);
+
+              tau_w_arr(i, j, k, 1) = rho(i,j,k)*uatu2*
+                  m_store_xy_vel_arr(i, j, kk, 1)*instWindSpeed/
+                  (std::abs(m_umean[1])*m_mean_windSpeed);
+
+              });
+
+  }
+
+   tau_wall.fillpatch(m_sim.time().current_time());
+
+}
 
 ABLVelWallFunc::ABLVelWallFunc(
     Field&, const ABLWallFunction& wall_func)
