@@ -60,8 +60,8 @@ amrex::BoxArray realbox_to_boxarray(
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             amrex::Real bbox_min = amrex::max(rb.lo()[i], problo[i]);
             amrex::Real bbox_max = amrex::min(rb.hi()[i], probhi[i]);
-            amrex::Real rlo = std::floor((bbox_min - problo[i]) / dx[i]);
-            amrex::Real rhi = std::ceil((bbox_max - problo[i]) / dx[i]);
+            amrex::Real rlo = amrex::Math::floor((bbox_min - problo[i]) / dx[i]);
+            amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) / dx[i]);
             lo[i] = static_cast<int>(rlo);
             hi[i] = static_cast<int>(rhi);
         }
@@ -106,7 +106,7 @@ void CartBoxRefinement::read_inputs(const amrex::AmrCore& mesh, std::istream& if
 
     // Set the number of levels to the minimum of what is in the input file and
     // the simulation
-    m_nlevels = std::min(max_lev, nlev_in);
+    m_nlevels = amrex::min(max_lev, nlev_in);
 
     if (m_nlevels < 1) return;
 
