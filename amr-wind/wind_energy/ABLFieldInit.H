@@ -42,6 +42,12 @@ public:
     //! Flag indicating whether temperature field needs perturbations
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
+    //! Initialize TKE field
+    void init_tke(
+        const amrex::Box& vbx,
+        const amrex::Geometry& geom,
+        const amrex::Array4<amrex::Real>& tke) const;
+
 private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;

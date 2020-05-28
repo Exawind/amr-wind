@@ -74,7 +74,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
-    auto gradT = this->m_sim.repo().create_scratch_field(AMREX_SPACEDIM,0);
+    auto gradT = (this->m_sim.repo()).create_scratch_field(3,m_temperature.num_grow()[0]);
     compute_gradient(*gradT, m_temperature);
 
     auto& vel = this->m_vel.state(fstate);
