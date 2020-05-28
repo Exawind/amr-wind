@@ -106,7 +106,7 @@ void CartBoxRefinement::read_inputs(const amrex::AmrCore& mesh, std::istream& if
 
     // Set the number of levels to the minimum of what is in the input file and
     // the simulation
-    m_nlevels = std::min(max_lev, nlev_in);
+    m_nlevels = amrex::min(max_lev, nlev_in);
 
     if (m_nlevels < 1) return;
 

@@ -93,9 +93,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                 });
         }
 
-        conv_cfl = std::max(conv_cfl, conv_lev);
-        diff_cfl = std::max(diff_cfl, diff_lev);
-        force_cfl = std::max(force_cfl, force_lev);
+        conv_cfl = amrex::max(conv_cfl, conv_lev);
+        diff_cfl = amrex::max(diff_cfl, diff_lev);
+        force_cfl = amrex::max(force_cfl, force_lev);
     }
 
     ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());
