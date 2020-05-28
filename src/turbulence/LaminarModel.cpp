@@ -28,7 +28,7 @@ template <
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
 inline void laminar_visc_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
 {
-    field_ops::copy(evisc, lam.mu(), 0, 0, evisc.num_comp(), evisc.num_grow());
+    field_ops::copy(evisc, *lam.mu(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
 template <
@@ -45,7 +45,7 @@ template <
     typename std::enable_if<!Transport::constant_properties>::type* = nullptr>
 inline void laminar_alpha_update(Field& evisc, Laminar<Transport>& lam, const Transport&)
 {
-    field_ops::copy(evisc, lam.alpha(), 0, 0, evisc.num_comp(), evisc.num_grow());
+    field_ops::copy(evisc, *lam.alpha(), 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
 template <
@@ -65,7 +65,7 @@ inline void laminar_scal_diff_update(Field& evisc, Laminar<Transport>& lam, cons
                                      const std::string& name)
 {
     field_ops::copy(
-        evisc, lam.scalar_diffusivity(name), 0, 0, evisc.num_comp(),
+        evisc, *lam.scalar_diffusivity(name), 0, 0, evisc.num_comp(),
         evisc.num_grow());
 }
 

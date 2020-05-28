@@ -64,7 +64,7 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     auto lam_alpha = transport.alpha();
     field_ops::lincomb(
-        evisc, 1.0, lam_alpha, 0, 1.0 / transport.turbulent_prandtl(),
+        evisc, 1.0, *lam_alpha, 0, 1.0 / transport.turbulent_prandtl(),
         tvisc, 0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
@@ -77,7 +77,7 @@ inline void scal_diff_update(
     auto lam_mu = transport.mu();
     field_ops::lincomb(
         evisc, 1.0 / transport.laminar_schmidt(name), *lam_mu, 0,
-        1.0 / transport.turbulent_schmidt(), tvisc, 0, 0, evisc.num_comp(),
+        1.0 / transport.turbulent_schmidt(name), tvisc, 0, 0, evisc.num_comp(),
         evisc.num_grow());
 }
 
