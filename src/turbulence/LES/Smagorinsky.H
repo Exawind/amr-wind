@@ -31,6 +31,9 @@ private:
 
     const Field& m_vel;
     const Field& m_rho;
+
+    const amr_wind::SimTime& m_time;
+
 };
 
 } // namespace turbulence

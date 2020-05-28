@@ -11,7 +11,7 @@ void normalize_field(FType& Field)
     const int nlevels = repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(Field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(Field.num_grow());
+            const auto& bx = mfi.tilebox();
             const auto& field_arr = Field(lev).array(mfi);
 
             amrex::ParallelFor(
