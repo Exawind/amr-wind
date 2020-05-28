@@ -50,9 +50,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                 Real mx = -1.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     mx = amrex::max(
-                        std::abs(v(i, j, k, 0)) * dxinv[0],
-                        std::abs(v(i, j, k, 1)) * dxinv[1],
-                        std::abs(v(i, j, k, 2)) * dxinv[2], mx);
+                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0],
+                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1],
+                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2], mx);
                 });
                 return mx;
             });
@@ -85,9 +85,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         mx = amrex::max(
-                            std::abs(vf(i, j, k, 0)) * dxinv[0],
-                            std::abs(vf(i, j, k, 1)) * dxinv[1],
-                            std::abs(vf(i, j, k, 2)) * dxinv[2], mx);
+                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0],
+                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1],
+                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2], mx);
                     });
                     return mx;
                 });

@@ -65,12 +65,12 @@ void incflo::ErrorEst (int lev, TagBoxArray& tags, Real time, int ngrow)
                     tag(i,j,k) = tagval;
                 }
                 if (tag_gradrho) {
-                    Real ax = std::abs(rho(i+1,j,k) - rho(i,j,k));
-                    Real ay = std::abs(rho(i,j+1,k) - rho(i,j,k));
-                    Real az = std::abs(rho(i,j,k+1) - rho(i,j,k));
-                    ax = amrex::max(ax,std::abs(rho(i,j,k) - rho(i-1,j,k)));
-                    ay = amrex::max(ay,std::abs(rho(i,j,k) - rho(i,j-1,k)));
-                    az = amrex::max(az,std::abs(rho(i,j,k) - rho(i,j,k-1)));
+                    Real ax = amrex::Math::abs(rho(i+1,j,k) - rho(i,j,k));
+                    Real ay = amrex::Math::abs(rho(i,j+1,k) - rho(i,j,k));
+                    Real az = amrex::Math::abs(rho(i,j,k+1) - rho(i,j,k));
+                    ax = amrex::max(ax,amrex::Math::abs(rho(i,j,k) - rho(i-1,j,k)));
+                    ay = amrex::max(ay,amrex::Math::abs(rho(i,j,k) - rho(i,j-1,k)));
+                    az = amrex::max(az,amrex::Math::abs(rho(i,j,k) - rho(i,j,k-1)));
                     if (amrex::max(ax,ay,az) >= gradrhoerr) {
                         tag(i,j,k) = tagval;
                     }

@@ -19,7 +19,7 @@ void incflo::set_background_pressure ()
     // (1) incflo.delp in inputs
     int delp_dir = -1;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
-        if (std::abs(m_delp[dir]) > std::numeric_limits<Real>::epsilon()) {
+        if (amrex::Math::abs(m_delp[dir]) > std::numeric_limits<Real>::epsilon()) {
             //fixme
             amrex::Abort("m_gp0 is being filled with delp/L but not used in the gradp forcing need to fix this");
             if (delp_dir == -1) {
