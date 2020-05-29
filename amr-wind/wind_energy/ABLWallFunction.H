@@ -41,7 +41,9 @@ public:
 
     void ComputeTauWall();
 
-    const amrex::FArrayBox&  instplanar() const {return m_store_xy_vel[0];}
+    // const amrex::FArrayBox  instplanar() const {return m_store_xy_vel[0];}
+
+    const amrex::FArrayBox&  instplanar() const {return m_store_xy_vel;}
 
     amrex::Real meanwindspeed() const {return m_mean_windSpeed;}
 
@@ -69,13 +71,13 @@ private:
 
     amrex::Real m_mean_windSpeed;
 
-    amrex::Vector<amrex::Box> m_bx_z_sample;
-    amrex::Vector<amrex::FArrayBox>  m_store_xy_vel;
-    amrex::Vector<int> m_z_sample_index;
+    // amrex::Vector<amrex::Box> m_bx_z_sample;
+    // amrex::Vector<amrex::FArrayBox>  m_store_xy_vel;
+    // amrex::Vector<int> m_z_sample_index;
 
-    // amrex::Box m_bx_z_sample;
-    // amrex::FArrayBox  m_store_xy_vel;
-    // int m_z_sample_index;
+    amrex::Box m_bx_z_sample;
+    amrex::FArrayBox  m_store_xy_vel;
+    int m_z_sample_index;
 
     // Field& m_tau_wall;
 

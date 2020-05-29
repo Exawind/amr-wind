@@ -38,41 +38,36 @@ void ABLWallFunction::init_log_law_height()
         m_log_law_height = (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     } else {
 
-      int numActiveLevel = m_sim.repo().num_active_levels();
-
-      m_bx_z_sample.resize(numActiveLevel);
-      m_store_xy_vel.resize(numActiveLevel);
-      m_z_sample_index.resize(numActiveLevel);
+      // m_bx_z_sample.resize(numActiveLevel);
+      // m_store_xy_vel.resize(numActiveLevel);
+      // m_z_sample_index.resize(numActiveLevel);
       const auto& geom = m_mesh.Geom();
 
-      for (int lev = 0; lev < numActiveLevel; ++lev) {
-        amrex::Box const& domain = geom[lev].Domain();
+      amrex::Box const& domain = geom[m_mesh.finestLevel()].Domain();
         const auto dlo = amrex::lbound(domain);
         const auto dhi = amrex::ubound(domain);
 
-        const amrex::Real dz = geom[lev].CellSize(2);
-        m_z_sample_index[lev] = dlo.z + std::round((m_log_law_height -
-                                               geom[lev].ProbLo(2))/dz);
+        const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
+        m_z_sample_index = dlo.z + std::round((m_log_law_height -
+                                               geom[m_mesh.finestLevel()].ProbLo(2))/dz) + 1;
 
         // assuming Z is wall normal direction
         m_ncells_x = dhi.x-dlo.x+1;
         m_ncells_y = dhi.y-dlo.y+1;
 
-        amrex::Real zcellN = geom[lev].ProbLo(2) + (m_z_sample_index[lev]-1)*dz;
-        amrex::Real zcellP = geom[lev].ProbLo(2) + (m_z_sample_index[lev])*dz;
+        amrex::Real zcellN = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index-1)*dz;
+        amrex::Real zcellP = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index)*dz;
 
         m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
         m_coeff_interp[1] = (m_log_law_height-zcellN)/dz;
 
-        amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index[lev]));
-        amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index[lev]));
+        amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
+        amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
 
-        m_bx_z_sample[lev].setSmall(lo);
-        m_bx_z_sample[lev].setBig(hi);
+        m_bx_z_sample.setSmall(lo);
+        m_bx_z_sample.setBig(hi);
 
-        m_store_xy_vel[lev].resize(m_bx_z_sample[lev], AMREX_SPACEDIM);
-
-      }
+        m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
 
     }
     
@@ -131,9 +126,9 @@ void ABLWallFunction::ComputePlanar()
   
   auto& velf = frepo.get_field("velocity", amr_wind::FieldState::New);
 
-  m_store_xy_vel[0].setVal(0.0);
+  m_store_xy_vel.setVal(0.0);
 
-  auto m_store_xy_vel_arr = m_store_xy_vel[0].array();
+  auto m_store_xy_vel_arr = m_store_xy_vel.array();
 
   for (amrex::MFIter mfi(velf(nlevels),mfi_info); mfi.isValid(); ++mfi) {
     const auto& bx = mfi.validbox();
@@ -150,8 +145,8 @@ void ABLWallFunction::ComputePlanar()
 
     auto vel = velf(nlevels).array(mfi);
 
-    const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index[0]);
-    const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index[0]);
+    const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index);
+    const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
     const amrex::Box z_sample_bx(lo, hi);
 
     amrex::ParallelFor(
@@ -168,14 +163,14 @@ void ABLWallFunction::ComputePlanar()
 
   amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
   
-  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_arr.dataPtr(),
-                                           numCells*3*sizeof(amrex::Real));
+  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel.dataPtr(),
+                                           m_ncells_x*m_ncells_y*3);
 
   std::fill(m_umean.begin(), m_umean.end(), 0.0);
   m_mean_windSpeed = 0.0;
 
   amrex::ParallelFor(
-      m_bx_z_sample[0], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+      m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                           m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
                           m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
                           m_mean_windSpeed += std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*
