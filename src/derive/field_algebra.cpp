@@ -23,7 +23,7 @@ void normalize_field(FType& Field)
                 }
                 //Normalize field
                 for (int icomp=0;icomp<ncomp;++icomp){
-                    field_arr(i,j,k)=field_arr(i,j,k,icomp)/std::sqrt(mag);
+                    field_arr(i,j,k,icomp)=field_arr(i,j,k,icomp)/std::sqrt(mag);
                 }
 
                 });

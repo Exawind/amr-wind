@@ -99,7 +99,7 @@ public:
         auto& fields = this->m_sim.pde_manager().icns().fields();
         this->m_sim.io_manager().register_io_var(fields.mueff.name());
 
-        m_mu_turb.set_default_fillpatch_bc(sim.time());
+        m_mu_turb.set_default_fillpatch_bc(this->m_sim.time());
 
     }
 

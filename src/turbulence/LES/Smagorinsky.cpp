@@ -16,7 +16,6 @@ Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
     , m_rho(sim.repo().get_field("density"))
-    , m_time(sim.time())
 {
     const std::string coeffs_dict = this->model_name() + "_coeffs";
     amrex::ParmParse pp(coeffs_dict);
@@ -63,7 +62,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
         }
     }
 
-    mu_turb.fillpatch(m_time.current_time());
+    mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
 } // namespace turbulence
