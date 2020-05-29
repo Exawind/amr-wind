@@ -14,7 +14,7 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_sim(sim)
     , m_mesh(sim.mesh())
-    , m_tau_wall(sim.repo().declare_field("tau_wall", 2, 1, 0))
+    // , m_tau_wall(sim.repo().declare_field("tau_wall", 2, 1, 0))
 {
     amrex::ParmParse pp("ABL");
 
@@ -38,34 +38,44 @@ void ABLWallFunction::init_log_law_height()
         m_log_law_height = (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     } else {
 
+      int numActiveLevel = m_sim.repo().num_active_levels();
+
+      m_bx_z_sample.resize(numActiveLevel);
+      m_store_xy_vel.resize(numActiveLevel);
+      m_z_sample_index.resize(numActiveLevel);
       const auto& geom = m_mesh.Geom();
-      amrex::Box const& domain = geom[m_mesh.finestLevel()].Domain();
-      const auto dlo = amrex::lbound(domain);
-      const auto dhi = amrex::ubound(domain);
 
-      const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
-      m_z_sample_index = dlo.z + std::round((m_log_law_height -
-                                             geom[m_mesh.finestLevel()].ProbLo(2))/dz);
+      for (int lev = 0; lev < numActiveLevel; ++lev) {
+        amrex::Box const& domain = geom[lev].Domain();
+        const auto dlo = amrex::lbound(domain);
+        const auto dhi = amrex::ubound(domain);
 
-      // assuming Z is wall normal direction
-      m_ncells_x = dhi.x-dlo.x+1;
-      m_ncells_y = dhi.y-dlo.y+1;
+        const amrex::Real dz = geom[lev].CellSize(2);
+        m_z_sample_index[lev] = dlo.z + std::round((m_log_law_height -
+                                               geom[lev].ProbLo(2))/dz);
 
-      amrex::Real zcellN = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index-1)*dz;
-      amrex::Real zcellP = geom[m_mesh.finestLevel()].ProbLo(2) + (m_z_sample_index)*dz;
+        // assuming Z is wall normal direction
+        m_ncells_x = dhi.x-dlo.x+1;
+        m_ncells_y = dhi.y-dlo.y+1;
 
-      m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
-      m_coeff_interp[1] = (m_log_law_height-zcellN)/dz;
+        amrex::Real zcellN = geom[lev].ProbLo(2) + (m_z_sample_index[lev]-1)*dz;
+        amrex::Real zcellP = geom[lev].ProbLo(2) + (m_z_sample_index[lev])*dz;
 
-      amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
-      amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
+        m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
+        m_coeff_interp[1] = (m_log_law_height-zcellN)/dz;
 
-      m_bx_z_sample.setSmall(lo);
-      m_bx_z_sample.setBig(hi);
+        amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index[lev]));
+        amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index[lev]));
 
-      m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
+        m_bx_z_sample[lev].setSmall(lo);
+        m_bx_z_sample[lev].setBig(hi);
+
+        m_store_xy_vel[lev].resize(m_bx_z_sample[lev], AMREX_SPACEDIM);
+
+      }
 
     }
+    
 }
 
 void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
@@ -99,7 +109,7 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     ComputePlanar();
     m_utau = m_kappa * m_mean_windSpeed/
         (std::log(m_log_law_height/m_z0));
-    ComputeTauWall();
+    // ComputeTauWall();
   }
   
 }
@@ -121,9 +131,9 @@ void ABLWallFunction::ComputePlanar()
   
   auto& velf = frepo.get_field("velocity", amr_wind::FieldState::New);
 
-  m_store_xy_vel.setVal(0.0);
+  m_store_xy_vel[0].setVal(0.0);
 
-  auto m_store_xy_vel_arr = m_store_xy_vel.array();
+  auto m_store_xy_vel_arr = m_store_xy_vel[0].array();
 
   for (amrex::MFIter mfi(velf(nlevels),mfi_info); mfi.isValid(); ++mfi) {
     const auto& bx = mfi.validbox();
@@ -140,8 +150,8 @@ void ABLWallFunction::ComputePlanar()
 
     auto vel = velf(nlevels).array(mfi);
 
-    const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index);
-    const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
+    const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index[0]);
+    const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index[0]);
     const amrex::Box z_sample_bx(lo, hi);
 
     amrex::ParallelFor(
@@ -165,13 +175,13 @@ void ABLWallFunction::ComputePlanar()
   m_mean_windSpeed = 0.0;
 
   amrex::ParallelFor(
-      m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                       m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
-                       m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
-                       m_mean_windSpeed += std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*
-                                                     m_store_xy_vel_arr(i, j, k, 0) +
-                                                     m_store_xy_vel_arr(i, j, k, 1)*
-                                                     m_store_xy_vel_arr(i, j, k, 1));
+      m_bx_z_sample[0], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                          m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
+                          m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
+                          m_mean_windSpeed += std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*
+                                                        m_store_xy_vel_arr(i, j, k, 0) +
+                                                        m_store_xy_vel_arr(i, j, k, 1)*
+                                                        m_store_xy_vel_arr(i, j, k, 1));
                    });
 
   m_umean[0] = m_umean[0]/numCells;
@@ -180,48 +190,48 @@ void ABLWallFunction::ComputePlanar()
 
 }
 
-void ABLWallFunction::ComputeTauWall() {
+// void ABLWallFunction::ComputeTauWall() {
 
-  amrex::MFItInfo mfi_info{};
-  const auto& frepo = m_sim.repo();
-  const int nlevels = m_mesh.finestLevel();
+//   amrex::MFItInfo mfi_info{};
+//   const auto& frepo = m_sim.repo();
+//   const int nlevels = m_mesh.finestLevel();
 
-  auto& tau_wall = frepo.get_field("tau_wall", amr_wind::FieldState::New);
-  auto& density = frepo.get_field("density", amr_wind::FieldState::New);
+//   auto& tau_wall = frepo.get_field("tau_wall", amr_wind::FieldState::New);
+//   auto& density = frepo.get_field("density", amr_wind::FieldState::New);
 
-  auto m_store_xy_vel_arr = m_store_xy_vel.array();
+//   auto m_store_xy_vel_arr = m_store_xy_vel.array();
 
-  amrex::Real uatu2 = m_utau*m_utau;
+//   amrex::Real uatu2 = m_utau*m_utau;
 
-  for (amrex::MFIter mfi(tau_wall(nlevels),mfi_info); mfi.isValid(); ++mfi) {
-    const auto& bx = mfi.validbox();
+//   for (amrex::MFIter mfi(tau_wall(nlevels),mfi_info); mfi.isValid(); ++mfi) {
+//     const auto& bx = mfi.validbox();
 
-    auto tau_w_arr = tau_wall(nlevels).array(mfi);
-    auto rho = density(nlevels).array(mfi);
+//     auto tau_w_arr = tau_wall(nlevels).array(mfi);
+//     auto rho = density(nlevels).array(mfi);
 
-    amrex::ParallelFor(
-        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-              int kk = m_z_sample_index;
-              amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, kk , 0)*
-                                                    m_store_xy_vel_arr(i, j, kk, 0) +
-                                                    m_store_xy_vel_arr(i, j, kk, 1)*
-                                                    m_store_xy_vel_arr(i, j, kk, 1));
+//     amrex::ParallelFor(
+//         bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+//               int kk = m_z_sample_index;
+//               amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, kk , 0)*
+//                                                     m_store_xy_vel_arr(i, j, kk, 0) +
+//                                                     m_store_xy_vel_arr(i, j, kk, 1)*
+//                                                     m_store_xy_vel_arr(i, j, kk, 1));
               
-              tau_w_arr(i, j, k, 0) = rho(i,j,k)*uatu2*
-                  m_store_xy_vel_arr(i, j, kk, 0)*instWindSpeed/
-                  (std::abs(m_umean[0])*m_mean_windSpeed);
+//               tau_w_arr(i, j, k, 0) = rho(i,j,k)*uatu2*
+//                   m_store_xy_vel_arr(i, j, kk, 0)*instWindSpeed/
+//                   (std::abs(m_umean[0])*m_mean_windSpeed);
 
-              tau_w_arr(i, j, k, 1) = rho(i,j,k)*uatu2*
-                  m_store_xy_vel_arr(i, j, kk, 1)*instWindSpeed/
-                  (std::abs(m_umean[1])*m_mean_windSpeed);
+//               tau_w_arr(i, j, k, 1) = rho(i,j,k)*uatu2*
+//                   m_store_xy_vel_arr(i, j, kk, 1)*instWindSpeed/
+//                   (std::abs(m_umean[1])*m_mean_windSpeed);
 
-              });
+//               });
 
-  }
+//   }
 
-   tau_wall.fillpatch(m_sim.time().current_time());
+//    tau_wall.fillpatch(m_sim.time().current_time());
 
-}
+// }
 
 ABLVelWallFunc::ABLVelWallFunc(
     Field&, const ABLWallFunction& wall_func)
@@ -232,7 +242,8 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
     diffusion::wall_model_bc(
         velocity, m_wall_func.utau(), utils::vec_mag(m_wall_func.umean().data()),
-        rho_state);
+        rho_state, m_wall_func.instplanar(), m_wall_func.umean(),
+        m_wall_func.meanwindspeed());
 }
 
 } // namespace amr_wind

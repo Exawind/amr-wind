@@ -10,7 +10,10 @@ void wall_model_bc(
     amr_wind::Field& velocity,
     const amrex::Real utau,
     const amrex::Real umag,
-    const amr_wind::FieldState fstate);
+    const amr_wind::FieldState fstate,
+    const amrex::FArrayBox& instplanar,
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& umean,
+    const amrex::Real windspeed);
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
 get_diffuse_tensor_bc(

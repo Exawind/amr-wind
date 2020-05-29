@@ -128,7 +128,10 @@ void wall_model_bc(
     amr_wind::Field& velocity,
     const amrex::Real utau,
     const amrex::Real umag,
-    const amr_wind::FieldState fstate)
+    const amr_wind::FieldState fstate,
+    const amrex::FArrayBox& inst_plane_vel,
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& velmean,
+    const amrex::Real mean_wind)
 {
     BL_PROFILE("amr-wind::diffusion::wall_model_bc");
     auto& repo = velocity.repo();
@@ -142,6 +145,12 @@ void wall_model_bc(
     amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
     amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    auto m_store_xy_vel_arr = inst_plane_vel.array();
+    const auto& bxPlanar = inst_plane_vel.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+    const auto planarhi = amrex::ubound(bxPlanar);
 
     // copies cell center to face
     Real c0 = 1.0;
@@ -252,10 +261,24 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
-                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
+                            // bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
+                            // bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
+
+
+                            amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, planarlo.z, 0)*
+                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 0) +
+                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 1)*
+                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 1));
+
+                            bc(i, j, k - 1, 0) = den(i, j, k)*utau2*
+                                m_store_xy_vel_arr(i, j, planarlo.z, 0)*instWindSpeed/
+                                (std::abs(velmean[0])*mean_wind*mu);
+                            bc(i, j, k - 1, 1) = den(i, j, k)*utau2*
+                                m_store_xy_vel_arr(i, j, planarlo.z, 1)*instWindSpeed/
+                                (std::abs(velmean[1])*mean_wind*mu);
+
                         });
                 }
 
