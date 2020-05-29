@@ -25,7 +25,7 @@ void compute_curvature(FType& curvf, const Field& field)
         const amrex::Real idz = 1.0 / dz;
 
         for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(field.num_grow());
+            const auto& bx = mfi.tilebox();
             const auto& curv_arr = curvf(lev).array(mfi);
             const auto& field_arr = field(lev).const_array(mfi);
 
@@ -46,7 +46,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxlo = amrex::Box(low, hi).grow({0, 1, 1});
+                    auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -62,7 +62,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxhi = amrex::Box(low, hi).grow({0, 1, 1});
+                    auto bxhi = amrex::Box(low, hi);
                     
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -81,7 +81,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxlo = amrex::Box(low, hi).grow({1, 0, 1});
+                    auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -97,7 +97,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxhi = amrex::Box(low, hi).grow({1, 0, 1});
+                    auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -116,7 +116,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxlo = amrex::Box(low, hi).grow({1, 1, 0});
+                    auto bxlo = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
                         bxlo, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -132,7 +132,7 @@ void compute_curvature(FType& curvf, const Field& field)
                     low.setVal(idim, sm);
                     hi.setVal(idim, sm);
 
-                    auto bxhi = amrex::Box(low, hi).grow({1, 1, 0});
+                    auto bxhi = amrex::Box(low, hi);
 
                     amrex::ParallelFor(
                         bxhi, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

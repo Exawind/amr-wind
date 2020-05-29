@@ -20,6 +20,7 @@ public:
     amrex::FArrayBox vectorgrad_;
     amrex::FArrayBox vectorlaplace_;
     amrex::FArrayBox curvature_;
+    amrex::FArrayBox strainrate_;
 };
 
 class LinearAnalyticalFunctions

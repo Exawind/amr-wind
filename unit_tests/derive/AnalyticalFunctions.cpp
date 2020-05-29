@@ -7,7 +7,7 @@ AnalyticalFunctions::AnalyticalFunctions(
     amrex::Box bx)
     : ncells_(n),
       dx_(0.1),
-      dy_(0.2 + 0.01*amrex::Random()),
+      dy_(0.2),
       dz_(0.3),
       scalar_(bx,1),
       scalargrad_(bx,AMREX_SPACEDIM),
@@ -15,7 +15,9 @@ AnalyticalFunctions::AnalyticalFunctions(
       vector_(bx,AMREX_SPACEDIM),
       vectorgrad_(bx,AMREX_SPACEDIM*AMREX_SPACEDIM),
       vectorlaplace_(bx,AMREX_SPACEDIM),
-      curvature_(bx,1)
+      curvature_(bx,1),
+      strainrate_(bx,1)
+
 {
     // Coordinates - First and last are on the boundary faces
     x_.resize(ncells_+2);
@@ -47,6 +49,7 @@ LinearAnalyticalFunctions::LinearAnalyticalFunctions(
     auto vec = vector_.array();
     auto gradvec = vectorgrad_.array();
     auto laplacevec = vectorlaplace_.array();
+    auto strainrate = strainrate_.array();
     for(int i = 0; i <= ncells_+1; ++i){
         for(int j = 0; j <= ncells_+1; ++j){
             for(int k = 0; k <= ncells_+1; ++k){
@@ -74,6 +77,12 @@ LinearAnalyticalFunctions::LinearAnalyticalFunctions(
                 laplacevec(i,j,k,0) = 0.; 
                 laplacevec(i,j,k,1) = 0.; 
                 laplacevec(i,j,k,2) = 0.;
+                strainrate(i,j,k) = std::sqrt(  2.0 * gradvec(i,j,k,0)*gradvec(i,j,k,0)
+                                              + 2.0 * gradvec(i,j,k,4)*gradvec(i,j,k,4)
+                                              + 2.0 * gradvec(i,j,k,8)*gradvec(i,j,k,8)
+                                              + (gradvec(i,j,k,1)+gradvec(i,j,k,3))*(gradvec(i,j,k,1)+gradvec(i,j,k,3))
+                                              + (gradvec(i,j,k,5)+gradvec(i,j,k,7))*(gradvec(i,j,k,5)+gradvec(i,j,k,7))
+                                              + (gradvec(i,j,k,6)+gradvec(i,j,k,2))*(gradvec(i,j,k,6)+gradvec(i,j,k,2)));
             }
         }
     }
@@ -92,6 +101,7 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
     auto vec = vector_.array();
     auto gradvec = vectorgrad_.array();
     auto laplacevec = vectorlaplace_.array();
+    auto strainrate = strainrate_.array();
     for(int i = 0; i <= ncells_+1; ++i){
         for(int j = 0; j <= ncells_+1; ++j){
             for(int k = 0; k <= ncells_+1; ++k){
@@ -127,6 +137,13 @@ QuadraticAnalyticalFunctions::QuadraticAnalyticalFunctions(
                 laplacevec(i,j,k,0)=9.4;
                 laplacevec(i,j,k,1)=-11.606;
                 laplacevec(i,j,k,2)=-0.0339998631644585;
+
+                strainrate(i,j,k) = std::sqrt(  2.0 * gradvec(i,j,k,0)*gradvec(i,j,k,0)
+                                              + 2.0 * gradvec(i,j,k,4)*gradvec(i,j,k,4)
+                                              + 2.0 * gradvec(i,j,k,8)*gradvec(i,j,k,8)
+                                              + (gradvec(i,j,k,1)+gradvec(i,j,k,3))*(gradvec(i,j,k,1)+gradvec(i,j,k,3))
+                                              + (gradvec(i,j,k,5)+gradvec(i,j,k,7))*(gradvec(i,j,k,5)+gradvec(i,j,k,7))
+                                              + (gradvec(i,j,k,6)+gradvec(i,j,k,2))*(gradvec(i,j,k,6)+gradvec(i,j,k,2)));
 
             }
         }

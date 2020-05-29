@@ -50,7 +50,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
         const amrex::Real smag_factor = Cs_sqr * ds_sqr;
 
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(mu_turb.num_grow());
+            const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
 
@@ -61,6 +61,8 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
                 });
         }
     }
+
+    mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
 } // namespace turbulence

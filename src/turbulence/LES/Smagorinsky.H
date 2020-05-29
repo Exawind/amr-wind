@@ -31,6 +31,7 @@ private:
 
     const Field& m_vel;
     const Field& m_rho;
+
 };
 
 } // namespace turbulence
