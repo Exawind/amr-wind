@@ -51,7 +51,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 u(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (upls + umns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     u(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     u(i,j,k) = umns;
@@ -78,7 +78,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 u(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (upls + umns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     u(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     u(i,j,k) = umns;
@@ -110,7 +110,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 v(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (vpls + vmns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     v(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     v(i,j,k) = vmns;
@@ -137,7 +137,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 v(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (vpls + vmns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     v(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     v(i,j,k) = vmns;
@@ -169,7 +169,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 w(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (wpls + wmns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     w(i,j,k) = 0.0;
                 } else if (avg > 0.0) {
                     w(i,j,k) = wmns;
@@ -196,7 +196,7 @@ void mol::predict_vels_on_faces (int lev, Box const& ubx, Box const& vbx, Box co
                 w(i,j,k) = 0.0;
             } else {
                 Real avg = 0.5 * (wpls + wmns);
-                if (std::abs(avg) < small_vel) {
+                if (amrex::Math::abs(avg) < small_vel) {
                     w(i,j,k) = 0.0;
             } else if (avg > 0.0) {
                     w(i,j,k) = wmns;

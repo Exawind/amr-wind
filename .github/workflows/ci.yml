@@ -43,7 +43,7 @@ jobs:
             install_deps: sudo apt-get install mpich libmpich-dev
             comp: gnu
           - build_type: RelWithDebInfo
-            ctest_args: -LE no-ci
+            ctest_args: -LE no_ci
           - build_type: Debug
             ctest_args: -L unit
         exclude:

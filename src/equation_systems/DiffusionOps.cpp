@@ -12,7 +12,7 @@ DiffSolverIface<LinOp>::DiffSolverIface(
     PDEFields& fields, const std::string& prefix)
     : m_pdefields(fields)
     , m_density(fields.repo.get_field("density"))
-    , m_options(prefix)
+    , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
 {
     amrex::LPInfo isolve;
     amrex::LPInfo iapply;

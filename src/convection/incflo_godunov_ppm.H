@@ -19,7 +19,7 @@ amrex::Real vanLeer(const amrex::Real a, const amrex::Real b, const amrex::Real 
     amrex::Real dsl = 2.e0*(a - c);
     amrex::Real dsr = 2.e0*(b - a);
     return (dsl*dsr > small_qty_sq) ? 
-        std::copysign(1., dsc)*amrex::min(std::abs(dsc),amrex::min(std::abs(dsl), std::abs(dsr))) : 0.;
+        amrex::Math::copysign(1., dsc)*amrex::min(amrex::Math::abs(dsc),amrex::min(amrex::Math::abs(dsl), amrex::Math::abs(dsr))) : 0.;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
@@ -59,9 +59,9 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
                 sp = s(domlo+1,j,k,n);
                 sm = s(domlo+1,j,k,n);
             }
-            else if(std::abs(sp - s(domlo+1,j,k,n)) >= 2.*std::abs(sm - s(domlo+1,j,k,n)))
+            else if(amrex::Math::abs(sp - s(domlo+1,j,k,n)) >= 2.*amrex::Math::abs(sm - s(domlo+1,j,k,n)))
                 sp = 3.*s(domlo+1,j,k,n) - 2.*sm;
-            else if(std::abs(sm - s(domlo+1,j,k,n)) >= 2.*std::abs(sp - s(domlo+1,j,k,n)))
+            else if(amrex::Math::abs(sm - s(domlo+1,j,k,n)) >= 2.*amrex::Math::abs(sp - s(domlo+1,j,k,n)))
                 sm = 3.*s(domlo+1,j,k,n) - 2.*sp;
         }
     }
@@ -93,9 +93,9 @@ void Godunov_ppm_xbc(const int i, const int j, const int k, const int n,
                 sp = s(domhi-1,j,k,n);
                 sm = s(domhi-1,j,k,n);
             }
-            else if(std::abs(sp - s(domhi-1,j,k,n)) >= 2.*std::abs(sm - s(domhi-1,j,k,n)))
+            else if(amrex::Math::abs(sp - s(domhi-1,j,k,n)) >= 2.*amrex::Math::abs(sm - s(domhi-1,j,k,n)))
                 sp = 3.*s(domhi-1,j,k,n) - 2.*sm;
-            else if(std::abs(sm - s(domhi-1,j,k,n)) >= 2.*std::abs(sp - s(domhi-1,j,k,n)))
+            else if(amrex::Math::abs(sm - s(domhi-1,j,k,n)) >= 2.*amrex::Math::abs(sp - s(domhi-1,j,k,n)))
                 sm = 3.*s(domhi-1,j,k,n) - 2.*sp;
         }
     }
@@ -138,9 +138,9 @@ void Godunov_ppm_ybc(const int i, const int j, const int k, const int n,
                 sp = s(i,domlo+1,k,n);
                 sm = s(i,domlo+1,k,n);
             }
-            else if(std::abs(sp - s(i,domlo+1,k,n)) >= 2.*std::abs(sm - s(i,domlo+1,k,n)))
+            else if(amrex::Math::abs(sp - s(i,domlo+1,k,n)) >= 2.*amrex::Math::abs(sm - s(i,domlo+1,k,n)))
                 sp = 3.*s(i,domlo+1,k,n) - 2.*sm;
-            else if(std::abs(sm - s(i,domlo+1,k,n)) >= 2.*std::abs(sp - s(i,domlo+1,k,n)))
+            else if(amrex::Math::abs(sm - s(i,domlo+1,k,n)) >= 2.*amrex::Math::abs(sp - s(i,domlo+1,k,n)))
                 sm = 3.*s(i,domlo+1,k,n) - 2.*sp;
         }
     }
@@ -171,10 +171,10 @@ void Godunov_ppm_ybc(const int i, const int j, const int k, const int n,
                 sp = s(i,domhi-1,k,n);
                 sm = s(i,domhi-1,k,n);
             }
-            else if(std::abs(sp - s(i,domhi-1,k,n)) >= 2.*std::abs(sm - s(i,domhi-1,k,n))) 
+            else if(amrex::Math::abs(sp - s(i,domhi-1,k,n)) >= 2.*amrex::Math::abs(sm - s(i,domhi-1,k,n))) 
                 sp = 3.*s(i,domhi-1,k,n) - 2.*sm;
 
-            else if(std::abs(sm - s(i,domhi-1,k,n)) >= 2.*std::abs(sp - s(i,domhi-1,k,n))) 
+            else if(amrex::Math::abs(sm - s(i,domhi-1,k,n)) >= 2.*amrex::Math::abs(sp - s(i,domhi-1,k,n))) 
                 sm = 3.*s(i,domhi-1,k,n) - 2.*sp;
         }
     }
@@ -218,10 +218,10 @@ void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
                 sp = s(i,j,domlo+1,n);
                 sm = s(i,j,domlo+1,n);
             }
-            else if(std::abs(sp - s(i,j,domlo+1,n)) >= 2.*std::abs(sm - s(i,j,domlo+1,n))) 
+            else if(amrex::Math::abs(sp - s(i,j,domlo+1,n)) >= 2.*amrex::Math::abs(sm - s(i,j,domlo+1,n))) 
                 sp = 3.*s(i,j,domlo+1,n) - 2.*sm;
 
-            else if(std::abs(sm - s(i,j,domlo+1,n)) >= 2.*std::abs(sp - s(i,j,domlo+1,n)))
+            else if(amrex::Math::abs(sm - s(i,j,domlo+1,n)) >= 2.*amrex::Math::abs(sp - s(i,j,domlo+1,n)))
                 sm = 3.*s(i,j,domlo+1,n) - 2.*sp;
         }
     }
@@ -253,10 +253,10 @@ void Godunov_ppm_zbc(const int i, const int j, const int k, const int n,
                 sp = s(i,j,domhi-1,n);
                 sm = s(i,j,domhi-1,n);
             }
-            else if(std::abs(sp - s(i,j,domhi-1,n)) >= 2.*std::abs(sm - s(i,j,domhi-1,n)))
+            else if(amrex::Math::abs(sp - s(i,j,domhi-1,n)) >= 2.*amrex::Math::abs(sm - s(i,j,domhi-1,n)))
                 sp = 3.*s(i,j,domhi-1,n) - 2.*sm;
             
-            else if(std::abs(sm - s(i,j,domhi-1,n)) >= 2.*std::abs(sp - s(i,j,domhi-1,n))) 
+            else if(amrex::Math::abs(sm - s(i,j,domhi-1,n)) >= 2.*amrex::Math::abs(sp - s(i,j,domhi-1,n))) 
                 sm = 3.*s(i,j,domhi-1,n) - 2.*sp;
               
         }
@@ -307,17 +307,17 @@ void Godunov_ppm_pred_x(const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
 
-    } else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    } else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
         sp = 3.0*s0 - 2.0*sedge1;
 
-      else if (std::abs(sedge1-S(i,j,k,n)) >=  2.0*std::abs(sedge2-s0))
+      else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >=  2.0*amrex::Math::abs(sedge2-s0))
         sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_xbc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(0), bc.hi(0), domlo, domhi);
 
     amrex::Real s6 = 6.0*s0 - 3.0*(sm + sp);
 
-    amrex::Real sigma = std::abs(v_ad)*dtdx;
+    amrex::Real sigma = amrex::Math::abs(v_ad)*dtdx;
 
     if (v_ad > small_vel)
     {
@@ -376,17 +376,17 @@ void Godunov_ppm_pred_y(const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
 
-    } else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    } else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
         sp = 3.0*s0 - 2.0*sedge1;
 
-      else if (std::abs(sedge1-S(i,j,k,n)) >= 2.0*std::abs(sedge2-s0))
+      else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge2-s0))
         sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_ybc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo, domhi);
 
     amrex::Real s6 = 6.0*s0- 3.0*(sm + sp);
 
-    amrex::Real sigma = std::abs(v_ad)*dtdy;
+    amrex::Real sigma = amrex::Math::abs(v_ad)*dtdy;
 
     if (v_ad > small_vel)
     {
@@ -445,17 +445,17 @@ void Godunov_ppm_pred_z(const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
 
-    } else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    } else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
         sp = 3.0*s0 - 2.0*sedge1;
 
-      else if (std::abs(sedge1-S(i,j,k,n)) >= 2.0*std::abs(sedge2-s0))
+      else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge2-s0))
         sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_zbc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(2), bc.hi(2), domlo, domhi);
 
     amrex::Real s6 = 6.0*s0- 3.0*(sm + sp);
 
-    amrex::Real sigma = std::abs(v_ad)*dtdz;
+    amrex::Real sigma = amrex::Math::abs(v_ad)*dtdz;
 
     if (v_ad > small_vel)
     {
@@ -519,18 +519,18 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
     }
-    else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
       sp = 3.0*s0 - 2.0*sedge1;
 
-    else if (std::abs(sedge1-S(i,j,k,n)) >=  2.0*std::abs(sedge2-s0))
+    else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >=  2.0*amrex::Math::abs(sedge2-s0))
       sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_xbc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(0), bc.hi(0), domlo, domhi);
 
     Real s6 = 6.0*s0 - 3.0*(sm + sp);
 
-    Real sigmap = std::abs(vel_edge(i+1,j,k))*dt/dx;
-    Real sigmam = std::abs(vel_edge(i  ,j,k))*dt/dx;
+    Real sigmap = amrex::Math::abs(vel_edge(i+1,j,k))*dt/dx;
+    Real sigmam = amrex::Math::abs(vel_edge(i  ,j,k))*dt/dx;
 
     if (vel_edge(i+1,j,k) > small_vel) 
         Ip = sp - (0.5*sigmap)*((sp - sm) - (1.e0 -2.e0/3.e0*sigmap)*s6);
@@ -587,18 +587,18 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
     } 
-    else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
         sp = 3.0*s0 - 2.0*sedge1;
 
-    else if (std::abs(sedge1-S(i,j,k,n)) >= 2.0*std::abs(sedge2-s0))
+    else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge2-s0))
         sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_ybc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(1), bc.hi(1), domlo, domhi);
 
     amrex::Real s6 = 6.0*s0- 3.0*(sm + sp);
 
-    Real sigmap = std::abs(vel_edge(i,j+1,k))*dt/dx;
-    Real sigmam = std::abs(vel_edge(i,j  ,k))*dt/dx;
+    Real sigmap = amrex::Math::abs(vel_edge(i,j+1,k))*dt/dx;
+    Real sigmam = amrex::Math::abs(vel_edge(i,j  ,k))*dt/dx;
 
     if (vel_edge(i,j+1,k) > small_vel)
         Ip = sp - (0.5*sigmap)*((sp - sm) - (1.e0 -2.e0/3.e0*sigmap)*s6);
@@ -655,17 +655,17 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
         sp = s0;
         sm = s0;
     } 
-    else if (std::abs(sedge2-S(i,j,k,n)) >= 2.0*std::abs(sedge1-s0))
+    else if (amrex::Math::abs(sedge2-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge1-s0))
         sp = 3.0*s0 - 2.0*sedge1;
 
-    else if (std::abs(sedge1-S(i,j,k,n)) >= 2.0*std::abs(sedge2-s0))
+    else if (amrex::Math::abs(sedge1-S(i,j,k,n)) >= 2.0*amrex::Math::abs(sedge2-s0))
         sm = 3.0*s0 - 2.0*sedge2;
 
     Godunov_ppm_zbc(i, j, k, n, sm, sp, sedge1, sedge2, S, bc.lo(2), bc.hi(2), domlo, domhi);
 
     Real s6 = 6.0*s0- 3.0*(sm + sp);
-    Real sigmap = std::abs(vel_edge(i,j,k+1))*dt/dx;
-    Real sigmam = std::abs(vel_edge(i,j,k  ))*dt/dx;
+    Real sigmap = amrex::Math::abs(vel_edge(i,j,k+1))*dt/dx;
+    Real sigmam = amrex::Math::abs(vel_edge(i,j,k  ))*dt/dx;
 
     if(vel_edge(i,j,k+1) > small_vel)
         Ip = sp - (0.5*sigmap)*((sp-sm) - (1.e0 -2.e0/3.e0*sigmap)*s6);

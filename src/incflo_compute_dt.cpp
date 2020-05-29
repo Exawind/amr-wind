@@ -50,9 +50,9 @@ void incflo::ComputeDt(bool explicit_diffusion)
                 Real mx = -1.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     mx = amrex::max(
-                        std::abs(v(i, j, k, 0)) * dxinv[0],
-                        std::abs(v(i, j, k, 1)) * dxinv[1],
-                        std::abs(v(i, j, k, 2)) * dxinv[2], mx);
+                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0],
+                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1],
+                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2], mx);
                 });
                 return mx;
             });
@@ -85,17 +85,17 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         mx = amrex::max(
-                            std::abs(vf(i, j, k, 0)) * dxinv[0],
-                            std::abs(vf(i, j, k, 1)) * dxinv[1],
-                            std::abs(vf(i, j, k, 2)) * dxinv[2], mx);
+                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0],
+                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1],
+                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2], mx);
                     });
                     return mx;
                 });
         }
 
-        conv_cfl = std::max(conv_cfl, conv_lev);
-        diff_cfl = std::max(diff_cfl, diff_lev);
-        force_cfl = std::max(force_cfl, force_lev);
+        conv_cfl = amrex::max(conv_cfl, conv_lev);
+        diff_cfl = amrex::max(diff_cfl, diff_lev);
+        force_cfl = amrex::max(force_cfl, force_lev);
     }
 
     ParallelAllReduce::Max<Real>(conv_cfl, ParallelContext::CommunicatorSub());

@@ -51,14 +51,17 @@ amrex::BoxArray realbox_to_boxarray(
 {
     amrex::BoxList bx_list;
     const auto* problo = geom.ProbLo();
+    const auto* probhi = geom.ProbHi();
     const auto* dx = geom.CellSize();
 
     for (const auto& rb : rbx) {
         amrex::IntVect lo, hi;
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            amrex::Real rlo = std::floor((rb.lo()[i] - problo[i]) / dx[i]);
-            amrex::Real rhi = std::ceil((rb.hi()[i] - problo[i]) / dx[i]);
+            amrex::Real bbox_min = amrex::max(rb.lo()[i], problo[i]);
+            amrex::Real bbox_max = amrex::min(rb.hi()[i], probhi[i]);
+            amrex::Real rlo = amrex::Math::floor((bbox_min - problo[i]) / dx[i]);
+            amrex::Real rhi = amrex::Math::ceil((bbox_max - problo[i]) / dx[i]);
             lo[i] = static_cast<int>(rlo);
             hi[i] = static_cast<int>(rhi);
         }
@@ -94,9 +97,16 @@ void CartBoxRefinement::read_inputs(const amrex::AmrCore& mesh, std::istream& if
     ifh >> nlev_in;
     ifh.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
+    // Issue a warning if the max levels in the input file is less than what's
+    // requested in the refinement file.
+    if (max_lev < nlev_in)
+        amrex::Print() << "WARNING: AmrMesh::finestLevel() is less than the "
+                          "requested levels in static refinement file"
+                       << std::endl;
+
     // Set the number of levels to the minimum of what is in the input file and
     // the simulation
-    m_nlevels = std::min(max_lev, nlev_in);
+    m_nlevels = amrex::min(max_lev, nlev_in);
 
     if (m_nlevels < 1) return;
 
