@@ -41,6 +41,10 @@ public:
 
     void ComputeTauWall();
 
+    const amrex::FArrayBox&  instplanar() const {return m_store_xy_vel[0];}
+
+    amrex::Real meanwindspeed() const {return m_mean_windSpeed;}
+
 private:
 
     const CFDSim& m_sim;
@@ -59,17 +63,21 @@ private:
     int m_direction{2}; ///< Direction normal to wall
     bool m_use_fch{true}; ///< Use first cell height?
     int m_z_sample_index;
-
     amrex::Array<amrex::Real, 2> m_coeff_interp{{0.0, 0.0}};
 
     int m_ncells_x, m_ncells_y;
 
     amrex::Real m_mean_windSpeed;
 
-    amrex::Box m_bx_z_sample;
-    amrex::FArrayBox  m_store_xy_vel;
+    amrex::Vector<amrex::Box> m_bx_z_sample;
+    amrex::Vector<amrex::FArrayBox>  m_store_xy_vel;
+    amrex::Vector<int> m_z_sample_index;
 
-    Field& m_tau_wall;
+    // amrex::Box m_bx_z_sample;
+    // amrex::FArrayBox  m_store_xy_vel;
+    // int m_z_sample_index;
+
+    // Field& m_tau_wall;
 
 };
 
