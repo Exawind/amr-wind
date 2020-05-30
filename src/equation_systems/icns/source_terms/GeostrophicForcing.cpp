@@ -12,9 +12,8 @@ namespace icns {
 
 /** Geostrophic forcing term for ABL 
  *
- *  Parameters are read from the `GeostrophicWind`, `CorolisForcing`, and
- *  `incflo` namespace in the input file. The following parameters are
- *  available:
+ *  Parameters are read from the `GeostrophicWind` and `CorolisForcing`
+ *  namespace in the input file. The following parameters are available:
  *
  * - `rotational_time_period` Time period for planetary rotation (default: 86400
  *    seconds) in the CoriolisForcing namespace
@@ -22,10 +21,9 @@ namespace icns {
  * - `geostrophic_wind` Geostrophic wind above capping inversion in the
  *    GeostrophicForcing namespace
  *
- * - `density` Density in the incflo namespace
- *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim&)
+GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
+  : m_density(sim.repo().get_field("density"))
 {
     amrex::Real coriolis_factor;
     {
@@ -42,15 +40,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         pp.getarr("geostrophic_wind", m_target_vel);
     }
 
-    amrex::Real rho=1.0;
-    {
-        // Read the density
-        amrex::ParmParse pp("incflo");
-        pp.query("density", rho);
-    }
-    
-    m_g_forcing = {-rho* coriolis_factor * m_target_vel[1],
-                   rho * coriolis_factor * m_target_vel[0],
+    m_g_forcing = {-coriolis_factor * m_target_vel[1],
+                   coriolis_factor * m_target_vel[0],
                    0.0 };
 
 }
@@ -58,16 +49,18 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
 GeostrophicForcing::~GeostrophicForcing() = default;
 
 void GeostrophicForcing::operator()(
-    const int,
-    const amrex::MFIter&,
+    const int lev,
+    const amrex::MFIter& mfi,
     const amrex::Box& bx,
-    const FieldState,
+    const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
 
+    const auto& rho =
+        m_density.state(fstate)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        src_term(i, j, k, 0) += m_g_forcing[0];
-        src_term(i, j, k, 1) += m_g_forcing[1];
+        src_term(i, j, k, 0) += rho(i,j,k) * m_g_forcing[0];
+        src_term(i, j, k, 1) += rho(i,j,k) * m_g_forcing[1];
         // No forcing in z-direction
     });
 }

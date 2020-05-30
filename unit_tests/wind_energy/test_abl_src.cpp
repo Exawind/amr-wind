@@ -86,9 +86,12 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
+    sim().init_physics();
 
-    auto& src_term = pde_mgr.icns().fields().src_term;
-
+    auto& src_term = pde_mgr.icns().fields().src_term; 
+    auto& density = sim().repo().get_field("density");
+    density.setVal(1.0);
+    
     amr_wind::pde::icns::GeostrophicForcing geostrophic_forcing(sim());
     src_term.setVal(0.0);
     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
