@@ -49,7 +49,7 @@ public:
     {
         m_abl_forcing = forcing;
     }
-
+    
 private:
     const CFDSim& m_sim;
 
@@ -66,6 +66,7 @@ private:
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
+    
 };
 
 }
