@@ -526,8 +526,32 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** Boolean, optional, default = false
    
    Perturb temperature field with random fluctuations.
-   This feature is currently deactivated. 
-	
+
+.. input_param:: ABL.theta_amplitude
+
+   **type:** Real, optional, default = 0.8 K
+
+   Amplitude of the temperature perturbations added to the initial field. Only
+   active when :input_param:`ABL.perturb_temperature` is true.
+
+.. input_param:: ABL.cutoff_height
+
+   **type:** Real, optional, default = domain height
+
+   Height below which temperature perturbations are added
+
+.. input_param:: ABL.random_gauss_mean
+
+   **type:** Real, optional, default = 0.0
+
+   Mean for the Gaussian random number generator
+
+.. input_param:: ABL.random_gauss_var
+
+   **type:** Real, optional, default = 1.0
+
+   Variance for the Gaussian random number generator
+
 	
 Section: ``Momentum Sources``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

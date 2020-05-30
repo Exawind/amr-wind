@@ -41,6 +41,12 @@ void ABL::initialize_fields(
     auto& density = m_density(level);
     auto& temp = (*m_temperature)(level);
 
+    if (m_field_init->add_temperature_perturbations()) {
+        m_field_init->perturb_temperature(level, geom, *m_temperature);
+    } else {
+        temp.setVal(0.0);
+    }
+
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
