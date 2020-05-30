@@ -539,7 +539,7 @@ Section: ``Momentum Sources``
    Activates source terms for the incompressible Navier-Stokes momentum equations. 
    These strings can be entered in any order with a space between each. 
    Current existing source terms for ABL include "BoussinesqBuoyancy", "CoriolisForcing",
-   and "ABLForcing". 
+   "GeostrophicForcing" and "ABLForcing". 
    Other source terms include "MMSForcing" and "DensityBuoyancy".
    
 .. input_param:: BoussinesqBuoyancy.reference_temperature
@@ -583,7 +583,15 @@ Section: ``Momentum Sources``
    North vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
    This vector is automatically normalized within amr-wind.
 
-.. input_param:: ABLForcing.abl_forcing_height 
+.. input_param:: GeostrophicForcing.geostrophic_wind
+
+   **type:** List of 3 reals, optional
+
+   The user has to choose between GeostrophicForcing and ABLForcing. 
+   CoriolisForcing input must be present when using GeostrophicForcing.
+   These checks are not enforced for now.
+   
+.. input_param:: ABLForcing.abl_forcing_height
 
    **type:** Real, mandatory
    

@@ -26,6 +26,13 @@ void populate_abl_params()
         pp.add("abl_forcing_height", 90.0);
     }
 
+    // Geostrophic Forcing
+    {
+        amrex::ParmParse pp("GeostrophicForcing");
+        amrex::Vector<amrex::Real> gwind{{10.0, 6.0, 0.0}};
+        pp.addarr("geostrophic_wind", gwind);
+    }
+
     // Coriolis term
     {
         amrex::ParmParse pp("CoriolisForcing");
