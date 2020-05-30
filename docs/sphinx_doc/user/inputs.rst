@@ -635,6 +635,8 @@ Helmholtz like solve to advance the momentum equations,
 "nodal_proj" is a node based pressure projection, and "mac_proj" projects velocities to faces. 
 The options are the same for each and the prefix determines which MLMG option is being specified.
 Below the diffusion options are described but the same options apply to "nodal_proj" and "mac_proj".
+It is also possible to specify diffusion solver options for specific equations such as temperature, 
+to do that use "diffusion_temperature" as your prefix.
    
 .. input_param:: diffusion.mg_verbose
 
@@ -681,13 +683,13 @@ Below the diffusion options are described but the same options apply to "nodal_p
    
    Order of the one-sided stencil applied near physical boundaries and fine/coarse boundaries.
    
-.. input_param:: diffusion.mg_mg_rtol
+.. input_param:: diffusion.mg_rtol
 
    **type:** Real, optional, default = 1.0e-11
    
    Set the relative tolerance for the linear solver
    
-.. input_param:: diffusion.mg_mg_atol
+.. input_param:: diffusion.mg_atol
 
    **type:** Real, optional, default = 1.0e-14
    
