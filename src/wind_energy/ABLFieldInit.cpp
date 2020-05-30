@@ -25,6 +25,10 @@ ABLFieldInit::ABLFieldInit()
     pp.query("deltaV", m_deltaV);
 
     pp.query("perturb_temperature", m_perturb_theta);
+    pp.query("random_gauss_mean", m_theta_gauss_mean);
+    pp.query("random_gauss_var", m_theta_gauss_var);
+    pp.query("cutoff_height", m_theta_cutoff_height);
+    pp.query("theta_amplitude", m_deltaT);
 
     {
         // TODO: Modify this to accept velocity as a function of height
@@ -92,7 +96,7 @@ void ABLFieldInit::operator()(
             }
         }
 
-        temperature(i, j, k, 0) = theta;
+        temperature(i, j, k, 0) += theta;
 
         if (perturb_vel) {
             const amrex::Real xl = x - problo[0];
@@ -103,9 +107,45 @@ void ABLFieldInit::operator()(
             velocity(i, j, k, 0) += ufac * damp * z * std::cos(aval * yl);
             velocity(i, j, k, 1) += vfac * damp * z * std::cos(bval * xl);
         }
-
-        // TODO: Implement temperature perturbations
     });
+}
+
+void ABLFieldInit::perturb_temperature(
+    const int lev,
+    const amrex::Geometry& geom,
+    Field& temperature)
+{
+    /** Perturbations for the temperature field is adapted from the following paper:
+     *
+     *  D. Munoz-Esparza, B. Kosovic, J. van Beeck, J. D. Mirocha, A stocastic
+     *  perturbation method to generate inflow turbulence in large-eddy
+     *  simulation models: Application to neutrally stratified atmospheric
+     *  boundary layers. Physics of Fluids, Vol. 27, 2015.
+     *
+     */
+
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+    auto& theta_fab = temperature(lev);
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+    for (amrex::MFIter mfi(theta_fab, amrex::TilingIfNotGPU()); mfi.isValid();
+         ++mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& theta = theta_fab.array(mfi);
+
+        amrex::LoopOnCpu(bx, [&](int i, int j, int k) noexcept {
+            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+            if (z < m_theta_cutoff_height)
+                theta(i, j, k) =
+                    m_deltaT *
+                    amrex::RandomNormal(m_theta_gauss_mean, m_theta_gauss_var);
+        });
+    }
+    amrex::prefetchToDevice(theta_fab);
 }
 
 } // namespace amr_wind

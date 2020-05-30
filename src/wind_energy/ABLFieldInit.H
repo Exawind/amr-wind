@@ -1,6 +1,8 @@
 #ifndef ABLFIELDINIT_H
 #define ABLFIELDINIT_H
 
+#include "Field.H"
+
 #include "AMReX_Array.H"
 #include "AMReX_Array4.H"
 #include "AMReX_Box.H"
@@ -26,6 +28,19 @@ public:
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
         const amrex::Array4<amrex::Real>& tracer) const;
+
+    /** Add temperature perturbations
+     *
+     *  This uses amrex::Random and, therefore, executes the loop on CPU and
+     *  pushes the field to device.
+     */
+    void perturb_temperature(
+        const int lev,
+        const amrex::Geometry& geom,
+        Field& temperature);
+
+    //! Flag indicating whether temperature field needs perturbations
+    bool add_temperature_perturbations() const { return m_perturb_theta; }
 
 private:
     //! Initial velocity components
@@ -60,6 +75,18 @@ private:
 
     //! Reference height for velocity perturbations
     amrex::Real m_ref_height{50.0};
+
+    //! Amplitude of temperature perturbations
+    amrex::Real m_deltaT{0.8};
+
+    //! Mean for Gaussian number generator
+    amrex::Real m_theta_gauss_mean{0.0};
+
+    //! Variance for Gaussian number generator
+    amrex::Real m_theta_gauss_var{1.0};
+
+    //! Cutoff height for temperature fluctuations
+    amrex::Real m_theta_cutoff_height{1.0e16};
 
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
