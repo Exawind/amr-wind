@@ -92,7 +92,7 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 #Build amr-wind and link to amrex library
-add_subdirectory(src)
+add_subdirectory(amr-wind)
 
 if (AMR_WIND_ENABLE_CUDA)
   set(awtargets "${amr_wind_lib_name};${amr_wind_exe_name}")
