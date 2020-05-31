@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "PDEFields.H"
 #include "SimTime.H"
 #include "FieldRepo.H"
 #include "FieldFillPatchOps.H"
@@ -35,26 +36,6 @@ inline std::string mueff_name(const std::string& var) { return var + "_mueff"; }
 } // namespace pde_impl
 
 namespace pde {
-
-struct PDEFields
-{
-    PDEFields(FieldRepo& repo_in, const std::string& var_name)
-        : repo(repo_in)
-        , field(repo.get_field(var_name))
-        , mueff(repo.get_field(pde_impl::mueff_name(var_name)))
-        , src_term(repo.get_field(pde_impl::src_term_name(var_name)))
-        , diff_term(repo.get_field(pde_impl::diff_term_name(var_name)))
-        , conv_term(repo.get_field(pde_impl::conv_term_name(var_name)))
-    {}
-
-    FieldRepo& repo;
-    Field& field;
-    Field& mueff;
-
-    Field& src_term;
-    Field& diff_term;
-    Field& conv_term;
-};
 
 template<typename PDE, typename Scheme>
 PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
