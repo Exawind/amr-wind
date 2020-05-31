@@ -42,7 +42,9 @@ include(AMReXBuildInfo)
 # PRE_BUILD etc.
 add_library(amrwind_buildinfo)
 generate_buildinfo(amrwind_buildinfo ${CMAKE_SOURCE_DIR})
-target_include_directories(${amr_wind_lib_name} PUBLIC ${AMREX_SUBMOD_LOCATION}/Tools/C_scripts)
+target_include_directories(${amr_wind_lib_name} PRIVATE
+  ${AMREX_SUBMOD_LOCATION}/Tools/C_scripts)
 
-target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex amrwind_buildinfo)
+target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex)
+target_link_libraries(${amr_wind_lib_name} PRIVATE amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})

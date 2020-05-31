@@ -1,5 +1,4 @@
 #include "amr-wind/incflo.H"
-#include <AMReX_buildInfo.H>
 #include "amr-wind/utilities/console_io.H"
 
 void writeBuildInfo();
