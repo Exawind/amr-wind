@@ -1,6 +1,6 @@
-#include <incflo_convection_K.H>
-#include "Godunov.H"
-#include "bc_ops.H"
+#include "amr-wind/convection/incflo_convection_K.H"
+#include "amr-wind/convection/Godunov.H"
+#include "amr-wind/utilities/bc_ops.H"
 
 using namespace amrex;
 

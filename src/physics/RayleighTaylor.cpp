@@ -1,6 +1,6 @@
-#include "RayleighTaylor.H"
-#include "RayleighTaylorFieldInit.H"
-#include "CFDSim.H"
+#include "amr-wind/physics/RayleighTaylor.H"
+#include "amr-wind/physics/RayleighTaylorFieldInit.H"
+#include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
 

@@ -1,10 +1,10 @@
 
-#include <incflo.H>
+#include "amr-wind/incflo.H"
 
-#include "ABL.H"
-#include "RefinementCriteria.H"
-#include "PDEBase.H"
-#include "IOManager.H"
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/tagging/RefinementCriteria.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/utilities/IOManager.H"
 
 using namespace amrex;
 

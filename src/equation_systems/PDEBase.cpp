@@ -1,9 +1,9 @@
-#include "PDEBase.H"
-#include "SchemeTraits.H"
-#include "CFDSim.H"
-#include "FieldRepo.H"
-#include "PDEHelpers.H"
-#include "incflo_enums.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/incflo_enums.H"
 
 #include "AMReX_ParmParse.H"
 

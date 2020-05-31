@@ -1,6 +1,6 @@
-#include "CFDSim.H"
-#include "TurbulenceModel.H"
-#include "IOManager.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/utilities/IOManager.H"
 
 #include "AMReX_ParmParse.H"
 

@@ -1,5 +1,5 @@
-#include <incflo.H>
-#include "RefinementCriteria.H"
+#include "amr-wind/incflo.H"
+#include "amr-wind/utilities/tagging/RefinementCriteria.H"
 
 using namespace amrex;
 

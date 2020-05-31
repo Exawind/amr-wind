@@ -1,8 +1,8 @@
-#include "icns_ops.H"
+#include "amr-wind/equation_systems/icns/icns_ops.H"
 #include "AMReX_MacProjector.H"
-#include "mac_projection.H"
-#include "MLMGOptions.H"
-#include "console_io.H"
+#include "amr-wind/convection/mac_projection.H"
+#include "amr-wind/core/MLMGOptions.H"
+#include "amr-wind/utilities/console_io.H"
 
 namespace amr_wind {
 namespace pde {

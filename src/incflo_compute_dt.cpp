@@ -1,4 +1,4 @@
-#include <incflo.H>
+#include "amr-wind/incflo.H"
 
 #include <cmath>
 #include <limits>

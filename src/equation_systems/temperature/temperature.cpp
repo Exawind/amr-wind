@@ -1,7 +1,7 @@
-#include "temperature/temperature.H"
-#include "AdvOp_Godunov.H"
-#include "AdvOp_MOL.H"
-#include "BCOps.H"
+#include "amr-wind/equation_systems/temperature/temperature.H"
+#include "amr-wind/equation_systems/AdvOp_Godunov.H"
+#include "amr-wind/equation_systems/AdvOp_MOL.H"
+#include "amr-wind/equation_systems/BCOps.H"
 
 namespace amr_wind {
 namespace pde {

@@ -1,8 +1,8 @@
 #ifndef FIXEDGRADIENTBC_H
 #define FIXEDGRADIENTBC_H
 
-#include "FieldBCOps.H"
-#include "FieldRepo.H"
+#include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/core/FieldRepo.H"
 
 #include "AMReX_Orientation.H"
 

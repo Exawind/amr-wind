@@ -1,8 +1,8 @@
 #ifndef FreeStream_H
 #define FreeStream_H
 
-#include "Physics.H"
-#include "Field.H"
+#include "amr-wind/core/Physics.H"
+#include "amr-wind/core/Field.H"
 
 namespace amr_wind {
 

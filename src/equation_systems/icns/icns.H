@@ -1,11 +1,11 @@
 #ifndef ICNS_H
 #define ICNS_H
 
-#include "PDETraits.H"
-#include "SchemeTraits.H"
-#include "PDEHelpers.H"
-#include "PDE.H"
-#include "icns/MomentumSource.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/PDE.H"
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
 
 namespace amr_wind {
 namespace pde {

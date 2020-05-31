@@ -2,10 +2,10 @@
 #define CFDSIM_H
 
 #include "AMReX_AmrCore.H"
-#include "SimTime.H"
-#include "FieldRepo.H"
-#include "PDEBase.H"
-#include "Physics.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/core/Physics.H"
 
 namespace amr_wind {
 class IOManager;

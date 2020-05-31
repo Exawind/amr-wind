@@ -3,9 +3,9 @@
 
 #include <memory>
 
-#include "Physics.H"
-#include "RayleighTaylorFieldInit.H"
-#include "Field.H"
+#include "amr-wind/core/Physics.H"
+#include "amr-wind/physics/RayleighTaylorFieldInit.H"
+#include "amr-wind/core/Field.H"
 
 namespace amr_wind {
 

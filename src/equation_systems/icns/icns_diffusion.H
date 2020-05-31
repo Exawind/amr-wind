@@ -1,11 +1,11 @@
 #ifndef ICNS_DIFFUSION_H
 #define ICNS_DIFFUSION_H
 
-#include "PDETraits.H"
-#include "PDEOps.H"
-#include "PDEHelpers.H"
-#include "DiffusionOps.H"
-#include "icns/icns.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/PDEOps.H"
+#include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/DiffusionOps.H"
+#include "amr-wind/equation_systems/icns/icns.H"
 
 namespace amr_wind {
 namespace pde {

@@ -1,7 +1,7 @@
-#include "FreeStream.H"
-#include "CFDSim.H"
+#include "amr-wind/physics/FreeStream.H"
+#include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-#include "trig_ops.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind {
 

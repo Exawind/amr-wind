@@ -1,13 +1,13 @@
 #ifndef ICNS_OPS_H
 #define ICNS_OPS_H
 
-#include "PDETraits.H"
-#include "PDEOps.H"
-#include "PDEHelpers.H"
-#include "AdvOp_Godunov.H"
-#include "AdvOp_MOL.H"
-#include "DiffusionOps.H"
-#include "icns/icns.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/PDEOps.H"
+#include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/AdvOp_Godunov.H"
+#include "amr-wind/equation_systems/AdvOp_MOL.H"
+#include "amr-wind/equation_systems/DiffusionOps.H"
+#include "amr-wind/equation_systems/icns/icns.H"
 #include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {

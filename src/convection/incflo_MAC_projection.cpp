@@ -5,9 +5,9 @@
 #include <AMReX_MacProjector.H>
 #include <AMReX_Vector.H>
 
-#include <mac_projection.H>
-#include <MLMGOptions.H>
-#include "console_io.H"
+#include "amr-wind/convection/mac_projection.H"
+#include "amr-wind/core/MLMGOptions.H"
+#include "amr-wind/utilities/console_io.H"
 
 using namespace amrex;
 

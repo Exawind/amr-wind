@@ -1,7 +1,7 @@
-#include "GeostrophicForcing.H"
-#include "PlaneAveraging.H"
-#include "CFDSim.H"
-#include "trig_ops.H"
+#include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"

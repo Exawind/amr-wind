@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "CartBoxRefinement.H"
+#include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {

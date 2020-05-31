@@ -1,5 +1,5 @@
-#include "derive_K.H"
-#include "FieldRepo.H"
+#include "amr-wind/derive/derive_K.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 

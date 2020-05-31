@@ -1,5 +1,5 @@
-#include "incflo.H"
-#include "diffusion.H"
+#include "amr-wind/incflo.H"
+#include "amr-wind/diffusion/diffusion.H"
 
 using namespace amrex;
 

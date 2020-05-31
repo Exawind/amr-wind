@@ -2,11 +2,11 @@
 #define PDE_H
 
 #include <string>
-#include "CFDSim.H"
-#include "PDEBase.H"
-#include "PDEOps.H"
-#include "CompRHSOps.H"
-#include "DiffusionOps.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/equation_systems/PDEOps.H"
+#include "amr-wind/equation_systems/CompRHSOps.H"
+#include "amr-wind/equation_systems/DiffusionOps.H"
 
 namespace amr_wind {
 namespace pde {

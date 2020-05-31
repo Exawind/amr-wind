@@ -1,9 +1,4 @@
-#include <incflo.H>
-#include <random>
-#include <AMReX_Random.H>
-#include "trig_ops.H"
-
-#include "ABL.H"
+#include "amr-wind/incflo.H"
 
 using namespace amrex;
 

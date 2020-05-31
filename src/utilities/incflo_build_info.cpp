@@ -1,5 +1,5 @@
 #include "AMReX_buildInfo.H"
-#include <incflo.H>
+#include "amr-wind/incflo.H"
 
 using namespace amrex;
 

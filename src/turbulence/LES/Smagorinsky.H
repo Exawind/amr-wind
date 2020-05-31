@@ -2,8 +2,8 @@
 #define SMAGORINSKY_H
 
 #include <string>
-#include "TurbModelBase.H"
-#include "FieldRepo.H"
+#include "amr-wind/turbulence/TurbModelBase.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 namespace turbulence {

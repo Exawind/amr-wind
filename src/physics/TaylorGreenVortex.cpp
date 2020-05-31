@@ -1,7 +1,7 @@
-#include "TaylorGreenVortex.H"
-#include "CFDSim.H"
+#include "amr-wind/physics/TaylorGreenVortex.H"
+#include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-#include "trig_ops.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind {
 

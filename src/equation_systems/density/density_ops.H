@@ -1,7 +1,7 @@
 #ifndef DENSITY_OPS_H
 #define DENSITY_OPS_H
 
-#include "density/density.H"
+#include "amr-wind/equation_systems/density/density.H"
 
 namespace amr_wind {
 namespace pde {

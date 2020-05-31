@@ -1,8 +1,8 @@
 #ifndef TURBMODEL_H
 #define TURBMODEL_H
 
-#include "TurbulenceModel.H"
-#include "CFDSim.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
 namespace turbulence {

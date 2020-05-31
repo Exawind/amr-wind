@@ -1,5 +1,5 @@
-#include "MMS.H"
-#include "CFDSim.H"
+#include "amr-wind/mms/MMS.H"
+#include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"

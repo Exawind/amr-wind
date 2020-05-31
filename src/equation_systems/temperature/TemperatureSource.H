@@ -1,10 +1,10 @@
 #ifndef TEMPERATURESOURCE_H
 #define TEMPERATURESOURCE_H
 
-#include "Factory.H"
-#include "FieldDescTypes.H"
-#include "FieldUtils.H"
-#include "FieldRepo.H"
+#include "amr-wind/core/Factory.H"
+#include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/core/FieldRepo.H"
 #include "AMReX_MultiFab.H"
 
 namespace amr_wind {

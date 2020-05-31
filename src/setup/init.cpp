@@ -1,14 +1,14 @@
 // #include <AMReX_ParmParse.H>
 #include <AMReX_BC_TYPES.H>
-#include <incflo.H>
+#include "amr-wind/incflo.H"
 #include <cmath>
 
 
-#include "Physics.H"
-#include "ABL.H"
-#include "BoussinesqBubble.H"
-#include "RefinementCriteria.H"
-#include "CartBoxRefinement.H"
+#include "amr-wind/core/Physics.H"
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/physics/BoussinesqBubble.H"
+#include "amr-wind/utilities/tagging/RefinementCriteria.H"
+#include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 using namespace amrex;
 

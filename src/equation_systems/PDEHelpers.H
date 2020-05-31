@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include "PDEFields.H"
-#include "SimTime.H"
-#include "FieldRepo.H"
-#include "FieldFillPatchOps.H"
-#include "FieldBCOps.H"
+#include "amr-wind/equation_systems/PDEFields.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/FieldFillPatchOps.H"
+#include "amr-wind/core/FieldBCOps.H"
 
 namespace amr_wind {
 namespace pde_impl {

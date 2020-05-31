@@ -1,6 +1,6 @@
-#include "incflo_godunov_plm.H" 
-#include "incflo_godunov_ppm.H" 
-#include "Godunov.H"
+#include "amr-wind/convection/incflo_godunov_plm.H"
+#include "amr-wind/convection/incflo_godunov_ppm.H"
+#include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
 using namespace amrex;

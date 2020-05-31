@@ -1,8 +1,8 @@
 #ifndef TURBMODELDEFS_H
 #define TURBMODELDEFS_H
 
-#include "TurbulenceModel.H"
-#include "ConstTransport.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/transport_models/ConstTransport.H"
 
 namespace amr_wind {
 

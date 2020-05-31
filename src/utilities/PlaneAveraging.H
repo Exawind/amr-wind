@@ -8,7 +8,7 @@
 #define PlaneAveraging_H
 
 #include <AMReX_AmrCore.H>
-#include "DirectionSelector.H"
+#include "amr-wind/utilities/DirectionSelector.H"
 
 class incflo;
 

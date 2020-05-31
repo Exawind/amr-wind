@@ -1,8 +1,8 @@
 #ifndef TURBULENCEMODEL_H
 #define TURBULENCEMODEL_H
 
-#include "Factory.H"
-#include "FieldDescTypes.H"
+#include "amr-wind/core/Factory.H"
+#include "amr-wind/core/FieldDescTypes.H"
 
 namespace amr_wind {
 

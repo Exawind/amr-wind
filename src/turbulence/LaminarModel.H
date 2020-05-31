@@ -1,7 +1,7 @@
 #ifndef LAMINARMODEL_H
 #define LAMINARMODEL_H
 
-#include "TurbModel.H"
+#include "amr-wind/turbulence/TurbModel.H"
 
 namespace amr_wind {
 namespace turbulence {

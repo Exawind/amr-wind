@@ -1,8 +1,8 @@
 #ifndef BOUSSINESQBUOYANCY_H
 #define BOUSSINESQBUOYANCY_H
 
-#include "FieldRepo.H"
-#include "icns/MomentumSource.H"
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
 
 namespace amr_wind {
 namespace pde {

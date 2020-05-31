@@ -1,7 +1,7 @@
-#include "ABLWallFunction.H"
-#include "ABL.H"
-#include "tensor_ops.H"
-#include "diffusion.H"
+#include "amr-wind/wind_energy/ABLWallFunction.H"
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/utilities/tensor_ops.H"
+#include "amr-wind/diffusion/diffusion.H"
 
 #include <cmath>
 

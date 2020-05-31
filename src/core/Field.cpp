@@ -1,9 +1,9 @@
-#include "Field.H"
-#include "FieldRepo.H"
-#include "FieldFillPatchOps.H"
-#include "FieldBCOps.H"
-#include "BCInterface.H"
-#include "SimTime.H"
+#include "amr-wind/core/Field.H"
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/FieldFillPatchOps.H"
+#include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/boundary_conditions/BCInterface.H"
 
 namespace amr_wind {
 

@@ -3,11 +3,11 @@
 
 #include <memory>
 
-#include "Physics.H"
-#include "ABLFieldInit.H"
-#include "ABLWallFunction.H"
-#include "SimTime.H"
-#include "PlaneAveraging.H"
+#include "amr-wind/core/Physics.H"
+#include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLWallFunction.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
 
 class incflo;
 

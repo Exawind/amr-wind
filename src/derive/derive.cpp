@@ -1,6 +1,6 @@
 #include <AMReX_Box.H>
 
-#include <incflo.H>
+#include "amr-wind/incflo.H"
 #include <AMReX_NodalProjector.H>
 
 using namespace amrex;

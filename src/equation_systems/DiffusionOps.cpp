@@ -1,6 +1,5 @@
-#include "DiffusionOps.H"
-#include "diffusion.H"
-#include "console_io.H"
+#include "amr-wind/equation_systems/DiffusionOps.H"
+#include "amr-wind/utilities/console_io.H"
 
 #include "AMReX_MLTensorOp.H"
 

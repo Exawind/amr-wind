@@ -6,7 +6,7 @@
 #ifndef Godunov_H
 #define Godunov_H
 
-#include "FieldRepo.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace godunov {
 

@@ -1,8 +1,8 @@
 #ifndef ICNS_BCOP_H
 #define ICNS_BCOP_H
 
-#include "icns/icns.H"
-#include "BCOps.H"
+#include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/equation_systems/BCOps.H"
 
 namespace amr_wind {
 namespace pde {

@@ -1,7 +1,7 @@
 #include "abl_test_utils.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-#include "ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLFieldInit.H"
 
 namespace amr_wind_tests {
 namespace {

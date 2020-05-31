@@ -9,8 +9,8 @@
 #include "AMReX_BCRec.H"
 #include "AMReX_Gpu.H"
 
-#include "incflo_enums.H"
-#include "FieldDescTypes.H"
+#include "amr-wind/incflo_enums.H"
+#include "amr-wind/core/FieldDescTypes.H"
 
 namespace amr_wind {
 

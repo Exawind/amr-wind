@@ -1,5 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
-#include "field_ops.H"
+#include "amr-wind/core/field_ops.H"
 
 namespace amr_wind_tests {
 

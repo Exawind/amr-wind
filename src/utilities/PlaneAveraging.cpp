@@ -4,8 +4,8 @@
 //
 
 #include <algorithm>
-#include "PlaneAveraging.H"
-#include "incflo.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/incflo.H"
 
 using namespace amrex;
 

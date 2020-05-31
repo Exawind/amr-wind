@@ -6,7 +6,7 @@
 #ifndef mac_projection_h
 #define mac_projection_h
 
-#include "FieldRepo.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace mac {
 

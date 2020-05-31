@@ -1,8 +1,8 @@
 #include <cmath>
 
-#include "Smagorinsky.H"
-#include "TurbModelDefs.H"
-#include "derive_K.H"
+#include "amr-wind/turbulence/LES/Smagorinsky.H"
+#include "amr-wind/turbulence/TurbModelDefs.H"
+#include "amr-wind/derive/derive_K.H"
 
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"

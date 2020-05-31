@@ -3,9 +3,9 @@
 //  amr-wind
 //
 
-#include "DensityBuoyancy.H"
-#include "CFDSim.H"
-#include "FieldUtils.H"
+#include "amr-wind/equation_systems/icns/source_terms/DensityBuoyancy.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/FieldUtils.H"
 
 #include "AMReX_ParmParse.H"
 

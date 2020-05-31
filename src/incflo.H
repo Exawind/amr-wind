@@ -7,10 +7,10 @@
 #include <AMReX_iMultiFab.H>
 #include <AMReX_NodalProjector.H>
 
-#include "incflo_enums.H"
-#include "CFDSim.H"
-#include "SimTime.H"
-#include "FieldRepo.H"
+#include "amr-wind/incflo_enums.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 namespace pde {
@@ -111,7 +111,7 @@ public: // for cuda
                                    amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time,
                                    amrex::Real bcv);
 
-#include "incflo_prob_I.H"
+#include "amr-wind/prob/incflo_prob_I.H"
 
     ///////////////////////////////////////////////////////////////////////////
     //

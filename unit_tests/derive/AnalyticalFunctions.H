@@ -1,5 +1,5 @@
 #include "aw_test_utils/AmrexTest.H"
-#include "derive_K.H"
+#include "amr-wind/derive/derive_K.H"
 
 namespace amr_wind_tests {
 

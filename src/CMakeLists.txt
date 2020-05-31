@@ -12,7 +12,7 @@ target_sources(${amr_wind_lib_name}
 target_sources(${amr_wind_exe_name} PRIVATE main.cpp)
 
 #AMR-Wind include directories
-target_include_directories(${amr_wind_lib_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${amr_wind_lib_name} PUBLIC ${CMAKE_SOURCE_DIR})
 
 #Gather all other source files
 add_subdirectory(core)

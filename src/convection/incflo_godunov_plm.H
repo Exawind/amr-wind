@@ -1,7 +1,7 @@
 #ifndef GODUNOV_PLM_H
 #define GODUNOV_PLM_H
 
-#include <incflo_convection_K.H>
+#include "amr-wind/convection/incflo_convection_K.H"
 #include <AMReX_Gpu.H>
 #include <AMReX_BCRec.H>
 

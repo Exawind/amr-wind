@@ -1,4 +1,4 @@
-#include "SimTime.H"
+#include "amr-wind/core/SimTime.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Print.H"

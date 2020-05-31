@@ -1,11 +1,11 @@
-#include "ABL.H"
-#include "ABLFieldInit.H"
-#include "ABLForcing.H"
-#include "incflo.H"
+#include "amr-wind/wind_energy/ABL.H"
+#include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
+#include "amr-wind/incflo.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
-#include "PlaneAveraging.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
 
 namespace amr_wind {
 

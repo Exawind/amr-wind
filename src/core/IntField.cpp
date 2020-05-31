@@ -1,5 +1,5 @@
-#include "IntField.H"
-#include "FieldRepo.H"
+#include "amr-wind/core/IntField.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 

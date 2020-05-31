@@ -1,8 +1,8 @@
-#include "incflo_godunov_plm.H" 
-#include "incflo_godunov_ppm.H" 
+#include "amr-wind/convection/incflo_godunov_plm.H"
+#include "amr-wind/convection/incflo_godunov_ppm.H"
 
 #include <AMReX_BCRec.H>
-#include "Godunov.H"
+#include "amr-wind/convection/Godunov.H"
 
 using namespace amrex;
 

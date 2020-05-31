@@ -3,10 +3,10 @@
 
 #include <type_traits>
 
-#include "MOL.H"
-#include "SchemeTraits.H"
-#include "PDETraits.H"
-#include "PDEOps.H"
+#include "amr-wind/convection/MOL.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/PDEOps.H"
 
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"

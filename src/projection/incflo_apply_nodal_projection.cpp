@@ -1,7 +1,7 @@
 #include <AMReX_BC_TYPES.H>
-#include <incflo.H>
-#include <MLMGOptions.H>
-#include "console_io.H"
+#include "amr-wind/incflo.H"
+#include "amr-wind/core/MLMGOptions.H"
+#include "amr-wind/utilities/console_io.H"
 
 using namespace amrex;
 

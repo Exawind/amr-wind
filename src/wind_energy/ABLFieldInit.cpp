@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 

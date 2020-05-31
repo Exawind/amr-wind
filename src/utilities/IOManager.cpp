@@ -1,9 +1,9 @@
 #include <chrono>
 #include <ctime>
 
-#include "IOManager.H"
-#include "CFDSim.H"
-#include "console_io.H"
+#include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/console_io.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"

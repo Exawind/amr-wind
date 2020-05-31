@@ -1,9 +1,9 @@
 #ifndef COMPRHSOPS_H
 #define COMPRHSOPS_H
 
-#include "incflo_enums.H"
-#include "PDEOps.H"
-#include "SchemeTraits.H"
+#include "amr-wind/incflo_enums.H"
+#include "amr-wind/equation_systems/PDEOps.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
 
 namespace amr_wind {
 namespace pde {

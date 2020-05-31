@@ -1,11 +1,11 @@
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
 
-#include "PDETraits.H"
-#include "SchemeTraits.H"
-#include "PDEHelpers.H"
-#include "PDE.H"
-#include "temperature/TemperatureSource.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
+#include "amr-wind/equation_systems/PDEHelpers.H"
+#include "amr-wind/equation_systems/PDE.H"
+#include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 
 namespace amr_wind {
 namespace pde {

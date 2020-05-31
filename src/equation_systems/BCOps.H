@@ -1,9 +1,9 @@
 #ifndef BCOPS_H
 #define BCOPS_H
 
-#include "PDETraits.H"
-#include "PDEOps.H"
-#include "BCInterface.H"
+#include "amr-wind/equation_systems/PDETraits.H"
+#include "amr-wind/equation_systems/PDEOps.H"
+#include "amr-wind/boundary_conditions/BCInterface.H"
 
 namespace amr_wind {
 namespace pde {

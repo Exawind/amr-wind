@@ -1,7 +1,7 @@
-#include "ABLForcing.H"
-#include "PlaneAveraging.H"
-#include "CFDSim.H"
-#include "ABL.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"

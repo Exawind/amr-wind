@@ -1,5 +1,5 @@
-#include "MMSForcing.H"
-#include "CFDSim.H"
+#include "amr-wind/mms/MMSForcing.H"
+#include "amr-wind/CFDSim.H"
 #include "masa.h"
 
 namespace amr_wind {

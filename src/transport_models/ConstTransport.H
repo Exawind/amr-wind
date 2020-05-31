@@ -1,7 +1,7 @@
 #ifndef CONSTTRANSPORT_H
 #define CONSTTRANSPORT_H
 
-#include "TransportModel.H"
+#include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {

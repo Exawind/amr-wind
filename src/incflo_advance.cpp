@@ -1,14 +1,15 @@
-#include <incflo.H>
-#include "Physics.H"
 #include <cmath>
-#include "field_ops.H"
-#include "Godunov.H"
-#include "MOL.H"
-#include "PDEBase.H"
-#include "mac_projection.H"
-#include "diffusion.H"
-#include "TurbulenceModel.H"
-#include "console_io.H"
+
+#include "amr-wind/incflo.H"
+#include "amr-wind/core/Physics.H"
+#include "amr-wind/core/field_ops.H"
+#include "amr-wind/convection/Godunov.H"
+#include "amr-wind/convection/MOL.H"
+#include "amr-wind/convection/mac_projection.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/diffusion/diffusion.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/utilities/console_io.H"
 
 using namespace amrex;
 

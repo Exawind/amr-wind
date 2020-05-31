@@ -1,8 +1,8 @@
 #ifndef TRANSPORTMODEL_H
 #define TRANSPORTMODEL_H
 
-#include "Factory.H"
-#include "FieldRepo.H"
+#include "amr-wind/core/Factory.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind {
 namespace transport {

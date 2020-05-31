@@ -1,7 +1,6 @@
-//#include <incflo.H>
-#include <incflo_convection_K.H>
-#include "MOL.H"
-#include "bc_ops.H"
+#include "amr-wind/convection/incflo_convection_K.H"
+#include "amr-wind/convection/MOL.H"
+#include "amr-wind/utilities/bc_ops.H"
 
 using namespace amrex;
 

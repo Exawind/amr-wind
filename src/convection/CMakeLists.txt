@@ -9,5 +9,3 @@ target_sources(${amr_wind_lib_name}
       incflo_godunov_advection.cpp
       incflo_mol_fluxes.cpp
    )
-
-target_include_directories(${amr_wind_lib_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

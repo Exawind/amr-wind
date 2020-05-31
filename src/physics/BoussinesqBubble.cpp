@@ -1,7 +1,7 @@
-#include "BoussinesqBubble.H"
-#include "BoussinesqBubbleFieldInit.H"
-#include "CFDSim.H"
-#include "ABLWallFunction.H"
+#include "amr-wind/physics/BoussinesqBubble.H"
+#include "amr-wind/physics/BoussinesqBubbleFieldInit.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/wind_energy/ABLWallFunction.H"
 
 namespace amr_wind {
 

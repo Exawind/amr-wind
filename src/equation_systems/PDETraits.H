@@ -4,7 +4,7 @@
 #include <string>
 #include "AMReX_MLTensorOp.H"
 
-#include "SourceTerm.H"
+#include "amr-wind/equation_systems/SourceTerm.H"
 
 namespace amr_wind {
 namespace pde {

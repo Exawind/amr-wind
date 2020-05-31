@@ -1,8 +1,8 @@
 #ifndef GEOSTROPHICFORCING_H
 #define GEOSTROPHICFORCING_H
 
-#include "icns/MomentumSource.H"
-#include "SimTime.H"
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind {
 namespace pde {

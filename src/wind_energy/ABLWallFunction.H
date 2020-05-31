@@ -1,9 +1,9 @@
 #ifndef ABLWALLFUNCTION_H
 #define ABLWALLFUNCTION_H
 
-#include "CFDSim.H"
-#include "PlaneAveraging.H"
-#include "FieldBCOps.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/core/FieldBCOps.H"
 
 namespace amr_wind {
 
