@@ -1,6 +1,5 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_PlotFileUtil.H>
-#include <AMReX_buildInfo.H>
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/utilities/console_io.H"

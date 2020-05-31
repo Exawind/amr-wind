@@ -1,10 +1,6 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/utilities/console_io.H"
 
-void writeBuildInfo();
-
-using namespace amrex;
-
 int main(int argc, char* argv[])
 {
 #ifdef AMREX_USE_MPI
@@ -32,7 +28,7 @@ int main(int argc, char* argv[])
         if(argc < 2) amrex::Abort("Input file must be given as command-line argument.");
 
         // Start timing the program
-        Real start_time = ParallelDescriptor::second();
+        amrex::Real start_time = amrex::ParallelDescriptor::second();
         amrex::Print() << "Initializing AMR-Wind ..." << std::endl;
 
         // Default constructor. Note inheritance: incflo : AmrCore : AmrMesh. 
@@ -42,17 +38,19 @@ int main(int argc, char* argv[])
         my_incflo.InitData();
 
         // Time spent on initialization
-        Real init_time = ParallelDescriptor::second() - start_time;
+        amrex::Real init_time = amrex::ParallelDescriptor::second() - start_time;
         amrex::Print() << "Initialization successful. Time elapsed = " << init_time << std::endl;
 
         // Evolve system to final time
         my_incflo.Evolve();
 
         // Time spent in total
-        Real end_time = ParallelDescriptor::second() - start_time;
+        amrex::Real end_time = amrex::ParallelDescriptor::second() - start_time;
 
-        ParallelDescriptor::ReduceRealMax(init_time, ParallelDescriptor::IOProcessorNumber());
-        ParallelDescriptor::ReduceRealMax(end_time, ParallelDescriptor::IOProcessorNumber());
+        amrex::ParallelDescriptor::ReduceRealMax(
+            init_time, amrex::ParallelDescriptor::IOProcessorNumber());
+        amrex::ParallelDescriptor::ReduceRealMax(
+            end_time, amrex::ParallelDescriptor::IOProcessorNumber());
 
         // Print timing results
         amrex::Print() << "Time spent in InitData():    " << init_time << std::endl;
