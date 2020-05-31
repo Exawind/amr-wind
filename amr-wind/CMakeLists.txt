@@ -48,3 +48,6 @@ target_include_directories(${amr_wind_lib_name} PRIVATE
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC amrex)
 target_link_libraries(${amr_wind_lib_name} PRIVATE amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
+
+file(GLOB_RECURSE amr_wind_header_list ${CMAKE_CURRENT_SOURCE_DIR} "*.H")
+add_custom_target(amr_wind_headers SOURCES ${amr_wind_header_list})
