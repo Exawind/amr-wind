@@ -2,7 +2,13 @@
 #include <ctime>
 #include "amr-wind/utilities/console_io.H"
 #include "AMReX.H"
-#include "AMReX_buildInfo.H"
+
+namespace amrex {
+const char* buildInfoGetBuildDate();
+const char* buildInfoGetComp();
+const char* buildInfoGetGitHash(int i);
+const char* buildInfoGetCompVersion();
+}
 
 namespace amr_wind {
 namespace io {
