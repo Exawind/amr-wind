@@ -1,5 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
-#include "Physics.H"
+#include "amr-wind/core/Physics.H"
 
 namespace amr_wind_tests {
 

@@ -5,7 +5,7 @@
 
 #include "aw_test_utils/AmrexTest.H"
 #include "aw_test_utils/AmrTestMesh.H"
-#include "SimTime.H"
+#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind_tests {
 

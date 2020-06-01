@@ -1,0 +1,200 @@
+#ifndef INCFLO_H_
+#define INCFLO_H_
+
+#include <AMReX_AmrCore.H>
+#include <AMReX_MultiFabUtil.H>
+#include <AMReX_ParmParse.H>
+#include <AMReX_iMultiFab.H>
+#include <AMReX_NodalProjector.H>
+
+#include "amr-wind/incflo_enums.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/SimTime.H"
+#include "amr-wind/core/FieldRepo.H"
+
+namespace amr_wind {
+namespace pde {
+class PDEBase;
+}
+class RefinementCriteria;
+}
+
+class incflo : public amrex::AmrCore
+{
+public:
+    incflo ();
+    virtual ~incflo ();
+
+    // Initialize multilevel AMR data
+    void InitData ();
+
+    // Evolve solution to final time through repeated calls to Advance()
+    void Evolve ();
+
+    // Tag cells for refinement
+    virtual void ErrorEst (int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
+
+    // Make a new level from scratch using provided BoxArray and DistributionMapping
+    // Only used during initialization
+    virtual void MakeNewLevelFromScratch (int lev, amrex::Real time,
+                                          const amrex::BoxArray& new_grids,
+                                          const amrex::DistributionMapping& new_dmap) override;
+
+    // Make a new level using provided BoxArray and DistributionMapping,
+    // and fill with interpolated coarse level data
+    virtual void MakeNewLevelFromCoarse (int lev, amrex::Real time,
+                                         const amrex::BoxArray& ba,
+                                         const amrex::DistributionMapping& dm) override;
+
+    // Remake an existing level using provided BoxArray and DistributionMapping,
+    // and fill with existing fine and coarse data
+    virtual void RemakeLevel (int lev, amrex::Real time,
+                              const amrex::BoxArray& ba,
+                              const amrex::DistributionMapping& dm) override;
+
+    // Delete level data
+    virtual void ClearLevel (int lev) override;
+
+    amr_wind::CFDSim& sim() { return m_sim; }
+    const amr_wind::SimTime& time() const { return m_time; }
+    amr_wind::FieldRepo& repo() { return m_repo; }
+    const amr_wind::FieldRepo& repo() const { return m_repo; }
+
+    amr_wind::pde::PDEBase& icns() { return m_sim.pde_manager().icns(); }
+    const amr_wind::pde::PDEBase& icns() const { return m_sim.pde_manager().icns(); }
+    amr_wind::pde::PDEMgr::TypeVector& scalar_eqns()
+    { return m_sim.pde_manager().scalar_eqns(); }
+    const amr_wind::pde::PDEMgr::TypeVector& scalar_eqns() const
+    { return m_sim.pde_manager().scalar_eqns(); }
+
+    amr_wind::Field& velocity() const { return m_repo.get_field("velocity"); }
+    amr_wind::Field& density() const { return m_repo.get_field("density"); }
+    amr_wind::Field& temperature() const { return m_repo.get_field("temperature"); }
+    amr_wind::Field& pressure() const { return m_repo.get_field("p"); }
+    amr_wind::Field& grad_p() const { return m_repo.get_field("gp"); }
+
+public: // for cuda
+
+    void ComputeDt (bool explicit_diffusion);
+
+    void set_inflow_velocity (int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // convection
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ApplyPredictor(bool incremental_projection = false);
+    void ApplyCorrector();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // derive
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ComputeStrainrate (amrex::Real time);
+    void ComputeVorticity (int lev, amrex::Real time, amrex::MultiFab& vort,
+                           amrex::MultiFab const& vel);
+    void ComputeDivU (amrex::Real time);
+    amrex::Real ComputeKineticEnergy () const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // prob
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void prob_init_fluid (int lev);
+    void prob_set_inflow_velocity (int grid_id, amrex::Orientation ori, amrex::Box const& bx,
+                                   amrex::Array4<amrex::Real> const& v, int lev, amrex::Real time,
+                                   amrex::Real bcv);
+
+#include "amr-wind/prob/incflo_prob_I.H"
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // projection
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ApplyProjection(amrex::Vector<amrex::MultiFab const*> density,
+                         amrex::Real time, amrex::Real scaling_factor, bool incremental);
+
+    //! Initialize Physics instances as well as PDEs (include turbulence models)
+    void init_physics_and_pde();
+
+private:
+
+    //
+    // member variables
+    //
+
+    amr_wind::CFDSim m_sim;
+    amr_wind::SimTime& m_time;
+    amr_wind::FieldRepo& m_repo;
+
+    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>> m_refine_criteria;
+
+    // Be verbose?
+    int m_verbose = 0;
+
+    // Member variables for initial conditions
+    int m_probtype = 0;
+
+    // Initial projection / iterations
+    bool m_do_initial_proj    = true;
+    int  m_initial_iterations = 3;
+
+    bool m_constant_density = true;
+
+    // Default to MOL (not Godunov)
+    bool m_use_godunov         = false;
+
+    DiffusionType m_diff_type = DiffusionType::Implicit;
+    int m_KE_int = -1;
+
+    //
+    // end of member variables
+    //
+
+    amrex::FabFactory<amrex::FArrayBox> const&
+    Factory (int lev) const noexcept { return m_repo.factory(lev); }
+
+    bool need_divtau () const {
+        return !(!m_use_godunov and DiffusionType::Implicit == m_diff_type);
+    }
+
+    amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
+    get_projection_bc (amrex::Orientation::Side side) const noexcept;
+
+    void Advance ();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // setup
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void set_background_pressure ();
+    void ReadParameters ();
+    void InitialProjection ();
+    void InitialIterations ();
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // utilities
+    //
+    ///////////////////////////////////////////////////////////////////////////
+
+    void ReadCheckpointFile ();
+
+    void PrintMaxValues (const std::string& header);
+    void PrintMaxVel (int lev);
+    void PrintMaxGp (int lev);
+    void CheckForNans (int lev);
+
+};
+
+#endif

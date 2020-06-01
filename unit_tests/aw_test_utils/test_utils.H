@@ -8,7 +8,7 @@
 #include "gtest/gtest.h"
 #include "AMReX_MultiFab.H"
 #include "AMReX_Vector.H"
-#include "FieldRepo.H"
+#include "amr-wind/core/FieldRepo.H"
 
 namespace amr_wind_tests {
 namespace utils {
