@@ -95,8 +95,9 @@ void ConvectingTaylorVortex::initialize_fields(
 }
 
 amrex::Real ConvectingTaylorVortex::compute_error(
-    const int comp, const Field& field, amr_wind::ctv::FuncDef f)
+    const int comp, const Field& field, amr_wind::ctv::FuncDef f_exact)
 {
+
     amrex::Real error = 0.0;
     const amrex::Real time = m_time.current_time();
 
@@ -120,23 +121,27 @@ amrex::Real ConvectingTaylorVortex::compute_error(
         const amrex::Real cell_vol = dx[0] * dx[1] * dx[2];
 
         const auto& fld = field(lev);
-        for (amrex::MFIter mfi(fld); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
-            const auto& field_arr = fld.array(mfi);
-            const auto& mask_arr = level_mask.array(mfi);
+        error += amrex::ReduceSum(
+            fld, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& fld_arr,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real err_fab = 0.0;
 
-            amrex::Real err_fab = 0.0;
-            amrex::LoopOnCpu(vbx, [=, &err_fab](int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real u = field_arr(i, j, k, comp);
-                const amrex::Real u_exact = f(m_u0, m_v0, m_omega, x, y, time);
-                err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
-                           (u - u_exact);
+                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real u = fld_arr(i, j, k, comp);
+                    const amrex::Real u_exact =
+                        f_exact(m_u0, m_v0, m_omega, x, y, time);
+                    err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
+                               (u - u_exact);
+                });
+                return err_fab;
             });
-            error += err_fab;
-        }
     }
+
     amrex::ParallelDescriptor::ReduceRealSum(error);
 
     const amrex::Real total_vol = m_mesh.Geom(0).ProbDomain().volume();

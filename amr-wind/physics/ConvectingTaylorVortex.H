@@ -7,10 +7,10 @@
 
 namespace amr_wind {
 namespace ctv {
-/** Convecting Taylor Vortex physics
- */
 using FuncDef = double (*)(double, double, double, double, double, double);
 
+/** Convecting Taylor Vortex physics
+ */
 class ConvectingTaylorVortex : public Physics::Register<ConvectingTaylorVortex>
 {
 public:
