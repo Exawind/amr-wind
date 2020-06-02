@@ -1,6 +1,6 @@
-#include "FieldPlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include <algorithm>
-#include "incflo.H"
+#include "amr-wind/incflo.H"
 
 namespace amr_wind {
 

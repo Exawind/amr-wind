@@ -2,9 +2,9 @@
 #define ThirdMomentAveraging_H
 
 #include <AMReX_AmrCore.H>
-#include "DirectionSelector.H"
-#include "Field.H"
-#include "FieldPlaneAveraging.H"
+#include "amr-wind/utilities/DirectionSelector.H"
+#include "amr-wind/core/Field.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 namespace amr_wind {
 

@@ -2,9 +2,9 @@
 #define FieldPlaneAveraging_H
 
 #include <AMReX_AmrCore.H>
-#include "DirectionSelector.H"
-#include "Field.H"
-#include "SimTime.H"
+#include "amr-wind/utilities/DirectionSelector.H"
+#include "amr-wind/core/Field.H"
+#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind {
 

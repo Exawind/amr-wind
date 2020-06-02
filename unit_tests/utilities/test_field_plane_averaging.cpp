@@ -8,8 +8,8 @@
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
 
-#include "FieldPlaneAveraging.H"
-#include "trig_ops.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind_tests {
 
