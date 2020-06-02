@@ -9,35 +9,6 @@ endif()
 include(ProcessorCount)
 ProcessorCount(PROCESSES)
 
-# Set TOLERANCE for testing
-#if(NOT ${TEST_TOLERANCE} STREQUAL "")
-#  set(TOLERANCE ${TEST_TOLERANCE}) # User defined
-#else(NOT ${TEST_TOLERANCE} STREQUAL "")
-#  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-#    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
-#        OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-#      set(TOLERANCE "1e-3")
-#    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-#      set(TOLERANCE "1e-3")
-#    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-#      set(TOLERANCE "1e-2")
-#    else()
-#      set(TOLERANCE "1e-8") # Mac default
-#    endif()
-#  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-#      set(TOLERANCE "1e-5")
-#    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-#      set(TOLERANCE "1e-15")
-#    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-#      set(TOLERANCE "1e-2")
-#    else()
-#      set(TOLERANCE "1e-8") # Linux default
-#    endif()
-#  endif()
-#endif()
-#message(STATUS "Using test tolerance of ${TOLERANCE}")
-
 #=============================================================================
 # Functions for adding tests / Categories of tests
 #=============================================================================
@@ -89,6 +60,13 @@ function(add_test_re TEST_NAME NP)
     set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
 endfunction(add_test_re)
 
+# Regression test and excluded from CI with dependency
+function(add_test_red TEST_NAME NP TEST_DEPENDENCY)
+    add_test_re(${TEST_NAME} ${NP})
+    set_tests_properties(${TEST_NAME} PROPERTIES FIXTURES_REQUIRED fixture_${TEST_DEPENDENCY})
+    set_tests_properties(${TEST_DEPENDENCY} PROPERTIES FIXTURES_SETUP fixture_${TEST_DEPENDENCY})
+endfunction(add_test_red)
+
 # Standard unit test
 function(add_test_u TEST_NAME NP)
     # Set variables for respective binary and source directories for the test
@@ -137,13 +115,17 @@ add_test_re(abl_godunov_cn 4)
 add_test_re(abl_mol_explicit 4)
 add_test_re(abl_mol_cn 4)
 add_test_re(tgv_godunov_plm 4)
-add_test_re(abl_godunov_restart 4)
 add_test_re(abl_godunov_static_refinement 4)
 if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_godunov 4)
   add_test_re(mms_godunov_plm 4)
   add_test_re(mms_mol 4)
 endif()
+
+#=============================================================================
+# Regression tests excluded from CI with a test dependency
+#=============================================================================
+add_test_red(abl_godunov_restart 4 abl_godunov)
 
 #=============================================================================
 # Verification tests
