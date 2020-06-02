@@ -26,7 +26,7 @@ void ThirdMomentAveraging::output_line_average_ascii(
         outfile << "#step,time,z";
 
         for (int m = 0; m < m_plane_average1.ncomp(); ++m) {
-            for (int n = 0; n < m_plane_average1.ncomp(); ++n) {
+            for (int n = 0; n < m_plane_average2.ncomp(); ++n) {
                 for (int p = 0; p < m_plane_average3.ncomp(); ++p) {
                     outfile << ",<" + m_plane_average1.field().base_name() +
                                    std::to_string(m) + "'" +
