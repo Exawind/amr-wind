@@ -14,13 +14,14 @@ namespace amr_wind {
 ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     : m_sim(sim)
     , m_mesh(sim.mesh())
-    // , m_tau_wall(sim.repo().declare_field("tau_wall", 2, 1, 0))
+    , m_abl_neutral(true)
 {
     amrex::ParmParse pp("ABL");
 
     pp.query("kappa", m_kappa);
     pp.query("surface_roughness_z0", m_z0);
     pp.query("normal_direction", m_direction);
+    pp.queryarr("gravity", m_gravity);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
     if (pp.contains("log_law_height")) {
@@ -28,6 +29,26 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         pp.get("log_law_height", m_log_law_height);
     } else {
       m_use_fch = true;
+    }
+
+    if (pp.contains("wall_heat_flux"))
+    {
+      m_abl_neutral = false;
+      
+      pp.query("wall_heat_flux", m_abl_surface_flux);
+
+      m_heatflux = true;
+
+      if(m_abl_surface_flux<0)
+      {
+        m_stable = true;
+      }else
+      {
+         m_stable = false;
+      }
+    } else if(pp.contains("wall_heat_rate"))
+    {
+      m_abl_neutral = false;
     }
 }
 
@@ -67,7 +88,8 @@ void ABLWallFunction::init_log_law_height()
         m_bx_z_sample.setSmall(lo);
         m_bx_z_sample.setBig(hi);
 
-        m_store_xy_vel.resize(m_bx_z_sample, AMREX_SPACEDIM);
+        // 3 velocity component + potential temperature
+        m_store_xy_vel_temp.resize(m_bx_z_sample, 4);
 
     }
     
@@ -101,16 +123,15 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     m_utau = m_kappa * utils::vec_mag(m_umean.data()) / (
         std::log(m_log_law_height / m_z0));
   }else{
-    ComputePlanar();
+    computeplanar();
     m_utau = m_kappa * m_mean_windSpeed/
         (std::log(m_log_law_height/m_z0));
-    // ComputeTauWall();
+    computeusingheatflux();
   }
   
 }
 
-
-void ABLWallFunction::ComputePlanar()
+void ABLWallFunction::computeplanar()
 {
 
   amrex::MFItInfo mfi_info{};
@@ -125,10 +146,11 @@ void ABLWallFunction::ComputePlanar()
   const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
   
   auto& velf = frepo.get_field("velocity", amr_wind::FieldState::New);
+  auto& tempf = frepo.get_field("temperature", amr_wind::FieldState::New);
 
-  m_store_xy_vel.setVal(0.0);
+  m_store_xy_vel_temp.setVal(0.0);
 
-  auto m_store_xy_vel_arr = m_store_xy_vel.array();
+  auto m_xy_arr = m_store_xy_vel_temp.array();
 
   for (amrex::MFIter mfi(velf(nlevels),mfi_info); mfi.isValid(); ++mfi) {
     const auto& bx = mfi.validbox();
@@ -144,6 +166,7 @@ void ABLWallFunction::ComputePlanar()
     }
 
     auto vel = velf(nlevels).array(mfi);
+    auto temp = tempf(nlevels).array(mfi);
 
     const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index);
     const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
@@ -151,82 +174,130 @@ void ABLWallFunction::ComputePlanar()
 
     amrex::ParallelFor(
           z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                         m_store_xy_vel_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0)
+                         m_xy_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0)
                              + m_coeff_interp[1]*vel(i, j, k, 0);
-                         m_store_xy_vel_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1)
+                         m_xy_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1)
                              + m_coeff_interp[1]*vel(i, j, k, 1);
-                         m_store_xy_vel_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2)
+                         m_xy_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2)
                              + m_coeff_interp[1]*vel(i, j, k, 2);
+                         m_xy_arr(i, j, k, 3) = m_coeff_interp[0]*temp(i, j, k-1)
+                             + m_coeff_interp[1]*temp(i, j, k);
+
               });
 
   }
 
   amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
   
-  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel.dataPtr(),
+  amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_temp.dataPtr(),
                                            m_ncells_x*m_ncells_y*3);
 
   std::fill(m_umean.begin(), m_umean.end(), 0.0);
   m_mean_windSpeed = 0.0;
+  m_mean_potTemp = 0.0;
 
   amrex::ParallelFor(
       m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                          m_umean[0] += m_store_xy_vel_arr(i, j, k, 0);
-                          m_umean[1] += m_store_xy_vel_arr(i, j, k, 1);
-                          m_mean_windSpeed += std::sqrt(m_store_xy_vel_arr(i, j, k, 0)*
-                                                        m_store_xy_vel_arr(i, j, k, 0) +
-                                                        m_store_xy_vel_arr(i, j, k, 1)*
-                                                        m_store_xy_vel_arr(i, j, k, 1));
+                          m_umean[0] += m_xy_arr(i, j, k, 0);
+                          m_umean[1] += m_xy_arr(i, j, k, 1);
+                          m_mean_windSpeed += std::sqrt(m_xy_arr(i, j, k, 0)*
+                                                        m_xy_arr(i, j, k, 0) +
+                                                        m_xy_arr(i, j, k, 1)*
+                                                        m_xy_arr(i, j, k, 1));
+                          m_mean_potTemp += m_xy_arr(i, j, k, 3);
                    });
 
   m_umean[0] = m_umean[0]/numCells;
   m_umean[1] = m_umean[1]/numCells;
   m_mean_windSpeed = m_mean_windSpeed/numCells;
+  m_mean_potTemp = m_mean_potTemp/numCells;
 
 }
 
-// void ABLWallFunction::ComputeTauWall() {
+void ABLWallFunction::computeusingheatflux(){
 
-//   amrex::MFItInfo mfi_info{};
-//   const auto& frepo = m_sim.repo();
-//   const int nlevels = m_mesh.finestLevel();
+  if(m_abl_neutral) return;
 
-//   auto& tau_wall = frepo.get_field("tau_wall", amr_wind::FieldState::New);
-//   auto& density = frepo.get_field("density", amr_wind::FieldState::New);
+  amrex::Real g = utils::vec_mag(m_gravity.data());
 
-//   auto m_store_xy_vel_arr = m_store_xy_vel.array();
+  amrex::Real zeta = 0.0;
+  amrex::Real m_utau_iter = 0.0;
+  amrex::Real xzeta = 0.0;
+  amrex::Real pi_ = std::acos(-1.0);
 
-//   amrex::Real uatu2 = m_utau*m_utau;
+  m_psi_m = 0.0;
+  m_psi_h = 0.0;
 
-//   for (amrex::MFIter mfi(tau_wall(nlevels),mfi_info); mfi.isValid(); ++mfi) {
-//     const auto& bx = mfi.validbox();
+  int iter = 0;
+  
+  if(m_heatflux){
 
-//     auto tau_w_arr = tau_wall(nlevels).array(mfi);
-//     auto rho = density(nlevels).array(mfi);
+    if(m_stable) {
 
-//     amrex::ParallelFor(
-//         bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-//               int kk = m_z_sample_index;
-//               amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, kk , 0)*
-//                                                     m_store_xy_vel_arr(i, j, kk, 0) +
-//                                                     m_store_xy_vel_arr(i, j, kk, 1)*
-//                                                     m_store_xy_vel_arr(i, j, kk, 1));
-              
-//               tau_w_arr(i, j, k, 0) = rho(i,j,k)*uatu2*
-//                   m_store_xy_vel_arr(i, j, kk, 0)*instWindSpeed/
-//                   (std::abs(m_umean[0])*m_mean_windSpeed);
+      do {
+        m_utau_iter = m_utau;
+        m_obhukhov_length = -m_utau*m_utau*m_utau*m_mean_potTemp/(m_kappa*g*m_abl_surface_flux);
+        zeta = m_log_law_height/m_obhukhov_length;
+        m_psi_m = -m_stable_beta*zeta;
+        m_psi_h = -m_stable_beta*zeta;
+        m_utau = m_kappa * m_mean_windSpeed/(std::log(m_log_law_height/m_z0) - m_psi_m);
+        iter +=1;
+        
+      } while((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= maxIter);
 
-//               tau_w_arr(i, j, k, 1) = rho(i,j,k)*uatu2*
-//                   m_store_xy_vel_arr(i, j, kk, 1)*instWindSpeed/
-//                   (std::abs(m_umean[1])*m_mean_windSpeed);
+    } else{
 
-//               });
+      do {
 
-//   }
+        m_utau_iter = m_utau;
+        m_obhukhov_length = -m_utau*m_utau*m_utau*m_mean_potTemp/(m_kappa*g*m_abl_surface_flux);
+        zeta = m_log_law_height/m_obhukhov_length;
 
-//    tau_wall.fillpatch(m_sim.time().current_time());
+        xzeta = std::pow(1.0-m_unstable_gamma*zeta, 0.25);
+        
+        m_psi_m = 2.0*std::log(0.5*(1.0+xzeta)) + std::log(0.5*(1.0+xzeta*xzeta))
+            - 2.0*std::atan(xzeta) + 0.5*pi_;
+        m_psi_h = 2.0*std::log(0.5*(1.0+xzeta*xzeta));
 
-// }
+        m_utau = m_kappa * m_mean_windSpeed/(std::log(m_log_law_height/m_z0) - m_psi_m);
+
+        iter +=1;
+
+        amrex::Print() << "Iter\t" << iter << "Utau \t" << m_utau << "psi_m \t" << m_psi_m << std::endl; 
+        
+      } while((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= maxIter);
+
+      
+    }
+
+  } else{
+
+    do {
+      m_utau_iter = m_utau;
+      m_abl_surface_flux = -(m_mean_potTemp-m_abl_surface_temp)*
+          m_utau*m_kappa/(std::log(m_log_law_height/m_z0) - m_psi_h);
+      m_obhukhov_length = -m_utau*m_utau*m_utau*m_mean_potTemp/(m_kappa*g*m_abl_surface_flux);
+    
+      zeta = m_log_law_height/m_obhukhov_length;
+
+      if(zeta > 0.0){
+        m_psi_m = -m_stable_beta*zeta;
+        m_psi_h = -m_stable_beta*zeta;
+      } else {
+        xzeta = std::pow(1.0-m_unstable_gamma*zeta, 0.25);
+        m_psi_m = 2.0*std::log(0.5*(1.0+xzeta)) + std::log(0.5*(1.0+xzeta*xzeta))
+            - 2.0*std::atan(xzeta) + 0.5*pi_;
+        m_psi_h = 2.0*std::log(0.5*(1.0+xzeta*xzeta));
+      }
+      m_utau = m_kappa * m_mean_windSpeed/(std::log(m_log_law_height/m_z0) - m_psi_m);
+      iter +=1;
+    } while((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= maxIter);
+    
+  }
+
+
+}
+
 
 ABLVelWallFunc::ABLVelWallFunc(
     Field&, const ABLWallFunction& wall_func)
