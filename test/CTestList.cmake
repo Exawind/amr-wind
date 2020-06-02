@@ -33,7 +33,7 @@ function(add_test_r TEST_NAME)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt time.plot_interval=10 time.checkpoint_interval=10 amrex.throw_exception=1 amrex.signal_handling=0")
+    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt time.plot_interval=10 amrex.throw_exception=1 amrex.signal_handling=0")
     if(AMR_WIND_ENABLE_CUDA)
       set(FCOMPARE_TOLERANCE "-r 1e-12")
     endif()
