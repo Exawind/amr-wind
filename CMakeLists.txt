@@ -104,7 +104,7 @@ if (AMR_WIND_ENABLE_CUDA)
   endforeach()
 endif()
 
-if (AMR_WIND_ENABLE_UNIT_TESTING OR AMR_WIND_ENABLE_TESTS)
+if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")
