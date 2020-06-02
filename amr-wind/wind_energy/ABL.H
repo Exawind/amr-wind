@@ -7,7 +7,7 @@
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 #include "amr-wind/core/SimTime.H"
-#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 class incflo;
 
@@ -58,7 +58,7 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
 
-    PlaneAveraging m_pa;
+    FieldPlaneAveraging m_pa;
     ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance
