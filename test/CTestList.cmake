@@ -14,7 +14,7 @@ ProcessorCount(PROCESSES)
 #=============================================================================
 
 # Standard regression test
-function(add_test_r TEST_NAME NP)
+function(add_test_r TEST_NAME)
     # Set variables for respective binary and source directories for the test
     set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
     set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
@@ -39,8 +39,10 @@ function(add_test_r TEST_NAME NP)
       set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     if(AMR_WIND_ENABLE_MPI)
+      set(NP 4)
       set(MPI_COMMANDS "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS}")
     else()
+      set(NP 1)
       unset(MPI_COMMANDS)
     endif()
     # Add test and actual test commands to CTest database
@@ -55,23 +57,25 @@ function(add_test_r TEST_NAME NP)
 endfunction(add_test_r)
 
 # Regression tests excluded from CI
-function(add_test_re TEST_NAME NP)
-    add_test_r(${TEST_NAME} ${NP})
+function(add_test_re TEST_NAME)
+    add_test_r(${TEST_NAME})
     set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
 endfunction(add_test_re)
 
 # Regression test and excluded from CI with dependency
-function(add_test_red TEST_NAME NP TEST_DEPENDENCY)
-    add_test_re(${TEST_NAME} ${NP})
+function(add_test_red TEST_NAME TEST_DEPENDENCY)
+    add_test_re(${TEST_NAME})
     set_tests_properties(${TEST_NAME} PROPERTIES FIXTURES_REQUIRED fixture_${TEST_DEPENDENCY})
     set_tests_properties(${TEST_DEPENDENCY} PROPERTIES FIXTURES_SETUP fixture_${TEST_DEPENDENCY})
 endfunction(add_test_red)
 
 # Standard unit test
-function(add_test_u TEST_NAME NP)
+function(add_test_u TEST_NAME)
     # Set variables for respective binary and source directories for the test
     set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
     set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
+    # Use a single process
+    set(NP 1)
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     if(AMR_WIND_ENABLE_MPI)
@@ -92,40 +96,40 @@ endfunction(add_test_u)
 #=============================================================================
 # Unit tests
 #=============================================================================
-add_test_u(unit_tests 1)
+add_test_u(unit_tests)
 
 #=============================================================================
 # Regression tests
 #=============================================================================
-add_test_r(abl_godunov 4)
-add_test_r(boussinesq_bubble_godunov 4)
-add_test_r(tgv_godunov 4)
-add_test_r(abl_mol 4)
+add_test_r(abl_godunov)
+add_test_r(boussinesq_bubble_godunov)
+add_test_r(tgv_godunov)
+add_test_r(abl_mol)
 
 #=============================================================================
 # Regression tests excluded from CI
 #=============================================================================
-add_test_re(tgv_mol 4)
-add_test_re(boussinesq_bubble_mol 4)
-add_test_re(rayleigh_taylor_godunov 4)
-add_test_re(rayleigh_taylor_mol 4)
-add_test_re(abl_godunov_plm 4)
-add_test_re(abl_godunov_explicit 4)
-add_test_re(abl_godunov_cn 4)
-add_test_re(abl_mol_explicit 4)
-add_test_re(abl_mol_cn 4)
-add_test_re(tgv_godunov_plm 4)
-add_test_re(abl_godunov_static_refinement 4)
+add_test_re(tgv_mol)
+add_test_re(boussinesq_bubble_mol)
+add_test_re(rayleigh_taylor_godunov)
+add_test_re(rayleigh_taylor_mol)
+add_test_re(abl_godunov_plm)
+add_test_re(abl_godunov_explicit)
+add_test_re(abl_godunov_cn)
+add_test_re(abl_mol_explicit)
+add_test_re(abl_mol_cn)
+add_test_re(tgv_godunov_plm)
+add_test_re(abl_godunov_static_refinement)
 if(AMR_WIND_ENABLE_MASA)
-  add_test_re(mms_godunov 4)
-  add_test_re(mms_godunov_plm 4)
-  add_test_re(mms_mol 4)
+  add_test_re(mms_godunov)
+  add_test_re(mms_godunov_plm)
+  add_test_re(mms_mol)
 endif()
 
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
-add_test_red(abl_godunov_restart 4 abl_godunov)
+add_test_red(abl_godunov_restart abl_godunov)
 
 #=============================================================================
 # Verification tests
