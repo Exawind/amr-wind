@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 project(AMR-Wind CXX C Fortran)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 ########################## OPTIONS #####################################
 
@@ -66,7 +67,7 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
 #Create target names
-set(amr_wind_lib_name "amrwind")
+set(amr_wind_lib_name "amrwind_obj")
 set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 
@@ -92,7 +93,7 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 #Build amr-wind and link to amrex library
-add_subdirectory(src)
+add_subdirectory(amr-wind)
 
 if (AMR_WIND_ENABLE_CUDA)
   set(awtargets "${amr_wind_lib_name};${amr_wind_exe_name}")
@@ -125,7 +126,31 @@ endif()
 
 #Define what we want to be installed during a make install 
 install(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_lib_name}
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  EXPORT AMRWindTargets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
+
+install(
+  DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.H")
+
+export(
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  NAMESPACE ${PROJECT_NAME}::
+  FILE AMRWindTargets.cmake
+  )
+
+install(
+  EXPORT AMRWindTargets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+configure_package_config_file(
+  cmake/AMRWindConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/AMRWindConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/AMRWindConfig.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})

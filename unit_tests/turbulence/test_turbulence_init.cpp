@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "aw_test_utils/MeshTest.H"
-#include "TurbulenceModel.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
 
 namespace amr_wind_tests {
 

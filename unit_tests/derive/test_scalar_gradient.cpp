@@ -3,7 +3,7 @@
  */
 
 #include "aw_test_utils/AmrexTest.H"
-#include "derive_K.H"
+#include "amr-wind/derive/derive_K.H"
 #include "AnalyticalFunctions.H"
 
 namespace amr_wind_tests {
@@ -43,7 +43,7 @@ TEST_F(ScalarGradientTest, ihilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    LinearAnalyticalFunctions func(n,bx);
+    QuadraticAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
@@ -74,7 +74,7 @@ TEST_F(ScalarGradientTest, jhilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    LinearAnalyticalFunctions func(n,bx);
+    QuadraticAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  
@@ -105,7 +105,7 @@ TEST_F(ScalarGradientTest, khilo)
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};
-    LinearAnalyticalFunctions func(n,bx);
+    QuadraticAnalyticalFunctions func(n,bx);
     
     amrex::FArrayBox scalargradient(bx, AMREX_SPACEDIM);   
     scalargradient.setVal<amrex::RunOn::Host>(0.0);  

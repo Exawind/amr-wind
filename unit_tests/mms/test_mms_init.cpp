@@ -2,7 +2,7 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 
-#include "MMS.H"
+#include "amr-wind/mms/MMS.H"
 
 namespace amr_wind_tests {
 TEST_F(MMSMeshTest, mms_initialization)

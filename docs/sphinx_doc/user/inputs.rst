@@ -526,8 +526,32 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** Boolean, optional, default = false
    
    Perturb temperature field with random fluctuations.
-   This feature is currently deactivated. 
-	
+
+.. input_param:: ABL.theta_amplitude
+
+   **type:** Real, optional, default = 0.8 K
+
+   Amplitude of the temperature perturbations added to the initial field. Only
+   active when :input_param:`ABL.perturb_temperature` is true.
+
+.. input_param:: ABL.cutoff_height
+
+   **type:** Real, optional, default = domain height
+
+   Height below which temperature perturbations are added
+
+.. input_param:: ABL.random_gauss_mean
+
+   **type:** Real, optional, default = 0.0
+
+   Mean for the Gaussian random number generator
+
+.. input_param:: ABL.random_gauss_var
+
+   **type:** Real, optional, default = 1.0
+
+   Variance for the Gaussian random number generator
+
 	
 Section: ``Momentum Sources``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -539,7 +563,7 @@ Section: ``Momentum Sources``
    Activates source terms for the incompressible Navier-Stokes momentum equations. 
    These strings can be entered in any order with a space between each. 
    Current existing source terms for ABL include "BoussinesqBuoyancy", "CoriolisForcing",
-   and "ABLForcing". 
+   "GeostrophicForcing" and "ABLForcing". 
    Other source terms include "MMSForcing" and "DensityBuoyancy".
    
 .. input_param:: BoussinesqBuoyancy.reference_temperature
@@ -583,7 +607,15 @@ Section: ``Momentum Sources``
    North vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
    This vector is automatically normalized within amr-wind.
 
-.. input_param:: ABLForcing.abl_forcing_height 
+.. input_param:: GeostrophicForcing.geostrophic_wind
+
+   **type:** List of 3 reals, optional
+
+   The user has to choose between GeostrophicForcing and ABLForcing. 
+   CoriolisForcing input must be present when using GeostrophicForcing.
+   These checks are not enforced for now.
+   
+.. input_param:: ABLForcing.abl_forcing_height
 
    **type:** Real, mandatory
    
@@ -635,6 +667,8 @@ Helmholtz like solve to advance the momentum equations,
 "nodal_proj" is a node based pressure projection, and "mac_proj" projects velocities to faces. 
 The options are the same for each and the prefix determines which MLMG option is being specified.
 Below the diffusion options are described but the same options apply to "nodal_proj" and "mac_proj".
+It is also possible to specify diffusion solver options for specific equations such as temperature, 
+to do that use "diffusion_temperature" as your prefix.
    
 .. input_param:: diffusion.mg_verbose
 
@@ -681,13 +715,13 @@ Below the diffusion options are described but the same options apply to "nodal_p
    
    Order of the one-sided stencil applied near physical boundaries and fine/coarse boundaries.
    
-.. input_param:: diffusion.mg_mg_rtol
+.. input_param:: diffusion.mg_rtol
 
    **type:** Real, optional, default = 1.0e-11
    
    Set the relative tolerance for the linear solver
    
-.. input_param:: diffusion.mg_mg_atol
+.. input_param:: diffusion.mg_atol
 
    **type:** Real, optional, default = 1.0e-14
    

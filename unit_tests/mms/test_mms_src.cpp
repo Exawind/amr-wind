@@ -2,10 +2,10 @@
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 
-#include "MMS.H"
-#include "MMSForcing.H"
-#include "icns/icns.H"
-#include "icns/icns_ops.H"
+#include "amr-wind/mms/MMS.H"
+#include "amr-wind/mms/MMSForcing.H"
+#include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/equation_systems/icns/icns_ops.H"
 
 namespace amr_wind_tests {
 

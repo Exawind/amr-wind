@@ -119,16 +119,16 @@ add_test_u(unit_tests 1)
 #=============================================================================
 # Regression tests
 #=============================================================================
-add_test_r(tgv_mol 4)
-add_test_r(tgv_godunov 4)
-add_test_r(boussinesq_bubble_mol 4)
-add_test_r(boussinesq_bubble_godunov 4)
-add_test_r(abl_mol 4)
 add_test_r(abl_godunov 4)
+add_test_r(boussinesq_bubble_godunov 4)
+add_test_r(tgv_godunov 4)
+add_test_r(abl_mol 4)
 
 #=============================================================================
 # Regression tests excluded from CI
 #=============================================================================
+add_test_re(tgv_mol 4)
+add_test_re(boussinesq_bubble_mol 4)
 add_test_re(rayleigh_taylor_godunov 4)
 add_test_re(rayleigh_taylor_mol 4)
 add_test_re(abl_godunov_plm 4)
@@ -138,6 +138,7 @@ add_test_re(abl_mol_explicit 4)
 add_test_re(abl_mol_cn 4)
 add_test_re(tgv_godunov_plm 4)
 add_test_re(abl_godunov_restart 4)
+add_test_re(abl_godunov_static_refinement 4)
 if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_godunov 4)
   add_test_re(mms_godunov_plm 4)
