@@ -263,8 +263,6 @@ void ABLWallFunction::computeusingheatflux(){
 
         iter +=1;
 
-        amrex::Print() << "Iter\t" << iter << "Utau \t" << m_utau << "psi_m \t" << m_psi_m << std::endl; 
-        
       } while((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= maxIter);
 
       
