@@ -5,7 +5,7 @@ on:
     branches: [development]
     paths:
       - 'cmake/**'
-      - 'src/**'
+      - 'amr-wind/**'
       - 'submods/**'
       - 'test/**'
       - 'unit_tests/**'
@@ -15,7 +15,7 @@ on:
     branches: [development]
     paths:
       - 'cmake/**'
-      - 'src/**'
+      - 'amr-wind/**'
       - 'submods/**'
       - 'test/**'
       - 'unit_tests/**'
