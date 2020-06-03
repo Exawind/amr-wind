@@ -120,7 +120,7 @@ void IOManager::write_plot_file()
         << m_sim.time().new_time() << std::endl;
     amrex::WriteMultiLevelPlotfile(
         plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
-        mesh.Geom(), m_sim.time().current_time(), istep, mesh.refRatio());
+        mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
 
     write_info_file(plt_filename);
 }
