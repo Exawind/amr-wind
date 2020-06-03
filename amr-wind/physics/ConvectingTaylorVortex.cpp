@@ -9,6 +9,8 @@ namespace amr_wind {
 namespace ctv {
 
 namespace {
+
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 amrex::Real u_exact(
     const amrex::Real u0,
     const amrex::Real v0,
@@ -22,6 +24,7 @@ amrex::Real u_exact(
                     std::exp(-2.0 * omega * t);
 }
 
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE
 amrex::Real v_exact(
     const amrex::Real u0,
     const amrex::Real v0,
