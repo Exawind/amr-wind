@@ -74,6 +74,10 @@ void ConvectingTaylorVortex::initialize_fields(
 {
     using namespace utils;
 
+    const auto u0 = m_u0;
+    const auto v0 = m_v0;
+    const auto omega = m_omega;
+
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
 
@@ -90,8 +94,8 @@ void ConvectingTaylorVortex::initialize_fields(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                vel(i, j, k, 0) = u_exact(m_u0, m_v0, m_omega, x, y, 0.0);
-                vel(i, j, k, 1) = v_exact(m_u0, m_v0, m_omega, x, y, 0.0);
+                vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0);
+                vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 2) = 0.0;
             });
     }
@@ -103,6 +107,10 @@ amrex::Real ConvectingTaylorVortex::compute_error(
 
     amrex::Real error = 0.0;
     const amrex::Real time = m_time.current_time();
+    const auto u0 = m_u0;
+    const auto v0 = m_v0;
+    const auto omega = m_omega;
+
 
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -137,7 +145,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                     const amrex::Real u = fld_arr(i, j, k, comp);
                     const amrex::Real u_exact =
-                        f_exact(m_u0, m_v0, m_omega, x, y, time);
+                        f_exact(u0, v0, omega, x, y, time);
                     err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
                                (u - u_exact);
                 });
@@ -168,5 +176,6 @@ void ConvectingTaylorVortex::output_error()
 void ConvectingTaylorVortex::post_init_actions() { output_error(); }
 
 void ConvectingTaylorVortex::post_advance_work() { output_error(); }
+
 } // namespace ctv
 } // namespace amr_wind
