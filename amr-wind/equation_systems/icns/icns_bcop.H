@@ -35,6 +35,10 @@ struct BCOp<ICNS>
         // Used for fillpatch operation on the source term
         BCSrcTerm bc_src(m_fields.src_term);
         bc_src();
+
+        // Used for fillpatch operation during regrid
+        auto& gradp = m_fields.repo.get_field("gp");
+        gradp.set_default_fillpatch_bc(m_time);
     }
 
     /** Apply boundary conditions before a linear solve
