@@ -18,16 +18,14 @@ MMS::MMS(const CFDSim& sim)
           "mms_vel_source", m_velocity.num_comp(), m_velocity.num_grow()[0], 1))
 {
     std::string masa_name = "";
-    amrex::ParmParse pp("MMS");
-    pp.get("masa_name", masa_name);
+    amrex::ParmParse pp_mms("MMS");
+    pp_mms.get("masa_name", masa_name);
     masa_init("mms", masa_name.c_str());
     for (auto& it : m_params_map) {
-        pp.query(it.first.c_str(), it.second);
+        pp_mms.query(it.first.c_str(), it.second);
     }
-    {
-        amrex::ParmParse pp("transport");
-        pp.query("viscosity", m_params_map["nu"]);
-    }
+    amrex::ParmParse pp_transport("transport");
+    pp_transport.query("viscosity", m_params_map["nu"]);
     for (const auto& it : m_params_map) {
         masa_set_param(it.first.c_str(), it.second);
     }
