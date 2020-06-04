@@ -193,6 +193,19 @@ void Field::fillpatch(amrex::Real time) noexcept
     fillpatch(time, num_grow());
 }
 
+void Field::fillphysbc(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& ng) noexcept
+{
+    BL_PROFILE("amr-wind::Field::fillphysbc")
+    BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
+    auto& fop = *(m_info->m_fillpatch_op);
+    fop.fillphysbc(lev, time, mfab, ng);
+}
+
 void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
 {
   BL_PROFILE("amr-wind::Field::fillphysbc");

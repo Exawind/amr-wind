@@ -296,6 +296,12 @@ public:
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
+    void fillphysbc(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) noexcept;
+
     inline void fillpatch(
         int lev,
         amrex::Real time,
@@ -312,6 +318,15 @@ public:
         int nghost) noexcept
     {
         fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
+    }
+
+    inline void fillphysbc(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        int nghost) noexcept
+    {
+        fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
     }
 
 protected:
