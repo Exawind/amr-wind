@@ -8,35 +8,33 @@ namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
 {
-    amrex::ParmParse pp("ABL");
+    amrex::ParmParse pp1("ABL");
 
     // Temperature variation as a function of height
-    pp.getarr("temperature_heights", m_theta_heights);
-    pp.getarr("temperature_values", m_theta_values);
+    pp1.getarr("temperature_heights", m_theta_heights);
+    pp1.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
     int num_theta_values = m_theta_heights.size();
 
-    pp.query("perturb_velocity", m_perturb_vel);
-    pp.query("perturb_ref_height", m_ref_height);
-    pp.query("Uperiods", m_Uperiods);
-    pp.query("Vperiods", m_Vperiods);
-    pp.query("deltaU", m_deltaU);
-    pp.query("deltaV", m_deltaV);
+    pp1.query("perturb_velocity", m_perturb_vel);
+    pp1.query("perturb_ref_height", m_ref_height);
+    pp1.query("Uperiods", m_Uperiods);
+    pp1.query("Vperiods", m_Vperiods);
+    pp1.query("deltaU", m_deltaU);
+    pp1.query("deltaV", m_deltaV);
 
-    pp.query("perturb_temperature", m_perturb_theta);
-    pp.query("random_gauss_mean", m_theta_gauss_mean);
-    pp.query("random_gauss_var", m_theta_gauss_var);
-    pp.query("cutoff_height", m_theta_cutoff_height);
-    pp.query("theta_amplitude", m_deltaT);
+    pp1.query("perturb_temperature", m_perturb_theta);
+    pp1.query("random_gauss_mean", m_theta_gauss_mean);
+    pp1.query("random_gauss_var", m_theta_gauss_var);
+    pp1.query("cutoff_height", m_theta_cutoff_height);
+    pp1.query("theta_amplitude", m_deltaT);
 
-    {
-        // TODO: Modify this to accept velocity as a function of height
-        // Extract velocity field from incflo
-        amrex::ParmParse lpp("incflo");
-        lpp.get("density", m_rho);
-        lpp.getarr("velocity", m_vel);
-    }
+    // TODO: Modify this to accept velocity as a function of height
+    // Extract velocity field from incflo
+    amrex::ParmParse pp2("incflo");
+    pp2.get("density", m_rho);
+    pp2.getarr("velocity", m_vel);
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);

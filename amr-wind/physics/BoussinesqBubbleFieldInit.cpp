@@ -8,17 +8,14 @@ namespace amr_wind {
 
 BoussinesqBubbleFieldInit::BoussinesqBubbleFieldInit()
 {
-    amrex::ParmParse pp("BoussinesqBubble");
-    pp.queryarr("location", m_loc,0,AMREX_SPACEDIM);
-    pp.query("radius",m_tracer_radius);
-    pp.query("inner_value",m_tracer_inner);
-    pp.query("outer_value",m_tracer_outer);
+    amrex::ParmParse pp1("BoussinesqBubble");
+    pp1.queryarr("location", m_loc,0,AMREX_SPACEDIM);
+    pp1.query("radius",m_tracer_radius);
+    pp1.query("inner_value",m_tracer_inner);
+    pp1.query("outer_value",m_tracer_outer);
 
-    {
-        amrex::ParmParse lpp("incflo");
-        lpp.query("density", m_rho);
-    }
-
+    amrex::ParmParse pp2("incflo");
+    pp2.query("density", m_rho);
 }
 
 void BoussinesqBubbleFieldInit::operator()(
