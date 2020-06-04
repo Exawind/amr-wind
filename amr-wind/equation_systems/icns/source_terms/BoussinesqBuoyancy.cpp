@@ -19,18 +19,18 @@ namespace icns {
 BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
     : m_temperature(sim.repo().get_field("temperature"))
 {
-    amrex::ParmParse pp1(this->identifier());
-    pp1.get("reference_temperature", m_ref_theta);
+    amrex::ParmParse pp_boussinesq_buoyancy(this->identifier());
+    pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
 
-    if (pp1.contains("thermal_expansion_coeff")) {
-        pp1.get("thermal_expansion_coeff", m_beta);
+    if (pp_boussinesq_buoyancy.contains("thermal_expansion_coeff")) {
+        pp_boussinesq_buoyancy.get("thermal_expansion_coeff", m_beta);
     } else {
         m_beta = 1.0 / m_ref_theta;
     }
 
     // FIXME: gravity in `incflo` namespace
-    amrex::ParmParse pp2("incflo");
-    pp2.queryarr("gravity", m_gravity);
+    amrex::ParmParse pp_incflo("incflo");
+    pp_incflo.queryarr("gravity", m_gravity);
 }
 
 BoussinesqBuoyancy::~BoussinesqBuoyancy() = default;

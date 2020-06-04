@@ -8,33 +8,33 @@ namespace amr_wind {
 
 ABLFieldInit::ABLFieldInit()
 {
-    amrex::ParmParse pp1("ABL");
+    amrex::ParmParse pp_abl("ABL");
 
     // Temperature variation as a function of height
-    pp1.getarr("temperature_heights", m_theta_heights);
-    pp1.getarr("temperature_values", m_theta_values);
+    pp_abl.getarr("temperature_heights", m_theta_heights);
+    pp_abl.getarr("temperature_values", m_theta_values);
 
     AMREX_ALWAYS_ASSERT(m_theta_heights.size() == m_theta_values.size());
     int num_theta_values = m_theta_heights.size();
 
-    pp1.query("perturb_velocity", m_perturb_vel);
-    pp1.query("perturb_ref_height", m_ref_height);
-    pp1.query("Uperiods", m_Uperiods);
-    pp1.query("Vperiods", m_Vperiods);
-    pp1.query("deltaU", m_deltaU);
-    pp1.query("deltaV", m_deltaV);
+    pp_abl.query("perturb_velocity", m_perturb_vel);
+    pp_abl.query("perturb_ref_height", m_ref_height);
+    pp_abl.query("Uperiods", m_Uperiods);
+    pp_abl.query("Vperiods", m_Vperiods);
+    pp_abl.query("deltaU", m_deltaU);
+    pp_abl.query("deltaV", m_deltaV);
 
-    pp1.query("perturb_temperature", m_perturb_theta);
-    pp1.query("random_gauss_mean", m_theta_gauss_mean);
-    pp1.query("random_gauss_var", m_theta_gauss_var);
-    pp1.query("cutoff_height", m_theta_cutoff_height);
-    pp1.query("theta_amplitude", m_deltaT);
+    pp_abl.query("perturb_temperature", m_perturb_theta);
+    pp_abl.query("random_gauss_mean", m_theta_gauss_mean);
+    pp_abl.query("random_gauss_var", m_theta_gauss_var);
+    pp_abl.query("cutoff_height", m_theta_cutoff_height);
+    pp_abl.query("theta_amplitude", m_deltaT);
 
     // TODO: Modify this to accept velocity as a function of height
     // Extract velocity field from incflo
-    amrex::ParmParse pp2("incflo");
-    pp2.get("density", m_rho);
-    pp2.getarr("velocity", m_vel);
+    amrex::ParmParse pp_incflo("incflo");
+    pp_incflo.get("density", m_rho);
+    pp_incflo.getarr("velocity", m_vel);
 
     m_thht_d.resize(num_theta_values);
     m_thvv_d.resize(num_theta_values);

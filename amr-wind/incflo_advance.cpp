@@ -41,8 +41,7 @@ void incflo::Advance()
     ApplyPredictor();
 
     if (!m_use_godunov) {
-        auto& vel2 = icns().fields().field;
-        vel2.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        vel.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
         for (auto& eqn: scalar_eqns()) {
             auto& field = eqn->fields().field;
             field.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());

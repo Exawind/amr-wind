@@ -15,11 +15,11 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_forcing_term(this);
 
-    amrex::ParmParse pp1(identifier());
+    amrex::ParmParse pp_abl(identifier());
     // TODO: Allow forcing at multiple heights
-    pp1.get("abl_forcing_height", m_forcing_height);
-    amrex::ParmParse pp2("incflo");
-    pp2.getarr("velocity", m_target_vel);
+    pp_abl.get("abl_forcing_height", m_forcing_height);
+    amrex::ParmParse pp_incflo("incflo");
+    pp_incflo.getarr("velocity", m_target_vel);
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         m_mean_vel[i] = m_target_vel[i];
