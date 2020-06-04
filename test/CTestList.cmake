@@ -5,6 +5,10 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
   message(STATUS "Test golds directory for fcompare: ${FCOMPARE_GOLD_FILES_DIRECTORY}")
 endif()
 
+if(AMR_WIND_ENABLE_MASA AND NOT AMR_WIND_ENABLE_MPI)
+  message(WARNING "Running verification tests without MPI enabled will require long run times")
+endif()
+
 # Have CMake discover the number of cores on the node
 include(ProcessorCount)
 ProcessorCount(PROCESSES)
@@ -72,6 +76,52 @@ function(add_test_red TEST_NAME TEST_DEPENDENCY)
     set_tests_properties(${TEST_DEPENDENCY} PROPERTIES FIXTURES_SETUP fixture_${TEST_DEPENDENCY})
 endfunction(add_test_red)
 
+# Verification test using multiple resolutions
+function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
+    # Make sure run command is cleared before we construct it
+    unset(MASTER_RUN_COMMAND)
+    # Set variables for respective binary and source directories for the test
+    set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
+    set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
+    # Get last item in resolution list so we can find out when we are on the last item in our loop
+    list(GET LIST_OF_GRID_SIZES -1 LAST_GRID_SIZE_IN_LIST)
+    # Create the commands to run for each resolution
+    foreach(GRID_SIZE IN LISTS LIST_OF_GRID_SIZES)
+      # Make working directory for test
+      file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE})
+      # Gather all files in source directory for test
+      file(GLOB TEST_FILES "${CURRENT_TEST_SOURCE_DIR}/*")
+      # Copy files to test working directory
+      file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/")
+      # Set number of cells at runtime according to dimension
+      set(NCELLS "${GRID_SIZE} ${GRID_SIZE} ${GRID_SIZE}")
+      if(AMR_WIND_ENABLE_MPI)
+        set(NP 4)
+        set(MPI_COMMANDS "${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${NP} ${MPIEXEC_PREFLAGS}")
+      else()
+        set(NP 1)
+        unset(MPI_COMMANDS)
+      endif()
+      # Set the run command for this resolution
+      set(RUN_COMMAND_${GRID_SIZE} "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/${TEST_NAME}.i")
+      # Set some runtime options for each resolution
+      set(RUNTIME_OPTIONS_${GRID_SIZE} "amrex.throw_exception=1 amrex.signal_handling=0 amr.n_cell=${NCELLS}")
+      # Construct our large run command for the entire test with everything &&'d together
+      string(APPEND MASTER_RUN_COMMAND "cd ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}")
+      string(APPEND MASTER_RUN_COMMAND " && ")
+      string(APPEND MASTER_RUN_COMMAND "${RUN_COMMAND_${GRID_SIZE}} ${RUNTIME_OPTIONS_${GRID_SIZE}}")
+      # Add another " && " unless we are on the last resolution in the list
+      if(NOT ${GRID_SIZE} EQUAL ${LAST_GRID_SIZE_IN_LIST})
+        string(APPEND MASTER_RUN_COMMAND " && ")
+      endif()
+    endforeach()
+    # Convert list of grid sizes to space separated string
+    list(JOIN LIST_OF_GRID_SIZES " " STRING_OF_GRID_SIZES)
+    # Add test and actual test commands to CTest database (python script requires a very specific python environment)
+    add_test(${TEST_NAME} sh -c "${MASTER_RUN_COMMAND} && cd ${CURRENT_TEST_BINARY_DIR} && ${PYTHON_EXECUTABLE} ${CURRENT_TEST_SOURCE_DIR}/plotter.py -f ${STRING_OF_GRID_SIZES}")
+    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 7200 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}" LABELS "verification;no_ci" ATTACHED_FILES "plots.pdf")
+endfunction(add_test_v)
+
 # Standard unit test
 function(add_test_u TEST_NAME)
     # Set variables for respective binary and source directories for the test
@@ -138,6 +188,10 @@ add_test_red(abl_godunov_restart abl_godunov)
 #=============================================================================
 # Verification tests
 #=============================================================================
+if(AMR_WIND_ENABLE_MASA)
+  set(LIST_OF_GRID_SIZES 8 16 32 64)
+  add_test_v(mms "${LIST_OF_GRID_SIZES}")
+endif()
 
 #=============================================================================
 # Performance tests
