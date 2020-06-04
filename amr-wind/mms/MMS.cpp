@@ -25,8 +25,8 @@ MMS::MMS(const CFDSim& sim)
         pp.query(it.first.c_str(), it.second);
     }
     {
-        amrex::ParmParse pp("transport");
-        pp.query("viscosity", m_params_map["nu"]);
+        amrex::ParmParse lpp("transport");
+        lpp.query("viscosity", m_params_map["nu"]);
     }
     for (const auto& it : m_params_map) {
         masa_set_param(it.first.c_str(), it.second);

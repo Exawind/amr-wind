@@ -20,8 +20,8 @@ ABLForcing::ABLForcing(const CFDSim& sim) : m_time(sim.time())
     pp.get("abl_forcing_height", m_forcing_height);
 
     {
-        amrex::ParmParse pp("incflo");
-        pp.getarr("velocity", m_target_vel);
+        amrex::ParmParse lpp("incflo");
+        lpp.getarr("velocity", m_target_vel);
     }
 
     for (int i = 0; i < AMREX_SPACEDIM; ++i) {

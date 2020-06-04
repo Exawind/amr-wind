@@ -41,8 +41,8 @@ void incflo::Advance()
     ApplyPredictor();
 
     if (!m_use_godunov) {
-        auto& vel = icns().fields().field;
-        vel.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
+        auto& vel2 = icns().fields().field;
+        vel2.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
         for (auto& eqn: scalar_eqns()) {
             auto& field = eqn->fields().field;
             field.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
@@ -137,12 +137,6 @@ void incflo::ApplyPredictor (bool incremental_projection)
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
-    auto& velocity_forces = icns_fields.src_term;
-    // only the old states are used in predictor
-    auto& divtau = m_use_godunov
-                       ? icns_fields.diff_term
-                       : icns_fields.diff_term.state(amr_wind::FieldState::Old);
-
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
@@ -169,8 +163,15 @@ void incflo::ApplyPredictor (bool incremental_projection)
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
         icns().compute_diffusion_term(amr_wind::FieldState::Old);
-        if (m_use_godunov)
+        if (m_use_godunov) {
+            auto& velocity_forces = icns_fields.src_term;
+            // only the old states are used in predictor
+            auto& divtau = m_use_godunov
+                       ? icns_fields.diff_term
+                       : icns_fields.diff_term.state(amr_wind::FieldState::Old);
+
             amr_wind::field_ops::add(velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
+        }
     }
 
 

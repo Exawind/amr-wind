@@ -33,8 +33,6 @@ void print_banner(std::ostream& out)
 
     const char* git_hash = amrex::buildInfoGetGitHash(1);
     const char* amrex_hash = amrex::buildInfoGetGitHash(2);
-    const std::string git_str =
-        (strlen(git_hash) > 0) ? std::string(git_hash) : std::string("Unknown");
     const std::string amrex_git_str =
         (strlen(amrex_hash) > 0) ? std::string(amrex_hash) : std::string("Unknown");
 

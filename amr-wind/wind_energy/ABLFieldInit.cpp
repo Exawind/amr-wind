@@ -33,9 +33,9 @@ ABLFieldInit::ABLFieldInit()
     {
         // TODO: Modify this to accept velocity as a function of height
         // Extract velocity field from incflo
-        amrex::ParmParse pp("incflo");
-        pp.get("density", m_rho);
-        pp.getarr("velocity", m_vel);
+        amrex::ParmParse lpp("incflo");
+        lpp.get("density", m_rho);
+        lpp.getarr("velocity", m_vel);
     }
 
     m_thht_d.resize(num_theta_values);

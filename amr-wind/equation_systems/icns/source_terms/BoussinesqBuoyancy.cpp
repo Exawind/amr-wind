@@ -31,8 +31,8 @@ BoussinesqBuoyancy::BoussinesqBuoyancy(const CFDSim& sim)
 
     // FIXME: gravity in `incflo` namespace
     {
-        amrex::ParmParse pp("incflo");
-        pp.queryarr("gravity", m_gravity);
+        amrex::ParmParse lpp("incflo");
+        lpp.queryarr("gravity", m_gravity);
     }
 }
 

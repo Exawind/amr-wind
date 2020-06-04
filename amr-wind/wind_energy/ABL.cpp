@@ -101,11 +101,11 @@ void ABL::pre_advance_work()
     {
         // TODO: This should be handled by PlaneAveraging
         int output_interval = 1;
-        int plot_type = 0;
         amrex::ParmParse pp("io");
         pp.query("line_plot_int", output_interval);
 
         if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
+            int plot_type = 0;
             pp.query("line_plot_type", plot_type);
             PlaneAveraging pa(2);
             pa(m_sim.mesh().Geom(), m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature->vec_ptrs());

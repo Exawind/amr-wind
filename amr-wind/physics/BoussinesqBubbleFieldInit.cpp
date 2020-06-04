@@ -15,8 +15,8 @@ BoussinesqBubbleFieldInit::BoussinesqBubbleFieldInit()
     pp.query("outer_value",m_tracer_outer);
 
     {
-        amrex::ParmParse pp("incflo");
-        pp.query("density", m_rho);
+        amrex::ParmParse lpp("incflo");
+        lpp.query("density", m_rho);
     }
 
 }
