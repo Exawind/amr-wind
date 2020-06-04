@@ -668,7 +668,7 @@ Helmholtz like solve to advance the momentum equations,
 The options are the same for each and the prefix determines which MLMG option is being specified.
 Below the diffusion options are described but the same options apply to "nodal_proj" and "mac_proj".
 It is also possible to specify diffusion solver options for specific equations such as temperature, 
-to do that use "diffusion_temperature" as your prefix.
+to do that use "temperature_diffusion" as your prefix.
    
 .. input_param:: diffusion.mg_verbose
 
