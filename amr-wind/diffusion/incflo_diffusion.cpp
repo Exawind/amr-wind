@@ -285,12 +285,12 @@ average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_e
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
-    Array<MultiFab,AMREX_SPACEDIM> r{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
+    Array<MultiFab,AMREX_SPACEDIM> r{{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
-                                              dm, 1, 0, MFInfo(), fact)};
+                                              dm, 1, 0, MFInfo(), fact)}};
     amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, geom);
     fixup_eta_on_domain_faces(geom, r, cc_eta);
     return r;
@@ -304,12 +304,12 @@ average_tracer_eta_to_faces (int comp, const amrex::Geometry& geom, MultiFab con
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
     MultiFab cc(cc_eta, amrex::make_alias, comp, 1);
-    Array<MultiFab,AMREX_SPACEDIM> r{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
+    Array<MultiFab,AMREX_SPACEDIM> r{{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
                                               dm, 1, 0, MFInfo(), fact),
                                      MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
-                                              dm, 1, 0, MFInfo(), fact)};
+                                              dm, 1, 0, MFInfo(), fact)}};
     amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, geom);
     fixup_eta_on_domain_faces(geom, r, cc);
     return r;

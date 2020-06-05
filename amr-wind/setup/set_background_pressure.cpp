@@ -6,9 +6,9 @@ void incflo::set_background_pressure ()
 {
     const auto problo = geom[0].ProbLoArray();
     const auto probhi = geom[0].ProbHiArray();
-    GpuArray<Real,AMREX_SPACEDIM> problen{probhi[0]-problo[0],
-                                          probhi[1]-problo[1],
-                                          probhi[2]-problo[2]};
+    GpuArray<Real,AMREX_SPACEDIM> problen{{probhi[0]-problo[0],
+                                           probhi[1]-problo[1],
+                                           probhi[2]-problo[2]}};
 
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
     amrex::Vector<amrex::Real> m_delp{{0.0, 0.0, 0.0}};
