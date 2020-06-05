@@ -7,7 +7,7 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
     list(APPEND AMR_WIND_Fortran_FLAGS "-Wall")
   else()
     # Intel always reports some diagnostics we don't necessarily care about
-    list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076")
+    list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076,15335")
   endif()
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
     # Avoid notes about -faligned-new with GCC > 7
