@@ -109,7 +109,7 @@ function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
       # Construct our large run command for the entire test with everything &&'d together
       string(APPEND MASTER_RUN_COMMAND "cd ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}")
       string(APPEND MASTER_RUN_COMMAND " && ")
-      string(APPEND MASTER_RUN_COMMAND "${RUN_COMMAND_${GRID_SIZE}} ${RUNTIME_OPTIONS_${GRID_SIZE}}")
+      string(APPEND MASTER_RUN_COMMAND "${RUN_COMMAND_${GRID_SIZE}} ${RUNTIME_OPTIONS_${GRID_SIZE}} > ${TEST_NAME}_${GRID_SIZE}.log")
       # Add another " && " unless we are on the last resolution in the list
       if(NOT ${GRID_SIZE} EQUAL ${LAST_GRID_SIZE_IN_LIST})
         string(APPEND MASTER_RUN_COMMAND " && ")
