@@ -10,28 +10,26 @@ namespace ctv {
 
 namespace {
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
-amrex::Real u_exact(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
     const amrex::Real x,
     const amrex::Real y,
-    const amrex::Real t)
+    const amrex::Real t) const
 {
     return u0 - std::cos(utils::pi() * (x - u0 * t)) *
                     std::sin(utils::pi() * (y - v0 * t)) *
                     std::exp(-2.0 * omega * t);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE
-amrex::Real v_exact(
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
     const amrex::Real x,
     const amrex::Real y,
-    const amrex::Real t)
+    const amrex::Real t) const
 {
     return v0 + std::sin(utils::pi() * (x - u0 * t)) *
                     std::cos(utils::pi() * (y - v0 * t)) *
@@ -83,6 +81,9 @@ void ConvectingTaylorVortex::initialize_fields(
 
     density.setVal(m_rho);
 
+    UExact u_exact;
+    VExact v_exact;
+
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
@@ -101,8 +102,8 @@ void ConvectingTaylorVortex::initialize_fields(
     }
 }
 
-amrex::Real ConvectingTaylorVortex::compute_error(
-    const int comp, const Field& field, amr_wind::ctv::FuncDef f_exact)
+template <typename T>
+amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 {
 
     amrex::Real error = 0.0;
@@ -110,7 +111,8 @@ amrex::Real ConvectingTaylorVortex::compute_error(
     const auto u0 = m_u0;
     const auto v0 = m_v0;
     const auto omega = m_omega;
-
+    T f_exact;
+    const auto comp = f_exact.m_comp;
 
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -161,8 +163,8 @@ amrex::Real ConvectingTaylorVortex::compute_error(
 
 void ConvectingTaylorVortex::output_error()
 {
-    const amrex::Real u_err = compute_error(0, m_velocity, u_exact);
-    const amrex::Real v_err = compute_error(1, m_velocity, v_exact);
+    const amrex::Real u_err = compute_error<UExact>(m_velocity);
+    const amrex::Real v_err = compute_error<VExact>(m_velocity);
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;
