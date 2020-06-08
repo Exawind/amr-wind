@@ -7,7 +7,31 @@
 
 namespace amr_wind {
 namespace ctv {
-using FuncDef = double (*)(double, double, double, double, double, double);
+
+namespace {
+struct UExact
+{
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real) const;
+};
+
+struct VExact
+{
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real,
+        const amrex::Real) const;
+};
+
+} // namespace
 
 /** Convecting Taylor Vortex physics
  */
@@ -22,7 +46,8 @@ public:
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
-    amrex::Real compute_error(const int, const Field&, FuncDef);
+    template <typename T>
+    amrex::Real compute_error(const int, const Field&, const T&);
 
     void post_init_actions() override;
 
