@@ -17,7 +17,7 @@ void godunov::predict_plm_x(
     Vector<BCRec> const& h_bcrec,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
-    BL_PROFILE("amr-wind::godunov::predict_plm_x")
+    BL_PROFILE("amr-wind::godunov::predict_plm_x");
     const Real dx = geom[lev].CellSize(0);
     const Real dtdx = dt / dx;
 
@@ -100,7 +100,7 @@ void godunov::predict_plm_y(
     Vector<BCRec> const& h_bcrec,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
-    BL_PROFILE("amr-wind::godunov::predict_plm_y")
+    BL_PROFILE("amr-wind::godunov::predict_plm_y");
     const Real dy = geom[lev].CellSize(1);
     const Real dtdy = dt / dy;
 
@@ -183,7 +183,7 @@ void godunov::predict_plm_z(
     Vector<BCRec> const& h_bcrec,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
-    BL_PROFILE("amr-wind::godunov::predict_plm_z")
+    BL_PROFILE("amr-wind::godunov::predict_plm_z");
 
     const Real dz = geom[lev].CellSize(2);
     const Real dtdz = dt / dz;

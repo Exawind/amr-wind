@@ -16,7 +16,7 @@ void godunov::predict_ppm (int lev, Box const& bx, int /* ncomp */,
                           Real dt,
                           amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
-    BL_PROFILE("amr-wind::godunov::predict_ppm")
+    BL_PROFILE("amr-wind::godunov::predict_ppm");
     const auto dx = geom[lev].CellSizeArray();
     const Box& domain = geom[lev].Domain();
     const Dim3 dlo = amrex::lbound(domain);

@@ -10,7 +10,7 @@ void incflo::MakeNewLevelFromCoarse (int lev,
                                      const BoxArray& ba,
                                      const DistributionMapping& dm)
 {
-    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromCoarse()")
+    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromCoarse()");
 
     if (m_verbose > 0) {
         amrex::Print() << "Making new level " << lev << " from coarse" << std::endl;
@@ -25,7 +25,7 @@ void incflo::MakeNewLevelFromCoarse (int lev,
 void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
 			 const DistributionMapping& dm)
 {
-    BL_PROFILE("amr-wind::incflo::RemakeLevel()")
+    BL_PROFILE("amr-wind::incflo::RemakeLevel()");
 
     if (m_verbose > 0) {
         amrex::Print() << "Remaking level " << lev << std::endl;
@@ -38,6 +38,6 @@ void incflo::RemakeLevel (int lev, Real time, const BoxArray& ba,
 // overrides the pure virtual function in AmrCore
 void incflo::ClearLevel (int lev)
 {
-    BL_PROFILE("amr-wind::incflo::ClearLevel()")
+    BL_PROFILE("amr-wind::incflo::ClearLevel()");
     m_repo.clear_level(lev);
 }

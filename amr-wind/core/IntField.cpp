@@ -55,7 +55,7 @@ amrex::Vector<const amrex::iMultiFab*> IntField::vec_const_ptrs() const noexcept
 
 void IntField::setVal(int value) noexcept
 {
-    BL_PROFILE("amr-wind::IntField::setVal 1")
+    BL_PROFILE("amr-wind::IntField::setVal 1");
     for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
         operator()(lev).setVal(value);
     }
@@ -63,7 +63,7 @@ void IntField::setVal(int value) noexcept
 
 void IntField::setVal(int value, int start_comp, int num_comp, int nghost) noexcept
 {
-    BL_PROFILE("amr-wind::IntField::setVal 2")
+    BL_PROFILE("amr-wind::IntField::setVal 2");
     for (int lev=0; lev < m_repo.num_active_levels(); ++lev) {
         operator()(lev).setVal(value, start_comp, num_comp, nghost);
     }
@@ -71,7 +71,7 @@ void IntField::setVal(int value, int start_comp, int num_comp, int nghost) noexc
 
 void IntField::setVal(const amrex::Vector<int>& values, int nghost) noexcept
 {
-    BL_PROFILE("amr-wind::IntField::setVal 3")
+    BL_PROFILE("amr-wind::IntField::setVal 3");
     AMREX_ASSERT(num_comp() == static_cast<int>(values.size()));
 
     // Update 1 component at a time

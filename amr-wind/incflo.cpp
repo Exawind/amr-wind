@@ -31,7 +31,7 @@ incflo::~incflo ()
 
 void incflo::InitData ()
 {
-    BL_PROFILE("amr-wind::incflo::InitData()")
+    BL_PROFILE("amr-wind::incflo::InitData()");
 
     // Initialize I/O manager to enable restart and outputs
     auto& io_mgr = m_sim.io_manager();
@@ -97,7 +97,7 @@ void incflo::InitData ()
 
 void incflo::Evolve()
 {
-    BL_PROFILE("amr-wind::incflo::Evolve()")
+    BL_PROFILE("amr-wind::incflo::Evolve()");
 
     if (m_KE_int > 0 && m_sim.io_manager().restart_file().empty()) {
         amrex::Print() << "\nTime, Kinetic Energy: " << m_time.new_time()
@@ -170,7 +170,7 @@ void incflo::Evolve()
 void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_grids,
                                       const DistributionMapping& new_dmap)
 {
-    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()")
+    BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()");
 
     if (m_verbose > 0)
     {

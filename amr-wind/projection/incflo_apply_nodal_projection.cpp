@@ -55,7 +55,7 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
 void incflo::ApplyProjection (Vector<MultiFab const*> density,
                               Real time, Real scaling_factor, bool incremental)
 {
-    BL_PROFILE("amr-wind::incflo::ApplyProjection")
+    BL_PROFILE("amr-wind::incflo::ApplyProjection");
 
     // If we have dropped the dt substantially for whatever reason,
     // use a different form of the approximate projection that
