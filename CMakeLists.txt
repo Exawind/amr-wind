@@ -127,7 +127,7 @@ endif()
 #Define what we want to be installed during a make install 
 install(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
-  EXPORT AMRWindTargets
+  EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
@@ -140,17 +140,17 @@ install(
 export(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
   NAMESPACE ${PROJECT_NAME}::
-  FILE AMRWindTargets.cmake
+  FILE ${PROJECT_NAME}Targets.cmake
   )
 
 install(
-  EXPORT AMRWindTargets
+  EXPORT ${PROJECT_NAME}Targets
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 configure_package_config_file(
-  cmake/AMRWindConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/AMRWindConfig.cmake
+  cmake/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/AMRWindConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
