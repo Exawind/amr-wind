@@ -265,19 +265,27 @@ void wall_model_bc(
                             // bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
+                            // bc(i, j, k - 1, 1) = 0.0;
 
 
                             amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, planarlo.z, 0)*
-                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 0) +
-                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 1)*
-                                                                  m_store_xy_vel_arr(i, j, planarlo.z, 1));
+                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 0) +
+                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 1)*
+                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 1));
 
-                            bc(i, j, k - 1, 0) = den(i, j, k)*utau2*
-                                m_store_xy_vel_arr(i, j, planarlo.z, 0)*instWindSpeed/
-                                (std::abs(velmean[0])*mean_wind*mu);
-                            bc(i, j, k - 1, 1) = den(i, j, k)*utau2*
-                                m_store_xy_vel_arr(i, j, planarlo.z, 1)*instWindSpeed/
-                                (std::abs(velmean[1])*mean_wind*mu);
+                            bc(i, j, k - 1, 0) = den(i, j, k)*utau2*((m_store_xy_vel_arr(i, j, planarlo.z, 0)-
+                                                                      velmean[0])*mean_wind + instWindSpeed*velmean[0])/
+                                (mean_wind*std::abs(velmean[0])*mu);
+
+                            if(std::abs(velmean[1]) > 1e-1) {
+                              bc(i, j, k - 1, 1) = den(i, j, k)*utau2*((m_store_xy_vel_arr(i, j, planarlo.z, 1)-
+                                                                        velmean[1])*mean_wind + instWindSpeed*velmean[1])/
+                                  (mean_wind*std::abs(velmean[1])*mu);
+                            } else {
+                              bc(i, j, k - 1, 1) = 0.0;
+                            }
+
+
 
                         });
                 }
