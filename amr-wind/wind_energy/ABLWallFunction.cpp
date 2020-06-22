@@ -69,8 +69,8 @@ void ABLWallFunction::init_log_law_height()
         const auto dhi = amrex::ubound(domain);
 
         const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
-        m_z_sample_index = dlo.z + std::round((m_log_law_height -
-                                               geom[m_mesh.finestLevel()].ProbLo(2))/dz) + 1;
+        m_z_sample_index = dlo.z + static_cast<int> (std::floor((m_log_law_height -
+                                                                 geom[m_mesh.finestLevel()].ProbLo(2))/dz));
 
         // assuming Z is wall normal direction
         m_ncells_x = dhi.x-dlo.x+1;
