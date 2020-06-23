@@ -131,7 +131,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                       mu_arr(i,j,k) * (1.0 + 2.0 * tlscale_arr(i,j,k)/ds)
                       * stratification;
 
-                  shear_prod_arr(i,j,k) *= mu_arr(i,j,k);
+                  shear_prod_arr(i,j,k) *= shear_prod_arr(i,j,k) * mu_arr(i,j,k);
                   
                     });
         }
