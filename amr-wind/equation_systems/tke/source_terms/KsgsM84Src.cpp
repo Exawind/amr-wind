@@ -1,6 +1,6 @@
-#include "KsgsM84Src.H"
-#include "CFDSim.H"
-#include "TurbulenceModel.H"
+#include "amr-wind/equation_systems/tke/source_terms/KsgsM84Src.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
 
 namespace amr_wind {
 namespace pde {

@@ -1,9 +1,9 @@
-#include "OneEqKsgs.H"
-#include "PDEBase.H"
-#include "TurbModelDefs.H"
-#include "derive_K.H"
-#include "turb_utils.H"
-#include "tke/TKE.H"
+#include "amr-wind/turbulence/LES/OneEqKsgs.H"
+#include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/turbulence/TurbModelDefs.H"
+#include "amr-wind/derive/derive_K.H"
+#include "amr-wind/turbulence/turb_utils.H"
+#include "amr-wind/equation_systems/tke/TKE.H"
 
 #include "AMReX_ParmParse.H"
 

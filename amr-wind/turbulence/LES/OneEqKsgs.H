@@ -2,7 +2,7 @@
 #define ONEEQKSGS_H
 
 #include <string>
-#include "TurbModelBase.H"
+#include "amr-wind/turbulence/TurbModelBase.H"
 
 namespace amr_wind {
 namespace turbulence {
