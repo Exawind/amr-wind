@@ -17,13 +17,15 @@ endif()
 
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
-separate_arguments(AMR_WIND_Fortran_FLAGS)
 target_compile_options(
   ${amr_wind_lib_name} PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
-target_compile_options(
-  ${amr_wind_lib_name} PUBLIC
-  $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+if (AMR_WIND_ENABLE_FORTRAN)
+  separate_arguments(AMR_WIND_Fortran_FLAGS)
+  target_compile_options(
+    ${amr_wind_lib_name} PUBLIC
+    $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+endif()
 
 # Building on CUDA requires additional considerations
 if (AMR_WIND_ENABLE_CUDA)

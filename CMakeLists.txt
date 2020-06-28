@@ -1,7 +1,7 @@
 ############################ BASE ######################################
 
 cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
-project(AMR-Wind CXX C Fortran)
+project(AMR-Wind CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -9,6 +9,7 @@ include(GNUInstallDirs)
 ########################## OPTIONS #####################################
 
 #General options for the project
+option(AMR_WIND_ENABLE_FORTRAN "Enable Fortran interfaces" OFF)
 option(AMR_WIND_ENABLE_DOCUMENTATION "Build documentation" OFF)
 option(AMR_WIND_ENABLE_SPHINX_API_DOCS "Link Doxygen API docs to Sphinx" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" OFF)
@@ -78,9 +79,12 @@ add_executable(${amr_wind_exe_name})
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
-#Keep our Fortran module files confined to a directory
-set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
-                     "${CMAKE_BINARY_DIR}/fortran_modules/")
+if (AMR_WIND_ENABLE_FORTRAN)
+  #Keep our Fortran module files confined to a directory
+  set_target_properties(
+    ${amr_wind_lib_name} PROPERTIES
+    Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/fortran_modules/")
+endif()
 
 if(AMR_WIND_ENABLE_MASA)
   set(CMAKE_PREFIX_PATH ${MASA_DIR} ${CMAKE_PREFIX_PATH})
