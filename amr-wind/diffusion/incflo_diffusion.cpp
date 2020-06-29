@@ -309,6 +309,82 @@ void wall_model_bc(
     } // level loop
 }
 
+void temp_wall_model_bc(
+    amr_wind::Field& temperature,
+    const amrex::Real heat_flux)
+{
+    BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc")
+
+    auto& repo = temperature.repo();
+    auto& density = repo.get_field("density", fstate);
+    auto& alpha = repo.get_field("temperature_mueff");
+    const int nlevels = repo.num_active_levels();
+
+    amrex::Orientation xlo(amrex::Direction::x, amrex::Orientation::low);
+    amrex::Orientation ylo(amrex::Direction::y, amrex::Orientation::low);
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
+    amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    auto m_store_xy_vel_arr = inst_plane_vel.array();
+    const auto& bxPlanar = inst_plane_vel.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+    const auto planarhi = amrex::ubound(bxPlanar);
+
+    // copies cell center to face
+    Real c0 = 1.0;
+    Real c1 = 0.0;
+
+    // linear extrapolate onto face
+    if(extrapolate)
+    {
+        c0 =  1.5;
+        c1 = -0.5;
+    }
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& temp_lev = temperature(lev);
+        auto& alpha_lev = alpha(lev);
+
+        if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto temp = temp_lev.array(mfi);
+            auto bc  = temp_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto alphaT = alpha_lev.array(mfi);
+
+            int idim = 2;
+
+            if (!geom.isPeriodic(idim)) {
+                if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                          const Real alphaT_wall  = c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
+                          // Inhomogeneous Neumann BC
+                          bc(i, j, k - 1) = den(i, j, k)*heat_flux/alphaT_wall;
+
+                        });
+                }
+            }
+        }
+
+    }
+
+}
+
 Array<MultiFab,AMREX_SPACEDIM>
 average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_eta)
 {

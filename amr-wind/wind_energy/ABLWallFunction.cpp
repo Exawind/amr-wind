@@ -81,7 +81,9 @@ void ABLWallFunction::init_log_law_height()
         amrex::Real zcellP = first_cell_height + (m_z_sample_index+1)*dz;
 
         m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
-        m_coeff_interp[1] = (m_log_law_height-zcellN)/dz;
+        m_coeff_interp[1] = 1.0 - m_coeff_interp[0];
+
+        amrex::Print() << "index of Z sample\t" << m_z_sample_index << "\tInterpolate coeff\t" << m_coeff_interp[0] ;
 
         amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
         amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
@@ -309,6 +311,17 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
         velocity, m_wall_func.utau(), utils::vec_mag(m_wall_func.umean().data()),
         rho_state, m_wall_func.instplanar(), m_wall_func.umean(),
         m_wall_func.meanwindspeed());
+}
+
+ABLTempWallFunc::ABLTempWallFunc(
+    Field&,
+    const ABLWallFunction& wall_fuc)
+    : m_wall_func(wall_fuc)
+{}
+
+void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state){
+
+  diffusion::temp_wall_model_bc(temperature, m_wall_func.heatflux_wall());
 }
 
 } // namespace amr_wind

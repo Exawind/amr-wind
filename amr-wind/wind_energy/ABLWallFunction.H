@@ -47,6 +47,8 @@ public:
 
     amrex::Real meanwindspeed() const {return m_mean_windSpeed;}
 
+    amrex::Real heatflux_wall() const {return m_abl_surface_flux;}
+
 private:
 
     const CFDSim& m_sim;
@@ -111,6 +113,17 @@ public:
     ABLVelWallFunc(Field& velocity, const ABLWallFunction& wall_func);
 
     void operator()(Field& velocity, const FieldState rho_state) override;
+
+private:
+    const ABLWallFunction& m_wall_func;
+};
+
+class ABLTempWallFunc : public FieldBCIface
+{
+public:
+    ABLTempWallFunc(Field& temperature, const ABLWallFunction& wall_func);
+
+    void operator()(Field& temperature, const FieldState rho_state) override;
 
 private:
     const ABLWallFunction& m_wall_func;

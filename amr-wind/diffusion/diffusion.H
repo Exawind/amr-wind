@@ -1,3 +1,4 @@
+
 #ifndef DIFFUSION_H
 #define DIFFUSION_H
 
@@ -14,6 +15,10 @@ void wall_model_bc(
     const amrex::FArrayBox& instplanar,
     const amrex::Array<amrex::Real, AMREX_SPACEDIM>& umean,
     const amrex::Real windspeed);
+
+void temp_wall_model_bc(
+    amr_wind::Field& temperature,
+    const amrex::Real heat_flux);
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
 get_diffuse_tensor_bc(
