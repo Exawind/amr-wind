@@ -85,13 +85,14 @@ void ABL::post_init_actions()
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-
     if (m_bndry_plane->is_initialized()) {
         m_bndry_plane->write_header();
         m_bndry_plane->write_file();
         m_bndry_plane->read_header();
         m_bndry_plane->read_file();
     }
+    *m_temperature.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
+
 }
 
 /** Perform tasks at the beginning of a new timestep
