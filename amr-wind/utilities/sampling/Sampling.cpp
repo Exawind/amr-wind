@@ -138,7 +138,7 @@ void Sampling::write_native()
     const std::string post_dir = "post_processing";
     const std::string sdir =
         amrex::Concatenate(m_label, m_sim.time().time_index());
-    amrex::Vector<std::string> int_var_names{"set_id", "probe_id"};
+    amrex::Vector<std::string> int_var_names{"uid", "set_id", "probe_id"};
 
     m_scontainer->WritePlotFile(
         post_dir, sdir, m_var_names, int_var_names,

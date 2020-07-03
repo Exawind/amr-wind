@@ -14,14 +14,15 @@ namespace sampling {
 class SamplerBase;
 
 static constexpr int SNStructReal = 0;
-static constexpr int SNStructInt = 2;
+static constexpr int SNStructInt = 3;
 static constexpr int SNArrayReal = 0;
 static constexpr int SNArrayInt = 0;
 
 struct IIx
 {
     enum Indices {
-        sid = 0, ///< Identifier of the set this particle belongs to
+        uid = 0, ///< Unique identifier for this particle
+        sid,     ///< Identifier of the set this particle belongs to
         nid      ///< Index within the set for this particle
     };
 };

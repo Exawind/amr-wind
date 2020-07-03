@@ -123,6 +123,7 @@ void SamplingContainer::initialize_particles(
             pp.pos(1) = locs[ip][1];
             pp.pos(2) = locs[ip][2];
 
+            pp.idata(IIx::uid) = pidx;
             pp.idata(IIx::sid) = probe->id();
             pp.idata(IIx::nid) = ip;
 
