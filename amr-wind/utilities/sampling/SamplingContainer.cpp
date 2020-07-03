@@ -132,8 +132,6 @@ void SamplingContainer::initialize_particles(
     }
 
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
-    // Redistribute particles to appropriate boxes/MPI ranks
-    Redistribute();
 }
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)

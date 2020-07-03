@@ -61,6 +61,8 @@ void Sampling::initialize()
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
     m_scontainer->setup_container(ncomp);
     m_scontainer->initialize_particles(m_samplers);
+    // Redistribute particles to appropriate boxes/MPI ranks
+    m_scontainer->Redistribute();
 }
 
 void Sampling::initialize_particles()
