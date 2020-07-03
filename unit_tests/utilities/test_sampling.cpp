@@ -3,6 +3,7 @@
 
 #include "amr-wind/utilities/sampling/Sampling.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
+#include "amr-wind/utilities/sampling/PlaneSampler.H"
 
 namespace amr_wind_tests {
 
@@ -166,6 +167,36 @@ TEST_F(SamplingTest, sampling)
     SamplingImpl probes(sim(), "sampling");
     probes.initialize();
     probes.post_advance_work();
+}
+
+TEST_F(SamplingTest, plane_sampler)
+{
+    initialize_mesh();
+
+    {
+        amrex::ParmParse pp("plane");
+        pp.addarr("axis1", amrex::Vector<double>{0.0, 1.0, 0.0});
+        pp.addarr("axis2", amrex::Vector<double>{0.0, 0.0, 1.0});
+        pp.addarr("origin", amrex::Vector<double>{0.0, 0.0, 0.0});
+        pp.addarr("num_points", amrex::Vector<int>{3, 3});
+        pp.addarr("offsets", amrex::Vector<double>{-1.0, 1.0});
+        pp.addarr("normal", amrex::Vector<double>{1.0, 0.0, 0.0});
+    }
+
+    amr_wind::sampling::PlaneSampler plane(sim());
+    plane.initialize("plane");
+    amr_wind::sampling::PlaneSampler::SampleLocType locs;
+    plane.sampling_locations(locs);
+
+    ASSERT_EQ(locs.size(), 3 * 3 * 2);
+#if 0
+    for (amrex::Long i=0; i < locs.size(); ++i) {
+        for (int d=0; d < AMREX_SPACEDIM; ++d) {
+            std::cerr << locs[i][d] << " ";
+        }
+        std::cerr << std::endl;
+    }
+#endif
 }
 
 }
