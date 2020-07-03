@@ -126,6 +126,10 @@ void Sampling::process_output()
 {
     if (m_out_fmt == "native") {
         write_native();
+    } else if (m_out_fmt == "ascii") {
+        amrex::Print() << "WARNING: Sampling: ASCII format will impact performance"
+                       << std::endl;
+        m_scontainer->WriteAsciiFile(m_label);
     } else if (m_out_fmt == "netcdf") {
         amrex::Abort("Sampling: NetCDF format not yet supported");
     } else {
