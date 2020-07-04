@@ -1,6 +1,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/utilities/PostProcessing.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -12,6 +13,7 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     , m_repo(m_mesh)
     , m_pde_mgr(*this)
     , m_io_mgr(new IOManager(*this))
+    , m_post_mgr(new PostProcessManager(*this))
 {}
 
 CFDSim::~CFDSim() = default;

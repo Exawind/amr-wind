@@ -10,6 +10,8 @@ target_sources(${amr_wind_lib_name}
       FieldPlaneAveraging.cpp
       SecondMomentAveraging.cpp
       ThirdMomentAveraging.cpp
+
+      PostProcessing.cpp
    )
 
 add_subdirectory(tagging)

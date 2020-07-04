@@ -10,6 +10,7 @@
 #include "amr-wind/diffusion/diffusion.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/utilities/PostProcessing.H"
 
 using namespace amrex;
 
@@ -53,6 +54,7 @@ void incflo::Advance()
     for (auto& pp: m_sim.physics())
         pp->post_advance_work();
 
+    m_sim.post_manager().post_advance_work();
     if (m_verbose > 1) PrintMaxValues("end of timestep");
 }
 
