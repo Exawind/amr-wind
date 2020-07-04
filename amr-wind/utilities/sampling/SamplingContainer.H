@@ -18,6 +18,8 @@ static constexpr int SNStructInt = 3;
 static constexpr int SNArrayReal = 0;
 static constexpr int SNArrayInt = 0;
 
+/** Indexing for the integer variables defined on the AMReX particle
+ */
 struct IIx
 {
     enum Indices {
@@ -27,6 +29,29 @@ struct IIx
     };
 };
 
+/** Specialization of the AMReX ParticleContainer object for sampling data
+ *
+ *  Represents the data probes as a collection of particles that are uniquely
+ *  identified by three integer identifiers:
+ *
+ *   - a universal identifier (UID) that is unique to each particle,
+ *   - a set identifier that represents a group (e.g., line, plane) of particles
+ *   - a node identifier that represents indexing of this particle within the group
+ *
+ *  The quantities of interest are themselves stored as runtime components based
+ *  on user-defined inputs.
+ *
+ *
+ *  Notes:
+ *
+ *   - The implementation uses linear interpolation in three directions to
+ *     determine the data at a given probe location
+ *
+ *   - For non-nodal fields, the current implementation requires at-least one
+ *     ghost cell to allow linear interpolation.
+ *
+ *   - Interpolation near domain boundaries does not currently handle `hoextrap`
+ */
 class SamplingContainer
     : public amrex::AmrParticleContainer<
           SNStructReal,

@@ -14,8 +14,11 @@ Sampling::~Sampling() = default;
 
 void Sampling::initialize()
 {
+    BL_PROFILE("amr-wind::Sampling::initialize");
+
     // Labels for the different sampler types
     amrex::Vector<std::string> labels;
+    // Fields to be sampled - requested by user
     amrex::Vector<std::string> field_names;
 
     {
@@ -43,6 +46,7 @@ void Sampling::initialize()
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
 
+    // Load different probe types, default probe type is line
     int idx = 0;
     for (auto& lbl : labels) {
         const std::string key = m_label + "/" + lbl;
@@ -58,6 +62,7 @@ void Sampling::initialize()
         m_samplers.emplace_back(std::move(obj));
     }
 
+    // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
     m_scontainer->setup_container(ncomp);
     m_scontainer->initialize_particles(m_samplers);
@@ -67,6 +72,7 @@ void Sampling::initialize()
 
 void Sampling::post_advance_work()
 {
+    BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
@@ -92,6 +98,8 @@ void Sampling::process_output()
 
 void Sampling::impl_write_native()
 {
+    BL_PROFILE("amr-wind::Sampling::write_native");
+
     const std::string post_dir = "post_processing";
     const std::string sdir =
         amrex::Concatenate(m_label, m_sim.time().time_index());
@@ -107,6 +115,7 @@ void Sampling::impl_write_native()
 
 void Sampling::write_ascii()
 {
+    BL_PROFILE("amr-wind::Sampling::write_ascii");
     amrex::Print() << "WARNING: Sampling: ASCII output will impact performance"
                    << std::endl;
 

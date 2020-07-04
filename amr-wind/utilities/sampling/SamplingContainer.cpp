@@ -30,6 +30,8 @@ void sample_field(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& offset)
 {
+    BL_PROFILE("amr-wind::SamplingContainer::sample_impl");
+
     auto* pstruct = pvec.data();
     auto* parr = &(pavec[0]);
 
@@ -72,6 +74,7 @@ void sample_field(
 void SamplingContainer::setup_container(
     const int num_real_components, const int num_int_components)
 {
+    BL_PROFILE("amr-wind::SamplingContainer::setup");
     const bool communicate_comp = true;
     for (int i = 0; i < num_real_components; ++i) AddRealComp(communicate_comp);
     for (int i = 0; i < num_int_components; ++i) AddIntComp(communicate_comp);
@@ -87,6 +90,8 @@ void SamplingContainer::setup_container(
 void SamplingContainer::initialize_particles(
     const amrex::Vector<std::unique_ptr<SamplerBase>>& samplers)
 {
+    BL_PROFILE("amr-wind::SamplingContainer::initialize");
+
     // We will assign all particles to the first box in level 0 and let
     // redistribute scatter it to the appropriate rank and box.
     const int lev = 0;
@@ -136,6 +141,8 @@ void SamplingContainer::initialize_particles(
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
 {
+    BL_PROFILE("amr-wind::SamplingContainer::interpolate");
+
     const int nlevels = m_mesh.finestLevel() + 1;
 
     for (int lev = 0; lev < nlevels; ++lev) {
