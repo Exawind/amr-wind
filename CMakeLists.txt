@@ -26,6 +26,7 @@ option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 
 # Third party libraries
+option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 
 #Options for C++
@@ -84,6 +85,11 @@ if (AMR_WIND_ENABLE_FORTRAN)
   set_target_properties(
     ${amr_wind_lib_name} PROPERTIES
     Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/fortran_modules/")
+endif()
+
+if (AMR_WIND_ENABLE_NETCDF)
+  set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(NetCDF REQUIRED)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)
