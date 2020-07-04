@@ -80,7 +80,7 @@ void Sampling::post_advance_work()
 void Sampling::process_output()
 {
     if (m_out_fmt == "native") {
-        write_native();
+        impl_write_native();
     } else if (m_out_fmt == "ascii") {
         write_ascii();
     } else if (m_out_fmt == "netcdf") {
@@ -90,7 +90,7 @@ void Sampling::process_output()
     }
 }
 
-void Sampling::write_native()
+void Sampling::impl_write_native()
 {
     const std::string post_dir = "post_processing";
     const std::string sdir =

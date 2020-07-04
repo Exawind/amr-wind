@@ -24,9 +24,11 @@ public:
 
     void post_advance_work();
 
+    // Public for CUDA
+    virtual void impl_write_native();
+
 protected:
     virtual void process_output();
-    virtual void write_native();
     virtual void write_ascii();
 
 private:
