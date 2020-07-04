@@ -65,53 +65,6 @@ void Sampling::initialize()
     m_scontainer->Redistribute();
 }
 
-void Sampling::initialize_particles()
-{
-    using IIx = amr_wind::sampling::IIx;
-    using PType = amr_wind::sampling::SamplingContainer::ParticleType;
-    // We will assign all particles to the first box in level 0 and let
-    // redistribute scatter it to the appropriate rank and box.
-    const int lev = 0;
-    const int iproc = amrex::ParallelDescriptor::MyProc();
-    const int owner = m_scontainer->ParticleDistributionMap(lev)[0];
-
-    if (owner != iproc) return;
-
-    int num_particles = 0;
-    for (auto& probes : m_samplers) num_particles += probes->num_points();
-
-    const int grid_id = 0;
-    const int tile_id = 0;
-    auto& ptile =
-        m_scontainer->GetParticles(lev)[std::make_pair(grid_id, tile_id)];
-    ptile.resize(num_particles);
-
-    int sid = 0;
-    int pidx = 0;
-    auto* pstruct = ptile.GetArrayOfStructs()().data();
-    SamplerBase::SampleLocType locs;
-    for (auto& probe : m_samplers) {
-        probe->sampling_locations(locs);
-
-        const int npts = locs.size();
-        for (int ip = 0; ip < npts; ++ip) {
-            auto& pp = pstruct[pidx];
-            pp.id() = PType::NextID();
-            pp.cpu() = iproc;
-
-            pp.pos(0) = locs[ip][0];
-            pp.pos(1) = locs[ip][1];
-            pp.pos(2) = locs[ip][2];
-
-            pp.idata(IIx::sid) = sid;
-            pp.idata(IIx::nid) = ip;
-
-            ++pidx;
-        }
-        ++sid;
-    }
-}
-
 void Sampling::post_advance_work()
 {
     const auto& time = m_sim.time();

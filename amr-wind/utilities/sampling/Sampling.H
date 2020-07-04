@@ -29,8 +29,6 @@ protected:
     virtual void write_native();
 
 private:
-    void initialize_particles();
-
     CFDSim& m_sim;
 
     std::unique_ptr<SamplingContainer> m_scontainer;
