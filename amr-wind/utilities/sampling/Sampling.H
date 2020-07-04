@@ -27,6 +27,7 @@ public:
 protected:
     virtual void process_output();
     virtual void write_native();
+    virtual void write_ascii();
 
 private:
     CFDSim& m_sim;

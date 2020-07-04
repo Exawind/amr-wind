@@ -82,9 +82,7 @@ void Sampling::process_output()
     if (m_out_fmt == "native") {
         write_native();
     } else if (m_out_fmt == "ascii") {
-        amrex::Print() << "WARNING: Sampling: ASCII format will impact performance"
-                       << std::endl;
-        m_scontainer->WriteAsciiFile(m_label);
+        write_ascii();
     } else if (m_out_fmt == "netcdf") {
         amrex::Abort("Sampling: NetCDF format not yet supported");
     } else {
@@ -105,6 +103,21 @@ void Sampling::write_native()
             const SamplingContainer::SuperParticleType& p) {
             return p.id() > 0;
         });
+}
+
+void Sampling::write_ascii()
+{
+    amrex::Print() << "WARNING: Sampling: ASCII output will impact performance"
+                   << std::endl;
+
+    const std::string post_dir = "post_processing";
+    const std::string sname = amrex::Concatenate(m_label, m_sim.time().time_index());
+
+    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
+        amrex::CreateDirectoryFailed(post_dir);
+    }
+    const std::string fname = post_dir + "/" + sname + ".txt";
+    m_scontainer->WriteAsciiFile(fname);
 }
 
 } // namespace sampling
