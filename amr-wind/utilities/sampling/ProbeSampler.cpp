@@ -14,6 +14,7 @@ void ProbeSampler::initialize(const std::string& key)
 {
     amrex::ParmParse pp(key);
     std::string pfile("probe_locations.txt");
+    pp.query("probe_location_file", pfile);
 
     std::ifstream ifh(pfile, std::ios::in);
     if (!ifh.good())

@@ -376,6 +376,32 @@ as initial conditions and discretization options.
    When :input_param:`amr.max_level` > 0 this will trigger mesh adaption if the difference
    between density at a cell center and its neighbors is greater than `incflo.gradrhoerr`. 
    This maybe specified as a single number for all levels or a value per AMR level.
+
+.. input_param:: incflo.post_processing
+
+   **type:** List of strings, optional
+
+   When present, this parameter contains list of sections to be read with
+   specific post-postprocessing actions. Currently, the code supports
+   :ref:`Sampling <inputs_sampling>`.
+
+   ::
+
+     incflo.post_processing     = sampling
+     sampling.output_frequency  = 5
+     sampling.labels            = line1 line2
+     sampling.fields            = velocity
+     sampling/line1.type        = LineSampler
+     sampling/line1.num_points  = 21
+     sampling/line1.start       = 250.0 250.0 10.0
+     sampling/line1.end         = 250.0 250.0 210.0
+     sampling/line2.type        = LineSampler
+     sampling/line2.num_points  = 21
+     sampling/line2.start       = 500.0 500.0 10.0
+     sampling/line2.end         = 500.0 500.0 210.0
+
+   In the above example, the code will read the parameters with keyword
+   ``sampling`` to initialize user-defined probes.
    
 Section: ``transport``
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -733,5 +759,107 @@ to do that use "temperature_diffusion" as your prefix.
    
    Set the bottom solver type. Current bottom solver options 
    include: smoother, bicgstab, cg, bicgcg, cgbicg, hypre, and petsc. 
-   The hyper and petsc options will require compiling with those libraries. 
+   The hyper and petsc options will require compiling with those libraries.
+
+.. _inputs_sampling:
    
+Section: ``Sampling``
+~~~~~~~~~~~~~~~~~~~~~
+
+This section controls data-sampling (post-processing) actions supported within
+AMR-wind. Note that while the input parameters use the keyword ``sampling``, the
+actual keyword is determined by the labels provided to
+:input_param:`incflo.post_processing`. So for example, if
+``incflo.post_processing = my_sampling``, then the options must be prefixed with
+``my_sampling.``.
+
+.. input_param:: sampling.output_frequency
+
+   **type:** Integer, optional, default = 100
+
+   Specify the output frequency (in timesteps) when data sampling is performed
+   and output to disk.
+
+.. input_param:: sampling.output_format
+
+   **type:** String, optional, default = "native"
+
+   Specify the format of the data outputs. Currently the code supports the
+   following formats
+
+   ``native``
+       AMReX particle binary format
+
+   ``ascii``
+       AMReX particle ASCII format. Note, this can have significant impact
+       on performance and must be used for debugging only.
+
+.. input_param:: labels
+
+   **type:** List of one or more names
+
+   Labels indicate the names of the different types of samplers (e.g., line,
+   plane, probes) that are used to sample data from the flow field.
+
+   For example, if the user uses
+
+   ::
+      sampling.labels = line1 plane1 probe1
+
+   Then the code expects to read ``sampling/line1, sampling/plane1,
+   sampling/probe1`` sections to determine the specific sampling probe information.
+
+.. input_param:: fields
+
+   **type:** List of one or more strings
+
+   List of CFD simulation fields to sample and output
+
+The individual sampling types are documented below
+
+Sampling along a line
+``````````````````````
+
+The ``LineSampler`` allows the user to sample the flow-field along a line
+defined by ``start`` and ``end`` coordinates with ``num_points`` equidistant
+nodes.
+
+Example::
+  sampling/line1.type       = LineSampler
+  sampling/line1.num_points = 21
+  sampling/line1.start      = 250.0 250.0 10.0
+  sampling/line1.end        = 250.0 250.0 210.0
+
+Sampling on one or more planes
+```````````````````````````````
+
+The ``PlaneSampler`` samples the flow-field on two-dimensional planes defined by
+two axes: ``axis1`` and ``axis2`` with the bottom corner located at ``origin``
+and is divided into equally spaced nodes defined by the two entries in
+``num_points`` vector. Multiple planes parallel to the reference planes can be
+sampled by specifying the ``normal`` vector along which the the planes are
+offset for as many planes as there are entries in the ``offset`` array.
+
+Example::
+
+  sampling/plane1.type        = PlaneSampler
+  sampling/plane1.axis1       = 0.0 1.0 0.0
+  sampling/plane1.axis2       = 0.0 0.0 1.0
+  sampling/plane1.origin      = 0.0 0.0 0.0
+  sampling/plane1.num_points  = 10 10
+  sampling/plane1.normal      = 1.0 0.0 0.0
+  sampling/plane1.offsets     = -10.0 0.0 10.0
+
+Sampling at arbitrary locations
+````````````````````````````````
+
+The ``ProbeSampler`` allows the user to sample the flow field at arbitrary
+locations read from a text file (default: ``probe_locations.txt``).
+
+Example::
+
+  sampling/probe1.type = ProbeSampler
+  sampling/probe1.probe_location_file = "probe_locations.txt"
+
+The first line of the file contains the total number of probes for this set.
+This is followed by the coordinates (three real numbers), one line per probe.
