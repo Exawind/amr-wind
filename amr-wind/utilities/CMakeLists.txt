@@ -16,3 +16,7 @@ target_sources(${amr_wind_lib_name}
 
 add_subdirectory(tagging)
 add_subdirectory(sampling)
+
+if (AMR_WIND_ENABLE_NETCDF)
+  add_subdirectory(ncutils)
+endif()
