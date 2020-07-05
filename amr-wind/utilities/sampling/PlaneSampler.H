@@ -41,6 +41,9 @@ public:
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType&) const override;
 
+    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
+
     //! Name of this sampling object
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }

@@ -2,6 +2,7 @@
 #define SAMPLERBASE_H
 
 #include "amr-wind/core/Factory.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
 
@@ -36,6 +37,10 @@ public:
 
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
+
+    //! Populate metadata in the NetCDF file
+    virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}
+    virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 };
 
 }

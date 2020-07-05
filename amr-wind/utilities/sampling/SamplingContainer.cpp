@@ -208,5 +208,32 @@ void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
     }
 }
 
+void SamplingContainer::populate_buffer(std::vector<double>& buf)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::populate_buffer");
+
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev=0; lev < nlevels; ++lev) {
+        for (int fid=0; fid < NumRuntimeRealComps(); ++fid) {
+            const int offset = fid * num_sampling_particles();
+            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+                const int np = pti.numParticles();
+                auto* pstruct = pti.GetArrayOfStructs()().data();
+                auto* parr = &pti.GetStructOfArrays().GetRealData(fid)[0];
+
+                for (int ip=0; ip < np; ++ip) {
+                    auto& pp = pstruct[ip];
+                    const int pidx = pp.idata(IIx::uid);
+                    const int ii = offset + pidx;
+
+                    buf[ii] = parr[ip];
+                }
+            }
+        }
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(
+        buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
+}
+
 } // namespace sampling
 } // namespace amr_wind

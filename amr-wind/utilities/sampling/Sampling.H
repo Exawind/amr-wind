@@ -44,6 +44,12 @@ protected:
     //! Output data based on user-defined format
     virtual void process_output();
 
+    //! Prepare NetCDF metadata
+    virtual void prepare_netcdf_file();
+
+    //! Write sampled data into a NetCDF file
+    void write_netcdf();
+
     /** Output sampled data in ASCII format
      *
      *  Note that this should be used for debugging only and not in production
@@ -71,8 +77,15 @@ private:
     const std::string m_label;
 
     //! Format of the data output (native, ascii, netcdf, etc.)
+#ifdef AMR_WIND_USE_NETCDF
+    std::string m_out_fmt{"netcdf"};
+    std::string m_ncfile_name;
+#else
     std::string m_out_fmt{"native"};
+#endif
 
+    //! Number of particles:
+    size_t m_total_particles;
     //! Frequency of data sampling and output
     int m_out_freq{100};
 };

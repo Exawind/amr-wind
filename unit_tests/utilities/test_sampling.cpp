@@ -45,6 +45,7 @@ public:
     {}
 
 protected:
+    void prepare_netcdf_file() override {}
     void process_output() override {}
 };
 

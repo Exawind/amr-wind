@@ -244,6 +244,8 @@ protected:
 
 #else
 
+namespace ncutils {
+
 struct NCDim
 {
     const int ncid{-1};
@@ -265,6 +267,7 @@ public:
 class NCFile : public NCGroup
 {};
 
+} // namespace ncutils
 
 #endif
 

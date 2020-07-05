@@ -67,5 +67,22 @@ void LineSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
+#ifdef AMR_WIND_USE_NETCDF
+void LineSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
+{
+    grp.def_var("start", NC_DOUBLE, {"ndim"});
+    grp.def_var("end", NC_DOUBLE, {"ndim"});
+}
+
+void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup& grp) const
+{
+    grp.var("start").put(m_start.data());
+    grp.var("end").put(m_end.data());
+}
+#else
+void LineSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LineSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+#endif
+
 } // namespace sampling
 } // namespace amr_wind

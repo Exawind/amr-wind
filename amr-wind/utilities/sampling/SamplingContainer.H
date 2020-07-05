@@ -82,7 +82,11 @@ public:
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);
 
+    void populate_buffer(std::vector<double>& buf);
+
     int num_sampling_particles() const { return m_total_particles; }
+
+    int& num_sampling_particles() { return m_total_particles; }
 
 private:
     amrex::AmrCore& m_mesh;
