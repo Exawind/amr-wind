@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/utilities/IOManager.H"
+#include "amr-wind/utilities/PostProcessing.H"
 
 using namespace amrex;
 
@@ -62,6 +63,8 @@ void incflo::InitData ()
         icns().initialize();
         for (auto& eqn: scalar_eqns()) eqn->initialize();
 
+        m_sim.post_manager().initialize();
+
         if (m_do_initial_proj) {
             InitialProjection();
         }
@@ -87,6 +90,8 @@ void incflo::InitData ()
 
         icns().initialize();
         for (auto& eqn: scalar_eqns()) eqn->initialize();
+
+        m_sim.post_manager().initialize();
     }
 
     // Plot initial distribution

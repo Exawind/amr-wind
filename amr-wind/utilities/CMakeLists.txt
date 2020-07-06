@@ -10,6 +10,13 @@ target_sources(${amr_wind_lib_name}
       FieldPlaneAveraging.cpp
       SecondMomentAveraging.cpp
       ThirdMomentAveraging.cpp
+
+      PostProcessing.cpp
    )
 
 add_subdirectory(tagging)
+add_subdirectory(sampling)
+
+if (AMR_WIND_ENABLE_NETCDF)
+  add_subdirectory(ncutils)
+endif()

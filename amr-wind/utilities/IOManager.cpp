@@ -4,43 +4,12 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/utilities/io_utils.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"
 
 namespace amr_wind {
-namespace {
-
-/** Generate field names for multi-component fields
- *
- *  Function generates variable names based on the number of components in the
- *  field. If the field is a scalar, it just inserts the variable name. For
- *  vectors it appends "x, y, z" to the components, and for all other fields it
- *  numbers the components start with 0.
- */
-void add_var_names(
-    amrex::Vector<std::string>& vnames,
-    const std::string& fname,
-    const int ncomp)
-{
-    const amrex::Vector<std::string> comp{"x", "y", "z"};
-
-    switch (ncomp) {
-    case 1:
-        vnames.push_back(fname);
-        break;
-
-    case AMREX_SPACEDIM:
-        for (int i = 0; i < AMREX_SPACEDIM; ++i)
-            vnames.push_back(fname + comp[i]);
-        break;
-
-    default:
-        for (int i = 0; i < ncomp; ++i)
-            vnames.push_back(fname + std::to_string(i));
-    }
-}
-} // namespace
 
 IOManager::IOManager(CFDSim& sim) : m_sim(sim) {}
 
@@ -82,7 +51,7 @@ void IOManager::initialize_io()
             auto& fld = repo.get_field(fname);
             m_plt_num_comp += fld.num_comp();
             m_plt_fields.emplace_back(&fld);
-            add_var_names(m_plt_var_names, fld.name(), fld.num_comp());
+            ioutils::add_var_names(m_plt_var_names, fld.name(), fld.num_comp());
         } else {
             amrex::Print() << "  Invalid output variable requested: " << fname << std::endl;
         }

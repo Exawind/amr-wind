@@ -9,6 +9,7 @@
 
 namespace amr_wind {
 class IOManager;
+class PostProcessManager;
 
 namespace turbulence {
 class TurbulenceModel;
@@ -59,6 +60,9 @@ public:
     IOManager& io_manager() { return *m_io_mgr; }
     const IOManager& io_manager() const { return * m_io_mgr; }
 
+    PostProcessManager& post_manager() { return *m_post_mgr; }
+    const PostProcessManager& post_manager() const  { return *m_post_mgr; }
+
     void create_turbulence_model();
 
     void init_physics();
@@ -77,6 +81,8 @@ private:
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 
     std::unique_ptr<IOManager> m_io_mgr;
+
+    std::unique_ptr<PostProcessManager> m_post_mgr;
 };
 
 }
