@@ -18,7 +18,8 @@ void wall_model_bc(
 
 void temp_wall_model_bc(
     amr_wind::Field& temperature,
-    const amrex::Real heat_flux);
+    const amrex::Real heat_flux,
+    const amr_wind::FieldState fstate);
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
 get_diffuse_tensor_bc(
