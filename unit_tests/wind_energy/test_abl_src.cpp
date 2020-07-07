@@ -17,7 +17,8 @@
 
 namespace amr_wind_tests {
 
-using ICNSFields = amr_wind::pde::FieldRegOp<amr_wind::pde::ICNS, amr_wind::fvm::Godunov>;
+using ICNSFields =
+    amr_wind::pde::FieldRegOp<amr_wind::pde::ICNS, amr_wind::fvm::Godunov>;
 
 TEST_F(ABLMeshTest, abl_forcing)
 {
@@ -42,7 +43,7 @@ TEST_F(ABLMeshTest, abl_forcing)
         abl_forcing(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
-    for (int i=0; i < AMREX_SPACEDIM; ++i) {
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
         EXPECT_NEAR(min_val, 0.0, tol);
@@ -68,8 +69,9 @@ TEST_F(ABLMeshTest, abl_forcing)
         // Targets are U = (20.0, 10.0, 0.0) set in initial conditions
         // Means (set above) V = (10.0, 5.0, 0.0)
         // deltaT (set above) dt = 0.1
-        const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{{100.0, 50.0, 0.0}};
-        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+        const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
+            {100.0, 50.0, 0.0}};
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
             EXPECT_NEAR(min_val, golds[i], tol);
@@ -77,7 +79,6 @@ TEST_F(ABLMeshTest, abl_forcing)
             EXPECT_NEAR(min_val, max_val, tol);
         }
     }
-
 }
 
 TEST_F(ABLMeshTest, body_force)
@@ -102,15 +103,13 @@ TEST_F(ABLMeshTest, body_force)
         body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
-    for (int i=0; i < AMREX_SPACEDIM; ++i) {
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
         EXPECT_NEAR(min_val, 0.0, tol);
         EXPECT_NEAR(min_val, max_val, tol);
     }
-
 }
-
 
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
@@ -122,10 +121,10 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     pde_mgr.register_icns();
     sim().init_physics();
 
-    auto& src_term = pde_mgr.icns().fields().src_term; 
+    auto& src_term = pde_mgr.icns().fields().src_term;
     auto& density = sim().repo().get_field("density");
     density.setVal(1.0);
-    
+
     amr_wind::pde::icns::GeostrophicForcing geostrophic_forcing(sim());
     src_term.setVal(0.0);
     run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
@@ -136,15 +135,14 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
     });
 
     constexpr amrex::Real corfac = 2.0 * amr_wind::utils::two_pi() / 86400.0;
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM>
-        golds{{-corfac * 6.0, corfac * 10.0, 0.0}};
-    for (int i=0; i < AMREX_SPACEDIM; ++i) {
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
+        {-corfac * 6.0, corfac * 10.0, 0.0}};
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_val = utils::field_min(src_term, i);
         const auto max_val = utils::field_max(src_term, i);
         EXPECT_NEAR(min_val, golds[i], tol);
         EXPECT_NEAR(min_val, max_val, tol);
     }
-
 }
 
 TEST_F(ABLMeshTest, coriolis_const_vel)
@@ -180,7 +178,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
             coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
 
-        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
             EXPECT_NEAR(min_val, golds[i], tol);
@@ -191,7 +189,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in y-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0, 0.0};
+        amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0,
+                                             0.0};
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 1);
@@ -203,7 +202,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
             coriolis(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
         });
 
-        for (int i=0; i < AMREX_SPACEDIM; ++i) {
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             const auto min_val = utils::field_min(src_term, i);
             const auto max_val = utils::field_max(src_term, i);
             EXPECT_NEAR(min_val, golds[i], tol);
@@ -216,8 +215,7 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 namespace {
 
 void cor_height_init_vel_field(
-    const amrex::Box& bx,
-    const amrex::Array4<amrex::Real>& vel)
+    const amrex::Box& bx, const amrex::Array4<amrex::Real>& vel)
 {
     // Set y velocity as a function of height with (dx = 1.0)
     amrex::ParallelFor(bx, [vel] AMREX_GPU_DEVICE(int i, int j, int k) {
@@ -225,7 +223,7 @@ void cor_height_init_vel_field(
     });
 }
 
-}
+} // namespace
 
 TEST_F(ABLMeshTest, coriolis_height_variation)
 {
@@ -258,7 +256,7 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
     EXPECT_NEAR(utils::field_min(vel_src, 0), 0.0, tol);
     EXPECT_NEAR(utils::field_max(vel_src, 0), corfac * latfac * kdim, tol);
 
-    for (int i=1; i < AMREX_SPACEDIM; ++i) {
+    for (int i = 1; i < AMREX_SPACEDIM; ++i) {
         const auto min_src = utils::field_min(vel_src, i);
         const auto max_src = utils::field_max(vel_src, i);
         EXPECT_NEAR(min_src, 0.0, tol);
@@ -266,33 +264,29 @@ TEST_F(ABLMeshTest, coriolis_height_variation)
     }
 }
 
-
 namespace {
 
-void init_abl_temperature_field(int kdim,
-                           const amrex::Box& bx,
-                           const amrex::Array4<amrex::Real>& trac)
+void init_abl_temperature_field(
+    int kdim, const amrex::Box& bx, const amrex::Array4<amrex::Real>& trac)
 {
     // Set tracer as a function of height with (dx = 1.0)
-    const amrex::Real dz = 1000.0/((amrex::Real) kdim+1);
+    const amrex::Real dz = 1000.0 / ((amrex::Real)kdim + 1);
 
-    amrex::ParallelFor(bx, [dz,trac] AMREX_GPU_DEVICE(int i, int j, int k) {
-
-        const amrex::Real z = (k+0.5)*dz;
+    amrex::ParallelFor(bx, [dz, trac] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const amrex::Real z = (k + 0.5) * dz;
 
         // potential temperature profile
-        if(z < 650.0){
+        if (z < 650.0) {
             trac(i, j, k, 0) = 300.0;
-        } else if(z < 750.0){
-            trac(i, j, k, 0) = 300.0 + (z-650.0)/(750.0-650.0)*8.0;
+        } else if (z < 750.0) {
+            trac(i, j, k, 0) = 300.0 + (z - 650.0) / (750.0 - 650.0) * 8.0;
         } else {
             trac(i, j, k, 0) = 308.0;
         }
-
     });
 }
 
-}
+} // namespace
 
 TEST_F(ABLMeshTest, boussinesq)
 {
@@ -312,23 +306,22 @@ TEST_F(ABLMeshTest, boussinesq)
 
     auto& src_term = pde_mgr.icns().fields().src_term;
 
-    auto& temperature = sim().repo().get_field("temperature",amr_wind::FieldState::Old);
+    auto& temperature =
+        sim().repo().get_field("temperature", amr_wind::FieldState::Old);
 
     src_term.setVal(0.0);
 
     run_algorithm(temperature, [&](const int lev, const amrex::MFIter& mfi) {
-
         const auto bx = mfi.validbox();
         const auto& temp_arr = temperature(lev).array(mfi);
         const auto& src_arr = src_term(lev).array(mfi);
 
         init_abl_temperature_field(kdim, bx, temp_arr);
         bb(lev, mfi, bx, amr_wind::FieldState::Old, src_arr);
-
     });
 
     // should be no forcing in x and y directions
-    for (int i=0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         const auto min_src = utils::field_min(src_term, i);
         const auto max_src = utils::field_max(src_term, i);
         EXPECT_NEAR(min_src, 0.0, tol);
@@ -337,8 +330,8 @@ TEST_F(ABLMeshTest, boussinesq)
 
     // f = beta * (T0 - T)*g
     EXPECT_NEAR(utils::field_min(src_term, 2), 0.0, tol);
-    EXPECT_NEAR(utils::field_max(src_term, 2), -9.81*(300.0-308.0)/300.0, tol);
-
+    EXPECT_NEAR(
+        utils::field_max(src_term, 2), -9.81 * (300.0 - 308.0) / 300.0, tol);
 }
 
 TEST_F(ABLMeshTest, boussinesq_nph)
@@ -359,23 +352,22 @@ TEST_F(ABLMeshTest, boussinesq_nph)
 
     auto& src_term = pde_mgr.icns().fields().src_term;
 
-    auto& temperature = sim().repo().get_field("temperature", amr_wind::FieldState::NPH);
+    auto& temperature =
+        sim().repo().get_field("temperature", amr_wind::FieldState::NPH);
 
     src_term.setVal(0.0);
 
     run_algorithm(temperature, [&](const int lev, const amrex::MFIter& mfi) {
-
         const auto bx = mfi.validbox();
         const auto& temp_arr = temperature(lev).array(mfi);
         const auto& src_arr = src_term(lev).array(mfi);
 
         init_abl_temperature_field(kdim, bx, temp_arr);
         bb(lev, mfi, bx, amr_wind::FieldState::NPH, src_arr);
-
     });
 
     // should be no forcing in x and y directions
-    for (int i=0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         const auto min_src = utils::field_min(src_term, i);
         const auto max_src = utils::field_max(src_term, i);
         EXPECT_NEAR(min_src, 0.0, tol);
@@ -384,35 +376,32 @@ TEST_F(ABLMeshTest, boussinesq_nph)
 
     // f = beta * (T0 - T)*g
     EXPECT_NEAR(utils::field_min(src_term, 2), 0.0, tol);
-    EXPECT_NEAR(utils::field_max(src_term, 2), -9.81*(300.0-308.0)/300.0, tol);
-
+    EXPECT_NEAR(
+        utils::field_max(src_term, 2), -9.81 * (300.0 - 308.0) / 300.0, tol);
 }
 
 namespace {
 
-void init_density_field(int kdim,
-                        const amrex::Box& bx,
-                        const amrex::Array4<amrex::Real>& den)
+void init_density_field(
+    int kdim, const amrex::Box& bx, const amrex::Array4<amrex::Real>& den)
 {
     // Set density as a function of height with (dz = 1.0)
-    const amrex::Real dz = 1.0/((amrex::Real) kdim+1);
+    const amrex::Real dz = 1.0 / ((amrex::Real)kdim + 1);
 
-    amrex::ParallelFor(bx, [dz,den] AMREX_GPU_DEVICE(int i, int j, int k) {
+    amrex::ParallelFor(bx, [dz, den] AMREX_GPU_DEVICE(int i, int j, int k) {
+        const amrex::Real z = (k + 0.5) * dz;
 
-        const amrex::Real z = (k+0.5)*dz;
-
-        if(z < 0.3){
+        if (z < 0.3) {
             den(i, j, k) = 0.5;
-        } else if(z > 0.7){
+        } else if (z > 0.7) {
             den(i, j, k) = 2.0;
         } else {
             den(i, j, k) = 1.0;
         }
-
     });
 }
 
-}
+} // namespace
 
 TEST_F(ABLMeshTest, densitybuoyancy)
 {
@@ -430,7 +419,8 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     sim().init_physics();
 
     auto& src_term = pde_mgr.icns().fields().src_term;
-    auto& density = sim().repo().get_field("density",amr_wind::FieldState::Old);
+    auto& density =
+        sim().repo().get_field("density", amr_wind::FieldState::Old);
 
     amr_wind::pde::icns::DensityBuoyancy db(sim());
 
@@ -444,7 +434,7 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     });
 
     // should be no forcing for constant density
-    for (int i=0; i < AMREX_SPACEDIM; ++i) {
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
         const auto min_src = utils::field_min(src_term, i);
         const auto max_src = utils::field_max(src_term, i);
         EXPECT_NEAR(min_src, 0.0, tol);
@@ -460,7 +450,7 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     });
 
     // should be no forcing in x and y directions
-    for (int i=0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         const auto min_src = utils::field_min(src_term, i);
         const auto max_src = utils::field_max(src_term, i);
         EXPECT_NEAR(min_src, 0.0, tol);
@@ -468,11 +458,8 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     }
 
     // f = g*(1-rho_0/rho)
-    EXPECT_NEAR(utils::field_min(src_term, 2), -9.81*(1.0-1.0/2.0), tol);
-    EXPECT_NEAR(utils::field_max(src_term, 2), -9.81*(1.0-1.0/0.5), tol);
-
+    EXPECT_NEAR(utils::field_min(src_term, 2), -9.81 * (1.0 - 1.0 / 2.0), tol);
+    EXPECT_NEAR(utils::field_max(src_term, 2), -9.81 * (1.0 - 1.0 / 0.5), tol);
 }
-
-
 
 } // namespace amr_wind_tests

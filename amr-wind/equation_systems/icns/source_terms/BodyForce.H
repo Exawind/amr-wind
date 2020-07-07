@@ -26,13 +26,13 @@ public:
 
 private:
     const Field& m_density;
-   
+
     //! Forcing source term (pressure gradient)
     amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
 
     //! Body Force Type
     std::string m_type;
-    
+
     //! Angular frequency used in the oscillatory forcing
     amrex::Real m_omega;
 
