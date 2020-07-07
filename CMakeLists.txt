@@ -1,13 +1,15 @@
 ############################ BASE ######################################
 
 cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
-project(AMR-Wind CXX C Fortran)
+project(AMR-Wind CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 ########################## OPTIONS #####################################
 
 #General options for the project
+option(AMR_WIND_ENABLE_FORTRAN "Enable Fortran interfaces" OFF)
 option(AMR_WIND_ENABLE_DOCUMENTATION "Build documentation" OFF)
 option(AMR_WIND_ENABLE_SPHINX_API_DOCS "Link Doxygen API docs to Sphinx" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" OFF)
@@ -24,6 +26,7 @@ option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 
 # Third party libraries
+option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 
 #Options for C++
@@ -66,7 +69,7 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
 #Create target names
-set(amr_wind_lib_name "amrwind")
+set(amr_wind_lib_name "amrwind_obj")
 set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
 
@@ -77,9 +80,17 @@ add_executable(${amr_wind_exe_name})
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
-#Keep our Fortran module files confined to a directory
-set_target_properties(${amr_wind_lib_name} PROPERTIES Fortran_MODULE_DIRECTORY
-                     "${CMAKE_BINARY_DIR}/fortran_modules/")
+if (AMR_WIND_ENABLE_FORTRAN)
+  #Keep our Fortran module files confined to a directory
+  set_target_properties(
+    ${amr_wind_lib_name} PROPERTIES
+    Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/fortran_modules/")
+endif()
+
+if (AMR_WIND_ENABLE_NETCDF)
+  set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(NetCDF REQUIRED)
+endif()
 
 if(AMR_WIND_ENABLE_MASA)
   set(CMAKE_PREFIX_PATH ${MASA_DIR} ${CMAKE_PREFIX_PATH})
@@ -92,7 +103,7 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 #Build amr-wind and link to amrex library
-add_subdirectory(src)
+add_subdirectory(amr-wind)
 
 if (AMR_WIND_ENABLE_CUDA)
   set(awtargets "${amr_wind_lib_name};${amr_wind_exe_name}")
@@ -103,7 +114,7 @@ if (AMR_WIND_ENABLE_CUDA)
   endforeach()
 endif()
 
-if (AMR_WIND_ENABLE_UNIT_TESTING OR AMR_WIND_ENABLE_TESTS)
+if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
   add_subdirectory("submods/googletest")
   add_subdirectory("unit_tests")
@@ -125,7 +136,31 @@ endif()
 
 #Define what we want to be installed during a make install 
 install(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_lib_name}
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
+
+install(
+  DIRECTORY ${PROJECT_SOURCE_DIR}/amr-wind
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.H")
+
+export(
+  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  NAMESPACE ${PROJECT_NAME}::
+  FILE ${PROJECT_NAME}Targets.cmake
+  )
+
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
+configure_package_config_file(
+  cmake/${PROJECT_NAME}Config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})

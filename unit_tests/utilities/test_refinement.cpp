@@ -11,7 +11,7 @@
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
 
-#include "CartBoxRefinement.H"
+#include "amr-wind/utilities/tagging/CartBoxRefinement.H"
 
 namespace amr_wind_tests {
 

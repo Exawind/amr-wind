@@ -3,7 +3,7 @@
  */
 
 #include "aw_test_utils/AmrexTest.H"
-#include "derive_K.H"
+#include "amr-wind/derive/derive_K.H"
 #include "AnalyticalFunctions.H"
 
 namespace amr_wind_tests {
@@ -13,7 +13,7 @@ class ScalarlaplacianTest : public AmrexTest
 
 TEST_F(ScalarlaplacianTest, interior)
 {
-    constexpr double tol = 1.0e-12;
+    constexpr double tol = 1.0e-11;
     
     const int n = 5;
     amrex::Box bx{{0, 0, 0}, {n+1, n+1, n+1}};

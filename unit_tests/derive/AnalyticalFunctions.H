@@ -1,5 +1,5 @@
 #include "aw_test_utils/AmrexTest.H"
-#include "derive_K.H"
+#include "amr-wind/derive/derive_K.H"
 
 namespace amr_wind_tests {
 
@@ -20,6 +20,7 @@ public:
     amrex::FArrayBox vectorgrad_;
     amrex::FArrayBox vectorlaplace_;
     amrex::FArrayBox curvature_;
+    amrex::FArrayBox strainrate_;
 };
 
 class LinearAnalyticalFunctions

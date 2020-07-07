@@ -1,0 +1,6 @@
+.git
+.*
+test
+build*
+docs
+tools

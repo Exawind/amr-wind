@@ -1,0 +1,10 @@
+target_sources(${amr_wind_lib_name}
+   PRIVATE
+      #C++
+      derive.cpp
+      field_algebra.cpp
+      compute_strainrate.cpp
+      compute_gradient.cpp
+      compute_laplacian.cpp
+      compute_curvature.cpp
+   )

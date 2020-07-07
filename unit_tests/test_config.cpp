@@ -7,8 +7,11 @@
 #include "AMReX_ccse-mpi.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
-#include "AMReX_buildInfo.H"
 #include "AMReX_Gpu.H"
+
+namespace amrex {
+const char* buildInfoGetGitHash(int i);
+}
 
 namespace amr_wind_tests {
 

@@ -1,26 +1,17 @@
 #include "aw_test_utils/MeshTest.H"
-#include "Physics.H"
+#include "amr-wind/core/Physics.H"
+#include "physics_test_utils.H"
 
 namespace amr_wind_tests {
 
 class PhysicsTest : public MeshTest
 {};
 
-class PhysicsEx : public amr_wind::Physics::Register<PhysicsEx>
+TEST_F(PhysicsTest, physics_example)
 {
-public:
-    static const std::string identifier() { return "PhysicsEx"; }
-
-    PhysicsEx(amr_wind::CFDSim&) {}
-
-    virtual ~PhysicsEx() = default;
-
-    void post_init_actions() override {}
-    void post_regrid_actions() override {}
-    void initialize_fields(int, const amrex::Geometry&) override {}
-    void pre_advance_work() override {}
-    void post_advance_work() override {}
-};
+    PhysicsEx obj(sim());
+    EXPECT_EQ("PhysicsEx", obj.identifier());
+}
 
 TEST_F(PhysicsTest, physics_interface)
 {

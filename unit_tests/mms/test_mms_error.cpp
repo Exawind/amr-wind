@@ -1,10 +1,10 @@
 #include "mms_test_utils.H"
-#include "trig_ops.H"
+#include "amr-wind/utilities/trig_ops.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 
 #include "masa.h"
-#include "MMS.H"
+#include "amr-wind/mms/MMS.H"
 
 namespace amr_wind_tests {
 

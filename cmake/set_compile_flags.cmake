@@ -7,7 +7,7 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
     list(APPEND AMR_WIND_Fortran_FLAGS "-Wall")
   else()
     # Intel always reports some diagnostics we don't necessarily care about
-    list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076")
+    list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076,15335")
   endif()
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
     # Avoid notes about -faligned-new with GCC > 7
@@ -17,13 +17,15 @@ endif()
 
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
-separate_arguments(AMR_WIND_Fortran_FLAGS)
 target_compile_options(
   ${amr_wind_lib_name} PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
-target_compile_options(
-  ${amr_wind_lib_name} PUBLIC
-  $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+if (AMR_WIND_ENABLE_FORTRAN)
+  separate_arguments(AMR_WIND_Fortran_FLAGS)
+  target_compile_options(
+    ${amr_wind_lib_name} PUBLIC
+    $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
+endif()
 
 # Building on CUDA requires additional considerations
 if (AMR_WIND_ENABLE_CUDA)

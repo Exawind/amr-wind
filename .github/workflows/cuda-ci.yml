@@ -1,0 +1,35 @@
+name: AMR-Wind CUDA CI
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - 'Dockerfile'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - 'Dockerfile'
+      - '.github/workflows/ci.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Check CUDA build
+        run: docker build -t amr-wind .
