@@ -32,7 +32,7 @@ private:
 
     //! Body Force Type
     std::string m_type;
-    
+
     //! Angular frequency used in the oscillatory forcing
     amrex::Real m_omega;
 
