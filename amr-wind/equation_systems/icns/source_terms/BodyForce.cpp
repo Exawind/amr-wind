@@ -19,9 +19,9 @@ BodyForce::BodyForce(const CFDSim& sim)
         // Read the geostrophic wind speed vector (in m/s)
         amrex::ParmParse pp("BodyForce");
         pp.query("type", m_type);
-        pp.queryarr("magnitude", m_body_force);
+        pp.getarr("magnitude", m_body_force);
         if (m_type == "Oscillatory" || m_type == "oscillatory") {
-            pp.query("AngularFrequency", m_omega);
+            pp.get("AngularFrequency", m_omega);
         }
     }
 }
