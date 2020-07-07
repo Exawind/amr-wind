@@ -1,11 +1,33 @@
 #ifndef IO_UTILS_H
 #define IO_UTILS_H
 
+#include <chrono>
+#include <ctime>
 #include <string>
+#include <sstream>
 #include "AMReX_Vector.H"
+
+namespace amrex{
+const char* buildInfoGetGitHash(int i);
+}
 
 namespace amr_wind {
 namespace ioutils {
+
+inline std::string amr_wind_version()
+{
+    return std::string(amrex::buildInfoGetGitHash(1));
+}
+
+inline std::string timestamp()
+{
+    auto etime = std::chrono::system_clock::now();
+    auto etimet = std::chrono::system_clock::to_time_t(etime);
+    std::ostringstream buf;
+    buf << std::ctime(&etimet);
+    std::string tstamp = buf.str();
+    return tstamp;
+}
 
 /** Generate field names for multi-component fields
  *

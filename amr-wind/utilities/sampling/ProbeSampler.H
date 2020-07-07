@@ -24,6 +24,8 @@ public:
 
     void sampling_locations(SampleLocType&) const override;
 
+    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
+
     std::string label() const override { return m_label; }
     std::string& label() override { return m_label; }
     int id() const override { return m_id; }

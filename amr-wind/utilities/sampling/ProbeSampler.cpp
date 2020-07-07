@@ -37,5 +37,14 @@ void ProbeSampler::sampling_locations(SampleLocType& locs) const
             locs[i][d] = m_probes[i][d];
 }
 
+#ifdef AMR_WIND_USE_NETCDF
+void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
+{
+    grp.put_attr("sampling_type", identifier());
+}
+#else
+void ProbeSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
+#endif
+
 } // namespace sampling
 } // namespace amr_wind

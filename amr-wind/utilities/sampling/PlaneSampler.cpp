@@ -66,26 +66,19 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
 #ifdef AMR_WIND_USE_NETCDF
 void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
-    grp.def_dim("num_offsets", m_poffsets.size());
-    grp.def_var("ijk_dims", NC_INT, {"ndim"});
-    grp.def_var("origin", NC_DOUBLE, {"ndim"});
-    grp.def_var("axis1", NC_DOUBLE, {"ndim"});
-    grp.def_var("axis2", NC_DOUBLE, {"ndim"});
-    grp.def_var("axis3", NC_DOUBLE, {"ndim"});
-    grp.def_var("offsets", NC_DOUBLE, {"num_offsets"});
-}
-
-void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup& grp) const
-{
     const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1],
                                static_cast<int>(m_poffsets.size())};
-    grp.var("ijk_dims").put(ijk.data());
-    grp.var("origin").put(m_origin.data());
-    grp.var("axis1").put(m_axis1.data());
-    grp.var("axis2").put(m_axis2.data());
-    grp.var("axis3").put(m_normal.data());
-    grp.var("offsets").put(m_poffsets.data());
+    grp.put_attr("sampling_type", identifier());
+    grp.put_attr("ijk_dims", ijk);
+    grp.put_attr("origin", m_origin);
+    grp.put_attr("axis1", m_axis1);
+    grp.put_attr("axis2", m_axis2);
+    grp.put_attr("axis3", m_normal);
+    grp.put_attr("offsets", m_poffsets);
 }
+
+void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
+{}
 #else
 void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
 void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
