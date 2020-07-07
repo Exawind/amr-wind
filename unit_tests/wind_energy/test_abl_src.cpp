@@ -111,37 +111,6 @@ TEST_F(ABLMeshTest, body_force)
     }
 }
 
-TEST_F(ABLMeshTest, body_force)
-{
-    constexpr amrex::Real tol = 1.0e-12;
-    utils::populate_abl_params();
-    initialize_mesh();
-
-    auto& pde_mgr = sim().pde_manager();
-    pde_mgr.register_icns();
-    sim().init_physics();
-
-    auto& src_term = pde_mgr.icns().fields().src_term;
-
-    amr_wind::pde::icns::BodyForce body_force(sim());
-
-    src_term.setVal(0.0);
-    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
-
-        body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
-    });
-
-    for (int i=0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_val = utils::field_min(src_term, i);
-        const auto max_val = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_val, 0.0, tol);
-        EXPECT_NEAR(min_val, max_val, tol);
-    }
-
-}
-
 
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
