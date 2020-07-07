@@ -50,6 +50,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     {
       m_abl_neutral = false;
     }
+    
 }
 
 void ABLWallFunction::init_log_law_height()
@@ -177,14 +178,14 @@ void ABLWallFunction::computeplanar()
 
     amrex::ParallelFor(
           z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                         m_xy_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k-1, 0)
-                             + m_coeff_interp[1]*vel(i, j, k, 0);
-                         m_xy_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k-1, 1)
-                             + m_coeff_interp[1]*vel(i, j, k, 1);
-                         m_xy_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k-1, 2)
-                             + m_coeff_interp[1]*vel(i, j, k, 2);
-                         m_xy_arr(i, j, k, 3) = m_coeff_interp[0]*temp(i, j, k-1)
-                             + m_coeff_interp[1]*temp(i, j, k);
+                         m_xy_arr(i, j, k, 0) = m_coeff_interp[0]*vel(i, j, k, 0)
+                             + m_coeff_interp[1]*vel(i, j, k+1, 0);
+                         m_xy_arr(i, j, k, 1) = m_coeff_interp[0]*vel(i, j, k, 1)
+                             + m_coeff_interp[1]*vel(i, j, k+1, 1);
+                         m_xy_arr(i, j, k, 2) = m_coeff_interp[0]*vel(i, j, k, 2)
+                             + m_coeff_interp[1]*vel(i, j, k+1, 2);
+                         m_xy_arr(i, j, k, 3) = m_coeff_interp[0]*temp(i, j, k)
+                             + m_coeff_interp[1]*temp(i, j, k+1);
 
               });
 
@@ -268,6 +269,7 @@ void ABLWallFunction::computeusingheatflux(){
 
       } while((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= maxIter);
 
+      amrex::Print()<< " Utau \t" << m_utau << "\t Iter" << iter ;
       
     }
 
@@ -296,7 +298,7 @@ void ABLWallFunction::computeusingheatflux(){
     
   }
 
-
+  
 }
 
 
@@ -321,7 +323,7 @@ ABLTempWallFunc::ABLTempWallFunc(
 
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state){
 
-  diffusion::temp_wall_model_bc(temperature, m_wall_func.heatflux_wall());
+  diffusion::temp_wall_model_bc(temperature, m_wall_func.heatflux_wall(), rho_state);
 }
 
 } // namespace amr_wind

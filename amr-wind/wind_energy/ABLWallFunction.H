@@ -98,8 +98,6 @@ private:
 
     const int maxIter=25;
 
-  
-
 };
 
 /** Applies a shear-stress value at the domain boundary

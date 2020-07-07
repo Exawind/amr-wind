@@ -92,8 +92,7 @@ void ABL::post_init_actions()
         m_bndry_plane->read_header();
         m_bndry_plane->read_file();
     }
-    *m_temperature.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-
+    (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 }
 
 /** Perform tasks at the beginning of a new timestep

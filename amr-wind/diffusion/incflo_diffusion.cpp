@@ -277,7 +277,7 @@ void wall_model_bc(
                                                                       velmean[0])*mean_wind + instWindSpeed*velmean[0])/
                                 (mean_wind*std::abs(velmean[0])*mu);
 
-                            if(std::abs(velmean[1]) > 1e-1) {
+                            if(std::abs(velmean[1]) > 1e-3) {
                               bc(i, j, k - 1, 1) = den(i, j, k)*utau2*((m_store_xy_vel_arr(i, j, planarlo.z, 1)-
                                                                         velmean[1])*mean_wind + instWindSpeed*velmean[1])/
                                   (mean_wind*std::abs(velmean[1])*mu);
@@ -311,7 +311,8 @@ void wall_model_bc(
 
 void temp_wall_model_bc(
     amr_wind::Field& temperature,
-    const amrex::Real heat_flux)
+    const amrex::Real heat_flux,
+    const amr_wind::FieldState fstate)
 {
     BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc")
 
@@ -326,12 +327,6 @@ void temp_wall_model_bc(
     amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
     amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
-
-    auto m_store_xy_vel_arr = inst_plane_vel.array();
-    const auto& bxPlanar = inst_plane_vel.box();
-
-    const auto planarlo = amrex::lbound(bxPlanar);
-    const auto planarhi = amrex::ubound(bxPlanar);
 
     // copies cell center to face
     Real c0 = 1.0;
@@ -357,7 +352,7 @@ void temp_wall_model_bc(
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+        for (MFIter mfi(temp_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
             auto temp = temp_lev.array(mfi);
             auto bc  = temp_lev.array(mfi);
@@ -368,7 +363,7 @@ void temp_wall_model_bc(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    temperature.bc_type()[zlo] ==  BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
