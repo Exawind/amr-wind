@@ -212,6 +212,11 @@ void NCVar::get_attr(const std::string& name, std::vector<int>& values) const
     check_nc_error(nc_get_att_int(ncid, varid, name.data(), values.data()));
 }
 
+void NCVar::par_access(const int cmode) const
+{
+  check_nc_error(nc_var_par_access(ncid, varid, cmode));
+}
+
 std::string NCGroup::name() const
 {
     size_t nlen;
