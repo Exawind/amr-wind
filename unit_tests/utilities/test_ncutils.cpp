@@ -104,11 +104,14 @@ TEST(NetCDFUtils, var_io)
     ncutils::NCFile ncf =
         ncutils::NCFile::create("test_vario.nc", NC_DISKLESS | NC_NETCDF4);
     ASSERT_GE(ncf.ncid, 0);
+    ncf.put_attr("title", "AMR-Wind data sampling");
 
     auto line1 = ncf.def_group("line1");
+    line1.put_attr("sampling_type", "LineSampler");
     line1.def_dim("nx", num_points);
     line1.def_dim("ny", num_points);
     std::vector<double> fill_val(num_points * num_points);
+    ASSERT_EQ(line1.get_attr("sampling_type"), "LineSampler");
 
     int idx = 0;
     for (int i=0; i < num_points; ++i)
@@ -116,7 +119,9 @@ TEST(NetCDFUtils, var_io)
             fill_val[idx++] = static_cast<double>(i * num_points + j);
 
     auto vel = line1.def_var("vel", NC_DOUBLE, {"nx", "ny"});
+    vel.put_attr("units", "m/s");
     vel.put(fill_val.data());
+    ASSERT_EQ("m/s", vel.get_attr("units"));
 
     const size_t istart = num_points - 2;
     const double start_val = static_cast<double>(istart * num_points);

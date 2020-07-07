@@ -100,6 +100,15 @@ struct NCVar
         const std::vector<size_t>&,
         const std::vector<size_t>&,
         const std::vector<ptrdiff_t>&) const;
+
+    bool has_attr(const std::string& name) const;
+    void put_attr(const std::string& name, const std::string& value) const;
+    void put_attr(const std::string& name, const std::vector<double>& value) const;
+    void put_attr(const std::string& name, const std::vector<int>& value) const;
+
+    std::string get_attr(const std::string& name) const;
+    void get_attr(const std::string& name, std::vector<double>& value) const;
+    void get_attr(const std::string& name, std::vector<int>& value) const;
 };
 
 //! Representation of a NetCDF group
@@ -148,6 +157,9 @@ public:
     //! Check if a variable exists by name
     bool has_var(const std::string&) const;
 
+    //! Check if an attribute exists
+    bool has_attr(const std::string&) const;
+
     /** Get the group by name
      *
      *  Throws error if the group doesn't exist, use `has_group` to check
@@ -183,6 +195,14 @@ public:
     {
         return def_array(name, dtype, dnames);
     }
+
+    void put_attr(const std::string& name, const std::string& value) const;
+    void put_attr(const std::string& name, const std::vector<double>& value) const;
+    void put_attr(const std::string& name, const std::vector<int>& value) const;
+
+    std::string get_attr(const std::string& name) const;
+    void get_attr(const std::string& name, std::vector<double>& value) const;
+    void get_attr(const std::string& name, std::vector<int>& value) const;
 
     //! Return a list of all groups defined in this group
     std::vector<NCGroup> all_groups() const;

@@ -158,12 +158,66 @@ void NCVar::get(
         ncid, varid, start.data(), count.data(), stride.data(), dptr));
 }
 
+bool NCVar::has_attr(const std::string& name) const
+{
+    int ierr;
+    size_t lenp;
+    ierr = nc_inq_att(ncid, varid, name.data(), NULL, &lenp);
+    return (ierr == NC_NOERR);
+}
+
+void NCVar::put_attr(const std::string& name, const std::string& value) const
+{
+    check_nc_error(nc_put_att_text(
+        ncid, varid, name.data(), value.size(), value.data()));
+}
+
+void NCVar::put_attr(const std::string& name, const std::vector<double>& value) const
+{
+    check_nc_error(
+        nc_put_att_double(ncid, varid, name.data(),
+                          NC_DOUBLE, value.size(), value.data()));
+}
+
+void NCVar::put_attr(const std::string& name, const std::vector<int>& value) const
+{
+    check_nc_error(
+        nc_put_att_int(ncid, varid, name.data(),
+                          NC_INT, value.size(), value.data()));
+}
+
+std::string NCVar::get_attr(const std::string& name) const
+{
+    size_t lenp;
+    std::vector<char> aval;
+    check_nc_error(nc_inq_attlen(ncid, varid, name.data(), &lenp));
+    aval.resize(lenp);
+    check_nc_error(nc_get_att_text(ncid, varid, name.data(), aval.data()));
+    return std::string{aval.begin(), aval.end()};
+}
+
+void NCVar::get_attr(const std::string& name, std::vector<double>& values) const
+{
+    size_t lenp;
+    check_nc_error(nc_inq_attlen(ncid, varid, name.data(), &lenp));
+    values.resize(lenp);
+    check_nc_error(nc_get_att_double(ncid, varid, name.data(), values.data()));
+}
+
+void NCVar::get_attr(const std::string& name, std::vector<int>& values) const
+{
+    size_t lenp;
+    check_nc_error(nc_inq_attlen(ncid, varid, name.data(), &lenp));
+    values.resize(lenp);
+    check_nc_error(nc_get_att_int(ncid, varid, name.data(), values.data()));
+}
+
 std::string NCGroup::name() const
 {
     size_t nlen;
     std::vector<char> grpname;
     check_nc_error(nc_inq_grpname_len(ncid, &nlen));
-    grpname.resize(nlen);
+    grpname.resize(nlen+1);
     check_nc_error(nc_inq_grpname(ncid, grpname.data()));
     return std::string{grpname.begin(), grpname.end()};
 }
@@ -173,7 +227,7 @@ std::string NCGroup::full_name() const
     size_t nlen;
     std::vector<char> grpname;
     check_nc_error(nc_inq_grpname_full(ncid, &nlen, NULL));
-    grpname.reserve(nlen);
+    grpname.resize(nlen);
     check_nc_error(nc_inq_grpname_full(ncid, &nlen, grpname.data()));
     return std::string{grpname.begin(), grpname.end()};
 }
@@ -279,6 +333,60 @@ bool NCGroup::has_var(const std::string& name) const
 {
     int ierr = nc_inq_varid(ncid, name.data(), NULL);
     return (ierr == NC_NOERR);
+}
+
+bool NCGroup::has_attr(const std::string& name) const
+{
+    int ierr;
+    size_t lenp;
+    ierr = nc_inq_att(ncid, NC_GLOBAL, name.data(), NULL, &lenp);
+    return (ierr == NC_NOERR);
+}
+
+void NCGroup::put_attr(const std::string& name, const std::string& value) const
+{
+    check_nc_error(nc_put_att_text(
+        ncid, NC_GLOBAL, name.data(), value.size(), value.data()));
+}
+
+void NCGroup::put_attr(const std::string& name, const std::vector<double>& value) const
+{
+    check_nc_error(
+        nc_put_att_double(ncid, NC_GLOBAL, name.data(),
+                          NC_DOUBLE, value.size(), value.data()));
+}
+
+void NCGroup::put_attr(const std::string& name, const std::vector<int>& value) const
+{
+    check_nc_error(
+        nc_put_att_int(ncid, NC_GLOBAL, name.data(),
+                          NC_INT, value.size(), value.data()));
+}
+
+std::string NCGroup::get_attr(const std::string& name) const
+{
+    size_t lenp;
+    std::vector<char> aval;
+    check_nc_error(nc_inq_attlen(ncid, NC_GLOBAL, name.data(), &lenp));
+    aval.resize(lenp);
+    check_nc_error(nc_get_att_text(ncid, NC_GLOBAL, name.data(), aval.data()));
+    return std::string{aval.begin(), aval.end()};
+}
+
+void NCGroup::get_attr(const std::string& name, std::vector<double>& values) const
+{
+    size_t lenp;
+    check_nc_error(nc_inq_attlen(ncid, NC_GLOBAL, name.data(), &lenp));
+    values.resize(lenp);
+    check_nc_error(nc_get_att_double(ncid, NC_GLOBAL, name.data(), values.data()));
+}
+
+void NCGroup::get_attr(const std::string& name, std::vector<int>& values) const
+{
+    size_t lenp;
+    check_nc_error(nc_inq_attlen(ncid, NC_GLOBAL, name.data(), &lenp));
+    values.resize(lenp);
+    check_nc_error(nc_get_att_int(ncid, NC_GLOBAL, name.data(), values.data()));
 }
 
 std::vector<NCGroup> NCGroup::all_groups() const
