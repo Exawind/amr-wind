@@ -28,9 +28,6 @@ private:
     //! Time
     const SimTime& m_time;
 
-    //! Density
-    const Field& m_density;
-
     //! Forcing source term (pressure gradient)
     amrex::Vector<amrex::Real> m_body_force{{0.0, 0.0, 0.0}};
 
@@ -38,7 +35,7 @@ private:
     std::string m_type{"constant"};
 
     //! Angular frequency used in the oscillatory forcing
-    amrex::Real m_omega{0.};
+    amrex::Real m_omega{0.0};
 };
 
 } // namespace icns
