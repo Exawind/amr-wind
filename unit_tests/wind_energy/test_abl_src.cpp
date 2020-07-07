@@ -8,6 +8,7 @@
 #include "amr-wind/equation_systems/icns/icns.H"
 #include "amr-wind/equation_systems/icns/icns_ops.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "amr-wind/equation_systems/icns/source_terms/BodyForce.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/CoriolisForcing.H"
@@ -78,6 +79,38 @@ TEST_F(ABLMeshTest, abl_forcing)
     }
 
 }
+
+TEST_F(ABLMeshTest, body_force)
+{
+    constexpr amrex::Real tol = 1.0e-12;
+    utils::populate_abl_params();
+    initialize_mesh();
+
+    auto& pde_mgr = sim().pde_manager();
+    pde_mgr.register_icns();
+    sim().init_physics();
+
+    auto& src_term = pde_mgr.icns().fields().src_term;
+
+    amr_wind::pde::icns::BodyForce body_force(sim());
+
+    src_term.setVal(0.0);
+    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+        const auto& bx = mfi.tilebox();
+        const auto& src_arr = src_term(lev).array(mfi);
+
+        body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+    });
+
+    for (int i=0; i < AMREX_SPACEDIM; ++i) {
+        const auto min_val = utils::field_min(src_term, i);
+        const auto max_val = utils::field_max(src_term, i);
+        EXPECT_NEAR(min_val, 0.0, tol);
+        EXPECT_NEAR(min_val, max_val, tol);
+    }
+
+}
+
 
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
@@ -439,6 +472,7 @@ TEST_F(ABLMeshTest, densitybuoyancy)
     EXPECT_NEAR(utils::field_max(src_term, 2), -9.81*(1.0-1.0/0.5), tol);
 
 }
+
 
 
 } // namespace amr_wind_tests
