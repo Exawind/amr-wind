@@ -37,7 +37,7 @@ void BodyForce::operator()(
         {m_body_force[0], m_body_force[1], m_body_force[2]}};
 
     amrex::Real coeff =
-        (m_type == "oscillatory") ? std::sin(m_omega * time) : 1.0;
+        (m_type == "oscillatory") ? std::cos(m_omega * time) : 1.0;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         src_term(i, j, k, 0) += coeff * forcing[0];

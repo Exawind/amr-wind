@@ -14,6 +14,15 @@ void populate_abl_params()
     pp.addarr("temperature_values", tvalues);
     pp.add("perturb_ref_height", 50.0);
 
+    // Body force
+    {
+        amrex::ParmParse pp("BodyForce");
+        pp.add("type",std::string("oscillatory"));
+        amrex::Vector<amrex::Real> source_mag{{1.0, 2.0, 3.0}};
+        pp.addarr("magnitude", source_mag);
+        pp.add("angular_frequency",1.0);
+    }
+
     // Boussinesq Buoyancy
     {
         amrex::ParmParse pp("BoussinesqBuoyancy");
