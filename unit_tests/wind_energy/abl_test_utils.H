@@ -16,6 +16,6 @@ class ABLMeshTest : public MeshTest
 namespace utils {
 void populate_abl_params();
 }
-}
+} // namespace amr_wind_tests
 
 #endif /* ABL_TEST_UTILS_H */
