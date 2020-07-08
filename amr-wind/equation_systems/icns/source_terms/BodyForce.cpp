@@ -11,19 +11,15 @@ namespace icns {
 
 /** Body Force
  */
-BodyForce::BodyForce(const CFDSim& sim)
-    : m_time(sim.time()), m_density(sim.repo().get_field("density"))
+BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time())
 {
 
-    {
-        // Read the geostrophic wind speed vector (in m/s)
-        amrex::ParmParse pp("BodyForce");
-        pp.query("type", m_type);
-        pp.queryarr("magnitude", m_body_force);
-        if (m_type == "Oscillatory" || m_type == "oscillatory") {
-            pp.query("AngularFrequency", m_omega);
-        }
-    }
+    // Read the geostrophic wind speed vector (in m/s)
+    amrex::ParmParse pp("BodyForce");
+    pp.query("type", m_type);
+    m_type = amrex::toLower(m_type);
+    pp.getarr("magnitude", m_body_force);
+    if (m_type == "oscillatory") pp.get("angular_frequency", m_omega);
 }
 
 BodyForce::~BodyForce() = default;
@@ -40,18 +36,13 @@ void BodyForce::operator()(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_body_force[0], m_body_force[1], m_body_force[2]}};
 
-    amrex::Real coeff;
+    amrex::Real coeff =
+        (m_type == "oscillatory") ? std::cos(m_omega * time) : 1.0;
 
-    if (m_type == "constant" || m_type == "Constant") {
-        coeff = 1.;
-    } else if (m_type == "Oscillatory" || m_type == "oscillatory") {
-        coeff = std::sin(m_omega * time);
-    }
-    const auto& rho = m_density.state(fstate)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        src_term(i, j, k, 0) += rho(i, j, k) * coeff * forcing[0];
-        src_term(i, j, k, 1) += rho(i, j, k) * coeff * forcing[1];
-        src_term(i, j, k, 2) += rho(i, j, k) * coeff * forcing[2];
+        src_term(i, j, k, 0) += coeff * forcing[0];
+        src_term(i, j, k, 1) += coeff * forcing[1];
+        src_term(i, j, k, 2) += coeff * forcing[2];
     });
 }
 

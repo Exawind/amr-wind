@@ -89,6 +89,7 @@ TEST_F(ABLMeshTest, body_force)
 
     auto& pde_mgr = sim().pde_manager();
     pde_mgr.register_icns();
+    // pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
 
     auto& src_term = pde_mgr.icns().fields().src_term;
@@ -103,11 +104,34 @@ TEST_F(ABLMeshTest, body_force)
         body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
     });
 
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        const auto min_val = utils::field_min(src_term, i);
-        const auto max_val = utils::field_max(src_term, i);
-        EXPECT_NEAR(min_val, 0.0, tol);
-        EXPECT_NEAR(min_val, max_val, tol);
+    const auto valx = utils::field_max(src_term, 0);
+    const auto valy = utils::field_max(src_term, 1);
+    const auto valz = utils::field_max(src_term, 2);
+    EXPECT_NEAR(valx, 1.0, tol);
+    EXPECT_NEAR(valy, 2.0, tol);
+    EXPECT_NEAR(valz, 3.0, tol);
+
+    // Mimic source term at later timesteps
+    {
+        auto& time = sim().time();
+        time.current_time() = 0.1;
+        src_term.setVal(0.0);
+
+        run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& src_arr = src_term(lev).array(mfi);
+
+            body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
+        });
+
+        const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
+            {1.0 * std::cos(0.1), 2.0 * std::cos(0.1), 3.0 * std::cos(0.1)}};
+        const auto valx = utils::field_max(src_term, 0);
+        const auto valy = utils::field_max(src_term, 1);
+        const auto valz = utils::field_max(src_term, 2);
+        EXPECT_NEAR(valx, golds[0], tol);
+        EXPECT_NEAR(valy, golds[1], tol);
+        EXPECT_NEAR(valz, golds[2], tol);
     }
 }
 
