@@ -14,6 +14,15 @@ void populate_abl_params()
     pp.addarr("temperature_values", tvalues);
     pp.add("perturb_ref_height", 50.0);
 
+    // Body force
+    {
+        amrex::ParmParse pp("BodyForce");
+        pp.add("type", std::string("oscillatory"));
+        amrex::Vector<amrex::Real> source_mag{{1.0, 2.0, 3.0}};
+        pp.addarr("magnitude", source_mag);
+        pp.add("angular_frequency", 1.0);
+    }
+
     // Boussinesq Buoyancy
     {
         amrex::ParmParse pp("BoussinesqBuoyancy");
@@ -50,12 +59,11 @@ void populate_abl_params()
         amrex::Vector<std::string> physics{"ABL"};
         pp.addarr("physics", physics);
 
-        pp.add("density", 1.0);   // Density
+        pp.add("density", 1.0); // Density
         amrex::Vector<amrex::Real> vel{{20.0, 10.0, 0.0}};
         pp.addarr("velocity", vel);
-        amrex::Vector<amrex::Real> grav{{0.0,0.0,-9.81}};
+        amrex::Vector<amrex::Real> grav{{0.0, 0.0, -9.81}};
         pp.addarr("gravity", grav);
-        
     }
 
     // Adjust computational domain to be more like ABL mesh in the z direction
@@ -66,11 +74,11 @@ void populate_abl_params()
     }
     {
         amrex::ParmParse pp("geometry");
-        amrex::Vector<amrex::Real> probhi {{120.0, 120.0, 1000.0}};
+        amrex::Vector<amrex::Real> probhi{{120.0, 120.0, 1000.0}};
 
         pp.addarr("prob_hi", probhi);
     }
 }
 
-}
-}
+} // namespace utils
+} // namespace amr_wind_tests
