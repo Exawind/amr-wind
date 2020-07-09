@@ -26,10 +26,6 @@ function(add_test_r TEST_NAME)
     set(PLOT_GOLD ${FCOMPARE_GOLD_FILES_DIRECTORY}/${TEST_NAME}/plt00010)
     # Test plot is currently expected to be after 10 steps
     set(PLOT_TEST ${CURRENT_TEST_BINARY_DIR}/plt00010)
-    # Find fcompare
-    if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE ${CMAKE_BINARY_DIR}/submods/amrex/Tools/Plotfile/fcompare)
-    endif()
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     # Gather all files in source directory for test
@@ -43,7 +39,7 @@ function(add_test_r TEST_NAME)
     endif()
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
+      set(FCOMPARE_COMMAND "&& ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     if(AMR_WIND_ENABLE_MPI)
       set(NP 4)
