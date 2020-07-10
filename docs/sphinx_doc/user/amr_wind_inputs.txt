@@ -34,7 +34,6 @@ io.restart_file            = ""
 incflo.physics             = ABL
 incflo.density             = 1.225
 incflo.velocity            = 6.0 5.0 0.0
-incflo.delp                = 0.0 0.0 0.0
 incflo.verbose             = 0
 incflo.initial_iterations  = 3
 incflo.do_initial_proj     = true

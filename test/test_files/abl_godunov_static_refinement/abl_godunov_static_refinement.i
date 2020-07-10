@@ -61,8 +61,6 @@ geometry.prob_lo        =   0.       0.     0.  # Lo corner coordinates
 geometry.prob_hi        =   1000.  1000.  1000.  # Hi corner coordinates
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
-incflo.delp             =   0.  0.  0.  # Prescribed (cyclic) pressure gradient
-
 # Boundary conditions
 zlo.type =   "wall_model"
 zlo.temperature_type = "fixed_gradient"
