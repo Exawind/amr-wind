@@ -25,6 +25,7 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
+option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
