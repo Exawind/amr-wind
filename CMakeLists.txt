@@ -5,6 +5,7 @@ project(AMR-Wind CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
+include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
 ########################## OPTIONS #####################################
 
@@ -26,6 +27,7 @@ option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 
 # Third party libraries
+option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 
@@ -47,11 +49,7 @@ if(AMR_WIND_TEST_WITH_FCOMPARE)
 endif()
 
 ########################### AMReX #####################################
-
-set(AMREX_SUBMOD_LOCATION "${CMAKE_SOURCE_DIR}/submods/amrex")
-include(${CMAKE_SOURCE_DIR}/cmake/set_amrex_options.cmake)
-list(APPEND CMAKE_MODULE_PATH "${AMREX_SUBMOD_LOCATION}/Tools/CMake")
-add_subdirectory(${AMREX_SUBMOD_LOCATION})
+init_amrex()
 
 ########################### AMR-Wind #####################################
 
@@ -78,7 +76,6 @@ add_library(${amr_wind_lib_name} OBJECT)
 add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
 if (AMR_WIND_ENABLE_FORTRAN)
   #Keep our Fortran module files confined to a directory
