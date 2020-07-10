@@ -294,14 +294,6 @@ as initial conditions and discretization options.
    Specify reference velocity in the "x-", "y-", "z-direction". 
    Refer to the field initializer for your chosen :input_param:`incflo.physics` for how `incflo.velocity` is used.
    
-.. input_param:: incflo.delp
-
-   **type:** List of 3 real numbers
-
-   Specify a constant pressure change in the x,y, and z directions. 
-   Currently this is broken and will abort if a non-zero number is specified.
-   A user defined body force will replace this in the future.
-   
 .. input_param:: incflo.verbose
 
    **type:** Integer, optional, default = 0
