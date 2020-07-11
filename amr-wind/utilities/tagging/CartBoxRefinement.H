@@ -10,6 +10,7 @@
 namespace amr_wind {
 
 /** Static refinement with Cartesian-aligned bounding boxes
+ *  \ingroup amr_utils wind
  *
  *  Implements tagging functionality for nested refinement of meshes using
  *  bounding box specifications. This class only allows nested refinement of

@@ -9,6 +9,23 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 
+/**
+ *  \defgroup wind Wind energy modeling
+ *  Wind energy modeling
+ *
+ *  This group documents all the wind-energy related physics models available in
+ *  AMR-Wind
+ *
+ *  \ingroup physics
+ */
+
+/**
+ *  \defgroup we_abl ABL
+ *  Atmospheric boundary layer (ABL) modeling
+ *
+ *  \ingroup wind
+ */
+
 class incflo;
 
 namespace amr_wind {
@@ -20,6 +37,16 @@ class ABLForcing;
 }
 
 /** Atmospheric Boundary Layer physics
+ *  \ingroup we_abl
+ *
+ *  This class implements the necessary code to simulation atmospheric boundary
+ *  layers with AMR-Wind. It reads the namespace `ABL` from the input file to
+ *  determine how the initial conditions are generated. At each timestep it
+ *  performs plane averages to collect statistics as well as set the necessary
+ *  data to be used by wall models as well as any ABLForcing terms that might be
+ *  active.
+ *
+ *  \sa ABLFieldInit, ABLWallFunction, FieldPlaneAveraging
  */
 class ABL : public Physics::Register<ABL>
 {

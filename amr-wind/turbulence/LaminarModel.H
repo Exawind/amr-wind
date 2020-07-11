@@ -6,6 +6,11 @@
 namespace amr_wind {
 namespace turbulence {
 
+/** Laminar model
+ *  \ingroup turb_model
+ *
+ *  Implementation of laminar flow model
+ */
 template<typename Transport>
 class Laminar : public TurbModel<Transport>
 {
@@ -18,6 +23,7 @@ public:
 
     virtual ~Laminar() = default;
 
+    //! String representation of this model for I/O
     virtual std::string model_name() override { return "laminar"; }
 
     //! Update the effective/turbulent viscosity field

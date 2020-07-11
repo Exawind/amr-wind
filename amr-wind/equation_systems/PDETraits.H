@@ -9,16 +9,33 @@
 namespace amr_wind {
 namespace pde {
 
+/** Characteristics of a vector transport equation
+ *  \ingroup eqsys
+ */
 struct VectorTransport
 {
+    //! Linear operator for the diffusion solve
     using MLDiffOp = amrex::MLABecLaplacian;
+
+    //! Number of components per degree-of-freedom
     static constexpr int ndim = AMREX_SPACEDIM;
 
+    //! Flag indicating whether this equation will use `(n + 1/2)` state
     static constexpr bool need_nph_state = true;
+
+    //! Flag indicating if the terms need to be multiplied by density (e.g., source term)
     static constexpr bool multiply_rho = true;
+
+    //! Flag indicating whether the equation has a diffusion term
     static constexpr bool has_diffusion = true;
 };
 
+/** Characteristics of a scalar transport equation
+ *  \ingroup eqsys
+ *
+ *  This class defines common characteristics of a scalar transport equation
+ *  that concrete traits can override. For example, compare with Density trait
+ */
 struct ScalarTransport
 {
     //! AMReX linear operator used to solve the diffusion equation

@@ -112,6 +112,11 @@ amrex::Real FieldPlaneAveraging::line_derivative_of_average_cell(
     return dudx;
 }
 
+/**
+ *  \param field_in [in] Field to be averaged
+ *  \param time [in] Time instance to determine output frequencies
+ *  \param axis_in [in] Direction along which planes are computed
+ */
 FieldPlaneAveraging::FieldPlaneAveraging(
     amr_wind::Field& field_in, const amr_wind::SimTime& time, int axis_in)
     : m_field(field_in), m_time(time), m_axis(axis_in)

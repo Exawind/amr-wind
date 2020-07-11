@@ -4,6 +4,7 @@
 namespace amr_wind {
 
 /** Possible time states for a given Field instance
+ *  \ingroup fields
  *
  *  All defined fields have at least one state, `New`, as their default state.
  *  For state variables, there are currently two states `New` and `Old`. `Old` .
@@ -16,11 +17,12 @@ enum class FieldState : int {
     NM1,         ///< State at `(n - 1)` th timestep
     NPH,         ///< State at `(n + 1/2)` (intermediate) timestep
     NMH,         ///< State at `(n - 1/2)` timestep
-    New = NP1,
-    Old = N,
+    New = NP1,   ///< Same as FieldState::NP1
+    Old = N,     ///< Same as FieldState::N
 };
 
 /** Possible locations for a field in a structured mesh
+ *  \ingroup fields
  */
 enum class FieldLoc : int {
     CELL,  ///< Cell-centered (default)
@@ -31,11 +33,12 @@ enum class FieldLoc : int {
 };
 
 //! Coarse-to-fine field interpolation options
+//! \ingroup fields
 enum class FieldInterpolator : int
 {
-    PiecewiseConstant,
-    CellConsLinear,
-    NodeBilinear
+    PiecewiseConstant, ///< Constant across cell
+    CellConsLinear, ///< Linear interpolation
+    NodeBilinear ///< Bilinear nodal interpolation
 };
 
 } // namespace amr_wind

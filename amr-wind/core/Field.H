@@ -21,6 +21,7 @@ class FieldBCIface;
 class SimTime;
 
 /** Information common to a field that has multiple states
+ *  \ingroup fields
  */
 struct FieldInfo
 {
@@ -82,6 +83,7 @@ struct FieldInfo
 };
 
 /** Computational field
+ *  \ingroup fields
  *
  *  This is an abstraction of a collection of MultiFabs over multiple levels,
  *  and allows operations on the field as a whole. The Field cannot be
@@ -236,11 +238,6 @@ public:
 
     //! Create a new time state after the field has been created
     Field& create_state(const FieldState fstate) noexcept;
-
-    /** \defgroup These methods wrappers to MultiFab methods
-     *
-     *  @{
-     */
 
     // NOTE: We break naming rules for methods here to provide 1-1 mapping with
     // the underlying MultiFab method names.

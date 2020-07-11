@@ -8,6 +8,9 @@
 namespace amr_wind {
 namespace turbulence {
 
+/** Smagorinsky LES Model
+ *  \ingroup turb_model
+ */
 template <typename Transport>
 class Smagorinsky : public TurbModelBase<Transport>
 {

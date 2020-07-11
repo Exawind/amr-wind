@@ -10,6 +10,11 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
+/** Forcing term to drive the ABL profile to a desired state
+ *  \ingroup icns_src we_abl
+ *
+ *  \sa ABL
+ */
 class ABLForcing : public MomentumSource::Register<ABLForcing>
 {
 public:

@@ -11,6 +11,11 @@ class CFDSim;
 namespace sampling {
 
 /** Abstract representation of data probes to sample flow data
+ *  \ingroup sampling
+ *
+ *  This class defines the interface by which the positions of the data-probes
+ *  are defined and access from the Sampling class. All data probe definitions
+ *  must be sub-classes of this base class.
  */
 class SamplerBase : public Factory<SamplerBase, CFDSim&>
 {

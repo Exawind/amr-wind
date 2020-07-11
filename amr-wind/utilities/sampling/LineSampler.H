@@ -7,6 +7,7 @@ namespace amr_wind {
 namespace sampling {
 
 /** Sample data along a line
+ *  \ingroup sampling
  *
  *  Defines probes along a line defined by `start` and `end` coordinates and
  *  divides it into equal segements as determined by `num_points`. The length of

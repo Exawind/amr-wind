@@ -12,19 +12,46 @@ class Field;
 
 namespace turbulence {
 
+/**
+ *  \defgroup turb_model Turbulence models
+ *
+ *  Turbulence models available in AMR-Wind
+ */
+
+/** Abstract representation of a turbulence model
+ *  \ingroup turb_model
+ *
+ *  This class is an abstract representation of a turbulence model used in
+ *  AMR-Wind. Subclasses must implement the methods defined in this class to
+ *  interact with \ref eqsys.
+ */
 class TurbulenceModel : public Factory<TurbulenceModel, CFDSim&>
 {
 public:
+    //! Default identifier used by factor methods
     static std::string base_identifier() { return "TurbulenceModel"; }
 
     virtual ~TurbulenceModel() = default;
 
+    /** Update the turbulent viscosity field
+     *
+     *  This method is called at the beginning of each predictor/corrector step
+     *  to update the turbulent viscosity field. The exact effective viscosity
+     *  for each equation system is handled by the concrete implementation of
+     *  PDESystem.
+     *
+     *  \param fstate State used for updates to differentiate logic in predictor
+     *  and corrector steps.
+     */
     virtual void update_turbulent_viscosity(const FieldState fstate) = 0;
 
+    //! Register the effective viscosity (for momentum field)
     virtual void register_mueff_field(Field& mueff) = 0;
 
+    //! Register the thermal diffusivity field
     virtual void register_alphaeff_field(Field& alphaeff) = 0;
 
+    //! String representation of this turbulence model for I/O
     virtual std::string model_name() = 0;
 
     //! Return the dynamic viscosity (laminar) field
@@ -51,7 +78,9 @@ public:
     //! Flag indicating whether the model is turbulent
     virtual bool is_turbulent() const { return true; }
 
-    //! Interface to update effective viscosity (mu_eff = mu + mu_t)
+    //! Interface to update effective viscosity
+    //!
+    //! \f$\mu_\mathrm{eff} = \mu + \mu_t\f$
     virtual void update_mueff(Field& mueff) = 0;
 
     //! Interface to update effective thermal diffusivity

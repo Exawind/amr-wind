@@ -6,9 +6,30 @@
 
 #include "AMReX_BC_TYPES.H"
 
+/**
+ *  \defgroup field_bc Boundary conditions management
+ *  Boundary conditions managment
+ *
+ *  This group documents the boundary condition management interface within
+ *  AMR-Wind. Boundary conditions are registered on a Field instance and are
+ *  used by the Field::fillpatch and Field::fillphysbc calls to perform the
+ *  actual work. The classes documented in this group provide the interface to
+ *  read user inputs and initialize the BC data structures in FieldInfo, moves
+ *  them to the device so that they are ready for use during the solution
+ *  process, and fill the ghost cells with appropriate values that require
+ *  custom computations and not simple extrapolations.
+ *
+ *  \ingroup fields
+ */
+
 namespace amr_wind {
 
 /** Abstract class that defines the interface for processing BCs
+ *  \ingroup field_bc
+ *
+ *  This class defines the infrastructure to read and initialize the boundary
+ *  condition information from the input file and populate the necessary data in
+ *  FieldInfo instance for a given Field.
  */
 class BCIface
 {
@@ -49,6 +70,9 @@ protected:
     Field& m_field;
 };
 
+/** Boundary condition initialization for velocity (ICNS momentum) field
+ *  \ingroup field_bc
+ */
 class BCVelocity : public BCIface
 {
 public:
@@ -59,6 +83,9 @@ protected:
     virtual void read_values() override;
 };
 
+/** Boundary condition initialization for scalar transport variables
+ *  \ingroup field_bc
+ */
 class BCScalar : public BCIface
 {
 public:
@@ -69,6 +96,11 @@ protected:
     virtual void read_values() override;
 };
 
+/** Specialization of BC initialization for pressure
+ *
+ *  For pressure there is no user value read from file. The values are assumed
+ *  to be zero.
+ */
 class BCPressure : public BCScalar
 {
 public:
@@ -78,6 +110,12 @@ protected:
     virtual void read_values() override;
 };
 
+/** Specialization for source terms
+ *  \ingroup field_bc
+ *
+ *  Sets a default first-order extrapolation for non-periodic BCs and a no-op
+ *  for fillpatch operations.
+ */
 class BCSrcTerm : public BCIface
 {
 public:
@@ -91,6 +129,13 @@ protected:
     }
 };
 
+/** Default BC that can be applied on any field
+ *  \ingroup field_bc
+ *
+ *  This operator is used to initialize defaults for any field that might
+ *  require valid BC data. It sets higher-order extrapolation for mathematical
+ *  BC.
+ */
 class BCFillPatchExtrap : public BCIface
 {
 public:

@@ -9,6 +9,7 @@ namespace amr_wind {
 namespace pde {
 
 /** BC operations for all scalar transport equations
+ *  \ingroup pdeop
  */
 template <typename PDE>
 struct BCOp<

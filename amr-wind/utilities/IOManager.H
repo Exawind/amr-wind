@@ -12,6 +12,18 @@ namespace amr_wind {
 class CFDSim;
 class Field;
 
+/** Input/Output manager
+ *  \ingroup utilities
+ *
+ *  This class contains infrastructure to output solution fields during the
+ *  simulation as well as code that reads a checkpoint file during a restarted
+ *  simulation. By default the \ref eqsys register the necessary fields during
+ *  initialization and these fields are output into plot-file and checkpoint
+ *  file formats based on output frequencies managed by SimTime. The user can
+ *  request additional fields be output by setting appropriate parameters in the
+ *  input file. The class also provides the ability to override output of the
+ *  default fields and output a subset of those fields.
+ */
 class IOManager
 {
 public:
@@ -53,6 +65,7 @@ public:
         m_chkvars.insert(fname);
     }
 
+    //! Name of the checkpoint file to be read during a restart
     const std::string& restart_file()
     { return m_restart_file; }
 

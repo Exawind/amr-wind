@@ -19,6 +19,7 @@ static constexpr int SNArrayReal = 0;
 static constexpr int SNArrayInt = 0;
 
 /** Indexing for the integer variables defined on the AMReX particle
+ *  \ingroup sampling
  */
 struct IIx
 {
@@ -30,6 +31,7 @@ struct IIx
 };
 
 /** Specialization of the AMReX ParticleContainer object for sampling data
+ *  \ingroup sampling
  *
  *  Represents the data probes as a collection of particles that are uniquely
  *  identified by three integer identifiers:
@@ -82,6 +84,7 @@ public:
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);
 
+    //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
 
     int num_sampling_particles() const { return m_total_particles; }

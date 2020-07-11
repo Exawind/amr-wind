@@ -8,6 +8,7 @@
 namespace amr_wind {
 
 /** Time manager for simulations
+ *  \ingroup core
  */
 class SimTime
 {

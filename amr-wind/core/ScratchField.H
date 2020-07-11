@@ -10,6 +10,17 @@ namespace amr_wind {
 
 class FieldRepo;
 
+/** A temporary computational field
+ *  \ingroup fields
+ *
+ *  A ScratchField is similar to a Field in usage, but is temporary in nature.
+ *  It is used as a scratch buffer to compute intermediate quantities. However,
+ *  unlike fields these don't have multiple states, and cannot survive across a
+ *  regrid. By default, FieldRepo returns a unique pointer to this instance and
+ *  it is not safe to hold this pointer across timesteps.
+ *
+ *  At present, ScratchField cannot be used for I/O and/or post-processing utilities.
+ */
 class ScratchField
 {
 public:

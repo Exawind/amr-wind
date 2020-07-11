@@ -12,12 +12,16 @@ namespace amr_wind {
 namespace pde {
 
 /** Implementation of the PDE interface for transport equations
+ *  \ingroup eqsys
  *
  *  This class takes two traits, one describing the PDE type and the other
  *  describing the numerical scheme (e.g., Godunov, MOL) to generate a family of
  *  PDE systems and its solution process. Each operation is performed by a
  *  separate operator object that can be customized based on the different
  *  traits as necessary.
+ *
+ *  \tparam PDE The PDE trait (e.g., ICNS, Temperature, etc.)
+ *  \tparam Scheme Numerical scheme trait (e.g., Godunov, MOL)
  */
 template<typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
@@ -33,6 +37,10 @@ public:
         return PDE::pde_name() + "-"  + Scheme::scheme_name();
     }
 
+    /**
+     *  \param sim A CFDSim instance
+     *  \param probtype Unique identifier for a problem type
+     */
     PDESystem(CFDSim& sim, const int probtype)
         : m_sim(sim)
         , m_time(sim.time())

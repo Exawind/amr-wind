@@ -8,6 +8,9 @@
 namespace amr_wind {
 
 /** Boussinesq Bubble physics
+ *  \ingroup physics
+ *
+ *  \sa BoussinesqBubbleFieldInit
  */
 class BoussinesqBubble : public Physics::Register<BoussinesqBubble>
 {

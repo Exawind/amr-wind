@@ -4,9 +4,26 @@
 #include "AMReX_AmrCore.H"
 #include "AMReX_TagBox.H"
 
+/**
+ *  \defgroup amr_utils Mesh refinement
+ *  Mesh refinement
+ *
+ *  This group contains utilities used for static or adaptive refinement during
+ *  a simulation.
+ *
+ *  \ingroup utilities
+ */
+
 namespace amr_wind {
 
-//! Abstract interface for refinement criteria
+/** Abstract interface for tagging cells for refinement
+ *  \ingroup amr_utils
+ *
+ *  This class provides an API that can be used by concrete implementations to
+ *  tag cells that must be refined based on a pre-defined criteria. The criteria
+ *  can be a heuristic determined from the solution (e.g., vorticity magntiude
+ *  or gradients), or some user defined criteria (e.g., static, nested refinements).
+ */
 class RefinementCriteria
 {
 public:

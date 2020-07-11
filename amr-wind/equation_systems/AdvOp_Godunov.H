@@ -14,6 +14,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** Godunov advection operator for scalar transport equations
+ *  \ingroup pdeop
+ */
 template <typename PDE>
 struct AdvectionOp<
     PDE,

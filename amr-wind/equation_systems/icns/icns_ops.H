@@ -15,6 +15,17 @@ namespace pde {
 
 void advection_mac_project(FieldRepo& repo, FieldState fstate);
 
+/** Specialization of field registration for ICNS
+ *  \ingroup icns
+ *
+ *  In addition to the PDEFields, this operator initializes several additional
+ *  fields necessary to solve the Navier-Stokes equation system.
+ *
+ *  - `density` - The fluid density field variable
+ *  - `pressure` - The perturbation pressure field
+ *  - `umac, vmac, wmac` - The face velocity fields used for flux computations
+ *  - `grad_p` - Pressure gradient used for projection
+ */
 template<typename Scheme>
 struct FieldRegOp<ICNS, Scheme>
 {
@@ -56,6 +67,9 @@ struct FieldRegOp<ICNS, Scheme>
     CFDSim& sim;
 };
 
+/** Specialization of the source term operator for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
@@ -100,6 +114,9 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
 };
 
+/** Godunov scheme for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
@@ -258,6 +275,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_use_forces_in_trans{false};
 };
 
+/** MOL scheme for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
@@ -358,6 +378,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
     Field& w_mac;
 };
 
+/** Effective turbulent viscosity computation for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct TurbulenceOp<ICNS>
 {

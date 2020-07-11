@@ -8,6 +8,10 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
+/** Account for Coriolis forcing due to earth's rotation
+ *  \ingroup icns_src we_abl
+ *
+ */
 class CoriolisForcing : public MomentumSource::Register<CoriolisForcing>
 {
 public:

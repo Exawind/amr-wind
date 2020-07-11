@@ -15,6 +15,14 @@
 namespace amr_wind {
 namespace pde {
 
+/** Base class for all diffusion operators
+ *  \ingroup pdeop
+ *
+ *  This class provides the common operations for an implicit solution of a
+ *  convection-diffusion equation within AMR-Wind.
+ *
+ *  \tparam LinOp The linear operator (see [AMREeX docs](https://amrex-codes.github.io/amrex/docs_html/LinearSolvers.html))
+ */
 template <typename LinOp>
 class DiffSolverIface
 {
@@ -23,9 +31,14 @@ public:
 
     virtual ~DiffSolverIface() = default;
 
+    /** Implicit solve and update of a linear system
+     *
+     *  \param dt timestep size
+     */
     virtual void linsys_solve(const amrex::Real dt);
 
 protected:
+    //! Sets up the linear operator (e.g., setup BCs, etc.)
     virtual void setup_operator(
         LinOp& linop,
         const amrex::Real alpha,
@@ -75,6 +88,10 @@ protected:
     std::unique_ptr<LinOp> m_applier;
 };
 
+
+/** Diffusion operator for scalar transport equations
+ *  \ingroup pdeop
+ */
 template <typename PDE, typename Scheme>
 struct DiffusionOp<
     PDE,
@@ -97,6 +114,7 @@ struct DiffusionOp<
             diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::high));
     }
 
+    //! Computes the diffusion term that goes in the RHS
     void compute_diff_term(const FieldState fstate)
     {
         this->setup_operator(*this->m_applier, 0.0, -1.0, fstate);

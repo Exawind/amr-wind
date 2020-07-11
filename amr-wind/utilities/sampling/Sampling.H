@@ -8,10 +8,24 @@
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 
+/**
+ *  \defgroup sampling Data-sampling utilities
+ *  Data-sampling utilities
+ *
+ *  Sampling contains various data-probes sampling utilities that are
+ *  implemented in using the [AMReX
+ *  particles](https://amrex-codes.github.io/amrex/docs_html/Particle.html)
+ *  interface. It supports output in native AMReX particles binary format as
+ *  well as NetCDF format.
+ *
+ *  \ingroup utilities
+ */
+
 namespace amr_wind {
 namespace sampling {
 
 /** Collection of data sampling objects
+ *  \ingroup sampling
  *
  *  A concrete impelementation of the post-processing interface that deals with
  *  data probes. Multiple instances of sampling entities (e.g., point cloud or
@@ -19,6 +33,9 @@ namespace sampling {
  *  probles are represented as amr_wind::sampling::SamplingContainer for
  *  tracking their position within the CFD mesh and updating the fields of
  *  interest.
+ *
+ *  This class manages the interpolation and the field management. The actual
+ *  definition of probes are managed by subclasses of SamplerBase.
  */
 class Sampling : public PostProcessBase::Register<Sampling>
 {

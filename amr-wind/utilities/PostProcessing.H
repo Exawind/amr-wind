@@ -5,14 +5,25 @@
 
 #include "amr-wind/core/Factory.H"
 
+/**
+ *  \defgroup utilities Utilities
+ *  Utilities
+ *
+ *  This group documents various utilities available in AMR-Wind for
+ *  input/output, post-processing, collecting statistics etc.
+ */
+
 namespace amr_wind {
 
 class CFDSim;
 
 /** Abstract representation of a post-processing utility
+ *  \ingroup utilities
  *
  *  Provides an interface for a runtime-selectable post-processing action (e.g.,
  *  data sampling, volume/surface integration, etc.) with the main solver.
+ *
+ *  All post-processing utilities must derive from this class.
  */
 class PostProcessBase : public Factory<PostProcessBase, CFDSim&, const std::string&>
 {
@@ -39,6 +50,8 @@ public:
  *  Upon initialization, the class reads the ``incflo.post_processing``
  *  parameter to determine the utilities that must be activated and uses runtime
  *  selection to initialize them
+ *
+ *  \ingroup utilities
  */
 class PostProcessManager
 {

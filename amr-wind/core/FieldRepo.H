@@ -16,6 +16,19 @@
 
 namespace amr_wind {
 
+/**
+ *  \defgroup fields Field management
+ *  Field management infrastructure
+ *
+ *  Field is at the core of AMR-Wind implementation that handles all the data
+ *  used during the simulation. FieldRepo manages a collection of fields and is
+ *  responsible for all memory allocation and reinitialization during regrid
+ *  process. Field provides a higher-level interface than MultiFabs and also
+ *  provides a unified interface to manage boundary conditions and states.
+ *
+ *  \ingroup core
+ */
+
 /** Object that holds the MultiFab instances at all levels for a given field
  */
 struct LevelDataHolder
@@ -33,6 +46,7 @@ struct LevelDataHolder
 };
 
 /** Field Repository
+ *  \ingroup fields
  *
  *  FieldRepo is a database that manages handling of fields used during a
  *  simulation. It provides an interface to automatically handle the
@@ -61,8 +75,11 @@ struct LevelDataHolder
  *
  *  Fields can be accessed using amr_wind::FieldRepo::get_field method. Unlike
  *  the declaration method, this method will raise an error if no field exists.
- *  amr_wind::FieldRepo::query_field can be used to determine if a field exists
+ *  amr_wind::FieldRepo::field_exists can be used to determine if a field exists
  *  in the repository.
+ *
+ *  FieldRepo also manages integer fields (IntField) as well as creation of
+ *  ScratchField instances.
  */
 class FieldRepo
 {
@@ -86,16 +103,25 @@ public:
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
+    /** Allocate and initialize data on a finer level from the next coarser level
+     *
+     *  This is called by the AmrCore automatically during regrid process
+     */
     void make_new_level_from_coarse(
         int lev, amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
+    /** Allocate and initialize data on an existing level during regrid
+     *
+     *  This is called by the AmrCore automatically during regrid process
+     */
     void remake_level(
         int lev, amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
+    //! Remove a level during regrid
     void clear_level(int lev);
 
     /** Create a new field instance
@@ -215,6 +241,12 @@ public:
     bool field_exists(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    /** Declare an integer field
+     *
+     *  Integer fields are used for masks and iblanking with overset meshes
+     *
+     *  \param name [in] Unique indentifier for the field
+     */
     IntField& declare_int_field(
         const std::string& name,
         const int ncomp = 1,
@@ -222,18 +254,40 @@ public:
         const int nstates = 1,
         const FieldLoc floc = FieldLoc::CELL);
 
+    //! Return a reference to an integer field
     IntField& get_int_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    //! Query if an integer field exists
     bool int_field_exists(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    /** Create a scratch field
+     *
+     *  ScratchField is a temporary field used to compute and store intermediate
+     *  quantities that are needed within a timestep. Scratch fields provide an
+     *  API similar to Field, but do not contain multiple states. The underlying
+     *  MultiFab data is not managed by FieldRepo and, therefore, ScratchField
+     *  do not survive a regrid. This method returns a unique_ptr instance that
+     *  is only valid within a timestep. It is not safe to hold a reference to
+     *  the ScratchField object across timesteps.
+     */
     std::unique_ptr<ScratchField> create_scratch_field(
         const std::string& name,
         const int ncomp = 1,
         const int ngrow = 0,
         const FieldLoc floc = FieldLoc::CELL) const;
 
+    /** Create a scratch field
+     *
+     *  ScratchField is a temporary field used to compute and store intermediate
+     *  quantities that are needed within a timestep. Scratch fields provide an
+     *  API similar to Field, but do not contain multiple states. The underlying
+     *  MultiFab data is not managed by FieldRepo and, therefore, ScratchField
+     *  do not survive a regrid. This method returns a unique_ptr instance that
+     *  is only valid within a timestep. It is not safe to hold a reference to
+     *  the ScratchField object across timesteps.
+     */
     std::unique_ptr<ScratchField> create_scratch_field(
         const int ncomp = 1,
         const int ngrow = 0,
@@ -242,6 +296,7 @@ public:
     //! Advance all fields with more than one timestate to the new timestep
     void advance_states() noexcept;
 
+    //! Return a reference to the underlying AMR mesh instance
     const amrex::AmrCore& mesh() const { return m_mesh; }
 
     //! Total number of levels currently active in the AMR mesh
@@ -269,12 +324,18 @@ protected:
         return m_leveldata[lev]->m_mfabs[fid];
     }
 
+    /** Return the integer fab instance for a field at a given level
+     *
+     *  \param fid Unique integer field identifier for this field
+     *  \param lev AMR level
+     */
     inline amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_int_fabs[fid];
     }
 
+    //! Create a new state for a field
     Field& create_state(Field& field, const FieldState fstate) noexcept;
 
     //! Allocate field data for a single level outside of regrid

@@ -8,6 +8,12 @@
 
 namespace amr_wind {
 
+/** Applies a non-zero gradient at the domain boundary
+ *  \ingroup field_bc
+ *
+ *  Used with the inhomogeneous Neumann linear solver BC to apply a
+ *  user-specified fixed gradient at the domain boundary.
+ */
 class FixedGradientBC : public FieldBCIface
 {
 public:

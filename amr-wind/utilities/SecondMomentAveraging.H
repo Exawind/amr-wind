@@ -8,6 +8,19 @@
 
 namespace amr_wind {
 
+/** Compute second moments for two variables
+ *  \ingroup statistics
+ *
+ *  Computes second-moment statistics for any two variables. For example, if the
+ *  velocity field is provided, then it computes the following quantities:
+ *
+ *  \f$\langle u'u'\rangle, \langle u'v'\rangle, \langle u'w'\rangle, \ldots\f$
+ *
+ *  Alternately, using velocity (vector) and a scalar (e.g., temperature
+ *  \f$\theta\f$), would compute:
+ *
+ *  \f$\langle u'\theta ' \rangle, \langle v' \theta ' \rangle, \langle w' \theta ' \rangle\f$
+ */
 class SecondMomentAveraging
 {
 public:

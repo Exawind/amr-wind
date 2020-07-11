@@ -10,6 +10,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** Specialization of diffusion operator for ICNS
+ *  \ingroup icns
+ */
 template <typename Scheme>
 struct DiffusionOp<ICNS, Scheme>
     : public DiffSolverIface<typename ICNS::MLDiffOp>

@@ -12,11 +12,36 @@
 namespace amr_wind {
 namespace pde {
 
+/**
+ *  \defgroup pdeop PDE Operators
+ *  PDE Operators
+ *
+ *  The different terms in a PDE as well as other actions on a PDE are
+ *  implemented within AMR-Wind using operator classes. These operators can be
+ *  specialized for a given PDE or a Scheme based on specific traits that are
+ *  passed to the amr_wind::pde::PDESytem class.
+ *
+ *  \ingroup eqsys
+ */
+
+/** %Field registration operator
+ *  \ingroup pdeop
+ *
+ *  When a PDESystem is created, this operator is called first and is
+ *  responsible for creating all the necessary fields that will be accessed by
+ *  the PDE during the solution process.
+ */
 template<typename PDE, typename Scheme>
 struct FieldRegOp
 {
     FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
+    /** Perform initialization activities
+     *
+     *  Declares the necessary fields, sets their I/O properties
+     *
+     *  \return The collection of fields for this PDE
+     */
     PDEFields operator()(const SimTime& time, const int probtype)
     {
         auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
@@ -29,6 +54,17 @@ struct FieldRegOp
     CFDSim& sim;
 };
 
+/** Base implementation of source terms for a PDE
+ *  \ingroup pdeop
+ *
+ *  Holds a collection of source terms that are initialized using at runtime
+ *  based on user inputs. The implementation consults the `source_terms` input
+ *  variable within the PDE namespace (e.g., `ICNS.source_terms` for momentum
+ *  sources) and initializes them. These source terms are then accumulated into
+ *  the PDEFields::src_term during solution process.
+ *
+ *  \sa MomentumSource, TemperatureSource
+ */
 template<typename PDE>
 struct SrcTermOpBase
 {
@@ -36,6 +72,10 @@ struct SrcTermOpBase
     : fields(fields_in)
     , m_density(fields_in.repo.get_field("density")) {}
 
+    /** Initialize the source terms
+     *
+     *  At this stage the mesh has been created
+     */
     void init_source_terms(const CFDSim& sim)
     {
         amrex::ParmParse pp(PDE::pde_name());
@@ -47,6 +87,7 @@ struct SrcTermOpBase
         }
     }
 
+    //! Helper method to multiply the source terms with density
     void multiply_rho(const FieldState fstate)
     {
         BL_PROFILE("amr-wind::" + PDE::pde_name() + "::multiply_rho");
@@ -74,6 +115,7 @@ struct SrcTermOpBase
         }
     }
 
+    //! Update source terms during time-integration procedure
     void operator()(const FieldState fstate)
     {
         // Zero out source term
@@ -107,6 +149,9 @@ struct SrcTermOpBase
     amrex::Vector<std::unique_ptr<typename PDE::SrcTerm>> sources;
 };
 
+/** Implementation of source terms for scalar transport equations
+ *  \ingroup pdeop
+ */
 template<typename PDE>
 struct SrcTermOp : SrcTermOpBase<PDE>
 {
@@ -121,6 +166,9 @@ template<typename PDE, typename Scheme, typename = void>
 struct DiffusionOp
 {};
 
+/** Turbulence update operator for scalar transport equations
+ *  \ingroup pdeop
+ */
 template<typename PDE>
 struct TurbulenceOp
 {
@@ -138,6 +186,9 @@ struct TurbulenceOp
     PDEFields& m_fields;
 };
 
+/** Boundary condition update operator
+ *  \ingroup pdeop
+ */
 template<typename PDE, typename = void>
 struct BCOp;
 

@@ -37,6 +37,14 @@ inline std::string mueff_name(const std::string& var) { return var + "_mueff"; }
 
 namespace pde {
 
+/** Declare fields necessary for solving a PDE
+ *
+ *  This function defines the boilerplate code to declare all the fields in
+ *  PDEFields that are necessary to solve the equation system.
+ *
+ *  \tparam PDE Trait defining this equation system (e.g., ICNS, Temperature)
+ *  \tparam Scheme The numerical scheme (e.g., Godnuov, MOL)
+ */
 template<typename PDE, typename Scheme>
 PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
 {

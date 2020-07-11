@@ -12,6 +12,11 @@
 
 class incflo;
 
+/** Compute statistics on a plane along a given direction
+ *  \ingroup statistics
+ *
+ *  \deprecated Use amr_wind::FieldPlaneAveraging instead
+ */
 class PlaneAveraging
 {
 public:

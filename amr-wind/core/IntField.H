@@ -11,6 +11,11 @@ namespace amr_wind {
 
 class FieldRepo;
 
+/** An integer computational field
+ *  \ingroup fields
+ *
+ *  Used to indicate masking and overset state with IBlanking
+ */
 class IntField
 {
 public:

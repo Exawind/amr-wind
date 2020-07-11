@@ -7,6 +7,10 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/Physics.H"
 
+/** AMR-Wind
+ *
+ *  All C++ code in AMR-Wind is organized within the amr_wind namespace.
+ */
 namespace amr_wind {
 class IOManager;
 class PostProcessManager;
@@ -15,15 +19,24 @@ namespace turbulence {
 class TurbulenceModel;
 }
 
+/**
+ *  \defgroup core AMR-Wind core
+ *  Core data structures in AMR-Wind
+ *
+ *  This group describes the core data structures implemented in AMR-Wind that
+ *  provide a higher-level abstraction over the classes available in AMReX.
+ */
+
 /** Data structures for a CFD simulation
+ *  \ingroup core
  *
- *  CFDSim is a thin wrapper that holds all the necessary objects for a CFD
- *  simulation. The key data members within this object are:
- *
- *  - mesh (amrex::AmrCore) The AMR mesh hierarchy data structure
- *  - time (SimTime)        The time object
- *  - repo (FieldRepo)      The field repository
- *  - pde_manager (PDEMgr)  PDE manager interface
+ *  CFDSim represents the amr-wind execution environment and manages all the
+ *  necessary components used to perform a simulation. Each simulation contains
+ *  a single CFDSim instance that holds references to the mesh, FieldRepo,
+ *  SimTime, PhysicsMgr, pde::PDEMgr, IOManager, and post-processing manager
+ *  instances. This class is just a data holder and does not perform any
+ *  computational logic itself. The computational heavy-lifting is performed by
+ *  the class instances within a time integration loop.
  */
 class CFDSim
 {
@@ -63,8 +76,10 @@ public:
     PostProcessManager& post_manager() { return *m_post_mgr; }
     const PostProcessManager& post_manager() const  { return *m_post_mgr; }
 
+    //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();
 
+    //! Instantiate all physics instances based on user inputs
     void init_physics();
 
 private:

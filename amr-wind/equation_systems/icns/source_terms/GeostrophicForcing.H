@@ -8,6 +8,9 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
+/** Apply source term equivalent to drive the flow to match given geostrophic wind
+ *  \ingroup icns_src we_abl
+ */
 class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
 {
 public:

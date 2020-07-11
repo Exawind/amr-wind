@@ -15,7 +15,23 @@ class CFDSim;
 
 namespace pde {
 
+/**
+ *  \defgroup eqsys Equation Systems
+ *
+ *  Governing partial-differential equations
+ *
+ *  The governing equations and their solution procedure is implemented within
+ *  equation systems that all inherit from PDEBase class. Each term of the
+ *  governing equation is implemented as a \ref pdeop that can be specialized
+ *  for different equations. The behavior is specialized using two traits: 1. a
+ *  PDE trait, e.g., ICNS representing the incompressible Navier-Stokes
+ *  equation, or the Density trait representing the scalar density transport
+ *  equation; and 2. a Scheme trait, e.g., Godunov or MOL that determines the
+ *  discretization process.
+ */
+
 /** Abstract interface defining a PDE and its solution process withn AMR-Wind
+ *  \ingroup eqsys
  *
  *  The exact behavior is implemented by subclass PDESystem that is specialized
  *  using two traits: the PDE type trait, and the numerical scheme trait.

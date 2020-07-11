@@ -6,8 +6,25 @@
 #include "amr-wind/core/Field.H"
 #include "amr-wind/core/SimTime.H"
 
+/**
+ *  \defgroup statistics Field statistics
+ *  Field statistics
+ *
+ *  This group contains utilities for performing turbulence averaging and
+ *  outputting statistics during wind simulations.
+ *
+ *  \ingroup utilities
+ */
+
 namespace amr_wind {
 
+/** Output average of a field on planes normal to a given direction
+ *  \ingroup statistics we_abl
+ *
+ *  The user can choose a direction (x, y, or z), the default value is the
+ *  z-direction. The field is then averaged on planes at the cell-centers at
+ *  level 0 (coarsest level) along the specified direction.
+ */
 class FieldPlaneAveraging
 {
 public:

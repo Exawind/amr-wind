@@ -8,6 +8,10 @@
 
 namespace amr_wind {
 
+/** Compute the third moment with three fields
+ *  \ingroup statistics
+ *
+ */
 class ThirdMomentAveraging
 {
 public:
