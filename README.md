@@ -40,7 +40,12 @@ objectives:
 
 ## Documentation
 
-Documentation is available online at http://amr-wind.readthedocs.io/en/latest/.
+Documentation is organized into a [user manual](https://amr-wind.readthedocs.io)
+and a developer-focused [API
+documentation](https://exawind.github.io/amr-wind/index.html). You can either
+browse the docs online by following the links, or you can generate them locally
+after downloading the code. Please follow the instructions in user manual to
+build documentation locally.
 
 ## Compilation and usage
 
