@@ -52,5 +52,10 @@ target_link_libraries(${amr_wind_lib_name} PRIVATE amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
 target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name})
 
+# Set -fpic options
+set_target_properties(
+  ${amr_wind_lib_name} amrwind_buildinfo
+  PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 file(GLOB_RECURSE amr_wind_header_list ${CMAKE_CURRENT_SOURCE_DIR} "*.H")
 add_custom_target(amr_wind_headers SOURCES ${amr_wind_header_list})
