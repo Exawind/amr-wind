@@ -71,9 +71,11 @@ include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 set(amr_wind_lib_name "amrwind_obj")
 set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
+set(aw_api_lib "amrwind_api")
 
 #Create main target executable
 add_library(${amr_wind_lib_name} OBJECT)
+add_library(${aw_api_lib} SHARED)
 add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
@@ -132,9 +134,10 @@ if(AMR_WIND_ENABLE_DOCUMENTATION)
    add_subdirectory(docs)
 endif()
 
-#Define what we want to be installed during a make install 
+#Define what we want to be installed during a make install
 install(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  ${aw_api_lib} ${amr_wind_lib_name} amrwind_buildinfo
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
@@ -147,18 +150,38 @@ install(
 
 export(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
+  ${aw_api_lib} ${amr_wind_lib_name} amrwind_buildinfo
   NAMESPACE ${PROJECT_NAME}::
-  FILE ${PROJECT_NAME}Targets.cmake
-  )
+  FILE ${PROJECT_NAME}Targets.cmake)
+
+if (${AMR_WIND_USE_INTERNAL_AMREX})
+  set(_amrex_exports Flags_CXX Flags_Fortran Flags_FPE
+    Flags_CXX_REQUIRED Flags_Fortran_REQUIRED)
+  if (AMR_WIND_ENABLE_DPCPP)
+    list(APPEND _amrex_exports SYCL)
+  endif()
+  install(
+    TARGETS amrex
+    EXPORT ${PROJECT_NAME}Targets
+    RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
+  export(
+    TARGETS amrex ${_amrex_exports}
+    NAMESPACE ${PROJECT_NAME}::
+    APPEND FILE ${PROJECT_NAME}Targets.cmake)
+endif()
 
 install(
   EXPORT ${PROJECT_NAME}Targets
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION lib/cmake/${PROJECT_NAME})
 
 configure_package_config_file(
   cmake/${PROJECT_NAME}Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME})
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+  DESTINATION lib/cmake/${PROJECT_NAME})

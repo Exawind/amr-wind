@@ -18,12 +18,12 @@ endif()
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
 target_compile_options(
-  ${amr_wind_lib_name} PUBLIC
+  ${amr_wind_lib_name} PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
 if (AMR_WIND_ENABLE_FORTRAN)
   separate_arguments(AMR_WIND_Fortran_FLAGS)
   target_compile_options(
-    ${amr_wind_lib_name} PUBLIC
+    ${amr_wind_lib_name} PRIVATE
     $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
 endif()
 
