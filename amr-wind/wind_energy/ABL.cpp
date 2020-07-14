@@ -19,6 +19,7 @@ ABL::ABL(CFDSim& sim)
     , m_density(sim.repo().get_field("density"))
     , m_pa(sim, 2)
     , m_abl_wall_func(sim)
+    , m_istats(sim, m_abl_wall_func)
 {
     // Register temperature equation
     // FIXME: this should be optional?
@@ -57,6 +58,8 @@ void ABL::initialize_fields(
             vbx, geom, velocity.array(mfi), density.array(mfi),
             temp.array(mfi));
     }
+
+    m_istats.initialize();
 }
 
 void ABL::post_init_actions()
@@ -136,6 +139,8 @@ void ABL::pre_advance_work()
         }
 
     }
+
+    m_istats.post_advance_work();
 }
 
 } // namespace amr_wind

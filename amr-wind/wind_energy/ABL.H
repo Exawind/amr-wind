@@ -8,7 +8,7 @@
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
-
+#include "amr-wind/wind_energy/ABLiStats.H"
 /**
  *  \defgroup wind Wind energy modeling
  *  Wind energy modeling
@@ -93,6 +93,9 @@ private:
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
+
+    //! ABL integrated statistics object
+    ABLiStats m_istats;
     
 };
 
