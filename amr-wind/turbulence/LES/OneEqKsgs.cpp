@@ -23,6 +23,9 @@ OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
 
     //Turbulent length scale field
     this->m_sim.io_manager().register_io_var("turb_lscale");
+    this->m_sim.io_manager().register_io_var("shear_prod");
+    this->m_sim.io_manager().register_io_var("buoy_prod");
+    
 }
 
 template <typename Transport>
@@ -56,7 +59,7 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
     }
     
     // TKE source term to be added to PDE
-    // turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KsgsM84Src"});
+    turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KsgsM84Src"});
 }
 
 template <typename Transport>
@@ -75,7 +78,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
     auto gradT = (this->m_sim.repo()).create_scratch_field(3,m_temperature.num_grow()[0]);
-    compute_gradient(*gradT, m_temperature);
+    compute_gradient(*gradT, m_temperature.state(fstate) );
 
     auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
@@ -101,7 +104,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(mu_turb.num_grow());
+            const auto& bx = mfi.tilebox();
             const auto& mu_arr = mu_turb(lev).array(mfi);
             const auto& rho_arr = den(lev).const_array(mfi);
             const auto& gradT_arr = (*gradT)(lev).array(mfi);
@@ -114,22 +117,23 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
                   amrex::Real stratification =
-                      (gradT_arr(i,j,k,0) * gravity[0]
+                      -(gradT_arr(i,j,k,0) * gravity[0]
                        + gradT_arr(i,j,k,1) * gravity[1]
                        + gradT_arr(i,j,k,2) * gravity[2])*beta;
                   if(stratification > 1e-10)
                       tlscale_arr(i,j,k) =
-                          0.76 * stratification * std::sqrt(tke_arr(i,j,k));
+                          amrex::min(ds,
+                                     0.76 * std::sqrt(tke_arr(i,j,k) / stratification) );
                   else
                       tlscale_arr(i,j,k) = ds;
-                        
+
                   mu_arr(i, j, k) =
                       rho_arr(i, j, k) * Ce
                       * tlscale_arr(i,j,k) * std::sqrt(tke_arr(i,j,k));
                   
                   buoy_prod_arr(i,j,k) =
-                      mu_arr(i,j,k) * (1.0 + 2.0 * tlscale_arr(i,j,k)/ds)
-                      * stratification;
+                      -mu_arr(i,j,k) * (1.0 + 2.0 * tlscale_arr(i,j,k)/ds)
+                       * stratification;
 
                   shear_prod_arr(i,j,k) *= shear_prod_arr(i,j,k) * mu_arr(i,j,k);
                   

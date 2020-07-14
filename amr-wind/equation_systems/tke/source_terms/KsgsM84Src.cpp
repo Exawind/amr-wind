@@ -15,6 +15,7 @@ KsgsM84Src::KsgsM84Src(const CFDSim& sim)
     AMREX_ALWAYS_ASSERT(sim.turbulence_model().model_name() == "OneEqKsgsM84");
     auto coeffs = sim.turbulence_model().model_coeffs();
     m_Ceps = coeffs["Ceps"];
+    
 }
 
 KsgsM84Src::~KsgsM84Src() = default;
@@ -31,14 +32,12 @@ void KsgsM84Src::operator()(
     const auto& buoy_prod_arr = (this->m_buoy_prod)(lev).array(mfi);
     const auto& tke_arr = (this->m_tke)(lev).array(mfi);
     const amrex::Real Ceps = this->m_Ceps;
-    
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-      src_term(i, j, k) += shear_prod_arr(i,j,k)
+      src_term(i, j, k) = shear_prod_arr(i,j,k)
           + buoy_prod_arr(i,j,k)
-          + Ceps * std::sqrt(tke_arr(i,j,k))
-          * tke_arr(i,j,k) / tlscale_arr(i,j,k);
+          - Ceps * std::sqrt(tke_arr(i,j,k)) * tke_arr(i,j,k) / tlscale_arr(i,j,k);
     });
-    
     
 }
 
