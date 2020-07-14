@@ -25,6 +25,7 @@ public:
 
 private:
     amrex::Real m_Ceps{0.93};
+    amrex::Real m_CepsGround{3.9};
 
     Field& m_turb_lscale;
     Field& m_shear_prod;
