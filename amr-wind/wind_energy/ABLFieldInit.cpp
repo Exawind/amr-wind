@@ -160,13 +160,14 @@ void ABLFieldInit::init_tke(
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-        if ( z < ref_height ) {
-            tke(i, j, k) = 0.4 * (1.0 - z/ref_height)
-                * (1.0 - z/ref_height)
-                * (1.0 - z/ref_height);
-        } else {
-            tke(i,j,k) = 0.1;
-        }
+        // if ( z < ref_height ) {
+        //     tke(i, j, k) = 0.4 * (1.0 - z/ref_height)
+        //         * (1.0 - z/ref_height)
+        //         * (1.0 - z/ref_height);
+        // } else {
+        //     tke(i,j,k) = 0.1;
+        // }
+        tke(i,j,k) = 0.1;
 
     });
 }
