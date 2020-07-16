@@ -95,7 +95,7 @@ private:
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
     //! ABL integrated statistics object
-    ABLiStats m_istats;
+    std::unique_ptr<ABLiStats> m_istats;
     
 };
 

@@ -19,13 +19,14 @@ ABL::ABL(CFDSim& sim)
     , m_density(sim.repo().get_field("density"))
     , m_pa(sim, 2)
     , m_abl_wall_func(sim)
-    , m_istats(sim, m_abl_wall_func)
 {
     // Register temperature equation
     // FIXME: this should be optional?
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 
+    m_istats.reset( new ABLiStats(sim, m_abl_wall_func));
+        
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
 }
@@ -59,7 +60,7 @@ void ABL::initialize_fields(
             temp.array(mfi));
     }
 
-    m_istats.initialize();
+    m_istats->initialize();
 }
 
 void ABL::post_init_actions()
@@ -140,7 +141,7 @@ void ABL::pre_advance_work()
 
     }
 
-    m_istats.post_advance_work();
+    m_istats->post_advance_work();
 }
 
 } // namespace amr_wind

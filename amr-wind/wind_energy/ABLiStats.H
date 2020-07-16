@@ -35,6 +35,12 @@ public:
     //! Process fields given timestep and output to disk
     void post_advance_work();
 
+    //! Compute height of capping inversion
+    template <typename h1_dir, typename h2_dir>
+    void compute_zi(
+        const h1_dir& h1Sel,
+        const h2_dir& h2Sel);
+
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -52,12 +58,11 @@ protected:
      */
     virtual void write_ascii();
 
-    //! Compute height of capping inversion
-    void compute_zi();
 
 private:
     CFDSim& m_sim;
     const ABLWallFunction& m_abl_wall_func;
+    Field& m_temperature;
 
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
@@ -72,6 +77,16 @@ private:
 
     //! Variable to store capping inversion height
     double m_zi{0.0};
+
+    //! Wall-normal direction axis
+    int m_normal_dir{2};
+    
+    //! Cell spacing at the coarsest level
+    double m_dn{0.0};
+    
+    //! Number of cells in the horizontal direction
+    int m_ncells_h1{0};
+    int m_ncells_h2{0};
 };
 
 
