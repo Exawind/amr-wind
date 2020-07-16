@@ -38,7 +38,7 @@ void KsgsM84Src::operator()(
     const amrex::Real CepsGround = this->m_CepsGround;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-      src_term(i, j, k) = shear_prod_arr(i,j,k)
+      src_term(i, j, k) += shear_prod_arr(i,j,k)
           + buoy_prod_arr(i,j,k)
           - Ceps * std::sqrt(tke_arr(i,j,k)) * tke_arr(i,j,k) / tlscale_arr(i,j,k);
     });
@@ -50,9 +50,7 @@ void KsgsM84Src::operator()(
         amrex::Box blo = amrex::adjCellLo(bx,dir,0) & bx;
         if (blo.ok()) {
           amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            src_term(i, j, k) = shear_prod_arr(i,j,k)
-                + buoy_prod_arr(i,j,k)
-                - CepsGround * std::sqrt(tke_arr(i,j,k)) * tke_arr(i,j,k) / tlscale_arr(i,j,k);
+            src_term(i, j, k) += (Ceps - CepsGround) * std::sqrt(tke_arr(i,j,k)) * tke_arr(i,j,k) / tlscale_arr(i,j,k);
           });
         }
       }
