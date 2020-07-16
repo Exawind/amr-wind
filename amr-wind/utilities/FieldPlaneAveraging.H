@@ -4,6 +4,7 @@
 #include <AMReX_AmrCore.H>
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/core/SimTime.H"
 
 /**
@@ -25,13 +26,58 @@ namespace amr_wind {
  *  z-direction. The field is then averaged on planes at the cell-centers at
  *  level 0 (coarsest level) along the specified direction.
  */
-class FieldPlaneAveraging
+template<typename FType>
+class FPlaneAveraging
 {
 public:
-    FieldPlaneAveraging(
-        amr_wind::Field& field, const amr_wind::SimTime& time, int axis_in = 2);
 
-    ~FieldPlaneAveraging(){};
+    /**
+    *  \param field_in [in] Field to be averaged
+    *  \param time [in] Time instance to determine output frequencies
+    *  \param axis_in [in] Direction along which planes are computed
+    *  \param compute_deriv [in] Should the derivative of the averages be computed
+    */
+    FPlaneAveraging(
+      const FType& field_in, const amr_wind::SimTime& time, int axis_in
+      , bool compute_deriv=false)
+        : m_field(field_in), m_time(time), m_axis(axis_in)
+        , m_comp_deriv(compute_deriv)
+    {
+      AMREX_ALWAYS_ASSERT(m_axis >= 0 and m_axis <= 2);
+
+      auto geom = m_field.repo().mesh().Geom();
+
+      // level=0 is default, could later make this an input.
+      // Might only makes sense for fully covered levels
+      
+      m_xlo = geom[m_level].ProbLo(m_axis);
+      m_dx = geom[m_level].CellSize(m_axis);
+      
+      m_ncomp = m_field.num_comp();
+      
+      const amrex::Box& domain = geom[m_level].Domain();
+      const amrex::IntVect dom_lo(domain.loVect());
+      const amrex::IntVect dom_hi(domain.hiVect());
+      
+      m_ncell_line = dom_hi[m_axis] - dom_lo[m_axis] + 1;
+      
+      // count number of cells in plane
+      m_ncell_plane = 1;
+      for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+          if (i != m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
+      }
+      
+      m_line_average.resize(m_ncell_line * m_ncomp, 0.0);
+      if (m_comp_deriv)
+          m_line_deriv.resize(m_ncell_line * m_ncomp, 0.0);
+      m_line_xcentroid.resize(m_ncell_line);
+      
+      for (int i = 0; i < m_ncell_line; ++i) {
+          m_line_xcentroid[i] = m_xlo + (i + 0.5) * m_dx;
+      }
+    }
+    
+    ~FPlaneAveraging(){};
 
     void operator()();
 
@@ -40,6 +86,9 @@ public:
     /** evaluate line average at specific cell for any average component */
     amrex::Real line_average_cell(int cell, int comp) const;
 
+    /** evaluate line average derivative at specific location for any average
+        component */
+    amrex::Real line_derivative_interpolated(amrex::Real x, int comp) const;
     /** evaluate derivative of a line average at specific cell for any component */
     amrex::Real line_derivative_of_average_cell(int ind, int comp) const;
 
@@ -66,7 +115,7 @@ public:
         return m_line_xcentroid;
     };
 
-    amr_wind::Field& field() const { return m_field; };
+    const FType& field() const { return m_field; };
 
 private:
     int m_ncomp; /** number of average components */
@@ -74,6 +123,9 @@ private:
     amrex::Vector<amrex::Real>
         m_line_average; /** line storage for the average velocity and tracer
                            variables */
+    //! line storage for the derivative of average field
+    amrex::Vector<amrex::Real> m_line_deriv; 
+    
     amrex::Vector<amrex::Real> m_line_xcentroid; /** line storage for centroids
                                                     of each cell along a line*/
 
@@ -89,16 +141,25 @@ private:
     int m_last_updated_index = -1; /** keep track of the last time index that
                                       the operator was called */
 
-    amr_wind::Field& m_field;
+    const FType& m_field;
     const SimTime& m_time;
     const int m_axis;
+    const bool m_comp_deriv;
 
 public: // public for GPU
     /** fill line storage with averages */
     template <typename IndexSelector>
     void
     compute_averages(const IndexSelector& idxOp, const amrex::MultiFab& mfab);
+    
+    /** fill derivatives of line storage */
+    void compute_line_derivatives();
 };
+
+template class FPlaneAveraging<Field>;
+template class FPlaneAveraging<ScratchField>;
+
+using FieldPlaneAveraging = FPlaneAveraging<Field>;
 
 } // namespace amr_wind
 

@@ -29,7 +29,7 @@ public:
     ScratchField(const ScratchField&) = delete;
     ScratchField& operator=(const ScratchField&) = delete;
 
-    inline const std::string& name() { return m_name; }
+    inline const std::string& name() const { return m_name; }
 
     //! Number of components for this field
     inline int num_comp() const { return m_ncomp; }

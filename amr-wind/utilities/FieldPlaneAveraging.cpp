@@ -4,10 +4,11 @@
 
 namespace amr_wind {
 
-void FieldPlaneAveraging::output_line_average_ascii(
+template <typename FType>
+void FPlaneAveraging<FType>::output_line_average_ascii(
     std::string filename, int step, amrex::Real time)
 {
-    BL_PROFILE("amr-wind::FieldPlaneAveraging::output_line_average_ascii");
+    BL_PROFILE("amr-wind::FPlaneAveraging::output_line_average_ascii");
 
     if (step != m_last_updated_index) {
         operator()();
@@ -25,7 +26,7 @@ void FieldPlaneAveraging::output_line_average_ascii(
         outfile << m_ncell_line << ", " << m_ncomp + 3 << std::endl;
         outfile << "#step,time,z";
         for (int i = 0; i < m_ncomp; ++i)
-            outfile << ",<" + m_field.base_name() + std::to_string(i) + ">";
+            outfile << ",<" + m_field.name() + std::to_string(i) + ">";
         outfile << std::endl;
     } else {
         // append file
@@ -43,13 +44,15 @@ void FieldPlaneAveraging::output_line_average_ascii(
     }
 }
 
-void FieldPlaneAveraging::output_line_average_ascii(int step, amrex::Real time)
+template <typename FType>
+void FPlaneAveraging<FType>::output_line_average_ascii(int step, amrex::Real time)
 {
     std::string filename = "plane_average_" + m_field.name() + ".txt";
     output_line_average_ascii(filename, step, time);
 }
 
-amrex::Real FieldPlaneAveraging::line_average_interpolated(amrex::Real x, int comp) const
+template <typename FType>
+amrex::Real FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_interpolated");
 
@@ -75,7 +78,8 @@ amrex::Real FieldPlaneAveraging::line_average_interpolated(amrex::Real x, int co
            m_line_average[m_ncomp * (ind + 1) + comp] * c;
 }
 
-amrex::Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
+template <typename FType>
+amrex::Real FPlaneAveraging<FType>::line_average_cell(int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell");
 
@@ -85,7 +89,19 @@ amrex::Real FieldPlaneAveraging::line_average_cell(int ind, int comp) const
     return m_line_average[m_ncomp * ind + comp];
 }
 
-amrex::Real FieldPlaneAveraging::line_derivative_of_average_cell(
+template <typename FType>
+void FPlaneAveraging<FType>::compute_line_derivatives()
+{
+    BL_PROFILE("amr-wind::PlaneAveraging::compute_line_derivatives");
+    for (int i = 0; i < m_ncell_line; ++i) {
+        for (int n = 0; n < m_ncomp; ++n)
+            m_line_deriv[m_ncomp * i + n] =
+                line_derivative_of_average_cell(i, n);
+    }
+}
+
+template <typename FType>
+amrex::Real FPlaneAveraging<FType>::line_derivative_of_average_cell(
     int ind, int comp) const
 {
     BL_PROFILE("amr-wind::PlaneAveraging::line_derivative_of_average_cell");
@@ -112,50 +128,39 @@ amrex::Real FieldPlaneAveraging::line_derivative_of_average_cell(
     return dudx;
 }
 
-/**
- *  \param field_in [in] Field to be averaged
- *  \param time [in] Time instance to determine output frequencies
- *  \param axis_in [in] Direction along which planes are computed
- */
-FieldPlaneAveraging::FieldPlaneAveraging(
-    amr_wind::Field& field_in, const amr_wind::SimTime& time, int axis_in)
-    : m_field(field_in), m_time(time), m_axis(axis_in)
+template <typename FType>
+amrex::Real FPlaneAveraging<FType>::line_derivative_interpolated(
+    amrex::Real x, int comp) const
 {
-    AMREX_ALWAYS_ASSERT(m_axis >= 0 and m_axis <= 2);
+    BL_PROFILE("amr-wind::PlaneAveraging::line_derivative_interpolated");
 
-    auto geom = m_field.repo().mesh().Geom();
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
 
-    // level=0 is default, could later make this an input.
-    // Might only makes sense for fully covered levels
+    amrex::Real c = 0.0;
+    int ind = 0;
 
-    m_xlo = geom[m_level].ProbLo(m_axis);
-    m_dx = geom[m_level].CellSize(m_axis);
-
-    m_ncomp = m_field.num_comp();
-
-    const amrex::Box& domain = geom[m_level].Domain();
-    const amrex::IntVect dom_lo(domain.loVect());
-    const amrex::IntVect dom_hi(domain.hiVect());
-
-    m_ncell_line = dom_hi[m_axis] - dom_lo[m_axis] + 1;
-
-    // count number of cells in plane
-    m_ncell_plane = 1;
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-        if (i != m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
+    if (x > m_xlo + 0.5 * m_dx) {
+        ind = floor((x - m_xlo) / m_dx - 0.5);
+        const amrex::Real x1 = m_xlo + (ind + 0.5) * m_dx;
+        c = (x - x1) / m_dx;
     }
 
-    m_line_average.resize(m_ncell_line * m_ncomp, 0.0);
-    m_line_xcentroid.resize(m_ncell_line);
-
-    for (int i = 0; i < m_ncell_line; ++i) {
-        m_line_xcentroid[i] = m_xlo + (i + 0.5) * m_dx;
+    if (ind + 1 >= m_ncell_line) {
+        ind = m_ncell_line - 2;
+        c = 1.0;
     }
+
+    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
+
+    return m_line_deriv[m_ncomp * ind + comp] * (1.0 - c) +
+        m_line_deriv[m_ncomp * (ind + 1) + comp] * c;
 }
 
-void FieldPlaneAveraging::operator()()
+
+template <typename FType>
+void FPlaneAveraging<FType>::operator()()
 {
-    BL_PROFILE("amr-wind::FieldPlaneAveraging::operator");
+    BL_PROFILE("amr-wind::FPlaneAveraging::operator");
 
     m_last_updated_index = m_time.time_index();
 
@@ -175,10 +180,15 @@ void FieldPlaneAveraging::operator()()
         amrex::Abort("axis must be equal to 0, 1, or 2");
         break;
     }
+
+    if (m_comp_deriv)
+        compute_line_derivatives();
+    
 }
 
+template <typename FType>
 template <typename IndexSelector>
-void FieldPlaneAveraging::compute_averages(
+void FPlaneAveraging<FType>::compute_averages(
     const IndexSelector& idxOp, const amrex::MultiFab& mfab)
 {
     BL_PROFILE("amr-wind::PlaneAveraging::compute_averages");
