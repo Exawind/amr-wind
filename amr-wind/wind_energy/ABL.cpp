@@ -17,7 +17,7 @@ ABL::ABL(CFDSim& sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
-    , m_pa(sim.pde_manager().icns().fields().field, sim.time(), 2)
+    , m_pa(sim, 2)
     , m_abl_wall_func(sim)
 {
     // Register temperature equation

@@ -85,7 +85,7 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
 
-    FieldPlaneAveraging m_pa;
+    VelPlaneAveraging m_pa;
     ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance
