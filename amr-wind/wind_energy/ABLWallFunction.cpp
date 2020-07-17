@@ -37,6 +37,10 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
       
       pp.query("wall_heat_flux", m_abl_surface_flux);
 
+      pp.get("surf_ref_temp", m_surface_temp_ref);
+      
+      m_surface_temp_ref;
+
       m_heatflux = true;
 
       if(m_abl_surface_flux<0)
@@ -49,6 +53,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     } else if(pp.contains("wall_heat_rate"))
     {
       m_abl_neutral = false;
+      pp.get("surf_ref_temp", m_surface_temp_ref);
     }
     
 }
@@ -83,8 +88,6 @@ void ABLWallFunction::init_log_law_height()
 
         m_coeff_interp[0] = 1.0 - (m_log_law_height-zcellN)/dz;
         m_coeff_interp[1] = 1.0 - m_coeff_interp[0];
-
-        amrex::Print() << "index of Z sample\t" << m_z_sample_index << "\tInterpolate coeff\t" << m_coeff_interp[0] ;
 
         amrex::IntVect lo(AMREX_D_DECL(0,0,m_z_sample_index));
         amrex::IntVect hi(AMREX_D_DECL(m_ncells_x-1,m_ncells_y-1,m_z_sample_index));
@@ -216,6 +219,29 @@ void ABLWallFunction::computeplanar()
   m_mean_windSpeed = m_mean_windSpeed/numCells;
   m_mean_potTemp = m_mean_potTemp/numCells;
 
+  amrex::ParallelFor(
+      m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                       amrex::Real instWindSpeed = std::sqrt(m_xy_arr(i, j, k, 0)*
+                                                             m_xy_arr(i, j, k, 0) +
+                                                             m_xy_arr(i, j, k, 1)*
+                                                             m_xy_arr(i, j, k, 1));
+
+                       amrex::Real tau_xz = m_umean[0]/m_mean_windSpeed;
+                       amrex::Real tau_yz = m_umean[1]/m_mean_windSpeed;
+                            
+                       m_xy_arr(i, j, k, 0) = tau_xz*((m_xy_arr(i, j, k, 0) -
+                                                       m_umean[0])*m_mean_windSpeed +
+                                                 instWindSpeed*m_umean[0])/
+                           (m_mean_windSpeed*m_umean[0]);
+
+                       m_xy_arr(i, j, k, 1) = tau_yz*((m_xy_arr(i, j, k, 1) -
+                                                       m_umean[1])*m_mean_windSpeed +
+                                                 instWindSpeed*m_umean[1])/
+                           (m_mean_windSpeed*m_umean[1]);
+
+                     });
+
+
 }
 
 void ABLWallFunction::computeusingheatflux(){
@@ -298,6 +324,24 @@ void ABLWallFunction::computeusingheatflux(){
     
   }
 
+  auto m_xy_arr = m_store_xy_vel_temp.array();
+
+  amrex::ParallelFor(
+      m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                       amrex::Real instWindSpeed = std::sqrt(m_xy_arr(i, j, k, 0)*
+                                                             m_xy_arr(i, j, k, 0) +
+                                                             m_xy_arr(i, j, k, 1)*
+                                                             m_xy_arr(i, j, k, 1));
+
+                       amrex::Real tau_thetaz = -m_abl_surface_flux;
+
+                       amrex::Real num1 = (m_xy_arr(i, j, k, 3) - m_mean_potTemp)*m_mean_windSpeed;
+                       amrex::Real num2 = instWindSpeed*(m_mean_potTemp - m_surface_temp_ref);
+                       amrex::Real denom1 = m_mean_windSpeed*(m_mean_potTemp-m_surface_temp_ref);
+
+                       m_xy_arr(i, j, k, 3) = tau_thetaz*(num1 + num2)/denom1;
+
+                     });
   
 }
 
@@ -309,21 +353,29 @@ ABLVelWallFunc::ABLVelWallFunc(
 
 void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
+
+  if(m_wall_func.use_fch()) {
     diffusion::wall_model_bc(
         velocity, m_wall_func.utau(), utils::vec_mag(m_wall_func.umean().data()),
-        rho_state, m_wall_func.instplanar(), m_wall_func.umean(),
+        rho_state);
+  } else {
+  diffusion::wall_model_bc_moeng(
+        velocity, m_wall_func.utau(), rho_state,
+        m_wall_func.instplanar(), m_wall_func.umean(),
         m_wall_func.meanwindspeed());
+  }
 }
 
 ABLTempWallFunc::ABLTempWallFunc(
-    Field&,
-    const ABLWallFunction& wall_fuc)
+    Field&, const ABLWallFunction& wall_fuc)
     : m_wall_func(wall_fuc)
 {}
 
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state){
 
-  diffusion::temp_wall_model_bc(temperature, m_wall_func.heatflux_wall(), rho_state);
+  if(!is_abl_neutral()) {
+    diffusion::temp_wall_model_bc(temperature, m_wall_func.instplanar(), rho_state);
+  }
 }
 
 } // namespace amr_wind

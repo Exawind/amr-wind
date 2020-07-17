@@ -49,6 +49,10 @@ public:
 
     amrex::Real heatflux_wall() const {return m_abl_surface_flux;}
 
+    bool use_fch() const {return m_use_fch;}
+
+    bool is_abl_neutral() const {return m_abl_neutral;}
+
 private:
 
     const CFDSim& m_sim;
@@ -92,6 +96,7 @@ private:
     amrex::Real m_obhukhov_length;
     amrex::Real m_psi_m, m_psi_h;
     amrex::Real m_abl_surface_temp;
+    amrex::Real m_surface_temp_ref;
 
     const amrex::Real m_stable_beta = 5.0;
     const amrex::Real m_unstable_gamma = 16.0;
