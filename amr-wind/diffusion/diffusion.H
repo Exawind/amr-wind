@@ -7,18 +7,23 @@
 
 namespace diffusion {
 
-void wall_model_bc(
+void wall_model_bc_moeng(
     amr_wind::Field& velocity,
     const amrex::Real utau,
-    const amrex::Real umag,
     const amr_wind::FieldState fstate,
     const amrex::FArrayBox& instplanar,
     const amrex::Array<amrex::Real, AMREX_SPACEDIM>& umean,
     const amrex::Real windspeed);
 
+void wall_model_bc(
+    amr_wind::Field& velocity,
+    const amrex::Real utau,
+    const amrex::Real umag,
+    const amr_wind::FieldState fstate);
+
 void temp_wall_model_bc(
     amr_wind::Field& temperature,
-    const amrex::Real heat_flux,
+    const amrex::FArrayBox& instplanar,
     const amr_wind::FieldState fstate);
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>

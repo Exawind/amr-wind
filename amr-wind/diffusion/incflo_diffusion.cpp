@@ -128,10 +128,7 @@ void wall_model_bc(
     amr_wind::Field& velocity,
     const amrex::Real utau,
     const amrex::Real umag,
-    const amr_wind::FieldState fstate,
-    const amrex::FArrayBox& inst_plane_vel,
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& velmean,
-    const amrex::Real mean_wind)
+    const amr_wind::FieldState fstate)
 {
     BL_PROFILE("amr-wind::diffusion::wall_model_bc");
     auto& repo = velocity.repo();
@@ -145,12 +142,6 @@ void wall_model_bc(
     amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
     amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
-
-    auto m_store_xy_vel_arr = inst_plane_vel.array();
-    const auto& bxPlanar = inst_plane_vel.box();
-
-    const auto planarlo = amrex::lbound(bxPlanar);
-    const auto planarhi = amrex::ubound(bxPlanar);
 
     // copies cell center to face
     Real c0 = 1.0;
@@ -261,29 +252,12 @@ void wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                             const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                             // Inhomogeneous Neumann BC
-                            // bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
-                            // bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
+                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
+                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
-                            // bc(i, j, k - 1, 1) = 0.0;
+                            
 
-
-                            amrex::Real instWindSpeed = std::sqrt(m_store_xy_vel_arr(i, j, planarlo.z, 0)*
-                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 0) +
-                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 1)*
-                                                                   m_store_xy_vel_arr(i, j, planarlo.z, 1));
-
-                            bc(i, j, k - 1, 0) = den(i, j, k)*utau2*((m_store_xy_vel_arr(i, j, planarlo.z, 0)-
-                                                                      velmean[0])*mean_wind + instWindSpeed*velmean[0])/
-                                (mean_wind*std::abs(velmean[0])*mu);
-
-                            if(std::abs(velmean[1]) > 1e-3) {
-                              bc(i, j, k - 1, 1) = den(i, j, k)*utau2*((m_store_xy_vel_arr(i, j, planarlo.z, 1)-
-                                                                        velmean[1])*mean_wind + instWindSpeed*velmean[1])/
-                                  (mean_wind*std::abs(velmean[1])*mu);
-                            } else {
-                              bc(i, j, k - 1, 1) = 0.0;
-                            }
 
 
 
@@ -309,9 +283,93 @@ void wall_model_bc(
     } // level loop
 }
 
+void wall_model_bc_moeng(
+    amr_wind::Field& velocity,
+    const amrex::Real utau,
+    const amr_wind::FieldState fstate,
+    const amrex::FArrayBox& inst_plane_vel,
+    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& velmean,
+    const amrex::Real mean_wind)
+{
+    BL_PROFILE("amr-wind::diffusion::wall_model_bc")
+    auto& repo = velocity.repo();
+    auto& density = repo.get_field("density", fstate);
+    auto& viscosity = repo.get_field("velocity_mueff");
+    const int nlevels = repo.num_active_levels();
+
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    auto m_store_xy_vel_arr = inst_plane_vel.array();
+    const auto& bxPlanar = inst_plane_vel.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+    const auto planarhi = amrex::ubound(bxPlanar);
+
+    // copies cell center to face
+    Real c0 = 1.0;
+    Real c1 = 0.0;
+
+    // linear extrapolate onto face
+    if(extrapolate)
+    {
+        c0 =  1.5;
+        c1 = -0.5;
+    }
+
+    const Real utau2 = utau*utau;
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& vel_lev = velocity(lev);
+        auto& eta_lev = viscosity(lev);
+
+        if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto vel = vel_lev.array(mfi);
+            auto bc  = vel_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto eta = eta_lev.array(mfi);
+
+            idim = 2;
+
+            if (!geom.isPeriodic(idim)) {
+                if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            // Dirichlet BC
+                            bc(i, j, k - 1, 2) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k - 1, 0) = m_store_xy_vel_arr(i, j, planarlo.z, 0)*
+                                den(i, j, k)*utau2/mu;
+                            bc(i, j, k - 1, 1) = m_store_xy_vel_arr(i, j, planarlo.z, 1)*
+                                den(i, j, k)*utau2/mu;
+
+
+                        });
+                }
+
+            }
+
+        } // MFIter loop
+    } // level loop
+}
+
+
 void temp_wall_model_bc(
     amr_wind::Field& temperature,
-    const amrex::Real heat_flux,
+    const amrex::FArrayBox& inst_plane_temp,
     const amr_wind::FieldState fstate)
 {
     BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc")
@@ -321,13 +379,15 @@ void temp_wall_model_bc(
     auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
 
-    amrex::Orientation xlo(amrex::Direction::x, amrex::Orientation::low);
-    amrex::Orientation ylo(amrex::Direction::y, amrex::Orientation::low);
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
-    amrex::Orientation xhi(amrex::Direction::x, amrex::Orientation::high);
-    amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
+    auto m_store_xy_temp_arr = inst_plane_temp.array();
+    const auto& bxPlanar = inst_plane_temp.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+    const auto planarhi = amrex::ubound(bxPlanar);
+    
     // copies cell center to face
     Real c0 = 1.0;
     Real c1 = 0.0;
@@ -369,7 +429,8 @@ void temp_wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                           const Real alphaT_wall  = c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
                           // Inhomogeneous Neumann BC
-                          bc(i, j, k - 1) = den(i, j, k)*heat_flux/alphaT_wall;
+                          bc(i, j, k - 1) = den(i, j, k)*m_store_xy_temp_arr(i, j, planarlo.z, 3)
+                              /alphaT_wall;
 
                         });
                 }
