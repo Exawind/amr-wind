@@ -339,7 +339,7 @@ void wall_model_bc_moeng(
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
-            idim = 2;
+            int idim = 2;
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&

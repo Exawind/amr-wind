@@ -373,7 +373,7 @@ ABLTempWallFunc::ABLTempWallFunc(
 
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state){
 
-  if(!is_abl_neutral()) {
+  if(!m_wall_func.is_abl_neutral()) {
     diffusion::temp_wall_model_bc(temperature, m_wall_func.instplanar(), rho_state);
   }
 }
