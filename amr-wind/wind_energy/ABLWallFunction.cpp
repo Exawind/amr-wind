@@ -54,6 +54,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     {
       m_abl_neutral = false;
       pp.get("surf_ref_temp", m_surface_temp_ref);
+      pp.get("surface_heating_rate", m_abl_surface_rate);
     }
     
 }
