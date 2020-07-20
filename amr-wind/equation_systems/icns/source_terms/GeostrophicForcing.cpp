@@ -22,7 +22,7 @@ namespace icns {
  *    GeostrophicForcing namespace
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
+GeostrophicForcing::GeostrophicForcing(const CFDSim&)
 {
     amrex::Real coriolis_factor;
     {
@@ -46,10 +46,10 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
 GeostrophicForcing::~GeostrophicForcing() = default;
 
 void GeostrophicForcing::operator()(
-    const int lev,
-    const amrex::MFIter& mfi,
+    const int,
+    const amrex::MFIter&,
     const amrex::Box& bx,
-    const FieldState fstate,
+    const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
