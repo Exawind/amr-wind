@@ -148,31 +148,6 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   FILES_MATCHING PATTERN "*.H")
 
-export(
-  TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
-  ${aw_api_lib} ${amr_wind_lib_name} amrwind_buildinfo
-  NAMESPACE ${PROJECT_NAME}::
-  FILE ${PROJECT_NAME}Targets.cmake)
-
-if (${AMR_WIND_USE_INTERNAL_AMREX})
-  set(_amrex_exports Flags_CXX Flags_Fortran Flags_FPE
-    Flags_CXX_REQUIRED Flags_Fortran_REQUIRED)
-  if (AMR_WIND_ENABLE_DPCPP)
-    list(APPEND _amrex_exports SYCL)
-  endif()
-  install(
-    TARGETS amrex
-    EXPORT ${PROJECT_NAME}Targets
-    RUNTIME DESTINATION bin
-    PUBLIC_HEADER DESTINATION include
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib)
-  export(
-    TARGETS amrex ${_amrex_exports}
-    NAMESPACE ${PROJECT_NAME}::
-    APPEND FILE ${PROJECT_NAME}Targets.cmake)
-endif()
-
 install(
   EXPORT ${PROJECT_NAME}Targets
   NAMESPACE ${PROJECT_NAME}::
