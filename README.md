@@ -66,3 +66,9 @@ We welcome contributions from the community in form of bug fixes, feature
 enhancements, documentation updates, etc. All contributions are processed
 through pull-requests on GitHub.
 
+## License
+
+AMR-Wind is licensed under BSD 3-clause license. Please see the
+[LICENSE](https://github.com/Exawind/amr-wind/blob/development/LICENSE) included in
+the source code repository for more details.
+
