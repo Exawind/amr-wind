@@ -1,7 +1,7 @@
 ############################ BASE ######################################
 
 cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
-project(AMR-Wind CXX C Fortran)
+project(AMR-Wind CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -36,6 +36,10 @@ option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(NOT AMR_WIND_ENABLE_DPCPP)
+  enable_language(Fortran)
+endif()
 
 if(AMR_WIND_ENABLE_CUDA)
   enable_language(CUDA)
