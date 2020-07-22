@@ -29,7 +29,7 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         pp.get("log_law_height", m_log_law_height);
     } else {
       m_use_fch = true;
-      amrex::Print() << "log_law_height not specified for ABL physics. Assuming log_law_height = first cell height" << std::endl;
+      amrex::Print() << "ABLWallFunction: log_law_height not specified for ABL physics. Assuming log_law_height = first cell height" << std::endl;
     }
     
     pp.get("reference_temperature", m_ref_temp);
@@ -46,18 +46,18 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
         if (pp.contains("surface_temp_init"))
             pp.get("surface_temp_init", m_surf_temp_init);
         else {
-            amrex::Print() << "Initial surface temperature not found for ABL. Assuming to be equal to the reference temperature " << m_ref_temp << std::endl;
+            amrex::Print() << "ABLWallFunction: Initial surface temperature not found for ABL. Assuming to be equal to the reference temperature " << m_ref_temp << std::endl;
             m_surf_temp_init = m_ref_temp;
             m_surf_temp = m_surf_temp;
         }
         if (pp.contains("surface_temp_rate_tstart"))
             pp.get("surface_temp_rate_tstart",m_surf_temp_rate_tstart);
         else {
-            amrex::Print() << "Surface temperature heating/cooling start time (surface_temp_rate_tstart) not found for ABL. Assuming zero." << m_surf_temp_rate_tstart << std::endl;
+            amrex::Print() << "ABLWallFunction: Surface temperature heating/cooling start time (surface_temp_rate_tstart) not found for ABL. Assuming zero." << m_surf_temp_rate_tstart << std::endl;
         }
 
     } else {
-        amrex::Print() << "Neither surface_temp_flux nor surface_temp_rate specified for ABL physics. Assuming Neutral Stratification" << std::endl;
+        amrex::Print() << "ABLWallFunction: Neither surface_temp_flux nor surface_temp_rate specified for ABL physics. Assuming Neutral Stratification" << std::endl;
     }
     
 }
@@ -80,7 +80,7 @@ amrex::Real ABLWallFunction::mo_psi_h(amrex::Real zeta) {
         return -m_gamma_h * zeta;
     } else {
         amrex::Real x = std::sqrt( 1 - m_beta_m * zeta);
-        return std::log( 0.5*(1 + x * x));
+        return std::log( 0.5*(1 + x));
     }
 }
    
@@ -194,7 +194,7 @@ void ABLWallFunction::computeplanar()
   amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x*m_ncells_y);
   
   amrex::ParallelDescriptor::ReduceRealSum(m_store_xy_vel_temp.dataPtr(),
-                                           m_ncells_x*m_ncells_y*3);
+                                           m_ncells_x*m_ncells_y*4);
 
   std::fill(m_umean.begin(), m_umean.end(), 0.0);
   m_mean_windspeed = 0.0;
