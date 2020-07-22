@@ -37,6 +37,16 @@ public:
     //! Update the mean velocity at a given timestep
     void update_umean(const FieldPlaneAveraging& pa);
 
+    /**
+     * van der Laan, P., Kelly, M. C., & Sørensen, N. N. (2017). A new k-epsilon
+     * model consistent with Monin-Obukhov similarity theory. Wind Energy, 20(3),
+     * 479–489. https://doi.org/10.1002/we.2017
+     *
+     * Consistent with Dyer (1974) formulation from page 57, Chapter 2, Modeling
+     * the vertical ABL structure in Modelling of Atmospheric Flow Fields,
+     * Demetri P Lalas and Corrado F Ratto, January 1996,
+     * https://doi.org/10.1142/2975.
+     */    
     //! Return Monin-Obukhov Similarity function psi_m
     amrex::Real mo_psi_m(amrex::Real zeta); 
 
@@ -54,6 +64,8 @@ public:
     amrex::Real mean_windspeed() const {return m_mean_windspeed;}
 
     amrex::Real surface_temp_flux() const {return m_surf_temp_flux;}
+
+    amrex::Real surface_temp() const {return m_surf_temp;}
 
     bool use_fch() const {return m_use_fch;}
 
@@ -106,9 +118,9 @@ private:
     amrex::Real m_surf_temp;
     amrex::Real m_ref_temp;
 
-    const amrex::Real m_gamma_m{4.7};
-    const amrex::Real m_gamma_h{4.7};
-    const amrex::Real m_beta_m{15.0};
+    const amrex::Real m_gamma_m{5.0};
+    const amrex::Real m_gamma_h{5.0};
+    const amrex::Real m_beta_m{16.0};
 
     const int m_max_iter{25};
 
