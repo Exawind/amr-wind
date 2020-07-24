@@ -55,6 +55,10 @@ public:
     // Delete level data
     virtual void ClearLevel (int lev) override;
 
+    void init_mesh();
+    void init_amr_wind_modules();
+    void prepare_for_time_integration();
+
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
     amr_wind::FieldRepo& repo() { return m_repo; }

@@ -30,16 +30,14 @@ incflo::incflo ()
 incflo::~incflo ()
 {}
 
-void incflo::InitData ()
+void incflo::init_mesh()
 {
-    BL_PROFILE("amr-wind::incflo::InitData()");
-
+    BL_PROFILE("amr-wind::incflo::init_mesh");
     // Initialize I/O manager to enable restart and outputs
     auto& io_mgr = m_sim.io_manager();
     io_mgr.initialize_io();
 
-    int restart_flag = 0;
-    if(io_mgr.restart_file().empty()) {
+    if (!io_mgr.is_restart()) {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
         // SetIterateToFalse();
@@ -57,47 +55,53 @@ void incflo::InitData ()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
-        for (auto& pp: m_sim.physics())
-            pp->post_init_actions();
-
-        icns().initialize();
-        for (auto& eqn: scalar_eqns()) eqn->initialize();
-
-        m_sim.post_manager().initialize();
-
-        if (m_do_initial_proj) {
-            InitialProjection();
-        }
-        if (m_initial_iterations > 0) {
-            InitialIterations();
-        }
-
-        if (m_time.write_checkpoint())
-            m_sim.io_manager().write_checkpoint_file();
-    }
-    else
-    {
-        restart_flag = 1;
+    } else {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+    }
+}
 
-        for (auto& pp: m_sim.physics())
-            pp->post_init_actions();
+void incflo::init_amr_wind_modules()
+{
+    for (auto& pp: m_sim.physics())
+        pp->post_init_actions();
 
-        icns().initialize();
-        for (auto& eqn: scalar_eqns()) eqn->initialize();
+    icns().initialize();
+    for (auto& eqn: scalar_eqns()) eqn->initialize();
 
-        m_sim.post_manager().initialize();
+    m_sim.post_manager().initialize();
+}
+
+void incflo::prepare_for_time_integration()
+{
+    // Don't perform initial work if this is a restart
+    if (m_sim.io_manager().is_restart()) return;
+
+    if (m_do_initial_proj) {
+        InitialProjection();
+    }
+    if (m_initial_iterations > 0) {
+        InitialIterations();
     }
 
     // Plot initial distribution
-    if(m_time.write_plot_file() && !restart_flag)
+    if(m_time.write_plot_file())
         m_sim.io_manager().write_plot_file();
+    if (m_time.write_checkpoint())
+        m_sim.io_manager().write_checkpoint_file();
+}
 
+void incflo::InitData ()
+{
+    BL_PROFILE("amr-wind::incflo::InitData()");
+
+    init_mesh();
+    init_amr_wind_modules();
+    prepare_for_time_integration();
 }
 
 void incflo::Evolve()
