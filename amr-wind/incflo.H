@@ -58,6 +58,8 @@ public:
     void init_mesh();
     void init_amr_wind_modules();
     void prepare_for_time_integration();
+    bool regrid_and_update();
+    void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
@@ -129,6 +131,8 @@ public: // for cuda
     //! Initialize Physics instances as well as PDEs (include turbulence models)
     void init_physics_and_pde();
 
+    void Advance ();
+
 private:
 
     //
@@ -172,8 +176,6 @@ private:
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
-
-    void Advance ();
 
     ///////////////////////////////////////////////////////////////////////////
     //

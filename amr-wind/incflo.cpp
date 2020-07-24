@@ -67,6 +67,7 @@ void incflo::init_mesh()
 
 void incflo::init_amr_wind_modules()
 {
+    BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
     for (auto& pp: m_sim.physics())
         pp->post_init_actions();
 
@@ -78,6 +79,7 @@ void incflo::init_amr_wind_modules()
 
 void incflo::prepare_for_time_integration()
 {
+    BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
     // Don't perform initial work if this is a restart
     if (m_sim.io_manager().is_restart()) return;
 
@@ -104,6 +106,45 @@ void incflo::InitData ()
     prepare_for_time_integration();
 }
 
+bool incflo::regrid_and_update()
+{
+    BL_PROFILE("amr-wind::incflo::regrid_and_update");
+
+    if (m_time.do_regrid()) {
+        amrex::Print() << "Regrid mesh ... " ;
+        amrex::Real rstart = amrex::ParallelDescriptor::second();
+        regrid(0, m_time.current_time());
+        amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
+        amrex::Print() << "time elapsed = " << rend << std::endl;
+        if (ParallelDescriptor::IOProcessor()) {
+            amrex::Print() << "Grid summary: " << std::endl;
+            printGridSummary(amrex::OutStream(), 0, finest_level);
+        }
+        icns().post_regrid_actions();
+        for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
+        for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+    }
+
+    return m_time.do_regrid();
+}
+
+void incflo::post_advance_work()
+{
+    BL_PROFILE("amr-wind::incflo::post_advance_work");
+    if (m_time.write_plot_file()) {
+        m_sim.io_manager().write_plot_file();
+    }
+
+    if (m_time.write_checkpoint()) {
+        m_sim.io_manager().write_checkpoint_file();
+    }
+
+    if (m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0)) {
+        amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time() << ", "
+                       << ComputeKineticEnergy() << std::endl;
+    }
+}
+
 void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
@@ -113,46 +154,16 @@ void incflo::Evolve()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
 
-    while(m_time.new_timestep())
-    {
+    while(m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
-        if (m_time.do_regrid())
-        {
-            amrex::Print() << "Regrid mesh ... " ;
-            amrex::Real rstart = amrex::ParallelDescriptor::second();
-            regrid(0, m_time.current_time());
-            amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
-            amrex::Print() << "time elapsed = " << rend << std::endl;
-            if (ParallelDescriptor::IOProcessor()) {
-                amrex::Print() << "Grid summary: " << std::endl;
-                printGridSummary(amrex::OutStream(), 0, finest_level);
-            }
-            icns().post_regrid_actions();
-            for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
-            for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
-        }
+        regrid_and_update();
 
         // Advance to time t + dt
         amrex::Real time1 = amrex::ParallelDescriptor::second();
         Advance();
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
-
-        if (m_time.write_plot_file())
-        {
-            m_sim.io_manager().write_plot_file();
-        }
-
-        if(m_time.write_checkpoint())
-        {
-            m_sim.io_manager().write_checkpoint_file();
-        }
-
-        if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
-        {
-            amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time()
-                           << ", " << ComputeKineticEnergy() << std::endl;
-        }
+        post_advance_work();
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime: " << m_time.time_index()
