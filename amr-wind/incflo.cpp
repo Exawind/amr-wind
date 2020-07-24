@@ -198,7 +198,7 @@ void incflo::Evolve()
 
         // Advance to time t + dt
         amrex::Real time1 = amrex::ParallelDescriptor::second();
-        Advance();
+        advance();
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
         post_advance_work();

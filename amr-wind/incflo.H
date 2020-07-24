@@ -83,6 +83,7 @@ public:
     void init_amr_wind_modules();
     void prepare_for_time_integration();
     bool regrid_and_update();
+    void advance();
     void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
@@ -155,7 +156,6 @@ public: // for cuda
     //! Initialize Physics instances as well as PDEs (include turbulence models)
     void init_physics_and_pde();
 
-    void Advance ();
 
 private:
 
