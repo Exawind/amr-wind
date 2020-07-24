@@ -14,6 +14,22 @@
 
 using namespace amrex;
 
+/** Advance simulation state by one timestep
+ *
+ *  Performs the following actions at a given timestep
+ *  - Compute \f$\Delta t\f$
+ *  - Advance all computational fields to new timestate in preparation for time integration
+ *  - Call pre-advance work for all registered physics modules
+ *  - For Godunov scheme, advance to new time state
+ *  - For MOL scheme, call predictor corrector steps
+ *  - Perform any post-advance work
+ *
+ *  Much of the heavy-lifting is done by incflo::ApplyPredictor and
+ *  incflo::ApplyCorrector. Please refer to the documentation of those methods
+ *  for detailed information on the various equations being solved.
+ *
+ * \callgraph
+ */
 void incflo::Advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance");
@@ -58,53 +74,68 @@ void incflo::Advance()
     if (m_verbose > 1) PrintMaxValues("end of timestep");
 }
 
+// Apply predictor step
 //
-// Apply predictor:
+//  For Godunov, this completes the timestep. For MOL, this is the first part of
+//  the predictor/corrector within a timestep.
 //
-//  1. Use u = vel_old to compute
+//  <ol>
+//  <li> Use u = vel_old to compute
 //
-//      conv_u  = - u grad u
-//      conv_r  = - div( u rho  )
-//      conv_t  = - div( u trac )
-//      eta_old     = visosity at m_time.current_time()
-//      if (m_diff_type == DiffusionType::Explicit)
-//         divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho^n
-//         rhs = u + dt * ( conv + divtau_old )
-//      else
-//         divtau_old  = 0.0
-//         rhs = u + dt * conv
+//     \code{.cpp}
+//     conv_u  = - u grad u
+//     conv_r  = - div( u rho  )
+//     conv_t  = - div( u trac )
+//     eta_old     = visosity at m_time.current_time()
+//     if (m_diff_type == DiffusionType::Explicit)
+//        divtau _old = div( eta ( (grad u) + (grad u)^T ) ) / rho^n
+//        rhs = u + dt * ( conv + divtau_old )
+//     else
+//        divtau_old  = 0.0
+//        rhs = u + dt * conv
 //
-//      eta     = eta at new_time
+//     eta     = eta at new_time
+//     \endcode
 //
-//  2. Add explicit forcing term i.e. gravity + lagged pressure gradient
+//  <li> Add explicit forcing term i.e. gravity + lagged pressure gradient
 //
-//      rhs += dt * ( g - grad(p + p0) / rho^nph )
+//     \code{.cpp}
+//     rhs += dt * ( g - grad(p + p0) / rho^nph )
+//     \endcode
 //
-//      Note that in order to add the pressure gradient terms divided by rho,
-//      we convert the velocity to momentum before adding and then convert them back.
+//  Note that in order to add the pressure gradient terms divided by rho,
+//  we convert the velocity to momentum before adding and then convert them back.
 //
-//  3. A. If (m_diff_type == DiffusionType::Implicit)
+//  <li> A. If (m_diff_type == DiffusionType::Implicit)
 //        solve implicit diffusion equation for u*
 //
-//     ( 1 - dt / rho^nph * div ( eta grad ) ) u* = u^n + dt * conv_u
-//                                                  + dt * ( g - grad(p + p0) / rho^nph )
+//  \code{.cpp}
+//  ( 1 - dt / rho^nph * div ( eta grad ) ) u* = u^n + dt * conv_u
+//                                               + dt * ( g - grad(p + p0) / rho^nph )
+//  \endcode
 //
-//     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
-//        solve semi-implicit diffusion equation for u*
+//  B. If (m_diff_type == DiffusionType::Crank-Nicolson)
+//     solve semi-implicit diffusion equation for u*
 //
+//     \code{.cpp}
 //     ( 1 - (dt/2) / rho^nph * div ( eta_old grad ) ) u* = u^n +
 //            dt * conv_u + (dt/2) / rho * div (eta_old grad) u^n
 //          + dt * ( g - grad(p + p0) / rho^nph )
+//     \endcode
 //
-//  4. Apply projection
+//  <li> Apply projection (see incflo::ApplyProjection)
 //
 //     Add pressure gradient term back to u*:
 //
+//      \code{.cpp}
 //      u** = u* + dt * grad p / rho^nph
+//      \endcode
 //
 //     Solve Poisson equation for phi:
 //
+//     \code{.cpp}
 //     div( grad(phi) / rho^nph ) = div( u** )
+//     \endcode
 //
 //     Update pressure:
 //
@@ -113,10 +144,37 @@ void incflo::Advance()
 //     Update velocity, now divergence free
 //
 //     vel = u** - dt * grad p / rho^nph
+//  </ol>
 //
 // It is assumed that the ghost cels of the old data have been filled and
 // the old and new data are the same in valid region.
 //
+
+/** Apply predictor step
+ *
+ *  For Godunov, this completes the timestep. For MOL, this is the first part of
+ *  the predictor/corrector within a timestep.
+ *
+ *  <ol>
+ *  <li> Solve transport equation for momentum and scalars
+ *
+ *  \f{align}
+ *  \left[1 - \kappa \frac{\Delta t}{\rho^{n+1/2}} \nabla \cdot \left( \mu
+ *  \nabla \right)\right] u^{*} &= u^n - \Delta t (u \cdot \nabla) u + (1 - \kappa) \frac{\Delta t}{\rho^n} \nabla \cdot \left( \mu^{n} \nabla\right) u^{n} + \frac{\Delta t}{\rho^{n+1/2}} \left( S_u - \nabla(p + p_0)\right) \\
+ *  \f}
+ *
+ *  where
+ *  \f{align}
+ *  \kappa = \begin{cases}
+ *  0 & \text{Explicit} \\
+ *  0.5 & \text{Crank-Nicholson} \\
+ *  1 & \text{Implicit}
+ *  \end{cases}
+ *  \f}
+ *
+ *  <li> \ref incflo::ApplyProjection "Apply projection"
+ *  </ol>
+ */
 void incflo::ApplyPredictor (bool incremental_projection)
 {
     BL_PROFILE("amr-wind::incflo::ApplyPredictor");
@@ -346,6 +404,29 @@ void incflo::ApplyPredictor (bool incremental_projection)
 //
 //     vel = u** - dt * grad p / rho
 //
+
+/** Corrector step for MOL scheme
+ *
+ *  <ol>
+ *  <li> Solve transport equation for momentum and scalars
+ *
+ *  \f{align}
+ *  \left[1 - \kappa \frac{\Delta t}{\rho} \nabla \cdot \left( \mu
+ *  \nabla \right)\right] u^{*} &= u^n - \Delta t C_u + (1 - \kappa) \frac{\Delta t}{\rho} \nabla \cdot \left( \mu \nabla\right) u^{n} + \frac{\Delta t}{\rho} \left( S_u - \nabla(p + p_0)\right) \\
+ *  \f}
+ *
+ *  where
+ *  \f{align}
+ *  \kappa = \begin{cases}
+ *  0 & \text{Explicit} \\
+ *  0.5 & \text{Crank-Nicholson} \\
+ *  1 & \text{Implicit}
+ *  \end{cases}
+ *  \f}
+ *
+ *  <li> \ref incflo::ApplyProjection "Apply projection"
+ *  </ol>
+ */
 void incflo::ApplyCorrector()
 {
     BL_PROFILE("amr-wind::incflo::ApplyCorrector");

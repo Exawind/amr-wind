@@ -33,25 +33,56 @@ incflo::get_projection_bc (Orientation::Side side) const noexcept
     return r;
 }
 
-//
-// Computes the following decomposition:
-//
-//    u + dt grad(phi) / ro = u*,     where div(u) = 0
-//
-// where u* is a non-div-free velocity field, stored
-// by components in u, v, and w. The resulting div-free
-// velocity field, u, overwrites the value of u* in u, v, and w.
-//
-// phi is an auxiliary function related to the pressure p by the relation:
-//
-//     new p  = phi
-//
-// except in the initial projection when
-//
-//     new p  = old p + phi     (nstep has its initial value -1)
-//
-// Note: scaling_factor equals dt except when called during initial projection, when it is 1.0
-//
+/** Perform nodal projection
+ *
+ *  Computes the following decomposition:
+ *
+ *  \f{align}
+ *    u + \frac{\Delta t}{\rho} \nabla \phi &= u^{*} & \nabla \cdot u = 0
+ *  \f}
+ *
+ *  where \f$u^{*}\f$ is a non-div-free velocity field, stored
+ *  by components in u, v, and w. The resulting div-free
+ *  velocity field, u, overwrites the value of u* in u, v, and w.
+ *
+ *  \f$\phi\f$ is an auxiliary function related to the pressure \f$p\f$ by the
+ * relation:
+ *
+ *  \f[ p^{\mathrm{new}} = \phi \f]
+ *
+ *  except in the initial projection when
+ *
+ *  \f[ p^{\mathrm{new}} = p^{\mathrm{old}} + \phi \f]
+ *
+ *  Velocity is updated using the following relation
+ *
+ *  \f{align}
+ *   u^{**} &= u^{*} + \frac{\Delta t}{\rho} \nabla p^{\mathrm{old}} \\
+ *   \nabla \cdot \left( \frac{\Delta t}{\rho} \nabla \phi \right) &= \nabla \cdot u^{**} \\
+ *   u^{\mathrm{new}} &= u^{**} - \frac{\Delta t}{\rho} \nabla p^\mathrm{new}
+ *  \f}
+ *
+ *  Notes:
+ *  - `scaling_factor` equals \f$\Delta t\f$ except when called during initial
+ *     projection, when it is 1.0
+ *
+ *  - \f$\rho\f$ in the above expressions is either at state `n+1` or `n+1/2`
+ *    depending on whether this method was called from incflo::ApplyPredictor or
+ *    incflo::ApplyCorrector.
+ *
+ *  - If `incremental == true`, then the pressure term is not added to
+ *    \f$u^{**}\f$ and the update is in delta-form.
+ *
+ *  Please consult [AMReX Linear
+ *  Solvers](https://amrex-codes.github.io/amrex/docs_html/LinearSolvers.html#nodal-projection)
+ *  documentation for more information on the nodal projection operator.
+ *
+ *  \param density Vector of multifabs containing the density field at all levels
+ *  \param time Current time
+ *  \param scaling_factor Scaling factor \f$\Delta t\f$
+ *  \param incremental Flag indicating if it is an incremental projection.
+ *
+ */
 void incflo::ApplyProjection (Vector<MultiFab const*> density,
                               Real time, Real scaling_factor, bool incremental)
 {

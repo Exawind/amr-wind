@@ -5,23 +5,29 @@
 
 using namespace amrex;
 
-//
-// Compute new dt by using the formula derived in
-// "A Boundary Condition Capturing Method for Multiphase Incompressible Flow"
-// by Kang et al. (JCP).
-//
-//  dt/2 * ( C+V + sqrt( (C+V)**2 + 4Fx/dx + 4Fy/dy + 4Fz/dz )
-//
-// where
-//
-// C = max(|U|)/dx + max(|V|)/dy + max(|W|)/dz    --> Convection
-//
-// V = 2 * max(eta/rho) * (1/dx^2 + 1/dy^2 +1/dz^2) --> Diffusion
-//
-// Fx, Fy, Fz = net acceleration due to external forces
-//
-// WARNING: We use a slightly modified version of C in the implementation below
-//
+/** Estimate the new timestep for adaptive timestepping algorithm
+ *
+ *  \param explicit_diffusion Flag indicating whether user has selected explicit
+ *  treatment of diffusion term.
+ *
+ * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary Condition
+ * Capturing Method for Multiphase Incompressible Flow" by Kang et al. (JCP).
+ *
+ *  \f{align}
+ *  \text{CFL} &= \frac{\Delta t}{2}  \left[\left(C+V \right) + \sqrt{\left(C+V\right)^2 + 4
+ * \left(\frac{|F_x|}{\Delta x} + \frac{|F_y|}{\Delta y} + \frac{|F_z|}{\Delta
+ * z} \right)} \right] && \\
+ *  C &= \text{max} \left(\frac{|U_x|}{\Delta x} ,\ \frac{|U_y|}{\Delta y} ,\ \frac{|U_z|}{\Delta z}\right) && \text{Convection} \\
+ *  V &= 2 \left(\frac{\mu}{\rho}\right)_\mathrm{max} \left[\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2} + \frac{1}{\Delta z^2} \right] && \text{Diffusion}
+ *  \f}
+ *
+ *  \f$F_x, F_y, F_z\f$ are acceleration due to forcing terms. By default,
+ *  \f$C\f$ is always used for computing CFL. The term \f$V\f$ is only used when
+ *  the user has chosen implicit or Crank-Nicholson scheme for diffusion, and
+ *  contributions from forcing term when `time.use_force_cfl` is `true` (default
+ *  is `true`).
+ *
+ */
 void incflo::ComputeDt(bool explicit_diffusion)
 {
     BL_PROFILE("amr-wind::incflo::ComputeDt");

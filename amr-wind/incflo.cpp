@@ -30,6 +30,11 @@ incflo::incflo ()
 incflo::~incflo ()
 {}
 
+/** Initialize AMR mesh data structure.
+ *
+ *  Calls the AmrMesh/AmrCore functions to initialize the mesh. For restarted
+ *  simulations, it loads the checkpoint file.
+ */
 void incflo::init_mesh()
 {
     BL_PROFILE("amr-wind::incflo::init_mesh");
@@ -65,6 +70,13 @@ void incflo::init_mesh()
     }
 }
 
+/** Initialize AMR-Wind data structures after mesh has been created.
+ *
+ *  Modules initialized:
+ *    - Registered \ref physics classes
+ *    - Registered \ref PDE systems
+ *    - Registered post-processing classes
+ */
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
@@ -77,6 +89,14 @@ void incflo::init_amr_wind_modules()
     m_sim.post_manager().initialize();
 }
 
+/** Initialize flow-field before performing time-integration.
+ *
+ *  This method calls the incflo::InitialProjection step to ensure that the
+ *  velocity field is divergence free. Then it performs a user-defined number of
+ *  initial iterations to compute \f$p^{n - 1/2}\f$ necessary for advancing into
+ *  the first timestep. These actions are only performed when starting a new
+ *  simulation, but not for a restarted simulation.
+ */
 void incflo::prepare_for_time_integration()
 {
     BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
@@ -97,6 +117,12 @@ void incflo::prepare_for_time_integration()
         m_sim.io_manager().write_checkpoint_file();
 }
 
+/** Perform all initialization actions for AMR-Wind.
+ *
+ *  This is a wrapper method that calls the following methods to perform the actual work.
+ *
+ *  \callgraph
+ */
 void incflo::InitData ()
 {
     BL_PROFILE("amr-wind::incflo::InitData()");
@@ -106,6 +132,10 @@ void incflo::InitData ()
     prepare_for_time_integration();
 }
 
+/** Perform regrid actions at a given timestep.
+ *
+ *  \return Flag indicating if regrid was performed
+ */
 bool incflo::regrid_and_update()
 {
     BL_PROFILE("amr-wind::incflo::regrid_and_update");
@@ -128,6 +158,10 @@ bool incflo::regrid_and_update()
     return m_time.do_regrid();
 }
 
+/** Perform actions after a timestep
+ *
+ *  Performs any necessary I/O before advancing to next timestep
+ */
 void incflo::post_advance_work()
 {
     BL_PROFILE("amr-wind::incflo::post_advance_work");
@@ -145,6 +179,10 @@ void incflo::post_advance_work()
     }
 }
 
+/** Perform time-integration for user-defined time or timesteps.
+ *
+ *  \callgraph
+ */
 void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");

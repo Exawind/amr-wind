@@ -19,6 +19,30 @@ class PDEBase;
 class RefinementCriteria;
 }
 
+/**
+ *  \defgroup driver AMR-Wind driver code
+ *
+ *  Code that implements initialization and time-stepping logic.
+ *
+ *  This module documents the high-level driver code that is manages the
+ *  initialization and execution of the time-integration algorithm when invoked
+ *  from the executable. Currently there are two phases during AMR-Wind execution:
+ *
+ *  <ol>
+ *
+ *  <li> **Initialization** \ref incflo::ReadParameters "Read input parameters",
+ *  \ref incflo::InitData "initialize mesh, physics modules, etc.".
+ *
+ *  <li> **Time loop** Run user-defined number of timesteps \ref incflo::Evolve
+ *  "in a loop" that \ref incflo::Advance "advances" the flow-field.
+ *
+ *  </ol>
+ */
+
+/** AMR-Wind driver class
+ *  \ingroup driver
+ *
+ */
 class incflo : public amrex::AmrCore
 {
 public:
