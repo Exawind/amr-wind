@@ -2,6 +2,7 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
+#include "amr-wind/overset/OversetManager.H"
 
 #ifdef AMREX_USE_DPCPP
 #include "amr-wind/turbulence/turbulence_utils.H"
@@ -51,6 +52,14 @@ void CFDSim::init_physics()
 
     for (auto& phy: phys_names)
         m_physics_mgr.create(phy, *this);
+}
+
+void CFDSim::activate_overset()
+{
+    amrex::ParmParse pp("overset");
+    std::string otype = "TIOGA";
+
+    m_overset_mgr = OversetManager::create(otype, *this);
 }
 
 } // namespace amr_wind

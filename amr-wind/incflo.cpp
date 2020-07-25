@@ -6,6 +6,7 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
+#include "amr-wind/overset/OversetManager.H"
 
 using namespace amrex;
 
@@ -86,6 +87,7 @@ void incflo::init_amr_wind_modules()
     icns().initialize();
     for (auto& eqn: scalar_eqns()) eqn->initialize();
 
+    if (m_sim.has_overset()) m_sim.overset_manager()->post_init_actions();
     m_sim.post_manager().initialize();
 }
 
@@ -153,6 +155,9 @@ bool incflo::regrid_and_update()
         icns().post_regrid_actions();
         for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+
+        if (m_sim.has_overset())
+            m_sim.overset_manager()->post_regrid_actions();
     }
 
     return m_time.do_regrid();
