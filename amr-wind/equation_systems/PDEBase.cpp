@@ -60,5 +60,10 @@ bool PDEMgr::has_pde(const std::string &pde_name) const
     return contains(name);
 }
 
+int PDEMgr::num_ghost_state() const
+{
+    return m_use_godunov ? fvm::Godunov::nghost_state : fvm::MOL::nghost_state;
+}
+
 }
 }
