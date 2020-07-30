@@ -38,43 +38,7 @@ public:
     */
     FPlaneAveraging(
       const FType& field_in, const amr_wind::SimTime& time, int axis_in
-      , bool compute_deriv=false)
-        : m_field(field_in), m_time(time), m_axis(axis_in)
-        , m_comp_deriv(compute_deriv)
-    {
-      AMREX_ALWAYS_ASSERT(m_axis >= 0 and m_axis <= 2);
-
-      auto geom = m_field.repo().mesh().Geom();
-
-      // level=0 is default, could later make this an input.
-      // Might only makes sense for fully covered levels
-      
-      m_xlo = geom[m_level].ProbLo(m_axis);
-      m_dx = geom[m_level].CellSize(m_axis);
-      
-      m_ncomp = m_field.num_comp();
-      
-      const amrex::Box& domain = geom[m_level].Domain();
-      const amrex::IntVect dom_lo(domain.loVect());
-      const amrex::IntVect dom_hi(domain.hiVect());
-      
-      m_ncell_line = dom_hi[m_axis] - dom_lo[m_axis] + 1;
-      
-      // count number of cells in plane
-      m_ncell_plane = 1;
-      for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-          if (i != m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
-      }
-      
-      m_line_average.resize(m_ncell_line * m_ncomp, 0.0);
-      if (m_comp_deriv)
-          m_line_deriv.resize(m_ncell_line * m_ncomp, 0.0);
-      m_line_xcentroid.resize(m_ncell_line);
-      
-      for (int i = 0; i < m_ncell_line; ++i) {
-          m_line_xcentroid[i] = m_xlo + (i + 0.5) * m_dx;
-      }
-    }
+      , bool compute_deriv=false);
     
     ~FPlaneAveraging() = default;
 
