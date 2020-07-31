@@ -4,6 +4,9 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/SecondMomentAveraging.H"
+#include "amr-wind/utilities/ThirdMomentAveraging.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
@@ -12,22 +15,21 @@
 namespace amr_wind {
 
 /**
- *  \defgroup abl_istats ABL Integrated Statistics
- *  Data-sampling utilities
+ *  \defgroup abl_istats ABL Statistics
  *
- *  ABLiStats contains functions to compute and integrated statistics for ABL
+ *  ABLStats contains functions to compute and statistics for ABL
  *  simulations. It supports output in ascii format as well as NetCDF format.
  * 
  * \ingroup we_abl
  */
-class ABLiStats
+class ABLStats
 {
 public:
-    static const std::string identifier() { return "ABLiStats"; }
+    static const std::string identifier() { return "ABLStats"; }
 
-    ABLiStats(CFDSim&, const ABLWallFunction&);
+    ABLStats(CFDSim&, const ABLWallFunction&);
 
-    virtual ~ABLiStats();
+    virtual ~ABLStats();
 
     //! Read user inputs and create the necessary files
     void initialize();
@@ -63,7 +65,15 @@ private:
     CFDSim& m_sim;
     const ABLWallFunction& m_abl_wall_func;
     Field& m_temperature;
+    Field& m_mueff;
 
+    VelPlaneAveraging m_pa_vel;
+    FieldPlaneAveraging m_pa_temp;
+    FieldPlaneAveraging m_pa_mueff;    
+    SecondMomentAveraging m_pa_tu;
+    SecondMomentAveraging m_pa_uu;
+    ThirdMomentAveraging m_pa_uuu;
+    
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
     std::string m_out_fmt{"netcdf"};

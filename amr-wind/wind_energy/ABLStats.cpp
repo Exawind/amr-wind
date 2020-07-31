@@ -1,4 +1,4 @@
-#include "amr-wind/wind_energy/ABLiStats.H"
+#include "amr-wind/wind_energy/ABLStats.H"
 #include "amr-wind/derive/derive_K.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
@@ -14,17 +14,24 @@ struct temp_grad{
   double max_grad_loc;
 };
 
-ABLiStats::ABLiStats(CFDSim& sim, const ABLWallFunction& abl_wall_func)
+ABLStats::ABLStats(CFDSim& sim, const ABLWallFunction& abl_wall_func)
     : m_sim(sim)
     , m_abl_wall_func(abl_wall_func)
     , m_temperature(sim.repo().get_field("temperature"))
+    , m_mueff(sim.pde_manager().icns().fields().mueff)
+    , m_pa_vel(sim, 2)
+    , m_pa_temp(m_temperature, sim.time(), 2)
+    , m_pa_mueff(m_mueff, sim.time(), 2)
+    , m_pa_tu(m_pa_vel, m_pa_temp)
+    , m_pa_uu(m_pa_vel, m_pa_vel)
+    , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
 {}
 
-ABLiStats::~ABLiStats() = default;
+ABLStats::~ABLStats() = default;
 
-void ABLiStats::initialize()
+void ABLStats::initialize()
 {
-    BL_PROFILE("amr-wind::ABLiStats::initialize");
+    BL_PROFILE("amr-wind::ABLStats::initialize");
 
     {
         amrex::ParmParse pp("ABL");
@@ -58,9 +65,9 @@ void ABLiStats::initialize()
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
 }
 
-void ABLiStats::post_advance_work()
+void ABLStats::post_advance_work()
 {
-    BL_PROFILE("amr-wind::ABLiStats::post_advance_work");
+    BL_PROFILE("amr-wind::ABLStats::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
@@ -82,7 +89,7 @@ void ABLiStats::post_advance_work()
 }
 
 template <typename h1_dir, typename h2_dir> 
-void ABLiStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel) {
+void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel) {
 
     auto gradT = (this->m_sim.repo()).create_scratch_field(3,m_temperature.num_grow()[0]);
     compute_gradient(*gradT, m_temperature);
@@ -124,21 +131,27 @@ void ABLiStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel) {
     }
 }
 
-void ABLiStats::process_output()
+void ABLStats::process_output()
 {
+    m_pa_vel();
+    m_pa_temp();
+    m_pa_tu();
+    m_pa_uu();
+    m_pa_uuu();
+    
     if (m_out_fmt == "ascii") {
         write_ascii();
     } else if (m_out_fmt == "netcdf") {
         write_netcdf();
     } else {
-        amrex::Abort("ABLiStats: Invalid output format encountered");
+        amrex::Abort("ABLStats: Invalid output format encountered");
     }
 }
 
-void ABLiStats::write_ascii()
+void ABLStats::write_ascii()
 {
-    BL_PROFILE("amr-wind::ABLiStats::write_ascii");
-    amrex::Print() << "WARNING: ABLiStats: ASCII output will impact performance"
+    BL_PROFILE("amr-wind::ABLStats::write_ascii");
+    amrex::Print() << "WARNING: ABLStats: ASCII output will impact performance"
                    << std::endl;
 
     const std::string istat_dir = "i_stats";
@@ -151,7 +164,7 @@ void ABLiStats::write_ascii()
     //TODO: Do something to write the data to file here
 }
 
-void ABLiStats::prepare_netcdf_file()
+void ABLStats::prepare_netcdf_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
@@ -162,12 +175,13 @@ void ABLiStats::prepare_netcdf_file()
     }
     m_ncfile_name = istat_dir + "/" + sname + ".nc";
 
+
+    
     // Only I/O processor handles NetCDF generation
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
 
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
-    const std::string npart_name = "num_points";
     const std::vector<std::string> two_dim{nt_name, npart_name};
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind data sampling output");
@@ -175,12 +189,44 @@ void ABLiStats::prepare_netcdf_file()
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
+    
     ncf.def_var("time", NC_DOUBLE, {nt_name});
     ncf.def_var("ustar", NC_DOUBLE, {nt_name});
     ncf.def_var("wstar", NC_DOUBLE, {nt_name});
     ncf.def_var("L", NC_DOUBLE, {nt_name});
     ncf.def_var("zi", NC_DOUBLE, {nt_name});
+
+    auto grp = ncf.def_group("mean_profiles");
+    auto n_levels = m_pa_vel.ncell_line();
+    const std::string nlevels_name = "nlevels";
+    grp.def_dim("nlevels", n_levels);
+    const std::vector<std::string> two_dim{nt_name, nlevels_name};
+    grp.def_var("h", {nlevels_name});    
+    grp.def_var("u",two_dim);
+    grp.def_var("v",two_dim);
+    grp.def_var("w",two_dim);    
+    grp.def_var("hvelmag",two_dim);
+    grp.def_var("theta",two_dim);
+    grp.def_var("mueff", two_dim);
+    grp.def_var("<u'theta'>_r",two_dim);
+    grp.def_var("<v'theta'>_r",two_dim);
+    grp.def_var("<w'theta'>_r",two_dim);
+    grp.def_var("<u'u'>_r",two_dim);
+    grp.def_var("<u'v'>_r",two_dim);
+    grp.def_var("<u'w'>_r",two_dim);    
+    grp.def_var("<v'v'>_r",two_dim);    
+    grp.def_var("<v'w'>_r",two_dim);
+    grp.def_var("<w'w'>_r",two_dim);    
+    grp.def_var("<u'u'u'>_r",two_dim);    
+    grp.def_var("<v'v'v'>_r",two_dim);    
+    grp.def_var("<w'w'w'>_r",two_dim);    
+    
     ncf.exit_def_mode();
+
+    {
+        auto h = grp.var("h");
+        h.put(m_pa_vel.line_centroids().data(), 0, n_levels);
+    }
 
 #else
     amrex::Abort(
@@ -189,7 +235,7 @@ void ABLiStats::prepare_netcdf_file()
 #endif
 }
 
-void ABLiStats::write_netcdf()
+void ABLStats::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
@@ -205,9 +251,65 @@ void ABLiStats::write_netcdf()
         ncf.var("ustar").put(&ustar, {nt}, {1});
         double wstar = 0.0;
         ncf.var("wstar").put(&wstar, {nt}, {1});
-        double L = 1e18;
+        double L = 0.0;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
+
+        auto grp = ncf.group("mean_profiles");
+        auto n_levels = m_pa_vel.ncell_line();
+        amrex::Vector<amrex::Real> l_vec(n_levels);
+        std::vector<size_t> start{nt, 0};
+        std::vector<size_t> count{1, n_levels};
+
+        {
+        amrex::Vector<std::string> var_names{"u","v","w"};
+        amrex::IntVec var_comp{0,1,2};
+        for (int i=0; i < var_comp.size(); i++) {
+            m_pa_vel.line_average(var_comp[i], l_vec);
+            auto var = grp.var(var_names[i], two_dim);
+            var.put(l_vec.data(), start, count);
+        }
+        }
+        
+        auto var = grp.var("hvelmag");
+        var.put(m_pa_vel.line_hvelmag_average().data(), start, count);
+
+        auto var = grp.var("theta");
+        var.put(m_pa_temp.line_average().data(), start, count);
+
+        auto var = grp.var("mueff");
+        var.put(m_pa_mueff.line_average().data(), start, count);
+
+        {
+        amrex::Vector<std::string> var_names{"<u'theta'>_r", "<v'theta'>_r", "<w'theta'>_r"}
+        amrex::IntVec var_comp{0,1,2};
+        for (int i=0; i < var_comp.size(); i++) {
+            m_pa_tu.line_moment(var_comp[i], l_vec);
+            auto var = grp.var(var_names[i], two_dim);
+            var.put(l_vec.data(), start, count);
+        }
+        }
+
+        {
+        amrex::Vector<std::string> var_names{"<u'u'>_r", "<u'v'>_r", "<u'w'>_r", "<v'v'>_r", "<v'w'>_r", "<w'w'>_r"}
+        amrex::IntVec var_comp{0,1,2,4,5,8};
+        for (int i=0; i < var_comp.size(); i++) {
+            m_pa_uu.line_moment(var_comp[i], l_vec);
+            auto var = grp.var(var_names[i], two_dim);
+            var.put(l_vec.data(), start, count);
+        }
+        }
+
+        {
+            amrex::Vector<std::string> var_names{"<u'u'u'>_r", "<v'v'v'>_r", "<w'w'w'>_r"}
+            amrex::IntVec var_comp{0,13,26};
+            for (int i=0; i < var_comp.size(); i++) {
+                m_pa_uuu.line_moment(var_comp[i], l_vec);
+                auto var = grp.var(var_names[i], two_dim);
+                var.put(l_vec.data(), start, count);
+            }
+        }
+        
     }
     ncf.close();
 #endif

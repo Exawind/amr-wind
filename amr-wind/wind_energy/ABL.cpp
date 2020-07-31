@@ -25,7 +25,7 @@ ABL::ABL(CFDSim& sim)
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 
-    m_istats.reset( new ABLiStats(sim, m_abl_wall_func));
+    m_stats.reset( new ABLStats(sim, m_abl_wall_func));
         
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
@@ -60,7 +60,7 @@ void ABL::initialize_fields(
             temp.array(mfi));
     }
 
-    m_istats->initialize();
+    m_stats->initialize();
 }
 
 void ABL::post_init_actions()
@@ -141,7 +141,7 @@ void ABL::pre_advance_work()
 
     }
 
-    m_istats->post_advance_work();
+    m_stats->post_advance_work();
 }
 
 } // namespace amr_wind
