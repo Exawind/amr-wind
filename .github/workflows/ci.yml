@@ -20,7 +20,7 @@ on:
       - 'test/**'
       - 'unit_tests/**'
       - 'CMakeLists.txt'
-      - '.github/workflows/**'
+      - '.github/workflows/ci.yml'
 
 env:
   CXX_COMPILER: mpicxx
