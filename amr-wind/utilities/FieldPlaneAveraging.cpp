@@ -117,7 +117,20 @@ amrex::Real FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int
     return m_line_average[m_ncomp * ind + comp] * (1.0 - c) +
            m_line_average[m_ncomp * (ind + 1) + comp] * c;
 }
+
+template <typename FType>
+void FPlaneAveraging<FType>::line_average(int comp, amrex::Vector<amrex::Real> & l_vec)
+{
+    BL_PROFILE("amr-wind::PlaneAveraging::line_average");
+
+    AMREX_ALWAYS_ASSERT(comp >=0 && comp < m_ncomp);
+
+    for (int i=0; i < m_ncell_line; i++)
+        l_vec[i] = m_line_average[m_ncomp * i + comp];
     
+}
+
+
 template <typename FType>
 amrex::Real FPlaneAveraging<FType>::line_average_cell(int ind, int comp) const
 {

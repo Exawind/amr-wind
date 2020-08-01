@@ -73,6 +73,7 @@ public:
     int last_updated_index() const { return m_last_updated_index; };
 
     const amrex::Vector<amrex::Real>& line_average() { return m_line_average; };
+    void line_average(int comp, amrex::Vector<amrex::Real> & l_vec);   
     const amrex::Vector<amrex::Real>& line_centroids()
     {
         return m_line_xcentroid;
@@ -150,6 +151,9 @@ public: // public for GPU
                              const int h2_idx,                             
                              const amrex::MultiFab& mfab);
 
+    /** return vector containing horizontal velocity magnitude average */
+    const amrex::Vector<amrex::Real>& line_hvelmag_average() { return m_line_hvelmag_average; };
+    
     /** evaluate line haverage at specific location for horizontal velocity magnitude */
     amrex::Real line_hvelmag_average_interpolated(amrex::Real x) const;
     /** evaluate line average at specific cell for horizontal velocity magnitude */
