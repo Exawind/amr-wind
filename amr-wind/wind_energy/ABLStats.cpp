@@ -69,6 +69,15 @@ void ABLStats::initialize()
         
 }
 
+void ABLStats::post_init_actions()
+{
+    m_pa_vel();
+    m_pa_temp();
+    m_pa_tu();
+    m_pa_uu();
+    m_pa_uuu();
+}
+    
 void ABLStats::post_advance_work()
 {
     BL_PROFILE("amr-wind::ABLStats::post_advance_work");
@@ -89,6 +98,12 @@ void ABLStats::post_advance_work()
         break;
     }
 
+    m_pa_vel();
+    m_pa_temp();
+    m_pa_tu();
+    m_pa_uu();
+    m_pa_uuu();
+    
     process_output();
 }
 
@@ -137,11 +152,6 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel) {
 
 void ABLStats::process_output()
 {
-    m_pa_vel();
-    m_pa_temp();
-    m_pa_tu();
-    m_pa_uu();
-    m_pa_uuu();
     
     if (m_out_fmt == "ascii") {
         write_ascii();

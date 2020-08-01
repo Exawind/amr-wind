@@ -34,6 +34,9 @@ public:
     //! Read user inputs and create the necessary files
     void initialize();
 
+    //! Post init actions - calc average profiles
+    void post_init_actions();
+    
     //! Process fields given timestep and output to disk
     void post_advance_work();
 
@@ -42,6 +45,10 @@ public:
     void compute_zi(
         const h1_dir& h1Sel,
         const h2_dir& h2Sel);
+
+    //! Return vel plane averaging instance
+    const VelPlaneAveraging& vel_plane_averaging() { return m_pa_vel;} ;
+    
 
 protected:
     //! Output data based on user-defined format

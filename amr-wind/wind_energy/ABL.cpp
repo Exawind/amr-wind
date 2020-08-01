@@ -17,7 +17,6 @@ ABL::ABL(CFDSim& sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
-    , m_pa(sim, 2)
     , m_abl_wall_func(sim)
 {
     // Register temperature equation
@@ -67,9 +66,10 @@ void ABL::post_init_actions()
 {
     m_abl_wall_func.init_log_law_height();
 
-    m_pa();
-
-    m_abl_wall_func.update_umean(m_pa);
+    m_stats->post_init_actions();
+    
+    const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
+    m_abl_wall_func.update_umean(vel_pa);
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
@@ -87,61 +87,31 @@ void ABL::post_init_actions()
  */
 void ABL::pre_advance_work()
 {
-    const auto& time = m_sim.time();
-
-    m_pa();
-
-    m_abl_wall_func.update_umean(m_pa);
+    
+    const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
+    m_abl_wall_func.update_umean(vel_pa);
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
-        const amrex::Real vx = m_pa.line_average_interpolated(zh, 0);
-        const amrex::Real vy = m_pa.line_average_interpolated(zh, 1);
+        const amrex::Real vx = vel_pa.line_average_interpolated(zh, 0);
+        const amrex::Real vy = vel_pa.line_average_interpolated(zh, 1);
         // Set the mean velocities at the forcing height so that the source
         // terms can be computed during the time integration calls
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
-    {
-        // TODO: This should be handled by PlaneAveraging
-        int output_interval = 1;
-        amrex::ParmParse pp("io");
-        pp.query("line_plot_int", output_interval);
+}
 
-        if ((output_interval > 0) && (time.time_index() % output_interval == 0)) {
-            int plot_type = 0;
-            pp.query("line_plot_type", plot_type);
-            PlaneAveraging pa(2);
-            pa(m_sim.mesh().Geom(), m_density.vec_ptrs(), m_velocity.vec_ptrs(), m_mueff.vec_ptrs(), m_temperature->vec_ptrs());
-            pa.plot_line(time.time_index(), time.current_time(), plot_type);
-
-
-            // new way
-            m_pa.output_line_average_ascii(time.time_index(), time.current_time());
-
-            SecondMomentAveraging uu(m_pa, m_pa);
-            uu.output_line_average_ascii(time.time_index(), time.current_time());
-
-            ThirdMomentAveraging uuu(m_pa, m_pa, m_pa);
-            uuu.output_line_average_ascii(time.time_index(), time.current_time());
-
-            if(m_temperature != nullptr){
-                int dir = 2;
-                FieldPlaneAveraging pa_temp(*m_temperature, m_sim.time(), dir);
-                pa_temp.line_derivative_of_average_cell(2,0);
-                pa_temp.output_line_average_ascii(time.time_index(), time.current_time());
-
-                SecondMomentAveraging tu(pa_temp,m_pa);
-                tu.output_line_average_ascii(time.time_index(), time.current_time());
-            }
-
-            FieldPlaneAveraging pa_mueff(m_mueff, m_sim.time(), 2);
-            pa_mueff.output_line_average_ascii(time.time_index(), time.current_time());
-        }
-
-    }
-
+/** Perform tasks at the end of a new timestep
+ *
+ *  For ABL simulations this method invokes the FieldPlaneAveraging class to
+ *  compute spatial averages at all z-levels on the coarsest mesh (level 0).
+ *
+ */
+void ABL::post_advance_work()
+{
     m_stats->post_advance_work();
 }
+    
 
 } // namespace amr_wind

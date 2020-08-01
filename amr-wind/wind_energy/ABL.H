@@ -70,7 +70,7 @@ public:
 
     void pre_advance_work() override;
 
-    void post_advance_work() override {}
+    void post_advance_work() override;
 
     void register_forcing_term(pde::icns::ABLForcing* forcing) const
     {
@@ -85,7 +85,6 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
 
-    VelPlaneAveraging m_pa;
     ABLWallFunction m_abl_wall_func;
 
     //! ABL field initializer instance
