@@ -47,6 +47,8 @@ protected:
     //! Output data based on user-defined format
     virtual void process_output();
 
+    //! Prepare ASCII file
+    virtual void prepare_ascii_file();
     //! Prepare NetCDF metadata
     virtual void prepare_netcdf_file();
 
@@ -79,8 +81,9 @@ private:
     std::string m_out_fmt{"netcdf"};
     std::string m_ncfile_name;
 #else
-    std::string m_out_fmt{"native"};
+    std::string m_out_fmt{"ascii"};
 #endif
+    std::string m_ascii_file_name;
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
