@@ -94,11 +94,11 @@ void TiogaInterface::amr_to_tioga_mesh()
 
     int ngrids_global = 0;
     int ngrids_local = 0;
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         ngrids_global += mesh.boxArray(lev).size();
 
         const auto& dmap = mesh.DistributionMap(lev);
-        for (long d=0; d < dmap.size(); ++d) {
+        for (long d = 0; d < dmap.size(); ++d) {
             if (dmap[d] == iproc) ++ngrids_local;
         }
     }
@@ -121,12 +121,12 @@ void TiogaInterface::amr_to_tioga_mesh()
     int iix = 0; // Index into the integer array
     int irx = 0; // Index into the real array
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& ba = mesh.boxArray(lev);
         const auto& dm = mesh.DistributionMap(lev);
         const amrex::Real* dx = mesh.Geom(lev).CellSize();
 
-        for (long d=0; d < dm.size(); ++d) {
+        for (long d = 0; d < dm.size(); ++d) {
             idata[iix++] = igp;             // Global index of this patch
             idata[iix++] = lev;             // Level of this patch
             idata[iix++] = dm[d];           // MPI rank of this patch
@@ -153,7 +153,8 @@ void TiogaInterface::amr_to_tioga_mesh()
             // Increment global ID counter
             ++igp;
             // Increment local index
-            ++lgrid_id[dm[d]];}
+            ++lgrid_id[dm[d]];
+        }
     }
 }
 
