@@ -136,10 +136,12 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel) {
       });
     }
 
+#ifdef AMREX_USE_MPI
     MPI_Reduce(tgrad_ptr, tgrad_g_ptr, m_ncells_h1 * m_ncells_h2,
                MPI_2DOUBLE_PRECISION, MPI_MAXLOC,
                amrex::ParallelDescriptor::IOProcessorNumber(),
                amrex::ParallelDescriptor::Communicator() );
+#endif
 
     m_zi = 0.0;
     if (amrex::ParallelDescriptor::IOProcessor()) {
