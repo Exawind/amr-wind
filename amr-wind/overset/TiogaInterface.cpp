@@ -43,7 +43,8 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
 // clang-format off
 
 TiogaInterface::TiogaInterface(CFDSim& sim)
-    : m_iblank_cell(sim.repo().declare_int_field(
+    : m_sim(sim)
+    , m_iblank_cell(sim.repo().declare_int_field(
           "iblank_cell", 1, sim.pde_manager().num_ghost_state()))
     , m_iblank_node(sim.repo().declare_int_field(
           "iblank_node", 1, sim.pde_manager().num_ghost_state(), 1,
@@ -56,9 +57,15 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
 {}
 // clang-format on
 
-void TiogaInterface::post_init_actions() {}
+void TiogaInterface::post_init_actions()
+{
+    amr_to_tioga_mesh();
+}
 
-void TiogaInterface::post_regrid_actions() {}
+void TiogaInterface::post_regrid_actions()
+{
+    amr_to_tioga_mesh();
+}
 
 void TiogaInterface::pre_overset_conn_work()
 {
@@ -75,5 +82,79 @@ void TiogaInterface::post_overset_conn_work()
 void TiogaInterface::register_solution() {}
 
 void TiogaInterface::update_solution() {}
+
+void TiogaInterface::amr_to_tioga_mesh()
+{
+    BL_PROFILE("amr-wind::TiogaInterface::amr_to_tioga_mesh");
+    auto& mesh = m_sim.mesh();
+    const int nlevels = mesh.finestLevel() + 1;
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    const int nproc = amrex::ParallelDescriptor::NProcs();
+    const auto* problo = mesh.Geom(0).ProbLo();
+
+    int ngrids_global = 0;
+    int ngrids_local = 0;
+    for (int lev=0; lev < nlevels; ++lev) {
+        ngrids_global += mesh.boxArray(lev).size();
+
+        const auto& dmap = mesh.DistributionMap(lev);
+        for (long d=0; d < dmap.size(); ++d) {
+            if (dmap[d] == iproc) ++ngrids_local;
+        }
+    }
+
+    // Reset array data structures
+    m_info.ngrids_global = ngrids_global;
+    m_info.ngrids_local = ngrids_local;
+    m_info.int_data.resize(AMROversetInfo::ints_per_grid * ngrids_global);
+    m_info.real_data.resize(AMROversetInfo::reals_per_grid * ngrids_global);
+    m_info.gid_map.resize(nlevels);
+    for (auto& vv : m_info.gid_map) vv.clear();
+
+    // Track local grid ID
+    std::vector<int> lgrid_id(nproc, 0);
+
+    auto& idata = m_info.int_data;
+    auto& rdata = m_info.real_data;
+
+    int igp = 0; // Global index of the grid
+    int iix = 0; // Index into the integer array
+    int irx = 0; // Index into the real array
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& ba = mesh.boxArray(lev);
+        const auto& dm = mesh.DistributionMap(lev);
+        const amrex::Real* dx = mesh.Geom(lev).CellSize();
+
+        for (long d=0; d < dm.size(); ++d) {
+            idata[iix++] = igp;             // Global index of this patch
+            idata[iix++] = lev;             // Level of this patch
+            idata[iix++] = dm[d];           // MPI rank of this patch
+            idata[iix++] = lgrid_id[dm[d]]; // Local ID for this patch
+
+            const auto& bx = ba[d];
+            const int* lo = bx.loVect();
+            const int* hi = bx.hiVect();
+
+            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+                idata[iix + i] = lo[i];
+                idata[iix + AMREX_SPACEDIM + i] = hi[i];
+
+                rdata[irx + i] = problo[i] + lo[i] * dx[i];
+                rdata[irx + AMREX_SPACEDIM + i] = dx[i];
+            }
+            iix += 2 * AMREX_SPACEDIM;
+            irx += 2 * AMREX_SPACEDIM;
+
+            if (iproc == dm[d]) {
+                m_info.gid_map[lev].push_back(igp);
+            }
+
+            // Increment global ID counter
+            ++igp;
+            // Increment local index
+            ++lgrid_id[dm[d]];}
+    }
+}
 
 } // namespace amr_wind

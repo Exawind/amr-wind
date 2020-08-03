@@ -1,11 +1,33 @@
 #ifndef TIOGAINTERFACE_H
 #define TIOGAINTERFACE_H
 
+#include <vector>
 #include "amr-wind/overset/OversetManager.H"
 
 namespace amr_wind {
 
 class IntField;
+
+struct AMROversetInfo
+{
+    //! Integer data to be sent to TIOGA
+    std::vector<int> int_data;
+
+    //! Bounding box and grid size info to be sent to TIOGA
+    std::vector<double> real_data;
+
+    //! Global ID mapping for the patches
+    std::vector<std::vector<int>> gid_map;
+
+    //! Total number of patches (across all levels) in this AMR mesh
+    int ngrids_global;
+
+    //! Number of patches across all levels that are local to this MPI rank
+    int ngrids_local;
+
+    static constexpr int ints_per_grid{10};
+    static constexpr int reals_per_grid{6};
+};
 
 class TiogaInterface : public OversetManager::Register<TiogaInterface>
 {
@@ -52,7 +74,13 @@ public:
      */
     virtual void update_solution() override;
 
+    AMROversetInfo& amr_mesh_info() { return m_info; }
+
 private:
+    void amr_to_tioga_mesh();
+
+    CFDSim& m_sim;
+
     //! IBLANK on cell centered fields
     IntField& m_iblank_cell;
 
@@ -63,6 +91,8 @@ private:
     IntField& m_mask_cell;
 
     IntField& m_mask_node;
+
+    AMROversetInfo m_info;
 };
 
 } // namespace amr_wind
