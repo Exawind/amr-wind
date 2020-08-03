@@ -133,6 +133,8 @@ public:
     //! Query if a PDE has already been registered
     bool has_pde(const std::string& pde_name) const;
 
+    int num_ghost_state() const;
+
 private:
     //! Instance of the CFD simulation controller
     CFDSim& m_sim;

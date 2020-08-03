@@ -14,6 +14,7 @@
 namespace amr_wind {
 class IOManager;
 class PostProcessManager;
+class OversetManager;
 
 namespace turbulence {
 class TurbulenceModel;
@@ -76,11 +77,19 @@ public:
     PostProcessManager& post_manager() { return *m_post_mgr; }
     const PostProcessManager& post_manager() const  { return *m_post_mgr; }
 
+    OversetManager* overset_manager() { return m_overset_mgr.get(); }
+    const OversetManager* overset_manager() const { return m_overset_mgr.get(); }
+
+    bool has_overset() const { return static_cast<bool>(m_overset_mgr); }
+
     //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();
 
     //! Instantiate all physics instances based on user inputs
     void init_physics();
+
+    //! Activate overset connectivity
+    void activate_overset();
 
 private:
     amrex::AmrCore& m_mesh;
@@ -98,6 +107,8 @@ private:
     std::unique_ptr<IOManager> m_io_mgr;
 
     std::unique_ptr<PostProcessManager> m_post_mgr;
+
+    std::unique_ptr<OversetManager> m_overset_mgr;
 };
 
 }

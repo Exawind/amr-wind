@@ -30,7 +30,7 @@ using namespace amrex;
  *
  * \callgraph
  */
-void incflo::Advance()
+void incflo::advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance");
 
