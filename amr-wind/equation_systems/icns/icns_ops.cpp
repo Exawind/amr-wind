@@ -28,7 +28,7 @@ namespace pde {
 //       div(ep*grad(phi)/rho) = div(ep * u*)
 //
 
-void advection_mac_project(FieldRepo& repo, const FieldState fstate)
+void advection_mac_project(FieldRepo& repo, const FieldState fstate, const bool has_overset)
 {
     BL_PROFILE("amr-wind::ICNS::advection_mac_project");
     auto& geom = repo.mesh().Geom();
@@ -80,8 +80,13 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate)
 
     // Perform MAC projection
     amrex::MacProjector macproj(
-        mac_vec, rho_face_const,
-        repo.mesh().Geom(0, repo.num_active_levels() - 1), lp_info);
+        mac_vec, amrex::MLMG::Location::FaceCenter,
+        rho_face_const, amrex::MLMG::Location::FaceCenter,
+        amrex::MLMG::Location::CellCenter,
+        repo.mesh().Geom(0, repo.num_active_levels() - 1), lp_info, {},
+        amrex::MLMG::Location::CellCenter,
+        (has_overset ? repo.get_int_field("mask_cell").vec_const_ptrs()
+                     : amrex::Vector<const amrex::iMultiFab*>()));
 
     // get the bc types from pressure field
     auto& bctype = repo.get_field("p").bc_type();

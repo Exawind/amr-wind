@@ -27,7 +27,10 @@ template <typename LinOp>
 class DiffSolverIface
 {
 public:
-    DiffSolverIface(PDEFields& fields, const std::string& prefix = "diffusion");
+    DiffSolverIface(
+        PDEFields& fields,
+        const bool has_overset,
+        const std::string& prefix = "diffusion");
 
     virtual ~DiffSolverIface() = default;
 
@@ -103,8 +106,8 @@ struct DiffusionOp<
     static_assert(std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
                   "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields)
-        : DiffSolverIface<typename PDE::MLDiffOp>(fields)
+    DiffusionOp(PDEFields& fields, const bool has_overset)
+        : DiffSolverIface<typename PDE::MLDiffOp>(fields, has_overset)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::low),

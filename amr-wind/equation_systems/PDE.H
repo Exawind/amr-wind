@@ -59,7 +59,7 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
@@ -71,7 +71,7 @@ public:
     {
         if (PDE::has_diffusion){
             BL_PROFILE("amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         }
     }
 
@@ -105,7 +105,7 @@ public:
     void compute_advection_term(const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::" + this->identifier() + "::compute_advection_term");
-        m_adv_op(fstate, m_time.deltaT());
+        m_adv_op(fstate, m_time.deltaT(), m_sim.has_overset());
     }
 
     virtual void compute_predictor_rhs(const DiffusionType difftype) override

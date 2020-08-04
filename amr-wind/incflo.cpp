@@ -255,6 +255,15 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
 void incflo::init_physics_and_pde()
 {
+    {
+        // Query and activate overset before initializing PDEs and physics
+        amrex::ParmParse pp("incflo");
+        bool activate_overset = false;
+        pp.query("activate_overset", activate_overset);
+
+        if (activate_overset) m_sim.activate_overset();
+    }
+
     auto& pde_mgr = m_sim.pde_manager();
 
     // Always register incompressible Navier-Stokes equation
