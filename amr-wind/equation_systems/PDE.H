@@ -105,7 +105,7 @@ public:
     void compute_advection_term(const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::" + this->identifier() + "::compute_advection_term");
-        m_adv_op(fstate, m_time.deltaT());
+        m_adv_op(fstate, m_time.deltaT(), m_sim.has_overset());
     }
 
     virtual void compute_predictor_rhs(const DiffusionType difftype) override
