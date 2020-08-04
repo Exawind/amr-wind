@@ -66,7 +66,7 @@ void ABL::post_init_actions()
 {
     m_abl_wall_func.init_log_law_height();
 
-    m_stats->post_init_actions();
+    m_stats->calc_averages();
     
     const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
     m_abl_wall_func.update_umean(vel_pa);
@@ -87,8 +87,8 @@ void ABL::post_init_actions()
  */
 void ABL::pre_advance_work()
 {
-    
-    const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
+    m_stats->calc_averages();
+    const auto& vel_pa = m_stats->vel_plane_averaging();
     m_abl_wall_func.update_umean(vel_pa);
 
     if (m_abl_forcing != nullptr) {
@@ -104,9 +104,8 @@ void ABL::pre_advance_work()
 
 /** Perform tasks at the end of a new timestep
  *
- *  For ABL simulations this method invokes the FieldPlaneAveraging class to
- *  compute spatial averages at all z-levels on the coarsest mesh (level 0).
- *
+ *  For ABL simulations, this method writes all plane-averaged profiles and
+ *  integrated statistics to output 
  */
 void ABL::post_advance_work()
 {

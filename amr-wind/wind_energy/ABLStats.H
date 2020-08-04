@@ -34,8 +34,8 @@ public:
     //! Read user inputs and create the necessary files
     void initialize();
 
-    //! Post init actions - calc average profiles
-    void post_init_actions();
+    //! Calculate plane average profiles
+    void calc_averages();
     
     //! Process fields given timestep and output to disk
     void post_advance_work();
