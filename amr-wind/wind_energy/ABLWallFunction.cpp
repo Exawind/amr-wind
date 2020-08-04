@@ -130,7 +130,7 @@ void ABLWallFunction::update_umean(const FieldPlaneAveraging& pa)
     const auto& time = m_sim.time();
 
     if (! m_tempflux)
-        m_surf_temp = m_surf_temp_init + m_surf_temp_rate * (time.current_time() - m_surf_temp_rate_tstart);
+        m_surf_temp = m_surf_temp_init + m_surf_temp_rate * (time.current_time() - m_surf_temp_rate_tstart)/3600.0;
 
     computeplanar();
     computeusingheatflux();
