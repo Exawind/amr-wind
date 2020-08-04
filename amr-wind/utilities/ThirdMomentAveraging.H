@@ -35,6 +35,9 @@ public:
     /** evaluate third moment at specific cell for each component */
     amrex::Real line_average_cell(int cell, int comp) const;
 
+    const amrex::Vector<amrex::Real>& line_moment() { return m_third_moments_line; };
+    void line_moment(int comp, amrex::Vector<amrex::Real> & l_vec);
+    
     void
     output_line_average_ascii(std::string filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);
