@@ -59,7 +59,7 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
@@ -71,7 +71,7 @@ public:
     {
         if (PDE::has_diffusion){
             BL_PROFILE("amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         }
     }
 

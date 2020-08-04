@@ -8,7 +8,7 @@ namespace pde {
 
 template <typename LinOp>
 DiffSolverIface<LinOp>::DiffSolverIface(
-    PDEFields& fields, const std::string& prefix)
+    PDEFields& fields, const bool has_overset, const std::string& prefix)
     : m_pdefields(fields)
     , m_density(fields.repo.get_field("density"))
     , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
@@ -20,14 +20,26 @@ DiffSolverIface<LinOp>::DiffSolverIface(
     iapply.setMaxCoarseningLevel(0);
 
     const auto& mesh = m_pdefields.repo.mesh();
-    m_solver.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                             mesh.boxArray(0, mesh.finestLevel()),
-                             mesh.DistributionMap(0, mesh.finestLevel()),
-                             isolve));
-    m_applier.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                             mesh.boxArray(0, mesh.finestLevel()),
-                             mesh.DistributionMap(0, mesh.finestLevel()),
-                             iapply));
+    if (!has_overset) {
+        m_solver.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
+                                 mesh.boxArray(0, mesh.finestLevel()),
+                                 mesh.DistributionMap(0, mesh.finestLevel()),
+                                 isolve));
+        m_applier.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
+                                  mesh.boxArray(0, mesh.finestLevel()),
+                                  mesh.DistributionMap(0, mesh.finestLevel()),
+                                  iapply));
+    } else {
+        auto imask = fields.repo.get_int_field("mask_cell").vec_const_ptrs();
+        m_solver.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
+                                 mesh.boxArray(0, mesh.finestLevel()),
+                                 mesh.DistributionMap(0, mesh.finestLevel()),
+                                 imask, isolve));
+        m_applier.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
+                                  mesh.boxArray(0, mesh.finestLevel()),
+                                  mesh.DistributionMap(0, mesh.finestLevel()),
+                                  imask, iapply));
+    }
 
     m_solver->setMaxOrder(m_options.max_order);
     m_applier->setMaxOrder(m_options.max_order);
