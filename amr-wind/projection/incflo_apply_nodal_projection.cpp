@@ -182,6 +182,16 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     nodal_projector.reset(new NodalProjector(vel, GetVecOfConstPtrs(sigma),
                                              Geom(0,finest_level), LPInfo()));
     nodal_projector->setDomainBC(bclo, bchi);
+
+    // Setup masking for overset simulations
+    if (sim().has_overset()) {
+        auto& linop = nodal_projector->getLinOp();
+        auto& imask_node = repo().get_int_field("mask_node");
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            linop.setDirichletMask(lev, imask_node(lev));
+        }
+    }
+
     nodal_projector->setVerbose(options.verbose);
     nodal_projector->project(options.rel_tol, options.abs_tol);
     amr_wind::io::print_mlmg_info("Nodal_projection", nodal_projector->getMLMG());
