@@ -47,7 +47,7 @@ struct PostSolveOp<TKE>
 
     void operator()()
     {
-        field_ops::field_lower_bound(m_fields.field, clip_value);
+        field_ops::lower_bound(m_fields.field, clip_value);
     }
 
     PDEFields& m_fields;
