@@ -296,7 +296,11 @@ inline void lincomb(
     lincomb(dst, a, x, xcomp, b, y, ycomp, dstcomp, numcomp, amrex::IntVect(nghost));
 }
 
-//Set the lower bound for a given scalar field   
+/** Set the lower bound for a given scalar field   
+ * \ingroup field_ops
+ * 
+ * \param [in] min_value Minimum value for scalar field
+ */
 inline void field_lower_bound(Field& field, amrex::Real min_value)
 {
   const auto& repo = field.repo();

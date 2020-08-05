@@ -44,9 +44,8 @@ public:
 
     //! Initialize TKE field
     void init_tke(
-        const amrex::Box& vbx,
         const amrex::Geometry& geom,
-        const amrex::Array4<amrex::Real>& tke) const;
+        amrex::MultiFab& tke) const;
 
 private:
     //! Initial velocity components
@@ -94,6 +93,9 @@ private:
     //! Cutoff height for temperature fluctuations
     amrex::Real m_theta_cutoff_height{1.0e16};
 
+    //! Initial value for tke field
+    amrex::Real m_tke_init{0.1};
+    
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
 

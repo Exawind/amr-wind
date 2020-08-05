@@ -20,11 +20,6 @@ OneEqKsgs<Transport>::OneEqKsgs(CFDSim& sim)
 {
     auto& tke_eqn = sim.pde_manager().register_transport_pde(pde::TKE::pde_name());
     m_tke = &(tke_eqn.fields().field);
-
-    //Turbulent length scale field
-    this->m_sim.io_manager().register_io_var("turb_lscale");
-    this->m_sim.io_manager().register_io_var("shear_prod");
-    this->m_sim.io_manager().register_io_var("buoy_prod");
     
 }
 
@@ -77,7 +72,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
-    auto gradT = (this->m_sim.repo()).create_scratch_field(3,m_temperature.num_grow()[0]);
+    auto gradT = (this->m_sim.repo()).create_scratch_field(3,0);
     compute_gradient(*gradT, m_temperature.state(fstate) );
 
     auto& vel = this->m_vel.state(fstate);
