@@ -118,9 +118,9 @@ private:
     amrex::Real m_surf_temp;
     amrex::Real m_ref_temp;
 
-    const amrex::Real m_gamma_m{5.0};
-    const amrex::Real m_gamma_h{5.0};
-    const amrex::Real m_beta_m{16.0};
+    amrex::Real m_gamma_m{5.0};
+    amrex::Real m_gamma_h{5.0};
+    amrex::Real m_beta_m{16.0};
 
     const int m_max_iter{25};
 

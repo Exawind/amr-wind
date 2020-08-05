@@ -19,6 +19,9 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     amrex::ParmParse pp("ABL");
 
     pp.query("kappa", m_kappa);
+    pp.query("mo_gamma_m", m_gamma_m);
+    pp.query("mo_gamma_h", m_gamma_h);
+    pp.query("mo_beta_m", m_beta_m);
     pp.query("surface_roughness_z0", m_z0);
     pp.query("normal_direction", m_direction);
     pp.queryarr("gravity", m_gravity);
