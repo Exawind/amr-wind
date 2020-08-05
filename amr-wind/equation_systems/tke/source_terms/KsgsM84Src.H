@@ -7,6 +7,11 @@ namespace amr_wind {
 namespace pde {
 namespace tke {
 
+/** One-equation Ksgs LES turbulence model
+ *   \ingroup turb_model
+ *
+ *  Reference to Moeng paper
+ */
 class KsgsM84Src : public TKESource::Register<KsgsM84Src>
 {
 public:
