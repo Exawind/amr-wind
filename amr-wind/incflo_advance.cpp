@@ -302,7 +302,10 @@ void incflo::ApplyPredictor (bool incremental_projection)
 
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
+
+            // Post-processing actions after a PDE solve
         }
+        eqn->post_solve_actions();
 
         // Update scalar at n+1/2
         amr_wind::field_ops::lincomb(
@@ -332,10 +335,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
                            : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
     }
+    icns().post_solve_actions();
 
-    if (m_sim.repo().field_exists("tke"))
-        amr_wind::field_ops::field_lower_bound(repo().get_field("tke"), 1.0e-15);
-        
     // ************************************************************************************
     //
     // Project velocity field, update pressure
@@ -502,6 +503,7 @@ void incflo::ApplyCorrector()
             // Solve diffusion eqn. and update of the scalar field
             eqn->solve(dt_diff);
         }
+        eqn->post_solve_actions();
 
         // Update scalar at n+1/2
         amr_wind::field_ops::lincomb(
@@ -533,6 +535,7 @@ void incflo::ApplyCorrector()
                            : 0.5 * m_time.deltaT();
         icns().solve(dt_diff);
     }
+    icns().post_solve_actions();
 
     // *************************************************************************************
     // Project velocity field, update pressure

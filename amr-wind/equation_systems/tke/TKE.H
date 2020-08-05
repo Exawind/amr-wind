@@ -40,6 +40,20 @@ struct TurbulenceOp<TKE>
     PDEFields& m_fields;
 };
 
+template<>
+struct PostSolveOp<TKE>
+{
+    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+
+    void operator()()
+    {
+        field_ops::field_lower_bound(m_fields.field, clip_value);
+    }
+
+    PDEFields& m_fields;
+    amrex::Real clip_value{1.0e-15};
+};
+
 } // namespace pde
 } // namespace amr_wind
 
