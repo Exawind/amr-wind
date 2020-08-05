@@ -333,7 +333,8 @@ void incflo::ApplyPredictor (bool incremental_projection)
         icns().solve(dt_diff);
     }
 
-    amr_wind::field_ops::field_lower_bound(repo().get_field("tke"), 1.0e-15);
+    if (m_sim.repo().field_exists("tke"))
+        amr_wind::field_ops::field_lower_bound(repo().get_field("tke"), 1.0e-15);
         
     // ************************************************************************************
     //
