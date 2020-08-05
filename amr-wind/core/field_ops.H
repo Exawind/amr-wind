@@ -300,12 +300,8 @@ inline void lincomb(
 inline void field_lower_bound(Field& field, amrex::Real min_value)
 {
   const auto& repo = field.repo();
-  const auto& geom_vec = repo.mesh().Geom();
-  const auto ncomp = field.num_comp();
-    
   const int nlevels = repo.num_active_levels();
   for (int lev=0; lev < nlevels; ++lev) {
-    const auto& geom = geom_vec[lev];
     
     for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
       const auto& bx = mfi.tilebox();

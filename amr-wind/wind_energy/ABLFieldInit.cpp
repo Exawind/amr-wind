@@ -148,27 +148,12 @@ void ABLFieldInit::perturb_temperature(
 
 // Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const amrex::Box& vbx,
-    const amrex::Geometry& geom,
-    const amrex::Array4<amrex::Real>& tke) const
+    const amrex::Box& vbx
+    , const amrex::Geometry& // geom
+    , const amrex::Array4<amrex::Real>& tke) const
 {
-    const auto& dx = geom.CellSizeArray();
-    const auto& problo = geom.ProbLoArray();
-
-    const amrex::Real ref_height = 250.0;
-
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-        // if ( z < ref_height ) {
-        //     tke(i, j, k) = 0.4 * (1.0 - z/ref_height)
-        //         * (1.0 - z/ref_height)
-        //         * (1.0 - z/ref_height);
-        // } else {
-        //     tke(i,j,k) = 0.1;
-        // }
         tke(i,j,k) = 0.1;
-
     });
 }
 
