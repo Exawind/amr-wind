@@ -94,6 +94,9 @@ public:
     //! Solve the diffusion linear system and update the field
     virtual void solve(const amrex::Real dt) = 0;
 
+    //! Perform post-processing actions after a system solve
+    virtual void post_solve_actions() = 0;
+
     //! Base class identifier used for factory registration interface
     static std::string base_identifier() { return "PDESystem"; }
 };

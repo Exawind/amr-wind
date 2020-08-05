@@ -60,6 +60,14 @@ void ABL::initialize_fields(
     }
 
     m_stats->initialize();
+
+    if (m_sim.repo().field_exists("tke")) {
+        m_tke = &(m_sim.repo().get_field("tke"));
+        auto& tke = (*m_tke)(level);
+        m_field_init->init_tke(geom, tke);
+    }
+    
+
 }
 
 void ABL::post_init_actions()

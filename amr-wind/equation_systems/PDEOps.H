@@ -192,6 +192,17 @@ struct TurbulenceOp
 template<typename PDE, typename = void>
 struct BCOp;
 
+/** Actions to be performed after a PDE solve
+ *  \ingroup pdeop
+ */
+template<typename PDE>
+struct PostSolveOp
+{
+    PostSolveOp(PDEFields&) {}
+
+    void operator()() {}
+};
+
 }
 }
 

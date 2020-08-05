@@ -1,4 +1,3 @@
 target_sources(${amr_wind_lib_name} PRIVATE
-  Smagorinsky.cpp
-  OneEqKsgs.cpp
+  KsgsM84Src.cpp
   )

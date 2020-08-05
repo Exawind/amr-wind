@@ -95,6 +95,12 @@ void Laminar<Transport>::update_scalar_diff(Field& deff, const std::string& name
     laminar_scal_diff_update(deff, *this, this->m_transport, name);
 }
 
+template<typename Transport>
+TurbulenceModel::CoeffsDictType Laminar<Transport>::model_coeffs() const
+{
+    return TurbulenceModel::CoeffsDictType{};
+}
+
 } // namespace turbulence
 
 INSTANTIATE_TURBULENCE_MODEL(Laminar);

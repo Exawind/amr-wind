@@ -50,6 +50,7 @@ public:
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)
+        , m_post_solve_op(m_fields)
     {
         m_bc_op.init_bcs();
     }
@@ -129,6 +130,11 @@ public:
         }
     }
 
+    void post_solve_actions() override
+    {
+        m_post_solve_op();
+    }
+
 protected:
     //! CFD simulation controller instance
     CFDSim& m_sim;
@@ -157,6 +163,8 @@ protected:
     std::unique_ptr<TurbulenceOp<PDE>> m_turb_op;
 
     BCOp<PDE> m_bc_op;
+
+    PostSolveOp<PDE> m_post_solve_op;
 };
 
 } // namespace pde

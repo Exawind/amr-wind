@@ -84,6 +84,7 @@ private:
     Field& m_mueff;
     Field& m_density;
     Field* m_temperature{nullptr};
+    Field* m_tke{nullptr};
 
     ABLWallFunction m_abl_wall_func;
 
