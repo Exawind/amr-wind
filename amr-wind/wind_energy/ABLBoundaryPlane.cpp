@@ -345,7 +345,7 @@ void ABLBoundaryPlane::write_file()
     const int t_step = m_time.time_index();
 
     // Only output data if at the desired timestep
-    if ((t_step % m_write_frequency != 0) or ((m_io_mode != io_mode::output)) or
+    if ((t_step % m_write_frequency != 0) || ((m_io_mode != io_mode::output)) ||
         (time < m_out_start_time))
         return;
 
@@ -477,7 +477,7 @@ void ABLBoundaryPlane::read_file()
     const amrex::Real time = m_time.new_time();
     AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) and (time < m_in_times.back()));
 
-    if (not((m_in_data.tn() <= time) and (time < m_in_data.tnp1()))) {
+    if (!((m_in_data.tn() <= time) && (time < m_in_data.tnp1()))) {
 
         auto ncf = ncutils::NCFile::open_par(
             m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
@@ -513,7 +513,7 @@ void ABLBoundaryPlane::populate_data(
     if (m_io_mode != io_mode::input) return;
 
     AMREX_ALWAYS_ASSERT(
-        ((m_in_data.tn() <= time) and (time <= m_in_data.tnp1())));
+        ((m_in_data.tn() <= time) || (time <= m_in_data.tnp1())));
     AMREX_ALWAYS_ASSERT(amrex::Math::abs(time - m_in_data.tinterp()) < 1e-12);
 
     for (amrex::OrientationIter oit; oit; ++oit) {
