@@ -299,10 +299,14 @@ inline void lincomb(
 /** Set the lower bound for a given scalar field   
  * \ingroup field_ops
  * 
- * \param [in] min_value Minimum value for scalar field
+ * \param [in] min_value Minimum value for a given field
+ * \param [in] icomp Component to set the minimum bound
  */
 template<typename FType>
-inline void field_lower_bound(FType& field, amrex::Real min_value)
+inline void lower_bound(
+    FType& field,
+    const amrex::Real min_value,
+    const int icomp = 0)
 {
   const auto& repo = field.repo();
   const int nlevels = repo.num_active_levels();
@@ -314,7 +318,7 @@ inline void field_lower_bound(FType& field, amrex::Real min_value)
 
       amrex::ParallelFor(
         bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-          field_arr(i,j,k) = amrex::max(min_value, field_arr(i,j,k));
+          field_arr(i,j,k,icomp) = amrex::max(min_value, field_arr(i,j,k,icomp));
       });
     }
   }
