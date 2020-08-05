@@ -301,7 +301,8 @@ inline void lincomb(
  * 
  * \param [in] min_value Minimum value for scalar field
  */
-inline void field_lower_bound(Field& field, amrex::Real min_value)
+template<typename FType>
+inline void field_lower_bound(FType& field, amrex::Real min_value)
 {
   const auto& repo = field.repo();
   const int nlevels = repo.num_active_levels();
@@ -319,7 +320,6 @@ inline void field_lower_bound(Field& field, amrex::Real min_value)
   }
 
 }
-
 
 } // namespace field_ops
 } // namespace amr_wind
