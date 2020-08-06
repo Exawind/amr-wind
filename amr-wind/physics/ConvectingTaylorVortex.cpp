@@ -53,7 +53,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
         amrex::Real nu;
         amrex::ParmParse pp("transport");
         pp.query("viscosity", nu);
-        m_omega = utils::pi() * nu;
+        m_omega = utils::pi() * utils::pi() * nu;
     }
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;
