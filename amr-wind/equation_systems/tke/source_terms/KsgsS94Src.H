@@ -1,5 +1,5 @@
-#ifndef KSGSM84SRC_H
-#define KSGSM84SRC_H
+#ifndef KSGSS94SRC_H
+#define KSGSS94SRC_H
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
@@ -27,4 +27,4 @@ public:
 }
 }
 
-#endif /* KSGSM84SRC_H */
+#endif /* KSGSS94SRC_H */
