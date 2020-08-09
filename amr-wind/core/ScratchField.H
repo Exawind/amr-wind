@@ -5,6 +5,8 @@
 
 #include "amr-wind/core/FieldDescTypes.H"
 #include "AMReX_MultiFab.H"
+#include "AMReX_Vector.H"
+#include "AMReX_PhysBCFunct.H"
 
 namespace amr_wind {
 
@@ -29,6 +31,7 @@ public:
     ScratchField(const ScratchField&) = delete;
     ScratchField& operator=(const ScratchField&) = delete;
 
+    //! Name if available for this scratch field
     inline const std::string& name() const { return m_name; }
 
     //! Number of components for this field
@@ -37,8 +40,10 @@ public:
     //! Ghost cells
     inline const amrex::IntVect& num_grow() const { return m_ngrow; }
 
+    //! Cell, node, face where the field is stored
     inline FieldLoc field_location() const { return m_floc; }
 
+    //! Return the field data for a given level
     amrex::MultiFab& operator()(int lev) { return m_data[lev]; }
     const amrex::MultiFab& operator()(int lev) const { return m_data[lev]; }
 
@@ -52,7 +57,24 @@ public:
         return amrex::GetVecOfConstPtrs(m_data);
     }
 
+    //! Return a reference to the field repository that created this field
     const FieldRepo& repo() const { return m_repo; }
+
+    void fillpatch(amrex::Real time) noexcept;
+    void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
+
+    void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) noexcept;
+
+    void fillpatch(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost,
+        amrex::Vector<amrex::BCRec>& bcrec) noexcept;
 
 protected:
     ScratchField(
