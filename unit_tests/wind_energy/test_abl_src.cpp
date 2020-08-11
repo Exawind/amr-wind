@@ -91,7 +91,6 @@ TEST_F(ABLMeshTest, body_force)
     pde_mgr.register_icns();
     // pde_mgr.register_transport_pde("Temperature");
     sim().init_physics();
-<<<<<<< HEAD
 
     auto& src_term = pde_mgr.icns().fields().src_term;
 
@@ -118,34 +117,6 @@ TEST_F(ABLMeshTest, body_force)
         time.current_time() = 0.1;
         src_term.setVal(0.0);
 
-=======
-
-    auto& src_term = pde_mgr.icns().fields().src_term;
-
-    amr_wind::pde::icns::BodyForce body_force(sim());
-
-    src_term.setVal(0.0);
-    run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
-        const auto& bx = mfi.tilebox();
-        const auto& src_arr = src_term(lev).array(mfi);
-
-        body_force(lev, mfi, bx, amr_wind::FieldState::New, src_arr);
-    });
-
-    const auto valx = utils::field_max(src_term, 0);
-    const auto valy = utils::field_max(src_term, 1);
-    const auto valz = utils::field_max(src_term, 2);
-    EXPECT_NEAR(valx, 1.0, tol);
-    EXPECT_NEAR(valy, 2.0, tol);
-    EXPECT_NEAR(valz, 3.0, tol);
-
-    // Mimic source term at later timesteps
-    {
-        auto& time = sim().time();
-        time.current_time() = 0.1;
-        src_term.setVal(0.0);
-
->>>>>>> upstream/development
         run_algorithm(src_term, [&](const int lev, const amrex::MFIter& mfi) {
             const auto& bx = mfi.tilebox();
             const auto& src_arr = src_term(lev).array(mfi);
