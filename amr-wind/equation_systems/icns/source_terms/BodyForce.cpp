@@ -25,22 +25,12 @@ BodyForce::BodyForce(const CFDSim& sim) : m_time(sim.time())
 BodyForce::~BodyForce() = default;
 
 void BodyForce::operator()(
-<<<<<<< HEAD
-    const int lev,
-    const amrex::MFIter& mfi,
-    const amrex::Box& bx,
-    const FieldState fstate,
-    const amrex::Array4<amrex::Real>& src_term) const
-{
-
-=======
     const int,
     const amrex::MFIter&,
     const amrex::Box& bx,
     const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
->>>>>>> upstream/development
     const auto& time = m_time.current_time();
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_body_force[0], m_body_force[1], m_body_force[2]}};
