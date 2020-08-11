@@ -242,4 +242,16 @@ SecondMomentAveraging::line_average_cell(int ind, int comp1, int comp2) const
     return line_average_cell(ind, comp);
 }
 
+void SecondMomentAveraging::line_moment(int comp, amrex::Vector<amrex::Real> & l_vec)
+{
+    BL_PROFILE("amr-wind::SecondMomentAveraging::line_moment");
+
+    AMREX_ALWAYS_ASSERT(comp >=0 && comp < m_num_moments);
+
+    const int ncell_line = m_plane_average1.ncell_line();
+    for (int i=0; i < ncell_line; i++)
+        l_vec[i] = m_second_moments_line[m_num_moments * i + comp];
+    
+}
+
 }

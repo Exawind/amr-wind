@@ -7,6 +7,7 @@ namespace amr_wind {
 namespace sampling {
 
 /** Sample data on uniform grids
+ *  \ingroup sampling
  *
  *  Defines probe locations on a two-dimensional plane defined by two vectors
  *  `axis1` and `axis2` that originate from the point `origin`. The length of

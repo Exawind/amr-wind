@@ -7,6 +7,9 @@
 namespace amr_wind {
 namespace transport {
 
+/** Fluid transport model with constant properties
+ *  \ingroup transport
+ */
 class ConstTransport : public TransportModel
 {
 public:

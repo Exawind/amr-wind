@@ -10,6 +10,9 @@
 namespace amr_wind {
 
 /** Rayleigh Taylor physics
+ *  \ingroup physics
+ *
+ *  \sa RayleighTaylorFieldInit
  */
 class RayleighTaylor : public Physics::Register<RayleighTaylor>
 {

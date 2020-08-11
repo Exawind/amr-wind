@@ -9,9 +9,13 @@
 namespace amr_wind {
 
 /** Interface to manage objects of sub-classes based on factory registration
+ *  \ingroup core
  *
  *  Provides boiler-plate code to register a collection and then query using
  *  lookup keywords
+ *
+ *  \tparam Collection Class holding instances of collection (e.g., PhysicsMgr)
+ *  \tparam Base class of the collection (e.g., Physics)
  */
 template<typename Collection, typename Type, bool allow_duplicates=false>
 class CollMgr

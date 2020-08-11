@@ -46,9 +46,9 @@ void sample_field(
             (p.pos(2) - problo[2] - offset[2] * dx[2]) * dxi[2];
 
         // Index of the low corner
-        const int i = std::floor(x);
-        const int j = std::floor(y);
-        const int k = std::floor(z);
+        const int i = amrex::Math::floor(x);
+        const int j = amrex::Math::floor(y);
+        const int k = amrex::Math::floor(z);
 
         // Interpolation weights in each direction (linear basis)
         const amrex::Real wx_hi = (x - i);

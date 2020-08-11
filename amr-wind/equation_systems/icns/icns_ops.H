@@ -13,8 +13,19 @@
 namespace amr_wind {
 namespace pde {
 
-void advection_mac_project(FieldRepo& repo, FieldState fstate);
+void advection_mac_project(FieldRepo& repo, FieldState fstate, const bool);
 
+/** Specialization of field registration for ICNS
+ *  \ingroup icns
+ *
+ *  In addition to the PDEFields, this operator initializes several additional
+ *  fields necessary to solve the Navier-Stokes equation system.
+ *
+ *  - `density` - The fluid density field variable
+ *  - `pressure` - The perturbation pressure field
+ *  - `umac, vmac, wmac` - The face velocity fields used for flux computations
+ *  - `grad_p` - Pressure gradient used for projection
+ */
 template<typename Scheme>
 struct FieldRegOp<ICNS, Scheme>
 {
@@ -56,6 +67,9 @@ struct FieldRegOp<ICNS, Scheme>
     CFDSim& sim;
 };
 
+/** Specialization of the source term operator for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
@@ -100,6 +114,9 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
 };
 
+/** Godunov scheme for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
@@ -120,7 +137,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, 0);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void operator()(
+        const FieldState fstate, const amrex::Real dt, const bool has_overset)
     {
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
@@ -212,7 +230,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // MAC projection
-        advection_mac_project(repo, fstate);
+        advection_mac_project(repo, fstate, has_overset);
 
         //
         // Advect momentum eqns
@@ -258,6 +276,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     bool godunov_use_forces_in_trans{false};
 };
 
+/** MOL scheme for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
@@ -268,7 +289,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real )
+    void operator()(const FieldState fstate, const amrex::Real , const bool has_overset)
     {
 
         auto& repo = fields.repo;
@@ -307,7 +328,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
             }
         }
 
-        advection_mac_project(repo, fstate);
+        advection_mac_project(repo, fstate, has_overset);
 
         //
         // Advect velocity
@@ -358,6 +379,9 @@ struct AdvectionOp<ICNS, fvm::MOL>
     Field& w_mac;
 };
 
+/** Effective turbulent viscosity computation for ICNS
+ *  \ingroup icns
+ */
 template<>
 struct TurbulenceOp<ICNS>
 {

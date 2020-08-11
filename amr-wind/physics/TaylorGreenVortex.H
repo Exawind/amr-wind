@@ -7,6 +7,7 @@
 namespace amr_wind {
 
 /** Taylor Green Vortex physics
+ *  \ingroup physics
  */
 class TaylorGreenVortex : public Physics::Register<TaylorGreenVortex>
 {

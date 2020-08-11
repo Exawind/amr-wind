@@ -7,6 +7,7 @@ namespace amr_wind {
 namespace sampling {
 
 /** Sample data on a cloud of points
+ *  \ingroup sampling
  *
  *  Reads a cloud of point locations from a text file and samples data on those
  *  points.

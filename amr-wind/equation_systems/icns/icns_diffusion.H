@@ -10,6 +10,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** Specialization of diffusion operator for ICNS
+ *  \ingroup icns
+ */
 template <typename Scheme>
 struct DiffusionOp<ICNS, Scheme>
     : public DiffSolverIface<typename ICNS::MLDiffOp>
@@ -21,8 +24,8 @@ struct DiffusionOp<ICNS, Scheme>
         std::is_same<typename ICNS::MLDiffOp, amrex::MLTensorOp>::value,
         "Invalid linear operator for scalar diffusion operator");
 
-    DiffusionOp(PDEFields& fields)
-        : DiffSolverIface<typename ICNS::MLDiffOp>(fields)
+    DiffusionOp(PDEFields& fields, const bool has_overset)
+        : DiffSolverIface<typename ICNS::MLDiffOp>(fields, has_overset)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_tensor_bc(

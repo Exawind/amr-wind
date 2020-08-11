@@ -11,6 +11,7 @@
 namespace amr_wind {
 
 /** Runtime selection of options based on string keyword lookup
+ *  \ingroup core
  *
  *  Factory provides an automated way to register subclasses that can be
  *  instantiated during runtime using string based lookups. The facility mimics
@@ -24,7 +25,7 @@ namespace amr_wind {
  *  Then new models, e.g., Smagorinsky, k-Omega SST/SAS, etc., are added as
  *  subclasses to this instance.
  *
- *  ```C++
+ *  ```
  *  // Create a base class that can be used to register and create instances
  *  //
  *  // The template arguments are the classname for CRTP and types of additional
@@ -52,6 +53,9 @@ namespace amr_wind {
  *  // tmodel is a std::unique_ptr<TurbulenceModel> instance
  *  auto tmodel = TurbulenceModel::create("Smagorinsky", sim);
  *  ```
+ *
+ *  \tparam Base base class (e.g., Physics)
+ *  \tparam Args Arguments types to be passed to the constructor during instantiation
  */
 template <class Base, class... Args>
 struct Factory
@@ -83,6 +87,7 @@ struct Factory
         }
     }
 
+    //! Class to handle registration of subclass for runtime selection
     template <class T>
     struct Register : public Base
     {

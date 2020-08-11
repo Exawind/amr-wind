@@ -8,6 +8,7 @@ namespace amr_wind {
 namespace pde {
 
 /** BC operations for incompressible Navier-Stokes
+ *  \ingroup icns
  */
 template<>
 struct BCOp<ICNS>

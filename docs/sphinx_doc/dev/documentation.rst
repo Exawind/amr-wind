@@ -62,14 +62,29 @@ provides an overview of this format and how to write documentation using this fo
 
 
 Documenting source code
------------------------
+-------------------------
 
 Source code (C++ files) are commented using a special format that allows Doxygen
 to extract the annotated comments and create source code documentation as well
-as inheritance diagrams. `Doxygen manual
-<http://www.doxygen.nl/manual/index.html>`_ provides an overview of the syntax
-that must be used. Please follow the Doxygen style of commenting code when
-commenting AMR-Wind sources.
+as inheritance diagrams. API documentation for the latest snapshot of the
+codebase can be browsed online `here
+<https://exawind.github.io/amr-wind/index.html>`_. To build the documentation
+locally, first install ``doxygen`` and ``graphviz`` executables on your system.
+Once they are successfully installed, execute the following command from the
+root directory of ``amr-wind``
+
+.. code-block:: console
+
+   doxygen ./docs/doxygen/Doxyfile
+
+The default format is HTML, and upon successful completion of the above command,
+the documentation files are available in :file:`build/html` directory. Open
+:file:`build/html/index.html` on your browser to browse the locally generated
+documentation.
+
+`Doxygen manual <http://www.doxygen.nl/manual/index.html>`_ provides an overview
+of the syntax that must be used. Please follow the Doxygen style of commenting
+code when commenting AMR-Wind sources.
 
 When commenting code, try to use self-documenting code, i.e., descriptive names
 for variables and functions that eliminate the need to describe what is going on

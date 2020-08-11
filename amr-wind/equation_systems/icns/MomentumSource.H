@@ -13,6 +13,11 @@ class CFDSim;
 
 namespace pde {
 
+/** Representation of a momentum source term
+ *  \ingroup icns_src
+ *
+ *  All momentum source terms must inherit from this class
+ */
 class MomentumSource : public Factory<MomentumSource, const CFDSim&>
 {
 public:

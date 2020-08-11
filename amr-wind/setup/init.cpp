@@ -12,6 +12,8 @@
 
 using namespace amrex;
 
+/** Parse the input file and populate parameters
+ */
 void incflo::ReadParameters ()
 {
     { // Prefix io
@@ -74,9 +76,12 @@ void incflo::ReadParameters ()
 
 }
 
-//
-// Perform initial pressure iterations
-//
+/** Perform initial pressure iterations
+ *
+ *  Performs a user-defined number of iterations to compute the pressure based
+ *  on the initial conditions. This method is only invoked for new simulations
+ *  and skipped for restarted simulations from a checkpoint file.
+ */
 void incflo::InitialIterations ()
 {
     BL_PROFILE("amr-wind::incflo::InitialIterations()");
@@ -128,7 +133,13 @@ void incflo::InitialIterations ()
     amrex::Print() << "Completed initial pressure iterations" << std::endl << std::endl;
 }
 
-// Project velocity field to make sure initial velocity is divergence-free
+/** Ensure initial velocity field is divergence-free.
+ *
+ *  Performs a \ref incflo::ApplyProjection "projection" step to ensure that the
+ *  user-provided initial velocity field is divergence free. This method is only
+ *  invoked for new simulations. For restarted simulations using a checkpoint
+ *  file, this is not necessary.
+ */
 void incflo::InitialProjection()
 {
     BL_PROFILE("amr-wind::incflo::InitialProjection()");

@@ -9,6 +9,7 @@ namespace amr_wind {
 namespace pde {
 
 /** BC operations for all scalar transport equations
+ *  \ingroup pdeop
  */
 template <typename PDE>
 struct BCOp<
@@ -27,7 +28,7 @@ struct BCOp<
         bc(PDE::default_bc_value);
 
         // Used for fillpatch operation on the source term
-        BCScalar bc_src(m_fields.src_term);
+        BCSrcTerm bc_src(m_fields.src_term);
         bc_src();
     }
 

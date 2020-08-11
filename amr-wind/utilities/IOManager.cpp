@@ -8,6 +8,7 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"
+#include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {
 
@@ -57,6 +58,10 @@ void IOManager::initialize_io()
         }
     }
 
+    if (m_sim.has_overset()) {
+        m_plt_var_names.push_back("iblank_cell");
+    }
+
     for (const auto& fname: m_chkvars) {
         auto& fld = repo.get_field(fname);
         m_chk_fields.emplace_back(&fld);
@@ -68,7 +73,8 @@ void IOManager::write_plot_file()
     BL_PROFILE("amr-wind::IOManager::write_plot_file");
 
     amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
-    auto outfield = m_sim.repo().create_scratch_field(m_plt_num_comp);
+    const int plt_comp = m_plt_num_comp + (m_sim.has_overset() ? 1 : 0);
+    auto outfield = m_sim.repo().create_scratch_field(plt_comp);
     const int nlevels = m_sim.repo().num_active_levels();
 
     for (int lev=0; lev < nlevels; ++lev) {
@@ -78,6 +84,11 @@ void IOManager::write_plot_file()
         for (auto* fld: m_plt_fields) {
             amrex::MultiFab::Copy(mf, (*fld)(lev), 0, icomp, fld->num_comp(), 0);
             icomp += fld->num_comp();
+        }
+
+        if (m_sim.has_overset()) {
+            auto& ibc = m_sim.repo().get_int_field("iblank_cell")(lev);
+            amrex::MultiFab::Copy(mf, amrex::ToMultiFab(ibc), 0, icomp, 1, 0);
         }
     }
 

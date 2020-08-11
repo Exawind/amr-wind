@@ -12,10 +12,27 @@
 #include "AMReX_PhysBCFunct.H"
 #include "AMReX_FillPatchUtil.H"
 
+/**
+ *  \defgroup field_fillpatch Fillpatch operators
+ *  Field fillpatch operators
+ *
+ *  This group documents classes and functions available for performing
+ *  fillpatch operations on the entire field. This API represents a higher-level
+ *  interface to the MultiFab based fillpatch operations and fill physics BC
+ *  operations defined in AMReX library. The functionality available in AMR-Wind
+ *  has two components: 1. the fill patch operators themselves that perform the
+ *  fill operation, and 2. operator classes that define what happens during a
+ *  fillpatch operation at the domain boundaries.
+ *
+ *  \ingroup fields
+ */
+
 namespace amr_wind {
 
 /** Abstract interface for classes that handle fill patch and physical boundary
  *  condition operations for multi-level AMR meshes.
+ *
+ *  \ingroup field_fillpatch
  */
 class FieldFillPatchOpsBase
 {
@@ -48,6 +65,8 @@ public:
 };
 
 /** Implementation that just fills a constant value on newly created grids
+ *
+ *  \ingroup field_fillpatch
  */
 class FieldFillConstScalar : public FieldFillPatchOpsBase
 {
@@ -78,6 +97,8 @@ private:
 
 /** Concrete implementation of filling patches and boundary conditions on
  *  multi-level AMR meshes.
+ *
+ *  \ingroup field_fillpatch
  */
 template <typename Functor>
 class FieldFillPatchOps : public FieldFillPatchOpsBase

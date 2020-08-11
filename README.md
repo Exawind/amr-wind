@@ -1,6 +1,6 @@
 # AMR-Wind 
 
-[Website](https://www.exawind.org/) | [Documentation](https://amr-wind.readthedocs.io) | [Nightly test dashboard](http://my.cdash.org/index.php?project=AMR-Wind) 
+[Website](https://www.exawind.org/) | [User manual](https://amr-wind.readthedocs.io) | [API docs](https://exawind.github.io/amr-wind/index.html) | [Nightly test dashboard](http://my.cdash.org/index.php?project=AMR-Wind) 
 
 [![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![Docs Status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://amr-wind.readthedocs.io)
 
@@ -40,7 +40,12 @@ objectives:
 
 ## Documentation
 
-Documentation is available online at http://amr-wind.readthedocs.io/en/latest/.
+Documentation is organized into a [user manual](https://amr-wind.readthedocs.io)
+and a developer-focused [API
+documentation](https://exawind.github.io/amr-wind/index.html). You can either
+browse the docs online by following the links, or you can generate them locally
+after downloading the code. Please follow the instructions in user manual to
+build documentation locally.
 
 ## Compilation and usage
 

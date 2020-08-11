@@ -334,18 +334,50 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
                      + (uy+vx)*(uy+vx) + (vz+wy)*(vz+wy) + (wx+uz)*(wx+uz));
 }
 
+/** Compute strain-rate for a given field
+ *  \ingroup field_ops
+ *
+ *  \tparam FType Field or ScratchField
+ *  \param field [out] The computed magnitude of strain-rate
+ *  \param field [in] The velocity field
+ */
 template<typename FType>
 void compute_strainrate(FType& field, const Field& velocity);
 
+/** Compute gradient of a scalar or vector field
+ *  \ingroup field_ops
+ *
+ *  \f$\nabla \mathbf{f}\f$
+ *
+ *  \tparam FType Field or ScratchField
+ *  \param gradf [out] The gradient of the input field
+ *  \param field [in] Field on which gradient is to be computed
+ */
 template<typename FType>
 void compute_gradient(FType& gradf, const Field& field);
 
+/** Compute laplacian of a scalar or vector field
+ *  \ingroup field_ops
+ *
+ *  \f$\nabla^2 \mathbf{f}\f$
+ *
+ *  \tparam FType Field or ScratchField
+ *  \param gradf [out] The gradient of the input field
+ *  \param field [in] Field on which gradient is to be computed
+ */
 template<typename FType>
 void compute_laplacian(FType& laplacef, const Field& field);
 
 template<typename FType>
 void compute_curvature(FType& curvf, const Field& field);
 
+/** Normalize a given vector field
+ *  \ingroup field_ops
+ *
+ *  \f$ \mathbf{f} = \mathbf{f} / |\mathbf{f}|\f$
+ *  \tparam FType Field or ScratchField
+ *  \param field [inout] Field to be normalized
+ */
 template<typename FType>
 void normalize_field(FType& field);
 

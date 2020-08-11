@@ -7,6 +7,25 @@
 namespace amr_wind {
 namespace transport {
 
+/**
+ *  \defgroup transport Transport models
+ *
+ *  AMR-Wind representation of fluid transport models.
+ *
+ *  For most land-based wind-energy applications, a constant transport
+ *  (ConstTransport) model is sufficient with uniform properties. However, for
+ *  offshore applications with multiphase models, the properties can change at
+ *  different positions in the domain. Transport models provide a way to
+ *  separate out this behavior from the base turbulence model implementation.
+ *  The turbulence models are templated on transport model to provide different
+ *  behavior depending on fluid transport model chosen by the user. For more
+ *  details see amr_wind::turbulence::TurbModel implementation.
+ *
+ */
+
+/** Abstract representation of a transport model
+ *  \ingroup transport
+ */
 class TransportModel
 {
 public:

@@ -36,6 +36,7 @@ struct VExact
 } // namespace
 
 /** Convecting Taylor Vortex physics
+ *  \ingroup physics
  */
 class ConvectingTaylorVortex : public Physics::Register<ConvectingTaylorVortex>
 {

@@ -18,12 +18,12 @@ endif()
 # Add our extra flags according to language
 separate_arguments(AMR_WIND_CXX_FLAGS)
 target_compile_options(
-  ${amr_wind_lib_name} PUBLIC
+  ${amr_wind_lib_name} PRIVATE
   $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
 if (AMR_WIND_ENABLE_FORTRAN)
   separate_arguments(AMR_WIND_Fortran_FLAGS)
   target_compile_options(
-    ${amr_wind_lib_name} PUBLIC
+    ${amr_wind_lib_name} PRIVATE
     $<$<COMPILE_LANGUAGE:Fortran>:${AMR_WIND_Fortran_FLAGS}>)
 endif()
 
@@ -50,6 +50,11 @@ endif()
 # within amr-wind
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR
     ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
-  target_compile_options(
-    amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
+  if (${AMR_WIND_USE_INTERNAL_AMREX})
+    target_compile_options(
+      amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
+  else()
+    target_compile_options(
+      ${amr_wind_lib_name} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
+  endif()
 endif()

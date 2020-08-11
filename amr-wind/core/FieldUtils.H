@@ -9,6 +9,7 @@ namespace amr_wind {
 namespace field_impl {
 
 /** Convert amr_wind::FieldLoc to index type for use with AMReX objects.
+ *  \ingroup field_ops
  */
 inline amrex::IndexType index_type(const FieldLoc floc)
 {
@@ -35,6 +36,7 @@ inline amrex::IndexType index_type(const FieldLoc floc)
 
 /** Given a base field name and a state, return a unique string that identifies
  *  this state in the field repository.
+ *  \ingroup field_ops
  */
 inline std::string
 field_name_with_state(const std::string& fname, const FieldState fstate)
@@ -67,6 +69,7 @@ field_name_with_state(const std::string& fname, const FieldState fstate)
  *  the user specified field name matches any of those reserved suffixes.
  *
  *. \return True if the field is not a reserved field name
+ *  \ingroup field_ops
  */
 inline bool is_valid_field_name(const std::string& name)
 {
@@ -79,6 +82,7 @@ inline bool is_valid_field_name(const std::string& name)
 
 /** Return an AMReX coarse-to-fine field interpolation object based on
  *  amr_wind::FieldInterpolator
+ *  \ingroup field_ops
  */
 inline amrex::Interpolater*
 get_interpolation_operator(const FieldInterpolator itype)

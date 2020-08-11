@@ -12,7 +12,6 @@ void PostProcessManager::initialize()
     amrex::Vector<std::string> pnames;
     amrex::ParmParse pp("incflo");
     pp.queryarr("post_processing", pnames);
-    std::cerr << pnames.size() << std::endl;
     for (const auto& label: pnames) {
         std::string ptype = "Sampling";
         amrex::ParmParse pp1(label);

@@ -65,6 +65,14 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
+template<typename Transport>
+TurbulenceModel::CoeffsDictType Smagorinsky<Transport>::model_coeffs() const
+{
+    return TurbulenceModel::CoeffsDictType{
+        {"Cs", this->m_Cs}
+    };
+}
+
 } // namespace turbulence
 
 INSTANTIATE_TURBULENCE_MODEL(Smagorinsky);

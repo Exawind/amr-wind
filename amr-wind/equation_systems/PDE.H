@@ -12,12 +12,16 @@ namespace amr_wind {
 namespace pde {
 
 /** Implementation of the PDE interface for transport equations
+ *  \ingroup eqsys
  *
  *  This class takes two traits, one describing the PDE type and the other
  *  describing the numerical scheme (e.g., Godunov, MOL) to generate a family of
  *  PDE systems and its solution process. Each operation is performed by a
  *  separate operator object that can be customized based on the different
  *  traits as necessary.
+ *
+ *  \tparam PDE The PDE trait (e.g., ICNS, Temperature, etc.)
+ *  \tparam Scheme Numerical scheme trait (e.g., Godunov, MOL)
  */
 template<typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
@@ -33,6 +37,10 @@ public:
         return PDE::pde_name() + "-"  + Scheme::scheme_name();
     }
 
+    /**
+     *  \param sim A CFDSim instance
+     *  \param probtype Unique identifier for a problem type
+     */
     PDESystem(CFDSim& sim, const int probtype)
         : m_sim(sim)
         , m_time(sim.time())
@@ -42,6 +50,7 @@ public:
         , m_adv_op(m_fields)
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)
+        , m_post_solve_op(m_fields)
     {
         m_bc_op.init_bcs();
     }
@@ -51,7 +60,7 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
             m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
@@ -63,7 +72,7 @@ public:
     {
         if (PDE::has_diffusion){
             BL_PROFILE("amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields));
+            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         }
     }
 
@@ -97,7 +106,7 @@ public:
     void compute_advection_term(const FieldState fstate) override
     {
         BL_PROFILE("amr-wind::" + this->identifier() + "::compute_advection_term");
-        m_adv_op(fstate, m_time.deltaT());
+        m_adv_op(fstate, m_time.deltaT(), m_sim.has_overset());
     }
 
     virtual void compute_predictor_rhs(const DiffusionType difftype) override
@@ -119,6 +128,11 @@ public:
             m_bc_op.apply_bcs(FieldState::New);
             m_diff_op->linsys_solve(dt);
         }
+    }
+
+    void post_solve_actions() override
+    {
+        m_post_solve_op();
     }
 
 protected:
@@ -149,6 +163,8 @@ protected:
     std::unique_ptr<TurbulenceOp<PDE>> m_turb_op;
 
     BCOp<PDE> m_bc_op;
+
+    PostSolveOp<PDE> m_post_solve_op;
 };
 
 } // namespace pde

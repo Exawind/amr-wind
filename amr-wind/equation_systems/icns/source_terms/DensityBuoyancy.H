@@ -13,6 +13,11 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
+/** Buoyancy term from density variations
+ *  \ingroup icns_src
+ *
+ *  \sa RayleighTaylor
+ */
 class DensityBuoyancy : public MomentumSource::Register<DensityBuoyancy>
 {
 public:

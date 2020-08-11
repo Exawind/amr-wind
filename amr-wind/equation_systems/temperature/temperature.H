@@ -10,6 +10,24 @@
 namespace amr_wind {
 namespace pde {
 
+/**
+ *  \defgroup temp_eqn Temperature transport equation
+ *  %Temperature transport equation
+ *
+ *  \ingroup eqsys
+ */
+
+/**
+ *  \defgroup temp_src Temperature Source terms
+ *
+ *  Source terms used with temperature transport equation
+ *
+ *  \ingroup temp_eqn
+ */
+
+/** Characteristics of temperature transport equation
+ *  \ingroup temp_eqn
+ */
 struct Temperature : ScalarTransport
 {
     using SrcTerm = TemperatureSource;
@@ -18,6 +36,9 @@ struct Temperature : ScalarTransport
     static std::string var_name() { return "temperature"; }
 };
 
+/** Effective thermal diffusivity update operator
+ *  \ingroup temp_eqn
+ */
 template<>
 struct TurbulenceOp<Temperature>
 {

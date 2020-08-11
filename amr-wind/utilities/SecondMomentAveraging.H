@@ -8,6 +8,19 @@
 
 namespace amr_wind {
 
+/** Compute second moments for two variables
+ *  \ingroup statistics
+ *
+ *  Computes second-moment statistics for any two variables. For example, if the
+ *  velocity field is provided, then it computes the following quantities:
+ *
+ *  \f$\langle u'u'\rangle, \langle u'v'\rangle, \langle u'w'\rangle, \ldots\f$
+ *
+ *  Alternately, using velocity (vector) and a scalar (e.g., temperature
+ *  \f$\theta\f$), would compute:
+ *
+ *  \f$\langle u'\theta ' \rangle, \langle v' \theta ' \rangle, \langle w' \theta ' \rangle\f$
+ */
 class SecondMomentAveraging
 {
 public:
@@ -27,6 +40,9 @@ public:
     /** evaluate second moment at specific cell for each component */
     amrex::Real line_average_cell(int cell, int comp) const;
 
+    const amrex::Vector<amrex::Real>& line_moment() { return m_second_moments_line; };
+    void line_moment(int comp, amrex::Vector<amrex::Real> & l_vec);
+    
     void
     output_line_average_ascii(std::string filename, int step, amrex::Real time);
     void output_line_average_ascii(int step, amrex::Real time);

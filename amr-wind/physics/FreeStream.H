@@ -7,6 +7,10 @@
 namespace amr_wind {
 
 /** Freestream physics
+ *  \ingroup physics
+ *
+ *  Initializes the velocity, and density field to user-defined constant values
+ *  throughout the domain.
  */
 class FreeStream : public Physics::Register<FreeStream>
 {

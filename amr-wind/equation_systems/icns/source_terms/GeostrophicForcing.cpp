@@ -22,8 +22,7 @@ namespace icns {
  *    GeostrophicForcing namespace
  *
  */
-GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
-    : m_density(sim.repo().get_field("density"))
+GeostrophicForcing::GeostrophicForcing(const CFDSim&)
 {
     amrex::Real coriolis_factor;
     {
@@ -47,18 +46,17 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim& sim)
 GeostrophicForcing::~GeostrophicForcing() = default;
 
 void GeostrophicForcing::operator()(
-    const int lev,
-    const amrex::MFIter& mfi,
+    const int,
+    const amrex::MFIter&,
     const amrex::Box& bx,
-    const FieldState fstate,
+    const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> forcing{
         {m_g_forcing[0], m_g_forcing[1], m_g_forcing[2]}};
-    const auto& rho = m_density.state(fstate)(lev).const_array(mfi);
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        src_term(i, j, k, 0) += rho(i, j, k) * forcing[0];
-        src_term(i, j, k, 1) += rho(i, j, k) * forcing[1];
+        src_term(i, j, k, 0) += forcing[0];
+        src_term(i, j, k, 1) += forcing[1];
         // No forcing in z-direction
     });
 }

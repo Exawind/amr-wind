@@ -14,6 +14,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** MOL advection operator for scalar transport equations
+ *  \ingroup pdeop
+ */
 template <typename PDE>
 struct AdvectionOp<
     PDE,
@@ -28,7 +31,8 @@ struct AdvectionOp<
     , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real )
+    void operator()(const FieldState fstate, const amrex::Real ,
+                    const bool /* has_overset */)
     {
         static_assert(PDE::ndim == 1, "Invalid number of components for scalar");
 

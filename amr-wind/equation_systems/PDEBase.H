@@ -15,7 +15,23 @@ class CFDSim;
 
 namespace pde {
 
+/**
+ *  \defgroup eqsys Equation Systems
+ *
+ *  Governing partial-differential equations
+ *
+ *  The governing equations and their solution procedure is implemented within
+ *  equation systems that all inherit from PDEBase class. Each term of the
+ *  governing equation is implemented as a \ref pdeop that can be specialized
+ *  for different equations. The behavior is specialized using two traits: 1. a
+ *  PDE trait, e.g., ICNS representing the incompressible Navier-Stokes
+ *  equation, or the Density trait representing the scalar density transport
+ *  equation; and 2. a Scheme trait, e.g., Godunov or MOL that determines the
+ *  discretization process.
+ */
+
 /** Abstract interface defining a PDE and its solution process withn AMR-Wind
+ *  \ingroup eqsys
  *
  *  The exact behavior is implemented by subclass PDESystem that is specialized
  *  using two traits: the PDE type trait, and the numerical scheme trait.
@@ -78,6 +94,9 @@ public:
     //! Solve the diffusion linear system and update the field
     virtual void solve(const amrex::Real dt) = 0;
 
+    //! Perform post-processing actions after a system solve
+    virtual void post_solve_actions() = 0;
+
     //! Base class identifier used for factory registration interface
     static std::string base_identifier() { return "PDESystem"; }
 };
@@ -116,6 +135,8 @@ public:
 
     //! Query if a PDE has already been registered
     bool has_pde(const std::string& pde_name) const;
+
+    int num_ghost_state() const;
 
 private:
     //! Instance of the CFD simulation controller

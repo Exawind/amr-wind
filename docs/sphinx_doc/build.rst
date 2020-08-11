@@ -19,10 +19,16 @@ your system. The main dependencies are listed below:
 
 #. `CMake <https://cmake.org/>`_ -- Configure and build the code
 
+#. `Python <https://python.org>`_ A recent version of python
+
+**Optional dependencies**
+
 #. `NVIDIA CUDA <https://developer.nvidia.com/cuda-zone>`_ version 10 or higher
    required to run on GPUs.
 
-#. `Python <https://python.org>`_ A recent version of python
+#. `Intel OneAPI
+   <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_
+   for building with DPC++.
 
 Building from source
 --------------------
@@ -46,7 +52,7 @@ Building from source
       cmake -DAMR_WIND_ENABLE_TESTS:BOOL=ON ../
       make
 
-   Upon successful build, you will end up with an executable :file:`amr-wind` in
+   Upon successful build, you will end up with an executable :file:`amr_wind` in
    your build directory.
 
 #. (Optional) Test your build
@@ -58,6 +64,9 @@ Building from source
 CMake configuration reference
 -----------------------------
 
+Architecture options
+~~~~~~~~~~~~~~~~~~~
+
 .. cmakeval:: AMR_WIND_ENABLE_MPI
 
    Enable MPI support for parallel executions. Default: OFF
@@ -66,6 +75,36 @@ CMake configuration reference
 
    Enable OpenMP threading support for CPU builds. It is not recommended to
    combine this with GPU builds. Default: OFF
+
+.. cmakeval:: AMR_WIND_ENABLE_CUDA
+
+   Enable `NVIDIA CUDA GPU <https://developer.nvidia.com/cuda-zone>`_ builds. Default: OFF
+
+.. cmakeval:: AMR_WIND_ENABLE_DPCPP
+
+   Enable `Intel OneAPI DPC++ <https://software.intel.com/content/www/us/en/develop/tools/oneapi.html>`_ builds. Default: OFF
+
+Dependencies
+~~~~~~~~~~~~~
+
+.. cmakeval:: AMR_WIND_ENABLE_MASA
+
+   Enable MASA library. Default: OFF
+
+.. cmakeval:: AMR_WIND_ENABLE_NETCDF
+
+   Enable NetCDF outputs. Default: OFF
+
+.. cmakeval:: AMR_WIND_USE_INTERNAL_AMREX
+
+   Use a super-build with the AMReX tracked as a submodule. Default: ON
+
+   If set to ``OFF``, then provide the the path to the existing AMReX
+   installation either through ``AMREX_DIR`` variable or via
+   ``CMAKE_PREFIX_PATH``.
+
+Other AMR-Wind specific options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. cmakeval:: AMR_WIND_ENABLE_TESTS
 
@@ -78,6 +117,16 @@ CMake configuration reference
 .. cmakeval:: AMR_WIND_ENABLE_ALL_WARNINGS
 
    Enable compiler warnings during build. Default: OFF
+
+.. cmakeval:: AMR_WIND_ENABLE_FORTRAN
+
+   Build Fortran interfaces. Default: OFF
+
+   AMR-Wind itself has no Fortran code. This option is unused if
+   :cmakeval:`AMR_WIND_USE_INTERNAL_AMREX` is set to ``OFF``.
+
+General CMake options
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. cmakeval:: CMAKE_INSTALL_PREFIX
 
@@ -103,7 +152,10 @@ CMake configuration reference
 
 .. cmakeval:: CMAKE_CXX_COMPILER
 
-   Set the C++ compiler used for compiling the code
+   Set the C++ compiler used for compiling the code.
+
+   For Intel DPC++ builds (see :cmakeval:`AMR_WIND_ENABLE_DPCPP`) this should be
+   set to `dpcpp`.
 
 .. cmakeval:: CMAKE_C_COMPILER
 

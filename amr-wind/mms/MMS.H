@@ -7,10 +7,13 @@
 
 namespace amr_wind {
 namespace mms {
-/** Method of manufactured solutions physics
- */
+
 using FuncDef = double (*)(double, double, double);
 
+/** Method of manufactured solutions physics
+ *  \ingroup physics
+ *
+ */
 class MMS : public Physics::Register<MMS>
 {
 public:

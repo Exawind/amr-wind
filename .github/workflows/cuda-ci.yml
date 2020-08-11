@@ -11,7 +11,7 @@ on:
       - 'unit_tests/**'
       - 'CMakeLists.txt'
       - 'Dockerfile'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/cuda-ci.yml'
   pull_request:
     branches:
       - development
@@ -22,7 +22,7 @@ on:
       - 'unit_tests/**'
       - 'CMakeLists.txt'
       - 'Dockerfile'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/cuda-ci.yml'
 
 jobs:
   build:

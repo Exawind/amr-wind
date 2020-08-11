@@ -13,6 +13,19 @@ namespace amr_wind {
 class Field;
 
 /** Interface to setup up boundary conditions on a field
+ *  \ingroup field_bc
+ *
+ *  This is the base class for all non-standard operations that need to be
+ *  performed at a domain boundary. Examples include using a wall-function to
+ *  specify shear-stress at domain boundary for viscous flows, and setting an
+ *  inhomogeneous Neumann (e.g., non-zero gradient) BC for temperature above
+ *  capping inversion.
+ *
+ *  Customized BC operators are registered on a field using
+ *  Field::register_custom_bc and then called during the linear system solve in
+ *  \ref eqsys by calling Field::apply_bc_funcs This operation happens after the
+ *  Field::fillphysbc is called and the default BC values have been populated in
+ *  ghost cells.
  */
 class FieldBCIface
 {
@@ -22,6 +35,9 @@ public:
     virtual void operator()(Field& field, const FieldState rho_state) = 0;
 };
 
+/** A no-op BC
+ *  \ingroup field_fillpatch
+ */
 struct FieldBCNoOp
 {
     int m_probtype;
@@ -51,6 +67,9 @@ struct FieldBCNoOp
     {}
 };
 
+/** Sets constant values on specified boundaries
+ *  \ingroup field_fillpatch
+ */
 struct FieldBCDirichlet
 {
     int m_probtype;

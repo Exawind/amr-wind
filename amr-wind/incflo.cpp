@@ -6,6 +6,7 @@
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
+#include "amr-wind/overset/OversetManager.H"
 
 using namespace amrex;
 
@@ -30,16 +31,19 @@ incflo::incflo ()
 incflo::~incflo ()
 {}
 
-void incflo::InitData ()
+/** Initialize AMR mesh data structure.
+ *
+ *  Calls the AmrMesh/AmrCore functions to initialize the mesh. For restarted
+ *  simulations, it loads the checkpoint file.
+ */
+void incflo::init_mesh()
 {
-    BL_PROFILE("amr-wind::incflo::InitData()");
-
+    BL_PROFILE("amr-wind::incflo::init_mesh");
     // Initialize I/O manager to enable restart and outputs
     auto& io_mgr = m_sim.io_manager();
     io_mgr.initialize_io();
 
-    int restart_flag = 0;
-    if(io_mgr.restart_file().empty()) {
+    if (!io_mgr.is_restart()) {
         // This tells the AmrMesh class not to iterate when creating the initial
         // grid hierarchy
         // SetIterateToFalse();
@@ -57,49 +61,133 @@ void incflo::InitData ()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
-        for (auto& pp: m_sim.physics())
-            pp->post_init_actions();
-
-        icns().initialize();
-        for (auto& eqn: scalar_eqns()) eqn->initialize();
-
-        m_sim.post_manager().initialize();
-
-        if (m_do_initial_proj) {
-            InitialProjection();
-        }
-        if (m_initial_iterations > 0) {
-            InitialIterations();
-        }
-
-        if (m_time.write_checkpoint())
-            m_sim.io_manager().write_checkpoint_file();
-    }
-    else
-    {
-        restart_flag = 1;
+    } else {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+    }
+}
 
-        for (auto& pp: m_sim.physics())
-            pp->post_init_actions();
+/** Initialize AMR-Wind data structures after mesh has been created.
+ *
+ *  Modules initialized:
+ *    - Registered \ref physics classes
+ *    - Registered \ref PDE systems
+ *    - Registered post-processing classes
+ */
+void incflo::init_amr_wind_modules()
+{
+    BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
+    for (auto& pp: m_sim.physics())
+        pp->post_init_actions();
 
-        icns().initialize();
-        for (auto& eqn: scalar_eqns()) eqn->initialize();
+    icns().initialize();
+    for (auto& eqn: scalar_eqns()) eqn->initialize();
 
-        m_sim.post_manager().initialize();
+    if (m_sim.has_overset()) m_sim.overset_manager()->post_init_actions();
+    m_sim.post_manager().initialize();
+}
+
+/** Initialize flow-field before performing time-integration.
+ *
+ *  This method calls the incflo::InitialProjection step to ensure that the
+ *  velocity field is divergence free. Then it performs a user-defined number of
+ *  initial iterations to compute \f$p^{n - 1/2}\f$ necessary for advancing into
+ *  the first timestep. These actions are only performed when starting a new
+ *  simulation, but not for a restarted simulation.
+ */
+void incflo::prepare_for_time_integration()
+{
+    BL_PROFILE("amr-wind::incflo::prepare_for_time_integration");
+    // Don't perform initial work if this is a restart
+    if (m_sim.io_manager().is_restart()) return;
+
+    if (m_do_initial_proj) {
+        InitialProjection();
+    }
+    if (m_initial_iterations > 0) {
+        InitialIterations();
     }
 
     // Plot initial distribution
-    if(m_time.write_plot_file() && !restart_flag)
+    if(m_time.write_plot_file())
         m_sim.io_manager().write_plot_file();
-
+    if (m_time.write_checkpoint())
+        m_sim.io_manager().write_checkpoint_file();
 }
 
+/** Perform all initialization actions for AMR-Wind.
+ *
+ *  This is a wrapper method that calls the following methods to perform the actual work.
+ *
+ *  \callgraph
+ */
+void incflo::InitData ()
+{
+    BL_PROFILE("amr-wind::incflo::InitData()");
+
+    init_mesh();
+    init_amr_wind_modules();
+    prepare_for_time_integration();
+}
+
+/** Perform regrid actions at a given timestep.
+ *
+ *  \return Flag indicating if regrid was performed
+ */
+bool incflo::regrid_and_update()
+{
+    BL_PROFILE("amr-wind::incflo::regrid_and_update");
+
+    if (m_time.do_regrid()) {
+        amrex::Print() << "Regrid mesh ... " ;
+        amrex::Real rstart = amrex::ParallelDescriptor::second();
+        regrid(0, m_time.current_time());
+        amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
+        amrex::Print() << "time elapsed = " << rend << std::endl;
+        if (ParallelDescriptor::IOProcessor()) {
+            amrex::Print() << "Grid summary: " << std::endl;
+            printGridSummary(amrex::OutStream(), 0, finest_level);
+        }
+        icns().post_regrid_actions();
+        for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
+        for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+
+        if (m_sim.has_overset())
+            m_sim.overset_manager()->post_regrid_actions();
+    }
+
+    return m_time.do_regrid();
+}
+
+/** Perform actions after a timestep
+ *
+ *  Performs any necessary I/O before advancing to next timestep
+ */
+void incflo::post_advance_work()
+{
+    BL_PROFILE("amr-wind::incflo::post_advance_work");
+    if (m_time.write_plot_file()) {
+        m_sim.io_manager().write_plot_file();
+    }
+
+    if (m_time.write_checkpoint()) {
+        m_sim.io_manager().write_checkpoint_file();
+    }
+
+    if (m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0)) {
+        amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time() << ", "
+                       << ComputeKineticEnergy() << std::endl;
+    }
+}
+
+/** Perform time-integration for user-defined time or timesteps.
+ *
+ *  \callgraph
+ */
 void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
@@ -109,46 +197,16 @@ void incflo::Evolve()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
 
-    while(m_time.new_timestep())
-    {
+    while(m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
-        if (m_time.do_regrid())
-        {
-            amrex::Print() << "Regrid mesh ... " ;
-            amrex::Real rstart = amrex::ParallelDescriptor::second();
-            regrid(0, m_time.current_time());
-            amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
-            amrex::Print() << "time elapsed = " << rend << std::endl;
-            if (ParallelDescriptor::IOProcessor()) {
-                amrex::Print() << "Grid summary: " << std::endl;
-                printGridSummary(amrex::OutStream(), 0, finest_level);
-            }
-            icns().post_regrid_actions();
-            for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
-            for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
-        }
+        regrid_and_update();
 
         // Advance to time t + dt
         amrex::Real time1 = amrex::ParallelDescriptor::second();
-        Advance();
+        advance();
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
-
-        if (m_time.write_plot_file())
-        {
-            m_sim.io_manager().write_plot_file();
-        }
-
-        if(m_time.write_checkpoint())
-        {
-            m_sim.io_manager().write_checkpoint_file();
-        }
-
-        if(m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0))
-        {
-            amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time()
-                           << ", " << ComputeKineticEnergy() << std::endl;
-        }
+        post_advance_work();
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime: " << m_time.time_index()
@@ -197,6 +255,15 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
 void incflo::init_physics_and_pde()
 {
+    {
+        // Query and activate overset before initializing PDEs and physics
+        amrex::ParmParse pp("incflo");
+        bool activate_overset = false;
+        pp.query("activate_overset", activate_overset);
+
+        if (activate_overset) m_sim.activate_overset();
+    }
+
     auto& pde_mgr = m_sim.pde_manager();
 
     // Always register incompressible Navier-Stokes equation

@@ -19,6 +19,30 @@ class PDEBase;
 class RefinementCriteria;
 }
 
+/**
+ *  \defgroup driver AMR-Wind driver code
+ *
+ *  Code that implements initialization and time-stepping logic.
+ *
+ *  This module documents the high-level driver code that is manages the
+ *  initialization and execution of the time-integration algorithm when invoked
+ *  from the executable. Currently there are two phases during AMR-Wind execution:
+ *
+ *  <ol>
+ *
+ *  <li> **Initialization** \ref incflo::ReadParameters "Read input parameters",
+ *  \ref incflo::InitData "initialize mesh, physics modules, etc.".
+ *
+ *  <li> **Time loop** Run user-defined number of timesteps \ref incflo::Evolve
+ *  "in a loop" that \ref incflo::Advance "advances" the flow-field.
+ *
+ *  </ol>
+ */
+
+/** AMR-Wind driver class
+ *  \ingroup driver
+ *
+ */
 class incflo : public amrex::AmrCore
 {
 public:
@@ -54,6 +78,13 @@ public:
 
     // Delete level data
     virtual void ClearLevel (int lev) override;
+
+    void init_mesh();
+    void init_amr_wind_modules();
+    void prepare_for_time_integration();
+    bool regrid_and_update();
+    void advance();
+    void post_advance_work();
 
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
@@ -125,6 +156,7 @@ public: // for cuda
     //! Initialize Physics instances as well as PDEs (include turbulence models)
     void init_physics_and_pde();
 
+
 private:
 
     //
@@ -168,8 +200,6 @@ private:
 
     amrex::Array<amrex::LinOpBCType,AMREX_SPACEDIM>
     get_projection_bc (amrex::Orientation::Side side) const noexcept;
-
-    void Advance ();
 
     ///////////////////////////////////////////////////////////////////////////
     //

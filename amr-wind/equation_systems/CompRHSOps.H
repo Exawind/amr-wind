@@ -8,6 +8,12 @@
 namespace amr_wind {
 namespace pde {
 
+/** RHS computation operator
+ *  \ingroup pdeop
+ *
+ *  Accumulates the convective, diffusion, and source terms for predictor and
+ *  corrector steps.
+ */
 template<typename PDE, typename Scheme>
 struct ComputeRHSOp
 {
@@ -16,6 +22,11 @@ struct ComputeRHSOp
     , density(fields_in.repo.get_field("density"))
     {}
 
+    /** Compute right-hand side for predictor steps
+     *
+     *  \param difftype Indicating whether time-integration is explicit/implicit
+     *  \param dt time step size
+     */
     void predictor_rhs(const DiffusionType difftype, const amrex::Real dt)
     {
         amrex::Real factor = 0.0;
@@ -94,6 +105,11 @@ struct ComputeRHSOp
         }
     }
 
+    /** Compute right-hand side for corrector steps
+     *
+     *  \param difftype Indicating whether time-integration is explicit/implicit
+     *  \param dt time step size
+     */
     void corrector_rhs(const DiffusionType difftype, const amrex::Real dt)
     {
         amrex::Real ofac = 0.0;

@@ -34,6 +34,29 @@ public:
         amrex::MultiFab& vel_forces) const = 0;
 };
 
+/**
+ *  \defgroup physics Physics models
+ *
+ *  AMR-Wind representation of different physics
+ *
+ *  In AMR-Wind, different physics are implemented using the Physics class.
+ *  Every simulation is a collection of several physics instances that are used
+ *  to set initial conditions, perform certain actions at the start and
+ *  completion of a timestep, or after a regrid.
+ *
+ *  Examples of pre-processing actions include reading time-varying inflow data
+ *  from an input file based on user inputs.
+ */
+
+/** Abstract representation of different physics
+ *  \ingroup physics
+ *
+ *  This class defines an abstract API that represents the notion of some
+ *  physics that will be used during the simulation. The most common use-case
+ *  for this class is to create initial conditions. However, it can also be used
+ *  to perform actions at different stages within a timestep during a CFD
+ *  simulation.
+ */
 class Physics : public Factory<Physics, CFDSim&>
 {
 public:
@@ -57,6 +80,10 @@ public:
     virtual void post_advance_work() = 0;
 };
 
+/** A collection of \ref physics instances that are active during a simulation
+ *
+ *  \ingroup physics
+ */
 class PhysicsMgr : public CollMgr<PhysicsMgr, Physics>
 {
 public:

@@ -12,6 +12,9 @@ class CFDSim;
 
 namespace pde {
 
+/** Abstract representation of a source term
+ *  \ingroup pdeop
+ */
 class SourceTerm : public Factory<SourceTerm, const CFDSim&>
 {
 public:

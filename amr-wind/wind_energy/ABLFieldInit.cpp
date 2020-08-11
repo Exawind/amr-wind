@@ -30,6 +30,8 @@ ABLFieldInit::ABLFieldInit()
     pp_abl.query("cutoff_height", m_theta_cutoff_height);
     pp_abl.query("theta_amplitude", m_deltaT);
 
+    pp_abl.query("init_tke", m_tke_init);
+
     // TODO: Modify this to accept velocity as a function of height
     // Extract velocity field from incflo
     amrex::ParmParse pp_incflo("incflo");
@@ -144,6 +146,14 @@ void ABLFieldInit::perturb_temperature(
         });
     }
     amrex::prefetchToDevice(theta_fab);
+}
+
+//! Initialize sfs tke field at the beginning of the simulation
+void ABLFieldInit::init_tke(
+    const amrex::Geometry& // geom
+    , amrex::MultiFab& tke) const
+{
+    tke.setVal(m_tke_init,1);
 }
 
 } // namespace amr_wind

@@ -42,6 +42,11 @@ public:
     //! Flag indicating whether temperature field needs perturbations
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
+    //! Initialize TKE field
+    void init_tke(
+        const amrex::Geometry& geom,
+        amrex::MultiFab& tke) const;
+
 private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
@@ -88,6 +93,9 @@ private:
     //! Cutoff height for temperature fluctuations
     amrex::Real m_theta_cutoff_height{1.0e16};
 
+    //! Initial value for tke field
+    amrex::Real m_tke_init{0.1};
+    
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
 

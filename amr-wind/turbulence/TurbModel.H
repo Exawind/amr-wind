@@ -7,6 +7,12 @@
 namespace amr_wind {
 namespace turbulence {
 
+/** Turbulence model with a specific transport model
+ *  \ingroup turb_model
+ *
+ *  This templated class allows turbulence model to be specialised based on \ref
+ *  transport models. All turbulence model implementations inherit from this class.
+ */
 template<typename Transport>
 class TurbModel : public TurbulenceModel
 {

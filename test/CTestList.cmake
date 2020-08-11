@@ -26,10 +26,6 @@ function(add_test_r TEST_NAME)
     set(PLOT_GOLD ${FCOMPARE_GOLD_FILES_DIRECTORY}/${TEST_NAME}/plt00010)
     # Test plot is currently expected to be after 10 steps
     set(PLOT_TEST ${CURRENT_TEST_BINARY_DIR}/plt00010)
-    # Find fcompare
-    if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE ${CMAKE_BINARY_DIR}/submods/amrex/Tools/Plotfile/fcompare)
-    endif()
     # Make working directory for test
     file(MAKE_DIRECTORY ${CURRENT_TEST_BINARY_DIR})
     # Gather all files in source directory for test
@@ -43,7 +39,7 @@ function(add_test_r TEST_NAME)
     endif()
     # Use fcompare to test diffs in plots against gold files
     if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE_COMMAND "&& ${FCOMPARE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
+      set(FCOMPARE_COMMAND "&& ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     if(AMR_WIND_ENABLE_MPI)
       set(NP 4)
@@ -119,7 +115,7 @@ function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
     list(JOIN LIST_OF_GRID_SIZES " " STRING_OF_GRID_SIZES)
     # Add test and actual test commands to CTest database (python script requires a very specific python environment)
     add_test(${TEST_NAME} sh -c "${MASTER_RUN_COMMAND} && cd ${CURRENT_TEST_BINARY_DIR} && ${PYTHON_EXECUTABLE} ${CURRENT_TEST_SOURCE_DIR}/plotter.py -f ${STRING_OF_GRID_SIZES}")
-    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 14400 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}" LABELS "verification;no_ci" ATTACHED_FILES "plots.pdf")
+    set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 14400 PROCESSORS ${NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}" LABELS "verification;no_ci" ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/plots.pdf")
 endfunction(add_test_v)
 
 # Standard unit test
@@ -174,6 +170,7 @@ add_test_re(abl_mol_cn)
 add_test_re(tgv_godunov_plm)
 add_test_re(abl_godunov_static_refinement)
 add_test_re(ctv_godunov_plm)
+add_test_re(abl_ksgsm84_godunov)
 if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_godunov)
   add_test_re(mms_godunov_plm)

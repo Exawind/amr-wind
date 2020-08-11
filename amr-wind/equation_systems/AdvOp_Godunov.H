@@ -14,6 +14,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** Godunov advection operator for scalar transport equations
+ *  \ingroup pdeop
+ */
 template <typename PDE>
 struct AdvectionOp<
     PDE,
@@ -34,7 +37,8 @@ struct AdvectionOp<
         iconserv.resize(PDE::ndim, 1);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void operator()(const FieldState fstate, const amrex::Real dt,
+                    const bool /* has_overset */)
     {
         static_assert(PDE::ndim == 1, "Invalid number of components for scalar");
         auto& repo = fields.repo;

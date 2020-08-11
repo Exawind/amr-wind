@@ -54,18 +54,26 @@ void BCIface::read_bctype()
     auto& geom = m_field.repo().mesh().Geom(0);
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
-        // Process and quit early if this face is periodic
-        if (geom.isPeriodic(ori.coordDir())) {
-            ibctype[ori] = BC::periodic;
-            continue;
-        }
-
         const auto& bcid = bcnames[ori];
         amrex::ParmParse pp(bcid);
         std::string bcstr = "null";
         pp.query("type", bcstr);
         pp.query(key.c_str(), bcstr);
         bcstr = amrex::toLower(bcstr);
+
+        // Protect against copy/paste errors where user intended to add a BC but
+        // forgot to turn off periodic in that direction, or vice versa.
+        if (geom.isPeriodic(ori.coordDir()) && bcstr != "null") {
+            amrex::Abort(
+                "Setting " + bcstr + " BC on a periodic face " + bcid +
+                " is not allowed");
+        }
+
+        // Process and quit early if this face is periodic
+        if (geom.isPeriodic(ori.coordDir())) {
+            ibctype[ori] = BC::periodic;
+            continue;
+        }
 
         if ((bcstr == "pressure_inflow") || (bcstr == "pi")) {
             ibctype[ori] = BC::pressure_inflow;
@@ -88,7 +96,9 @@ void BCIface::read_bctype()
         }
 
         if (ibctype[ori] == BC::undefined)  {
-            amrex::Abort("No BC specified for non-periodic boundary");
+            amrex::Abort(
+                "Invalid BC specification for non-periodic boundary = " +
+                bcstr);
         }
     }
 }

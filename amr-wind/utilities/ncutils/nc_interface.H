@@ -109,6 +109,7 @@ struct NCVar
     std::string get_attr(const std::string& name) const;
     void get_attr(const std::string& name, std::vector<double>& value) const;
     void get_attr(const std::string& name, std::vector<int>& value) const;
+    void par_access(const int cmode) const;
 };
 
 //! Representation of a NetCDF group
