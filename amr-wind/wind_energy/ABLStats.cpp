@@ -113,7 +113,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
 
     // Only compute zi using coarsest level
 
-    amrex::Gpu::ManagedVector<TemperatureGradient> tgrad(m_ncells_h1 * m_ncells_h2);
+    amrex::Gpu::DeviceVector<TemperatureGradient> tgrad(m_ncells_h1 * m_ncells_h2);
     auto* tgrad_ptr = tgrad.data();
     {
         const int normal_dir = m_normal_dir;
@@ -126,7 +126,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     int h1 = h1Sel(i, j, k);
                     int h2 = h2Sel(i, j, k);
-                    if (tgrad[h2 * ncells_h2 + h1].grad_z <
+                    if (tgrad_ptr[h2 * ncells_h2 + h1].grad_z <
                         gradT_arr(i, j, k, normal_dir)) {
                         tgrad_ptr[h2 * ncells_h2 + h1].grad_z =
                             gradT_arr(i, j, k, normal_dir);
