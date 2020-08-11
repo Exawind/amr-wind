@@ -24,9 +24,6 @@ on:
 
 jobs:
   dpcpp:
-    # Follow AMReX and turn of DPC++ for now
-    # https://github.com/intel/llvm/issues/2187
-    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
