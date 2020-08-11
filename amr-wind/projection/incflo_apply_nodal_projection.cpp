@@ -188,7 +188,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
         auto& linop = nodal_projector->getLinOp();
         auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
-            linop.setDirichletMask(lev, imask_node(lev));
+            linop.setOversetMask(lev, imask_node(lev));
         }
     }
 

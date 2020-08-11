@@ -11,8 +11,8 @@ namespace {
  *
  *  \f{align}
  *  \mathrm{mask}_{i,j,k} = \begin{cases}
- *  0 & \mathrm{IBLANK}_{i, j, k} > 0 \\
- *  1 & \mathrm{IBLANK}_{i, j, k} \leq 0
+ *  1 & \mathrm{IBLANK}_{i, j, k} = 0 \\
+ *  0 & \mathrm{IBLANK}_{i, j, k} \leq 0
  *  \end{cases}
  *  \f}
  */
@@ -33,7 +33,7 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
             const auto& marr = mask.array(mfi);
             amrex::ParallelFor(
                 gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    marr(i, j, k) = ibarr(i, j, k) > 0 ? 0 : 1;
+                    marr(i, j, k) = amrex::max(ibarr(i, j, k), 0);
                 });
         }
     }
