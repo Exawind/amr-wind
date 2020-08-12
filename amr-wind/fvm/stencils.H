@@ -275,7 +275,6 @@ struct StencilKHI
 struct StencilILO_JLO
 {
     static constexpr int direction = 10;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -306,7 +305,6 @@ struct StencilILO_JLO
 struct StencilJLO_KLO
 {
     static constexpr int direction = 11;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  0.5;
     static constexpr amrex::Real c01 =  0;
@@ -337,7 +335,6 @@ struct StencilJLO_KLO
 struct StencilILO_KLO
 {
     static constexpr int direction = 12;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -368,7 +365,6 @@ struct StencilILO_KLO
 struct StencilIHI_JHI
 {
     static constexpr int direction = 13;
-    static constexpr int side = amrex::Orientation::Side::high;
 
     static constexpr amrex::Real c00 =  4.0/3;
     static constexpr amrex::Real c01 = -1;
@@ -399,7 +395,6 @@ struct StencilIHI_JHI
 struct StencilJHI_KHI
 {
     static constexpr int direction = 14;
-    static constexpr int side = amrex::Orientation::Side::high;
     
     static constexpr amrex::Real c00 =  0.5;
     static constexpr amrex::Real c01 =  0.0;
@@ -431,7 +426,6 @@ struct StencilJHI_KHI
 struct StencilIHI_KHI
 {
     static constexpr int direction = 15;
-    static constexpr int side = amrex::Orientation::Side::high;
 
     static constexpr amrex::Real c00 =  4.0/3;
     static constexpr amrex::Real c01 = -1;
@@ -463,7 +457,6 @@ struct StencilIHI_KHI
 struct StencilILO_JHI
 {
     static constexpr int direction = 16;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -494,7 +487,6 @@ struct StencilILO_JHI
 struct StencilJLO_KHI
 {
     static constexpr int direction = 17;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  0.5;
     static constexpr amrex::Real c01 =  0;
@@ -525,7 +517,6 @@ struct StencilJLO_KHI
 struct StencilILO_KHI
 {
     static constexpr int direction = 18;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -556,7 +547,6 @@ struct StencilILO_KHI
 struct StencilIHI_JLO
 {
     static constexpr int direction = 19;
-    static constexpr int side = amrex::Orientation::Side::high;
 
     static constexpr amrex::Real c00 =  4.0/3;
     static constexpr amrex::Real c01 = -1;
@@ -587,7 +577,6 @@ struct StencilIHI_JLO
 struct StencilJHI_KLO
 {
     static constexpr int direction = 20;
-    static constexpr int side = amrex::Orientation::Side::high;
     
     static constexpr amrex::Real c00 =  0.5;
     static constexpr amrex::Real c01 =  0.0;
@@ -619,7 +608,6 @@ struct StencilJHI_KLO
 struct StencilIHI_KLO
 {
     static constexpr int direction = 21;
-    static constexpr int side = amrex::Orientation::Side::high;
 
     static constexpr amrex::Real c00 =  4.0/3;
     static constexpr amrex::Real c01 = -1;
@@ -650,7 +638,6 @@ struct StencilIHI_KLO
 struct StencilILO_JLO_KLO
 {
     static constexpr int direction = 22;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -681,8 +668,7 @@ struct StencilILO_JLO_KLO
 struct StencilILO_JHI_KLO
 {
     static constexpr int direction = 23;
-    static constexpr int side = amrex::Orientation::Side::low;
-
+    
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
     static constexpr amrex::Real c02 = -4.0/3;
@@ -712,7 +698,6 @@ struct StencilILO_JHI_KLO
 struct StencilIHI_JLO_KLO
 {
     static constexpr int direction = 24;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  4./3.;
     static constexpr amrex::Real c01 =  -1;
@@ -743,7 +728,6 @@ struct StencilIHI_JLO_KLO
 struct StencilIHI_JHI_KLO
 {
     static constexpr int direction = 25;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  4./3.;
     static constexpr amrex::Real c01 =  -1;
@@ -774,7 +758,6 @@ struct StencilIHI_JHI_KLO
 struct StencilILO_JLO_KHI
 {
     static constexpr int direction = 26;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -805,7 +788,6 @@ struct StencilILO_JLO_KHI
 struct StencilILO_JHI_KHI
 {
     static constexpr int direction = 27;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  1.0/3;
     static constexpr amrex::Real c01 =  1.0;
@@ -836,7 +818,6 @@ struct StencilILO_JHI_KHI
 struct StencilIHI_JLO_KHI
 {
     static constexpr int direction = 28;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  4./3.;
     static constexpr amrex::Real c01 =  -1;
@@ -866,7 +847,6 @@ struct StencilIHI_JLO_KHI
 struct StencilIHI_JHI_KHI
 {
     static constexpr int direction = 29;
-    static constexpr int side = amrex::Orientation::Side::low;
 
     static constexpr amrex::Real c00 =  4./3.;
     static constexpr amrex::Real c01 =  -1;
