@@ -88,6 +88,24 @@ TEST_F(FieldRepoTest, field_post_declare)
 
     const auto& frepo = mesh().field_repo();
     EXPECT_EQ(frepo.num_fields(), 4);
+
+    // Check that the IDs are consistent
+    {
+        auto& f1 = frepo.get_field("vel");
+        auto& f2 = frepo.get_field(0);
+        EXPECT_EQ(f1.id(), f2.id());
+    }
+    // Velocity has two states...
+    {
+        auto& f1 = frepo.get_field("density");
+        auto& f2 = frepo.get_field(2);
+        EXPECT_EQ(f1.id(), f2.id());
+    }
+    {
+        auto& f1 = frepo.get_field("pressure");
+        auto& f2 = frepo.get_field(3);
+        EXPECT_EQ(f1.id(), f2.id());
+    }
 }
 
 TEST_F(FieldRepoTest, field_get)

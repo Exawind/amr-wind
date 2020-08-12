@@ -237,6 +237,11 @@ public:
     Field& get_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
 
+    /** Return a previously created field using a unique identifier
+     */
+    Field& get_field(const int field_id) const
+    { return *m_field_vec.at(field_id); }
+
     //! Query if field uniquely identified by name and time state exists in repository
     bool field_exists(
         const std::string& name, const FieldState fstate = FieldState::New) const;
@@ -257,6 +262,11 @@ public:
     //! Return a reference to an integer field
     IntField& get_int_field(
         const std::string& name, const FieldState fstate = FieldState::New) const;
+
+    /** Return a reference to a previously created integer field using unique identifier
+     */
+    IntField& get_int_field(const int field_id) const
+    { return *m_int_field_vec.at(field_id); }
 
     //! Query if an integer field exists
     bool int_field_exists(
