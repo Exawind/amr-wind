@@ -20,7 +20,7 @@ public:
 
     amrex::Real strainrate(amrex::Real x, amrex::Real y, amrex::Real z) const;
 
-    amnrex::Real laplacian(amrex::Real x, amrex::Real y, amrex::Real z) const;
+    amrex::Real laplacian(amrex::Real x, amrex::Real y, amrex::Real z) const;
 
     const int m_degree;
     const int m_ncomponents;

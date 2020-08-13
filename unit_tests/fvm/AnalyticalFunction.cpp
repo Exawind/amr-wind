@@ -91,8 +91,10 @@ AnalyticalFunction::laplacian(amrex::Real x, amrex::Real y, amrex::Real z) const
 }
 
 amrex::Real AnalyticalFunction::divergence(
-    amrex::Real x, amrex::Real y, amrex::Real z, int component) const
+    amrex::Real x, amrex::Real y, amrex::Real z) const
 {
+    AMREX_ALWAYS_ASSERT(m_ncomponents == AMREX_SPACEDIM);
+
     return dphi_eval(x, y, z, 0) + dphi_eval(x, y, z, 4) +
            dphi_eval(x, y, z, 8);
 }
@@ -100,6 +102,8 @@ amrex::Real AnalyticalFunction::divergence(
 amrex::Real AnalyticalFunction::strainrate(
     amrex::Real x, amrex::Real y, amrex::Real z) const
 {
+    AMREX_ALWAYS_ASSERT(m_ncomponents == AMREX_SPACEDIM);
+
     const int ncomp = AMREX_SPACEDIM * AMREX_SPACEDIM;
     amrex::Vector<amrex::Real> gradvec(ncomp);
 
