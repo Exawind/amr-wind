@@ -1,5 +1,6 @@
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/fvm/gradient.H"
+#include "amr-wind/fvm/strainrate.H"
 #include "AnalyticalFunction.H"
 #include "aw_test_utils/iter_tools.H"
 
@@ -27,7 +28,7 @@ void initialize_velocity(
     const amrex::Real* cv_ptr = cv.data();
     const amrex::Real* cw_ptr = cw.data();
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+    amrex::ParallelFor(grow(bx,1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = amrex::min(
             amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]), probhi[0]);
         const amrex::Real y = amrex::min(
@@ -83,10 +84,8 @@ amrex::Real grad_test_impl(amr_wind::Field& vel)
                 amrex::Array4<amrex::Real const> const& gvel) -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                // fixme remove this grow -1 when all edge/corner cases are
-                // implemented
                 amrex::Loop(
-                    amrex::grow(bx, -1),
+                    bx,
                     [=, &error](int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
@@ -121,6 +120,65 @@ amrex::Real grad_test_impl(amr_wind::Field& vel)
                         error += amrex::Math::abs(
                             gvel(i, j, k, 8) - analytical_function::dphidz_eval(
                                                    pdegree, cw_ptr, x, y, z));
+
+                    });
+
+                return error;
+            });
+    }
+
+    return error_total;
+}
+
+
+amrex::Real strainrate_test_impl(amr_wind::Field& vel)
+{
+
+    const int pdegree = 2;
+    const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
+
+    amrex::Gpu::DeviceVector<amrex::Real> cu(ncoeff, 0.00123);
+    amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
+    amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
+
+    auto& geom = vel.repo().mesh().Geom();
+
+    run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
+        auto vel_arr = vel(lev).array(mfi);
+        const auto& bx = mfi.validbox();
+        initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
+    });
+
+    auto str = amr_wind::fvm::strainrate(vel);
+
+    const int nlevels = vel.repo().num_active_levels();
+    amrex::Real error_total = 0.0;
+
+    const amrex::Real* cu_ptr = cu.data();
+    const amrex::Real* cv_ptr = cv.data();
+    const amrex::Real* cw_ptr = cw.data();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& dx = geom[lev].CellSizeArray();
+
+        error_total += amrex::ReduceSum(
+            (*str)(lev), 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& str_arr) -> amrex::Real {
+                amrex::Real error = 0.0;
+
+                amrex::Loop(
+                    amrex::grow(bx, 0),
+                    [=, &error](int i, int j, int k) noexcept {
+                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                        error += amrex::Math::abs(str_arr(i,j,k) - analytical_function::strainrate(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+
                     });
 
                 return error;
@@ -152,6 +210,32 @@ TEST_F(FvmOpTest, gradient)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     auto error_total = grad_test_impl(vel);
+
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(FvmOpTest, strainrate)
+{
+
+    constexpr double tol = 1.0e-11;
+
+    populate_parameters();
+    {
+        amrex::ParmParse pp("geometry");
+        amrex::Vector<int> periodic{{0, 0, 0}};
+        pp.addarr("is_periodic", periodic);
+    }
+
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 3;
+    const int nghost = 1;
+    auto& vel = repo.declare_field("vel", ncomp, nghost);
+
+    auto error_total = strainrate_test_impl(vel);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
