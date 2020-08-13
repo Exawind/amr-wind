@@ -1,6 +1,6 @@
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/fvm/gradient.H"
-#include "aw_test_utils/iter_tools.H"
+#include "AnalyticalFunction.H"
 
 namespace amr_wind_tests {
 
