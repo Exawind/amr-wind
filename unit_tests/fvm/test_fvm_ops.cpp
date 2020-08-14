@@ -347,10 +347,7 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
         initialize_scalar(geom[lev], bx, pdegree, coeff, scalar_arr);
     });
 
-
-    auto grad_scalar = amr_wind::fvm::gradient(scalar);
-    // fixme need to extrap to walls again here?
-    auto curv_scalar = amr_wind::fvm::curvature(*grad_scalar);
+    auto curv_scalar = amr_wind::fvm::curvature(scalar);
 
     const int nlevels = scalar.repo().num_active_levels();
     amrex::Real error_total = 0.0;
@@ -370,7 +367,7 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
                 amrex::Real error = 0.0;
 
                 amrex::Loop(
-                    grow(bx,-1), //fixme this is because we don't have the correct wall treatment
+                    bx,
                     [=, &error](int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
