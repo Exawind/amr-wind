@@ -99,9 +99,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidz_eval(
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
     int degree,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffx,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffy,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffz,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
     amrex::Real x,
     amrex::Real y,
     amrex::Real z) noexcept
@@ -131,9 +131,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
     int degree,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffx,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffy,
-    const amrex::Gpu::DeviceVector<amrex::Real>& coeffz,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
     amrex::Real x,
     amrex::Real y,
     amrex::Real z) noexcept
