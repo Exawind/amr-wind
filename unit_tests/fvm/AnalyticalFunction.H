@@ -97,7 +97,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidz_eval(
     return dphidz;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
     int degree,
     const amrex::Gpu::DeviceVector<amrex::Real>& coeffx,
     const amrex::Gpu::DeviceVector<amrex::Real>& coeffy,
@@ -129,7 +129,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real laplacian(
     return lap;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
     int degree,
     const amrex::Gpu::DeviceVector<amrex::Real>& coeffx,
     const amrex::Gpu::DeviceVector<amrex::Real>& coeffy,
@@ -160,7 +160,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real divergence(
     return div;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,
@@ -187,7 +187,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
         (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz));
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
