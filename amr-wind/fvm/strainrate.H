@@ -17,7 +17,6 @@ struct StrainRate
     template <typename Stencil>
     void apply(const int lev, const amrex::MFIter& mfi) const
     {
-        const int ncomp = m_phi.num_comp();
         const auto& geom = m_phi.repo().mesh().Geom(lev);
         const auto& idx = geom.InvCellSizeArray();
         const auto& strphi = m_strphi(lev).array(mfi);
