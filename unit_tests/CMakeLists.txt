@@ -7,7 +7,6 @@ target_sources(${amr_wind_unit_test_exe_name}
 add_subdirectory(aw_test_utils)
 add_subdirectory(core)
 add_subdirectory(wind_energy)
-add_subdirectory(derive)
 add_subdirectory(utilities)
 add_subdirectory(equation_systems)
 add_subdirectory(turbulence)
