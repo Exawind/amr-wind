@@ -2,8 +2,7 @@
 
 #include "amr-wind/turbulence/LES/Smagorinsky.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
-#include "amr-wind/derive/derive_K.H"
-
+#include "amr-wind/fvm/strainrate.H"
 #include "AMReX_REAL.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_ParmParse.H"
@@ -36,7 +35,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
-    compute_strainrate(mu_turb, vel);
+    fvm::strainrate(mu_turb,vel);
 
     const int nlevels = repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {

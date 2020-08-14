@@ -1,5 +1,5 @@
 #include "amr-wind/wind_energy/ABLStats.H"
-#include "amr-wind/derive/derive_K.H"
+#include "amr-wind/fvm/gradient.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/DirectionSelector.H"
@@ -109,7 +109,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
 
     auto gradT = (this->m_sim.repo())
                      .create_scratch_field(3, m_temperature.num_grow()[0]);
-    compute_gradient(*gradT, m_temperature);
+    fvm::gradient(*gradT, m_temperature);
 
     // Only compute zi using coarsest level
 

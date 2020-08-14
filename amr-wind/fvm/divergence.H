@@ -49,7 +49,7 @@ struct Divergence
                     cp1 = Stencil::c10;
                     c = Stencil::c11;
                     cm1 = Stencil::c12;
-                    divphi_arr(i, j, k, icomp) =
+                    divphi_arr(i, j, k, icomp) +=
                         (cp1 * phi_arr(i, j + 1, k, icomp*AMREX_SPACEDIM+1) +
                          c * phi_arr(i, j, k, icomp*AMREX_SPACEDIM+1) +
                          cm1 * phi_arr(i, j - 1, k, icomp*AMREX_SPACEDIM+1)) *
@@ -59,7 +59,7 @@ struct Divergence
                     cp1 = Stencil::c20;
                     c = Stencil::c21;
                     cm1 = Stencil::c22;
-                    divphi_arr(i, j, k, icomp) =
+                    divphi_arr(i, j, k, icomp) +=
                         (cp1 * phi_arr(i, j, k + 1, icomp*AMREX_SPACEDIM+2) +
                          c * phi_arr(i, j, k, icomp*AMREX_SPACEDIM+2) +
                          cm1 * phi_arr(i, j, k - 1, icomp*AMREX_SPACEDIM+2)) *

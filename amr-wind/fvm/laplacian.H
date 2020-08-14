@@ -11,7 +11,8 @@ struct Laplacian
 {
     Laplacian(FTypeOut& lphi, const FTypeIn& phi) : m_lapphi(lphi), m_phi(phi)
     {
-        AMREX_ALWAYS_ASSERT(m_lapphi.num_comp() == m_phi.num_comp());
+        AMREX_ALWAYS_ASSERT(m_lapphi.num_comp() == 1);
+        AMREX_ALWAYS_ASSERT(m_phi.num_comp() == AMREX_SPACEDIM);
     }
 
     template <typename Stencil>
@@ -34,25 +35,25 @@ struct Laplacian
                     sp1 = Stencil::s00;
                     s = Stencil::s01;
                     sm1 = Stencil::s02;
-                    d2phidx2 = (sp1 * phi(i + 1, j, k, icomp) +
-                                s * phi(i, j, k, icomp) +
-                                sm1 * phi(i - 1, j, k, icomp)) *
+                    d2phidx2 = (sp1 * phi(i + 1, j, k, 0) +
+                                s * phi(i, j, k, 0) +
+                                sm1 * phi(i - 1, j, k, 0)) *
                                idx[0] * idx[0];
                     sp1 = Stencil::s10;
                     s = Stencil::s11;
                     sm1 = Stencil::s12;
-                    d2phidy2 = (sp1 * phi(i, j + 1, k, icomp) +
-                                s * phi(i, j, k, icomp) +
-                                sm1 * phi(i, j - 1, k, icomp)) *
+                    d2phidy2 = (sp1 * phi(i, j + 1, k, 1) +
+                                s * phi(i, j, k, 1) +
+                                sm1 * phi(i, j - 1, k, 1)) *
                                idx[1] * idx[1];
                     sp1 = Stencil::s20;
                     s = Stencil::s21;
                     sm1 = Stencil::s22;
-                    d2phidz2 = (sp1 * phi(i, j, k + 1, icomp) +
-                                s * phi(i, j, k, icomp) +
-                                sm1 * phi(i, j, k - 1, icomp)) *
+                    d2phidz2 = (sp1 * phi(i, j, k + 1, 2) +
+                                s * phi(i, j, k, 2) +
+                                sm1 * phi(i, j, k - 1, 2)) *
                                idx[2] * idx[2];
-                    lapphi(i, j, k, icomp) = d2phidx2 + d2phidy2 + d2phidz2;
+                    lapphi(i, j, k) = d2phidx2 + d2phidy2 + d2phidz2;
                 }
             });
     }
@@ -60,6 +61,22 @@ struct Laplacian
     FTypeOut& m_lapphi;
     const FTypeIn& m_phi;
 };
+
+template <typename FTypeIn, typename FTypeOut>
+inline void laplacian(FTypeOut& lapphi, const FTypeIn& phi)
+{
+    Laplacian<FTypeIn, FTypeOut> lap(lapphi, phi);
+    impl::apply(lap, phi);
+}
+
+template <typename FType>
+inline std::unique_ptr<ScratchField> laplacian(const FType& phi)
+{
+    const std::string gname = phi.name() + "_laplacian";
+    auto lapphi = phi.repo().create_scratch_field(gname, 1);
+    laplacian(*lapphi, phi);
+    return lapphi;
+}
 
 } // namespace fvm
 } // namespace amr_wind
