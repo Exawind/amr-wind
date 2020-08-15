@@ -39,7 +39,7 @@ struct FieldRegOp<ICNS, Scheme>
         auto& rho = repo.declare_cc_field(
             "density", 1, Scheme::nghost_state, Scheme::num_states);
         auto& grad_p = repo.declare_cc_field("gp", ICNS::ndim, 0, 1);
-        auto& pressure = repo.declare_nd_field("p", 1, 0, 1);
+        auto& pressure = repo.declare_nd_field("p", 1, Scheme::nghost_state, 1);
         repo.declare_face_normal_field(
             {"u_mac", "v_mac", "w_mac"}, 1, Scheme::nghost_mac, 1);
 
