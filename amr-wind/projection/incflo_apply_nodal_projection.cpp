@@ -2,6 +2,7 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/core/field_ops.H"
 
 using namespace amrex;
 
@@ -192,8 +193,17 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
         }
     }
 
+    auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
+    if (incremental) {
+        for (int lev=0; lev <= finestLevel(); ++lev) {
+            (*phif)(lev).setVal(0.0);
+        }
+    } else {
+        amr_wind::field_ops::copy(*phif, pressure, 0, 0, 1, 1);
+    }
+
     nodal_projector->setVerbose(options.verbose);
-    nodal_projector->project(options.rel_tol, options.abs_tol);
+    nodal_projector->project(phif->vec_ptrs(), options.rel_tol, options.abs_tol);
     amr_wind::io::print_mlmg_info("Nodal_projection", nodal_projector->getMLMG());
 
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
