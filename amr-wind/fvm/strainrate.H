@@ -6,6 +6,9 @@
 namespace amr_wind {
 namespace fvm {
 
+/** Strain rate operator
+ *  \ingroup fvm
+ */
 template <typename FTypeIn, typename FTypeOut>
 struct StrainRate
 {
@@ -84,13 +87,25 @@ struct StrainRate
     const FTypeIn& m_phi;
 };
 
+/** Compute the magnitude of strain rate
+ *  \ingroup fvm
+ *
+ *  \param strphi [out] Field where the strain rate magnitude is populated
+ *  \param phi [in] The velocity vector field
+ */
 template <typename FTypeIn, typename FTypeOut>
 inline void strainrate(FTypeOut& strphi, const FTypeIn& phi)
 {
+    BL_PROFILE("amr-wind::fvm::strainrate");
     StrainRate<FTypeIn, FTypeOut> str(strphi, phi);
     impl::apply(str, phi);
 }
 
+/** Compute the magnitude of strain rate return as a ScratchField
+ *  \ingroup fvm
+ *
+ *  \param phi [in] The velocity vector field
+ */
 template <typename FType>
 inline std::unique_ptr<ScratchField> strainrate(const FType& phi)
 {

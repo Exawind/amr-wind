@@ -6,6 +6,9 @@
 namespace amr_wind {
 namespace fvm {
 
+/** Laplacian operator
+ *  \ingroup fvm
+ */
 template <typename FTypeIn, typename FTypeOut>
 struct Laplacian
 {
@@ -62,13 +65,25 @@ struct Laplacian
     const FTypeIn& m_phi;
 };
 
+/** Compute the laplacian of a given field
+ *  \ingroup fvm
+ *
+ *  \param lapphi [inout] Field where the laplacian term is populated
+ *  \param phi [in] Field whose gradient is computed
+ */
 template <typename FTypeIn, typename FTypeOut>
 inline void laplacian(FTypeOut& lapphi, const FTypeIn& phi)
 {
+    BL_PROFILE("amr-wind::fvm::laplacian");
     Laplacian<FTypeIn, FTypeOut> lap(lapphi, phi);
     impl::apply(lap, phi);
 }
 
+/** Compute the laplacian of a given field and return as ScratchField
+ *  \ingroup fvm
+ *
+ *  \param phi [in] Field whose gradient is computed
+ */
 template <typename FType>
 inline std::unique_ptr<ScratchField> laplacian(const FType& phi)
 {

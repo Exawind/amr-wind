@@ -9,9 +9,16 @@
 namespace amr_wind {
 namespace fvm {
 
+/** Gradient operator
+ *  \ingroup fvm
+ */
 template<typename FTypeIn, typename FTypeOut>
 struct Gradient
 {
+    /**
+     *  \param gradphi The gradient field \f$\nabla \mathbf{\phi}\f$
+     *  \param phi The input file \f$\phi\f$
+     */
     Gradient(FTypeOut& gradphi, const FTypeIn& phi)
         : m_gradphi(gradphi), m_phi(phi)
     {
@@ -72,13 +79,25 @@ struct Gradient
     const FTypeIn& m_phi;
 };
 
+/** Compute the gradient of a given field
+ *  \ingroup fvm
+ *
+ *  \param gradphi [inout] Field where the gradient term is populated
+ *  \param phi [in] Field whose gradient is computed
+ */
 template<typename FTypeIn, typename FTypeOut>
 inline void gradient(FTypeOut& gradphi, const FTypeIn& phi)
 {
+    BL_PROFILE("amr-wind::fvm::gradient");
     Gradient<FTypeIn, FTypeOut> grad(gradphi, phi);
     impl::apply(grad, phi);
 }
 
+/** Compute the gradient of a given field and return it as ScratchField
+ *  \ingroup fvm
+ *
+ *  \param phi [in] Field whose gradient is computed
+ */
 template<typename FType>
 inline std::unique_ptr<ScratchField> gradient(const FType& phi)
 {

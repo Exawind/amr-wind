@@ -6,6 +6,9 @@
 namespace amr_wind {
 namespace fvm {
 
+/** Curvature operator
+ *  \ingroup fvm
+ */
 template <typename FTypeIn, typename FTypeOut>
 struct Curvature
 {
@@ -86,13 +89,20 @@ struct Curvature
     const FTypeIn& m_phi;
 };
 
+/** Compute curvature
+ *  \ingroup fvm
+ */
 template <typename FTypeIn, typename FTypeOut>
 inline void curvature(FTypeOut& curphi, const FTypeIn& phi)
 {
+    BL_PROFILE("amr-wind::fvm::curvature");
     Curvature<FTypeIn, FTypeOut> cur(curphi, phi);
     impl::apply(cur, phi);
 }
 
+/** Compute curvature
+ *  \ingroup fvm
+ */
 template <typename FType>
 inline std::unique_ptr<ScratchField> curvature(const FType& phi)
 {

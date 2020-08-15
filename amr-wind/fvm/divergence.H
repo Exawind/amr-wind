@@ -9,6 +9,9 @@
 namespace amr_wind {
 namespace fvm {
 
+/** Divergence operator
+ *  \ingroup fvm
+ */
 template<typename FTypeIn, typename FTypeOut>
 struct Divergence
 {
@@ -72,13 +75,20 @@ struct Divergence
     const FTypeIn& m_phi;
 };
 
+/** Compute the divergence of a vector field
+ *  \ingroup fvm
+ */
 template<typename FTypeIn, typename FTypeOut>
 inline void divergence(FTypeOut& divphi, const FTypeIn& phi)
 {
+    BL_PROFILE("amr-wind::fvm::divergence");
     Divergence<FTypeIn, FTypeOut> grad(divphi, phi);
     impl::apply(grad, phi);
 }
 
+/** Compute the divergence of a vector field
+ *  \ingroup fvm
+ */
 template<typename FType>
 inline std::unique_ptr<ScratchField> divergence(const FType& phi)
 {

@@ -15,6 +15,15 @@
  *  | j | c10 | c11 | c12 |
  *  | k | c20 | c21 | c22 |
  *  ```
+ *
+ *  Coefficients for the second derivative
+ *  ```
+ *  |   | +1  | 0   | -1  |
+ *  |---+-----+-----+-----|
+ *  | i | s00 | s01 | s02 |
+ *  | j | s10 | s11 | s12 |
+ *  | k | s20 | s21 | s22 |
+ *  ```
  */
 
 #include "AMReX_REAL.H"
@@ -27,6 +36,19 @@ namespace fvm {
 namespace stencil {
 
 namespace impl {
+
+/** Return a layer of cells adjacent to a non-periodic lower boundary
+ *
+ *  Given a box, this function returns a new box that contains the first layer
+ *  of cells immediately adjacent to the lower boundary in the given direction
+ *  (`idir`).
+ *
+ *  \param [in] bx The box whose layers are being considered
+ *  \param [in] geom The amrex::Geometry object
+ *  \param [in] Direction in which the first cell adjacent to the boundary is desired
+ *
+ *  \return A box with a single layer of cells adjacent to the boundary or empty
+ */
 inline amrex::Box
 box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
@@ -41,6 +63,18 @@ box_lo(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
     return amrex::Box(low, hi);
 }
 
+/** Return a layer of cells adjacent to a non-periodic upper boundary
+ *
+ *  Given a box, this function returns a new box that contains the first layer
+ *  of cells immediately adjacent to the lower boundary in the given direction
+ *  (`idir`).
+ *
+ *  \param [in] bx The box whose layers are being considered
+ *  \param [in] geom The amrex::Geometry object
+ *  \param [in] Direction in which the first cell adjacent to the boundary is desired
+ *
+ *  \return A box with a single layer of cells adjacent to the boundary or empty
+ */
 inline amrex::Box
 box_hi(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 {
@@ -56,6 +90,8 @@ box_hi(const amrex::Box& bx, const amrex::Geometry& geom, const int idir)
 }
 } // namespace impl
 
+/** Second-order FVM stencils for interior cells
+ */
 struct StencilInterior
 {
     // First derivatives
