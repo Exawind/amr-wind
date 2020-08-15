@@ -62,8 +62,8 @@ void TiogaInterface::post_init_actions()
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
-    m_mask_cell.setVal(0);
-    m_mask_node.setVal(0);
+    m_mask_cell.setVal(1);
+    m_mask_node.setVal(1);
 }
 
 void TiogaInterface::post_regrid_actions()
@@ -71,8 +71,8 @@ void TiogaInterface::post_regrid_actions()
     amr_to_tioga_mesh();
 
     // Initialize masking so that all cells are active in solvers
-    m_mask_cell.setVal(0);
-    m_mask_node.setVal(0);
+    m_mask_cell.setVal(1);
+    m_mask_node.setVal(1);
 }
 
 void TiogaInterface::pre_overset_conn_work()
