@@ -571,6 +571,37 @@ This section is for setting atmospheric boundary layer parameters.
    Variance for the Gaussian random number generator
 
 	
+.. input_param:: ABL.bndry_file
+
+   **type:** String, optional, default = ""
+
+   NetCDF-4 file name for ABL inflow
+
+.. input_param:: ABL.bndry_io_mode
+
+   **type:** Int, optional, default = -1
+
+   IO mode (0=output, 1=input)
+
+.. input_param:: ABL.bndry_planes
+
+   **type:** String, optional, default = ""
+
+   IO planes for ABL inflow
+
+.. input_param:: ABL.bndry_output_start_time
+
+   **type:** Real, optional, default = 0.0
+
+   Time at which to start ABL inflow output
+
+.. input_param:: ABL.bndry_var_names
+
+   **type:** String, optional, default = ""
+
+   Variables for IO for ABL inflow
+
+
 Section: ``Momentum Sources``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
