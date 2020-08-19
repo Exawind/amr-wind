@@ -10,6 +10,8 @@
 
 namespace {
 
+constexpr amrex::Real small_vel = 1e-10;
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 amrex::Real vanLeer(const amrex::Real a, const amrex::Real b, const amrex::Real c)
 {
@@ -276,7 +278,6 @@ void Godunov_ppm_pred_x(const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
     constexpr amrex::Real sixth = 1.0/6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -345,7 +346,6 @@ void Godunov_ppm_pred_y(const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
     constexpr amrex::Real sixth = 1.0/6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -414,7 +414,6 @@ void Godunov_ppm_pred_z(const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
     constexpr amrex::Real sixth = 1.0/6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -488,7 +487,6 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
     {
     using namespace amrex;
 
-    constexpr Real small_vel = 1e-10;
     constexpr Real sixth = 1.0/6.0;
 
     amrex::Real sedge1, sedge2, sp, sm;
@@ -556,7 +554,6 @@ void Godunov_ppm_fpu_y (const int i, const int j, const int k, const int n,
     {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
     constexpr amrex::Real sixth = 1.0/6.0;
 
     Real sedge1, sedge2, sp, sm;
@@ -624,7 +621,6 @@ void Godunov_ppm_fpu_z (const int i, const int j, const int k, const int n,
     {
     using namespace amrex;
 
-    constexpr amrex::Real small_vel = 1e-10;
     constexpr amrex::Real sixth = 1.0/6.0;
 
     Real sedge1, sedge2, sp, sm;
@@ -690,7 +686,6 @@ void Godunov_trans_xbc(const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
-    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low X
     if (i <= domlo)
@@ -750,8 +745,6 @@ void Godunov_trans_ybc(const int i, const int j, const int k, const int n,
 {
     using namespace amrex;
 
-    // constexpr amrex::Real small_vel = 1e-10;
-
     // Low Y 
     if (j <= domlo)
     {
@@ -809,8 +802,6 @@ void Godunov_trans_zbc(const int i, const int j, const int k, const int n,
                        const int domlo, const int domhi)
 {
     using namespace amrex;
-
-    // constexpr amrex::Real small_vel = 1e-10;
 
     // Low Z
     if (k <= domlo)
