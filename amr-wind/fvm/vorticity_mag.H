@@ -1,18 +1,18 @@
-#ifndef VORTICITY_H
-#define VORTICITY_H
+#ifndef VORTICITYMAG_H
+#define VORTICITYMAG_H
 
 #include "amr-wind/fvm/fvm_utils.H"
 
 namespace amr_wind {
 namespace fvm {
 
-/** Vorticity operator
+/** VorticityMag operator
  *  \ingroup fvm
  */
 template <typename FTypeIn, typename FTypeOut>
-struct Vorticity
+struct VorticityMag
 {
-    Vorticity(FTypeOut& vortphi, const FTypeIn& phi) : m_vortphi(vortphi), m_phi(phi)
+    VorticityMag(FTypeOut& vortmagphi, const FTypeIn& phi) : m_vortmagphi(vortmagphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -22,7 +22,7 @@ struct Vorticity
     {
         const auto& geom = m_phi.repo().mesh().Geom(lev);
         const auto& idx = geom.InvCellSizeArray();
-        const auto& vortphi = m_vortphi(lev).array(mfi);
+        const auto& vortmagphi = m_vortmagphi(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
 
         const auto& bx_in = mfi.tilebox();
@@ -31,14 +31,11 @@ struct Vorticity
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real cp1, c, cm1, ux, uy, uz, vx, vy, vz, wx, wy, wz;
+                amrex::Real cp1, c, cm1, uy, uz, vx, vz, wx, wy;
                 cp1 = Stencil::c00;
                 c = Stencil::c01;
                 cm1 = Stencil::c02;
 
-                ux = (cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0) +
-                      cm1 * phi(i - 1, j, k, 0)) *
-                     idx[0];
                 vx = (cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1) +
                       cm1 * phi(i - 1, j, k, 1)) *
                      idx[0];
@@ -52,9 +49,6 @@ struct Vorticity
 
                 uy = (cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0) +
                       cm1 * phi(i, j - 1, k, 0)) *
-                     idx[1];
-                vy = (cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1) +
-                      cm1 * phi(i, j - 1, k, 1)) *
                      idx[1];
                 wy = (cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2) +
                       cm1 * phi(i, j - 1, k, 2)) *
@@ -70,32 +64,29 @@ struct Vorticity
                 vz = (cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1) +
                       cm1 * phi(i, j, k - 1, 1)) *
                      idx[2];
-                wz = (cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2) +
-                      cm1 * phi(i, j, k - 1, 2)) *
-                     idx[2];
 
-                vortphi(i, j, k) = sqrt(std::pow(uy - vx, 2)
+                vortmagphi(i, j, k) = sqrt(std::pow(uy - vx, 2)
                                        + std::pow(vz - wy, 2)
                                        + std::pow(wx - uz, 2));
             });
     }
 
-    FTypeOut& m_vortphi;
+    FTypeOut& m_vortmagphi;
     const FTypeIn& m_phi;
 };
 
 /** Compute the magnitude of vorticity
  *  \ingroup fvm
  *
- *  \param vortphi [out] Field where the vorticity magnitude is populated
+ *  \param vortmagphi [out] Field where the vorticity magnitude is populated
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void vorticity(FTypeOut& vortphi, const FTypeIn& phi)
+inline void vorticity_mag(FTypeOut& vortmagphi, const FTypeIn& phi)
 {
-    BL_PROFILE("amr-wind::fvm::vorticity");
-    Vorticity<FTypeIn, FTypeOut> vort(vortphi, phi);
-    impl::apply(vort, phi);
+    BL_PROFILE("amr-wind::fvm::vorticity_mag");
+    VorticityMag<FTypeIn, FTypeOut> vortmag(vortmagphi, phi);
+    impl::apply(vortmag, phi);
 }
 
 /** Compute the magnitude of vorticity return as a ScratchField
@@ -104,15 +95,15 @@ inline void vorticity(FTypeOut& vortphi, const FTypeIn& phi)
  *  \param phi [in] The velocity vector field
  */
 template <typename FType>
-inline std::unique_ptr<ScratchField> vorticity(const FType& phi)
+inline std::unique_ptr<ScratchField> vorticity_mag(const FType& phi)
 {
-    const std::string gname = phi.name() + "_vorticity";
-    auto vortphi = phi.repo().create_scratch_field(gname, 1);
-    vorticity(*vortphi, phi);
-    return vortphi;
+    const std::string gname = phi.name() + "_vorticity_mag";
+    auto vortmagphi = phi.repo().create_scratch_field(gname, 1);
+    vorticity_mag(*vortmagphi, phi);
+    return vortmagphi;
 }
 
 } // namespace fvm
 } // namespace amr_wind
 
-#endif /* VORTICITY_H */
+#endif /* VORTICITYMAG_H */

@@ -187,7 +187,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real strainrate(
         (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz));
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
     int degree,
     const amrex::Real* coeffx,
     const amrex::Real* coeffy,

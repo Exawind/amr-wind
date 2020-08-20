@@ -1,7 +1,7 @@
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/fvm/strainrate.H"
-#include "amr-wind/fvm/vorticity.H"
+#include "amr-wind/fvm/vorticity_mag.H"
 #include "amr-wind/fvm/laplacian.H"
 #include "amr-wind/fvm/divergence.H"
 #include "amr-wind/fvm/curvature.H"
@@ -221,7 +221,7 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
     return error_total;
 }
 
-amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
+amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
 {
 
     const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
@@ -238,7 +238,7 @@ amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
         initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
     });
 
-    auto str = amr_wind::fvm::vorticity(vel);
+    auto str = amr_wind::fvm::vorticity_mag(vel);
 
     const int nlevels = vel.repo().num_active_levels();
     amrex::Real error_total = 0.0;
@@ -266,7 +266,7 @@ amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(str_arr(i,j,k) - analytical_function::vorticity(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                        error += amrex::Math::abs(str_arr(i,j,k) - analytical_function::vorticity_mag(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
 
                     });
 
@@ -497,7 +497,7 @@ TEST_F(FvmOpTest, strainrate)
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 
-TEST_F(FvmOpTest, vorticity)
+TEST_F(FvmOpTest, vorticity_mag)
 {
 
     constexpr double tol = 1.0e-11;
@@ -517,7 +517,7 @@ TEST_F(FvmOpTest, vorticity)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     const int pdegree=2;
-    auto error_total = vorticity_test_impl(vel, pdegree);
+    auto error_total = vorticity_mag_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
