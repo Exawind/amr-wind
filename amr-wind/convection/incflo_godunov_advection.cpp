@@ -65,8 +65,6 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
     p +=         zlo.size();
     Array4<Real> zhi = makeArray4(p, zebox, ncomp);
     p +=         zhi.size();
-    Array4<Real> divu = makeArray4(p, bxg1, 1);
-    p +=         divu.size();
     Array4<Real> xyzlo = makeArray4(p, bxg1, ncomp);
     p +=         xyzlo.size();
     Array4<Real> xyzhi = makeArray4(p, bxg1, ncomp);
@@ -109,10 +107,6 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         });
     }
 
-    amrex::ParallelFor(Box(divu), [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
-        divu(i,j,k) = 0.0;
-    });
-
     amrex::ParallelFor(
         xebox, ncomp, [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
@@ -120,11 +114,12 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
 
             Real uad = umac(i,j,k);
             Real fux = (amrex::Math::abs(uad) < small_vel)? 0. : 1.;
-            bool uval = uad >= 0.; 
-            Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i-1,j,k,n)*divu(i-1,j,k) : 0.;
-            Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i  ,j,k,n)*divu(i  ,j,k) : 0.;
-            Real lo = Ipx(i-1,j,k,n) + cons1; 
-            Real hi = Imx(i  ,j,k,n) + cons2;
+            bool uval = uad >= 0.;
+            // divu = 0
+            //Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i-1,j,k,n)*divu(i-1,j,k) : 0.;
+            //Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i  ,j,k,n)*divu(i  ,j,k) : 0.;
+            Real lo = Ipx(i-1,j,k,n);// + cons1;
+            Real hi = Imx(i  ,j,k,n);// + cons2;
             if (fq) {
                 lo += 0.5*l_dt*fq(i-1,j,k,n);
                 hi += 0.5*l_dt*fq(i  ,j,k,n);
@@ -146,10 +141,11 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
             Real vad = vmac(i,j,k);
             Real fuy = (amrex::Math::abs(vad) < small_vel)? 0. : 1.;
             bool vval = vad >= 0.;
-            Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k) : 0.;
-            Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j  ,k,n)*divu(i,j  ,k) : 0.;
-            Real lo = Ipy(i,j-1,k,n) + cons1;
-            Real hi = Imy(i,j  ,k,n) + cons2;
+            // divu = 0
+            //Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k) : 0.;
+            //Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j  ,k,n)*divu(i,j  ,k) : 0.;
+            Real lo = Ipy(i,j-1,k,n);// + cons1;
+            Real hi = Imy(i,j  ,k,n);// + cons2;
             if (fq) {
                 lo += 0.5*l_dt*fq(i,j-1,k,n);
                 hi += 0.5*l_dt*fq(i,j  ,k,n);
@@ -172,10 +168,11 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
             Real fuz = (amrex::Math::abs(wad) < small_vel) ? 0. : 1.;
             bool wval = wad >= 0.; 
             auto bc = pbc[n];
-            Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k-1,n)*divu(i,j,k-1) : 0.;
-            Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k  ,n)*divu(i,j,k  ) : 0.;
-            Real lo = Ipz(i,j,k-1,n) + cons1;
-            Real hi = Imz(i,j,k  ,n) + cons2;
+            // divu = 0
+            //Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k-1,n)*divu(i,j,k-1) : 0.;
+            //Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j,k  ,n)*divu(i,j,k  ) : 0.;
+            Real lo = Ipz(i,j,k-1,n);// + cons1;
+            Real hi = Imz(i,j,k  ,n);// + cons2;
             if (fq) {
                 lo += 0.5*l_dt*fq(i,j,k-1,n);
                 hi += 0.5*l_dt*fq(i,j,k  ,n);
@@ -210,7 +207,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_zy(l_zylo, l_zyhi,
                                  i, j, k, n, l_dt, dy, iconserv[n],
                                  zlo(i,j,k,n), zhi(i,j,k,n),
-                                 q, divu, vmac, yedge);
+                                 q, vmac, yedge);
 
         Real wad = wmac(i,j,k);
         Godunov_trans_zbc(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
@@ -229,7 +226,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_yz(l_yzlo, l_yzhi,
                                  i, j, k, n, l_dt, dz, iconserv[n],
                                  ylo(i,j,k,n), yhi(i,j,k,n),
-                                 q, divu, wmac, zedge);
+                                 q, wmac, zedge);
 
         Real vad = vmac(i,j,k);
         Godunov_trans_ybc(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
@@ -297,7 +294,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_xz(l_xzlo, l_xzhi,
                                  i, j, k, n, l_dt, dz, iconserv[n],
                                  xlo(i,j,k,n),  xhi(i,j,k,n),
-                                 q, divu, wmac, zedge);
+                                 q, wmac, zedge);
 
         Real uad = umac(i,j,k);
         Godunov_trans_xbc(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
@@ -316,7 +313,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_zx(l_zxlo, l_zxhi,
                                  i, j, k, n, l_dt, dx, iconserv[n],
                                  zlo(i,j,k,n), zhi(i,j,k,n),
-                                 q, divu, umac, xedge);
+                                 q, umac, xedge);
 
         Real wad = wmac(i,j,k);
         Godunov_trans_zbc(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
@@ -386,7 +383,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_xy(l_xylo, l_xyhi,
                                  i, j, k, n, l_dt, dy, iconserv[n],
                                  xlo(i,j,k,n), xhi(i,j,k,n),
-                                 q, divu, vmac, yedge);
+                                 q, vmac, yedge);
 
         Real uad = umac(i,j,k);
         Godunov_trans_xbc(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
@@ -405,7 +402,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_yx(l_yxlo, l_yxhi,
                                  i, j, k, n, l_dt, dx, iconserv[n],
                                  ylo(i,j,k,n), yhi(i,j,k,n),
-                                 q, divu, umac, xedge);
+                                 q, umac, xedge);
 
         Real vad = vmac(i,j,k);
         Godunov_trans_ybc(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
