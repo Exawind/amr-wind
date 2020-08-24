@@ -238,11 +238,6 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
     Array4<Real> yedge = Imy;
     Array4<Real> zedge = Imz;
 
-    Array4<Real> divu = makeArray4(Ipx.dataPtr(), grow(bx,1), 1);
-    amrex::ParallelFor(Box(divu), [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
-        divu(i,j,k) = 0.0;
-    });
-
     // We can reuse the space in Ipy and Ipz.
 
     //
@@ -264,7 +259,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_zy(l_zylo, l_zyhi,
                                  i, j, k, n, l_dt, dy, false,
                                  zlo(i,j,k,n), zhi(i,j,k,n),
-                                 q, divu, v_ad, yedge);
+                                 q, v_ad, yedge);
 
         Real wad = w_ad(i,j,k);
         Godunov_trans_zbc(i, j, k, n, q, l_zylo, l_zyhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
@@ -283,7 +278,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_yz(l_yzlo, l_yzhi,
                                  i, j, k, n, l_dt, dz, false,
                                  ylo(i,j,k,n), yhi(i,j,k,n),
-                                 q, divu, w_ad, zedge);
+                                 q, w_ad, zedge);
 
         Real vad = v_ad(i,j,k);
         Godunov_trans_ybc(i, j, k, n, q, l_yzlo, l_yzhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);
@@ -342,7 +337,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_xz(l_xzlo, l_xzhi,
                                  i, j, k, n, l_dt, dz, false,
                                  xlo(i,j,k,n),  xhi(i,j,k,n),
-                                 q, divu, w_ad, zedge);
+                                 q, w_ad, zedge);
 
         Real uad = u_ad(i,j,k);
         Godunov_trans_xbc(i, j, k, n, q, l_xzlo, l_xzhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
@@ -361,7 +356,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_zx(l_zxlo, l_zxhi,
                                  i, j, k, n, l_dt, dx, false,
                                  zlo(i,j,k,n), zhi(i,j,k,n),
-                                 q, divu, u_ad, xedge);
+                                 q, u_ad, xedge);
 
         Real wad = w_ad(i,j,k);
         Godunov_trans_zbc(i, j, k, n, q, l_zxlo, l_zxhi, wad, bc.lo(2), bc.hi(2), dlo.z, dhi.z);
@@ -420,7 +415,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_xy(l_xylo, l_xyhi,
                                  i, j, k, n, l_dt, dy, false,
                                  xlo(i,j,k,n), xhi(i,j,k,n),
-                                 q, divu, v_ad, yedge);
+                                 q, v_ad, yedge);
 
         Real uad = u_ad(i,j,k);
         Godunov_trans_xbc(i, j, k, n, q, l_xylo, l_xyhi, uad, bc.lo(0), bc.hi(0), dlo.x, dhi.x);
@@ -443,7 +438,7 @@ void godunov::predict_godunov (int lev, Box const& bx, int ncomp,
         Godunov_corner_couple_yx(l_yxlo, l_yxhi,
                                  i, j, k, n, l_dt, dx, false,
                                  ylo(i,j,k,n), yhi(i,j,k,n),
-                                 q, divu, u_ad, xedge);
+                                 q, u_ad, xedge);
 
         Real vad = v_ad(i,j,k);
         Godunov_trans_ybc(i, j, k, n, q, l_yxlo, l_yxhi, vad, bc.lo(1), bc.hi(1), dlo.y, dhi.y);

@@ -251,7 +251,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
                 amrex::FArrayBox tmpfab(
-                    amrex::grow(bx, 1), ICNS::ndim * 14 + 1);
+                    amrex::grow(bx, 1), ICNS::ndim * 14);
 
                 godunov::compute_advection(
                     lev, bx, ICNS::ndim, conv_term(lev).array(mfi),

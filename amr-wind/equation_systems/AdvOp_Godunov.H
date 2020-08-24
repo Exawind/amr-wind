@@ -80,7 +80,7 @@ struct AdvectionOp<
                         });
                 }
 
-                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14 + 1);
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
                 godunov::compute_advection(lev, bx, PDE::ndim,
                                            conv_term(lev).array(mfi),
