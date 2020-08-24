@@ -34,6 +34,7 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 class ABLForcing;
+class ABLMeanBoussinesq;
 }
 }
 
@@ -78,6 +79,11 @@ public:
         m_abl_forcing = forcing;
     }
 
+    void register_mean_boussinesq_term(pde::icns::ABLMeanBoussinesq* term) const
+    {
+        m_abl_mean_bous = term;
+    }
+
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
 
     //! Return the ABL statistics calculator
@@ -106,6 +112,7 @@ private:
     //! ABL integrated statistics object
     std::unique_ptr<ABLStats> m_stats;
 
+    mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 };
 
 }

@@ -1,6 +1,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldUtils.H"
+#include "amr-wind/wind_energy/ABL.H"
 
 #include "AMReX_ParmParse.H"
 
@@ -19,6 +20,9 @@ namespace icns {
 ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
     : m_mesh(sim.mesh())
 {
+    const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
+    abl.register_mean_boussinesq_term(this);
+
     amrex::ParmParse pp_boussinesq_buoyancy("BoussinesqBuoyancy");
     pp_boussinesq_buoyancy.get("reference_temperature", m_ref_theta);
 
@@ -31,6 +35,8 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
     // FIXME: gravity in `incflo` namespace
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
+
+    mean_temperature_init(abl.abl_statistics().temperature_plane_stats());
 }
 
 ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
@@ -49,22 +55,60 @@ void ABLMeanBoussinesq::operator()(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{{
         m_gravity[0], m_gravity[1], m_gravity[2]}};
 
+    // Mean temperature profile used to compute background forcing term
+    //
+    // Assumes that the temperature profile is at the cell-centers of the level
+    // 0 grid. For finer meshes, it will extrapolate beyond the Level0
+    // cell-centers for the lo/hi cells.
+    //
+    const int idir = m_axis;
+    const int nh_max = m_theta_ht.size() - 2;
+    const int lp1 = lev + 1;
+    const amrex::Real* theights = m_theta_ht.data();
+    const amrex::Real* tvals = m_theta_vals.data();
+
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        amrex::Real temp = 308.75;
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-        if (z > 750.0) {
-            temp = 308.0 + 0.003 * (z - 750.0);
-        } else if (z > 650.0) {
-            temp = 300.0 + 0.08 * (z - 650.0);
-        } else {
-            temp = 300.0;
-        }
+        amrex::Real temp = T0;
+        amrex::IntVect iv(i, j, k);
+        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+
+        const int il = amrex::min(k / lp1, nh_max);
+        const int ir = il + 1;
+        temp = tvals[il] +
+            ((tvals[ir] - tvals[il]) / (theights[ir] - theights[il])) *
+            (ht - theights[il]);
 
         const amrex::Real fac = beta * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;
         src_term(i, j, k, 1) += gravity[1] * fac;
         src_term(i, j, k, 2) += gravity[2] * fac;
     });
+}
+
+void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
+{
+    m_axis = tavg.axis();
+
+    // The implementation depends the assumption that the ABL statistics class
+    // computes statistics at the cell-centeres only on level 0. If this
+    // assumption changes in future, the implementation will break... so put in
+    // a check here to catch this.
+    AMREX_ALWAYS_ASSERT(
+        m_mesh.Geom(0).Domain().length(m_axis) ==
+        static_cast<int>(tavg.line_centroids().size()));
+    m_theta_ht.resize(tavg.line_centroids().size());
+    m_theta_vals.resize(tavg.line_average().size());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tavg.line_centroids().begin(),
+        tavg.line_centroids().end(), m_theta_ht.begin());
+    mean_temperature_update(tavg);
+}
+
+void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
+{
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tavg.line_average().begin(),
+        tavg.line_average().end(), m_theta_vals.begin());
 }
 
 } // namespace icns
