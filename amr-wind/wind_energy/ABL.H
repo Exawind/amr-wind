@@ -80,6 +80,9 @@ public:
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
 
+    //! Return the ABL statistics calculator
+    const ABLStats& abl_statistics() const { return *m_stats; }
+
 private:
     const CFDSim& m_sim;
 
