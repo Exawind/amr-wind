@@ -91,8 +91,6 @@ private:
 
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
-    int m_direction{2}; ///< Direction normal to wall
-    bool m_use_fch{true}; ///< Use first cell height?
     int m_z_sample_index;
     amrex::Array<amrex::Real, 2> m_coeff_interp{{0.0, 0.0}};
 
@@ -106,7 +104,6 @@ private:
 
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox  m_store_xy_vel_temp;
-    int m_z_sample_index;
 
     bool m_tempflux;
     amrex::Real m_surf_temp_flux;
