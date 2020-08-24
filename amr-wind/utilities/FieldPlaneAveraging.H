@@ -72,9 +72,9 @@ public:
     int ncell_line() const { return m_ncell_line; };
     int last_updated_index() const { return m_last_updated_index; };
 
-    const amrex::Vector<amrex::Real>& line_average() { return m_line_average; };
+    const amrex::Vector<amrex::Real>& line_average() const { return m_line_average; };
     void line_average(int comp, amrex::Vector<amrex::Real> & l_vec);   
-    const amrex::Vector<amrex::Real>& line_centroids()
+    const amrex::Vector<amrex::Real>& line_centroids() const
     {
         return m_line_xcentroid;
     };
