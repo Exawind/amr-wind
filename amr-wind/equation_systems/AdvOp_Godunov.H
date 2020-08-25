@@ -31,7 +31,7 @@ struct AdvectionOp<
     , w_mac(fields_in.repo.get_field("w_mac"))
     {
         amrex::ParmParse pp("incflo");
-        pp.query("godunov_ppm", godunov_ppm);
+        pp.query("use_ppm", godunov_ppm);
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
