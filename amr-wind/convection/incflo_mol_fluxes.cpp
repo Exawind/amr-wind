@@ -177,9 +177,9 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
                 qs = q(i,j,domain_khi+1,n);
             } else {
                 Real qpls = q(i,j,k,n) - 0.5 * incflo_zslope_extdir
-                    (i,j,k,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                    (i,j,k,n,q, extdir_or_ho_klo, extdir_or_ho_khi, domain_klo, domain_khi);
                 Real qmns = q(i,j,k-1,n) + 0.5 * incflo_zslope_extdir(
-                    i,j,k-1,n,q, extdir_klo, extdir_khi, domain_klo, domain_khi);
+                    i,j,k-1,n,q, extdir_or_ho_klo, extdir_or_ho_khi, domain_klo, domain_khi);
                 if (wmac(i,j,k) > small_vel) {
                     qs = qmns;
                 } else if (wmac(i,j,k) < -small_vel) {
