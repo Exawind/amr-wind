@@ -51,7 +51,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
     Box const& zbx = amrex::surroundingNodes(bx,2);
 
     // At an ext_dir boundary, the boundary value is on the face, not cell center.
-    auto extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::x));
+    auto extdir_lohi = amr_wind::utils::has_extdir_or_ho(h_bcrec, ncomp, static_cast<int>(Direction::x));
     bool has_extdir_lo = extdir_lohi.first;
     bool has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_ilo >= xbx.smallEnd(0)-1) or
@@ -60,18 +60,20 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         amrex::ParallelFor(xbx, ncomp, [d_bcrec,q,domain_ilo,domain_ihi,umac,small_vel,fx]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            bool extdir_ilo = d_bcrec[n].lo(0) == BCType::ext_dir;
-            bool extdir_ihi = d_bcrec[n].hi(0) == BCType::ext_dir;
+            bool extdir_or_ho_ilo = (d_bcrec[n].lo(0) == BCType::ext_dir) ||
+                                    (d_bcrec[n].lo(0) == BCType::hoextrap);
+            bool extdir_or_ho_ihi = (d_bcrec[n].hi(0) == BCType::ext_dir) ||
+                                    (d_bcrec[n].hi(0) == BCType::hoextrap);
             Real qs;
-            if (extdir_ilo and i <= domain_ilo) {
+            if (i <= domain_ilo && (d_bcrec[n].lo(0) == BCType::ext_dir)) {
                 qs = q(domain_ilo-1,j,k,n);
-            } else if (extdir_ihi and i >= domain_ihi+1) {
+            } else if (i >= domain_ihi+1 && (d_bcrec[n].hi(0) == BCType::ext_dir)) {
                 qs = q(domain_ihi+1,j,k,n);
             } else {
                 Real qpls = q(i,j,k,n) - 0.5 * incflo_xslope_extdir
-                    (i,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                    (i,j,k,n,q, extdir_or_ho_ilo, extdir_or_ho_ihi, domain_ilo, domain_ihi);
                 Real qmns = q(i-1,j,k,n) + 0.5 * incflo_xslope_extdir
-                    (i-1,j,k,n,q, extdir_ilo, extdir_ihi, domain_ilo, domain_ihi);
+                    (i-1,j,k,n,q, extdir_or_ho_ilo, extdir_or_ho_ihi, domain_ilo, domain_ihi);
                 if (umac(i,j,k) > small_vel) {
                     qs = qmns;
                 } else if (umac(i,j,k) < -small_vel) {
@@ -102,7 +104,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp,  static_cast<int>(Direction::y));
+    extdir_lohi = amr_wind::utils::has_extdir_or_ho(h_bcrec, ncomp,  static_cast<int>(Direction::y));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_jlo >= ybx.smallEnd(1)-1) or
@@ -111,18 +113,20 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         amrex::ParallelFor(ybx, ncomp, [d_bcrec,q,domain_jlo,domain_jhi,vmac,small_vel,fy]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            bool extdir_jlo = d_bcrec[n].lo(1) == BCType::ext_dir;
-            bool extdir_jhi = d_bcrec[n].hi(1) == BCType::ext_dir;
+            bool extdir_or_ho_jlo = (d_bcrec[n].lo(1) == BCType::ext_dir) ||
+                                    (d_bcrec[n].lo(1) == BCType::hoextrap);
+            bool extdir_or_ho_jhi = (d_bcrec[n].hi(1) == BCType::ext_dir) ||
+                                    (d_bcrec[n].hi(1) == BCType::hoextrap);
             Real qs;
-            if (extdir_jlo and j <= domain_jlo) {
+            if (j <= domain_jlo && (d_bcrec[n].lo(1) == BCType::ext_dir)) {
                 qs = q(i,domain_jlo-1,k,n);
-            } else if (extdir_jhi and j >= domain_jhi+1) {
+            } else if (j >= domain_jhi+1 && (d_bcrec[n].hi(1) == BCType::ext_dir)) {
                 qs = q(i,domain_jhi+1,k,n);
             } else {
                 Real qpls = q(i,j,k,n) - 0.5 * incflo_yslope_extdir
-                    (i,j,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                    (i,j,k,n,q, extdir_or_ho_jlo, extdir_or_ho_jhi, domain_jlo, domain_jhi);
                 Real qmns = q(i,j-1,k,n) + 0.5 * incflo_yslope_extdir
-                    (i,j-1,k,n,q, extdir_jlo, extdir_jhi, domain_jlo, domain_jhi);
+                    (i,j-1,k,n,q, extdir_or_ho_jlo, extdir_or_ho_jhi, domain_jlo, domain_jhi);
                 if (vmac(i,j,k) > small_vel) {
                     qs = qmns;
                 } else if (vmac(i,j,k) < -small_vel) {
@@ -153,7 +157,7 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         });
     }
 
-    extdir_lohi = amr_wind::utils::has_extdir(h_bcrec, ncomp, static_cast<int>(Direction::z));
+    extdir_lohi = amr_wind::utils::has_extdir_or_ho(h_bcrec, ncomp, static_cast<int>(Direction::z));
     has_extdir_lo = extdir_lohi.first;
     has_extdir_hi = extdir_lohi.second;
     if ((has_extdir_lo and domain_klo >= zbx.smallEnd(2)-1) or
@@ -162,12 +166,14 @@ mol::compute_convective_fluxes (int lev, Box const& bx, int ncomp,
         amrex::ParallelFor(zbx, ncomp, [d_bcrec,q,domain_klo,domain_khi,wmac,small_vel,fz]
         AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {
-            bool extdir_klo = d_bcrec[n].lo(2) == BCType::ext_dir;
-            bool extdir_khi = d_bcrec[n].hi(2) == BCType::ext_dir;
+            bool extdir_or_ho_klo = (d_bcrec[n].lo(2) == BCType::ext_dir) ||
+                                    (d_bcrec[n].lo(2) == BCType::hoextrap);
+            bool extdir_or_ho_khi = (d_bcrec[n].hi(2) == BCType::ext_dir) ||
+                                    (d_bcrec[n].hi(2) == BCType::hoextrap);
             Real qs;
-            if (extdir_klo and k <= domain_klo) {
+            if (k <= domain_klo && (d_bcrec[n].lo(2) == BCType::ext_dir)) {
                 qs = q(i,j,domain_klo-1,n);
-            } else if (extdir_khi and k >= domain_khi+1) {
+            } else if (k >= domain_khi+1 && (d_bcrec[n].hi(2) == BCType::ext_dir)) {
                 qs = q(i,j,domain_khi+1,n);
             } else {
                 Real qpls = q(i,j,k,n) - 0.5 * incflo_zslope_extdir
