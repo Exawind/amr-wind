@@ -333,31 +333,32 @@ lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
 template <typename FType>
 inline amrex::Real global_max_magnitude(FType& field)
 {
-    using namespace amrex;
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
     amrex::Real maxglobal;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
-        amrex::Real maxglobal = 0.0;
-        maxglobal = amrex::ReduceMax(
+        amrex::Real maxglobal_lev = 0.0;
+        maxglobal_lev = amrex::ReduceMax(
             field(lev), 0.,
             [=] AMREX_GPU_HOST_DEVICE(
-                Box const& b, Array4<Real const> const& field_arr) -> Real {
-                Real mx = 0.0;
+                amrex::Box const& b, amrex::Array4<amrex::Real const> const& field_arr) -> amrex::Real {
+                amrex::Real mx = 0.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
-                    Real Mag = 0.0;
+                    amrex::Real mag = 0.0;
                     for (int icomp = 0; icomp < ncomp; ++icomp) {
-                        Mag = Mag + field_arr(i, j, k, icomp) *
+                        mag = mag + field_arr(i, j, k, icomp) *
                                         field_arr(i, j, k, icomp);
                     }
-                    mx = amrex::max(std::sqrt(Mag), mx);
+                    mx = amrex::max(std::sqrt(mag), mx);
                 });
                 return mx;
             });
+    amrex::max(maxglobal,maxglobal_lev);
     }
-    ParallelAllReduce::Max<Real>(maxglobal, ParallelContext::CommunicatorSub());
+    
+    amrex::ParallelAllReduce::Max<amrex::Real>(maxglobal, amrex::ParallelContext::CommunicatorSub());
     return maxglobal;
 }
 
@@ -369,6 +370,7 @@ inline amrex::Real global_max_magnitude(FType& field)
 template <typename FType>
 inline void normalize(FType& field)
 {
+    const amrex::Real eps = 1.0e-12;
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
@@ -387,7 +389,7 @@ inline void normalize(FType& field)
                         mag = mag + field_arr(i, j, k, icomp) *
                                         field_arr(i, j, k, icomp);
                     }
-                    if (mag > 1e-12) {
+                    if (mag > eps) {
                         for (int icomp = 0; icomp < ncomp; ++icomp) {
                             field_arr(i, j, k, icomp) =
                                 field_arr(i, j, k, icomp) / std::sqrt(mag);
