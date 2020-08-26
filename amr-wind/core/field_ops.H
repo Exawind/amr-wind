@@ -293,46 +293,45 @@ inline void lincomb(
     int numcomp,
     int nghost)
 {
-    lincomb(dst, a, x, xcomp, b, y, ycomp, dstcomp, numcomp, amrex::IntVect(nghost));
+    lincomb(
+        dst, a, x, xcomp, b, y, ycomp, dstcomp, numcomp,
+        amrex::IntVect(nghost));
 }
 
-/** Set the lower bound for a given scalar field   
+/** Set the lower bound for a given scalar field
  * \ingroup field_ops
- * 
+ *
  * \param [in] min_value Minimum value for a given field
  * \param [in] icomp Component to set the minimum bound
  */
-template<typename FType>
-inline void lower_bound(
-    FType& field,
-    const amrex::Real min_value,
-    const int icomp = 0)
+template <typename FType>
+inline void
+lower_bound(FType& field, const amrex::Real min_value, const int icomp = 0)
 {
-  const auto& repo = field.repo();
-  const int nlevels = repo.num_active_levels();
-  for (int lev=0; lev < nlevels; ++lev) {
-    
-    for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-      const auto& bx = mfi.tilebox();
-      const auto& field_arr = field(lev).array(mfi);
+    const auto& repo = field.repo();
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
 
-      amrex::ParallelFor(
-        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-          field_arr(i,j,k,icomp) = amrex::max(min_value, field_arr(i,j,k,icomp));
-      });
+        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& field_arr = field(lev).array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    field_arr(i, j, k, icomp) =
+                        amrex::max(min_value, field_arr(i, j, k, icomp));
+                });
+        }
     }
-  }
-
 }
 
-/** Computes the global maximum of a field at all levels   
-  * \ingroup field_ops
-  * 
-  * \param [in] field that needs to be normalised 
-  */
-template<typename FType>
-inline amrex::Real global_max_magnitude(
-    FType& field)
+/** Computes the global maximum of a field from all levels
+ * \ingroup field_ops
+ *
+ * \param [in] field we need to compute its global maximum magnitude
+ */
+template <typename FType>
+inline amrex::Real global_max_magnitude(FType& field)
 {
     using namespace amrex;
     const auto& repo = field.repo();
@@ -340,60 +339,64 @@ inline amrex::Real global_max_magnitude(
 
     amrex::Real maxglobal;
     const int nlevels = repo.num_active_levels();
-     for (int lev=0; lev < nlevels; ++lev) {
-        amrex::Real maxglobal=0.0;
-        maxglobal = amrex::ReduceMax(field(lev), 0.,
-            [=] AMREX_GPU_HOST_DEVICE(Box const& b, Array4<Real const> const& field_arr) -> Real {
-                Real mx=0.0;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        amrex::Real maxglobal = 0.0;
+        maxglobal = amrex::ReduceMax(
+            field(lev), 0.,
+            [=] AMREX_GPU_HOST_DEVICE(
+                Box const& b, Array4<Real const> const& field_arr) -> Real {
+                Real mx = 0.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
-                Real Mag=0.0;
-                for (int icomp=0;icomp<ncomp;++icomp){
-                    Mag=Mag+field_arr(i,j,k,icomp)*field_arr(i,j,k,icomp);
-                }
-                mx = amrex::max(std::sqrt(Mag), mx);
+                    Real Mag = 0.0;
+                    for (int icomp = 0; icomp < ncomp; ++icomp) {
+                        Mag = Mag + field_arr(i, j, k, icomp) *
+                                        field_arr(i, j, k, icomp);
+                    }
+                    mx = amrex::max(std::sqrt(Mag), mx);
                 });
                 return mx;
             });
     }
-    ParallelAllReduce::Max<Real>(maxglobal , ParallelContext::CommunicatorSub());
+    ParallelAllReduce::Max<Real>(maxglobal, ParallelContext::CommunicatorSub());
     return maxglobal;
 }
 
-/** Normalises a field using its magnitude   
-  * \ingroup field_ops
-  * 
-  * \param [in] field that needs to be normalised 
-  */
- template<typename FType>
- inline void normalize(FType& field)
- {
-     const auto& repo = field.repo();
-     const auto ncomp = field.num_comp();
+/** Normalizes a field using its magnitude
+ * \ingroup field_ops
+ *
+ * \param [in] field that needs to be normalized
+ */
+template <typename FType>
+inline void normalize(FType& field)
+{
+    const auto& repo = field.repo();
+    const auto ncomp = field.num_comp();
 
-     const int nlevels = repo.num_active_levels();
-     for (int lev=0; lev < nlevels; ++lev) {
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
 
-     for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-       const auto& bx = mfi.tilebox();
-       const auto& field_arr = field(lev).array(mfi);
+        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& field_arr = field(lev).array(mfi);
 
-       amrex::ParallelFor(
-         bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-             //Compute magnitude
-             amrex::Real mag=0.;
-             for (int icomp=0;icomp<ncomp;++icomp){
-                 mag=mag+field_arr(i,j,k,icomp)*field_arr(i,j,k,icomp);
-             }
-             if(mag>1e-12){
-                 for (int icomp=0;icomp<ncomp;++icomp){
-                     field_arr(i,j,k,icomp)=field_arr(i,j,k,icomp)/std::sqrt(mag);
-                 }
-             }
-       });
-     }
-   }
-
- }
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    // Compute magnitude
+                    amrex::Real mag = 0.;
+                    for (int icomp = 0; icomp < ncomp; ++icomp) {
+                        mag = mag + field_arr(i, j, k, icomp) *
+                                        field_arr(i, j, k, icomp);
+                    }
+                    if (mag > 1e-12) {
+                        for (int icomp = 0; icomp < ncomp; ++icomp) {
+                            field_arr(i, j, k, icomp) =
+                                field_arr(i, j, k, icomp) / std::sqrt(mag);
+                        }
+                    }
+                });
+        }
+    }
+}
 
 } // namespace field_ops
 } // namespace amr_wind
