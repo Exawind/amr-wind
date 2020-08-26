@@ -175,6 +175,15 @@ TEST_F(FieldRepoTest, field_multiple_states)
     }
 }
 
+
+TEST_F(FieldRepoTest, compute_max_magnitude)
+{
+    initialize_mesh();
+    auto& frepo = mesh().field_repo();
+    auto& velocity = frepo.declare_field("vel", 3, 0, 2);
+    
+
+}
 TEST_F(FieldRepoTest, field_location)
 {
     initialize_mesh();
