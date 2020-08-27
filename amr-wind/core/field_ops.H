@@ -343,7 +343,9 @@ inline amrex::Real global_max_magnitude(FType& field)
         maxglobal_lev = amrex::ReduceMax(
             field(lev), 0.,
             [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& b, amrex::Array4<amrex::Real const> const& field_arr) -> amrex::Real {
+                amrex::Box const& b,
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
                 amrex::Real mx = 0.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     amrex::Real mag = 0.0;
@@ -355,10 +357,11 @@ inline amrex::Real global_max_magnitude(FType& field)
                 });
                 return mx;
             });
-    maxglobal=amrex::max(maxglobal,maxglobal_lev);
+        maxglobal = amrex::max(maxglobal, maxglobal_lev);
     }
-    
-    amrex::ParallelAllReduce::Max<amrex::Real>(maxglobal, amrex::ParallelContext::CommunicatorSub());
+
+    amrex::ParallelAllReduce::Max<amrex::Real>(
+        maxglobal, amrex::ParallelContext::CommunicatorSub());
     return maxglobal;
 }
 
