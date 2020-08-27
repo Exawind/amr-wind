@@ -1,0 +1,61 @@
+#ifndef ABLMEANBOUSSINESQ_H
+#define ABLMEANBOUSSINESQ_H
+
+#include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/equation_systems/icns/MomentumSource.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
+
+namespace amr_wind {
+namespace pde {
+namespace icns {
+
+/** Boussinesq bouyancy source term
+ *  \ingroup icns_src we_abl
+ *
+ *  \f[
+ *    S = \beta g \left( T_\mathrm{mean} - T_\mathrm{ref} \right)
+ *  \f]
+ */
+class ABLMeanBoussinesq : public MomentumSource::Register<ABLMeanBoussinesq>
+{
+public:
+    static const std::string identifier() { return "ABLMeanBoussinesq"; }
+
+    ABLMeanBoussinesq(const CFDSim& sim);
+
+    virtual ~ABLMeanBoussinesq();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& bx,
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
+
+    void mean_temperature_init(const FieldPlaneAveraging&);
+
+    void mean_temperature_update(const FieldPlaneAveraging&);
+
+private:
+    const amrex::AmrCore& m_mesh;
+
+    amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
+
+    //! Reference temperature (Kelvin)
+    amrex::Real m_ref_theta{300.0};
+
+    //! Thermal expansion coefficient
+    amrex::Real m_beta{0.0};
+
+    int m_axis{2};
+};
+} // namespace icns
+
+} // namespace pde
+} // namespace amr_wind
+
+
+#endif /* ABLMEANBOUSSINESQ_H */
