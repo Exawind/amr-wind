@@ -48,7 +48,10 @@ public:
 
     //! Return vel plane averaging instance
     const VelPlaneAveraging& vel_plane_averaging() { return m_pa_vel;} ;
-    
+
+    //! Return instance that handles temperature statistics
+    const FieldPlaneAveraging& temperature_plane_stats() const
+    { return m_pa_temp; }
 
 protected:
     //! Output data based on user-defined format

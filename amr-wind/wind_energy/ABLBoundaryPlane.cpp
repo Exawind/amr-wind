@@ -207,7 +207,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
         amrex::Vector<std::string> valid_planes{{"xlo", "ylo"}};
 
         if (std::find(valid_planes.begin(), valid_planes.end(), plane) ==
-            m_planes.end()) {
+            valid_planes.end()) {
             throw std::runtime_error(
                 "Requested plane does not exist: pick one of [xlo, ylo]");
         }
@@ -518,7 +518,9 @@ void ABLBoundaryPlane::populate_data(
 
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
-        if ((not m_in_data.is_populated(ori)) or (fld.bc_type()[ori] != BC::mass_inflow)) continue;
+        if ((not m_in_data.is_populated(ori)) or
+            (fld.bc_type()[ori] != BC::mass_inflow))
+            continue;
 
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
