@@ -355,7 +355,7 @@ inline amrex::Real global_max_magnitude(FType& field)
                 });
                 return mx;
             });
-    amrex::max(maxglobal,maxglobal_lev);
+    maxglobal=amrex::max(maxglobal,maxglobal_lev);
     }
     
     amrex::ParallelAllReduce::Max<amrex::Real>(maxglobal, amrex::ParallelContext::CommunicatorSub());
