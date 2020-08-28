@@ -81,13 +81,23 @@ void incflo::init_mesh()
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
+
+    if (m_sim.has_overset()) {
+        m_sim.overset_manager()->post_init_actions();
+    } else {
+        auto& mask_cell = m_sim.repo().declare_int_field("mask_cell", 1, 1);
+        auto& mask_node = m_sim.repo().declare_int_field(
+            "mask_node", 1, 1, 1, amr_wind::FieldLoc::NODE);
+        mask_cell.setVal(1);
+        mask_node.setVal(1);
+    }
+
     for (auto& pp: m_sim.physics())
         pp->post_init_actions();
 
     icns().initialize();
     for (auto& eqn: scalar_eqns()) eqn->initialize();
 
-    if (m_sim.has_overset()) m_sim.overset_manager()->post_init_actions();
     m_sim.post_manager().initialize();
 }
 
@@ -152,12 +162,19 @@ bool incflo::regrid_and_update()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+
+        if (m_sim.has_overset()) {
+            m_sim.overset_manager()->post_regrid_actions();
+        } else {
+            auto& mask_cell = m_sim.repo().get_int_field("mask_cell");
+            auto& mask_node = m_sim.repo().get_int_field("mask_node");
+            mask_cell.setVal(1);
+            mask_node.setVal(1);
+        }
+
         icns().post_regrid_actions();
         for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
-
-        if (m_sim.has_overset())
-            m_sim.overset_manager()->post_regrid_actions();
     }
 
     return m_time.do_regrid();
