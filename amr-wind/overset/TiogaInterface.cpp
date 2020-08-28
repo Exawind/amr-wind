@@ -85,6 +85,11 @@ void TiogaInterface::post_overset_conn_work()
 {
     iblank_to_mask(m_iblank_cell, m_mask_cell);
     iblank_to_mask(m_iblank_node, m_mask_node);
+
+    // Update equation systems after a connectivity update
+    m_sim.pde_manager().icns().post_regrid_actions();
+    for (auto& eqn: m_sim.pde_manager().scalar_eqns())
+        eqn->post_regrid_actions();
 }
 
 void TiogaInterface::register_solution() {}
