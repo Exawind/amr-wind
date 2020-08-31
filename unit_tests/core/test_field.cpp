@@ -170,37 +170,6 @@ TEST_F(FieldRepoTest, field_multiple_states)
     }
 }
 
-TEST_F(FieldRepoTest, compute_max_magnitude)
-{
-    initialize_mesh();
-    auto& frepo = mesh().field_repo();
-    auto& field = frepo.declare_field("F", 3, 0, 2);
-    auto& geom = mesh().Geom();
-
-    const int nlevels = frepo.num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
-        const auto& probhi = geom[lev].ProbHiArray();
-        std::cerr << dx[0] << std::endl;
-        for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& field_arr = field(lev).array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                    field_arr(i, j, k) = 1.0 - (x + y + z);
-                });
-        }
-    }
-    amrex::Real global_maximum =
-        amr_wind::field_ops::global_max_magnitude(field);
-    EXPECT_NEAR(global_maximum, 21.5, 1.0e-12);
-}
-
 TEST_F(FieldRepoTest, field_location)
 {
     initialize_mesh();
