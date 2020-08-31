@@ -13,7 +13,7 @@ public:
         frepo.declare_field("vector_field", 3, 1, 2);
     }
 
-    void initialise_defaut_fields(
+    void initialise_default_fields(
         amr_wind::Field& field,
         amrex::Vector<amrex::Geometry> geom,
         const int nlevels)
@@ -45,7 +45,7 @@ TEST_F(FieldOpsTest, compute_max_magnitude)
     auto& geom = mesh().Geom();
     const int nlevels = mesh().finestLevel() + 1;
 
-    initialise_defaut_fields(field, geom, nlevels);
+    initialise_default_fields(field, geom, nlevels);
 
     amrex::Real global_maximum =
         amr_wind::field_ops::global_max_magnitude(field);
