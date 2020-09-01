@@ -7,6 +7,7 @@
 namespace amr_wind {
 
 class IntField;
+class ScratchField;
 
 struct AMROversetInfo
 {
@@ -76,6 +77,9 @@ public:
 
     AMROversetInfo& amr_mesh_info() { return m_info; }
 
+    ScratchField& qvars_cell() { return *m_qcell; }
+    ScratchField& qvars_node() { return *m_qnode; }
+
 private:
     void amr_to_tioga_mesh();
 
@@ -93,6 +97,9 @@ private:
     IntField& m_mask_node;
 
     AMROversetInfo m_info;
+
+    std::unique_ptr<ScratchField> m_qcell;
+    std::unique_ptr<ScratchField> m_qnode;
 };
 
 } // namespace amr_wind
