@@ -2,6 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/core/field_ops.H"
 
 namespace amr_wind {
 
@@ -92,9 +93,74 @@ void TiogaInterface::post_overset_conn_work()
         eqn->post_regrid_actions();
 }
 
-void TiogaInterface::register_solution() {}
+void TiogaInterface::register_solution()
+{
+    m_qcell.reset();
+    m_qnode.reset();
+    auto& repo = m_sim.repo();
+    auto& vel = repo.get_field("velocity");
+    auto& pres = repo.get_field("p");
+    m_qcell = repo.create_scratch_field(
+        vel.num_comp(), vel.num_grow()[0], vel.field_location());
+    m_qnode = repo.create_scratch_field(
+        pres.num_comp(), pres.num_grow()[0], pres.field_location());
 
-void TiogaInterface::update_solution() {}
+    field_ops::copy(*m_qcell, vel, 0, 0, vel.num_comp(), vel.num_grow());
+    field_ops::copy(*m_qnode, pres, 0, 0, pres.num_comp(), pres.num_grow());
+}
+
+void TiogaInterface::update_solution()
+{
+    auto& repo = m_sim.repo();
+    auto& vel = repo.get_field("velocity");
+    auto& pres = repo.get_field("p");
+
+    field_ops::copy(vel, *m_qcell, 0, 0, vel.num_comp(), vel.num_grow());
+    field_ops::copy(pres, *m_qnode, 0, 0, pres.num_comp(), pres.num_grow());
+
+#if 0
+    int nlevels = repo.num_active_levels();
+    for (int lev=0; lev < nlevels; ++lev) {
+        auto& vfab = vel(lev);
+        auto& pfab = pres(lev);
+        auto& qcfab = (*m_qcell)(lev);
+        auto& qnfab = (*m_qnode)(lev);
+        for (amrex::MFIter mfi(vfab); mfi.isValid(); ++mfi) {
+            {
+                const int ncomp = vel.num_comp();
+                auto bx = mfi.tilebox();
+                auto varr = vfab.array(mfi);
+                auto qcarr = qcfab.const_array(mfi);
+                auto marr = m_mask_cell(lev).const_array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real fac =
+                            static_cast<amrex::Real>(marr(i, j, k));
+                        for (int n = 0; n < ncomp; ++n) {
+                            varr(i, j, k, n) = fac * varr(i, j, k, n) +
+                                               (1.0 - fac) * qcarr(i, j, k, n);
+                        }
+                    });
+            }
+            {
+                auto bx = mfi.nodaltilebox();
+                auto parr = pfab.array(mfi);
+                auto qnarr = qnfab.const_array(mfi);
+                auto marr = m_mask_node(lev).const_array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real fac =
+                            static_cast<amrex::Real>(marr(i, j, k));
+                        parr(i, j, k) =
+                            fac * parr(i, j, k) + (1.0 - fac) * qnarr(i, j, k);
+                    });
+            }
+        }
+    }
+#endif
+}
 
 void TiogaInterface::amr_to_tioga_mesh()
 {
