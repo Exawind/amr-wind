@@ -108,9 +108,10 @@ void SimTime::set_current_cfl(
     } else {
         // If user has specified fixed DT then issue a warning if the timestep
         // is larger than the deltaT determined from max. CFL considerations.
-        if ((dt_new < m_fixed_dt) && !m_is_init) {
-            issue_cfl_warning = true;
-        }
+        // Only issue warnings when the error is greater than 1% of the timestep
+        // specified
+        if ((1.0 - (dt_new / m_fixed_dt)) > 0.01) issue_cfl_warning = true;
+
         // Ensure that we use user-specified dt. Checkpoint restart might have
         // overridden this
         m_dt[0] = m_fixed_dt;
@@ -133,7 +134,7 @@ void SimTime::set_current_cfl(
                        << " src: "  << std::setprecision(6) << std::sqrt(src_cfl) * m_dt[0]
                        << " )" << std::endl;
     }
-    if (issue_cfl_warning)
+    if (issue_cfl_warning && !m_is_init)
         amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition.\n"
                        << "Max. CFL: " << m_max_cfl
                        << " => dt: " << std::setprecision(6) << dt_new
