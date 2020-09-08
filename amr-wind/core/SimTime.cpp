@@ -130,7 +130,7 @@ void SimTime::set_current_cfl(
                        << std::setprecision(6) << m_current_cfl
                        << " (conv: " << std::setprecision(6) << conv_cfl * m_dt[0]
                        << " diff: " << std::setprecision(6) << diff_cfl * m_dt[0]
-                       << " src: "  << std::setprecision(6) << src_cfl * m_dt[0]
+                       << " src: "  << std::setprecision(6) << std::sqrt(src_cfl) * m_dt[0]
                        << " )" << std::endl;
     }
     if (issue_cfl_warning)
