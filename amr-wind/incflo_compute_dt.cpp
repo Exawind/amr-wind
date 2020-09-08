@@ -114,17 +114,5 @@ void incflo::ComputeDt(bool explicit_diffusion)
             force_cfl, ParallelContext::CommunicatorSub());
     }
 
-    const Real cd_cfl = conv_cfl + diff_cfl;
-
-    // Combined CFL conditioner
-    const Real comb_cfl =
-        2.0 * cd_cfl + std::sqrt(cd_cfl * cd_cfl + 4.0 * force_cfl);
-
-    if (m_verbose > 2) {
-        amrex::Print() << "conv_cfl: " << conv_cfl << " diff_cfl: " << diff_cfl
-                       << " force_cfl: " << force_cfl
-                       << " comb_cfl: " << comb_cfl << std::endl;
-    }
-
-    m_time.set_current_cfl(comb_cfl);
+    m_time.set_current_cfl(conv_cfl, diff_cfl, force_cfl);
 }
