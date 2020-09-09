@@ -253,7 +253,7 @@ void FPlaneAveraging<FType>::compute_averages(
     const int ncomp = m_ncomp;
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi) {
         amrex::Box bx = mfi.tilebox();
@@ -337,7 +337,7 @@ void VelPlaneAveraging::compute_hvelmag_averages(
     amrex::Real* line_avg = lavg.data();
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi) {
         amrex::Box bx = mfi.tilebox();

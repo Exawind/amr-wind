@@ -160,7 +160,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp,
     int Tw_ = Tw;
  
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(velocity, TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
@@ -191,7 +191,7 @@ void PlaneAveraging::fill_line(const IndexSelector &idxOp,
     line_average_ = lavg2.data();
     
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (MFIter mfi(velocity, TilingIfNotGPU()); mfi.isValid(); ++mfi)
     {
