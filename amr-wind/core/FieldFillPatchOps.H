@@ -47,21 +47,24 @@ public:
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) = 0;
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling patches from a coarse to fine level
     virtual void fillpatch_from_coarse(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) = 0;
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) = 0;
 
     //! Implementation that handles filling physical boundary conditions
     virtual void fillphysbc(
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) = 0;
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) = 0;
 };
 
 /** Implementation that just fills a constant value on newly created grids
@@ -74,19 +77,22 @@ public:
     FieldFillConstScalar(Field&, amrex::Real fill_val) : m_fill_val(fill_val) {}
 
     void fillpatch(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&) override
+        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        const FieldState) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillpatch_from_coarse(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&) override
+        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        const FieldState) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillphysbc(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&) override
+        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        const FieldState) override
     {
         mfab.setVal(m_fill_val);
     }
@@ -151,8 +157,10 @@ public:
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) override
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) override
     {
+        auto& fld = m_field.state(fstate);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
                 m_mesh.Geom(lev), m_field.bcrec(),
@@ -160,7 +168,7 @@ public:
                         m_field.bc_values_device()});
 
             amrex::FillPatchSingleLevel(
-                mfab, nghost, time, {&m_field(lev)}, {time}, 0, 0,
+                mfab, nghost, time, {&fld(lev)}, {time}, 0, 0,
                 m_field.num_comp(), m_mesh.Geom(lev), physbc, 0);
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
@@ -174,8 +182,8 @@ public:
                         m_field.bc_values_device()});
 
             amrex::FillPatchTwoLevels(
-                mfab, nghost, time, {&m_field(lev - 1)}, {time},
-                {&m_field(lev)}, {time}, 0, 0, m_field.num_comp(),
+                mfab, nghost, time, {&fld(lev - 1)}, {time},
+                {&fld(lev)}, {time}, 0, 0, m_field.num_comp(),
                 m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
                 m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
         }
@@ -232,8 +240,10 @@ public:
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) override
+        const amrex::IntVect& nghost,
+        const FieldState fstate = FieldState::New) override
     {
+        auto& fld = m_field.state(fstate);
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
             m_mesh.Geom(lev - 1), m_field.bcrec(),
             Functor{m_probtype, m_field.num_comp(),
@@ -245,7 +255,7 @@ public:
                     m_field.bc_values_device()});
 
         amrex::InterpFromCoarseLevel(
-            mfab, nghost, time, m_field(lev - 1), 0, 0, m_field.num_comp(),
+            mfab, nghost, time, fld(lev - 1), 0, 0, m_field.num_comp(),
             m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
             m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
     }
@@ -254,7 +264,8 @@ public:
         int lev,
         amrex::Real time,
         amrex::MultiFab& mfab,
-        const amrex::IntVect& nghost) override
+        const amrex::IntVect& nghost,
+        const FieldState) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
             m_mesh.Geom(lev), m_field.bcrec(),
