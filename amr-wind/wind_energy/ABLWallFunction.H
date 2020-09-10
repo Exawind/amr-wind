@@ -100,10 +100,6 @@ private:
 
     amrex::Real m_mean_windspeed, m_mean_pot_temp;
 
-    // amrex::Vector<amrex::Box> m_bx_z_sample;
-    // amrex::Vector<amrex::FArrayBox>  m_store_xy_vel;
-    // amrex::Vector<int> m_z_sample_index;
-
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox m_store_xy_vel_temp;
 

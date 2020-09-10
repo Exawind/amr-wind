@@ -168,7 +168,10 @@ void ABLWallFunction::computeplanar()
 
     m_store_xy_vel_temp.setVal<amrex::RunOn::Device>(0.0);
 
-    auto m_xy_arr = m_store_xy_vel_temp.array();
+    auto xy_arr = m_store_xy_vel_temp.array();
+
+    const amrex::Real coeff_interp0 = m_coeff_interp[0];
+    const amrex::Real coeff_interp1 = m_coeff_interp[1];
 
     for (amrex::MFIter mfi(velf(maxlev)); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.validbox();
@@ -193,14 +196,14 @@ void ABLWallFunction::computeplanar()
 
         amrex::ParallelFor(
             z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                m_xy_arr(i, j, k, 0) = m_coeff_interp[0] * vel(i, j, k, 0) +
-                                       m_coeff_interp[1] * vel(i, j, k + 1, 0);
-                m_xy_arr(i, j, k, 1) = m_coeff_interp[0] * vel(i, j, k, 1) +
-                                       m_coeff_interp[1] * vel(i, j, k + 1, 1);
-                m_xy_arr(i, j, k, 2) = m_coeff_interp[0] * vel(i, j, k, 2) +
-                                       m_coeff_interp[1] * vel(i, j, k + 1, 2);
-                m_xy_arr(i, j, k, 3) = m_coeff_interp[0] * temp(i, j, k) +
-                                       m_coeff_interp[1] * temp(i, j, k + 1);
+                xy_arr(i, j, k, 0) = coeff_interp0 * vel(i, j, k, 0) +
+                                       coeff_interp1 * vel(i, j, k + 1, 0);
+                xy_arr(i, j, k, 1) = coeff_interp0 * vel(i, j, k, 1) +
+                                       coeff_interp1 * vel(i, j, k + 1, 1);
+                xy_arr(i, j, k, 2) = coeff_interp0 * vel(i, j, k, 2) +
+                                       coeff_interp1 * vel(i, j, k + 1, 2);
+                xy_arr(i, j, k, 3) = coeff_interp0 * temp(i, j, k) +
+                                       coeff_interp1 * temp(i, j, k + 1);
             });
     }
 
@@ -210,23 +213,26 @@ void ABLWallFunction::computeplanar()
         m_store_xy_vel_temp.dataPtr(), m_ncells_x * m_ncells_y * 4);
 
     std::fill(m_umean.begin(), m_umean.end(), 0.0);
-    m_mean_windspeed = 0.0;
-    m_mean_pot_temp = 0.0;
+
+    amrex::Real umean0 = 0.0;
+    amrex::Real umean1 = 0.0;
+    amrex::Real mean_windspd = 0.0;
+    amrex::Real mean_pot_temp = 0.0;
 
     amrex::ParallelFor(
-        m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            m_umean[0] += m_xy_arr(i, j, k, 0);
-            m_umean[1] += m_xy_arr(i, j, k, 1);
-            m_mean_windspeed += std::sqrt(
-                m_xy_arr(i, j, k, 0) * m_xy_arr(i, j, k, 0) +
-                m_xy_arr(i, j, k, 1) * m_xy_arr(i, j, k, 1));
-            m_mean_pot_temp += m_xy_arr(i, j, k, 3);
+        m_bx_z_sample, [=,&umean0,&umean1,&mean_windspd,&mean_pot_temp] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            umean0 += xy_arr(i, j, k, 0);
+            umean1 += xy_arr(i, j, k, 1);
+            mean_windspd += std::sqrt(
+                xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
+                xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
+            mean_pot_temp += xy_arr(i, j, k, 3);
         });
 
-    m_umean[0] = m_umean[0] / numCells;
-    m_umean[1] = m_umean[1] / numCells;
-    m_mean_windspeed = m_mean_windspeed / numCells;
-    m_mean_pot_temp = m_mean_pot_temp / numCells;
+    m_umean[0] = umean0 / numCells;
+    m_umean[1] = umean1 / numCells;
+    m_mean_windspeed = mean_windspd / numCells;
+    m_mean_pot_temp = mean_pot_temp / numCells;
 }
 
 void ABLWallFunction::computeusingheatflux()
@@ -265,38 +271,42 @@ void ABLWallFunction::computeusingheatflux()
         iter += 1;
     } while ((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= m_max_iter);
 
-    auto m_xy_arr = m_store_xy_vel_temp.array();
+    auto xy_arr = m_store_xy_vel_temp.array();
+
+    const amrex::Real umean0 = m_umean[0];
+    const amrex::Real umean1 = m_umean[1];
+    const amrex::Real mean_windspd = m_mean_windspeed;
+    const amrex::Real mean_pot_temp = m_mean_pot_temp;
+    const amrex::Real ref_temp = m_ref_temp;
+
+    const amrex::Real tau_xz = umean0 / m_mean_windspeed;
+    const amrex::Real tau_yz = umean1 / m_mean_windspeed;
+    const amrex::Real tau_thetaz = -m_surf_temp_flux;
+    const amrex::Real denom1 = mean_windspd * (mean_pot_temp - ref_temp);
 
     amrex::ParallelFor(
         m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            amrex::Real inst_wind_speed = std::sqrt(
-                m_xy_arr(i, j, k, 0) * m_xy_arr(i, j, k, 0) +
-                m_xy_arr(i, j, k, 1) * m_xy_arr(i, j, k, 1));
+            const amrex::Real inst_wind_speed = std::sqrt(
+                xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
+                xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
 
-            amrex::Real tau_xz = m_umean[0] / m_mean_windspeed;
-            amrex::Real tau_yz = m_umean[1] / m_mean_windspeed;
-
-            m_xy_arr(i, j, k, 0) =
+            xy_arr(i, j, k, 0) =
                 tau_xz *
-                ((m_xy_arr(i, j, k, 0) - m_umean[0]) * m_mean_windspeed +
-                 inst_wind_speed * m_umean[0]) /
-                (m_mean_windspeed * m_umean[0]);
+                ((xy_arr(i, j, k, 0) - umean0) * mean_windspd +
+                 inst_wind_speed * umean0) /
+                (mean_windspd * umean0);
 
-            m_xy_arr(i, j, k, 1) =
+            xy_arr(i, j, k, 1) =
                 tau_yz *
-                ((m_xy_arr(i, j, k, 1) - m_umean[1]) * m_mean_windspeed +
-                 inst_wind_speed * m_umean[1]) /
-                (m_mean_windspeed * m_umean[1]);
+                ((xy_arr(i, j, k, 1) - umean1) * mean_windspd +
+                 inst_wind_speed * umean1) /
+                (mean_windspd * umean1);
 
-            amrex::Real tau_thetaz = -m_surf_temp_flux;
+            const amrex::Real num1 =
+                (xy_arr(i, j, k, 3) - mean_pot_temp) * mean_windspd;
+            const amrex::Real num2 = inst_wind_speed * (mean_pot_temp - ref_temp);
 
-            amrex::Real num1 =
-                (m_xy_arr(i, j, k, 3) - m_mean_pot_temp) * m_mean_windspeed;
-            amrex::Real num2 = inst_wind_speed * (m_mean_pot_temp - m_ref_temp);
-            amrex::Real denom1 =
-                m_mean_windspeed * (m_mean_pot_temp - m_ref_temp);
-
-            m_xy_arr(i, j, k, 3) = tau_thetaz * (num1 + num2) / denom1;
+            xy_arr(i, j, k, 3) = tau_thetaz * (num1 + num2) / denom1;
         });
 }
 
