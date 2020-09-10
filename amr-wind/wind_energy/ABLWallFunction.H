@@ -40,6 +40,7 @@ public:
     //! Update the mean velocity at a given timestep
     void update_umean();
 
+
     /**
      * van der Laan, P., Kelly, M. C., & Sørensen, N. N. (2017). A new k-epsilon
      * model consistent with Monin-Obukhov similarity theory. Wind Energy,
@@ -56,6 +57,10 @@ public:
     //! Return Monin-Obukhov Similarity function psi_h
     amrex::Real mo_psi_h(amrex::Real zeta);
 
+    void computeplanar();
+
+    void computeusingheatflux();
+    
     const amrex::FArrayBox& instplanar() const { return m_store_xy_vel_temp; }
 
     amrex::Real mean_windspeed() const { return m_mean_windspeed; }
@@ -69,9 +74,6 @@ public:
     amrex::Real obukhov_length() const { return m_obukhov_length; }
 
 private:
-    void computeplanar();
-
-    void computeusingheatflux();
 
     const CFDSim& m_sim;
 
