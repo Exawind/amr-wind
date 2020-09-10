@@ -187,6 +187,12 @@ bool incflo::regrid_and_update()
 void incflo::post_advance_work()
 {
     BL_PROFILE("amr-wind::incflo::post_advance_work");
+    for (auto& pp: m_sim.physics())
+        pp->post_advance_work();
+
+    m_sim.post_manager().post_advance_work();
+    if (m_verbose > 1) PrintMaxValues("end of timestep");
+
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
     }
