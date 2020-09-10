@@ -54,7 +54,7 @@ TEST_F(ABLMeshTest, abl_forcing)
     {
         auto& time = sim().time();
         time.new_timestep();
-        time.set_current_cfl(2.0);
+        time.set_current_cfl(2.0, 0.0, 0.0);
         EXPECT_NEAR(time.deltaT(), 0.1, tol);
 
         src_term.setVal(0.0);

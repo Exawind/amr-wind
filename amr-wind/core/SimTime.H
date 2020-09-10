@@ -49,11 +49,13 @@ public:
      */
     bool write_last_checkpoint();
 
-    /** Set current CFL and update timestep based on CFL
+    /** Set current CFL and update timestep based on CFL components
      *
-     *  @param cfl_unit_time `(U / dx)`, i.e., CFL assuming unit dt
      */
-    void set_current_cfl(amrex::Real cfl_unit_time);
+    void set_current_cfl(
+        const amrex::Real conv_cfl,
+        const amrex::Real diff_cfl,
+        const amrex::Real src_cfl);
 
     /** Set start time and index based on checkpoint/restart file
      *

@@ -142,7 +142,7 @@ void SecondMomentAveraging::compute_average(
     const int nmoments = m_num_moments;
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab1, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {

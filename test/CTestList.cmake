@@ -171,6 +171,9 @@ add_test_re(tgv_godunov_plm)
 add_test_re(abl_godunov_static_refinement)
 add_test_re(ctv_godunov_plm)
 add_test_re(abl_ksgsm84_godunov)
+if (AMR_WIND_ENABLE_NETCDF)
+  add_test_re(abl_bndry_output)
+endif()
 if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_godunov)
   add_test_re(mms_godunov_plm)
@@ -181,6 +184,9 @@ endif()
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
 add_test_red(abl_godunov_restart abl_godunov)
+if (AMR_WIND_ENABLE_NETCDF)
+  add_test_red(abl_bndry_input abl_bndry_output)
+endif()
 
 #=============================================================================
 # Verification tests

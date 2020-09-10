@@ -1,6 +1,8 @@
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
 #include "amr-wind/incflo.H"
 
 #include "AMReX_ParmParse.H"
@@ -28,6 +30,9 @@ ABL::ABL(CFDSim& sim)
         
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
+
+    // Instantiate the ABL boundary plane IO
+    m_bndry_plane.reset(new ABLBoundaryPlane(sim));
 }
 
 ABL::~ABL() = default;
@@ -81,6 +86,13 @@ void ABL::post_init_actions()
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
+
+    if (m_bndry_plane->is_initialized()) {
+        m_bndry_plane->write_header();
+        m_bndry_plane->write_file();
+        m_bndry_plane->read_header();
+        m_bndry_plane->read_file();
+    }
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -108,6 +120,12 @@ void ABL::pre_advance_work()
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
+    if (m_abl_mean_bous != nullptr)
+        m_abl_mean_bous->mean_temperature_update(m_stats->temperature_plane_stats());
+
+    if (m_bndry_plane->is_initialized()) {
+        m_bndry_plane->read_file();
+    }
 }
 
 /** Perform tasks at the end of a new timestep
@@ -118,7 +136,10 @@ void ABL::pre_advance_work()
 void ABL::post_advance_work()
 {
     m_stats->post_advance_work();
+
+    if (m_bndry_plane->is_initialized()) {
+        m_bndry_plane->write_file();
+    }
 }
-    
 
 } // namespace amr_wind

@@ -1,7 +1,8 @@
 #include "amr-wind/turbulence/LES/OneEqKsgs.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/turbulence/TurbModelDefs.H"
-#include "amr-wind/derive/derive_K.H"
+#include "amr-wind/fvm/gradient.H"
+#include "amr-wind/fvm/strainrate.H"
 #include "amr-wind/turbulence/turb_utils.H"
 #include "amr-wind/equation_systems/tke/TKE.H"
 
@@ -73,11 +74,11 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
     auto gradT = (this->m_sim.repo()).create_scratch_field(3,0);
-    compute_gradient(*gradT, m_temperature.state(fstate) );
+    fvm::gradient(*gradT, m_temperature.state(fstate) );
 
     auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
-    compute_strainrate(this->m_shear_prod, vel);
+    fvm::strainrate(this->m_shear_prod, vel);
     
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
         m_gravity[0], m_gravity[1], m_gravity[2]};
