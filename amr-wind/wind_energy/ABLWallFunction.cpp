@@ -219,14 +219,16 @@ void ABLWallFunction::computeplanar()
     amrex::Real mean_windspd = 0.0;
     amrex::Real mean_pot_temp = 0.0;
 
-    amrex::ParallelFor(
-        m_bx_z_sample, [=,&umean0,&umean1,&mean_windspd,&mean_pot_temp] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+    amrex::Loop(
+        m_bx_z_sample,
+        [=, &umean0, &umean1, &mean_windspd, &mean_pot_temp](int i, int j, int k) noexcept {
             umean0 += xy_arr(i, j, k, 0);
             umean1 += xy_arr(i, j, k, 1);
             mean_windspd += std::sqrt(
                 xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
                 xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
             mean_pot_temp += xy_arr(i, j, k, 3);
+
         });
 
     m_umean[0] = umean0 / numCells;
