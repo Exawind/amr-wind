@@ -37,12 +37,7 @@ Smagorinsky_coeffs.Cs = 0.135
 incflo.physics = ABL
 ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
 BoussinesqBuoyancy.reference_temperature = 300.0
-CoriolisForcing.latitude = 41.3
-ABLForcing.abl_forcing_height = 90
-
-incflo.physics = ABL
-ICNS.source_terms = BoussinesqBuoyancy CoriolisForcing ABLForcing
-BoussinesqBuoyancy.reference_temperature = 300.0
+ABL.reference_temperature = 300.0
 CoriolisForcing.latitude = 41.3
 ABLForcing.abl_forcing_height = 90
 

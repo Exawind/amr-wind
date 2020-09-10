@@ -287,9 +287,7 @@ void wall_model_bc_moeng(
     amr_wind::Field& velocity,
     const amrex::Real utau,
     const amr_wind::FieldState fstate,
-    const amrex::FArrayBox& inst_plane_vel,
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& velmean,
-    const amrex::Real mean_wind)
+    const amrex::FArrayBox& inst_plane_vel)
 {
     BL_PROFILE("amr-wind::diffusion::wall_model_bc")
     auto& repo = velocity.repo();
@@ -298,13 +296,11 @@ void wall_model_bc_moeng(
     const int nlevels = repo.num_active_levels();
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
-    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    auto m_store_xy_vel_arr = inst_plane_vel.array();
+    auto store_xy_vel_arr = inst_plane_vel.array();
     const auto& bxPlanar = inst_plane_vel.box();
 
     const auto planarlo = amrex::lbound(bxPlanar);
-    const auto planarhi = amrex::ubound(bxPlanar);
 
     // copies cell center to face
     Real c0 = 1.0;
@@ -334,7 +330,6 @@ void wall_model_bc_moeng(
 #endif
         for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto vel = vel_lev.array(mfi);
             auto bc  = vel_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
@@ -351,9 +346,9 @@ void wall_model_bc_moeng(
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k - 1, 0) = m_store_xy_vel_arr(i, j, planarlo.z, 0)*
+                            bc(i, j, k - 1, 0) = store_xy_vel_arr(i, j, planarlo.z, 0)*
                                 den(i, j, k)*utau2/mu;
-                            bc(i, j, k - 1, 1) = m_store_xy_vel_arr(i, j, planarlo.z, 1)*
+                            bc(i, j, k - 1, 1) = store_xy_vel_arr(i, j, planarlo.z, 1)*
                                 den(i, j, k)*utau2/mu;
 
 
@@ -380,14 +375,12 @@ void temp_wall_model_bc(
     const int nlevels = repo.num_active_levels();
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
-    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    auto m_store_xy_temp_arr = inst_plane_temp.array();
+    auto store_xy_temp_arr = inst_plane_temp.array();
     const auto& bxPlanar = inst_plane_temp.box();
 
     const auto planarlo = amrex::lbound(bxPlanar);
-    const auto planarhi = amrex::ubound(bxPlanar);
-    
+
     // copies cell center to face
     Real c0 = 1.0;
     Real c1 = 0.0;
@@ -414,7 +407,6 @@ void temp_wall_model_bc(
 #endif
         for (MFIter mfi(temp_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto temp = temp_lev.array(mfi);
             auto bc  = temp_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto alphaT = alpha_lev.array(mfi);
@@ -429,7 +421,7 @@ void temp_wall_model_bc(
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                           const Real alphaT_wall  = c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
                           // Inhomogeneous Neumann BC
-                          bc(i, j, k - 1) = den(i, j, k)*m_store_xy_temp_arr(i, j, planarlo.z, 3)
+                          bc(i, j, k - 1) = den(i, j, k)*store_xy_temp_arr(i, j, planarlo.z, 3)
                               /alphaT_wall;
 
                         });
