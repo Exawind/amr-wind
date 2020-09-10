@@ -159,7 +159,7 @@ void Field::fillpatch(
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch(lev, time, mfab, nghost);
+    fop.fillpatch(lev, time, mfab, nghost, field_state());
 }
 
 void Field::fillpatch_from_coarse(
@@ -173,7 +173,7 @@ void Field::fillpatch_from_coarse(
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
 
-    fop.fillpatch_from_coarse(lev, time, mfab, nghost);
+    fop.fillpatch_from_coarse(lev, time, mfab, nghost, field_state());
 }
 
 void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
@@ -184,7 +184,7 @@ void Field::fillpatch(amrex::Real time, amrex::IntVect ng) noexcept
     auto& fop = *(m_info->m_fillpatch_op);
     const int nlevels = m_repo.num_active_levels();
     for (int lev=0; lev < nlevels; ++lev) {
-        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), ng);
+        fop.fillpatch(lev, time, m_repo.get_multifab(m_id, lev), ng, field_state());
     }
 }
 
@@ -203,7 +203,7 @@ void Field::fillphysbc(
     BL_ASSERT(m_info->m_fillpatch_op);
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
-    fop.fillphysbc(lev, time, mfab, ng);
+    fop.fillphysbc(lev, time, mfab, ng, field_state());
 }
 
 void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
@@ -214,7 +214,7 @@ void Field::fillphysbc(amrex::Real time, amrex::IntVect ng) noexcept
   auto& fop = *(m_info->m_fillpatch_op);
   const int nlevels = m_repo.num_active_levels();
   for (int lev=0; lev < nlevels; ++lev) {
-      fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), ng);
+      fop.fillphysbc(lev, time, m_repo.get_multifab(m_id, lev), ng, field_state());
   }
 }
 
