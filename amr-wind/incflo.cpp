@@ -223,9 +223,11 @@ void incflo::Evolve()
     while(m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
         regrid_and_update();
+        pre_advance_stage1();
+        pre_advance_stage2();
 
-        // Advance to time t + dt
         amrex::Real time1 = amrex::ParallelDescriptor::second();
+        // Advance to time t + dt
         advance();
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -233,9 +235,10 @@ void incflo::Evolve()
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime: " << m_time.time_index()
-                       << " Solve: " << std::setprecision(8) << (time2 - time1)
-                       << " Misc: " << std::setprecision(6) << (time3 - time2)
-                       << " Total: " << std::setprecision(8) << (time3 - time0) << std::endl;
+                       << " Pre: " << std::setprecision(3) << (time1 - time0)
+                       << " Solve: " << std::setprecision(4) << (time2 - time1)
+                       << " Post: " << std::setprecision(3) << (time3 - time2)
+                       << " Total: " << std::setprecision(4) << (time3 - time0) << std::endl;
     }
     amrex::Print()
         << "\n==============================================================================\n"

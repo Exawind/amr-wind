@@ -15,6 +15,36 @@
 
 using namespace amrex;
 
+void incflo::pre_advance_stage1()
+{
+    BL_PROFILE("amr-wind::incflo::pre_advance_stage1");
+
+    // Compute time step size
+    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
+    ComputeDt(explicit_diffusion);
+
+    if (m_constant_density) {
+        density().advance_states();
+        density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
+
+    auto& vel = icns().fields().field;
+    vel.advance_states();
+    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    for (auto& eqn: scalar_eqns()) {
+        auto& field = eqn->fields().field;
+        field.advance_states();
+        field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
+    }
+}
+
+void incflo::pre_advance_stage2()
+{
+    BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
+    for (auto& pp: m_sim.physics())
+        pp->pre_advance_work();
+}
+
 /** Advance simulation state by one timestep
  *
  *  Performs the following actions at a given timestep
@@ -34,28 +64,6 @@ using namespace amrex;
 void incflo::advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance");
-
-    // Compute time step size
-    bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
-    ComputeDt(explicit_diffusion);
-
-    if (m_constant_density) {
-        density().advance_states();
-        density().state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    }
-
-    auto& vel = icns().fields().field;
-    vel.advance_states();
-    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    for (auto& eqn: scalar_eqns()) {
-        auto& field = eqn->fields().field;
-        field.advance_states();
-        field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    }
-
-    for (auto& pp: m_sim.physics())
-        pp->pre_advance_work();
-
     ApplyPredictor();
 
     if (!m_use_godunov) ApplyCorrector();
