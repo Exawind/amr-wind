@@ -266,6 +266,7 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
                             0, AMREX_SPACEDIM, refRatio(lev));
     }
 
+    velocity.fillpatch(m_time.new_time());
     if (m_verbose > 2)
     {
         if (proj_for_small_dt) {
