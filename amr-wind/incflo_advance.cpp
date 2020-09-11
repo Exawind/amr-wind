@@ -58,15 +58,7 @@ void incflo::advance()
 
     ApplyPredictor();
 
-    if (!m_use_godunov) {
-        vel.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
-        for (auto& eqn: scalar_eqns()) {
-            auto& field = eqn->fields().field;
-            field.state(amr_wind::FieldState::New).fillpatch(m_time.current_time());
-        }
-
-        ApplyCorrector();
-    }
+    if (!m_use_godunov) ApplyCorrector();
 }
 
 // Apply predictor step

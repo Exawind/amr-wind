@@ -132,7 +132,7 @@ public:
 
     void post_solve_actions() override
     {
-        m_post_solve_op();
+        m_post_solve_op(m_time.new_time());
     }
 
 protected:

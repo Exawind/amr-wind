@@ -198,9 +198,14 @@ struct BCOp;
 template<typename PDE>
 struct PostSolveOp
 {
-    PostSolveOp(PDEFields&) {}
+    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
 
-    void operator()() {}
+    void operator()(const amrex::Real time)
+    {
+        m_fields.field.fillpatch(time);
+    }
+
+    PDEFields& m_fields;
 };
 
 }
