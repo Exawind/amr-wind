@@ -1,3 +1,4 @@
+
 #ifndef DIFFUSION_H
 #define DIFFUSION_H
 
@@ -6,10 +7,21 @@
 
 namespace diffusion {
 
+void wall_model_bc_moeng(
+    amr_wind::Field& velocity,
+    const amrex::Real utau,
+    const amr_wind::FieldState fstate,
+    const amrex::FArrayBox& instplanar);
+
 void wall_model_bc(
     amr_wind::Field& velocity,
     const amrex::Real utau,
     const amrex::Real umag,
+    const amr_wind::FieldState fstate);
+
+void temp_wall_model_bc(
+    amr_wind::Field& temperature,
+    const amrex::FArrayBox& instplanar,
     const amr_wind::FieldState fstate);
 
 amrex::Vector<amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>>
@@ -23,9 +35,7 @@ amrex::Array<amrex::MultiFab, AMREX_SPACEDIM> average_velocity_eta_to_faces(
     const amrex::Geometry& geom, amrex::MultiFab const& cc_eta);
 
 amrex::Array<amrex::MultiFab, AMREX_SPACEDIM> average_tracer_eta_to_faces(
-    int comp,
-    const amrex::Geometry& geom,
-    amrex::MultiFab const& cc_eta);
+    int comp, const amrex::Geometry& geom, amrex::MultiFab const& cc_eta);
 
 void fixup_eta_on_domain_faces(
     const amrex::Geometry& geom,

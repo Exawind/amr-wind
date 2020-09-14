@@ -13,6 +13,8 @@ void populate_abl_params()
     pp.addarr("temperature_heights", theights);
     pp.addarr("temperature_values", tvalues);
     pp.add("perturb_ref_height", 50.0);
+    pp.add("reference_temperature", 300.0);
+
 
     // Body force
     {
