@@ -32,6 +32,7 @@ struct AdvectionOp<
     {
         amrex::ParmParse pp("incflo");
         pp.query("use_ppm", godunov_ppm);
+        pp.query("use_ppm_limiter", godunov_ppm_limiter);
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
@@ -92,7 +93,9 @@ struct AdvectionOp<
                                            dof_field.bcrec_device().data(),
                                            iconserv.data(),
                                            tmpfab.dataPtr(),
-                                           geom, dt, godunov_ppm);
+                                           geom, dt,
+                                           godunov_ppm,
+                                           godunov_ppm_limiter);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -107,6 +110,7 @@ struct AdvectionOp<
     amrex::Gpu::DeviceVector<int> iconserv;
 
     bool godunov_ppm{true};
+    bool godunov_ppm_limiter{true};
 };
 
 } // namespace pde
