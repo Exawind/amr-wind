@@ -130,9 +130,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         { // Prefix incflo
             amrex::ParmParse pp("incflo");
             pp.query("use_ppm", godunov_ppm);
-            pp.query("use_ppm_limiter", godunov_ppm_limiter);
+            pp.query("use_limiter", use_limiter);
             pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
         }
+
+        if (!use_limiter && !godunov_ppm)
+            amrex::Abort("Currently limiter option only available for Godunov PPM and not PLM");
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(ICNS::ndim, 0);
@@ -204,7 +207,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                     if (godunov_ppm){
                         godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
-                                              geom, dt, bcrec_device, godunov_ppm_limiter);
+                                              geom, dt, bcrec_device, use_limiter);
                     } else {
                         godunov::predict_plm_x (lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel,
                                      geom, dt, dof_field.bcrec(), bcrec_device);
@@ -262,7 +265,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     dof_field.bcrec_device().data(), iconserv.data(),
                     tmpfab.dataPtr(), geom, dt,
                     godunov_ppm,
-                    godunov_ppm_limiter);
+                    use_limiter);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -277,7 +280,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
     bool godunov_ppm{true};
     bool godunov_use_forces_in_trans{false};
-    bool godunov_ppm_limiter{true};
+    bool use_limiter{true};
 };
 
 /** MOL scheme for ICNS

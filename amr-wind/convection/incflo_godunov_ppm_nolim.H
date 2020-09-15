@@ -195,13 +195,13 @@ void Godunov_ppm_pred_x_nolim(const int i, const int j, const int k, const int n
     amrex::Real sp1 = S(i+1,j,k,n);
     amrex::Real sp2 = S(i+2,j,k,n);
 
-    amrex::Real d1 = 0.5*(sp1-sm1);
-    amrex::Real d2 = 0.5*(s0-sm2);
+    amrex::Real d1 = 0.5*(sp1 - sm1);
+    amrex::Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 
@@ -252,13 +252,13 @@ void Godunov_ppm_pred_y_nolim(const int i, const int j, const int k, const int n
     amrex::Real sp1 = S(i,j+1,k,n);
     amrex::Real sp2 = S(i,j+2,k,n);
 
-    amrex::Real d1 = 0.5*(sp1-sm1);
-    amrex::Real d2 = 0.5*(s0-sm2);
+    amrex::Real d1 = 0.5*(sp1 - sm1);
+    amrex::Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 
@@ -308,13 +308,13 @@ void Godunov_ppm_pred_z_nolim(const int i, const int j, const int k, const int n
     amrex::Real sp1 = S(i,j,k+1,n);
     amrex::Real sp2 = S(i,j,k+2,n);
 
-    amrex::Real d1 = 0.5*(sp1-sm1);
-    amrex::Real d2 = 0.5*(s0-sm2);
+    amrex::Real d1 = 0.5*(sp1 - sm1);
+    amrex::Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 
@@ -370,13 +370,13 @@ void Godunov_ppm_fpu_x_nolim (const int i, const int j, const int k, const int n
     amrex::Real sp1 = S(i+1,j,k,n);
     amrex::Real sp2 = S(i+2,j,k,n);
 
-    amrex::Real d1 = 0.5*(sp1-sm1);
-    amrex::Real d2 = 0.5*(s0-sm2);
+    amrex::Real d1 = 0.5*(sp1 - sm1);
+    amrex::Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 
@@ -425,13 +425,13 @@ void Godunov_ppm_fpu_y_nolim (const int i, const int j, const int k, const int n
     Real sp1 = S(i,j+1,k,n);
     Real sp2 = S(i,j+2,k,n);
 
-    Real d1 = 0.5*(sp1-sm1);
-    Real d2 = 0.5*(s0-sm2);
+    Real d1 = 0.5*(sp1 - sm1);
+    Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 
@@ -480,13 +480,13 @@ void Godunov_ppm_fpu_z_nolim (const int i, const int j, const int k, const int n
     Real sp1 = S(i,j,k+1,n);
     Real sp2 = S(i,j,k+2,n);
 
-    Real d1 = 0.5*(sp1-sm1);
-    Real d2 = 0.5*(s0-sm2);
+    Real d1 = 0.5*(sp1 - sm1);
+    Real d2 = 0.5*(s0 - sm2);
 
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
 
-    d1 = 0.5*(sp2-s0);
-    d2 = 0.5*(sp1-sm1);
+    d1 = 0.5*(sp2 - s0);
+    d2 = 0.5*(sp1 - sm1);
 
     sedge2 = 0.5e0*(sp1 + s0) - sixth*(d1 - d2);
 

@@ -16,7 +16,7 @@ void godunov::predict_ppm (int lev, Box const& bx, int /* ncomp */,
                           Vector<Geometry> geom,
                           Real dt,
                           amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
-                          bool godunov_ppm_limiter)
+                          bool use_limiter)
 {
     BL_PROFILE("amr-wind::godunov::predict_ppm");
     const auto dx = geom[lev].CellSizeArray();
@@ -30,7 +30,7 @@ void godunov::predict_ppm (int lev, Box const& bx, int /* ncomp */,
 
     BCRec const* pbc = bcrec_device.data();
 
-    if(godunov_ppm_limiter) {
+    if(use_limiter) {
         amrex::ParallelFor(bx, AMREX_SPACEDIM,
         [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
         {

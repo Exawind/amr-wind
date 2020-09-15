@@ -26,7 +26,7 @@ void compute_advection(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     bool godunov_ppm,
-    bool godunov_ppm_limiter);
+    bool use_limiter);
 
 void predict_ppm(
     int lev,
@@ -43,7 +43,7 @@ void predict_ppm(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
-    bool godunov_ppm_limiter);
+    bool use_limiter);
 
 void predict_plm_x(
     int lev,

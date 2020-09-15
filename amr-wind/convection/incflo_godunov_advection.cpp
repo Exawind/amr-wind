@@ -19,7 +19,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
                            Vector<amrex::Geometry> geom,
                            Real dt,
                            bool godunov_ppm,
-                           bool godunov_ppm_limiter)
+                           bool use_limiter)
 {
     BL_PROFILE("amr-wind::godunov::compute_advection");
     Box const& xbx = amrex::surroundingNodes(bx,0);
@@ -74,7 +74,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
 
     // Use PPM to generate Im and Ip */
     if (godunov_ppm) {
-        if(godunov_ppm_limiter) {
+        if(use_limiter) {
 
             amrex::ParallelFor(bxg1, ncomp,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
