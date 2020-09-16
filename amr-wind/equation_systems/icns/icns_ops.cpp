@@ -55,6 +55,8 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate, const bool 
         rho_face_const;
     rho_face_const.reserve(repo.num_active_levels());
 
+    amrex::Real factor = has_overset ? 0.5 * dt : 1.0;
+
     for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
         rho_face[lev][0] = &(*rho_xf)(lev);
         rho_face[lev][1] = &(*rho_yf)(lev);
@@ -63,7 +65,7 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate, const bool 
         amrex::average_cellcenter_to_face(
             rho_face[lev], density(lev), geom[lev]);
         for (int idim = 0; idim < ICNS::ndim; ++idim) {
-            rho_face[lev][idim]->invert(dt, 0);
+            rho_face[lev][idim]->invert(factor, 0);
         }
 
         rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
