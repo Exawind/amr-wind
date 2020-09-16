@@ -4,6 +4,7 @@
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/utilities/tensor_ops.H"
 
 #include "netcdf.h"
 
@@ -343,6 +344,7 @@ void interp_perturb_vel(
     vel[i] = wt.xl * velL[i] + wt.xr * velR[i];
 }
 
+
 }
 
 SyntheticTurbulence::SyntheticTurbulence(
@@ -423,8 +425,7 @@ SyntheticTurbulence::SyntheticTurbulence(
   m_turb_grid.trMat_[2][1] = 0.0;
   m_turb_grid.trMat_[2][2] = 1.0;
   // y = z .cross. x
-  //TODO: WHERE IS CROSS3
-  //cross3(&m_turb_grid.trMat_[2][0], &m_turb_grid.trMat_[0][0], &m_turb_grid.trMat_[1][0]);
+  utils::cross_prod(&m_turb_grid.trMat_[2][0], &m_turb_grid.trMat_[0][0], &m_turb_grid.trMat_[1][0]);
 
   amrex::Print()
     << "Synthethic turbulence forcing initialized \n"
@@ -461,7 +462,7 @@ void SyntheticTurbulence::initialize()
 {
   // Convert current time to an equivalent length based on the reference
   // velocity to determine the position within the turbulence grid
-  const amrex::Real curTime = m_time.current_time() - m_time_offset;
+  const amrex::Real curTime = m_time.new_time() - m_time_offset;
   const amrex::Real eqivLen = m_wind_profile->reference_velocity() * curTime;
   int il, ir;
   get_lr_indices(m_turb_grid, 0, eqivLen, il, ir);
@@ -474,7 +475,7 @@ void SyntheticTurbulence::update()
 {
   // Convert current time to an equivalent length based on the reference
   // velocity to determine the position within the turbulence grid
-  const amrex::Real curTime = m_time.current_time() - m_time_offset;
+  const amrex::Real curTime = m_time.new_time() - m_time_offset;
   const amrex::Real eqivLen = m_wind_profile->reference_velocity() * curTime;
 
   InterpWeights weights;
@@ -566,42 +567,6 @@ void SyntheticTurbulence::update()
       }
   }
 
-  // for (auto* b: bkts) {
-  //   for (auto node: *b) {
-  //     const amrex::Real* xyzG = stk::mesh::field_data(*coordinates, node);
-  //     amrex::Real* forcing = stk::mesh::field_data(*turbForcingField_, node);
-
-  //     // Transform to local coordinates
-  //     global_to_local(m_turb_grid, xyzG, xyzL);
-
-  //     // Check if the point is in the box, if not we skip this node. The
-  //     // function will also populate the interpolation weights for points that
-  //     // are determined to be within the box.
-  //     bool ptInBox = find_point_in_box(m_turb_grid, xyzL, weights);
-  //     if (!ptInBox) continue;
-
-  //     // Interpolate perturbation velocities in the local reference frame
-  //     interp_perturb_vel(m_turb_grid, weights, velL);
-  //     // Transform to global coordinates
-  //     local_to_global_vel(m_turb_grid, velL, velG);
-
-  //     // Based on the equations in http://doi.wiley.com/10.1002/we.1608
-  //     // v_n in Eq. 10
-  //     const amrex::Real vMag = std::sqrt(velG[0] * velG[0] + velG[1] * velG[1] + velG[2] * velG[2]);
-  //     // (V_n + 1/2 v_n) in Eq. 10
-  //     const amrex::Real vMagTotal = ((*m_wind_profile)(xyzG[2]) + 0.5 * vMag);
-  //     // Smearing factor (see Eq. 11). The normal direction to the grid is the
-  //     // x-axis of the local reference frame by construction
-  //     const amrex::Real term1 = xyzL[0] / m_epsilon;
-  //     const amrex::Real eta = std::exp(-(term1 * term1)) * m_gauss_scaling;
-  //     const amrex::Real factor = vMagTotal * eta / m_grid_spacing;
-
-  //     // Defer density and volume scaling to the nodal assembly algorithm
-  //     forcing[0] = velG[0] * factor;
-  //     forcing[1] = velG[1] * factor;
-  //     forcing[2] = velG[2] * factor;
-  //   }
-  // }
 }
 
 }  // namespace amr_wind
