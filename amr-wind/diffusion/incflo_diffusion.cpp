@@ -256,6 +256,11 @@ void wall_model_bc(
                             bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
+                            
+
+
+
+
                         });
                 }
 
@@ -276,6 +281,156 @@ void wall_model_bc(
 
         } // MFIter loop
     } // level loop
+}
+
+void wall_model_bc_moeng(
+    amr_wind::Field& velocity,
+    const amrex::Real utau,
+    const amr_wind::FieldState fstate,
+    const amrex::FArrayBox& inst_plane_vel)
+{
+    BL_PROFILE("amr-wind::diffusion::wall_model_bc")
+    auto& repo = velocity.repo();
+    auto& density = repo.get_field("density", fstate);
+    auto& viscosity = repo.get_field("velocity_mueff");
+    const int nlevels = repo.num_active_levels();
+
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+
+    auto store_xy_vel_arr = inst_plane_vel.array();
+    const auto& bxPlanar = inst_plane_vel.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+
+    // copies cell center to face
+    Real c0 = 1.0;
+    Real c1 = 0.0;
+
+    // linear extrapolate onto face
+    if(extrapolate)
+    {
+        c0 =  1.5;
+        c1 = -0.5;
+    }
+
+    const Real utau2 = utau*utau;
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& vel_lev = velocity(lev);
+        auto& eta_lev = viscosity(lev);
+
+        if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto bc  = vel_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto eta = eta_lev.array(mfi);
+
+            int idim = 2;
+
+            if (!geom.isPeriodic(idim)) {
+                if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            // Dirichlet BC
+                            bc(i, j, k - 1, 2) = 0.0;
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k - 1, 0) = store_xy_vel_arr(i, j, planarlo.z, 0)*
+                                den(i, j, k)*utau2/mu;
+                            bc(i, j, k - 1, 1) = store_xy_vel_arr(i, j, planarlo.z, 1)*
+                                den(i, j, k)*utau2/mu;
+
+
+                        });
+                }
+
+            }
+
+        } // MFIter loop
+    } // level loop
+}
+
+
+void temp_wall_model_bc(
+    amr_wind::Field& temperature,
+    const amrex::FArrayBox& inst_plane_temp,
+    const amr_wind::FieldState fstate)
+{
+    BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc")
+
+    auto& repo = temperature.repo();
+    auto& density = repo.get_field("density", fstate);
+    auto& alpha = repo.get_field("temperature_mueff");
+    const int nlevels = repo.num_active_levels();
+
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+
+    auto store_xy_temp_arr = inst_plane_temp.array();
+    const auto& bxPlanar = inst_plane_temp.box();
+
+    const auto planarlo = amrex::lbound(bxPlanar);
+
+    // copies cell center to face
+    Real c0 = 1.0;
+    Real c1 = 0.0;
+
+    // linear extrapolate onto face
+    if(extrapolate)
+    {
+        c0 =  1.5;
+        c1 = -0.5;
+    }
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& temp_lev = temperature(lev);
+        auto& alpha_lev = alpha(lev);
+
+        if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(temp_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto bc  = temp_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto alphaT = alpha_lev.array(mfi);
+
+            int idim = 2;
+
+            if (!geom.isPeriodic(idim)) {
+                if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                    temperature.bc_type()[zlo] ==  BC::wall_model) {
+                    amrex::ParallelFor(
+                        amrex::bdryLo(bx, idim),
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                          const Real alphaT_wall  = c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
+                          // Inhomogeneous Neumann BC
+                          bc(i, j, k - 1) = den(i, j, k)*store_xy_temp_arr(i, j, planarlo.z, 3)
+                              /alphaT_wall;
+
+                        });
+                }
+            }
+        }
+
+    }
+
 }
 
 Array<MultiFab,AMREX_SPACEDIM>

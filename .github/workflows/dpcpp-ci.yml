@@ -42,6 +42,7 @@ jobs:
         run: |
           set +e
           source /opt/intel/oneapi/setvars.sh
+          source /opt/intel/oneapi/compiler/2021.1-beta08/env/vars.sh
           set -e
           cmake -Bbuild \
             -DCMAKE_CXX_COMPILER=$(which dpcpp) \

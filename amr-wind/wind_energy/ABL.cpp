@@ -81,18 +81,17 @@ void ABL::post_init_actions()
 
     m_stats->calc_averages();
     
-    const VelPlaneAveraging& vel_pa = m_stats->vel_plane_averaging();
-    m_abl_wall_func.update_umean(vel_pa);
+    m_abl_wall_func.update_umean();
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-
     if (m_bndry_plane->is_initialized()) {
         m_bndry_plane->write_header();
         m_bndry_plane->write_file();
         m_bndry_plane->read_header();
         m_bndry_plane->read_file();
     }
+    (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -109,7 +108,7 @@ void ABL::pre_advance_work()
 {
     m_stats->calc_averages();
     const auto& vel_pa = m_stats->vel_plane_averaging();
-    m_abl_wall_func.update_umean(vel_pa);
+    m_abl_wall_func.update_umean();
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
