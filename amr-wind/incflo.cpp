@@ -81,13 +81,23 @@ void incflo::init_mesh()
 void incflo::init_amr_wind_modules()
 {
     BL_PROFILE("amr-wind::incflo::init_amr_wind_modules");
+
+    if (m_sim.has_overset()) {
+        m_sim.overset_manager()->post_init_actions();
+    } else {
+        auto& mask_cell = m_sim.repo().declare_int_field("mask_cell", 1, 1);
+        auto& mask_node = m_sim.repo().declare_int_field(
+            "mask_node", 1, 1, 1, amr_wind::FieldLoc::NODE);
+        mask_cell.setVal(1);
+        mask_node.setVal(1);
+    }
+
     for (auto& pp: m_sim.physics())
         pp->post_init_actions();
 
     icns().initialize();
     for (auto& eqn: scalar_eqns()) eqn->initialize();
 
-    if (m_sim.has_overset()) m_sim.overset_manager()->post_init_actions();
     m_sim.post_manager().initialize();
 }
 
@@ -152,12 +162,19 @@ bool incflo::regrid_and_update()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+
+        if (m_sim.has_overset()) {
+            m_sim.overset_manager()->post_regrid_actions();
+        } else {
+            auto& mask_cell = m_sim.repo().get_int_field("mask_cell");
+            auto& mask_node = m_sim.repo().get_int_field("mask_node");
+            mask_cell.setVal(1);
+            mask_node.setVal(1);
+        }
+
         icns().post_regrid_actions();
         for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
-
-        if (m_sim.has_overset())
-            m_sim.overset_manager()->post_regrid_actions();
     }
 
     return m_time.do_regrid();
@@ -170,6 +187,12 @@ bool incflo::regrid_and_update()
 void incflo::post_advance_work()
 {
     BL_PROFILE("amr-wind::incflo::post_advance_work");
+    for (auto& pp: m_sim.physics())
+        pp->post_advance_work();
+
+    m_sim.post_manager().post_advance_work();
+    if (m_verbose > 1) PrintMaxValues("end of timestep");
+
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
     }
@@ -200,9 +223,11 @@ void incflo::Evolve()
     while(m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
         regrid_and_update();
+        pre_advance_stage1();
+        pre_advance_stage2();
 
-        // Advance to time t + dt
         amrex::Real time1 = amrex::ParallelDescriptor::second();
+        // Advance to time t + dt
         advance();
         amrex::Print() << std::endl;
         amrex::Real time2 = amrex::ParallelDescriptor::second();
@@ -210,9 +235,10 @@ void incflo::Evolve()
         amrex::Real time3 = amrex::ParallelDescriptor::second();
 
         amrex::Print() << "WallClockTime: " << m_time.time_index()
-                       << " Solve: " << std::setprecision(8) << (time2 - time1)
-                       << " Misc: " << std::setprecision(6) << (time3 - time2)
-                       << " Total: " << std::setprecision(8) << (time3 - time0) << std::endl;
+                       << " Pre: " << std::setprecision(3) << (time1 - time0)
+                       << " Solve: " << std::setprecision(4) << (time2 - time1)
+                       << " Post: " << std::setprecision(3) << (time3 - time2)
+                       << " Total: " << std::setprecision(4) << (time3 - time0) << std::endl;
     }
     amrex::Print()
         << "\n==============================================================================\n"

@@ -83,6 +83,8 @@ public:
     void init_amr_wind_modules();
     void prepare_for_time_integration();
     bool regrid_and_update();
+    void pre_advance_stage1();
+    void pre_advance_stage2();
     void advance();
     void post_advance_work();
 

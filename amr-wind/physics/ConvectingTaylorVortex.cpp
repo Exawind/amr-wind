@@ -49,6 +49,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     pp.query("density", m_rho);
     pp.query("u0", m_u0);
     pp.query("v0", m_v0);
+    pp.query("activate_pressure", m_activate_pressure);
     {
         amrex::Real nu;
         amrex::ParmParse pp("transport");
@@ -78,6 +79,8 @@ void ConvectingTaylorVortex::initialize_fields(
 
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
+    auto& pressure = m_repo.get_field("p")(level);
+    auto& gradp = m_repo.get_field("gp")(level);
 
     density.setVal(m_rho);
 
@@ -90,6 +93,7 @@ void ConvectingTaylorVortex::initialize_fields(
         const auto& dx = geom.CellSizeArray();
         const auto& problo = geom.ProbLoArray();
         auto vel = velocity.array(mfi);
+        auto gp = gradp.array(mfi);
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -98,7 +102,29 @@ void ConvectingTaylorVortex::initialize_fields(
                 vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 2) = 0.0;
+
+                if (m_activate_pressure) {
+                    gp(i, j, k, 0) = 0.25 * 2.0 * utils::pi() *
+                                     std::sin(2.0 * utils::pi() * x);
+                    gp(i, j, k, 1) = 0.25 * 2.0 * utils::pi() *
+                                     std::sin(2.0 * utils::pi() * y);
+                    gp(i, j, k, 2) = 0.0;
+                }
             });
+
+        if (m_activate_pressure) {
+            const auto& nbx = mfi.nodaltilebox();
+            auto pres = pressure.array(mfi);
+
+            amrex::ParallelFor(
+                nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + i * dx[0];
+                    const amrex::Real y = problo[1] + j * dx[1];
+                    pres(i, j, k, 0) =
+                        -0.25 * (std::cos(2.0 * utils::pi() * x) +
+                                 std::cos(2.0 * utils::pi() * y));
+                });
+        }
     }
 }
 

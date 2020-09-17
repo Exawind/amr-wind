@@ -85,6 +85,8 @@ private:
 
     //! error log file
     const std::string m_output_fname{"ctv.log"};
+
+    bool m_activate_pressure{false};
 };
 } // namespace ctv
 } // namespace amr_wind

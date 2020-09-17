@@ -13,7 +13,7 @@
 namespace amr_wind {
 namespace pde {
 
-void advection_mac_project(FieldRepo& repo, FieldState fstate, const bool);
+void advection_mac_project(FieldRepo& repo, FieldState fstate, const bool, const amrex::Real dt);
 
 /** Specialization of field registration for ICNS
  *  \ingroup icns
@@ -39,7 +39,7 @@ struct FieldRegOp<ICNS, Scheme>
         auto& rho = repo.declare_cc_field(
             "density", 1, Scheme::nghost_state, Scheme::num_states);
         auto& grad_p = repo.declare_cc_field("gp", ICNS::ndim, 0, 1);
-        auto& pressure = repo.declare_nd_field("p", 1, 0, 1);
+        auto& pressure = repo.declare_nd_field("p", 1, Scheme::nghost_state, 1);
         repo.declare_face_normal_field(
             {"u_mac", "v_mac", "w_mac"}, 1, Scheme::nghost_mac, 1);
 
@@ -230,7 +230,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // MAC projection
-        advection_mac_project(repo, fstate, has_overset);
+        advection_mac_project(repo, fstate, has_overset, dt);
 
         //
         // Advect momentum eqns
@@ -289,7 +289,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real , const bool has_overset)
+    void operator()(const FieldState fstate, const amrex::Real dt, const bool has_overset)
     {
 
         auto& repo = fields.repo;
@@ -328,7 +328,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
             }
         }
 
-        advection_mac_project(repo, fstate, has_overset);
+        advection_mac_project(repo, fstate, has_overset, dt);
 
         //
         // Advect velocity
