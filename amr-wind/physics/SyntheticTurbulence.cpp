@@ -354,7 +354,7 @@ SyntheticTurbulence::SyntheticTurbulence(
       m_mesh(sim.mesh()),
       m_velocity(sim.repo().get_field("velocity")),
       m_density(sim.repo().get_field("density")),
-      m_turb_force(sim.repo().declare_field("synth_turb_forcing"))
+      m_turb_force(sim.repo().declare_field("synth_turb_forcing", 3))
 {
   const amrex::Real pi = std::acos(-1.0);
 
@@ -537,6 +537,7 @@ void SyntheticTurbulence::update()
                 // Transform to global coordinates
                 local_to_global_vel(m_turb_grid, velL, velG);
 
+                
                 // Based on the equations in
                 // http://doi.wiley.com/10.1002/we.1608
                 // v_n in Eq. 10
@@ -550,18 +551,21 @@ void SyntheticTurbulence::update()
                 // Smearing factor (see Eq. 11). The normal direction to
                 // the grid is the x-axis of the local reference frame by
                 // construction
+
                 const amrex::Real term1 = xyzL[0] / m_epsilon;
                 const amrex::Real eta =
                     std::exp(-(term1 * term1)) * m_gauss_scaling;
                 const amrex::Real factor =
                     vMagTotal * eta / m_grid_spacing;
 
+                
                 turb_force_arr(i,j,k,0) =
                     rho_arr(i,j,k) * velG[0] * factor;
                 turb_force_arr(i,j,k,1) =
                     rho_arr(i,j,k) * velG[1] * factor;
                 turb_force_arr(i,j,k,2) =
                     rho_arr(i,j,k) * velG[2] * factor;
+
             }
           });
       }
