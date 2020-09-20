@@ -43,6 +43,9 @@ include(AMReXBuildInfo)
 # PRE_BUILD etc.
 add_library(amrwind_buildinfo)
 generate_buildinfo(amrwind_buildinfo ${CMAKE_SOURCE_DIR})
+if (AMR_WIND_ENABLE_HIP)
+  setup_target_for_hip_compilation(amrwind_buildinfo)
+endif()
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex)
 if (AMR_WIND_ENABLE_NETCDF)
@@ -51,7 +54,6 @@ if (AMR_WIND_ENABLE_NETCDF)
 endif()
 target_link_libraries(${amr_wind_lib_name} PRIVATE amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
-target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name})
 
 # Set -fpic options
 set_target_properties(

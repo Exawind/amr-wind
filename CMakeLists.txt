@@ -25,6 +25,7 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
+option(AMR_WIND_ENABLE_HIP "Enable AMD HIP/ROCm" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 
 # Third party libraries
@@ -45,6 +46,16 @@ if(AMR_WIND_ENABLE_CUDA)
   if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "10.0")
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
+  endif()
+endif()
+
+if (AMR_WIND_ENABLE_HIP)
+  find_package(HIP REQUIRED)
+  if (NOT DEFINED AMD_ARCH)
+    set(AMD_ARCH "gfx906,gfx908")
+  endif()
+  if (NOT DEFINED AMREX_HIPCC_FLAGS)
+    set(AMREX_HIPCC_FLAGS "-fPIC -Wno-pass-failed")
   endif()
 endif()
 
@@ -71,14 +82,12 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
 #Create target names
-set(amr_wind_lib_name "amrwind_obj")
+set(amr_wind_lib_name "amrwind")
 set(amr_wind_exe_name "amr_wind")
 set(amr_wind_unit_test_exe_name "${amr_wind_exe_name}_unit_tests")
-set(aw_api_lib "amrwind_api")
 
 #Create main target executable
-add_library(${amr_wind_lib_name} OBJECT)
-add_library(${aw_api_lib} SHARED)
+add_library(${amr_wind_lib_name} SHARED)
 add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
@@ -127,6 +136,12 @@ if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   endif()
 endif()
 
+if (AMR_WIND_ENABLE_HIP)
+  setup_target_for_hip_compilation(${amr_wind_lib_name})
+  setup_target_for_hip_compilation(${amr_wind_exe_name})
+  setup_target_for_hip_compilation(${amr_wind_unit_test_exe_name})
+endif()
+
 if(AMR_WIND_ENABLE_TESTS)
   enable_testing()
   include(CTest)
@@ -140,7 +155,7 @@ endif()
 #Define what we want to be installed during a make install
 install(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
-  ${aw_api_lib} ${amr_wind_lib_name} amrwind_buildinfo
+  ${amr_wind_lib_name} amrwind_buildinfo
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

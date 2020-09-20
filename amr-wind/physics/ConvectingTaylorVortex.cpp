@@ -10,7 +10,7 @@ namespace ctv {
 
 namespace {
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -23,7 +23,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
                     std::exp(-2.0 * omega * t);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real u0,
     const amrex::Real v0,
     const amrex::Real omega,
