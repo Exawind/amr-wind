@@ -206,7 +206,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
     for (const auto& plane : m_planes) {
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
 
-        if (not(std::find(valid_planes.begin(), valid_planes.end(), plane) !=
+        if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
                 valid_planes.end())) {
             throw std::runtime_error(
                 "Requested plane (" + plane +
