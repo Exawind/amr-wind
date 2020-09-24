@@ -33,7 +33,7 @@ function(add_test_r TEST_NAME)
     # Copy files to test working directory
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
     # Set some default runtime options for all tests in this category
-    set(RUNTIME_OPTIONS "time.checkpoint_interval=-1 time.max_step=10 amr.plot_file=plt time.plot_interval=10 amrex.throw_exception=1 amrex.signal_handling=0")
+    set(RUNTIME_OPTIONS "time.max_step=10 amr.plot_file=plt time.plot_interval=10 amrex.throw_exception=1 amrex.signal_handling=0")
     if(AMR_WIND_ENABLE_CUDA)
       set(FCOMPARE_TOLERANCE "-r 1e-12")
     endif()
@@ -101,7 +101,7 @@ function(add_test_v TEST_NAME LIST_OF_GRID_SIZES)
       # Set the run command for this resolution
       set(RUN_COMMAND_${GRID_SIZE} "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}/${TEST_NAME}.i")
       # Set some runtime options for each resolution
-      set(RUNTIME_OPTIONS_${GRID_SIZE} "time.checkpoint_interval=-1 amrex.throw_exception=1 amrex.signal_handling=0 amr.n_cell=${NCELLS}")
+      set(RUNTIME_OPTIONS_${GRID_SIZE} "amrex.throw_exception=1 amrex.signal_handling=0 amr.n_cell=${NCELLS}")
       # Construct our large run command for the entire test with everything &&'d together
       string(APPEND MASTER_RUN_COMMAND "cd ${CURRENT_TEST_BINARY_DIR}/${GRID_SIZE}")
       string(APPEND MASTER_RUN_COMMAND " && ")
