@@ -124,6 +124,8 @@ if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   if (AMR_WIND_ENABLE_CUDA)
     get_target_property(UTEST_SOURCES ${amr_wind_unit_test_exe_name} SOURCES)
     set_source_files_properties(${UTEST_SOURCES} PROPERTIES LANGUAGE CUDA)
+    set_target_properties(${amr_wind_unit_test_exe_name} PROPERTIES
+      CUDA_SEPARABLE_COMPILATION ON)
   endif()
 endif()
 
