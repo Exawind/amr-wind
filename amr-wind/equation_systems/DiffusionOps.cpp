@@ -77,11 +77,14 @@ void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
         mlmg.setBottomSolver(amrex::MLMG::BottomSolver::hypre);
     }
 
+    // MLMG options
+    mlmg.setVerbose(opts.verbose);
     mlmg.setMaxIter(opts.max_iter);
     mlmg.setMaxFmgIter(opts.fmg_max_iter);
-    mlmg.setCGMaxIter(opts.cg_max_iter);
-    mlmg.setVerbose(opts.verbose);
-    mlmg.setCGVerbose(opts.cg_verbose);
+
+    // Bottom solver options
+    mlmg.setBottomMaxIter(opts.cg_max_iter);
+    mlmg.setBottomVerbose(opts.cg_verbose);
 }
 
 
