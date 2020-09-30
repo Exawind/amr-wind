@@ -37,12 +37,11 @@ jobs:
           echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libopenmpi-dev intel-oneapi-dpcpp-compiler intel-oneapi-mkl
+            libopenmpi-dev intel-oneapi-dpcpp-compiler intel-oneapi-mkl-devel
       - name: Configure and build
         run: |
           set +e
           source /opt/intel/oneapi/setvars.sh
-          source /opt/intel/oneapi/compiler/2021.1-beta08/env/vars.sh
           set -e
           cmake -Bbuild \
             -DCMAKE_CXX_COMPILER=$(which dpcpp) \
