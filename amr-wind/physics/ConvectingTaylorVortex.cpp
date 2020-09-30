@@ -76,6 +76,7 @@ void ConvectingTaylorVortex::initialize_fields(
     const auto u0 = m_u0;
     const auto v0 = m_v0;
     const auto omega = m_omega;
+    const bool activate_pressure = m_activate_pressure;
 
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
@@ -103,7 +104,7 @@ void ConvectingTaylorVortex::initialize_fields(
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 2) = 0.0;
 
-                if (m_activate_pressure) {
+                if (activate_pressure) {
                     gp(i, j, k, 0) = 0.25 * 2.0 * utils::pi() *
                                      std::sin(2.0 * utils::pi() * x);
                     gp(i, j, k, 1) = 0.25 * 2.0 * utils::pi() *
@@ -112,7 +113,7 @@ void ConvectingTaylorVortex::initialize_fields(
                 }
             });
 
-        if (m_activate_pressure) {
+        if (activate_pressure) {
             const auto& nbx = mfi.nodaltilebox();
             auto pres = pressure.array(mfi);
 
