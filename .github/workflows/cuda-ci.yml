@@ -46,5 +46,7 @@ jobs:
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.0/lib:${LD_LIBRARY_PATH}
           cmake -Bbuild \
             -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_CUDA=ON .
+            -DAMR_WIND_ENABLE_CUDA=ON \
+            -DCUDA_ERROR_CAPTURE_THIS:BOOL=ON \
+            -DCUDA_ARCH=Volta .
           cmake --build build -- -j $(nproc)
