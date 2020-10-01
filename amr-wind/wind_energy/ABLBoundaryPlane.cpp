@@ -589,6 +589,8 @@ void ABLBoundaryPlane::populate_data(
             }
         }
     }
+#else
+    amrex::ignore_unused(lev, time, fld, mfab);
 #endif
 }
 
@@ -659,7 +661,6 @@ void ABLBoundaryPlane::write_data(
         grp.var(name).put(buffer.data.dataPtr(), buffer.start, buffer.count);
     }
 }
-#endif
 
 void ABLBoundaryPlane::impl_buffer_field(
     const amrex::Box bx,
@@ -670,8 +671,6 @@ void ABLBoundaryPlane::impl_buffer_field(
     const amrex::Array4<const amrex::Real>& fld,
     amrex::Gpu::ManagedVector<amrex::Real>& buffer)
 {
-#ifdef AMR_WIND_USE_NETCDF
-
     auto d_buffer = buffer.dataPtr();
     const auto lo = bx.loVect3d();
     amrex::ParallelFor(
@@ -682,6 +681,6 @@ void ABLBoundaryPlane::impl_buffer_field(
                 0.5 * (fld(i, j, k, n) + fld(i - v_offset[0], j - v_offset[1],
                                              k - v_offset[2], n));
         });
-#endif
 }
+#endif
 } // namespace amr_wind
