@@ -25,11 +25,26 @@ on:
       - '.github/workflows/cuda-ci.yml'
 
 jobs:
-  build:
+  cuda-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Check CUDA build
-        run: docker build -t amr-wind .
+      - name: Prepare CUDA environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          wget -q -O  https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | sudo apt-key add -
+          echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list
+          echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+              libopenmpi-dev cuda-command-line-tools-11-0 cuda-compiler-11-0 cuda-cupti-dev-11-0 cuda-minimal-build-11-0 cuda-nvml-dev-11-0 cuda-nvtx-11-0 libcurand-dev-11-0
+      - name: Configure and build
+        run: |
+          export PATH=/usr/local/nvidia/bin:/usr/local/cuda-11.0/bin:${PATH}
+          export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-11.0/lib:${LD_LIBRARY_PATH}
+          cmake -Bbuild \
+            -DAMR_WIND_ENABLE_MPI=OFF \
+            -DAMR_WIND_ENABLE_CUDA=ON .
+          cmake --build build -- -j $(nproc)
