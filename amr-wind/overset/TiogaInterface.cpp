@@ -105,6 +105,9 @@ void TiogaInterface::register_solution()
     m_qnode = repo.create_scratch_field(
         pres.num_comp(), pres.num_grow()[0], pres.field_location());
 
+    vel.fillpatch(0.0);
+    pres.fillpatch(0.0);
+
     field_ops::copy(*m_qcell, vel, 0, 0, vel.num_comp(), vel.num_grow());
     field_ops::copy(*m_qnode, pres, 0, 0, pres.num_comp(), pres.num_grow());
 }
@@ -112,7 +115,7 @@ void TiogaInterface::register_solution()
 void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
-    auto& vel = repo.get_field("velocity");
+    auto& vel = repo.get_field("velocity").state(amr_wind::FieldState::Old);
     auto& pres = repo.get_field("p");
 
     field_ops::copy(vel, *m_qcell, 0, 0, vel.num_comp(), vel.num_grow());
@@ -160,6 +163,12 @@ void TiogaInterface::update_solution()
         }
     }
 #endif
+
+    // fixme this is only necessary because tioga does
+    // not fill in ghosts yet
+    vel.fillpatch(0.0);
+    pres.fillpatch(0.0);
+
 }
 
 void TiogaInterface::amr_to_tioga_mesh()

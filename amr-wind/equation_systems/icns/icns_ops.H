@@ -47,8 +47,11 @@ struct FieldRegOp<ICNS, Scheme>
             repo.mesh(), time, probtype);
         grad_p.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
             repo.mesh(), time, probtype);
-        pressure.template register_fill_patch_op<FieldFillConstScalar>(0.0);
-
+        //pressure.template register_fill_patch_op<FieldFillConstScalar>(0.0);
+        // fixme this is only necessary since tioga does not fill in ghosts
+        // convert back later
+        pressure.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+            repo.mesh(), time, probtype);
         rho.fillpatch_on_regrid() = true;
         grad_p.fillpatch_on_regrid() = true;
 
