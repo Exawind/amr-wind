@@ -1,7 +1,7 @@
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            SIMULATION STOP            #
 #.......................................#
-time.stop_time               =   22000.0     # Max (simulated) time to evolve
+time.stop_time               =   200.0     # Max (simulated) time to evolve
 time.max_step                =   -1          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -32,18 +32,18 @@ CoriolisForcing.latitude = 90.0
 CoriolisForcing.rotational_time_period = 86164.0900027328
 GeostrophicForcing.geostrophic_wind = 15.0 0.0 0.0
 
+
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 8 8 400     # Grid cells at coarsest AMRlevel
+amr.n_cell              = 4 4 400     # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
 amr.blocking_factor     = 4
-
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
-geometry.prob_lo        =   0.   -50.     0.  # Lo corner coordinates
-geometry.prob_hi        =   100.  50.  5000.  # Hi corner coordinates
+geometry.prob_lo        =    0.   0.     0.  # Lo corner coordinates
+geometry.prob_hi        =   50.  50.  5000.  # Hi corner coordinates
 geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions

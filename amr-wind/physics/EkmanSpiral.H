@@ -6,24 +6,6 @@
 #include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
-namespace ekmanspiral {
-
-namespace {
-struct UExact
-{
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
-    const int m_comp{0};
-};
-
-struct VExact
-{
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
-    const int m_comp{1};
-};
-
-} // namespace
 
 /** Ekman Spiral physics
  *  \ingroup physics
@@ -72,7 +54,6 @@ private:
     //! error log file
     const std::string m_output_fname{"ekman_spiral.log"};
 };
-} // namespace ekmanspiral
 } // namespace amr_wind
 
 #endif /* EkmanSpiral_H */

@@ -6,15 +6,28 @@
 #include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind {
-namespace ekmanspiral {
 
 namespace {
+
+struct UExact
+{
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
+    const int m_comp{0};
+};
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real UExact::operator()(
     const amrex::Real v0, const amrex::Real a, const amrex::Real z) const
 {
     return v0 * (1.0 - std::exp(-a * z) * std::cos(-a * z));
 }
+
+struct VExact
+{
+    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(const amrex::Real, const amrex::Real, const amrex::Real) const;
+    const int m_comp{1};
+};
 
 AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
     const amrex::Real v0, const amrex::Real a, const amrex::Real z) const
@@ -190,5 +203,4 @@ void EkmanSpiral::post_init_actions() { output_error(); }
 
 void EkmanSpiral::post_advance_work() { output_error(); }
 
-} // namespace ekmanspiral
 } // namespace amr_wind
