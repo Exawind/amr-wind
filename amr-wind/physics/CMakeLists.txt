@@ -8,4 +8,5 @@ target_sources(${amr_wind_lib_name}
   TaylorGreenVortex.cpp
   FreeStream.cpp
   ConvectingTaylorVortex.cpp
+  EkmanSpiral.cpp
   )
