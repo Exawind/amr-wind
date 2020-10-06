@@ -172,6 +172,7 @@ add_test_re(abl_godunov_static_refinement)
 add_test_re(ctv_godunov_plm)
 add_test_re(abl_ksgsm84_godunov)
 add_test_re(abl_godunov_nolim)
+add_test_re(ekman_spiral)
 
 if (AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
