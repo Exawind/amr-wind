@@ -170,10 +170,10 @@ simplifying further we arrive at the Ekman spiral solution
 
 Velocity profiles of AMR-wind with a Geostrophic wind of 15 m/s
 
-.. image:: ./ekman_spiral_velocity2.pdf
+.. image:: ./ekman_spiral_velocity.pdf
    :width: 300pt
 
-Wind direction :math:`\arctan{v/u} \frac{180}{\pi}`
+Wind direction :math:`\tan^{-1}(v/u) \frac{180}{\pi}`
 
 .. image:: ./ekman_spiral_wind_direction.pdf
    :width: 300pt
