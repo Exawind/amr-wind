@@ -85,3 +85,100 @@ where :math:`s^h` is the numerical solution, :math:`s^*` is the exact
 solution, and :math:`N_e` is the number of elements. :math:`N`, used
 below, is the number of element on a side of the cube (:math:`N_e =
 N^3`).
+
+Ekman spiral 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Solution method adapted from this Ekman `lecture 
+<https://houraad.github.io/MPO503/Lecture%2011.xhtml>`_. Ekman assumed steady, homogeneous and horizontal flow with friction on a rotating Earth. Hence, the horizontal and time derivatives are zero.
+
+.. math::
+	\frac{\partial}{\partial t} = \frac{\partial}{\partial x} = \frac{\partial}{\partial y} = 0
+
+This leave a balance between vertical friction and the Coriolis force:
+
+.. math::
+   -fv = A_z \frac{\partial^2 u}{\partial z^2}  (1)
+
+.. math::
+   fu = A_z \frac{\partial^2 v}{\partial z^2} + f u_g (2)
+
+where :math:`A_z` is the eddy viscosity assumed to be constant throughout the boundary layer. If we multiply (2) by :math:`i` and add to (1) we get:
+
+.. math::
+   ifu - fv = \frac{\partial^2 \left( u + iv) \right)}{\partial z^2} 
+   
+where :math:`i = \sqrt{-1}`, rearranging the left hand side to get :math:`u+iv`
+
+.. math::
+   if(u+iv) = \frac{\partial^2 \left( u + iv) \right)}{\partial z^2} 
+   
+Next we define :math:`V = u+iv` and substitute that in:
+
+.. math::
+   \frac{\partial^2 V}{\partial z^2} - a^2 V = -a^2 u_g
+   
+where :math:`a = \sqrt{\frac{if}{A_z}}`. The solution to this constant coefficient second-order differential equation is:
+
+.. math::
+   V = Ae^{az} + Be^{-az} + u_g
+   
+The boundary conditions for this flow are :math:`z=0, u=v=0` and at :math:`z \rightarrow \infty, u \rightarrow u_g, v \rightarrow 0` therefore :math:`A=0`
+
+.. math::
+   V = B e^{-az} + u_g
+   
+where :math:`B = \hat{B}e^{i\phi}` and :math:`\phi` is the angle of the velocity to the wind. Now separating into real and imaginary parts:
+
+.. math::
+   a = \sqrt{\frac{if}{A_z}} = \sqrt{i} \sqrt{\frac{f}{A_z}} = \frac{1+i}{\sqrt{2}}  \sqrt{\frac{f}{A_z}}  = \left(1+i \right) \sqrt{\frac{f}{2 A_z}} = \frac{1+i}{D_E}
+   
+where :math:`D_E = \sqrt{\frac{2 A_z}{f}}` is the Ekman depth. 
+
+.. math::
+   V = \hat{B} e^{i\phi} e^{-(1+i)z/D_E} + u_g
+
+rearranging
+
+.. math::
+   V = \hat{B} e^{-z/D_E} e^{i \left(\phi-z/D_E \right)} + u_g
+   
+using Eulers identity :math:`e^{i\theta} = \cos(\theta) + i \sin(\theta)` we can split this into real and imaginary parts
+
+.. math::
+   V = \hat{B} e^{-z/D_E} \left [ \cos(\phi-z/D_E ) + i \sin(\phi-z/D_E ) \right ] + u_g
+   
+.. math::
+   u = \hat{B} e^{-z/D_E} \cos(\phi-z/D_E ) + u_g
+   
+.. math::
+   v = \hat{B} e^{-z/D_E} \sin(\phi-z/D_E )
+   
+apply the boundary conditions :math:`u(0) = 0`,
+
+.. math::
+   \hat{B} + u_g = 0 \rightarrow \hat{B} = -u_g
+ 
+simplifying further we arrive at the Ekman spiral solution
+ 
+.. math::
+   u = u_g\left [1- e^{-z/D_E} \cos(\phi-z/D_E ) \right]
+   
+.. math::
+   v = u_g e^{-z/D_E} \sin(\phi-z/D_E )
+
+
+Velocity profiles of AMR-wind with a Geostrophic wind of 15 m/s
+
+.. image:: ./ekman_spiral_velocity2.pdf
+   :width: 300pt
+
+Wind direction :math:`\arctan{v/u} \frac{180}{\pi}`
+
+.. image:: ./ekman_spiral_wind_direction.pdf
+   :width: 300pt
+   
+AMR-wind :math:`L_2` error after :math:`t=200` seconds. 
+
+.. image:: ./ekman_spiral_error.pdf 
+   :width: 300pt
