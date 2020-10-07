@@ -29,11 +29,13 @@ protected:
         {
         amrex::ParmParse pp("incflo");
         pp.add("use_godunov", 1);
+        pp.add("use_limiter",0);
         }
         
         {
             amrex::ParmParse pp("time");
-            pp.add("max_step", 10);
+            pp.add("stop_time",3.);
+            pp.add("max_step", 3000);
             pp.add("fixed_dt", 0.001);
             pp.add("plot_interval",50);
         }
@@ -84,7 +86,7 @@ TEST_F(MultiphaseTest, levelset_test2)
     const int nlevels = field_repo.num_active_levels();
 
     //Declare the initial levelset field
-    auto& levelset = field_repo.get_field("levelset");
+    auto& levelset = field_repo.get_field("levelset").state(amr_wind::FieldState::New);
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
@@ -118,8 +120,10 @@ TEST_F(MultiphaseTest, levelset_test2)
     auto& wmac = field_repo.declare_field(
         "w_mac", 1, 0, 1, amr_wind::FieldLoc::ZFACE);
 
+    iomgr.write_plot_file();
     while (time.new_timestep()) {
-        
+
+    amrex::Print()<< "Current time is " <<time.current_time()<<std::endl;
         // Assign umac, vmac and wmac velocities
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(umac(lev)); mfi.isValid(); ++mfi) {
@@ -140,19 +144,25 @@ TEST_F(MultiphaseTest, levelset_test2)
                     const amrex::Real zc = problo[2] + (k+0.5)*dx[2];
                     ux(i,j,k) = 2.0*std::sin(M_PI*xface)*std::sin(M_PI*xface)
                                    *std::sin(2.0*M_PI*yc)*std::sin(2.0*M_PI*zc)*std::cos(M_PI*time.current_time()/TT);
-                    uy(i,j,k) =    -std::sin(M_PI*yface)*std::sin(M_PI*yface)
+                    uy(i,j,k) = -std::sin(M_PI*yface)*std::sin(M_PI*yface)
                                    *std::sin(2.0*M_PI*xc)*std::sin(2.0*M_PI*zc)*std::cos(M_PI*time.current_time()/TT);
-                    uz(i,j,k) =    -std::sin(M_PI*zface)*std::sin(M_PI*zface)
+                    uz(i,j,k) = -std::sin(M_PI*zface)*std::sin(M_PI*zface)
                                    *std::sin(2.0*M_PI*xc)*std::sin(2.0*M_PI*yc)*std::cos(M_PI*time.current_time()/TT);
                 });
             }
         }    
+        // Pre-advance 
+        levelset_pde.fields().field.advance_states();
+        levelset_pde.fields().field.state(amr_wind::FieldState::Old).fillpatch(time.current_time());
+
         // Do advection
-        levelset_pde.compute_advection_term(amr_wind::FieldState::New);
+        levelset_pde.compute_advection_term(amr_wind::FieldState::Old);
         levelset_pde.compute_predictor_rhs(DiffusionType::Explicit);
         
         // output plots
-        iomgr.write_plot_file();
+        if(time.write_plot_file()){
+            iomgr.write_plot_file();
+        }
     }
 }
 
