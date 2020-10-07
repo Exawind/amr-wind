@@ -11,6 +11,7 @@ add_subdirectory(utilities)
 add_subdirectory(equation_systems)
 add_subdirectory(turbulence)
 add_subdirectory(fvm)
+add_subdirectory(multiphase)
 if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
@@ -25,7 +26,7 @@ target_include_directories(${amr_wind_unit_test_exe_name} SYSTEM PRIVATE
 
 target_link_libraries(${amr_wind_unit_test_exe_name} PUBLIC ${amr_wind_lib_name})
 
-#Define what we want to be installed during a make install 
+#Define what we want to be installed during a make install
 install(TARGETS ${amr_wind_unit_test_exe_name}
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib
