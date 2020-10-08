@@ -6,7 +6,40 @@
 namespace amr_wind {
 namespace pde {
 
-template<typename Scheme>
+template <typename Scheme>
+struct FieldRegOp<Levelset, Scheme>
+{
+    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+
+    PDEFields operator()(const SimTime& time, const int probtype)
+    {
+        auto& repo = sim.repo();
+        auto fields =
+            create_fields_instance<Levelset, Scheme>(time, repo, probtype);
+
+        auto& normal =
+            repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
+        auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
+
+        normal.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+            repo.mesh(), time, probtype);
+        curvature
+            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+                repo.mesh(), time, probtype);
+
+        // Register fields for output/restart
+        auto& iomgr = sim.io_manager();
+        iomgr.register_io_var(fields.field.name());
+        iomgr.register_io_var(normal.name());
+        iomgr.register_io_var(curvature.name());
+
+        return fields;
+    }
+
+    CFDSim& sim;
+};
+
+template <typename Scheme>
 struct ComputeRHSOp<Levelset, Scheme>
 {
     ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
@@ -35,11 +68,11 @@ struct ComputeRHSOp<Levelset, Scheme>
                 const auto ddt_o = conv_term(lev).const_array(mfi);
 
                 amrex::ParallelFor(
-                    bx,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         phi(i, j, k) = phi_o(i, j, k) + dt * ddt_o(i, j, k);
                         // Defer n+1/2 update to the time-stepping algorithm
-                        // phi_nph(i, j, k) = 0.5 * (phi(i, j, k) + phi_o(i, j, k));
+                        // phi_nph(i, j, k) = 0.5 * (phi(i, j, k) + phi_o(i, j,
+                        // k));
                     });
             }
         }
@@ -80,7 +113,7 @@ struct ComputeRHSOp<Levelset, Scheme>
     // data members
     PDEFields& fields;
 };
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* LEVELSET_OPS_H */

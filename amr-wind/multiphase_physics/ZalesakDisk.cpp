@@ -2,6 +2,8 @@
 #include "amr-wind/multiphase_physics/ZalesakDiskFieldInit.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/fvm/gradient.H"
+#include "amr-wind/core/field_ops.H"
 
 namespace amr_wind {
 

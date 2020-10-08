@@ -38,6 +38,7 @@ private:
 
     Field& m_velocity;
     Field& m_density;
+    Field& m_normal;
 
     //! Levelset field
     Field* m_levelset{nullptr};
