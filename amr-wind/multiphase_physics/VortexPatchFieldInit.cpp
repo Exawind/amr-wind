@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "amr-wind/physics/VortexPatchFieldInit.H"
+#include "amr-wind/multiphase_physics/VortexPatchFieldInit.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
 
@@ -10,8 +10,9 @@ VortexPatchFieldInit::VortexPatchFieldInit()
 {
 
     amrex::ParmParse pp_vortex_patch("VortexPatch");
-    pp_vortex_patch.queryarr("location", m_loc,0,AMREX_SPACEDIM);
-    pp_vortex_patch.query("radius",m_radius);
+    pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp_vortex_patch.query("radius", m_radius);
+ 
 
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.query("density", m_rho);
@@ -41,17 +42,21 @@ void VortexPatchFieldInit::operator()(
 
         density(i, j, k) = rho;
 
-        velocity(i, j, k, 0) = 2.0*std::sin(M_PI*x)*std::sin(M_PI*x)
-                                   *std::sin(2.0*M_PI*y)*std::sin(2.0*M_PI*z);
-        velocity(i, j, k, 1) = -std::sin(M_PI*y)*std::sin(M_PI*y)
-                                   *std::sin(2.0*M_PI*x)*std::sin(2.0*M_PI*z);
-        velocity(i, j, k, 2) = -std::sin(M_PI*z)*std::sin(M_PI*z)
-                                   *std::sin(2.0*M_PI*x)*std::sin(2.0*M_PI*y);
+        velocity(i, j, k, 0) = 2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
+                               std::sin(2.0 * M_PI * y) *
+                               std::sin(2.0 * M_PI * z);
+        velocity(i, j, k, 1) = -std::sin(M_PI * y) * std::sin(M_PI * y) *
+                               std::sin(2.0 * M_PI * x) *
+                               std::sin(2.0 * M_PI * z);
+        velocity(i, j, k, 2) = -std::sin(M_PI * z) * std::sin(M_PI * z) *
+                               std::sin(2.0 * M_PI * x) *
+                               std::sin(2.0 * M_PI * y);
 
-        levelset(i,j,k) = radius - std::sqrt((x-xc)*(x - xc) + 
-                                   (y - yc) * (y - yc) + (z - zc) * (z - zc));
-
+        levelset(i, j, k) =
+            radius - std::sqrt(
+                         (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                         (z - zc) * (z - zc));
     });
 }
 
-}
+} // namespace amr_wind

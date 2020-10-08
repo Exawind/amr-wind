@@ -11,14 +11,15 @@
 
 namespace amr_wind {
 
-/** Initialize VortexPatch fields
+/** Initialize mutiphase VortexPatch fields
  */
 
 class VortexPatchFieldInit
 {
-    static_assert(AMREX_SPACEDIM == 3, "VortexPatch requires 3 dimensional mesh");
+    static_assert(
+        AMREX_SPACEDIM == 3, "VortexPatch requires 3 dimensional mesh");
 
-public: 
+public:
     VortexPatchFieldInit();
 
     void operator()(
@@ -37,9 +38,8 @@ private:
 
     //! vortex patch radius value
     amrex::Real m_radius{0.15};
-
 };
 
-}
+} // namespace amr_wind
 
 #endif /* VortexPatchFIELDINIT_H */

@@ -8,7 +8,4 @@ target_sources(${amr_wind_lib_name}
   TaylorGreenVortex.cpp
   FreeStream.cpp
   ConvectingTaylorVortex.cpp
-
-  VortexPatch.cpp
-  VortexPatchFieldInit.cpp
   )
