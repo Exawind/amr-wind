@@ -10,11 +10,11 @@ ZalesakDisk::ZalesakDisk(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {
-    // This shouldn't be here, but this is part of the prescirbed velocity field and 
-    // doesn't fit within ZalesakDiskFieldInit either.
+    // This shouldn't be here, but this is part of the prescirbed velocity field
+    // and doesn't fit within ZalesakDiskFieldInit either.
     amrex::ParmParse pp_vortex_patch("ZalesakDisk");
     pp_vortex_patch.query("period", m_TT);
-    
+
     // Register levelset equation
     auto& levelset_eqn = sim.pde_manager().register_transport_pde("Levelset");
 
@@ -65,10 +65,10 @@ void ZalesakDisk::post_advance_work()
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
- 
-                    vel(i, j, k, 0) = 2.0*M_PI/m_TT*(0.5-y);
-                    vel(i, j, k, 1) = 2.0*M_PI/m_TT*(x-0.5); 
-                    vel(i, j, k, 2) = 0.0; 
+
+                    vel(i, j, k, 0) = 2.0 * M_PI / m_TT * (0.5 - y);
+                    vel(i, j, k, 1) = 2.0 * M_PI / m_TT * (x - 0.5);
+                    vel(i, j, k, 2) = 0.0;
                 });
         }
     }

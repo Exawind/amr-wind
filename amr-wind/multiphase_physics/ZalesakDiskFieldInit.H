@@ -35,7 +35,7 @@ private:
 
     //! Initial density field for fluid 1
     amrex::Real m_rho1{1.0};
-    
+
     //! Initial density field for fluid 2
     amrex::Real m_rho2{1.0};
 
@@ -48,7 +48,7 @@ private:
     //! slot depth
     amrex::Real m_depth{0.2};
 
-    //! prescribed velocity period  
+    //! prescribed velocity period
     amrex::Real m_TT{6.0};
 };
 

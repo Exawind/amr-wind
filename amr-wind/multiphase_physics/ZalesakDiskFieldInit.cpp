@@ -40,12 +40,11 @@ void ZalesakDiskFieldInit::operator()(
         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
         const amrex::Real z = problo[1] + (k + 0.5) * dx[2];
 
-
         density(i, j, k) = rho;
 
-        velocity(i, j, k, 0) = 2.0*M_PI/m_TT*(0.5-y);
-        velocity(i, j, k, 1) = 2.0*M_PI/m_TT*(x-0.5); 
-        velocity(i, j, k, 2) = 0.0; 
+        velocity(i, j, k, 0) = 2.0 * M_PI / m_TT * (0.5 - y);
+        velocity(i, j, k, 1) = 2.0 * M_PI / m_TT * (x - 0.5);
+        velocity(i, j, k, 2) = 0.0;
 
         levelset(i, j, k) =
             radius - std::sqrt(
@@ -53,19 +52,19 @@ void ZalesakDiskFieldInit::operator()(
                          (z - zc) * (z - zc));
         amrex::Real d1, d2, min_dist;
 
-        if(y<radius+yc && y>yc+radius-m_depth && std::abs(x-xc)<=m_width && std::abs(z-zc)<=radius){
-            if(x>xc){
-                d1=std::abs(xc+m_width-x);
+        if (y < radius + yc && y > yc + radius - m_depth &&
+            std::abs(x - xc) <= m_width && std::abs(z - zc) <= radius) {
+            if (x > xc) {
+                d1 = std::abs(xc + m_width - x);
             } else {
-                d1=std::abs(xc-m_width-x);
+                d1 = std::abs(xc - m_width - x);
             }
 
-            d2=std::abs(y-(yc+radius-m_depth));
-            min_dist=std::min(d1,d2);
+            d2 = std::abs(y - (yc + radius - m_depth));
+            min_dist = std::min(d1, d2);
 
-            levelset(i,j,k)=-min_dist;
+            levelset(i, j, k) = -min_dist;
         }
-        
     });
 }
 
