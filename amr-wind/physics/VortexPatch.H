@@ -31,11 +31,12 @@ public:
 
     void post_regrid_actions() override {}
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override {} 
 
-    void post_advance_work() override {}
+    void post_advance_work() override;
 
 private:
+    const CFDSim& m_sim;
 
     Field& m_velocity;
     Field& m_density;
@@ -45,6 +46,9 @@ private:
 
     //! VortexPatch field initializer instance
     std::unique_ptr<VortexPatchFieldInit> m_field_init;
+
+    //! prescribed velocity period
+    amrex::Real m_TT{3.0};
 
 };
 

@@ -35,7 +35,7 @@ private:
     //! Initial density field
     amrex::Real m_rho{1.0};
 
-    //! tracer bubble radius value
+    //! vortex patch radius value
     amrex::Real m_radius{0.15};
 
 };
