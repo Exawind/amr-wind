@@ -263,7 +263,12 @@ This section deals with parameters that control input/output to the simulation.
 
    If a string is present `amr-wind` will restart using the specified file in the string.
    
-   
+.. input_param:: io.vorticity
+
+   **type:** Boolean, optional, default = false
+
+   If set to true or 1 then vorticity magnitude is added to plot file.
+
 Section: ``incflo``
 ~~~~~~~~~~~~~~~~~~~
 

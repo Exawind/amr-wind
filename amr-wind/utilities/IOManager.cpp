@@ -10,6 +10,8 @@
 #include "AMReX_PlotFileUtil.H"
 #include "AMReX_MultiFabUtil.H"
 
+#include "amr-wind/fvm/vorticity_mag.H"
+
 namespace amr_wind {
 
 IOManager::IOManager(CFDSim& sim) : m_sim(sim) {}
@@ -26,6 +28,7 @@ void IOManager::initialize_io()
     pp.query("plot_file", m_plt_prefix);
     pp.query("check_file", m_chk_prefix);
     pp.query("restart_file", m_restart_file);
+    pp.query("vorticity", m_plot_vorticity);
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
@@ -62,6 +65,10 @@ void IOManager::initialize_io()
         m_plt_var_names.push_back("iblank_cell");
     }
 
+    if(m_plot_vorticity){
+        m_plt_var_names.push_back("vorticity_magnitude");
+    }
+
     for (const auto& fname: m_chkvars) {
         auto& fld = repo.get_field(fname);
         m_chk_fields.emplace_back(&fld);
@@ -73,9 +80,15 @@ void IOManager::write_plot_file()
     BL_PROFILE("amr-wind::IOManager::write_plot_file");
 
     amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
-    const int plt_comp = m_plt_num_comp + (m_sim.has_overset() ? 1 : 0);
+    const int plt_comp = m_plt_num_comp + (m_sim.has_overset() ? 1 : 0) +
+                         (m_plot_vorticity ? 1 : 0);
     auto outfield = m_sim.repo().create_scratch_field(plt_comp);
     const int nlevels = m_sim.repo().num_active_levels();
+    auto vorticity = m_sim.repo().create_scratch_field();
+
+    if(m_plot_vorticity){
+        amr_wind::fvm::vorticity_mag(*vorticity, m_sim.repo().get_field("velocity"));
+    }
 
     for (int lev=0; lev < nlevels; ++lev) {
         int icomp = 0;
@@ -88,8 +101,14 @@ void IOManager::write_plot_file()
 
         if (m_sim.has_overset()) {
             auto& ibc = m_sim.repo().get_int_field("iblank_cell")(lev);
-            amrex::MultiFab::Copy(mf, amrex::ToMultiFab(ibc), 0, icomp, 1, 0);
+            amrex::MultiFab::Copy(mf, amrex::ToMultiFab(ibc), 0, icomp++, 1, 0);
         }
+
+        if(m_plot_vorticity){
+            auto& vm = (*vorticity)(lev);
+            amrex::MultiFab::Copy(mf, vm, 0, icomp++, 1, 0);
+        }
+
     }
 
     const std::string& plt_filename =

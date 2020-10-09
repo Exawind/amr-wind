@@ -105,6 +105,9 @@ private:
     //! Restart file name
     std::string m_restart_file{""};
 
+    //! flag to print vorticity
+    bool m_plot_vorticity{false};
+
     //! Total number of variables (including components) output to plot file
     int m_plt_num_comp{0};
 
