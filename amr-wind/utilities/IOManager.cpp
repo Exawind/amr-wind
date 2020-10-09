@@ -19,7 +19,9 @@ IOManager::~IOManager() = default;
 void IOManager::initialize_io()
 {
     amrex::Vector<std::string> out_vars;
+    amrex::Vector<std::string> out_int_vars;
     std::set<std::string> outputs;
+    std::set<std::string> int_outputs;
 
     amrex::ParmParse pp("io");
     pp.query("output_default_variables", m_output_default_vars);
@@ -29,10 +31,14 @@ void IOManager::initialize_io()
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
+    pp.queryarr("int_outputs", out_int_vars);
 
     // We process the input vector to eliminate duplicates
     for (const auto& name: out_vars)
         outputs.insert(name);
+
+    for (const auto& name: out_int_vars)
+        int_outputs.insert(name);
 
     // If the user hasn't disabled default output variables, then we append them
     // to the list so that we don't end up with any duplicates (in case user
@@ -40,6 +46,9 @@ void IOManager::initialize_io()
     if (m_output_default_vars) {
         for (const auto& name: m_pltvars_default)
             outputs.insert(name);
+
+        for (const auto& name: m_int_pltvars_default)
+            int_outputs.insert(name);
     }
 
     amrex::Print() << "Initializing I/O manager" << std::endl;
@@ -58,8 +67,15 @@ void IOManager::initialize_io()
         }
     }
 
-    if (m_sim.has_overset()) {
-        m_plt_var_names.push_back("iblank_cell");
+    for (const auto& fname: int_outputs) {
+        if (repo.int_field_exists(fname)) {
+            auto& fld = repo.get_int_field(fname);
+            m_plt_num_comp += fld.num_comp();
+            m_int_plt_fields.emplace_back(&fld);
+            ioutils::add_var_names(m_plt_var_names, fld.name(), fld.num_comp());
+        } else {
+            amrex::Print() << "  Invalid output variable requested: " << fname << std::endl;
+        }
     }
 
     for (const auto& fname: m_chkvars) {
@@ -73,7 +89,7 @@ void IOManager::write_plot_file()
     BL_PROFILE("amr-wind::IOManager::write_plot_file");
 
     amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
-    const int plt_comp = m_plt_num_comp + (m_sim.has_overset() ? 1 : 0);
+    const int plt_comp = m_plt_num_comp;
     auto outfield = m_sim.repo().create_scratch_field(plt_comp);
     const int nlevels = m_sim.repo().num_active_levels();
 
@@ -86,9 +102,10 @@ void IOManager::write_plot_file()
             icomp += fld->num_comp();
         }
 
-        if (m_sim.has_overset()) {
-            auto& ibc = m_sim.repo().get_int_field("iblank_cell")(lev);
-            amrex::MultiFab::Copy(mf, amrex::ToMultiFab(ibc), 0, icomp, 1, 0);
+        for (auto* fld: m_int_plt_fields) {
+            amrex::MultiFab::Copy(
+                mf, amrex::ToMultiFab((*fld)(lev)), 0, icomp, fld->num_comp(), 0);
+            icomp += fld->num_comp();
         }
     }
 
