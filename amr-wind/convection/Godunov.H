@@ -26,7 +26,24 @@ void compute_advection(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
     bool godunov_ppm,
+    bool godunov_weno,
     bool use_limiter);
+
+void predict_weno(
+    int lev,
+    amrex::Box const& bx,
+    int ncomp,
+    amrex::Array4<amrex::Real> const& Imx,
+    amrex::Array4<amrex::Real> const& Ipx,
+    amrex::Array4<amrex::Real> const& Imy,
+    amrex::Array4<amrex::Real> const& Ipy,
+    amrex::Array4<amrex::Real> const& Imz,
+    amrex::Array4<amrex::Real> const& Ipz,
+    amrex::Array4<amrex::Real const> const& q,
+    amrex::Array4<amrex::Real const> const& vel,
+    amrex::Vector<amrex::Geometry> geom,
+    amrex::Real dt,
+    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
 
 void predict_ppm(
     int lev,

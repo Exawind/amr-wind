@@ -1,6 +1,7 @@
 #include "amr-wind/convection/incflo_godunov_plm.H"
 #include "amr-wind/convection/incflo_godunov_ppm.H"
 #include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
+#include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -19,6 +20,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
                            Vector<amrex::Geometry> geom,
                            Real dt,
                            bool godunov_ppm,
+                           bool godunov_weno,
                            bool use_limiter)
 {
     BL_PROFILE("amr-wind::godunov::compute_advection");
@@ -88,7 +90,6 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
             });
 
         } else {
-
             amrex::ParallelFor(bxg1, ncomp,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
             {
@@ -100,6 +101,9 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
                                         q, wmac, pbc[n], dlo.z, dhi.z);
             });
         }
+    // Use WENO to generate Im and Ip */
+    } else if(godunov_weno){
+
 
     // Use PLM to generate Im and Ip */
     } else {

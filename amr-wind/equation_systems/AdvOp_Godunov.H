@@ -32,6 +32,7 @@ struct AdvectionOp<
     {
         amrex::ParmParse pp("incflo");
         pp.query("use_ppm", godunov_ppm);
+        pp.query("use_weno",godunov_weno);
         pp.query("use_limiter", use_limiter);
 
         if (!use_limiter && !godunov_ppm)
@@ -98,6 +99,7 @@ struct AdvectionOp<
                                            tmpfab.dataPtr(),
                                            geom, dt,
                                            godunov_ppm,
+                                           godunov_weno,
                                            use_limiter);
 
                 amrex::Gpu::streamSynchronize();
@@ -113,6 +115,7 @@ struct AdvectionOp<
     amrex::Gpu::DeviceVector<int> iconserv;
 
     bool godunov_ppm{true};
+    bool godunov_weno{false};
     bool use_limiter{true};
 };
 

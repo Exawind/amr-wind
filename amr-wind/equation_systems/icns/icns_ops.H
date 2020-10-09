@@ -133,6 +133,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         { // Prefix incflo
             amrex::ParmParse pp("incflo");
             pp.query("use_ppm", godunov_ppm);
+            pp.query("use_weno", godunov_weno);
             pp.query("use_limiter", use_limiter);
             pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
         }
@@ -268,6 +269,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     dof_field.bcrec_device().data(), iconserv.data(),
                     tmpfab.dataPtr(), geom, dt,
                     godunov_ppm,
+                    godunov_weno,
                     use_limiter);
 
                 amrex::Gpu::streamSynchronize();
@@ -282,6 +284,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     amrex::Gpu::DeviceVector<int> iconserv;
 
     bool godunov_ppm{true};
+    bool godunov_weno{false};
     bool godunov_use_forces_in_trans{false};
     bool use_limiter{true};
 };
