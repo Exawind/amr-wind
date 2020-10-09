@@ -37,7 +37,7 @@ jobs:
           echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libopenmpi-dev intel-oneapi-dpcpp-compiler intel-oneapi-mkl-devel
+            libopenmpi-dev intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
       - name: Configure and build
         run: |
           set +e
