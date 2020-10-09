@@ -13,23 +13,18 @@ VortexPatchFieldInit::VortexPatchFieldInit()
     pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp_vortex_patch.query("radius", m_radius);
  
-
-    amrex::ParmParse pp_incflo("incflo");
-    pp_incflo.query("density", m_rho);
 }
 
 void VortexPatchFieldInit::operator()(
     const amrex::Box& vbx,
     const amrex::Geometry& geom,
     const amrex::Array4<amrex::Real>& velocity,
-    const amrex::Array4<amrex::Real>& density,
     const amrex::Array4<amrex::Real>& levelset) const
 {
 
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
 
-    const amrex::Real rho = m_rho;
     const amrex::Real xc = m_loc[0];
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
@@ -39,8 +34,6 @@ void VortexPatchFieldInit::operator()(
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-        density(i, j, k) = rho;
 
         velocity(i, j, k, 0) = 2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
                                std::sin(2.0 * M_PI * y) *

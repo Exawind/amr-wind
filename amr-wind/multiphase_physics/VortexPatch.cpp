@@ -8,19 +8,13 @@ namespace amr_wind {
 VortexPatch::VortexPatch(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.repo().get_field("velocity"))
-    , m_density(sim.repo().get_field("density"))
+    , m_levelset(sim.repo().get_field("levelset"))
 {
     // This shouldn't be here, but this is part of the prescirbed velocity field and 
     // doesn't fit within VortexPatchFieldInit either.
     amrex::ParmParse pp_vortex_patch("VortexPatch");
     pp_vortex_patch.query("period", m_TT);
     
-    // Register levelset equation
-    auto& levelset_eqn = sim.pde_manager().register_transport_pde("Levelset");
-
-    // Defer getting levelset field until PDE has been registered
-    m_levelset = &(levelset_eqn.fields().field);
-
     // Instantiate the VortexPatch field initializer
     m_field_init.reset(new VortexPatchFieldInit());
 }
@@ -33,15 +27,13 @@ VortexPatch::VortexPatch(CFDSim& sim)
 void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
-    auto& density = m_density(level);
-    auto& levelset = (*m_levelset)(level);
+    auto& levelset = m_levelset(level);
 
-    for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
+    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
         (*m_field_init)(
-            vbx, geom, velocity.array(mfi), density.array(mfi),
-            levelset.array(mfi));
+            vbx, geom, velocity.array(mfi), levelset.array(mfi));
     }
 }
 

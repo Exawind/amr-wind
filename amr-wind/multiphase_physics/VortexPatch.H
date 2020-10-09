@@ -37,10 +37,7 @@ private:
     const CFDSim& m_sim;
 
     Field& m_velocity;
-    Field& m_density;
-
-    //! Levelset field
-    Field* m_levelset{nullptr};
+    Field& m_levelset;
 
     //! VortexPatch field initializer instance
     std::unique_ptr<VortexPatchFieldInit> m_field_init;

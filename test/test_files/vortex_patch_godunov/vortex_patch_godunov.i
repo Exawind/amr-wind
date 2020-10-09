@@ -28,7 +28,7 @@ transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
-incflo.physics = VortexPatch
+incflo.physics = MultiPhase VortexPatch
 VortexPatch.period=3.
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #

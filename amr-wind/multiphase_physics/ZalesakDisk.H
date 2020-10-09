@@ -37,10 +37,7 @@ private:
     const CFDSim& m_sim;
 
     Field& m_velocity;
-    Field& m_density;
-
-    //! Levelset field
-    Field* m_levelset{nullptr};
+    Field& m_levelset;
 
     //! ZalesakDisk field initializer instance
     std::unique_ptr<ZalesakDiskFieldInit> m_field_init;

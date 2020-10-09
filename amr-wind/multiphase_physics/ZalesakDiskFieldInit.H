@@ -26,15 +26,11 @@ public:
         const amrex::Box& vbx,
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
-        const amrex::Array4<amrex::Real>& density,
         const amrex::Array4<amrex::Real>& levelset) const;
 
 private:
     //! Initial ZalesakDisk location
     amrex::Vector<amrex::Real> m_loc{{0.5, 0.72, 0.24}};
-
-    //! Initial density field
-    amrex::Real m_rho{1.0};
 
     //! sphere radius value
     amrex::Real m_radius{0.16};
