@@ -41,7 +41,7 @@ void MultiPhase::post_advance_work()
 {
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
-
+    // Set ve
     for (int lev = 0; lev < nlevels; ++lev) {
         set_multiphase_properties(lev, geom[lev]);
     }
@@ -50,7 +50,6 @@ void MultiPhase::post_advance_work()
 void MultiPhase::set_multiphase_properties(
     int level, const amrex::Geometry& geom)
 {
-
     auto& density = m_density(level);
     auto& mueff = m_mueff(level);
     auto& levelset = (*m_levelset)(level);
@@ -63,16 +62,15 @@ void MultiPhase::set_multiphase_properties(
         const amrex::Array4<amrex::Real>& rho = density.array(mfi);
         const amrex::Array4<amrex::Real>& mu = mueff.array(mfi);
         const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-        const amrex::Real rho1=m_rho1;
-        const amrex::Real rho2=m_rho2;
-        const amrex::Real mu1=m_mu1;
-        const amrex::Real mu2=m_mu2;
+        const amrex::Real rho1 = m_rho1;
+        const amrex::Real rho2 = m_rho2;
+        const amrex::Real mu1 = m_mu1;
+        const amrex::Real mu2 = m_mu2;
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real H;
                 // const amrex::Real H = (phi(i,j,k) > eps) ? 1.0 :
                 // 0.5*(1+phi(i,j,k)/(2*epsilon)+1./M_PI*std::sin(phi(i,j,k)*M_PI/epsilon);
-
                 if (phi(i, j, k) > eps) {
                     H = 1.0;
                 } else if (phi(i, j, k) < -eps) {
@@ -81,7 +79,6 @@ void MultiPhase::set_multiphase_properties(
                     H = 0.5 * (1 + phi(i, j, k) / (2 * eps) +
                                1. / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                 }
-
                 rho(i, j, k) = rho1 * H + rho2 * (1 - H);
                 mu(i, j, k) = mu1 * H + mu2 * (1 - H);
             });
