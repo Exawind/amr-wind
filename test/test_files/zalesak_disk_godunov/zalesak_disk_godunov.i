@@ -13,11 +13,8 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = 1
-io.line_plot_int = 1
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  100       # Steps between checkpoint files
-amr.plt_tracer = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -37,7 +34,6 @@ incflo.physics = ZalesakDisk
 #.......................................#
 amr.n_cell              = 64 64 32    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
-#amr.max_grid_size      = 8
 amr.blocking_factor     = 8
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -62,4 +58,3 @@ diffusion.mg_rtol = 1.0e-1
 diffusion.mg_atol = 1.0e-3
 mac_proj.mg_rtol = 1.0e-6
 mac_proj.mg_atol = 1.0e-10
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

@@ -61,15 +61,15 @@ void ZalesakDisk::post_advance_work()
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
-
+            const amrex::Real TT=m_TT;
             auto vel = m_velocity(lev).array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
 
-                    vel(i, j, k, 0) = 2.0 * M_PI / m_TT * (0.5 - y);
-                    vel(i, j, k, 1) = 2.0 * M_PI / m_TT * (x - 0.5);
+                    vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
+                    vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
                     vel(i, j, k, 2) = 0.0;
                 });
         }

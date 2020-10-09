@@ -13,11 +13,8 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = 1
-io.line_plot_int = 1
 time.plot_interval            =  50       # Steps between plot files
 time.checkpoint_interval      =  100       # Steps between checkpoint files
-amr.plt_tracer = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -62,4 +59,3 @@ diffusion.mg_rtol = 1.0e-1
 diffusion.mg_atol = 1.0e-3
 mac_proj.mg_rtol = 1.0e-6
 mac_proj.mg_atol = 1.0e-10
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

@@ -60,7 +60,7 @@ void VortexPatch::post_advance_work()
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
-
+            const amrex::Real TT=m_TT;
             auto vel = m_velocity(lev).array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -70,15 +70,15 @@ void VortexPatch::post_advance_work()
                     vel(i, j, k, 0) =
                         2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
                         std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z) *
-                        std::cos(M_PI * time / m_TT);
+                        std::cos(M_PI * time / TT);
                     vel(i, j, k, 1) = -std::sin(M_PI * y) * std::sin(M_PI * y) *
                                       std::sin(2.0 * M_PI * x) *
                                       std::sin(2.0 * M_PI * z) *
-                                      std::cos(M_PI * time / m_TT);
+                                      std::cos(M_PI * time / TT);
                     vel(i, j, k, 2) = -std::sin(M_PI * z) * std::sin(M_PI * z) *
                                       std::sin(2.0 * M_PI * x) *
                                       std::sin(2.0 * M_PI * y) *
-                                      std::cos(M_PI * time / m_TT);
+                                      std::cos(M_PI * time / TT);
                 });
         }
     }

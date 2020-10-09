@@ -33,11 +33,8 @@ private:
     //! Initial ZalesakDisk location
     amrex::Vector<amrex::Real> m_loc{{0.5, 0.72, 0.24}};
 
-    //! Initial density field for fluid 1
-    amrex::Real m_rho1{1.0};
-
-    //! Initial density field for fluid 2
-    amrex::Real m_rho2{1.0};
+    //! Initial density field
+    amrex::Real m_rho{1.0};
 
     //! sphere radius value
     amrex::Real m_radius{0.16};

@@ -15,7 +15,7 @@ ZalesakDiskFieldInit::ZalesakDiskFieldInit()
     pp_vortex_patch.query("period", m_TT);
 
     amrex::ParmParse pp_incflo("incflo");
-    pp_incflo.query("density", m_rho1);
+    pp_incflo.query("density", m_rho);
 }
 
 void ZalesakDiskFieldInit::operator()(
@@ -29,21 +29,22 @@ void ZalesakDiskFieldInit::operator()(
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
 
-    const amrex::Real rho = m_rho1;
+    const amrex::Real rho = m_rho;
     const amrex::Real xc = m_loc[0];
     const amrex::Real yc = m_loc[1];
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
+    const amrex::Real TT = m_TT;
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-        const amrex::Real z = problo[1] + (k + 0.5) * dx[2];
+        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
         density(i, j, k) = rho;
 
-        velocity(i, j, k, 0) = 2.0 * M_PI / m_TT * (0.5 - y);
-        velocity(i, j, k, 1) = 2.0 * M_PI / m_TT * (x - 0.5);
+        velocity(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
+        velocity(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
         velocity(i, j, k, 2) = 0.0;
 
         levelset(i, j, k) =
