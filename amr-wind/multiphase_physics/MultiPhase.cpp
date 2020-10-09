@@ -63,7 +63,10 @@ void MultiPhase::set_multiphase_properties(
         const amrex::Array4<amrex::Real>& rho = density.array(mfi);
         const amrex::Array4<amrex::Real>& mu = mueff.array(mfi);
         const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
-
+        const amrex::Real rho1=m_rho1;
+        const amrex::Real rho2=m_rho2;
+        const amrex::Real mu1=m_mu1;
+        const amrex::Real mu2=m_mu2;
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real H;
@@ -79,8 +82,8 @@ void MultiPhase::set_multiphase_properties(
                                1. / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                 }
 
-                rho(i, j, k) = m_rho1 * H + m_rho2 * (1 - H);
-                mu(i, j, k) = m_mu1 * H + m_mu2 * (1 - H);
+                rho(i, j, k) = rho1 * H + rho2 * (1 - H);
+                mu(i, j, k) = mu1 * H + mu2 * (1 - H);
             });
     }
 }
