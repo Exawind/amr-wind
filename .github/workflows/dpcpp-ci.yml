@@ -64,10 +64,3 @@ jobs:
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_DPCPP=${{matrix.enable_dpcpp}} .
           cmake --build build-${{matrix.intel_type}} -- -j $(nproc)
-      - name: Run unit tests
-        if: ${{ matrix.intel_type == 'ICC' }}
-        run: |
-          set +e
-          source /opt/intel/oneapi/setvars.sh
-          set -e
-          ./build-${{matrix.intel_type}}/amr_wind_unit_tests
