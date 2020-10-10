@@ -57,7 +57,7 @@ jobs:
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -Bbuild-${{matrix.cuda_pkg} \
+          cmake -Bbuild-${{matrix.cuda_pkg}} \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
             -DCUDA_ERROR_CAPTURE_THIS:BOOL=ON \
