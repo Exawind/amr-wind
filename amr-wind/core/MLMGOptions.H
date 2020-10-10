@@ -45,7 +45,7 @@ struct MLMGOptions
     void operator()(amrex::MacProjector&);
 
     //! Linear operator options during construction
-    amrex::LPInfo& lpinfo();
+    amrex::LPInfo& lpinfo() { return m_lpinfo; }
 
     // Linear operator options
     int max_order{2};
