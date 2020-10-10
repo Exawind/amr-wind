@@ -58,7 +58,7 @@ void ZalesakDiskFieldInit::operator()(
             }
 
             d2 = std::abs(y - (yc + radius - depth));
-            min_dist = std::min(d1, d2);
+            min_dist = amrex::min(d1, d2);
 
             levelset(i, j, k) = -min_dist;
         }
