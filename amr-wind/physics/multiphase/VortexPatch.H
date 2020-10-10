@@ -2,7 +2,7 @@
 #define VortexPatch_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/multiphase_physics/VortexPatchFieldInit.H"
+#include "amr-wind/physics/multiphase/VortexPatchFieldInit.H"
 #include "amr-wind/core/Field.H"
 
 /** Multiphase vortex patch physics

@@ -1,5 +1,5 @@
-#include "amr-wind/multiphase_physics/VortexPatch.H"
-#include "amr-wind/multiphase_physics/VortexPatchFieldInit.H"
+#include "amr-wind/physics/multiphase/VortexPatch.H"
+#include "amr-wind/physics/multiphase/VortexPatchFieldInit.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
