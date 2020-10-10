@@ -13,10 +13,9 @@ DiffSolverIface<LinOp>::DiffSolverIface(
     , m_density(fields.repo.get_field("density"))
     , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
 {
-    amrex::LPInfo isolve;
+    amrex::LPInfo isolve = m_options.lpinfo();
     amrex::LPInfo iapply;
 
-    isolve.setMaxCoarseningLevel(m_options.max_coarsen_level);
     iapply.setMaxCoarseningLevel(0);
 
     const auto& mesh = m_pdefields.repo.mesh();
@@ -69,22 +68,8 @@ template<typename LinOp>
 void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 {
     BL_PROFILE("amr-wind::setup_solver");
-    auto& opts = m_options;
-
-    if (opts.bottom_solver_type == "smoother") {
-        mlmg.setBottomSolver(amrex::MLMG::BottomSolver::smoother);
-    } else if (opts.bottom_solver_type == "hypre") {
-        mlmg.setBottomSolver(amrex::MLMG::BottomSolver::hypre);
-    }
-
-    // MLMG options
-    mlmg.setVerbose(opts.verbose);
-    mlmg.setMaxIter(opts.max_iter);
-    mlmg.setMaxFmgIter(opts.fmg_max_iter);
-
-    // Bottom solver options
-    mlmg.setBottomMaxIter(opts.cg_max_iter);
-    mlmg.setBottomVerbose(opts.cg_verbose);
+    // Set all MLMG options
+    m_options(mlmg);
 }
 
 

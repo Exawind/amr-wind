@@ -181,8 +181,11 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
-    nodal_projector.reset(new NodalProjector(vel, GetVecOfConstPtrs(sigma),
-                                             Geom(0,finest_level), LPInfo()));
+    nodal_projector.reset(new NodalProjector(
+        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
+        options.lpinfo()));
+    // Set MLMG and NodalProjector options
+    options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
 
     // Setup masking for overset simulations
@@ -194,7 +197,6 @@ void incflo::ApplyProjection (Vector<MultiFab const*> density,
         }
     }
 
-    nodal_projector->setVerbose(options.verbose);
     if (m_sim.has_overset()) {
         auto phif = m_repo.create_scratch_field(1, 1, amr_wind::FieldLoc::NODE);
         if (incremental) {

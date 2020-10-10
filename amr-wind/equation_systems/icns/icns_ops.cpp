@@ -77,22 +77,18 @@ void advection_mac_project(FieldRepo& repo, const FieldState fstate, const bool 
 
     amr_wind::MLMGOptions options("mac_proj");
 
-    // If we want to set max_coarsening_level we have to send it in to the
-    // constructor
-    amrex::LPInfo lp_info;
-    lp_info.setMaxCoarseningLevel(options.max_coarsen_level);
-
     // Perform MAC projection
     amrex::MacProjector macproj(
         mac_vec, amrex::MLMG::Location::FaceCenter,
         rho_face_const, amrex::MLMG::Location::FaceCenter,
         amrex::MLMG::Location::CellCenter,
-        repo.mesh().Geom(0, repo.num_active_levels() - 1), lp_info,
+        repo.mesh().Geom(0, repo.num_active_levels() - 1), options.lpinfo(),
         {},
         amrex::MLMG::Location::CellCenter,
         (has_overset ? repo.get_int_field("mask_cell").vec_const_ptrs()
                      : amrex::Vector<const amrex::iMultiFab*>()));
-                                                                    
+    // Set MLMG and MacProjector options
+    options(macproj);
 
     // get the bc types from pressure field
     auto& pressure = repo.get_field("p");
