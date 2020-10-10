@@ -8,6 +8,7 @@ namespace amr_wind {
 namespace turbulence {
 
 /** Base class for 1-Equation subgrid scale TKE turbulence model
+ *  \ingroup turb_model
  */
 template <typename Transport>
 class OneEqKsgs : public TurbModelBase<Transport>
@@ -33,6 +34,13 @@ protected:
 
 };
 
+/** 1-equation subgrid scale TKE turbulence model
+ *  \ingroup turb_model we_abl
+ *
+ *  Implements the model described in Moeng 1984 paper
+ *
+ *  \sa amr_wind::pde::tke::KsgsM84Src
+ */
 template <typename Transport>
 class OneEqKsgsM84 : public OneEqKsgs<Transport>
 {
@@ -53,22 +61,28 @@ public:
 
     //! Update the effective thermal diffusivity field
     virtual void update_alphaeff(Field& alphaeff) override;
-    
+
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 private:
 
     Field& m_temperature;
-    
+
     //! Gravity vector (m/s^2)
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
 
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};
-    
 };
 
+/** 1-equation subgrid scale TKE turbulence model
+ *  \ingroup turb_model we_abl
+ *
+ *  Implements the model described in Sullivan 1994 paper
+ *
+ *  \sa amr_wind::pde::tke::KsgsS94Src
+ */
 template <typename Transport>
 class OneEqKsgsS94 : public OneEqKsgs<Transport>
 {
