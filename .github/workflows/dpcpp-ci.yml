@@ -1,4 +1,4 @@
-name: AMR-Wind DPC++ CI
+name: AMR-Wind Intel OneAPI CI
 
 on:
   push:
@@ -25,6 +25,21 @@ on:
 jobs:
   dpcpp:
     runs-on: ubuntu-latest
+    name: Intel OneAPI ${{matrix.intel_type}}
+    strategy:
+      matrix:
+        intel_type: [ICC, DPCPP]
+        include:
+          - intel_type: ICC
+            oneapi_packages: intel-oneapi-dpcpp-cpp-compiler-pro
+            cexe: icc
+            cppexe: icpc
+            enable_dpcpp: OFF
+          - intel_type: DPCPP
+            oneapi_packages: intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
+            cexe: clang
+            cppexe: dpcpp
+            enable_dpcpp: ON
     steps:
       - uses: actions/checkout@v2
         with:
@@ -37,15 +52,15 @@ jobs:
           echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libopenmpi-dev intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
+            libopenmpi-dev ${{matrix.oneapi_packages}}
       - name: Configure and build
         run: |
           set +e
           source /opt/intel/oneapi/setvars.sh
           set -e
-          cmake -Bbuild \
-            -DCMAKE_CXX_COMPILER=$(which dpcpp) \
-            -DCMAKE_C_COMPILER=$(which clang) \
+          cmake -Bbuild-${{matrix.intel_type}} \
+            -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
+            -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
             -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_DPCPP=ON .
-          cmake --build build -- -j $(nproc)
+            -DAMR_WIND_ENABLE_DPCPP=${{matrix.enable_dpcpp}} .
+          cmake --build build-${{matrix.intel_type}} -- -j $(nproc)
