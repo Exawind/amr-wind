@@ -173,6 +173,8 @@ add_test_re(ctv_godunov_plm)
 add_test_re(abl_ksgsm84_godunov)
 add_test_re(abl_godunov_nolim)
 add_test_re(ekman_spiral)
+add_test_re(vortex_patch_godunov)
+add_test_re(zalesak_disk_godunov)
 
 if (AMR_WIND_ENABLE_NETCDF)
   add_test_re(abl_bndry_output)
