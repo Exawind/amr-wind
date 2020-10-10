@@ -7,10 +7,8 @@ namespace amr_wind {
 namespace pde {
 namespace tke {
 
-/** One-equation Ksgs LES turbulence model
- *   \ingroup turb_model
- *
- *  Reference to Moeng paper
+/** TKE source term based on Moeng 1984 paper
+ *  \ingroup tke_src turb_model we_abl
  */
 class KsgsM84Src : public TKESource::Register<KsgsM84Src>
 {
@@ -36,7 +34,6 @@ private:
     Field& m_shear_prod;
     Field& m_buoy_prod;
     Field& m_tke;
-    
 };
 
 } // namespace tke

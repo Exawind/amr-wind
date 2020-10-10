@@ -11,6 +11,25 @@
 namespace amr_wind {
 namespace pde {
 
+/**
+ *  \defgroup tke_eqn Turbulent Kinetic Energy (TKE) transport equation
+ *  %TKE transport equation
+ *
+ *  \ingroup eqsys
+ */
+
+/**
+ *  \defgroup tke_src TKE Source terms
+ *
+ *  Source terms used with TKE transport equation
+ *
+ *  \ingroup tke_eqn
+ */
+
+/** Characteristics of TKE transport equation
+ *
+ *  \ingroup tke_eqn
+ */
 struct TKE : ScalarTransport
 {
     using SrcTerm = TKESource;
@@ -19,6 +38,9 @@ struct TKE : ScalarTransport
     static std::string var_name() { return "tke"; }
 };
 
+/** Implementation of Turbulence operator for TKE equation
+ *  \ingroup tke_eqn
+ */
 template<>
 struct TurbulenceOp<TKE>
 {
@@ -40,6 +62,9 @@ struct TurbulenceOp<TKE>
     PDEFields& m_fields;
 };
 
+/** Implementation of post-processing actions for TKE equation
+ *  \ingroup tke_eqn
+ */
 template<>
 struct PostSolveOp<TKE>
 {

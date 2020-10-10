@@ -6,6 +6,9 @@
 namespace amr_wind {
 namespace pde {
 
+/** Field registration operator for Levelset equation system
+ *  \ingroup levelset
+ */
 template <typename Scheme>
 struct FieldRegOp<Levelset, Scheme>
 {
@@ -39,6 +42,9 @@ struct FieldRegOp<Levelset, Scheme>
     CFDSim& sim;
 };
 
+/** Right-hand side (RHS) evaluator for Levelset transport equation
+ *  \ingroup levelset
+ */
 template <typename Scheme>
 struct ComputeRHSOp<Levelset, Scheme>
 {
