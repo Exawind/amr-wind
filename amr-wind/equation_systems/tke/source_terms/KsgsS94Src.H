@@ -7,6 +7,9 @@ namespace amr_wind {
 namespace pde {
 namespace tke {
 
+/** One-equation k-sgs source term based on Sullivan 1994 paper
+ *  \ingroup tke_src turb_model we_abl
+ */
 class KsgsS94Src : public TKESource::Register<KsgsS94Src>
 {
 public:

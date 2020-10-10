@@ -9,6 +9,21 @@
 namespace amr_wind {
 namespace pde {
 
+/**
+ *  \defgroup levelset Levelset transport equation
+ *  \ingroup eqsys
+ */
+
+/**
+ *  \defgroup levelset_src Levelset source terms
+ *
+ *  Source terms used in Levelset transport equation
+ *  \ingroup levelset
+ */
+
+/** Characteristics of Levelset transport equation system
+ *  \ingroup levelset
+ */
 struct Levelset : ScalarTransport
 {
 
