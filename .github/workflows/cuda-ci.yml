@@ -34,12 +34,16 @@ jobs:
         include:
           - cuda_ver: 11.0
             cuda_pkg: 11-0
+            cuda_extra: libcurand-dev-11-0
           - cuda_ver: 10.2
             cuda_pkg: 10-2
+            cuda_extra: cuda-curand-dev-10-2
           - cuda_ver: 10.1
             cuda_pkg: 10-1
+            cuda_extra: cuda-curand-dev-10-1
           - cuda_ver: 10.0
             cuda_pkg: 10-0
+            cuda_extra: cuda-curand-dev-10-0
     steps:
       - uses: actions/checkout@v2
         with:
@@ -52,7 +56,7 @@ jobs:
           echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-              libopenmpi-dev cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-cupti-dev-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} libcurand-dev-${{matrix.cuda_pkg}}
+              libopenmpi-dev cuda-command-line-tools-${{matrix.cuda_pkg}} cuda-compiler-${{matrix.cuda_pkg}} cuda-cupti-dev-${{matrix.cuda_pkg}} cuda-minimal-build-${{matrix.cuda_pkg}} cuda-nvml-dev-${{matrix.cuda_pkg}} cuda-nvtx-${{matrix.cuda_pkg}} ${{matrix.cuda_extra}}
       - name: Configure and build
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
