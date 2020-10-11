@@ -1,0 +1,11 @@
+name: "AMR-Wind CodeQL config"
+
+paths:
+  - amr-wind
+  - unit_tests
+
+paths-ignore:
+  - submods
+  - test
+  - tools
+  - docs
