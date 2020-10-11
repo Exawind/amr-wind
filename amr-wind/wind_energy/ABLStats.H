@@ -108,8 +108,8 @@ private:
     double m_dn{0.0};
     
     //! Number of cells in the horizontal direction
-    int m_ncells_h1{0};
-    int m_ncells_h2{0};
+    size_t m_ncells_h1{0};
+    size_t m_ncells_h2{0};
 };
 
 

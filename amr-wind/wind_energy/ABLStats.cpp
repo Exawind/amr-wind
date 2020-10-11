@@ -117,7 +117,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
     auto* tgrad_ptr = tgrad.data();
     {
         const int normal_dir = m_normal_dir;
-        const int ncells_h2 = m_ncells_h2;
+        const size_t ncells_h2 = m_ncells_h2;
         amrex::Real dnval = m_dn;
         for (amrex::MFIter mfi(m_temperature(0)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -151,7 +151,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
 
     m_zi = 0.0;
     if (amrex::ParallelDescriptor::IOProcessor()) {
-        for (int i = 0; i < m_ncells_h1 * m_ncells_h2; i++) {
+        for (size_t i = 0; i < m_ncells_h1 * m_ncells_h2; i++) {
             m_zi += gtemp_grad[i].max_grad_loc;
         }
         m_zi /= (m_ncells_h1 * m_ncells_h2);
