@@ -31,7 +31,6 @@ add_subdirectory(equation_systems)
 add_subdirectory(transport_models)
 add_subdirectory(turbulence)
 add_subdirectory(physics)
-add_subdirectory(multiphase_physics)
 add_subdirectory(overset)
 
 if(AMR_WIND_ENABLE_MASA)

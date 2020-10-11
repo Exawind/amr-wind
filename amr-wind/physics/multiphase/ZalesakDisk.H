@@ -2,7 +2,7 @@
 #define ZalesakDisk_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/multiphase_physics/ZalesakDiskFieldInit.H"
+#include "amr-wind/physics/multiphase/ZalesakDiskFieldInit.H"
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Zalesak disk physics

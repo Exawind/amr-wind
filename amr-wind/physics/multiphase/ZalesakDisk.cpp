@@ -1,5 +1,5 @@
-#include "amr-wind/multiphase_physics/ZalesakDisk.H"
-#include "amr-wind/multiphase_physics/ZalesakDiskFieldInit.H"
+#include "amr-wind/physics/multiphase/ZalesakDisk.H"
+#include "amr-wind/physics/multiphase/ZalesakDiskFieldInit.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"

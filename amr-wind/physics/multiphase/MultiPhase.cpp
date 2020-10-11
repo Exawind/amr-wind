@@ -1,4 +1,4 @@
-#include "amr-wind/multiphase_physics/MultiPhase.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
