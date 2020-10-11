@@ -37,18 +37,9 @@ jobs:
         uses: github/codeql-action/init@v1
         with:
           languages: cpp
-          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Configure and build
-        run: |
-          cmake -Bbuild \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_CXX_COMPILER=$(which mpicxx) \
-            -DCMAKE_C_COMPILER=$(which mpicc) \
-            -DCMAKE_Fortran_COMPILER=$(which mpifort) \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
-            -DAMR_WIND_ENABLE_MPI=ON .
-          cmake --build build -- -j $(nproc)
+        uses: github/codeql-action/autobuild@v1
 
       - name: Analyze
         uses: github/codeql-action/analyze@v1
