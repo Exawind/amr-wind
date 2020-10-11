@@ -81,7 +81,8 @@ SecondMomentAveraging::SecondMomentAveraging(
     m_num_moments = m_plane_average1.ncomp() * m_plane_average2.ncomp();
 
     m_second_moments_line.resize(
-        m_plane_average1.ncell_line() * m_num_moments, 0.0);
+        static_cast<size_t>(m_plane_average1.ncell_line()) * m_num_moments,
+        0.0);
 }
 
 void SecondMomentAveraging::operator()()

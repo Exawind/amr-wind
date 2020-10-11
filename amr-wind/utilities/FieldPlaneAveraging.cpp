@@ -33,9 +33,9 @@ FPlaneAveraging<FType>::FPlaneAveraging(
       if (i != m_axis) m_ncell_plane *= (dom_hi[i] - dom_lo[i] + 1);
   }
   
-  m_line_average.resize(m_ncell_line * m_ncomp, 0.0);
+  m_line_average.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
   if (m_comp_deriv)
-      m_line_deriv.resize(m_ncell_line * m_ncomp, 0.0);
+      m_line_deriv.resize(static_cast<size_t>(m_ncell_line) * m_ncomp, 0.0);
   m_line_xcentroid.resize(m_ncell_line);
   
   for (int i = 0; i < m_ncell_line; ++i) {
