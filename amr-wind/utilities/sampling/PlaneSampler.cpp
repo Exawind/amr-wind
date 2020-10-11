@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "amr-wind/utilities/sampling/PlaneSampler.H"
 
 #include "AMReX_ParmParse.H"
@@ -33,7 +35,12 @@ void PlaneSampler::initialize(const std::string& key)
     }
 
     // Update total number of points
-    m_npts = m_npts_dir[0] * m_npts_dir[1] * m_poffsets.size();
+    const size_t tmp = m_poffsets.size() * m_npts_dir[0] * m_npts_dir[1];
+    if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        amrex::Abort("PlaneSampler: Plane definition " + key +
+                     " exceeds 32-bit integer limits");
+    }
+    m_npts = static_cast<int>(tmp);
 }
 
 void PlaneSampler::sampling_locations(SampleLocType& locs) const
