@@ -25,6 +25,7 @@ option(AMR_WIND_TEST_WITH_FCOMPARE "Check test plots against gold files" OFF)
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
+option(AMR_WIND_ENABLE_HIP "Enable HIP/ROCm" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 
 # Third party libraries
@@ -45,6 +46,14 @@ if(AMR_WIND_ENABLE_CUDA)
   if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "10.0")
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
+  endif()
+endif()
+
+if (AMR_WIND_ENABLE_HIP)
+  find_package(HIP REQUIRED)
+  if (NOT DEFINED AMD_ARCH)
+    # Set default AMD architectures (based on Tulip for now)
+    set(AMD_ARCH "gfx906,gfx908")
   endif()
 endif()
 
