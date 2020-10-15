@@ -79,11 +79,11 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
-    
+
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
-        m_gravity[0], m_gravity[1], m_gravity[2]};
-    const amrex::Real beta = 1.0/m_ref_theta;
-    
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
+    const amrex::Real beta = 1.0 / m_ref_theta;
+
     auto& mu_turb = this->mu_turb();
     const amrex::Real Ce = this->m_Ce;
     auto& den = this->m_rho.state(fstate);
