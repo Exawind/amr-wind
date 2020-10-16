@@ -21,25 +21,15 @@ public:
 
     ~ABLWallFunction() = default;
 
-    //! Return the height used to perform friction velocity computations
-    amrex::Real log_law_height() const { return m_log_law_height; }
-
     //! Return the plane-averaged computed friction velocity at any given
     //! instance
     amrex::Real utau() const { return m_utau; }
-
-    //! Return the mean velocity used for friction velocity computations
-    const amrex::Array<amrex::Real, AMREX_SPACEDIM>& umean() const
-    {
-        return m_umean;
-    }
 
     //! Initialize the log-law height based on user inputs
     void init_log_law_height();
 
     //! Update the mean velocity at a given timestep
     void update_umean();
-
 
     /**
      * van der Laan, P., Kelly, M. C., & Sørensen, N. N. (2017). A new k-epsilon
@@ -60,16 +50,8 @@ public:
     void computeplanar();
 
     void computeusingheatflux();
-    
+
     const amrex::FArrayBox& instplanar() const { return m_store_xy_vel_temp; }
-
-    amrex::Real mean_windspeed() const { return m_mean_windspeed; }
-
-    amrex::Real surface_temp_flux() const { return m_surf_temp_flux; }
-
-    amrex::Real surface_temp() const { return m_surf_temp; }
-
-    bool use_fch() const { return m_use_fch; }
 
 private:
 
