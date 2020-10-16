@@ -24,7 +24,7 @@ public:
 
     //! Return the plane-averaged computed friction velocity at any given
     //! instance
-    amrex::Real utau() const { return m_utau; }
+    amrex::Real utau() const { return m_mo.utau; }
 
     //! Initialize the log-law height based on user inputs
     void init_log_law_height();
@@ -62,8 +62,6 @@ private:
 
     //! Monin-Obukhov instance
     MOData m_mo;
-
-    amrex::Real m_utau;                ///< Friction velocity
 
     int m_direction{2};   ///< Direction normal to wall
     bool m_use_fch{true}; ///< Use first cell height?

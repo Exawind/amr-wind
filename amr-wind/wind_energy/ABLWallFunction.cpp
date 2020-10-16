@@ -247,31 +247,31 @@ void ABLWallFunction::computeusingheatflux()
     // Initialize variables
     amrex::Real psi_m = 0.0;
     amrex::Real psi_h = 0.0;
-    m_utau = m_mo.kappa * m_mo.vmag_mean /
+    m_mo.utau = m_mo.kappa * m_mo.vmag_mean /
              (std::log(m_mo.zref / m_mo.z0) - psi_m);
 
     int iter = 0;
     do {
-        utau_iter = m_utau;
+        utau_iter = m_mo.utau;
         if (m_tempflux) {
             m_mo.surf_temp = m_mo.surf_temp_flux *
                               (std::log(m_mo.zref / m_mo.z0) - psi_h) /
-                              (m_utau * m_mo.kappa) +
+                              (m_mo.utau * m_mo.kappa) +
                           m_mo.theta_mean;
         } else {
-            m_mo.surf_temp_flux = -(m_mo.theta_mean - m_mo.surf_temp) * m_utau *
+            m_mo.surf_temp_flux = -(m_mo.theta_mean - m_mo.surf_temp) * m_mo.utau *
                                m_mo.kappa /
                                (std::log(m_mo.zref / m_mo.z0) - psi_h);
         }
-        amrex::Real obukhov_length = -m_utau * m_utau * m_utau * m_mo.theta_mean /
+        amrex::Real obukhov_length = -m_mo.utau * m_mo.utau * m_mo.utau * m_mo.theta_mean /
                            (m_mo.kappa * g * m_mo.surf_temp_flux);
         zeta = m_mo.zref / obukhov_length;
         psi_m = mo_psi_m(zeta);
         psi_h = mo_psi_h(zeta);
-        m_utau = m_mo.kappa * m_mo.vmag_mean /
+        m_mo.utau = m_mo.kappa * m_mo.vmag_mean /
                  (std::log(m_mo.zref / m_mo.z0) - psi_m);
         iter += 1;
-    } while ((std::abs(utau_iter - m_utau) > 1e-5) && iter <= m_max_iter);
+    } while ((std::abs(utau_iter - m_mo.utau) > 1e-5) && iter <= m_max_iter);
 
     auto xy_arr = m_store_xy_vel_temp.array();
 
