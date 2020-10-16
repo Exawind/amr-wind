@@ -127,7 +127,7 @@ void ABLWallFunction::update_umean(
                       m_surf_temp_rate *
                           (time.current_time() - m_surf_temp_rate_tstart) /
                           3600.0;
-#if 0
+#if 1
     {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
         m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
