@@ -380,8 +380,7 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     const amrex::Real wspd_mean = mo.vmag_mean;
     const amrex::Real theta_mean = mo.theta_mean;
     const amrex::Real theta_surf = mo.surf_temp;
-    const amrex::Real term1 = mo.utau / mo.phi_m();
-    const amrex::Real term2 = term1 * term1;
+    const amrex::Real term1 = (mo.utau * mo.kappa) / (wspd_mean * mo.phi_h());
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -420,7 +419,7 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
                     const amrex::Real theta = told_arr(i, j, k);
                     const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
                     const amrex::Real num2 = (theta_mean - theta_surf) * wspd;
-                    const amrex::Real tauT = term2 * (num1 + num2);
+                    const amrex::Real tauT = term1 * (num1 + num2);
                     tarr(i, j, k - 1) = den(i, j, k) * tauT / alphaT;
                 });
         }
