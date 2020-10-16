@@ -4,6 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldBCOps.H"
+#include "amr-wind/wind_energy/MOData.h"
 
 namespace amr_wind {
 
@@ -59,14 +60,10 @@ private:
 
     const amrex::AmrCore& m_mesh;
 
-    //! Mean velocity
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> m_umean{{0.0, 0.0, 0.0}};
+    //! Monin-Obukhov instance
+    MOData m_mo;
 
-    amrex::Real m_log_law_height{0.0}; ///< log-law height
     amrex::Real m_utau;                ///< Friction velocity
-
-    amrex::Real m_kappa{0.41}; ///< von Karman constant
-    amrex::Real m_z0{0.1};     ///< Roughness height
 
     int m_direction{2};   ///< Direction normal to wall
     bool m_use_fch{true}; ///< Use first cell height?
@@ -78,22 +75,13 @@ private:
 
     int m_ncells_x, m_ncells_y;
 
-    amrex::Real m_mean_windspeed, m_mean_pot_temp;
-
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox m_store_xy_vel_temp;
 
     bool m_tempflux;
-    amrex::Real m_surf_temp_flux;
     amrex::Real m_surf_temp_rate;
     amrex::Real m_surf_temp_rate_tstart;
     amrex::Real m_surf_temp_init;
-    amrex::Real m_surf_temp;
-    amrex::Real m_ref_temp;
-
-    amrex::Real m_gamma_m{5.0};
-    amrex::Real m_gamma_h{5.0};
-    amrex::Real m_beta_m{16.0};
 
     const int m_max_iter{25};
 };

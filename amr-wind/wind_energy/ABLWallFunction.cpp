@@ -17,18 +17,18 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 {
     amrex::ParmParse pp("ABL");
 
-    pp.query("kappa", m_kappa);
-    pp.query("mo_gamma_m", m_gamma_m);
-    pp.query("mo_gamma_h", m_gamma_h);
-    pp.query("mo_beta_m", m_beta_m);
-    pp.query("surface_roughness_z0", m_z0);
+    pp.query("kappa", m_mo.kappa);
+    pp.query("mo_gamma_m", m_mo.gamma_m);
+    pp.query("mo_gamma_h", m_mo.gamma_h);
+    pp.query("mo_beta_m", m_mo.beta_m);
+    pp.query("surface_roughness_z0", m_mo.z0);
     pp.query("normal_direction", m_direction);
     pp.queryarr("gravity", m_gravity);
     AMREX_ASSERT((0 <= m_direction) && (m_direction < AMREX_SPACEDIM));
 
     if (pp.contains("log_law_height")) {
         m_use_fch = false;
-        pp.get("log_law_height", m_log_law_height);
+        pp.get("log_law_height", m_mo.zref);
     } else {
         m_use_fch = true;
         amrex::Print()
@@ -37,12 +37,12 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
             << std::endl;
     }
 
-    pp.get("reference_temperature", m_ref_temp);
+    pp.get("reference_temperature", m_mo.ref_temp);
 
     m_tempflux = true;
-    m_surf_temp_flux = 0.0;
+    m_mo.surf_temp_flux = 0.0;
     if (pp.contains("surface_temp_flux")) {
-        pp.query("surface_temp_flux", m_surf_temp_flux);
+        pp.query("surface_temp_flux", m_mo.surf_temp_flux);
     } else if (pp.contains("surface_temp_rate")) {
         m_tempflux = false;
         pp.get("surface_temp_rate", m_surf_temp_rate);
@@ -52,8 +52,8 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
             amrex::Print()
                 << "ABLWallFunction: Initial surface temperature not found for "
                    "ABL. Assuming to be equal to the reference temperature "
-                << m_ref_temp << std::endl;
-            m_surf_temp_init = m_ref_temp;
+                << m_mo.ref_temp << std::endl;
+            m_surf_temp_init = m_mo.ref_temp;
         }
         if (pp.contains("surface_temp_rate_tstart"))
             pp.get("surface_temp_rate_tstart", m_surf_temp_rate_tstart);
@@ -78,9 +78,9 @@ amrex::Real ABLWallFunction::mo_psi_m(amrex::Real zeta)
 {
 
     if (zeta > 0) {
-        return -m_gamma_m * zeta;
+        return -m_mo.gamma_m * zeta;
     } else {
-        amrex::Real x = std::sqrt(std::sqrt(1 - m_beta_m * zeta));
+        amrex::Real x = std::sqrt(std::sqrt(1 - m_mo.beta_m * zeta));
         return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
                2.0 * std::atan(x) + utils::half_pi();
     }
@@ -91,9 +91,9 @@ amrex::Real ABLWallFunction::mo_psi_h(amrex::Real zeta)
 {
 
     if (zeta > 0) {
-        return -m_gamma_h * zeta;
+        return -m_mo.gamma_h * zeta;
     } else {
-        amrex::Real x = std::sqrt(1 - m_beta_m * zeta);
+        amrex::Real x = std::sqrt(1 - m_mo.beta_m * zeta);
         return std::log(0.5 * (1 + x));
     }
 }
@@ -102,7 +102,7 @@ void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
         const auto& geom = m_mesh.Geom(0);
-        m_log_law_height =
+        m_mo.zref =
             (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     }
 
@@ -117,7 +117,7 @@ void ABLWallFunction::init_log_law_height()
         geom[m_mesh.finestLevel()].ProbLo(2) + 0.5 * dz;
     m_z_sample_index =
         dlo.z + static_cast<int>(
-                    std::floor((m_log_law_height - first_cell_height) / dz));
+                    std::floor((m_mo.zref - first_cell_height) / dz));
 
     // assuming Z is wall normal direction
     m_ncells_x = dhi.x - dlo.x + 1;
@@ -125,7 +125,7 @@ void ABLWallFunction::init_log_law_height()
 
     amrex::Real zcellN = first_cell_height + (m_z_sample_index)*dz;
 
-    m_coeff_interp[0] = 1.0 - (m_log_law_height - zcellN) / dz;
+    m_coeff_interp[0] = 1.0 - (m_mo.zref - zcellN) / dz;
     m_coeff_interp[1] = 1.0 - m_coeff_interp[0];
 
     amrex::IntVect lo(AMREX_D_DECL(0, 0, m_z_sample_index));
@@ -144,7 +144,7 @@ void ABLWallFunction::update_umean()
     const auto& time = m_sim.time();
 
     if (!m_tempflux)
-        m_surf_temp = m_surf_temp_init +
+        m_mo.surf_temp = m_surf_temp_init +
                       m_surf_temp_rate *
                           (time.current_time() - m_surf_temp_rate_tstart) /
                           3600.0;
@@ -182,7 +182,7 @@ void ABLWallFunction::computeplanar()
         amrex::Real zminBox = problo[2] + dz * (dlo.z);
         amrex::Real zmaxBox = problo[2] + dz * (dhi.z);
 
-        if ((m_log_law_height - zminBox) * (zmaxBox - m_log_law_height) <=
+        if ((m_mo.zref - zminBox) * (zmaxBox - m_mo.zref) <=
             0.0) {
             continue;
         }
@@ -212,7 +212,7 @@ void ABLWallFunction::computeplanar()
     amrex::ParallelDescriptor::ReduceRealSum(
         m_store_xy_vel_temp.dataPtr(), m_ncells_x * m_ncells_y * 4);
 
-    std::fill(m_umean.begin(), m_umean.end(), 0.0);
+    for (int i=0; i < AMREX_SPACEDIM; ++i) m_mo.vel_mean[i] = 0.0;
 
     amrex::Real umean0 = 0.0;
     amrex::Real umean1 = 0.0;
@@ -231,10 +231,10 @@ void ABLWallFunction::computeplanar()
 
         });
 
-    m_umean[0] = umean0 / numCells;
-    m_umean[1] = umean1 / numCells;
-    m_mean_windspeed = mean_windspd / numCells;
-    m_mean_pot_temp = mean_pot_temp / numCells;
+    m_mo.vel_mean[0] = umean0 / numCells;
+    m_mo.vel_mean[1] = umean1 / numCells;
+    m_mo.vmag_mean = mean_windspd / numCells;
+    m_mo.theta_mean = mean_pot_temp / numCells;
 }
 
 void ABLWallFunction::computeusingheatflux()
@@ -247,43 +247,43 @@ void ABLWallFunction::computeusingheatflux()
     // Initialize variables
     amrex::Real psi_m = 0.0;
     amrex::Real psi_h = 0.0;
-    m_utau = m_kappa * m_mean_windspeed /
-             (std::log(m_log_law_height / m_z0) - psi_m);
+    m_utau = m_mo.kappa * m_mo.vmag_mean /
+             (std::log(m_mo.zref / m_mo.z0) - psi_m);
 
     int iter = 0;
     do {
         utau_iter = m_utau;
         if (m_tempflux) {
-            m_surf_temp = m_surf_temp_flux *
-                              (std::log(m_log_law_height / m_z0) - psi_h) /
-                              (m_utau * m_kappa) +
-                          m_mean_pot_temp;
+            m_mo.surf_temp = m_mo.surf_temp_flux *
+                              (std::log(m_mo.zref / m_mo.z0) - psi_h) /
+                              (m_utau * m_mo.kappa) +
+                          m_mo.theta_mean;
         } else {
-            m_surf_temp_flux = -(m_mean_pot_temp - m_surf_temp) * m_utau *
-                               m_kappa /
-                               (std::log(m_log_law_height / m_z0) - psi_h);
+            m_mo.surf_temp_flux = -(m_mo.theta_mean - m_mo.surf_temp) * m_utau *
+                               m_mo.kappa /
+                               (std::log(m_mo.zref / m_mo.z0) - psi_h);
         }
-        amrex::Real obukhov_length = -m_utau * m_utau * m_utau * m_mean_pot_temp /
-                           (m_kappa * g * m_surf_temp_flux);
-        zeta = m_log_law_height / obukhov_length;
+        amrex::Real obukhov_length = -m_utau * m_utau * m_utau * m_mo.theta_mean /
+                           (m_mo.kappa * g * m_mo.surf_temp_flux);
+        zeta = m_mo.zref / obukhov_length;
         psi_m = mo_psi_m(zeta);
         psi_h = mo_psi_h(zeta);
-        m_utau = m_kappa * m_mean_windspeed /
-                 (std::log(m_log_law_height / m_z0) - psi_m);
+        m_utau = m_mo.kappa * m_mo.vmag_mean /
+                 (std::log(m_mo.zref / m_mo.z0) - psi_m);
         iter += 1;
     } while ((std::abs(utau_iter - m_utau) > 1e-5) && iter <= m_max_iter);
 
     auto xy_arr = m_store_xy_vel_temp.array();
 
-    const amrex::Real umean0 = m_umean[0];
-    const amrex::Real umean1 = m_umean[1];
-    const amrex::Real mean_windspd = m_mean_windspeed;
-    const amrex::Real mean_pot_temp = m_mean_pot_temp;
-    const amrex::Real ref_temp = m_ref_temp;
+    const amrex::Real umean0 = m_mo.vel_mean[0];
+    const amrex::Real umean1 = m_mo.vel_mean[1];
+    const amrex::Real mean_windspd = m_mo.vmag_mean;
+    const amrex::Real mean_pot_temp = m_mo.theta_mean;
+    const amrex::Real ref_temp = m_mo.ref_temp;
 
-    const amrex::Real tau_xz = umean0 / m_mean_windspeed;
-    const amrex::Real tau_yz = umean1 / m_mean_windspeed;
-    const amrex::Real tau_thetaz = -m_surf_temp_flux;
+    const amrex::Real tau_xz = umean0 / m_mo.vmag_mean;
+    const amrex::Real tau_yz = umean1 / m_mo.vmag_mean;
+    const amrex::Real tau_thetaz = -m_mo.surf_temp_flux;
     const amrex::Real denom1 = mean_windspd * (mean_pot_temp - ref_temp);
 
     amrex::ParallelFor(
