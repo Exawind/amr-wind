@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include "AMReX_REAL.H"
+#include "AMReX_Gpu.H"
 
 namespace amr_wind {
 namespace utils {

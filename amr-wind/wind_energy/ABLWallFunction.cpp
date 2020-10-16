@@ -71,6 +71,9 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                           "Assuming Neutral Stratification"
                        << std::endl;
     }
+
+    m_mo.alg_type = m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
+    m_mo.gravity = utils::vec_mag(m_gravity.data());
 }
 
 //! Return Monin-Obukhov Similarity function psi_m
