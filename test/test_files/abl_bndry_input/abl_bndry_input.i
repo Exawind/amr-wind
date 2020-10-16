@@ -12,11 +12,9 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 io.KE_int = 1
-io.line_plot_int = 1
 io.restart_file = "../abl_bndry_output/chk00005"
 time.plot_interval            =  1       # Steps between plot files
 time.checkpoint_interval      =  1       # Steps between checkpoint files
-amr.plt_tracer = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
@@ -75,8 +73,6 @@ ylo.density = 1.0
 ylo.temperature = 0.0
 yhi.type = "pressure_outflow"
 zlo.type =   "wall_model"
-zlo.temperature_type = "fixed_gradient"
-zlo.temperature = 0.0
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
 zhi.temperature = 0.0
@@ -84,7 +80,3 @@ zhi.temperature = 0.0
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

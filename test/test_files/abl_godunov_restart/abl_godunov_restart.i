@@ -14,11 +14,9 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 io.KE_int = 1
-io.line_plot_int = 1
 io.restart_file = ../abl_godunov/chk00005
 time.plot_interval            =   500       # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
-amr.plt_tracer = 1
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -64,8 +62,6 @@ geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
 zlo.type =   "wall_model"
-zlo.temperature_type = "fixed_gradient"
-zlo.temperature = 0.0
 
 zhi.type =   "slip_wall"
 zhi.temperature_type = "fixed_gradient"
@@ -75,8 +71,3 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

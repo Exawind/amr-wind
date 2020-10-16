@@ -36,6 +36,5 @@ incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = 
 incflo.verbose          =   1           # incflo_level
 mac_proj.verbose        =   0           # MAC Projector
 nodal_proj.verbose      =   0           # Nodal Projector
-diffusion.mg_verbose    =   0           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12

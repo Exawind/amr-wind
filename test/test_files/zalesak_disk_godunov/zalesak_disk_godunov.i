@@ -19,7 +19,6 @@ time.checkpoint_interval      =  100       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.density             = 1.0          # Reference density 
 
 incflo.use_godunov = 1
 incflo.use_limiter = 1
