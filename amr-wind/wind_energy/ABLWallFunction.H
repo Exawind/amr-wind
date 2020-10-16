@@ -71,8 +71,6 @@ public:
 
     bool use_fch() const { return m_use_fch; }
 
-    amrex::Real obukhov_length() const { return m_obukhov_length; }
-
 private:
 
     const CFDSim& m_sim;
@@ -108,8 +106,6 @@ private:
     amrex::Real m_surf_temp_rate;
     amrex::Real m_surf_temp_rate_tstart;
     amrex::Real m_surf_temp_init;
-    amrex::Real m_obukhov_length;
-    amrex::Real m_psi_m, m_psi_h;
     amrex::Real m_surf_temp;
     amrex::Real m_ref_temp;
 

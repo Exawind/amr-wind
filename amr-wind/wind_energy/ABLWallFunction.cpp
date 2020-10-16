@@ -242,36 +242,36 @@ void ABLWallFunction::computeusingheatflux()
 
     amrex::Real g = utils::vec_mag(m_gravity.data());
     amrex::Real zeta = 0.0;
-    amrex::Real m_utau_iter = 0.0;
+    amrex::Real utau_iter = 0.0;
 
     // Initialize variables
-    m_psi_m = 0.0;
-    m_psi_h = 0.0;
+    amrex::Real psi_m = 0.0;
+    amrex::Real psi_h = 0.0;
     m_utau = m_kappa * m_mean_windspeed /
-             (std::log(m_log_law_height / m_z0) - m_psi_m);
+             (std::log(m_log_law_height / m_z0) - psi_m);
 
     int iter = 0;
     do {
-        m_utau_iter = m_utau;
+        utau_iter = m_utau;
         if (m_tempflux) {
             m_surf_temp = m_surf_temp_flux *
-                              (std::log(m_log_law_height / m_z0) - m_psi_h) /
+                              (std::log(m_log_law_height / m_z0) - psi_h) /
                               (m_utau * m_kappa) +
                           m_mean_pot_temp;
         } else {
             m_surf_temp_flux = -(m_mean_pot_temp - m_surf_temp) * m_utau *
                                m_kappa /
-                               (std::log(m_log_law_height / m_z0) - m_psi_h);
+                               (std::log(m_log_law_height / m_z0) - psi_h);
         }
-        m_obukhov_length = -m_utau * m_utau * m_utau * m_mean_pot_temp /
+        amrex::Real obukhov_length = -m_utau * m_utau * m_utau * m_mean_pot_temp /
                            (m_kappa * g * m_surf_temp_flux);
-        zeta = m_log_law_height / m_obukhov_length;
-        m_psi_m = mo_psi_m(zeta);
-        m_psi_h = mo_psi_h(zeta);
+        zeta = m_log_law_height / obukhov_length;
+        psi_m = mo_psi_m(zeta);
+        psi_h = mo_psi_h(zeta);
         m_utau = m_kappa * m_mean_windspeed /
-                 (std::log(m_log_law_height / m_z0) - m_psi_m);
+                 (std::log(m_log_law_height / m_z0) - psi_m);
         iter += 1;
-    } while ((std::abs(m_utau_iter - m_utau) > 1e-5) && iter <= m_max_iter);
+    } while ((std::abs(utau_iter - m_utau) > 1e-5) && iter <= m_max_iter);
 
     auto xy_arr = m_store_xy_vel_temp.array();
 
