@@ -76,31 +76,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
     m_mo.gravity = utils::vec_mag(m_gravity.data());
 }
 
-//! Return Monin-Obukhov Similarity function psi_m
-amrex::Real ABLWallFunction::mo_psi_m(amrex::Real zeta)
-{
-
-    if (zeta > 0) {
-        return -m_mo.gamma_m * zeta;
-    } else {
-        amrex::Real x = std::sqrt(std::sqrt(1 - m_mo.beta_m * zeta));
-        return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
-               2.0 * std::atan(x) + utils::half_pi();
-    }
-}
-
-//! Return Monin-Obukhov Similarity function psi_h
-amrex::Real ABLWallFunction::mo_psi_h(amrex::Real zeta)
-{
-
-    if (zeta > 0) {
-        return -m_mo.gamma_h * zeta;
-    } else {
-        amrex::Real x = std::sqrt(1 - m_mo.beta_m * zeta);
-        return std::log(0.5 * (1 + x));
-    }
-}
-
 void ABLWallFunction::init_log_law_height()
 {
     if (m_use_fch) {
@@ -142,7 +117,8 @@ void ABLWallFunction::init_log_law_height()
     m_store_xy_vel_temp.resize(m_bx_z_sample, 4);
 }
 
-void ABLWallFunction::update_umean()
+void ABLWallFunction::update_umean(
+    const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa)
 {
     const auto& time = m_sim.time();
 
@@ -151,14 +127,22 @@ void ABLWallFunction::update_umean()
                       m_surf_temp_rate *
                           (time.current_time() - m_surf_temp_rate_tstart) /
                           3600.0;
-
+#if 0
+    {
+        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
+        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
+        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
+        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
+    }
+    m_mo.update_fluxes();
+#else
     computeplanar();
     computeusingheatflux();
+#endif
 }
 
 void ABLWallFunction::computeplanar()
 {
-
     const auto& frepo = m_sim.repo();
     static constexpr int idir = 2;
     const int maxlev = m_mesh.finestLevel();
@@ -289,9 +273,82 @@ ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
 
 void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
+#if 1
+    BL_PROFILE("amr-wind::ABLVelWallFunc");
+    constexpr bool extrapolate = false;
+    constexpr int idim = 2;
+    auto& repo = velocity.repo();
+    auto& density = repo.get_field("density", rho_state);
+    auto& viscosity = repo.get_field("velocity_mueff");
+    const int nlevels = repo.num_active_levels();
 
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+
+    AMREX_ALWAYS_ASSERT(((velocity.bc_type()[zlo] == BC::wall_model) &&
+                         (!repo.mesh().Geom(0).isPeriodic(idim))));
+
+    const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
+    const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
+    const amrex::Real utau2 = m_wall_func.utau() * m_wall_func.utau();
+    const auto& mo = m_wall_func.mo();
+    const amrex::Real umeanx = mo.vel_mean[0];
+    const amrex::Real umeany = mo.vel_mean[1];
+    const amrex::Real wspd_mean = mo.vmag_mean;
+    const amrex::Real tau_xz = umeanx / wspd_mean;
+    const amrex::Real tau_yz = umeany / wspd_mean;
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        amrex::MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        auto& vel_lev = velocity(lev);
+        auto& eta_lev = viscosity(lev);
+
+        if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto varr  = vel_lev.array(mfi);
+            auto vold_arr = vold_lev.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto eta = eta_lev.array(mfi);
+
+            if (!(bx.smallEnd(idim) == domain.smallEnd(idim))) continue;
+
+            amrex::ParallelFor(
+                amrex::bdryLo(bx, idim),
+                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real mu = c0 * eta(i, j, k) + c1 * eta(i, j, k+1);
+                    const amrex::Real uu = vold_arr(i, j, k, 0);
+                    const amrex::Real vv = vold_arr(i, j, k, 1);
+                    const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+
+                    // Dirichlet BC
+                    varr(i, j, k-1, 2) = 0.0;
+
+                    // Shear stress BC
+                    amrex::Real taux =
+                        tau_xz * ((uu - umeanx) * wspd_mean + wspd * umeanx) /
+                        (wspd_mean * umeanx);
+                    amrex::Real tauy =
+                        tau_yz * ((vv - umeany) * wspd_mean + wspd * umeany) /
+                        (wspd_mean * umeany);
+
+                    varr(i, j, k-1, 0) = taux * den(i, j, k) * utau2 / mu;
+                    varr(i, j, k-1, 1) = tauy * den(i, j, k) * utau2 / mu;
+                });
+        }
+    }
+
+#else
     diffusion::wall_model_bc_moeng(
         velocity, m_wall_func.utau(), rho_state, m_wall_func.instplanar());
+#endif
 }
 
 ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)

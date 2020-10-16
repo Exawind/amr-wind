@@ -3,6 +3,18 @@
 
 namespace amr_wind {
 
+/*
+ * van der Laan, P., Kelly, M. C., & Sørensen, N. N. (2017). A new k-epsilon
+ * model consistent with Monin-Obukhov similarity theory. Wind Energy,
+ * 20(3), 479–489. https://doi.org/10.1002/we.2017
+ *
+ * Consistent with Dyer (1974) formulation from page 57, Chapter 2, Modeling
+ * the vertical ABL structure in Modelling of Atmospheric Flow Fields,
+ * Demetri P Lalas and Corrado F Ratto, January 1996,
+ * https://doi.org/10.1142/2975.
+ */
+
+
 amrex::Real MOData::calc_psi_m(amrex::Real zeta)
 {
     if (zeta > 0) {

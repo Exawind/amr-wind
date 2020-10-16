@@ -71,8 +71,6 @@ void ABL::initialize_fields(
         auto& tke = (*m_tke)(level);
         m_field_init->init_tke(geom, tke);
     }
-    
-
 }
 
 void ABL::post_init_actions()
@@ -80,8 +78,9 @@ void ABL::post_init_actions()
     m_abl_wall_func.init_log_law_height();
 
     m_stats->calc_averages();
-    
-    m_abl_wall_func.update_umean();
+
+    m_abl_wall_func.update_umean(
+        m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
@@ -108,7 +107,9 @@ void ABL::pre_advance_work()
 {
     m_stats->calc_averages();
     const auto& vel_pa = m_stats->vel_plane_averaging();
-    m_abl_wall_func.update_umean();
+    m_abl_wall_func.update_umean(
+        m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
+
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();

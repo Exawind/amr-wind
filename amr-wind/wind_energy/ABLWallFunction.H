@@ -22,6 +22,9 @@ public:
 
     ~ABLWallFunction() = default;
 
+    MOData& mo() { return m_mo; }
+    const MOData& mo() const { return m_mo; }
+
     //! Return the plane-averaged computed friction velocity at any given
     //! instance
     amrex::Real utau() const { return m_mo.utau; }
@@ -30,23 +33,7 @@ public:
     void init_log_law_height();
 
     //! Update the mean velocity at a given timestep
-    void update_umean();
-
-    /**
-     * van der Laan, P., Kelly, M. C., & Sørensen, N. N. (2017). A new k-epsilon
-     * model consistent with Monin-Obukhov similarity theory. Wind Energy,
-     * 20(3), 479–489. https://doi.org/10.1002/we.2017
-     *
-     * Consistent with Dyer (1974) formulation from page 57, Chapter 2, Modeling
-     * the vertical ABL structure in Modelling of Atmospheric Flow Fields,
-     * Demetri P Lalas and Corrado F Ratto, January 1996,
-     * https://doi.org/10.1142/2975.
-     */
-    //! Return Monin-Obukhov Similarity function psi_m
-    amrex::Real mo_psi_m(amrex::Real zeta);
-
-    //! Return Monin-Obukhov Similarity function psi_h
-    amrex::Real mo_psi_h(amrex::Real zeta);
+    void update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
     void computeplanar();
 
