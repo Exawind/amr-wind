@@ -1,3 +1,4 @@
+#include <limits>
 #include "amr-wind/wind_energy/MOData.h"
 
 namespace amr_wind {
@@ -25,13 +26,14 @@ amrex::Real MOData::calc_psi_h(amrex::Real zeta)
 
 void MOData::update_fluxes(int max_iters)
 {
+    constexpr amrex::Real eps = 1.0e-16;
     amrex::Real zeta = 0.0;
     amrex::Real utau_iter = 0.0;
 
     // Initialize variables
     amrex::Real psi_m = 0.0;
     amrex::Real psi_h = 0.0;
-    utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m);
+    utau = kappa * vmag_mean / (std::log(zref / z0));
 
     int iter = 0;
     do {
@@ -49,9 +51,16 @@ void MOData::update_fluxes(int max_iters)
             break;
         }
 
-        obukhov_len = -utau * utau * utau * theta_mean /
-                      (kappa * gravity * surf_temp_flux);
-        zeta = zref / obukhov_len;
+        if (std::abs(surf_temp_flux) > eps) {
+            // Stable and unstable ABL conditions
+            obukhov_len = -utau * utau * utau * theta_mean /
+                (kappa * gravity * surf_temp_flux);
+            zeta = zref / obukhov_len;
+        } else {
+            // Neutral conditions
+            obukhov_len = std::numeric_limits<amrex::Real>::max();
+            zeta = 0.0;
+        }
         psi_m = calc_psi_m(zeta);
         psi_h = calc_psi_h(zeta);
         utau = kappa * vmag_mean / (std::log(zref / z0) - psi_m);

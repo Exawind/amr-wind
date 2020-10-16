@@ -80,8 +80,6 @@ private:
     amrex::Real m_surf_temp_rate;
     amrex::Real m_surf_temp_rate_tstart;
     amrex::Real m_surf_temp_init;
-
-    const int m_max_iter{25};
 };
 
 /** Applies a shear-stress value at the domain boundary
