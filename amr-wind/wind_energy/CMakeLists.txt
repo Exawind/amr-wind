@@ -7,4 +7,5 @@ target_sources(${amr_wind_lib_name}
   ABLWallFunction.cpp
   ABLFillInflow.cpp
   ABLBoundaryPlane.cpp
+  MOData.cpp
   )
