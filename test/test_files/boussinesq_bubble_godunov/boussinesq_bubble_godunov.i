@@ -2,7 +2,6 @@ time.max_step                = 140
 time.stop_time               = 100.0           # Max (simulated) time to evolve
 
 incflo.use_godunov                     = true
-incflo.godunov_include_diff_in_forcing = true
 
 time.fixed_dt = 0.2
 
@@ -40,14 +39,10 @@ zhi.temperature_type = "fixed_gradient"
 
 incflo.gradrhoerr       = 0.1
 
-amr.plt_ccse_regtest    =  1
-amr.plt_vort            =  1
-
 incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 
 incflo.verbose          =   1           # incflo_level
 mac_proj.verbose        =   0           # MAC Projector
 nodal_proj.verbose      =   0           # Nodal Projector
-diffusion.mg_verbose    =   0           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12

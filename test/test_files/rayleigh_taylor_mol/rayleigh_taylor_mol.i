@@ -36,9 +36,6 @@ incflo.gravity          = 0. 0. -0.3
 
 incflo.gradrhoerr       = 0.1
 
-amr.plt_ccse_regtest    =  1
-amr.plt_vort            =  1
-
 incflo.use_godunov      = false
 incflo.constant_density = false
 
