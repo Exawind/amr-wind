@@ -357,9 +357,84 @@ ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
 
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
 {
+#if 1
+    constexpr bool extrapolate = false;
+    constexpr int idim = 2;
+    auto& repo = temperature.repo();
 
+    // Return early if the user hasn't requested a wall model BC for temperature
+    amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
+    if ((temperature.bc_type()[zlo] != BC::wall_model) ||
+        repo.mesh().Geom(0).isPeriodic(idim))
+        return;
+
+    BL_PROFILE("amr-wind::ABLVelWallFunc");
+    constexpr amrex::Real eps_denom = 0.1;
+    auto& velocity = repo.get_field("velocity");
+    auto& density = repo.get_field("density", rho_state);
+    auto& alpha = repo.get_field("temperature_mueff");
+    const int nlevels = repo.num_active_levels();
+
+    const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
+    const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
+    const auto& mo = m_wall_func.mo();
+    const amrex::Real wspd_mean = mo.vmag_mean;
+    const amrex::Real theta_mean = mo.theta_mean;
+    const amrex::Real tau_thetaz = -mo.surf_temp_flux;
+    amrex::Real denom = (mo.theta_mean - mo.ref_temp);
+    const bool denom_is_zero = (std::abs(denom) < eps_denom);
+    denom *= wspd_mean;
+
+    for (int lev=0; lev < nlevels; ++lev) {
+        const auto& geom = repo.mesh().Geom(lev);
+        const auto& domain = geom.Domain();
+        amrex::MFItInfo mfi_info{};
+
+        auto& rho_lev = density(lev);
+        auto& vold_lev = velocity.state(FieldState::Old)(lev);
+        auto& told_lev = temperature.state(FieldState::Old)(lev);
+        auto& theta = temperature(lev);
+        auto& eta_lev = alpha(lev);
+
+        if (amrex::Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(theta, mfi_info); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            auto vold_arr = vold_lev.array(mfi);
+            auto told_arr = told_lev.array(mfi);
+            auto tarr = theta.array(mfi);
+            auto den = rho_lev.array(mfi);
+            auto eta = eta_lev.array(mfi);
+
+            if (!(bx.smallEnd(idim) == domain.smallEnd(idim))) continue;
+
+            amrex::ParallelFor(
+                amrex::bdryLo(bx, idim),
+                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real alphaT = c0 * eta(i, j, k) + c1 * eta(i, j, k+1);
+                    const amrex::Real uu = vold_arr(i, j, k, 0);
+                    const amrex::Real vv = vold_arr(i, j, k, 1);
+                    const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+
+                    if (denom_is_zero) {
+                        const amrex::Real tauT = tau_thetaz * wspd / wspd_mean;
+                        tarr(i, j, k-1) = den(i, j, k) * tauT / alphaT;
+                    } else {
+                        const amrex::Real theta = told_arr(i, j, k);
+                        const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
+                        const amrex::Real num2 = denom * wspd;
+                        const amrex::Real tauT = tau_thetaz * (num1 + num2) / denom;
+                        tarr(i, j, k-1) = den(i, j, k) * tauT / alphaT;
+                    }
+                });
+        }
+    }
+#else
     diffusion::temp_wall_model_bc(
         temperature, m_wall_func.instplanar(), rho_state);
+#endif
 }
 
 } // namespace amr_wind
