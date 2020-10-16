@@ -15,7 +15,7 @@ namespace amr_wind {
  */
 
 
-amrex::Real MOData::calc_psi_m(amrex::Real zeta)
+amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
 {
     if (zeta > 0) {
         return -gamma_m * zeta;
@@ -26,7 +26,7 @@ amrex::Real MOData::calc_psi_m(amrex::Real zeta)
     }
 }
 
-amrex::Real MOData::calc_psi_h(amrex::Real zeta)
+amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
 {
     if (zeta > 0) {
         return -gamma_h * zeta;

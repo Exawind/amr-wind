@@ -369,7 +369,6 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
         return;
 
     BL_PROFILE("amr-wind::ABLVelWallFunc");
-    constexpr amrex::Real eps_denom = 0.1;
     auto& velocity = repo.get_field("velocity");
     auto& density = repo.get_field("density", rho_state);
     auto& alpha = repo.get_field("temperature_mueff");
@@ -380,12 +379,10 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
     const auto& mo = m_wall_func.mo();
     const amrex::Real wspd_mean = mo.vmag_mean;
     const amrex::Real theta_mean = mo.theta_mean;
-    const amrex::Real tau_thetaz = -mo.surf_temp_flux;
-    amrex::Real denom = (mo.theta_mean - mo.ref_temp);
-    const bool denom_is_zero = (std::abs(denom) < eps_denom);
-    denom *= wspd_mean;
+    const amrex::Real theta_surf = mo.surf_temp;
+    const amrex::Real term1 = (mo.utau * mo.kappa) / (wspd_mean * mo.phi_h());
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
@@ -413,21 +410,17 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
             amrex::ParallelFor(
                 amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real alphaT = c0 * eta(i, j, k) + c1 * eta(i, j, k+1);
+                    const amrex::Real alphaT =
+                        c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                     const amrex::Real uu = vold_arr(i, j, k, 0);
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
-                    if (denom_is_zero) {
-                        const amrex::Real tauT = tau_thetaz * wspd / wspd_mean;
-                        tarr(i, j, k-1) = den(i, j, k) * tauT / alphaT;
-                    } else {
-                        const amrex::Real theta = told_arr(i, j, k);
-                        const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
-                        const amrex::Real num2 = denom * wspd;
-                        const amrex::Real tauT = tau_thetaz * (num1 + num2) / denom;
-                        tarr(i, j, k-1) = den(i, j, k) * tauT / alphaT;
-                    }
+                    const amrex::Real theta = told_arr(i, j, k);
+                    const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
+                    const amrex::Real num2 = (theta_mean - theta_surf) * wspd;
+                    const amrex::Real tauT = term1 * (num1 + num2);
+                    tarr(i, j, k - 1) = den(i, j, k) * tauT / alphaT;
                 });
         }
     }
