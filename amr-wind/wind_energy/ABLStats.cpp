@@ -3,6 +3,7 @@
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/DirectionSelector.H"
+#include "amr-wind/utilities/tensor_ops.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
@@ -42,6 +43,11 @@ void ABLStats::initialize()
         pp.query("stats_output_format", m_out_fmt);
         pp.query("normal_direction", m_normal_dir);
         AMREX_ASSERT((0 <= m_normal_dir) && (m_normal_dir < AMREX_SPACEDIM));
+        pp.query("kappa", m_kappa);
+        amrex::Vector<amrex::Real> gravity{{0.0, 0.0, -9.81}};
+        pp.queryarr("gravity", gravity);
+        m_gravity = utils::vec_mag(gravity.data());
+        pp.get("reference_temperature", m_ref_theta);
     }
 
     // Get normal direction and associated stuff
@@ -256,6 +262,8 @@ void ABLStats::prepare_netcdf_file()
     ncf.def_dim("ndim", AMREX_SPACEDIM);
 
     ncf.def_var("time", NC_DOUBLE, {nt_name});
+    ncf.def_var("Q", NC_DOUBLE, {nt_name});
+    ncf.def_var("Tsurf", NC_DOUBLE, {nt_name});    
     ncf.def_var("ustar", NC_DOUBLE, {nt_name});
     ncf.def_var("wstar", NC_DOUBLE, {nt_name});
     ncf.def_var("L", NC_DOUBLE, {nt_name});
@@ -317,8 +325,14 @@ void ABLStats::write_netcdf()
         auto ustar = m_abl_wall_func.utau();
         ncf.var("ustar").put(&ustar, {nt}, {1});
         double wstar = 0.0;
+        auto Q = m_abl_wall_func.mo().surf_temp_flux;
+        ncf.var("Q").put(&Q, {nt}, {1});
+        auto Tsurf = m_abl_wall_func.mo().surf_temp;
+        ncf.var("Tsurf").put(&Tsurf, {nt}, {1});        
+        if (Q > 1e-10)
+            wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);        
         ncf.var("wstar").put(&wstar, {nt}, {1});
-        double L = 0.0;
+        double L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 
