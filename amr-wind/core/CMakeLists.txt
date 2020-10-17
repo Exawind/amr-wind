@@ -6,5 +6,6 @@ target_sources(${amr_wind_lib_name}
   IntField.cpp
   FieldRepo.cpp
   ScratchField.cpp
+  ViewField.cpp
   MLMGOptions.cpp
   )

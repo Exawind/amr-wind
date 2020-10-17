@@ -11,6 +11,7 @@
 
 #include "amr-wind/incflo_enums.H"
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/ViewField.H"
 
 namespace amr_wind {
 
@@ -257,6 +258,11 @@ public:
     /** Set components to those in the vector for a multi-component field
      */
     void setVal(const amrex::Vector<amrex::Real>& values, int nghost=0) noexcept;
+
+    /** Return a sub-view of the Field instance
+     */
+    ViewField<Field> subview(const int scomp = 0, const int ncomp = 1)
+    { return {*this, scomp, ncomp}; }
 
     /** Register a custom fillpatch class instance for this field
      *
