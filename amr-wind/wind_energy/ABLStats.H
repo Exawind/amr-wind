@@ -98,6 +98,15 @@ private:
     //! Frequency of data sampling and output
     int m_out_freq{100};
 
+    //! Acceleration due to gravity magnitude
+    amrex::Real m_gravity{9.81};
+
+    //! Von-Karman constant
+    amrex::Real m_kappa{0.41};
+
+    //! Reference surface temperature
+    amrex::Real m_ref_theta{300.0};    
+
     //! Variable to store capping inversion height
     double m_zi{0.0};
 
