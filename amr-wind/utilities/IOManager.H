@@ -12,6 +12,7 @@ namespace amr_wind {
 class CFDSim;
 class Field;
 class IntField;
+class DerivedQtyMgr;
 
 /** Input/Output manager
  *  \ingroup utilities
@@ -86,6 +87,8 @@ private:
     void write_info_file(const std::string&);
 
     CFDSim& m_sim;
+
+    std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
 
     //! Default output variables registered automatically in the code
     std::set<std::string> m_pltvars_default;

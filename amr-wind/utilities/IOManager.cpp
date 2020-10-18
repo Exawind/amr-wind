@@ -5,6 +5,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/utilities/DerivedQuantity.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"
@@ -12,7 +13,9 @@
 
 namespace amr_wind {
 
-IOManager::IOManager(CFDSim& sim) : m_sim(sim) {}
+IOManager::IOManager(CFDSim& sim)
+    : m_sim(sim), m_derived_mgr(new DerivedQtyMgr(m_sim.repo()))
+{}
 
 IOManager::~IOManager() = default;
 
@@ -20,6 +23,7 @@ void IOManager::initialize_io()
 {
     amrex::Vector<std::string> out_vars;
     amrex::Vector<std::string> out_int_vars;
+    amrex::Vector<std::string> out_derived_vars;
     std::set<std::string> outputs;
     std::set<std::string> int_outputs;
 
@@ -32,6 +36,7 @@ void IOManager::initialize_io()
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
     pp.queryarr("int_outputs", out_int_vars);
+    pp.queryarr("derived_outputs", out_derived_vars);
 
     // We process the input vector to eliminate duplicates
     for (const auto& name: out_vars)
@@ -78,6 +83,12 @@ void IOManager::initialize_io()
         }
     }
 
+    if (out_derived_vars.size() > 0u) {
+        m_derived_mgr->create(out_derived_vars);
+        m_plt_num_comp += m_derived_mgr->num_comp();
+        m_derived_mgr->var_names(m_plt_var_names);
+    }
+
     for (const auto& fname: m_chkvars) {
         auto& fld = repo.get_field(fname);
         m_chk_fields.emplace_back(&fld);
@@ -90,6 +101,7 @@ void IOManager::write_plot_file()
 
     amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
     const int plt_comp = m_plt_num_comp;
+    const int start_comp = m_plt_num_comp - m_derived_mgr->num_comp();
     auto outfield = m_sim.repo().create_scratch_field(plt_comp);
     const int nlevels = m_sim.repo().num_active_levels();
 
@@ -108,6 +120,8 @@ void IOManager::write_plot_file()
             icomp += fld->num_comp();
         }
     }
+
+    (*m_derived_mgr)(*outfield, start_comp);
 
     const std::string& plt_filename =
         amrex::Concatenate(m_plt_prefix, m_sim.time().time_index());
