@@ -13,8 +13,8 @@ time.cfl              =   0.95         # CFL factor
 #.......................................#
 io.KE_int = 1
 io.restart_file = "../abl_bndry_output/chk00005"
-time.plot_interval            =  1       # Steps between plot files
-time.checkpoint_interval      =  1       # Steps between checkpoint files
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#

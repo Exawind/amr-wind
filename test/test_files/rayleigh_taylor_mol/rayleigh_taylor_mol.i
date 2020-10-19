@@ -4,7 +4,7 @@ time.fixed_dt         = 0.1
 time.cfl              = 0.49           # CFL factor
 time.init_shrink      = 1.0
 
-time.plot_interval            =   10          # Steps between plot files
+time.plot_interval            =   20          # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
 
 transport.viscosity = 0.001
