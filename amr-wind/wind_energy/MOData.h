@@ -35,7 +35,7 @@ struct MOData
     amrex::Real vmag_mean;                ///< Mean wind speed (at zref)
     amrex::Real theta_mean;               ///< Mean potential temperature
 
-    amrex::Real surf_temp_flux; ///< Heat flux
+    amrex::Real surf_temp_flux{0.0}; ///< Heat flux
     amrex::Real surf_temp;      ///< Instantaneous surface temperature
     amrex::Real ref_temp;       ///< Reference temperature
 

@@ -39,8 +39,6 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
 
     pp.get("reference_temperature", m_mo.ref_temp);
 
-    m_tempflux = true;
-    m_mo.surf_temp_flux = 0.0;
     if (pp.contains("surface_temp_flux")) {
         pp.query("surface_temp_flux", m_mo.surf_temp_flux);
     } else if (pp.contains("surface_temp_rate")) {
