@@ -3,6 +3,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/utilities/IOManager.H"
 
 namespace amr_wind {
 
@@ -55,7 +56,9 @@ TiogaInterface::TiogaInterface(CFDSim& sim)
     , m_mask_node(sim.repo().declare_int_field(
           "mask_node", 1, sim.pde_manager().num_ghost_state(), 1,
           FieldLoc::NODE))
-{}
+{
+    m_sim.io_manager().register_output_int_var(m_iblank_cell.name());
+}
 // clang-format on
 
 void TiogaInterface::post_init_actions()

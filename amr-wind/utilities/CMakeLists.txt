@@ -12,6 +12,8 @@ target_sources(${amr_wind_lib_name}
       ThirdMomentAveraging.cpp
 
       PostProcessing.cpp
+      DerivedQuantity.cpp
+      DerivedQtyDefs.cpp
    )
 
 add_subdirectory(tagging)

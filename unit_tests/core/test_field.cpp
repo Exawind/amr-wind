@@ -352,4 +352,37 @@ TEST_F(FieldRepoTest, default_fillpatch_op)
     velocity.fillpatch(sim().time().current_time());
 }
 
+TEST_F(FieldRepoTest, field_subviews)
+{
+    initialize_mesh();
+    auto& repo = mesh().field_repo();
+    auto& velocity = repo.declare_field("vel", 3);
+
+    velocity.setVal(10.0, 0, 1);
+    velocity.setVal(20.0, 1, 1);
+    velocity.setVal(30.0, 2, 1);
+    {
+        auto wvel = velocity.subview(2);
+        EXPECT_TRUE(wvel.num_comp() == 1);
+
+        int nlevels = repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            EXPECT_NEAR(wvel(lev).min(0), 30.0, 1.0e-12);
+            EXPECT_NEAR(wvel(lev).max(0), 30.0, 1.0e-12);
+        }
+    }
+
+    {
+        auto vel2d = velocity.subview(0, 2);
+        EXPECT_TRUE(vel2d.num_comp() == 2);
+        int nlevels = repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            EXPECT_NEAR(vel2d(lev).min(0), 10.0, 1.0e-12);
+            EXPECT_NEAR(vel2d(lev).max(0), 10.0, 1.0e-12);
+            EXPECT_NEAR(vel2d(lev).min(1), 20.0, 1.0e-12);
+            EXPECT_NEAR(vel2d(lev).max(1), 20.0, 1.0e-12);
+        }
+    }
+}
+
 } // namespace amr_wind_tests

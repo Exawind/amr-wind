@@ -4,6 +4,7 @@
 #include <string>
 
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/ViewField.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_Vector.H"
 #include "AMReX_PhysBCFunct.H"
@@ -59,6 +60,11 @@ public:
 
     //! Return a reference to the field repository that created this field
     const FieldRepo& repo() const { return m_repo; }
+
+    /** Return a sub-view of the ScratchField instance
+     */
+    ViewField<ScratchField> subview(const int scomp = 0, const int ncomp = 1)
+    { return {*this, scomp, ncomp}; }
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
