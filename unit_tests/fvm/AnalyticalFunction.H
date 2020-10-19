@@ -196,18 +196,14 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
     amrex::Real y,
     amrex::Real z) noexcept
 {
-
-    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
     const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
     const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
 
     const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
-    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
     const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
 
     const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
     const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
-    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
 
     return std::sqrt(
         (uy - vx) * (uy - vx) + (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz));

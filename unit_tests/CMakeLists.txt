@@ -15,6 +15,9 @@ if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
 
+target_compile_options(
+  ${amr_wind_unit_test_exe_name} PRIVATE
+  $<$<COMPILE_LANGUAGE:CXX>:${AMR_WIND_CXX_FLAGS}>)
 target_include_directories(${amr_wind_unit_test_exe_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 #Link our unit test executable with GoogleTest
