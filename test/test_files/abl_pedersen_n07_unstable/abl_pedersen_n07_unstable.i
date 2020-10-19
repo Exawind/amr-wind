@@ -12,7 +12,7 @@ time.cfl              =   0.95       # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 time.plot_interval            =  1000       # Steps between plot files
-time.checkpoint_interval      =  10000       # Steps between checkpoint files
+time.checkpoint_interval      =  -1       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
@@ -49,9 +49,7 @@ ABL.kappa = .41
 ABL.surface_roughness_z0 = 0.01
 ABL.surface_temp_flux = 0.005
 ABL.normal_direction = 2
-ABL.stats_output_frequency = 1
-#ABL.stats_output_format = netcdf
-
+ABL.stats_output_frequency = 100
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
@@ -83,80 +81,3 @@ diffusion.mg_rtol = 1.0e-6
 diffusion.mg_atol = 1.0e-12
 temperature_diffusion.mg_rtol = 1.0e-10
 temperature_diffusion.mg_atol = 1.0e-13
-
-# Activate data probe sampling
-incflo.post_processing = sampling
-
-# Frequency of output for the data
-sampling.output_frequency = 5
-# Type of probes to output
-sampling.labels = l_v11 l_v12 l_v13 l_v21 l_v22 l_v23 l_v31 l_v32 l_v33 p_h p_v1 p_v2
-
-# Fields to output
-sampling.fields = velocity temperature
-
-# Definitions for each probe
-sampling/l_v11.type = LineSampler
-sampling/l_v11.num_points = 192
-sampling/l_v11.start = 500.0 500.0 5.208333333333333
-sampling/l_v11.end = 500.0 500.0 1994.7916666666667
-
-sampling/l_v12.type = LineSampler
-sampling/l_v12.num_points = 192
-sampling/l_v12.start = 500.0 1500.0 5.208333333333333
-sampling/l_v12.end = 500.0 1500.0 1994.7916666666667
-
-sampling/l_v13.type = LineSampler
-sampling/l_v13.num_points = 192
-sampling/l_v13.start = 500.0 2500.0 5.208333333333333
-sampling/l_v13.end = 500.0 2500.0 1994.7916666666667
-
-sampling/l_v21.type = LineSampler
-sampling/l_v21.num_points = 192
-sampling/l_v21.start = 1500.0 500.0 5.208333333333333
-sampling/l_v21.end = 1500.0 500.0 1994.7916666666667
-
-sampling/l_v22.type = LineSampler
-sampling/l_v22.num_points = 192
-sampling/l_v22.start = 1500.0 1500.0 5.208333333333333
-sampling/l_v22.end = 1500.0 1500.0 1994.7916666666667
-
-sampling/l_v23.type = LineSampler
-sampling/l_v23.num_points = 192
-sampling/l_v23.start = 1500.0 2500.0 5.208333333333333
-sampling/l_v23.end = 1500.0 2500.0 1994.7916666666667
-
-sampling/l_v31.type = LineSampler
-sampling/l_v31.num_points = 192
-sampling/l_v31.start = 2500.0 500.0 5.208333333333333
-sampling/l_v31.end = 2500.0 500.0 1994.7916666666667
-
-sampling/l_v32.type = LineSampler
-sampling/l_v32.num_points = 192
-sampling/l_v32.start = 2500.0 1500.0 5.208333333333333
-sampling/l_v32.end = 2500.0 1500.0 1994.7916666666667
-
-sampling/l_v33.type = LineSampler
-sampling/l_v33.num_points = 192
-sampling/l_v33.start = 2500.0 2500.0 5.208333333333333
-sampling/l_v33.end = 2500.0 2500.0 1994.7916666666667
-
-sampling/p_h.type = PlaneSampler
-sampling/p_h.axis1 = 1.0 0.0 0.0
-sampling/p_h.axis2 = 0.0 1.0 0.0
-sampling/p_h.origin = 0.0 0.0 50.0
-sampling/p_h.num_points = 288 288
-sampling/p_h.normal = 0.0 0.0 1.0
-sampling/p_h.offsets = 0.0 50.0 150.0
-
-sampling/p_v1.type = PlaneSampler
-sampling/p_v1.axis1 = 0.0 0.0 1.0
-sampling/p_v1.axis2 = 1.0 0.0 0.0
-sampling/p_v1.origin = 0.0 1500.0 0.0
-sampling/p_v1.num_points = 192 288
-
-sampling/p_v2.type = PlaneSampler
-sampling/p_v2.axis1 = 0.0 0.0 1.0
-sampling/p_v2.axis2 = 0.0 -1.0 0.0
-sampling/p_v2.origin = 1500.0 3000.0 0.0
-sampling/p_v2.num_points = 192 288
