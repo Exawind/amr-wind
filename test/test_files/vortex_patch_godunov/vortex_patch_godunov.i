@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   3     # Max (simulated) time to evolve
-time.max_step                =   3000          # Max number of time steps
+time.max_step                =   20    # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -13,8 +13,8 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-time.plot_interval            =  50       # Steps between plot files
-time.checkpoint_interval      =  100       # Steps between checkpoint files
+time.plot_interval            =  20       # Steps between plot files
+time.checkpoint_interval      =  -100       # Steps between checkpoint files
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
