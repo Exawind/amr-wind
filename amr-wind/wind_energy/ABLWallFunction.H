@@ -63,10 +63,10 @@ private:
     amrex::Box m_bx_z_sample;
     amrex::FArrayBox m_store_xy_vel_temp;
 
-    bool m_tempflux;
-    amrex::Real m_surf_temp_rate;
-    amrex::Real m_surf_temp_rate_tstart;
-    amrex::Real m_surf_temp_init;
+    bool m_tempflux{true};
+    amrex::Real m_surf_temp_rate{0.0};
+    amrex::Real m_surf_temp_rate_tstart{0.0};
+    amrex::Real m_surf_temp_init{300.0};
 };
 
 /** Applies a shear-stress value at the domain boundary
