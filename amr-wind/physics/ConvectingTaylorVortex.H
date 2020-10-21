@@ -11,7 +11,7 @@ namespace ctv {
 namespace {
 struct UExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
@@ -23,7 +23,7 @@ struct UExact
 
 struct VExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,

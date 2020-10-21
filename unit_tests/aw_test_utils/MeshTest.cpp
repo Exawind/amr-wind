@@ -34,7 +34,7 @@ void MeshTest::reset_prob_domain()
 
     if (gg != nullptr) {
         gg->ResetDefaultProbDomain(rb);
-        gg->ResetDefaultPeriodicity({periodic[0],periodic[1],periodic[2]});
+        gg->ResetDefaultPeriodicity({{periodic[0],periodic[1],periodic[2]}});
     }
 }
 

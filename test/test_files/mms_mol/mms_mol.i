@@ -7,7 +7,7 @@ time.fixed_dt = 0.05
 time.cfl              = 0.49           # CFL factor
 time.init_shrink      = 1.0
 
-time.plot_interval            =   140         # Steps between plot files
+time.plot_interval            =   10         # Steps between plot files
 time.checkpoint_interval           =  -100         # Steps between checkpoint files
 
 transport.viscosity = 1.0
@@ -36,6 +36,5 @@ incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = 
 incflo.verbose          =   1           # incflo_level
 mac_proj.verbose        =   0           # MAC Projector
 nodal_proj.verbose      =   0           # Nodal Projector
-diffusion.mg_verbose    =   0           # Diffusion
 
 mac_proj.mg_rtol        = 1.e-12

@@ -1,0 +1,45 @@
+name: AMR-Wind CodeQL
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/codeql.yml'
+  pull_request:
+    branches: [development]
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/codeql.yml'
+
+jobs:
+  analyze:
+    name: CodeQL analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 2
+
+      - name: Install dependencies
+        run: sudo apt-get install mpich libmpich-dev
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: cpp
+
+      - name: Configure and build
+        uses: github/codeql-action/autobuild@v1
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v1

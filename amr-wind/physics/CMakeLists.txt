@@ -10,3 +10,5 @@ target_sources(${amr_wind_lib_name}
   ConvectingTaylorVortex.cpp
   EkmanSpiral.cpp
   )
+
+  add_subdirectory(multiphase)

@@ -6,6 +6,7 @@
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/fvm/laplacian.H"
 #include "amr-wind/fvm/strainrate.H"
+#include "amr-wind/fvm/vorticity_mag.H"
 
 /**
  *  \defgroup fvm Finite-Volume Operators

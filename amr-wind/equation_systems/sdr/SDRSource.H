@@ -13,6 +13,11 @@ class CFDSim;
 
 namespace pde {
 
+/** Base class for SDR source terms.
+ *  \ingroup sdr_src
+ *
+ *  All concrete implementations of SDR source terms must subclass this class.
+ */
 class SDRSource : public Factory<SDRSource, const CFDSim&>
 {
 public:

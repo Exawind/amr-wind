@@ -5,10 +5,21 @@
 
 #include "AMReX_REAL.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_MLLinOp.H"
+
+namespace amrex {
+class MLMG;
+class NodalProjector;
+class MacProjector;
+}
 
 namespace amr_wind {
 
-/** Collection of solver options to control MLMG behavior
+/** Interface to control the behavior of AMReX LinearSolvers
+ *
+ *  MLMGOptions provides a unified interface to set options to the linear
+ *  operator object, MLMG solver, external solvers (e.g., hypre), as well as
+ *  MacProjector and NodalProjector objects.
  */
 struct MLMGOptions
 {
@@ -16,7 +27,7 @@ struct MLMGOptions
      *
      *  \param prefix Prefix used to parse user inputs, e.g., mac_proj
      */
-    MLMGOptions(const std::string& prefix) { parse_options(prefix); }
+    MLMGOptions(const std::string& prefix);
 
     /** Parse options in two stages
      *
@@ -27,46 +38,72 @@ struct MLMGOptions
      *  \param custom_prefix Namespace for override options
      */
     MLMGOptions(
-        const std::string& default_prefix, const std::string& custom_prefix)
-    {
-        parse_options(default_prefix);
-        parse_options(custom_prefix);
-    }
+        const std::string& default_prefix, const std::string& custom_prefix);
+
+    void operator()(amrex::MLMG&);
+    void operator()(amrex::NodalProjector&);
+    void operator()(amrex::MacProjector&);
+
+    //! Linear operator options during construction
+    amrex::LPInfo& lpinfo() { return m_lpinfo; }
+
+    // Linear operator options
+    int max_order{2};
+
+    //! Relative tolerance for convergence of MLMG solvers
+    amrex::Real rel_tol{1.0e-11};
+
+    //! Absolute tolerance for convergence checks
+    amrex::Real abs_tol{1.0e-14};
+
+private:
+    void parse_options(const std::string&);
+
+    //! Linear operator info object
+    amrex::LPInfo m_lpinfo;
+
+    // MLMG options
 
     //! Bottom solver type bicgstab, cg, hypre, etc.
     std::string bottom_solver_type{"bicgstab"};
 
-    //! Relative tolerance for convergence of MLMG solvers
-    amrex::Real rel_tol{1.0e-11};
-    //! Absolute tolerance for convergence checks
-    amrex::Real abs_tol{1.0e-14};
+    //! Options namespace for hypre solvers
+    std::string hypre_namespace{"hypre"};
 
+    //! Options of hypre interface
+    std::string hypre_interface{"ij"};
+
+    //! Relative tolerance for convergence of MLMG solvers
+    amrex::Real bottom_rel_tol{1.0e-4};
+
+    //! Absolute tolerance for convergence checks
+    amrex::Real bottom_abs_tol{-1.0};
+
+    /** Verbosity of the MLMG and Projector interfaces
+     */
     int verbose{0};
     int max_iter{200};
-    int max_coarsen_level{100};
-    int max_order{2};
-    int fmg_max_iter{0};
+    int max_fmg_iters{0};
+    int num_pre_smooth{2};
+    int num_post_smooth{2};
+    int num_final_smooth{8};
+    int num_bottom_smooth{0};
 
-    int cg_verbose{0};
-    int cg_max_iter{200};
+    /** Set verbosity for AMReX bottom solvers
+     *
+     *  When using hypre as the bottom solver, this option is not passed to
+     *  hypre. Instead user must set `hypre.verbose` to control the hypre solver
+     *  verbosity and `hypre.bamg_verbose` to control BoomerAMG verbosity (when
+     *  used as a preconditioner).
+     */
+    int bottom_verbose{0};
 
-private:
-    void parse_options(const std::string& prefix)
-    {
-        amrex::ParmParse pp(prefix);
+    //! Maximum iterations for the bottom solver
+    int bottom_max_iter{200};
 
-        pp.query("mg_verbose", verbose);
-        pp.query("mg_cg_verbose", cg_verbose);
-
-        pp.query("mg_max_iter", max_iter);
-        pp.query("mg_cg_max_iter", cg_max_iter);
-        pp.query("mg_fmg_max_iter", fmg_max_iter);
-        pp.query("mg_max_coarsening_level", max_coarsen_level);
-        pp.query("mg_max_order", max_order);
-        pp.query("mg_rtol", rel_tol);
-        pp.query("mg_atol", abs_tol);
-        pp.query("bottom_solver_type", bottom_solver_type);
-    }
+    //! If set to true, AMReX won't abort if linear solver doesn't converge
+    //! within max iterations
+    bool do_fixed_iters{true};
 };
 
 } // namespace amr_wind

@@ -1,0 +1,51 @@
+name: AMR-Wind HIP CI
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/hip-ci.yml'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/hip-ci.yml'
+
+jobs:
+  hip-build:
+    runs-on: ubuntu-latest
+    name: HIP/ROCm
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Prepare HIP/ROCm environment
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
+          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          sudo apt-get update
+          sudo apt-get install -y libopenmpi-dev rocm-dev rocm-libs
+      - name: Configure and build
+        run: |
+          echo 'export PATH=$PATH:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin' | sudo tee -a /etc/profile.d/rocm.sh
+          source /etc/profile.d/rocm.sh
+          cmake -Bbuild \
+            -DAMR_WIND_ENABLE_MPI=OFF \
+            -DAMR_WIND_ENABLE_HIP=ON \
+            -DCMAKE_CXX_COMPILER=$(which hipcc) \
+            -DCMAKE_C_COMPILER=$(which hipcc) \
+            -DCMAKE_VERBOSE_MAKEFILE=ON \
+            -DAMD_ARCH="gfx906,gfx908" .
+          cmake --build build -- -j $(nproc)

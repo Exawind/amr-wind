@@ -80,7 +80,6 @@ TEST_F(SamplingTest, scontainer)
 {
     if (amrex::ParallelDescriptor::NProcs() > 1) {
         GTEST_SKIP();
-        return;
     }
 
     using IIx = amr_wind::sampling::IIx;

@@ -11,6 +11,8 @@ namespace amr_wind {
 
 class CFDSim;
 class Field;
+class IntField;
+class DerivedQtyMgr;
 
 /** Input/Output manager
  *  \ingroup utilities
@@ -52,6 +54,11 @@ public:
         m_pltvars_default.insert(fname);
     }
 
+    void register_output_int_var(const std::string& fname)
+    {
+        m_int_pltvars_default.insert(fname);
+    }
+
     //! Register a variable for restart file
     void register_restart_var(const std::string& fname)
     {
@@ -81,14 +88,22 @@ private:
 
     CFDSim& m_sim;
 
+    std::unique_ptr<DerivedQtyMgr> m_derived_mgr;
+
     //! Default output variables registered automatically in the code
     std::set<std::string> m_pltvars_default;
+
+    //! Default output integer variales registered automatically in the code
+    std::set<std::string> m_int_pltvars_default;
 
     //! Variables for output in checkpoint/restart files
     std::set<std::string> m_chkvars;
 
     //! Final list of fields to be output
     amrex::Vector<Field*> m_plt_fields;
+
+    //! Final list of integer fields to be output
+    amrex::Vector<IntField*> m_int_plt_fields;
 
     //! Final list of fields for restart
     amrex::Vector<Field*> m_chk_fields;

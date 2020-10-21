@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   22000.0     # Max (simulated) time to evolve
-time.max_step                =   -1          # Max number of time steps
+time.max_step                =   10          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -14,10 +14,8 @@ time.cfl              =   0.95         # CFL factor
 #            INPUT AND OUTPUT           #
 #.......................................#
 io.KE_int = 1
-io.line_plot_int = 1
-time.plot_interval            =  500       # Steps between plot files
-time.checkpoint_interval      =  5       # Steps between checkpoint files
-amr.plt_tracer = 1
+time.plot_interval            =  10       # Steps between plot files
+time.checkpoint_interval      =  -5       # Steps between checkpoint files
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -61,8 +59,6 @@ geometry.is_periodic    =   1   1   0   # Periodicity x y z (0/1)
 
 # Boundary conditions
 zlo.type =   "wall_model"
-zlo.temperature_type = "fixed_gradient"
-zlo.temperature = 0.0
 zlo.tke_type = "zero_gradient"
 
 zhi.type =   "slip_wall"
@@ -73,8 +69,3 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-amrex.fpe_trap_invalid  =   0           # Trap NaNs

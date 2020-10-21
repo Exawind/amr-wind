@@ -2,7 +2,7 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   0.2   # Max (simulated) time to evolve
-time.max_step                =   200   # Max number of time steps
+time.max_step                =   20   # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
@@ -19,8 +19,6 @@ io.KE_int = 1        # calculate kinetic energy
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.gravity          = 0.  0.  0.  # Gravitational force (3D)
-incflo.density             = 1.          # Reference density 
 incflo.use_godunov      = 1
 incflo.use_ppm = 0
 transport.viscosity = 0.001

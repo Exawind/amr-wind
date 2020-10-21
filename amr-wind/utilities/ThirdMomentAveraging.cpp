@@ -96,7 +96,8 @@ ThirdMomentAveraging::ThirdMomentAveraging(
                     m_plane_average3.ncomp();
 
     m_third_moments_line.resize(
-        m_plane_average1.ncell_line() * m_num_moments, 0.0);
+        static_cast<size_t>(m_plane_average1.ncell_line()) * m_num_moments,
+        0.0);
 }
 
 void ThirdMomentAveraging::operator()()
