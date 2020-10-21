@@ -30,14 +30,22 @@ struct AdvectionOp<
     , v_mac(fields_in.repo.get_field("v_mac"))
     , w_mac(fields_in.repo.get_field("w_mac"))
     {
+        
         amrex::ParmParse pp("incflo");
-        pp.query("use_ppm", godunov_ppm);
-        pp.query("use_weno",godunov_weno);
-        pp.query("use_limiter", use_limiter);
-
-        if (!use_limiter && !godunov_ppm)
-            amrex::Abort("Currently limiter option only available for Godunov PPM and not PLM");
-
+        pp.query("godunov_type", godunov_type);
+        //pp.query("use_limiter", use_limiter);
+        if(amrex::toLower(godunov_type)=="plm"){
+            godunov_scheme = godunov::scheme::PLM;
+        }else if (amrex::toLower(godunov_type)=="ppm"){
+            godunov_scheme = godunov::scheme::PPM;
+        }else if (amrex::toLower(godunov_type)=="ppm_nolim"){
+            godunov_scheme = godunov::scheme::PPM_NOLIM;
+        }else if (amrex::toLower(godunov_type)=="weno"){
+            godunov_scheme = godunov::scheme::WENO;
+        } else {
+            amrex::Abort("For godunov_type select between godunov_plm, godunov_ppm, godunov_ppm_nolim and godunov_weno");
+        }
+    
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
     }
@@ -97,10 +105,9 @@ struct AdvectionOp<
                                            dof_field.bcrec_device().data(),
                                            iconserv.data(),
                                            tmpfab.dataPtr(),
-                                           geom, dt,
-                                           godunov_ppm,
-                                           godunov_weno,
-                                           use_limiter);
+                                           geom, 
+                                           dt,
+                                           godunov_scheme);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -114,9 +121,8 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    bool godunov_ppm{true};
-    bool godunov_weno{false};
-    bool use_limiter{true};
+    godunov::scheme godunov_scheme;    
+    std::string godunov_type;
 };
 
 } // namespace pde

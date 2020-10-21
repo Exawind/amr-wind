@@ -10,6 +10,8 @@
 
 namespace godunov {
 
+enum scheme{PLM, PPM, PPM_NOLIM, WENO};
+
 void compute_advection(
     int lev,
     amrex::Box const& bx,
@@ -25,9 +27,8 @@ void compute_advection(
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    bool godunov_ppm,
-    bool godunov_weno,
-    bool use_limiter);
+    godunov::scheme godunov_scheme
+    );
 
 void predict_weno(
     int lev,
