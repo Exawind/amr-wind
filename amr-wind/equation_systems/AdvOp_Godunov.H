@@ -43,7 +43,8 @@ struct AdvectionOp<
         }else if (amrex::toLower(godunov_type)=="weno"){
             godunov_scheme = godunov::scheme::WENO;
         } else {
-            amrex::Abort("For godunov_type select between godunov_plm, godunov_ppm, godunov_ppm_nolim and godunov_weno");
+            amrex::Print()<<"For godunov_type select between plm, ppm, ppm_nolim and weno: it defaults to ppm"<<std::endl;
+            godunov_scheme = godunov::scheme::PPM;
         }
     
         // TODO: Need iconserv flag to be adjusted???
