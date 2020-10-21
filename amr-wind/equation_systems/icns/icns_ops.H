@@ -215,24 +215,24 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
                     switch(godunov_scheme)
                     {
-                        case godunov::PPM:
+                        case godunov::scheme::PPM:
                         {
                         godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
                                               geom, dt, bcrec_device, true);
                         break;
                         }
-                        case godunov::PPM_NOLIM:
+                        case godunov::scheme::PPM_NOLIM:
                         {
                         godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
                                               geom, dt, bcrec_device, false);
                         break;
                         }
-                        case godunov::WENO:
+                        case godunov::scheme::WENO:
                         {
                         amrex::Abort("WENO is not ready yet");
                         break;
                         }
-                        case godunov::PLM:
+                        case godunov::scheme::PLM:
                         {
                         godunov::predict_plm_x (lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel,
                                      geom, dt, dof_field.bcrec(), bcrec_device);
@@ -304,7 +304,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme;    
+    godunov::scheme godunov_scheme=godunov::scheme::PPM;    
     std::string godunov_type;
     bool godunov_use_forces_in_trans{false};
 };

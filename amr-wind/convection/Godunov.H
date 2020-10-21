@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum scheme{PLM, PPM, PPM_NOLIM, WENO};
+enum class scheme{PLM, PPM, PPM_NOLIM, WENO};
 
 void compute_advection(
     int lev,

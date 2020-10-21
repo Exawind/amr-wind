@@ -121,7 +121,7 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme;    
+    godunov::scheme godunov_scheme=godunov::scheme::PPM;    
     std::string godunov_type;
 };
 

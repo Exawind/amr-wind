@@ -75,7 +75,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
     // Use PPM to generate Im and Ip */
     switch(godunov_scheme)
     {
-        case PPM:
+        case godunov::scheme::PPM:
         {
             amrex::ParallelFor(bxg1, ncomp,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -89,7 +89,7 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
             });
         break;
         }
-        case PPM_NOLIM:
+        case godunov::scheme::PPM_NOLIM:
         {
             amrex::ParallelFor(bxg1, ncomp,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
@@ -103,12 +103,12 @@ godunov::compute_advection(int lev, Box const& bx, int ncomp,
             });
         break;
         }
-        case WENO:
+        case godunov::scheme::WENO:
         {
             amrex::Abort(" WENO is not ready yet");
         break;
         }
-        case PLM:
+        case godunov::scheme::PLM:
         {
              amrex::ParallelFor(xebox, ncomp,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
