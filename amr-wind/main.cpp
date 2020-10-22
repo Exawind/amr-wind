@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
         if (!pp.contains("throw_exception"))
             pp.add("throw_exception", 1);
         if (!pp.contains("signal_handling"))
-            pp.add("signal_handling", 1);
+            pp.add("signal_handling", 0);
     });
 
     { /* These braces are necessary to ensure amrex::Finalize() can be called
