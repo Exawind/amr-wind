@@ -18,9 +18,19 @@ int main(int argc, char* argv[])
     }
     amr_wind::io::print_banner(std::cout);
 
-    amrex::Initialize(argc, argv, true, MPI_COMM_WORLD);
-    { /* These braces are necessary to ensure amrex::Finalize() can be called without explicitly
-        deleting all the incflo member MultiFabs */
+    amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
+        amrex::ParmParse pp("amrex");
+        // Set the defaults so that we throw an exception instead of attempting
+        // to generate backtrace files. However, if the user has explicitly set
+        // these options in their input files respect those settings.
+        if (!pp.contains("throw_exception"))
+            pp.add("throw_exception", 1);
+        if (!pp.contains("signal_handling"))
+            pp.add("signal_handling", 1);
+    });
+
+    { /* These braces are necessary to ensure amrex::Finalize() can be called
+        without explicitly deleting all the incflo member MultiFabs */
 
         BL_PROFILE("amr-wind::main()");
 
