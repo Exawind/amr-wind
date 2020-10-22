@@ -499,12 +499,13 @@ void Godunov_ppm_fpu_x (const int i, const int j, const int k, const int n,
     amrex::Real sp1 = S(i+1,j,k,n);
     amrex::Real sp2 = S(i+2,j,k,n);
 
+    // Compute val Leer slopes
     amrex::Real d1 = vanLeer(s0,sp1,sm1);
     amrex::Real d2 = vanLeer(sm1,s0,sm2);
-
+    // interpolate s to x-edges
     sedge1 = 0.5e0*(s0 + sm1) - sixth*(d1 - d2);
     sedge1 = amrex::min(amrex::max(sedge1, amrex::min(s0, sm1)),amrex::max(s0,sm1));
-
+    
     d1 = vanLeer(sp1,sp2,s0);
     d2 = vanLeer(s0,sp1,sm1);
 

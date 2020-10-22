@@ -230,7 +230,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         }
                         case godunov::scheme::WENO:
                         {
-                        amrex::Abort("WENO is not ready yet");
+                        godunov::predict_weno (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
+                                              geom, dt, bcrec_device);
                         break;
                         }
                         case godunov::scheme::PLM:

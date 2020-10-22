@@ -1,6 +1,7 @@
 target_sources(${amr_wind_lib_name}
    PRIVATE
       #C++
+      incflo_godunov_weno.cpp
       incflo_godunov_ppm.cpp
       incflo_MAC_projection.cpp
       incflo_godunov_plm.cpp
