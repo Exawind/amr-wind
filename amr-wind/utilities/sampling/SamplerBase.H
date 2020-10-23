@@ -20,7 +20,8 @@ namespace sampling {
 class SamplerBase : public Factory<SamplerBase, CFDSim&>
 {
 public:
-    using SampleLocType = amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>;
+    using SampleLocType =
+        amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>;
 
     static const std::string base_identifier() { return "SamplerBase"; }
 
@@ -28,9 +29,10 @@ public:
 
     //! Name used to refer to this sampler (e.g., file I/O)
     virtual std::string label() const = 0;
-    virtual std::string& label() =0;
+    virtual std::string& label() = 0;
 
-    //! Unique numeric identifier used to track particles belonging to this instance
+    //! Unique numeric identifier used to track particles belonging to this
+    //! instance
     virtual int id() const = 0;
     virtual int& id() = 0;
 
@@ -48,7 +50,7 @@ public:
     virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 };
 
-}
-}
+} // namespace sampling
+} // namespace amr_wind
 
 #endif /* SAMPLERBASE_H */

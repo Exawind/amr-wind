@@ -15,7 +15,6 @@ void populate_abl_params()
     pp.add("perturb_ref_height", 50.0);
     pp.add("reference_temperature", 300.0);
 
-
     // Body force
     {
         amrex::ParmParse pp("BodyForce");

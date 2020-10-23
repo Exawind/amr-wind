@@ -92,7 +92,7 @@ void TiogaInterface::post_overset_conn_work()
 
     // Update equation systems after a connectivity update
     m_sim.pde_manager().icns().post_regrid_actions();
-    for (auto& eqn: m_sim.pde_manager().scalar_eqns())
+    for (auto& eqn : m_sim.pde_manager().scalar_eqns())
         eqn->post_regrid_actions();
 }
 
@@ -171,7 +171,6 @@ void TiogaInterface::update_solution()
     // not fill in ghosts yet
     vel.fillpatch(0.0);
     pres.fillpatch(0.0);
-
 }
 
 void TiogaInterface::amr_to_tioga_mesh()

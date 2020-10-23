@@ -12,7 +12,7 @@ namespace fvm {
 /** Gradient operator
  *  \ingroup fvm
  */
-template<typename FTypeIn, typename FTypeOut>
+template <typename FTypeIn, typename FTypeOut>
 struct Gradient
 {
     /**
@@ -52,7 +52,6 @@ struct Gradient
                          cm1 * phi_arr(i - 1, j, k, icomp)) *
                         idx[0];
 
-
                     cp1 = Stencil::c10;
                     c = Stencil::c11;
                     cm1 = Stencil::c12;
@@ -61,7 +60,6 @@ struct Gradient
                          c * phi_arr(i, j, k, icomp) +
                          cm1 * phi_arr(i, j - 1, k, icomp)) *
                         idx[1];
-
 
                     cp1 = Stencil::c20;
                     c = Stencil::c21;
@@ -85,7 +83,7 @@ struct Gradient
  *  \param gradphi [inout] Field where the gradient term is populated
  *  \param phi [in] Field whose gradient is computed
  */
-template<typename FTypeIn, typename FTypeOut>
+template <typename FTypeIn, typename FTypeOut>
 inline void gradient(FTypeOut& gradphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::gradient");
@@ -98,12 +96,12 @@ inline void gradient(FTypeOut& gradphi, const FTypeIn& phi)
  *
  *  \param phi [in] Field whose gradient is computed
  */
-template<typename FType>
+template <typename FType>
 inline std::unique_ptr<ScratchField> gradient(const FType& phi)
 {
     const std::string gname = phi.name() + "_gradient";
-    auto gradphi = phi.repo().create_scratch_field(
-        gname, phi.num_comp() * AMREX_SPACEDIM);
+    auto gradphi =
+        phi.repo().create_scratch_field(gname, phi.num_comp() * AMREX_SPACEDIM);
     gradient(*gradphi, phi);
     return gradphi;
 }

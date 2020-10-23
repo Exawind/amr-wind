@@ -37,7 +37,7 @@ template <typename Functor>
 void run_algorithm(amr_wind::Field& field, Functor func)
 {
     const int nlevels = field.repo().num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         auto& lfab = field(lev);
 
         for (amrex::MFIter mfi(lfab); mfi.isValid(); ++mfi) {

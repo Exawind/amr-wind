@@ -12,7 +12,8 @@ namespace fvm {
 template <typename FTypeIn, typename FTypeOut>
 struct StrainRate
 {
-    StrainRate(FTypeOut& strphi, const FTypeIn& phi) : m_strphi(strphi), m_phi(phi)
+    StrainRate(FTypeOut& strphi, const FTypeIn& phi)
+        : m_strphi(strphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -74,12 +75,10 @@ struct StrainRate
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                strphi(i, j, k) = sqrt(  2.0 * std::pow(ux, 2)
-                                       + 2.0 * std::pow(vy, 2)
-                                       + 2.0 * std::pow(wz, 2)
-                                       + std::pow(uy + vx, 2)
-                                       + std::pow(vz + wy, 2)
-                                       + std::pow(wx + uz, 2));
+                strphi(i, j, k) = sqrt(
+                    2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
+                    2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
+                    std::pow(vz + wy, 2) + std::pow(wx + uz, 2));
             });
     }
 

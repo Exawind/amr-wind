@@ -15,8 +15,8 @@ namespace icns {
  *  Parameters are read from the `GeostrophicWind` and `CorolisForcing`
  *  namespace in the input file. The following parameters are available:
  *
- *  - `rotational_time_period` Time period for planetary rotation (default: 86400
- *    seconds) in the CoriolisForcing namespace
+ *  - `rotational_time_period` Time period for planetary rotation (default:
+ * 86400 seconds) in the CoriolisForcing namespace
  *
  *  - `geostrophic_wind` Geostrophic wind above capping inversion in the
  *    GeostrophicForcing namespace

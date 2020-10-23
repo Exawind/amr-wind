@@ -3,28 +3,27 @@
 
 using namespace amrex;
 
-bool extrapolate=false;// fixme make an input maybe? extrapolate could cause negative viscosity if not used carefully
+bool extrapolate = false; // fixme make an input maybe? extrapolate could cause
+                          // negative viscosity if not used carefully
 
 namespace diffusion {
 
-Vector<Array<LinOpBCType, AMREX_SPACEDIM>>
-get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcept
+Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
+    amr_wind::Field& velocity, Orientation::Side side) noexcept
 {
     const auto& geom = velocity.repo().mesh().Geom(0);
-    Vector<Array<LinOpBCType,AMREX_SPACEDIM>> r(3);
+    Vector<Array<LinOpBCType, AMREX_SPACEDIM>> r(3);
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom.isPeriodic(dir)) {
             r[0][dir] = LinOpBCType::Periodic;
             r[1][dir] = LinOpBCType::Periodic;
             r[2][dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = velocity.bc_type()[Orientation(dir,side)];
-            switch (bc)
-            {
+            auto bc = velocity.bc_type()[Orientation(dir, side)];
+            switch (bc) {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
-            case BC::zero_gradient:
-            {
+            case BC::zero_gradient: {
                 // All three components are Neumann
                 r[0][dir] = LinOpBCType::Neumann;
                 r[1][dir] = LinOpBCType::Neumann;
@@ -32,16 +31,14 @@ get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcep
                 break;
             }
             case BC::mass_inflow:
-            case BC::no_slip_wall:
-            {
+            case BC::no_slip_wall: {
                 // All three components are Dirichlet
                 r[0][dir] = LinOpBCType::Dirichlet;
                 r[1][dir] = LinOpBCType::Dirichlet;
                 r[2][dir] = LinOpBCType::Dirichlet;
                 break;
             }
-            case BC::slip_wall:
-            {
+            case BC::slip_wall: {
                 // Tangential components are Neumann
                 // Normal     component  is  Dirichlet
                 r[0][dir] = LinOpBCType::Neumann;
@@ -51,8 +48,7 @@ get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcep
                 r[dir][dir] = LinOpBCType::Dirichlet;
                 break;
             }
-            case BC::wall_model:
-            {
+            case BC::wall_model: {
                 // Tangential components are inhomogeneous Neumann
                 // Normal     component  is  Dirichlet
                 r[0][dir] = LinOpBCType::inhomogNeumann;
@@ -73,31 +69,27 @@ get_diffuse_tensor_bc(amr_wind::Field& velocity, Orientation::Side side) noexcep
 Array<LinOpBCType, AMREX_SPACEDIM>
 get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
 {
-    Array<LinOpBCType,AMREX_SPACEDIM> r;
+    Array<LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (scalar.repo().mesh().Geom(0).isPeriodic(dir)) {
             r[dir] = LinOpBCType::Periodic;
         } else {
-            auto bc = scalar.bc_type()[Orientation(dir,side)];
-            switch (bc)
-            {
+            auto bc = scalar.bc_type()[Orientation(dir, side)];
+            switch (bc) {
             case BC::pressure_inflow:
             case BC::pressure_outflow:
             case BC::zero_gradient:
-            case BC::slip_wall:
-            {
+            case BC::slip_wall: {
                 r[dir] = LinOpBCType::Neumann;
                 break;
             }
             case BC::wall_model:
-            case BC::fixed_gradient:
-            {
+            case BC::fixed_gradient: {
                 r[dir] = LinOpBCType::inhomogNeumann;
                 break;
             }
             case BC::mass_inflow:
-            case BC::no_slip_wall:
-            {
+            case BC::no_slip_wall: {
                 r[dir] = LinOpBCType::Dirichlet;
                 break;
             }
@@ -108,7 +100,6 @@ get_diffuse_scalar_bc(amr_wind::Field& scalar, Orientation::Side side) noexcept
     }
     return r;
 }
-
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real shear_stress(
     int i,
@@ -122,7 +113,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real shear_stress(
 {
     return rho(i, j, k) * utau2 * vel(i, j, k, comp) / umag;
 }
-
 
 void wall_model_bc(
     amr_wind::Field& velocity,
@@ -148,15 +138,14 @@ void wall_model_bc(
     Real c1 = 0.0;
 
     // linear extrapolate onto face
-    if(extrapolate)
-    {
-        c0 =  1.5;
+    if (extrapolate) {
+        c0 = 1.5;
         c1 = -0.5;
     }
 
-    const Real utau2 = utau*utau;
+    const Real utau2 = utau * utau;
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         MFItInfo mfi_info{};
@@ -172,7 +161,7 @@ void wall_model_bc(
         for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
             auto vel = vel_lev.array(mfi);
-            auto bc  = vel_lev.array(mfi);
+            auto bc = vel_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
@@ -180,30 +169,44 @@ void wall_model_bc(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    velocity.bc_type()[xlo] ==  BC::wall_model) {
+                    velocity.bc_type()[xlo] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i + 1, j, k);
+                            const Real mu =
+                                c0 * eta(i, j, k) + c1 * eta(i + 1, j, k);
                             // Dirichlet BC
                             bc(i - 1, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i - 1, j, k, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
-                            bc(i - 1, j, k, 2) = shear_stress(i, j, k, utau2, umag, den, vel, 2) / mu;
+                            bc(i - 1, j, k, 1) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 1) /
+                                mu;
+                            bc(i - 1, j, k, 2) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 2) /
+                                mu;
                         });
                 }
 
                 if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
-                    velocity.bc_type()[xhi] ==  BC::wall_model) {
+                    velocity.bc_type()[xhi] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i - 1, j, k) + c1 * eta(i - 2, j, k);
+                            const Real mu =
+                                c0 * eta(i - 1, j, k) + c1 * eta(i - 2, j, k);
                             // Dirichlet BC's
                             bc(i, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 1) = shear_stress(i - 1, j, k, utau2, umag, den, vel, 1) / mu;
-                            bc(i, j, k, 2) = shear_stress(i - 1, j, k, utau2, umag, den, vel, 2) / mu;
+                            bc(i, j, k, 1) =
+                                shear_stress(
+                                    i - 1, j, k, utau2, umag, den, vel, 1) /
+                                mu;
+                            bc(i, j, k, 2) =
+                                shear_stress(
+                                    i - 1, j, k, utau2, umag, den, vel, 2) /
+                                mu;
                         });
                 }
             }
@@ -212,32 +215,46 @@ void wall_model_bc(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    velocity.bc_type()[ylo] ==  BC::wall_model) {
+                    velocity.bc_type()[ylo] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
+                            const Real mu =
+                                c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
                             // Inhomogeneous Neumann BC
-                            bc(i, j - 1, k, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
+                            bc(i, j - 1, k, 0) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 0) /
+                                mu;
                             // Dirichlet BC
                             bc(i, j - 1, k, 1) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j - 1, k, 2) = shear_stress(i, j, k, utau2, umag, den, vel, 2) / mu;
+                            bc(i, j - 1, k, 2) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 2) /
+                                mu;
                         });
                 }
 
                 if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
-                    velocity.bc_type()[yhi] ==  BC::wall_model) {
+                    velocity.bc_type()[yhi] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
+                            const Real mu =
+                                c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 0) = shear_stress(i, j - 1, k, utau2, umag, den, vel, 0) / mu;
+                            bc(i, j, k, 0) =
+                                shear_stress(
+                                    i, j - 1, k, utau2, umag, den, vel, 0) /
+                                mu;
                             // Dirichlet BC
                             bc(i, j, k, 1) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 2) = shear_stress(i, j - 1, k, utau2, umag, den, vel, 2) / mu;
+                            bc(i, j, k, 2) =
+                                shear_stress(
+                                    i, j - 1, k, utau2, umag, den, vel, 2) /
+                                mu;
                         });
                 }
             }
@@ -246,33 +263,42 @@ void wall_model_bc(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    velocity.bc_type()[zlo] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            const Real mu =
+                                c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k - 1, 0) = shear_stress(i, j, k, utau2, umag, den, vel, 0) / mu;
-                            bc(i, j, k - 1, 1) = shear_stress(i, j, k, utau2, umag, den, vel, 1) / mu;
+                            bc(i, j, k - 1, 0) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 0) /
+                                mu;
+                            bc(i, j, k - 1, 1) =
+                                shear_stress(
+                                    i, j, k, utau2, umag, den, vel, 1) /
+                                mu;
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
-                            
-
-
-
-
                         });
                 }
 
                 if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
-                    velocity.bc_type()[zhi] ==  BC::wall_model) {
+                    velocity.bc_type()[zhi] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
+                            const Real mu =
+                                c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k, 0) = shear_stress(i, j, k - 1, utau2, umag, den, vel, 0) / mu;
-                            bc(i, j, k, 1) = shear_stress(i, j, k - 1, utau2, umag, den, vel, 1) / mu;
+                            bc(i, j, k, 0) =
+                                shear_stress(
+                                    i, j, k - 1, utau2, umag, den, vel, 0) /
+                                mu;
+                            bc(i, j, k, 1) =
+                                shear_stress(
+                                    i, j, k - 1, utau2, umag, den, vel, 1) /
+                                mu;
                             // Dirichlet BC
                             bc(i, j, k, 2) = 0.0;
                         });
@@ -280,7 +306,7 @@ void wall_model_bc(
             }
 
         } // MFIter loop
-    } // level loop
+    }     // level loop
 }
 
 void wall_model_bc_moeng(
@@ -307,15 +333,14 @@ void wall_model_bc_moeng(
     Real c1 = 0.0;
 
     // linear extrapolate onto face
-    if(extrapolate)
-    {
-        c0 =  1.5;
+    if (extrapolate) {
+        c0 = 1.5;
         c1 = -0.5;
     }
 
-    const Real utau2 = utau*utau;
+    const Real utau2 = utau * utau;
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         MFItInfo mfi_info{};
@@ -330,7 +355,7 @@ void wall_model_bc_moeng(
 #endif
         for (MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto bc  = vel_lev.array(mfi);
+            auto bc = vel_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
@@ -338,29 +363,28 @@ void wall_model_bc_moeng(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    velocity.bc_type()[zlo] ==  BC::wall_model) {
+                    velocity.bc_type()[zlo] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu  = c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            const Real mu =
+                                c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
                             // Inhomogeneous Neumann BC
-                            bc(i, j, k - 1, 0) = store_xy_vel_arr(i, j, planarlo.z, 0)*
-                                den(i, j, k)*utau2/mu;
-                            bc(i, j, k - 1, 1) = store_xy_vel_arr(i, j, planarlo.z, 1)*
-                                den(i, j, k)*utau2/mu;
-
-
+                            bc(i, j, k - 1, 0) =
+                                store_xy_vel_arr(i, j, planarlo.z, 0) *
+                                den(i, j, k) * utau2 / mu;
+                            bc(i, j, k - 1, 1) =
+                                store_xy_vel_arr(i, j, planarlo.z, 1) *
+                                den(i, j, k) * utau2 / mu;
                         });
                 }
-
             }
 
         } // MFIter loop
-    } // level loop
+    }     // level loop
 }
-
 
 void temp_wall_model_bc(
     amr_wind::Field& temperature,
@@ -386,13 +410,12 @@ void temp_wall_model_bc(
     Real c1 = 0.0;
 
     // linear extrapolate onto face
-    if(extrapolate)
-    {
-        c0 =  1.5;
+    if (extrapolate) {
+        c0 = 1.5;
         c1 = -0.5;
     }
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         MFItInfo mfi_info{};
@@ -407,7 +430,7 @@ void temp_wall_model_bc(
 #endif
         for (MFIter mfi(temp_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto bc  = temp_lev.array(mfi);
+            auto bc = temp_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto alphaT = alpha_lev.array(mfi);
 
@@ -415,84 +438,92 @@ void temp_wall_model_bc(
 
             if (!geom.isPeriodic(idim)) {
                 if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
-                    temperature.bc_type()[zlo] ==  BC::wall_model) {
+                    temperature.bc_type()[zlo] == BC::wall_model) {
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                          const Real alphaT_wall  = c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
-                          // Inhomogeneous Neumann BC
-                          bc(i, j, k - 1) = den(i, j, k)*store_xy_temp_arr(i, j, planarlo.z, 3)
-                              /alphaT_wall;
-
+                            const Real alphaT_wall =
+                                c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
+                            // Inhomogeneous Neumann BC
+                            bc(i, j, k - 1) =
+                                den(i, j, k) *
+                                store_xy_temp_arr(i, j, planarlo.z, 3) /
+                                alphaT_wall;
                         });
                 }
             }
         }
-
     }
-
 }
 
-Array<MultiFab,AMREX_SPACEDIM>
-average_velocity_eta_to_faces (const amrex::Geometry& geom, MultiFab const& cc_eta)
+Array<MultiFab, AMREX_SPACEDIM> average_velocity_eta_to_faces(
+    const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
     BL_PROFILE("amr-wind::diffusion::average_velocity_eta_to_faces");
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
-    Array<MultiFab,AMREX_SPACEDIM> r{{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
-                                              dm, 1, 0, MFInfo(), fact),
-                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
-                                              dm, 1, 0, MFInfo(), fact),
-                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
-                                              dm, 1, 0, MFInfo(), fact)}};
+    Array<MultiFab, AMREX_SPACEDIM> r{
+        {MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(0)), dm, 1, 0,
+             MFInfo(), fact),
+         MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(1)), dm, 1, 0,
+             MFInfo(), fact),
+         MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(2)), dm, 1, 0,
+             MFInfo(), fact)}};
     amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc_eta, geom);
     fixup_eta_on_domain_faces(geom, r, cc_eta);
     return r;
 }
 
-Array<MultiFab,AMREX_SPACEDIM>
-average_tracer_eta_to_faces (int comp, const amrex::Geometry& geom, MultiFab const& cc_eta)
+Array<MultiFab, AMREX_SPACEDIM> average_tracer_eta_to_faces(
+    int comp, const amrex::Geometry& geom, MultiFab const& cc_eta)
 {
     BL_PROFILE("amr-wind::diffusion::average_tracer_eta_to_faces");
     const auto& ba = cc_eta.boxArray();
     const auto& dm = cc_eta.DistributionMap();
     const auto& fact = cc_eta.Factory();
     MultiFab cc(cc_eta, amrex::make_alias, comp, 1);
-    Array<MultiFab,AMREX_SPACEDIM> r{{MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(0)),
-                                              dm, 1, 0, MFInfo(), fact),
-                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(1)),
-                                              dm, 1, 0, MFInfo(), fact),
-                                     MultiFab(amrex::convert(ba,IntVect::TheDimensionVector(2)),
-                                              dm, 1, 0, MFInfo(), fact)}};
+    Array<MultiFab, AMREX_SPACEDIM> r{
+        {MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(0)), dm, 1, 0,
+             MFInfo(), fact),
+         MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(1)), dm, 1, 0,
+             MFInfo(), fact),
+         MultiFab(
+             amrex::convert(ba, IntVect::TheDimensionVector(2)), dm, 1, 0,
+             MFInfo(), fact)}};
     amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, geom);
     fixup_eta_on_domain_faces(geom, r, cc);
     return r;
 }
 
-void
-fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPACEDIM>& fc,
-                                   MultiFab const& cc)
+void fixup_eta_on_domain_faces(
+    const amrex::Geometry& geom,
+    Array<MultiFab, AMREX_SPACEDIM>& fc,
+    MultiFab const& cc)
 {
     BL_PROFILE("amr-wind::diffusion::fixup_eta_on_domain_faces");
     // copies cell center to face
     Real c0 = 1.0;
     Real c1 = 0.0;
-    
+
     // linear extrapolate onto face
-    if(extrapolate)
-    {
-        c0 =  1.5;
+    if (extrapolate) {
+        c0 = 1.5;
         c1 = -0.5;
     }
-    
+
     const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
     if (Gpu::notInLaunchRegion()) mfi_info.SetDynamic(true);
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-    for (MFIter mfi(cc,mfi_info); mfi.isValid(); ++mfi) {
+    for (MFIter mfi(cc, mfi_info); mfi.isValid(); ++mfi) {
         Box const& bx = mfi.validbox();
         Array4<Real const> const& cca = cc.const_array(mfi);
 
@@ -500,18 +531,20 @@ fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPA
         if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i,j,k) + c1*cca(i+1,j,k);
-                });
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i, j, k) + c1 * cca(i + 1, j, k);
+                    });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i-1,j,k) + c1*cca(i-2,j,k);
-                });
+                amrex::ParallelFor(
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i - 1, j, k) + c1 * cca(i - 2, j, k);
+                    });
             }
         }
 
@@ -519,19 +552,20 @@ fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPA
         if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i,j,k) + c1*cca(i,j+1,k);
-
-                });
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i, j, k) + c1 * cca(i, j + 1, k);
+                    });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryHi(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i,j-1,k) + c1*cca(i,j-2,k);
-                });
+                amrex::ParallelFor(
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i, j - 1, k) + c1 * cca(i, j - 2, k);
+                    });
             }
         }
 
@@ -539,11 +573,12 @@ fixup_eta_on_domain_faces (const amrex::Geometry& geom, Array<MultiFab,AMREX_SPA
         if (!geom.isPeriodic(idim)) {
             Array4<Real> const& fca = fc[idim].array(mfi);
             if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
-                amrex::ParallelFor(amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    fca(i,j,k) = c0*cca(i,j,k) + c1*cca(i,j,k+1);
-                });
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        fca(i, j, k) =
+                            c0 * cca(i, j, k) + c1 * cca(i, j, k + 1);
+                    });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(

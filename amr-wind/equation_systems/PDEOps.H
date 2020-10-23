@@ -31,7 +31,7 @@ namespace pde {
  *  responsible for creating all the necessary fields that will be accessed by
  *  the PDE during the solution process.
  */
-template<typename PDE, typename Scheme>
+template <typename PDE, typename Scheme>
 struct FieldRegOp
 {
     FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
@@ -44,7 +44,8 @@ struct FieldRegOp
      */
     PDEFields operator()(const SimTime& time, const int probtype)
     {
-        auto fields = create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
+        auto fields =
+            create_fields_instance<PDE, Scheme>(time, sim.repo(), probtype);
 
         // Register solution variable for this PDE as output/restart variable
         sim.io_manager().register_io_var(fields.field.name());
@@ -65,12 +66,12 @@ struct FieldRegOp
  *
  *  \sa MomentumSource, TemperatureSource
  */
-template<typename PDE>
+template <typename PDE>
 struct SrcTermOpBase
 {
     SrcTermOpBase(PDEFields& fields_in)
-    : fields(fields_in)
-    , m_density(fields_in.repo.get_field("density")) {}
+        : fields(fields_in), m_density(fields_in.repo.get_field("density"))
+    {}
 
     /** Initialize the source terms
      *
@@ -81,8 +82,7 @@ struct SrcTermOpBase
         amrex::ParmParse pp(PDE::pde_name());
         amrex::Vector<std::string> src_terms;
         pp.queryarr("source_terms", src_terms);
-        for (auto& src_name: src_terms)
-        {
+        for (auto& src_name : src_terms) {
             sources.emplace_back(PDE::SrcTerm::create(src_name, sim));
         }
     }
@@ -95,7 +95,7 @@ struct SrcTermOpBase
         auto& density = m_density.state(rhostate);
 
         const int nlevels = fields.repo.num_active_levels();
-        for (int lev=0; lev < nlevels; ++lev) {
+        for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = fields.src_term(lev);
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -125,7 +125,7 @@ struct SrcTermOpBase
         if (this->sources.size() == 0) return;
 
         const int nlevels = this->fields.repo.num_active_levels();
-        for (int lev=0; lev < nlevels; ++lev) {
+        for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -135,7 +135,7 @@ struct SrcTermOpBase
                 const auto& bx = mfi.tilebox();
                 const auto& vf = src_term.array(mfi);
 
-                for (auto& src: this->sources) {
+                for (auto& src : this->sources) {
                     (*src)(lev, mfi, bx, fstate, vf);
                 }
             }
@@ -152,28 +152,27 @@ struct SrcTermOpBase
 /** Implementation of source terms for scalar transport equations
  *  \ingroup pdeop
  */
-template<typename PDE>
+template <typename PDE>
 struct SrcTermOp : SrcTermOpBase<PDE>
 {
     SrcTermOp(PDEFields& fields_in) : SrcTermOpBase<PDE>(fields_in) {}
 };
 
-template<typename PDE, typename Scheme, typename = void>
+template <typename PDE, typename Scheme, typename = void>
 struct AdvectionOp
 {};
 
-template<typename PDE, typename Scheme, typename = void>
+template <typename PDE, typename Scheme, typename = void>
 struct DiffusionOp
 {};
 
 /** Turbulence update operator for scalar transport equations
  *  \ingroup pdeop
  */
-template<typename PDE>
+template <typename PDE>
 struct TurbulenceOp
 {
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
-                 PDEFields& fields)
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
         : m_tmodel(tmodel), m_fields(fields)
     {}
 
@@ -189,26 +188,23 @@ struct TurbulenceOp
 /** Boundary condition update operator
  *  \ingroup pdeop
  */
-template<typename PDE, typename = void>
+template <typename PDE, typename = void>
 struct BCOp;
 
 /** Actions to be performed after a PDE solve
  *  \ingroup pdeop
  */
-template<typename PDE>
+template <typename PDE>
 struct PostSolveOp
 {
     PostSolveOp(PDEFields& fields) : m_fields(fields) {}
 
-    void operator()(const amrex::Real time)
-    {
-        m_fields.field.fillpatch(time);
-    }
+    void operator()(const amrex::Real time) { m_fields.field.fillpatch(time); }
 
     PDEFields& m_fields;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* PDEOPS_H */

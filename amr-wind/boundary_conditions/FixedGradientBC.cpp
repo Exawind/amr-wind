@@ -8,13 +8,13 @@ amrex::Box lower_boundary_faces(const amrex::Box& b, int dir)
     amrex::IntVect lo(b.smallEnd());
     amrex::IntVect hi(b.bigEnd());
     int sm = lo[dir];
-    lo.setVal(dir, sm-1);
-    hi.setVal(dir, sm-1);
+    lo.setVal(dir, sm - 1);
+    hi.setVal(dir, sm - 1);
     amrex::IndexType bxtype(b.ixType());
     bxtype.set(dir);
     return amrex::Box(lo, hi, bxtype);
 }
-}
+} // namespace
 
 FixedGradientBC::FixedGradientBC(Field& field, amrex::Orientation ori)
     : m_field(field), m_ori(ori)
@@ -31,7 +31,7 @@ void FixedGradientBC::operator()(Field& field, const FieldState)
     const auto ishigh = m_ori.isHigh();
 
     const int nlevels = field.repo().num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& domain = repo.mesh().Geom(lev).Domain();
 
         amrex::MFItInfo mfi_info{};
@@ -47,7 +47,7 @@ void FixedGradientBC::operator()(Field& field, const FieldState)
                 amrex::ParallelFor(
                     lower_boundary_faces(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        for (int n=0; n < ncomp; ++n)
+                        for (int n = 0; n < ncomp; ++n)
                             bc_a(i, j, k, n) = bcvals[idx][n];
                     });
             }

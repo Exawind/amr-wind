@@ -38,4 +38,4 @@ TEST_F(PDETest, test_pde_create_mol)
     EXPECT_EQ(mesh().field_repo().num_fields(), 25);
 }
 
-}
+} // namespace amr_wind_tests

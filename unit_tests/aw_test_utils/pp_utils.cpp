@@ -31,8 +31,8 @@ void default_mesh_inputs()
 
     {
         amrex::ParmParse pp("geometry");
-        amrex::Vector<amrex::Real> problo {{0.0, 0.0, 0.0}};
-        amrex::Vector<amrex::Real> probhi {{8.0, 8.0, 8.0}};
+        amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
+        amrex::Vector<amrex::Real> probhi{{8.0, 8.0, 8.0}};
         amrex::Vector<int> periodic{{1, 1, 1}};
 
         pp.addarr("prob_lo", problo);
@@ -46,5 +46,5 @@ void default_mesh_inputs()
     }
 }
 
-}
-}
+} // namespace pp_utils
+} // namespace amr_wind_tests

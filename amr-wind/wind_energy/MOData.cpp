@@ -1,5 +1,5 @@
 #include <limits>
-#include "amr-wind/wind_energy/MOData.h"
+#include "amr-wind/wind_energy/MOData.H"
 
 namespace amr_wind {
 
@@ -14,7 +14,6 @@ namespace amr_wind {
  * https://doi.org/10.1142/2975.
  */
 
-
 amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
 {
     if (zeta > 0) {
@@ -22,7 +21,7 @@ amrex::Real MOData::calc_psi_m(amrex::Real zeta) const
     } else {
         amrex::Real x = std::sqrt(std::sqrt(1 - beta_m * zeta));
         return 2.0 * std::log(0.5 * (1.0 + x)) + log(0.5 * (1 + x * x)) -
-            2.0 * std::atan(x) + utils::half_pi();
+               2.0 * std::atan(x) + utils::half_pi();
     }
 }
 
@@ -66,7 +65,7 @@ void MOData::update_fluxes(int max_iters)
         if (std::abs(surf_temp_flux) > eps) {
             // Stable and unstable ABL conditions
             obukhov_len = -utau * utau * utau * theta_mean /
-                (kappa * gravity * surf_temp_flux);
+                          (kappa * gravity * surf_temp_flux);
             zeta = zref / obukhov_len;
         } else {
             // Neutral conditions
@@ -90,4 +89,4 @@ void MOData::update_fluxes(int max_iters)
     }
 }
 
-}
+} // namespace amr_wind

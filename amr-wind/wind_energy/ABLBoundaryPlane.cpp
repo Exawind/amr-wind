@@ -207,7 +207,7 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
 
         if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
-                valid_planes.end())) {
+             valid_planes.end())) {
             throw std::runtime_error(
                 "Requested plane (" + plane +
                 ") does not exist. Pick one of [xlo, ylo].");

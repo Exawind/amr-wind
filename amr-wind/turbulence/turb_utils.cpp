@@ -23,18 +23,16 @@ void inject_turbulence_src_terms(
 
     // There are source terms defined by user... so need to combine terms
     std::set<std::string> sterm_set;
-    for (const auto& sname: srcin)
-        sterm_set.insert(sname);
-    for (const auto& sname: terms)
-        sterm_set.insert(sname);
+    for (const auto& sname : srcin) sterm_set.insert(sname);
+    for (const auto& sname : terms) sterm_set.insert(sname);
 
-    // Now convert the combined terms back into a vector for insertion in input dictionary
+    // Now convert the combined terms back into a vector for insertion in input
+    // dictionary
     srcin.clear();
-    for (const auto& sname: sterm_set)
-        srcin.emplace_back(sname);
+    for (const auto& sname : sterm_set) srcin.emplace_back(sname);
     pp.addarr("sources", srcin);
 }
 
-}
-}
-}
+} // namespace turb_utils
+} // namespace turbulence
+} // namespace amr_wind

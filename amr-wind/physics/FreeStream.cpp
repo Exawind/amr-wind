@@ -17,17 +17,14 @@ FreeStream::FreeStream(const CFDSim& sim)
     {
         amrex::ParmParse pp("incflo");
         pp.query("density", m_rho);
-        pp.queryarr("velocity",m_vel);
-
+        pp.queryarr("velocity", m_vel);
     }
 }
 
 /** Initialize the velocity and density fields at the beginning of the
  *  simulation.
  */
-void FreeStream::initialize_fields(
-    int level,
-    const amrex::Geometry& /* geom */)
+void FreeStream::initialize_fields(int level, const amrex::Geometry& /* geom */)
 {
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
@@ -36,7 +33,6 @@ void FreeStream::initialize_fields(
     velocity.setVal(m_vel[0], 0, 1);
     velocity.setVal(m_vel[1], 1, 1);
     velocity.setVal(m_vel[2], 2, 1);
-
 }
 
 } // namespace amr_wind

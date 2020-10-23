@@ -12,7 +12,8 @@ namespace fvm {
 template <typename FTypeIn, typename FTypeOut>
 struct VorticityMag
 {
-    VorticityMag(FTypeOut& vortmagphi, const FTypeIn& phi) : m_vortmagphi(vortmagphi), m_phi(phi)
+    VorticityMag(FTypeOut& vortmagphi, const FTypeIn& phi)
+        : m_vortmagphi(vortmagphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -65,9 +66,9 @@ struct VorticityMag
                       cm1 * phi(i, j, k - 1, 1)) *
                      idx[2];
 
-                vortmagphi(i, j, k) = sqrt(std::pow(uy - vx, 2)
-                                       + std::pow(vz - wy, 2)
-                                       + std::pow(wx - uz, 2));
+                vortmagphi(i, j, k) = sqrt(
+                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
+                    std::pow(wx - uz, 2));
             });
     }
 

@@ -25,7 +25,8 @@ class CFDSim;
  *
  *  All post-processing utilities must derive from this class.
  */
-class PostProcessBase : public Factory<PostProcessBase, CFDSim&, const std::string&>
+class PostProcessBase
+    : public Factory<PostProcessBase, CFDSim&, const std::string&>
 {
 public:
     static const std::string base_identifier() { return "PostProcessBase"; }
@@ -77,6 +78,6 @@ private:
     amrex::Vector<std::unique_ptr<PostProcessBase>> m_post;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* POSTPROCESSING_H */

@@ -19,7 +19,7 @@ namespace amr_wind {
  *
  *  ABLStats contains functions to compute and statistics for ABL
  *  simulations. It supports output in ascii format as well as NetCDF format.
- * 
+ *
  * \ingroup we_abl
  */
 class ABLStats
@@ -36,22 +36,22 @@ public:
 
     //! Calculate plane average profiles
     void calc_averages();
-    
+
     //! Process fields given timestep and output to disk
     void post_advance_work();
 
     //! Compute height of capping inversion
     template <typename h1_dir, typename h2_dir>
-    void compute_zi(
-        const h1_dir& h1Sel,
-        const h2_dir& h2Sel);
+    void compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel);
 
     //! Return vel plane averaging instance
-    const VelPlaneAveraging& vel_plane_averaging() { return m_pa_vel;} ;
+    const VelPlaneAveraging& vel_plane_averaging() { return m_pa_vel; };
 
     //! Return instance that handles temperature statistics
     const FieldPlaneAveraging& temperature_plane_stats() const
-    { return m_pa_temp; }
+    {
+        return m_pa_temp;
+    }
 
 protected:
     //! Output data based on user-defined format
@@ -72,7 +72,6 @@ protected:
      */
     virtual void write_ascii();
 
-
 private:
     CFDSim& m_sim;
     const ABLWallFunction& m_abl_wall_func;
@@ -81,11 +80,11 @@ private:
 
     VelPlaneAveraging m_pa_vel;
     FieldPlaneAveraging m_pa_temp;
-    FieldPlaneAveraging m_pa_mueff;    
+    FieldPlaneAveraging m_pa_mueff;
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
-    
+
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
     std::string m_out_fmt{"netcdf"};
@@ -105,23 +104,22 @@ private:
     amrex::Real m_kappa{0.41};
 
     //! Reference surface temperature
-    amrex::Real m_ref_theta{300.0};    
+    amrex::Real m_ref_theta{300.0};
 
     //! Variable to store capping inversion height
     double m_zi{0.0};
 
     //! Wall-normal direction axis
     int m_normal_dir{2};
-    
+
     //! Cell spacing at the coarsest level
     double m_dn{0.0};
-    
+
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
 };
 
-
-}
+} // namespace amr_wind
 
 #endif /* ABLISTATS_H */

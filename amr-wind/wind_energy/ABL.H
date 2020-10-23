@@ -35,8 +35,8 @@ namespace pde {
 namespace icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
-}
-}
+} // namespace icns
+} // namespace pde
 
 /** Atmospheric Boundary Layer physics
  *  \ingroup we_abl
@@ -59,16 +59,13 @@ public:
 
     virtual ~ABL();
 
-    const ABLWallFunction& abl_wall_function() const
-    { return m_abl_wall_func; }
+    const ABLWallFunction& abl_wall_function() const { return m_abl_wall_func; }
 
     void post_init_actions() override;
 
     void post_regrid_actions() override {}
 
-    void initialize_fields(
-        int level,
-        const amrex::Geometry& geom) override;
+    void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void pre_advance_work() override;
 
@@ -115,6 +112,6 @@ private:
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 };
 
-}
+} // namespace amr_wind
 
 #endif /* ABL_H */

@@ -10,7 +10,7 @@
 #include "AMReX_Gpu.H"
 
 /** select index based on direction input */
-template<int Index>
+template <int Index>
 struct DirectionSelector
 {
     int operator()(int i, int j, int k) const;

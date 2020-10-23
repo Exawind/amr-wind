@@ -104,8 +104,8 @@ public:
 
     void read_file();
 
-    void populate_data(
-        const int, const amrex::Real, Field&, amrex::MultiFab&) const;
+    void
+    populate_data(const int, const amrex::Real, Field&, amrex::MultiFab&) const;
 
     void impl_buffer_field(
         const amrex::Box,

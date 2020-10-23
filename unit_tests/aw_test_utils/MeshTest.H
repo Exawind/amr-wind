@@ -26,7 +26,7 @@ public:
     //! Create the mesh instance
     virtual void create_mesh_instance();
 
-    template<typename T>
+    template <typename T>
     void create_mesh_instance()
     {
         if (!m_mesh) {
@@ -41,15 +41,9 @@ public:
     //! Reset the problem domain for this test
     virtual void reset_prob_domain();
 
-    amr_wind::CFDSim& sim()
-    {
-        return mesh().sim();
-    }
+    amr_wind::CFDSim& sim() { return mesh().sim(); }
 
-    amr_wind::SimTime& time()
-    {
-        return sim().time();
-    }
+    amr_wind::SimTime& time() { return sim().time(); }
 
     AmrTestMesh& mesh() { return *m_mesh; }
 
@@ -65,6 +59,6 @@ protected:
     bool m_need_params{true};
 };
 
-}
+} // namespace amr_wind_tests
 
 #endif /* MESHTEST_H */

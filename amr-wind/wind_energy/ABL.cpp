@@ -26,8 +26,8 @@ ABL::ABL(CFDSim& sim)
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 
-    m_stats.reset( new ABLStats(sim, m_abl_wall_func));
-        
+    m_stats.reset(new ABLStats(sim, m_abl_wall_func));
+
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
 
@@ -42,9 +42,7 @@ ABL::~ABL() = default;
  *
  *  \sa amr_wind::ABLFieldInit
  */
-void ABL::initialize_fields(
-    int level,
-    const amrex::Geometry& geom)
+void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
@@ -110,7 +108,6 @@ void ABL::pre_advance_work()
     m_abl_wall_func.update_umean(
         m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
 
-
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
         const amrex::Real vx = vel_pa.line_average_interpolated(zh, 0);
@@ -121,7 +118,8 @@ void ABL::pre_advance_work()
     }
 
     if (m_abl_mean_bous != nullptr)
-        m_abl_mean_bous->mean_temperature_update(m_stats->temperature_plane_stats());
+        m_abl_mean_bous->mean_temperature_update(
+            m_stats->temperature_plane_stats());
 
     if (m_bndry_plane->is_initialized()) {
         m_bndry_plane->read_file();
@@ -131,7 +129,7 @@ void ABL::pre_advance_work()
 /** Perform tasks at the end of a new timestep
  *
  *  For ABL simulations, this method writes all plane-averaged profiles and
- *  integrated statistics to output 
+ *  integrated statistics to output
  */
 void ABL::post_advance_work()
 {

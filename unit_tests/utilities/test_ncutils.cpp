@@ -84,7 +84,8 @@ TEST(NetCDFUtils, ncgroups)
     // checks if multiple calls to close are safe.
     ncf.close();
 
-    // These tests require an actual file on disk... doesn't work with diskless mode
+    // These tests require an actual file on disk... doesn't work with diskless
+    // mode
 #if 0
     {
         auto ncf1 = ncutils::NCFile::open("test_groups.nc", NC_WRITE);
@@ -114,8 +115,8 @@ TEST(NetCDFUtils, var_io)
     ASSERT_EQ(line1.get_attr("sampling_type"), "LineSampler");
 
     int idx = 0;
-    for (int i=0; i < num_points; ++i)
-        for (int j=0; j < num_points; ++j)
+    for (int i = 0; i < num_points; ++i)
+        for (int j = 0; j < num_points; ++j)
             fill_val[idx++] = static_cast<double>(i * num_points + j);
 
     auto vel = line1.def_var("vel", NC_DOUBLE, {"nx", "ny"});
@@ -128,16 +129,18 @@ TEST(NetCDFUtils, var_io)
     std::vector<double> buf(num_points);
     vel.get(buf.data(), {istart, 0}, {1, num_points});
 
-    for (int i=0; i < num_points; ++i)
+    for (int i = 0; i < num_points; ++i)
         ASSERT_NEAR(buf[i], start_val + static_cast<double>(i), 1.0e-12);
 
     // Test hyperslab
-    buf.resize(num_points*2);
+    buf.resize(num_points * 2);
     vel.get(buf.data(), {0, 0}, {num_points, 2}, {1, 2});
     idx = 0;
-    for (int i=0; i < num_points; ++i)
-        for (int j=0; j < 2; ++j)
-            ASSERT_NEAR(buf[idx++], static_cast<double>(num_points * i + 2 * j), 1.0e-12);
+    for (int i = 0; i < num_points; ++i)
+        for (int j = 0; j < 2; ++j)
+            ASSERT_NEAR(
+                buf[idx++], static_cast<double>(num_points * i + 2 * j),
+                1.0e-12);
 }
 
 } // namespace amr_wind_tests

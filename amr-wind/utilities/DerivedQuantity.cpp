@@ -99,9 +99,10 @@ bool DerivedQtyMgr::contains(const std::string& key) const noexcept
     return (it != m_obj_map.end());
 }
 
-void DerivedQtyMgr::var_names(amrex::Vector<std::string>& plt_var_names) const noexcept
+void DerivedQtyMgr::var_names(amrex::Vector<std::string>& plt_var_names) const
+    noexcept
 {
-    for (auto& qty: m_derived_vec) {
+    for (auto& qty : m_derived_vec) {
         qty->var_names(plt_var_names);
     }
 }

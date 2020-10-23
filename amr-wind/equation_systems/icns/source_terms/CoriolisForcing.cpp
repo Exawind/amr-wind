@@ -14,8 +14,8 @@ namespace icns {
  *  Parameters are read from the `abl` namespace in the input file. The
  *  following parameters are available:
  *
- *  - `latitude`:  The latitude (in degrees) where the Coriolis term is computed.
- *     This argument is mandatory.
+ *  - `latitude`:  The latitude (in degrees) where the Coriolis term is
+ * computed. This argument is mandatory.
  *
  *  - `east_vector`, `north_vector`
  *
@@ -59,16 +59,20 @@ void CoriolisForcing::operator()(
     const FieldState fstate,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> east{{m_east[0], m_east[1], m_east[2]}};
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> north{{m_north[0], m_north[1], m_north[2]}};
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> up{{m_up[0], m_up[1], m_up[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> east{
+        {m_east[0], m_east[1], m_east[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> north{
+        {m_north[0], m_north[1], m_north[2]}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> up{
+        {m_up[0], m_up[1], m_up[2]}};
 
     const auto sinphi = m_sinphi;
     const auto cosphi = m_cosphi;
     const auto corfac = m_coriolis_factor;
-    const auto& vel = m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
+    const auto& vel =
+        m_velocity.state(field_impl::dof_state(fstate))(lev).const_array(mfi);
 
-    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept {
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real ue = east[0] * vel(i, j, k, 0) +
                                east[1] * vel(i, j, k, 1) +
                                east[2] * vel(i, j, k, 2);

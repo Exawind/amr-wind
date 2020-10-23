@@ -23,7 +23,8 @@ struct VectorTransport
     //! Flag indicating whether this equation will use `(n + 1/2)` state
     static constexpr bool need_nph_state = true;
 
-    //! Flag indicating if the terms need to be multiplied by density (e.g., source term)
+    //! Flag indicating if the terms need to be multiplied by density (e.g.,
+    //! source term)
     static constexpr bool multiply_rho = true;
 
     //! Flag indicating whether the equation has a diffusion term

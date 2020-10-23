@@ -11,7 +11,8 @@
 
 namespace amr_wind {
 
-class DerivedQty : public Factory<DerivedQty, const FieldRepo&, std::vector<std::string>&>
+class DerivedQty
+    : public Factory<DerivedQty, const FieldRepo&, std::vector<std::string>&>
 {
 public:
     static const std::string base_identifier() { return "DerivedQty"; }
@@ -60,6 +61,6 @@ private:
     std::unordered_map<std::string, int> m_obj_map;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* DERIVEDQUANTITY_H */

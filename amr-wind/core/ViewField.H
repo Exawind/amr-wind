@@ -19,7 +19,7 @@ class FieldRepo;
  *  subview instances cannot be created directly but instead must be created
  *  using the Field::subview() and ScratchField::subview() methods.
  */
-template<typename T>
+template <typename T>
 class ViewField
 {
 public:
@@ -31,14 +31,12 @@ public:
     ViewField(ViewField&&) = default;
     ViewField& operator=(ViewField&&) = default;
 
-    inline const std::string name() const
-    { return m_src.name() + "view"; }
+    inline const std::string name() const { return m_src.name() + "view"; }
 
     //! Number of components in this subview
     inline int num_comp() const { return m_ncomp; }
 
-    inline const amrex::IntVect& num_grow() const
-    { return m_src.num_grow(); }
+    inline const amrex::IntVect& num_grow() const { return m_src.num_grow(); }
 
     inline FieldLoc field_location() const { return m_src.field_location(); }
 
@@ -79,6 +77,6 @@ private:
     amrex::Vector<amrex::MultiFab> m_data;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* VIEWFIELD_H */

@@ -27,6 +27,6 @@ private:
     amrex::Orientation m_ori;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* FIXEDGRADIENTBC_H */

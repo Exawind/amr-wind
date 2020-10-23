@@ -43,7 +43,7 @@ public:
     virtual std::unique_ptr<ScratchField>
     scalar_diffusivity(const std::string& scalar_name) = 0;
 };
-}
-}
+} // namespace transport
+} // namespace amr_wind
 
 #endif /* TRANSPORTMODEL_H */

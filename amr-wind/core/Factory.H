@@ -33,14 +33,16 @@ namespace amr_wind {
  *  class TurbulenceModel : public Factory<TurbulenceModel, const CFDSim&>
  *  {
  *       // Define a base identifier string for debugging purposes
- *       static const std::string base_identifier() { return "TurbulenceModel"; }
+ *       static const std::string base_identifier() { return "TurbulenceModel";
+ * }
  *
  *       // Define API as appropriate here
  *  };
  *
  *  // Define a subclass
- *  // Instead of using the base class we use Base::Register to allow registration
- *  class Smagorinsky : public TurbulenceModel::Register<Smagorinsky>
+ *  // Instead of using the base class we use Base::Register to allow
+ * registration class Smagorinsky : public
+ * TurbulenceModel::Register<Smagorinsky>
  *  {
  *       // This is the keyword that is used to lookup and create this instance
  *       static const std::string identifier() { return "Smagorinsky"; }
@@ -55,7 +57,8 @@ namespace amr_wind {
  *  ```
  *
  *  \tparam Base base class (e.g., Physics)
- *  \tparam Args Arguments types to be passed to the constructor during instantiation
+ *  \tparam Args Arguments types to be passed to the constructor during
+ * instantiation
  */
 template <class Base, class... Args>
 struct Factory
@@ -125,14 +128,14 @@ private:
     using CreatorFunc = std::unique_ptr<Base> (*)(Args...);
     using LookupTable = std::unordered_map<std::string, CreatorFunc>;
 
-    //! Check if the keyword exists in table or print diagnostic message and abort
+    //! Check if the keyword exists in table or print diagnostic message and
+    //! abort
     static void key_exists_or_error(const std::string& key)
     {
         const auto& tbl = table();
         if (tbl.find(key) == tbl.end()) {
             // Print valid options
-            if (amrex::ParallelDescriptor::IOProcessor())
-                print(std::cout);
+            if (amrex::ParallelDescriptor::IOProcessor()) print(std::cout);
             // Quit with error
             amrex::Abort(
                 "In " + Base::base_identifier() +

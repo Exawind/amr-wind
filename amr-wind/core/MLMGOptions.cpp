@@ -6,10 +6,7 @@
 
 namespace amr_wind {
 
-MLMGOptions::MLMGOptions(const std::string& prefix)
-{
-    parse_options(prefix);
-}
+MLMGOptions::MLMGOptions(const std::string& prefix) { parse_options(prefix); }
 
 MLMGOptions::MLMGOptions(
     const std::string& default_prefix, const std::string& custom_prefix)

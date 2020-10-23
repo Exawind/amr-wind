@@ -43,7 +43,7 @@ struct PDEFields
     Field& conv_term;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* PDEFIELDS_H */

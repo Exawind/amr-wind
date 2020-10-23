@@ -24,11 +24,11 @@ struct AdvectionOp<
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
     AdvectionOp(PDEFields& fields_in)
-    : fields(fields_in)
-    , density(fields_in.repo.get_field("density"))
-    , u_mac(fields_in.repo.get_field("u_mac"))
-    , v_mac(fields_in.repo.get_field("v_mac"))
-    , w_mac(fields_in.repo.get_field("w_mac"))
+        : fields(fields_in)
+        , density(fields_in.repo.get_field("density"))
+        , u_mac(fields_in.repo.get_field("u_mac"))
+        , v_mac(fields_in.repo.get_field("v_mac"))
+        , w_mac(fields_in.repo.get_field("w_mac"))
     {
         
         amrex::ParmParse pp("incflo");
@@ -54,10 +54,13 @@ struct AdvectionOp<
         iconserv.resize(PDE::ndim, 1);
     }
 
-    void operator()(const FieldState fstate, const amrex::Real dt,
-                    const bool /* has_overset */)
+    void operator()(
+        const FieldState fstate,
+        const amrex::Real dt,
+        const bool /* has_overset */)
     {
-        static_assert(PDE::ndim == 1, "Invalid number of components for scalar");
+        static_assert(
+            PDE::ndim == 1, "Invalid number of components for scalar");
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
 
@@ -76,8 +79,8 @@ struct AdvectionOp<
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            for (amrex::MFIter mfi(dof_field(lev),mfi_info); mfi.isValid(); ++mfi)
-            {
+            for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
+                 ++mfi) {
                 const auto& bx = mfi.tilebox();
                 auto rho_arr = den(lev).array(mfi);
                 auto tra_arr = dof_field(lev).array(mfi);
@@ -85,13 +88,15 @@ struct AdvectionOp<
                 amrex::Array4<amrex::Real> rhotrac;
 
                 if (PDE::multiply_rho) {
-                    auto rhotrac_box = amrex::grow(bx, fvm::Godunov::nghost_state);
+                    auto rhotrac_box =
+                        amrex::grow(bx, fvm::Godunov::nghost_state);
                     rhotracfab.resize(rhotrac_box, PDE::ndim);
                     rhotrac = rhotracfab.array();
 
                     amrex::ParallelFor(
                         rhotrac_box, PDE::ndim,
-                        [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                        [=] AMREX_GPU_DEVICE(
+                            int i, int j, int k, int n) noexcept {
                             rhotrac(i, j, k, n) =
                                 rho_arr(i, j, k) * tra_arr(i, j, k, n);
                         });

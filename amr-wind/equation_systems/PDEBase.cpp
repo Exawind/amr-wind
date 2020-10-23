@@ -19,17 +19,14 @@ PDEFields::PDEFields(FieldRepo& repo_in, const std::string& var_name)
     , conv_term(repo.get_field(pde_impl::conv_term_name(var_name)))
 {}
 
-PDEMgr::PDEMgr(CFDSim& sim)
-    : m_sim(sim)
-    , m_probtype(0)
+PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim), m_probtype(0)
 {
     amrex::ParmParse pp("incflo");
     pp.query("probtype", m_probtype);
     pp.query("use_godunov", m_use_godunov);
 
-    m_scheme = m_use_godunov
-        ? fvm::Godunov::scheme_name()
-        : fvm::MOL::scheme_name();
+    m_scheme =
+        m_use_godunov ? fvm::Godunov::scheme_name() : fvm::MOL::scheme_name();
 }
 
 PDEBase& PDEMgr::register_icns()
@@ -45,16 +42,15 @@ PDEBase& PDEMgr::register_transport_pde(const std::string& pde_name)
     const std::string name = pde_name + "-" + m_scheme;
 
     if (contains(name)) {
-        amrex::Print()
-            << "WARNING: Multiple requests to register PDE: " << pde_name
-            << std::endl;
+        amrex::Print() << "WARNING: Multiple requests to register PDE: "
+                       << pde_name << std::endl;
         return operator()(name);
     }
 
     return create(name, m_sim, m_probtype);
 }
 
-bool PDEMgr::has_pde(const std::string &pde_name) const
+bool PDEMgr::has_pde(const std::string& pde_name) const
 {
     const std::string name = pde_name + "-" + m_scheme;
     return contains(name);
@@ -65,5 +61,5 @@ int PDEMgr::num_ghost_state() const
     return m_use_godunov ? fvm::Godunov::nghost_state : fvm::MOL::nghost_state;
 }
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
