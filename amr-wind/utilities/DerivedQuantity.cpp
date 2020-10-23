@@ -48,6 +48,11 @@ parse_derived_qty(const std::string& key)
 
 } // namespace
 
+void DerivedQty::var_names(amrex::Vector<std::string>& plt_var_names)
+{
+    ioutils::add_var_names(plt_var_names, this->name(), this->num_comp());
+}
+
 DerivedQtyMgr::DerivedQtyMgr(const FieldRepo& repo) : m_repo(repo) {}
 
 DerivedQty& DerivedQtyMgr::create(const std::string& key)
@@ -97,7 +102,7 @@ bool DerivedQtyMgr::contains(const std::string& key) const noexcept
 void DerivedQtyMgr::var_names(amrex::Vector<std::string>& plt_var_names) const noexcept
 {
     for (auto& qty: m_derived_vec) {
-        ioutils::add_var_names(plt_var_names, qty->name(), qty->num_comp());
+        qty->var_names(plt_var_names);
     }
 }
 

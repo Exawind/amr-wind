@@ -23,6 +23,8 @@ public:
     virtual int num_comp() const = 0;
 
     virtual void operator()(ScratchField& fld, const int scomp = 0) = 0;
+
+    virtual void var_names(amrex::Vector<std::string>&);
 };
 
 class DerivedQtyMgr
