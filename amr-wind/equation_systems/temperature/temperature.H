@@ -39,18 +39,14 @@ struct Temperature : ScalarTransport
 /** Effective thermal diffusivity update operator
  *  \ingroup temp_eqn
  */
-template<>
+template <>
 struct TurbulenceOp<Temperature>
 {
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
-                 PDEFields& fields)
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
         : m_tmodel(tmodel), m_fields(fields)
     {}
 
-    void operator()()
-    {
-        m_tmodel.update_alphaeff(m_fields.mueff);
-    }
+    void operator()() { m_tmodel.update_alphaeff(m_fields.mueff); }
 
     turbulence::TurbulenceModel& m_tmodel;
     PDEFields& m_fields;
@@ -58,6 +54,5 @@ struct TurbulenceOp<Temperature>
 
 } // namespace pde
 } // namespace amr_wind
-
 
 #endif /* TEMPERATURE_H */

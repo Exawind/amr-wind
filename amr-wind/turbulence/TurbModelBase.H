@@ -64,8 +64,8 @@ inline void alpha_update(Field& evisc, Field& tvisc, Transport& transport)
 {
     auto lam_alpha = transport.alpha();
     field_ops::lincomb(
-        evisc, 1.0, *lam_alpha, 0, 1.0 / transport.turbulent_prandtl(),
-        tvisc, 0, 0, evisc.num_comp(), evisc.num_grow());
+        evisc, 1.0, *lam_alpha, 0, 1.0 / transport.turbulent_prandtl(), tvisc,
+        0, 0, evisc.num_comp(), evisc.num_grow());
 }
 
 template <
@@ -92,7 +92,7 @@ inline void scal_diff_update(
  *  model but is a convenient way to represent the absence of a turbulence
  *  model.
  */
-template<typename Transport>
+template <typename Transport>
 class TurbModelBase : public TurbModel<Transport>
 {
 public:
@@ -107,7 +107,6 @@ public:
         this->m_sim.io_manager().register_io_var(fields.mueff.name());
 
         m_mu_turb.set_default_fillpatch_bc(this->m_sim.time());
-
     }
 
     //! Return the turbulent viscosity field
@@ -160,7 +159,7 @@ protected:
     Field* m_alpha_turb{nullptr};
 };
 
-}
-}
+} // namespace turbulence
+} // namespace amr_wind
 
 #endif /* TURBMODELBASE_H */

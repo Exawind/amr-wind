@@ -8,21 +8,25 @@ LevelDataHolder::LevelDataHolder()
 {}
 
 void FieldRepo::make_new_level_from_scratch(
-    int lev, amrex::Real /* time */,
+    int lev,
+    amrex::Real /* time */,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
     BL_PROFILE("amr-wind::FieldRepo::make_new_level_from_scratch");
     m_leveldata[lev].reset(new LevelDataHolder());
 
-    allocate_field_data(ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
-    allocate_field_data(ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_int_fact));
+    allocate_field_data(
+        ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
+    allocate_field_data(
+        ba, dm, *m_leveldata[lev], *(m_leveldata[lev]->m_int_fact));
 
     m_is_initialized = true;
 }
 
 void FieldRepo::make_new_level_from_coarse(
-    int lev, amrex::Real time,
+    int lev,
+    amrex::Real time,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
@@ -32,7 +36,7 @@ void FieldRepo::make_new_level_from_coarse(
     allocate_field_data(ba, dm, *ldata, *(ldata->m_factory));
     allocate_field_data(ba, dm, *ldata, *(ldata->m_int_fact));
 
-    for (auto& field: m_field_vec) {
+    for (auto& field : m_field_vec) {
         if (!field->fillpatch_on_regrid()) continue;
 
         field->fillpatch_from_coarse(lev, time, ldata->m_mfabs[field->id()], 0);
@@ -43,7 +47,8 @@ void FieldRepo::make_new_level_from_coarse(
 }
 
 void FieldRepo::remake_level(
-    int lev, amrex::Real time,
+    int lev,
+    amrex::Real time,
     const amrex::BoxArray& ba,
     const amrex::DistributionMapping& dm)
 {
@@ -53,7 +58,7 @@ void FieldRepo::remake_level(
     allocate_field_data(ba, dm, *ldata, *(ldata->m_factory));
     allocate_field_data(ba, dm, *ldata, *(ldata->m_int_fact));
 
-    for (auto& field: m_field_vec) {
+    for (auto& field : m_field_vec) {
         if (!field->fillpatch_on_regrid()) continue;
 
         field->fillpatch(lev, time, ldata->m_mfabs[field->id()], 0);
@@ -86,8 +91,10 @@ Field& FieldRepo::declare_field(
             if ((ncomp != field.num_comp()) ||
                 (field.num_time_states() != nstates) ||
                 (floc != field.field_location())) {
-                amrex::Abort("Attempt to reregister field with inconsistent parameters: "
-                             + name);
+                amrex::Abort(
+                    "Attempt to reregister field with inconsistent "
+                    "parameters: " +
+                    name);
             }
             return field;
         }
@@ -112,10 +119,11 @@ Field& FieldRepo::declare_field(
         const unsigned fid = m_field_vec.size();
 
         // Create new field instance
-        std::unique_ptr<Field> field(new Field(*this, fname, finfo, fid, fstate));
-        // If declare field is called after mesh has been initialized create field multifabs
-        if (m_is_initialized)
-            allocate_field_data(*field);
+        std::unique_ptr<Field> field(
+            new Field(*this, fname, finfo, fid, fstate));
+        // If declare field is called after mesh has been initialized create
+        // field multifabs
+        if (m_is_initialized) allocate_field_data(*field);
 
         // Add reference to states lookup
         finfo->m_states[i] = field.get();
@@ -129,8 +137,8 @@ Field& FieldRepo::declare_field(
     return *m_field_vec[m_fid_map[name]];
 }
 
-Field& FieldRepo::get_field(
-    const std::string& name, const FieldState fstate) const
+Field&
+FieldRepo::get_field(const std::string& name, const FieldState fstate) const
 {
     BL_PROFILE("amr-wind::FieldRepo::get_field");
     const auto fname = field_impl::field_name_with_state(name, fstate);
@@ -160,9 +168,7 @@ IntField& FieldRepo::declare_int_field(
 {
     BL_PROFILE("amr-wind::FieldRepo::declare_int_field");
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        nstates == 1,
-        "Multiple states not supported for integer fields"
-    );
+        nstates == 1, "Multiple states not supported for integer fields");
 
     // If the field is already registered check and return the fields
     {
@@ -172,8 +178,10 @@ IntField& FieldRepo::declare_int_field(
 
             if ((ncomp != field.num_comp()) ||
                 (floc != field.field_location())) {
-                amrex::Abort("Attempt to reregister field with inconsistent parameters: "
-                             + name);
+                amrex::Abort(
+                    "Attempt to reregister field with inconsistent "
+                    "parameters: " +
+                    name);
             }
             return field;
         }
@@ -192,8 +200,7 @@ IntField& FieldRepo::declare_int_field(
         std::unique_ptr<IntField> field(
             new IntField(*this, fname, fid, ncomp, ngrow, floc));
 
-        if (m_is_initialized)
-            allocate_field_data(*field);
+        if (m_is_initialized) allocate_field_data(*field);
 
         m_int_field_vec.emplace_back(std::move(field));
         m_int_fid_map[fname] = fid;
@@ -202,8 +209,8 @@ IntField& FieldRepo::declare_int_field(
     return *m_int_field_vec[m_int_fid_map[name]];
 }
 
-IntField& FieldRepo::get_int_field(
-    const std::string& name, const FieldState fstate) const
+IntField&
+FieldRepo::get_int_field(const std::string& name, const FieldState fstate) const
 {
     BL_PROFILE("amr-wind::FieldRepo::get_int_field");
     AMREX_ALWAYS_ASSERT(fstate == FieldState::New);
@@ -227,21 +234,28 @@ bool FieldRepo::int_field_exists(
 }
 
 std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
-    const std::string& name, const int ncomp, const int nghost, const FieldLoc floc) const
+    const std::string& name,
+    const int ncomp,
+    const int nghost,
+    const FieldLoc floc) const
 {
     BL_PROFILE("amr-wind::FieldRepo::create_scratch_field");
     if (!m_is_initialized) {
-        amrex::Abort("Scratch field creation is not permitted before mesh is initialized");
+        amrex::Abort(
+            "Scratch field creation is not permitted before mesh is "
+            "initialized");
     }
 
-    std::unique_ptr<ScratchField> field(new ScratchField(*this, name, ncomp, nghost, floc));
+    std::unique_ptr<ScratchField> field(
+        new ScratchField(*this, name, ncomp, nghost, floc));
 
-    for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
-        const auto ba = amrex::convert(
-            m_mesh.boxArray(lev), field_impl::index_type(floc));
+    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
+        const auto ba =
+            amrex::convert(m_mesh.boxArray(lev), field_impl::index_type(floc));
 
         field->m_data.emplace_back(
-            ba, m_mesh.DistributionMap(lev), ncomp, nghost, amrex::MFInfo(), *(m_leveldata[lev]->m_factory));
+            ba, m_mesh.DistributionMap(lev), ncomp, nghost, amrex::MFInfo(),
+            *(m_leveldata[lev]->m_factory));
     }
     return field;
 }
@@ -254,7 +268,7 @@ std::unique_ptr<ScratchField> FieldRepo::create_scratch_field(
 
 void FieldRepo::advance_states() noexcept
 {
-    for (auto& it: m_field_vec) {
+    for (auto& it : m_field_vec) {
         if (it->field_state() != FieldState::New) continue;
         it->advance_states();
     }
@@ -300,8 +314,9 @@ void FieldRepo::allocate_field_data(
 
 void FieldRepo::allocate_field_data(Field& field)
 {
-    for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
-        allocate_field_data(lev, field, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
+    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
+        allocate_field_data(
+            lev, field, *m_leveldata[lev], *(m_leveldata[lev]->m_factory));
     }
 }
 
@@ -323,11 +338,8 @@ void FieldRepo::allocate_field_data(
     }
 }
 
-
 void FieldRepo::allocate_field_data(
-    int lev,
-    IntField& field,
-    LevelDataHolder& level_data)
+    int lev, IntField& field, LevelDataHolder& level_data)
 {
     auto& fab_vec = level_data.m_int_fabs;
     AMREX_ASSERT(fab_vec.size() == field.id());
@@ -342,13 +354,12 @@ void FieldRepo::allocate_field_data(
 
 void FieldRepo::allocate_field_data(IntField& field)
 {
-    for (int lev=0; lev <= m_mesh.finestLevel(); ++lev) {
+    for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
         allocate_field_data(lev, field, *m_leveldata[lev]);
     }
 }
 
-Field& FieldRepo::create_state(
-    Field& infield, const FieldState fstate) noexcept
+Field& FieldRepo::create_state(Field& infield, const FieldState fstate) noexcept
 {
     BL_PROFILE("amr-wind::FieldRepo::create_state");
     AMREX_ASSERT((fstate == FieldState::NPH));
@@ -356,14 +367,13 @@ Field& FieldRepo::create_state(
 
     auto& finfo = infield.m_info;
     const int i = static_cast<int>(fstate);
-    const std::string fname = field_impl::field_name_with_state(
-        infield.base_name(), fstate);
+    const std::string fname =
+        field_impl::field_name_with_state(infield.base_name(), fstate);
     const unsigned fid = m_field_vec.size();
 
     // Create the half state
     std::unique_ptr<Field> field(new Field(*this, fname, finfo, fid, fstate));
-    if (m_is_initialized)
-        allocate_field_data(*field);
+    if (m_is_initialized) allocate_field_data(*field);
 
     // Add reference to states lookup
     finfo->m_states[i] = field.get();

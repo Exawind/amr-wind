@@ -22,7 +22,8 @@ class FieldRepo;
  *  regrid. By default, FieldRepo returns a unique pointer to this instance and
  *  it is not safe to hold this pointer across timesteps.
  *
- *  At present, ScratchField cannot be used for I/O and/or post-processing utilities.
+ *  At present, ScratchField cannot be used for I/O and/or post-processing
+ * utilities.
  */
 class ScratchField
 {
@@ -64,7 +65,9 @@ public:
     /** Return a sub-view of the ScratchField instance
      */
     ViewField<ScratchField> subview(const int scomp = 0, const int ncomp = 1)
-    { return {*this, scomp, ncomp}; }
+    {
+        return {*this, scomp, ncomp};
+    }
 
     void fillpatch(amrex::Real time) noexcept;
     void fillpatch(amrex::Real time, const amrex::IntVect& ng) noexcept;
@@ -89,7 +92,11 @@ protected:
         const int ncomp = 1,
         const int ngrow = 1,
         const FieldLoc floc = FieldLoc::CELL)
-        : m_repo(repo), m_name(name), m_ncomp(ncomp), m_ngrow(ngrow), m_floc(floc)
+        : m_repo(repo)
+        , m_name(name)
+        , m_ncomp(ncomp)
+        , m_ngrow(ngrow)
+        , m_floc(floc)
     {}
 
     const FieldRepo& m_repo;
@@ -101,6 +108,6 @@ protected:
     amrex::Vector<amrex::MultiFab> m_data;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* SCRATCHFIELD_H */

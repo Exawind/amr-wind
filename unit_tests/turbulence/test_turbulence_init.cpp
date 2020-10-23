@@ -14,4 +14,4 @@ TEST_F(TurbTest, test_turb_create)
     amr_wind::turbulence::TurbulenceModel::print(std::cout);
 }
 
-}
+} // namespace amr_wind_tests

@@ -10,7 +10,7 @@ namespace pde {
 /** BC operations for incompressible Navier-Stokes
  *  \ingroup icns
  */
-template<>
+template <>
 struct BCOp<ICNS>
 {
     BCOp(PDEFields& fields, const SimTime& time)
@@ -56,7 +56,7 @@ struct BCOp<ICNS>
     const SimTime& m_time;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* ICNS_BCOP_H */

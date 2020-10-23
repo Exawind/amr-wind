@@ -77,21 +77,30 @@ public:
     FieldFillConstScalar(Field&, amrex::Real fill_val) : m_fill_val(fill_val) {}
 
     void fillpatch(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        int,
+        amrex::Real,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect&,
         const FieldState) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillpatch_from_coarse(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        int,
+        amrex::Real,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect&,
         const FieldState) override
     {
         mfab.setVal(m_fill_val);
     }
 
     void fillphysbc(
-        int, amrex::Real, amrex::MultiFab& mfab, const amrex::IntVect&,
+        int,
+        amrex::Real,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect&,
         const FieldState) override
     {
         mfab.setVal(m_fill_val);
@@ -182,9 +191,9 @@ public:
                         m_field.bc_values_device()});
 
             amrex::FillPatchTwoLevels(
-                mfab, nghost, time, {&fld(lev - 1)}, {time},
-                {&fld(lev)}, {time}, 0, 0, m_field.num_comp(),
-                m_mesh.Geom(lev - 1), m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
+                mfab, nghost, time, {&fld(lev - 1)}, {time}, {&fld(lev)},
+                {time}, 0, 0, m_field.num_comp(), m_mesh.Geom(lev - 1),
+                m_mesh.Geom(lev), cphysbc, 0, fphysbc, 0,
                 m_mesh.refRatio(lev - 1), m_mapper, m_field.bcrec(), 0);
         }
     }
@@ -231,8 +240,8 @@ public:
                 cphysbc, 0, fphysbc, 0, m_mesh.refRatio(lev - 1), m_mapper,
                 m_field.bcrec(), 0);
         }
-        amrex::Print() << lev << " " << m_time.current_time()
-                       << " " << m_time.new_time() << std::endl;
+        amrex::Print() << lev << " " << m_time.current_time() << " "
+                       << m_time.new_time() << std::endl;
     }
 #endif
 

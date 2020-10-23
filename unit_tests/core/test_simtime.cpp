@@ -24,7 +24,6 @@ void build_simtime_params()
     pp.add("regrid_interval", 3);
     pp.add("plot_interval", 1);
     pp.add("checkpoint_interval", 2);
-
 }
 
 } // namespace

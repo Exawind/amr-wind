@@ -7,7 +7,7 @@
 #include <sstream>
 #include "AMReX_Vector.H"
 
-namespace amrex{
+namespace amrex {
 const char* buildInfoGetGitHash(int i);
 }
 
@@ -58,7 +58,7 @@ inline void add_var_names(
             vnames.push_back(fname + std::to_string(i));
     }
 }
-}
-}
+} // namespace ioutils
+} // namespace amr_wind
 
 #endif /* IO_UTILS_H */

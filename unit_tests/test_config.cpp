@@ -44,9 +44,9 @@ TEST(Configuration, CUDA)
 #ifdef AMREX_USE_CUDA
 #if defined(CUDA_VERSION)
     amrex::Print() << "CUDA configuration: "
-                   << "CUDA_VERSION: " << CUDA_VERSION
-                   << " " << CUDA_VERSION / 1000 << "."
-                   << (CUDA_VERSION % 1000) / 10 << std::endl;
+                   << "CUDA_VERSION: " << CUDA_VERSION << " "
+                   << CUDA_VERSION / 1000 << "." << (CUDA_VERSION % 1000) / 10
+                   << std::endl;
 #endif
     cudaError_t error;
     int ndevices;
@@ -69,9 +69,8 @@ TEST(Configuration, CUDA)
     }
     char busid[512];
     cudaDeviceGetPCIBusId(busid, 512, rankDevice);
-    std::cout << "[" << myrank << "] " << rankDevice << ": "
-              << dev.name << " CC: " << dev.major << "." << dev.minor
-              << " ID: " << busid
+    std::cout << "[" << myrank << "] " << rankDevice << ": " << dev.name
+              << " CC: " << dev.major << "." << dev.minor << " ID: " << busid
               << " GM: "
               << (static_cast<double>(dev.totalGlobalMem) / (1 << 30)) << "GB"
               << " ShMem/Blk: " << (dev.sharedMemPerBlock / (1 << 10)) << "KB"

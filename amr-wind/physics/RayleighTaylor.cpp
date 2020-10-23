@@ -27,8 +27,7 @@ void RayleighTaylor::initialize_fields(int level, const amrex::Geometry& geom)
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        (*m_field_init)(
-            vbx, geom, density.array(mfi));
+        (*m_field_init)(vbx, geom, density.array(mfi));
     }
 }
 

@@ -12,7 +12,6 @@ VortexPatchFieldInit::VortexPatchFieldInit()
     amrex::ParmParse pp_vortex_patch("VortexPatch");
     pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp_vortex_patch.query("radius", m_radius);
- 
 }
 
 void VortexPatchFieldInit::operator()(

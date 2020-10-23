@@ -23,7 +23,7 @@ namespace icns {
 DensityBuoyancy::DensityBuoyancy(const CFDSim& sim)
     : m_density(sim.repo().get_field("density"))
 {
-//    amrex::ParmParse pp(identifier());
+    //    amrex::ParmParse pp(identifier());
 
     // FIXME: gravity in `incflo` namespace
     {
@@ -52,14 +52,13 @@ void DensityBuoyancy::operator()(
     const amrex::Array4<amrex::Real>& vel_forces) const
 {
     const amrex::Real density_0 = rho_0;
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{{
-        m_gravity[0], m_gravity[1], m_gravity[2]}};
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
 
     FieldState den_state = field_impl::phi_state(fstate);
     const auto& density = m_density.state(den_state)(lev).const_array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
         const amrex::Real fac = 1.0 - density_0 / density(i, j, k);
 
         vel_forces(i, j, k, 0) += gravity[0] * fac;

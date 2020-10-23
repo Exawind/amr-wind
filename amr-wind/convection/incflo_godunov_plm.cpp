@@ -44,8 +44,10 @@ void godunov::predict_plm_x(
             [q, vcc, domain_ilo, domain_ihi, Imx, Ipx, dtdx,
              pbc] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 const auto& bc = pbc[n];
-                bool extdir_ilo = (bc.lo(0) == BCType::ext_dir) || (bc.lo(0) == BCType::hoextrap);
-                bool extdir_ihi = (bc.hi(0) == BCType::ext_dir) || (bc.hi(0) == BCType::hoextrap);
+                bool extdir_ilo = (bc.lo(0) == BCType::ext_dir) ||
+                                  (bc.lo(0) == BCType::hoextrap);
+                bool extdir_ihi = (bc.hi(0) == BCType::ext_dir) ||
+                                  (bc.hi(0) == BCType::hoextrap);
 
                 Real upls =
                     q(i, j, k, n) + 0.5 * (-1.0 - vcc(i, j, k, 0) * dtdx) *
@@ -127,8 +129,10 @@ void godunov::predict_plm_y(
             [q, vcc, domain_jlo, domain_jhi, Imy, Ipy, dtdy,
              pbc] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 const auto& bc = pbc[n];
-                bool extdir_jlo = (bc.lo(1) == BCType::ext_dir) || (bc.lo(1) == BCType::hoextrap);
-                bool extdir_jhi = (bc.hi(1) == BCType::ext_dir) || (bc.hi(1) == BCType::hoextrap);
+                bool extdir_jlo = (bc.lo(1) == BCType::ext_dir) ||
+                                  (bc.lo(1) == BCType::hoextrap);
+                bool extdir_jhi = (bc.hi(1) == BCType::ext_dir) ||
+                                  (bc.hi(1) == BCType::hoextrap);
 
                 Real vpls =
                     q(i, j, k, n) + 0.5 * (-1.0 - vcc(i, j, k, 1) * dtdy) *
@@ -211,8 +215,10 @@ void godunov::predict_plm_z(
             [q, vcc, domain_klo, domain_khi, Ipz, Imz, dtdz,
              pbc] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 const auto& bc = pbc[n];
-                bool extdir_klo = (bc.lo(2) == BCType::ext_dir) || (bc.lo(2) == BCType::hoextrap);
-                bool extdir_khi = (bc.hi(2) == BCType::ext_dir) || (bc.hi(2) == BCType::hoextrap);
+                bool extdir_klo = (bc.lo(2) == BCType::ext_dir) ||
+                                  (bc.lo(2) == BCType::hoextrap);
+                bool extdir_khi = (bc.hi(2) == BCType::ext_dir) ||
+                                  (bc.hi(2) == BCType::hoextrap);
 
                 Real wpls =
                     q(i, j, k, n) + 0.5 * (-1.0 - vcc(i, j, k, 2) * dtdz) *

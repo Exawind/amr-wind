@@ -14,12 +14,11 @@ namespace pde {
  *  Accumulates the convective, diffusion, and source terms for predictor and
  *  corrector steps.
  */
-template<typename PDE, typename Scheme>
+template <typename PDE, typename Scheme>
 struct ComputeRHSOp
 {
     ComputeRHSOp(PDEFields& fields_in)
-    : fields(fields_in)
-    , density(fields_in.repo.get_field("density"))
+        : fields(fields_in), density(fields_in.repo.get_field("density"))
     {}
 
     /** Compute right-hand side for predictor steps
@@ -207,7 +206,7 @@ struct ComputeRHSOp
     Field& density;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* COMPRHSOPS_H */

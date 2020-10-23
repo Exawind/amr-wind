@@ -17,8 +17,7 @@ namespace icns {
  *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
  *  - `gravity` acceleration due to gravity (m/s)
  */
-ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim)
-    : m_mesh(sim.mesh())
+ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
 {
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_boussinesq_term(this);
@@ -52,8 +51,8 @@ void ABLMeanBoussinesq::operator()(
     const auto& dx = m_mesh.Geom(lev).CellSizeArray();
     const amrex::Real T0 = m_ref_theta;
     const amrex::Real beta = m_beta;
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{{
-        m_gravity[0], m_gravity[1], m_gravity[2]}};
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
 
     // Mean temperature profile used to compute background forcing term
     //
@@ -75,8 +74,8 @@ void ABLMeanBoussinesq::operator()(
         const int il = amrex::min(k / lp1, nh_max);
         const int ir = il + 1;
         temp = tvals[il] +
-            ((tvals[ir] - tvals[il]) / (theights[ir] - theights[il])) *
-            (ht - theights[il]);
+               ((tvals[ir] - tvals[il]) / (theights[ir] - theights[il])) *
+                   (ht - theights[il]);
 
         const amrex::Real fac = beta * (temp - T0);
         src_term(i, j, k, 0) += gravity[0] * fac;

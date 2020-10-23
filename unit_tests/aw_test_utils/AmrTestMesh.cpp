@@ -4,9 +4,7 @@
 
 namespace amr_wind_tests {
 
-AmrTestMesh::AmrTestMesh()
-    : m_sim(*this)
-    , m_repo(m_sim.repo())
+AmrTestMesh::AmrTestMesh() : m_sim(*this), m_repo(m_sim.repo())
 {
     m_sim.time().parse_parameters();
 }
@@ -55,13 +53,13 @@ void AmrTestMesh::RemakeLevel(
     m_repo.remake_level(lev, time, ba, dm);
 }
 
-void AmrTestMesh::ClearLevel(int lev)
-{
-    m_repo.clear_level(lev);
-}
+void AmrTestMesh::ClearLevel(int lev) { m_repo.clear_level(lev); }
 
 void AmrTestMesh::ErrorEst(
-    int /* lev */, amrex::TagBoxArray& /* tags */, amrex::Real /* time */, int /* ngrow */)
+    int /* lev */,
+    amrex::TagBoxArray& /* tags */,
+    amrex::Real /* time */,
+    int /* ngrow */)
 {
     amrex::Abort("Not implemented");
 }

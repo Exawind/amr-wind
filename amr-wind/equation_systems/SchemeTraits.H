@@ -51,7 +51,7 @@ struct MOL
     static constexpr int num_conv_states = 2;
 };
 
-}
-}
+} // namespace fvm
+} // namespace amr_wind
 
 #endif /* SCHEMETRAITS_H */

@@ -3,7 +3,6 @@
 //  amr-wind
 //
 
-
 #ifndef PlaneAveraging_H
 #define PlaneAveraging_H
 
@@ -24,11 +23,12 @@ public:
 
     ~PlaneAveraging(){};
 
-    void operator()(const amrex::Vector<amrex::Geometry>& Geom,
-               amrex::Vector<amrex::MultiFab*> const& density,
-               amrex::Vector<amrex::MultiFab*> const& velocity,
-               amrex::Vector<amrex::MultiFab*> const& mueff,
-               amrex::Vector<amrex::MultiFab*> const& tracer);
+    void operator()(
+        const amrex::Vector<amrex::Geometry>& Geom,
+        amrex::Vector<amrex::MultiFab*> const& density,
+        amrex::Vector<amrex::MultiFab*> const& velocity,
+        amrex::Vector<amrex::MultiFab*> const& mueff,
+        amrex::Vector<amrex::MultiFab*> const& tracer);
 
     /** evaluate line average at specific location for velocity xdir*/
     amrex::Real line_velocity_xdir(amrex::Real x) const
@@ -60,10 +60,7 @@ public:
     void plot_line(int step, amrex::Real time, int plot_type = 0);
 
     /** change precision of text file output */
-    void set_precision(int p)
-    {
-        precision = p;
-    };
+    void set_precision(int p) { precision = p; };
 
 private:
     enum average_var {
@@ -94,30 +91,32 @@ private:
     };
     const static int navg =
         last_avg_var + 1; /** number of average components */
-    const static int nfluc = last_fluc_var+1; /** number of fluctuation components */
+    const static int nfluc =
+        last_fluc_var + 1; /** number of fluctuation components */
 
-    amrex::Vector<amrex::Real> line_average; /** line storage for the average velocity and tracer variables */
-    amrex::Vector<amrex::Real> line_fluctuation; /** line storage for fluctuations */
-    amrex::Vector<amrex::Real> line_xcentroid; /** line storage for centroids of each cell along a line*/
+    amrex::Vector<amrex::Real> line_average; /** line storage for the average
+                                                velocity and tracer variables */
+    amrex::Vector<amrex::Real>
+        line_fluctuation; /** line storage for fluctuations */
+    amrex::Vector<amrex::Real> line_xcentroid; /** line storage for centroids of
+                                                  each cell along a line*/
 
-    amrex::Real dx; /** mesh spacing in axis direction*/
+    amrex::Real dx;  /** mesh spacing in axis direction*/
     amrex::Real xlo; /** bottom of domain in axis direction */
-    
-    int ncell_plane; /** number of cells in plane */
-    int ncell_line; /** number of cells along line */
-    
-    int precision = 4; /** precision for line plot text file */
-    int level = 0; /** level for plane averaging for now fixed at level=0 */
 
+    int ncell_plane; /** number of cells in plane */
+    int ncell_line;  /** number of cells along line */
+
+    int precision = 4; /** precision for line plot text file */
+    int level = 0;     /** level for plane averaging for now fixed at level=0 */
 
     const int axis;
 
-    amrex::Real eval_line_average(amrex::Real x, int comp) const; /** evaluate line average at specific location for any average component */
+    amrex::Real eval_line_average(
+        amrex::Real x, int comp) const; /** evaluate line average at specific
+                                           location for any average component */
 
-
-public: // public for GPU 
-
-
+public: // public for GPU
     /** fill line storage with averages and fluctuations */
     template <typename IndexSelector>
     void fill_line(
@@ -129,5 +128,3 @@ public: // public for GPU
 };
 
 #endif /* PlaneAveraging_H */
-
-

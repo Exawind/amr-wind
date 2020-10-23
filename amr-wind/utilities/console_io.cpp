@@ -8,7 +8,7 @@ const char* buildInfoGetBuildDate();
 const char* buildInfoGetComp();
 const char* buildInfoGetGitHash(int i);
 const char* buildInfoGetCompVersion();
-}
+} // namespace amrex
 
 namespace amr_wind {
 namespace io {
@@ -33,8 +33,9 @@ void print_banner(std::ostream& out)
 
     const char* git_hash = amrex::buildInfoGetGitHash(1);
     const char* amrex_hash = amrex::buildInfoGetGitHash(2);
-    const std::string amrex_git_str =
-        (strlen(amrex_hash) > 0) ? std::string(amrex_hash) : std::string("Unknown");
+    const std::string amrex_git_str = (strlen(amrex_hash) > 0)
+                                          ? std::string(amrex_hash)
+                                          : std::string("Unknown");
 
     // clang-format off
     out << dbl_line
@@ -68,7 +69,6 @@ void print_banner(std::ostream& out)
         << " See https://github.com/Exawind/amr-wind/blob/development/LICENSE for details. "
         << dash_line << std::endl;
     // clang-format on
-
 }
 
 void print_mlmg_header(const std::string& key)
@@ -76,10 +76,12 @@ void print_mlmg_header(const std::string& key)
     const int name_width = 26;
     amrex::Print() << "\n" << key << std::endl;
     amrex::Print() << "  " << std::setw(name_width) << std::left << "System"
-                   << std::setw(6) << std::right << "Iters"
-                   << std::setw(22) << std::right << "Initial residual"
-                   << std::setw(22) << std::right << "Final residual" << std::endl
-                   << "  ----------------------------------------------------------------------------"
+                   << std::setw(6) << std::right << "Iters" << std::setw(22)
+                   << std::right << "Initial residual" << std::setw(22)
+                   << std::right << "Final residual" << std::endl
+                   << "  "
+                      "--------------------------------------------------------"
+                      "--------------------"
                    << std::endl;
 }
 

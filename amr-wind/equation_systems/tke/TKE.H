@@ -41,11 +41,10 @@ struct TKE : ScalarTransport
 /** Implementation of Turbulence operator for TKE equation
  *  \ingroup tke_eqn
  */
-template<>
+template <>
 struct TurbulenceOp<TKE>
 {
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
-                 PDEFields& fields)
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
         : m_tmodel(tmodel), m_fields(fields)
     {}
 
@@ -65,7 +64,7 @@ struct TurbulenceOp<TKE>
 /** Implementation of post-processing actions for TKE equation
  *  \ingroup tke_eqn
  */
-template<>
+template <>
 struct PostSolveOp<TKE>
 {
     PostSolveOp(PDEFields& fields) : m_fields(fields) {}

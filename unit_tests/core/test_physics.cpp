@@ -62,4 +62,4 @@ TEST_F(PhysicsTest, physics_test_duplicates)
     EXPECT_EQ(&pex1, &pex2);
 }
 
-}
+} // namespace amr_wind_tests

@@ -23,10 +23,8 @@ int main(int argc, char* argv[])
         // Set the defaults so that we throw an exception instead of attempting
         // to generate backtrace files. However, if the user has explicitly set
         // these options in their input files respect those settings.
-        if (!pp.contains("throw_exception"))
-            pp.add("throw_exception", 1);
-        if (!pp.contains("signal_handling"))
-            pp.add("signal_handling", 0);
+        if (!pp.contains("throw_exception")) pp.add("throw_exception", 1);
+        if (!pp.contains("signal_handling")) pp.add("signal_handling", 0);
     });
 
     { /* These braces are necessary to ensure amrex::Finalize() can be called
@@ -34,22 +32,25 @@ int main(int argc, char* argv[])
 
         BL_PROFILE("amr-wind::main()");
 
-        // Issue an error if input file is not given 
-        if(argc < 2) amrex::Abort("Input file must be given as command-line argument.");
+        // Issue an error if input file is not given
+        if (argc < 2)
+            amrex::Abort("Input file must be given as command-line argument.");
 
         // Start timing the program
         amrex::Real start_time = amrex::ParallelDescriptor::second();
         amrex::Print() << "Initializing AMR-Wind ..." << std::endl;
 
-        // Default constructor. Note inheritance: incflo : AmrCore : AmrMesh. 
+        // Default constructor. Note inheritance: incflo : AmrCore : AmrMesh.
         incflo my_incflo;
 
         // Initialize data, parameters, arrays and derived internals
         my_incflo.InitData();
 
         // Time spent on initialization
-        amrex::Real init_time = amrex::ParallelDescriptor::second() - start_time;
-        amrex::Print() << "Initialization successful. Time elapsed = " << init_time << std::endl;
+        amrex::Real init_time =
+            amrex::ParallelDescriptor::second() - start_time;
+        amrex::Print() << "Initialization successful. Time elapsed = "
+                       << init_time << std::endl;
 
         // Evolve system to final time
         my_incflo.Evolve();
@@ -63,8 +64,10 @@ int main(int argc, char* argv[])
             end_time, amrex::ParallelDescriptor::IOProcessorNumber());
 
         // Print timing results
-        amrex::Print() << "Time spent in InitData():    " << init_time << std::endl;
-        amrex::Print() << "Time spent in Evolve():      " << end_time - init_time << std::endl;
+        amrex::Print() << "Time spent in InitData():    " << init_time
+                       << std::endl;
+        amrex::Print() << "Time spent in Evolve():      "
+                       << end_time - init_time << std::endl;
     }
     amrex::Finalize();
 #ifdef AMREX_USE_MPI

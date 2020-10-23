@@ -36,5 +36,4 @@ public:
 } // namespace pde
 } // namespace amr_wind
 
-
 #endif /* TEMPERATURESOURCE_H */

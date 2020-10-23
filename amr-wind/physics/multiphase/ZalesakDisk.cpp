@@ -34,8 +34,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        (*m_field_init)(
-            vbx, geom, velocity.array(mfi), levelset.array(mfi));
+        (*m_field_init)(vbx, geom, velocity.array(mfi), levelset.array(mfi));
     }
 }
 
@@ -53,7 +52,7 @@ void ZalesakDisk::post_advance_work()
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
-            const amrex::Real TT=m_TT;
+            const amrex::Real TT = m_TT;
             auto vel = m_velocity(lev).array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

@@ -31,7 +31,6 @@ protected:
     //! Turbulence constant
     amrex::Real m_Ce{0.1};
     amrex::Real m_Ceps{0.93};
-
 };
 
 /** 1-equation subgrid scale TKE turbulence model
@@ -66,7 +65,6 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 private:
-
     Field& m_temperature;
 
     //! Gravity vector (m/s^2)

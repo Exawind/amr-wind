@@ -11,13 +11,9 @@ namespace amr_wind_tests {
 class CaptureOutput
 {
 public:
-    CaptureOutput()
-    {
-        redirect_io();
-    }
+    CaptureOutput() { redirect_io(); }
 
-    CaptureOutput(bool stdout, bool stderr)
-        : m_stdout(stdout), m_stderr(stderr)
+    CaptureOutput(bool stdout, bool stderr) : m_stdout(stdout), m_stderr(stderr)
     {
         redirect_io();
     }

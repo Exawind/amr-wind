@@ -13,7 +13,6 @@ ZalesakDiskFieldInit::ZalesakDiskFieldInit()
     pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp_vortex_patch.query("radius", m_radius);
     pp_vortex_patch.query("period", m_TT);
-
 }
 
 void ZalesakDiskFieldInit::operator()(
@@ -31,8 +30,8 @@ void ZalesakDiskFieldInit::operator()(
     const amrex::Real zc = m_loc[2];
     const amrex::Real radius = m_radius;
     const amrex::Real TT = m_TT;
-    const amrex::Real width=m_width;
-    const amrex::Real depth=m_depth;
+    const amrex::Real width = m_width;
+    const amrex::Real depth = m_depth;
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];

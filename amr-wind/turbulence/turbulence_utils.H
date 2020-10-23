@@ -11,18 +11,16 @@
 namespace amr_wind {
 namespace turbulence {
 
-std::unique_ptr<TurbulenceModel> create_turbulence_model(
-    const std::string& name, CFDSim& sim)
+std::unique_ptr<TurbulenceModel>
+create_turbulence_model(const std::string& name, CFDSim& sim)
 {
     std::unique_ptr<TurbulenceModel> turb;
 
     if (name == "Laminar") {
         turb.reset(new Laminar<transport::ConstTransport>(sim));
-    }
-    else if (name == "Smagorinsky") {
+    } else if (name == "Smagorinsky") {
         turb.reset(new Smagorinsky<transport::ConstTransport>(sim));
-    }
-    else {
+    } else {
         amrex::Abort("Invalid turbulence model requested: " + name);
     }
 
@@ -30,7 +28,7 @@ std::unique_ptr<TurbulenceModel> create_turbulence_model(
     return turb;
 }
 
-}
+} // namespace turbulence
 } // namespace amr_wind
 
 #endif /* TURBULENCE_UTILS_H */

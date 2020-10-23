@@ -70,7 +70,8 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                        << std::endl;
     }
 
-    m_mo.alg_type = m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
+    m_mo.alg_type =
+        m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
     m_mo.gravity = utils::vec_mag(m_gravity.data());
 }
 
@@ -92,8 +93,8 @@ void ABLWallFunction::init_log_law_height()
     amrex::Real first_cell_height =
         geom[m_mesh.finestLevel()].ProbLo(2) + 0.5 * dz;
     m_z_sample_index =
-        dlo.z + static_cast<int>(
-                    std::floor((m_mo.zref - first_cell_height) / dz));
+        dlo.z +
+        static_cast<int>(std::floor((m_mo.zref - first_cell_height) / dz));
 
     // assuming Z is wall normal direction
     m_ncells_x = dhi.x - dlo.x + 1;
@@ -122,9 +123,9 @@ void ABLWallFunction::update_umean(
 
     if (!m_tempflux)
         m_mo.surf_temp = m_surf_temp_init +
-                      m_surf_temp_rate *
-                          (time.current_time() - m_surf_temp_rate_tstart) /
-                          3600.0;
+                         m_surf_temp_rate *
+                             (time.current_time() - m_surf_temp_rate_tstart) /
+                             3600.0;
 #if 1
     {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
@@ -167,8 +168,7 @@ void ABLWallFunction::computeplanar()
         amrex::Real zminBox = problo[2] + dz * (dlo.z);
         amrex::Real zmaxBox = problo[2] + dz * (dhi.z);
 
-        if ((m_mo.zref - zminBox) * (zmaxBox - m_mo.zref) <=
-            0.0) {
+        if ((m_mo.zref - zminBox) * (zmaxBox - m_mo.zref) <= 0.0) {
             continue;
         }
 
@@ -182,13 +182,13 @@ void ABLWallFunction::computeplanar()
         amrex::ParallelFor(
             z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 xy_arr(i, j, k, 0) = coeff_interp0 * vel(i, j, k, 0) +
-                                       coeff_interp1 * vel(i, j, k + 1, 0);
+                                     coeff_interp1 * vel(i, j, k + 1, 0);
                 xy_arr(i, j, k, 1) = coeff_interp0 * vel(i, j, k, 1) +
-                                       coeff_interp1 * vel(i, j, k + 1, 1);
+                                     coeff_interp1 * vel(i, j, k + 1, 1);
                 xy_arr(i, j, k, 2) = coeff_interp0 * vel(i, j, k, 2) +
-                                       coeff_interp1 * vel(i, j, k + 1, 2);
+                                     coeff_interp1 * vel(i, j, k + 1, 2);
                 xy_arr(i, j, k, 3) = coeff_interp0 * temp(i, j, k) +
-                                       coeff_interp1 * temp(i, j, k + 1);
+                                     coeff_interp1 * temp(i, j, k + 1);
             });
     }
 
@@ -197,7 +197,7 @@ void ABLWallFunction::computeplanar()
     amrex::ParallelDescriptor::ReduceRealSum(
         m_store_xy_vel_temp.dataPtr(), m_ncells_x * m_ncells_y * 4);
 
-    for (int i=0; i < AMREX_SPACEDIM; ++i) m_mo.vel_mean[i] = 0.0;
+    for (int i = 0; i < AMREX_SPACEDIM; ++i) m_mo.vel_mean[i] = 0.0;
 
     amrex::Real umean0 = 0.0;
     amrex::Real umean1 = 0.0;
@@ -205,15 +205,14 @@ void ABLWallFunction::computeplanar()
     amrex::Real mean_pot_temp = 0.0;
 
     amrex::Loop(
-        m_bx_z_sample,
-        [=, &umean0, &umean1, &mean_windspd, &mean_pot_temp](int i, int j, int k) noexcept {
+        m_bx_z_sample, [=, &umean0, &umean1, &mean_windspd,
+                        &mean_pot_temp](int i, int j, int k) noexcept {
             umean0 += xy_arr(i, j, k, 0);
             umean1 += xy_arr(i, j, k, 1);
             mean_windspd += std::sqrt(
                 xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
                 xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
             mean_pot_temp += xy_arr(i, j, k, 3);
-
         });
 
     m_mo.vel_mean[0] = umean0 / numCells;
@@ -245,21 +244,20 @@ void ABLWallFunction::computeusingheatflux()
                 xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
                 xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
 
-            xy_arr(i, j, k, 0) =
-                tau_xz *
-                ((xy_arr(i, j, k, 0) - umean0) * mean_windspd +
-                 inst_wind_speed * umean0) /
-                (mean_windspd * umean0);
+            xy_arr(i, j, k, 0) = tau_xz *
+                                 ((xy_arr(i, j, k, 0) - umean0) * mean_windspd +
+                                  inst_wind_speed * umean0) /
+                                 (mean_windspd * umean0);
 
-            xy_arr(i, j, k, 1) =
-                tau_yz *
-                ((xy_arr(i, j, k, 1) - umean1) * mean_windspd +
-                 inst_wind_speed * umean1) /
-                (mean_windspd * umean1);
+            xy_arr(i, j, k, 1) = tau_yz *
+                                 ((xy_arr(i, j, k, 1) - umean1) * mean_windspd +
+                                  inst_wind_speed * umean1) /
+                                 (mean_windspd * umean1);
 
             const amrex::Real num1 =
                 (xy_arr(i, j, k, 3) - mean_pot_temp) * mean_windspd;
-            const amrex::Real num2 = inst_wind_speed * (mean_pot_temp - ref_temp);
+            const amrex::Real num2 =
+                inst_wind_speed * (mean_pot_temp - ref_temp);
 
             xy_arr(i, j, k, 3) = tau_thetaz * (num1 + num2) / denom1;
         });
@@ -282,8 +280,9 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
 
-    AMREX_ALWAYS_ASSERT(((velocity.bc_type()[zlo] == BC::wall_model) &&
-                         (!repo.mesh().Geom(0).isPeriodic(idim))));
+    AMREX_ALWAYS_ASSERT(
+        ((velocity.bc_type()[zlo] == BC::wall_model) &&
+         (!repo.mesh().Geom(0).isPeriodic(idim))));
 
     const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
     const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
@@ -295,7 +294,7 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     const amrex::Real tau_xz = umeanx / wspd_mean;
     const amrex::Real tau_yz = umeany / wspd_mean;
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
         amrex::MFItInfo mfi_info{};
@@ -311,7 +310,7 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 #endif
         for (amrex::MFIter mfi(vel_lev, mfi_info); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.validbox();
-            auto varr  = vel_lev.array(mfi);
+            auto varr = vel_lev.array(mfi);
             auto vold_arr = vold_lev.array(mfi);
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
@@ -321,13 +320,14 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
             amrex::ParallelFor(
                 amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real mu = c0 * eta(i, j, k) + c1 * eta(i, j, k+1);
+                    const amrex::Real mu =
+                        c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
                     const amrex::Real uu = vold_arr(i, j, k, 0);
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
                     // Dirichlet BC
-                    varr(i, j, k-1, 2) = 0.0;
+                    varr(i, j, k - 1, 2) = 0.0;
 
                     // Shear stress BC
                     amrex::Real taux =
@@ -337,8 +337,8 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
                         tau_yz * ((vv - umeany) * wspd_mean + wspd * umeany) /
                         (wspd_mean * umeany);
 
-                    varr(i, j, k-1, 0) = taux * den(i, j, k) * utau2 / mu;
-                    varr(i, j, k-1, 1) = tauy * den(i, j, k) * utau2 / mu;
+                    varr(i, j, k - 1, 0) = taux * den(i, j, k) * utau2 / mu;
+                    varr(i, j, k - 1, 1) = tauy * den(i, j, k) * utau2 / mu;
                 });
         }
     }

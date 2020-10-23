@@ -44,8 +44,8 @@ void BoussinesqBuoyancy::operator()(
 {
     const amrex::Real T0 = m_ref_theta;
     const amrex::Real beta = m_beta;
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{{
-        m_gravity[0], m_gravity[1], m_gravity[2]}};
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> gravity{
+        {m_gravity[0], m_gravity[1], m_gravity[2]}};
 
     const auto& temp =
         m_temperature.state(field_impl::phi_state(fstate))(lev).const_array(

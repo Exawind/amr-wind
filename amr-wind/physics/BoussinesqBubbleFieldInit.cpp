@@ -9,10 +9,10 @@ namespace amr_wind {
 BoussinesqBubbleFieldInit::BoussinesqBubbleFieldInit()
 {
     amrex::ParmParse pp_boussinesq_bubble("BoussinesqBubble");
-    pp_boussinesq_bubble.queryarr("location", m_loc,0,AMREX_SPACEDIM);
-    pp_boussinesq_bubble.query("radius",m_tracer_radius);
-    pp_boussinesq_bubble.query("inner_value",m_tracer_inner);
-    pp_boussinesq_bubble.query("outer_value",m_tracer_outer);
+    pp_boussinesq_bubble.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp_boussinesq_bubble.query("radius", m_tracer_radius);
+    pp_boussinesq_bubble.query("inner_value", m_tracer_inner);
+    pp_boussinesq_bubble.query("outer_value", m_tracer_outer);
 
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.query("density", m_rho);
@@ -47,13 +47,13 @@ void BoussinesqBubbleFieldInit::operator()(
         velocity(i, j, k, 1) = 0.0;
         velocity(i, j, k, 2) = 0.0;
 
-        amrex::Real r = std::sqrt((x-xc)*(x-xc) + (y-yc)*(y-yc) + (z-zc)*(z-zc));
+        amrex::Real r = std::sqrt(
+            (x - xc) * (x - xc) + (y - yc) * (y - yc) + (z - zc) * (z - zc));
 
-        if(r < radius)
-            tracer(i,j,k,0) = ti;
+        if (r < radius)
+            tracer(i, j, k, 0) = ti;
         else
-            tracer(i,j,k,0) = to;
-
+            tracer(i, j, k, 0) = to;
     });
 }
 

@@ -49,7 +49,7 @@ protected:
     void process_output() override {}
 };
 
-}
+} // namespace
 
 class SamplingTest : public MeshTest
 {
@@ -103,7 +103,7 @@ TEST_F(SamplingTest, scontainer)
 
     const int npts = 64;
     const int dl = (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1);
-    for (int k=0; k < npts; ++k) {
+    for (int k = 0; k < npts; ++k) {
         PType p;
         const amrex::Real z = (k + 0.5) * dl;
 
@@ -120,7 +120,7 @@ TEST_F(SamplingTest, scontainer)
 
         // Initialize the runtime array stuff
         auto& soa = ptile.GetStructOfArrays();
-        for (int ii=0; ii < ncomp; ++ii) {
+        for (int ii = 0; ii < ncomp; ++ii) {
             soa.GetRealData(ii).push_back(0.0);
         }
     }
@@ -152,8 +152,9 @@ TEST_F(SamplingTest, sampling)
         amrex::ParmParse pp("sampling");
         pp.add("output_frequency", 1);
         pp.addarr("labels", amrex::Vector<std::string>{"line1"});
-        pp.addarr("fields", amrex::Vector<std::string>
-                  {"density", "pressure", "velocity"});
+        pp.addarr(
+            "fields",
+            amrex::Vector<std::string>{"density", "pressure", "velocity"});
     }
     {
         amrex::ParmParse pp("sampling/line1");
@@ -199,4 +200,4 @@ TEST_F(SamplingTest, plane_sampler)
 #endif
 }
 
-}
+} // namespace amr_wind_tests

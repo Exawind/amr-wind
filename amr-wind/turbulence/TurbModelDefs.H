@@ -7,12 +7,13 @@
 namespace amr_wind {
 
 #ifndef AMREX_USE_DPCPP
-#define INSTANTIATE_TURBULENCE_MODEL(Model) \
-    template struct ::amr_wind::turbulence::TurbulenceModel::Register<::amr_wind::turbulence::Model<transport::ConstTransport>>
+#define INSTANTIATE_TURBULENCE_MODEL(Model)                                    \
+    template struct ::amr_wind::turbulence::TurbulenceModel::Register<         \
+        ::amr_wind::turbulence::Model<transport::ConstTransport>>
 #else
-#define INSTANTIATE_TURBULENCE_MODEL(Model) \
+#define INSTANTIATE_TURBULENCE_MODEL(Model)                                    \
     template class ::amr_wind::turbulence::Model<transport::ConstTransport>
 #endif
-}
+} // namespace amr_wind
 
 #endif /* TURBMODELDEFS_H */

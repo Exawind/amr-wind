@@ -88,8 +88,7 @@ public:
     friend class IntField;
 
     FieldRepo(const amrex::AmrCore& mesh)
-        : m_mesh(mesh)
-        , m_leveldata(mesh.maxLevel() + 1)
+        : m_mesh(mesh), m_leveldata(mesh.maxLevel() + 1)
     {}
 
     FieldRepo(const FieldRepo&) = delete;
@@ -99,16 +98,19 @@ public:
     //! Perform field data management tasks when
     //! amrex::AmrCore::MakeNewLevelFromScratch is called
     void make_new_level_from_scratch(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
-    /** Allocate and initialize data on a finer level from the next coarser level
+    /** Allocate and initialize data on a finer level from the next coarser
+     * level
      *
      *  This is called by the AmrCore automatically during regrid process
      */
     void make_new_level_from_coarse(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
@@ -117,7 +119,8 @@ public:
      *  This is called by the AmrCore automatically during regrid process
      */
     void remake_level(
-        int lev, amrex::Real time,
+        int lev,
+        amrex::Real time,
         const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm);
 
@@ -235,16 +238,21 @@ public:
     /** Return a previously created field identified by name and time state
      */
     Field& get_field(
-        const std::string& name, const FieldState fstate = FieldState::New) const;
+        const std::string& name,
+        const FieldState fstate = FieldState::New) const;
 
     /** Return a previously created field using a unique identifier
      */
     Field& get_field(const int field_id) const
-    { return *m_field_vec.at(field_id); }
+    {
+        return *m_field_vec.at(field_id);
+    }
 
-    //! Query if field uniquely identified by name and time state exists in repository
+    //! Query if field uniquely identified by name and time state exists in
+    //! repository
     bool field_exists(
-        const std::string& name, const FieldState fstate = FieldState::New) const;
+        const std::string& name,
+        const FieldState fstate = FieldState::New) const;
 
     /** Declare an integer field
      *
@@ -261,16 +269,21 @@ public:
 
     //! Return a reference to an integer field
     IntField& get_int_field(
-        const std::string& name, const FieldState fstate = FieldState::New) const;
+        const std::string& name,
+        const FieldState fstate = FieldState::New) const;
 
-    /** Return a reference to a previously created integer field using unique identifier
+    /** Return a reference to a previously created integer field using unique
+     * identifier
      */
     IntField& get_int_field(const int field_id) const
-    { return *m_int_field_vec.at(field_id); }
+    {
+        return *m_int_field_vec.at(field_id);
+    }
 
     //! Query if an integer field exists
     bool int_field_exists(
-        const std::string& name, const FieldState fstate = FieldState::New) const;
+        const std::string& name,
+        const FieldState fstate = FieldState::New) const;
 
     /** Create a scratch field
      *
@@ -316,11 +329,17 @@ public:
     int num_fields() const noexcept { return m_field_vec.size(); }
 
     //! Return list of fields registered (for unit-test purposes only)
-    const amrex::Vector<std::unique_ptr<Field>>& fields() const { return m_field_vec; }
+    const amrex::Vector<std::unique_ptr<Field>>& fields() const
+    {
+        return m_field_vec;
+    }
 
     //! Return factory instance at a given level
-    inline const amrex::FabFactory<amrex::FArrayBox>&
-    factory(int lev) const noexcept { return *m_leveldata[lev]->m_factory; }
+    inline const amrex::FabFactory<amrex::FArrayBox>& factory(int lev) const
+        noexcept
+    {
+        return *m_leveldata[lev]->m_factory;
+    }
 
 protected:
     /** Return the amrex::MultiFab instance for a field at a given level
@@ -328,7 +347,8 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    inline amrex::MultiFab& get_multifab(const unsigned fid, const int lev) noexcept
+    inline amrex::MultiFab&
+    get_multifab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_mfabs[fid];
@@ -339,7 +359,8 @@ protected:
      *  \param fid Unique integer field identifier for this field
      *  \param lev AMR level
      */
-    inline amrex::iMultiFab& get_int_fab(const unsigned fid, const int lev) noexcept
+    inline amrex::iMultiFab&
+    get_int_fab(const unsigned fid, const int lev) noexcept
     {
         BL_ASSERT(lev <= m_mesh.finestLevel());
         return m_leveldata[lev]->m_int_fabs[fid];

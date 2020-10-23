@@ -50,8 +50,7 @@ struct FieldBCNoOp
         const int ncomp,
         const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
         : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
-    {
-    }
+    {}
 
     AMREX_GPU_DEVICE
     void operator()(
@@ -82,8 +81,7 @@ struct FieldBCDirichlet
         const int ncomp,
         const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
         : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
-    {
-    }
+    {}
 
     AMREX_GPU_DEVICE
     void operator()(

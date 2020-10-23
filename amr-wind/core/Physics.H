@@ -18,9 +18,8 @@ public:
     virtual std::string physics_name() const = 0;
 
     //! Initialize the fields for the physics/problem
-    virtual void initialize_fields(
-        int level,
-        const amrex::Geometry& geom) const = 0;
+    virtual void
+    initialize_fields(int level, const amrex::Geometry& geom) const = 0;
 
     //! Perform tasks necessary before advancing timestep
     virtual void pre_advance_work() = 0;
@@ -88,7 +87,7 @@ class PhysicsMgr : public CollMgr<PhysicsMgr, Physics>
 {
 public:
     //! Return a concrete physics instance
-    template<typename T>
+    template <typename T>
     T& get()
     {
         AMREX_ASSERT(contains(T::identifier()));
@@ -96,7 +95,7 @@ public:
     }
 
     //! Return a concrete physics instance
-    template<typename T>
+    template <typename T>
     const T& get() const
     {
         AMREX_ASSERT(contains(T::identifier()));
@@ -104,6 +103,6 @@ public:
     }
 };
 
-}
+} // namespace amr_wind
 
 #endif /* PHYSICS_H */
