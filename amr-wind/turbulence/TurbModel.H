@@ -11,18 +11,16 @@ namespace turbulence {
  *  \ingroup turb_model
  *
  *  This templated class allows turbulence model to be specialised based on \ref
- *  transport models. All turbulence model implementations inherit from this class.
+ *  transport models. All turbulence model implementations inherit from this
+ * class.
  */
-template<typename Transport>
+template <typename Transport>
 class TurbModel : public TurbulenceModel
 {
 public:
     using TransportType = Transport;
 
-    TurbModel(CFDSim& sim)
-        : m_sim(sim)
-        , m_transport(sim.repo())
-    {}
+    TurbModel(CFDSim& sim) : m_sim(sim), m_transport(sim.repo()) {}
 
     virtual void register_mueff_field(Field& mueff) override
     {
@@ -36,14 +34,19 @@ public:
 
     //! Return the dynamic viscosity field
     virtual std::unique_ptr<ScratchField> mu() override
-    { return m_transport.mu(); }
+    {
+        return m_transport.mu();
+    }
 
     //! Return the thermal diffusivity field
     virtual std::unique_ptr<ScratchField> alpha() override
-    { return m_transport.alpha(); }
+    {
+        return m_transport.alpha();
+    }
 
     //! Return the scalar diffusivity field
-    virtual std::unique_ptr<ScratchField> scalar_diffusivity(const std::string& name) override
+    virtual std::unique_ptr<ScratchField>
+    scalar_diffusivity(const std::string& name) override
     {
         return m_transport.scalar_diffusivity(name);
     }
@@ -73,7 +76,7 @@ protected:
     Field* m_alphaeff{nullptr};
 };
 
-}
-}
+} // namespace turbulence
+} // namespace amr_wind
 
 #endif /* TURBMODEL_H */

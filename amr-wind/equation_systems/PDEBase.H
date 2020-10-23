@@ -119,7 +119,8 @@ public:
     PDEBase& icns() { return *m_icns; }
     const PDEBase& icns() const { return *m_icns; }
 
-    //! Create the incompressible Navier-Stokes instance and return its reference
+    //! Create the incompressible Navier-Stokes instance and return its
+    //! reference
     PDEBase& register_icns();
 
     //! Register a new PDE instance and return its reference

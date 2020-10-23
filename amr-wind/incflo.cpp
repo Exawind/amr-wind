@@ -10,10 +10,7 @@
 
 using namespace amrex;
 
-incflo::incflo ()
-    : m_sim(*this)
-    , m_time(m_sim.time())
-    , m_repo(m_sim.repo())
+incflo::incflo() : m_sim(*this), m_time(m_sim.time()), m_repo(m_sim.repo())
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -28,8 +25,7 @@ incflo::incflo ()
     set_background_pressure();
 }
 
-incflo::~incflo ()
-{}
+incflo::~incflo() {}
 
 /** Initialize AMR mesh data structure.
  *
@@ -54,7 +50,7 @@ void incflo::init_mesh()
 
         // This is an AmrCore member function which recursively makes new levels
         // with MakeNewLevelFromScratch.
-        amrex::Print() << "Creating mesh... " ;
+        amrex::Print() << "Creating mesh... ";
         InitFromScratch(m_time.current_time());
         amrex::Print() << "done" << std::endl;
         if (ParallelDescriptor::IOProcessor()) {
@@ -92,11 +88,10 @@ void incflo::init_amr_wind_modules()
         mask_node.setVal(1);
     }
 
-    for (auto& pp: m_sim.physics())
-        pp->post_init_actions();
+    for (auto& pp : m_sim.physics()) pp->post_init_actions();
 
     icns().initialize();
-    for (auto& eqn: scalar_eqns()) eqn->initialize();
+    for (auto& eqn : scalar_eqns()) eqn->initialize();
 
     m_sim.post_manager().initialize();
 }
@@ -123,19 +118,18 @@ void incflo::prepare_for_time_integration()
     }
 
     // Plot initial distribution
-    if(m_time.write_plot_file())
-        m_sim.io_manager().write_plot_file();
-    if (m_time.write_checkpoint())
-        m_sim.io_manager().write_checkpoint_file();
+    if (m_time.write_plot_file()) m_sim.io_manager().write_plot_file();
+    if (m_time.write_checkpoint()) m_sim.io_manager().write_checkpoint_file();
 }
 
 /** Perform all initialization actions for AMR-Wind.
  *
- *  This is a wrapper method that calls the following methods to perform the actual work.
+ *  This is a wrapper method that calls the following methods to perform the
+ * actual work.
  *
  *  \callgraph
  */
-void incflo::InitData ()
+void incflo::InitData()
 {
     BL_PROFILE("amr-wind::incflo::InitData()");
 
@@ -153,7 +147,7 @@ bool incflo::regrid_and_update()
     BL_PROFILE("amr-wind::incflo::regrid_and_update");
 
     if (m_time.do_regrid()) {
-        amrex::Print() << "Regrid mesh ... " ;
+        amrex::Print() << "Regrid mesh ... ";
         amrex::Real rstart = amrex::ParallelDescriptor::second();
         regrid(0, m_time.current_time());
         amrex::Real rend = amrex::ParallelDescriptor::second() - rstart;
@@ -173,7 +167,7 @@ bool incflo::regrid_and_update()
         }
 
         icns().post_regrid_actions();
-        for (auto& eqn: scalar_eqns()) eqn->post_regrid_actions();
+        for (auto& eqn : scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
     }
 
@@ -187,8 +181,7 @@ bool incflo::regrid_and_update()
 void incflo::post_advance_work()
 {
     BL_PROFILE("amr-wind::incflo::post_advance_work");
-    for (auto& pp: m_sim.physics())
-        pp->post_advance_work();
+    for (auto& pp : m_sim.physics()) pp->post_advance_work();
 
     m_sim.post_manager().post_advance_work();
     if (m_verbose > 1) PrintMaxValues("end of timestep");
@@ -220,7 +213,7 @@ void incflo::Evolve()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
 
-    while(m_time.new_timestep()) {
+    while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
         regrid_and_update();
         pre_advance_stage1();
@@ -238,32 +231,34 @@ void incflo::Evolve()
                        << " Pre: " << std::setprecision(3) << (time1 - time0)
                        << " Solve: " << std::setprecision(4) << (time2 - time1)
                        << " Post: " << std::setprecision(3) << (time3 - time2)
-                       << " Total: " << std::setprecision(4) << (time3 - time0) << std::endl;
+                       << " Total: " << std::setprecision(4) << (time3 - time0)
+                       << std::endl;
     }
-    amrex::Print()
-        << "\n==============================================================================\n"
-        << std::endl;
+    amrex::Print() << "\n======================================================"
+                      "========================\n"
+                   << std::endl;
 
     // Output at final time
-    if( m_time.write_last_plot_file())
-        m_sim.io_manager().write_plot_file();
+    if (m_time.write_last_plot_file()) m_sim.io_manager().write_plot_file();
 
-    if( m_time.write_last_checkpoint())
+    if (m_time.write_last_checkpoint())
         m_sim.io_manager().write_checkpoint_file();
-
 }
 
-// Make a new level from scratch using provided BoxArray and DistributionMapping.
-// Only used during initialization.
-// overrides the pure virtual function in AmrCore
-void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_grids,
-                                      const DistributionMapping& new_dmap)
+// Make a new level from scratch using provided BoxArray and
+// DistributionMapping. Only used during initialization. overrides the pure
+// virtual function in AmrCore
+void incflo::MakeNewLevelFromScratch(
+    int lev,
+    Real time,
+    const BoxArray& new_grids,
+    const DistributionMapping& new_dmap)
 {
     BL_PROFILE("amr-wind::incflo::MakeNewLevelFromScratch()");
 
-    if (m_verbose > 0)
-    {
-        amrex::Print() << "Making new level " << lev << " from scratch" << std::endl;
+    if (m_verbose > 0) {
+        amrex::Print() << "Making new level " << lev << " from scratch"
+                       << std::endl;
         if (m_verbose > 2) {
             amrex::Print() << "with BoxArray " << new_grids << std::endl;
         }
@@ -274,7 +269,7 @@ void incflo::MakeNewLevelFromScratch (int lev, Real time, const BoxArray& new_gr
 
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
-    for (auto& pp: m_sim.physics()) {
+    for (auto& pp : m_sim.physics()) {
         pp->initialize_fields(lev, Geom(lev));
     }
 }

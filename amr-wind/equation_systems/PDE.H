@@ -23,7 +23,7 @@ namespace pde {
  *  \tparam PDE The PDE trait (e.g., ICNS, Temperature, etc.)
  *  \tparam Scheme Numerical scheme trait (e.g., Godunov, MOL)
  */
-template<typename PDE, typename Scheme>
+template <typename PDE, typename Scheme>
 class PDESystem : public PDEBase::Register<PDESystem<PDE, Scheme>>
 {
 public:
@@ -34,7 +34,7 @@ public:
     //! through the factor iterface
     static std::string identifier()
     {
-        return PDE::pde_name() + "-"  + Scheme::scheme_name();
+        return PDE::pde_name() + "-" + Scheme::scheme_name();
     }
 
     /**
@@ -60,8 +60,10 @@ public:
     {
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
-            m_turb_op.reset(new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
+            m_diff_op.reset(
+                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+            m_turb_op.reset(
+                new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
         m_src_op.init_source_terms(m_sim);
@@ -70,9 +72,11 @@ public:
     //! Perform update actions after a regrid is performed
     void post_regrid_actions() override
     {
-        if (PDE::has_diffusion){
-            BL_PROFILE("amr-wind::" + this->identifier() + "::post_regrid_actions");
-            m_diff_op.reset(new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+        if (PDE::has_diffusion) {
+            BL_PROFILE(
+                "amr-wind::" + this->identifier() + "::post_regrid_actions");
+            m_diff_op.reset(
+                new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         }
     }
 
@@ -86,9 +90,9 @@ public:
         m_src_op(fstate);
     }
 
-    void compute_mueff(const FieldState ) override
+    void compute_mueff(const FieldState) override
     {
-        if (PDE::has_diffusion){
+        if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::compute_mueff");
             (*m_turb_op)();
         }
@@ -96,8 +100,9 @@ public:
 
     void compute_diffusion_term(const FieldState fstate) override
     {
-        if (PDE::has_diffusion){
-            BL_PROFILE("amr-wind::" + this->identifier() + "::compute_diffusion_term");
+        if (PDE::has_diffusion) {
+            BL_PROFILE(
+                "amr-wind::" + this->identifier() + "::compute_diffusion_term");
             m_bc_op.apply_bcs(fstate);
             m_diff_op->compute_diff_term(fstate);
         }
@@ -105,35 +110,35 @@ public:
 
     void compute_advection_term(const FieldState fstate) override
     {
-        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_advection_term");
+        BL_PROFILE(
+            "amr-wind::" + this->identifier() + "::compute_advection_term");
         m_adv_op(fstate, m_time.deltaT(), m_sim.has_overset());
     }
 
     virtual void compute_predictor_rhs(const DiffusionType difftype) override
     {
-        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_predictor_rhs");
+        BL_PROFILE(
+            "amr-wind::" + this->identifier() + "::compute_predictor_rhs");
         m_rhs_op.predictor_rhs(difftype, m_time.deltaT());
     }
 
     virtual void compute_corrector_rhs(const DiffusionType difftype) override
     {
-        BL_PROFILE("amr-wind::" + this->identifier() + "::compute_corrector_rhs");
+        BL_PROFILE(
+            "amr-wind::" + this->identifier() + "::compute_corrector_rhs");
         m_rhs_op.corrector_rhs(difftype, m_time.deltaT());
     }
 
     void solve(const amrex::Real dt) override
     {
-        if (PDE::has_diffusion){
+        if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::linsys_solve");
             m_bc_op.apply_bcs(FieldState::New);
             m_diff_op->linsys_solve(dt);
         }
     }
 
-    void post_solve_actions() override
-    {
-        m_post_solve_op(m_time.new_time());
-    }
+    void post_solve_actions() override { m_post_solve_op(m_time.new_time()); }
 
 protected:
     //! CFD simulation controller instance

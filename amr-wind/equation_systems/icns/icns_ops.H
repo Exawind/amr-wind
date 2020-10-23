@@ -13,7 +13,8 @@
 namespace amr_wind {
 namespace pde {
 
-void advection_mac_project(FieldRepo& repo, FieldState fstate, const bool, const amrex::Real dt);
+void advection_mac_project(
+    FieldRepo& repo, FieldState fstate, const bool, const amrex::Real dt);
 
 /** Specialization of field registration for ICNS
  *  \ingroup icns
@@ -26,7 +27,7 @@ void advection_mac_project(FieldRepo& repo, FieldState fstate, const bool, const
  *  - `umac, vmac, wmac` - The face velocity fields used for flux computations
  *  - `grad_p` - Pressure gradient used for projection
  */
-template<typename Scheme>
+template <typename Scheme>
 struct FieldRegOp<ICNS, Scheme>
 {
     FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
@@ -34,7 +35,8 @@ struct FieldRegOp<ICNS, Scheme>
     PDEFields operator()(const SimTime& time, const int probtype)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<ICNS, Scheme>(time, repo, probtype);
+        auto fields =
+            create_fields_instance<ICNS, Scheme>(time, repo, probtype);
 
         auto& rho = repo.declare_cc_field(
             "density", 1, Scheme::nghost_state, Scheme::num_states);
@@ -43,15 +45,16 @@ struct FieldRegOp<ICNS, Scheme>
         repo.declare_face_normal_field(
             {"u_mac", "v_mac", "w_mac"}, 1, Scheme::nghost_mac, 1);
 
-        rho.template register_fill_patch_op<FieldFillPatchOps<FieldBCDirichlet>>(
-            repo.mesh(), time, probtype);
+        rho.template register_fill_patch_op<
+            FieldFillPatchOps<FieldBCDirichlet>>(repo.mesh(), time, probtype);
         grad_p.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
             repo.mesh(), time, probtype);
-        //pressure.template register_fill_patch_op<FieldFillConstScalar>(0.0);
+        // pressure.template register_fill_patch_op<FieldFillConstScalar>(0.0);
         // fixme this is only necessary since tioga does not fill in ghosts
         // convert back later
-        pressure.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo.mesh(), time, probtype);
+        pressure
+            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+                repo.mesh(), time, probtype);
         rho.fillpatch_on_regrid() = true;
         grad_p.fillpatch_on_regrid() = true;
 
@@ -73,12 +76,12 @@ struct FieldRegOp<ICNS, Scheme>
 /** Specialization of the source term operator for ICNS
  *  \ingroup icns
  */
-template<>
+template <>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
     SrcTermOp(PDEFields& fields_in)
-    : SrcTermOpBase<ICNS>(fields_in)
-    , grad_p(fields_in.repo.get_field("gp")) {}
+        : SrcTermOpBase<ICNS>(fields_in), grad_p(fields_in.repo.get_field("gp"))
+    {}
 
     void operator()(const FieldState fstate)
     {
@@ -86,7 +89,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
         auto& density = m_density.state(rhostate);
 
         const int nlevels = this->fields.repo.num_active_levels();
-        for (int lev=0; lev < nlevels; ++lev) {
+        for (int lev = 0; lev < nlevels; ++lev) {
             auto& src_term = this->fields.src_term(lev);
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -114,31 +117,33 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     }
 
     Field& grad_p;
-
 };
 
 /** Godunov scheme for ICNS
  *  \ingroup icns
  */
-template<>
+template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
     AdvectionOp(PDEFields& fields_in)
-    : fields(fields_in)
-    , u_mac(fields_in.repo.get_field("u_mac"))
-    , v_mac(fields_in.repo.get_field("v_mac"))
-    , w_mac(fields_in.repo.get_field("w_mac"))
+        : fields(fields_in)
+        , u_mac(fields_in.repo.get_field("u_mac"))
+        , v_mac(fields_in.repo.get_field("v_mac"))
+        , w_mac(fields_in.repo.get_field("w_mac"))
     {
 
         { // Prefix incflo
             amrex::ParmParse pp("incflo");
             pp.query("use_ppm", godunov_ppm);
             pp.query("use_limiter", use_limiter);
-            pp.query("godunov_use_forces_in_trans", godunov_use_forces_in_trans);
+            pp.query(
+                "godunov_use_forces_in_trans", godunov_use_forces_in_trans);
         }
 
         if (!use_limiter && !godunov_ppm)
-            amrex::Abort("Currently limiter option only available for Godunov PPM and not PLM");
+            amrex::Abort(
+                "Currently limiter option only available for Godunov PPM and "
+                "not PLM");
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(ICNS::ndim, 0);
@@ -171,67 +176,99 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 #endif
             {
                 amrex::FArrayBox scratch;
-                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi)
-                {
+                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
+                     mfi.isValid(); ++mfi) {
                     amrex::Box const& bx = mfi.tilebox();
-                    amrex::Box const& bxg1 = amrex::grow(bx,1);
+                    amrex::Box const& bxg1 = amrex::grow(bx, 1);
                     amrex::Box const& xbx = mfi.nodaltilebox(0);
                     amrex::Box const& ybx = mfi.nodaltilebox(1);
                     amrex::Box const& zbx = mfi.nodaltilebox(2);
 
-                    amrex::Array4<amrex::Real> const& a_umac = u_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& a_vmac = v_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real> const& a_wmac = w_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real const> const& a_vel = dof_field(lev).const_array(mfi);
-                    amrex::Array4<amrex::Real const> const& a_f = src_term(lev).const_array(mfi);
+                    amrex::Array4<amrex::Real> const& a_umac =
+                        u_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_vmac =
+                        v_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real> const& a_wmac =
+                        w_mac(lev).array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_vel =
+                        dof_field(lev).const_array(mfi);
+                    amrex::Array4<amrex::Real const> const& a_f =
+                        src_term(lev).const_array(mfi);
 
-                    scratch.resize(bxg1, ICNS::ndim*12+3);
-    //                Elixir eli = scratch.elixir(); // not needed because of streamSynchronize later
+                    scratch.resize(bxg1, ICNS::ndim * 12 + 3);
+                    //                Elixir eli = scratch.elixir(); // not
+                    //                needed because of streamSynchronize later
                     amrex::Real* p = scratch.dataPtr();
 
-                    amrex::Array4<amrex::Real> Imx = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Imx.size();
-                    amrex::Array4<amrex::Real> Ipx = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Ipx.size();
-                    amrex::Array4<amrex::Real> Imy = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Imy.size();
-                    amrex::Array4<amrex::Real> Ipy = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Ipy.size();
-                    amrex::Array4<amrex::Real> Imz = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Imz.size();
-                    amrex::Array4<amrex::Real> Ipz = makeArray4(p,bxg1,ICNS::ndim);
-                    p +=         Ipz.size();
-                    amrex::Array4<amrex::Real> u_ad = makeArray4(p,amrex::Box(bx).grow(1,1).grow(2,1).surroundingNodes(0),1);
-                    p +=         u_ad.size();
-                    amrex::Array4<amrex::Real> v_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(2,1).surroundingNodes(1),1);
-                    p +=         v_ad.size();
-                    amrex::Array4<amrex::Real> w_ad = makeArray4(p,amrex::Box(bx).grow(0,1).grow(1,1).surroundingNodes(2),1);
-                    p +=         w_ad.size();
+                    amrex::Array4<amrex::Real> Imx =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Imx.size();
+                    amrex::Array4<amrex::Real> Ipx =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Ipx.size();
+                    amrex::Array4<amrex::Real> Imy =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Imy.size();
+                    amrex::Array4<amrex::Real> Ipy =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Ipy.size();
+                    amrex::Array4<amrex::Real> Imz =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Imz.size();
+                    amrex::Array4<amrex::Real> Ipz =
+                        makeArray4(p, bxg1, ICNS::ndim);
+                    p += Ipz.size();
+                    amrex::Array4<amrex::Real> u_ad = makeArray4(
+                        p,
+                        amrex::Box(bx).grow(1, 1).grow(2, 1).surroundingNodes(
+                            0),
+                        1);
+                    p += u_ad.size();
+                    amrex::Array4<amrex::Real> v_ad = makeArray4(
+                        p,
+                        amrex::Box(bx).grow(0, 1).grow(2, 1).surroundingNodes(
+                            1),
+                        1);
+                    p += v_ad.size();
+                    amrex::Array4<amrex::Real> w_ad = makeArray4(
+                        p,
+                        amrex::Box(bx).grow(0, 1).grow(1, 1).surroundingNodes(
+                            2),
+                        1);
+                    p += w_ad.size();
 
-                    if (godunov_ppm){
-                        godunov::predict_ppm (lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_vel,
-                                              geom, dt, bcrec_device, use_limiter);
+                    if (godunov_ppm) {
+                        godunov::predict_ppm(
+                            lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
+                            a_vel, a_vel, geom, dt, bcrec_device, use_limiter);
                     } else {
-                        godunov::predict_plm_x (lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel,
-                                     geom, dt, dof_field.bcrec(), bcrec_device);
+                        godunov::predict_plm_x(
+                            lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel, geom,
+                            dt, dof_field.bcrec(), bcrec_device);
 
-                        godunov::predict_plm_y (lev, bx, ICNS::ndim, Imy, Ipy, a_vel, a_vel,
-                                     geom, dt, dof_field.bcrec(), bcrec_device);
+                        godunov::predict_plm_y(
+                            lev, bx, ICNS::ndim, Imy, Ipy, a_vel, a_vel, geom,
+                            dt, dof_field.bcrec(), bcrec_device);
 
-                        godunov::predict_plm_z (lev, bx, ICNS::ndim, Imz, Ipz, a_vel, a_vel,
-                                     geom, dt, dof_field.bcrec(), bcrec_device);
+                        godunov::predict_plm_z(
+                            lev, bx, ICNS::ndim, Imz, Ipz, a_vel, a_vel, geom,
+                            dt, dof_field.bcrec(), bcrec_device);
                     }
 
-                    godunov::make_trans_velocities(lev, amrex::Box(u_ad), amrex::Box(v_ad), amrex::Box(w_ad),
-                                                   u_ad, v_ad, w_ad,
-                                                   Imx, Ipx, Imy, Ipy, Imz, Ipz, a_vel, a_f,
-                                                   geom, dt, bcrec_device, godunov_use_forces_in_trans);
+                    godunov::make_trans_velocities(
+                        lev, amrex::Box(u_ad), amrex::Box(v_ad),
+                        amrex::Box(w_ad), u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy,
+                        Imz, Ipz, a_vel, a_f, geom, dt, bcrec_device,
+                        godunov_use_forces_in_trans);
 
-                    godunov::predict_godunov(lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac, a_wmac,
-                                             a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy, Imz, Ipz, a_f, p,
-                                             geom, dt, bcrec_device, godunov_use_forces_in_trans);
+                    godunov::predict_godunov(
+                        lev, bx, ICNS::ndim, xbx, ybx, zbx, a_umac, a_vmac,
+                        a_wmac, a_vel, u_ad, v_ad, w_ad, Imx, Ipx, Imy, Ipy,
+                        Imz, Ipz, a_f, p, geom, dt, bcrec_device,
+                        godunov_use_forces_in_trans);
 
-                    amrex::Gpu::streamSynchronize();  // otherwise we might be using too much memory
+                    amrex::Gpu::streamSynchronize(); // otherwise we might be
+                                                     // using too much memory
                 }
             }
         }
@@ -257,8 +294,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
-                amrex::FArrayBox tmpfab(
-                    amrex::grow(bx, 1), ICNS::ndim * 14);
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), ICNS::ndim * 14);
 
                 godunov::compute_advection(
                     lev, bx, ICNS::ndim, conv_term(lev).array(mfi),
@@ -266,9 +302,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
                     dof_field.bcrec_device().data(), iconserv.data(),
-                    tmpfab.dataPtr(), geom, dt,
-                    godunov_ppm,
-                    use_limiter);
+                    tmpfab.dataPtr(), geom, dt, godunov_ppm, use_limiter);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -289,17 +323,18 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 /** MOL scheme for ICNS
  *  \ingroup icns
  */
-template<>
+template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
     AdvectionOp(PDEFields& fields_in)
-    : fields(fields_in)
-    , u_mac(fields_in.repo.get_field("u_mac"))
-    , v_mac(fields_in.repo.get_field("v_mac"))
-    , w_mac(fields_in.repo.get_field("w_mac"))
+        : fields(fields_in)
+        , u_mac(fields_in.repo.get_field("u_mac"))
+        , v_mac(fields_in.repo.get_field("v_mac"))
+        , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real dt, const bool has_overset)
+    void operator()(
+        const FieldState fstate, const amrex::Real dt, const bool has_overset)
     {
 
         auto& repo = fields.repo;
@@ -316,24 +351,20 @@ struct AdvectionOp<ICNS, fvm::MOL>
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
             {
-                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU()); mfi.isValid(); ++mfi)
-                {
+                for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
+                     mfi.isValid(); ++mfi) {
                     amrex::Box const& ubx = mfi.nodaltilebox(0);
                     amrex::Box const& vbx = mfi.nodaltilebox(1);
                     amrex::Box const& wbx = mfi.nodaltilebox(2);
                     amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
                     amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
                     amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
-                    amrex::Array4<amrex::Real const> const& vcc = dof_field(lev).const_array(mfi);
+                    amrex::Array4<amrex::Real const> const& vcc =
+                        dof_field(lev).const_array(mfi);
 
-                    mol::predict_vels_on_faces(lev,
-                                               ubx, vbx, wbx,
-                                               u, v, w,
-                                               vcc,
-                                               dof_field.bcrec(),
-                                               dof_field.bcrec_device().data(),
-                                               repo.mesh().Geom());
-                    
+                    mol::predict_vels_on_faces(
+                        lev, ubx, vbx, wbx, u, v, w, vcc, dof_field.bcrec(),
+                        dof_field.bcrec_device().data(), repo.mesh().Geom());
                 }
             }
         }
@@ -392,24 +423,20 @@ struct AdvectionOp<ICNS, fvm::MOL>
 /** Effective turbulent viscosity computation for ICNS
  *  \ingroup icns
  */
-template<>
+template <>
 struct TurbulenceOp<ICNS>
 {
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
-                 PDEFields& fields)
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
         : m_tmodel(tmodel), m_fields(fields)
     {}
 
-    void operator()()
-    {
-        m_tmodel.update_mueff(m_fields.mueff);
-    }
+    void operator()() { m_tmodel.update_mueff(m_fields.mueff); }
 
     turbulence::TurbulenceModel& m_tmodel;
     PDEFields& m_fields;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* ICNS_OPS_H */

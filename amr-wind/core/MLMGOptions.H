@@ -11,7 +11,7 @@ namespace amrex {
 class MLMG;
 class NodalProjector;
 class MacProjector;
-}
+} // namespace amrex
 
 namespace amr_wind {
 

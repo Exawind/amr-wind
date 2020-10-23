@@ -39,19 +39,22 @@ bool SimTime::new_timestep()
 
     if (m_is_init && (m_verbose >= 0)) {
         amrex::Print() << "\nBegin simulation: " << std::endl;
-        if ((m_stop_time > 0) && (m_stop_time >=0))
+        if ((m_stop_time > 0) && (m_stop_time >= 0))
             amrex::Print() << "  Run until " << m_stop_time << " sec. or "
                            << m_stop_time_index << " timesteps" << std::endl;
         else if (m_stop_time > 0)
-            amrex::Print() << "  Run till " << m_stop_time << " seconds " << std::endl;
-        else if (m_stop_time_index >= 0)
-            amrex::Print() << "  Run for " << m_stop_time_index << " timesteps" << std::endl;
-        if (m_adaptive)
-            amrex::Print() << "  Adaptive timestepping with max. CFL = " << m_max_cfl
+            amrex::Print() << "  Run till " << m_stop_time << " seconds "
                            << std::endl;
+        else if (m_stop_time_index >= 0)
+            amrex::Print() << "  Run for " << m_stop_time_index << " timesteps"
+                           << std::endl;
+        if (m_adaptive)
+            amrex::Print() << "  Adaptive timestepping with max. CFL = "
+                           << m_max_cfl << std::endl;
         else
             amrex::Print() << "  Fixed timestepping with dt = " << m_fixed_dt
-                           << "; max. CFL from inputs = " << m_max_cfl << std::endl;
+                           << "; max. CFL from inputs = " << m_max_cfl
+                           << std::endl;
     }
 
     // Toggle initialization state and enter evolution phase
@@ -101,7 +104,7 @@ void SimTime::set_current_cfl(
     if (m_adaptive) {
         m_dt[0] = dt_new;
 
-        if(m_is_init && m_initial_dt > 0.0) m_dt[0] = m_initial_dt;
+        if (m_is_init && m_initial_dt > 0.0) m_dt[0] = m_initial_dt;
 
         if (!m_is_init) m_new_time = m_cur_time + m_dt[0];
 
@@ -120,19 +123,18 @@ void SimTime::set_current_cfl(
     m_current_cfl = 0.5 * cfl_unit_time * m_dt[0];
     if (m_verbose >= 0) {
         if (!m_is_init)
-            amrex::Print() << "Step: " << m_time_index
-                           << " dt: " << m_dt[0]
+            amrex::Print() << "Step: " << m_time_index << " dt: " << m_dt[0]
                            << " Time: " << std::setprecision(6) << m_cur_time
-                           << " to " << m_new_time
-                           << std::endl;
+                           << " to " << m_new_time << std::endl;
         else
-            amrex::Print() << "dt: " << std::setprecision(6) << m_dt[0] << std::endl;
-        amrex::Print() << "CFL: "
-                       << std::setprecision(6) << m_current_cfl
-                       << " (conv: " << std::setprecision(6) << conv_cfl * m_dt[0]
-                       << " diff: " << std::setprecision(6) << diff_cfl * m_dt[0]
-                       << " src: "  << std::setprecision(6) << std::sqrt(src_cfl) * m_dt[0]
-                       << " )" << std::endl;
+            amrex::Print() << "dt: " << std::setprecision(6) << m_dt[0]
+                           << std::endl;
+        amrex::Print() << "CFL: " << std::setprecision(6) << m_current_cfl
+                       << " (conv: " << std::setprecision(6)
+                       << conv_cfl * m_dt[0]
+                       << " diff: " << std::setprecision(6)
+                       << diff_cfl * m_dt[0] << " src: " << std::setprecision(6)
+                       << std::sqrt(src_cfl) * m_dt[0] << " )" << std::endl;
     }
     if (issue_cfl_warning && !m_is_init)
         amrex::Print() << "WARNING: fixed_dt does not satisfy CFL condition.\n"

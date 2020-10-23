@@ -27,12 +27,10 @@ public:
         const amrex::MFIter& mfi,
         const amrex::Box& bx,
         const FieldState fstate,
-        const amrex::Array4<amrex::Real>& src_term
-    ) const = 0;
+        const amrex::Array4<amrex::Real>& src_term) const = 0;
 };
 
-}
-}
-
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* SOURCETERM_H */

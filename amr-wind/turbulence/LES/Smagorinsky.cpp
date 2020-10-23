@@ -10,7 +10,7 @@
 namespace amr_wind {
 namespace turbulence {
 
-template<typename Transport>
+template <typename Transport>
 Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
     : TurbModelBase<Transport>(sim)
     , m_vel(sim.repo().get_field("velocity"))
@@ -24,7 +24,8 @@ Smagorinsky<Transport>::Smagorinsky(CFDSim& sim)
 template <typename Transport>
 void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
 {
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
+    BL_PROFILE(
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
     auto& repo = mu_turb.repo();
@@ -35,10 +36,10 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     // Populate strainrate into the turbulent viscosity arrays to avoid creating
     // a temporary buffer
-    fvm::strainrate(mu_turb,vel);
+    fvm::strainrate(mu_turb, vel);
 
     const int nlevels = repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];
 
         const amrex::Real dx = geom.CellSize()[0];
@@ -64,12 +65,10 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
     mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
-template<typename Transport>
+template <typename Transport>
 TurbulenceModel::CoeffsDictType Smagorinsky<Transport>::model_coeffs() const
 {
-    return TurbulenceModel::CoeffsDictType{
-        {"Cs", this->m_Cs}
-    };
+    return TurbulenceModel::CoeffsDictType{{"Cs", this->m_Cs}};
 }
 
 } // namespace turbulence

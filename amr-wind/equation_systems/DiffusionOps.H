@@ -21,7 +21,8 @@ namespace pde {
  *  This class provides the common operations for an implicit solution of a
  *  convection-diffusion equation within AMR-Wind.
  *
- *  \tparam LinOp The linear operator (see [AMREeX docs](https://amrex-codes.github.io/amrex/docs_html/LinearSolvers.html))
+ *  \tparam LinOp The linear operator (see [AMREeX
+ * docs](https://amrex-codes.github.io/amrex/docs_html/LinearSolvers.html))
  */
 template <typename LinOp>
 class DiffSolverIface
@@ -84,13 +85,12 @@ protected:
 
     PDEFields& m_pdefields;
     Field& m_density;
-    
+
     MLMGOptions m_options;
 
     std::unique_ptr<LinOp> m_solver;
     std::unique_ptr<LinOp> m_applier;
 };
-
 
 /** Diffusion operator for scalar transport equations
  *  \ingroup pdeop
@@ -102,19 +102,25 @@ struct DiffusionOp<
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
     : public DiffSolverIface<typename PDE::MLDiffOp>
 {
-    static_assert(PDE::ndim == 1, "DiffusionOp invoked for non-scalar PDE type");
-    static_assert(std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
-                  "Invalid linear operator for scalar diffusion operator");
+    static_assert(
+        PDE::ndim == 1, "DiffusionOp invoked for non-scalar PDE type");
+    static_assert(
+        std::is_same<typename PDE::MLDiffOp, amrex::MLABecLaplacian>::value,
+        "Invalid linear operator for scalar diffusion operator");
 
     DiffusionOp(PDEFields& fields, const bool has_overset)
         : DiffSolverIface<typename PDE::MLDiffOp>(fields, has_overset)
     {
         this->m_solver->setDomainBC(
-            diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::low),
-            diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::high));
+            diffusion::get_diffuse_scalar_bc(
+                this->m_pdefields.field, amrex::Orientation::low),
+            diffusion::get_diffuse_scalar_bc(
+                this->m_pdefields.field, amrex::Orientation::high));
         this->m_applier->setDomainBC(
-            diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::low),
-            diffusion::get_diffuse_scalar_bc(this->m_pdefields.field, amrex::Orientation::high));
+            diffusion::get_diffuse_scalar_bc(
+                this->m_pdefields.field, amrex::Orientation::low),
+            diffusion::get_diffuse_scalar_bc(
+                this->m_pdefields.field, amrex::Orientation::high));
     }
 
     //! Computes the diffusion term that goes in the RHS
@@ -123,10 +129,12 @@ struct DiffusionOp<
         this->setup_operator(*this->m_applier, 0.0, -1.0, fstate);
 
         auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
-            ? FieldState::New : fstate;
+                             ? FieldState::New
+                             : fstate;
         amrex::MLMG mlmg(*this->m_applier);
-        mlmg.apply(this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),
-                   this->m_pdefields.field.vec_ptrs());
+        mlmg.apply(
+            this->m_pdefields.diff_term.state(tau_state).vec_ptrs(),
+            this->m_pdefields.field.vec_ptrs());
     }
 };
 

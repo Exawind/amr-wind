@@ -4,7 +4,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldBCOps.H"
-#include "amr-wind/wind_energy/MOData.h"
+#include "amr-wind/wind_energy/MOData.H"
 
 namespace amr_wind {
 
@@ -33,7 +33,8 @@ public:
     void init_log_law_height();
 
     //! Update the mean velocity at a given timestep
-    void update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
+    void
+    update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
     void computeplanar();
 
@@ -42,7 +43,6 @@ public:
     const amrex::FArrayBox& instplanar() const { return m_store_xy_vel_temp; }
 
 private:
-
     const CFDSim& m_sim;
 
     const amrex::AmrCore& m_mesh;

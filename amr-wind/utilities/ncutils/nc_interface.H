@@ -103,7 +103,8 @@ struct NCVar
 
     bool has_attr(const std::string& name) const;
     void put_attr(const std::string& name, const std::string& value) const;
-    void put_attr(const std::string& name, const std::vector<double>& value) const;
+    void
+    put_attr(const std::string& name, const std::vector<double>& value) const;
     void put_attr(const std::string& name, const std::vector<int>& value) const;
 
     std::string get_attr(const std::string& name) const;
@@ -198,7 +199,8 @@ public:
     }
 
     void put_attr(const std::string& name, const std::string& value) const;
-    void put_attr(const std::string& name, const std::vector<double>& value) const;
+    void
+    put_attr(const std::string& name, const std::vector<double>& value) const;
     void put_attr(const std::string& name, const std::vector<int>& value) const;
 
     std::string get_attr(const std::string& name) const;

@@ -38,7 +38,8 @@ struct IIx
  *
  *   - a universal identifier (UID) that is unique to each particle,
  *   - a set identifier that represents a group (e.g., line, plane) of particles
- *   - a node identifier that represents indexing of this particle within the group
+ *   - a node identifier that represents indexing of this particle within the
+ * group
  *
  *  The quantities of interest are themselves stored as runtime components based
  *  on user-defined inputs.
@@ -73,13 +74,13 @@ public:
 
     /** Define the container and allocate memory for runtime components
      */
-    void setup_container(const int num_real_components,
-                         const int num_int_components = 0);
+    void setup_container(
+        const int num_real_components, const int num_int_components = 0);
 
     /** Create particle information for all the sampling locations
      */
-    void initialize_particles(
-        const amrex::Vector<std::unique_ptr<SamplerBase>>&);
+    void
+    initialize_particles(const amrex::Vector<std::unique_ptr<SamplerBase>>&);
 
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);

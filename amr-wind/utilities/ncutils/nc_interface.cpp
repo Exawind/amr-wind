@@ -168,22 +168,22 @@ bool NCVar::has_attr(const std::string& name) const
 
 void NCVar::put_attr(const std::string& name, const std::string& value) const
 {
-    check_nc_error(nc_put_att_text(
-        ncid, varid, name.data(), value.size(), value.data()));
+    check_nc_error(
+        nc_put_att_text(ncid, varid, name.data(), value.size(), value.data()));
 }
 
-void NCVar::put_attr(const std::string& name, const std::vector<double>& value) const
+void NCVar::put_attr(
+    const std::string& name, const std::vector<double>& value) const
 {
-    check_nc_error(
-        nc_put_att_double(ncid, varid, name.data(),
-                          NC_DOUBLE, value.size(), value.data()));
+    check_nc_error(nc_put_att_double(
+        ncid, varid, name.data(), NC_DOUBLE, value.size(), value.data()));
 }
 
-void NCVar::put_attr(const std::string& name, const std::vector<int>& value) const
+void NCVar::put_attr(
+    const std::string& name, const std::vector<int>& value) const
 {
-    check_nc_error(
-        nc_put_att_int(ncid, varid, name.data(),
-                          NC_INT, value.size(), value.data()));
+    check_nc_error(nc_put_att_int(
+        ncid, varid, name.data(), NC_INT, value.size(), value.data()));
 }
 
 std::string NCVar::get_attr(const std::string& name) const
@@ -214,7 +214,7 @@ void NCVar::get_attr(const std::string& name, std::vector<int>& values) const
 
 void NCVar::par_access(const int cmode) const
 {
-  check_nc_error(nc_var_par_access(ncid, varid, cmode));
+    check_nc_error(nc_var_par_access(ncid, varid, cmode));
 }
 
 std::string NCGroup::name() const
@@ -222,7 +222,7 @@ std::string NCGroup::name() const
     size_t nlen;
     std::vector<char> grpname;
     check_nc_error(nc_inq_grpname_len(ncid, &nlen));
-    grpname.resize(nlen+1);
+    grpname.resize(nlen + 1);
     check_nc_error(nc_inq_grpname(ncid, grpname.data()));
     return std::string{grpname.begin(), grpname.end()};
 }
@@ -354,18 +354,18 @@ void NCGroup::put_attr(const std::string& name, const std::string& value) const
         ncid, NC_GLOBAL, name.data(), value.size(), value.data()));
 }
 
-void NCGroup::put_attr(const std::string& name, const std::vector<double>& value) const
+void NCGroup::put_attr(
+    const std::string& name, const std::vector<double>& value) const
 {
-    check_nc_error(
-        nc_put_att_double(ncid, NC_GLOBAL, name.data(),
-                          NC_DOUBLE, value.size(), value.data()));
+    check_nc_error(nc_put_att_double(
+        ncid, NC_GLOBAL, name.data(), NC_DOUBLE, value.size(), value.data()));
 }
 
-void NCGroup::put_attr(const std::string& name, const std::vector<int>& value) const
+void NCGroup::put_attr(
+    const std::string& name, const std::vector<int>& value) const
 {
-    check_nc_error(
-        nc_put_att_int(ncid, NC_GLOBAL, name.data(),
-                          NC_INT, value.size(), value.data()));
+    check_nc_error(nc_put_att_int(
+        ncid, NC_GLOBAL, name.data(), NC_INT, value.size(), value.data()));
 }
 
 std::string NCGroup::get_attr(const std::string& name) const
@@ -378,12 +378,14 @@ std::string NCGroup::get_attr(const std::string& name) const
     return std::string{aval.begin(), aval.end()};
 }
 
-void NCGroup::get_attr(const std::string& name, std::vector<double>& values) const
+void NCGroup::get_attr(
+    const std::string& name, std::vector<double>& values) const
 {
     size_t lenp;
     check_nc_error(nc_inq_attlen(ncid, NC_GLOBAL, name.data(), &lenp));
     values.resize(lenp);
-    check_nc_error(nc_get_att_double(ncid, NC_GLOBAL, name.data(), values.data()));
+    check_nc_error(
+        nc_get_att_double(ncid, NC_GLOBAL, name.data(), values.data()));
 }
 
 void NCGroup::get_attr(const std::string& name, std::vector<int>& values) const
@@ -458,16 +460,16 @@ NCFile NCFile::open(const std::string& name, const int cmode)
     return NCFile(ncid);
 }
 
-NCFile NCFile::create_par(const std::string& name, const int cmode,
-                          MPI_Comm comm, MPI_Info info)
+NCFile NCFile::create_par(
+    const std::string& name, const int cmode, MPI_Comm comm, MPI_Info info)
 {
     int ncid;
     check_nc_error(nc_create_par(name.data(), cmode, comm, info, &ncid));
     return NCFile(ncid);
 }
 
-NCFile NCFile::open_par(const std::string& name, const int cmode,
-                          MPI_Comm comm, MPI_Info info)
+NCFile NCFile::open_par(
+    const std::string& name, const int cmode, MPI_Comm comm, MPI_Info info)
 {
     int ncid;
     check_nc_error(nc_open_par(name.data(), cmode, comm, info, &ncid));

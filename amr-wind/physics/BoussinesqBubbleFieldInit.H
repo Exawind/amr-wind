@@ -15,7 +15,8 @@ namespace amr_wind {
  */
 class BoussinesqBubbleFieldInit
 {
-    static_assert(AMREX_SPACEDIM == 3, "BoussinesqBubble requires 3 dimensional mesh");
+    static_assert(
+        AMREX_SPACEDIM == 3, "BoussinesqBubble requires 3 dimensional mesh");
 
 public:
     BoussinesqBubbleFieldInit();
@@ -42,7 +43,6 @@ private:
 
     //! tracer bubble radius value
     amrex::Real m_tracer_radius{0.1};
-
 };
 
 } // namespace amr_wind

@@ -8,19 +8,17 @@ namespace {
 amrex::Vector<std::string> bcnames = {"xlo", "ylo", "zlo", "xhi", "yhi", "zhi"};
 }
 
-BCIface::BCIface(Field& field)
-    : m_field(field)
-{}
+BCIface::BCIface(Field& field) : m_field(field) {}
 
-inline void BCIface::set_bcrec_lo(
-    int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+inline void
+BCIface::set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
 {
     auto& fbcrec = m_field.bcrec();
     for (int i = 0; i < m_field.num_comp(); ++i) fbcrec[i].setLo(dir, bcrec);
 }
 
-inline void BCIface::set_bcrec_hi(
-    int dir, amrex::BCType::mathematicalBndryTypes bcrec)
+inline void
+BCIface::set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec)
 {
     auto& fbcrec = m_field.bcrec();
     for (int i = 0; i < m_field.num_comp(); ++i) fbcrec[i].setHi(dir, bcrec);
@@ -95,7 +93,7 @@ void BCIface::read_bctype()
             ibctype[ori] = BC::undefined;
         }
 
-        if (ibctype[ori] == BC::undefined)  {
+        if (ibctype[ori] == BC::undefined) {
             amrex::Abort(
                 "Invalid BC specification for non-periodic boundary = " +
                 bcstr);
@@ -110,7 +108,7 @@ void BCIface::set_bcfuncs()
         auto ori = oit();
         const auto bct = ibctype[ori];
 
-        switch(bct) {
+        switch (bct) {
         case BC::fixed_gradient:
             m_field.register_custom_bc<FixedGradientBC>(ori);
             break;
@@ -255,7 +253,7 @@ void BCScalar::set_bcrec()
         default:
             amrex::Abort("Invalid incflo BC type encountered");
         }
-   }
+    }
 }
 
 void BCScalar::read_values()

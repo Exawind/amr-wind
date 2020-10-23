@@ -27,7 +27,8 @@ public:
     virtual void initialize(const amrex::AmrCore&) override;
 
     virtual void
-    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) override;
+    operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+        override;
 
     //! Helper function to process inputs
     //!
@@ -35,7 +36,10 @@ public:
     void read_inputs(const amrex::AmrCore&, std::istream&);
 
     //! Vector of boxarrays that define refinement zones at each level
-    const amrex::Vector<amrex::BoxArray>& boxarray_vec() const { return m_boxarrays; }
+    const amrex::Vector<amrex::BoxArray>& boxarray_vec() const
+    {
+        return m_boxarrays;
+    }
 
 protected:
     //! Domain bounding boxes where refinement is performed at each level

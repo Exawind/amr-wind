@@ -126,7 +126,8 @@ void Sampling::write_ascii()
                    << std::endl;
 
     const std::string post_dir = "post_processing";
-    const std::string sname = amrex::Concatenate(m_label, m_sim.time().time_index());
+    const std::string sname =
+        amrex::Concatenate(m_label, m_sim.time().time_index());
 
     if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
         amrex::CreateDirectoryFailed(post_dir);
@@ -140,7 +141,8 @@ void Sampling::prepare_netcdf_file()
 #ifdef AMR_WIND_USE_NETCDF
 
     const std::string post_dir = "post_processing";
-    const std::string sname = amrex::Concatenate(m_label, m_sim.time().time_index());
+    const std::string sname =
+        amrex::Concatenate(m_label, m_sim.time().time_index());
     if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
         amrex::CreateDirectoryFailed(post_dir);
     }
@@ -161,13 +163,13 @@ void Sampling::prepare_netcdf_file()
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
     // Define groups for each sampler
-    for (const auto& obj: m_samplers) {
+    for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
         grp.def_dim(npart_name, obj->num_points());
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname: m_var_names)
+        for (const auto& vname : m_var_names)
             grp.def_var(vname, NC_DOUBLE, two_dim);
     }
     ncf.exit_def_mode();
@@ -176,7 +178,7 @@ void Sampling::prepare_netcdf_file()
         const std::vector<size_t> start{0, 0};
         std::vector<size_t> count{0, AMREX_SPACEDIM};
         SamplerBase::SampleLocType locs;
-        for (const auto& obj: m_samplers) {
+        for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
             obj->populate_netcdf_metadata(grp);
             obj->sampling_locations(locs);
@@ -212,11 +214,11 @@ void Sampling::write_netcdf()
     std::vector<size_t> count{1, 0};
 
     const int nvars = m_var_names.size();
-    for (int iv=0; iv < nvars; ++iv) {
+    for (int iv = 0; iv < nvars; ++iv) {
         start[1] = 0;
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
-        for (const auto& obj: m_samplers) {
+        for (const auto& obj : m_samplers) {
             count[1] = obj->num_points();
             auto grp = ncf.group(obj->label());
             auto var = grp.var(m_var_names[iv]);

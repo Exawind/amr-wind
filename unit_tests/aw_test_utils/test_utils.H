@@ -78,7 +78,7 @@ inline void field_min(
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Vector<amrex::Real>& min_val)
 {
-    for (int icomp=0; icomp < min_val.size(); ++icomp) {
+    for (int icomp = 0; icomp < min_val.size(); ++icomp) {
         min_val[icomp] = field_min(nlevels, field, icomp);
     }
 }
@@ -94,7 +94,7 @@ inline void field_max(
     const amrex::Vector<amrex::MultiFab*>& field,
     amrex::Vector<amrex::Real>& max_val)
 {
-    for (int icomp=0; icomp < max_val.size(); ++icomp) {
+    for (int icomp = 0; icomp < max_val.size(); ++icomp) {
         max_val[icomp] = field_max(nlevels, field, icomp);
     }
 }

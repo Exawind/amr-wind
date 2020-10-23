@@ -57,5 +57,4 @@ private:
 } // namespace pde
 } // namespace amr_wind
 
-
 #endif /* ABLMEANBOUSSINESQ_H */

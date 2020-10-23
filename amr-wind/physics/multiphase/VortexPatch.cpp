@@ -10,11 +10,11 @@ VortexPatch::VortexPatch(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
 {
-    // This shouldn't be here, but this is part of the prescirbed velocity field and 
-    // doesn't fit within VortexPatchFieldInit either.
+    // This shouldn't be here, but this is part of the prescirbed velocity field
+    // and doesn't fit within VortexPatchFieldInit either.
     amrex::ParmParse pp_vortex_patch("VortexPatch");
     pp_vortex_patch.query("period", m_TT);
-    
+
     // Instantiate the VortexPatch field initializer
     m_field_init.reset(new VortexPatchFieldInit());
 }
@@ -32,8 +32,7 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        (*m_field_init)(
-            vbx, geom, velocity.array(mfi), levelset.array(mfi));
+        (*m_field_init)(vbx, geom, velocity.array(mfi), levelset.array(mfi));
     }
 }
 
@@ -52,7 +51,7 @@ void VortexPatch::post_advance_work()
             const auto& vbx = mfi.validbox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
-            const amrex::Real TT=m_TT;
+            const amrex::Real TT = m_TT;
             auto vel = m_velocity(lev).array(mfi);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

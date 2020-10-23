@@ -209,7 +209,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real vorticity_mag(
         (uy - vx) * (uy - vx) + (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz));
 }
 
-
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
     int degree,
     const amrex::Real* coeff,

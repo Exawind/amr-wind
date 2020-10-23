@@ -24,9 +24,7 @@ BoussinesqBubble::BoussinesqBubble(CFDSim& sim)
  *
  *  \sa amr_wind::BoussinesqBubbleFieldInit
  */
-void BoussinesqBubble::initialize_fields(
-    int level,
-    const amrex::Geometry& geom)
+void BoussinesqBubble::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);

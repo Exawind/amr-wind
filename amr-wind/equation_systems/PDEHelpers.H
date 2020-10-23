@@ -45,14 +45,16 @@ namespace pde {
  *  \tparam PDE Trait defining this equation system (e.g., ICNS, Temperature)
  *  \tparam Scheme The numerical scheme (e.g., Godnuov, MOL)
  */
-template<typename PDE, typename Scheme>
-PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
+template <typename PDE, typename Scheme>
+PDEFields
+create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
 {
-    repo.declare_field(PDE::var_name(), PDE::ndim, Scheme::nghost_state, Scheme::num_states);
+    repo.declare_field(
+        PDE::var_name(), PDE::ndim, Scheme::nghost_state, Scheme::num_states);
     repo.declare_field(pde_impl::mueff_name(PDE::var_name()), 1, 1, 1);
     repo.declare_field(
-        pde_impl::src_term_name(PDE::var_name()), PDE::ndim,
-        Scheme::nghost_src, 1);
+        pde_impl::src_term_name(PDE::var_name()), PDE::ndim, Scheme::nghost_src,
+        1);
     repo.declare_field(
         pde_impl::diff_term_name(PDE::var_name()), PDE::ndim, 0,
         Scheme::num_diff_states);
@@ -68,14 +70,12 @@ PDEFields create_fields_instance(const SimTime& time, FieldRepo& repo, const int
 
     fields.field.fillpatch_on_regrid() = true;
 
-    if (PDE::need_nph_state)
-        fields.field.create_state(FieldState::NPH);
+    if (PDE::need_nph_state) fields.field.create_state(FieldState::NPH);
 
     return fields;
 }
 
 } // namespace pde
 } // namespace amr_wind
-
 
 #endif /* PDEHELPERS_H */

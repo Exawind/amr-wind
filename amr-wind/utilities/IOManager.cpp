@@ -39,21 +39,17 @@ void IOManager::initialize_io()
     pp.queryarr("derived_outputs", out_derived_vars);
 
     // We process the input vector to eliminate duplicates
-    for (const auto& name: out_vars)
-        outputs.insert(name);
+    for (const auto& name : out_vars) outputs.insert(name);
 
-    for (const auto& name: out_int_vars)
-        int_outputs.insert(name);
+    for (const auto& name : out_int_vars) int_outputs.insert(name);
 
     // If the user hasn't disabled default output variables, then we append them
     // to the list so that we don't end up with any duplicates (in case user
     // also added the variable explicitly in the input file)
     if (m_output_default_vars) {
-        for (const auto& name: m_pltvars_default)
-            outputs.insert(name);
+        for (const auto& name : m_pltvars_default) outputs.insert(name);
 
-        for (const auto& name: m_int_pltvars_default)
-            int_outputs.insert(name);
+        for (const auto& name : m_int_pltvars_default) int_outputs.insert(name);
     }
 
     amrex::Print() << "Initializing I/O manager" << std::endl;
@@ -61,25 +57,27 @@ void IOManager::initialize_io()
     // Process output variables information
     auto& repo = m_sim.repo();
     m_plt_num_comp = 0;
-    for (const auto& fname: outputs) {
+    for (const auto& fname : outputs) {
         if (repo.field_exists(fname)) {
             auto& fld = repo.get_field(fname);
             m_plt_num_comp += fld.num_comp();
             m_plt_fields.emplace_back(&fld);
             ioutils::add_var_names(m_plt_var_names, fld.name(), fld.num_comp());
         } else {
-            amrex::Print() << "  Invalid output variable requested: " << fname << std::endl;
+            amrex::Print() << "  Invalid output variable requested: " << fname
+                           << std::endl;
         }
     }
 
-    for (const auto& fname: int_outputs) {
+    for (const auto& fname : int_outputs) {
         if (repo.int_field_exists(fname)) {
             auto& fld = repo.get_int_field(fname);
             m_plt_num_comp += fld.num_comp();
             m_int_plt_fields.emplace_back(&fld);
             ioutils::add_var_names(m_plt_var_names, fld.name(), fld.num_comp());
         } else {
-            amrex::Print() << "  Invalid output variable requested: " << fname << std::endl;
+            amrex::Print() << "  Invalid output variable requested: " << fname
+                           << std::endl;
         }
     }
 
@@ -89,7 +87,7 @@ void IOManager::initialize_io()
         m_derived_mgr->var_names(m_plt_var_names);
     }
 
-    for (const auto& fname: m_chkvars) {
+    for (const auto& fname : m_chkvars) {
         auto& fld = repo.get_field(fname);
         m_chk_fields.emplace_back(&fld);
     }
@@ -99,24 +97,27 @@ void IOManager::write_plot_file()
 {
     BL_PROFILE("amr-wind::IOManager::write_plot_file");
 
-    amrex::Vector<int> istep(m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
+    amrex::Vector<int> istep(
+        m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
     const int plt_comp = m_plt_num_comp;
     const int start_comp = m_plt_num_comp - m_derived_mgr->num_comp();
     auto outfield = m_sim.repo().create_scratch_field(plt_comp);
     const int nlevels = m_sim.repo().num_active_levels();
 
-    for (int lev=0; lev < nlevels; ++lev) {
+    for (int lev = 0; lev < nlevels; ++lev) {
         int icomp = 0;
         auto& mf = (*outfield)(lev);
 
-        for (auto* fld: m_plt_fields) {
-            amrex::MultiFab::Copy(mf, (*fld)(lev), 0, icomp, fld->num_comp(), 0);
+        for (auto* fld : m_plt_fields) {
+            amrex::MultiFab::Copy(
+                mf, (*fld)(lev), 0, icomp, fld->num_comp(), 0);
             icomp += fld->num_comp();
         }
 
-        for (auto* fld: m_int_plt_fields) {
+        for (auto* fld : m_int_plt_fields) {
             amrex::MultiFab::Copy(
-                mf, amrex::ToMultiFab((*fld)(lev)), 0, icomp, fld->num_comp(), 0);
+                mf, amrex::ToMultiFab((*fld)(lev)), 0, icomp, fld->num_comp(),
+                0);
             icomp += fld->num_comp();
         }
     }
@@ -126,9 +127,8 @@ void IOManager::write_plot_file()
     const std::string& plt_filename =
         amrex::Concatenate(m_plt_prefix, m_sim.time().time_index());
     const auto& mesh = m_sim.mesh();
-    amrex::Print()
-        << "Writing plot file       " << plt_filename << " at time "
-        << m_sim.time().new_time() << std::endl;
+    amrex::Print() << "Writing plot file       " << plt_filename << " at time "
+                   << m_sim.time().new_time() << std::endl;
     amrex::WriteMultiLevelPlotfile(
         plt_filename, nlevels, outfield->vec_const_ptrs(), m_plt_var_names,
         mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
@@ -140,22 +140,23 @@ void IOManager::write_checkpoint_file()
 {
     BL_PROFILE("amr-wind::IOManager::write_checkpoint_file");
     const std::string level_prefix = "Level_";
-    const std::string chkname = amrex::Concatenate(m_chk_prefix, m_sim.time().time_index());
+    const std::string chkname =
+        amrex::Concatenate(m_chk_prefix, m_sim.time().time_index());
 
     amrex::Print() << "Writing checkpoint file " << chkname << " at time "
                    << m_sim.time().new_time() << std::endl;
     const auto& mesh = m_sim.mesh();
-    amrex::PreBuildDirectorHierarchy(chkname, level_prefix, mesh.finestLevel() + 1, true);
+    amrex::PreBuildDirectorHierarchy(
+        chkname, level_prefix, mesh.finestLevel() + 1, true);
     write_header(chkname);
     write_info_file(chkname);
 
     for (int lev = 0; lev < mesh.finestLevel() + 1; ++lev) {
-        for (auto* fld: m_chk_fields) {
+        for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             amrex::VisMF::Write(
-                field(lev),
-                amrex::MultiFabFileFullPrefix(
-                    lev, chkname, level_prefix, field.name()));
+                field(lev), amrex::MultiFabFileFullPrefix(
+                                lev, chkname, level_prefix, field.name()));
         }
     }
 }
@@ -166,12 +167,11 @@ void IOManager::read_checkpoint_fields(const std::string& restart_file)
     const std::string level_prefix = "Level_";
     const int nlevels = m_sim.mesh().finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
-        for (auto* fld: m_chk_fields) {
+        for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             amrex::VisMF::Read(
-                field(lev),
-                amrex::MultiFabFileFullPrefix(
-                    lev, restart_file, level_prefix, field.name()));
+                field(lev), amrex::MultiFabFileFullPrefix(
+                                lev, restart_file, level_prefix, field.name()));
         }
     }
 }
@@ -186,8 +186,9 @@ void IOManager::write_header(const std::string& chkname)
     std::ofstream hdr;
     hdr.rdbuf()->pubsetbuf(io_buf.dataPtr(), io_buf.size());
 
-    hdr.open(hdr_name.c_str(),
-             std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+    hdr.open(
+        hdr_name.c_str(),
+        std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
     if (!hdr.good()) {
         amrex::FileOpenFailed(hdr_name);
     }
@@ -233,12 +234,12 @@ void IOManager::write_info_file(const std::string& path)
 
     fh << dash_line << "Grid information: " << std::endl;
     const auto& mesh = m_sim.mesh();
-    for (int lev=0; lev < m_sim.mesh().finestLevel()+1; ++lev) {
+    for (int lev = 0; lev < m_sim.mesh().finestLevel() + 1; ++lev) {
         fh << "  Level: " << lev << "\n"
            << "    num. boxes = " << mesh.boxArray().size() << "\n"
            << "    maximum zones = ";
 
-        for (int dir=0; dir < AMREX_SPACEDIM; ++dir)
+        for (int dir = 0; dir < AMREX_SPACEDIM; ++dir)
             fh << mesh.Geom(lev).Domain().length(dir) << " ";
         fh << "\n";
     }

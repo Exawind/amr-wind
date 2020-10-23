@@ -70,8 +70,7 @@ struct Gradient : public DerivedQty::Register<Gradient>
 
     std::string name() const override { return "grad_" + m_phi->name(); }
 
-    int num_comp() const override
-    { return AMREX_SPACEDIM * m_phi->num_comp(); }
+    int num_comp() const override { return AMREX_SPACEDIM * m_phi->num_comp(); }
 
     void operator()(ScratchField& fld, const int scomp = 0) override
     {
@@ -150,21 +149,22 @@ struct FieldComponents : public DerivedQty::Register<FieldComponents>
 
         m_ncomp = nargs - 1;
         m_comp.resize(nargs - 1);
-        for (size_t i=1; i < nargs; ++i) {
+        for (size_t i = 1; i < nargs; ++i) {
             m_comp[i - 1] = std::stoi(args[i]);
-            AMREX_ALWAYS_ASSERT((m_comp[i-1] >= 0) && (m_comp[i - 1] < m_fld->num_comp()));
+            AMREX_ALWAYS_ASSERT(
+                (m_comp[i - 1] >= 0) && (m_comp[i - 1] < m_fld->num_comp()));
         }
     }
 
     std::string name() const override { return m_fld->name(); }
 
-    int num_comp() const override  { return m_ncomp; }
+    int num_comp() const override { return m_ncomp; }
 
     void var_names(amrex::Vector<std::string>& plt_var_names) override
     {
         amrex::Vector<std::string> names;
         ioutils::add_var_names(names, m_fld->name(), m_fld->num_comp());
-        for (auto ic: m_comp) {
+        for (auto ic : m_comp) {
             plt_var_names.push_back(names[ic]);
         }
     }
@@ -173,7 +173,7 @@ struct FieldComponents : public DerivedQty::Register<FieldComponents>
     {
         AMREX_ASSERT(fld.num_comp() >= (scomp + num_comp()));
         int dst_comp = scomp;
-        for (auto icomp: m_comp) {
+        for (auto icomp : m_comp) {
             field_ops::copy(fld, *m_fld, icomp, dst_comp, 1, 0);
             ++dst_comp;
         }

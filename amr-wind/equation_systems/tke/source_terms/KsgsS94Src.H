@@ -26,8 +26,8 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 };
-}
-}
-}
+} // namespace tke
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* KSGSS94SRC_H */

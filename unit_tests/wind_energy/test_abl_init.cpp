@@ -4,9 +4,7 @@
 #include "amr-wind/wind_energy/ABLFieldInit.H"
 
 namespace amr_wind_tests {
-namespace {
-
-} // namespace
+namespace {} // namespace
 
 TEST_F(ABLMeshTest, abl_initialization)
 {
@@ -49,7 +47,8 @@ TEST_F(ABLMeshTest, abl_initialization)
     {
         const amrex::Real dz = mesh().Geom(0).CellSize(2);
         const amrex::Real min_temp_gold = 300.0;
-        const amrex::Real max_temp_gold = 308.75 - (308.75 - 308.0) / 250.0 * (0.5 * dz);
+        const amrex::Real max_temp_gold =
+            308.75 - (308.75 - 308.0) / 250.0 * (0.5 * dz);
         amrex::Real min_temp, max_temp;
         utils::field_minmax(nlevels, temperature, min_temp, max_temp);
         EXPECT_NEAR(min_temp, min_temp_gold, tol);
@@ -70,10 +69,10 @@ TEST_F(ABLMeshTest, abl_initialization)
         utils::field_minmax(nlevels, velocity, min_vel, max_vel);
         EXPECT_NEAR(min_vel[0], 20.0, tol);
         EXPECT_NEAR(min_vel[1], 10.0, tol);
-        EXPECT_NEAR(min_vel[2],  0.0, tol);
+        EXPECT_NEAR(min_vel[2], 0.0, tol);
         EXPECT_NEAR(max_vel[0], 20.0, tol);
         EXPECT_NEAR(max_vel[1], 10.0, tol);
-        EXPECT_NEAR(max_vel[2],  0.0, tol);
+        EXPECT_NEAR(max_vel[2], 0.0, tol);
     }
 }
 

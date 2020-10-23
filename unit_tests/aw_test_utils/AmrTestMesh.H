@@ -35,15 +35,21 @@ public:
 
 protected:
     virtual void MakeNewLevelFromScratch(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void MakeNewLevelFromCoarse(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void RemakeLevel(
-        int lev, amrex::Real time, const amrex::BoxArray& ba,
+        int lev,
+        amrex::Real time,
+        const amrex::BoxArray& ba,
         const amrex::DistributionMapping& dm) override;
 
     virtual void ClearLevel(int lev) override;
@@ -56,6 +62,6 @@ protected:
     amr_wind::FieldRepo& m_repo;
 };
 
-}
+} // namespace amr_wind_tests
 
 #endif /* AMRTESTMESH_H */

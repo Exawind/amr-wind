@@ -65,20 +65,28 @@ public:
     const PhysicsMgr& physics_manager() const { return m_physics_mgr; }
 
     PhysicsMgr::TypeVector& physics() { return m_physics_mgr.objects(); }
-    const PhysicsMgr::TypeVector& physics() const { return m_physics_mgr.objects(); }
+    const PhysicsMgr::TypeVector& physics() const
+    {
+        return m_physics_mgr.objects();
+    }
 
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
     const turbulence::TurbulenceModel& turbulence_model() const
-    { return *m_turbulence; }
+    {
+        return *m_turbulence;
+    }
 
     IOManager& io_manager() { return *m_io_mgr; }
-    const IOManager& io_manager() const { return * m_io_mgr; }
+    const IOManager& io_manager() const { return *m_io_mgr; }
 
     PostProcessManager& post_manager() { return *m_post_mgr; }
-    const PostProcessManager& post_manager() const  { return *m_post_mgr; }
+    const PostProcessManager& post_manager() const { return *m_post_mgr; }
 
     OversetManager* overset_manager() { return m_overset_mgr.get(); }
-    const OversetManager* overset_manager() const { return m_overset_mgr.get(); }
+    const OversetManager* overset_manager() const
+    {
+        return m_overset_mgr.get();
+    }
 
     bool has_overset() const { return static_cast<bool>(m_overset_mgr); }
 
@@ -111,6 +119,6 @@ private:
     std::unique_ptr<OversetManager> m_overset_mgr;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* CFDSIM_H */

@@ -12,13 +12,13 @@ namespace amr_wind {
  *  timestep the solution will advance to.
  */
 enum class FieldState : int {
-    NP1 = 0,     ///< Latest state, also aliased to `New`
-    N,           ///< Previous state, also aliased to `Old`
-    NM1,         ///< State at `(n - 1)` th timestep
-    NPH,         ///< State at `(n + 1/2)` (intermediate) timestep
-    NMH,         ///< State at `(n - 1/2)` timestep
-    New = NP1,   ///< Same as FieldState::NP1
-    Old = N,     ///< Same as FieldState::N
+    NP1 = 0,   ///< Latest state, also aliased to `New`
+    N,         ///< Previous state, also aliased to `Old`
+    NM1,       ///< State at `(n - 1)` th timestep
+    NPH,       ///< State at `(n + 1/2)` (intermediate) timestep
+    NMH,       ///< State at `(n - 1/2)` timestep
+    New = NP1, ///< Same as FieldState::NP1
+    Old = N,   ///< Same as FieldState::N
 };
 
 /** Possible locations for a field in a structured mesh
@@ -34,11 +34,10 @@ enum class FieldLoc : int {
 
 //! Coarse-to-fine field interpolation options
 //! \ingroup fields
-enum class FieldInterpolator : int
-{
+enum class FieldInterpolator : int {
     PiecewiseConstant, ///< Constant across cell
-    CellConsLinear, ///< Linear interpolation
-    NodeBilinear ///< Bilinear nodal interpolation
+    CellConsLinear,    ///< Linear interpolation
+    NodeBilinear       ///< Bilinear nodal interpolation
 };
 
 } // namespace amr_wind

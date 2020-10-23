@@ -20,24 +20,24 @@ DiffSolverIface<LinOp>::DiffSolverIface(
 
     const auto& mesh = m_pdefields.repo.mesh();
     if (!has_overset) {
-        m_solver.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                                 mesh.boxArray(0, mesh.finestLevel()),
-                                 mesh.DistributionMap(0, mesh.finestLevel()),
-                                 isolve));
-        m_applier.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                                  mesh.boxArray(0, mesh.finestLevel()),
-                                  mesh.DistributionMap(0, mesh.finestLevel()),
-                                  iapply));
+        m_solver.reset(new LinOp(
+            mesh.Geom(0, mesh.finestLevel()),
+            mesh.boxArray(0, mesh.finestLevel()),
+            mesh.DistributionMap(0, mesh.finestLevel()), isolve));
+        m_applier.reset(new LinOp(
+            mesh.Geom(0, mesh.finestLevel()),
+            mesh.boxArray(0, mesh.finestLevel()),
+            mesh.DistributionMap(0, mesh.finestLevel()), iapply));
     } else {
         auto imask = fields.repo.get_int_field("mask_cell").vec_const_ptrs();
-        m_solver.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                                 mesh.boxArray(0, mesh.finestLevel()),
-                                 mesh.DistributionMap(0, mesh.finestLevel()),
-                                 imask, isolve));
-        m_applier.reset(new LinOp(mesh.Geom(0, mesh.finestLevel()),
-                                  mesh.boxArray(0, mesh.finestLevel()),
-                                  mesh.DistributionMap(0, mesh.finestLevel()),
-                                  imask, iapply));
+        m_solver.reset(new LinOp(
+            mesh.Geom(0, mesh.finestLevel()),
+            mesh.boxArray(0, mesh.finestLevel()),
+            mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve));
+        m_applier.reset(new LinOp(
+            mesh.Geom(0, mesh.finestLevel()),
+            mesh.boxArray(0, mesh.finestLevel()),
+            mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply));
     }
 
     m_solver->setMaxOrder(m_options.max_order);
@@ -49,7 +49,10 @@ DiffSolverIface<LinOp>::DiffSolverIface(
 
 template <typename LinOp>
 void DiffSolverIface<LinOp>::setup_operator(
-    LinOp& linop, const amrex::Real alpha, const amrex::Real beta, const FieldState fstate)
+    LinOp& linop,
+    const amrex::Real alpha,
+    const amrex::Real beta,
+    const FieldState fstate)
 {
     BL_PROFILE("amr-wind::setup_operator");
     auto& repo = m_pdefields.repo;
@@ -64,7 +67,7 @@ void DiffSolverIface<LinOp>::setup_operator(
     set_bcoeffs(linop);
 }
 
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 {
     BL_PROFILE("amr-wind::setup_solver");
@@ -72,8 +75,7 @@ void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
     m_options(mlmg);
 }
 
-
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 {
     FieldState fstate = FieldState::New;
@@ -120,7 +122,6 @@ void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 
 template class DiffSolverIface<amrex::MLABecLaplacian>;
 template class DiffSolverIface<amrex::MLTensorOp>;
-
 
 } // namespace pde
 } // namespace amr_wind

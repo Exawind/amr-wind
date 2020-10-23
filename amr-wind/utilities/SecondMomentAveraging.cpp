@@ -164,8 +164,7 @@ void SecondMomentAveraging::compute_average(
                         const amrex::Real up2 =
                             mfab_arr2(i, j, k, n) - line_avg2[ncomp2 * ind + n];
                         amrex::HostDevice::Atomic::Add(
-                            &line_fluc[nmoments * ind + nf],
-                            up1 * up2 * denom);
+                            &line_fluc[nmoments * ind + nf], up1 * up2 * denom);
                         ++nf;
                     }
                 }
@@ -243,16 +242,16 @@ SecondMomentAveraging::line_average_cell(int ind, int comp1, int comp2) const
     return line_average_cell(ind, comp);
 }
 
-void SecondMomentAveraging::line_moment(int comp, amrex::Vector<amrex::Real> & l_vec)
+void SecondMomentAveraging::line_moment(
+    int comp, amrex::Vector<amrex::Real>& l_vec)
 {
     BL_PROFILE("amr-wind::SecondMomentAveraging::line_moment");
 
-    AMREX_ALWAYS_ASSERT(comp >=0 && comp < m_num_moments);
+    AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_num_moments);
 
     const int ncell_line = m_plane_average1.ncell_line();
-    for (int i=0; i < ncell_line; i++)
+    for (int i = 0; i < ncell_line; i++)
         l_vec[i] = m_second_moments_line[m_num_moments * i + comp];
-    
 }
 
-}
+} // namespace amr_wind

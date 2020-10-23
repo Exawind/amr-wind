@@ -22,7 +22,8 @@ namespace amr_wind {
  *  This class provides an API that can be used by concrete implementations to
  *  tag cells that must be refined based on a pre-defined criteria. The criteria
  *  can be a heuristic determined from the solution (e.g., vorticity magntiude
- *  or gradients), or some user defined criteria (e.g., static, nested refinements).
+ *  or gradients), or some user defined criteria (e.g., static, nested
+ * refinements).
  */
 class RefinementCriteria
 {
@@ -40,12 +41,9 @@ public:
      *  Interface is the same as amrex::AmrCore::ErrorEst
      */
     virtual void operator()(
-        int level,
-        amrex::TagBoxArray& tags,
-        amrex::Real time,
-        int ngrow) = 0;
+        int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
 };
 
-}
+} // namespace amr_wind
 
 #endif /* REFINEMENTCRITERIA_H */

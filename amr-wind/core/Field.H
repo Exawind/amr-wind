@@ -61,7 +61,7 @@ struct FieldInfo
 
     ///@{
     //! Boundary condition data
-    amrex::GpuArray<BC, AMREX_SPACEDIM*2> m_bc_type;
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> m_bc_type;
     amrex::Vector<amrex::Vector<amrex::Real>> m_bc_values;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bc_values_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_bc_values_dview;
@@ -139,9 +139,10 @@ public:
     inline int num_time_states() const { return m_info->m_nstates; }
 
     //! Number of states available for this field
-    inline int num_states() const {
+    inline int num_states() const
+    {
         int ns = 0;
-        for (auto* ff: m_info->m_states) {
+        for (auto* ff : m_info->m_states) {
             if (ff != nullptr) ++ns;
         }
         AMREX_ASSERT(num_time_states() <= ns);
@@ -167,7 +168,7 @@ public:
         return (m_info->m_states[fid] != nullptr);
     }
 
-    amrex::GpuArray<BC, AMREX_SPACEDIM*2>& bc_type()
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2>& bc_type()
     {
         return m_info->m_bc_type;
     }
@@ -181,11 +182,16 @@ public:
     //! Return reference to host view of BCRec array
     amrex::Vector<amrex::BCRec>& bcrec() { return m_info->m_bcrec; }
 
-    const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM*2>& bc_values_device() const
-    { return m_info->m_bc_values_d; }
+    const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&
+    bc_values_device() const
+    {
+        return m_info->m_bc_values_d;
+    }
 
     const amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device() const
-    { return m_info->m_bcrec_d; }
+    {
+        return m_info->m_bcrec_d;
+    }
 
     //! Copy BC data from host to device
     //!
@@ -194,10 +200,7 @@ public:
     inline void copy_bc_to_device() { m_info->copy_bc_to_device(); }
 
     //! Return flag indicating whether BCs have been initialized
-    inline bool bc_initialized() const
-    {
-        return m_info->m_bc_copied_to_device;
-    }
+    inline bool bc_initialized() const { return m_info->m_bc_copied_to_device; }
 
     //! Return a flag indicating whether a fillpatch Op has been registered
     inline bool has_fillpatch_op() const
@@ -250,25 +253,32 @@ public:
      *
      *  \param value Constant value for initialization
      *  \param start_comp Starting component index (0-based)
-     *  \param num_comp Number of components from starting component to initialize
-     *  \param num_ghost Number of ghost cells to include
+     *  \param num_comp Number of components from starting component to
+     * initialize \param num_ghost Number of ghost cells to include
      */
-    void setVal(amrex::Real value, int start_comp, int num_comp=1, int nghost=0) noexcept;
+    void setVal(
+        amrex::Real value,
+        int start_comp,
+        int num_comp = 1,
+        int nghost = 0) noexcept;
 
     /** Set components to those in the vector for a multi-component field
      */
-    void setVal(const amrex::Vector<amrex::Real>& values, int nghost=0) noexcept;
+    void
+    setVal(const amrex::Vector<amrex::Real>& values, int nghost = 0) noexcept;
 
     /** Return a sub-view of the Field instance
      */
     ViewField<Field> subview(const int scomp = 0, const int ncomp = 1)
-    { return {*this, scomp, ncomp}; }
+    {
+        return {*this, scomp, ncomp};
+    }
 
     /** Register a custom fillpatch class instance for this field
      *
      *  The class must be a subclass of amr_wind::FieldFillPatchOpsBase
      */
-    template<typename T, class... Args>
+    template <typename T, class... Args>
     void register_fill_patch_op(Args&&... args)
     {
         m_info->m_fillpatch_op.reset(new T(*this, std::forward<Args>(args)...));
@@ -276,10 +286,11 @@ public:
 
     /** Register a custom boundary conditions class
      */
-    template<typename T, class... Args>
+    template <typename T, class... Args>
     void register_custom_bc(Args&&... args)
     {
-        m_info->m_bc_func.emplace_back(new T(*this, std::forward<Args>(args)...));
+        m_info->m_bc_func.emplace_back(
+            new T(*this, std::forward<Args>(args)...));
     }
 
     void fillpatch(amrex::Real time) noexcept;
@@ -318,19 +329,13 @@ public:
     }
 
     inline void fillpatch_from_coarse(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& mfab,
-        int nghost) noexcept
+        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
     {
         fillpatch_from_coarse(lev, time, mfab, amrex::IntVect(nghost));
     }
 
     inline void fillphysbc(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& mfab,
-        int nghost) noexcept
+        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
     {
         fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
     }

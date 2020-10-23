@@ -12,7 +12,7 @@ namespace fvm {
 /** Divergence operator
  *  \ingroup fvm
  */
-template<typename FTypeIn, typename FTypeOut>
+template <typename FTypeIn, typename FTypeOut>
 struct Divergence
 {
     Divergence(FTypeOut& divphi, const FTypeIn& phi)
@@ -43,29 +43,33 @@ struct Divergence
                     c = Stencil::c01;
                     cm1 = Stencil::c02;
                     divphi_arr(i, j, k, icomp) =
-                        (cp1 * phi_arr(i + 1, j, k, icomp*AMREX_SPACEDIM+0) +
-                         c * phi_arr(i, j, k, icomp*AMREX_SPACEDIM+0) +
-                         cm1 * phi_arr(i - 1, j, k, icomp*AMREX_SPACEDIM+0)) *
+                        (cp1 *
+                             phi_arr(i + 1, j, k, icomp * AMREX_SPACEDIM + 0) +
+                         c * phi_arr(i, j, k, icomp * AMREX_SPACEDIM + 0) +
+                         cm1 *
+                             phi_arr(i - 1, j, k, icomp * AMREX_SPACEDIM + 0)) *
                         idx[0];
-
 
                     cp1 = Stencil::c10;
                     c = Stencil::c11;
                     cm1 = Stencil::c12;
                     divphi_arr(i, j, k, icomp) +=
-                        (cp1 * phi_arr(i, j + 1, k, icomp*AMREX_SPACEDIM+1) +
-                         c * phi_arr(i, j, k, icomp*AMREX_SPACEDIM+1) +
-                         cm1 * phi_arr(i, j - 1, k, icomp*AMREX_SPACEDIM+1)) *
+                        (cp1 *
+                             phi_arr(i, j + 1, k, icomp * AMREX_SPACEDIM + 1) +
+                         c * phi_arr(i, j, k, icomp * AMREX_SPACEDIM + 1) +
+                         cm1 *
+                             phi_arr(i, j - 1, k, icomp * AMREX_SPACEDIM + 1)) *
                         idx[1];
-
 
                     cp1 = Stencil::c20;
                     c = Stencil::c21;
                     cm1 = Stencil::c22;
                     divphi_arr(i, j, k, icomp) +=
-                        (cp1 * phi_arr(i, j, k + 1, icomp*AMREX_SPACEDIM+2) +
-                         c * phi_arr(i, j, k, icomp*AMREX_SPACEDIM+2) +
-                         cm1 * phi_arr(i, j, k - 1, icomp*AMREX_SPACEDIM+2)) *
+                        (cp1 *
+                             phi_arr(i, j, k + 1, icomp * AMREX_SPACEDIM + 2) +
+                         c * phi_arr(i, j, k, icomp * AMREX_SPACEDIM + 2) +
+                         cm1 *
+                             phi_arr(i, j, k - 1, icomp * AMREX_SPACEDIM + 2)) *
                         idx[2];
                 }
             });
@@ -78,7 +82,7 @@ struct Divergence
 /** Compute the divergence of a vector field
  *  \ingroup fvm
  */
-template<typename FTypeIn, typename FTypeOut>
+template <typename FTypeIn, typename FTypeOut>
 inline void divergence(FTypeOut& divphi, const FTypeIn& phi)
 {
     BL_PROFILE("amr-wind::fvm::divergence");
@@ -89,14 +93,14 @@ inline void divergence(FTypeOut& divphi, const FTypeIn& phi)
 /** Compute the divergence of a vector field
  *  \ingroup fvm
  */
-template<typename FType>
+template <typename FType>
 inline std::unique_ptr<ScratchField> divergence(const FType& phi)
 {
-    AMREX_ALWAYS_ASSERT( phi.num_comp() >= AMREX_SPACEDIM);
-    AMREX_ALWAYS_ASSERT( phi.num_comp()%AMREX_SPACEDIM == 0);
+    AMREX_ALWAYS_ASSERT(phi.num_comp() >= AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(phi.num_comp() % AMREX_SPACEDIM == 0);
     const std::string gname = phi.name() + "_divergence";
-    auto divphi = phi.repo().create_scratch_field(
-        gname, phi.num_comp() / AMREX_SPACEDIM);
+    auto divphi =
+        phi.repo().create_scratch_field(gname, phi.num_comp() / AMREX_SPACEDIM);
     divergence(*divphi, phi);
     return divphi;
 }

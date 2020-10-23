@@ -29,9 +29,9 @@ void initialize_scalar(
 
     const amrex::Real* c_ptr = c.data();
 
-    // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects it
-    // and it fills the ghosts with wall values
-    amrex::ParallelFor(grow(bx,1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+    // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
+    // it and it fills the ghosts with wall values
+    amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = amrex::min(
             amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]), probhi[0]);
         const amrex::Real y = amrex::min(
@@ -39,8 +39,8 @@ void initialize_scalar(
         const amrex::Real z = amrex::min(
             amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]), probhi[2]);
 
-        scalar_arr(i, j, k) = analytical_function::phi_eval(pdegree, c_ptr, x, y, z);
-
+        scalar_arr(i, j, k) =
+            analytical_function::phi_eval(pdegree, c_ptr, x, y, z);
     });
 }
 
@@ -61,9 +61,9 @@ void initialize_velocity(
     const amrex::Real* cv_ptr = cv.data();
     const amrex::Real* cw_ptr = cw.data();
 
-    // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects it
-    // and it fills the ghosts with wall values
-    amrex::ParallelFor(grow(bx,1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+    // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
+    // it and it fills the ghosts with wall values
+    amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
         const amrex::Real x = amrex::min(
             amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]), probhi[0]);
         const amrex::Real y = amrex::min(
@@ -118,44 +118,41 @@ amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
                 amrex::Array4<amrex::Real const> const& gvel) -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 0) - analytical_function::dphidx_eval(
-                                                   pdegree, cu_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 1) - analytical_function::dphidy_eval(
-                                                   pdegree, cu_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 2) - analytical_function::dphidz_eval(
-                                                   pdegree, cu_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 0) - analytical_function::dphidx_eval(
+                                               pdegree, cu_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 1) - analytical_function::dphidy_eval(
+                                               pdegree, cu_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 2) - analytical_function::dphidz_eval(
+                                               pdegree, cu_ptr, x, y, z));
 
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 3) - analytical_function::dphidx_eval(
-                                                   pdegree, cv_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 4) - analytical_function::dphidy_eval(
-                                                   pdegree, cv_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 5) - analytical_function::dphidz_eval(
-                                                   pdegree, cv_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 3) - analytical_function::dphidx_eval(
+                                               pdegree, cv_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 4) - analytical_function::dphidy_eval(
+                                               pdegree, cv_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 5) - analytical_function::dphidz_eval(
+                                               pdegree, cv_ptr, x, y, z));
 
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 6) - analytical_function::dphidx_eval(
-                                                   pdegree, cw_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 7) - analytical_function::dphidy_eval(
-                                                   pdegree, cw_ptr, x, y, z));
-                        error += amrex::Math::abs(
-                            gvel(i, j, k, 8) - analytical_function::dphidz_eval(
-                                                   pdegree, cw_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 6) - analytical_function::dphidx_eval(
+                                               pdegree, cw_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 7) - analytical_function::dphidy_eval(
+                                               pdegree, cw_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 8) - analytical_function::dphidz_eval(
+                                               pdegree, cw_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -163,7 +160,6 @@ amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
 
     return error_total;
 }
-
 
 amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
 {
@@ -200,19 +196,20 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
             (*str)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& str_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& str_arr)
+                -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(str_arr(i,j,k) - analytical_function::strainrate(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        str_arr(i, j, k) -
+                        analytical_function::strainrate(
+                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -256,19 +253,20 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
             (*str)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& str_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& str_arr)
+                -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(str_arr(i,j,k) - analytical_function::vorticity_mag(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        str_arr(i, j, k) -
+                        analytical_function::vorticity_mag(
+                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -276,7 +274,6 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
 
     return error_total;
 }
-
 
 amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
 {
@@ -313,19 +310,20 @@ amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
             (*lap)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& lap_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& lap_arr)
+                -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(lap_arr(i,j,k) - analytical_function::laplacian(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        lap_arr(i, j, k) -
+                        analytical_function::laplacian(
+                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -369,19 +367,20 @@ amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
             (*div)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& div_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& div_arr)
+                -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(div_arr(i,j,k) - analytical_function::divergence(pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        div_arr(i, j, k) -
+                        analytical_function::divergence(
+                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -421,19 +420,19 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
             (*curv_scalar)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& curv_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& curv_arr)
+                -> amrex::Real {
                 amrex::Real error = 0.0;
 
-                amrex::Loop(
-                    bx,
-                    [=, &error](int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        error += amrex::Math::abs(curv_arr(i,j,k) - analytical_function::curvature(pdegree, coeff_ptr, x, y, z));
-
-                    });
+                    error += amrex::Math::abs(
+                        curv_arr(i, j, k) - analytical_function::curvature(
+                                                pdegree, coeff_ptr, x, y, z));
+                });
 
                 return error;
             });
@@ -463,7 +462,7 @@ TEST_F(FvmOpTest, gradient)
     const int nghost = 1;
     auto& vel = repo.declare_field("vel", ncomp, nghost);
     const int pdegree = 2;
-    auto error_total = grad_test_impl(vel,pdegree);
+    auto error_total = grad_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
@@ -489,7 +488,7 @@ TEST_F(FvmOpTest, strainrate)
     const int nghost = 1;
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
-    const int pdegree=2;
+    const int pdegree = 2;
     auto error_total = strainrate_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
@@ -516,7 +515,7 @@ TEST_F(FvmOpTest, vorticity_mag)
     const int nghost = 1;
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
-    const int pdegree=2;
+    const int pdegree = 2;
     auto error_total = vorticity_mag_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
@@ -544,12 +543,11 @@ TEST_F(FvmOpTest, laplacian)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = laplacian_test_impl(vel,pdegree);
+    auto error_total = laplacian_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
     EXPECT_NEAR(error_total, 0.0, tol);
-
 }
 
 TEST_F(FvmOpTest, divergence)
@@ -572,12 +570,11 @@ TEST_F(FvmOpTest, divergence)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = divergence_test_impl(vel,pdegree);
+    auto error_total = divergence_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
     EXPECT_NEAR(error_total, 0.0, tol);
-
 }
 
 TEST_F(FvmOpTest, curvature)
@@ -600,12 +597,11 @@ TEST_F(FvmOpTest, curvature)
     auto& scalar = repo.declare_field("scalar", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = curvature_test_impl(scalar,pdegree);
+    auto error_total = curvature_test_impl(scalar, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
     EXPECT_NEAR(error_total, 0.0, tol);
-
 }
 
 } // namespace amr_wind_tests

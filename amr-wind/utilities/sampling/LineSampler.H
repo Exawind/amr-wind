@@ -56,7 +56,7 @@ private:
     int m_npts{0};
 };
 
-}
-}
+} // namespace sampling
+} // namespace amr_wind
 
 #endif /* LINESAMPLER_H */

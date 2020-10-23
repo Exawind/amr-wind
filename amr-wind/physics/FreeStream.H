@@ -21,10 +21,9 @@ public:
 
     virtual ~FreeStream() = default;
 
-    //! Initialize the temperature and velocity fields for BoussinesqBubble simulations
-    void initialize_fields(
-        int level,
-        const amrex::Geometry& geom) override;
+    //! Initialize the temperature and velocity fields for BoussinesqBubble
+    //! simulations
+    void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void post_init_actions() override {}
 
@@ -35,16 +34,14 @@ public:
     void post_advance_work() override {}
 
 private:
-
     Field& m_velocity;
     Field& m_density;
 
     //! initial density value
     amrex::Real m_rho{1.0};
     amrex::Vector<amrex::Real> m_vel{{1.0, 0.0, 0.0}};
-
 };
 
-}
+} // namespace amr_wind
 
 #endif /* FreeStream_H */

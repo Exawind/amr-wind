@@ -38,8 +38,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void vec_normalize(T* x)
 /** Compute the dot product of two vectors
  */
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-T dot_prod(const T* x, const T* y)
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T dot_prod(const T* x, const T* y)
 {
     static_assert(
         AMREX_SPACEDIM == 3, "Vector ops only defined for AMREX_SPACEDIM == 3");
@@ -72,9 +71,9 @@ cross_prod(const T* a, const T* b, T* c)
 
 /** Compute the transformation `{y} = [A] {x}`
  */
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void transform_vec(const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void
+transform_vec(const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
 {
     y[0] = tmat[0][0] * x[0] + tmat[0][1] * x[1] + tmat[0][2] * x[2];
     y[1] = tmat[1][0] * x[0] + tmat[1][1] * x[1] + tmat[1][2] * x[2];
@@ -83,9 +82,9 @@ void transform_vec(const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* 
 
 /** Compute the transformation `{y} = {x}^T [A]`
  */
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-void inv_transform_vec(const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void inv_transform_vec(
+    const T tmat[AMREX_SPACEDIM][AMREX_SPACEDIM], const T* x, T* y)
 {
     y[0] = tmat[0][0] * x[0] + tmat[1][0] * x[1] + tmat[2][0] * x[2];
     y[1] = tmat[0][1] * x[0] + tmat[1][1] * x[1] + tmat[2][1] * x[2];

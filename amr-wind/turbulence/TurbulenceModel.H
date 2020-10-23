@@ -65,7 +65,8 @@ public:
     virtual std::unique_ptr<ScratchField> alpha() = 0;
 
     //! Return the scalar diffusivity field
-    virtual std::unique_ptr<ScratchField> scalar_diffusivity(const std::string& name) = 0;
+    virtual std::unique_ptr<ScratchField>
+    scalar_diffusivity(const std::string& name) = 0;
 
     //! Return the turbulent dynamic viscosity field
     virtual Field& mu_turb() = 0;
@@ -97,7 +98,7 @@ public:
     virtual CoeffsDictType model_coeffs() const = 0;
 };
 
-}
-}
+} // namespace turbulence
+} // namespace amr_wind
 
 #endif /* TURBULENCEMODEL_H */

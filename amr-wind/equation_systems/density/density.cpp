@@ -4,7 +4,6 @@
 #include "amr-wind/equation_systems/BCOps.H"
 #include "amr-wind/equation_systems/density/density_ops.H"
 
-
 namespace amr_wind {
 namespace pde {
 

@@ -23,6 +23,6 @@ public:
     void post_advance_work() override;
 };
 
-}
+} // namespace amr_wind_tests
 
 #endif /* PHYSICS_TEST_UTILS_H */

@@ -35,22 +35,17 @@ public:
      *  pushes the field to device.
      */
     void perturb_temperature(
-        const int lev,
-        const amrex::Geometry& geom,
-        Field& temperature);
+        const int lev, const amrex::Geometry& geom, Field& temperature);
 
     //! Flag indicating whether temperature field needs perturbations
     bool add_temperature_perturbations() const { return m_perturb_theta; }
 
     //! Initialize TKE field
-    void init_tke(
-        const amrex::Geometry& geom,
-        amrex::MultiFab& tke) const;
+    void init_tke(const amrex::Geometry& geom, amrex::MultiFab& tke) const;
 
 private:
     //! Initial velocity components
     amrex::Vector<amrex::Real> m_vel;
-
 
     ///@{
     //! Lookup table containing temperature variation w.r.t. height above
@@ -95,7 +90,7 @@ private:
 
     //! Initial value for tke field
     amrex::Real m_tke_init{0.1};
-    
+
     //! Perturb initial velocity field with sinusoidal fluctuations
     bool m_perturb_vel{true};
 

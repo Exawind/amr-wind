@@ -59,12 +59,12 @@ protected:
     inline void set_default_value(const amrex::Real value);
 
     //! Set AMReX mathematical boundary types for the lower boundaries
-    inline void set_bcrec_lo(
-        int dir, amrex::BCType::mathematicalBndryTypes bcrec);
+    inline void
+    set_bcrec_lo(int dir, amrex::BCType::mathematicalBndryTypes bcrec);
 
     //! Set AMReX mathematical boundary types for the upper boundaries
-    inline void set_bcrec_hi(
-        int dir, amrex::BCType::mathematicalBndryTypes bcrec);
+    inline void
+    set_bcrec_hi(int dir, amrex::BCType::mathematicalBndryTypes bcrec);
 
     //! Field instance where BC is being set
     Field& m_field;
@@ -125,7 +125,8 @@ protected:
     virtual void set_bcrec() override;
     virtual void read_values() override
     {
-        // No values specified for source terms. empty method to satisfy inheritance
+        // No values specified for source terms. empty method to satisfy
+        // inheritance
     }
 };
 
@@ -142,8 +143,7 @@ public:
     BCFillPatchExtrap(
         Field& field,
         amrex::BCType::mathematicalBndryTypes bctype = amrex::BCType::hoextrap)
-        : BCIface(field)
-        , m_extrap_type(bctype)
+        : BCIface(field), m_extrap_type(bctype)
     {}
 
 protected:

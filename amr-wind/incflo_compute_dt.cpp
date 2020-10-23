@@ -10,16 +10,19 @@ using namespace amrex;
  *  \param explicit_diffusion Flag indicating whether user has selected explicit
  *  treatment of diffusion term.
  *
- * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary Condition
- * Capturing Method for Multiphase Incompressible Flow" by Kang et al. (JCP).
+ * Compute new \f$\Delta t\f$ by using the formula derived in "A Boundary
+ * Condition Capturing Method for Multiphase Incompressible Flow" by Kang et al.
+ * (JCP).
  *
  *  \f{align}
- *  \text{CFL} &= \frac{\Delta t}{2}  \left[\left(C+V \right) + \sqrt{\left(C+V\right)^2 + 4
- * \left(\frac{|F_x|}{\Delta x} + \frac{|F_y|}{\Delta y} + \frac{|F_z|}{\Delta
+ *  \text{CFL} &= \frac{\Delta t}{2}  \left[\left(C+V \right) +
+ * \sqrt{\left(C+V\right)^2 + 4 \left(\frac{|F_x|}{\Delta x} +
+ * \frac{|F_y|}{\Delta y} + \frac{|F_z|}{\Delta
  * z} \right)} \right] && \\
- *  C &= \text{max} \left(\frac{|U_x|}{\Delta x} ,\ \frac{|U_y|}{\Delta y} ,\ \frac{|U_z|}{\Delta z}\right) && \text{Convection} \\
- *  V &= 2 \left(\frac{\mu}{\rho}\right)_\mathrm{max} \left[\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2} + \frac{1}{\Delta z^2} \right] && \text{Diffusion}
- *  \f}
+ *  C &= \text{max} \left(\frac{|U_x|}{\Delta x} ,\ \frac{|U_y|}{\Delta y} ,\
+ * \frac{|U_z|}{\Delta z}\right) && \text{Convection} \\ V &= 2
+ * \left(\frac{\mu}{\rho}\right)_\mathrm{max} \left[\frac{1}{\Delta x^2} +
+ * \frac{1}{\Delta y^2} + \frac{1}{\Delta z^2} \right] && \text{Diffusion} \f}
  *
  *  \f$F_x, F_y, F_z\f$ are acceleration due to forcing terms. By default,
  *  \f$C\f$ is always used for computing CFL. The term \f$V\f$ is only used when

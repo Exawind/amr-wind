@@ -45,8 +45,8 @@ ABLFieldInit::ABLFieldInit()
         amrex::Gpu::hostToDevice, m_theta_heights.begin(),
         m_theta_heights.end(), m_thht_d.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, m_theta_values.begin(),
-        m_theta_values.end(), m_thvv_d.begin());
+        amrex::Gpu::hostToDevice, m_theta_values.begin(), m_theta_values.end(),
+        m_thvv_d.begin());
 }
 
 void ABLFieldInit::operator()(
@@ -111,11 +111,10 @@ void ABLFieldInit::operator()(
 }
 
 void ABLFieldInit::perturb_temperature(
-    const int lev,
-    const amrex::Geometry& geom,
-    Field& temperature)
+    const int lev, const amrex::Geometry& geom, Field& temperature)
 {
-    /** Perturbations for the temperature field is adapted from the following paper:
+    /** Perturbations for the temperature field is adapted from the following
+     * paper:
      *
      *  D. Munoz-Esparza, B. Kosovic, J. van Beeck, J. D. Mirocha, A stocastic
      *  perturbation method to generate inflow turbulence in large-eddy
@@ -151,9 +150,10 @@ void ABLFieldInit::perturb_temperature(
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
     const amrex::Geometry& // geom
-    , amrex::MultiFab& tke) const
+    ,
+    amrex::MultiFab& tke) const
 {
-    tke.setVal(m_tke_init,1);
+    tke.setVal(m_tke_init, 1);
 }
 
 } // namespace amr_wind

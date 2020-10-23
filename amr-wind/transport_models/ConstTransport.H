@@ -29,8 +29,7 @@ public:
 
     inline amrex::Real viscosity() const { return m_mu; }
 
-    inline amrex::Real thermal_diffusivity() const
-    { return m_mu / m_Pr; }
+    inline amrex::Real thermal_diffusivity() const { return m_mu / m_Pr; }
 
     inline amrex::Real laminar_prandtl() const { return m_Pr; }
 
@@ -75,7 +74,8 @@ public:
         return alpha;
     }
 
-    inline std::unique_ptr<ScratchField> scalar_diffusivity(const std::string& scalar_name)
+    inline std::unique_ptr<ScratchField>
+    scalar_diffusivity(const std::string& scalar_name)
     {
         amrex::Real lam_schmidt = laminar_schmidt(scalar_name);
 
@@ -102,7 +102,7 @@ private:
     amrex::Real m_Prt{1.0};
 };
 
-}
-}
+} // namespace transport
+} // namespace amr_wind
 
 #endif /* CONSTTRANSPORT_H */

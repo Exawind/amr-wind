@@ -50,8 +50,7 @@ void CFDSim::init_physics()
     amrex::Vector<std::string> phys_names;
     pp.queryarr("physics", phys_names);
 
-    for (auto& phy: phys_names)
-        m_physics_mgr.create(phy, *this);
+    for (auto& phy : phys_names) m_physics_mgr.create(phy, *this);
 }
 
 void CFDSim::activate_overset()

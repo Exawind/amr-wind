@@ -119,7 +119,8 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
 
     // Only compute zi using coarsest level
 
-    amrex::Gpu::DeviceVector<TemperatureGradient> tgrad(m_ncells_h1 * m_ncells_h2);
+    amrex::Gpu::DeviceVector<TemperatureGradient> tgrad(
+        m_ncells_h1 * m_ncells_h2);
     auto* tgrad_ptr = tgrad.data();
     {
         const int normal_dir = m_normal_dir;
@@ -146,7 +147,8 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
     amrex::Vector<TemperatureGradient> temp_grad(m_ncells_h1 * m_ncells_h2);
     amrex::Vector<TemperatureGradient> gtemp_grad(m_ncells_h1 * m_ncells_h2);
     amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, tgrad.begin(), tgrad.end(), temp_grad.begin());
+        amrex::Gpu::deviceToHost, tgrad.begin(), tgrad.end(),
+        temp_grad.begin());
 #ifdef AMREX_USE_MPI
     MPI_Reduce(
         &temp_grad[0], &gtemp_grad[0], m_ncells_h1 * m_ncells_h2,
@@ -263,7 +265,7 @@ void ABLStats::prepare_netcdf_file()
 
     ncf.def_var("time", NC_DOUBLE, {nt_name});
     ncf.def_var("Q", NC_DOUBLE, {nt_name});
-    ncf.def_var("Tsurf", NC_DOUBLE, {nt_name});    
+    ncf.def_var("Tsurf", NC_DOUBLE, {nt_name});
     ncf.def_var("ustar", NC_DOUBLE, {nt_name});
     ncf.def_var("wstar", NC_DOUBLE, {nt_name});
     ncf.def_var("L", NC_DOUBLE, {nt_name});
@@ -328,9 +330,8 @@ void ABLStats::write_netcdf()
         auto Q = m_abl_wall_func.mo().surf_temp_flux;
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
-        ncf.var("Tsurf").put(&Tsurf, {nt}, {1});        
-        if (Q > 1e-10)
-            wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);        
+        ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
+        if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
         ncf.var("wstar").put(&wstar, {nt}, {1});
         double L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});

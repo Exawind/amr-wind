@@ -37,8 +37,9 @@ void PlaneSampler::initialize(const std::string& key)
     // Update total number of points
     const size_t tmp = m_poffsets.size() * m_npts_dir[0] * m_npts_dir[1];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
-        amrex::Abort("PlaneSampler: Plane definition " + key +
-                     " exceeds 32-bit integer limits");
+        amrex::Abort(
+            "PlaneSampler: Plane definition " + key +
+            " exceeds 32-bit integer limits");
     }
     m_npts = static_cast<int>(tmp);
 }
@@ -84,8 +85,7 @@ void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("offsets", m_poffsets);
 }
 
-void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
-{}
+void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
 #else
 void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
 void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}

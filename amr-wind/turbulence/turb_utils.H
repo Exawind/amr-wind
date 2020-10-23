@@ -16,7 +16,7 @@ namespace turb_utils {
 void inject_turbulence_src_terms(
     const std::string& key, const amrex::Vector<std::string>& terms);
 
-}
+} // namespace turb_utils
 } // namespace turbulence
 } // namespace amr_wind
 
