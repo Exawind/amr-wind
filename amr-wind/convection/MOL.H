@@ -23,8 +23,6 @@ void predict_vels_on_faces(
     amrex::BCRec const* d_bcrec,
     amrex::Vector<amrex::Geometry> geom);
 
-
-
 void compute_convective_fluxes(
     int lev,
     amrex::Box const& bx,

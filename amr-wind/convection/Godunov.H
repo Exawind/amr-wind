@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum class scheme{PLM, PPM, PPM_NOLIM, WENO};
+enum class scheme { PLM, PPM, PPM_NOLIM, WENO };
 
 void compute_advection(
     int lev,
@@ -27,8 +27,7 @@ void compute_advection(
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    godunov::scheme godunov_scheme
-    );
+    godunov::scheme godunov_scheme);
 
 void predict_weno(
     int lev,

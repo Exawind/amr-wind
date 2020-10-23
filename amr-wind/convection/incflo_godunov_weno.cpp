@@ -3,19 +3,21 @@
 
 using namespace amrex;
 
-
-void godunov::predict_weno(int lev, Box const& bx, int /* ncomp */,
-                          Array4<Real> const& Imx,
-                          Array4<Real> const& Ipx,
-                          Array4<Real> const& Imy,
-                          Array4<Real> const& Ipy,
-                          Array4<Real> const& Imz,
-                          Array4<Real> const& Ipz,
-                          Array4<Real const> const& q,
-                          Array4<Real const> const& vel,
-                          Vector<Geometry> geom,
-                          Real dt,
-                          amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
+void godunov::predict_weno(
+    int lev,
+    Box const& bx,
+    int /* ncomp */,
+    Array4<Real> const& Imx,
+    Array4<Real> const& Ipx,
+    Array4<Real> const& Imy,
+    Array4<Real> const& Ipy,
+    Array4<Real> const& Imz,
+    Array4<Real> const& Ipz,
+    Array4<Real const> const& q,
+    Array4<Real const> const& vel,
+    Vector<Geometry> geom,
+    Real dt,
+    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
 {
     BL_PROFILE("amr-wind::godunov::predict_weno");
     const auto dx = geom[lev].CellSizeArray();
@@ -29,13 +31,17 @@ void godunov::predict_weno(int lev, Box const& bx, int /* ncomp */,
 
     BCRec const* pbc = bcrec_device.data();
 
-    amrex::ParallelFor(bx, AMREX_SPACEDIM,
-    [=] AMREX_GPU_DEVICE (int i, int j, int k, int n) noexcept
-    {
-        Godunov_weno_pred_x(i,j,k,n,l_dtdx,vel(i,j,k,0),q,Imx,Ipx,pbc[n],dlo.x,dhi.x);
-        Godunov_weno_pred_y(i,j,k,n,l_dtdy,vel(i,j,k,1),q,Imy,Ipy,pbc[n],dlo.y,dhi.y);
-        Godunov_weno_pred_z(i,j,k,n,l_dtdz,vel(i,j,k,2),q,Imz,Ipz,pbc[n],dlo.z,dhi.z);
-    });
-
+    amrex::ParallelFor(
+        bx, AMREX_SPACEDIM,
+        [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+            Godunov_weno_pred_x(
+                i, j, k, n, l_dtdx, vel(i, j, k, 0), q, Imx, Ipx, pbc[n], dlo.x,
+                dhi.x);
+            Godunov_weno_pred_y(
+                i, j, k, n, l_dtdy, vel(i, j, k, 1), q, Imy, Ipy, pbc[n], dlo.y,
+                dhi.y);
+            Godunov_weno_pred_z(
+                i, j, k, n, l_dtdz, vel(i, j, k, 2), q, Imz, Ipz, pbc[n], dlo.z,
+                dhi.z);
+        });
 }
-
