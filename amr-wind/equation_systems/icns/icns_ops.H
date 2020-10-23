@@ -134,9 +134,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
-        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+        if (pp.contains("use_plm") || pp.contains("use_limiter"))
             amrex::Abort("Godunov: use_ppm and use_limiter are deprecated. Please update input file");
-            
+
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
         } else if (amrex::toLower(godunov_type) == "ppm") {
