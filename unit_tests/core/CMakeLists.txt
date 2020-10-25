@@ -7,3 +7,5 @@ target_sources(
   test_field_ops.cpp
   test_physics.cpp
   )
+
+add_subdirectory(vs)
