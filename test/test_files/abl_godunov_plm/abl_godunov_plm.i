@@ -24,7 +24,7 @@ incflo.gravity          =   0.  0. -9.81  # Gravitational force (3D)
 incflo.density             = 1.0          # Reference density 
 
 incflo.use_godunov = 1
-incflo.use_ppm = 0
+incflo.godunov_type = "plm"
 transport.viscosity = 1.0e-5
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333

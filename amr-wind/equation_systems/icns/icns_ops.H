@@ -132,18 +132,25 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
     {
 
-        { // Prefix incflo
-            amrex::ParmParse pp("incflo");
-            pp.query("use_ppm", godunov_ppm);
-            pp.query("use_limiter", use_limiter);
-            pp.query(
-                "godunov_use_forces_in_trans", godunov_use_forces_in_trans);
-        }
+        amrex::ParmParse pp("incflo");
+        pp.query("godunov_type", godunov_type);
+        if (pp.contains("use_ppm") || pp.contains("use_limiter"))
+            amrex::Abort("Godunov: use_ppm and use_limiter are deprecated. Please update input file");
 
-        if (!use_limiter && !godunov_ppm)
-            amrex::Abort(
-                "Currently limiter option only available for Godunov PPM and "
-                "not PLM");
+        if (amrex::toLower(godunov_type) == "plm") {
+            godunov_scheme = godunov::scheme::PLM;
+        } else if (amrex::toLower(godunov_type) == "ppm") {
+            godunov_scheme = godunov::scheme::PPM;
+        } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
+            godunov_scheme = godunov::scheme::PPM_NOLIM;
+        } else if (amrex::toLower(godunov_type) == "weno") {
+            godunov_scheme = godunov::scheme::WENO;
+        } else {
+            amrex::Print() << "For godunov_type select between plm, ppm, "
+                              "ppm_nolim and weno: it defaults to ppm"
+                           << std::endl;
+            godunov_scheme = godunov::scheme::PPM;
+        }
 
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(ICNS::ndim, 0);
@@ -237,11 +244,26 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         1);
                     p += w_ad.size();
 
-                    if (godunov_ppm) {
+                    switch (godunov_scheme) {
+                    case godunov::scheme::PPM: {
                         godunov::predict_ppm(
                             lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
-                            a_vel, a_vel, geom, dt, bcrec_device, use_limiter);
-                    } else {
+                            a_vel, a_vel, geom, dt, bcrec_device, true);
+                        break;
+                    }
+                    case godunov::scheme::PPM_NOLIM: {
+                        godunov::predict_ppm(
+                            lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
+                            a_vel, a_vel, geom, dt, bcrec_device, false);
+                        break;
+                    }
+                    case godunov::scheme::WENO: {
+                        godunov::predict_weno(
+                            lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
+                            a_vel, a_vel, geom, dt, bcrec_device);
+                        break;
+                    }
+                    case godunov::scheme::PLM: {
                         godunov::predict_plm_x(
                             lev, bx, ICNS::ndim, Imx, Ipx, a_vel, a_vel, geom,
                             dt, dof_field.bcrec(), bcrec_device);
@@ -253,6 +275,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                         godunov::predict_plm_z(
                             lev, bx, ICNS::ndim, Imz, Ipz, a_vel, a_vel, geom,
                             dt, dof_field.bcrec(), bcrec_device);
+                        break;
+                    }
                     }
 
                     godunov::make_trans_velocities(
@@ -302,7 +326,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
                     dof_field.bcrec_device().data(), iconserv.data(),
-                    tmpfab.dataPtr(), geom, dt, godunov_ppm, use_limiter);
+                    tmpfab.dataPtr(), geom, dt, godunov_scheme);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -315,9 +339,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    bool godunov_ppm{true};
+    godunov::scheme godunov_scheme = godunov::scheme::PPM;
+    std::string godunov_type;
     bool godunov_use_forces_in_trans{false};
-    bool use_limiter{true};
 };
 
 /** MOL scheme for ICNS

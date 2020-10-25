@@ -598,7 +598,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x(
 
         amrex::Real d1 = vanLeer(s0, sp1, sm1);
         amrex::Real d2 = vanLeer(sm1, s0, sm2);
-
         sedge1 = 0.5e0 * (s0 + sm1) - sixth * (d1 - d2);
         sedge1 = amrex::min(
             amrex::max(sedge1, amrex::min(s0, sm1)), amrex::max(s0, sm1));

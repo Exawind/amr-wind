@@ -21,7 +21,7 @@ time.checkpoint_interval      =  -100       # Steps between checkpoint files
 #.......................................#
 
 incflo.use_godunov = 1
-incflo.use_limiter = 0
+incflo.godunov_type = "weno"
 transport.viscosity = 1.
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333

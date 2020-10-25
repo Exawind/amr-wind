@@ -1,6 +1,7 @@
 #include "amr-wind/convection/incflo_godunov_plm.H"
 #include "amr-wind/convection/incflo_godunov_ppm.H"
 #include "amr-wind/convection/incflo_godunov_ppm_nolim.H"
+#include "amr-wind/convection/incflo_godunov_weno.H"
 #include "amr-wind/convection/Godunov.H"
 #include <AMReX_Geometry.H>
 
@@ -21,9 +22,9 @@ void godunov::compute_advection(
     Real* p,
     Vector<amrex::Geometry> geom,
     Real dt,
-    bool godunov_ppm,
-    bool use_limiter)
+    godunov::scheme godunov_scheme)
 {
+
     BL_PROFILE("amr-wind::godunov::compute_advection");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
     Box const& ybx = amrex::surroundingNodes(bx, 1);
@@ -76,42 +77,56 @@ void godunov::compute_advection(
     p += xyzhi.size();
 
     // Use PPM to generate Im and Ip */
-    if (godunov_ppm) {
-        if (use_limiter) {
-
-            amrex::ParallelFor(
-                bxg1, ncomp,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    Godunov_ppm_fpu_x(
-                        i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n),
-                        q, umac, pbc[n], dlo.x, dhi.x);
-                    Godunov_ppm_fpu_y(
-                        i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n),
-                        q, vmac, pbc[n], dlo.y, dhi.y);
-                    Godunov_ppm_fpu_z(
-                        i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n),
-                        q, wmac, pbc[n], dlo.z, dhi.z);
-                });
-
-        } else {
-
-            amrex::ParallelFor(
-                bxg1, ncomp,
-                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                    Godunov_ppm_fpu_x_nolim(
-                        i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n),
-                        q, umac, pbc[n], dlo.x, dhi.x);
-                    Godunov_ppm_fpu_y_nolim(
-                        i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n),
-                        q, vmac, pbc[n], dlo.y, dhi.y);
-                    Godunov_ppm_fpu_z_nolim(
-                        i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n),
-                        q, wmac, pbc[n], dlo.z, dhi.z);
-                });
-        }
-
-        // Use PLM to generate Im and Ip */
-    } else {
+    switch (godunov_scheme) {
+    case godunov::scheme::PPM: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_ppm_fpu_x(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x);
+                Godunov_ppm_fpu_y(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y);
+                Godunov_ppm_fpu_z(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::PPM_NOLIM: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_ppm_fpu_x_nolim(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x);
+                Godunov_ppm_fpu_y_nolim(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y);
+                Godunov_ppm_fpu_z_nolim(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::WENO: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_weno_fpu_x(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x);
+                Godunov_weno_fpu_y(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y);
+                Godunov_weno_fpu_z(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z);
+            });
+        break;
+    }
+    case godunov::scheme::PLM: {
         amrex::ParallelFor(
             xebox, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
@@ -135,6 +150,8 @@ void godunov::compute_advection(
                     i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k - 1, n),
                     q, wmac(i, j, k), pbc[n], dlo.z, dhi.z);
             });
+        break;
+    }
     }
 
     amrex::ParallelFor(
