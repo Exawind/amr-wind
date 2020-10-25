@@ -9,6 +9,7 @@ namespace amr_wind {
 namespace vs {
 
 template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 TensorT<T>::TensorT(
     const VectorT<T>& x,
     const VectorT<T>& y,
