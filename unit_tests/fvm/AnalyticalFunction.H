@@ -293,8 +293,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
 
     const amrex::Real S = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz + (uy + vx) * (uy + vx) +
         (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz);
-    const amrex::Real W = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz + (uy - vx) * (uy - vx) +
-        (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz);
+    const amrex::Real W = (uy - vx) * (uy - vx) + (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz);
 
     return 0.5*(S-W);
 }

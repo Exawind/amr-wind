@@ -79,9 +79,7 @@ struct Qcriterion
                     2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
                     std::pow(vz + wy, 2) + std::pow(wx + uz, 2);
 
-                W = 2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
-                    2.0 * std::pow(wz, 2) + std::pow(uy - vx, 2) +
-                    std::pow(vz - wy, 2) + std::pow(wx - uz, 2);
+                W = std::pow(uy - vx, 2) + std::pow(vz - wy, 2) + std::pow(wx - uz, 2);
 
                 qcritphi(i, j, k) = 0.5 * (S - W);
             });
