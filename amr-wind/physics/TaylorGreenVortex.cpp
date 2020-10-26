@@ -26,18 +26,16 @@ void TaylorGreenVortex::initialize_fields(
 
     density.setVal(m_rho);
 
+    const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
+    const amrex::Real Lx = probhi[0]-problo[0];
+    const amrex::Real Ly = probhi[1]-problo[1];
+    const amrex::Real Lz = probhi[2]-problo[2];
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
-
         const auto& dx = geom.CellSizeArray();
-        const auto& problo = geom.ProbLoArray();
-        const auto& probhi = geom.ProbHiArray();
-
         auto vel = velocity.array(mfi);
-        const amrex::Real Lx = probhi[0]-problo[0];
-        const amrex::Real Ly = probhi[1]-problo[1];
-        const amrex::Real Lz = probhi[2]-problo[2];
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
