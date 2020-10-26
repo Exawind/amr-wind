@@ -6,6 +6,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/DerivedQuantity.H"
+#include "amr-wind/utilities/DerivedQtyDefs.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_PlotFileUtil.H"
