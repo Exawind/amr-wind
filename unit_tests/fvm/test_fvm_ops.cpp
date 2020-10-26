@@ -277,7 +277,8 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
 
 amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
 {
-    
+    amrex::Real error_total = 0.0;
+    return error_total;
 }
 
 amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
