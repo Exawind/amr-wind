@@ -2,7 +2,7 @@ time.max_step                = 10
 time.stop_time               = 5.0           # Max (simulated) time to evolve
 
 incflo.use_godunov                     = true
-incflo.use_ppm                         = false
+incflo.godunov_type = "plm"
 
 time.fixed_dt = 0.05
 time.cfl              = 0.49           # CFL factor
