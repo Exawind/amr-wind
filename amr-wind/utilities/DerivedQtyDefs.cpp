@@ -20,6 +20,22 @@ void VorticityMag::operator()(ScratchField& fld, const int scomp)
     fvm::vorticity_mag(vort_mag, m_vel);
 }
 
+QCriterion::QCriterion(
+    const FieldRepo& repo, const std::vector<std::string>& args)
+    : m_vel(repo.get_field("velocity"))
+{
+    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+}
+
+void QCriterion::operator()(ScratchField& fld, const int scomp)
+{
+    AMREX_ASSERT(fld.num_comp() > (scomp));
+    auto q_crit = fld.subview(scomp, 1);
+    fvm::q_criterion(q_crit, m_vel);
+}
+
+
+
 StrainRateMag::StrainRateMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
