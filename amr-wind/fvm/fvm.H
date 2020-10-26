@@ -7,6 +7,7 @@
 #include "amr-wind/fvm/laplacian.H"
 #include "amr-wind/fvm/strainrate.H"
 #include "amr-wind/fvm/vorticity_mag.H"
+#include "amr-wind/fvm/qcriterion.H"
 
 /**
  *  \defgroup fvm Finite-Volume Operators
