@@ -270,6 +270,36 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real curvature(
            std::pow(phix * phix + phiy * phiy + phiz * phiz, 1.5);
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
+    int degree,
+    const amrex::Real* coeffx,
+    const amrex::Real* coeffy,
+    const amrex::Real* coeffz,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z) noexcept
+{
+    const amrex::Real ux = dphidx_eval(degree, coeffx, x, y, z);
+    const amrex::Real uy = dphidy_eval(degree, coeffx, x, y, z);
+    const amrex::Real uz = dphidz_eval(degree, coeffx, x, y, z);
+
+    const amrex::Real vx = dphidx_eval(degree, coeffy, x, y, z);
+    const amrex::Real vy = dphidy_eval(degree, coeffy, x, y, z);
+    const amrex::Real vz = dphidz_eval(degree, coeffy, x, y, z);
+
+    const amrex::Real wx = dphidx_eval(degree, coeffz, x, y, z);
+    const amrex::Real wy = dphidy_eval(degree, coeffz, x, y, z);
+    const amrex::Real wz = dphidz_eval(degree, coeffz, x, y, z);
+
+    const amrex::Real S = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz + (uy + vx) * (uy + vx) +
+        (vz + wy) * (vz + wy) + (wx + uz) * (wx + uz);
+    const amrex::Real W = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz + (uy - vx) * (uy - vx) +
+        (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz);
+
+    return 0.5*(S-W);
+}
+
+
 } // namespace analytical_function
 
 } // namespace amr_wind_tests
