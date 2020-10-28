@@ -14,6 +14,12 @@
 
 namespace amr_wind {
 
+namespace pde {
+namespace icns {
+class ABLForcing;
+} // namespace icns
+} // namespace pde
+
 /**
  *  \defgroup abl_istats ABL Statistics
  *
@@ -53,6 +59,11 @@ public:
         return m_pa_temp;
     }
 
+    void register_forcing_term(pde::icns::ABLForcing* forcing) const
+    {
+        m_abl_forcing = forcing;
+    }
+
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -84,6 +95,9 @@ private:
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
+
+    //! Reference to ABL forcing term if present
+    mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF

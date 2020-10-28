@@ -4,6 +4,7 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/tensor_ops.H"
+#include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
@@ -206,12 +207,31 @@ void ABLStats::write_ascii()
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
 
+    amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+    if (m_abl_forcing != nullptr) {
+        abl_forcing = m_abl_forcing->abl_forcing();
+    }
+
+    double wstar = 0.0;
+    auto Q = m_abl_wall_func.mo().surf_temp_flux;
+    if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
+    auto L = m_abl_wall_func.mo().obukhov_len;
+
     std::ofstream outfile;
     outfile.precision(4);
     outfile.open(
         m_ascii_file_name.c_str(), std::ios_base::out | std::ios_base::app);
-    outfile << time.new_time() << ", " << m_abl_wall_func.utau() << ", " << 0.0
-            << ", " << 0.0 << ", " << m_zi << std::endl;
+    // clang-format off
+    outfile << time.new_time() << ", "
+            << Q << ", "
+            << m_abl_wall_func.mo().surf_temp << ", "
+            << m_abl_wall_func.utau() << ", "
+            << wstar << ", "
+            << L << ", "
+            << m_zi << ", "
+            << abl_forcing[0] << ", "
+            << abl_forcing[1] << std::endl;
+    // clang-format on
     outfile.close();
 }
 
@@ -235,7 +255,9 @@ void ABLStats::prepare_ascii_file()
 
     std::ofstream outfile;
     outfile.open(m_ascii_file_name.c_str(), std::ios_base::out);
-    outfile << "Time,   ustar,   wstar,   L,   zi" << std::endl;
+    outfile << "Time,   Q, Tsurf, ustar,   wstar,   L,   zi, abl_forcing_x, "
+               "abl_forcing_y"
+            << std::endl;
     outfile.close();
 }
 
@@ -270,6 +292,8 @@ void ABLStats::prepare_netcdf_file()
     ncf.def_var("wstar", NC_DOUBLE, {nt_name});
     ncf.def_var("L", NC_DOUBLE, {nt_name});
     ncf.def_var("zi", NC_DOUBLE, {nt_name});
+    ncf.def_var("abl_forcing_x", NC_DOUBLE, {nt_name});
+    ncf.def_var("abl_forcing_y", NC_DOUBLE, {nt_name});
 
     auto grp = ncf.def_group("mean_profiles");
     size_t n_levels = m_pa_vel.ncell_line();
@@ -336,6 +360,13 @@ void ABLStats::write_netcdf()
         double L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
+
+        amrex::RealArray abl_forcing = {{0.0, 0.0, 0.0}};
+        if (m_abl_forcing != nullptr) {
+            abl_forcing = m_abl_forcing->abl_forcing();
+        }
+        ncf.var("abl_forcing_x").put(&abl_forcing[0], {nt}, {1});
+        ncf.var("abl_forcing_y").put(&abl_forcing[1], {nt}, {1});
 
         auto grp = ncf.group("mean_profiles");
         size_t n_levels = m_pa_vel.ncell_line();
