@@ -221,6 +221,7 @@ void ABLStats::write_ascii()
     outfile.precision(4);
     outfile.open(
         m_ascii_file_name.c_str(), std::ios_base::out | std::ios_base::app);
+    // clang-format off
     outfile << time.new_time() << ", "
             << Q << ", "
             << m_abl_wall_func.mo().surf_temp << ", "
@@ -230,6 +231,7 @@ void ABLStats::write_ascii()
             << m_zi << ", "
             << abl_forcing[0] << ", "
             << abl_forcing[1] << std::endl;
+    // clang-format on
     outfile.close();
 }
 
@@ -253,7 +255,9 @@ void ABLStats::prepare_ascii_file()
 
     std::ofstream outfile;
     outfile.open(m_ascii_file_name.c_str(), std::ios_base::out);
-    outfile << "Time,   Q, Tsurf, ustar,   wstar,   L,   zi, abl_forcing_x, abl_forcing_y" << std::endl;
+    outfile << "Time,   Q, Tsurf, ustar,   wstar,   L,   zi, abl_forcing_x, "
+               "abl_forcing_y"
+            << std::endl;
     outfile.close();
 }
 
