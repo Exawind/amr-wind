@@ -459,7 +459,6 @@ void VelPlaneAveraging::output_line_average_ascii(
         outfile.open(filename.c_str(), std::ios_base::out | std::ios_base::app);
     }
 
-    std::cerr << "m_ncomp = " << m_ncomp << std::endl;
     for (int i = 0; i < m_ncell_line; ++i) {
         outfile << step << ", " << std::scientific << time << ", "
                 << m_line_xcentroid[i];
