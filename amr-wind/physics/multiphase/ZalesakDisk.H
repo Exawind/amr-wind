@@ -2,7 +2,6 @@
 #define ZalesakDisk_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/physics/multiphase/ZalesakDiskFieldInit.H"
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Zalesak disk physics
@@ -14,6 +13,10 @@ namespace amr_wind {
 
 class ZalesakDisk : public Physics::Register<ZalesakDisk>
 {
+
+    static_assert(
+        AMREX_SPACEDIM == 3, "ZalesakDisk requires 3 dimensional mesh");
+
 public:
     static const std::string identifier() { return "ZalesakDisk"; }
 
@@ -39,8 +42,17 @@ private:
     Field& m_velocity;
     Field& m_levelset;
 
-    //! ZalesakDisk field initializer instance
-    std::unique_ptr<ZalesakDiskFieldInit> m_field_init;
+    //! Initial ZalesakDisk location
+    amrex::Vector<amrex::Real> m_loc{{0.5, 0.72, 0.24}};
+
+    //! sphere radius value
+    amrex::Real m_radius{0.16};
+
+    //! slot width value
+    amrex::Real m_width{0.04};
+
+    //! slot depth
+    amrex::Real m_depth{0.2};
 
     //! prescribed velocity period
     amrex::Real m_TT{6.0};

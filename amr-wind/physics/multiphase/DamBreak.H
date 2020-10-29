@@ -2,7 +2,6 @@
 #define DamBreak_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/physics/multiphase/DamBreakFieldInit.H"
 #include "amr-wind/core/Field.H"
 
 /** Multiphase Dam break physics
@@ -34,12 +33,18 @@ public:
     void post_advance_work() override {}
 
 private:
-
     Field& m_velocity;
     Field& m_levelset;
 
-    //! DamBreak field initializer instance
-    std::unique_ptr<DamBreakFieldInit> m_field_init;
+    //! Initial DamBreak location
+    amrex::Vector<amrex::Real> m_loc{{0.0, 0.0, 0.0}};
+
+    //! dam width value
+    amrex::Real m_width{0.1};
+
+    //! dam height value
+    amrex::Real m_height{0.25};
+
 };
 
 } // namespace amr_wind
