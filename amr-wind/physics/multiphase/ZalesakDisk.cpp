@@ -1,5 +1,4 @@
 #include "amr-wind/physics/multiphase/ZalesakDisk.H"
-#include "amr-wind/physics/multiphase/ZalesakDiskFieldInit.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"
@@ -12,13 +11,10 @@ ZalesakDisk::ZalesakDisk(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
 {
-    // This shouldn't be here, but this is part of the prescirbed velocity field
-    // and doesn't fit within ZalesakDiskFieldInit either.
-    amrex::ParmParse pp_vortex_patch("ZalesakDisk");
-    pp_vortex_patch.query("period", m_TT);
-
-    // Instantiate the ZalesakDisk field initializer
-    m_field_init.reset(new ZalesakDiskFieldInit());
+    amrex::ParmParse pp(identifier());
+    pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp.query("radius", m_radius);
+    pp.query("period", m_TT);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -30,11 +26,51 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
+
+    const amrex::Real xc = m_loc[0];
+    const amrex::Real yc = m_loc[1];
+    const amrex::Real zc = m_loc[2];
+    const amrex::Real radius = m_radius;
+    const amrex::Real TT = m_TT;
+    const amrex::Real width = m_width;
+    const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
+        auto vel = velocity.array(mfi);
+        auto phi = velocity.array(mfi);
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-        (*m_field_init)(vbx, geom, velocity.array(mfi), levelset.array(mfi));
+                vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
+                vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
+                vel(i, j, k, 2) = 0.0;
+
+                phi(i, j, k) =
+                    radius - std::sqrt(
+                                 (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                                 (z - zc) * (z - zc));
+                amrex::Real d1, d2, min_dist;
+
+                if (y < radius + yc && y > yc + radius - depth &&
+                    std::abs(x - xc) <= width && std::abs(z - zc) <= radius) {
+                    if (x > xc) {
+                        d1 = std::abs(xc + width - x);
+                    } else {
+                        d1 = std::abs(xc - width - x);
+                    }
+
+                    d2 = std::abs(y - (yc + radius - depth));
+                    min_dist = amrex::min(d1, d2);
+
+                    phi(i, j, k) = -min_dist;
+                }
+            });
     }
 }
 

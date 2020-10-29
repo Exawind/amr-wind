@@ -2,7 +2,6 @@
 #define VortexPatch_H
 
 #include "amr-wind/core/Physics.H"
-#include "amr-wind/physics/multiphase/VortexPatchFieldInit.H"
 #include "amr-wind/core/Field.H"
 
 /** Multiphase vortex patch physics
@@ -14,6 +13,8 @@ namespace amr_wind {
 
 class VortexPatch : public Physics::Register<VortexPatch>
 {
+    static_assert(
+        AMREX_SPACEDIM == 3, "VortexPatch requires 3 dimensional mesh");
 public:
     static const std::string identifier() { return "VortexPatch"; }
 
@@ -39,8 +40,11 @@ private:
     Field& m_velocity;
     Field& m_levelset;
 
-    //! VortexPatch field initializer instance
-    std::unique_ptr<VortexPatchFieldInit> m_field_init;
+    //! Initial VortexPatch location
+    amrex::Vector<amrex::Real> m_loc{{0.35, 0.35, 0.35}};
+
+    //! vortex patch radius value
+    amrex::Real m_radius{0.15};
 
     //! prescribed velocity period
     amrex::Real m_TT{3.0};

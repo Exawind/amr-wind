@@ -1,5 +1,4 @@
 #include "amr-wind/physics/multiphase/VortexPatch.H"
-#include "amr-wind/physics/multiphase/VortexPatchFieldInit.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
@@ -10,13 +9,9 @@ VortexPatch::VortexPatch(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
 {
-    // This shouldn't be here, but this is part of the prescirbed velocity field
-    // and doesn't fit within VortexPatchFieldInit either.
-    amrex::ParmParse pp_vortex_patch("VortexPatch");
-    pp_vortex_patch.query("period", m_TT);
-
-    // Instantiate the VortexPatch field initializer
-    m_field_init.reset(new VortexPatchFieldInit());
+    amrex::ParmParse pp(identifier());
+    pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp.query("radius", m_radius);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -28,11 +23,38 @@ void VortexPatch::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
+    const auto& dx = geom.CellSizeArray();
+    const auto& problo = geom.ProbLoArray();
 
+    const amrex::Real xc = m_loc[0];
+    const amrex::Real yc = m_loc[1];
+    const amrex::Real zc = m_loc[2];
+    const amrex::Real radius = m_radius;
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
+        auto vel = velocity.array(mfi);
+        auto phi = levelset.array(mfi);
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-        (*m_field_init)(vbx, geom, velocity.array(mfi), levelset.array(mfi));
+                vel(i, j, k, 0) =
+                    2.0 * std::sin(M_PI * x) * std::sin(M_PI * x) *
+                    std::sin(2.0 * M_PI * y) * std::sin(2.0 * M_PI * z);
+                vel(i, j, k, 1) = -std::sin(M_PI * y) * std::sin(M_PI * y) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * z);
+                vel(i, j, k, 2) = -std::sin(M_PI * z) * std::sin(M_PI * z) *
+                                  std::sin(2.0 * M_PI * x) *
+                                  std::sin(2.0 * M_PI * y);
+
+                phi(i, j, k) =
+                    radius - std::sqrt(
+                                 (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                                 (z - zc) * (z - zc));
+            });
     }
 }
 
