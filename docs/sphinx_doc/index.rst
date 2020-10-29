@@ -42,7 +42,7 @@ objectives:
    :maxdepth: 3
 
    build
-   getting_started
+   theory/theory 
    user/inputs
    user/abl_bndry_io
    dev/index
