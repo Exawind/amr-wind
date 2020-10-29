@@ -1,5 +1,3 @@
-.. theory:
-
 Theory Manual
 ================================
 
@@ -100,6 +98,31 @@ then defining
 and 
 
 .. math:: {p}^{n+1/2, \ast} = \phi
+
+Multiphase flow modelling
+------------------------------------
+
+The level-set (LS) method was introduced by \cite{OsherSethian1988} to simulate the motion of a surface with curvature dependent speed. In the LS method, the two-phase interface is represented implicitly by a signed distance function (also called level-set function)
+
+
+.. math::
+
+   \phi ( \mathbf{x},t ) = \begin{cases} 
+      d , & \text{in water} \\
+      0,  & \text{on surface} \\
+      -d, & \text{in air.}
+   \end{cases}
+
+where :math:`d` is the distance from point :math:`\mathbf{x}` to the interface.
+
+.. math:: \frac{\partial \phi}{\partial t} + \mathbf{u} \nabla \phi = 0 
+
+where :math:`\mathbf{u}=(u_x,u_y,u_z)` is the velocity vector.
+Re-initialization of the level-set
+
+.. math:: \frac{\partial \phi}{\partial \tau} = \text{sgn}(\phi^0)(1-|\nabla \phi|)
+
+where :math:`\phi^0=\phi(x,0)` represents the location of the interface. 
 
 Navigating source code
 ------------------------
