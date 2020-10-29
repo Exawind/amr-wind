@@ -2,12 +2,12 @@
 #            SIMULATION STOP            #
 #.......................................#
 time.stop_time               =   6     # Max (simulated) time to evolve
-time.max_step                =   10          # Max number of time steps
+time.max_step                =   1000          # Max number of time steps
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#
-time.fixed_dt         =   0.002        # Use this constant dt if > 0
+time.fixed_dt         =   0.001        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -28,7 +28,7 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase DamBreak 
-MultiPhase.density_fluid1=1000
+MultiPhase.density_fluid1=100
 MultiPhase.density_fluid2=1
 ICNS.source_terms = DensityBuoyancy
 
