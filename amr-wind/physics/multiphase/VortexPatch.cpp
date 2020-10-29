@@ -9,9 +9,9 @@ VortexPatch::VortexPatch(CFDSim& sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
 {
-    amrex::ParmParse pp_vortex_patch("VortexPatch");
-    pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
-    pp_vortex_patch.query("radius", m_radius);
+    amrex::ParmParse pp(identifier());
+    pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp.query("radius", m_radius);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
