@@ -122,10 +122,11 @@ void ABLWallFunction::update_umean(
     const auto& time = m_sim.time();
 
     if (!m_tempflux)
-        m_mo.surf_temp = m_surf_temp_init +
-                         m_surf_temp_rate *
-                             (time.current_time() - m_surf_temp_rate_tstart) /
-                             3600.0;
+        m_mo.surf_temp =
+            m_surf_temp_init +
+            m_surf_temp_rate *
+                amrex::max(time.current_time() - m_surf_temp_rate_tstart, 0.0) /
+                3600.0;
 #if 1
     {
         m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
