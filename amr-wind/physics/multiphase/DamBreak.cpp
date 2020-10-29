@@ -11,9 +11,9 @@ DamBreak::DamBreak(CFDSim& sim)
     , m_levelset(sim.repo().get_field("levelset"))
 {
     amrex::ParmParse pp(identifier());
-    pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
-    pp_vortex_patch.query("width", m_width);
-    pp_vortex_patch.query("height", m_height);
+    pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
+    pp.query("width", m_width);
+    pp.query("height", m_height);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
