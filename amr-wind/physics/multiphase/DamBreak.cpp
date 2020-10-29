@@ -10,7 +10,7 @@ DamBreak::DamBreak(CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
 {
-    amrex::ParmParse pp_vortex_patch("DamBreak");
+    amrex::ParmParse pp(identifier());
     pp_vortex_patch.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp_vortex_patch.query("width", m_width);
     pp_vortex_patch.query("height", m_height);
