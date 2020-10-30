@@ -16,15 +16,17 @@ namespace amr_wind {
  *  bounding box specifications. This class only allows nested refinement of
  *  regions that are aligned with the coordinate directons.
  */
-class CartBoxRefinement : public RefinementCriteria
+class CartBoxRefinement : public RefinementCriteria::Register<CartBoxRefinement>
 {
 public:
-    CartBoxRefinement() = default;
+    static std::string identifier() { return "CartBoxRefinement"; }
+
+    CartBoxRefinement(CFDSim& sim);
 
     virtual ~CartBoxRefinement() = default;
 
     //! Read input file and initialize boxarray used to refine each level
-    virtual void initialize(const amrex::AmrCore&) override;
+    virtual void initialize(const std::string& key) override;
 
     virtual void
     operator()(int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
@@ -42,6 +44,8 @@ public:
     }
 
 protected:
+    const amrex::AmrCore& m_mesh;
+
     //! Domain bounding boxes where refinement is performed at each level
     amrex::Vector<amrex::Vector<amrex::RealBox>> m_real_boxes;
 

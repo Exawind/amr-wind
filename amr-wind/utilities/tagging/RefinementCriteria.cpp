@@ -1,0 +1,40 @@
+#include "amr-wind/utilities/tagging/RefinementCriteria.H"
+#include "amr-wind/CFDSim.H"
+
+#include "AMReX_ParmParse.H"
+
+namespace amr_wind {
+
+RefineCriteriaManager::RefineCriteriaManager(CFDSim& sim) : m_sim(sim) {}
+
+void RefineCriteriaManager::initialize()
+{
+    BL_PROFILE("amr-wind::RefineCriteriaManager::initialize");
+    // Labels for different sampler types
+    amrex::Vector<std::string> labels;
+    {
+        amrex::ParmParse pp("tagging");
+        pp.queryarr("labels", labels);
+    }
+
+    for (auto& lbl : labels) {
+        const std::string key = "tagging/" + lbl;
+        amrex::ParmParse pp(key);
+        std::string stype = "CartBoxRefinement";
+        pp.query("type", stype);
+
+        auto obj = RefinementCriteria::create(stype, m_sim);
+        obj->initialize(key);
+        m_refiners.emplace_back(std::move(obj));
+    }
+}
+
+void RefineCriteriaManager::tag_cells(
+    int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
+{
+    for (auto& rc: m_refiners) {
+        (*rc)(lev, tags, time, ngrow);
+    }
+}
+
+} // namespace amr_wind

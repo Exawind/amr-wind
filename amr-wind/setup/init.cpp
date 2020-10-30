@@ -74,8 +74,8 @@ void incflo::ReadParameters()
         pp.query("static_refinement", static_refine);
         if (static_refine) {
             std::unique_ptr<amr_wind::CartBoxRefinement> obj(
-                new amr_wind::CartBoxRefinement);
-            obj->initialize(*this);
+                new amr_wind::CartBoxRefinement(m_sim));
+            obj->initialize("tagging");
 
             m_refine_criteria.push_back(std::move(obj));
         }
