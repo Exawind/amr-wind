@@ -86,7 +86,5 @@ void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
         }
     }
 
-    for (auto& rc : m_refine_criteria) {
-        (*rc)(lev, tags, time, ngrow);
-    }
+    m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
 }

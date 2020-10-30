@@ -10,7 +10,11 @@
 
 using namespace amrex;
 
-incflo::incflo() : m_sim(*this), m_time(m_sim.time()), m_repo(m_sim.repo())
+incflo::incflo()
+    : m_sim(*this)
+    , m_time(m_sim.time())
+    , m_repo(m_sim.repo())
+    , m_mesh_refiner(new amr_wind::RefineCriteriaManager(m_sim))
 {
     // NOTE: Geometry on all levels has just been defined in the AmrCore
     // constructor. No valid BoxArray and DistributionMapping have been defined.
@@ -302,4 +306,7 @@ void incflo::init_physics_and_pde()
 
     m_sim.init_physics();
     m_sim.create_turbulence_model();
+
+    // Initialize the refinement criteria
+    m_mesh_refiner->initialize();
 }
