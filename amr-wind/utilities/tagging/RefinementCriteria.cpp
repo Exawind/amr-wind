@@ -20,8 +20,8 @@ void RefineCriteriaManager::initialize()
     for (auto& lbl : labels) {
         const std::string key = "tagging/" + lbl;
         amrex::ParmParse pp(key);
-        std::string stype = "CartBoxRefinement";
-        pp.query("type", stype);
+        std::string stype;
+        pp.get("type", stype);
 
         auto obj = RefinementCriteria::create(stype, m_sim);
         obj->initialize(key);

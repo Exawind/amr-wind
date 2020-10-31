@@ -6,6 +6,20 @@
 namespace amr_wind {
 class Field;
 
+/** AMR refinement using a given field (e.g., density)
+ *  \ingroup amr_utils
+ *
+ *  ```
+ *  tagging.labels = t1
+ *  tagging/t1.type = FieldRefinement
+ *  tagging/t1.field_name = density
+ *  # Tagging based on field value
+ *  # tagging/t1.field_error = 10.0 10.0
+
+ *  # Tagging based on local gradient
+ *  tagging/t1.grad_error = 0.1 0.1 0.1
+ *  ```
+ */
 class FieldRefinement : public RefinementCriteria::Register<FieldRefinement>
 {
 public:
