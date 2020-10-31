@@ -8,7 +8,7 @@ using namespace amrex;
 void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
 {
     BL_PROFILE("amr-wind::incflo::ErrorEst()");
-
+#if 0
     static bool first = true;
     static Vector<Real> rhoerr_v, gradrhoerr_v;
 
@@ -85,6 +85,6 @@ void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
                 });
         }
     }
-
+#endif
     m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
 }

@@ -310,3 +310,9 @@ void incflo::init_physics_and_pde()
     // Initialize the refinement criteria
     m_mesh_refiner->initialize();
 }
+
+void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
+{
+    BL_PROFILE("amr-wind::incflo::ErrorEst()");
+    m_mesh_refiner->tag_cells(lev, tags, time, ngrow);
+}
