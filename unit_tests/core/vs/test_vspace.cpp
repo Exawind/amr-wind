@@ -169,4 +169,17 @@ TEST(VectorSpace, device_capture) { test_device_capture_impl(); }
 
 TEST(VectorSpace, device_lists) { test_device_lists_impl(); }
 
+TEST(VectorSpace, vector_ops)
+{
+    namespace vs = amr_wind::vs;
+    const vs::Vector v1{10.0, 20.0, 0.0};
+    const vs::Vector v2{1.0, 2.0, 0.0};
+    const auto v21 = vs::mag_sqr(v2.unit());
+
+    EXPECT_NEAR((v1 & v2), 50.0 * v21, tol);
+    EXPECT_NEAR((v1 & vs::Vector::khat()), 0.0, tol);
+
+    EXPECT_NEAR(vs::mag_sqr((v1 + v2) - vs::Vector{11.0, 22.0, 0.0}), 0.0, tol);
+}
+
 } // namespace amr_wind_tests

@@ -91,6 +91,12 @@ struct VectorT
     VectorT<T> operator-() const;
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    VectorT<T> operator*=(const T val);
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
+    VectorT<T> operator/=(const T val);
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     T& operator[](size_type pos) { return vv[pos]; }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
     const T& operator[](size_type pos) const { return vv[pos]; }
