@@ -26,7 +26,6 @@ domain are prefixed with ``geometry.`` and so on. A sample input file is shown b
 
 .. literalinclude:: ./amr_wind_inputs.txt
    :linenos:
-   :emphasize-lines: 6, 11, 15, 26, 33, 49, 55, 59, 75, 85, 89, 95, 107, 111
 
 
 Input file reference
@@ -46,9 +45,10 @@ Section                 Description
 ``turbulence``          Turbulence model controls 
 ``ABL``                 Atmospheric boundary layer (ABL) controls
 ``Momentum sources``    Activate Momentum source terms and their parameters
-``Static Refinement``   Cartesian static refinement options
 ``Boundary conditions`` Boundary condition types and gradients
 ``MLMG options``        Multi-Level Multi-Grid Linear solver options
+``Tagging``             Cartesian static refinement options
+``Sampling``            Data probes to sample field data during simulations
 ======================= ============================================================
 
 This section documents the parameters available within each section.
@@ -62,7 +62,7 @@ This section documents the parameters available within each section.
 
    - If an input is repeated only the last one is used.
 
-Section: ``geometry``
+Section: geometry
 ~~~~~~~~~~~~~~~~~~~~~
 
 This section deals with inputs related to the problem domain.
@@ -86,11 +86,12 @@ This section deals with inputs related to the problem domain.
    Flags indicating whether the flow is periodic in the ``x``, ``y``, or ``z``
    directions respectively.
 
-Section: ``amr``
+Section: amr
 ~~~~~~~~~~~~~~~~
 
-This section mostly contains inputs the adaptive mesh refinement capabilities of
-:program:`amr_wind`.
+This section contains input parameters used by the core AMReX mesh data
+structure ``AmrCore`` to determine the base mesh and adaptive mesh refinement
+strategies. The refinement criteria is specified through :ref:`inputs_tagging`
 
 .. input_param:: amr.n_cell
 
@@ -118,11 +119,11 @@ This section mostly contains inputs the adaptive mesh refinement capabilities of
 
    **type:** Integer, optional, default: 8
 
-   Each grid must be divisible by ``amr.blocking_factor``.
+   Each grid must be divisible by :input_param:`amr.blocking_factor`.
    There are also options to specify this value in each direction,
    please refer to AMReX documentation.
 
-Section: ``time``
+Section: time
 ~~~~~~~~~~~~~~~~~
 
 This section deals with parameters that control the simulation.
@@ -212,30 +213,11 @@ This section deals with parameters that control the simulation.
    If this flag is true then the forces (including the pressure gradient) are included
    in the CFL calculation.
    
-Section: ``io``
+Section: io
 ~~~~~~~~~~~~~~~~~
 
 This section deals with parameters that control input/output to the simulation.
 
-.. input_param:: io.line_plot_int
-
-   **type:** Integer, optional, default = 1
-
-   If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which line plot files are written to disk. 
-   Currently line plotting is only turned on for ABL simulations.
-   
-.. input_param:: io.line_plot_type
-
-   **type:** Integer, optional, default = 0
-
-   This input specifies the type of line plot output, where 0 outputs averages and
-   fluctuations in a text format, 
-   1 outputs only averages in text format, 
-   and 2 outputs averages and fluctuations in a binary format. 
-   Currently line plotting is only turned on for ABL simulations
-
-   
 .. input_param:: io.KE_int
 
    **type:** Integer, optional, default = -1
@@ -264,7 +246,7 @@ This section deals with parameters that control input/output to the simulation.
    If a string is present `amr-wind` will restart using the specified file in the string.
    
    
-Section: ``incflo``
+Section: incflo
 ~~~~~~~~~~~~~~~~~~~
 
 This section deals with parameters that mostly determine how amr-wind is run such 
@@ -395,7 +377,7 @@ as initial conditions and discretization options.
    In the above example, the code will read the parameters with keyword
    ``sampling`` to initialize user-defined probes.
    
-Section: ``transport``
+Section: transport
 ~~~~~~~~~~~~~~~~~~~~~~
 
 This section is for setting thermal and momentum diffusivities.
@@ -424,7 +406,7 @@ This section is for setting thermal and momentum diffusivities.
 
    Sets the turbulent Prandtl number.
    
-Section: ``turbulence``
+Section: turbulence
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This section is for setting turbulence model parameters
@@ -444,7 +426,7 @@ This section is for setting turbulence model parameters
 
    Specifies the coefficient used in the `Smagorinsky` turbulence model. 
    
-Section: ``ABL``
+Section: ABL
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 This section is for setting atmospheric boundary layer parameters.
@@ -602,30 +584,30 @@ This section is for setting atmospheric boundary layer parameters.
    Variables for IO for ABL inflow
 
 
-Section: ``Momentum Sources``
+Section: Momentum Sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 .. input_param:: ICNS.source_terms
 
    **type:** String(s), optional
    
-   Activates source terms for the incompressible Navier-Stokes momentum equations. 
-   These strings can be entered in any order with a space between each. 
-   Current existing source terms for ABL include "BoussinesqBuoyancy", "CoriolisForcing",
-   "GeostrophicForcing" and "ABLForcing". 
-   Other source terms include "MMSForcing" and "DensityBuoyancy".
-   
+   Activates source terms for the incompressible Navier-Stokes momentum
+   equations. These strings can be entered in any order with a space between
+   each. Please consult `AMR-Wind developer documentation
+   <https://exawind.github.io/amr-wind/group__icns__src.html>`_ for a
+   comprehensive list of all momentum source terms available.
+
 .. input_param:: BoussinesqBuoyancy.reference_temperature
 
    **type:** Real, mandatory
    
-   Reference temperature in Kelvin. 
+   Reference temperature :math:`\theta_\mathrm{ref}` in Kelvin.
    Values of the temperature field that are less than or greater than this value will 
    cause a buoyancy force in the direction of the gravity vector.
    
 .. input_param:: BoussinesqBuoyancy.thermal_expansion_coeff
 
-   **type:** Real, optional, default = ``1/BoussinesqBuoyancy.reference_temperature``
+   **type:** Real, optional, default :math:`\beta = 1 / \theta_\mathrm{ref}`
    
    Thermal expansion coefficient, if not specified this value is set to the inverse of the
    :input_param:`BoussinesqBuoyancy.reference_temperature` value.
@@ -634,7 +616,8 @@ Section: ``Momentum Sources``
 
    **type:** Real, mandatory
    
-   Latitude in degrees where the Coriolis forcing is computed (northern hemisphere).
+   Latitude in degrees where the Coriolis forcing is computed. Positive values
+   indicate northern hemisphere.
    
 .. input_param:: CoriolisForcing.rotational_time_period 
 
@@ -668,17 +651,17 @@ Section: ``Momentum Sources``
 
    **type:** Real, mandatory
    
-   height in meters at which the flow is forced to maintain the freestream inflow velocities
-   ``incflo.ic_u`` and ``incflo.ic_v``. 
+   Height in meters at which the flow is forced to maintain the freestream
+   inflow velocities specified through :input_param:`incflo.velocity`.
 
-Section: ``Static Refinement``
+Section: Static Refinement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section is for controlling the static mesh refinement of the grid. 
 
 .. input_param:: tagging.static_refinement 
 
-   **type:** Boolian, optional, default = false
+   **type:** Boolean, optional, default = false
    
    Static refinement with Cartesian-aligned bounding boxes. 
    
@@ -688,7 +671,7 @@ This section is for controlling the static mesh refinement of the grid.
    
    Static refinement with Cartesian-aligned bounding boxes input file name. 
    
-Section: ``Boundary conditions``
+Section: Boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    
 This section controls the boundary conditions. Only non-periodic BC's need to be defined here.
@@ -707,7 +690,7 @@ This section controls the boundary conditions. Only non-periodic BC's need to be
    
    Specifies a temperature gradient at the wall, only activated for slip_wall and wall_model BC types. 
    
-Section: ``MLMG options``
+Section: MLMG options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section specifies the Multi-Level Multi-Grid (MLMG) options for each type
@@ -855,10 +838,205 @@ temperature, to do that use "temperature_diffusion" as your prefix.
       nodal_proj.hypre.hypre_solver = GMRES
       nodal_proj.hypre.hypre_preconditioner = BoomerAMG
 
+.. _inputs_tagging:
+
+Section: AMR Tagging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section manages the various mesh refinement criteria that can be used to
+activate either static or adaptive mesh refinement during simulations. The
+parameters are read from the prefix ``tagging`` and can contain different types
+of tagging logic. Note that this section is only active if
+:input_param:`amr.max_level` is greater than zero. Regridding interval is controlled by :input_param:`time.regrid_interval` .
+
+Example::
+
+  tagging.labels = s1 f1 g1
+  tagging/s1.type = StaticRefinement
+  tagging/s1.static_refinement_def = static_box.txt
+
+  tagging/f1.type = FieldRefinement
+  tagging/f1.field_name = density
+  tagging/f1.grad_error = 0.1. 0.1 0.1
+
+  tagging/g1.type = GeometryRefinement
+  tagging/g1.shapes = c1 b1
+
+  tagging/g1/c1.type = cylinder
+  tagging/g1/c1.start = 500.0 500.0 250.0
+  tagging/g1/c1.end = 500.0 500.0 750.0
+  tagging/g1/c1.outer_radius = 300.0
+  tagging/g1/c1.inner_radius = 275.0
+
+  tagging/g1/b1.type = box
+  tagging/g1/b1.origin = 300.0 150.0 250.0
+  tagging/g1/b1.xaxis =  450.0 600.0 0.0
+  tagging/g1/b1.yaxis =  -150.0 100.0 0.0
+  tagging/g1/b1.zaxis = 0.0 0.0 500.0
+
+Each section must contain the keyword ``type`` that is one of the refinement types:
+
+======================== ===================================================================
+``CartBoxRefinement``    Nested refinement using Cartesian boxes
+``FieldRefinement``      Refinement based on error metric for field or its gradient
+``OversetRefinement``    Refinement around fringe/field interface
+``GeometryRefinement``   Refinement using geometric shapes
+======================== ===================================================================
+
+.. input_param:: tagging.labels
+
+   **type:** List of one or more names
+
+   Labels indicate a list of prefixes for different types of refinement criteria
+   active during the simulation.
+
+The parameters for the subsections are determined by the type of refinement being performed.
+
+Refinement using Cartesian boxes
+````````````````````````````````
+
+``CartBoxRefinement`` allows refining boxes (aligned with the principal axes).
+
+Example::
+
+   tagging.labels = static
+   tagging/static.type = CartBoxRefinement
+   tagging/static.static_refinement_def = static_box.txt
+
+.. input_param:: tagging.CartBoxRefinement.static_refinement_def
+
+   **type:** String, required
+
+   The text file that contains a list of bounding boxes used to perform
+   refinement at various levels.
+
+Refinement using field error criteria
+`````````````````````````````````````
+
+Example::
+
+  tagging/f1.type = FieldRefinement
+  tagging/f1.field_name = density
+  tagging/f1.grad_error = 0.1. 0.1 0.1
+
+.. input_param:: tagging.FieldRefinement.field_name
+
+   **type:** String, required
+
+   The name of the field used to tag cells
+
+.. input_param:: tagging.FieldRefinement.field_error
+
+   **type:** Vector<Real>, optional
+
+   List of field error values at each level. The user must specify a value for
+   each level desired.
+
+.. input_param:: tagging.FieldRefinement.grad_error
+
+   **type:** Vector<Real>, optional
+
+   List of gradient error values at each level. The user must specify a value for
+   each level desired.
+
+Refinement using geometry
+`````````````````````````
+
+This section controls refinement using pre-defined geometric shapes. Currently,
+two options are supported: 1. ``box`` -- refines the region inside a hexahedral
+block, and 2. ``cylinder`` -- refines the region inside a cylindrical block.
+
+.. input_param:: tagging.GeometryRefinement.shapes
+
+   **type:** List of strings, required
+
+   Names of the input subsections that define specific geometries for refinement.
+
+.. input_param:: tagging.GeoemtryRefinement.level
+
+   **type:**  Integer, optional, default: -1
+
+   If ``level`` is provided and is greater than or equal to 0, then the
+   refinement based on geometries defined for this section is only performed at
+   that level.
+
+.. input_param:: tagging.GeometryRefinement.min_level
+
+   **type:**  Integer, optional, default: 0
+
+   If ``level`` is not specified, then this option specifies the minimum level
+   where this refinement is active.
+
+.. input_param:: tagging.GeometryRefinement.max_level
+
+   **type:**  Integer, optional, default: ``mesh.maxLevel()``
+
+   If ``level`` is not specified, then this option specifies the maximum level
+   where this refinement is active.
+
+Note that the specification of ``level`` overrides, ``min_level`` and
+``max_level`` specifications. This can be used to control the different levels
+where refinement regions are active.
+
+Example::
+
+  tagging/g1.type = GeometryRefinement
+  tagging/g1.shapes = b1 b2
+  tagging/g1.level = 0
+  tagging/g1/b1.type = box
+  tagging/g1/b1.origin = 300.0 150.0 250.0
+  tagging/g1/b1.xaxis =  450.0 600.0 0.0
+  tagging/g1/b1.yaxis =  -150.0 100.0 0.0
+  tagging/g1/b1.zaxis = 0.0 0.0 500.0
+  tagging/g1/b2.type = box
+  tagging/g1/b2.origin = 600.0 350.0 250.0
+  tagging/g1/b2.xaxis =  50.0 30.0 0.0
+  tagging/g1/b2.yaxis =  -50.0 60.0 0.0
+  tagging/g1/b2.zaxis = 0.0 0.0 500.0
+
+  tagging/g2.type = GeometryRefinement
+  tagging/g2.shapes = c1
+  tagging/g2.level = 1
+  tagging/g2/c1.type = cylinder
+  tagging/g2/c1.start = 500.0 500.0 250.0
+  tagging/g2/c1.end = 500.0 500.0 750.0
+  tagging/g2/c1.outer_radius = 300.0
+  tagging/g2/c1.inner_radius = 275.0
+
+
+This example defines two different refinement definitions acting on level 0 and
+1 respectively. The refinement at level 0 (``g1``) contains two box regions,
+whereas the refinement at level 1 (``g2``) only contains one cylinder
+definition.
+
+**Refinement using hexahedral block definitions**
+
+To perform ``box`` refinement, the user specifies the ``origin`` of the box and
+three vectors: ``xaxis, yaxis, zaxis`` that defines the directions and the
+extents of the hexahedral block. Denoting :math:`\mathbf{O}` as origin vector
+and :math:`\mathbf{x}`, :math:`\mathbf{y}` and :math:`\mathbf{z}` as the three
+vectors given by the user, the position vectors of the eight corners of the
+hexahedral box are given by
+
+.. math::
+
+   \mathbf{x}_0 &= \mathbf{O} && \mathbf{x}_4 &= \mathbf{O} + \mathbf{z} \\
+   \mathbf{x}_1 &= \mathbf{O} + \mathbf{x} && \mathbf{x}_5 &= \mathbf{O} + \mathbf{z} + \mathbf{x} \\
+   \mathbf{x}_2 &= \mathbf{O} + \mathbf{x} + \mathbf{y} \qquad && \mathbf{x}_6 &= \mathbf{O} + \mathbf{z} + \mathbf{x} + \mathbf{y} \\
+   \mathbf{x}_3 &= \mathbf{O} + \mathbf{y} && \mathbf{x}_7 &= \mathbf{O} + \mathbf{z} + \mathbf{y} \\
+
+
+
+**Refinement using cylindrical block definitions**
+
+The axis and the extents along the axis are defined by two position vectors
+``start`` and ``end``. The radial extent is specified by ``outer_radius``. An
+optional ``inner_radius`` can be specified to restrict tagging to an annulus
+between the inner and outer radii.
 
 .. _inputs_sampling:
    
-Section: ``Sampling``
+Section: Sampling
 ~~~~~~~~~~~~~~~~~~~~~
 
 This section controls data-sampling (post-processing) actions supported within
@@ -889,7 +1067,7 @@ actual keyword is determined by the labels provided to
        AMReX particle ASCII format. Note, this can have significant impact
        on performance and must be used for debugging only.
 
-.. input_param:: labels
+.. input_param:: sampling.labels
 
    **type:** List of one or more names
 
@@ -898,13 +1076,14 @@ actual keyword is determined by the labels provided to
 
    For example, if the user uses
 
-   ::
+   Example::
+
       sampling.labels = line1 plane1 probe1
 
    Then the code expects to read ``sampling/line1, sampling/plane1,
    sampling/probe1`` sections to determine the specific sampling probe information.
 
-.. input_param:: fields
+.. input_param:: sampling.fields
 
    **type:** List of one or more strings
 
@@ -920,6 +1099,7 @@ defined by ``start`` and ``end`` coordinates with ``num_points`` equidistant
 nodes.
 
 Example::
+
   sampling/line1.type       = LineSampler
   sampling/line1.num_points = 21
   sampling/line1.start      = 250.0 250.0 10.0
