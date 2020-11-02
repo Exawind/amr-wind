@@ -126,6 +126,10 @@ void ABLFieldInit::perturb_temperature(
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
     auto& theta_fab = temperature(lev);
+    const auto theta_cutoff_height = m_theta_cutoff_height;
+    const auto theta_gauss_mean = m_theta_gauss_mean;
+    const auto theta_gauss_var = m_theta_gauss_var;
+    const auto deltaT = m_deltaT;
 
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
@@ -135,22 +139,22 @@ void ABLFieldInit::perturb_temperature(
         const auto& bx = mfi.tilebox();
         const auto& theta = theta_fab.array(mfi);
 
-        amrex::LoopOnCpu(bx, [&](int i, int j, int k) noexcept {
-            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-            if (z < m_theta_cutoff_height)
-                theta(i, j, k) =
-                    m_deltaT *
-                    amrex::RandomNormal(m_theta_gauss_mean, m_theta_gauss_var);
-        });
+        amrex::ParallelForRNG(
+            bx, [=] AMREX_GPU_DEVICE(
+                    int i, int j, int k,
+                    const amrex::RandomEngine& engine) noexcept {
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                if (z < theta_cutoff_height)
+                    theta(i, j, k) =
+                        deltaT * amrex::RandomNormal(
+                                     theta_gauss_mean, theta_gauss_var, engine);
+            });
     }
-    amrex::prefetchToDevice(theta_fab);
 }
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const amrex::Geometry& // geom
-    ,
+    const amrex::Geometry& /* geom */,
     amrex::MultiFab& tke) const
 {
     tke.setVal(m_tke_init, 1);
