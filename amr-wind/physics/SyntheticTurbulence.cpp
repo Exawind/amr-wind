@@ -490,6 +490,8 @@ void SyntheticTurbulence::update()
   auto& repo = m_turb_force.repo();
   auto& geom_vec = repo.mesh().Geom();
 
+  const amrex::Real timestep = m_time.deltaT();
+
   const int nlevels = repo.num_active_levels();
   for (int lev=0; lev < nlevels; ++lev) {
       const auto& geom = geom_vec[lev];
@@ -498,7 +500,6 @@ void SyntheticTurbulence::update()
       const amrex::Real dx = geom.CellSize()[0];
       const amrex::Real dy = geom.CellSize()[1];
       const amrex::Real dz = geom.CellSize()[2];
-      const amrex::Real ds = std::cbrt(dx * dy * dz);
 
       for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
           const auto& bx = mfi.tilebox();
@@ -536,18 +537,17 @@ void SyntheticTurbulence::update()
                 interp_perturb_vel(m_turb_grid, wts_loc, velL);
                 // Transform to global coordinates
                 local_to_global_vel(m_turb_grid, velL, velG);
-
                 
                 // Based on the equations in
                 // http://doi.wiley.com/10.1002/we.1608
                 // v_n in Eq. 10
-                const amrex::Real vMag =
+                const amrex::Real vMag = 
                     std::sqrt(velG[0] * velG[0]
                               + velG[1] * velG[1]
                               + velG[2] * velG[2]);
                 // (V_n + 1/2 v_n) in Eq. 10
                 const amrex::Real vMagTotal =
-                    ((*m_wind_profile)(xyzG[2]) + 0.5 * vMag);
+                    ((*m_wind_profile)(xyzG[0]) + 0.5 * vMag);
                 // Smearing factor (see Eq. 11). The normal direction to
                 // the grid is the x-axis of the local reference frame by
                 // construction
@@ -556,7 +556,7 @@ void SyntheticTurbulence::update()
                 const amrex::Real eta =
                     std::exp(-(term1 * term1)) * m_gauss_scaling;
                 const amrex::Real factor =
-                    vMagTotal * eta / m_grid_spacing;
+                    vMagTotal * eta;
 
                 
                 turb_force_arr(i,j,k,0) =
