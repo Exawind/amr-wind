@@ -4,6 +4,8 @@
 #include "AMReX_AmrCore.H"
 #include "AMReX_TagBox.H"
 
+#include "amr-wind/core/Factory.H"
+
 /**
  *  \defgroup amr_utils Mesh refinement
  *  Mesh refinement
@@ -16,6 +18,8 @@
 
 namespace amr_wind {
 
+class CFDSim;
+
 /** Abstract interface for tagging cells for refinement
  *  \ingroup amr_utils
  *
@@ -25,16 +29,18 @@ namespace amr_wind {
  *  or gradients), or some user defined criteria (e.g., static, nested
  * refinements).
  */
-class RefinementCriteria
+class RefinementCriteria : public Factory<RefinementCriteria, CFDSim&>
 {
 public:
+    static std::string base_identifier() { return "RefinementCriteria"; }
+
     RefinementCriteria() = default;
 
     virtual ~RefinementCriteria() = default;
 
     //! Perform initialization tasks (e.g., read from file etc.). Called before
     //! mesh is initialized
-    virtual void initialize(const amrex::AmrCore&) = 0;
+    virtual void initialize(const std::string& key) = 0;
 
     /** Perform tagging operation based on refinement criteria
      *
@@ -42,6 +48,26 @@ public:
      */
     virtual void operator()(
         int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
+};
+
+/** A collection of refinement criteria instances that are active during a simulation
+ *  \ingroup amr_utils
+ */
+class RefineCriteriaManager
+{
+public:
+    RefineCriteriaManager(CFDSim& sim);
+
+    ~RefineCriteriaManager() = default;
+
+    void initialize();
+
+    void tag_cells(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
+
+private:
+    CFDSim& m_sim;
+
+    amrex::Vector<std::unique_ptr<RefinementCriteria>> m_refiners;
 };
 
 } // namespace amr_wind

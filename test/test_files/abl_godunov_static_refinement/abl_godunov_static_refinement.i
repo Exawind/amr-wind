@@ -3,8 +3,10 @@
 #.......................................#
 time.stop_time               =   22000.0     # Max (simulated) time to evolve
 time.max_step                =   10          # Max number of time steps
-tagging.static_refinement = true
-tagging.static_refinement_def = static_box.txt 
+
+tagging.labels = static
+tagging/static.type = CartBoxRefinement
+tagging/static.static_refinement_def = static_box.txt
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #         TIME STEP COMPUTATION         #
 #.......................................#

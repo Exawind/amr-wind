@@ -79,7 +79,7 @@ TEST_F(NestRefineTest, box_refine)
 
     create_mesh_instance<NestRefineMesh>();
     std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
-        new amr_wind::CartBoxRefinement);
+        new amr_wind::CartBoxRefinement(sim()));
     box_refine->read_inputs(mesh(), ss);
 
     // Store the target boxarray for future tests
@@ -120,7 +120,7 @@ TEST_F(NestRefineTest, level_warning)
         CaptureOutput io;
         create_mesh_instance<NestRefineMesh>();
         std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
-            new amr_wind::CartBoxRefinement);
+            new amr_wind::CartBoxRefinement(sim()));
         box_refine->read_inputs(mesh(), ss);
 
         auto msg = io.stdout().str();
@@ -145,7 +145,7 @@ TEST_F(NestRefineTest, bbox_limits)
 
     create_mesh_instance<NestRefineMesh>();
     std::unique_ptr<amr_wind::CartBoxRefinement> box_refine(
-        new amr_wind::CartBoxRefinement);
+        new amr_wind::CartBoxRefinement(sim()));
     box_refine->read_inputs(mesh(), ss);
 
     auto targets = box_refine->boxarray_vec();

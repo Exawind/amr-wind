@@ -65,7 +65,7 @@ CMake configuration reference
 -----------------------------
 
 Architecture options
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 .. cmakeval:: AMR_WIND_ENABLE_MPI
 
@@ -104,7 +104,7 @@ Dependencies
    ``CMAKE_PREFIX_PATH``.
 
 Other AMR-Wind specific options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. cmakeval:: AMR_WIND_ENABLE_TESTS
 

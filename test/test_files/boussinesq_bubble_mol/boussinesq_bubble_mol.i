@@ -36,7 +36,10 @@ zhi.type                = "sw"
 zlo.temperature_type = "fixed_gradient"
 zhi.temperature_type = "fixed_gradient"
 
-incflo.gradrhoerr       = 0.1
+tagging.labels = density
+tagging/density.type = FieldRefinement
+tagging/density.field_name = density
+tagging/density.grad_error = 0.1 0.1 0.1 0.1
 
 incflo.diffusion_type   = 2             # 0 = Explicit, 1 = Crank-Nicolson, 2 = Implicit
 

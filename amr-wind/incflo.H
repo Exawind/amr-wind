@@ -17,6 +17,7 @@ namespace pde {
 class PDEBase;
 }
 class RefinementCriteria;
+class RefineCriteriaManager;
 } // namespace amr_wind
 
 /**
@@ -197,8 +198,7 @@ private:
     amr_wind::SimTime& m_time;
     amr_wind::FieldRepo& m_repo;
 
-    amrex::Vector<std::unique_ptr<amr_wind::RefinementCriteria>>
-        m_refine_criteria;
+    std::unique_ptr<amr_wind::RefineCriteriaManager> m_mesh_refiner;
 
     // Be verbose?
     int m_verbose = 0;
