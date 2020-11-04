@@ -47,7 +47,7 @@ Section                 Description
 ``Momentum sources``    Activate Momentum source terms and their parameters
 ``Boundary conditions`` Boundary condition types and gradients
 ``MLMG options``        Multi-Level Multi-Grid Linear solver options
-``Tagging``             Cartesian static refinement options
+``Tagging``             Static and dynamic refinement options
 ``Sampling``            Data probes to sample field data during simulations
 ======================= ============================================================
 
@@ -881,6 +881,7 @@ Each section must contain the keyword ``type`` that is one of the refinement typ
 ``FieldRefinement``      Refinement based on error metric for field or its gradient
 ``OversetRefinement``    Refinement around fringe/field interface
 ``GeometryRefinement``   Refinement using geometric shapes
+``QCriterionRefinement`` Refinement using absolute value of Q-Criterion
 ======================== ===================================================================
 
 .. input_param:: tagging.labels
@@ -1033,6 +1034,23 @@ The axis and the extents along the axis are defined by two position vectors
 ``start`` and ``end``. The radial extent is specified by ``outer_radius``. An
 optional ``inner_radius`` can be specified to restrict tagging to an annulus
 between the inner and outer radii.
+
+Refinement using Q-Criterion
+`````````````````````````````````````
+
+Example::
+
+  tagging/qc1.type = QCriterionRefinement
+  tagging/qc1.values = 10.0 20.0 20.0
+
+.. input_param:: tagging.QCriterionRefinement.values
+
+   **type:** Vector<Real>, optional
+
+   List of Q-criterion values at each level.
+   If the absolute value of Q-criterion exceeds this value
+   the cell is tagged for refinement.
+   The user must specify a value for each level desired.
 
 .. _inputs_sampling:
    
