@@ -1,4 +1,3 @@
-
 ==========
  AMR-Wind
 ==========
@@ -41,12 +40,8 @@ objectives:
 .. toctree::
    :maxdepth: 2
 
-   AMR-Wind Homepage <https://github.com/Exawind/amr-wind>
-   AMR-Wind Nightly Test Results <https://my.cdash.org/index.php?project=AMR-Wind>
    theory/theory 
-   user/build
-   user/inputs
-   user/abl_bndry_io
+   user/user
    development/index
 
 

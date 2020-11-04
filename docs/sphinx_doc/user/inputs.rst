@@ -1,5 +1,3 @@
-.. _amrwind-inputs:
-
 AMR-Wind inputs file
 =====================
 
