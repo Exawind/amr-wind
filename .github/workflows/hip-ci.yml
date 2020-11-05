@@ -47,5 +47,5 @@ jobs:
             -DCMAKE_CXX_COMPILER=$(which hipcc) \
             -DCMAKE_C_COMPILER=$(which hipcc) \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
-            -DAMD_ARCH="gfx906,gfx908" .
+            -DAMReX_AMD_ARCH="gfx906,gfx908" .
           cmake --build build -- -j $(nproc)
