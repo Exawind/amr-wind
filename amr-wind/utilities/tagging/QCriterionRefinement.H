@@ -42,6 +42,8 @@ private:
     amrex::Vector<amrex::Real> m_qc_value;
 
     int m_max_lev_field;
+
+    bool m_nondim{true};
 };
 
 } // namespace amr_wind

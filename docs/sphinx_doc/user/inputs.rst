@@ -881,7 +881,8 @@ Each section must contain the keyword ``type`` that is one of the refinement typ
 ``FieldRefinement``      Refinement based on error metric for field or its gradient
 ``OversetRefinement``    Refinement around fringe/field interface
 ``GeometryRefinement``   Refinement using geometric shapes
-``QCriterionRefinement`` Refinement using absolute value of Q-Criterion
+``QCriterionRefinement`` Refinement using Q-Criterion
+``VorticityRefinement``  Refinement using vorticity
 ======================== ===================================================================
 
 .. input_param:: tagging.labels
@@ -1041,8 +1042,20 @@ Refinement using Q-Criterion
 Example::
 
   tagging/qc1.type = QCriterionRefinement
+  tagging/qc1.nondim = false
   tagging/qc1.values = 10.0 20.0 20.0
 
+.. input_param:: tagging.QCriterionRefinement.nondim
+
+   **type:** Boolean, optional, default = true
+
+   Boolean determining if the dimensional or non-dimensional form 
+   of Q-criterion should be used. Dimensional version may require 
+   modifying values depending on physical scales. For the non-dimensional 
+   form positive thresholds indicate regions where the rotational strength is 
+   larger than the shear rate strength. A threshold of unity indicates 
+   that the rotational strength is equal to the background shear strength. 
+   
 .. input_param:: tagging.QCriterionRefinement.values
 
    **type:** Vector<Real>, optional

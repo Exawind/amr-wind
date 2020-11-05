@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/tagging/QCriterionRefinement.H"
+#include "amr-wind/utilities/tagging/VorticityRefinement.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX.H"
@@ -6,13 +6,13 @@
 
 namespace amr_wind {
 
-QCriterionRefinement::QCriterionRefinement(const CFDSim& sim)
+VorticityRefinement::VorticityRefinement(const CFDSim& sim)
     : m_sim(sim)
-    , m_qc_value(
+    , m_vort_value(
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
 {}
 
-void QCriterionRefinement::initialize(const std::string& key)
+void VorticityRefinement::initialize(const std::string& key)
 {
     std::string fname = "velocity";
 
@@ -22,25 +22,22 @@ void QCriterionRefinement::initialize(const std::string& key)
     }
     m_vel = &(m_sim.repo().get_field(fname));
 
-    amrex::Vector<double> qc_value;
+    amrex::Vector<double> vort_value;
     amrex::ParmParse pp(key);
 
-    pp.queryarr("values", qc_value);
+    pp.queryarr("values", vort_value);
 
-    if (qc_value.size() == 0u)
-        amrex::Abort(
-            "QCriterionRefinement: Must specify at least one of value");
+    if (vort_value.size() == 0u)
+        amrex::Abort("VorticityRefinement: Must specify at least one of value");
 
     {
-        size_t fcount = std::min(qc_value.size(), m_qc_value.size());
-        for (size_t i = 0; i < fcount; ++i) m_qc_value[i] = qc_value[i];
+        size_t fcount = std::min(vort_value.size(), m_vort_value.size());
+        for (size_t i = 0; i < fcount; ++i) m_vort_value[i] = vort_value[i];
         m_max_lev_field = fcount - 1;
     }
-
-    pp.query("nondim", m_nondim);
 }
 
-void QCriterionRefinement::operator()(
+void VorticityRefinement::operator()(
     int level, amrex::TagBoxArray& tags, amrex::Real time, int)
 {
     const bool tag_field = level <= m_max_lev_field;
@@ -52,8 +49,6 @@ void QCriterionRefinement::operator()(
     const auto& mfab = (*m_vel)(level);
     const auto& idx = m_sim.repo().mesh().Geom(level).InvCellSizeArray();
 
-    const auto nondim = m_nondim;
-
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -62,14 +57,12 @@ void QCriterionRefinement::operator()(
         const auto& bx = mfi.tilebox();
         const auto& tag = tags.array(mfi);
         const auto& vel = mfab.const_array(mfi);
-        const auto qc_val = m_qc_value[level];
+        const auto vort_val = m_vort_value[level];
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
                 // TODO: ignoring wall stencils for now
-                const auto ux =
-                    0.5 * (vel(i + 1, j, k, 0) - vel(i - 1, j, k, 0)) * idx[0];
                 const auto vx =
                     0.5 * (vel(i + 1, j, k, 1) - vel(i - 1, j, k, 1)) * idx[0];
                 const auto wx =
@@ -77,8 +70,6 @@ void QCriterionRefinement::operator()(
 
                 const auto uy =
                     0.5 * (vel(i, j + 1, k, 0) - vel(i, j - 1, k, 0)) * idx[1];
-                const auto vy =
-                    0.5 * (vel(i, j + 1, k, 1) - vel(i, j - 1, k, 1)) * idx[1];
                 const auto wy =
                     0.5 * (vel(i, j + 1, k, 2) - vel(i, j - 1, k, 2)) * idx[1];
 
@@ -86,24 +77,12 @@ void QCriterionRefinement::operator()(
                     0.5 * (vel(i, j, k + 1, 0) - vel(i, j, k - 1, 0)) * idx[2];
                 const auto vz =
                     0.5 * (vel(i, j, k + 1, 1) - vel(i, j, k - 1, 1)) * idx[2];
-                const auto wz =
-                    0.5 * (vel(i, j, k + 1, 2) - vel(i, j, k - 1, 2)) * idx[2];
 
-                const auto S2 = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz +
-                                std::pow(uy + vx, 2) + std::pow(vz + wy, 2) +
-                                std::pow(wx + uz, 2);
+                const auto vort = sqrt(
+                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
+                    std::pow(wx - uz, 2));
 
-                const auto W2 = std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                                std::pow(wx - uz, 2);
-
-                const auto qc = 0.5 * (W2 - S2);
-                const auto qc_nondim =
-                    0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
-
-                if (nondim && qc_nondim > qc_val)
-                    tag(i, j, k) = amrex::TagBox::SET;
-                else if (!nondim && amrex::Math::abs(qc) > qc_val)
-                    tag(i, j, k) = amrex::TagBox::SET;
+                if (vort > vort_val) tag(i, j, k) = amrex::TagBox::SET;
             });
     }
 }
