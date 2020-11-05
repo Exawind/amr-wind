@@ -4,6 +4,7 @@ target_sources(${amr_wind_lib_name} PRIVATE
   CartBoxRefinement.cpp
   FieldRefinement.cpp
   QCriterionRefinement.cpp
+  VorticityRefinement.cpp
   OversetRefinement.cpp
   GeometryRefinement.cpp
 
