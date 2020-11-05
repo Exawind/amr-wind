@@ -48,7 +48,7 @@ Building from source
 
    .. code-block:: console
 
-      cd amr-wind/build
+      mkdir amr-wind/build && cd amr-wind/build
       cmake -DAMR_WIND_ENABLE_TESTS:BOOL=ON ../
       make
 
