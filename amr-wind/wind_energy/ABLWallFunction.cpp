@@ -292,8 +292,6 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
     const amrex::Real umeanx = mo.vel_mean[0];
     const amrex::Real umeany = mo.vel_mean[1];
     const amrex::Real wspd_mean = mo.vmag_mean;
-    const amrex::Real tau_xz = umeanx / wspd_mean;
-    const amrex::Real tau_yz = umeany / wspd_mean;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -332,12 +330,11 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
                     // Shear stress BC
                     amrex::Real taux =
-                        tau_xz * ((uu - umeanx) * wspd_mean + wspd * umeanx) /
-                        (wspd_mean * umeanx);
+                        ((uu - umeanx) * wspd_mean + wspd * umeanx) /
+                        (wspd_mean * wspd_mean);
                     amrex::Real tauy =
-                        tau_yz * ((vv - umeany) * wspd_mean + wspd * umeany) /
-                        (wspd_mean * umeany);
-
+                        ((vv - umeany) * wspd_mean + wspd * umeany) /
+                        (wspd_mean * wspd_mean);
                     varr(i, j, k - 1, 0) = taux * den(i, j, k) * utau2 / mu;
                     varr(i, j, k - 1, 1) = tauy * den(i, j, k) * utau2 / mu;
                 });
