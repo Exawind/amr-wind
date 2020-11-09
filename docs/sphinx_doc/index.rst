@@ -40,9 +40,9 @@ objectives:
 .. toctree::
    :maxdepth: 2
 
-   theory/theory 
    user/user
-   development/index
+   theory/theory 
+   developer/index
 
 
 Indices and tables
