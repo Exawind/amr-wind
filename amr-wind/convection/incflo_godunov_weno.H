@@ -29,9 +29,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real weno5js(
         13.0 / 12.0 * (s - 2.0 * sp1 + sp2) * (s - 2.0 * sp1 + sp2) +
         0.25 * (3.0 * s - 4.0 * sp1 + sp2) * (3.0 * s - 4.0 * sp1 + sp2);
 
-    amrex::Real omega1 = 1 / ((eps + beta1) * (eps + beta1));
-    amrex::Real omega2 = 1 / ((eps + beta2) * (eps + beta2));
-    amrex::Real omega3 = 1 / ((eps + beta3) * (eps + beta3));
+    amrex::Real omega1 = 0.1 / (eps + beta1);
+    amrex::Real omega2 = 0.6 / (eps + beta2);
+    amrex::Real omega3 = 0.3 / (eps + beta3);
     amrex::Real omega = omega1 + omega2 + omega3;
 
     amrex::Real v_1 = 2.0 * sm2 - 7.0 * sm1 + 11.0 * s;
