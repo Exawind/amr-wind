@@ -30,7 +30,7 @@ macro(init_amrex)
   else()
     set(CMAKE_PREFIX_PATH ${AMREX_DIR} ${CMAKE_PREFIX_PATH})
     list(APPEND AMREX_COMPONENTS
-      "3D" "PIC" "PARTICLES" "DPARTICLES" "DP" "LSOLVERS")
+      "3D" "PIC" "PARTICLES" "PDOUBLE" "DOUBLE" "LSOLVERS")
     if (AMR_WIND_ENABLE_MPI)
       list(APPEND AMREX_COMPONENTS "MPI")
     endif()
