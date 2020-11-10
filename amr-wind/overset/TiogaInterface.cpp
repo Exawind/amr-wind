@@ -42,6 +42,24 @@ void iblank_to_mask(const IntField& iblank, IntField& maskf)
 }
 } // namespace
 
+AMROversetInfo::AMROversetInfo(const int nglobal, const int nlocal)
+    : level(nglobal)
+    , mpi_rank(nglobal)
+    , local_id(nglobal)
+    , ilow(AMREX_SPACEDIM * nglobal)
+    , ihigh(AMREX_SPACEDIM * nglobal)
+    , dims(AMREX_SPACEDIM * nglobal)
+    , xlo(AMREX_SPACEDIM * nglobal)
+    , dx(AMREX_SPACEDIM * nglobal)
+    , global_idmap(nlocal)
+    , iblank_node(nlocal)
+    , iblank_cell(nlocal)
+    , qcell(nlocal)
+    , qnode(nlocal)
+    , ngrids_global(nglobal)
+    , ngrids_local(nlocal)
+{}
+
 // clang-format off
 
 TiogaInterface::TiogaInterface(CFDSim& sim)
@@ -113,6 +131,25 @@ void TiogaInterface::register_solution()
 
     field_ops::copy(*m_qcell, vel, 0, 0, vel.num_comp(), vel.num_grow());
     field_ops::copy(*m_qnode, pres, 0, 0, pres.num_comp(), pres.num_grow());
+
+    {
+        int ilp = 0;
+        const int nlevels = m_sim.repo().num_active_levels();
+        auto& ad = *m_amr_data;
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto& qcfab = (*m_qcell)(lev);
+            auto& qnfab = (*m_qnode)(lev);
+
+            for (amrex::MFIter mfi(qcfab); mfi.isValid(); ++mfi) {
+                ad.qcell.h_view[ilp] = qcfab[mfi].dataPtr();
+                ad.qcell.d_view[ilp] = qcfab[mfi].dataPtr();
+                ad.qnode.h_view[ilp] = qnfab[mfi].dataPtr();
+                ad.qnode.d_view[ilp] = qnfab[mfi].dataPtr();
+
+                ++ilp;
+            }
+        }
+    }
 }
 
 void TiogaInterface::update_solution()
@@ -193,11 +230,90 @@ void TiogaInterface::amr_to_tioga_mesh()
         }
     }
 
+    m_amr_data.reset(new AMROversetInfo(ngrids_global, ngrids_local));
+    std::vector<int> lgrid_id(nproc, 0);
+
+    int igp = 0; // Global index of the grid
+    int ilp = 0; // Counter for local patches
+    int iix = 0; // Index into the integer array
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& ba = mesh.boxArray(lev);
+        const auto& dm = mesh.DistributionMap(lev);
+        const amrex::Real* dx = mesh.Geom(lev).CellSize();
+
+        auto& ad = *m_amr_data;
+        for (long d = 0; d < dm.size(); ++d) {
+            ad.level.h_view[iix] = lev;      // AMR Level of this patch
+            ad.mpi_rank.h_view[iix] = dm[d]; // MPI rank of this patch
+            ad.local_id.h_view[iix] =
+                lgrid_id[dm[d]]; // Local ID for this patch
+
+            const auto& bx = ba[d];
+            const int* lo = bx.loVect();
+            const int* hi = bx.hiVect();
+
+            const int ioff = AMREX_SPACEDIM * iix;
+            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+                ad.ilow.h_view[ioff + i] = lo[i];
+                ad.ihigh.h_view[ioff + i] = hi[i];
+                ad.dims.h_view[ioff + i] = (hi[i] - lo[i]) + 1;
+
+                ad.xlo.h_view[ioff + i] = problo[i] + lo[i] * dx[i];
+                ad.dx.h_view[ioff + i] = dx[i];
+            }
+
+            if (iproc == dm[d]) {
+                ad.global_idmap.h_view[ilp++] = igp;
+            }
+
+            // Increment array counter
+            ++iix;
+            // Increment global ID counter
+            ++igp;
+            // Increment local index
+            ++lgrid_id[dm[d]];
+        }
+    }
+
+    // Reset local patch counter
+    ilp = 0;
+    auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
+    auto& ibnode = m_sim.repo().get_int_field("iblank_node");
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& ad = *m_amr_data;
+        auto& ibfab = ibcell(lev);
+        auto& ibnodefab = ibnode(lev);
+
+        for (amrex::MFIter mfi(ibfab); mfi.isValid(); ++mfi) {
+            auto& ib = ibfab[mfi];
+            auto& ibn = ibnodefab[mfi];
+            ad.iblank_cell.h_view[ilp] = ib.dataPtr();
+            ad.iblank_node.h_view[ilp] = ibn.dataPtr();
+            ad.iblank_cell.d_view[ilp] = ib.dataPtr();
+            ad.iblank_node.d_view[ilp] = ibn.dataPtr();
+
+            ++ilp;
+        }
+    }
+
+    // Synchronize data on host/device
+    m_amr_data->level.copy_to_device();
+    m_amr_data->mpi_rank.copy_to_device();
+    m_amr_data->local_id.copy_to_device();
+    m_amr_data->ilow.copy_to_device();
+    m_amr_data->ihigh.copy_to_device();
+    m_amr_data->dims.copy_to_device();
+    m_amr_data->xlo.copy_to_device();
+    m_amr_data->dx.copy_to_device();
+    m_amr_data->global_idmap.copy_to_device();
+
+#if 0
     // Reset array data structures
     m_info.ngrids_global = ngrids_global;
     m_info.ngrids_local = ngrids_local;
-    m_info.int_data.resize(AMROversetInfo::ints_per_grid * ngrids_global);
-    m_info.real_data.resize(AMROversetInfo::reals_per_grid * ngrids_global);
+    m_info.int_data.resize(AMROversetInfoOld::ints_per_grid * ngrids_global);
+    m_info.real_data.resize(AMROversetInfoOld::reals_per_grid * ngrids_global);
     m_info.gid_map.resize(nlevels);
     for (auto& vv : m_info.gid_map) vv.clear();
 
@@ -246,6 +362,7 @@ void TiogaInterface::amr_to_tioga_mesh()
             ++lgrid_id[dm[d]];
         }
     }
+#endif
 }
 
 } // namespace amr_wind
