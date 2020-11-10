@@ -13,7 +13,7 @@ namespace {
  *
  *  \f{align}
  *  \mathrm{mask}_{i,j,k} = \begin{cases}
- *  1 & \mathrm{IBLANK}_{i, j, k} = 0 \\
+ *  1 & \mathrm{IBLANK}_{i, j, k} = 1 \\
  *  0 & \mathrm{IBLANK}_{i, j, k} \leq 0
  *  \end{cases}
  *  \f}
@@ -126,8 +126,8 @@ void TiogaInterface::register_solution()
     m_qnode = repo.create_scratch_field(
         pres.num_comp(), pres.num_grow()[0], pres.field_location());
 
-    vel.fillpatch(0.0);
-    pres.fillpatch(0.0);
+    vel.fillpatch(m_sim.time().new_time());
+    pres.fillpatch(m_sim.time().new_time());
 
     field_ops::copy(*m_qcell, vel, 0, 0, vel.num_comp(), vel.num_grow());
     field_ops::copy(*m_qnode, pres, 0, 0, pres.num_comp(), pres.num_grow());
@@ -161,53 +161,10 @@ void TiogaInterface::update_solution()
     field_ops::copy(vel, *m_qcell, 0, 0, vel.num_comp(), vel.num_grow());
     field_ops::copy(pres, *m_qnode, 0, 0, pres.num_comp(), pres.num_grow());
 
-#if 0
-    int nlevels = repo.num_active_levels();
-    for (int lev=0; lev < nlevels; ++lev) {
-        auto& vfab = vel(lev);
-        auto& pfab = pres(lev);
-        auto& qcfab = (*m_qcell)(lev);
-        auto& qnfab = (*m_qnode)(lev);
-        for (amrex::MFIter mfi(vfab); mfi.isValid(); ++mfi) {
-            {
-                const int ncomp = vel.num_comp();
-                auto bx = mfi.tilebox();
-                auto varr = vfab.array(mfi);
-                auto qcarr = qcfab.const_array(mfi);
-                auto marr = m_mask_cell(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real fac =
-                            static_cast<amrex::Real>(marr(i, j, k));
-                        for (int n = 0; n < ncomp; ++n) {
-                            varr(i, j, k, n) = fac * varr(i, j, k, n) +
-                                               (1.0 - fac) * qcarr(i, j, k, n);
-                        }
-                    });
-            }
-            {
-                auto bx = mfi.nodaltilebox();
-                auto parr = pfab.array(mfi);
-                auto qnarr = qnfab.const_array(mfi);
-                auto marr = m_mask_node(lev).const_array(mfi);
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real fac =
-                            static_cast<amrex::Real>(marr(i, j, k));
-                        parr(i, j, k) =
-                            fac * parr(i, j, k) + (1.0 - fac) * qnarr(i, j, k);
-                    });
-            }
-        }
-    }
-#endif
-
     // fixme this is only necessary because tioga does
     // not fill in ghosts yet
-    vel.fillpatch(0.0);
-    pres.fillpatch(0.0);
+    vel.fillpatch(m_sim.time().new_time());
+    pres.fillpatch(m_sim.time().new_time());
 }
 
 void TiogaInterface::amr_to_tioga_mesh()
@@ -307,62 +264,6 @@ void TiogaInterface::amr_to_tioga_mesh()
     m_amr_data->xlo.copy_to_device();
     m_amr_data->dx.copy_to_device();
     m_amr_data->global_idmap.copy_to_device();
-
-#if 0
-    // Reset array data structures
-    m_info.ngrids_global = ngrids_global;
-    m_info.ngrids_local = ngrids_local;
-    m_info.int_data.resize(AMROversetInfoOld::ints_per_grid * ngrids_global);
-    m_info.real_data.resize(AMROversetInfoOld::reals_per_grid * ngrids_global);
-    m_info.gid_map.resize(nlevels);
-    for (auto& vv : m_info.gid_map) vv.clear();
-
-    // Track local grid ID
-    std::vector<int> lgrid_id(nproc, 0);
-
-    auto& idata = m_info.int_data;
-    auto& rdata = m_info.real_data;
-
-    int igp = 0; // Global index of the grid
-    int iix = 0; // Index into the integer array
-    int irx = 0; // Index into the real array
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& ba = mesh.boxArray(lev);
-        const auto& dm = mesh.DistributionMap(lev);
-        const amrex::Real* dx = mesh.Geom(lev).CellSize();
-
-        for (long d = 0; d < dm.size(); ++d) {
-            idata[iix++] = igp;             // Global index of this patch
-            idata[iix++] = lev;             // Level of this patch
-            idata[iix++] = dm[d];           // MPI rank of this patch
-            idata[iix++] = lgrid_id[dm[d]]; // Local ID for this patch
-
-            const auto& bx = ba[d];
-            const int* lo = bx.loVect();
-            const int* hi = bx.hiVect();
-
-            for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-                idata[iix + i] = lo[i];
-                idata[iix + AMREX_SPACEDIM + i] = hi[i];
-
-                rdata[irx + i] = problo[i] + lo[i] * dx[i];
-                rdata[irx + AMREX_SPACEDIM + i] = dx[i];
-            }
-            iix += 2 * AMREX_SPACEDIM;
-            irx += 2 * AMREX_SPACEDIM;
-
-            if (iproc == dm[d]) {
-                m_info.gid_map[lev].push_back(igp);
-            }
-
-            // Increment global ID counter
-            ++igp;
-            // Increment local index
-            ++lgrid_id[dm[d]];
-        }
-    }
-#endif
 }
 
 } // namespace amr_wind
