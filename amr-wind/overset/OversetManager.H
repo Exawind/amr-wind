@@ -56,7 +56,9 @@ public:
      *  This method will be called at least once every timestep and, perhaps,
      *  multiple times within a timestep.
      */
-    virtual void register_solution() = 0;
+    virtual void register_solution(
+        const std::vector<std::string>& cell_vars,
+        const std::vector<std::string>& node_vars) = 0;
 
     /** Additional work after solution fields have been exchanged.
      */

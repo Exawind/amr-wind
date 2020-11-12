@@ -5,6 +5,8 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/utilities/IOManager.H"
 
+#include <numeric>
+
 namespace amr_wind {
 
 namespace {
@@ -114,24 +116,54 @@ void TiogaInterface::post_overset_conn_work()
         eqn->post_regrid_actions();
 }
 
-void TiogaInterface::register_solution()
+void TiogaInterface::register_solution(
+    const std::vector<std::string>& cell_vars,
+    const std::vector<std::string>& node_vars)
 {
-    m_qcell.reset();
-    m_qnode.reset();
     auto& repo = m_sim.repo();
-    auto& vel = repo.get_field("velocity");
-    auto& pres = repo.get_field("p");
-    m_qcell = repo.create_scratch_field(
-        vel.num_comp(), vel.num_grow()[0], vel.field_location());
-    m_qnode = repo.create_scratch_field(
-        pres.num_comp(), pres.num_grow()[0], pres.field_location());
+    const auto comp_counter =
+        [&repo](int total, const std::string& fname) -> int {
+        return total + repo.get_field(fname).num_comp();
+    };
+    const int ncell_vars =
+        std::accumulate(cell_vars.begin(), cell_vars.end(), 0, comp_counter);
+    const int nnode_vars =
+        std::accumulate(node_vars.begin(), node_vars.end(), 0, comp_counter);
+    const int num_ghost = m_sim.pde_manager().num_ghost_state();
+    m_qcell = repo.create_scratch_field(ncell_vars, num_ghost, FieldLoc::CELL);
+    m_qnode = repo.create_scratch_field(nnode_vars, num_ghost, FieldLoc::NODE);
 
-    vel.fillpatch(m_sim.time().new_time());
-    pres.fillpatch(m_sim.time().new_time());
+    // Store field variable names for use in update_solution step
+    m_cell_vars = cell_vars;
+    m_node_vars = node_vars;
 
-    field_ops::copy(*m_qcell, vel, 0, 0, vel.num_comp(), vel.num_grow());
-    field_ops::copy(*m_qnode, pres, 0, 0, pres.num_comp(), pres.num_grow());
+    // Move cell variables into scratch field
+    {
+        int icomp = 0;
+        for (const auto& cvar: m_cell_vars) {
+            auto& fld = repo.get_field(cvar);
+            const int ncomp = fld.num_comp();
+            fld.fillpatch(m_sim.time().new_time());
+            field_ops::copy(*m_qcell, fld, 0, icomp, ncomp, num_ghost);
+            icomp += ncomp;
+        }
+        AMREX_ASSERT(ncell_vars == icomp);
+    }
 
+    // Move node variables into scratch field
+    {
+        int icomp = 0;
+        for (const auto& cvar: m_node_vars) {
+            auto& fld = repo.get_field(cvar);
+            const int ncomp = fld.num_comp();
+            fld.fillpatch(m_sim.time().new_time());
+            field_ops::copy(*m_qnode, fld, 0, icomp, ncomp, num_ghost);
+            icomp += ncomp;
+        }
+        AMREX_ASSERT(nnode_vars == icomp);
+    }
+
+    // Update data pointers for TIOGA exchange
     {
         int ilp = 0;
         const int nlevels = m_sim.repo().num_active_levels();
@@ -155,16 +187,41 @@ void TiogaInterface::register_solution()
 void TiogaInterface::update_solution()
 {
     auto& repo = m_sim.repo();
-    auto& vel = repo.get_field("velocity").state(amr_wind::FieldState::Old);
-    auto& pres = repo.get_field("p");
+    const int num_ghost = m_sim.pde_manager().num_ghost_state();
 
-    field_ops::copy(vel, *m_qcell, 0, 0, vel.num_comp(), vel.num_grow());
-    field_ops::copy(pres, *m_qnode, 0, 0, pres.num_comp(), pres.num_grow());
+    // Update cell variables
+    {
+        int icomp = 0;
+        for (const auto& cvar: m_cell_vars) {
+            auto& fldbase = repo.get_field(cvar);
+            auto& fld = (fldbase.num_time_states() > 1)
+                ? fldbase.state(FieldState::Old)
+                : fldbase;
+            const int ncomp = fld.num_comp();
+            field_ops::copy(fld, *m_qcell, icomp, 0, ncomp, num_ghost);
+            fld.fillpatch(m_sim.time().new_time());
+            icomp += ncomp;
+        }
+    }
 
-    // fixme this is only necessary because tioga does
-    // not fill in ghosts yet
-    vel.fillpatch(m_sim.time().new_time());
-    pres.fillpatch(m_sim.time().new_time());
+    // Update nodal variables
+    {
+        int icomp = 0;
+        for (const auto& cvar: m_node_vars) {
+            auto& fldbase = repo.get_field(cvar);
+            auto& fld = (fldbase.num_time_states() > 1)
+                ? fldbase.state(FieldState::Old)
+                : fldbase;
+            const int ncomp = fld.num_comp();
+            field_ops::copy(fld, *m_qnode, icomp, 0, ncomp, num_ghost);
+            fld.fillpatch(m_sim.time().new_time());
+            icomp += ncomp;
+        }
+    }
+
+    // Release memory to avoid holding onto scratch fields across regrids
+    m_qcell.reset();
+    m_qnode.reset();
 }
 
 void TiogaInterface::amr_to_tioga_mesh()

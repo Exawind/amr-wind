@@ -44,27 +44,6 @@ struct AMROversetInfo
     const int ngrids_local;
 };
 
-struct AMROversetInfoOld
-{
-    //! Integer data to be sent to TIOGA
-    std::vector<int> int_data;
-
-    //! Bounding box and grid size info to be sent to TIOGA
-    std::vector<double> real_data;
-
-    //! Global ID mapping for the patches
-    std::vector<std::vector<int>> gid_map;
-
-    //! Total number of patches (across all levels) in this AMR mesh
-    int ngrids_global;
-
-    //! Number of patches across all levels that are local to this MPI rank
-    int ngrids_local;
-
-    static constexpr int ints_per_grid{10};
-    static constexpr int reals_per_grid{6};
-};
-
 class TiogaInterface : public OversetManager::Register<TiogaInterface>
 {
 public:
@@ -104,13 +83,13 @@ public:
      *  This method will be called at least once every timestep and, perhaps,
      *  multiple times within a timestep.
      */
-    virtual void register_solution() override;
+    virtual void register_solution(
+        const std::vector<std::string>& cell_vars,
+        const std::vector<std::string>& node_vars) override;
 
     /** Additional work after solution fields have been exchanged.
      */
     virtual void update_solution() override;
-
-    AMROversetInfoOld& amr_mesh_info() { return m_info; }
 
     AMROversetInfo& amr_overset_info() { return *m_amr_data; }
 
@@ -133,11 +112,13 @@ private:
 
     IntField& m_mask_node;
 
-    AMROversetInfoOld m_info;
     std::unique_ptr<AMROversetInfo> m_amr_data;
 
     std::unique_ptr<ScratchField> m_qcell;
     std::unique_ptr<ScratchField> m_qnode;
+
+    std::vector<std::string> m_cell_vars;
+    std::vector<std::string> m_node_vars;
 };
 
 } // namespace amr_wind
