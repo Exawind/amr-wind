@@ -64,6 +64,6 @@ jobs:
           cmake -Bbuild-${{matrix.cuda_pkg}} \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
-            -DCUDA_ERROR_CAPTURE_THIS:BOOL=ON \
-            -DCUDA_ARCH=Volta .
+            -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
+            -DAMReX_CUDA_ARCH=Volta .
           cmake --build build-${{matrix.cuda_pkg}} -- -j $(nproc)
