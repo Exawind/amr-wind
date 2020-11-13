@@ -850,7 +850,7 @@ of tagging logic. Note that this section is only active if
 Example::
 
   tagging.labels = s1 f1 g1
-  tagging/s1.type = StaticRefinement
+  tagging/s1.type = CartBoxRefinement
   tagging/s1.static_refinement_def = static_box.txt
 
   tagging/f1.type = FieldRefinement
