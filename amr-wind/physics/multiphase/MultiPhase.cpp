@@ -10,16 +10,17 @@ MultiPhase::MultiPhase(CFDSim& sim)
     , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
 {
-    // Register levelset equation
-    auto& levelset_eqn = sim.pde_manager().register_transport_pde("Levelset");
-    // Defer getting levelset field until PDE has been registered
-    m_levelset = &(levelset_eqn.fields().field);
-
     amrex::ParmParse pp_multiphase("MultiPhase");
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("viscosity_fluid1", m_mu1);
     pp_multiphase.query("viscosity_fluid2", m_mu2);
+
+    // Register both VOF and levelset equations
+    auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
+    auto& levelset_eqn = sim.pde_manager().register_transport_pde("Levelset");
+    m_vof = &(vof_eqn.fields().field);
+    m_levelset = &(levelset_eqn.fields().field);
 }
 
 void MultiPhase::post_init_actions()
@@ -66,8 +67,6 @@ void MultiPhase::set_multiphase_properties(
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real H;
-                // const amrex::Real H = (phi(i,j,k) > eps) ? 1.0 :
-                // 0.5*(1+phi(i,j,k)/(2*epsilon)+1./M_PI*std::sin(phi(i,j,k)*M_PI/epsilon);
                 if (phi(i, j, k) > eps) {
                     H = 1.0;
                 } else if (phi(i, j, k) < -eps) {

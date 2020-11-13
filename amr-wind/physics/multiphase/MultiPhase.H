@@ -14,6 +14,8 @@
  */
 namespace amr_wind {
 
+enum class multiphase_model { VOF, LS, CLSVOF };
+
 class MultiPhase : public Physics::Register<MultiPhase>
 {
 public:
@@ -45,6 +47,9 @@ private:
     // Pointer to the levelset
     Field* m_levelset{nullptr};
 
+    // Pointer to VOF
+    Field* m_vof{nullptr};
+
     // Density value for Fluid 1
     amrex::Real m_rho1{10.0};
 
@@ -56,6 +61,9 @@ private:
 
     // Dynamic Viscosity for Fluid 2
     amrex::Real m_mu2{1.0};
+
+    // Multiphase model enum
+    multiphase_model m_multiphase_model=multiphase_model::VOF;
 };
 
 } // namespace amr_wind
