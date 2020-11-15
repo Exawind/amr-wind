@@ -106,6 +106,9 @@ public:
     AMREX_FORCE_INLINE
     bool use_force_cfl() const { return m_use_force_cfl; }
 
+    AMREX_FORCE_INLINE
+    int regrid_interval() const { return m_regrid_interval; }
+
     //! Read user defined options from input file
     void parse_parameters();
 
