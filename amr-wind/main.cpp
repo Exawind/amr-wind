@@ -11,12 +11,12 @@ int main(int argc, char* argv[])
     if (argc >= 2) {
         for (auto i = 1; i < argc; i++) {
             if (std::string(argv[i]) == "--describe") {
-                amr_wind::io::print_banner(std::cout);
+                amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
                 return 0;
             }
         }
     }
-    amr_wind::io::print_banner(std::cout);
+    amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
 
     amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
         amrex::ParmParse pp("amrex");

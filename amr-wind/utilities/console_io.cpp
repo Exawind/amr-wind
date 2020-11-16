@@ -18,13 +18,13 @@ const std::string dbl_line = std::string(78, '=') + "\n";
 const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 } // namespace
 
-void print_banner(std::ostream& out)
+void print_banner(MPI_Comm comm, std::ostream& out)
 {
     int irank = 0;
 #ifdef AMREX_USE_MPI
     int num_ranks = 1;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
-    MPI_Comm_rank(MPI_COMM_WORLD, &irank);
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
 #endif
     if (irank != 0) return;
 

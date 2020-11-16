@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace io {
 
-void print_banner(std::ostream&);
+void print_banner(MPI_Comm, std::ostream&);
 
 void print_summary(std::ostream&);
 

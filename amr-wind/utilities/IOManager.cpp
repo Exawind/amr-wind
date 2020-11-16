@@ -231,7 +231,7 @@ void IOManager::write_info_file(const std::string& path)
         amrex::FileOpenFailed(fname);
     }
 
-    amr_wind::io::print_banner(fh);
+    amr_wind::io::print_banner(amrex::ParallelContext::CommunicatorSub(), fh);
 
     fh << dash_line << "Grid information: " << std::endl;
     const auto& mesh = m_sim.mesh();
