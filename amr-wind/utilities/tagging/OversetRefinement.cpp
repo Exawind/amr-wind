@@ -21,7 +21,7 @@ void OversetRefinement::operator()(
 {
     if (level > m_max_lev) return;
 
-    const auto& ibcell = m_sim.repo().get_field("iblank_cell");
+    const auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
     const auto& ibfab = ibcell(level);
 
 #ifdef _OPENMP
