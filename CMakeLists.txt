@@ -151,7 +151,7 @@ endif()
 #Define what we want to be installed during a make install
 install(
   TARGETS ${amr_wind_exe_name} ${amr_wind_unit_test_exe_name}
-  ${aw_api_lib} ${amr_wind_lib_name} amrwind_buildinfo
+  ${aw_api_lib} ${amr_wind_lib_name} buildInfo${amr_wind_lib_name}
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib

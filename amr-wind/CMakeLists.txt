@@ -38,24 +38,15 @@ endif()
 
 # Generate AMReX build information file
 include(AMReXBuildInfo)
-# Create an internal target as amrwind library is an OBJECT library and cannot have
-# PRE_BUILD etc.
-add_library(amrwind_buildinfo)
-generate_buildinfo(amrwind_buildinfo ${CMAKE_SOURCE_DIR})
+generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex)
 if (AMR_WIND_ENABLE_NETCDF)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
   target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
 endif()
-target_link_libraries(${amr_wind_lib_name} PRIVATE amrwind_buildinfo)
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
 target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name})
-
-# Set -fpic options
-set_target_properties(
-  ${amr_wind_lib_name} amrwind_buildinfo
-  PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 file(GLOB_RECURSE amr_wind_header_list ${CMAKE_CURRENT_SOURCE_DIR} "*.H")
 add_custom_target(amr_wind_headers SOURCES ${amr_wind_header_list})
