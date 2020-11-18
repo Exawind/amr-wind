@@ -40,16 +40,10 @@ public:
  */
 struct FieldBCNoOp
 {
-    int m_probtype;
-    int m_ncomp;
-    amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
-
     AMREX_GPU_HOST
     constexpr FieldBCNoOp(
-        const int probtype,
-        const int ncomp,
-        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
-        : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
+        const int,
+        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&)
     {}
 
     AMREX_GPU_DEVICE
@@ -71,16 +65,14 @@ struct FieldBCNoOp
  */
 struct FieldBCDirichlet
 {
-    int m_probtype;
     int m_ncomp;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
 
     AMREX_GPU_HOST
     constexpr FieldBCDirichlet(
-        const int probtype,
         const int ncomp,
         const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
-        : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
+        : m_ncomp(ncomp), m_bcv(bcv)
     {}
 
     AMREX_GPU_DEVICE

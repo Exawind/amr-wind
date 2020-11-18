@@ -267,7 +267,7 @@ public:
 
 protected:
     Functor bc_functor()
-    { return Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()}; }
+    { return Functor{m_field.num_comp(), m_field.bc_values_device()}; }
 
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
