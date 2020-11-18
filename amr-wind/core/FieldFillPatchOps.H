@@ -172,23 +172,17 @@ public:
         auto& fld = m_field.state(fstate);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
             amrex::FillPatchSingleLevel(
                 mfab, nghost, time, {&fld(lev)}, {time}, 0, 0,
                 m_field.num_comp(), m_mesh.Geom(lev), physbc, 0);
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
             amrex::FillPatchTwoLevels(
                 mfab, nghost, time, {&fld(lev - 1)}, {time}, {&fld(lev)},
@@ -211,9 +205,7 @@ public:
         auto mfab_vec_lev = get_mfab_vec(lev);
         if (lev == 0) {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-                m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
             amrex::FillPatchSingleLevel(
                 mfab, nghost, time, mfab_vec_lev,
@@ -221,14 +213,10 @@ public:
                 m_field.num_comp(), m_mesh.Geom(lev), physbc, 0);
         } else {
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-                m_mesh.Geom(lev - 1), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
 
             amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-                m_mesh.Geom(lev), m_field.bcrec(),
-                Functor{m_probtype, m_field.num_comp(),
-                        m_field.bc_values_device()});
+                m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
             auto mfab_vec_levm1 = get_mfab_vec(lev - 1);
 
@@ -254,14 +242,10 @@ public:
     {
         auto& fld = m_field.state(fstate);
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
-            m_mesh.Geom(lev - 1), m_field.bcrec(),
-            Functor{m_probtype, m_field.num_comp(),
-                    m_field.bc_values_device()});
+            m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
 
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> fphysbc(
-            m_mesh.Geom(lev), m_field.bcrec(),
-            Functor{m_probtype, m_field.num_comp(),
-                    m_field.bc_values_device()});
+            m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
 
         amrex::InterpFromCoarseLevel(
             mfab, nghost, time, fld(lev - 1), 0, 0, m_field.num_comp(),
@@ -277,13 +261,14 @@ public:
         const FieldState) override
     {
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> physbc(
-            m_mesh.Geom(lev), m_field.bcrec(),
-            Functor{m_probtype, m_field.num_comp(),
-                    m_field.bc_values_device()});
+            m_mesh.Geom(lev), m_field.bcrec(), bc_functor());
         physbc.FillBoundary(mfab, 0, m_field.num_comp(), nghost, time, 0);
     }
 
 protected:
+    Functor bc_functor()
+    { return Functor{m_probtype, m_field.num_comp(), m_field.bc_values_device()}; }
+
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
     Field& m_field;
