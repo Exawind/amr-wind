@@ -315,7 +315,7 @@ void wall_model_bc_moeng(
     const amr_wind::FieldState fstate,
     const amrex::FArrayBox& inst_plane_vel)
 {
-    BL_PROFILE("amr-wind::diffusion::wall_model_bc")
+    BL_PROFILE("amr-wind::diffusion::wall_model_bc");
     auto& repo = velocity.repo();
     auto& density = repo.get_field("density", fstate);
     auto& viscosity = repo.get_field("velocity_mueff");
@@ -391,7 +391,7 @@ void temp_wall_model_bc(
     const amrex::FArrayBox& inst_plane_temp,
     const amr_wind::FieldState fstate)
 {
-    BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc")
+    BL_PROFILE("amr-wind::diffusion::temp_wall_model_bc");
 
     auto& repo = temperature.repo();
     auto& density = repo.get_field("density", fstate);
