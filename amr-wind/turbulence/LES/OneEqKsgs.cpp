@@ -75,7 +75,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     const FieldState fstate)
 {
     BL_PROFILE(
-        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto gradT = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradT, m_temperature.state(fstate));
@@ -147,7 +147,7 @@ template <typename Transport>
 void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 {
 
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff")
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
     amrex::Real lam_diff = (this->m_transport).thermal_diffusivity();
     auto& mu_turb = this->m_mu_turb;
@@ -206,7 +206,7 @@ void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
 )
 {
     BL_PROFILE(
-        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     // auto& mu_turb = this->mu_turb();
     // auto& vel = this->m_vel.state(fstate);

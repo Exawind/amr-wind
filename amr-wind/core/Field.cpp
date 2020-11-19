@@ -196,7 +196,7 @@ void Field::fillphysbc(
     amrex::MultiFab& mfab,
     const amrex::IntVect& ng) noexcept
 {
-    BL_PROFILE("amr-wind::Field::fillphysbc")
+    BL_PROFILE("amr-wind::Field::fillphysbc");
     BL_ASSERT(m_info->m_fillpatch_op);
     BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
     auto& fop = *(m_info->m_fillpatch_op);
