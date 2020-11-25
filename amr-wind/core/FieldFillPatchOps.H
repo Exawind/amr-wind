@@ -141,6 +141,20 @@ public:
         , m_mapper(field_impl::get_interpolation_operator(itype))
     {}
 
+    FieldFillPatchOps(
+        Field& field,
+        const amrex::AmrCore& mesh,
+        const SimTime& time,
+        BCOpCreator bc_op,
+        FieldInterpolator itype = FieldInterpolator::CellConsLinear)
+        : m_time(time)
+        , m_mesh(mesh)
+        , m_field(field)
+        , m_probtype(0)
+        , m_op(bc_op)
+        , m_mapper(field_impl::get_interpolation_operator(itype))
+    {}
+
     /** Utility function to get a vector of multifabs for over states
      *
      *  Returns one or two multifabs at a given level depending on whether the

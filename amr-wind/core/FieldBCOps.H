@@ -68,6 +68,8 @@ struct FieldBCNoOp
 
 struct ConstDirichlet
 {
+    using DeviceType = ConstDirichlet;
+
     int m_ncomp;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
 
@@ -76,6 +78,9 @@ struct ConstDirichlet
         : m_ncomp(fld.num_comp())
         , m_bcv(fld.bc_values_device())
     {}
+
+    AMREX_GPU_HOST
+    DeviceType device_obj() const { return *this; }
 
     AMREX_GPU_DEVICE
     inline void operator()(
@@ -210,6 +215,32 @@ struct FieldBCDirichlet
     { return FunctorType(m_field); }
 
     const Field& m_field;
+};
+
+template <typename InflowOp, typename WallOp>
+struct BCOpCreator
+{
+    using InflowOpType = typename InflowOp::DeviceType;
+    using WallOpType = typename WallOp::DeviceType;
+    using FunctorType = DirichletOp<InflowOpType, WallOpType>;
+
+    explicit BCOpCreator(const Field& fld)
+        : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
+    {}
+
+    explicit BCOpCreator(const Field& fld, const InflowOp& inflow_op, const WallOp& wall_op)
+        : m_field(fld), m_inflow_op(inflow_op), m_wall_op(wall_op)
+    {}
+
+    inline FunctorType operator()() const
+    {
+        return FunctorType{m_field, m_inflow_op.device_obj(),
+                           m_wall_op.device_obj()};
+    }
+
+    const Field& m_field;
+    InflowOpType m_inflow_op;
+    WallOpType m_wall_op;
 };
 
 } // namespace amr_wind
