@@ -115,10 +115,11 @@ private:
  *
  *  \ingroup field_fillpatch
  */
-template <typename Functor>
+template <typename BCOpCreator>
 class FieldFillPatchOps : public FieldFillPatchOpsBase
 {
 public:
+    using Functor = typename BCOpCreator::FunctorType;
     /**
      *  @param field Field whose patches are filled by this instance
      *  @param mesh  The mesh instance to determine amrex::Geometry at a level
@@ -136,6 +137,7 @@ public:
         , m_mesh(mesh)
         , m_field(field)
         , m_probtype(probtype)
+        , m_op(field)
         , m_mapper(field_impl::get_interpolation_operator(itype))
     {}
 
@@ -267,12 +269,14 @@ public:
 
 protected:
     Functor bc_functor()
-    { return Functor{m_field}; }
+    { return m_op(); }
 
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
     Field& m_field;
     int m_probtype;
+
+    const BCOpCreator m_op;
 
     //! Function that handles interpolation from coarse to fine level
     amrex::Interpolater* m_mapper;
