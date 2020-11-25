@@ -2,6 +2,7 @@
 #define FIELDBCOPS_H
 
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/Field.H"
 
 #include "AMReX_Gpu.H"
 #include "AMReX_FArrayBox.H"
@@ -41,9 +42,7 @@ public:
 struct FieldBCNoOp
 {
     AMREX_GPU_HOST
-    constexpr FieldBCNoOp(
-        const int,
-        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>&)
+    constexpr FieldBCNoOp(const Field&)
     {}
 
     AMREX_GPU_DEVICE
@@ -69,10 +68,9 @@ struct FieldBCDirichlet
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
 
     AMREX_GPU_HOST
-    constexpr FieldBCDirichlet(
-        const int ncomp,
-        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
-        : m_ncomp(ncomp), m_bcv(bcv)
+    constexpr FieldBCDirichlet(const Field& fld)
+        : m_ncomp(fld.num_comp())
+        , m_bcv(fld.bc_values_device())
     {}
 
     AMREX_GPU_DEVICE
