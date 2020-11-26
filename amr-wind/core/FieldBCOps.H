@@ -80,7 +80,7 @@ struct ConstDirichlet
     {}
 
     AMREX_GPU_HOST
-    DeviceType device_obj() const { return *this; }
+    DeviceType device_instance() const { return *this; }
 
     AMREX_GPU_DEVICE
     inline void operator()(
@@ -234,13 +234,13 @@ struct BCOpCreator
 
     inline FunctorType operator()() const
     {
-        return FunctorType{m_field, m_inflow_op.device_obj(),
-                           m_wall_op.device_obj()};
+        return FunctorType{m_field, m_inflow_op.device_instance(),
+                           m_wall_op.device_instance()};
     }
 
     const Field& m_field;
-    InflowOpType m_inflow_op;
-    WallOpType m_wall_op;
+    InflowOp m_inflow_op;
+    WallOp m_wall_op;
 };
 
 } // namespace amr_wind
