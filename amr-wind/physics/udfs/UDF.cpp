@@ -12,11 +12,13 @@ namespace udf {
 ConstValue::ConstValue(Field& fld) : m_field(fld)
 {
     amrex::ParmParse pp_old("incflo");
-    amrex::ParmParse pp(m_field.name() + "." + identifier());
+    amrex::ParmParse pp(identifier() + "." + m_field.name());
     pp_old.queryarr(m_field.name().c_str(), m_value);
     pp.queryarr("value", m_value);
 
-    AMREX_ALWAYS_ASSERT(fld.num_comp() == m_value.size());
+    if (fld.num_comp() != m_value.size()) {
+        amrex::Abort("UDF: Invalid value for field: " + m_field.name());
+    }
 }
 
 void ConstValue::operator()(int level, const amrex::Geometry&)
