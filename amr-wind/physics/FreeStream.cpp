@@ -2,37 +2,64 @@
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/physics/udfs/UDF.H"
 
 namespace amr_wind {
 
-FreeStream::FreeStream(const CFDSim& sim)
-    : m_velocity(sim.repo().get_field("velocity"))
-    , m_density(sim.repo().get_field("density"))
+namespace {
+
+std::unique_ptr<udf::UDF> process_field_func(Field& fld)
 {
+    std::string udf_name{"ConstValue"};
+    amrex::ParmParse pp("FreeStream");
+    const std::string key = fld.name() + "_type";
+    pp.query(key.c_str(), udf_name);
 
-    // no freestream inputs yet
-    // amrex::ParmParse pp(this->identifier());
+    return udf::UDF::create(udf_name, fld);
+}
 
-    // fixme rho,u,v,w in incflo class
+} // namespace
+
+FreeStream::FreeStream(const CFDSim& sim) : m_sim(sim) {}
+
+void FreeStream::pre_init_actions()
+{
+    const auto& repo = m_sim.repo();
+    m_field_funcs["density"] = process_field_func(repo.get_field("density"));
+
+    auto& pde_mgr = m_sim.pde_manager();
     {
-        amrex::ParmParse pp("incflo");
-        pp.query("density", m_rho);
-        pp.queryarr("velocity", m_vel);
+        auto& vel = pde_mgr.icns().fields().field;
+        m_field_funcs[vel.name()] = process_field_func(vel);
+    }
+    for (auto& eqn : pde_mgr.scalar_eqns()) {
+        auto& fld = eqn->fields().field;
+        m_field_funcs[fld.name()] = process_field_func(fld);
+    }
+
+    {
+        amrex::ParmParse pp("FreeStream");
+        amrex::Vector<std::string> fields;
+        pp.queryarr("fields", fields);
+        for (const auto& fname : fields) {
+            const auto it = m_field_funcs.find(fname);
+            if (it != m_field_funcs.end()) continue;
+
+            if (!repo.field_exists(fname)) {
+                amrex::Abort("FreeStream: Invalid field requested: " + fname);
+            }
+            m_field_funcs[fname] = process_field_func(repo.get_field(fname));
+        }
     }
 }
 
-/** Initialize the velocity and density fields at the beginning of the
- *  simulation.
+/** Initialize the fields at the start of simulation.
  */
-void FreeStream::initialize_fields(int level, const amrex::Geometry& /* geom */)
+void FreeStream::initialize_fields(int level, const amrex::Geometry& geom)
 {
-    auto& velocity = m_velocity(level);
-    auto& density = m_density(level);
-
-    density.setVal(m_rho);
-    velocity.setVal(m_vel[0], 0, 1);
-    velocity.setVal(m_vel[1], 1, 1);
-    velocity.setVal(m_vel[2], 2, 1);
+    for (auto& ff : m_field_funcs) {
+        (*ff.second)(level, geom);
+    }
 }
 
 } // namespace amr_wind
