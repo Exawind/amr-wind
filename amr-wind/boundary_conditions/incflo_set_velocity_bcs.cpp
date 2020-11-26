@@ -7,6 +7,8 @@ void incflo::set_inflow_velocity(
     int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
     auto& velocity = icns().fields().field;
+    velocity.fillphysbc(lev, time, vel, nghost);
+#if 0
     auto& bctype = velocity.bc_type();
     Geometry const& gm = Geom(lev);
     Box const& domain = gm.growPeriodicDomain(nghost);
@@ -40,6 +42,7 @@ void incflo::set_inflow_velocity(
             }
         }
     }
+#endif
 
     // TODO fix hack for ABL
     auto& phy_mgr = m_sim.physics_manager();
