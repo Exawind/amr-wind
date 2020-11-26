@@ -51,13 +51,12 @@ public:
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)
         , m_post_solve_op(m_fields)
-    {
-        m_bc_op.init_bcs();
-    }
+    {}
 
     //! Perform initialization actions after the mesh is created
     void initialize() override
     {
+        m_bc_op.init_bcs();
         if (PDE::has_diffusion) {
             BL_PROFILE("amr-wind::" + this->identifier() + "::initialize");
             m_diff_op.reset(
