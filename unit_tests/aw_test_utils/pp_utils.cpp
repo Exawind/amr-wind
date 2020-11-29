@@ -1,5 +1,8 @@
+#include "aw_test_utils/AmrexTestEnv.H"
 #include "pp_utils.H"
 #include "AMReX_ParmParse.H"
+
+extern amr_wind_tests::AmrexTestEnv* utest_env;
 
 namespace amr_wind_tests {
 namespace pp_utils {
@@ -9,10 +12,7 @@ bool has_managed_memory()
 #if defined (AMREX_USE_HIP)
     return false;
 #else
-    bool has_managed = true;
-    amrex::ParmParse pp("amrex");
-    pp.query("the_arena_is_managed", has_managed);
-    return has_managed;
+    return utest_env->has_managed_memory();
 #endif
 }
 
