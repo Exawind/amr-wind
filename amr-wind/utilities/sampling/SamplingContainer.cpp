@@ -113,27 +113,33 @@ void SamplingContainer::initialize_particles(
     ptile.resize(num_particles);
 
     int pidx = 0;
+    const int nextid = ParticleType::NextID();
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
     for (auto& probe : samplers) {
         probe->sampling_locations(locs);
-
         const int npts = locs.size();
-        for (int ip = 0; ip < npts; ++ip) {
-            auto& pp = pstruct[pidx];
-            pp.id() = ParticleType::NextID();
+        const auto probe_id = probe->id();
+        amrex::Gpu::DeviceVector<amrex::Real> dlocs(npts * AMREX_SPACEDIM);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
+        const auto* dpos = dlocs.data();
+
+        amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+            const auto uid = pidx + ip;
+            auto& pp = pstruct[uid];
+            pp.id() = nextid + uid;
             pp.cpu() = iproc;
 
-            pp.pos(0) = locs[ip][0];
-            pp.pos(1) = locs[ip][1];
-            pp.pos(2) = locs[ip][2];
-
-            pp.idata(IIx::uid) = pidx;
-            pp.idata(IIx::sid) = probe->id();
+            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                pp.pos(n) = dpos[uid * AMREX_SPACEDIM + n];
+            }
+            pp.idata(IIx::uid) = uid;
+            pp.idata(IIx::sid) = probe_id;
             pp.idata(IIx::nid) = ip;
-
-            ++pidx;
-        }
+        });
+        amrex::Gpu::streamSynchronize();
+        pidx += npts;
     }
 
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
