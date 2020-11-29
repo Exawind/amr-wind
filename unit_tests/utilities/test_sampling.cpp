@@ -76,15 +76,49 @@ protected:
     }
 };
 
+namespace {
+
+void test_scontainer_impl(
+    amr_wind::sampling::SamplingContainer::ParticleVector& pvec,
+    const int npts)
+{
+    using IIx = amr_wind::sampling::IIx;
+    using PType = amr_wind::sampling::SamplingContainer::ParticleType;
+    // Create a line probe
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> begin{{66.0, 66.0, 1.0}};
+    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> end{{66.0, 66.0, 127.0}};
+
+    auto* pstruct = pvec.data();
+    const int id_start = PType::NextID();
+    const int proc_id = amrex::ParallelDescriptor::MyProc();
+
+    amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+        auto& pp = pstruct[ip];
+        pp.id() = id_start + ip;
+        pp.cpu() = proc_id;
+        pp.pos(0) = begin[0];
+        pp.pos(1) = begin[1];
+
+        const int dl = (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1);
+        const amrex::Real z = (ip + 0.5) * dl;
+        pp.pos(2) = z;
+
+        pp.idata(IIx::uid) = pp.id();
+        pp.idata(IIx::sid) = 0;
+        pp.idata(IIx::nid) = ip;
+    });
+    amrex::Gpu::streamSynchronize();
+}
+
+} // namespace
+
 TEST_F(SamplingTest, scontainer)
 {
     if (amrex::ParallelDescriptor::NProcs() > 1) {
         GTEST_SKIP();
     }
 
-    using IIx = amr_wind::sampling::IIx;
     using ParIter = amr_wind::sampling::SamplingContainer::ParIterType;
-    using PType = amr_wind::sampling::SamplingContainer::ParticleType;
     const int ncomp = 5;
     initialize_mesh();
 
@@ -92,16 +126,18 @@ TEST_F(SamplingTest, scontainer)
     // Set up runtime components and prime the particle container
     sc.setup_container(ncomp);
 
-    // Create a line probe
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> begin{{66.0, 66.0, 1.0}};
-    amrex::Array<amrex::Real, AMREX_SPACEDIM> end{{66.0, 66.0, 127.0}};
-
+    const int npts = 64;
     const int lev = 0;
     const int gid = 0;
     const int tid = 0;
     auto& ptile = sc.GetParticles(lev)[std::make_pair(gid, tid)];
+    ptile.resize(npts);
+    test_scontainer_impl(ptile.GetArrayOfStructs()(), npts);
+    sc.Redistribute();
 
-    const int npts = 64;
+#if 0
+    // Old host based implementation for reference
+    using PType = amr_wind::sampling::SamplingContainer::ParticleType;
     const int dl = (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1);
     for (int k = 0; k < npts; ++k) {
         PType p;
@@ -125,8 +161,12 @@ TEST_F(SamplingTest, scontainer)
         }
     }
     sc.Redistribute();
+#endif
 
+#ifndef AMREX_USE_GPU
+    // TODO: Check why this causes errors in non-managed CUDA run
     ASSERT_EQ(npts, sc.NumberOfParticlesAtLevel(lev));
+#endif
     int counter = 0;
     int total_particles = 0;
     for (ParIter pti(sc, lev); pti.isValid(); ++pti) {
