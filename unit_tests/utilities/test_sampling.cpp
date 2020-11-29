@@ -46,7 +46,12 @@ public:
 
 protected:
     void prepare_netcdf_file() override {}
-    void process_output() override {}
+    void process_output() override
+    {
+        // Test buffer populate for GPU runs
+        std::vector<double> buf(num_total_particles() * var_names().size(), 0.0);
+        sampling_container().populate_buffer(buf);
+    }
 };
 
 } // namespace
