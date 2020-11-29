@@ -4,6 +4,18 @@
 namespace amr_wind_tests {
 namespace pp_utils {
 
+bool has_managed_memory()
+{
+#if defined (AMREX_USE_HIP)
+    return false;
+#else
+    bool has_managed = true;
+    amrex::ParmParse pp("amrex");
+    pp.query("the_arena_is_managed", has_managed);
+    return has_managed;
+#endif
+}
+
 void default_time_inputs()
 {
     amrex::ParmParse pp("time");

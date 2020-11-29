@@ -27,6 +27,9 @@ void default_time_inputs();
 //! Default inputs for amrex::AmrCore
 void default_mesh_inputs();
 
+//! Flag indicating whether managed memory is enabled
+bool has_managed_memory();
+
 } // namespace pp_utils
 } // namespace amr_wind_tests
 
