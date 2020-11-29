@@ -95,7 +95,7 @@ void SimTime::set_current_cfl(
     if (m_is_init) dt_new *= m_init_shrink;
 
     // Limit timestep growth to 10% per timestep
-    if (m_dt[0] > 0.0) dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
+    if (m_dt[0] > 0.0) dt_new = amrex::min<amrex::Real>(dt_new, 1.1 * m_dt[0]);
 
     // Don't overshoot stop time
     if ((m_stop_time > 0.0) && ((m_cur_time + dt_new) > m_stop_time))
