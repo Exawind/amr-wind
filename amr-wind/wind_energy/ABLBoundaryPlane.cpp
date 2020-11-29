@@ -247,7 +247,7 @@ void ABLBoundaryPlane::write_header()
     ncf.def_dim("pdim", 2);
     ncf.def_dim("vdim", 3);
     ncf.def_dim("nt", NC_UNLIMITED);
-    ncf.def_var("time", NC_DOUBLE, {"nt"});
+    ncf.def_var("time", ncutils::NCDType::Real, {"nt"});
 
     const int nlevels = m_repo.num_active_levels();
     for (amrex::OrientationIter oit; oit; ++oit) {
@@ -282,20 +282,21 @@ void ABLBoundaryPlane::write_header()
             lev_grp.def_dim("ny", minBox.length(1));
             lev_grp.def_dim("nz", minBox.length(2));
 
-            lev_grp.def_var("lengths", NC_DOUBLE, {"pdim"});
-            lev_grp.def_var("lo", NC_DOUBLE, {"pdim"});
-            lev_grp.def_var("hi", NC_DOUBLE, {"pdim"});
-            lev_grp.def_var("dx", NC_DOUBLE, {"pdim"});
+            lev_grp.def_var("lengths", ncutils::NCDType::Real, {"pdim"});
+            lev_grp.def_var("lo", ncutils::NCDType::Real, {"pdim"});
+            lev_grp.def_var("hi", ncutils::NCDType::Real, {"pdim"});
+            lev_grp.def_var("dx", ncutils::NCDType::Real, {"pdim"});
 
             const amrex::Vector<std::string> dirs{"nx", "ny", "nz"};
             for (auto* fld : m_fields) {
                 const std::string name = fld->name();
                 if (fld->num_comp() == 1) {
                     lev_grp.def_var(
-                        name, NC_DOUBLE, {"nt", dirs[perp[0]], dirs[perp[1]]});
+                        name, ncutils::NCDType::Real,
+                        {"nt", dirs[perp[0]], dirs[perp[1]]});
                 } else if (fld->num_comp() == AMREX_SPACEDIM) {
                     lev_grp.def_var(
-                        name, NC_DOUBLE,
+                        name, ncutils::NCDType::Real,
                         {"nt", dirs[perp[0]], dirs[perp[1]], "vdim"});
                 }
             }

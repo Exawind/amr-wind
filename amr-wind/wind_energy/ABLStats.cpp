@@ -212,7 +212,7 @@ void ABLStats::write_ascii()
         abl_forcing = m_abl_forcing->abl_forcing();
     }
 
-    double wstar = 0.0;
+    amrex::Real wstar = 0.0;
     auto Q = m_abl_wall_func.mo().surf_temp_flux;
     if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
     auto L = m_abl_wall_func.mo().obukhov_len;
@@ -285,40 +285,40 @@ void ABLStats::prepare_netcdf_file()
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
 
-    ncf.def_var("time", NC_DOUBLE, {nt_name});
-    ncf.def_var("Q", NC_DOUBLE, {nt_name});
-    ncf.def_var("Tsurf", NC_DOUBLE, {nt_name});
-    ncf.def_var("ustar", NC_DOUBLE, {nt_name});
-    ncf.def_var("wstar", NC_DOUBLE, {nt_name});
-    ncf.def_var("L", NC_DOUBLE, {nt_name});
-    ncf.def_var("zi", NC_DOUBLE, {nt_name});
-    ncf.def_var("abl_forcing_x", NC_DOUBLE, {nt_name});
-    ncf.def_var("abl_forcing_y", NC_DOUBLE, {nt_name});
+    ncf.def_var("time", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("Q", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("Tsurf", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("ustar", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("wstar", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("L", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("zi", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("abl_forcing_x", ncutils::NCDType::Real, {nt_name});
+    ncf.def_var("abl_forcing_y", ncutils::NCDType::Real, {nt_name});
 
     auto grp = ncf.def_group("mean_profiles");
     size_t n_levels = m_pa_vel.ncell_line();
     const std::string nlevels_name = "nlevels";
     grp.def_dim("nlevels", n_levels);
     const std::vector<std::string> two_dim{nt_name, nlevels_name};
-    grp.def_var("h", NC_DOUBLE, {nlevels_name});
-    grp.def_var("u", NC_DOUBLE, two_dim);
-    grp.def_var("v", NC_DOUBLE, two_dim);
-    grp.def_var("w", NC_DOUBLE, two_dim);
-    grp.def_var("hvelmag", NC_DOUBLE, two_dim);
-    grp.def_var("theta", NC_DOUBLE, two_dim);
-    grp.def_var("mueff", NC_DOUBLE, two_dim);
-    grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
-    grp.def_var("v'theta'_r", NC_DOUBLE, two_dim);
-    grp.def_var("w'theta'_r", NC_DOUBLE, two_dim);
-    grp.def_var("u'u'_r", NC_DOUBLE, two_dim);
-    grp.def_var("u'v'_r", NC_DOUBLE, two_dim);
-    grp.def_var("u'w'_r", NC_DOUBLE, two_dim);
-    grp.def_var("v'v'_r", NC_DOUBLE, two_dim);
-    grp.def_var("v'w'_r", NC_DOUBLE, two_dim);
-    grp.def_var("w'w'_r", NC_DOUBLE, two_dim);
-    grp.def_var("u'u'u'_r", NC_DOUBLE, two_dim);
-    grp.def_var("v'v'v'_r", NC_DOUBLE, two_dim);
-    grp.def_var("w'w'w'_r", NC_DOUBLE, two_dim);
+    grp.def_var("h", ncutils::NCDType::Real, {nlevels_name});
+    grp.def_var("u", ncutils::NCDType::Real, two_dim);
+    grp.def_var("v", ncutils::NCDType::Real, two_dim);
+    grp.def_var("w", ncutils::NCDType::Real, two_dim);
+    grp.def_var("hvelmag", ncutils::NCDType::Real, two_dim);
+    grp.def_var("theta", ncutils::NCDType::Real, two_dim);
+    grp.def_var("mueff", ncutils::NCDType::Real, two_dim);
+    grp.def_var("u'theta'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("v'theta'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("w'theta'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("u'u'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("u'v'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("u'w'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("v'v'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("v'w'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("w'w'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("u'u'u'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("v'v'v'_r", ncutils::NCDType::Real, two_dim);
+    grp.def_var("w'w'w'_r", ncutils::NCDType::Real, two_dim);
 
     ncf.exit_def_mode();
 
@@ -350,14 +350,14 @@ void ABLStats::write_netcdf()
         ncf.var("time").put(&time, {nt}, {1});
         auto ustar = m_abl_wall_func.utau();
         ncf.var("ustar").put(&ustar, {nt}, {1});
-        double wstar = 0.0;
+        amrex::Real wstar = 0.0;
         auto Q = m_abl_wall_func.mo().surf_temp_flux;
         ncf.var("Q").put(&Q, {nt}, {1});
         auto Tsurf = m_abl_wall_func.mo().surf_temp;
         ncf.var("Tsurf").put(&Tsurf, {nt}, {1});
         if (Q > 1e-10) wstar = std::cbrt(m_gravity * Q * m_zi / m_ref_theta);
         ncf.var("wstar").put(&wstar, {nt}, {1});
-        double L = m_abl_wall_func.mo().obukhov_len;
+        amrex::Real L = m_abl_wall_func.mo().obukhov_len;
         ncf.var("L").put(&L, {nt}, {1});
         ncf.var("zi").put(&m_zi, {nt}, {1});
 

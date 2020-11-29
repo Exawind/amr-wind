@@ -161,16 +161,16 @@ void Sampling::prepare_netcdf_file()
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
-    ncf.def_var("time", NC_DOUBLE, {nt_name});
+    ncf.def_var("time", ncutils::NCDType::Real, {nt_name});
     // Define groups for each sampler
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
         grp.def_dim(npart_name, obj->num_points());
         obj->define_netcdf_metadata(grp);
-        grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
+        grp.def_var("coordinates", ncutils::NCDType::Real, {npart_name, "ndim"});
         for (const auto& vname : m_var_names)
-            grp.def_var(vname, NC_DOUBLE, two_dim);
+            grp.def_var(vname, ncutils::NCDType::Real, two_dim);
     }
     ncf.exit_def_mode();
 
