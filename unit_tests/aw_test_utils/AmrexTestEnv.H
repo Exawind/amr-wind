@@ -39,21 +39,33 @@ public:
             pp.add("signal_handling", 0);
         });
 
+        // Save managed memory flag for future use
+        {
+            amrex::ParmParse pp("amrex");
+            pp.query("the_arena_is_managed", m_has_managed_memory);
+        }
+
         // Call ParmParse::Finalize immediately to allow unit tests to start
         // with a clean "input file". However, allow user to override this
         // behavior through command line arguments.
-        amrex::ParmParse pp("utest");
-        bool keep_parameters = false;
-        pp.query("keep_parameters", keep_parameters);
+        {
+            amrex::ParmParse pp("utest");
+            bool keep_parameters = false;
+            pp.query("keep_parameters", keep_parameters);
 
-        if (!keep_parameters) amrex::ParmParse::Finalize();
+            if (!keep_parameters) amrex::ParmParse::Finalize();
+        }
     }
 
     void TearDown() override { amrex::Finalize(); }
 
+    bool has_managed_memory() const { return m_has_managed_memory; }
+
 protected:
     int& m_argc;
     char**& m_argv;
+
+    bool m_has_managed_memory{true};
 };
 
 } // namespace amr_wind_tests

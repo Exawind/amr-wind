@@ -57,6 +57,10 @@ public:
     //! Write sampled data in binary format
     virtual void impl_write_native();
 
+    int num_total_particles() const { return m_total_particles; }
+
+    const amrex::Vector<std::string>& var_names() const { return m_var_names; }
+
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -73,6 +77,8 @@ protected:
      *  runs as it can have significant impacts on code performance.
      */
     virtual void write_ascii();
+
+    SamplingContainer& sampling_container() { return *m_scontainer; }
 
 private:
     CFDSim& m_sim;

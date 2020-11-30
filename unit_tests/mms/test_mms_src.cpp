@@ -14,6 +14,11 @@ using ICNSFields =
 
 TEST_F(MMSMeshTest, mms_forcing)
 {
+#if defined (AMREX_USE_HIP)
+    GTEST_SKIP();
+#else
+    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
+
     constexpr amrex::Real tol = 1.0e-12;
 
     // Initialize parameters
@@ -48,5 +53,6 @@ TEST_F(MMSMeshTest, mms_forcing)
         EXPECT_NEAR(min_val, min_golds[i], tol);
         EXPECT_NEAR(max_val, max_golds[i], tol);
     }
+#endif
 }
 } // namespace amr_wind_tests

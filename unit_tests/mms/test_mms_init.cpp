@@ -7,6 +7,11 @@
 namespace amr_wind_tests {
 TEST_F(MMSMeshTest, mms_initialization)
 {
+#if defined (AMREX_USE_HIP)
+    GTEST_SKIP();
+#else
+    if (!pp_utils::has_managed_memory()) GTEST_SKIP();
+
     populate_parameters();
     utils::populate_mms_params();
 
@@ -44,6 +49,7 @@ TEST_F(MMSMeshTest, mms_initialization)
         EXPECT_NEAR(max_vel[1], 0.15852994009080945, tol);
         EXPECT_NEAR(max_vel[2], 0.28208315203480022, tol);
     }
+#endif
 }
 
 } // namespace amr_wind_tests
