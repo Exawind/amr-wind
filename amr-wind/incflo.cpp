@@ -42,6 +42,7 @@ void incflo::init_mesh()
     // Initialize I/O manager to enable restart and outputs
     auto& io_mgr = m_sim.io_manager();
     io_mgr.initialize_io();
+    for (auto& pp : m_sim.physics()) pp->pre_init_actions();
 
     if (!io_mgr.is_restart()) {
         // This tells the AmrMesh class not to iterate when creating the initial

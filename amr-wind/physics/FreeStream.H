@@ -3,6 +3,10 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/physics/udfs/UDF.H"
+
+#include <unordered_map>
+#include <memory>
 
 namespace amr_wind {
 
@@ -25,6 +29,8 @@ public:
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
+    void pre_init_actions() override;
+
     void post_init_actions() override {}
 
     void post_regrid_actions() override {}
@@ -34,12 +40,9 @@ public:
     void post_advance_work() override {}
 
 private:
-    Field& m_velocity;
-    Field& m_density;
+    const CFDSim& m_sim;
 
-    //! initial density value
-    amrex::Real m_rho{1.0};
-    amrex::Vector<amrex::Real> m_vel{{1.0, 0.0, 0.0}};
+    std::unordered_map<std::string, std::unique_ptr<udf::UDF>> m_field_funcs;
 };
 
 } // namespace amr_wind

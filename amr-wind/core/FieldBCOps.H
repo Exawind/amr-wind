@@ -2,6 +2,7 @@
 #define FIELDBCOPS_H
 
 #include "amr-wind/core/FieldDescTypes.H"
+#include "amr-wind/core/Field.H"
 
 #include "AMReX_Gpu.H"
 #include "AMReX_FArrayBox.H"
@@ -40,17 +41,16 @@ public:
  */
 struct FieldBCNoOp
 {
-    int m_probtype;
-    int m_ncomp;
-    amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
+    using FunctorType = FieldBCNoOp;
 
     AMREX_GPU_HOST
-    constexpr FieldBCNoOp(
-        const int probtype,
-        const int ncomp,
-        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
-        : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
+    constexpr FieldBCNoOp() {}
+
+    AMREX_GPU_HOST
+    constexpr FieldBCNoOp(const Field&)
     {}
+
+    FunctorType operator()() const { return *this; }
 
     AMREX_GPU_DEVICE
     void operator()(
@@ -66,45 +66,108 @@ struct FieldBCNoOp
     {}
 };
 
-/** Sets constant values on specified boundaries
- *  \ingroup field_fillpatch
- */
-struct FieldBCDirichlet
+struct ConstDirichlet
 {
-    int m_probtype;
+    using DeviceType = ConstDirichlet;
+
     int m_ncomp;
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
 
     AMREX_GPU_HOST
-    constexpr FieldBCDirichlet(
-        const int probtype,
-        const int ncomp,
-        const amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2>& bcv)
-        : m_probtype(probtype), m_ncomp(ncomp), m_bcv(bcv)
+    ConstDirichlet(const Field& fld)
+        : m_ncomp(fld.num_comp())
+        , m_bcv(fld.bc_values_device())
+    {}
+
+    AMREX_GPU_HOST
+    DeviceType device_instance() const { return *this; }
+
+    AMREX_GPU_DEVICE
+    inline void operator()(
+        const amrex::IntVect& iv,
+        amrex::Array4<amrex::Real> const& field,
+        amrex::GeometryData const&,
+        const amrex::Real,
+        amrex::Orientation ori,
+        const int comp) const
+    {
+        field(iv[0], iv[1], iv[2], comp) = m_bcv[ori][comp];
+    }
+};
+
+/** Sets constant values on specified boundaries
+ *  \ingroup field_fillpatch
+ */
+template <typename InflowOp, typename WallOp>
+struct DirichletOp
+{
+    using InflowOpType = InflowOp;
+    using WallOpType = WallOp;
+
+    int m_ncomp;
+    amrex::GpuArray<BC, AMREX_SPACEDIM * 2> m_bc_type;
+    const InflowOpType m_inflow_op;
+    const WallOpType m_wall_op;
+
+    AMREX_GPU_HOST
+    constexpr DirichletOp(const Field& fld)
+        : m_ncomp(fld.num_comp())
+        , m_bc_type(fld.bc_type())
+        , m_inflow_op(fld)
+        , m_wall_op(fld)
+    {}
+
+    AMREX_GPU_HOST
+    DirichletOp(
+        const Field& fld,
+        const InflowOpType& inflow_op,
+        const WallOpType& wall_op)
+        : m_ncomp(fld.num_comp())
+        , m_bc_type(fld.bc_type())
+        , m_inflow_op(inflow_op)
+        , m_wall_op(wall_op)
     {}
 
     AMREX_GPU_DEVICE
-    void operator()(
+    inline void operator()(
         const amrex::IntVect& iv,
         amrex::Array4<amrex::Real> const& field,
         const int /* dcomp */,
         const int /* numcomp */,
         amrex::GeometryData const& geom,
-        const amrex::Real /* time */,
+        const amrex::Real time,
         const amrex::BCRec* bcr,
         const int bcomp,
         const int /* orig_comp */) const
     {
         // do something for external Dirichlet (amrex::BCType::ext_dir)
-        const int i = iv[0];
-        const int j = iv[1];
-        const int k = iv[2];
-
         const amrex::Box& domain_box = geom.Domain();
 
         for (int n = 0; n < m_ncomp; ++n) {
             const amrex::BCRec& bc = bcr[bcomp + n];
 
+            for (amrex::OrientationIter oit; oit; ++oit) {
+                auto ori = oit();
+                const int idir = ori.coordDir();
+
+                // Check if this boundary is a dirichlet type
+                const auto bctyp = (ori.isLow() ? bc.lo(idir) : bc.hi(idir));
+                if (bctyp != amrex::BCType::ext_dir) continue;
+
+                // Check if the point in question is on the boundary
+                const bool is_bndry =
+                    (ori.isLow() ? (iv[idir] < domain_box.smallEnd(idir))
+                                 : (iv[idir] > domain_box.bigEnd(idir)));
+                if (!is_bndry) continue;
+
+                if (m_bc_type[ori] == BC::mass_inflow) {
+                    m_inflow_op(iv, field, geom, time, ori, n);
+                } else {
+                    m_wall_op(iv, field, geom, time, ori, n);
+                }
+            }
+
+#if 0
             if (bc.lo(0) == amrex::BCType::ext_dir and
                 i < domain_box.smallEnd(0)) {
                 field(i, j, k, n) = m_bcv[amrex::Orientation(
@@ -137,8 +200,47 @@ struct FieldBCDirichlet
                 field(i, j, k, n) = m_bcv[amrex::Orientation(
                     amrex::Direction::z, amrex::Orientation::high)][n];
             }
+#endif
         }
     }
+};
+
+struct FieldBCDirichlet
+{
+    using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet>;
+
+    FieldBCDirichlet(const Field& fld) : m_field(fld) {}
+
+    inline FunctorType operator()() const
+    { return FunctorType(m_field); }
+
+    const Field& m_field;
+};
+
+template <typename InflowOp, typename WallOp>
+struct BCOpCreator
+{
+    using InflowOpType = typename InflowOp::DeviceType;
+    using WallOpType = typename WallOp::DeviceType;
+    using FunctorType = DirichletOp<InflowOpType, WallOpType>;
+
+    explicit BCOpCreator(const Field& fld)
+        : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
+    {}
+
+    explicit BCOpCreator(const Field& fld, const InflowOp& inflow_op, const WallOp& wall_op)
+        : m_field(fld), m_inflow_op(inflow_op), m_wall_op(wall_op)
+    {}
+
+    inline FunctorType operator()() const
+    {
+        return FunctorType{m_field, m_inflow_op.device_instance(),
+                           m_wall_op.device_instance()};
+    }
+
+    const Field& m_field;
+    InflowOp m_inflow_op;
+    WallOp m_wall_op;
 };
 
 } // namespace amr_wind

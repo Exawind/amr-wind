@@ -11,4 +11,5 @@ target_sources(${amr_wind_lib_name}
   EkmanSpiral.cpp
   )
 
-  add_subdirectory(multiphase)
+add_subdirectory(multiphase)
+add_subdirectory(udfs)

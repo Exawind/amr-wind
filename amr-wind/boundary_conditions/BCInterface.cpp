@@ -119,6 +119,64 @@ void BCIface::set_bcfuncs()
     }
 }
 
+std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
+{
+    auto& fname = m_field.name();
+    auto& bctype = m_field.bc_type();
+    const std::string inflow_key = fname + ".inflow_type";
+    const std::string wall_key = fname + ".wall_type";
+    std::string inflow_udf{"ConstDirichlet"};
+    std::string wall_udf{"ConstDirichlet"};
+    bool has_inflow_udf = false;
+    bool has_wall_udf = false;
+
+    for (amrex::OrientationIter oit; oit; ++oit) {
+        auto ori = oit();
+        const auto& bcid = bcnames[ori];
+        const auto bct = bctype[ori];
+        amrex::ParmParse pp(bcid);
+
+        switch (bct) {
+        case BC::mass_inflow: {
+            if (pp.contains(inflow_key.c_str())) {
+                std::string val;
+                pp.get(inflow_key.c_str(), val);
+
+                if (has_inflow_udf && (inflow_udf != val)) {
+                    amrex::Abort(
+                        "BCVelocity: Inflow UDF must be same for all inflow "
+                        "faces");
+                } else {
+                    inflow_udf = val;
+                }
+            }
+            break;
+        }
+
+        case BC::slip_wall: {
+            if (pp.contains(wall_key.c_str())) {
+                std::string val;
+                pp.get(wall_key.c_str(), val);
+
+                if (has_wall_udf && (wall_udf != val)) {
+                    amrex::Abort(
+                        "BCVelocity: Wall UDF must be same for all wall "
+                        "faces");
+                } else {
+                    wall_udf = val;
+                }
+            }
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+
+    return {inflow_udf, wall_udf};
+}
+
 void BCVelocity::set_bcrec()
 {
     auto& ibctype = m_field.bc_type();

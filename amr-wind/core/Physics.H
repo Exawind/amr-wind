@@ -66,6 +66,10 @@ public:
     //! Initialize the fields for a given level during init/regrid
     virtual void initialize_fields(int level, const amrex::Geometry& geom) = 0;
 
+    //! Actions to perform after PDEs and turbulence models have been created,
+    //! but before mesh creation
+    virtual void pre_init_actions() {}
+
     //! Actions to perform post initialization
     virtual void post_init_actions() = 0;
 

@@ -168,6 +168,11 @@ public:
         return (m_info->m_states[fid] != nullptr);
     }
 
+    const amrex::GpuArray<BC, AMREX_SPACEDIM * 2>& bc_type() const
+    {
+        return m_info->m_bc_type;
+    }
+
     amrex::GpuArray<BC, AMREX_SPACEDIM * 2>& bc_type()
     {
         return m_info->m_bc_type;

@@ -6,6 +6,8 @@
 
 #include "AMReX_BC_TYPES.H"
 
+#include <utility>
+
 /**
  *  \defgroup field_bc Boundary conditions management
  *  Boundary conditions managment
@@ -43,6 +45,9 @@ public:
     //! Operator that performs init actions and syncs the BC data to device
     virtual void operator()(const amrex::Real value = 0.0);
 
+    //! User-defined functions for Dirichlet-type boundaries
+    std::pair<const std::string, const std::string> get_dirichlet_udfs();
+
 protected:
     //! Setup AMReX mathematical BC types
     virtual void set_bcrec() = 0;
@@ -53,6 +58,7 @@ protected:
     //! Parse custom BCs specified for this field
     virtual void read_bctype();
 
+    //! BC functions for Neumann type boundaries
     virtual void set_bcfuncs();
 
     //! Set default BC values for the field
