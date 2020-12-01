@@ -86,7 +86,7 @@ public:
     void interpolate_fields(const amrex::Vector<Field*> fields);
 
     //! Populate the buffer with data for all the particles
-    void populate_buffer(std::vector<double>& buf);
+    void populate_buffer(std::vector<amrex::Real>& buf);
 
     int num_sampling_particles() const { return m_total_particles; }
 

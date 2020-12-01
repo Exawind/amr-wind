@@ -197,7 +197,7 @@ void Sampling::prepare_netcdf_file()
 void Sampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
+    std::vector<amrex::Real> buf(m_total_particles * m_var_names.size(), 0.0);
     m_scontainer->populate_buffer(buf);
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
