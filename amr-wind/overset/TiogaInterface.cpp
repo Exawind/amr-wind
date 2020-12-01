@@ -193,10 +193,7 @@ void TiogaInterface::update_solution()
     {
         int icomp = 0;
         for (const auto& cvar: m_cell_vars) {
-            auto& fldbase = repo.get_field(cvar);
-            auto& fld = (fldbase.num_time_states() > 1)
-                ? fldbase.state(FieldState::Old)
-                : fldbase;
+            auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             field_ops::copy(fld, *m_qcell, icomp, 0, ncomp, num_ghost);
             fld.fillpatch(m_sim.time().new_time());
@@ -208,10 +205,7 @@ void TiogaInterface::update_solution()
     {
         int icomp = 0;
         for (const auto& cvar: m_node_vars) {
-            auto& fldbase = repo.get_field(cvar);
-            auto& fld = (fldbase.num_time_states() > 1)
-                ? fldbase.state(FieldState::Old)
-                : fldbase;
+            auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             field_ops::copy(fld, *m_qnode, icomp, 0, ncomp, num_ghost);
             fld.fillpatch(m_sim.time().new_time());
