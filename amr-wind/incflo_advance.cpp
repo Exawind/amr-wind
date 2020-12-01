@@ -22,7 +22,16 @@ void incflo::pre_advance_stage1()
     // Compute time step size
     bool explicit_diffusion = (m_diff_type == DiffusionType::Explicit);
     ComputeDt(explicit_diffusion);
+}
 
+void incflo::pre_advance_stage2()
+{
+    BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
+    for (auto& pp : m_sim.physics()) pp->pre_advance_work();
+}
+
+void incflo::advance_states()
+{
     if (m_constant_density) {
         density().advance_states();
         density()
@@ -38,12 +47,6 @@ void incflo::pre_advance_stage1()
         field.advance_states();
         field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
     }
-}
-
-void incflo::pre_advance_stage2()
-{
-    BL_PROFILE("amr-wind::incflo::pre_advance_stage2");
-    for (auto& pp : m_sim.physics()) pp->pre_advance_work();
 }
 
 /** Advance simulation state by one timestep
@@ -66,6 +69,8 @@ void incflo::pre_advance_stage2()
 void incflo::advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance");
+    advance_states();
+
     ApplyPredictor();
 
     if (!m_use_godunov) ApplyCorrector();
