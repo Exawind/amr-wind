@@ -84,7 +84,7 @@ private:
     const int m_w{18};
 
     //! error log file
-    const std::string m_output_fname{"ctv.log"};
+    std::string m_output_fname{"ctv.log"};
 
     bool m_activate_pressure{false};
 };

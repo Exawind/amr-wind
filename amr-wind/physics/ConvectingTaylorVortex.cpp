@@ -50,6 +50,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     pp.query("u0", m_u0);
     pp.query("v0", m_v0);
     pp.query("activate_pressure", m_activate_pressure);
+    pp.query("error_log_file", m_output_fname);
     {
         amrex::Real nu;
         amrex::ParmParse pp("transport");
