@@ -99,8 +99,8 @@ and uses periodic boundary conditions. The exact solution is
 .. math::
    v(x,y) = v_0 - \sin(\pi (x-u_0 t)) \cos(\pi(y-v_0 t)) e^{-2\omega t}
 
-where :math:'\omega = \pi^2 \nu', and :math:'\nu' is the viscosity. Simulating the CTV
-to a fixed time of 0.2 seconds the :math:'L_2' error is measured over a set of grids with
+where :math:`\omega = \pi^2 \nu` and :math:`\nu` is the viscosity. Simulating the CTV
+to a fixed time of 0.2 seconds the :math:`L_2` error is measured over a set of grids with
 varying mesh resolution. This is performed for two CFL numbers and shown in the figure: 
 
 .. image:: ./ctv_error.png
