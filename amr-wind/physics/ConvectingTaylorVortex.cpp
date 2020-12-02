@@ -134,7 +134,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 {
 
     amrex::Real error = 0.0;
-    const amrex::Real time = m_time.current_time();
+    const amrex::Real time = m_time.new_time();
     const auto u0 = m_u0;
     const auto v0 = m_v0;
     const auto omega = m_omega;
