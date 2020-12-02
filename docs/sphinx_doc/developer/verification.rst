@@ -86,8 +86,29 @@ solution, and :math:`N_e` is the number of elements. :math:`N`, used
 below, is the number of element on a side of the cube (:math:`N_e =
 N^3`).
 
+Convecting Taylor Vortex (CTV)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An exact solution to the incompressible Navier-Stokes equations is 
+the Convecting Taylor Vortex (CTV) which can also be used to test the 
+order of accuracy. This exact solution is two dimensional, viscous, unsteady 
+and uses periodic boundary conditions. The exact solution is
+
+.. math::
+   u(x,y) = u_0 - \cos(\pi (x-u_0 t)) \sin(\pi(y-v_0 t)) e^{-2\omega t}
+.. math::
+   v(x,y) = v_0 - \sin(\pi (x-u_0 t)) \cos(\pi(y-v_0 t)) e^{-2\omega t}
+
+where :math:`\omega = \pi^2 \nu` and :math:`\nu` is the viscosity. Simulating the CTV
+to a fixed time of 0.2 seconds the :math:`L_2` error is measured over a set of grids with
+varying mesh resolution. This is performed for two CFL numbers and shown in the figure: 
+
+.. image:: ./ctv_error.png
+   :width: 300pt
+   
+   
 Ekman spiral 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Solution method adapted from this Ekman `lecture 
 <https://houraad.github.io/MPO503/Lecture%2011.xhtml>`_. Ekman assumed steady, homogeneous and horizontal flow with friction on a rotating Earth. Hence, the horizontal and time derivatives are zero.
