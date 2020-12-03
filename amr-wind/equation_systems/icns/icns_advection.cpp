@@ -2,6 +2,9 @@
 #include "amr-wind/core/MLMGOptions.H"
 #include "amr-wind/utilities/console_io.H"
 
+#include "AMReX_MacProjector.H"
+#include "AMReX_MultiFabUtil.H"
+
 namespace amr_wind {
 namespace pde {
 
