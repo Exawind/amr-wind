@@ -64,6 +64,27 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
     m_need_init = false;
 }
 
+//
+// Computes the following decomposition:
+//
+//    u + c*grad(phi)/ro = u*  with  div(ep*u) = 0
+//
+// Inputs:
+//
+//   u_mac,v_mac,w_mac = the MAC velocity field to be projected
+//   density           = the cell-centered density
+//
+// Outputs:
+//
+//  u_mac,v_mac,w_mac = the PROJECTED MAC velocity field
+//
+// Notes:
+//
+//  phi, the projection auxiliary function, is computed by solving
+//
+//       div(ep*grad(phi)/rho) = div(ep * u*)
+//
+
 void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::ICNS::advection_mac_project");
