@@ -5,11 +5,32 @@
 #include "amr-wind/equation_systems/AdvOp_MOL.H"
 #include "amr-wind/equation_systems/icns/icns.H"
 
+#include "AMReX_MacProjector.H"
+
 namespace amr_wind {
 namespace pde {
 
 void advection_mac_project(
     FieldRepo& repo, FieldState fstate, const bool, const amrex::Real dt);
+
+class MacProjOp
+{
+public:
+    using FaceFabPtrVec = amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
+
+    MacProjOp(FieldRepo&, bool);
+
+    void operator()(const FieldState fstate, const amrex::Real dt);
+
+private:
+    void init_projector(const FaceFabPtrVec&) noexcept;
+
+    FieldRepo& m_repo;
+    std::unique_ptr<amrex::MacProjector> m_mac_proj;
+    MLMGOptions m_options;
+    bool m_has_overset{false};
+    bool m_need_init{true};
+};
 
 /** Godunov scheme for ICNS
  *  \ingroup icns
