@@ -10,9 +10,6 @@
 namespace amr_wind {
 namespace pde {
 
-void advection_mac_project(
-    FieldRepo& repo, FieldState fstate, const bool, const amrex::Real dt);
-
 class MacProjOp
 {
 public:
@@ -43,6 +40,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
+        , m_macproj_op(fields.repo, false)
     {
 
         amrex::ParmParse pp("incflo");
@@ -211,7 +209,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         }
 
         // MAC projection
-        advection_mac_project(repo, fstate, has_overset, dt);
+        m_macproj_op(fstate, dt);
 
         //
         // Advect momentum eqns
@@ -250,6 +248,8 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     Field& u_mac;
     Field& v_mac;
     Field& w_mac;
+
+    MacProjOp m_macproj_op;
     amrex::Gpu::DeviceVector<int> iconserv;
 
     godunov::scheme godunov_scheme = godunov::scheme::PPM;
@@ -268,6 +268,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
+        , m_macproj_op(fields.repo, false)
     {}
 
     void operator()(
@@ -306,7 +307,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
             }
         }
 
-        advection_mac_project(repo, fstate, has_overset, dt);
+        m_macproj_op(fstate, dt);
 
         //
         // Advect velocity
@@ -355,6 +356,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
     Field& u_mac;
     Field& v_mac;
     Field& w_mac;
+
+    MacProjOp m_macproj_op;
 };
 
 }
