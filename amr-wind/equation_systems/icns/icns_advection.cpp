@@ -41,13 +41,14 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset)
     : m_repo(repo)
-    , m_mac_proj(new amrex::MacProjector(m_repo.mesh().Geom()))
     , m_options("mac_proj")
     , m_has_overset(has_overset)
 {}
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
+    m_mac_proj.reset(new amrex::MacProjector(
+        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1)));
     m_mac_proj->initProjector(
         m_options.lpinfo(), beta,
         m_has_overset ? m_repo.get_int_field("mask_cell").vec_const_ptrs()
