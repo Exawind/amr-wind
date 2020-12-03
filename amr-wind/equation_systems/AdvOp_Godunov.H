@@ -23,14 +23,13 @@ struct AdvectionOp<
     fvm::Godunov,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
-    AdvectionOp(PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool /* has_overset */)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
     {
-        
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
 
@@ -49,15 +48,13 @@ struct AdvectionOp<
             amrex::Print()<<"For godunov_type select between plm, ppm, ppm_nolim and weno: it defaults to ppm"<<std::endl;
             godunov_scheme = godunov::scheme::PPM;
         }
-    
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
     }
 
     void operator()(
         const FieldState fstate,
-        const amrex::Real dt,
-        const bool /* has_overset */)
+        const amrex::Real dt)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
@@ -114,7 +111,7 @@ struct AdvectionOp<
                                            dof_field.bcrec_device().data(),
                                            iconserv.data(),
                                            tmpfab.dataPtr(),
-                                           geom, 
+                                           geom,
                                            dt,
                                            godunov_scheme);
 
@@ -130,7 +127,7 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme=godunov::scheme::PPM;    
+    godunov::scheme godunov_scheme=godunov::scheme::PPM;
     std::string godunov_type;
 };
 

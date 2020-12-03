@@ -35,12 +35,12 @@ private:
 template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool has_overset)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, false)
+        , m_macproj_op(fields.repo, has_overset)
     {
 
         amrex::ParmParse pp("incflo");
@@ -68,7 +68,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
     }
 
     void operator()(
-        const FieldState fstate, const amrex::Real dt, const bool has_overset)
+        const FieldState fstate, const amrex::Real dt)
     {
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
@@ -263,16 +263,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
-    AdvectionOp(PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool has_overset)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(fields.repo, false)
+        , m_macproj_op(fields.repo, has_overset)
     {}
 
     void operator()(
-        const FieldState fstate, const amrex::Real dt, const bool has_overset)
+        const FieldState fstate, const amrex::Real dt)
     {
 
         auto& repo = fields.repo;

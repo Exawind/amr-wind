@@ -23,7 +23,7 @@ struct AdvectionOp<
     fvm::MOL,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
-    AdvectionOp(PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool /* has_overset */)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))
@@ -33,8 +33,7 @@ struct AdvectionOp<
 
     void operator()(
         const FieldState fstate,
-        const amrex::Real,
-        const bool /* has_overset */)
+        const amrex::Real)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
