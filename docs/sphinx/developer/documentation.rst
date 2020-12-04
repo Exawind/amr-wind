@@ -44,7 +44,7 @@ Once Sphinx is installed properly, you should have access to the
    cd ~/exawind/source/amr-wind/build/
 
    # Build docs in HTML format
-   sphinx-build -M html ../docs/sphinx_doc .
+   sphinx-build -M html ../docs/sphinx .
 
 The above command will build docs in HTML format and the output is placed in
 :file:`html` directory within the :file:`build` directory. Documentation can
