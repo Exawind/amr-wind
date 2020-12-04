@@ -62,11 +62,11 @@ public:
 
 private:
     const amr_wind::SimTime& m_time;
+    const amr_wind::CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
     Field& m_velocity;
     Field& m_density;
-
     void output_error();
 
     //! initial density value
@@ -88,7 +88,6 @@ private:
     std::string m_output_fname{"ctv.log"};
 
     bool m_activate_pressure{false};
-    bool m_has_overset{false};
 
 };
 } // namespace ctv

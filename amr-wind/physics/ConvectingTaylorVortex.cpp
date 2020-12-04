@@ -40,11 +40,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
 
 ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     : m_time(sim.time())
+    , m_sim(sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
-    , m_has_overset(sim.has_overset())
 {
     amrex::ParmParse pp("CTV");
     pp.query("density", m_rho);
@@ -143,8 +143,6 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
     T f_exact;
     const auto comp = f_exact.m_comp;
 
-    const auto& iblank = m_repo.get_int_field("iblank_cell");
-
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -161,11 +159,12 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         }
 
 
-        if(m_has_overset){
+        if(m_sim.has_overset())
+        {
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
 
-                const auto& iblank_arr = iblank(lev).array(mfi);
+                const auto& iblank_arr = m_repo.get_int_field("iblank_cell")(lev).array(mfi);
                 const auto& imask_arr = level_mask.array(mfi);
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
