@@ -62,6 +62,7 @@ public:
 
 private:
     const amr_wind::SimTime& m_time;
+    const amr_wind::CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
     Field& m_velocity;
@@ -87,6 +88,7 @@ private:
     std::string m_output_fname{"ctv.log"};
 
     bool m_activate_pressure{false};
+
 };
 } // namespace ctv
 } // namespace amr_wind

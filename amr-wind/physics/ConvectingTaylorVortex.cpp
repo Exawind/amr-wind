@@ -40,6 +40,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VExact::operator()(
 
 ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     : m_time(sim.time())
+    , m_sim(sim)
     , m_repo(sim.repo())
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
@@ -155,6 +156,22 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,
                 amrex::MFInfo());
             level_mask.setVal(1);
+        }
+
+
+        if(m_sim.has_overset())
+        {
+            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
+                const auto& vbx = mfi.validbox();
+
+                const auto& iblank_arr = m_repo.get_int_field("iblank_cell")(lev).array(mfi);
+                const auto& imask_arr = level_mask.array(mfi);
+                amrex::ParallelFor(
+                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        if(iblank_arr(i,j,k) < 1) imask_arr(i,j,k) = 0;
+                    });
+
+            }
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
