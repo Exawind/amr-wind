@@ -35,7 +35,7 @@ struct VExact
 
 struct WExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
@@ -47,7 +47,7 @@ struct WExact
 
 struct gpxExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
@@ -59,7 +59,7 @@ struct gpxExact
 
 struct gpyExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
@@ -71,7 +71,7 @@ struct gpyExact
 
 struct gpzExact
 {
-    AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,

@@ -47,7 +47,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
     return 0.0;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gpxExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpxExact::operator()(
     const amrex::Real u0,
     const amrex::Real,
     const amrex::Real omega,
@@ -60,7 +60,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gpxExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gpyExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpyExact::operator()(
     const amrex::Real,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -73,7 +73,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gpyExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real gpzExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpzExact::operator()(
     const amrex::Real,
     const amrex::Real,
     const amrex::Real,
