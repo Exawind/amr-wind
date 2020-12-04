@@ -44,6 +44,7 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     , m_mesh(sim.mesh())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
+    , m_has_overset(sim.has_overset())
 {
     amrex::ParmParse pp("CTV");
     pp.query("density", m_rho);
@@ -142,6 +143,8 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
     T f_exact;
     const auto comp = f_exact.m_comp;
 
+    const auto& iblank = m_repo.get_int_field("iblank_cell");
+
     const int nlevels = m_repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -155,6 +158,21 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,
                 amrex::MFInfo());
             level_mask.setVal(1);
+        }
+
+
+        if(m_has_overset){
+            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
+                const auto& vbx = mfi.validbox();
+
+                const auto& iblank_arr = iblank(lev).array(mfi);
+                const auto& imask_arr = level_mask.array(mfi);
+                amrex::ParallelFor(
+                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        if(iblank_arr(i,j,k) < 1) imask_arr(i,j,k) = 0;
+                    });
+
+            }
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
