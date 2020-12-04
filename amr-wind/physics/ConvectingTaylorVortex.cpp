@@ -47,7 +47,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real WExact::operator()(
     return 0.0;
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpxExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpxExact::operator()(
     const amrex::Real u0,
     const amrex::Real,
     const amrex::Real omega,
@@ -60,7 +60,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpxExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpyExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpyExact::operator()(
     const amrex::Real,
     const amrex::Real v0,
     const amrex::Real omega,
@@ -73,7 +73,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpyExact::operator()(
            std::exp(-4.0 * omega * t);
 }
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real gpzExact::operator()(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real GpzExact::operator()(
     const amrex::Real,
     const amrex::Real,
     const amrex::Real,
@@ -141,9 +141,9 @@ void ConvectingTaylorVortex::initialize_fields(
     UExact u_exact;
     VExact v_exact;
     WExact w_exact;
-    gpxExact gpx_exact;
-    gpyExact gpy_exact;
-    gpzExact gpz_exact;
+    GpxExact gpx_exact;
+    GpyExact gpy_exact;
+    GpzExact gpz_exact;
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -262,9 +262,9 @@ void ConvectingTaylorVortex::output_error()
     const amrex::Real u_err = compute_error<UExact>(m_velocity);
     const amrex::Real v_err = compute_error<VExact>(m_velocity);
     const amrex::Real w_err = compute_error<WExact>(m_velocity);
-    const amrex::Real gpx_err = compute_error<gpxExact>(m_gradp);
-    const amrex::Real gpy_err = compute_error<gpyExact>(m_gradp);
-    const amrex::Real gpz_err = compute_error<gpzExact>(m_gradp);
+    const amrex::Real gpx_err = compute_error<GpxExact>(m_gradp);
+    const amrex::Real gpy_err = compute_error<GpyExact>(m_gradp);
+    const amrex::Real gpz_err = compute_error<GpzExact>(m_gradp);
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f;

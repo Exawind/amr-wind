@@ -45,7 +45,7 @@ struct WExact
     const int m_comp{2};
 };
 
-struct gpxExact
+struct GpxExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
@@ -57,7 +57,7 @@ struct gpxExact
     const int m_comp{0};
 };
 
-struct gpyExact
+struct GpyExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
@@ -69,7 +69,7 @@ struct gpyExact
     const int m_comp{1};
 };
 
-struct gpzExact
+struct GpzExact
 {
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real operator()(
         const amrex::Real,
