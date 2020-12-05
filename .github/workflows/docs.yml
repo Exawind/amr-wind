@@ -41,12 +41,12 @@ jobs:
         working-directory: ${{runner.workspace}}/build-docs
         run:  |
            make
-           touch ${{runner.workspace}}/build-docs/docs/sphinx/html/.nojekyll
+           touch ${{runner.workspace}}/build-docs/sphinx/html/.nojekyll
       - name: Deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/development'
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           BRANCH: gh-pages
-          FOLDER: ${{runner.workspace}}/build-docs/docs/sphinx/html
+          FOLDER: ${{runner.workspace}}/build-docs/sphinx/html
           SINGLE_COMMIT: true
