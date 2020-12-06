@@ -126,6 +126,13 @@ public:
     //! Register a new PDE instance and return its reference
     PDEBase& register_transport_pde(const std::string& pde_name);
 
+    //! Advance states for all registered PDEs at the beginning of a timestep
+    void advance_states();
+
+    //! Call fillpatch operator on state variables for all registered PDEs
+    void fillpatch_state_fields(
+        const amrex::Real time, const FieldState fstate = FieldState::New);
+
     /** Return the vector containing all registered PDE instances
      *
      *  Note that this does not contain the ICNS system as it is treated
@@ -154,6 +161,9 @@ private:
 
     //! Flag indicating whether Godunov scheme is active
     bool m_use_godunov{false};
+
+    //! Flag indicating whether density is constant for this simulation
+    bool m_constant_density{true};
 };
 
 } // namespace pde
