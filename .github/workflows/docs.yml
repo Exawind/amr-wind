@@ -38,7 +38,7 @@ jobs:
       - name: Build docs
         run: |
           sphinx-build -M html ./docs/sphinx_doc ./build_docs/manual
-          doxygen -w html ./docs/doxygen/Doxyfile
+          doxygen ./docs/doxygen/Doxyfile
           mv ./build_docs/manual/html ./documentation
           mv ./build_docs/doxygen/html ./documentation/api_docs
           touch ./documentation/.nojekyll
