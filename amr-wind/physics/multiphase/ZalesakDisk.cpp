@@ -101,6 +101,8 @@ void ZalesakDisk::post_advance_work()
                 });
         }
     }
+
+    m_velocity.fillpatch(m_sim.time().current_time());
 }
 
 } // namespace amr_wind
