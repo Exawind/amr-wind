@@ -26,25 +26,6 @@ void incflo::pre_advance_stage2()
     for (auto& pp : m_sim.physics()) pp->pre_advance_work();
 }
 
-void incflo::advance_states()
-{
-    if (m_constant_density) {
-        density().advance_states();
-        density()
-            .state(amr_wind::FieldState::Old)
-            .fillpatch(m_time.current_time());
-    }
-
-    auto& vel = icns().fields().field;
-    vel.advance_states();
-    vel.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    for (auto& eqn : scalar_eqns()) {
-        auto& field = eqn->fields().field;
-        field.advance_states();
-        field.state(amr_wind::FieldState::Old).fillpatch(m_time.current_time());
-    }
-}
-
 /** Advance simulation state by one timestep
  *
  *  Performs the following actions at a given timestep
@@ -65,7 +46,8 @@ void incflo::advance_states()
 void incflo::advance()
 {
     BL_PROFILE("amr-wind::incflo::Advance");
-    advance_states();
+
+    m_sim.pde_manager().advance_states();
 
     ApplyPredictor();
 

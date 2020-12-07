@@ -95,6 +95,8 @@ void VortexPatch::post_advance_work()
                 });
         }
     }
+
+    m_velocity.fillpatch(time);
 }
 
 } // namespace amr_wind

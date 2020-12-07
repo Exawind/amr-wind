@@ -22,11 +22,6 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("viscosity_fluid2", m_mu2);
 }
 
-void MultiPhase::initialize_fields(int level, const amrex::Geometry& geom)
-{
-    set_multiphase_properties(level, geom);
-}
-
 void MultiPhase::post_init_actions()
 {
     const int nlevels = m_sim.repo().num_active_levels();
@@ -35,6 +30,7 @@ void MultiPhase::post_init_actions()
     for (int lev = 0; lev < nlevels; ++lev) {
         set_multiphase_properties(lev, geom[lev]);
     }
+    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::post_advance_work()
@@ -45,6 +41,7 @@ void MultiPhase::post_advance_work()
     for (int lev = 0; lev < nlevels; ++lev) {
         set_multiphase_properties(lev, geom[lev]);
     }
+    m_density.fillpatch(m_sim.time().new_time());
 }
 
 void MultiPhase::set_multiphase_properties(

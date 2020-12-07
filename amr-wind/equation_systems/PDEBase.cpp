@@ -24,6 +24,7 @@ PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim), m_probtype(0)
     amrex::ParmParse pp("incflo");
     pp.query("probtype", m_probtype);
     pp.query("use_godunov", m_use_godunov);
+    pp.query("constant_density", m_constant_density);
 
     m_scheme =
         m_use_godunov ? fvm::Godunov::scheme_name() : fvm::MOL::scheme_name();
@@ -59,6 +60,28 @@ bool PDEMgr::has_pde(const std::string& pde_name) const
 int PDEMgr::num_ghost_state() const
 {
     return m_use_godunov ? fvm::Godunov::nghost_state : fvm::MOL::nghost_state;
+}
+
+void PDEMgr::advance_states()
+{
+    if (m_constant_density)
+        m_sim.repo().get_field("density").advance_states();
+
+    icns().fields().field.advance_states();
+    for (auto& eqn: scalar_eqns()) {
+        eqn->fields().field.advance_states();
+    }
+}
+
+void PDEMgr::fillpatch_state_fields(const amrex::Real time, const FieldState fstate)
+{
+    if (m_constant_density)
+        m_sim.repo().get_field("density").state(fstate).fillpatch(time);
+
+    icns().fields().field.state(fstate).fillpatch(time);
+    for (auto& eqn: scalar_eqns()) {
+        eqn->fields().field.state(fstate).fillpatch(time);
+    }
 }
 
 } // namespace pde
