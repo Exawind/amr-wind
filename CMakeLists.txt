@@ -11,8 +11,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 
 #General options for the project
 option(AMR_WIND_ENABLE_FORTRAN "Enable Fortran interfaces" OFF)
-option(AMR_WIND_ENABLE_DOCUMENTATION "Build documentation" OFF)
-option(AMR_WIND_ENABLE_SPHINX_API_DOCS "Link Doxygen API docs to Sphinx" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 
@@ -142,10 +140,6 @@ if(AMR_WIND_ENABLE_TESTS)
   enable_testing()
   include(CTest)
   add_subdirectory(test)
-endif()
-
-if(AMR_WIND_ENABLE_DOCUMENTATION)
-   add_subdirectory(docs)
 endif()
 
 #Define what we want to be installed during a make install
