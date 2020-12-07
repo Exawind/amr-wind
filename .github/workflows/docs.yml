@@ -1,52 +1,51 @@
 name: AMR-Wind Docs
 
-on:
-  push:
-    branches: [development]
-    paths:
+ on:
+   push:
+     branches:
+       - development
+     paths:
        - 'amr-wind/**'
        - 'docs/**'
        - '.github/workflows/docs.yml'
-  pull_request:
-    branches: [development]
-    paths:
+   pull_request:
+     branches:
+       - development
+     paths:
        - 'amr-wind/**'
        - 'docs/**'
        - '.github/workflows/docs.yml'
 
-jobs:
-  Docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup
-        run: |
-          cmake -E make_directory ${{runner.workspace}}/build-docs
-      - name: Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-      - name: Dependencies
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends doxygen graphviz
-          python -m pip install --upgrade pip
-          pip install sphinx sphinx_rtd_theme
-      - name: Configure
-        working-directory: ${{runner.workspace}}/build-docs
-        run:  |
-          cmake ${{github.workspace}}/docs
-      - name: Build
-        working-directory: ${{runner.workspace}}/build-docs
-        run:  |
-           make
-           touch ${{runner.workspace}}/build-docs/sphinx/html/.nojekyll
-      - name: Deploy
-        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          BRANCH: gh-pages
-          FOLDER: ${{runner.workspace}}/build-docs/sphinx/html
-          SINGLE_COMMIT: true
+ jobs:
+   Docs:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v2
+       - name: Python
+         uses: actions/setup-python@v2
+         with:
+           python-version: '3.x'
+       - name: Dependencies
+         run: |
+           export DEBIAN_FRONTEND=noninteractive
+           sudo apt-get update
+           sudo apt-get install -y --no-install-recommends \
+             doxygen graphviz
+           python3 -m pip install --upgrade pip
+           pip3 install sphinx sphinx_rtd_theme
+       - name: Build
+         working-directory: ${{github.workspace}}
+         run: |
+           sphinx-build -M html ./docs/sphinx ./build_docs/manual
+           doxygen ./docs/doxygen/Doxyfile
+           mv ./build_docs/manual/html ./documentation
+           mv ./build_docs/doxygen/html ./documentation/api_docs
+           touch ./documentation/.nojekyll
+       - name: Deploy
+         if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+         uses: JamesIves/github-pages-deploy-action@releases/v3
+         with:
+           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+           BRANCH: gh-pages
+           FOLDER: documentation
+           SINGLE_COMMIT: true
