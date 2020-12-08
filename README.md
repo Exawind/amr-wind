@@ -1,8 +1,8 @@
 # AMR-Wind 
 
-[Website](https://www.exawind.org/) | [User manual](https://amr-wind.readthedocs.io) | [API docs](https://exawind.github.io/amr-wind/index.html) | [Nightly test dashboard](http://my.cdash.org/index.php?project=AMR-Wind) 
+[Website](https://www.exawind.org/) | [User manual](https://exawind.github.io/amr-wind) | [API docs](https://exawind.github.io/amr-wind/api_docs) | [Nightly test dashboard](http://my.cdash.org/index.php?project=AMR-Wind) 
 
-[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions) [![Docs Status](https://readthedocs.org/projects/pip/badge/?version=latest)](https://amr-wind.readthedocs.io)
+[![Powered by AMReX](https://amrex-codes.github.io/badges/powered%20by-AMReX-red.svg)](https://amrex-codes.github.io/amrex/) [![Build Status](https://github.com/Exawind/amr-wind/workflows/AMR-Wind-CI/badge.svg)](https://github.com/Exawind/amr-wind/actions)
 
 
 AMR-Wind is a massively parallel, block-structured adaptive-mesh, incompressible
@@ -40,9 +40,9 @@ objectives:
 
 ## Documentation
 
-Documentation is organized into a [user manual](https://amr-wind.readthedocs.io)
+Documentation is organized into a [user manual](https://exawind.github.io/amr-wind)
 and a developer-focused [API
-documentation](https://exawind.github.io/amr-wind/index.html). You can either
+documentation](https://exawind.github.io/amr-wind). You can either
 browse the docs online by following the links, or you can generate them locally
 after downloading the code. Please follow the instructions in user manual to
 build documentation locally.

@@ -12,3 +12,4 @@ test/Backtrace.*
 test/*plt*/
 test/chk*/
 test/AMR-WindGoldFiles
+.DS_store
