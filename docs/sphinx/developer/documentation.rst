@@ -19,7 +19,7 @@ ReStructured Text (ReST) and is converted into HTML and PDF formats using a
 python package Sphinx. Since the manuals are written in simple text files, they
 can be version controlled alongside the source code. Documentation is
 automatically generated with new updates to the GitHub repository and deployed
-at `ReadTheDocs site <https://amr-wind.readthedocs.io>`_.
+at `AMR-Wind documentation site <https://exawind.github.io/amr-wind>`_.
 
 Building documentation
 ``````````````````````
@@ -68,7 +68,7 @@ Source code (C++ files) are commented using a special format that allows Doxygen
 to extract the annotated comments and create source code documentation as well
 as inheritance diagrams. API documentation for the latest snapshot of the
 codebase can be browsed online `here
-<https://exawind.github.io/amr-wind/index.html>`_. To build the documentation
+<https://exawind.github.io/amr-wind/api_docs>`_. To build the documentation
 locally, first install ``doxygen`` and ``graphviz`` executables on your system.
 Once they are successfully installed, execute the following command from the
 root directory of ``amr-wind``

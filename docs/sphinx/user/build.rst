@@ -1,3 +1,5 @@
+.. _build:
+
 Compiling AMR-Wind
 ==================
 
@@ -34,7 +36,7 @@ Building from source
 #. If you are on an HPC system that provides Modules Environment, load the
    necessary compiler, MPI, and CMake modules. If targeting GPUs, load CUDA
    modules. You can also use scripts from `exawind-builder
-   <https://exawind-builder.readthedocs.io>`_.
+   <https://exawind.github.io/exawind-builder>`_.
 
 #. Clone a local copy of the git repository
 
