@@ -335,8 +335,8 @@ public:
     }
 
     //! Return factory instance at a given level
-    inline const amrex::FabFactory<amrex::FArrayBox>& factory(int lev) const
-        noexcept
+    inline const amrex::FabFactory<amrex::FArrayBox>&
+    factory(int lev) const noexcept
     {
         return *m_leveldata[lev]->m_factory;
     }

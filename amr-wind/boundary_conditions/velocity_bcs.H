@@ -40,8 +40,7 @@ void register_velocity_dirichlet(
     const std::string inflow_udf = udfs.first;
     const std::string wall_udf = udfs.second;
 
-    if ((inflow_udf == "ConstDirichlet") &&
-        (wall_udf == "ConstDirichlet"))
+    if ((inflow_udf == "ConstDirichlet") && (wall_udf == "ConstDirichlet"))
         return;
 
     if (wall_udf != "ConstDirichlet") {

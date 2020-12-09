@@ -15,6 +15,7 @@ class VortexPatch : public Physics::Register<VortexPatch>
 {
     static_assert(
         AMREX_SPACEDIM == 3, "VortexPatch requires 3 dimensional mesh");
+
 public:
     static const std::string identifier() { return "VortexPatch"; }
 

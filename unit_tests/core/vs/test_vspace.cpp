@@ -123,8 +123,8 @@ void test_device_lists_impl()
     });
 
     amrex::Vector<vs::Vector> hvectors(3);
-    amrex::Vector<vs::Vector> htrue{vs::Vector::ihat(), vs::Vector::jhat(),
-                                    vs::Vector::khat()};
+    amrex::Vector<vs::Vector> htrue{
+        vs::Vector::ihat(), vs::Vector::jhat(), vs::Vector::khat()};
     amrex::Gpu::copy(
         amrex::Gpu::deviceToHost, dvectors.begin(), dvectors.end(),
         hvectors.begin());

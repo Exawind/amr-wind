@@ -50,8 +50,8 @@ public:
         int level, amrex::TagBoxArray& tags, amrex::Real time, int ngrow) = 0;
 };
 
-/** A collection of refinement criteria instances that are active during a simulation
- *  \ingroup amr_utils
+/** A collection of refinement criteria instances that are active during a
+ * simulation \ingroup amr_utils
  */
 class RefineCriteriaManager
 {
@@ -62,7 +62,8 @@ public:
 
     void initialize();
 
-    void tag_cells(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
+    void
+    tag_cells(int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow);
 
 private:
     CFDSim& m_sim;

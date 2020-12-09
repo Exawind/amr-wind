@@ -44,7 +44,6 @@ private:
 
     //! dam height value
     amrex::Real m_height{0.25};
-
 };
 
 } // namespace amr_wind

@@ -32,7 +32,7 @@ void RefineCriteriaManager::initialize()
 void RefineCriteriaManager::tag_cells(
     int lev, amrex::TagBoxArray& tags, amrex::Real time, int ngrow)
 {
-    for (auto& rc: m_refiners) {
+    for (auto& rc : m_refiners) {
         (*rc)(lev, tags, time, ngrow);
     }
 }

@@ -47,8 +47,7 @@ struct FieldBCNoOp
     constexpr FieldBCNoOp() {}
 
     AMREX_GPU_HOST
-    constexpr FieldBCNoOp(const Field&)
-    {}
+    constexpr FieldBCNoOp(const Field&) {}
 
     FunctorType operator()() const { return *this; }
 
@@ -75,8 +74,7 @@ struct ConstDirichlet
 
     AMREX_GPU_HOST
     ConstDirichlet(const Field& fld)
-        : m_ncomp(fld.num_comp())
-        , m_bcv(fld.bc_values_device())
+        : m_ncomp(fld.num_comp()), m_bcv(fld.bc_values_device())
     {}
 
     AMREX_GPU_HOST
@@ -211,8 +209,7 @@ struct FieldBCDirichlet
 
     FieldBCDirichlet(const Field& fld) : m_field(fld) {}
 
-    inline FunctorType operator()() const
-    { return FunctorType(m_field); }
+    inline FunctorType operator()() const { return FunctorType(m_field); }
 
     const Field& m_field;
 };
@@ -228,14 +225,16 @@ struct BCOpCreator
         : m_field(fld), m_inflow_op(fld), m_wall_op(fld)
     {}
 
-    explicit BCOpCreator(const Field& fld, const InflowOp& inflow_op, const WallOp& wall_op)
+    explicit BCOpCreator(
+        const Field& fld, const InflowOp& inflow_op, const WallOp& wall_op)
         : m_field(fld), m_inflow_op(inflow_op), m_wall_op(wall_op)
     {}
 
     inline FunctorType operator()() const
     {
-        return FunctorType{m_field, m_inflow_op.device_instance(),
-                           m_wall_op.device_instance()};
+        return FunctorType{
+            m_field, m_inflow_op.device_instance(),
+            m_wall_op.device_instance()};
     }
 
     const Field& m_field;

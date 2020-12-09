@@ -135,7 +135,6 @@ TEST_F(ABLMeshTest, body_force)
     }
 }
 
-
 TEST_F(ABLMeshTest, geostrophic_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
@@ -190,8 +189,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in x-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {0.0, -corfac * latfac * vel_comp,
-                                             corfac * latfac * vel_comp};
+        amrex::Real golds[AMREX_SPACEDIM] = {
+            0.0, -corfac * latfac * vel_comp, corfac * latfac * vel_comp};
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 0);
@@ -214,8 +213,8 @@ TEST_F(ABLMeshTest, coriolis_const_vel)
 
     // Velocity in y-direction test
     {
-        amrex::Real golds[AMREX_SPACEDIM] = {corfac * latfac * vel_comp, 0.0,
-                                             0.0};
+        amrex::Real golds[AMREX_SPACEDIM] = {
+            corfac * latfac * vel_comp, 0.0, 0.0};
         vel.setVal(0.0);
         src_term.setVal(0.0);
         vel.setVal(vel_comp, 1);

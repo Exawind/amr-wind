@@ -34,27 +34,29 @@ struct AdvectionOp<
         pp.query("godunov_type", godunov_type);
 
         if (pp.contains("use_ppm") || pp.contains("use_limiter"))
-            amrex::Abort("Godunov: use_ppm and use_limiter are deprecated. Please update input file");
+            amrex::Abort(
+                "Godunov: use_ppm and use_limiter are deprecated. Please "
+                "update input file");
 
-        if(amrex::toLower(godunov_type)=="plm"){
+        if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
-        }else if (amrex::toLower(godunov_type)=="ppm"){
+        } else if (amrex::toLower(godunov_type) == "ppm") {
             godunov_scheme = godunov::scheme::PPM;
-        }else if (amrex::toLower(godunov_type)=="ppm_nolim"){
+        } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
-        }else if (amrex::toLower(godunov_type)=="weno"){
+        } else if (amrex::toLower(godunov_type) == "weno") {
             godunov_scheme = godunov::scheme::WENO;
-        }else{
-            amrex::Print()<<"For godunov_type select between plm, ppm, ppm_nolim and weno: it defaults to ppm"<<std::endl;
+        } else {
+            amrex::Print() << "For godunov_type select between plm, ppm, "
+                              "ppm_nolim and weno: it defaults to ppm"
+                           << std::endl;
             godunov_scheme = godunov::scheme::PPM;
         }
         // TODO: Need iconserv flag to be adjusted???
         iconserv.resize(PDE::ndim, 1);
     }
 
-    void operator()(
-        const FieldState fstate,
-        const amrex::Real dt)
+    void operator()(const FieldState fstate, const amrex::Real dt)
     {
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
@@ -101,19 +103,13 @@ struct AdvectionOp<
 
                 amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
-                godunov::compute_advection(lev, bx, PDE::ndim,
-                                           conv_term(lev).array(mfi),
-                                           (PDE::multiply_rho ? rhotrac : tra_arr),
-                                           u_mac(lev).const_array(mfi),
-                                           v_mac(lev).const_array(mfi),
-                                           w_mac(lev).const_array(mfi),
-                                           src_term(lev).const_array(mfi),
-                                           dof_field.bcrec_device().data(),
-                                           iconserv.data(),
-                                           tmpfab.dataPtr(),
-                                           geom,
-                                           dt,
-                                           godunov_scheme);
+                godunov::compute_advection(
+                    lev, bx, PDE::ndim, conv_term(lev).array(mfi),
+                    (PDE::multiply_rho ? rhotrac : tra_arr),
+                    u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
+                    w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
+                    dof_field.bcrec_device().data(), iconserv.data(),
+                    tmpfab.dataPtr(), geom, dt, godunov_scheme);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -127,7 +123,7 @@ struct AdvectionOp<
     Field& w_mac;
     amrex::Gpu::DeviceVector<int> iconserv;
 
-    godunov::scheme godunov_scheme=godunov::scheme::PPM;
+    godunov::scheme godunov_scheme = godunov::scheme::PPM;
     std::string godunov_type;
 };
 

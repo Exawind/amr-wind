@@ -41,6 +41,10 @@ jobs:
             cppexe: dpcpp
             enable_dpcpp: ON
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
       - uses: actions/checkout@v2
         with:
           submodules: true

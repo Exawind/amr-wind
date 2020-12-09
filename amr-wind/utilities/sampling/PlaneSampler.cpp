@@ -74,8 +74,8 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
 #ifdef AMR_WIND_USE_NETCDF
 void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
-    const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1],
-                               static_cast<int>(m_poffsets.size())};
+    const std::vector<int> ijk{
+        m_npts_dir[0], m_npts_dir[1], static_cast<int>(m_poffsets.size())};
     grp.put_attr("sampling_type", identifier());
     grp.put_attr("ijk_dims", ijk);
     grp.put_attr("origin", m_origin);

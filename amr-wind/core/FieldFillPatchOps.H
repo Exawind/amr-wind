@@ -282,8 +282,7 @@ public:
     }
 
 protected:
-    Functor bc_functor()
-    { return m_op(); }
+    Functor bc_functor() { return m_op(); }
 
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;

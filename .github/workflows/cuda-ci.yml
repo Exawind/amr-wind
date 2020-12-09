@@ -45,6 +45,10 @@ jobs:
             cuda_pkg: 10-0
             cuda_extra: cuda-curand-dev-10-0 cuda-cupti-10-0
     steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
       - uses: actions/checkout@v2
         with:
           submodules: true

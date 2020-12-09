@@ -140,7 +140,7 @@ void TiogaInterface::register_solution(
     // Move cell variables into scratch field
     {
         int icomp = 0;
-        for (const auto& cvar: m_cell_vars) {
+        for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
@@ -153,7 +153,7 @@ void TiogaInterface::register_solution(
     // Move node variables into scratch field
     {
         int icomp = 0;
-        for (const auto& cvar: m_node_vars) {
+        for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             fld.fillpatch(m_sim.time().new_time());
@@ -192,7 +192,7 @@ void TiogaInterface::update_solution()
     // Update cell variables
     {
         int icomp = 0;
-        for (const auto& cvar: m_cell_vars) {
+        for (const auto& cvar : m_cell_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             field_ops::copy(fld, *m_qcell, icomp, 0, ncomp, num_ghost);
@@ -204,7 +204,7 @@ void TiogaInterface::update_solution()
     // Update nodal variables
     {
         int icomp = 0;
-        for (const auto& cvar: m_node_vars) {
+        for (const auto& cvar : m_node_vars) {
             auto& fld = repo.get_field(cvar);
             const int ncomp = fld.num_comp();
             field_ops::copy(fld, *m_qnode, icomp, 0, ncomp, num_ghost);

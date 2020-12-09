@@ -64,22 +64,22 @@ int PDEMgr::num_ghost_state() const
 
 void PDEMgr::advance_states()
 {
-    if (m_constant_density)
-        m_sim.repo().get_field("density").advance_states();
+    if (m_constant_density) m_sim.repo().get_field("density").advance_states();
 
     icns().fields().field.advance_states();
-    for (auto& eqn: scalar_eqns()) {
+    for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.advance_states();
     }
 }
 
-void PDEMgr::fillpatch_state_fields(const amrex::Real time, const FieldState fstate)
+void PDEMgr::fillpatch_state_fields(
+    const amrex::Real time, const FieldState fstate)
 {
     if (m_constant_density)
         m_sim.repo().get_field("density").state(fstate).fillpatch(time);
 
     icns().fields().field.state(fstate).fillpatch(time);
-    for (auto& eqn: scalar_eqns()) {
+    for (auto& eqn : scalar_eqns()) {
         eqn->fields().field.state(fstate).fillpatch(time);
     }
 }

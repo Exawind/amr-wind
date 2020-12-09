@@ -27,7 +27,8 @@ public:
     virtual ~BoxRefiner() = default;
 
     void operator()(
-        const amrex::Box&, const amrex::Geometry& geom,
+        const amrex::Box&,
+        const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const override;
 
 protected:
@@ -36,7 +37,7 @@ protected:
     amrex::Gpu::DeviceVector<int> m_face_origin;
 };
 
-}
-}
+} // namespace tagging
+} // namespace amr_wind
 
 #endif /* BOXREFINER_H */

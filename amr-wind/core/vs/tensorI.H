@@ -9,8 +9,7 @@ namespace amr_wind {
 namespace vs {
 
 template <typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-TensorT<T>::TensorT(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>::TensorT(
     const VectorT<T>& x,
     const VectorT<T>& y,
     const VectorT<T>& z,
@@ -121,9 +120,9 @@ operator&(const TensorT<T>& t1, const TensorT<T>& t2)
     return t3;
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-TensorT<T> operator+(const TensorT<T>& t1, const TensorT<T>& t2)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>
+operator+(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return TensorT<T>{
         t1.vv[0] + t2.vv[0], t1.vv[1] + t2.vv[1], t1.vv[2] + t2.vv[2],
@@ -131,9 +130,9 @@ TensorT<T> operator+(const TensorT<T>& t1, const TensorT<T>& t2)
         t1.vv[6] + t2.vv[6], t1.vv[7] + t2.vv[7], t1.vv[8] + t2.vv[8]};
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-TensorT<T> operator-(const TensorT<T>& t1, const TensorT<T>& t2)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE TensorT<T>
+operator-(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return TensorT<T>{
         t1.vv[0] - t2.vv[0], t1.vv[1] - t2.vv[1], t1.vv[2] - t2.vv[2],
@@ -141,9 +140,9 @@ TensorT<T> operator-(const TensorT<T>& t1, const TensorT<T>& t2)
         t1.vv[6] - t2.vv[6], t1.vv[7] - t2.vv[7], t1.vv[8] - t2.vv[8]};
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-T operator&&(const TensorT<T>& t1, const TensorT<T>& t2)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T
+operator&&(const TensorT<T>& t1, const TensorT<T>& t2)
 {
     return (
         t1.vv[0] * t2.vv[0] + t1.vv[1] * t2.vv[1] + t1.vv[2] * t2.vv[2] +
@@ -151,16 +150,14 @@ T operator&&(const TensorT<T>& t1, const TensorT<T>& t2)
         t1.vv[6] * t2.vv[6] + t1.vv[7] * t2.vv[7] + t1.vv[8] * t2.vv[8]);
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-T mag_sqr(const TensorT<T>& t)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T mag_sqr(const TensorT<T>& t)
 {
     return (t && t);
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-T mag(const TensorT<T>& t)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T mag(const TensorT<T>& t)
 {
     return std::sqrt(mag_sqr(t));
 }
