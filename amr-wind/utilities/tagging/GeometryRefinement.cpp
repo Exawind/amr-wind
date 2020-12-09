@@ -34,7 +34,8 @@ void GeometryRefinement::initialize(const std::string& key)
 void GeometryRefinement::operator()(
     int level, amrex::TagBoxArray& tags, amrex::Real, int)
 {
-    // If the user has requested a particular level then check for it and exit early
+    // If the user has requested a particular level then check for it and exit
+    // early
     if ((m_set_level > 1) && (level != m_set_level)) return;
 
     // If the user has specified a range of levels, check and return early
@@ -53,7 +54,7 @@ void GeometryRefinement::operator()(
         const auto& bx = mfi.tilebox();
         const auto& tag = tags.array(mfi);
 
-        for (const auto& gg: m_geom_refiners) {
+        for (const auto& gg : m_geom_refiners) {
             (*gg)(bx, geom, tag);
         }
     }

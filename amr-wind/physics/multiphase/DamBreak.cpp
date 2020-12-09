@@ -25,7 +25,7 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     velocity.setVal(0.0, 0, AMREX_SPACEDIM);
-    
+
     auto& levelset = m_levelset(level);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
@@ -38,20 +38,22 @@ void DamBreak::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.validbox();
         auto phi = levelset.array(mfi);
 
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-            const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+        amrex::ParallelFor(
+            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-            if (x - xc < width && z - zc < height) {
-                phi(i, j, k) = amrex::min(width - x, height - z);
-            } else if (x - xc < width && z - zc > height) {
-                phi(i, j, k) = height - (z - zc);
-            } else if (x - xc > width && z - zc < height) {
-                phi(i, j, k) = width - (x - xc);
-            } else {
-                phi(i, j, k) = amrex::min(width - (x - xc), height - (z - zc));
-            }
-    });
+                if (x - xc < width && z - zc < height) {
+                    phi(i, j, k) = amrex::min(width - x, height - z);
+                } else if (x - xc < width && z - zc > height) {
+                    phi(i, j, k) = height - (z - zc);
+                } else if (x - xc > width && z - zc < height) {
+                    phi(i, j, k) = width - (x - xc);
+                } else {
+                    phi(i, j, k) =
+                        amrex::min(width - (x - xc), height - (z - zc));
+                }
+            });
     }
 }
 

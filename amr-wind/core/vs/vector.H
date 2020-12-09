@@ -25,86 +25,104 @@ struct VectorT
     using VType = VectorT<T>;
 
     //! Construct a default vector, all components set to zero
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT() : vv{Traits::zero(), Traits::zero(), Traits::zero()} {}
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT()
+        : vv{Traits::zero(), Traits::zero(), Traits::zero()}
+    {}
 
     /** New vector given the three components
      */
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT(const T& x, const T& y, const T& z) : vv{x, y, z} {}
+    VectorT(const T& x, const T& y, const T& z)
+        : vv{x, y, z}
+    {}
 
     //! Zero vector
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    static constexpr VectorT<T> zero()
-    { return VectorT<T>{Traits::zero(), Traits::zero(), Traits::zero()}; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T> zero()
+    {
+        return VectorT<T>{Traits::zero(), Traits::zero(), Traits::zero()};
+    }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    static constexpr VectorT<T> one()
-    { return VectorT<T>{Traits::one(), Traits::one(), Traits::one()}; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T> one()
+    {
+        return VectorT<T>{Traits::one(), Traits::one(), Traits::one()};
+    }
 
     /** Vector along x-axis
      *
      *  \param x Magnitude of vector
      */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    static constexpr VectorT<T> ihat(const T& x = Traits::one())
-    { return VectorT<T>{x, Traits::zero(), Traits::zero()}; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T>
+    ihat(const T& x = Traits::one())
+    {
+        return VectorT<T>{x, Traits::zero(), Traits::zero()};
+    }
 
     /** Vector along y-axis
      *
      *  \param y Magnitude of vector
      */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    static constexpr VectorT<T> jhat(const T& y = Traits::one())
-    { return VectorT<T>{Traits::zero(), y, Traits::zero()}; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T>
+    jhat(const T& y = Traits::one())
+    {
+        return VectorT<T>{Traits::zero(), y, Traits::zero()};
+    }
 
     /** Vector along z-axis
      *
      *  \param z Magnitude of vector
      */
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    static constexpr VectorT<T> khat(const T& z = Traits::one())
-    { return VectorT<T>{Traits::zero(), Traits::zero(), z}; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T>
+    khat(const T& z = Traits::one())
+    {
+        return VectorT<T>{Traits::zero(), Traits::zero(), z};
+    }
 
     //! Normalize the vector to unit vector
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT<T>& normalize();
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>& normalize();
 
     //! Return the unit vector parallel to this vector
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT<T> unit() const { return VectorT<T>(*this).normalize(); }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> unit() const
+    {
+        return VectorT<T>(*this).normalize();
+    }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    T& x() noexcept { return vv[0]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    T& y() noexcept { return vv[1]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    T& z() noexcept { return vv[2]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const T& x() const noexcept { return vv[0]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const T& y() const noexcept { return vv[1]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const T& z() const noexcept { return vv[2]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& x() noexcept { return vv[0]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& y() noexcept { return vv[1]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& z() noexcept { return vv[2]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& x() const noexcept
+    {
+        return vv[0];
+    }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& y() const noexcept
+    {
+        return vv[1];
+    }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& z() const noexcept
+    {
+        return vv[2];
+    }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT<T> operator-() const;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> operator-() const;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT<T> operator*=(const T val);
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> operator*=(const T val);
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    VectorT<T> operator/=(const T val);
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> operator/=(const T val);
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    T& operator[](size_type pos) { return vv[pos]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const T& operator[](size_type pos) const { return vv[pos]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& operator[](size_type pos)
+    {
+        return vv[pos];
+    }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T&
+    operator[](size_type pos) const
+    {
+        return vv[pos];
+    }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    T* data() noexcept { return vv; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    const T* data() const noexcept { return vv; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T* data() noexcept { return vv; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T* data() const noexcept
+    {
+        return vv;
+    }
 
     iterator begin() noexcept { return vv; }
     iterator end() noexcept { return vv + ncomp; }

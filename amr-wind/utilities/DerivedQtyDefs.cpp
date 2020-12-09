@@ -34,8 +34,6 @@ void QCriterion::operator()(ScratchField& fld, const int scomp)
     fvm::q_criterion(q_crit, m_vel);
 }
 
-
-
 StrainRateMag::StrainRateMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))

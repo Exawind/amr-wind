@@ -283,7 +283,7 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
     amrex::Gpu::DeviceVector<amrex::Real> cu(ncoeff, 0.00123);
     amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
     amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
-    
+
     auto& geom = vel.repo().mesh().Geom();
 
     run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
@@ -606,7 +606,6 @@ TEST_F(FvmOpTest, q_criterion)
 
     EXPECT_NEAR(error_total, 0.0, tol);
 }
-
 
 TEST_F(FvmOpTest, laplacian)
 {

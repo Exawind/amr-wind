@@ -8,16 +8,16 @@
 namespace amr_wind {
 namespace vs {
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> VectorT<T>::operator-() const
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+VectorT<T>::operator-() const
 {
     return VectorT<T>{-vv[0], -vv[1], -vv[2]};
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> VectorT<T>::operator*=(const T fac)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+VectorT<T>::operator*=(const T fac)
 {
     vv[0] *= fac;
     vv[1] *= fac;
@@ -25,9 +25,9 @@ VectorT<T> VectorT<T>::operator*=(const T fac)
     return *this;
 }
 
-template<typename T>
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-VectorT<T> VectorT<T>::operator/=(const T fac)
+template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+VectorT<T>::operator/=(const T fac)
 {
     vv[0] /= fac;
     vv[1] /= fac;
@@ -36,8 +36,7 @@ VectorT<T> VectorT<T>::operator/=(const T fac)
 }
 
 template <typename T, typename OStream>
-OStream&
-operator<<(OStream& out, const VectorT<T>& vec)
+OStream& operator<<(OStream& out, const VectorT<T>& vec)
 {
     out << "(" << vec.x() << " " << vec.y() << " " << vec.z() << ")";
     return out;
@@ -89,9 +88,10 @@ template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
 operator^(const VectorT<T>& v1, const VectorT<T>& v2)
 {
-    return VectorT<T>{(v1.y() * v2.z() - v1.z() * v2.y()),
-                      (v1.z() * v2.x() - v1.x() * v2.z()),
-                      (v1.x() * v2.y() - v1.y() * v2.x())};
+    return VectorT<T>{
+        (v1.y() * v2.z() - v1.z() * v2.y()),
+        (v1.z() * v2.x() - v1.x() * v2.z()),
+        (v1.x() * v2.y() - v1.y() * v2.x())};
 }
 
 template <typename T>

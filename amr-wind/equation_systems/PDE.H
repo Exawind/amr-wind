@@ -65,7 +65,8 @@ public:
                 new TurbulenceOp<PDE>(m_sim.turbulence_model(), m_fields));
         }
 
-        m_adv_op.reset(new AdvectionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+        m_adv_op.reset(
+            new AdvectionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         m_src_op.init_source_terms(m_sim);
     }
 
@@ -78,7 +79,8 @@ public:
             m_diff_op.reset(
                 new DiffusionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
         }
-        m_adv_op.reset(new AdvectionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
+        m_adv_op.reset(
+            new AdvectionOp<PDE, Scheme>(m_fields, m_sim.has_overset()));
     }
 
     //! Return the object holding the fields necessary for solving this PDE

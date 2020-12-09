@@ -9,7 +9,7 @@ namespace pp_utils {
 
 bool has_managed_memory()
 {
-#if defined (AMREX_USE_HIP)
+#if defined(AMREX_USE_HIP)
     return false;
 #else
     return utest_env->has_managed_memory();

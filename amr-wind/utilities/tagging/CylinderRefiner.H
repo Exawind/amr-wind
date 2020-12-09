@@ -25,7 +25,8 @@ public:
     virtual ~CylinderRefiner() = default;
 
     void operator()(
-        const amrex::Box&, const amrex::Geometry& geom,
+        const amrex::Box&,
+        const amrex::Geometry& geom,
         const amrex::Array4<amrex::TagBox::TagType>& tags) const override;
 
 private:

@@ -49,7 +49,8 @@ protected:
     void process_output() override
     {
         // Test buffer populate for GPU runs
-        std::vector<double> buf(num_total_particles() * var_names().size(), 0.0);
+        std::vector<double> buf(
+            num_total_particles() * var_names().size(), 0.0);
         sampling_container().populate_buffer(buf);
     }
 };
@@ -84,8 +85,7 @@ protected:
 namespace {
 
 void test_scontainer_impl(
-    amr_wind::sampling::SamplingContainer::ParticleVector& pvec,
-    const int npts)
+    amr_wind::sampling::SamplingContainer::ParticleVector& pvec, const int npts)
 {
     using IIx = amr_wind::sampling::IIx;
     using PType = amr_wind::sampling::SamplingContainer::ParticleType;

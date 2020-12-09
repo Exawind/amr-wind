@@ -29,7 +29,7 @@ void perturb_vel_field(
 
 TEST_F(MMSMeshTest, mms_error)
 {
-#if defined (AMREX_USE_HIP)
+#if defined(AMREX_USE_HIP)
     GTEST_SKIP();
 #else
     if (!pp_utils::has_managed_memory()) GTEST_SKIP();

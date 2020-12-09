@@ -66,8 +66,8 @@ OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
 {
-    return TurbulenceModel::CoeffsDictType{{"Ce", this->m_Ce},
-                                           {"Ceps", this->m_Ceps}};
+    return TurbulenceModel::CoeffsDictType{
+        {"Ce", this->m_Ce}, {"Ceps", this->m_Ceps}};
 }
 
 template <typename Transport>

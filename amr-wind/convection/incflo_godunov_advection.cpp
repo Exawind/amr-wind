@@ -191,7 +191,7 @@ void godunov::compute_advection(
             bool vval = vad >= 0.;
             // divu = 0
             // Real cons1 = (iconserv[n]) ? -0.5*l_dt*q(i,j-1,k,n)*divu(i,j-1,k)
-            // : 0.; Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j  ,k,n)*divu(i,j
+            // : 0.; Real cons2 = (iconserv[n]) ? -0.5*l_dt*q(i,j ,k,n)*divu(i,j
             // ,k) : 0.;
             Real lo = Ipy(i, j - 1, k, n); // + cons1;
             Real hi = Imy(i, j, k, n);     // + cons2;

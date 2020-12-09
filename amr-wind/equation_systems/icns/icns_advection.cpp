@@ -40,9 +40,7 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 } // namespace
 
 MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset)
-    : m_repo(repo)
-    , m_options("mac_proj")
-    , m_has_overset(has_overset)
+    : m_repo(repo), m_options("mac_proj"), m_has_overset(has_overset)
 {}
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
@@ -148,7 +146,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             amrex::average_node_to_cellcenter(
                 (*phif)(lev), 0, pressure(lev), 0, 1);
 
-        m_mac_proj->project(phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
+        m_mac_proj->project(
+            phif->vec_ptrs(), m_options.rel_tol, m_options.abs_tol);
 
     } else {
         m_mac_proj->project(m_options.rel_tol, m_options.abs_tol);

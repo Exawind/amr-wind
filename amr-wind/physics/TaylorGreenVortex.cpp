@@ -28,9 +28,9 @@ void TaylorGreenVortex::initialize_fields(
 
     const auto& problo = geom.ProbLoArray();
     const auto& probhi = geom.ProbHiArray();
-    const amrex::Real Lx = probhi[0]-problo[0];
-    const amrex::Real Ly = probhi[1]-problo[1];
-    const amrex::Real Lz = probhi[2]-problo[2];
+    const amrex::Real Lx = probhi[0] - problo[0];
+    const amrex::Real Ly = probhi[1] - problo[1];
+    const amrex::Real Lz = probhi[2] - problo[2];
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -44,9 +44,11 @@ void TaylorGreenVortex::initialize_fields(
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 vel(i, j, k, 0) = std::sin(two_pi() * x / Lx) *
-                                  std::cos(two_pi() * y / Ly) * cos(two_pi() * z / Lz);
+                                  std::cos(two_pi() * y / Ly) *
+                                  cos(two_pi() * z / Lz);
                 vel(i, j, k, 1) = -std::cos(two_pi() * x / Lx) *
-                                  std::sin(two_pi() * y / Ly) * cos(two_pi() * z / Lz);
+                                  std::sin(two_pi() * y / Ly) *
+                                  cos(two_pi() * z / Lz);
                 vel(i, j, k, 2) = 0.0;
             });
     }

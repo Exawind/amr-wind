@@ -31,5 +31,5 @@ PowerLawProfile::PowerLawProfile(const Field& fld) : m_op()
     for (int i = 0; i < AMREX_SPACEDIM; ++i) m_op.uvec[i] = vel[i];
 }
 
-}
-}
+} // namespace udf
+} // namespace amr_wind

@@ -74,11 +74,14 @@ struct Qcriterion
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                const amrex::Real S2 = 2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
+                const amrex::Real S2 =
+                    2.0 * std::pow(ux, 2) + 2.0 * std::pow(vy, 2) +
                     2.0 * std::pow(wz, 2) + std::pow(uy + vx, 2) +
                     std::pow(vz + wy, 2) + std::pow(wx + uz, 2);
 
-                const amrex::Real W2 = std::pow(uy - vx, 2) + std::pow(vz - wy, 2) + std::pow(wx - uz, 2);
+                const amrex::Real W2 = std::pow(uy - vx, 2) +
+                                       std::pow(vz - wy, 2) +
+                                       std::pow(wx - uz, 2);
 
                 qcritphi(i, j, k) = 0.5 * (W2 - S2);
             });

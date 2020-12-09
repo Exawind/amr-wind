@@ -13,7 +13,8 @@ namespace pde {
 class MacProjOp
 {
 public:
-    using FaceFabPtrVec = amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
+    using FaceFabPtrVec =
+        amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
     MacProjOp(FieldRepo&, bool);
 
@@ -46,7 +47,9 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         amrex::ParmParse pp("incflo");
         pp.query("godunov_type", godunov_type);
         if (pp.contains("use_ppm") || pp.contains("use_limiter"))
-            amrex::Abort("Godunov: use_ppm and use_limiter are deprecated. Please update input file");
+            amrex::Abort(
+                "Godunov: use_ppm and use_limiter are deprecated. Please "
+                "update input file");
 
         if (amrex::toLower(godunov_type) == "plm") {
             godunov_scheme = godunov::scheme::PLM;
@@ -67,8 +70,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         iconserv.resize(ICNS::ndim, 0);
     }
 
-    void operator()(
-        const FieldState fstate, const amrex::Real dt)
+    void operator()(const FieldState fstate, const amrex::Real dt)
     {
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
@@ -271,8 +273,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
         , m_macproj_op(fields.repo, has_overset)
     {}
 
-    void operator()(
-        const FieldState fstate, const amrex::Real dt)
+    void operator()(const FieldState fstate, const amrex::Real dt)
     {
 
         auto& repo = fields.repo;
@@ -360,7 +361,7 @@ struct AdvectionOp<ICNS, fvm::MOL>
     MacProjOp m_macproj_op;
 };
 
-}
-}
+} // namespace pde
+} // namespace amr_wind
 
 #endif /* ICNS_ADVECTION_H */

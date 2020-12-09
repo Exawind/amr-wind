@@ -66,7 +66,6 @@ void QCriterionRefinement::operator()(
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
                 // TODO: ignoring wall stencils for now
                 const auto ux =
                     0.5 * (vel(i + 1, j, k, 0) - vel(i - 1, j, k, 0)) * idx[0];

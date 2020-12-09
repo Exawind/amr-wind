@@ -154,8 +154,7 @@ void ABLFieldInit::perturb_temperature(
 
 //! Initialize sfs tke field at the beginning of the simulation
 void ABLFieldInit::init_tke(
-    const amrex::Geometry& /* geom */,
-    amrex::MultiFab& tke) const
+    const amrex::Geometry& /* geom */, amrex::MultiFab& tke) const
 {
     tke.setVal(m_tke_init, 1);
 }
