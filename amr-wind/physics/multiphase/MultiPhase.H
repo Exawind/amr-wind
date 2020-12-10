@@ -14,7 +14,7 @@
  */
 namespace amr_wind {
 
-//enum class ΜultiphaseΜodel { VOF, LS, CLSVOF };
+// enum class ΜultiphaseΜodel { VOF, LS, CLSVOF };
 
 class MultiPhase : public Physics::Register<MultiPhase>
 {

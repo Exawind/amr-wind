@@ -42,8 +42,7 @@ void MultiPhase::post_advance_work()
     m_density.fillpatch(m_sim.time().new_time());
 }
 
-void MultiPhase::set_density(
-    int level, const amrex::Geometry& geom)
+void MultiPhase::set_density(int level, const amrex::Geometry& geom)
 {
     auto& density = m_density(level);
     auto& levelset = (*m_levelset)(level);
@@ -54,7 +53,7 @@ void MultiPhase::set_density(
 
         const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
         const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-        const amrex::Real eps = std::cbrt(2.*dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
         const amrex::Real rho1 = m_rho1;
         const amrex::Real rho2 = m_rho2;
         amrex::ParallelFor(
