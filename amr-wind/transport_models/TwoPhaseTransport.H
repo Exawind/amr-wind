@@ -24,9 +24,6 @@ public:
         pp.query("viscosity_fluid2", m_mu2);
         pp.query("laminar_prandtl", m_Pr);
         pp.query("turbulent_prandtl", m_Prt);
-
-        //Get the levelset function
-
     }
 
     virtual ~TwoPhaseTransport() = default;

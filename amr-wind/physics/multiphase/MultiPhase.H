@@ -14,7 +14,7 @@
  */
 namespace amr_wind {
 
-enum class ΜultiphaseΜodel { VOF, LS, CLSVOF };
+//enum class ΜultiphaseΜodel { VOF, LS, CLSVOF };
 
 class MultiPhase : public Physics::Register<MultiPhase>
 {
@@ -56,7 +56,7 @@ private:
     amrex::Real m_rho2{1.0};
 
     // Multiphase model enum
-    ΜultiphaseΜodel m_multiphase_model=ΜultiphaseΜodel::VOF;
+    //ΜultiphaseΜodel m_multiphase_model=ΜultiphaseΜodel::VOF;
 };
 
 } // namespace amr_wind
