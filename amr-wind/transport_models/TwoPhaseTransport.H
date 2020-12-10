@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace transport {
 
-/** Two-phase fluid transport model with constant properties
+/** Two-phase fluid transport model with piece-wise constant properties
  *  \ingroup transport
  */
 class TwoPhaseTransport : public TransportModel
@@ -50,7 +50,6 @@ public:
         return turb_schmidt;
     }
 
-
     //! Return the dynamic visocity field
     inline std::unique_ptr<ScratchField> mu()
     {
@@ -76,7 +75,7 @@ public:
                     } else if (phi(i, j, k) < -eps) {
                         H = 0.;
                     } else {
-                        H = 0.5 * (1 + phi(i, j, k) / (2 * eps) +
+                        H = 0.5 * (1 + phi(i, j, k) / eps +
                                1. / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                     }
                     visc(i, j, k) = mu1 * H + mu2 * (1 - H);

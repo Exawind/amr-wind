@@ -65,7 +65,7 @@ void MultiPhase::set_density(
                 } else if (phi(i, j, k) < -eps) {
                     H = 0.;
                 } else {
-                    H = 0.5 * (1 + phi(i, j, k) / (2 * eps) +
+                    H = 0.5 * (1 + phi(i, j, k) / eps +
                                1. / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                 }
                 rho(i, j, k) = rho1 * H + rho2 * (1 - H);
