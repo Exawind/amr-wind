@@ -149,7 +149,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
-    //amrex::Real lam_diff = (this->m_transport).thermal_diffusivity();
+    // amrex::Real lam_diff = (this->m_transport).thermal_diffusivity();
 
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
@@ -170,13 +170,14 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
             const auto& muturb_arr = mu_turb(lev).array(mfi);
             const auto& alphaeff_arr = alphaeff(lev).array(mfi);
             const auto& tlscale_arr = this->m_turb_lscale(lev).array(mfi);
-            const auto& lam_diff_arr=(*lam_alpha)(lev).array(mfi);
+            const auto& lam_diff_arr = (*lam_alpha)(lev).array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     alphaeff_arr(i, j, k) =
-                        lam_diff_arr(i,j,k) + muturb_arr(i, j, k) *
-                                       (1.0 + 2.0 * tlscale_arr(i, j, k) / ds);
+                        lam_diff_arr(i, j, k) +
+                        muturb_arr(i, j, k) *
+                            (1.0 + 2.0 * tlscale_arr(i, j, k) / ds);
                 });
         }
     }
