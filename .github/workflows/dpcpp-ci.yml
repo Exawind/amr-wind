@@ -31,7 +31,7 @@ jobs:
         intel_type: [ICC, DPCPP]
         include:
           - intel_type: ICC
-            oneapi_packages: intel-oneapi-dpcpp-cpp-compiler-pro
+            oneapi_packages: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
             cexe: icc
             cppexe: icpc
             enable_dpcpp: OFF
