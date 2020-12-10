@@ -40,7 +40,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         auto vel = velocity.array(mfi);
-        auto phi = velocity.array(mfi);
+        auto phi = levelset.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];

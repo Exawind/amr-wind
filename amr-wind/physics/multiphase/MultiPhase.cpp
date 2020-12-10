@@ -7,14 +7,11 @@ namespace amr_wind {
 MultiPhase::MultiPhase(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.pde_manager().icns().fields().field)
-    , m_mueff(sim.pde_manager().icns().fields().mueff)
     , m_density(sim.repo().get_field("density"))
 {
     amrex::ParmParse pp_multiphase("MultiPhase");
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
-    pp_multiphase.query("viscosity_fluid1", m_mu1);
-    pp_multiphase.query("viscosity_fluid2", m_mu2);
 
     // Register both VOF and levelset equations
     auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
@@ -29,7 +26,7 @@ void MultiPhase::post_init_actions()
     const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        set_multiphase_properties(lev, geom[lev]);
+        set_density(lev, geom[lev]);
     }
     m_density.fillpatch(m_sim.time().current_time());
 }
@@ -40,16 +37,15 @@ void MultiPhase::post_advance_work()
     const auto& geom = m_sim.mesh().Geom();
     // Set ve
     for (int lev = 0; lev < nlevels; ++lev) {
-        set_multiphase_properties(lev, geom[lev]);
+        set_density(lev, geom[lev]);
     }
     m_density.fillpatch(m_sim.time().new_time());
 }
 
-void MultiPhase::set_multiphase_properties(
+void MultiPhase::set_density(
     int level, const amrex::Geometry& geom)
 {
     auto& density = m_density(level);
-    auto& mueff = m_mueff(level);
     auto& levelset = (*m_levelset)(level);
 
     for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
@@ -58,12 +54,9 @@ void MultiPhase::set_multiphase_properties(
 
         const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
         const amrex::Array4<amrex::Real>& rho = density.array(mfi);
-        const amrex::Array4<amrex::Real>& mu = mueff.array(mfi);
-        const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
+        const amrex::Real eps = std::cbrt(2.*dx[0] * dx[1] * dx[2]);
         const amrex::Real rho1 = m_rho1;
         const amrex::Real rho2 = m_rho2;
-        const amrex::Real mu1 = m_mu1;
-        const amrex::Real mu2 = m_mu2;
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real H;
@@ -76,7 +69,6 @@ void MultiPhase::set_multiphase_properties(
                                1. / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                 }
                 rho(i, j, k) = rho1 * H + rho2 * (1 - H);
-                mu(i, j, k) = mu1 * H + mu2 * (1 - H);
             });
     }
 }

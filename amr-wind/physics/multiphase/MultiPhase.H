@@ -14,7 +14,7 @@
  */
 namespace amr_wind {
 
-enum class multiphase_model { VOF, LS, CLSVOF };
+enum class ΜultiphaseΜodel { VOF, LS, CLSVOF };
 
 class MultiPhase : public Physics::Register<MultiPhase>
 {
@@ -35,13 +35,12 @@ public:
 
     void post_advance_work() override;
 
-    void set_multiphase_properties(int level, const amrex::Geometry& geom);
+    void set_density(int level, const amrex::Geometry& geom);
 
 private:
     const CFDSim& m_sim;
 
     Field& m_velocity;
-    Field& m_mueff;
     Field& m_density;
 
     // Pointer to the levelset
@@ -56,14 +55,8 @@ private:
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
 
-    // Dynamic Viscosity for Fluid 1
-    amrex::Real m_mu1{1.0};
-
-    // Dynamic Viscosity for Fluid 2
-    amrex::Real m_mu2{1.0};
-
     // Multiphase model enum
-    multiphase_model m_multiphase_model=multiphase_model::VOF;
+    ΜultiphaseΜodel m_multiphase_model=ΜultiphaseΜodel::VOF;
 };
 
 } // namespace amr_wind
