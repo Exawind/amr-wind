@@ -95,16 +95,18 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     , m_gradp(sim.repo().get_field("gp"))
     , m_density(sim.repo().get_field("density"))
 {
-    amrex::ParmParse pp("CTV");
-    pp.query("density", m_rho);
-    pp.query("u0", m_u0);
-    pp.query("v0", m_v0);
-    pp.query("activate_pressure", m_activate_pressure);
-    pp.query("error_log_file", m_output_fname);
+    {
+        amrex::ParmParse pp("CTV");
+        pp.query("density", m_rho);
+        pp.query("u0", m_u0);
+        pp.query("v0", m_v0);
+        pp.query("activate_pressure", m_activate_pressure);
+        pp.query("error_log_file", m_output_fname);
+    }
     {
         amrex::Real nu;
-        amrex::ParmParse pp2("transport");
-        pp2.query("viscosity", nu);
+        amrex::ParmParse pp("transport");
+        pp.query("viscosity", nu);
         m_omega = utils::pi() * utils::pi() * nu;
     }
     if (amrex::ParallelDescriptor::IOProcessor()) {

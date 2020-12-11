@@ -5,23 +5,20 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
     # Intel always reports some diagnostics we don't necessarily care about
     list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076,15335")
   endif()
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
-     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR
-     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
-       list(APPEND AMR_WIND_CXX_FLAGS "-faligned-new"
-                                      "-Wno-sign-compare"
-                                      "-Wunreachable-code"
-                                      "-Wnull-dereference"
-                                      "-Wfloat-conversion"
-                                      "-Wshadow"
-                                      "-Woverloaded-virtual")
+  if("${CMAKE_CXX_COMPILER_ID}" IN_LIST "GNU;Clang;AppleClang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
+      list(APPEND AMR_WIND_CXX_FLAGS "-faligned-new"
+                                     "-Wunreachable-code"
+                                     "-Wnull-dereference"
+                                     "-Wfloat-conversion"
+                                     "-Wshadow"
+                                     "-Woverloaded-virtual")
     endif()
   endif()
 endif()
 
 if(AMR_WIND_ENABLE_WERROR)
-  list(APPEND AMR_WIND_CXX_FLAGS "-Werror")
+  list(APPEND AMR_WIND_CXX_FLAGS "-Werror" "-fno-operator-names")
 endif()
 
 # Add our extra flags according to language

@@ -57,18 +57,13 @@ jobs:
     - name: Dependencies
       run: ${{matrix.install_deps}}
     - name: Setup
-      run: |
-        echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
-        cmake -E make_directory ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      run: echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
     - name: Configure
-      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         cmake \
+          -B${{runner.workspace}}/build-ci-${{matrix.build_type}}
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
-          -DCMAKE_CXX_COMPILER:STRING=mpicxx \
-          -DCMAKE_C_COMPILER:STRING=mpicc \
-          -DCMAKE_Fortran_COMPILER:STRING=mpifort \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
