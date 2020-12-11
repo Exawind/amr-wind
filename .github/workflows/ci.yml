@@ -61,7 +61,7 @@ jobs:
     - name: Configure
       run: |
         cmake \
-          -B${{runner.workspace}}/build-ci-${{matrix.build_type}}
+          -B${{runner.workspace}}/build-ci-${{matrix.build_type}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
