@@ -6,6 +6,8 @@
 namespace amr_wind {
 namespace pde {
 
+/** Right-hand side (RHS) evaluator for VOF transport equation
+ */
 template <typename Scheme>
 struct ComputeRHSOp<VOF, Scheme>
 {
