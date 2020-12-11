@@ -412,8 +412,8 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
-                    const amrex::Real theta = told_arr(i, j, k);
-                    const amrex::Real num1 = (theta - theta_mean) * wspd_mean;
+                    const amrex::Real theta2 = told_arr(i, j, k);
+                    const amrex::Real num1 = (theta2 - theta_mean) * wspd_mean;
                     const amrex::Real num2 = (theta_mean - theta_surf) * wspd;
                     const amrex::Real tauT = term1 * (num1 + num2);
                     tarr(i, j, k - 1) = den(i, j, k) * tauT / alphaT;

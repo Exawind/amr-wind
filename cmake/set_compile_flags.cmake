@@ -1,7 +1,13 @@
 # Logic for handling warnings
 if(AMR_WIND_ENABLE_ALL_WARNINGS)
   # GCC, Clang, and Intel seem to accept these
-  list(APPEND AMR_WIND_CXX_FLAGS "-Wall" "-Wextra" "-pedantic")
+  list(APPEND AMR_WIND_CXX_FLAGS "-Wall" "-Wextra" "-pedantic"
+                                 "-Wno-sign-compare"
+                                 "-Wunreachable-code"
+                                 "-Wnull-dereference"
+                                 "-Wfloat-conversion"
+                                 "-Wshadow"
+                                 "-Woverloaded-virtual")
   if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     # ifort doesn't like -Wall
     list(APPEND AMR_WIND_Fortran_FLAGS "-Wall")
@@ -13,6 +19,10 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
     # Avoid notes about -faligned-new with GCC > 7
     list(APPEND AMR_WIND_CXX_FLAGS "-faligned-new")
   endif()
+endif()
+
+if(AMR_WIND_ENABLE_WERROR)
+  list(APPEND AMR_WIND_CXX_FLAGS "-Werror")
 endif()
 
 # Add our extra flags according to language

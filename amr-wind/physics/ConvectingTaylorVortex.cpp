@@ -103,8 +103,8 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     pp.query("error_log_file", m_output_fname);
     {
         amrex::Real nu;
-        amrex::ParmParse pp("transport");
-        pp.query("viscosity", nu);
+        amrex::ParmParse pp2("transport");
+        pp2.query("viscosity", nu);
         m_omega = utils::pi() * utils::pi() * nu;
     }
     if (amrex::ParallelDescriptor::IOProcessor()) {

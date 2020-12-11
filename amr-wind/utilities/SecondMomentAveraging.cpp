@@ -204,7 +204,7 @@ SecondMomentAveraging::line_average_interpolated(amrex::Real x, int comp) const
     int ind = 0;
 
     if (x > xlo + 0.5 * dx) {
-        ind = floor((x - xlo) / dx - 0.5);
+        ind = static_cast<int>(floor((x - xlo) / dx - 0.5));
         const amrex::Real x1 = xlo + (ind + 0.5) * dx;
         c = (x - x1) / dx;
     }

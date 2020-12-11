@@ -104,7 +104,8 @@ void test_scontainer_impl(
         pp.pos(0) = begin[0];
         pp.pos(1) = begin[1];
 
-        const int dl = (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1);
+        const int dl = static_cast<int>(
+            (end[2] - begin[2]) / static_cast<amrex::Real>(npts - 1));
         const amrex::Real z = (ip + 0.5) * dl;
         pp.pos(2) = z;
 

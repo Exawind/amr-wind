@@ -45,8 +45,8 @@ struct DTraits<double>
 template <>
 struct DTraits<float>
 {
-    static constexpr float zero() noexcept { return 0.0; }
-    static constexpr float one() noexcept { return 1.0; }
+    static constexpr float zero() noexcept { return 0.0f; }
+    static constexpr float one() noexcept { return 1.0f; }
     static constexpr float max() noexcept
     {
         return std::numeric_limits<float>::max();
@@ -55,7 +55,7 @@ struct DTraits<float>
     {
         return std::numeric_limits<float>::min();
     }
-    static constexpr float eps() noexcept { return 1.0e-7; }
+    static constexpr float eps() noexcept { return 1.0e-7f; }
 };
 
 } // namespace vs
