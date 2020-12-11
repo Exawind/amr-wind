@@ -9,14 +9,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void compute_normals(
     int j,
     int k,
     amrex::Array4<amrex::Real const> const& c,
-    amrex::Real mx, amrex::Real my, amrex::Real mz) noexcept
+    amrex::Real mx,
+    amrex::Real my,
+    amrex::Real mz) noexcept
 {
     amrex::Real mm1, mm2;
 
     mm1 = c(i - 1, j - 1, k - 1) + c(i - 1, j - 1, k + 1) +
           c(i - 1, j + 1, k - 1) + c(i - 1, j + 1, k + 1) +
           2.0 * (c(i - 1, j - 1, k) + c(i - 1, j + 1, k) + c(i - 1, j, k - 1) +
-                 c(i - 1, j, k + 1)) + 
+                 c(i - 1, j, k + 1)) +
           4.0 * c(i - 1, j, k);
     mm2 = c(i + 1, j - 1, k - 1) + c(i + 1, j - 1, k + 1) +
           c(i + 1, j + 1, k - 1) + c(i + 1, j + 1, k + 1) +
@@ -48,14 +50,12 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void compute_normals(
                  c(i, j + 1, k + 1)) +
           4.0 * c(i, j, k + 1);
     mz = mm1 - mm2;
-
 }
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction cc
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real AL3D(
-    amrex::Real mx, amrex::Real my, amrex::Real  mz,
-    amrex::Real cc) noexcept
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+AL3D(amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real cc) noexcept
 {
     using namespace amrex;
 
@@ -93,7 +93,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real AL3D(
     if (m3 < m12) {
         mm = m3;
         V3 = (m3 * m3 * (3.0 * m12 - m3) + m1 * m1 * (m1 - 3.0 * m3) +
-              m2 * m2 * (m2 - 3.0 * m3)) / pr;
+              m2 * m2 * (m2 - 3.0 * m3)) /
+             pr;
     } else {
         mm = m12;
         V3 = 0.5 * mm / m3;
@@ -162,9 +163,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
     // normalized equation: m1*y1 + m2*y2 + m3*y3 = alh, with 0 <= m1 <= m2 <=
     // m3 the problem is then solved again in the unit cube
     amrex::Real tmp = std::abs(m1) * dr0 + std::abs(m2) + std::abs(m3);
-    amrex::Real n1 = std::abs(m1)/tmp; // need positive coefficients
-    amrex::Real n2 = std::abs(m2)/tmp;
-    amrex::Real n3 = std::abs(m3)/tmp;
+    amrex::Real n1 = std::abs(m1) / tmp; // need positive coefficients
+    amrex::Real n2 = std::abs(m2) / tmp;
+    amrex::Real n3 = std::abs(m3) / tmp;
     al =
         std::max(0.0, std::min(1.0, al / tmp)); // get new al within safe limits
     amrex::Real al0 = std::min(al, 1.0 - al);   // limit to: 0 < alh < 1/2
