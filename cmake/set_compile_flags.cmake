@@ -1,11 +1,11 @@
 if(AMR_WIND_ENABLE_ALL_WARNINGS)
   # GCC, Clang, and Intel seem to accept these
   list(APPEND AMR_WIND_CXX_FLAGS "-Wall" "-Wextra" "-pedantic")
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     # Intel always reports some diagnostics we don't necessarily care about
     list(APPEND AMR_WIND_CXX_FLAGS "-diag-disable:11074,11076,15335")
   endif()
-  if("${CMAKE_CXX_COMPILER_ID}" IN_LIST "GNU;Clang;AppleClang")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0)
       list(APPEND AMR_WIND_CXX_FLAGS "-faligned-new"
                                      "-Wunreachable-code"
@@ -43,8 +43,8 @@ endif()
 # Disable loop not vectorized warnings on Clang. This generates a lot of
 # diagnostic messages when compiling AMReX that we can't do anything about
 # within amr-wind
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR
-    ${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+    CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   if (${AMR_WIND_USE_INTERNAL_AMREX})
     target_compile_options(
       amrex PUBLIC $<$<COMPILE_LANGUAGE:CXX>:-Wno-pass-failed>)
