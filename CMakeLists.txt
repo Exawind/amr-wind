@@ -12,6 +12,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
 #General options for the project
 option(AMR_WIND_ENABLE_FORTRAN "Enable Fortran interfaces" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
+option(AMR_WIND_ENABLE_WERROR "Treat compiler warnings as errors" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 
 #Enabling tests overrides the executable options

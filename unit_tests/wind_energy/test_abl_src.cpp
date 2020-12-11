@@ -126,12 +126,12 @@ TEST_F(ABLMeshTest, body_force)
 
         const amrex::Array<amrex::Real, AMREX_SPACEDIM> golds{
             {1.0 * std::cos(0.1), 2.0 * std::cos(0.1), 3.0 * std::cos(0.1)}};
-        const auto valx = utils::field_max(src_term, 0);
-        const auto valy = utils::field_max(src_term, 1);
-        const auto valz = utils::field_max(src_term, 2);
-        EXPECT_NEAR(valx, golds[0], tol);
-        EXPECT_NEAR(valy, golds[1], tol);
-        EXPECT_NEAR(valz, golds[2], tol);
+        const auto valx2 = utils::field_max(src_term, 0);
+        const auto valy2 = utils::field_max(src_term, 1);
+        const auto valz2 = utils::field_max(src_term, 2);
+        EXPECT_NEAR(valx2, golds[0], tol);
+        EXPECT_NEAR(valy2, golds[1], tol);
+        EXPECT_NEAR(valz2, golds[2], tol);
     }
 }
 

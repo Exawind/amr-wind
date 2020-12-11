@@ -4,9 +4,12 @@ namespace amr_wind_tests {
 namespace utils {
 void populate_mms_params()
 {
-    amrex::ParmParse pp("MMS");
-    const std::string masa_name = "navierstokes_3d_incompressible_homogeneous";
-    pp.add("masa_name", masa_name);
+    {
+        amrex::ParmParse pp("MMS");
+        const std::string masa_name =
+            "navierstokes_3d_incompressible_homogeneous";
+        pp.add("masa_name", masa_name);
+    }
 
     // transport
     {

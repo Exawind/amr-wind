@@ -22,12 +22,6 @@ on:
       - 'CMakeLists.txt'
       - '.github/workflows/ci.yml'
 
-env:
-  CXX_COMPILER: mpicxx
-  C_COMPILER: mpicc
-  FORTRAN_COMPILER: mpifort
-  NUM_PROCS: 16
-
 jobs:
   build:
     runs-on: ${{matrix.os}}
@@ -39,9 +33,11 @@ jobs:
           - os: macos-latest
             install_deps: brew install open-mpi
             comp: llvm
+            procs: $(sysctl -n hw.ncpu)
           - os: ubuntu-latest
             install_deps: sudo apt-get install mpich libmpich-dev
             comp: gnu
+            procs: $(nproc)
           - build_type: RelWithDebInfo
             ctest_args: -LE no_ci
           - build_type: Debug
@@ -61,19 +57,17 @@ jobs:
     - name: Dependencies
       run: ${{matrix.install_deps}}
     - name: Setup
-      run: cmake -E make_directory ${{runner.workspace}}/build-ci-${{matrix.build_type}}
+      run: echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
     - name: Configure
-      working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
       run: |
         cmake \
+          -B${{runner.workspace}}/build-ci-${{matrix.build_type}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
-          -DCMAKE_CXX_COMPILER:STRING=${{env.CXX_COMPILER}} \
-          -DCMAKE_C_COMPILER:STRING=${{env.C_COMPILER}} \
-          -DCMAKE_Fortran_COMPILER:STRING=${{env.FORTRAN_COMPILER}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
+          -DAMR_WIND_ENABLE_WERROR:BOOL=ON \
           ${GITHUB_WORKSPACE}
     - name: Make
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
