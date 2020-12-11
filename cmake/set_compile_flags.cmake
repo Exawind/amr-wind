@@ -18,7 +18,7 @@ if(AMR_WIND_ENABLE_ALL_WARNINGS)
 endif()
 
 if(AMR_WIND_ENABLE_WERROR)
-  list(APPEND AMR_WIND_CXX_FLAGS "-Werror" "-fno-operator-names")
+  list(APPEND AMR_WIND_CXX_FLAGS "-Werror")
 endif()
 
 # Add our extra flags according to language
