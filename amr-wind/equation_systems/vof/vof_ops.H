@@ -17,16 +17,16 @@ struct FieldRegOp<VOF, Scheme>
     PDEFields operator()(const SimTime& time, const int probtype)
     {
         auto& repo = sim.repo();
-        auto fields =
-            create_fields_instance<VOF, Scheme>(time, repo, probtype);
+        auto fields = create_fields_instance<VOF, Scheme>(time, repo, probtype);
 
         auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
-        auto& normal = repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
+        auto& normal =
+            repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
-
-        levelset.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo.mesh(), time, probtype);
+        levelset
+            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+                repo.mesh(), time, probtype);
         normal.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
             repo.mesh(), time, probtype);
         curvature
@@ -45,7 +45,6 @@ struct FieldRegOp<VOF, Scheme>
 
     CFDSim& sim;
 };
-
 
 /** Right-hand side (RHS) evaluator for VOF transport equation
  */
