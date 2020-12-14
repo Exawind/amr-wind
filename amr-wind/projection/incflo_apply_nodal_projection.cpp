@@ -105,10 +105,8 @@ void incflo::ApplyProjection(
     }
 
     bool variable_density =
-        (!m_constant_density || m_sim.physics_manager().contains("MultiPhase"))
-            ? true
-            : false;
-
+        (!m_constant_density || m_sim.physics_manager().contains("MultiPhase"));
+           
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
