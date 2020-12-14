@@ -4,53 +4,6 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void compute_normals(
-    int i,
-    int j,
-    int k,
-    amrex::Array4<amrex::Real const> const& c,
-    amrex::Real mx,
-    amrex::Real my,
-    amrex::Real mz) noexcept
-{
-    amrex::Real mm1, mm2;
-
-    mm1 = c(i - 1, j - 1, k - 1) + c(i - 1, j - 1, k + 1) +
-          c(i - 1, j + 1, k - 1) + c(i - 1, j + 1, k + 1) +
-          2.0 * (c(i - 1, j - 1, k) + c(i - 1, j + 1, k) + c(i - 1, j, k - 1) +
-                 c(i - 1, j, k + 1)) +
-          4.0 * c(i - 1, j, k);
-    mm2 = c(i + 1, j - 1, k - 1) + c(i + 1, j - 1, k + 1) +
-          c(i + 1, j + 1, k - 1) + c(i + 1, j + 1, k + 1) +
-          2.0 * (c(i + 1, j - 1, k) + c(i + 1, j + 1, k) + c(i + 1, j, k - 1) +
-                 c(i + 1, j, k + 1)) +
-          4.0 * c(i + 1, j, k);
-    mx = mm1 - mm2;
-
-    mm1 = c(i - 1, j - 1, k - 1) + c(i - 1, j - 1, k + 1) +
-          c(i + 1, j - 1, k - 1) + c(i + 1, j - 1, k + 1) +
-          2.0 * (c(i - 1, j - 1, k) + c(i + 1, j - 1, k) + c(i, j - 1, k - 1) +
-                 c(i, j - 1, k + 1)) +
-          4.0 * c(i, j - 1, k);
-    mm2 = c(i - 1, j + 1, k - 1) + c(i - 1, j + 1, k + 1) +
-          c(i + 1, j + 1, k - 1) + c(i + 1, j + 1, k + 1) +
-          2.0 * (c(i - 1, j + 1, k) + c(i + 1, j + 1, k) + c(i, j + 1, k - 1) +
-                 c(i, j + 1, k + 1)) +
-          4.0 * c(i, j + 1, k);
-    my = mm1 - mm2;
-
-    mm1 = c(i - 1, j - 1, k - 1) + c(i - 1, j + 1, k - 1) +
-          c(i + 1, j - 1, k - 1) + c(i + 1, j + 1, k - 1) +
-          2.0 * (c(i - 1, j, k - 1) + c(i + 1, j, k - 1) + c(i, j - 1, k - 1) +
-                 c(i, j + 1, k - 1)) +
-          4.0 * c(i, j, k - 1);
-    mm2 = c(i - 1, j - 1, k + 1) + c(i - 1, j + 1, k + 1) +
-          c(i + 1, j - 1, k + 1) + c(i + 1, j + 1, k + 1) +
-          2.0 * (c(i - 1, j, k + 1) + c(i + 1, j, k + 1) + c(i, j - 1, k + 1) +
-                 c(i, j + 1, k + 1)) +
-          4.0 * c(i, j, k + 1);
-    mz = mm1 - mm2;
-}
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction cc
  */
@@ -187,8 +140,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
     }
 
     amrex::Real b12 = b1 + b2;
-    amrex::Real bm = std::min(b12, b3);
-    amrex::Real pr = std::max(6.0 * m1 * m2 * m3, const_tiny);
+    //amrex::Real bm = std::min(b12, b3);
+    //amrex::Real pr = std::max(6.0 * m1 * m2 * m3, const_tiny);
 
     // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016) method
     amrex::Real vm1 = b1;

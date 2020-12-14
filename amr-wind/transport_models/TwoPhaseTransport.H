@@ -1,6 +1,7 @@
 #ifndef TWOPHASETRANSPORT_H
 #define TWOPHASETRANSPORT_H
 
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/transport_models/TransportModel.H"
 #include "AMReX_ParmParse.H"
 
@@ -54,33 +55,19 @@ public:
     inline std::unique_ptr<ScratchField> mu()
     {
         auto mu = m_repo.create_scratch_field(1, 1);
-        auto& levelset = m_repo.get_field("levelset");
-        const auto& geom = m_repo.mesh().Geom();
+        auto& vof = m_repo.get_field("vof");
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.growntilebox();
-                const auto& dx = geom[lev].CellSizeArray();
-
-                const amrex::Array4<amrex::Real>& phi =
-                    levelset(lev).array(mfi);
+                const amrex::Array4<amrex::Real>& F = vof(lev).array(mfi);
                 const amrex::Array4<amrex::Real>& visc = (*mu)(lev).array(mfi);
-                const amrex::Real eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
                 const amrex::Real mu1 = m_mu1;
                 const amrex::Real mu2 = m_mu2;
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real H;
-                        if (phi(i, j, k) > eps) {
-                            H = 1.0;
-                        } else if (phi(i, j, k) < -eps) {
-                            H = 0.;
-                        } else {
-                            H = 0.5 * (1 + phi(i, j, k) / eps +
-                                       1. / M_PI *
-                                           std::sin(phi(i, j, k) * M_PI / eps));
-                        }
-                        visc(i, j, k) = mu1 * H + mu2 * (1 - H);
+                        visc(i, j, k) =
+                            mu1 * F(i, j, k) + mu2 * (1.0 - F(i, j, k));
                     });
             }
         }

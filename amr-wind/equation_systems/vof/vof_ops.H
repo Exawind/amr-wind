@@ -6,6 +6,47 @@
 namespace amr_wind {
 namespace pde {
 
+/** Field registration operator for Levelset equation system
+ *  \ingroup levelset
+ */
+template <typename Scheme>
+struct FieldRegOp<VOF, Scheme>
+{
+    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+
+    PDEFields operator()(const SimTime& time, const int probtype)
+    {
+        auto& repo = sim.repo();
+        auto fields =
+            create_fields_instance<VOF, Scheme>(time, repo, probtype);
+
+        auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
+        auto& normal = repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
+        auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
+
+
+        levelset.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+            repo.mesh(), time, probtype);
+        normal.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+            repo.mesh(), time, probtype);
+        curvature
+            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
+                repo.mesh(), time, probtype);
+
+        // Register fields for output/restart
+        auto& iomgr = sim.io_manager();
+        iomgr.register_io_var(fields.field.name());
+        iomgr.register_io_var(levelset.name());
+        iomgr.register_io_var(normal.name());
+        iomgr.register_io_var(curvature.name());
+
+        return fields;
+    }
+
+    CFDSim& sim;
+};
+
+
 /** Right-hand side (RHS) evaluator for VOF transport equation
  */
 template <typename Scheme>

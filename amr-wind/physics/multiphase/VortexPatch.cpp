@@ -70,7 +70,7 @@ void VortexPatch::post_advance_work()
     // Overriding the velocity field
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(m_velocity(lev)); mfi.isValid(); ++mfi) {
-            const auto& vbx = mfi.validbox();
+            const auto& vbx = mfi.growntilebox();
             const auto& dx = geom[lev].CellSizeArray();
             const auto& problo = geom[lev].ProbLoArray();
             const amrex::Real TT = m_TT;
