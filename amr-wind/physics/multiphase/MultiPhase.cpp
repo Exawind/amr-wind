@@ -1,5 +1,5 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
-#include "amr-wind/equation_systems/vof/VolumeFractions_K.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"
@@ -147,19 +147,20 @@ void MultiPhase::levelset2vof()
             const auto& dx = geom[lev].CellSizeArray();
 
             const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
-            const amrex::Array4<amrex::Real>& F = vof.array(mfi);
-            const amrex::Array4<amrex::Real>& n = normal(lev).array(mfi);
+            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
+            const amrex::Array4<amrex::Real>& ifacenorm =
+                normal(lev).array(mfi);
 
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Do a linear recontruction of the interface based on least
                     // squares
-                    n(i, j, k, 0) = -n(i, j, k, 0) * dx[0];
-                    n(i, j, k, 1) = -n(i, j, k, 1) * dx[1];
-                    n(i, j, k, 2) = -n(i, j, k, 2) * dx[2];
-                    amrex::Real mx = amrex::Math::abs(n(i, j, k, 0));
-                    amrex::Real my = amrex::Math::abs(n(i, j, k, 1));
-                    amrex::Real mz = amrex::Math::abs(n(i, j, k, 2));
+                    ifacenorm(i, j, k, 0) = -ifacenorm(i, j, k, 0) * dx[0];
+                    ifacenorm(i, j, k, 1) = -ifacenorm(i, j, k, 1) * dx[1];
+                    ifacenorm(i, j, k, 2) = -ifacenorm(i, j, k, 2) * dx[2];
+                    amrex::Real mx = amrex::Math::abs(ifacenorm(i, j, k, 0));
+                    amrex::Real my = amrex::Math::abs(ifacenorm(i, j, k, 1));
+                    amrex::Real mz = amrex::Math::abs(ifacenorm(i, j, k, 2));
                     amrex::Real normL1 = mx + my + mz;
                     mx = mx / normL1;
                     my = my / normL1;
@@ -167,11 +168,12 @@ void MultiPhase::levelset2vof()
                     amrex::Real alpha = phi(i, j, k) / normL1;
                     alpha = alpha + 0.5;
                     if (alpha >= 1.0) {
-                        F(i, j, k) = 1.0;
+                        volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {
-                        F(i, j, k) = 0.0;
+                        volfrac(i, j, k) = 0.0;
                     } else {
-                        F(i, j, k) = FL3D(mx, my, mz, alpha, 0.0, 1.0);
+                        volfrac(i, j, k) =
+                            multiphase::FL3D(mx, my, mz, alpha, 0.0, 1.0);
                     }
                 });
         }

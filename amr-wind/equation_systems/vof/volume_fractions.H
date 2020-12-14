@@ -1,8 +1,11 @@
-#ifndef VolumeFraction_K_H_
-#define VolumeFraction_K_H_
+#ifndef VolumeFraction_H_
+#define VolumeFraction_H_
 
 #include <AMReX_FArrayBox.H>
 #include <cmath>
+
+namespace amr_wind{
+namespace multiphase{
 
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction cc
@@ -179,6 +182,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
     }
 
     return FL3D;
+}
+
+}
 }
 
 #endif // VolumeFraction_K.H

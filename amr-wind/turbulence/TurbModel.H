@@ -20,7 +20,7 @@ class TurbModel : public TurbulenceModel
 public:
     using TransportType = Transport;
 
-    TurbModel(CFDSim& sim) : m_sim(sim), m_transport(sim.repo()) {}
+    TurbModel(CFDSim& sim) : m_sim(sim), m_transport(sim) {}
 
     virtual void register_mueff_field(Field& mueff) override
     {

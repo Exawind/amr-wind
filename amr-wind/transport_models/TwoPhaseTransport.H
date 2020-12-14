@@ -18,8 +18,15 @@ public:
 
     static const std::string identifier() { return "TwoPhaseTransport"; }
 
-    TwoPhaseTransport(FieldRepo& repo) : m_repo(repo)
+    TwoPhaseTransport(CFDSim& sim) : m_sim(sim), m_repo(sim.repo())
     {
+
+        auto& physics_mgr = m_sim.physics_manager();
+        if (!physics_mgr.contains("MultiPhase"))
+            amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
+        auto& multiphase = physics_mgr.get<MultiPhase>();
+        m_ifacetype = multiphase.interface_tracking_method();
+
         amrex::ParmParse pp("transport");
         pp.query("viscosity_fluid1", m_mu1);
         pp.query("viscosity_fluid2", m_mu2);
@@ -54,21 +61,65 @@ public:
     //! Return the dynamic visocity field
     inline std::unique_ptr<ScratchField> mu()
     {
+        // Select the interface tracking method
         auto mu = m_repo.create_scratch_field(1, 1);
-        auto& vof = m_repo.get_field("vof");
 
-        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-            for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
-                const auto& vbx = mfi.growntilebox();
-                const amrex::Array4<amrex::Real>& F = vof(lev).array(mfi);
-                const amrex::Array4<amrex::Real>& visc = (*mu)(lev).array(mfi);
-                const amrex::Real mu1 = m_mu1;
-                const amrex::Real mu2 = m_mu2;
-                amrex::ParallelFor(
-                    vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        visc(i, j, k) =
-                            mu1 * F(i, j, k) + mu2 * (1.0 - F(i, j, k));
-                    });
+        if (m_ifacetype == InterfaceTrackingMethod::VOF) {
+
+            auto& vof = m_repo.get_field("vof");
+
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
+                    const auto& vbx = mfi.growntilebox();
+                    const amrex::Array4<amrex::Real>& volfrac =
+                        vof(lev).array(mfi);
+                    const amrex::Array4<amrex::Real>& visc =
+                        (*mu)(lev).array(mfi);
+                    const amrex::Real mu1 = m_mu1;
+                    const amrex::Real mu2 = m_mu2;
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            visc(i, j, k) = mu1 * volfrac(i, j, k) +
+                                            mu2 * (1.0 - volfrac(i, j, k));
+                        });
+                }
+            }
+
+        } else if (m_ifacetype == InterfaceTrackingMethod::LS) {
+
+            auto& levelset = m_repo.get_field("levelset");
+            auto& geom = m_repo.mesh().Geom();
+
+            for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+                for (amrex::MFIter mfi((*mu)(lev)); mfi.isValid(); ++mfi) {
+                    const auto& vbx = mfi.growntilebox();
+                    const auto& dx = geom[lev].CellSizeArray();
+                    const amrex::Array4<amrex::Real>& visc =
+                        (*mu)(lev).array(mfi);
+                    const amrex::Array4<amrex::Real>& phi =
+                        levelset(lev).array(mfi);
+                    const amrex::Real eps =
+                        std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                    const amrex::Real mu1 = m_mu1;
+                    const amrex::Real mu2 = m_mu2;
+                    amrex::ParallelFor(
+                        vbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            amrex::Real H;
+                            if (phi(i, j, k) > eps) {
+                                H = 1.0;
+                            } else if (phi(i, j, k) < -eps) {
+                                H = 0.;
+                            } else {
+                                H = 0.5 *
+                                    (1.0 + phi(i, j, k) / eps +
+                                     1.0 / M_PI *
+                                         std::sin(phi(i, j, k) * M_PI / eps));
+                            }
+                            visc(i, j, k) = mu1 * H + mu2 * (1.0 - H);
+                        });
+                }
             }
         }
         return mu;
@@ -100,8 +151,14 @@ public:
     }
 
 private:
+    //! Reference to the CFD sim
+    CFDSim& m_sim;
+
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
+
+    //! Interface tracking method variable
+    InterfaceTrackingMethod m_ifacetype;
 
     //! Phase 1 (Laminar) dynamic viscosity
     amrex::Real m_mu1{1.0e-4};
