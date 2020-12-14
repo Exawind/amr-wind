@@ -50,7 +50,7 @@ jobs:
         working-directory: build-lint
         run: |
           # Sanitize AMREX_GIT_VERSION define with 3 backslashes and quotes which cppcheck can't parse
-          sed -i.bak 's/\\\\\\"//g' compile_commands.json
+          sed -i '' -e 's/\\\\\\"//g' compile_commands.json
           cppcheck --inline-suppr \
             --suppress=unmatchedSuppression --suppress=syntaxError --suppress=internalAstError \
             --std=c++14 --language=c++ --enable=all --project=compile_commands.json \
