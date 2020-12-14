@@ -88,17 +88,19 @@ void MultiPhase::set_density_via_levelset()
             const amrex::Real rho2 = m_rho2;
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real H;
+                    amrex::Real smooth_heaviside;
                     if (phi(i, j, k) > eps) {
-                        H = 1.0;
+                        smooth_heaviside = 1.0;
                     } else if (phi(i, j, k) < -eps) {
-                        H = 0.;
+                        smooth_heaviside = 0.;
                     } else {
-                        H = 0.5 *
+                        smooth_heaviside =
+                            0.5 *
                             (1.0 + phi(i, j, k) / eps +
                              1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
                     }
-                    rho(i, j, k) = rho1 * H + rho2 * (1.0 - H);
+                    rho(i, j, k) = rho1 * smooth_heaviside +
+                                   rho2 * (1.0 - smooth_heaviside);
                 });
         }
     }
@@ -173,7 +175,7 @@ void MultiPhase::levelset2vof()
                         volfrac(i, j, k) = 0.0;
                     } else {
                         volfrac(i, j, k) =
-                            multiphase::FL3D(mx, my, mz, alpha, 0.0, 1.0);
+                            multiphase::cut_volume(mx, my, mz, alpha, 0.0, 1.0);
                     }
                 });
         }

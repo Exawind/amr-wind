@@ -106,18 +106,20 @@ public:
                     amrex::ParallelFor(
                         vbx,
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            amrex::Real H;
+                            amrex::Real smooth_heaviside;
                             if (phi(i, j, k) > eps) {
-                                H = 1.0;
+                                smooth_heaviside = 1.0;
                             } else if (phi(i, j, k) < -eps) {
-                                H = 0.;
+                                smooth_heaviside = 0.;
                             } else {
-                                H = 0.5 *
+                                smooth_heaviside =
+                                    0.5 *
                                     (1.0 + phi(i, j, k) / eps +
                                      1.0 / M_PI *
                                          std::sin(phi(i, j, k) * M_PI / eps));
                             }
-                            visc(i, j, k) = mu1 * H + mu2 * (1.0 - H);
+                            visc(i, j, k) = mu1 * smooth_heaviside +
+                                            mu2 * (1.0 - smooth_heaviside);
                         });
                 }
             }

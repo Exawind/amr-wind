@@ -4,14 +4,14 @@
 #include <AMReX_FArrayBox.H>
 #include <cmath>
 
-namespace amr_wind{
-namespace multiphase{
+namespace amr_wind {
+namespace multiphase {
 
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction cc
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-AL3D(amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real cc) noexcept
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
+    amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real cc) noexcept
 {
     using namespace amrex;
 
@@ -61,7 +61,7 @@ AL3D(amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real cc) noexcept
     // Original method
     amrex::Real AL3D, p, q, p12, teta, cs;
     if (ch < V1) {
-        AL3D = std::pow(pr * ch, 1. / 3.); // case (1)
+        AL3D = std::cbrt(pr * ch); // case (1)
     } else if (ch < V2) {
         AL3D = 0.50 * (m1 + std::sqrt(m1 * m1 + 8.0 * m2 * m3 * (ch - V1)));
     } else if (ch < V3) {
@@ -97,7 +97,7 @@ AL3D(amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real cc) noexcept
  * (4) order coefficients: b1<b2<b3;
  * (5) calculate volume (NOTE: it is assumed:s0=t0=0; ds0=dt0=1.)
  */
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     amrex::Real m1,
     amrex::Real m2,
     amrex::Real m3,
@@ -143,8 +143,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
     }
 
     amrex::Real b12 = b1 + b2;
-    //amrex::Real bm = std::min(b12, b3);
-    //amrex::Real pr = std::max(6.0 * m1 * m2 * m3, const_tiny);
+    // amrex::Real bm = std::min(b12, b3);
+    // amrex::Real pr = std::max(6.0 * m1 * m2 * m3, const_tiny);
 
     // Compute volume fraction using Aoki Kawano (Computer & Fluids 2016) method
     amrex::Real vm1 = b1;
@@ -184,7 +184,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FL3D(
     return FL3D;
 }
 
-}
-}
+} // namespace multiphase
+} // namespace amr_wind
 
 #endif // VolumeFraction_K.H
