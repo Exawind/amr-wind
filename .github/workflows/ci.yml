@@ -57,7 +57,9 @@ jobs:
     - name: Dependencies
       run: ${{matrix.install_deps}}
     - name: Setup
-      run: echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
+      run: |
+        echo "::add-matcher::.github/problem-matchers/gcc.json"
+        echo "NUM_PROCS=${{matrix.procs}}" >> $GITHUB_ENV
     - name: Configure
       run: |
         cmake \
@@ -67,7 +69,6 @@ jobs:
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
-          -DAMR_WIND_ENABLE_WERROR:BOOL=ON \
           ${GITHUB_WORKSPACE}
     - name: Make
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
