@@ -146,6 +146,8 @@ public:
 
     int num_ghost_state() const;
 
+    bool constant_density() const { return m_constant_density; }
+
 private:
     //! Instance of the CFD simulation controller
     CFDSim& m_sim;

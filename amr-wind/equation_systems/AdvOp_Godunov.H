@@ -23,7 +23,7 @@ struct AdvectionOp<
     fvm::Godunov,
     typename std::enable_if<std::is_base_of<ScalarTransport, PDE>::value>::type>
 {
-    AdvectionOp(PDEFields& fields_in, bool /* has_overset */)
+    AdvectionOp(CFDSim& /* sim */, PDEFields& fields_in)
         : fields(fields_in)
         , density(fields_in.repo.get_field("density"))
         , u_mac(fields_in.repo.get_field("u_mac"))
