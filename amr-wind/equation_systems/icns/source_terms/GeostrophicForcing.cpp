@@ -48,8 +48,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         pp.getarr("geostrophic_wind", m_target_vel);
     }
 
-    m_g_forcing = {-coriolis_factor * m_target_vel[1],
-                   coriolis_factor * m_target_vel[0], 0.0};
+    m_g_forcing = {
+        -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0]
+        , 0.0};
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
