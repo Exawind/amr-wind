@@ -39,7 +39,7 @@ bool SimTime::new_timestep()
 
     if (m_is_init && (m_verbose >= 0)) {
         amrex::Print() << "\nBegin simulation: " << std::endl;
-        if ((m_stop_time > 0) && (m_stop_time >= 0))
+        if ((m_stop_time > 0) && (m_stop_time_index >= 0))
             amrex::Print() << "  Run until " << m_stop_time << " sec. or "
                            << m_stop_time_index << " timesteps" << std::endl;
         else if (m_stop_time > 0)
