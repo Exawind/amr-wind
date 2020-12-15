@@ -67,6 +67,7 @@ create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
         repo.mesh(), time, probtype);
     fields.src_term.register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
         repo.mesh(), time, probtype, FieldInterpolator::PiecewiseConstant);
+    fields.mueff.set_default_fillpatch_bc(time);
 
     fields.field.fillpatch_on_regrid() = true;
 

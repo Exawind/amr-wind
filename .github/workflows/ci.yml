@@ -75,4 +75,6 @@ jobs:
       run: cmake --build . -- -j ${{env.NUM_PROCS}}
     - name: Test
       working-directory: ${{runner.workspace}}/build-ci-${{matrix.build_type}}
-      run: ctest -j ${{env.NUM_PROCS}} ${{matrix.ctest_args}} --output-on-failure
+      run: |
+        export OMPI_MCA_rmaps_base_oversubscribe=yes
+        ctest ${{matrix.ctest_args}} --output-on-failure
