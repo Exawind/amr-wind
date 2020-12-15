@@ -8,7 +8,7 @@
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
 
-using namespace amrex;;
+using namespace amrex;
 
 incflo::incflo()
     : m_sim(*this)
