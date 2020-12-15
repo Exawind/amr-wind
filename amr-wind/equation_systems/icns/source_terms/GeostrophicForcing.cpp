@@ -32,11 +32,14 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         amrex::Real rot_time_period = 86400.0;
         pp.query("rotational_time_period", rot_time_period);
         coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+        amrex::Print() << "Geostrophic forcing: Coriolis factor = "
+                       << coriolis_factor << std::endl;
 
         amrex::Real latitude = 90.0;
         pp.query("latitude", latitude);
         AMREX_ALWAYS_ASSERT(
-            amrex::Math::abs(latitude - 90.0) < vs::DTraits<amrex::Real>::eps());
+            amrex::Math::abs(latitude - 90.0) <
+            vs::DTraits<amrex::Real>::eps());
     }
 
     {
@@ -45,9 +48,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         pp.getarr("geostrophic_wind", m_target_vel);
     }
 
-    m_g_forcing = {
-        -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
-        0.0};
+    m_g_forcing = {-coriolis_factor * m_target_vel[1],
+                   coriolis_factor * m_target_vel[0], 0.0};
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
