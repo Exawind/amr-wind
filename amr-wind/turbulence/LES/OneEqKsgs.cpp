@@ -141,6 +141,8 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
                 });
         }
     }
+
+    mu_turb.fillpatch(this->m_sim.time().current_time());
 }
 
 template <typename Transport>
@@ -164,7 +166,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
         const amrex::Real ds = std::cbrt(dx * dy * dz);
 
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox(mu_turb.num_grow());
+            const auto& bx = mfi.tilebox();
             const auto& muturb_arr = mu_turb(lev).array(mfi);
             const auto& alphaeff_arr = alphaeff(lev).array(mfi);
             const auto& tlscale_arr = this->m_turb_lscale(lev).array(mfi);
@@ -177,6 +179,8 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
                 });
         }
     }
+
+    alphaeff.fillpatch(this->m_sim.time().current_time());
 }
 
 template <typename Transport>
