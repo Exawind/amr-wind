@@ -2,6 +2,7 @@
 #include "amr-wind/utilities/PlaneAveraging.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/core/vs/vstraits.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -34,7 +35,8 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
 
         amrex::Real latitude = 90.0;
         pp.query("latitude", latitude);
-        AMREX_ALWAYS_ASSERT(amrex::Math::abs(latitude - 90.0) < 1.0e-14);
+        AMREX_ALWAYS_ASSERT(
+            amrex::Math::abs(latitude - 90.0) < vs::DTraits<amrex::Real>::eps());
     }
 
     {
@@ -43,8 +45,9 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         pp.getarr("geostrophic_wind", m_target_vel);
     }
 
-    m_g_forcing = {-coriolis_factor * m_target_vel[1],
-                   coriolis_factor * m_target_vel[0], 0.0};
+    m_g_forcing = {
+        -coriolis_factor * m_target_vel[1], coriolis_factor * m_target_vel[0],
+        0.0};
 }
 
 GeostrophicForcing::~GeostrophicForcing() = default;
