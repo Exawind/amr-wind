@@ -39,15 +39,46 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 } // namespace
 
-MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset)
-    : m_repo(repo), m_options("mac_proj"), m_has_overset(has_overset)
-{}
+MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
+    : m_repo(repo)
+    , m_options("mac_proj")
+    , m_has_overset(has_overset)
+    , m_variable_density(variable_density)
+{
+    amrex::ParmParse pp("incflo");
+    pp.query("rho_0", m_rho_0);
+}
 
 void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
 {
     m_mac_proj.reset(new amrex::MacProjector(
         m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1)));
     m_mac_proj->initProjector(
+        m_options.lpinfo(), beta,
+        m_has_overset ? m_repo.get_int_field("mask_cell").vec_const_ptrs()
+                      : amrex::Vector<const amrex::iMultiFab*>());
+
+    m_options(*m_mac_proj);
+
+    auto& pressure = m_repo.get_field("p");
+    auto& bctype = pressure.bc_type();
+
+    m_mac_proj->setDomainBC(
+        get_projection_bc(
+            amrex::Orientation::low, bctype, m_repo.mesh().Geom()),
+        get_projection_bc(
+            amrex::Orientation::high, bctype, m_repo.mesh().Geom()));
+
+    m_need_init = false;
+}
+
+void MacProjOp::init_projector(const amrex::Real beta) noexcept
+{
+    m_mac_proj.reset(new amrex::MacProjector(
+        m_repo.mesh().Geom(0, m_repo.num_active_levels() - 1)));
+    m_mac_proj->initProjector(
+        m_repo.mesh().boxArray(0, m_repo.num_active_levels() - 1),
+        m_repo.mesh().DistributionMap(0, m_repo.num_active_levels() - 1),
         m_options.lpinfo(), beta,
         m_has_overset ? m_repo.get_int_field("mask_cell").vec_const_ptrs()
                       : amrex::Vector<const amrex::iMultiFab*>());
@@ -98,9 +129,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     auto& density = m_repo.get_field("density", fstate);
 
     // This will hold (1/rho) on faces
-    auto rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
-    auto rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
-    auto rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+    std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
 
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
         m_repo.num_active_levels());
@@ -115,28 +144,45 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
 
-    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        rho_face[lev][0] = &(*rho_xf)(lev);
-        rho_face[lev][1] = &(*rho_yf)(lev);
-        rho_face[lev][2] = &(*rho_zf)(lev);
+    if (m_variable_density) {
 
-        amrex::average_cellcenter_to_face(
-            rho_face[lev], density(lev), geom[lev]);
-        for (int idim = 0; idim < ICNS::ndim; ++idim) {
-            rho_face[lev][idim]->invert(factor, 0);
+        rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+
+        for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+            rho_face[lev][0] = &(*rho_xf)(lev);
+            rho_face[lev][1] = &(*rho_yf)(lev);
+            rho_face[lev][2] = &(*rho_zf)(lev);
+
+            amrex::average_cellcenter_to_face(
+                rho_face[lev], density(lev), geom[lev]);
+            for (int idim = 0; idim < ICNS::ndim; ++idim) {
+                rho_face[lev][idim]->invert(factor, 0);
+            }
+
+            rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
-        rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
+        if (m_need_init)
+            init_projector(rho_face_const);
+        else
+            m_mac_proj->updateBeta(rho_face_const);
+
+    } else {
+
+        if (m_need_init)
+            init_projector(factor / m_rho_0);
+        else
+            m_mac_proj->updateBeta(factor / m_rho_0);
+    }
+
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 
         mac_vec[lev][0] = &u_mac(lev);
         mac_vec[lev][1] = &v_mac(lev);
         mac_vec[lev][2] = &w_mac(lev);
     }
-
-    if (m_need_init)
-        init_projector(rho_face_const);
-    else
-        m_mac_proj->updateBeta(rho_face_const);
 
     m_mac_proj->setUMAC(mac_vec);
 

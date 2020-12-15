@@ -104,6 +104,10 @@ void incflo::ApplyProjection(
         }
     }
 
+    bool variable_density =
+        (!m_sim.pde_manager().constant_density() ||
+         m_sim.physics_manager().contains("MultiPhase"));
+
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
@@ -143,19 +147,23 @@ void incflo::ApplyProjection(
 
     // Create sigma
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    for (int lev = 0; lev <= finest_level; ++lev) {
-        sigma[lev].define(grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+    if (variable_density) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            sigma[lev].define(
+                grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-        for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi) {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& sig = sigma[lev].array(mfi);
-            Array4<Real const> const& rho = density[lev]->const_array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    sig(i, j, k) = scaling_factor / rho(i, j, k);
-                });
+            for (MFIter mfi(sigma[lev], TilingIfNotGPU()); mfi.isValid();
+                 ++mfi) {
+                Box const& bx = mfi.tilebox();
+                Array4<Real> const& sig = sigma[lev].array(mfi);
+                Array4<Real const> const& rho = density[lev]->const_array(mfi);
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        sig(i, j, k) = scaling_factor / rho(i, j, k);
+                    });
+            }
         }
     }
 
@@ -176,9 +184,22 @@ void incflo::ApplyProjection(
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
-    nodal_projector.reset(new NodalProjector(
-        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
-        options.lpinfo()));
+
+    if (variable_density) {
+        nodal_projector.reset(new NodalProjector(
+            vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
+            options.lpinfo()));
+    } else {
+
+        amrex::Real rho_0 = 1.0;
+        amrex::ParmParse pp("incflo");
+        pp.query("density", rho_0);
+
+        nodal_projector.reset(new NodalProjector(
+            vel, scaling_factor / rho_0, Geom(0, finest_level),
+            options.lpinfo()));
+    }
+
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
