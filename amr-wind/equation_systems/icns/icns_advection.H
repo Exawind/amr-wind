@@ -16,7 +16,7 @@ public:
     using FaceFabPtrVec =
         amrex::Vector<amrex::Array<const amrex::MultiFab*, ICNS::ndim>>;
 
-    MacProjOp(CFDSim& sim);
+    MacProjOp(FieldRepo&, bool, bool);
 
     void operator()(const FieldState fstate, const amrex::Real dt);
 
@@ -39,12 +39,12 @@ private:
 template <>
 struct AdvectionOp<ICNS, fvm::Godunov>
 {
-    AdvectionOp(CFDSim& sim, PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(sim)
+        , m_macproj_op(fields.repo, has_overset, variable_density)
     {
 
         amrex::ParmParse pp("incflo");
@@ -268,12 +268,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
 template <>
 struct AdvectionOp<ICNS, fvm::MOL>
 {
-    AdvectionOp(CFDSim& sim, PDEFields& fields_in)
+    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
-        , m_macproj_op(sim)
+        , m_macproj_op(fields.repo, has_overset, variable_density)
     {}
 
     void operator()(const FieldState fstate, const amrex::Real dt)

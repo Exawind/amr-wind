@@ -39,15 +39,12 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_projection_bc(
 
 } // namespace
 
-MacProjOp::MacProjOp(CFDSim& sim)
-    : m_repo(sim.repo())
+MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
+    : m_repo(repo)
     , m_options("mac_proj")
-    , m_has_overset(sim.has_overset())
+    , m_has_overset(has_overset)
+    , m_variable_density(variable_density)
 {
-    m_variable_density =
-        (!sim.pde_manager().constant_density() ||
-         sim.physics_manager().contains("MultiPhase"));
-
     amrex::ParmParse pp("incflo");
     pp.query("rho_0", m_rho_0);
 }
