@@ -19,7 +19,8 @@ time.checkpoint_interval      =  -100       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-
+incflo.initial_iterations = 0
+incflo.do_initial_proj = 0
 incflo.use_godunov = 1
 incflo.godunov_type = "weno"
 transport.viscosity = 1.
@@ -28,7 +29,6 @@ transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase VortexPatch
-VortexPatch.period=3.
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
