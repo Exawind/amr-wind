@@ -13,7 +13,7 @@ void incflo::set_background_pressure()
 
     int delp_dir = -1;
     // (2) pressure inflow and pressure outflow
-    auto& bctype = pressure().bc_type();
+    const auto& bctype = pressure().bc_type();
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if ((bctype[Orientation(dir, Orientation::low)] ==
                  BC::pressure_inflow and

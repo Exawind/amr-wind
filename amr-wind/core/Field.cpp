@@ -248,7 +248,7 @@ void Field::copy_state(FieldState to_state, FieldState from_state) noexcept
 {
     BL_PROFILE("amr-wind::Field::copy_state");
     auto& to_field = state(to_state);
-    auto& from_field = state(from_state);
+    const auto& from_field = state(from_state);
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
         amrex::MultiFab::Copy(

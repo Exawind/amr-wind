@@ -61,14 +61,14 @@ struct AdvectionOp<
         static_assert(
             PDE::ndim == 1, "Invalid number of components for scalar");
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
-        auto& src_term = fields.src_term;
+        const auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 
         // only needed if multiplying by rho below
-        auto& den = density.state(fstate);
+        const auto& den = density.state(fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
