@@ -83,7 +83,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     void operator()(const FieldState fstate)
     {
         const auto rhostate = field_impl::phi_state(fstate);
-        auto& density = m_density.state(rhostate);
+        const auto& density = m_density.state(rhostate);
 
         const int nlevels = this->fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {

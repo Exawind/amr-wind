@@ -92,7 +92,7 @@ struct SrcTermOpBase
     {
         BL_PROFILE("amr-wind::" + PDE::pde_name() + "::multiply_rho");
         const auto rhostate = field_impl::phi_state(fstate);
-        auto& density = m_density.state(rhostate);
+        const auto& density = m_density.state(rhostate);
 
         const int nlevels = fields.repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {

@@ -61,7 +61,7 @@ void MacProjOp::init_projector(const MacProjOp::FaceFabPtrVec& beta) noexcept
     m_options(*m_mac_proj);
 
     auto& pressure = m_repo.get_field("p");
-    auto& bctype = pressure.bc_type();
+    const auto& bctype = pressure.bc_type();
 
     m_mac_proj->setDomainBC(
         get_projection_bc(
@@ -122,11 +122,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 {
     BL_PROFILE("amr-wind::ICNS::advection_mac_project");
     auto& geom = m_repo.mesh().Geom();
-    auto& pressure = m_repo.get_field("p");
+    const auto& pressure = m_repo.get_field("p");
     auto& u_mac = m_repo.get_field("u_mac");
     auto& v_mac = m_repo.get_field("v_mac");
     auto& w_mac = m_repo.get_field("w_mac");
-    auto& density = m_repo.get_field("density", fstate);
+    const auto& density = m_repo.get_field("density", fstate);
 
     // This will hold (1/rho) on faces
     std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;

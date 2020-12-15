@@ -103,7 +103,7 @@ void BCIface::read_bctype()
 
 void BCIface::set_bcfuncs()
 {
-    auto& ibctype = m_field.bc_type();
+    const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto bct = ibctype[ori];
@@ -121,8 +121,8 @@ void BCIface::set_bcfuncs()
 
 std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
 {
-    auto& fname = m_field.name();
-    auto& bctype = m_field.bc_type();
+    const auto& fname = m_field.name();
+    const auto& bctype = m_field.bc_type();
     const std::string inflow_key = fname + ".inflow_type";
     const std::string wall_key = fname + ".wall_type";
     std::string inflow_udf{"ConstDirichlet"};
@@ -179,7 +179,7 @@ std::pair<const std::string, const std::string> BCIface::get_dirichlet_udfs()
 
 void BCVelocity::set_bcrec()
 {
-    auto& ibctype = m_field.bc_type();
+    const auto& ibctype = m_field.bc_type();
     auto& bcrec = m_field.bcrec();
 
     for (amrex::OrientationIter oit; oit; ++oit) {
@@ -237,7 +237,7 @@ void BCVelocity::set_bcrec()
 void BCVelocity::read_values()
 {
     auto& fname = m_field.name();
-    auto& bctype = m_field.bc_type();
+    const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
     for (amrex::OrientationIter oit; oit; ++oit) {
@@ -266,7 +266,7 @@ void BCVelocity::read_values()
 
 void BCScalar::set_bcrec()
 {
-    auto& ibctype = m_field.bc_type();
+    const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
@@ -317,7 +317,7 @@ void BCScalar::set_bcrec()
 void BCScalar::read_values()
 {
     auto& fname = m_field.name();
-    auto& bctype = m_field.bc_type();
+    const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
     for (amrex::OrientationIter oit; oit; ++oit) {
@@ -341,7 +341,7 @@ void BCScalar::read_values()
 void BCPressure::read_values()
 {
     auto& fname = m_field.name();
-    auto& bctype = m_field.bc_type();
+    const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
     for (amrex::OrientationIter oit; oit; ++oit) {
@@ -364,7 +364,7 @@ void BCPressure::read_values()
 
 void BCSrcTerm::set_bcrec()
 {
-    auto& ibctype = m_field.bc_type();
+    const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();
@@ -391,7 +391,7 @@ void BCSrcTerm::set_bcrec()
 
 void BCFillPatchExtrap::set_bcrec()
 {
-    auto& ibctype = m_field.bc_type();
+    const auto& ibctype = m_field.bc_type();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const auto side = ori.faceDir();

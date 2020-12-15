@@ -256,7 +256,7 @@ public:
         const amrex::IntVect& nghost,
         const FieldState fstate = FieldState::New) override
     {
-        auto& fld = m_field.state(fstate);
+        const auto& fld = m_field.state(fstate);
         amrex::PhysBCFunct<amrex::GpuBndryFuncFab<Functor>> cphysbc(
             m_mesh.Geom(lev - 1), m_field.bcrec(), bc_functor());
 

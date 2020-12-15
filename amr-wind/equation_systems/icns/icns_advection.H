@@ -78,7 +78,7 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
 
-        auto& src_term = fields.src_term;
+        const auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 

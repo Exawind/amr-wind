@@ -52,7 +52,7 @@ void KsgsM84Src::operator()(
                                  tke_arr(i, j, k) / tlscale_arr(i, j, k);
     });
 
-    auto& bctype = (this->m_tke).bc_type();
+    const auto& bctype = (this->m_tke).bc_type();
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         amrex::Orientation olo(dir, amrex::Orientation::low);
         if (bctype[olo] == BC::wall_model) {

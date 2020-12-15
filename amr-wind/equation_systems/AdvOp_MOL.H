@@ -44,7 +44,7 @@ struct AdvectionOp<
 
         auto& conv_term = fields.conv_term.state(fstate);
         auto& dof_field = fields.field.state(fstate);
-        auto& den = density.state(fstate);
+        const auto& den = density.state(fstate);
 
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;

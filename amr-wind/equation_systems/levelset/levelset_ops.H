@@ -60,8 +60,8 @@ struct ComputeRHSOp<Levelset, Scheme>
 
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
-        auto& field_old = field.state(FieldState::Old);
-        auto& conv_term = fields.conv_term.state(fstate);
+        const auto& field_old = field.state(FieldState::Old);
+        const auto& conv_term = fields.conv_term.state(fstate);
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -88,9 +88,9 @@ struct ComputeRHSOp<Levelset, Scheme>
     {
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
-        auto& field_old = field.state(FieldState::Old);
-        auto& conv_term = fields.conv_term;
-        auto& conv_term_old = fields.conv_term.state(FieldState::Old);
+        const auto& field_old = field.state(FieldState::Old);
+        const auto& conv_term = fields.conv_term;
+        const auto& conv_term_old = fields.conv_term.state(FieldState::Old);
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
