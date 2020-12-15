@@ -40,6 +40,7 @@ jobs:
       - name: Build
         # execute from top-level amr-wind directory
         run: |
+          echo "::add-matcher::.github/problem-matchers/sphinx.json"
           sphinx-build -M html ./docs/sphinx ./build_docs/manual
           doxygen ./docs/doxygen/Doxyfile
           mv ./build_docs/manual/html ./documentation
