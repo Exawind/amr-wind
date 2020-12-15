@@ -14,6 +14,8 @@
  */
 namespace amr_wind {
 
+enum class InterfaceTrackingMethod { VOF, LS };
+
 class MultiPhase : public Physics::Register<MultiPhase>
 {
 public:
@@ -33,17 +35,25 @@ public:
 
     void post_advance_work() override;
 
-    void set_multiphase_properties(int level, const amrex::Geometry& geom);
+    void set_density_via_levelset();
+
+    void set_density_via_vof();
+
+    void levelset2vof();
+
+    InterfaceTrackingMethod interface_tracking_method();
 
 private:
     const CFDSim& m_sim;
 
     Field& m_velocity;
-    Field& m_mueff;
     Field& m_density;
 
     // Pointer to the levelset
     Field* m_levelset{nullptr};
+
+    // Pointer to VOF
+    Field* m_vof{nullptr};
 
     // Density value for Fluid 1
     amrex::Real m_rho1{10.0};
@@ -51,11 +61,10 @@ private:
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
 
-    // Dynamic Viscosity for Fluid 1
-    amrex::Real m_mu1{1.0};
-
-    // Dynamic Viscosity for Fluid 2
-    amrex::Real m_mu2{1.0};
+    // Multiphase model enum
+    std::string m_interface_model{"vof"};
+    InterfaceTrackingMethod m_interface_tracking_method =
+        InterfaceTrackingMethod::VOF;
 };
 
 } // namespace amr_wind

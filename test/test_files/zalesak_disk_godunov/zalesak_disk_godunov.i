@@ -15,6 +15,7 @@ time.cfl              =   0.95         # CFL factor
 #.......................................#
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
+io.outputs = velocity_mueff
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -23,6 +24,7 @@ incflo.initial_iterations = 0
 incflo.do_initial_proj = 0
 incflo.use_godunov = 1
 incflo.godunov_type = "weno"
+transport.model = TwoPhaseTransport
 transport.viscosity = 1.
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333

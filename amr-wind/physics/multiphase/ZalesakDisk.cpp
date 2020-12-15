@@ -38,9 +38,9 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real depth = m_depth;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+        const auto& vbx = mfi.growntilebox();
         auto vel = velocity.array(mfi);
-        auto phi = velocity.array(mfi);
+        auto phi = levelset.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -57,8 +57,11 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                                  (z - zc) * (z - zc));
                 amrex::Real d1, d2, min_dist;
 
-                if (y < radius + yc && y > yc + radius - depth &&
-                    std::abs(x - xc) <= width && std::abs(z - zc) <= radius) {
+                if (y - yc <= radius && y - yc > radius - depth &&
+                    std::abs(x - xc) <= width &&
+                    std::sqrt(
+                        (x - xc) * (x - xc) + (y - yc) * (y - yc) +
+                        (z - zc) * (z - zc)) <= radius) {
                     if (x > xc) {
                         d1 = std::abs(xc + width - x);
                     } else {
