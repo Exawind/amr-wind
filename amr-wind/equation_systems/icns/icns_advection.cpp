@@ -129,9 +129,7 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     auto& density = m_repo.get_field("density", fstate);
 
     // This will hold (1/rho) on faces
-    auto rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
-    auto rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
-    auto rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+    std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
 
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
         m_repo.num_active_levels());
@@ -147,6 +145,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
 
     if (m_variable_density) {
+
+        rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
+        rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
+        rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
