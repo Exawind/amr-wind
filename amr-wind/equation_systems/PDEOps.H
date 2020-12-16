@@ -34,7 +34,7 @@ namespace pde {
 template <typename PDE, typename Scheme>
 struct FieldRegOp
 {
-    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     /** Perform initialization activities
      *
@@ -69,7 +69,7 @@ struct FieldRegOp
 template <typename PDE>
 struct SrcTermOpBase
 {
-    SrcTermOpBase(PDEFields& fields_in)
+    explicit SrcTermOpBase(PDEFields& fields_in)
         : fields(fields_in), m_density(fields_in.repo.get_field("density"))
     {}
 
@@ -155,7 +155,7 @@ struct SrcTermOpBase
 template <typename PDE>
 struct SrcTermOp : SrcTermOpBase<PDE>
 {
-    SrcTermOp(PDEFields& fields_in) : SrcTermOpBase<PDE>(fields_in) {}
+    explicit SrcTermOp(PDEFields& fields_in) : SrcTermOpBase<PDE>(fields_in) {}
 };
 
 template <typename PDE, typename Scheme, typename = void>
@@ -197,7 +197,7 @@ struct BCOp;
 template <typename PDE>
 struct PostSolveOp
 {
-    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    explicit PostSolveOp(PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time) { m_fields.field.fillpatch(time); }
 

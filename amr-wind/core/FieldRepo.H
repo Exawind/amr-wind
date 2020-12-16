@@ -87,7 +87,7 @@ public:
     friend class Field;
     friend class IntField;
 
-    FieldRepo(const amrex::AmrCore& mesh)
+    explicit FieldRepo(const amrex::AmrCore& mesh)
         : m_mesh(mesh), m_leveldata(mesh.maxLevel() + 1)
     {}
 

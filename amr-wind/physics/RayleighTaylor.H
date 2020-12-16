@@ -19,7 +19,7 @@ class RayleighTaylor : public Physics::Register<RayleighTaylor>
 public:
     static const std::string identifier() { return "RayleighTaylor"; }
 
-    RayleighTaylor(const CFDSim& sim);
+    explicit RayleighTaylor(const CFDSim& sim);
 
     virtual ~RayleighTaylor() = default;
 

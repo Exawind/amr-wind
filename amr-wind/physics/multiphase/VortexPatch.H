@@ -19,7 +19,7 @@ class VortexPatch : public Physics::Register<VortexPatch>
 public:
     static const std::string identifier() { return "VortexPatch"; }
 
-    VortexPatch(CFDSim& sim);
+    explicit VortexPatch(CFDSim& sim);
 
     virtual ~VortexPatch() = default;
 

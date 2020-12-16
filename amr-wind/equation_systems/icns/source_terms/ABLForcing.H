@@ -20,7 +20,7 @@ class ABLForcing : public MomentumSource::Register<ABLForcing>
 public:
     static const std::string identifier() { return "ABLForcing"; }
 
-    ABLForcing(const CFDSim& sim);
+    explicit ABLForcing(const CFDSim& sim);
 
     virtual ~ABLForcing();
 

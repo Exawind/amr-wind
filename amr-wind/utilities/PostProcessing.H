@@ -57,7 +57,7 @@ public:
 class PostProcessManager
 {
 public:
-    PostProcessManager(CFDSim& sim);
+    explicit PostProcessManager(CFDSim& sim);
 
     ~PostProcessManager() = default;
 

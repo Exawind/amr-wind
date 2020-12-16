@@ -111,7 +111,7 @@ public:
 class PDEMgr : public CollMgr<PDEMgr, PDEBase>
 {
 public:
-    PDEMgr(CFDSim& sim);
+    explicit PDEMgr(CFDSim& sim);
 
     ~PDEMgr() = default;
 

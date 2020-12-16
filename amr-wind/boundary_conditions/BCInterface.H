@@ -82,7 +82,7 @@ protected:
 class BCVelocity : public BCIface
 {
 public:
-    BCVelocity(Field& field) : BCIface(field) {}
+    explicit BCVelocity(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -95,7 +95,7 @@ protected:
 class BCScalar : public BCIface
 {
 public:
-    BCScalar(Field& field) : BCIface(field) {}
+    explicit BCScalar(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -110,7 +110,7 @@ protected:
 class BCPressure : public BCScalar
 {
 public:
-    BCPressure(Field& field) : BCScalar(field) {}
+    explicit BCPressure(Field& field) : BCScalar(field) {}
 
 protected:
     virtual void read_values() override;
@@ -125,7 +125,7 @@ protected:
 class BCSrcTerm : public BCIface
 {
 public:
-    BCSrcTerm(Field& field) : BCIface(field) {}
+    explicit BCSrcTerm(Field& field) : BCIface(field) {}
 
 protected:
     virtual void set_bcrec() override;
@@ -146,7 +146,7 @@ protected:
 class BCFillPatchExtrap : public BCIface
 {
 public:
-    BCFillPatchExtrap(
+    explicit BCFillPatchExtrap(
         Field& field,
         amrex::BCType::mathematicalBndryTypes bctype = amrex::BCType::hoextrap)
         : BCIface(field), m_extrap_type(bctype)

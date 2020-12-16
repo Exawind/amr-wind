@@ -47,7 +47,7 @@ struct FieldBCNoOp
     constexpr FieldBCNoOp() {}
 
     AMREX_GPU_HOST
-    constexpr FieldBCNoOp(const Field&) {}
+    constexpr explicit FieldBCNoOp(const Field&) {}
 
     FunctorType operator()() const { return *this; }
 
@@ -73,7 +73,7 @@ struct ConstDirichlet
     amrex::GpuArray<const amrex::Real*, AMREX_SPACEDIM * 2> m_bcv;
 
     AMREX_GPU_HOST
-    ConstDirichlet(const Field& fld)
+    explicit ConstDirichlet(const Field& fld)
         : m_ncomp(fld.num_comp()), m_bcv(fld.bc_values_device())
     {}
 
@@ -108,7 +108,7 @@ struct DirichletOp
     const WallOpType m_wall_op;
 
     AMREX_GPU_HOST
-    constexpr DirichletOp(const Field& fld)
+    constexpr explicit DirichletOp(const Field& fld)
         : m_ncomp(fld.num_comp())
         , m_bc_type(fld.bc_type())
         , m_inflow_op(fld)
@@ -207,7 +207,7 @@ struct FieldBCDirichlet
 {
     using FunctorType = DirichletOp<ConstDirichlet, ConstDirichlet>;
 
-    FieldBCDirichlet(const Field& fld) : m_field(fld) {}
+    explicit FieldBCDirichlet(const Field& fld) : m_field(fld) {}
 
     inline FunctorType operator()() const { return FunctorType(m_field); }
 

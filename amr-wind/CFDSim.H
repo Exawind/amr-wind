@@ -42,7 +42,7 @@ class TurbulenceModel;
 class CFDSim
 {
 public:
-    CFDSim(amrex::AmrCore& mesh);
+    explicit CFDSim(amrex::AmrCore& mesh);
 
     ~CFDSim();
 

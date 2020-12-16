@@ -12,7 +12,7 @@ class PhysicsEx : public amr_wind::Physics::Register<PhysicsEx>
 public:
     static const std::string identifier() { return "PhysicsEx"; }
 
-    PhysicsEx(amr_wind::CFDSim&);
+    explicit PhysicsEx(amr_wind::CFDSim&);
 
     virtual ~PhysicsEx() = default;
 

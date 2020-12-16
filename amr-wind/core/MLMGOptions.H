@@ -27,7 +27,7 @@ struct MLMGOptions
      *
      *  \param prefix Prefix used to parse user inputs, e.g., mac_proj
      */
-    MLMGOptions(const std::string& prefix);
+    explicit MLMGOptions(const std::string& prefix);
 
     /** Parse options in two stages
      *

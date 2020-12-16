@@ -23,7 +23,7 @@ class DensityBuoyancy : public MomentumSource::Register<DensityBuoyancy>
 public:
     static const std::string identifier() { return "DensityBuoyancy"; }
 
-    DensityBuoyancy(const CFDSim& sim);
+    explicit DensityBuoyancy(const CFDSim& sim);
 
     virtual ~DensityBuoyancy();
 

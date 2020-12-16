@@ -17,7 +17,7 @@ class ProbeSampler : public SamplerBase::Register<ProbeSampler>
 public:
     static const std::string identifier() { return "ProbeSampler"; }
 
-    ProbeSampler(const CFDSim&);
+    explicit ProbeSampler(const CFDSim&);
 
     virtual ~ProbeSampler();
 

@@ -21,7 +21,7 @@ class CartBoxRefinement : public RefinementCriteria::Register<CartBoxRefinement>
 public:
     static std::string identifier() { return "CartBoxRefinement"; }
 
-    CartBoxRefinement(CFDSim& sim);
+    explicit CartBoxRefinement(CFDSim& sim);
 
     virtual ~CartBoxRefinement() = default;
 

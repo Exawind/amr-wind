@@ -21,7 +21,7 @@ class FreeStream : public Physics::Register<FreeStream>
 public:
     static const std::string identifier() { return "FreeStream"; }
 
-    FreeStream(const CFDSim& sim);
+    explicit FreeStream(const CFDSim& sim);
 
     virtual ~FreeStream() = default;
 

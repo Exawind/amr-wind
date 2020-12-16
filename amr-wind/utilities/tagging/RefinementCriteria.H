@@ -56,7 +56,7 @@ public:
 class RefineCriteriaManager
 {
 public:
-    RefineCriteriaManager(CFDSim& sim);
+    explicit RefineCriteriaManager(CFDSim& sim);
 
     ~RefineCriteriaManager() = default;
 

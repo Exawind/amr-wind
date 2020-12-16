@@ -55,7 +55,7 @@ class ABL : public Physics::Register<ABL>
 public:
     static const std::string identifier() { return "ABL"; }
 
-    ABL(CFDSim& sim);
+    explicit ABL(CFDSim& sim);
 
     virtual ~ABL();
 

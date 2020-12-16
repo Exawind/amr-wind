@@ -27,7 +27,7 @@ namespace pde {
 template <typename Scheme>
 struct FieldRegOp<ICNS, Scheme>
 {
-    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {
@@ -76,7 +76,7 @@ struct FieldRegOp<ICNS, Scheme>
 template <>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
-    SrcTermOp(PDEFields& fields_in)
+    explicit SrcTermOp(PDEFields& fields_in)
         : SrcTermOpBase<ICNS>(fields_in), grad_p(fields_in.repo.get_field("gp"))
     {}
 

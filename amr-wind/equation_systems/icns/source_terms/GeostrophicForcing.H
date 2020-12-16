@@ -16,7 +16,7 @@ class GeostrophicForcing : public MomentumSource::Register<GeostrophicForcing>
 public:
     static const std::string identifier() { return "GeostrophicForcing"; }
 
-    GeostrophicForcing(const CFDSim&);
+    explicit GeostrophicForcing(const CFDSim&);
 
     virtual ~GeostrophicForcing();
 

@@ -18,7 +18,7 @@ namespace amr_wind {
 class ABLWallFunction
 {
 public:
-    ABLWallFunction(const CFDSim& sim);
+    explicit ABLWallFunction(const CFDSim& sim);
 
     ~ABLWallFunction() = default;
 

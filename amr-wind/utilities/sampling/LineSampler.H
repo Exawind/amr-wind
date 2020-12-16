@@ -18,7 +18,7 @@ class LineSampler : public SamplerBase::Register<LineSampler>
 public:
     static const std::string identifier() { return "LineSampler"; }
 
-    LineSampler(const CFDSim&);
+    explicit LineSampler(const CFDSim&);
 
     virtual ~LineSampler();
 

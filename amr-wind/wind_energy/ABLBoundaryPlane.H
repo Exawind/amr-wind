@@ -94,7 +94,7 @@ class ABLBoundaryPlane
     static_assert(AMREX_SPACEDIM == 3, "ABL requires 3 dimensional mesh");
 
 public:
-    ABLBoundaryPlane(CFDSim&);
+    explicit ABLBoundaryPlane(CFDSim&);
 
     void write_header();
 

@@ -20,7 +20,7 @@ class BoussinesqBuoyancy : public MomentumSource::Register<BoussinesqBuoyancy>
 public:
     static const std::string identifier() { return "BoussinesqBuoyancy"; }
 
-    BoussinesqBuoyancy(const CFDSim& sim);
+    explicit BoussinesqBuoyancy(const CFDSim& sim);
 
     virtual ~BoussinesqBuoyancy();
 

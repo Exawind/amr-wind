@@ -17,7 +17,7 @@ namespace pde {
 template <typename PDE, typename Scheme>
 struct ComputeRHSOp
 {
-    ComputeRHSOp(PDEFields& fields_in)
+    explicit ComputeRHSOp(PDEFields& fields_in)
         : fields(fields_in), density(fields_in.repo.get_field("density"))
     {}
 
