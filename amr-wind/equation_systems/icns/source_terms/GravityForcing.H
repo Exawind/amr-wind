@@ -1,8 +1,3 @@
-//
-//  GravityForcing.H
-//  amr-wind
-//
-
 #ifndef GravityForcing_H
 #define GravityForcing_H
 
@@ -13,10 +8,8 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
-/** Buoyancy term from density variations
+/** Gravity Forcing term
  *  \ingroup icns_src
- *
- *  \sa RayleighTaylor
  */
 class GravityForcing : public MomentumSource::Register<GravityForcing>
 {
