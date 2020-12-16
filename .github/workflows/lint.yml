@@ -51,8 +51,6 @@ jobs:
         run: |
           # Using a working directory for cppcheck makes analysis faster
           mkdir cppcheck-wd
-          # Sanitize AMREX_GIT_VERSION define with 3 backslashes and quotes which cppcheck can't parse
-          sed -i '' -e 's/\\\\\\"//g' compile_commands.json
           # Cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
           sed -i '' -e 's/isystem /I/g' compile_commands.json
           cppcheck --inline-suppr \
