@@ -26,6 +26,7 @@ option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
 option(AMR_WIND_ENABLE_HIP "Enable HIP/ROCm" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
+option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
 
 # Third party libraries
 option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
