@@ -12,7 +12,7 @@ namespace pde {
 template <typename Scheme>
 struct FieldRegOp<VOF, Scheme>
 {
-    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {
@@ -51,7 +51,7 @@ struct FieldRegOp<VOF, Scheme>
 template <typename Scheme>
 struct ComputeRHSOp<VOF, Scheme>
 {
-    ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
+    explicit ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
 
     void predictor_rhs(const DiffusionType, const amrex::Real dt)
     {

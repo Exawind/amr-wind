@@ -36,7 +36,7 @@ class GeometryRefinement
 public:
     static std::string identifier() { return "GeometryRefinement"; }
 
-    GeometryRefinement(const CFDSim&);
+    explicit GeometryRefinement(const CFDSim&);
 
     virtual ~GeometryRefinement() = default;
 

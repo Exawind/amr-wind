@@ -29,7 +29,7 @@ class DerivedQtyMgr;
 class IOManager
 {
 public:
-    IOManager(CFDSim&);
+    explicit IOManager(CFDSim&);
 
     ~IOManager();
 

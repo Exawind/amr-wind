@@ -9,7 +9,7 @@ namespace pde {
 template <typename Scheme>
 struct ComputeRHSOp<Density, Scheme>
 {
-    ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
+    explicit ComputeRHSOp(PDEFields& fields_in) : fields(fields_in) {}
 
     void predictor_rhs(const DiffusionType, const amrex::Real dt)
     {

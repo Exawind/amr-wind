@@ -17,7 +17,7 @@ class BoussinesqBubble : public Physics::Register<BoussinesqBubble>
 public:
     static const std::string identifier() { return "BoussinesqBubble"; }
 
-    BoussinesqBubble(CFDSim& sim);
+    explicit BoussinesqBubble(CFDSim& sim);
 
     virtual ~BoussinesqBubble() = default;
 

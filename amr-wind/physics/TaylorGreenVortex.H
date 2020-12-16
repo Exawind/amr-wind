@@ -14,7 +14,7 @@ class TaylorGreenVortex : public Physics::Register<TaylorGreenVortex>
 public:
     static const std::string identifier() { return "TaylorGreenVortex"; }
 
-    TaylorGreenVortex(const CFDSim& sim);
+    explicit TaylorGreenVortex(const CFDSim& sim);
 
     virtual ~TaylorGreenVortex() = default;
     //! Initialize the temperature and velocity fields for BoussinesqBubble

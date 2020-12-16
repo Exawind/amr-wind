@@ -29,7 +29,7 @@ class PlaneSampler : public SamplerBase::Register<PlaneSampler>
 public:
     static const std::string identifier() { return "PlaneSampler"; }
 
-    PlaneSampler(const CFDSim&);
+    explicit PlaneSampler(const CFDSim&);
 
     virtual ~PlaneSampler();
 

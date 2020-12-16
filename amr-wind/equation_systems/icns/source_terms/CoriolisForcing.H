@@ -17,7 +17,7 @@ class CoriolisForcing : public MomentumSource::Register<CoriolisForcing>
 public:
     static const std::string identifier() { return "CoriolisForcing"; }
 
-    CoriolisForcing(const CFDSim&);
+    explicit CoriolisForcing(const CFDSim&);
 
     virtual ~CoriolisForcing();
 

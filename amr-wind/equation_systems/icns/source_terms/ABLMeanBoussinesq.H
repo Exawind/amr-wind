@@ -21,7 +21,7 @@ class ABLMeanBoussinesq : public MomentumSource::Register<ABLMeanBoussinesq>
 public:
     static const std::string identifier() { return "ABLMeanBoussinesq"; }
 
-    ABLMeanBoussinesq(const CFDSim& sim);
+    explicit ABLMeanBoussinesq(const CFDSim& sim);
 
     virtual ~ABLMeanBoussinesq();
 

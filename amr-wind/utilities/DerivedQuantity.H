@@ -34,8 +34,7 @@ public:
     using TypePtr = std::unique_ptr<DerivedQty>;
     using TypeVector = amrex::Vector<TypePtr>;
 
-    DerivedQtyMgr(const FieldRepo& repo);
-
+    explicit DerivedQtyMgr(const FieldRepo& repo);
     ~DerivedQtyMgr() = default;
 
     void operator()(ScratchField& fld, const int scomp = 0);

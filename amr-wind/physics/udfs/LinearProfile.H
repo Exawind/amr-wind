@@ -51,7 +51,7 @@ struct LinearProfile
 
     static std::string identifier() { return "LinearProfile"; }
 
-    LinearProfile(const Field& fld);
+    explicit LinearProfile(const Field& fld);
 
     DeviceType device_instance() const { return m_op; }
 

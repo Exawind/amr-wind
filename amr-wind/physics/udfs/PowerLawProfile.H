@@ -49,7 +49,7 @@ struct PowerLawProfile
 
     static std::string identifier() { return "PowerLawProfile"; }
 
-    PowerLawProfile(const Field& fld);
+    explicit PowerLawProfile(const Field& fld);
 
     DeviceType device_instance() const { return m_op; }
 
