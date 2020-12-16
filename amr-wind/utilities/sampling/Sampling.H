@@ -108,7 +108,8 @@ private:
 #endif
 
     //! Number of particles:
-    size_t m_total_particles;
+    size_t m_total_particles{0};
+
     //! Frequency of data sampling and output
     int m_out_freq{100};
 };
