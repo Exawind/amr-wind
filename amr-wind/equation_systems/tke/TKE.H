@@ -32,10 +32,18 @@ namespace pde {
  */
 struct TKE : ScalarTransport
 {
+    using MLDiffOp = amrex::MLABecLaplacian;
     using SrcTerm = TKESource;
 
     static std::string pde_name() { return "TKE"; }
     static std::string var_name() { return "tke"; }
+
+    static constexpr amrex::Real default_bc_value = 0.0;
+
+    static constexpr int ndim = 1;
+    static constexpr bool multiply_rho = true;
+    static constexpr bool has_diffusion = true;
+    static constexpr bool need_nph_state = true;
 };
 
 /** Implementation of Turbulence operator for TKE equation

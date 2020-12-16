@@ -12,13 +12,17 @@ namespace pde {
 
 struct Density : ScalarTransport
 {
+    using MLDiffOp = amrex::MLABecLaplacian;
     using SrcTerm = DensitySource;
 
     static std::string pde_name() { return "Density"; }
     static std::string var_name() { return "density"; }
 
+    static constexpr int ndim = 1;
+
     static constexpr bool multiply_rho = false;
     static constexpr bool has_diffusion = false;
+    static constexpr bool need_nph_state = true;
 
     static constexpr amrex::Real default_bc_value = 1.0;
 };

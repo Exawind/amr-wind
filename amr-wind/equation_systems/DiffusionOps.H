@@ -9,6 +9,7 @@
 #include "amr-wind/diffusion/diffusion.H"
 
 #include "AMReX_MLABecLaplacian.H"
+#include "AMReX_MLTensorOp.H"
 #include "AMReX_MLMG.H"
 #include "AMReX_AmrCore.H"
 

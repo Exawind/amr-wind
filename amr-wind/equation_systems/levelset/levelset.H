@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/PDE.H"
+#include "amr-wind/equation_systems/SourceTerm.H"
 
 namespace amr_wind {
 namespace pde {
@@ -26,12 +27,17 @@ namespace pde {
  */
 struct Levelset : ScalarTransport
 {
+    using MLDiffOp = amrex::MLABecLaplacian;
+    using SrcTerm = SourceTerm;
 
     static std::string pde_name() { return "Levelset"; }
     static std::string var_name() { return "levelset"; }
 
+    static constexpr int ndim = 1;
+
     static constexpr bool multiply_rho = false;
     static constexpr bool has_diffusion = false;
+    static constexpr bool need_nph_state = true;
 
     static constexpr amrex::Real default_bc_value = 0.0;
 };
