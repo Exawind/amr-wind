@@ -30,6 +30,7 @@ GravityForcing::~GravityForcing() = default;
  *  @param lev AMR level
  *  @param mfi multiFab index
  *  @param bx Box to operate on
+ *  @param FieldState field
  *  @param vel_forces Forcing source term, activated when density varies from
  * rho_0
  */
