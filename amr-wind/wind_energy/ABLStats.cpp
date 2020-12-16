@@ -335,7 +335,6 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
 
-
     ncf.exit_def_mode();
 
     {
@@ -447,8 +446,8 @@ void ABLStats::write_netcdf()
         }
 
         {
-            amrex::Vector<std::string> var_names{"u'v'_sfs", "u'w'_sfs",
-                "v'w'_sfs"};
+            amrex::Vector<std::string> var_names{
+                "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
                 m_pa_sfs.line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);
@@ -465,7 +464,6 @@ void ABLStats::write_netcdf()
                 var.put(l_vec.data(), start, count);
             }
         }
-
     }
     ncf.close();
 #endif
@@ -486,7 +484,6 @@ void ABLStats::calc_sfs_stress()
     auto gradT = repo.create_scratch_field(3);
     fvm::gradient(*gradT, m_temperature);
 
-
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(m_mueff(lev)); mfi.isValid(); ++mfi) {
@@ -500,21 +497,22 @@ void ABLStats::calc_sfs_stress()
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    sfs_arr(i, j, k, 0) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 1) + gradVel_arr(i, j, k, 4));
+                    sfs_arr(i, j, k, 1) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 2) + gradVel_arr(i, j, k, 6));
+                    sfs_arr(i, j, k, 2) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
 
-                sfs_arr(i,j,k,0) = mueff_arr(i,j,k) *
-                    ( gradVel_arr(i,j,k,1) + gradVel_arr(i,j,k,4) );
-                sfs_arr(i,j,k,1) = mueff_arr(i,j,k) *
-                    ( gradVel_arr(i,j,k,2) + gradVel_arr(i,j,k,6) );
-                sfs_arr(i,j,k,2) = mueff_arr(i,j,k) *
-                    ( gradVel_arr(i,j,k,5) + gradVel_arr(i,j,k,7) );
-
-                for (int icomp=0; icomp < AMREX_SPACEDIM; icomp++)
-                    t_sfs_arr(i,j,k,icomp) =
-                        alphaeff_arr(i,j,k) * gradT_arr(i,j,k,icomp);
-            });
+                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
+                        t_sfs_arr(i, j, k, icomp) =
+                            alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
+                });
         }
     }
-
 }
 
 } // namespace amr_wind
