@@ -103,7 +103,6 @@ void ABL::post_init_actions()
  */
 void ABL::pre_advance_work()
 {
-    m_stats->calc_averages();
     const auto& vel_pa = m_stats->vel_plane_averaging();
     m_abl_wall_func.update_umean(
         m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
@@ -133,6 +132,7 @@ void ABL::pre_advance_work()
  */
 void ABL::post_advance_work()
 {
+    m_stats->calc_averages();
     m_stats->post_advance_work();
 
     if (m_bndry_plane->is_initialized()) {
