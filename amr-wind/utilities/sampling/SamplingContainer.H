@@ -95,7 +95,7 @@ public:
 private:
     amrex::AmrCore& m_mesh;
 
-    int m_total_particles;
+    int m_total_particles{0};
 };
 
 } // namespace sampling

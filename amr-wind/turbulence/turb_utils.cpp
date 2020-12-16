@@ -29,6 +29,9 @@ void inject_turbulence_src_terms(
     // Now convert the combined terms back into a vector for insertion in input
     // dictionary
     srcin.clear();
+
+    // Prefer to use emplace_back here
+    // cppcheck-suppress useStlAlgorithm
     for (const auto& sname : sterm_set) srcin.emplace_back(sname);
     pp.addarr("sources", srcin);
 }

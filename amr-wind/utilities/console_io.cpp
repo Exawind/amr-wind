@@ -20,13 +20,15 @@ const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 
 void print_banner(MPI_Comm comm, std::ostream& out)
 {
-    int irank = 0;
 #ifdef AMREX_USE_MPI
+    int irank = 0;
     int num_ranks = 1;
     MPI_Comm_size(comm, &num_ranks);
     MPI_Comm_rank(comm, &irank);
-#endif
+
+    // Only root process does the printing
     if (irank != 0) return;
+#endif
 
     auto exec_time = std::chrono::system_clock::now();
     auto exect = std::chrono::system_clock::to_time_t(exec_time);

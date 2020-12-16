@@ -82,7 +82,10 @@ struct SrcTermOpBase
         amrex::ParmParse pp(PDE::pde_name());
         amrex::Vector<std::string> src_terms;
         pp.queryarr("source_terms", src_terms);
+
         for (auto& src_name : src_terms) {
+            // Prefer to use emplace_back here
+            // cppcheck-suppress useStlAlgorithm
             sources.emplace_back(PDE::SrcTerm::create(src_name, sim));
         }
     }
