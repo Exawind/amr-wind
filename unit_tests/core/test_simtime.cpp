@@ -57,8 +57,8 @@ TEST_F(SimTimeTest, init)
     // Check that the timestep growth is not greater than 10% of the last
     // timestep
     time.set_current_cfl(cur_cfl * 0.5, 0.0, 0.0);
-    EXPECT_NEAR(
-        time.deltaT(), 1.1 * first_dt, tol); // cppcheck-suppress unreadVariable
+    // cppcheck-suppress unreadVariable
+    EXPECT_NEAR(time.deltaT(), 1.1 * first_dt, tol);
 }
 
 TEST_F(SimTimeTest, time_loop)
@@ -85,8 +85,8 @@ TEST_F(SimTimeTest, time_loop)
     EXPECT_EQ(regrid_counter, 1);
 
     EXPECT_TRUE(time.write_last_checkpoint());
-    EXPECT_FALSE(
-        time.write_last_plot_file()); // cppcheck-suppress unreadVariable
+    // cppcheck-suppress unreadVariable
+    EXPECT_FALSE(time.write_last_plot_file());
 }
 
 TEST_F(SimTimeTest, fixed_dt_loop)
@@ -117,8 +117,8 @@ TEST_F(SimTimeTest, fixed_dt_loop)
     EXPECT_EQ(regrid_counter, 3);
 
     EXPECT_FALSE(time.write_last_checkpoint());
-    EXPECT_FALSE(
-        time.write_last_plot_file()); // cppcheck-suppress unreadVariable
+    // cppcheck-suppress unreadVariable
+    EXPECT_FALSE(time.write_last_plot_file());
 }
 
 } // namespace amr_wind_tests
