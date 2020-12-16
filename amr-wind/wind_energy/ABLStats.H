@@ -64,6 +64,10 @@ public:
         m_abl_forcing = forcing;
     }
 
+    //! Calculate sfs stress
+    void calc_sfs_stress();
+
+
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -88,6 +92,8 @@ private:
     const ABLWallFunction& m_abl_wall_func;
     Field& m_temperature;
     Field& m_mueff;
+    Field& m_sfs;
+    Field& m_t_sfs;
 
     VelPlaneAveraging m_pa_vel;
     FieldPlaneAveraging m_pa_temp;
@@ -95,6 +101,8 @@ private:
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
+    FieldPlaneAveraging m_pa_sfs;
+    FieldPlaneAveraging m_pa_tsfs;
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
