@@ -60,18 +60,18 @@ jobs:
             --suppress=unmatchedSuppression --suppress=syntaxError --suppress=internalAstError \
             --std=c++14 --language=c++ --enable=all --project=compile_commands.json \
             -j ${{env.NPROCS}} --cppcheck-build-dir=cppcheck-wd -i ${{github.workspace}}/submods/amrex/Src \
-            -i ${{github.workspace}}/submods/googletest --output-file=cppcheck.txt --check-config
+            -i ${{github.workspace}}/submods/googletest --output-file=cppcheck.txt
           # Warnings in header files are unavoidable, so we filter out submodule headers after analysis
           # Might be wrong to assume cppcheck always reports issues using 3 lines
-          # awk -v nlines=2 '/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1' \
-          #  < cppcheck.txt > amr-wind-static-analysis.txt
+           awk -v nlines=2 '/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1' \
+            < cppcheck.txt > amr-wind-static-analysis.txt
       - name: Report
         working-directory: build-lint
         run: |
           # Might be wrong to assume cppcheck always reports issues using 3 lines
-          #WARNINGS_TMP=$(wc -l < amr-wind-static-analysis.txt | xargs echo -n)
-          #WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
-          #printf "%s warnings\n" "${WARNINGS}" >> amr-wind-static-analysis.txt
-          cat cppcheck.txt
+          WARNINGS_TMP=$(wc -l < amr-wind-static-analysis.txt | xargs echo -n)
+          WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
+          printf "%s warnings\n" "${WARNINGS}" >> amr-wind-static-analysis.txt
+          cat amr-wind-static-analysis.txt
           # Just report for now and don't fail
           #exit ${WARNINGS}
