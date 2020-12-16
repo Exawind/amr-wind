@@ -18,7 +18,6 @@ struct VOF : ScalarTransport
     static std::string pde_name() { return "VOF"; }
     static std::string var_name() { return "vof"; }
 
-
     static constexpr int ndim = 1;
     static constexpr bool multiply_rho = false;
     static constexpr bool has_diffusion = false;
