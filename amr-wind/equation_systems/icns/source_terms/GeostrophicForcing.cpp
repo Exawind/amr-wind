@@ -39,7 +39,7 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         pp.query("latitude", latitude);
         AMREX_ALWAYS_ASSERT(
             amrex::Math::abs(latitude - 90.0) <
-            vs::DTraits<amrex::Real>::eps());
+            static_cast<amrex::Real>(vs::DTraits<float>::eps()));
     }
 
     {
