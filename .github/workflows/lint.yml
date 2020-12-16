@@ -37,7 +37,6 @@ jobs:
         run: brew install cppcheck
       - name: Configure
         run: |
-          echo "::add-matcher::.github/problem-matchers/gcc.json"
           echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
           cmake \
           -Bbuild-lint \
@@ -50,20 +49,27 @@ jobs:
       - name: Check
         working-directory: build-lint
         run: |
-          # Sanitize AMREX_GIT_VERSION define with 3 backslashes and quotes which cppcheck can't parse
-          sed -i '' -e 's/\\\\\\"//g' compile_commands.json
+          # Using a working directory for cppcheck makes analysis faster
+          mkdir cppcheck-wd
+          # Cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
+          sed -i '' -e 's/isystem /I/g' compile_commands.json
           cppcheck --inline-suppr \
             --suppress=unmatchedSuppression --suppress=syntaxError --suppress=internalAstError \
-            --std=c++14 --language=c++ --enable=all --project=compile_commands.json \
-            -j ${{env.NPROCS}} -i ${{github.workspace}}/submods/amrex/Src \
+            --suppress=unusedFunction --std=c++14 --language=c++ --enable=all --project=compile_commands.json \
+            -j ${{env.NPROCS}} --cppcheck-build-dir=cppcheck-wd -i ${{github.workspace}}/submods/amrex/Src \
             -i ${{github.workspace}}/submods/googletest --output-file=cppcheck.txt
+          # Warnings in header files are unavoidable, so we filter out submodule headers after analysis
+          # Might be wrong to assume cppcheck always reports issues using 3 lines
+           awk -v nlines=2 '/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1' \
+            < cppcheck.txt > amr-wind-static-analysis.txt
       - name: Report
         working-directory: build-lint
         run: |
+          echo "::add-matcher::.github/problem-matchers/gcc.json"
           # Might be wrong to assume cppcheck always reports issues using 3 lines
-          WARNINGS_TMP=$(wc -l < cppcheck.txt | xargs echo -n)
+          WARNINGS_TMP=$(wc -l < amr-wind-static-analysis.txt | xargs echo -n)
           WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
-          printf "%s warnings\n" "${WARNINGS}" >> cppcheck.txt
-          cat cppcheck.txt
+          printf "%s warnings\n" "${WARNINGS}" >> amr-wind-static-analysis.txt
+          cat amr-wind-static-analysis.txt
           # Just report for now and don't fail
           #exit ${WARNINGS}
