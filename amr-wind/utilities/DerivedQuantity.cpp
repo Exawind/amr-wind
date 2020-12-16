@@ -88,9 +88,9 @@ void DerivedQtyMgr::operator()(ScratchField& fld, const int scomp)
 
 int DerivedQtyMgr::num_comp() const noexcept
 {
-    int count = 0;
-    for (const auto& qty : m_derived_vec) count += qty->num_comp();
-    return count;
+    return std::accumulate(
+        m_derived_vec.begin(), m_derived_vec.end(), 0,
+        [](const int init, const auto& qty) { return init + qty->num_comp(); });
 }
 
 bool DerivedQtyMgr::contains(const std::string& key) const noexcept

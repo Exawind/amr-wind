@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <algorithm>
 
 #include "AMReX_MultiFab.H"
 #include "AMReX_BCRec.H"
@@ -141,10 +142,9 @@ public:
     //! Number of states available for this field
     inline int num_states() const
     {
-        int ns = 0;
-        for (auto* ff : m_info->m_states) {
-            if (ff != nullptr) ++ns;
-        }
+        int ns = std::count_if(
+            m_info->m_states.begin(), m_info->m_states.end(),
+            [](const Field* ff) { return (ff != nullptr); });
         AMREX_ASSERT(num_time_states() <= ns);
         return ns;
     }
