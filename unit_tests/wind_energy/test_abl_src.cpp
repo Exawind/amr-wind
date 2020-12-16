@@ -139,6 +139,10 @@ TEST_F(ABLMeshTest, geostrophic_forcing)
 {
     constexpr amrex::Real tol = 1.0e-12;
     utils::populate_abl_params();
+
+    amrex::ParmParse pp("CoriolisForcing");
+    pp.add("latitude", 90.0);
+
     initialize_mesh();
 
     auto& pde_mgr = sim().pde_manager();
