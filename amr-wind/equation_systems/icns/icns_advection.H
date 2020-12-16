@@ -338,8 +338,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
                 amrex::FArrayBox tmpfab(tmpbox, tmpcomp);
                 amrex::Elixir eli = tmpfab.elixir();
 
-                amrex::Array4<amrex::Real> fx = tmpfab.array(nmaxcomp * 0);
-                amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp * 1);
+                amrex::Array4<amrex::Real> fx = tmpfab.array(0);
+                amrex::Array4<amrex::Real> fy = tmpfab.array(nmaxcomp);
                 amrex::Array4<amrex::Real> fz = tmpfab.array(nmaxcomp * 2);
 
                 mol::compute_convective_fluxes(
