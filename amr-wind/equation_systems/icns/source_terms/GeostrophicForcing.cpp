@@ -2,6 +2,7 @@
 #include "amr-wind/utilities/PlaneAveraging.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
+#include "amr-wind/core/vs/vstraits.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
@@ -31,6 +32,14 @@ GeostrophicForcing::GeostrophicForcing(const CFDSim&)
         amrex::Real rot_time_period = 86400.0;
         pp.query("rotational_time_period", rot_time_period);
         coriolis_factor = 2.0 * utils::two_pi() / rot_time_period;
+        amrex::Print() << "Geostrophic forcing: Coriolis factor = "
+                       << coriolis_factor << std::endl;
+
+        amrex::Real latitude = 90.0;
+        pp.query("latitude", latitude);
+        AMREX_ALWAYS_ASSERT(
+            amrex::Math::abs(latitude - 90.0) <
+            static_cast<amrex::Real>(vs::DTraits<float>::eps()));
     }
 
     {
