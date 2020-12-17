@@ -64,6 +64,10 @@ public:
         m_abl_forcing = forcing;
     }
 
+    //! Calculate sfs stress averages
+    void
+    calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
+
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -133,9 +137,6 @@ private:
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
 
-    //! Calculate sfs stress averages
-    void
-    calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
 };
 
 } // namespace amr_wind
