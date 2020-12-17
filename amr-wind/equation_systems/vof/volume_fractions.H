@@ -71,23 +71,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction volF
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real volume_intercept(
-    amrex::Real mx, amrex::Real my, amrex::Real mz, amrex::Real volF) noexcept
+    amrex::Real b1, amrex::Real b2, amrex::Real b3, amrex::Real volF) noexcept
 {
     using namespace amrex;
 
     amrex::Real const_tiny = std::numeric_limits<amrex::Real>::epsilon();
-    amrex::Real b1 = mx;
-    amrex::Real b2 = my;
-    amrex::Real b3 = mz;
     // (1) order coefficients: m1<m2<m3;
     // (2) get ranges: V1<V2<v3;
     // (3) limit ch (0.d0 < ch < 0.5d0);
     // (4) calculate alpha
 
-    amrex::Real m1, m2, m3;
-    m1 = std::min(b1, b2);
-    m3 = std::max(b1, b2);
-    m2 = b3;
+    amrex::Real m1 = std::min(b1, b2);
+    amrex::Real m3 = std::max(b1, b2);
+    amrex::Real m2 = b3;
 
     amrex::Real tmp;
     if (m2 < m1) {
@@ -186,10 +182,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     amrex::Real al0 = std::min(al, 1.0 - al);   // limit to: 0 < alh < 1/2
 
     // Order coefficients
-    amrex::Real b1, b2, b3;
-    b1 = std::min(n1 * dr0, n2); // order coefficients
-    b3 = std::max(n1 * dr0, n2);
-    b2 = n3;
+    amrex::Real b1 = std::min(n1 * dr0, n2); // order coefficients
+    amrex::Real b3 = std::max(n1 * dr0, n2);
+    amrex::Real b2 = n3;
 
     if (b2 < b1) {
         tmp = b1;
@@ -255,13 +250,27 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
 {
     youngs_fd_normal(i, j, k, volfrac, mx, my, mz);
 
-    amrex::Real invx = std::copysign(1.0, mx);
-    amrex::Real invy = std::copysign(1.0, my);
-    amrex::Real invz = std::copysign(1.0, mz);
+    amrex::Real invx = 1.0;
+    amrex::Real invy = 1.0;
+    amrex::Real invz = 1.0;
+
+    if (mx < 0.0) {
+        mx = -mx;
+        invx = -1.0;
+    }
+    if (my < 0.0) {
+        my = -my;
+        invy = -1.0;
+    }
+    if (mx < 0.0) {
+        mz = -mz;
+        invz = -1.0;
+    }
+
     amrex::Real mm2 = mx + my + mz;
-    mx = invx * mx / mm2;
-    my = invy * my / mm2;
-    mz = invz * mz / mm2;
+    mx = mx / mm2;
+    my = my / mm2;
+    mz = mz / mm2;
 
     alpha = volume_intercept(mx, my, mz, volfrac(i, j, k));
 

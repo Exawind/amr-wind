@@ -29,7 +29,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
 
-        auto& dof_field = fields.field.state(fstate);
+        auto& dof_field = fields.field;
         auto bcrec_device = dof_field.bcrec_device();
         //
         // Advect volume using the Explicit Lagrangian onto-cell Sweeping method
@@ -37,7 +37,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         //
 
         // Define the sweep time
-        int isweep = 0;
+        isweep += 1;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion())
@@ -50,7 +50,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
                 amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 3 * VOF::ndim);
-
+                tmpfab.setVal(0.0);
                 multiphase::split_advection(
                     lev, bx, isweep, dof_field(lev).array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
@@ -67,6 +67,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& u_mac;
     Field& v_mac;
     Field& w_mac;
+    int isweep = 0;
 };
 
 } // namespace pde

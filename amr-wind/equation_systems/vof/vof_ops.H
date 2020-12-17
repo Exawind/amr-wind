@@ -50,6 +50,7 @@ struct ComputeRHSOp<VOF, Scheme>
 
     void predictor_rhs(const DiffusionType, const amrex::Real dt)
     {
+        /*
         // Field states for diffusion and advection terms. In Godunov scheme
         // these terms only have one state.
         auto fstate = std::is_same<Scheme, fvm::Godunov>::value
@@ -80,10 +81,12 @@ struct ComputeRHSOp<VOF, Scheme>
                     });
             }
         }
+        */
     }
 
     void corrector_rhs(const DiffusionType, const amrex::Real dt)
     {
+        /*
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
@@ -112,6 +115,7 @@ struct ComputeRHSOp<VOF, Scheme>
                     });
             }
         }
+        */
     }
 
     // data members
