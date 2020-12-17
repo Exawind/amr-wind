@@ -39,9 +39,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
         fluxR(i, j, k) = std::max(aR, 0.0);
     } else if (volfrac(i, j, k) > 0.0) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
+        amrex::Print() << mx << " " << my << " " << mz << std::endl;
         mmL = std::max(aL, 0.0);
         mmR = 1.0 - mmL + std::min(0.0, aR);
-        if (dim == 0) {
+        if (dim == 1) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
             if (aL < 0.0)
@@ -49,7 +50,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
             if (aR > 0.0)
                 fluxR(i, j, k) = cut_volume(mx, my, mz, alpha, 1.0, aR);
             fluxC(i, j, k) = cut_volume(mx, my, mz, alpha, mmL, mmR);
-        } else if (dim == 1) {
+        } else if (dim == 2) {
             my = my / (1.0 - aL + aR);
             alpha = alpha + my * aL;
             if (aL < 0.0)
@@ -57,7 +58,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
             if (aR > 0.0)
                 fluxR(i, j, k) = cut_volume(my, mz, mx, alpha, 1.0, aR);
             fluxC(i, j, k) = cut_volume(my, mz, mx, alpha, mmL, mmR);
-        } else if (dim == 2) {
+        } else if (dim == 3) {
             mz = mz / (1.0 - aL + aR);
             alpha = alpha + mz * aL;
             if (aL < 0.0)
@@ -86,13 +87,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
     // Before balance we need to take care of the BC fluxes
     // TO DO
 
-    if (dim == 0) {
+    if (dim == 1) {
         volfrac(i, j, k) =
             fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
-    } else if (dim == 1) {
+    } else if (dim == 2) {
         volfrac(i, j, k) =
             fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
-    } else if (dim == 2) {
+    } else if (dim == 3) {
         volfrac(i, j, k) =
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
