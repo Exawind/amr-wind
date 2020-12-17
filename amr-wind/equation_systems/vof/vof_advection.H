@@ -11,7 +11,7 @@ namespace pde {
 /** Godunov scheme for VOF
  *  \ingroup icns
  */
-/*
+
 template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
@@ -24,8 +24,11 @@ struct AdvectionOp<VOF, fvm::Godunov>
 
     void operator()(const FieldState fstate, const amrex::Real dt)
     {
+        static_assert(
+            VOF::ndim == 1, "Invalid number of components for scalar");
         auto& repo = fields.repo;
         auto& geom = repo.mesh().Geom();
+
         auto& dof_field = fields.field.state(fstate);
         auto bcrec_device = dof_field.bcrec_device();
         //
@@ -36,10 +39,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
         // Define the sweep time
         int isweep = 0;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            u_mac(lev).FillBoundary(geom[lev].periodicity());
-            v_mac(lev).FillBoundary(geom[lev].periodicity());
-            w_mac(lev).FillBoundary(geom[lev].periodicity());
-
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion())
                 mfi_info.EnableTiling(amrex::IntVect(1024, 1024, 1024))
@@ -47,22 +46,17 @@ struct AdvectionOp<VOF, fvm::Godunov>
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-            amrex::FArrayBox scratch;
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
-                amrex::Box const& bxg1 = amrex::grow(bx, 1);
-
-                scratch.resize(bxg1, 3);
-                //                Elixir eli = scratch.elixir(); // not
-                //                needed because of streamSynchronize later
-                amrex::Real* p = scratch.dataPtr();
+                amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 3 * VOF::ndim);
 
                 multiphase::split_advection(
                     lev, bx, isweep, dof_field(lev).array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), p, geom, dt);
+                    dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom,
+                    dt);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -74,7 +68,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& v_mac;
     Field& w_mac;
 };
-*/
+
 } // namespace pde
 } // namespace amr_wind
 #endif
