@@ -70,7 +70,14 @@ void MultiPhase::post_advance_work()
     // Compute the total volume fraction
     if (m_interface_tracking_method == InterfaceTrackingMethod::VOF) {
         m_total_volfrac = volume_fraction_sum();
-        amrex::Print() << "Volume of Fluid 1: " << m_total_volfrac << std::endl;
+        const auto& geom = m_sim.mesh().Geom();
+        const amrex::Real total_vol = geom[0].ProbDomain().volume();
+        amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
+        amrex::Print() << "   Water Volume Fractions Sum : " << m_total_volfrac
+                       << std::endl;
+        amrex::Print() << "   Air Volume Fractions Sum : "
+                       << total_vol - m_total_volfrac << std::endl;
+        amrex::Print() << " " << std::endl;
     }
 }
 
