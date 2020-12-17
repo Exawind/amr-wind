@@ -23,7 +23,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
 {
     using namespace amrex;
 
-    constexpr Real tiny = 1e-10;
+    constexpr Real tiny = 1e-12;
     Real mx = 0.0, my = 0.0, mz = 0.0, alpha = 0.0;
     Real mmL, mmR;
     Real aL = velL * dtdx;
@@ -40,7 +40,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
     } else if (volfrac(i, j, k) > 0.0) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         mmL = std::max(aL, 0.0);
-        mmR = 1.0 - mmL + std::max(0.0, aR);
+        mmR = 1.0 - mmL + std::min(0.0, aR);
         if (dim == 0) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
@@ -97,7 +97,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
     // Do clipping
-    volfrac(i, j, k) = std::max(0.0, std::min(0.0, volfrac(i, j, k)));
+    // volfrac(i, j, k) = std::max(0.0, std::min(1.0, volfrac(i, j, k)));
 }
 } // namespace multiphase
 } // namespace amr_wind
