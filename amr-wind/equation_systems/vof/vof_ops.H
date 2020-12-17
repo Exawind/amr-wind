@@ -32,7 +32,7 @@ struct FieldRegOp<VOF, Scheme>
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
         iomgr.register_io_var(levelset.name());
-        iomgr.register_io_var(normal.name());
+        // iomgr.register_io_var(normal.name());
         iomgr.register_io_var(curvature.name());
 
         return fields;
