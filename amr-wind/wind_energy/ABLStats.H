@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
-#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
 #include "amr-wind/utilities/ThirdMomentAveraging.H"
@@ -134,10 +133,9 @@ private:
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
 
-#ifdef AMR_WIND_USE_NETCDF
-    //! Calculate and write sfs stress averages to output
-    void output_sfs_stress_avgs(ncutils::NCGroup grp, const size_t nt);
-#endif
+    //! Calculate sfs stress averages
+    void
+    calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
 };
 
 } // namespace amr_wind

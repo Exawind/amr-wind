@@ -1,5 +1,6 @@
 #include "amr-wind/wind_energy/ABLStats.H"
 #include "amr-wind/fvm/gradient.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/tensor_ops.H"
@@ -82,6 +83,54 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
+}
+
+//! Calculate sfs stress averages
+void ABLStats::calc_sfs_stress_avgs(
+    ScratchField& sfs_stress, ScratchField& t_sfs_stress)
+{
+
+    BL_PROFILE("amr-wind::ABLStats::calc_sfs_stress_avgs");
+
+    auto& repo = m_sim.repo();
+
+    auto& m_vel = repo.get_field("velocity");
+    auto gradVel = repo.create_scratch_field(9);
+    fvm::gradient(*gradVel, m_vel);
+
+    auto& alphaeff = repo.get_field(pde_impl::mueff_name("temperature"));
+    auto gradT = repo.create_scratch_field(3);
+    fvm::gradient(*gradT, m_temperature);
+
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (amrex::MFIter mfi(m_mueff(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& mueff_arr = m_mueff(lev).array(mfi);
+            const auto& alphaeff_arr = alphaeff(lev).array(mfi);
+            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
+            const auto& gradT_arr = (*gradT)(lev).array(mfi);
+            const auto& sfs_arr = sfs_stress(lev).array(mfi);
+            const auto& t_sfs_arr = t_sfs_stress(lev).array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    sfs_arr(i, j, k, 0) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 1) + gradVel_arr(i, j, k, 4));
+                    sfs_arr(i, j, k, 1) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 2) + gradVel_arr(i, j, k, 6));
+                    sfs_arr(i, j, k, 2) =
+                        mueff_arr(i, j, k) *
+                        (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
+
+                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
+                        t_sfs_arr(i, j, k, icomp) =
+                            alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
+                });
+        }
+    }
 }
 
 void ABLStats::post_advance_work()
@@ -347,6 +396,16 @@ void ABLStats::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
 
+    // First calculate sfs stress averages
+    auto sfs_stress = m_sim.repo().create_scratch_field("sfs_stress", 3);
+    auto t_sfs_stress = m_sim.repo().create_scratch_field("tsfs_stress", 3);
+    calc_sfs_stress_avgs(*sfs_stress, *t_sfs_stress);
+    ScratchFieldPlaneAveraging pa_sfs(*sfs_stress, m_sim.time(), m_normal_dir);
+    pa_sfs();
+    ScratchFieldPlaneAveraging pa_tsfs(
+        *t_sfs_stress, m_sim.time(), m_normal_dir);
+    pa_tsfs();
+
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
     const std::string nt_name = "num_time_steps";
@@ -437,91 +496,28 @@ void ABLStats::write_netcdf()
             }
         }
 
-        output_sfs_stress_avgs(grp, nt);
+        {
+            amrex::Vector<std::string> var_names{
+                "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
+            for (int i = 0; i < AMREX_SPACEDIM; i++) {
+                pa_sfs.line_average(i, l_vec);
+                auto var = grp.var(var_names[i]);
+                var.put(l_vec.data(), start, count);
+            }
+        }
+
+        {
+            amrex::Vector<std::string> var_names{
+                "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
+            for (int i = 0; i < AMREX_SPACEDIM; i++) {
+                pa_tsfs.line_average(i, l_vec);
+                auto var = grp.var(var_names[i]);
+                var.put(l_vec.data(), start, count);
+            }
+        }
     }
     ncf.close();
 #endif
 }
-
-#ifdef AMR_WIND_USE_NETCDF
-void ABLStats::output_sfs_stress_avgs(ncutils::NCGroup grp, const size_t nt)
-{
-
-    BL_PROFILE("amr-wind::ABLStats::output_sfs_stress_avgs");
-
-    auto& repo = m_sim.repo();
-
-    auto sfs_stress = repo.create_scratch_field("sfs_stress", 3);
-    auto t_sfs_stress = repo.create_scratch_field("tsfs_stress", 3);
-
-    auto& m_vel = repo.get_field("velocity");
-    auto gradVel = repo.create_scratch_field(9);
-    fvm::gradient(*gradVel, m_vel);
-
-    auto& alphaeff = repo.get_field(pde_impl::mueff_name("temperature"));
-    auto gradT = repo.create_scratch_field(3);
-    fvm::gradient(*gradT, m_temperature);
-
-    const int nlevels = repo.num_active_levels();
-    for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(m_mueff(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& mueff_arr = m_mueff(lev).array(mfi);
-            const auto& alphaeff_arr = alphaeff(lev).array(mfi);
-            const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
-            const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& sfs_arr = (*sfs_stress)(lev).array(mfi);
-            const auto& t_sfs_arr = (*t_sfs_stress)(lev).array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    sfs_arr(i, j, k, 0) =
-                        mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 1) + gradVel_arr(i, j, k, 4));
-                    sfs_arr(i, j, k, 1) =
-                        mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 2) + gradVel_arr(i, j, k, 6));
-                    sfs_arr(i, j, k, 2) =
-                        mueff_arr(i, j, k) *
-                        (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
-
-                    for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
-                        t_sfs_arr(i, j, k, icomp) =
-                            alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
-                });
-        }
-    }
-
-    ScratchFieldPlaneAveraging pa_sfs(*sfs_stress, m_sim.time(), m_normal_dir);
-    pa_sfs();
-    ScratchFieldPlaneAveraging pa_tsfs(
-        *t_sfs_stress, m_sim.time(), m_normal_dir);
-    pa_tsfs();
-
-    size_t n_levels = pa_sfs.ncell_line();
-    amrex::Vector<amrex::Real> l_vec(n_levels);
-    std::vector<size_t> start{nt, 0};
-    std::vector<size_t> count{1, n_levels};
-    {
-        amrex::Vector<std::string> var_names{
-            "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
-        for (int i = 0; i < AMREX_SPACEDIM; i++) {
-            pa_sfs.line_average(i, l_vec);
-            auto var = grp.var(var_names[i]);
-            var.put(l_vec.data(), start, count);
-        }
-    }
-
-    {
-        amrex::Vector<std::string> var_names{
-            "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
-        for (int i = 0; i < AMREX_SPACEDIM; i++) {
-            pa_tsfs.line_average(i, l_vec);
-            auto var = grp.var(var_names[i]);
-            var.put(l_vec.data(), start, count);
-        }
-    }
-}
-#endif
 
 } // namespace amr_wind
