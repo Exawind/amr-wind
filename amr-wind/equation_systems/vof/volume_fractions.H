@@ -262,7 +262,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
         my = -my;
         invy = -1.0;
     }
-    if (mx < 0.0) {
+    if (mz < 0.0) {
         mz = -mz;
         invz = -1.0;
     }
