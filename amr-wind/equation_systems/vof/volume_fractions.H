@@ -24,9 +24,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     int j,
     int k,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Real mx,
-    amrex::Real my,
-    amrex::Real mz) noexcept
+    amrex::Real& mx,
+    amrex::Real& my,
+    amrex::Real& mz) noexcept
 {
     amrex::Real mm1, mm2;
 
@@ -40,7 +40,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
                  volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1)) +
           4.0 * volfrac(i + 1, j, k);
-    mx = (mm1 - mm2);
+    mx = mm1 - mm2;
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
@@ -52,7 +52,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i - 1, j + 1, k) + volfrac(i + 1, j + 1, k) +
                  volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1)) +
           4.0 * volfrac(i, j + 1, k);
-    my = (mm1 - mm2);
+    my = mm1 - mm2;
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j + 1, k - 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j + 1, k - 1) +
@@ -64,7 +64,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
                  volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1)) +
           4.0 * volfrac(i, j, k + 1);
-    mz = (mm1 - mm2);
+    mz = mm1 - mm2;
 }
 
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
@@ -243,10 +243,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     const int j,
     const int k,
     amrex::Array4<amrex::Real> const& volfrac,
-    amrex::Real mx,
-    amrex::Real my,
-    amrex::Real mz,
-    amrex::Real alpha)
+    amrex::Real& mx,
+    amrex::Real& my,
+    amrex::Real& mz,
+    amrex::Real& alpha)
 {
     youngs_fd_normal(i, j, k, volfrac, mx, my, mz);
 

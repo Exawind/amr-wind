@@ -38,6 +38,8 @@ struct AdvectionOp<VOF, fvm::Godunov>
 
         // Define the sweep time
         isweep += 1;
+        if (isweep > 3) isweep = 1;
+
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             amrex::MFItInfo mfi_info;
             if (amrex::Gpu::notInLaunchRegion())
