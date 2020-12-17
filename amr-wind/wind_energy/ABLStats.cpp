@@ -116,18 +116,18 @@ void ABLStats::calc_sfs_stress_avgs(
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     sfs_arr(i, j, k, 0) =
-                        mueff_arr(i, j, k) *
+                        -mueff_arr(i, j, k) *
                         (gradVel_arr(i, j, k, 1) + gradVel_arr(i, j, k, 4));
                     sfs_arr(i, j, k, 1) =
-                        mueff_arr(i, j, k) *
+                        -mueff_arr(i, j, k) *
                         (gradVel_arr(i, j, k, 2) + gradVel_arr(i, j, k, 6));
                     sfs_arr(i, j, k, 2) =
-                        mueff_arr(i, j, k) *
+                        -mueff_arr(i, j, k) *
                         (gradVel_arr(i, j, k, 5) + gradVel_arr(i, j, k, 7));
 
                     for (int icomp = 0; icomp < AMREX_SPACEDIM; icomp++)
                         t_sfs_arr(i, j, k, icomp) =
-                            alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
+                            -alphaeff_arr(i, j, k) * gradT_arr(i, j, k, icomp);
                 });
         }
     }
