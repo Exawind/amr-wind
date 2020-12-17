@@ -37,7 +37,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
         fluxL(i, j, k) = std::max(-aL, 0.0);
         fluxC(i, j, k) = 1.0 - std::max(aL, 0.0) + std::min(aR, 0.0);
         fluxR(i, j, k) = std::max(aR, 0.0);
-    } else {
+    } else if (volfrac(i, j, k) > 0.0) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         mmL = std::max(aL, 0.0);
         mmR = 1.0 - mmL + std::max(0.0, aR);
@@ -82,16 +82,22 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
     const int domlo,
     const int domhi)
 {
+
+    // Before balance we need to take care of the BC fluxes
+    // TO DO
+
     if (dim == 0) {
         volfrac(i, j, k) =
-            fluxL(i - 1, j, k) + fluxC(i, j, k) + fluxR(i + 1, j, k);
+            fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
     } else if (dim == 1) {
         volfrac(i, j, k) =
-            fluxL(i, j - 1, k) + fluxC(i, j, k) + fluxR(i, j + 1, k);
+            fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
     } else if (dim == 2) {
         volfrac(i, j, k) =
-            fluxL(i, j, k - 1) + fluxC(i, j, k) + fluxR(i, j, k + 1);
+            fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
+    // Do clipping
+    volfrac(i, j, k) = std::max(0.0, std::min(0.0, volfrac(i, j, k)));
 }
 } // namespace multiphase
 } // namespace amr_wind

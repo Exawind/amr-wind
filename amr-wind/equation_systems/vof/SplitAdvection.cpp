@@ -19,7 +19,7 @@ void multiphase::split_advection(
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt)
 {
-    BL_PROFILE("amr-wind::godunov::compute_advection");
+    BL_PROFILE("amr-wind::multiphase::split_advection");
     Box const& bxg1 = amrex::grow(bx, 1);
 
     const Real dx = geom[lev].CellSize(0);
@@ -162,6 +162,6 @@ void multiphase::split_advection(
                     domhi.x);
             });
     }
-} // namespace amr_wind
+}
 
 } // namespace amr_wind
