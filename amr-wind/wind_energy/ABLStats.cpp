@@ -25,16 +25,12 @@ ABLStats::ABLStats(CFDSim& sim, const ABLWallFunction& abl_wall_func)
     , m_abl_wall_func(abl_wall_func)
     , m_temperature(sim.repo().get_field("temperature"))
     , m_mueff(sim.pde_manager().icns().fields().mueff)
-    , m_sfs(sim.repo().declare_field("sfs_stress", 3))
-    , m_t_sfs(sim.repo().declare_field("tsfs_stress", 3))
     , m_pa_vel(sim, 2)
     , m_pa_temp(m_temperature, sim.time(), 2)
     , m_pa_mueff(m_mueff, sim.time(), 2)
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
-    , m_pa_sfs(m_sfs, sim.time(), 2)
-    , m_pa_tsfs(m_t_sfs, sim.time(), 2)
 {}
 
 ABLStats::~ABLStats() = default;
@@ -90,10 +86,7 @@ void ABLStats::calc_averages()
     m_pa_tu();
     m_pa_uu();
     m_pa_uuu();
-
-    calc_sfs_stress();
-    m_pa_sfs();
-    m_pa_tsfs();
+    calc_sfs_stress_avgs();
 }
 
 void ABLStats::post_advance_work()
@@ -117,6 +110,9 @@ void ABLStats::post_advance_work()
     }
 
     process_output();
+
+    delete m_pa_sfs;
+    delete m_pa_tsfs;
 }
 
 template <typename h1_dir, typename h2_dir>
@@ -449,7 +445,7 @@ void ABLStats::write_netcdf()
             amrex::Vector<std::string> var_names{
                 "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
-                m_pa_sfs.line_average(i, l_vec);
+                m_pa_sfs->line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);
                 var.put(l_vec.data(), start, count);
             }
@@ -459,7 +455,7 @@ void ABLStats::write_netcdf()
             amrex::Vector<std::string> var_names{
                 "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
             for (int i = 0; i < AMREX_SPACEDIM; i++) {
-                m_pa_tsfs.line_average(i, l_vec);
+                m_pa_tsfs->line_average(i, l_vec);
                 auto var = grp.var(var_names[i]);
                 var.put(l_vec.data(), start, count);
             }
@@ -469,12 +465,15 @@ void ABLStats::write_netcdf()
 #endif
 }
 
-void ABLStats::calc_sfs_stress()
+void ABLStats::calc_sfs_stress_avgs()
 {
 
     BL_PROFILE("amr-wind::ABLStats::calc_sfs_stres");
 
     auto& repo = m_sim.repo();
+
+    auto sfs_stress = repo.create_scratch_field("sfs_stress", 3);
+    auto t_sfs_stress = repo.create_scratch_field("tsfs_stress", 3);
 
     auto& m_vel = repo.get_field("velocity");
     auto gradVel = repo.create_scratch_field(9);
@@ -492,8 +491,8 @@ void ABLStats::calc_sfs_stress()
             const auto& alphaeff_arr = alphaeff(lev).array(mfi);
             const auto& gradVel_arr = (*gradVel)(lev).array(mfi);
             const auto& gradT_arr = (*gradT)(lev).array(mfi);
-            const auto& sfs_arr = m_sfs(lev).array(mfi);
-            const auto& t_sfs_arr = m_t_sfs(lev).array(mfi);
+            const auto& sfs_arr = (*sfs_stress)(lev).array(mfi);
+            const auto& t_sfs_arr = (*t_sfs_stress)(lev).array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -513,6 +512,13 @@ void ABLStats::calc_sfs_stress()
                 });
         }
     }
+
+    m_pa_sfs =
+        new ScratchFieldPlaneAveraging(*sfs_stress, m_sim.time(), m_normal_dir);
+    (*m_pa_sfs)();
+    m_pa_tsfs = new ScratchFieldPlaneAveraging(
+        *t_sfs_stress, m_sim.time(), m_normal_dir);
+    (*m_pa_tsfs)();
 }
 
 } // namespace amr_wind

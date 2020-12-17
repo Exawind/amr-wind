@@ -127,6 +127,7 @@ public: // public for GPU
 };
 
 using FieldPlaneAveraging = FPlaneAveraging<Field>;
+using ScratchFieldPlaneAveraging = FPlaneAveraging<ScratchField>;
 
 /** Specific application of FieldPlaneAveraging to the velocity field
  *  \ingroup statistics we_abl
