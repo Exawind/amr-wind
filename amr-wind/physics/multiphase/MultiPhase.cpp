@@ -66,6 +66,44 @@ void MultiPhase::post_advance_work()
         set_density_via_levelset();
     }
     m_density.fillpatch(m_sim.time().current_time());
+
+    // Compute the total volume fraction
+    if (m_interface_tracking_method == InterfaceTrackingMethod::VOF) {
+        m_total_volfrac = volume_fraction_sum();
+        amrex::Print() << "Volume of Fluid 1: " << m_total_volfrac << std::endl;
+    }
+}
+
+amrex::Real MultiPhase::volume_fraction_sum()
+{
+    BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
+    const int nlevels = m_sim.repo().num_active_levels();
+    const auto& geom = m_sim.mesh().Geom();
+
+    amrex::Real TotalVolumeFrac = 0.0;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& vof = (*m_vof)(lev);
+        const amrex::Real cell_vol = geom[lev].CellSize()[0] *
+                                     geom[lev].CellSize()[1] *
+                                     geom[lev].CellSize()[2];
+
+        TotalVolumeFrac += amrex::ReduceSum(
+            vof, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& volfrac)
+                -> amrex::Real {
+                amrex::Real Vol_Fab = 0.0;
+                amrex::Loop(bx, [=, &Vol_Fab](int i, int j, int k) noexcept {
+                    Vol_Fab += volfrac(i, j, k) * cell_vol;
+                });
+                return Vol_Fab;
+            });
+    }
+    amrex::ParallelDescriptor::ReduceRealSum(TotalVolumeFrac);
+
+    return TotalVolumeFrac;
 }
 
 void MultiPhase::set_density_via_levelset()

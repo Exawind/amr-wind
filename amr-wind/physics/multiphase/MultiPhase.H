@@ -41,6 +41,8 @@ public:
 
     void levelset2vof();
 
+    amrex::Real volume_fraction_sum();
+
     InterfaceTrackingMethod interface_tracking_method();
 
 private:
@@ -65,6 +67,9 @@ private:
     std::string m_interface_model{"vof"};
     InterfaceTrackingMethod m_interface_tracking_method =
         InterfaceTrackingMethod::VOF;
+
+    // sum of volume fractions (for vof only)
+    amrex::Real m_total_volfrac;
 };
 
 } // namespace amr_wind
