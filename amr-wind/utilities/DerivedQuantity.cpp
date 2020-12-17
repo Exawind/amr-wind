@@ -90,7 +90,9 @@ int DerivedQtyMgr::num_comp() const noexcept
 {
     return std::accumulate(
         m_derived_vec.begin(), m_derived_vec.end(), 0,
-        [](const int init, const auto& qty) { return init + qty->num_comp(); });
+        [](const int init, const std::unique_ptr<DerivedQty>& qty) {
+            return init + qty->num_comp();
+        });
 }
 
 bool DerivedQtyMgr::contains(const std::string& key) const noexcept
