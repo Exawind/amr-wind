@@ -29,10 +29,6 @@ void multiphase::split_advection(
     Real dtdy = dt / dy;
     Real dtdz = dt / dz;
 
-    // amrex::Print() << "Local (CFLx,CFLy,CFLz): (" << dtdx << "," << dtdy <<
-    // ","
-    //               << dtdz << ")" << std::endl;
-
     Box const& domain = geom[lev].Domain();
     const auto domlo = amrex::lbound(domain);
     const auto domhi = amrex::ubound(domain);
@@ -46,7 +42,7 @@ void multiphase::split_advection(
 
     if (isweep % 3 == 0) {
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real wL = wmac(i, j, k);
                 amrex::Real wR = wmac(i, j, k + 1);
                 multiphase::lagrangian_advection(
@@ -59,7 +55,7 @@ void multiphase::split_advection(
                     domhi.z);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real uL = umac(i, j, k);
                 amrex::Real uR = umac(i + 1, j, k);
                 multiphase::lagrangian_advection(
@@ -72,7 +68,7 @@ void multiphase::split_advection(
                     domhi.x);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real vL = vmac(i, j, k);
                 amrex::Real vR = vmac(i, j + 1, k);
                 multiphase::lagrangian_advection(
@@ -86,7 +82,7 @@ void multiphase::split_advection(
             });
     } else if (isweep % 2 == 0) {
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real vL = vmac(i, j, k);
                 amrex::Real vR = vmac(i, j + 1, k);
                 multiphase::lagrangian_advection(
@@ -99,7 +95,7 @@ void multiphase::split_advection(
                     domhi.y);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real wL = wmac(i, j, k);
                 amrex::Real wR = wmac(i, j, k + 1);
                 multiphase::lagrangian_advection(
@@ -112,7 +108,7 @@ void multiphase::split_advection(
                     domhi.z);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real uL = umac(i, j, k);
                 amrex::Real uR = umac(i + 1, j, k);
                 multiphase::lagrangian_advection(
@@ -126,7 +122,7 @@ void multiphase::split_advection(
             });
     } else {
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real uL = umac(i, j, k);
                 amrex::Real uR = umac(i + 1, j, k);
                 multiphase::lagrangian_advection(
@@ -139,7 +135,7 @@ void multiphase::split_advection(
                     domhi.x);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real vL = vmac(i, j, k);
                 amrex::Real vR = vmac(i, j + 1, k);
                 multiphase::lagrangian_advection(
@@ -152,7 +148,7 @@ void multiphase::split_advection(
                     domhi.y);
             });
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 amrex::Real wL = wmac(i, j, k);
                 amrex::Real wR = wmac(i, j, k + 1);
                 multiphase::lagrangian_advection(
@@ -171,7 +167,6 @@ void multiphase::split_advection(
         min_volfrac = std::min(min_volfrac, volfrac(i, j, k));
         max_volfrac = std::max(max_volfrac, volfrac(i, j, k));
     });
-    amrex::Print() << min_volfrac << " " << max_volfrac << std::endl;
 }
 
 } // namespace amr_wind
