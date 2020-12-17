@@ -1,3 +1,3 @@
 target_sources(${amr_wind_lib_name} PRIVATE
-  SplitLagrangianAdvection.cpp
+  SplitAdvection.cpp
   vof.cpp)
