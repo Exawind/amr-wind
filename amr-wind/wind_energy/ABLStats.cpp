@@ -1,7 +1,6 @@
 #include "amr-wind/wind_energy/ABLStats.H"
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/utilities/io_utils.H"
-#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/DirectionSelector.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
@@ -83,10 +82,6 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
-    m_pa_tu();
-    m_pa_uu();
-    m_pa_uuu();
-    calc_sfs_stress_avgs();
 }
 
 void ABLStats::post_advance_work()
@@ -109,10 +104,11 @@ void ABLStats::post_advance_work()
         break;
     }
 
-    process_output();
+    m_pa_tu();
+    m_pa_uu();
+    m_pa_uuu();
 
-    delete m_pa_sfs;
-    delete m_pa_tsfs;
+    process_output();
 }
 
 template <typename h1_dir, typename h2_dir>
@@ -441,34 +437,17 @@ void ABLStats::write_netcdf()
             }
         }
 
-        {
-            amrex::Vector<std::string> var_names{
-                "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
-            for (int i = 0; i < AMREX_SPACEDIM; i++) {
-                m_pa_sfs->line_average(i, l_vec);
-                auto var = grp.var(var_names[i]);
-                var.put(l_vec.data(), start, count);
-            }
-        }
-
-        {
-            amrex::Vector<std::string> var_names{
-                "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
-            for (int i = 0; i < AMREX_SPACEDIM; i++) {
-                m_pa_tsfs->line_average(i, l_vec);
-                auto var = grp.var(var_names[i]);
-                var.put(l_vec.data(), start, count);
-            }
-        }
+        output_sfs_stress_avgs(grp, nt);
     }
     ncf.close();
 #endif
 }
 
-void ABLStats::calc_sfs_stress_avgs()
+#ifdef AMR_WIND_USE_NETCDF
+void ABLStats::output_sfs_stress_avgs(ncutils::NCGroup grp, const size_t nt)
 {
 
-    BL_PROFILE("amr-wind::ABLStats::calc_sfs_stres");
+    BL_PROFILE("amr-wind::ABLStats::output_sfs_stress_avgs");
 
     auto& repo = m_sim.repo();
 
@@ -513,12 +492,36 @@ void ABLStats::calc_sfs_stress_avgs()
         }
     }
 
-    m_pa_sfs =
-        new ScratchFieldPlaneAveraging(*sfs_stress, m_sim.time(), m_normal_dir);
-    (*m_pa_sfs)();
-    m_pa_tsfs = new ScratchFieldPlaneAveraging(
+    ScratchFieldPlaneAveraging pa_sfs(*sfs_stress, m_sim.time(), m_normal_dir);
+    pa_sfs();
+    ScratchFieldPlaneAveraging pa_tsfs(
         *t_sfs_stress, m_sim.time(), m_normal_dir);
-    (*m_pa_tsfs)();
+    pa_tsfs();
+
+    size_t n_levels = pa_sfs.ncell_line();
+    amrex::Vector<amrex::Real> l_vec(n_levels);
+    std::vector<size_t> start{nt, 0};
+    std::vector<size_t> count{1, n_levels};
+    {
+        amrex::Vector<std::string> var_names{
+            "u'v'_sfs", "u'w'_sfs", "v'w'_sfs"};
+        for (int i = 0; i < AMREX_SPACEDIM; i++) {
+            pa_sfs.line_average(i, l_vec);
+            auto var = grp.var(var_names[i]);
+            var.put(l_vec.data(), start, count);
+        }
+    }
+
+    {
+        amrex::Vector<std::string> var_names{
+            "u'theta'_sfs", "v'theta'_sfs", "w'theta'_sfs"};
+        for (int i = 0; i < AMREX_SPACEDIM; i++) {
+            pa_tsfs.line_average(i, l_vec);
+            auto var = grp.var(var_names[i]);
+            var.put(l_vec.data(), start, count);
+        }
+    }
 }
+#endif
 
 } // namespace amr_wind

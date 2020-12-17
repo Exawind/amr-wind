@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
 #include "amr-wind/utilities/ThirdMomentAveraging.H"
@@ -64,9 +65,6 @@ public:
         m_abl_forcing = forcing;
     }
 
-    //! Calculate sfs stress averages
-    void calc_sfs_stress_avgs();
-
 protected:
     //! Output data based on user-defined format
     virtual void process_output();
@@ -98,8 +96,6 @@ private:
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
-    ScratchFieldPlaneAveraging* m_pa_sfs;
-    ScratchFieldPlaneAveraging* m_pa_tsfs;
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
@@ -137,6 +133,11 @@ private:
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
+
+#ifdef AMR_WIND_USE_NETCDF
+    //! Calculate and write sfs stress averages to output
+    void output_sfs_stress_avgs(ncutils::NCGroup grp, const size_t nt);
+#endif
 };
 
 } // namespace amr_wind
