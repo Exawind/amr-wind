@@ -3,7 +3,7 @@
 #define VOF_ADVECTION_H
 
 #include "amr-wind/equation_systems/vof/vof.H"
-#include "amr-wind/equation_systems/vof/SplitLagrangianAdvection.H"
+#include "amr-wind/equation_systems/vof/SplitAdvection.H"
 
 namespace amr_wind {
 namespace pde {
@@ -11,6 +11,7 @@ namespace pde {
 /** Godunov scheme for VOF
  *  \ingroup icns
  */
+/*
 template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
@@ -31,6 +32,9 @@ struct AdvectionOp<VOF, fvm::Godunov>
         // Advect volume using the Explicit Lagrangian onto-cell Sweeping method
         // with PLIC reconstruction
         //
+
+        // Define the sweep time
+        int isweep = 0;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
             u_mac(lev).FillBoundary(geom[lev].periodicity());
             v_mac(lev).FillBoundary(geom[lev].periodicity());
@@ -43,15 +47,22 @@ struct AdvectionOp<VOF, fvm::Godunov>
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
+            amrex::FArrayBox scratch;
             for (amrex::MFIter mfi(dof_field(lev), mfi_info); mfi.isValid();
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
+                amrex::Box const& bxg1 = amrex::grow(bx, 1);
 
-                multiphase::split_lagrangian_advection(
-                    lev, bx, dof_field(lev).array(mfi),
+                scratch.resize(bxg1, 3);
+                //                Elixir eli = scratch.elixir(); // not
+                //                needed because of streamSynchronize later
+                amrex::Real* p = scratch.dataPtr();
+
+                multiphase::split_advection(
+                    lev, bx, isweep, dof_field(lev).array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi),
-                    dof_field.bcrec_device().data(), geom, dt);
+                    dof_field.bcrec_device().data(), p, geom, dt);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -63,7 +74,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& v_mac;
     Field& w_mac;
 };
-
+*/
 } // namespace pde
 } // namespace amr_wind
 #endif

@@ -24,7 +24,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     int j,
     int k,
     amrex::Array4<amrex::Real const> const& volfrac,
-    amrex::Array4<amrex::Real> const& normal) noexcept
+    amrex::Real mx,
+    amrex::Real my,
+    amrex::Real mz) noexcept
 {
     amrex::Real mm1, mm2;
 
@@ -38,7 +40,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
                  volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1)) +
           4.0 * volfrac(i + 1, j, k);
-    normal(i, j, k, 0) = (mm1 - mm2);
+    mx = (mm1 - mm2);
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j - 1, k + 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j - 1, k + 1) +
@@ -50,7 +52,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i - 1, j + 1, k) + volfrac(i + 1, j + 1, k) +
                  volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1)) +
           4.0 * volfrac(i, j + 1, k);
-    normal(i, j, k, 1) = (mm1 - mm2);
+    my = (mm1 - mm2);
 
     mm1 = volfrac(i - 1, j - 1, k - 1) + volfrac(i - 1, j + 1, k - 1) +
           volfrac(i + 1, j - 1, k - 1) + volfrac(i + 1, j + 1, k - 1) +
@@ -62,7 +64,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
           2.0 * (volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
                  volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1)) +
           4.0 * volfrac(i, j, k + 1);
-    normal(i, j, k, 2) = (mm1 - mm2);
+    mz = (mm1 - mm2);
 }
 
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
@@ -239,6 +241,35 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real cut_volume(
     }
 
     return FL3D;
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
+    const int i,
+    const int j,
+    const int k,
+    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Real mx,
+    amrex::Real my,
+    amrex::Real mz,
+    amrex::Real alpha)
+{
+    youngs_fd_normal(i, j, k, volfrac, mx, my, mz);
+
+    amrex::Real invx = std::copysign(1.0, mx);
+    amrex::Real invy = std::copysign(1.0, my);
+    amrex::Real invz = std::copysign(1.0, mz);
+    amrex::Real mm2 = mx + my + mz;
+    mx = invx * mx / mm2;
+    my = invy * my / mm2;
+    mz = invz * mz / mm2;
+
+    alpha = volume_intercept(mx, my, mz, volfrac(i, j, k));
+
+    // Back to the original plane
+    mx = invx * mx;
+    my = invy * my;
+    mz = invz * mz;
+    alpha = alpha + std::min(0.0, mx) + std::min(0.0, my) + std::min(0.0, mz);
 }
 
 } // namespace multiphase
