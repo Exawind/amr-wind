@@ -39,7 +39,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
         fluxR(i, j, k) = std::max(aR, 0.0);
     } else if (volfrac(i, j, k) > 0.0) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
-        amrex::Print() << mx << " " << my << " " << mz << std::endl;
         mmL = std::max(aL, 0.0);
         mmR = 1.0 - mmL + std::min(0.0, aR);
         if (dim == 1) {
