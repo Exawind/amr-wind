@@ -136,7 +136,6 @@ private:
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
-
 };
 
 } // namespace amr_wind
