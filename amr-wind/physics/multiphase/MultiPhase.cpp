@@ -4,6 +4,7 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
+#include "amr-wind/equation_systems/BCOps.H"
 
 namespace amr_wind {
 
@@ -24,6 +25,9 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxilliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
+        const amrex::Real levelset_default = 0.0;
+        BCScalar bc_ls(*m_levelset);
+        bc_ls(levelset_default);
     } else if (amrex::toLower(m_interface_model) == "levelset") {
         m_interface_tracking_method = amr_wind::InterfaceTrackingMethod::LS;
         auto& levelset_eqn =
@@ -38,6 +42,9 @@ MultiPhase::MultiPhase(CFDSim& sim)
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxilliary field only !
         m_levelset = &(m_sim.repo().get_field("levelset"));
+        const amrex::Real levelset_default = 0.0;
+        BCScalar bc_ls(*m_levelset);
+        bc_ls(levelset_default);
     }
 }
 
@@ -180,7 +187,10 @@ void MultiPhase::levelset2vof()
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
 
+    const amrex::Real normal_default = 0.0;
     auto& normal = m_sim.repo().get_field("interface_normal");
+    BCScalar bc_normal(normal);
+    bc_normal(normal_default);
     (*m_levelset).fillpatch(m_sim.time().new_time());
     fvm::gradient(normal, (*m_levelset));
     normal.fillpatch(m_sim.time().new_time());
