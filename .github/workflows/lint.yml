@@ -66,10 +66,10 @@ jobs:
         working-directory: build-cppcheck
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
-          # Might be wrong to assume cppcheck always reports issues using 3 lines
+          # Crude warning number approximation
           WARNINGS_TMP=$(wc -l < cppcheck-warnings.txt | xargs echo -n)
           WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
-          printf "%s warnings\n" "${WARNINGS}" >> cppcheck-warnings.txt
+          printf "Approximately %s warnings\n" "${WARNINGS}" >> cppcheck-warnings.txt
           cat cppcheck-warnings.txt
   clang-tidy:
     runs-on: ubuntu-latest
@@ -107,4 +107,8 @@ jobs:
         working-directory: build-clang-tidy
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
+          # Crude warning number approximation
+          WARNINGS_TMP=$(wc -l < clang-tidy-warnings.txt | xargs echo -n)
+          WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
+          printf "Approximately %s warnings\n" "${WARNINGS}" >> clang-tidy-warnings.txt
           cat clang-tidy-warnings.txt
