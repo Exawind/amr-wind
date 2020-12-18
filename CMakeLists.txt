@@ -5,14 +5,14 @@ project(AMR-Wind CXX C)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
-include(${CMAKE_SOURCE_DIR}/cmake/amr-wind-utils.cmake)
+include(amr-wind-utils)
 
 ########################## OPTIONS #####################################
 
 #General options for the project
-option(AMR_WIND_ENABLE_FORTRAN "Enable Fortran interfaces" OFF)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_WERROR "Treat compiler warnings as errors" OFF)
+option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 
 #Enabling tests overrides the executable options
@@ -79,6 +79,8 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
+init_clang_tidy()
+
 #Create target names
 set(amr_wind_lib_name "amrwind_obj")
 set(amr_wind_exe_name "amr_wind")
@@ -91,13 +93,6 @@ add_library(${aw_api_lib} SHARED)
 add_executable(${amr_wind_exe_name})
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
-
-if (AMR_WIND_ENABLE_FORTRAN)
-  #Keep our Fortran module files confined to a directory
-  set_target_properties(
-    ${amr_wind_lib_name} PROPERTIES
-    Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/fortran_modules/")
-endif()
 
 if (AMR_WIND_ENABLE_NETCDF)
   set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
@@ -128,7 +123,9 @@ endif()
 
 if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
+  disable_clang_tidy()
   add_subdirectory("submods/googletest")
+  enable_clang_tidy()
   add_subdirectory("unit_tests")
   if (AMR_WIND_ENABLE_CUDA)
     get_target_property(UTEST_SOURCES ${amr_wind_unit_test_exe_name} SOURCES)

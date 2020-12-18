@@ -37,8 +37,11 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 # Generate AMReX build information file
+include(amr-wind-utils)
+disable_clang_tidy()
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
+enable_clang_tidy()
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex)
 if (AMR_WIND_ENABLE_NETCDF)
