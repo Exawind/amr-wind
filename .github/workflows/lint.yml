@@ -83,6 +83,10 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Dependencies
+        run: |
+          sudo apt-get install -y clang-tidy-9
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-9 100
       - name: Configure
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
