@@ -61,18 +61,16 @@ jobs:
           # Warnings in header files are unavoidable, so we filter out submodule headers after analysis
           # Might be wrong to assume cppcheck always reports issues using 3 lines
            awk -v nlines=2 '/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1' \
-            < cppcheck.txt > amr-wind-static-analysis.txt
+            < cppcheck.txt > cppcheck-warnings.txt
       - name: Report
         working-directory: build-cppcheck
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           # Might be wrong to assume cppcheck always reports issues using 3 lines
-          WARNINGS_TMP=$(wc -l < amr-wind-static-analysis.txt | xargs echo -n)
+          WARNINGS_TMP=$(wc -l < cppcheck-warnings.txt | xargs echo -n)
           WARNINGS=$(bc <<< "$WARNINGS_TMP/3")
-          printf "%s warnings\n" "${WARNINGS}" >> amr-wind-static-analysis.txt
-          cat amr-wind-static-analysis.txt
-          # Just report for now and don't fail
-          #exit ${WARNINGS}
+          printf "%s warnings\n" "${WARNINGS}" >> cppcheck-warnings.txt
+          cat cppcheck-warnings.txt
   clang-tidy:
     runs-on: ubuntu-latest
     steps:
@@ -104,6 +102,9 @@ jobs:
           ${{github.workspace}}
       - name: Check
         working-directory: build-clang-tidy
+        run: cmake --build . -- -j ${{env.NPROCS}} 2> clang-tidy-warnings.txt
+      - name: Report
+        working-directory: build-clang-tidy
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
-          cmake --build . -- -j ${{env.NPROCS}}
+          cat clang-tidy-warnings.txt
