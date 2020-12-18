@@ -3,6 +3,7 @@
 
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include <AMReX_FArrayBox.H>
+#include <AMReX_BCRec.H>
 #include <cmath>
 
 namespace amr_wind {
@@ -82,22 +83,43 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
     const int domlo,
     const int domhi)
 {
-
-    // Before balance we need to take care of the BC fluxes
-    // TO DO
-
+    int bclo = bc->lo(dim - 1);
+    int bchi = bc->hi(dim - 1);
+    /*
+        amrex::Print() << dim << " " << bclo << " " << bchi << std::endl;
+        amrex::Print() << domlo << " " << domhi << std::endl;
+    */
     if (dim == 1) {
+        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+            fluxR(domlo - 1, j, k) = 0.0;
+        }
+        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+            fluxL(domhi + 1, j, k) = 0.0;
+        }
         volfrac(i, j, k) =
             fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
     } else if (dim == 2) {
+        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+            fluxR(i, domlo - 1, k) = 0.0;
+        }
+        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+            fluxL(i, domhi + 1, k) = 0.0;
+        }
         volfrac(i, j, k) =
             fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
     } else if (dim == 3) {
+        if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
+            fluxR(i, j, domlo - 1) = 0.0;
+        }
+        if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
+            fluxL(i, j, domhi + 1) = 0.0;
+        }
+
         volfrac(i, j, k) =
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
     // Do clipping
-    // volfrac(i, j, k) = std::max(0.0, std::min(1.0, volfrac(i, j, k)));
+    volfrac(i, j, k) = std::max(0.0, std::min(1.0, volfrac(i, j, k)));
 }
 } // namespace multiphase
 } // namespace amr_wind
