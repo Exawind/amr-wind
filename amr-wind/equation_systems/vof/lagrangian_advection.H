@@ -91,30 +91,41 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
     */
     if (dim == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            fluxR(domlo - 1, j, k) = 0.0;
+            if (i == domlo) {
+                fluxR(domlo - 1, j, k) = 0.0;
+            }
         }
         if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            fluxL(domhi + 1, j, k) = 0.0;
+            if (i == domhi) {
+                fluxL(domhi + 1, j, k) = 0.0;
+            }
         }
         volfrac(i, j, k) =
             fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
     } else if (dim == 2) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            fluxR(i, domlo - 1, k) = 0.0;
+            if (j == domlo) {
+                fluxR(i, domlo - 1, k) = 0.0;
+            }
         }
         if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            fluxL(i, domhi + 1, k) = 0.0;
+            if (j == domhi) {
+                fluxL(i, domhi + 1, k) = 0.0;
+            }
         }
         volfrac(i, j, k) =
             fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
     } else if (dim == 3) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
-            fluxR(i, j, domlo - 1) = 0.0;
+            if (k == domlo) {
+                fluxR(i, j, domlo - 1) = 0.0;
+            }
         }
         if (bchi == amrex::BCType::ext_dir || bchi == amrex::BCType::hoextrap) {
-            fluxL(i, j, domhi + 1) = 0.0;
+            if (k == domhi) {
+                fluxL(i, j, domhi + 1) = 0.0;
+            }
         }
-
         volfrac(i, j, k) =
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
