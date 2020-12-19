@@ -62,12 +62,12 @@ jobs:
           # Might be wrong to assume cppcheck always reports issues using 3 lines
            awk -v nlines=2 '/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1' \
             < cppcheck.txt > cppcheck-warnings.txt
-      - name: Short Report
+      - name: Short report
         working-directory: build-cppcheck
         run: |
           cat cppcheck-warnings.txt | egrep 'error:|performance:|portability:|style:|warning:' | sort | \
-            awk '{print $0}{total+=1}END{print "Warnings: "total}'
-      - name: Full Report
+            awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}'
+      - name: Full report
         working-directory: build-cppcheck
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
@@ -104,13 +104,13 @@ jobs:
       - name: Check
         working-directory: build-clang-tidy
         run: cmake --build . -- -j ${{env.NPROCS}} 2> clang-tidy-warnings.txt
-      - name: Short Report
+      - name: Short report
         working-directory: build-clang-tidy
         run: |
           cat clang-tidy-warnings.txt | grep "warning:" | sort | \
-            awk '{print $0}{total+=1}END{print "Warnings: "total}'
-      - name: Full Report
+            awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}'
+      - name: Full report
         working-directory: build-clang-tidy
         run: |
-          echo "::add-matcher::.github/problem-matchers/gcc.json"
+          #echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-warnings.txt
