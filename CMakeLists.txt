@@ -79,8 +79,6 @@ message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
 
-init_clang_tidy()
-
 #Create target names
 set(amr_wind_lib_name "amrwind_obj")
 set(amr_wind_exe_name "amr_wind")
@@ -91,6 +89,12 @@ set(aw_api_lib "amrwind_api")
 add_library(${amr_wind_lib_name} OBJECT)
 add_library(${aw_api_lib} SHARED)
 add_executable(${amr_wind_exe_name})
+
+init_clang_tidy()
+if(CLANG_TIDY_EXE)
+  set_target_properties(${amr_wind_lib_name} ${aw_api_lib} ${amr_wind_exe_name}
+                        PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
 
@@ -123,9 +127,11 @@ endif()
 
 if (AMR_WIND_ENABLE_UNIT_TESTS OR AMR_WIND_ENABLE_TESTS)
   add_executable(${amr_wind_unit_test_exe_name})
-  disable_clang_tidy()
+  if(CLANG_TIDY_EXE)
+    set_target_properties(${amr_wind_unit_test_exe_name}
+                          PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
+  endif()
   add_subdirectory("submods/googletest")
-  enable_clang_tidy()
   add_subdirectory("unit_tests")
   if (AMR_WIND_ENABLE_CUDA)
     get_target_property(UTEST_SOURCES ${amr_wind_unit_test_exe_name} SOURCES)
