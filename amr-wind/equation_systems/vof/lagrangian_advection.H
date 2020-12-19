@@ -132,6 +132,28 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
     // Do clipping
     volfrac(i, j, k) = std::max(0.0, std::min(1.0, volfrac(i, j, k)));
 }
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
+    const int i,
+    const int j,
+    const int k,
+    amrex::Array4<amrex::Real> const& volfrac)
+{
+    amrex::Real small_vof = 1e-6;
+    amrex::Real volFxL = volfrac(i - 1, j, k);
+    amrex::Real volFxR = volfrac(i + 1, j, k);
+    amrex::Real volFyL = volfrac(i, j - 1, k);
+    amrex::Real volFyR = volfrac(i, j + 1, k);
+    amrex::Real volFzL = volfrac(i, j, k - 1);
+    amrex::Real volFzR = volfrac(i, j, k + 1);
+
+    if (volfrac(i, j, k) > 0.0 && volFxL < small_vof && volFxR < small_vof &&
+        volFyL < small_vof && volFyR < small_vof && volFzL < small_vof &&
+        volFzR < small_vof) {
+        volfrac(i, j, k) = 0.0;
+    }
+}
+
 } // namespace multiphase
 } // namespace amr_wind
 #endif // LAGRANGIAN_ADVECTION.H
