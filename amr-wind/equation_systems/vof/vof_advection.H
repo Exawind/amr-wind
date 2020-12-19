@@ -52,7 +52,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
                  ++mfi) {
                 const auto& bx = mfi.tilebox();
                 amrex::FArrayBox tmpfab(amrex::grow(bx, 1), 3 * VOF::ndim);
-                tmpfab.setVal(0.0);
+                tmpfab.setVal<amrex::RunOn::Device>(0.0);
                 multiphase::split_advection(
                     lev, bx, isweep, dof_field(lev).array(mfi),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
