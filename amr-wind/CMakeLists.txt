@@ -4,7 +4,6 @@ target_sources(${amr_wind_lib_name}
   incflo.cpp
   incflo_compute_dt.cpp
   incflo_regrid.cpp
-
   CFDSim.cpp
   )
 
@@ -36,7 +35,6 @@ if(AMR_WIND_ENABLE_MASA)
   add_subdirectory(mms)
 endif()
 
-# Generate AMReX build information file
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 

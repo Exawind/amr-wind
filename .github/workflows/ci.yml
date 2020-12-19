@@ -23,7 +23,7 @@ on:
       - '.github/workflows/ci.yml'
 
 jobs:
-  build:
+  Build:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
