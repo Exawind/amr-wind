@@ -67,6 +67,158 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     mz = mm1 - mm2;
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
+    int i,
+    int j,
+    int k,
+    amrex::Array4<amrex::Real const> const& volfrac,
+    amrex::Real& mx,
+    amrex::Real& my,
+    amrex::Real& mz) noexcept
+{
+    amrex::Real m[AMREX_SPACEDIM + 1][AMREX_SPACEDIM];
+    amrex::Real m1, m2;
+    // write the plane as: sgn(mx) X =  my Y +  mz Z + alpha
+    //                           m00 X = m01 Y + m02 Z + alpha
+    m1 = volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1) +
+         volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
+         volfrac(i - 1, j, k);
+    m2 = volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1) +
+         volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
+         volfrac(i + 1, j, k);
+    if (m1 > m2) {
+        m[0][0] = 1.0;
+    } else {
+        m[0][0] = -1.0;
+    }
+
+    m1 = volfrac(i - 1, j - 1, k) + volfrac(i + 1, j - 1, k) +
+         volfrac(i, j - 1, k);
+    m2 = volfrac(i - 1, j + 1, k) + volfrac(i + 1, j + 1, k) +
+         volfrac(i, j + 1, k);
+    m[0][1] = 0.5 * (m1 - m2);
+
+    m1 = volfrac(i - 1, j, k - 1) + volfrac(i + 1, j, k - 1) +
+         volfrac(i, j, k - 1);
+    m2 = volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
+         volfrac(i, j, k + 1);
+    m[0][2] = 0.5 * (m1 - m2);
+
+    // write the plane as: sgn(my) Y =  mx X +  mz Z + alpha,
+    //                          m11 Y = m10 X + m12 Z + alpha.
+
+    m1 = volfrac(i - 1, j - 1, k) + volfrac(i - 1, j + 1, k) +
+         volfrac(i - 1, j, k);
+    m2 = volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
+         volfrac(i + 1, j, k);
+    m[1][0] = 0.5 * (m1 - m2);
+
+    m1 = volfrac(i, j - 1, k - 1) + volfrac(i, j - 1, k + 1) +
+         volfrac(i + 1, j - 1, k) + volfrac(i - 1, j - 1, k) +
+         volfrac(i, j - 1, k);
+    m2 = volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1) +
+         volfrac(i + 1, j + 1, k) + volfrac(i - 1, j + 1, k) +
+         volfrac(i, j + 1, k);
+
+    if (m1 > m2) {
+        m[1][1] = 1.;
+    } else {
+        m[1][1] = -1.;
+    }
+
+    m1 = volfrac(i, j - 1, k - 1) + volfrac(i, j, k - 1) +
+         volfrac(i, j + 1, k - 1);
+    m2 = volfrac(i, j - 1, k + 1) + volfrac(i, j, k + 1) +
+         volfrac(i, j + 1, k + 1);
+    m[1][2] = 0.5 * (m1 - m2);
+
+    // write the plane as: sgn(mz) Z =  mx X +  my Y + alpha
+    //                          m22 Z = m20 X + m21 Y + alpha
+
+    m1 = volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1) +
+         volfrac(i - 1, j, k);
+    m2 = volfrac(i + 1, j, k - 1) + volfrac(j + 1, j, k + 1) +
+         volfrac(i + 1, j, k);
+    m[2][0] = 0.5 * (m1 - m2);
+
+    m1 = volfrac(i, j - 1, k - 1) + volfrac(i, j - 1, k + 1) +
+         volfrac(i, j - 1, k);
+    m2 = volfrac(i, j + 1, k - 1) + volfrac(i, j + 1, k + 1) +
+         volfrac(i, j + 1, k);
+    m[2][1] = 0.5 * (m1 - m2);
+
+    m1 = volfrac(i - 1, j, k - 1) + volfrac(i + 1, j, k - 1) +
+         volfrac(i, j - 1, k - 1) + volfrac(i, j + 1, k - 1) +
+         volfrac(i, j, k - 1);
+    m2 = volfrac(i - 1, j, k + 1) + volfrac(i + 1, j, k + 1) +
+         volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1) +
+         volfrac(i, j, k + 1);
+
+    if (m1 > m2) {
+        m[2][2] = 1.;
+    } else {
+        m[2][2] = -1.;
+    }
+
+    // normalize each set (mx,my,mz): |mx|+|my|+|mz| = 1
+    amrex::Real t0, t1, t2;
+
+    t0 = amrex::Math::abs(m[0][0]) + amrex::Math::abs(m[0][1]) +
+         amrex::Math::abs(m[0][2]);
+    m[0][0] = m[0][0] / t0;
+    m[0][1] = m[0][1] / t0;
+    m[0][2] = m[0][2] / t0;
+
+    t0 = amrex::Math::abs(m[1][0]) + amrex::Math::abs(m[1][1]) +
+         amrex::Math::abs(m[1][2]);
+    m[1][0] = m[1][0] / t0;
+    m[1][1] = m[1][1] / t0;
+    m[1][2] = m[1][2] / t0;
+
+    t0 = amrex::Math::abs(m[2][0]) + amrex::Math::abs(m[2][1]) +
+         amrex::Math::abs(m[2][2]);
+    m[2][0] = m[2][0] / t0;
+    m[2][1] = m[2][1] / t0;
+    m[2][2] = m[2][2] / t0;
+
+    // choose among the three central schemes */
+    t0 = amrex::Math::abs(m[0][0]);
+    t1 = amrex::Math::abs(m[1][1]);
+    t2 = amrex::Math::abs(m[2][2]);
+
+    int cn = 0;
+    if (t1 > t0) {
+        t0 = t1;
+        cn = 1;
+    }
+
+    if (t2 > t0) cn = 2;
+
+    // Youngs-CIAM scheme */
+    youngs_fd_normal(i, j, k, volfrac, m[3][0], m[3][1], m[3][2]);
+    // normalize the set (mx,my,mz): |mx|+|my|+|mz| = 1
+    constexpr amrex::Real tiny = 1e-20;
+    t0 = amrex::Math::abs(m[3][0]) + amrex::Math::abs(m[3][1]) +
+         amrex::Math::abs(m[3][2]) + tiny;
+    m[3][0] = m[3][0] / t0;
+    m[3][1] = m[3][1] / t0;
+    m[3][2] = m[3][2] / t0;
+
+    // choose between the previous choice and Youngs-CIAM
+    t0 = amrex::Math::abs(m[3][0]);
+    t1 = amrex::Math::abs(m[3][1]);
+    t2 = amrex::Math::abs(m[3][2]);
+    if (t1 > t0) t0 = t1;
+    if (t2 > t0) t0 = t2;
+
+    if (amrex::Math::abs(m[cn][cn]) > t0) cn = 3;
+
+    // components of the normal vector */
+    mx = m[cn][0];
+    my = m[cn][1];
+    mz = m[cn][2];
+}
+
 /* Computes alpha: m1*x1 + m2* x2 + m3*x3 = alpha
  * given that m1+m2+m3=1 (m1,m2,m3>0) and the volumetric fraction volF
  */
@@ -279,6 +431,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     my = invy * my;
     mz = invz * mz;
     alpha = alpha + std::min(0.0, mx) + std::min(0.0, my) + std::min(0.0, mz);
+
+    // Use the mixed_youngs_centrol_normal function -- DOES NOT WORK AT THE
+    // MOMENT mixed_youngs_central_normal(i, j, k, volfrac, mx, my, mz); alpha =
+    // volume_intercept(mx, my, mz, volfrac(i, j, k));
 }
 
 } // namespace multiphase
