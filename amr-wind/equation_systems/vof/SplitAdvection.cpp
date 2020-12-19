@@ -161,14 +161,11 @@ void multiphase::split_advection(
                     domhi.z);
             });
     }
-    /*
-    amrex::Real min_volfrac = 1.0e6;
-    amrex::Real max_volfrac = -1.0e6;
-    amrex::ParallelFor(bx, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        min_volfrac = std::min(min_volfrac, volfrac(i, j, k));
-        max_volfrac = std::max(max_volfrac, volfrac(i, j, k));
+
+    // Remove VOF debris
+    amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        multiphase::remove_vof_debris(i, j, k, volfrac);
     });
-    */
 }
 
 } // namespace amr_wind
