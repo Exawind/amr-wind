@@ -176,9 +176,9 @@ void ThirdMomentAveraging::compute_average(
         auto mfab_arr3 = mfab3.const_array(mfi);
 
         // Construct a box covering only the 2D plane orthogonal to the axis
-        // we're looping over (e.g. for idxOp == ZDir(), the x-y plane). Additionally
-        // construct a 1D box for that axis, which will be the one we loop over in
-        // the ParallelFor.
+        // we're looping over (e.g. for idxOp == ZDir(), the x-y plane).
+        // Additionally construct a 1D box for that axis, which will be the one
+        // we loop over in the ParallelFor.
 
         amrex::IntVect plane_lo, plane_hi;
 
@@ -199,7 +199,6 @@ void ThirdMomentAveraging::compute_average(
             pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
-                // The loop indices parallel to the plane just have a single index.
 
                 amrex::IntVect loop_lo, loop_hi;
 
@@ -225,14 +224,17 @@ void ThirdMomentAveraging::compute_average(
                             int nf = 0;
                             for (int m = 0; m < ncomp1; ++m) {
                                 const amrex::Real up1 =
-                                    mfab_arr1(i, j, k, m) - line_avg1[ncomp1 * ind + m];
+                                    mfab_arr1(i, j, k, m) -
+                                    line_avg1[ncomp1 * ind + m];
                                 for (int n = 0; n < ncomp2; ++n) {
                                     const amrex::Real up2 =
-                                        mfab_arr2(i, j, k, n) - line_avg2[ncomp2 * ind + n];
+                                        mfab_arr2(i, j, k, n) -
+                                        line_avg2[ncomp2 * ind + n];
                                     for (int p = 0; p < ncomp3; ++p) {
 
-                                        const amrex::Real up3 = mfab_arr3(i, j, k, n) -
-                                                                line_avg3[ncomp3 * ind + p];
+                                        const amrex::Real up3 =
+                                            mfab_arr3(i, j, k, n) -
+                                            line_avg3[ncomp3 * ind + p];
 
                                         amrex::HostDevice::Atomic::Add(
                                             &line_fluc[nmoments * ind + nf],
@@ -241,11 +243,9 @@ void ThirdMomentAveraging::compute_average(
                                     }
                                 }
                             }
-
                         }
                     }
                 }
-
             });
     }
 
