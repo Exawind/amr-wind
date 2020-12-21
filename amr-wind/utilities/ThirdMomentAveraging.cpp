@@ -175,29 +175,85 @@ void ThirdMomentAveraging::compute_average(
         auto mfab_arr2 = mfab2.const_array(mfi);
         auto mfab_arr3 = mfab3.const_array(mfi);
 
+        // Construct a box covering only the 2D plane orthogonal to the axis
+        // we're looping over (e.g. for idxOp == ZDir(), the x-y plane). Additionally
+        // construct a 1D box for that axis, which will be the one we loop over in
+        // the ParallelFor.
+
+        amrex::IntVect plane_lo, plane_hi, loop_lo, loop_hi;
+        int axis;
+
+        if (std::is_same<IndexSelector, XDir>::value) {
+            axis = 0;
+            plane_lo = {0, bx.smallEnd(1), bx.smallEnd(2)};
+            plane_hi = {0, bx.bigEnd(1), bx.bigEnd(2)};
+            loop_lo = {bx.smallEnd(0), 0, 0};
+            loop_hi = {bx.bigEnd(0), 0, 0};
+        }
+        else if (std::is_same<IndexSelector, YDir>::value) {
+            axis = 1;
+            plane_lo = {bx.smallEnd(0), 0, bx.bigEnd(2)};
+            plane_hi = {bx.bigEnd(0), 0, bx.bigEnd(2)};
+            loop_lo = {0, bx.smallEnd(1), 0};
+            loop_hi = {0, bx.bigEnd(1), 0};
+        }
+        else if (std::is_same<IndexSelector, ZDir>::value) {
+            axis = 2;
+            plane_lo = {bx.smallEnd(0), bx.smallEnd(1), 0};
+            plane_hi = {bx.bigEnd(0), bx.bigEnd(1), 0};
+            loop_lo = {0, 0, bx.smallEnd(2)};
+            loop_hi = {0, 0, bx.bigEnd(2)};
+        }
+        else {
+            amrex::Abort("axis must be equal to 0, 1, or 2");
+        }
+
+        amrex::Box plane_bx(plane_lo, plane_hi);
+        amrex::Box loop_box(loop_lo, loop_hi);
+
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int ind = idxOp(i, j, k);
+            plane_bx, [=] AMREX_GPU_DEVICE(int plane_i, int plane_j, int plane_k) noexcept {
+                // Loop over the direction perpendicular to the plane. The reason we do this is
+                // that it reduces the atomic pressure on the destination arrays. The loop indices
+                // parallel to the plane just have a single index.
 
-                int nf = 0;
-                for (int m = 0; m < ncomp1; ++m) {
-                    const amrex::Real up1 =
-                        mfab_arr1(i, j, k, m) - line_avg1[ncomp1 * ind + m];
-                    for (int n = 0; n < ncomp2; ++n) {
-                        const amrex::Real up2 =
-                            mfab_arr2(i, j, k, n) - line_avg2[ncomp2 * ind + n];
-                        for (int p = 0; p < ncomp3; ++p) {
+                int i_lo = axis == 0 ? bx.smallEnd(0) : plane_i;
+                int i_hi = axis == 0 ? bx.bigEnd(0) : plane_i;
+                int j_lo = axis == 1 ? bx.smallEnd(1) : plane_j;
+                int j_hi = axis == 1 ? bx.bigEnd(1) : plane_j;
+                int k_lo = axis == 2 ? bx.smallEnd(2) : plane_k;
+                int k_hi = axis == 2 ? bx.bigEnd(2) : plane_k;
 
-                            const amrex::Real up3 = mfab_arr3(i, j, k, n) -
-                                                    line_avg3[ncomp3 * ind + p];
+                for (int k = k_lo; k <= k_hi; ++k) {
+                    for (int j = j_lo; j <= j_hi; ++j) {
+                        for (int i = i_lo; i <= i_hi; ++i) {
 
-                            amrex::HostDevice::Atomic::Add(
-                                &line_fluc[nmoments * ind + nf],
-                                up1 * up2 * up3 * denom);
-                            ++nf;
+                            const int ind = idxOp(i, j, k);
+
+                            int nf = 0;
+                            for (int m = 0; m < ncomp1; ++m) {
+                                const amrex::Real up1 =
+                                    mfab_arr1(i, j, k, m) - line_avg1[ncomp1 * ind + m];
+                                for (int n = 0; n < ncomp2; ++n) {
+                                    const amrex::Real up2 =
+                                        mfab_arr2(i, j, k, n) - line_avg2[ncomp2 * ind + n];
+                                    for (int p = 0; p < ncomp3; ++p) {
+
+                                        const amrex::Real up3 = mfab_arr3(i, j, k, n) -
+                                                                line_avg3[ncomp3 * ind + p];
+
+                                        amrex::HostDevice::Atomic::Add(
+                                            &line_fluc[nmoments * ind + nf],
+                                            up1 * up2 * up3 * denom);
+                                        ++nf;
+                                    }
+                                }
+                            }
+
                         }
                     }
                 }
+
             });
     }
 
