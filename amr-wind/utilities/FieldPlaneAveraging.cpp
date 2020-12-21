@@ -265,12 +265,29 @@ void FPlaneAveraging<FType>::compute_averages(
 
         auto fab_arr = mfab.const_array(mfi);
 
+        amrex::Box pbx =
+            PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+
         amrex::ParallelFor(
-            bx, ncomp,
-            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                const int ind = idxOp(i, j, k);
-                amrex::HostDevice::Atomic::Add(
-                    &line_avg[ncomp * ind + n], fab_arr(i, j, k, n) * denom);
+            pbx, ncomp,
+            [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k, int n) noexcept {
+                // Loop over the direction perpendicular to the plane.
+                // This reduces the atomic pressure on the destination arrays.
+
+                amrex::Box lbx = ParallelBox<IndexSelector>(
+                    bx, amrex::IntVect{p_i, p_j, p_k});
+
+                for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
+                    for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
+                        for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
+
+                            const int ind = idxOp(i, j, k);
+                            amrex::HostDevice::Atomic::Add(
+                                &line_avg[ncomp * ind + n],
+                                fab_arr(i, j, k, n) * denom);
+                        }
+                    }
+                }
             });
     }
 
@@ -346,13 +363,32 @@ void VelPlaneAveraging::compute_hvelmag_averages(
 
         auto fab_arr = mfab.const_array(mfi);
 
+        amrex::Box pbx =
+            PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int ind = idx_op(i, j, k);
-                const amrex::Real hvelmag = std::sqrt(
-                    fab_arr(i, j, k, h1_idx) * fab_arr(i, j, k, h1_idx) +
-                    fab_arr(i, j, k, h2_idx) * fab_arr(i, j, k, h2_idx));
-                amrex::HostDevice::Atomic::Add(&line_avg[ind], hvelmag * denom);
+            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+                // Loop over the direction perpendicular to the plane.
+                // This reduces the atomic pressure on the destination arrays.
+
+                amrex::Box lbx = ParallelBox<IndexSelector>(
+                    bx, amrex::IntVect{p_i, p_j, p_k});
+
+                for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
+                    for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
+                        for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
+
+                            const int ind = idx_op(i, j, k);
+                            const amrex::Real hvelmag = std::sqrt(
+                                fab_arr(i, j, k, h1_idx) *
+                                fab_arr(i, j, k, h1_idx) +
+                                fab_arr(i, j, k, h2_idx) *
+                                fab_arr(i, j, k, h2_idx));
+                            amrex::HostDevice::Atomic::Add(&line_avg[ind],
+                                                           hvelmag * denom);
+                        }
+                    }
+                }
             });
     }
 
