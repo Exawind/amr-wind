@@ -204,7 +204,7 @@ void ThirdMomentAveraging::compute_average(
                                     for (int p = 0; p < ncomp3; ++p) {
 
                                         const amrex::Real up3 =
-                                            mfab_arr3(i, j, k, n) -
+                                            mfab_arr3(i, j, k, p) -
                                             line_avg3[ncomp3 * ind + p];
 
                                         amrex::HostDevice::Atomic::Add(
