@@ -180,53 +180,45 @@ void ThirdMomentAveraging::compute_average(
         // construct a 1D box for that axis, which will be the one we loop over in
         // the ParallelFor.
 
-        amrex::IntVect plane_lo, plane_hi, loop_lo, loop_hi;
-        int axis;
+        amrex::IntVect plane_lo, plane_hi;
 
         if (std::is_same<IndexSelector, XDir>::value) {
-            axis = 0;
             plane_lo = {0, bx.smallEnd(1), bx.smallEnd(2)};
             plane_hi = {0, bx.bigEnd(1), bx.bigEnd(2)};
-            loop_lo = {bx.smallEnd(0), 0, 0};
-            loop_hi = {bx.bigEnd(0), 0, 0};
-        }
-        else if (std::is_same<IndexSelector, YDir>::value) {
-            axis = 1;
+        } else if (std::is_same<IndexSelector, YDir>::value) {
             plane_lo = {bx.smallEnd(0), 0, bx.bigEnd(2)};
             plane_hi = {bx.bigEnd(0), 0, bx.bigEnd(2)};
-            loop_lo = {0, bx.smallEnd(1), 0};
-            loop_hi = {0, bx.bigEnd(1), 0};
-        }
-        else if (std::is_same<IndexSelector, ZDir>::value) {
-            axis = 2;
+        } else {
             plane_lo = {bx.smallEnd(0), bx.smallEnd(1), 0};
             plane_hi = {bx.bigEnd(0), bx.bigEnd(1), 0};
-            loop_lo = {0, 0, bx.smallEnd(2)};
-            loop_hi = {0, 0, bx.bigEnd(2)};
-        }
-        else {
-            amrex::Abort("axis must be equal to 0, 1, or 2");
         }
 
-        amrex::Box plane_bx(plane_lo, plane_hi);
-        amrex::Box loop_box(loop_lo, loop_hi);
+        amrex::Box pbx(plane_lo, plane_hi);
 
         amrex::ParallelFor(
-            plane_bx, [=] AMREX_GPU_DEVICE(int plane_i, int plane_j, int plane_k) noexcept {
-                // Loop over the direction perpendicular to the plane. The reason we do this is
-                // that it reduces the atomic pressure on the destination arrays. The loop indices
-                // parallel to the plane just have a single index.
+            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+                // Loop over the direction perpendicular to the plane.
+                // This reduces the atomic pressure on the destination arrays.
+                // The loop indices parallel to the plane just have a single index.
 
-                int i_lo = axis == 0 ? bx.smallEnd(0) : plane_i;
-                int i_hi = axis == 0 ? bx.bigEnd(0) : plane_i;
-                int j_lo = axis == 1 ? bx.smallEnd(1) : plane_j;
-                int j_hi = axis == 1 ? bx.bigEnd(1) : plane_j;
-                int k_lo = axis == 2 ? bx.smallEnd(2) : plane_k;
-                int k_hi = axis == 2 ? bx.bigEnd(2) : plane_k;
+                amrex::IntVect loop_lo, loop_hi;
 
-                for (int k = k_lo; k <= k_hi; ++k) {
-                    for (int j = j_lo; j <= j_hi; ++j) {
-                        for (int i = i_lo; i <= i_hi; ++i) {
+                if (std::is_same<IndexSelector, XDir>::value) {
+                    loop_lo = {bx.smallEnd(0), p_j, p_k};
+                    loop_hi = {bx.bigEnd(0), p_j, p_k};
+                } else if (std::is_same<IndexSelector, YDir>::value) {
+                    loop_lo = {p_i, bx.smallEnd(1), p_k};
+                    loop_hi = {p_i, bx.bigEnd(1), p_k};
+                } else {
+                    loop_lo = {p_i, p_j, bx.smallEnd(2)};
+                    loop_hi = {p_i, p_j, bx.bigEnd(2)};
+                }
+
+                amrex::Box lbx(loop_lo, loop_hi);
+
+                for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
+                    for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
+                        for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
 
                             const int ind = idxOp(i, j, k);
 
