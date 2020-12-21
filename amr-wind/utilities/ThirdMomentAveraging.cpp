@@ -175,45 +175,16 @@ void ThirdMomentAveraging::compute_average(
         auto mfab_arr2 = mfab2.const_array(mfi);
         auto mfab_arr3 = mfab3.const_array(mfi);
 
-        // Construct a box covering only the 2D plane orthogonal to the axis
-        // we're looping over (e.g. for idxOp == ZDir(), the x-y plane).
-        // Additionally construct a 1D box for that axis, which will be the one
-        // we loop over in the ParallelFor.
-
-        amrex::IntVect plane_lo, plane_hi;
-
-        if (std::is_same<IndexSelector, XDir>::value) {
-            plane_lo = {0, bx.smallEnd(1), bx.smallEnd(2)};
-            plane_hi = {0, bx.bigEnd(1), bx.bigEnd(2)};
-        } else if (std::is_same<IndexSelector, YDir>::value) {
-            plane_lo = {bx.smallEnd(0), 0, bx.bigEnd(2)};
-            plane_hi = {bx.bigEnd(0), 0, bx.bigEnd(2)};
-        } else {
-            plane_lo = {bx.smallEnd(0), bx.smallEnd(1), 0};
-            plane_hi = {bx.bigEnd(0), bx.bigEnd(1), 0};
-        }
-
-        amrex::Box pbx(plane_lo, plane_hi);
+        amrex::Box pbx = PerpendicularBox<IndexSelector>(
+                         bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
             pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
-                amrex::IntVect loop_lo, loop_hi;
-
-                if (std::is_same<IndexSelector, XDir>::value) {
-                    loop_lo = {bx.smallEnd(0), p_j, p_k};
-                    loop_hi = {bx.bigEnd(0), p_j, p_k};
-                } else if (std::is_same<IndexSelector, YDir>::value) {
-                    loop_lo = {p_i, bx.smallEnd(1), p_k};
-                    loop_hi = {p_i, bx.bigEnd(1), p_k};
-                } else {
-                    loop_lo = {p_i, p_j, bx.smallEnd(2)};
-                    loop_hi = {p_i, p_j, bx.bigEnd(2)};
-                }
-
-                amrex::Box lbx(loop_lo, loop_hi);
+                amrex::Box lbx = ParallelBox<IndexSelector>(
+                                 bx, amrex::IntVect{p_i, p_j, p_k});
 
                 for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
                     for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
