@@ -381,11 +381,11 @@ void VelPlaneAveraging::compute_hvelmag_averages(
                             const int ind = idx_op(i, j, k);
                             const amrex::Real hvelmag = std::sqrt(
                                 fab_arr(i, j, k, h1_idx) *
-                                fab_arr(i, j, k, h1_idx) +
+                                    fab_arr(i, j, k, h1_idx) +
                                 fab_arr(i, j, k, h2_idx) *
-                                fab_arr(i, j, k, h2_idx));
-                            amrex::HostDevice::Atomic::Add(&line_avg[ind],
-                                                           hvelmag * denom);
+                                    fab_arr(i, j, k, h2_idx));
+                            amrex::HostDevice::Atomic::Add(
+                                &line_avg[ind], hvelmag * denom);
                         }
                     }
                 }

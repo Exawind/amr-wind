@@ -254,20 +254,16 @@ void PlaneAveraging::fill_line(
                             const int ind = idxOp(i, j, k);
 
                             // velocity fluctuation
-                            const Real up =
-                                vel_arr(i, j, k, 0) -
-                                line_average_[navg_ * ind + u_avg_];
-                            const Real vp =
-                                vel_arr(i, j, k, 1) -
-                                line_average_[navg_ * ind + v_avg_];
-                            const Real wp =
-                                vel_arr(i, j, k, 2) -
-                                line_average_[navg_ * ind + w_avg_];
+                            const Real up = vel_arr(i, j, k, 0) -
+                                            line_average_[navg_ * ind + u_avg_];
+                            const Real vp = vel_arr(i, j, k, 1) -
+                                            line_average_[navg_ * ind + v_avg_];
+                            const Real wp = vel_arr(i, j, k, 2) -
+                                            line_average_[navg_ * ind + w_avg_];
 
                             // temperature fluctuation
-                            const Real Tp =
-                                temp_arr(i, j, k) -
-                                line_average_[navg_ * ind + T_avg_];
+                            const Real Tp = temp_arr(i, j, k) -
+                                            line_average_[navg_ * ind + T_avg_];
 
                             HostDevice::Atomic::Add(
                                 &line_fluctuation_[nfluc_ * ind + uu_],
