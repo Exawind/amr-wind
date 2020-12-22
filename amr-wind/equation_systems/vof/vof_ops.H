@@ -24,14 +24,9 @@ struct FieldRegOp<VOF, Scheme>
             repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
-        levelset
-            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-                repo.mesh(), time, probtype);
-        normal.template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-            repo.mesh(), time, probtype);
-        curvature
-            .template register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
-                repo.mesh(), time, probtype);
+        levelset.set_default_fillpatch_bc(sim.time());
+        normal.set_default_fillpatch_bc(sim.time());
+        curvature.set_default_fillpatch_bc(sim.time());
 
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
