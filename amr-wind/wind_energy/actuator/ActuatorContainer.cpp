@@ -1,0 +1,322 @@
+#include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
+#include "amr-wind/core/gpu_utils.H"
+#include "amr-wind/core/Field.H"
+
+#include "AMReX_Scan.H"
+
+#include <algorithm>
+
+namespace amr_wind {
+namespace actuator {
+
+ActuatorCloud::ActuatorCloud(const int nobjects)
+    : num_pts(nobjects, 0), num_objects(nobjects)
+{}
+
+ActuatorContainer::ActuatorContainer(
+    amrex::AmrCore& mesh, const int num_objects)
+    : amrex::AmrParticleContainer<
+          NumPStructReal,
+          NumPStructInt,
+          NumPArrayReal,
+          NumPArrayInt>(&mesh)
+    , m_mesh(mesh)
+    , m_data(num_objects)
+    , m_proc_pos(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
+    , m_pos_device(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
+{}
+
+/** Allocate memory and initialize the particles within the container
+ *
+ *  This method is only called once during the simulation. It allocates the
+ *  arrays for holding the position vector and velocity data on host memory and
+ *  also initializes corresponding particles within the first available particle
+ *  tile within the container. It is expected that the actuator manager instance
+ *  has already populated the number of points per turbine before invoking this
+ *  method.
+ */
+void ActuatorContainer::initialize_container()
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::initialize_container");
+
+    compute_local_coordinates();
+
+    // Initialize global data arrays
+    auto total_pts =
+        std::accumulate(m_data.num_pts.begin(), m_data.num_pts.end(), 0);
+    m_data.position.resize(total_pts);
+    m_data.velocity.resize(total_pts);
+
+    // Initialize particle container data structures.
+    //
+    // We assign all particles into the first available container within this
+    // MPI rank and let redistribute take care of scattering the particles into
+    // the respective MPI rank containing the cell enclosing this particle. The
+    // actual redistribution happens after position vectors are updated in
+    // update_positions.
+
+    // query the particle ID from the container. We should always be starting
+    // from 1.
+    const auto id_start = ParticleType::NextID();
+    AMREX_ALWAYS_ASSERT(id_start == 1u);
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+
+    // Flag indicating if a tile was found where all particles were deposited.
+    bool assigned = false;
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; ((lev < nlevels) && !assigned); ++lev) {
+        for (auto mfi = MakeMFIter(lev); (mfi.isValid() && !assigned); ++mfi) {
+            auto& ptile = GetParticles(
+                lev)[std::make_pair(mfi.index(), mfi.LocalTileIndex())];
+            ptile.resize(total_pts);
+            auto* pstruct = ptile.GetArrayOfStructs()().data();
+
+            amrex::ParallelFor(
+                total_pts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                    auto& pp = pstruct[ip];
+
+                    pp.id() = id_start + ip;
+                    pp.cpu() = iproc;
+                });
+            assigned = true;
+        }
+    }
+
+    // Indicate that we have initialized the containers and remaining methods
+    // are safe to use
+    m_container_initialized = true;
+    m_is_scattered = false;
+}
+
+/** Update position vectors of the particles within a container based on the
+ *  data provided by actuator instances.
+ *
+ *  This method assumes that the particles have been restored to their
+ *  originating MPI ranks after any scattering. This happens during
+ *  initialization (after AcutatorContainer::initialize_particles) and after
+ *  ActuatorContainer::sample_velocities.
+ *
+ *  After executing this method, the particles have been scattered across the
+ *  domain such that each particle is contained within a tile that has the cell
+ *  enclosing the particle.
+ *
+ */
+void ActuatorContainer::update_positions()
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::update_positions");
+    AMREX_ALWAYS_ASSERT(m_container_initialized && !m_is_scattered);
+
+    const auto dpos = gpu::device_view(m_data.position);
+    const auto dptr = dpos.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                const auto idx = pp.id() - 1;
+
+                auto& pvec = dptr[idx];
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    pp.pos(n) = pvec[n];
+                }
+            });
+        }
+    }
+
+    // Scatter particles to appropriate MPI ranks
+    Redistribute();
+
+    // Indicate that it is safe to sample velocities
+    m_is_scattered = true;
+}
+
+/** Interpolate the velocity field using a trilinear interpolation
+ *
+ *  This method performs three tasks:
+ *    - Sample the velocity field and interpolate onto particle location
+ *    - Restore the particles back to their original MPI rank
+ *    - Copy data from particles into the buffer used by actuator instances
+ *
+ *  After invocation if this method, the particles are back in their original
+ *  rank and the position vectors can be updated safely.
+ */
+void ActuatorContainer::sample_velocities(const Field& vel)
+{
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::sample_velocities");
+    AMREX_ALWAYS_ASSERT(m_container_initialized && m_is_scattered);
+
+    // Sample velocity field
+    interpolate_velocities(vel);
+
+    // Recall particles to the MPI ranks that contains their corresponding
+    // turbines
+    Redistribute();
+
+    // Populate the velocity buffer that all actuator instances can access
+    populate_vel_buffer();
+
+    // Indicate that the particles have been restored to their original MPI rank
+    m_is_scattered = false;
+}
+
+/** Helper method for ActuatorContainer::sample_velocities
+ *
+ *  Loops over the particle tiles and copies velocity data from particles to the
+ *  velocity array.
+ */
+void ActuatorContainer::populate_vel_buffer()
+{
+    amrex::Gpu::DeviceVector<vs::Vector> vel(m_data.velocity.size());
+    auto* varr = vel.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                const auto idx = pp.id() - 1;
+
+                auto& vvel = varr[idx];
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    vvel[n] = pp.rdata(n);
+                }
+            });
+        }
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, vel.begin(), vel.end(),
+        m_data.velocity.begin());
+}
+
+/** Helper method for ActuatorContainer::sample_velocities
+ *
+ *  Performs a trilinear interpolation of the velocity field to particle
+ *  locations. It also updates the particle locations such that the next
+ *  Redistribute call restores the particles back to their original MPI rank
+ *  where they were created.
+ */
+void ActuatorContainer::interpolate_velocities(const Field& vel)
+{
+    auto* dptr = m_pos_device.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+            const auto varr = vel(lev).const_array(pti);
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                // Determine offsets within the containing cell
+                const amrex::Real x =
+                    (pp.pos(0) - plo[0] - 0.5 * dx[0]) * dxi[0];
+                const amrex::Real y =
+                    (pp.pos(1) - plo[1] - 0.5 * dx[1]) * dxi[1];
+                const amrex::Real z =
+                    (pp.pos(2) - plo[2] - 0.5 * dx[2]) * dxi[2];
+
+                // Index of the low corner
+                const int i = static_cast<int>(amrex::Math::floor(x));
+                const int j = static_cast<int>(amrex::Math::floor(y));
+                const int k = static_cast<int>(amrex::Math::floor(z));
+
+                // Interpolation weights in each direction (linear basis)
+                const amrex::Real wx_hi = (x - i);
+                const amrex::Real wy_hi = (y - j);
+                const amrex::Real wz_hi = (z - k);
+
+                const amrex::Real wx_lo = 1.0 - wx_hi;
+                const amrex::Real wy_lo = 1.0 - wy_hi;
+                const amrex::Real wz_lo = 1.0 - wz_hi;
+
+                const int iproc = pp.cpu();
+
+                for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
+                    pp.rdata(ic) =
+                        wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
+                        wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic) +
+                        wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic) +
+                        wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic) +
+                        wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic) +
+                        wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic) +
+                        wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic) +
+                        wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic);
+
+                    // Reset position vectors so that the particles return back
+                    // to the MPI ranks with the turbines upon redistribution
+                    pp.pos(ic) = dptr[iproc][ic];
+                }
+            });
+        }
+    }
+}
+
+/** Determine position vector of a point within each MPI rank
+ *
+ *  Loops over the boxArray and determines the first patch that belongs to the
+ *  current MPI rank. Uses that to generate a position vector that is known to
+ *  exist in a given rank. Setting the position vectors of the particles to this
+ *  know location will recall particles belonging to this rank during
+ *  Redistribute.
+ */
+void ActuatorContainer::compute_local_coordinates()
+{
+    BL_PROFILE(
+        "amr-wind::actuator::ActuatorContainer::compute_local_coordinates");
+    const int nprocs = amrex::ParallelDescriptor::NProcs();
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+
+    // Reset position vectors to zero (required for parallel reduce sum)
+    m_proc_pos.assign(nprocs, vs::Vector::zero());
+
+    // Flag indicating whether a point within the domain belonging to this rank
+    // has been found
+    bool assigned = false;
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; ((lev < nlevels) && !assigned); ++lev) {
+        const auto& ba = m_mesh.boxArray(lev);
+        const auto& dm = m_mesh.DistributionMap(lev);
+
+        const int nbx = dm.size();
+        for (int i = 0; (i < nbx) && !assigned; ++i) {
+            if (dm[i] != iproc) continue;
+
+            const auto& geom = m_mesh.Geom(lev);
+            const auto& dx = geom.CellSize();
+            const auto& problo = geom.ProbLo();
+            const auto& bx = ba[i];
+            const int* lo = bx.loVect();
+
+            auto& pvec = m_proc_pos[iproc];
+            pvec.x() = problo[0] + (lo[0] + 0.5) * dx[0];
+            pvec.y() = problo[1] + (lo[1] + 0.5) * dx[1];
+            pvec.z() = problo[2] + (lo[2] + 0.5) * dx[2];
+
+            // Indicate that we have found a point and it is safe to exit the loop
+            assigned = true;
+        }
+    }
+
+    // Share position vectors with every process
+    amrex::ParallelDescriptor::ReduceRealSum(
+        &(m_proc_pos[0].x()), m_proc_pos.size() * vs::Vector::ncomp);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_proc_pos.begin(), m_proc_pos.end(),
+        m_pos_device.begin());
+}
+
+void ActuatorContainer::post_regrid_actions() { compute_local_coordinates(); }
+
+} // namespace actuator
+} // namespace amr_wind

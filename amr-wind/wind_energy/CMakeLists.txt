@@ -9,3 +9,5 @@ target_sources(${amr_wind_lib_name}
   ABLBoundaryPlane.cpp
   MOData.cpp
   )
+
+add_subdirectory(actuator)
