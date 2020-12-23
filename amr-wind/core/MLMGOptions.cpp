@@ -112,7 +112,7 @@ void MLMGOptions::operator()(amrex::NodalProjector& nodal_proj)
     // Only IJ interface supported for NodalProjector
     hypre_interface = "ij";
 
-    if ((m_lpinfo.max_coarsening_level > 0) &&
+    if ((m_lpinfo.max_coarsening_level > -1) &&
         (bottom_solver_type == "hypre")) {
         nodal_proj.getLinOp().setCoarseningStrategy(
             amrex::MLNodeLinOp::CoarseningStrategy::RAP);
