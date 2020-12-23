@@ -269,8 +269,10 @@ void FPlaneAveraging<FType>::compute_averages(
             PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
-            pbx, ncomp,
-            [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k, int n) noexcept {
+            amrex::Gpu::KernelInfo().setReduction(true), pbx,
+            [=] AMREX_GPU_DEVICE(
+                int p_i, int p_j, int p_k,
+                amrex::Gpu::Handler const& handler) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -282,9 +284,12 @@ void FPlaneAveraging<FType>::compute_averages(
                         for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
 
                             const int ind = idxOp(i, j, k);
-                            amrex::HostDevice::Atomic::Add(
-                                &line_avg[ncomp * ind + n],
-                                fab_arr(i, j, k, n) * denom);
+
+                            for (int n = 0; n < ncomp; ++n) {
+                                amrex::Gpu::deviceReduceSum(
+                                    &line_avg[ncomp * ind + n],
+                                    fab_arr(i, j, k, n) * denom, handler);
+                            }
                         }
                     }
                 }
@@ -367,7 +372,10 @@ void VelPlaneAveraging::compute_hvelmag_averages(
             PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
-            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+            amrex::Gpu::KernelInfo().setReduction(true), pbx,
+            [=] AMREX_GPU_DEVICE(
+                int p_i, int p_j, int p_k,
+                amrex::Gpu::Handler const& handler) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -384,8 +392,8 @@ void VelPlaneAveraging::compute_hvelmag_averages(
                                     fab_arr(i, j, k, h1_idx) +
                                 fab_arr(i, j, k, h2_idx) *
                                     fab_arr(i, j, k, h2_idx));
-                            amrex::HostDevice::Atomic::Add(
-                                &line_avg[ind], hvelmag * denom);
+                            amrex::Gpu::deviceReduceSum(
+                                &line_avg[ind], hvelmag * denom, handler);
                         }
                     }
                 }

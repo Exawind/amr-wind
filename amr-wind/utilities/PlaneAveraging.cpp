@@ -186,7 +186,10 @@ void PlaneAveraging::fill_line(
             PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
-            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+            amrex::Gpu::KernelInfo().setReduction(true), pbx,
+            [=] AMREX_GPU_DEVICE(
+                int p_i, int p_j, int p_k,
+                amrex::Gpu::Handler const& handler) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -199,22 +202,23 @@ void PlaneAveraging::fill_line(
 
                             const int ind = idxOp(i, j, k);
 
-                            HostDevice::Atomic::Add(
+                            amrex::Gpu::deviceReduceSum(
                                 &line_average_[navg_ * ind + u_avg_],
-                                vel_arr(i, j, k, 0) * denom);
-                            HostDevice::Atomic::Add(
+                                vel_arr(i, j, k, 0) * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_average_[navg_ * ind + v_avg_],
-                                vel_arr(i, j, k, 1) * denom);
-                            HostDevice::Atomic::Add(
+                                vel_arr(i, j, k, 1) * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_average_[navg_ * ind + w_avg_],
-                                vel_arr(i, j, k, 2) * denom);
-                            HostDevice::Atomic::Add(
+                                vel_arr(i, j, k, 2) * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_average_[navg_ * ind + T_avg_],
-                                temp_arr(i, j, k, 0) * denom);
+                                temp_arr(i, j, k, 0) * denom, handler);
                             // nu+nut = (mu+mut)/rho
-                            HostDevice::Atomic::Add(
+                            amrex::Gpu::deviceReduceSum(
                                 &line_average_[navg_ * ind + nu_avg_],
-                                mueff_arr(i, j, k) / den_arr(i, j, k) * denom);
+                                mueff_arr(i, j, k) / den_arr(i, j, k) * denom,
+                                handler);
                         }
                     }
                 }
@@ -240,7 +244,10 @@ void PlaneAveraging::fill_line(
             PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
-            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+            amrex::Gpu::KernelInfo().setReduction(true), pbx,
+            [=] AMREX_GPU_DEVICE(
+                int p_i, int p_j, int p_k,
+                amrex::Gpu::Handler const& handler) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -265,53 +272,53 @@ void PlaneAveraging::fill_line(
                             const Real Tp = temp_arr(i, j, k) -
                                             line_average_[navg_ * ind + T_avg_];
 
-                            HostDevice::Atomic::Add(
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + uu_],
-                                up * up * denom);
-                            HostDevice::Atomic::Add(
+                                up * up * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + uv_],
-                                up * vp * denom);
-                            HostDevice::Atomic::Add(
+                                up * vp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + uw_],
-                                up * wp * denom);
-                            HostDevice::Atomic::Add(
+                                up * wp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + vv_],
-                                vp * vp * denom);
-                            HostDevice::Atomic::Add(
+                                vp * vp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + vw_],
-                                vp * wp * denom);
-                            HostDevice::Atomic::Add(
+                                vp * wp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + ww_],
-                                wp * wp * denom);
+                                wp * wp * denom, handler);
 
-                            HostDevice::Atomic::Add(
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + wuu_],
-                                wp * up * up * denom);
-                            HostDevice::Atomic::Add(
+                                wp * up * up * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + wuv_],
-                                wp * up * vp * denom);
-                            HostDevice::Atomic::Add(
+                                wp * up * vp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + wuw_],
-                                wp * up * wp * denom);
-                            HostDevice::Atomic::Add(
+                                wp * up * wp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + wvv_],
-                                wp * vp * vp * denom);
-                            HostDevice::Atomic::Add(
+                                wp * vp * vp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + wvw_],
-                                wp * vp * wp * denom);
-                            HostDevice::Atomic::Add(
+                                wp * vp * wp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + www_],
-                                wp * wp * wp * denom);
+                                wp * wp * wp * denom, handler);
 
-                            HostDevice::Atomic::Add(
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + Tu_],
-                                Tp * up * denom);
-                            HostDevice::Atomic::Add(
+                                Tp * up * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + Tv_],
-                                Tp * vp * denom);
-                            HostDevice::Atomic::Add(
+                                Tp * vp * denom, handler);
+                            amrex::Gpu::deviceReduceSum(
                                 &line_fluctuation_[nfluc_ * ind + Tw_],
-                                Tp * wp * denom);
+                                Tp * wp * denom, handler);
                         }
                     }
                 }
