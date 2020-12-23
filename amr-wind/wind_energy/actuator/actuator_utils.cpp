@@ -41,6 +41,7 @@ std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbx)
 {
     std::set<int> procs;
+    const int finest_level = mesh.finestLevel();
     const int nlevels = mesh.finestLevel() + 1;
     auto bx = realbox_to_box(rbx, mesh.Geom(0));
 
@@ -54,7 +55,7 @@ std::set<int> determine_influenced_procs(
         // Extract the processor ranks
         for (const auto& is : isects) procs.insert(dm[is.first]);
 
-        bx = bx.refine(mesh.refRatio(lev));
+        if (lev < finest_level) bx = bx.refine(mesh.refRatio(lev));
     }
 
     return procs;
