@@ -61,7 +61,7 @@ macro(init_amrex)
   endif()
 endmacro(init_amrex)
 
-macro(init_clang_tidy)
+macro(init_code_checks)
   if(AMR_WIND_ENABLE_CLANG_TIDY)
     find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
     if(CLANG_TIDY_EXE)
@@ -70,4 +70,33 @@ macro(init_clang_tidy)
       message(WARNING "clang-tidy not found.")
     endif()
   endif()
-endmacro(init_clang_tidy)
+
+  if(AMR_WIND_ENABLE_CPPCHECK)
+    find_program(CPPCHECK_EXE NAMES "cppcheck")
+    if(CPPCHECK_EXE)
+      message(STATUS "cppcheck found: ${CPPCHECK_EXE}")
+      include(ProcessorCount)
+      ProcessorCount(NP)
+      if(NP EQUAL 0)
+        set(NP 1)
+      endif()
+      add_custom_target(cppcheck
+          COMMAND ${CMAKE_COMMAND} -E echo "Running cppcheck on project using ${NP} cores..."
+          COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck/cppcheck-wd
+          # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
+          COMMAND sed "s/isystem /I/g" compile_commands.json > cppcheck_compile_commands.json
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=internalAstError --suppress=unusedFunction --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck/cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck/cppcheck-full-report.txt -j ${NP}
+          COMMAND awk -v nlines=2 "/submods\/amrex/ || /submods\/googletest/ {for (i=0; i<nlines; i++) {getline}; next} 1" < cppcheck/cppcheck-full-report.txt > cppcheck/cppcheck-short-report.txt
+          COMMAND cat cppcheck/cppcheck-short-report.txt | egrep "information:|error:|performance:|portability:|style:|warning:" | sort > cppcheck-warnings.txt
+          COMMAND printf "Warnings: " >> cppcheck-warnings.txt
+          COMMAND cat cppcheck-warnings.txt | awk "END{print NR-1}" >> cppcheck-warnings.txt
+          COMMENT "Run cppcheck on project compile_commands.json"
+          BYPRODUCTS cppcheck-warnings.txt
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+          VERBATIM USES_TERMINAL
+      )
+    else()
+      message(WARNING "cppcheck not found.")
+    endif()
+  endif()
+endmacro(init_code_checks)
