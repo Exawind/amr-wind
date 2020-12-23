@@ -23,7 +23,7 @@ struct VOF : ScalarTransport
     static constexpr bool has_diffusion = false;
     static constexpr bool need_nph_state = true;
 
-    static constexpr amrex::Real default_bc_value = 1.0;
+    static constexpr amrex::Real default_bc_value = 0.0;
 };
 
 } // namespace pde
