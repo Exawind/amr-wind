@@ -156,7 +156,10 @@ void SecondMomentAveraging::compute_average(
             PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
 
         amrex::ParallelFor(
-            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+            amrex::Gpu::KernelInfo().setReduction(true), pbx,
+            [=] AMREX_GPU_DEVICE(
+                int p_i, int p_j, int p_k,
+                amrex::Gpu::Handler const& handler) noexcept {
                 // Loop over the direction perpendicular to the plane.
                 // This reduces the atomic pressure on the destination arrays.
 
@@ -179,9 +182,9 @@ void SecondMomentAveraging::compute_average(
                                         mfab_arr2(i, j, k, n) -
                                         line_avg2[ncomp2 * ind + n];
 
-                                    amrex::HostDevice::Atomic::Add(
+                                    amrex::Gpu::deviceReduceSum(
                                         &line_fluc[nmoments * ind + nf],
-                                        up1 * up2 * denom);
+                                        up1 * up2 * denom, handler);
                                     ++nf;
                                 }
                             }
