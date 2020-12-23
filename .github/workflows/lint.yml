@@ -97,5 +97,5 @@ jobs:
       - name: Short report
         working-directory: build-clang-tidy
         run: |
-          #echo "::add-matcher::.github/problem-matchers/gcc.json"
+          echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-warnings.txt
