@@ -303,7 +303,8 @@ void ActuatorContainer::compute_local_coordinates()
             pvec.y() = problo[1] + (lo[1] + 0.5) * dx[1];
             pvec.z() = problo[2] + (lo[2] + 0.5) * dx[2];
 
-            // Indicate that we have found a point and it is safe to exit the loop
+            // Indicate that we have found a point and it is safe to exit the
+            // loop
             assigned = true;
         }
     }

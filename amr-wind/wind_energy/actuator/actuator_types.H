@@ -89,7 +89,8 @@ struct ActGrid
         vel.resize(num_vel_pts);
     }
 
-    /** Convenience function to resize both force/velocity data to same locations
+    /** Convenience function to resize both force/velocity data to same
+     * locations
      */
     inline void resize(int num_pts) { resize(num_pts, num_pts); }
 };
@@ -114,7 +115,8 @@ struct ActInfo
     //! Root process where this turbine is active
     int root_proc{-1};
 
-    //! Flag indicating whether this actuator component is active in the current MPI rank
+    //! Flag indicating whether this actuator component is active in the current
+    //! MPI rank
     bool actuator_in_proc{false};
 
     ActInfo(const std::string& label_in, const int id_in)
@@ -135,7 +137,8 @@ struct ActDataHolder
     //! simulation (usually ActInfo)
     typename ActTrait::InfoType m_info;
 
-    //! Nodal data on the actuator grid defined for this component (usually ActGrid)
+    //! Nodal data on the actuator grid defined for this component (usually
+    //! ActGrid)
     typename ActTrait::GridType m_grid;
 
     //! Additional data necessary for a given actuator type

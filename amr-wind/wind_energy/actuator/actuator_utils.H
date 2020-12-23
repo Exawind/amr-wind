@@ -16,7 +16,8 @@ namespace utils {
  *  intersections with a bounding box ``rbox``.
  *
  *  \param mesh AMReX mesh instance
- *  \param rbox The bounding box that defines the region of influence of a turbine
+ *  \param rbox The bounding box that defines the region of influence of a
+ * turbine
  */
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbox);

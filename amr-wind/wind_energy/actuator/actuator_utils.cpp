@@ -10,7 +10,8 @@ namespace {
  *
  *  \param rbx Bounding box as defined in global domain coordinates
  *  \param geom AMReX geometry information for a given level
- *  \return The Box instance that defines the index space equivalent to bounding boxt
+ *  \return The Box instance that defines the index space equivalent to bounding
+ * boxt
  */
 amrex::Box
 realbox_to_box(const amrex::RealBox& rbx, const amrex::Geometry& geom)
