@@ -15,14 +15,14 @@ namespace pde {
 template <>
 struct AdvectionOp<VOF, fvm::Godunov>
 {
-    AdvectionOp(PDEFields& fields_in, bool has_overset, bool variable_density)
+    AdvectionOp(PDEFields& fields_in, bool, bool)
         : fields(fields_in)
         , u_mac(fields_in.repo.get_field("u_mac"))
         , v_mac(fields_in.repo.get_field("v_mac"))
         , w_mac(fields_in.repo.get_field("w_mac"))
     {}
 
-    void operator()(const FieldState fstate, const amrex::Real dt)
+    void operator()(const FieldState, const amrex::Real dt)
     {
         static_assert(
             VOF::ndim == 1, "Invalid number of components for scalar");
