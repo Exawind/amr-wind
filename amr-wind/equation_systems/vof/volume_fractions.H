@@ -192,7 +192,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
         cn = 1;
     }
 
-    if (t2 > t0) cn = 2;
+    if (t2 > t0) {
+        cn = 2;
+    }
 
     // Youngs-CIAM scheme */
     youngs_fd_normal(i, j, k, volfrac, m[3][0], m[3][1], m[3][2]);
@@ -208,10 +210,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     t0 = amrex::Math::abs(m[3][0]);
     t1 = amrex::Math::abs(m[3][1]);
     t2 = amrex::Math::abs(m[3][2]);
-    if (t1 > t0) t0 = t1;
-    if (t2 > t0) t0 = t2;
+    if (t1 > t0) {
+        t0 = t1;
+    }
+    if (t2 > t0) {
+        t0 = t2;
+    }
 
-    if (amrex::Math::abs(m[cn][cn]) > t0) cn = 3;
+    if (amrex::Math::abs(m[cn][cn]) > t0) {
+        cn = 3;
+    }
 
     // components of the normal vector */
     mx = m[cn][0];
