@@ -52,7 +52,7 @@ PerpendicularBox(const amrex::Box& bx, const amrex::IntVect& iv)
         plane_lo = {iv[0], bx.smallEnd(1), bx.smallEnd(2)};
         plane_hi = {iv[0], bx.bigEnd(1), bx.bigEnd(2)};
     } else if (std::is_same<IndexSelector, YDir>::value) {
-        plane_lo = {bx.smallEnd(0), iv[1], bx.bigEnd(2)};
+        plane_lo = {bx.smallEnd(0), iv[1], bx.smallEnd(2)};
         plane_hi = {bx.bigEnd(0), iv[1], bx.bigEnd(2)};
     } else {
         plane_lo = {bx.smallEnd(0), bx.smallEnd(1), iv[2]};
@@ -66,7 +66,8 @@ PerpendicularBox(const amrex::Box& bx, const amrex::IntVect& iv)
 
 // Given a box, return a 1D box parallel to the selected axis.
 // For example, if we're using ZDir, return a box covering the z axis.
-// The IntVect is used to set the constant index in the parallel direction.
+// The IntVect is used to set the constant indices in the perpendicular
+// direction.
 template <typename IndexSelector>
 AMREX_GPU_HOST_DEVICE amrex::Box
 ParallelBox(const amrex::Box& bx, const amrex::IntVect& iv)
