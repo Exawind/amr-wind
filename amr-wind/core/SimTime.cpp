@@ -104,7 +104,8 @@ void SimTime::set_current_cfl(
     if (m_adaptive) {
         m_dt[0] = dt_new;
 
-        if (m_is_init && m_initial_dt > 0.0) m_dt[0] = m_initial_dt;
+        if (m_is_init && m_initial_dt > 0.0)
+            m_dt[0] = amrex::min(dt_new, m_initial_dt);
 
         if (!m_is_init) m_new_time = m_cur_time + m_dt[0];
 
