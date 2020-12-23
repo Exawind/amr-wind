@@ -44,7 +44,7 @@ jobs:
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
           -DAMR_WIND_ENABLE_MASA:BOOL=OFF \
-          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=OFF \
+          -DAMR_WIND_ENABLE_CPPCHECK:BOOL=ON \
           ${{github.workspace}}
       - name: Check
         working-directory: build-cppcheck
