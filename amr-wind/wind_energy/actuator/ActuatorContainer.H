@@ -64,12 +64,14 @@ public:
 
     int num_actuator_points() const { return m_data.position.size(); }
 
-protected:
-    void compute_local_coordinates();
+    // public for CUDA, not safe for general access
 
     void interpolate_velocities(const Field& vel);
 
     void populate_vel_buffer();
+
+protected:
+    void compute_local_coordinates();
 
     // Accessor to allow unit testing
     ActuatorCloud& point_data() { return m_data; }
