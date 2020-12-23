@@ -182,25 +182,42 @@ void PlaneAveraging::fill_line(
         auto den_arr = density.const_array(mfi);
         auto mueff_arr = mueff.const_array(mfi);
 
+        amrex::Box pbx =
+            PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int ind = idxOp(i, j, k);
-                HostDevice::Atomic::Add(
-                    &line_average_[navg_ * ind + u_avg_],
-                    vel_arr(i, j, k, 0) * denom);
-                HostDevice::Atomic::Add(
-                    &line_average_[navg_ * ind + v_avg_],
-                    vel_arr(i, j, k, 1) * denom);
-                HostDevice::Atomic::Add(
-                    &line_average_[navg_ * ind + w_avg_],
-                    vel_arr(i, j, k, 2) * denom);
-                HostDevice::Atomic::Add(
-                    &line_average_[navg_ * ind + T_avg_],
-                    temp_arr(i, j, k, 0) * denom);
-                // nu+nut = (mu+mut)/rho
-                HostDevice::Atomic::Add(
-                    &line_average_[navg_ * ind + nu_avg_],
-                    mueff_arr(i, j, k) / den_arr(i, j, k) * denom);
+            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+                // Loop over the direction perpendicular to the plane.
+                // This reduces the atomic pressure on the destination arrays.
+
+                amrex::Box lbx = ParallelBox<IndexSelector>(
+                    bx, amrex::IntVect{p_i, p_j, p_k});
+
+                for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
+                    for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
+                        for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
+
+                            const int ind = idxOp(i, j, k);
+
+                            HostDevice::Atomic::Add(
+                                &line_average_[navg_ * ind + u_avg_],
+                                vel_arr(i, j, k, 0) * denom);
+                            HostDevice::Atomic::Add(
+                                &line_average_[navg_ * ind + v_avg_],
+                                vel_arr(i, j, k, 1) * denom);
+                            HostDevice::Atomic::Add(
+                                &line_average_[navg_ * ind + w_avg_],
+                                vel_arr(i, j, k, 2) * denom);
+                            HostDevice::Atomic::Add(
+                                &line_average_[navg_ * ind + T_avg_],
+                                temp_arr(i, j, k, 0) * denom);
+                            // nu+nut = (mu+mut)/rho
+                            HostDevice::Atomic::Add(
+                                &line_average_[navg_ * ind + nu_avg_],
+                                mueff_arr(i, j, k) / den_arr(i, j, k) * denom);
+                        }
+                    }
+                }
             });
     }
 
@@ -219,60 +236,85 @@ void PlaneAveraging::fill_line(
         auto vel_arr = velocity.const_array(mfi);
         auto temp_arr = temperature.const_array(mfi);
 
+        amrex::Box pbx =
+            PerpendicularBox<IndexSelector>(bx, amrex::IntVect{0, 0, 0});
+
         amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int ind = idxOp(i, j, k);
+            pbx, [=] AMREX_GPU_DEVICE(int p_i, int p_j, int p_k) noexcept {
+                // Loop over the direction perpendicular to the plane.
+                // This reduces the atomic pressure on the destination arrays.
 
-                // velocity fluctuation
-                const Real up =
-                    vel_arr(i, j, k, 0) - line_average_[navg_ * ind + u_avg_];
-                const Real vp =
-                    vel_arr(i, j, k, 1) - line_average_[navg_ * ind + v_avg_];
-                const Real wp =
-                    vel_arr(i, j, k, 2) - line_average_[navg_ * ind + w_avg_];
+                amrex::Box lbx = ParallelBox<IndexSelector>(
+                    bx, amrex::IntVect{p_i, p_j, p_k});
 
-                // temperature fluctuation
-                const Real Tp =
-                    temp_arr(i, j, k) - line_average_[navg_ * ind + T_avg_];
+                for (int k = lbx.smallEnd(2); k <= lbx.bigEnd(2); ++k) {
+                    for (int j = lbx.smallEnd(1); j <= lbx.bigEnd(1); ++j) {
+                        for (int i = lbx.smallEnd(0); i <= lbx.bigEnd(0); ++i) {
 
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + uu_], up * up * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + uv_], up * vp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + uw_], up * wp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + vv_], vp * vp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + vw_], vp * wp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + ww_], wp * wp * denom);
+                            const int ind = idxOp(i, j, k);
 
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + wuu_],
-                    wp * up * up * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + wuv_],
-                    wp * up * vp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + wuw_],
-                    wp * up * wp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + wvv_],
-                    wp * vp * vp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + wvw_],
-                    wp * vp * wp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + www_],
-                    wp * wp * wp * denom);
+                            // velocity fluctuation
+                            const Real up = vel_arr(i, j, k, 0) -
+                                            line_average_[navg_ * ind + u_avg_];
+                            const Real vp = vel_arr(i, j, k, 1) -
+                                            line_average_[navg_ * ind + v_avg_];
+                            const Real wp = vel_arr(i, j, k, 2) -
+                                            line_average_[navg_ * ind + w_avg_];
 
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + Tu_], Tp * up * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + Tv_], Tp * vp * denom);
-                HostDevice::Atomic::Add(
-                    &line_fluctuation_[nfluc_ * ind + Tw_], Tp * wp * denom);
+                            // temperature fluctuation
+                            const Real Tp = temp_arr(i, j, k) -
+                                            line_average_[navg_ * ind + T_avg_];
+
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + uu_],
+                                up * up * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + uv_],
+                                up * vp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + uw_],
+                                up * wp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + vv_],
+                                vp * vp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + vw_],
+                                vp * wp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + ww_],
+                                wp * wp * denom);
+
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + wuu_],
+                                wp * up * up * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + wuv_],
+                                wp * up * vp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + wuw_],
+                                wp * up * wp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + wvv_],
+                                wp * vp * vp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + wvw_],
+                                wp * vp * wp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + www_],
+                                wp * wp * wp * denom);
+
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + Tu_],
+                                Tp * up * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + Tv_],
+                                Tp * vp * denom);
+                            HostDevice::Atomic::Add(
+                                &line_fluctuation_[nfluc_ * ind + Tw_],
+                                Tp * wp * denom);
+                        }
+                    }
+                }
             });
     }
 
