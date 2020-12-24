@@ -80,6 +80,7 @@ macro(init_code_checks)
       if(NP EQUAL 0)
         set(NP 1)
       endif()
+      file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cppcheck)
       add_custom_target(cppcheck
           COMMAND ${CMAKE_COMMAND} -E echo "Running cppcheck on project using ${NP} cores..."
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck/cppcheck-wd
