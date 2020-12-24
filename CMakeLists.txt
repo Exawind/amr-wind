@@ -2,6 +2,7 @@
 
 cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
 project(AMR-Wind CXX C)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -13,6 +14,7 @@ include(amr-wind-utils)
 option(AMR_WIND_ENABLE_ALL_WARNINGS "Show most warnings for most compilers" ON)
 option(AMR_WIND_ENABLE_WERROR "Treat compiler warnings as errors" OFF)
 option(AMR_WIND_ENABLE_CLANG_TIDY "Compile with clang-tidy static analysis" OFF)
+option(AMR_WIND_ENABLE_CPPCHECK "Enable cppcheck static analysis target" OFF)
 option(AMR_WIND_ENABLE_FCOMPARE "Enable building fcompare when not testing" OFF)
 
 #Enabling tests overrides the executable options
@@ -77,7 +79,7 @@ message(STATUS "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "CMAKE_CXX_COMPILER_VERSION = ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
-include(${CMAKE_SOURCE_DIR}/cmake/set_rpath.cmake)
+include(set_rpath)
 
 #Create target names
 set(amr_wind_lib_name "amrwind_obj")
@@ -90,13 +92,13 @@ add_library(${amr_wind_lib_name} OBJECT)
 add_library(${aw_api_lib} SHARED)
 add_executable(${amr_wind_exe_name})
 
-init_clang_tidy()
+init_code_checks()
 if(CLANG_TIDY_EXE)
   set_target_properties(${amr_wind_lib_name} ${aw_api_lib} ${amr_wind_exe_name}
                         PROPERTIES CXX_CLANG_TIDY ${CLANG_TIDY_EXE})
 endif()
 
-include(${CMAKE_SOURCE_DIR}/cmake/set_compile_flags.cmake)
+include(set_compile_flags)
 
 if (AMR_WIND_ENABLE_NETCDF)
   set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})

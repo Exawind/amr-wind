@@ -1,8 +1,6 @@
 ---
-#Checks:          '*,-cppcoreguidelines-avoid-magic-numbers,-readability-magic-numbers,-readability-braces-around-statements,-fuchsia-default-arguments,-fuchsia-default-arguments-calls,-fuchsia-overloaded-operator,-fuchsia-statically-constructed-objects,-google-runtime-references,-hicpp-no-assembler,-llvm-include-order,-llvmlibc-callee-namespace,-llvmlibc-implementation-in-namespace,-llvmlibc-restrict-system-libc-headers'
-Checks:          'clang-diagnostic-*,clang-analyzer-*,corecppguidelines-*,modernize-*,readability-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,corecppguidelines-*,modernize-*,readability-*,-readability-magic-numbers,-modernize-avoid-c-arrays,-modernize-use-trailing-return-type,-readability-named-parameter,-readability-implicit-bool-conversion,-readability-isolate-declaration''
 WarningsAsErrors: ''
-#HeaderFilterRegex: '^.*/(AMReX)/.*\.H$'
 HeaderFilterRegex: '^((?!/amrex/Src/|/googletest/).)*$'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
