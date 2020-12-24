@@ -1,10 +1,16 @@
 #include "aw_test_utils/MeshTest.H"
+#include "test_act_utils.H"
 
+#include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/wind_energy/actuator/ActuatorModel.H"
+#include "amr-wind/wind_energy/actuator/ActParser.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
+#include "amr-wind/wind_energy/actuator/wing/ActuatorWing.H"
+#include "amr-wind/wind_energy/actuator/wing/wing_ops.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/vs/vector_space.H"
+#include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind_tests {
 namespace {
@@ -36,26 +42,11 @@ protected:
 namespace act = amr_wind::actuator;
 namespace vs = amr_wind::vs;
 
-struct FlatPlateData
-{
-    // Number of point along the wing
-    int num_pts{11};
-    // Pitch angle (i.e., angle of attack) of wing
-    amrex::Real pitch{6.0};
-    // User input for gaussian smearing parameter
-    vs::Vector eps_inp{2.0, 2.0, 2.0};
-    // Normal to the wing (used to compute chord direction)
-    vs::Vector normal{0.0, 0.0, 1.0};
-
-    vs::Vector begin{0.0, 0.0, 0.0};
-    vs::Vector end{0.0, 0.0, 0.0};
-};
-
 struct FlatPlate : public act::ActuatorType
 {
     using InfoType = act::ActInfo;
     using GridType = act::ActGrid;
-    using MetaType = FlatPlateData;
+    using MetaType = act::WingBaseData;
     using DataType = act::ActDataHolder<FlatPlate>;
 
     static const std::string identifier() { return "FlatPlate"; }
@@ -72,16 +63,10 @@ namespace ops {
 
 template <>
 void read_inputs<::amr_wind_tests::FlatPlate>(
-    ::amr_wind_tests::FlatPlate::DataType& data)
+    ::amr_wind_tests::FlatPlate::DataType& data,
+    const amr_wind::actuator::utils::ActParser& pp)
 {
-    auto& info = data.m_info;
-    auto& fpobj = data.m_meta;
-
-    fpobj.begin = {16.0, 12.0, 16.0};
-    fpobj.end = {16.0, 20.0, 16.0};
-
-    // Create a bounding box extending to max search radius in each direction
-    info.bound_box = amrex::RealBox(8.0, 4.0, 8.0, 24.0, 28.0, 24.0);
+    amr_wind::actuator::wing::read_inputs(data.m_meta, data.m_info, pp);
 }
 
 template <>
@@ -89,40 +74,73 @@ void init_data_structures<::amr_wind_tests::FlatPlate>(
     ::amr_wind_tests::FlatPlate::DataType& data)
 {
     auto& grid = data.m_grid;
-    auto& obj = data.m_meta;
+    auto& wdata = data.m_meta;
 
-    int npts = obj.num_pts;
-    grid.resize(npts);
-
-    // Wing span
-    auto wspan = obj.end - obj.begin;
-    // Compute chord/flow direction as a cross-product
-    auto chord = (wspan ^ obj.normal);
-    // Set up global to local transformation matrix
-    auto tmat = vs::Tensor(chord.unit(), wspan.unit(), obj.normal.unit());
-
-    // Equal spacing along span
-    auto dx = (1.0 / static_cast<amrex::Real>(npts - 1)) * wspan;
-
-    for (int i = 0; i < npts; ++i) {
-        grid.pos[i] = obj.begin + static_cast<amrex::Real>(i) * dx;
-        grid.epsilon[i] = obj.eps_inp;
-        grid.orientation[i] = tmat;
-    }
-
-    // Initialize remaining data
-    grid.force.assign(npts, vs::Vector::zero());
-    grid.vel_pos.assign(grid.pos.begin(), grid.pos.end());
-    grid.vel.assign(npts, vs::Vector::zero());
+    amr_wind::actuator::wing::init_data_structures(wdata, grid);
 
     {
         // Check that the wing coordinates were initialized correctly
         auto wing_len = vs::mag(grid.pos.back() - grid.pos.front());
         EXPECT_NEAR(wing_len, 8.0, 1.0e-12);
+        EXPECT_NEAR(
+            grid.orientation[0].x().unit() & vs::Vector::ihat(), 1.0, 1.0e-12);
+        EXPECT_NEAR(vs::mag_sqr(grid.orientation[0]), 3.0, 1.0e-12);
+    }
+}
 
-        // Check that the orientation tensor was initialized correctly
-        EXPECT_NEAR(chord.unit() & vs::Vector::ihat(), 1.0, 1.0e-12);
-        EXPECT_NEAR(vs::mag_sqr(tmat), 3.0, 1.0e-12);
+template <>
+inline void update_positions<::amr_wind_tests::FlatPlate>(
+    ::amr_wind_tests::FlatPlate::DataType&)
+{}
+
+template <>
+inline void update_velocities<::amr_wind_tests::FlatPlate>(
+    ::amr_wind_tests::FlatPlate::DataType& data)
+{
+    const auto& grid = data.m_grid;
+    const auto& pos = grid.vel_pos;
+    const auto& vel = grid.vel;
+    amrex::Real rerr = 0.0;
+    for (int i=0; i < grid.vel_pos.size(); ++i) {
+        const amrex::Real val = pos[i].x() + pos[i].y() + pos[i].z();
+        const vs::Vector vgold{val, val, val};
+        rerr += vs::mag_sqr(vel[i] - vgold);
+    }
+    EXPECT_NEAR(rerr, 0.0, 1.0e-12);
+}
+
+template <>
+inline void compute_forces<::amr_wind_tests::FlatPlate>(
+    ::amr_wind_tests::FlatPlate::DataType& data)
+{
+    auto& grid = data.m_grid;
+    const int npts = data.m_meta.num_pts;
+    const amrex::Real pitch = ::amr_wind::utils::radians(data.m_meta.pitch);
+    for (int ip=0; ip < npts; ++ip) {
+        const auto& tmat = grid.orientation[ip];
+        // Effective velocity at the wing control point in local frame
+        auto wvel = tmat & grid.vel[ip];
+        // Set spanwise component to zero to get a pure 2D velocity
+        wvel.y() = 0.0;
+
+        const auto vmag = vs::mag(wvel);
+        const auto phi = std::atan2(wvel.z(), wvel.x());
+        const auto aoa = pitch - phi;
+
+        // Make up some Cl, Cd values
+        const auto cl = amr_wind::utils::two_pi() * aoa;
+        const auto cd = cl * std::sin(aoa);
+
+        // Assume unit chord
+        const auto qval = 0.5 * vmag * vmag * grid.dx[ip];
+        const auto lift = qval * cl;
+        const auto drag = qval * cd;
+        // Determine unit vector parallel and perpendicular to velocity vector
+        const auto drag_dir = (wvel / vmag) & tmat;
+        const auto lift_dir = drag_dir ^ tmat.y();
+
+        // Compute force on fluid from this section of wing
+        grid.force[ip] = -(lift_dir * lift + drag * drag_dir);
     }
 }
 
@@ -135,18 +153,66 @@ template class ::amr_wind::actuator::
 
 namespace amr_wind_tests {
 
-TEST_F(ActFlatPlateTest, test_init)
+TEST_F(ActFlatPlateTest, act_model_init)
 {
     initialize_mesh();
 
-    ::amr_wind::actuator::ActModel<FlatPlate> flat_plate(
-        sim(), "flat_plate1", 0);
-    flat_plate.pre_init_actions();
-    flat_plate.post_init_actions();
+    {
+        amrex::ParmParse pp("Actuator.FlatPlateLine");
+        pp.add("num_points", 11);
+        pp.addarr("start", amrex::Vector<amrex::Real>{16.0, 12.0, 16.0});
+        pp.addarr("end", amrex::Vector<amrex::Real>{16.0, 20.0, 16.0});
+        pp.addarr("normal", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
+        pp.addarr("epsilon", amrex::Vector<amrex::Real>{3.0, 3.0, 3.0});
+        pp.add("pitch", 6.0);
+    }
+
+    ::amr_wind::actuator::ActModel<FlatPlate> flat_plate(sim(), "F1", 0);
+    {
+        amr_wind::actuator::utils::ActParser pp(
+            "Actuator.FlatPlateLine", "Actuator.F1");
+        flat_plate.read_inputs(pp);
+    }
+
+    amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
+    flat_plate.setup_actuator_source(act_proc_count);
 
     const auto& info = flat_plate.info();
     EXPECT_EQ(info.root_proc, 0);
     EXPECT_EQ(info.procs.size(), amrex::ParallelDescriptor::NProcs());
+}
+
+TEST_F(ActFlatPlateTest, actuator_init)
+{
+    initialize_mesh();
+    auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    init_field(vel);
+
+    amrex::Vector<std::string> actuators{"T1", "T2"};
+    {
+        amrex::ParmParse pp("Actuator");
+        pp.addarr("labels", actuators);
+        pp.add("type", std::string("FlatPlateLine"));
+    }
+    {
+        amrex::ParmParse pp("Actuator.FlatPlateLine");
+        pp.add("num_points", 11);
+        pp.addarr("normal", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
+        pp.addarr("epsilon", amrex::Vector<amrex::Real>{1.0, 1.0, 1.0});
+        pp.add("pitch", 6.0);
+    }
+    {
+        for (int i = 0; i < 2; ++i) {
+            amrex::Real zloc = 8.0 + 16.0 * i;
+            amrex::ParmParse pp("Actuator." + actuators[i]);
+            pp.addarr("start", amrex::Vector<amrex::Real>{16.0, 12.0, zloc});
+            pp.addarr("end", amrex::Vector<amrex::Real>{16.0, 20.0, zloc});
+        }
+    }
+
+    ::amr_wind::actuator::Actuator act(sim());
+    act.pre_init_actions();
+    act.post_init_actions();
 }
 
 } // namespace amr_wind_tests

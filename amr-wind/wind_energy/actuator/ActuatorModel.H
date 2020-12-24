@@ -4,6 +4,7 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
+#include "amr-wind/wind_energy/actuator/ActParser.H"
 
 namespace amr_wind {
 
@@ -11,7 +12,9 @@ class CFDSim;
 
 namespace actuator {
 
-/** Abstract representation of an actuator source in the flowfield
+/** Abstract representation of an actuator source in the flowfield.
+ *
+ *  \ingroup actuator
  *
  *  This class is intended to represent a single object (e.g., turbine, fixed
  *  wing) that exists in the computational domain. A collection of source
@@ -33,12 +36,22 @@ public:
 
     virtual const ActInfo& info() const = 0;
 
-    virtual void pre_init_actions() = 0;
+    virtual void read_inputs(const utils::ActParser&) = 0;
 
-    virtual void post_init_actions() = 0;
+    virtual void setup_actuator_source(amrex::Vector<int>&) = 0;
+
+    virtual int num_velocity_points() const = 0;
+
+    virtual void update_positions(VecSlice&) = 0;
+
+    virtual void update_velocities(const VecSlice&) = 0;
+
+    virtual void compute_forces() = 0;
 };
 
-/** Concrete implementation of the ActuatorModel for different actuator types
+/** Concrete implementation of the ActuatorModel for different actuator types.
+ *
+ *  \ingroup actuator
  *
  *  \tparam ActTrait An actuator type trait that defines the behavior of the
  *  different actions (initialization, velocity sampling, force computation, and
@@ -81,14 +94,57 @@ public:
     //! Return the core info object for this actuator instance
     const ActInfo& info() const override { return m_data.m_info; }
 
-    void pre_init_actions() override { ops::read_inputs<ActTrait>(m_data); }
-
-    void post_init_actions() override
+    void read_inputs(const utils::ActParser& pp) override
     {
-        ops::init_data_structures<ActTrait>(m_data);
-        ops::determine_influenced_procs<ActTrait>(m_data);
+        ops::read_inputs<ActTrait>(m_data, pp);
+    }
+
+    void setup_actuator_source(amrex::Vector<int>& act_proc_count) override;
+
+    int num_velocity_points() const override;
+
+    void update_positions(VecSlice& pos) override
+    {
+        ops::update_positions<ActTrait>(m_data);
+        const auto& vpos = m_data.m_grid.vel_pos;
+        std::copy(vpos.begin(), vpos.end(), pos.begin());
+    }
+
+    void update_velocities(const VecSlice& vel) override
+    {
+        std::copy(vel.begin(), vel.end(), m_data.m_grid.vel.begin());
+        ops::update_velocities<ActTrait>(m_data);
+    }
+
+    void compute_forces() override
+    {
+        ops::compute_forces<ActTrait>(m_data);
     }
 };
+
+template <typename ActTrait, typename SrcTrait>
+void ActModel<ActTrait, SrcTrait>::setup_actuator_source(
+    amrex::Vector<int>& act_proc_count)
+{
+    ops::determine_root_proc<ActTrait>(m_data, act_proc_count);
+    {
+        // Sanity checks
+        const auto& info = m_data.m_info;
+        const auto& plist = info.procs;
+        AMREX_ALWAYS_ASSERT(info.root_proc > -1);
+        AMREX_ALWAYS_ASSERT(plist.find(info.root_proc) != plist.end());
+    }
+    ops::init_data_structures<ActTrait>(m_data);
+}
+
+template <typename ActTrait, typename SrcTrait>
+int ActModel<ActTrait, SrcTrait>::num_velocity_points() const
+{
+    auto& info = m_data.m_info;
+    auto& grid = m_data.m_grid;
+
+    return (info.actuator_in_proc) ? grid.vel.size() : 0;
+}
 
 } // namespace actuator
 } // namespace amr_wind

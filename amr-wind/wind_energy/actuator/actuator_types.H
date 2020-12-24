@@ -1,6 +1,7 @@
 #ifndef ACTUATOR_TYPES_H
 #define ACTUATOR_TYPES_H
 
+#include "amr-wind/core/Slice.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 #include "AMReX_Gpu.H"
@@ -14,17 +15,23 @@ class CFDSim;
 
 namespace actuator {
 
-/** Abstract representation of an actuator type
+/** Abstract representation of an actuator type.
+ *
+ *  \ingroup actuator
  */
 struct ActuatorType
 {};
 
-/** Abstract representation of a source type
+/** Abstract representation of a source type.
+ *
+ *  \ingroup actuator
  */
 struct ActSrcType
 {};
 
-/** Actuator line representation
+/** Actuator line representation.
+ *
+ *  \ingroup actuator
  */
 struct ActSrcLine : ActSrcType
 {
@@ -37,7 +44,9 @@ struct ActSrcLine : ActSrcType
     static constexpr bool is_disk = false;
 };
 
-/** Acutator disk representation
+/** Acutator disk representation.
+ *
+ *  \ingroup actuator
  */
 struct ActSrcDisk : ActSrcType
 {
@@ -48,11 +57,14 @@ struct ActSrcDisk : ActSrcType
 };
 
 using VecList = amrex::Vector<amr_wind::vs::Vector>;
+using VecSlice = utils::Slice<amr_wind::vs::Vector>;
 using TensorList = amrex::Vector<amr_wind::vs::Tensor>;
 using DeviceVecList = amrex::Gpu::DeviceVector<amr_wind::vs::Vector>;
 using DeviceTensorList = amrex::Gpu::DeviceVector<amr_wind::vs::Tensor>;
 
-/** Actuator data at each node for an actuator component
+/** Actuator data at each node for an actuator component.
+ *
+ *  \ingroup actuator
  */
 struct ActGrid
 {
@@ -61,6 +73,9 @@ struct ActGrid
 
     //! Force vector at the forcing points
     VecList force;
+
+    //! Length of the actuator segment (centered around the node)
+    amrex::Vector<amrex::Real> dx;
 
     //! Gaussian smearing parameter
     VecList epsilon;
@@ -95,7 +110,9 @@ struct ActGrid
     inline void resize(int num_pts) { resize(num_pts, num_pts); }
 };
 
-/** Basic information that is common to all actuator types
+/** Basic information that is common to all actuator types.
+ *
+ *  \ingroup actuator
  */
 struct ActInfo
 {
@@ -124,7 +141,9 @@ struct ActInfo
     {}
 };
 
-/** Abstract representation of data holder for specific actuator types
+/** Abstract representation of data holder for specific actuator types.
+ *
+ *  \ingroup actuator
  *
  */
 template <typename ActTrait>
