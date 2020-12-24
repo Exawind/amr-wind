@@ -48,7 +48,7 @@ jobs:
           ${{github.workspace}}
       - name: Check
         working-directory: build-cppcheck
-        run: make cppcheck
+        run: make cppcheck-ci
       - name: Full report
         working-directory: build-cppcheck
         run: cat cppcheck/cppcheck-full-report.txt
@@ -56,7 +56,7 @@ jobs:
         working-directory: build-cppcheck
         run: |
           echo "::add-matcher::.github/problem-matchers/cppcheck.json"
-          cat cppcheck-warnings.txt
+          cat cppcheck-ci-report.txt
   clang-tidy:
     runs-on: ubuntu-latest
     steps:
@@ -89,8 +89,8 @@ jobs:
         working-directory: build-clang-tidy
         run: |
           cmake --build . --parallel ${{env.NPROCS}} 2> clang-tidy-full-report.txt
-          cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq -c | sort -nr | \
-            awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-warnings.txt
+          cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | sort -nr | \
+            awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Full report
         working-directory: build-clang-tidy
         run: cat clang-tidy-full-report.txt
@@ -98,4 +98,4 @@ jobs:
         working-directory: build-clang-tidy
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
-          cat clang-tidy-warnings.txt
+          cat clang-tidy-ci-report.txt
