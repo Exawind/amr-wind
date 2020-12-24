@@ -39,6 +39,9 @@ public:
     //! Write sampled data in binary format
     void impl_write_native();
 
+    //! calculate the L2 norm of a given field and component
+    amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
@@ -56,9 +59,6 @@ protected:
 
     //! Output sampled data in ASCII format
     void write_ascii();
-
-    //! calculate the L2 norm of a given field and component
-    amrex::Real L2_norm(amr_wind::Field& field, const int comp);
 
     //!  process all fields and calculate norms
     void process_field_norms();
