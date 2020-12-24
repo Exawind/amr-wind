@@ -84,8 +84,8 @@ macro(init_code_checks)
           COMMAND ${CMAKE_COMMAND} -E echo "Running cppcheck on project using ${NP} cores..."
           COMMAND ${CMAKE_COMMAND} -E make_directory cppcheck/cppcheck-wd
           # cppcheck ignores -isystem directories, so we change them to regular -I include directories (with no spaces either)
-          COMMAND sed "s/isystem /I/g" compile_commands.json > cppcheck_compile_commands.json
-          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=internalAstError --suppress=unusedFunction --std=c++14 --language=c++ --enable=all --project=cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck/cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck/cppcheck-full-report.txt -j ${NP}
+          COMMAND sed "s/isystem /I/g" compile_commands.json > cppcheck/cppcheck_compile_commands.json
+          COMMAND ${CPPCHECK_EXE} --template=gcc --inline-suppr --suppress=internalAstError --suppress=unusedFunction --std=c++14 --language=c++ --enable=all --project=cppcheck/cppcheck_compile_commands.json --cppcheck-build-dir=cppcheck/cppcheck-wd -i ${CMAKE_SOURCE_DIR}/submods/amrex/Src -i ${CMAKE_SOURCE_DIR}/submods/googletest --output-file=cppcheck/cppcheck-full-report.txt -j ${NP}
           # Filter out submodule source files after analysis
           COMMAND awk -v nlines=2 "/submods/ {for (i=0; i<nlines; i++) {getline}; next} 1" < cppcheck/cppcheck-full-report.txt > cppcheck/cppcheck-short-report.txt
           COMMAND cat cppcheck/cppcheck-short-report.txt | egrep "information:|error:|performance:|portability:|style:|warning:" | sort > cppcheck-warnings.txt
