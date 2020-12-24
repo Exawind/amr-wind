@@ -5,6 +5,7 @@
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
+#include <AMReX_MultiFabUtil.H>
 
 namespace amr_wind {
 
@@ -90,27 +91,44 @@ void MultiPhase::post_advance_work()
 
 amrex::Real MultiPhase::volume_fraction_sum()
 {
+    using namespace amrex;
     BL_PROFILE("amr-wind::multiphase::ComputeVolumeFractionSum");
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
+    auto& mesh = m_sim.mesh();
+    const auto grids = mesh.boxArray();
+    const auto dmap = mesh.DistributionMap();
 
     amrex::Real TotalVolumeFrac = 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                mesh.boxArray(lev), mesh.DistributionMap(lev),
+                mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                mesh.boxArray(lev), mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
         auto& vof = (*m_vof)(lev);
         const amrex::Real cell_vol = geom[lev].CellSize()[0] *
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
 
         TotalVolumeFrac += amrex::ReduceSum(
-            vof, 0,
+            vof, level_mask, 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& volfrac)
-                -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& volfrac,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
                 amrex::Real Vol_Fab = 0.0;
                 amrex::Loop(bx, [=, &Vol_Fab](int i, int j, int k) noexcept {
-                    Vol_Fab += volfrac(i, j, k) * cell_vol;
+                    Vol_Fab += volfrac(i, j, k) * mask_arr(i, j, k) * cell_vol;
                 });
                 return Vol_Fab;
             });
