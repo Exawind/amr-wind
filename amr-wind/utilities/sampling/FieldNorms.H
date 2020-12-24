@@ -1,0 +1,106 @@
+#ifndef FIELDNORMS_H
+#define FIELDNORMS_H
+
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/PostProcessing.H"
+
+/**
+ *  \defgroup Field Norm utilities
+ *  Field Norm utilities FIXME: need to update this
+ *
+ *  \ingroup utilities
+ */
+
+namespace amr_wind {
+namespace field_norms {
+
+/** field norm object
+ *  \ingroup Field Norm
+ *
+ *  A concrete impelementation of the post-processing interface that deals with
+ *  norms of fields. FIXME: need to update this
+ *
+ */
+class FieldNorms : public PostProcessBase::Register<FieldNorms>
+{
+public:
+    static const std::string identifier() { return "FieldNorms"; }
+
+    FieldNorms(CFDSim&, const std::string&);
+
+    ~FieldNorms();
+
+    //! Read user inputs and create the different data probe instances
+    void initialize();
+
+    //! Interpolate fields at a given timestep and output to disk
+    void post_advance_work();
+
+    //! Write sampled data in binary format
+    void impl_write_native();
+
+    const amrex::Vector<std::string>& var_names() const { return m_var_names; }
+
+protected:
+    //! Output data based on user-defined format
+    void process_output();
+
+    //! Prepare NetCDF metadata
+    void prepare_netcdf_file();
+
+    //! Write sampled data into a NetCDF file
+    void write_netcdf();
+
+    //! prepare ASCII file and directory
+    void prepare_ascii_file();
+
+    //! Output sampled data in ASCII format
+    void write_ascii();
+
+    //! calculate the L2 norm of a given field and component
+    amrex::Real L2_norm(amr_wind::Field& field, const int comp);
+
+    //!  process all fields and calculate norms
+    void process_field_norms();
+
+private:
+    CFDSim& m_sim;
+
+    //! List of variable names for output
+    amrex::Vector<std::string> m_var_names;
+
+    amrex::Vector<amrex::Real> m_fnorms;
+
+    //! List of fields to be sampled for this collection of probes
+    amrex::Vector<Field*> m_fields;
+
+    /** Name of this sampling object.
+     *
+     *  The label is used to read user inputs from file and is also used for
+     *  naming files directories depending on the output format.
+     */
+    const std::string m_label;
+
+    //! Format of the data output (native, ascii, netcdf, etc.)
+#ifdef AMR_WIND_USE_NETCDF
+    std::string m_out_fmt{"netcdf"};
+    std::string m_ncfile_name;
+#else
+    std::string m_out_fmt{"native"};
+    std::string m_out_fname;
+#endif
+
+    //! Frequency of data sampling and output
+    int m_out_freq{100};
+
+    //! width in ASCII output
+    int m_width{18};
+
+    //! precision in ASCII output
+    int m_precision{12};
+};
+
+} // namespace field_norms
+} // namespace amr_wind
+
+#endif /* FIELDNORMS_H */
