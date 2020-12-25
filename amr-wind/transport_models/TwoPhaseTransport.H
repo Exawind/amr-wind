@@ -25,7 +25,7 @@ public:
         if (!physics_mgr.contains("MultiPhase"))
             amrex::Abort("TwoPhaseTransport requires MultiPhase physics");
         auto& multiphase = physics_mgr.get<MultiPhase>();
-        m_ifacetype = multiphase.interface_tracking_method();
+        m_ifacetype = multiphase.interface_capturing_method();
 
         amrex::ParmParse pp("transport");
         pp.query("viscosity_fluid1", m_mu1);
@@ -61,10 +61,10 @@ public:
     //! Return the dynamic visocity field
     inline std::unique_ptr<ScratchField> mu()
     {
-        // Select the interface tracking method
+        // Select the interface capturing method
         auto mu = m_repo.create_scratch_field(1, 1);
 
-        if (m_ifacetype == InterfaceTrackingMethod::VOF) {
+        if (m_ifacetype == InterfaceCapturingMethod::VOF) {
 
             auto& vof = m_repo.get_field("vof");
 
@@ -86,7 +86,7 @@ public:
                 }
             }
 
-        } else if (m_ifacetype == InterfaceTrackingMethod::LS) {
+        } else if (m_ifacetype == InterfaceCapturingMethod::LS) {
 
             auto& levelset = m_repo.get_field("levelset");
             auto& geom = m_repo.mesh().Geom();
@@ -159,8 +159,8 @@ private:
     //! Reference to the field repository (for creating scratch fields)
     FieldRepo& m_repo;
 
-    //! Interface tracking method variable
-    InterfaceTrackingMethod m_ifacetype;
+    //! Interface capturing method variable
+    InterfaceCapturingMethod m_ifacetype;
 
     //! Phase 1 (Laminar) dynamic viscosity
     amrex::Real m_mu1{1.0e-4};

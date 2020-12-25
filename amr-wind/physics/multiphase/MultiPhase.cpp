@@ -15,13 +15,13 @@ MultiPhase::MultiPhase(CFDSim& sim)
     , m_density(sim.repo().get_field("density"))
 {
     amrex::ParmParse pp_multiphase("MultiPhase");
-    pp_multiphase.query("interface_tracking_method", m_interface_model);
+    pp_multiphase.query("interface_capturing_method", m_interface_model);
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
-        m_interface_tracking_method = amr_wind::InterfaceTrackingMethod::VOF;
+        m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxilliary field only !
@@ -30,15 +30,15 @@ MultiPhase::MultiPhase(CFDSim& sim)
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
     } else if (amrex::toLower(m_interface_model) == "levelset") {
-        m_interface_tracking_method = amr_wind::InterfaceTrackingMethod::LS;
+        m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::LS;
         auto& levelset_eqn =
             sim.pde_manager().register_transport_pde("Levelset");
         m_levelset = &(levelset_eqn.fields().field);
     } else {
-        amrex::Print() << "Please select an interface tracking model between "
+        amrex::Print() << "Please select an interface capturing model between "
                           "VOF and Levelset: defaultin to VOF "
                        << std::endl;
-        m_interface_tracking_method = amr_wind::InterfaceTrackingMethod::VOF;
+        m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::VOF;
         auto& vof_eqn = sim.pde_manager().register_transport_pde("VOF");
         m_vof = &(vof_eqn.fields().field);
         // Create levelset as a auxilliary field only !
@@ -49,18 +49,18 @@ MultiPhase::MultiPhase(CFDSim& sim)
     }
 }
 
-InterfaceTrackingMethod MultiPhase::interface_tracking_method()
+InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 {
-    return m_interface_tracking_method;
+    return m_interface_capturing_method;
 }
 
 void MultiPhase::post_init_actions()
 {
 
-    if (m_interface_tracking_method == InterfaceTrackingMethod::VOF) {
+    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
         levelset2vof();
         set_density_via_vof();
-    } else if (m_interface_tracking_method == InterfaceTrackingMethod::LS) {
+    } else if (m_interface_capturing_method == InterfaceCapturingMethod::LS) {
         set_density_via_levelset();
     }
     m_density.fillpatch(m_sim.time().current_time());
@@ -68,15 +68,15 @@ void MultiPhase::post_init_actions()
 
 void MultiPhase::post_advance_work()
 {
-    if (m_interface_tracking_method == InterfaceTrackingMethod::VOF) {
+    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
         set_density_via_vof();
-    } else if (m_interface_tracking_method == InterfaceTrackingMethod::LS) {
+    } else if (m_interface_capturing_method == InterfaceCapturingMethod::LS) {
         set_density_via_levelset();
     }
     m_density.fillpatch(m_sim.time().current_time());
 
     // Compute the total volume fraction
-    if (m_interface_tracking_method == InterfaceTrackingMethod::VOF) {
+    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
         m_total_volfrac = volume_fraction_sum();
         const auto& geom = m_sim.mesh().Geom();
         const amrex::Real total_vol = geom[0].ProbDomain().volume();
