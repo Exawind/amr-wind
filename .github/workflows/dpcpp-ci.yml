@@ -28,13 +28,13 @@ jobs:
     name: Intel OneAPI ${{matrix.intel_type}}
     strategy:
       matrix:
-        intel_type: [ICC, DPCPP]
+        intel_type: [DPCPP]
         include:
-          - intel_type: ICC
-            oneapi_packages: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
-            cexe: icc
-            cppexe: icpc
-            enable_dpcpp: OFF
+          # - intel_type: ICC
+          #   oneapi_packages: intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+          #   cexe: icc
+          #   cppexe: icpc
+          #   enable_dpcpp: OFF
           - intel_type: DPCPP
             oneapi_packages: intel-oneapi-dpcpp-cpp-compiler intel-oneapi-mkl-devel
             cexe: clang
@@ -63,9 +63,9 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           set -e
           cmake -Bbuild-${{matrix.intel_type}} \
-            -DAMReX_GPU_BACKEND=SYCL \
             -DCMAKE_CXX_COMPILER_ID="Clang" \
             -DCMAKE_CXX_COMPILER_VERSION=12.0 \
+            -DCMAKE_CXX_STANDARD_COMPUTED_DEFAULT=17 \
             -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
             -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
             -DAMR_WIND_ENABLE_MPI=OFF \
