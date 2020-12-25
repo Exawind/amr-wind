@@ -63,6 +63,9 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           set -e
           cmake -Bbuild-${{matrix.intel_type}} \
+            -DAMReX_GPU_BACKEND=SYCL \
+            -DCMAKE_CXX_COMPILER_ID="Clang" \
+            -DCMAKE_CXX_COMPILER_VERSION=12.0 \
             -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
             -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
             -DAMR_WIND_ENABLE_MPI=OFF \
