@@ -1,4 +1,5 @@
 #include "aw_test_utils/MeshTest.H"
+#include "test_act_utils.H"
 
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
 #include "amr-wind/core/gpu_utils.H"
@@ -8,35 +9,6 @@
 
 namespace amr_wind_tests {
 namespace {
-
-// Utility function to populate the velocity field used for tests
-void init_field(amr_wind::Field& fld)
-{
-    const auto& mesh = fld.repo().mesh();
-    const int nlevels = fld.repo().num_active_levels();
-    const int ncomp = fld.num_comp();
-
-    amrex::Real offset = 0.0;
-    if (fld.field_location() == amr_wind::FieldLoc::CELL) offset = 0.5;
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        const auto& dx = mesh.Geom(lev).CellSizeArray();
-        const auto& problo = mesh.Geom(lev).ProbLoArray();
-
-        for (amrex::MFIter mfi(fld(lev)); mfi.isValid(); ++mfi) {
-            auto bx = mfi.growntilebox();
-            const auto& farr = fld(lev).array(mfi);
-
-            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-                const amrex::Real x = problo[0] + (i + offset) * dx[0];
-                const amrex::Real y = problo[1] + (j + offset) * dx[1];
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                for (int d = 0; d < ncomp; d++) farr(i, j, k, d) = x + y + z;
-            });
-        }
-    }
-}
 
 /** Mock test object to allow access to the data struct
  */

@@ -1,0 +1,149 @@
+#include "amr-wind/wind_energy/actuator/Actuator.H"
+#include "amr-wind/wind_energy/actuator/ActuatorModel.H"
+#include "amr-wind/wind_energy/actuator/ActParser.H"
+#include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/core/FieldRepo.H"
+
+#include <algorithm>
+
+namespace amr_wind {
+namespace actuator {
+
+Actuator::Actuator(CFDSim& sim)
+    : m_sim(sim), m_act_source(sim.repo().declare_field("actuator_src_term", 3))
+{}
+
+Actuator::~Actuator() = default;
+
+void Actuator::pre_init_actions()
+{
+    BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
+    amrex::ParmParse pp(identifier());
+
+    amrex::Vector<std::string> labels;
+    pp.getarr("labels", labels);
+
+    const int nturbines = labels.size();
+
+    for (int i = 0; i < nturbines; ++i) {
+        const std::string& tname = labels[i];
+        const std::string& prefix = identifier() + "." + tname;
+        amrex::ParmParse pp1(prefix);
+
+        std::string type;
+        pp.query("type", type);
+        pp1.query("type", type);
+        AMREX_ALWAYS_ASSERT(!type.empty());
+
+        auto obj = ActuatorModel::create(type, m_sim, tname, i);
+
+        const std::string default_prefix = identifier() + "." + type;
+        utils::ActParser inp(default_prefix, prefix);
+
+        obj->read_inputs(inp);
+        m_actuators.emplace_back(std::move(obj));
+    }
+}
+
+void Actuator::post_init_actions()
+{
+    BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
+
+    amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
+    for (auto& act : m_actuators) act->setup_actuator_source(act_proc_count);
+
+    {
+        // Sanity check that we have processed the turbines correctly
+        int nact =
+            std::accumulate(act_proc_count.begin(), act_proc_count.end(), 0);
+        AMREX_ALWAYS_ASSERT(num_actuators() == nact);
+    }
+
+    setup_container();
+    update_positions();
+    update_velocities();
+    compute_forces();
+}
+
+/** Set up the container for sampling velocities
+ *
+ *  Allocates memory and initializes the particles corresponding to actuator
+ *  nodes for all turbines that influence the current MPI rank. This method is
+ *  invoked once during initialization and during regrid step.
+ */
+void Actuator::setup_container()
+{
+    const int ntotal = num_actuators();
+    const int nlocal = std::count_if(
+        m_actuators.begin(), m_actuators.end(),
+        [](const auto& obj) { return obj->info().actuator_in_proc; });
+
+    m_container.reset(new ActuatorContainer(m_sim.mesh(), nlocal));
+
+    auto& pinfo = m_container->m_data;
+    for (int i = 0, il = 0; i < ntotal; ++i) {
+        if (m_actuators[i]->info().actuator_in_proc) {
+            pinfo.global_id[il] = i;
+            pinfo.num_pts[il] = m_actuators[i]->num_velocity_points();
+            ++il;
+        }
+    }
+
+    m_container->initialize_container();
+}
+
+/** Update actuator positions and sample velocities at new locations.
+ *
+ *  This method loops over all the turbines local to this MPI rank and updates
+ *  the position vectors. These new locations are provided to the sampling
+ *  container that samples velocities at these new locations.
+ *
+ *  \sa Actuator::update_velocities
+ */
+void Actuator::update_positions()
+{
+    auto& pinfo = m_container->m_data;
+    for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
+        const auto ig = pinfo.global_id[i];
+        auto vpos =
+            ::amr_wind::utils::slice(pinfo.position, ic, pinfo.num_pts[i]);
+        m_actuators[ig]->update_positions(vpos);
+        ic += pinfo.num_pts[i];
+    }
+    m_container->update_positions();
+
+    // Sample velocities at the new locations
+    auto& vel = m_sim.repo().get_field("velocity");
+    m_container->sample_velocities(vel);
+}
+
+/** Provide updated velocities from container to actuator instances
+ *
+ *  \sa Acuator::update_positions
+ */
+void Actuator::update_velocities()
+{
+    auto& pinfo = m_container->m_data;
+    for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
+        const auto ig = pinfo.global_id[i];
+        const auto vel =
+            ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
+        m_actuators[ig]->update_velocities(vel);
+        ic += pinfo.num_pts[i];
+    }
+}
+
+/** Helper method to compute forces on all actuator components
+ */
+void Actuator::compute_forces()
+{
+    for (auto& ac : m_actuators) {
+        if (ac->info().actuator_in_proc) {
+            ac->compute_forces();
+        }
+    }
+}
+
+} // namespace actuator
+} // namespace amr_wind

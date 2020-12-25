@@ -11,7 +11,11 @@ class Field;
 
 namespace actuator {
 
-/** Cloud of actuator points
+class Actuator;
+
+/** Cloud of actuator points.
+ *
+ *  \ingroup actuator
  *
  *  Holds the position vector and velocity information for a cloud of actuator
  *  points belonging to all the turbines within a given MPI rank.
@@ -20,6 +24,9 @@ struct ActuatorCloud
 {
     //! Number of nodes per turbine on this MPI rank
     amrex::Vector<int> num_pts;
+
+    //! Global IDs of the turbines on this MPI rank
+    amrex::Vector<int> global_id;
 
     //! Position vectors of all actuator nodes belonging to this MPI rank
     amrex::Vector<vs::Vector> position;
@@ -42,7 +49,9 @@ static constexpr int NumPArrayReal = 0;
 //! Number of int entries in Struct of Arrays (SOA)
 static constexpr int NumPArrayInt = 0;
 
-/** Specialization of AmrParticleContainer for sampling velocities
+/** Specialization of AmrParticleContainer for sampling velocities.
+ *
+ *  \ingroup actuator
  */
 class ActuatorContainer
     : public amrex::AmrParticleContainer<
@@ -52,6 +61,8 @@ class ActuatorContainer
           NumPArrayInt>
 {
 public:
+    friend class Actuator;
+
     explicit ActuatorContainer(amrex::AmrCore& mesh, const int num_objects);
 
     void post_regrid_actions();

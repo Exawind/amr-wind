@@ -1,4 +1,5 @@
 #include "amr-wind/wind_energy/actuator/ActuatorContainer.H"
+#include "amr-wind/wind_energy/actuator/Actuator.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/Field.H"
 
@@ -10,7 +11,7 @@ namespace amr_wind {
 namespace actuator {
 
 ActuatorCloud::ActuatorCloud(const int nobjects)
-    : num_pts(nobjects, 0), num_objects(nobjects)
+    : num_pts(nobjects, 0), global_id(nobjects, -1), num_objects(nobjects)
 {}
 
 ActuatorContainer::ActuatorContainer(
