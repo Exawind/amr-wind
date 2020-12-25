@@ -156,7 +156,7 @@ namespace amr_wind_tests {
 TEST_F(ActFlatPlateTest, act_model_init)
 {
     initialize_mesh();
-
+    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1u);
     {
         amrex::ParmParse pp("Actuator.FlatPlateLine");
         pp.add("num_points", 11);
@@ -187,6 +187,7 @@ TEST_F(ActFlatPlateTest, actuator_init)
     initialize_mesh();
     auto& vel = sim().repo().declare_field("velocity", 3, 3);
     init_field(vel);
+    amr_wind::actuator::ActuatorContainer::ParticleType::NextID(1u);
 
     amrex::Vector<std::string> actuators{"T1", "T2"};
     {
