@@ -60,7 +60,6 @@ void determine_root_proc(
         return;
     }
 
-
     // If we have reached here, then we have more turbines than processes
     // available. We will assign the current turbine to the process that is
     // managing the lowest number of turbines.

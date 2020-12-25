@@ -116,10 +116,7 @@ public:
         ops::update_velocities<ActTrait>(m_data);
     }
 
-    void compute_forces() override
-    {
-        ops::compute_forces<ActTrait>(m_data);
-    }
+    void compute_forces() override { ops::compute_forces<ActTrait>(m_data); }
 };
 
 template <typename ActTrait, typename SrcTrait>

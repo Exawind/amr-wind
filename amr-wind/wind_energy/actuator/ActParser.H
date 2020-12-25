@@ -48,7 +48,7 @@ public:
         }
     }
 
-    template<typename T>
+    template <typename T>
     void get(const std::string& name, T& value) const
     {
         if (pp.contains(name.c_str())) {
@@ -58,7 +58,7 @@ public:
         }
     }
 
-    template<typename T>
+    template <typename T>
     void getarr(const std::string& name, T& value) const
     {
         if (pp.contains(name.c_str())) {
@@ -68,14 +68,14 @@ public:
         }
     }
 
-    template<typename T>
+    template <typename T>
     void query(const std::string& name, T& value) const
     {
         pp_default.query(name.c_str(), value);
         pp.query(name.c_str(), value);
     }
 
-    template<typename T>
+    template <typename T>
     void queryarr(const std::string& name, T& value) const
     {
         pp_default.queryarr(name.c_str(), value);

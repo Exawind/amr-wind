@@ -101,7 +101,7 @@ inline void update_velocities<::amr_wind_tests::FlatPlate>(
     const auto& pos = grid.vel_pos;
     const auto& vel = grid.vel;
     amrex::Real rerr = 0.0;
-    for (int i=0; i < grid.vel_pos.size(); ++i) {
+    for (int i = 0; i < grid.vel_pos.size(); ++i) {
         const amrex::Real val = pos[i].x() + pos[i].y() + pos[i].z();
         const vs::Vector vgold{val, val, val};
         rerr += vs::mag_sqr(vel[i] - vgold);
@@ -116,7 +116,7 @@ inline void compute_forces<::amr_wind_tests::FlatPlate>(
     auto& grid = data.m_grid;
     const int npts = data.m_meta.num_pts;
     const amrex::Real pitch = ::amr_wind::utils::radians(data.m_meta.pitch);
-    for (int ip=0; ip < npts; ++ip) {
+    for (int ip = 0; ip < npts; ++ip) {
         const auto& tmat = grid.orientation[ip];
         // Effective velocity at the wing control point in local frame
         auto wvel = tmat & grid.vel[ip];
