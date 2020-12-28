@@ -13,9 +13,9 @@ namespace ops {
 template <typename T>
 void determine_influenced_procs(typename T::DataType& data)
 {
-    auto& info = data.m_info;
+    auto& info = data.info();
     info.procs =
-        utils::determine_influenced_procs(data.m_sim.mesh(), info.bound_box);
+        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
 
     if (info.root_proc > -1) {
         // During regrid, the influenced processes might have changed and might
@@ -33,12 +33,12 @@ template <typename T>
 void determine_root_proc(
     typename T::DataType& data, amrex::Vector<int>& act_proc_count)
 {
-    auto& info = data.m_info;
+    auto& info = data.info();
     auto& plist = info.procs;
     bool assigned = false;
 
     plist =
-        utils::determine_influenced_procs(data.m_sim.mesh(), info.bound_box);
+        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
 
     // If any of the influenced procs is free (i.e., doesn't have a turbine
     // assigned to it) elect it as the root proc for this turbine and return

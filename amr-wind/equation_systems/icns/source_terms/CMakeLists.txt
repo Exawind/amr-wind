@@ -7,4 +7,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   CoriolisForcing.cpp
   BodyForce.cpp
   ABLMeanBoussinesq.cpp
+  ActuatorForcing.cpp
   )

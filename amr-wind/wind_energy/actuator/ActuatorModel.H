@@ -4,6 +4,7 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
+#include "amr-wind/wind_energy/actuator/ActSrcOp.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
 namespace amr_wind {
@@ -47,6 +48,15 @@ public:
     virtual void update_velocities(const VecSlice&) = 0;
 
     virtual void compute_forces() = 0;
+
+    virtual void compute_source_term(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Geometry& geom) = 0;
+
+    virtual void prepare_outputs(const std::string&) = 0;
+
+    virtual void write_outputs() = 0;
 };
 
 /** Concrete implementation of the ActuatorModel for different actuator types.
@@ -68,7 +78,13 @@ class ActModel : public ActuatorModel::Register<ActModel<ActTrait, SrcTrait>>
 {
 private:
     //! Instance that holds all data related to a particular actuator type
-    ActDataHolder<ActTrait> m_data;
+    typename ActTrait::DataType m_data;
+
+    //! Source computation operator
+    ops::ActSrcOp<ActTrait, SrcTrait> m_src_op;
+
+    //! Outputs processor
+    ops::ProcessOutputsOp<ActTrait, SrcTrait> m_out_op;
 
 public:
     static std::string identifier()
@@ -82,21 +98,22 @@ public:
      *  \param id Unique integer tag for this instance
      */
     ActModel(CFDSim& sim, const std::string& label, const int id)
-        : m_data(sim, label, id)
+        : m_data(sim, label, id), m_src_op(m_data), m_out_op(m_data)
     {}
 
     //! Return the unique identifier (name) for this instance
-    const std::string& label() const override { return m_data.m_info.label; }
+    const std::string& label() const override { return m_data.info().label; }
 
     //! Return the unique tag (integer ID) for this instance
-    int id() const override { return m_data.m_info.id; }
+    int id() const override { return m_data.info().id; }
 
     //! Return the core info object for this actuator instance
-    const ActInfo& info() const override { return m_data.m_info; }
+    const ActInfo& info() const override { return m_data.info(); }
 
     void read_inputs(const utils::ActParser& pp) override
     {
-        ops::read_inputs<ActTrait>(m_data, pp);
+        ops::ReadInputsOp<ActTrait, SrcTrait>()(m_data, pp);
+        m_out_op.read_io_options(pp);
     }
 
     void setup_actuator_source(amrex::Vector<int>& act_proc_count) override;
@@ -105,18 +122,37 @@ public:
 
     void update_positions(VecSlice& pos) override
     {
-        ops::update_positions<ActTrait>(m_data);
-        const auto& vpos = m_data.m_grid.vel_pos;
+        ops::UpdatePosOp<ActTrait, SrcTrait>()(m_data);
+        const auto& vpos = m_data.grid().vel_pos;
         std::copy(vpos.begin(), vpos.end(), pos.begin());
     }
 
     void update_velocities(const VecSlice& vel) override
     {
-        std::copy(vel.begin(), vel.end(), m_data.m_grid.vel.begin());
-        ops::update_velocities<ActTrait>(m_data);
+        std::copy(vel.begin(), vel.end(), m_data.grid().vel.begin());
+        ops::UpdateVelOp<ActTrait, SrcTrait>()(m_data);
     }
 
-    void compute_forces() override { ops::compute_forces<ActTrait>(m_data); }
+    void compute_forces() override
+    {
+        ops::ComputeForceOp<ActTrait, SrcTrait>()(m_data);
+        m_src_op.setup_op();
+    }
+
+    void compute_source_term(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Geometry& geom) override
+    {
+        m_src_op(lev, mfi, geom);
+    }
+
+    void prepare_outputs(const std::string& out_dir) override
+    {
+        m_out_op.prepare_outputs(out_dir);
+    }
+
+    void write_outputs() override { m_out_op.write_outputs(); }
 };
 
 template <typename ActTrait, typename SrcTrait>
@@ -126,19 +162,20 @@ void ActModel<ActTrait, SrcTrait>::setup_actuator_source(
     ops::determine_root_proc<ActTrait>(m_data, act_proc_count);
     {
         // Sanity checks
-        const auto& info = m_data.m_info;
+        const auto& info = m_data.info();
         const auto& plist = info.procs;
         AMREX_ALWAYS_ASSERT(info.root_proc > -1);
         AMREX_ALWAYS_ASSERT(plist.find(info.root_proc) != plist.end());
     }
-    ops::init_data_structures<ActTrait>(m_data);
+    ops::InitDataOp<ActTrait, SrcTrait>()(m_data);
+    m_src_op.initialize();
 }
 
 template <typename ActTrait, typename SrcTrait>
 int ActModel<ActTrait, SrcTrait>::num_velocity_points() const
 {
-    auto& info = m_data.m_info;
-    auto& grid = m_data.m_grid;
+    auto& info = m_data.info();
+    auto& grid = m_data.grid();
 
     return (info.actuator_in_proc) ? grid.vel.size() : 0;
 }

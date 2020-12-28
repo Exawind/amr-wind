@@ -24,15 +24,48 @@ struct WingBaseData
     //! Ending coordinate of the wing
     vs::Vector end;
 
-    //! Normal to the wing
-    vs::Vector normal{0.0, 0.0, 1.0};
-
     //! Gaussian smearing factor input by user
     vs::Vector eps_inp;
 
     //! Pitch angle for the wing
     amrex::Real pitch{0.0};
+
+    //! Relative velocity at the actuator node
+    VecList vel_rel;
+
+    //! Width of actuator sections
+    RealList dx;
+
+    //! Angle of attack at actuator nodes
+    RealList aoa;
+
+    //! Computed lift coefficient at actuator nodes
+    RealList cl;
+
+    //! Computed drag coefficient at actuator nodes
+    RealList cd;
+
+    //! Chord length at the actuator nodes
+    RealList chord;
+
+    //! Total integrated lift over the wing
+    amrex::Real lift{0.0};
+
+    //! Total integrated drag over the wing
+    amrex::Real drag{0.0};
 };
+
+struct WingType : public ActuatorType
+{};
+
+namespace wing {
+struct AirfoilLookup
+{
+    virtual void operator()(
+        const amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const = 0;
+};
+
+} // namespace wing
 
 } // namespace actuator
 } // namespace amr_wind

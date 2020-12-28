@@ -41,15 +41,17 @@ public:
 
     void post_init_actions() override;
 
-    void post_regrid_actions() override {}
+    void post_regrid_actions() override;
 
-    void pre_advance_work() override {}
+    void pre_advance_work() override;
 
-    void post_advance_work() override {}
+    void post_advance_work() override;
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the flowfield
     int num_actuators() const { return m_actuators.size(); }
+
+    virtual void prepare_outputs();
 
 private:
     void setup_container();
@@ -59,6 +61,8 @@ private:
     void update_velocities();
 
     void compute_forces();
+
+    void compute_source_term();
 
     CFDSim& m_sim;
 

@@ -56,6 +56,7 @@ struct ActSrcDisk : ActSrcType
     static constexpr bool is_disk = false;
 };
 
+using RealList = amrex::Vector<amrex::Real>;
 using VecList = amrex::Vector<amr_wind::vs::Vector>;
 using VecSlice = utils::Slice<amr_wind::vs::Vector>;
 using TensorList = amrex::Vector<amr_wind::vs::Tensor>;
@@ -73,9 +74,6 @@ struct ActGrid
 
     //! Force vector at the forcing points
     VecList force;
-
-    //! Length of the actuator segment (centered around the node)
-    amrex::Vector<amrex::Real> dx;
 
     //! Gaussian smearing parameter
     VecList epsilon;
@@ -147,8 +145,9 @@ struct ActInfo
  *
  */
 template <typename ActTrait>
-struct ActDataHolder
+class ActDataHolder
 {
+private:
     //! Instance of the CFD simulation environment
     CFDSim& m_sim;
 
@@ -163,6 +162,7 @@ struct ActDataHolder
     //! Additional data necessary for a given actuator type
     typename ActTrait::MetaType m_meta;
 
+public:
     /** Initialize the data structures
      *
      *  \param sim Instance of the CFD simulation environment
@@ -172,6 +172,18 @@ struct ActDataHolder
     ActDataHolder(CFDSim& sim, const std::string& label, const int id)
         : m_sim(sim), m_info(label, id), m_grid(), m_meta()
     {}
+
+    CFDSim& sim() { return m_sim; }
+    const CFDSim& sim() const { return m_sim; }
+
+    typename ActTrait::InfoType& info() { return m_info; }
+    const typename ActTrait::InfoType& info() const { return m_info; }
+
+    typename ActTrait::GridType& grid() { return m_grid; }
+    const typename ActTrait::GridType& grid() const { return m_grid; }
+
+    typename ActTrait::MetaType& meta() { return m_meta; }
+    const typename ActTrait::MetaType& meta() const { return m_meta; }
 };
 
 } // namespace actuator
