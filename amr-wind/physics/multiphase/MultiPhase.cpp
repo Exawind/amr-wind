@@ -6,6 +6,7 @@
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 #include <AMReX_MultiFabUtil.H>
+#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind {
 
@@ -18,6 +19,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("interface_capturing_method", m_interface_model);
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
+    pp_multiphase.query("verbose", m_verbose);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -75,8 +77,9 @@ void MultiPhase::post_advance_work()
     }
     m_density.fillpatch(m_sim.time().current_time());
 
-    // Compute the total volume fraction
-    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
+    // Compute the print the total volume fraction
+    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF &&
+        m_verbose > 0) {
         m_total_volfrac = volume_fraction_sum();
         const auto& geom = m_sim.mesh().Geom();
         const amrex::Real total_vol = geom[0].ProbDomain().volume();
@@ -99,7 +102,7 @@ amrex::Real MultiPhase::volume_fraction_sum()
     const auto grids = mesh.boxArray();
     const auto dmap = mesh.DistributionMap();
 
-    amrex::Real TotalVolumeFrac = 0.0;
+    amrex::Real total_volume_frac = 0.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -120,22 +123,22 @@ amrex::Real MultiPhase::volume_fraction_sum()
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
 
-        TotalVolumeFrac += amrex::ReduceSum(
+        total_volume_frac += amrex::ReduceSum(
             vof, level_mask, 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& volfrac,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real Vol_Fab = 0.0;
-                amrex::Loop(bx, [=, &Vol_Fab](int i, int j, int k) noexcept {
-                    Vol_Fab += volfrac(i, j, k) * mask_arr(i, j, k) * cell_vol;
+                amrex::Real vol_fab = 0.0;
+                amrex::Loop(bx, [=, &vol_fab](int i, int j, int k) noexcept {
+                    vol_fab += volfrac(i, j, k) * mask_arr(i, j, k) * cell_vol;
                 });
-                return Vol_Fab;
+                return vol_fab;
             });
     }
-    amrex::ParallelDescriptor::ReduceRealSum(TotalVolumeFrac);
+    amrex::ParallelDescriptor::ReduceRealSum(total_volume_frac);
 
-    return TotalVolumeFrac;
+    return total_volume_frac;
 }
 
 void MultiPhase::set_density_via_levelset()
@@ -205,10 +208,8 @@ void MultiPhase::levelset2vof()
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
 
-    const amrex::Real normal_default = 0.0;
     auto& normal = m_sim.repo().get_field("interface_normal");
-    BCScalar bc_normal(normal);
-    bc_normal(normal_default);
+    normal.set_default_fillpatch_bc(m_sim.time());
     (*m_levelset).fillpatch(m_sim.time().new_time());
     fvm::gradient(normal, (*m_levelset));
     normal.fillpatch(m_sim.time().new_time());

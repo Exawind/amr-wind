@@ -6,8 +6,8 @@
 namespace amr_wind {
 namespace pde {
 
-/** Field registration operator for Levelset equation system
- *  \ingroup levelset
+/** Field registration operator for VOF equation system
+ *  \ingroup vof
  */
 template <typename Scheme>
 struct FieldRegOp<VOF, Scheme>
@@ -31,9 +31,8 @@ struct FieldRegOp<VOF, Scheme>
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
-        iomgr.register_io_var(levelset.name());
-        // iomgr.register_io_var(normal.name());
-        iomgr.register_io_var(curvature.name());
+        iomgr.register_output_var(levelset.name());
+        iomgr.register_output_var(curvature.name());
 
         return fields;
     }
