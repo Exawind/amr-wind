@@ -58,39 +58,42 @@ InterfaceCapturingMethod MultiPhase::interface_capturing_method()
 
 void MultiPhase::post_init_actions()
 {
-
-    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
+    switch (m_interface_capturing_method) {
+    case InterfaceCapturingMethod::VOF:
         levelset2vof();
         set_density_via_vof();
-    } else if (m_interface_capturing_method == InterfaceCapturingMethod::LS) {
+        break;
+    case InterfaceCapturingMethod::LS:
         set_density_via_levelset();
-    }
+        break;
+    };
     m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::post_advance_work()
 {
-    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF) {
+    switch (m_interface_capturing_method) {
+    case InterfaceCapturingMethod::VOF:
         set_density_via_vof();
-    } else if (m_interface_capturing_method == InterfaceCapturingMethod::LS) {
+        // Compute the print the total volume fraction
+        if (m_verbose > 0) {
+            m_total_volfrac = volume_fraction_sum();
+            const auto& geom = m_sim.mesh().Geom();
+            const amrex::Real total_vol = geom[0].ProbDomain().volume();
+            amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
+            amrex::Print() << "   Water Volume Fractions Sum : "
+                           << m_total_volfrac << std::endl;
+            amrex::Print() << "   Air Volume Fractions Sum : "
+                           << total_vol - m_total_volfrac << std::endl;
+            amrex::Print() << " " << std::endl;
+        }
+        break;
+    case InterfaceCapturingMethod::LS:
         set_density_via_levelset();
-    }
+        break;
+    };
     m_density.fillpatch(m_sim.time().current_time());
-
-    // Compute the print the total volume fraction
-    if (m_interface_capturing_method == InterfaceCapturingMethod::VOF &&
-        m_verbose > 0) {
-        m_total_volfrac = volume_fraction_sum();
-        const auto& geom = m_sim.mesh().Geom();
-        const amrex::Real total_vol = geom[0].ProbDomain().volume();
-        amrex::Print() << "Volume of Fluid diagnostics:" << std::endl;
-        amrex::Print() << "   Water Volume Fractions Sum : " << m_total_volfrac
-                       << std::endl;
-        amrex::Print() << "   Air Volume Fractions Sum : "
-                       << total_vol - m_total_volfrac << std::endl;
-        amrex::Print() << " " << std::endl;
-    }
-}
+} // namespace amr_wind
 
 amrex::Real MultiPhase::volume_fraction_sum()
 {
@@ -229,8 +232,8 @@ void MultiPhase::levelset2vof()
 
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Do a linear recontruction of the interface based on least
-                    // squares
+                    // Do a linear recontruction of the interface based on
+                    // least squares
                     ifacenorm(i, j, k, 0) = -ifacenorm(i, j, k, 0) * dx[0];
                     ifacenorm(i, j, k, 1) = -ifacenorm(i, j, k, 1) * dx[1];
                     ifacenorm(i, j, k, 2) = -ifacenorm(i, j, k, 2) * dx[2];
