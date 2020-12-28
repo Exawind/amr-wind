@@ -98,8 +98,8 @@ void prepare_netcdf_file(
     auto grp = ncf.def_group(info.label);
     grp.put_attr("angle_of_attack", std::vector<double>{meta.pitch});
     grp.put_attr(
-        "epsilon", std::vector<double>{meta.eps_inp.x(), meta.eps_inp.y(),
-                                       meta.eps_inp.z()});
+        "epsilon", std::vector<double>{
+            meta.eps_inp.x(), meta.eps_inp.y(), meta.eps_inp.z()});
     grp.def_dim(np_name, meta.num_pts);
     grp.def_var("time", NC_DOUBLE, {nt_name});
     grp.def_var("integrated_lift", NC_DOUBLE, {nt_name});
@@ -116,10 +116,9 @@ void prepare_netcdf_file(
     ncf.exit_def_mode();
 
     {
-        const std::vector<size_t> start{0, 0};
-        const std::vector<size_t> count{static_cast<size_t>(meta.num_pts),
-                                        AMREX_SPACEDIM};
         const size_t npts = static_cast<size_t>(meta.num_pts);
+        const std::vector<size_t> start{0, 0};
+        const std::vector<size_t> count{npts, AMREX_SPACEDIM};
         auto xyz = grp.var("xyz");
         xyz.put(&(grid.pos[0][0]), start, count);
         auto chord = grp.var("chord");

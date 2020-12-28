@@ -193,7 +193,7 @@ void Actuator::prepare_outputs()
         amrex::CreateDirectoryFailed(sname);
     }
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    for (auto& ac: m_actuators) {
+    for (auto& ac : m_actuators) {
         if (ac->info().root_proc == iproc) {
             ac->prepare_outputs(sname);
         }
@@ -203,7 +203,7 @@ void Actuator::prepare_outputs()
 void Actuator::post_advance_work()
 {
     const int iproc = amrex::ParallelDescriptor::MyProc();
-    for (auto& ac: m_actuators) {
+    for (auto& ac : m_actuators) {
         if (ac->info().root_proc == iproc) {
             ac->write_outputs();
         }
