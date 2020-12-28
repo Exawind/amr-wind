@@ -64,6 +64,23 @@ void Actuator::post_init_actions()
     update_positions();
     update_velocities();
     compute_forces();
+    compute_source_term();
+    prepare_outputs();
+}
+
+void Actuator::post_regrid_actions()
+{
+    amrex::Abort("Mesh adaptivity currently not supported with Actuator terms");
+}
+
+void Actuator::pre_advance_work()
+{
+    BL_PROFILE("amr-wind::actuator::Actuator::pre_advance_work");
+
+    update_positions();
+    update_velocities();
+    compute_forces();
+    compute_source_term();
 }
 
 /** Set up the container for sampling velocities
@@ -141,6 +158,54 @@ void Actuator::compute_forces()
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->compute_forces();
+        }
+    }
+}
+
+void Actuator::compute_source_term()
+{
+    m_act_source.setVal(0.0);
+    const int nlevels = m_sim.repo().num_active_levels();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& sfab = m_act_source(lev);
+        const auto& geom = m_sim.mesh().Geom(lev);
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+        for (amrex::MFIter mfi(sfab); mfi.isValid(); ++mfi) {
+            for (auto& ac : m_actuators) {
+                if (ac->info().actuator_in_proc) {
+                    ac->compute_source_term(lev, mfi, geom);
+                }
+            }
+        }
+    }
+}
+
+void Actuator::prepare_outputs()
+{
+    const std::string out_dir_prefix = "post_processing/actuator";
+    const std::string sname =
+        amrex::Concatenate(out_dir_prefix, m_sim.time().time_index());
+    if (!amrex::UtilCreateDirectory(sname, 0755)) {
+        amrex::CreateDirectoryFailed(sname);
+    }
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    for (auto& ac : m_actuators) {
+        if (ac->info().root_proc == iproc) {
+            ac->prepare_outputs(sname);
+        }
+    }
+}
+
+void Actuator::post_advance_work()
+{
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    for (auto& ac : m_actuators) {
+        if (ac->info().root_proc == iproc) {
+            ac->write_outputs();
         }
     }
 }

@@ -73,6 +73,10 @@ struct TensorT
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> y() const noexcept;
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> z() const noexcept;
 
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> cx() const noexcept;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> cy() const noexcept;
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> cz() const noexcept;
+
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& xx() noexcept { return vv[0]; }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& xy() noexcept { return vv[1]; }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& xz() noexcept { return vv[2]; }
