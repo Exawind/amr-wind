@@ -7,17 +7,15 @@
 namespace amr_wind {
 namespace multiphase {
 
-/**---------------------------------------------------------------
-// FD32 - Youngs Finite Difference Gradient Scheme
-// the gradient is computed with a multiplicative factor of -32:
-//  mm = - 32 * grad (c)
-//----------------------------------------------------------------
-//
-// Known problems: the index (1,1,1), i.e. the central cell in the block, never
-occurs:
-// Therefore an isolated droplet will have a normal with all components to zero.
-// Translated into f90 by Stephane Z.
-*/
+/** Young's finite-difference gradient scheme.
+ *
+ *  The gradient is computed with a multiplicative factor of -32:
+ *  \f[ mm = - 32 * \grad (c) \f]
+ *
+ *  Known problems: the index (1,1,1), i.e. the central cell in the block, never
+ *  occurs: Therefore an isolated droplet will have a normal with all components
+ *  to zero.
+ */
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void youngs_fd_normal(
     int i,
@@ -86,11 +84,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
     m2 = volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1) +
          volfrac(i + 1, j - 1, k) + volfrac(i + 1, j + 1, k) +
          volfrac(i + 1, j, k);
-    if (m1 > m2) {
-        m[0][0] = 1.0;
-    } else {
-        m[0][0] = -1.0;
-    }
+
+    m[0][0] = (m1 > m2) ? 1.0 : -1.0;
 
     m1 = volfrac(i - 1, j - 1, k) + volfrac(i + 1, j - 1, k) +
          volfrac(i, j - 1, k);
@@ -120,11 +115,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
          volfrac(i + 1, j + 1, k) + volfrac(i - 1, j + 1, k) +
          volfrac(i, j + 1, k);
 
-    if (m1 > m2) {
-        m[1][1] = 1.;
-    } else {
-        m[1][1] = -1.;
-    }
+    m[1][1] = (m1 > m2) ? 1.0 : -1.0;
 
     m1 = volfrac(i, j - 1, k - 1) + volfrac(i, j, k - 1) +
          volfrac(i, j + 1, k - 1);
@@ -154,11 +145,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
          volfrac(i, j - 1, k + 1) + volfrac(i, j + 1, k + 1) +
          volfrac(i, j, k + 1);
 
-    if (m1 > m2) {
-        m[2][2] = 1.;
-    } else {
-        m[2][2] = -1.;
-    }
+    m[2][2] = (m1 > m2) ? 1.0 : -1.0;
 
     // normalize each set (mx,my,mz): |mx|+|my|+|mz| = 1
     amrex::Real t0, t1, t2;

@@ -9,7 +9,7 @@ namespace amr_wind {
 namespace pde {
 
 /** Godunov scheme for VOF
- *  \ingroup icns
+ *  \ingroup vof
  */
 
 template <>
