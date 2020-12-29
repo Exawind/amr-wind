@@ -43,36 +43,24 @@ amrex::Real FieldNorms::L2_norm(amr_wind::Field& field, const int comp)
 
     const int finest_level = field.repo().num_active_levels() - 1;
     const auto& geom = field.repo().mesh().Geom();
-    const auto& dmap = field.repo().mesh().DistributionMap();
-    const auto& grids = field.repo().mesh().boxArray();
-    const int nghost = 0;
+    constexpr int nghost = 0;
 
     for (int lev = 0; lev <= finest_level; lev++) {
-
-        amrex::iMultiFab level_mask;
-        if (lev < finest_level) {
-            level_mask = amrex::makeFineMask(
-                grids[lev], dmap[lev], grids[lev + 1], amrex::IntVect(2), 1, 0);
-        } else {
-            level_mask.define(grids[lev], dmap[lev], 1, 0, amrex::MFInfo());
-            level_mask.setVal(1);
-        }
 
         const amrex::Real cell_vol = geom[lev].CellSize()[0] *
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
 
         nrm += amrex::ReduceSum(
-            field(lev), level_mask, nghost,
+            field(lev), nghost,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& field_arr,
-                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
                 amrex::Real nrm_fab = 0.0;
 
                 amrex::Loop(bx, [=, &nrm_fab](int i, int j, int k) noexcept {
-                    nrm_fab += cell_vol * mask_arr(i, j, k) *
-                               field_arr(i, j, k, comp) *
+                    nrm_fab += cell_vol * field_arr(i, j, k, comp) *
                                field_arr(i, j, k, comp);
                 });
                 return nrm_fab;
@@ -111,9 +99,6 @@ void FieldNorms::post_advance_work()
 void FieldNorms::prepare_ascii_file()
 {
     BL_PROFILE("amr-wind::FieldNorms::prepare_ascii_file");
-    amrex::Print()
-        << "WARNING: FieldNorms: ASCII output will impact performance"
-        << std::endl;
 
     const std::string post_dir = "post_processing";
     const std::string sname =
