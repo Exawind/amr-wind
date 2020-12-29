@@ -132,7 +132,7 @@ void SamplingContainer::initialize_particles(
             pp.cpu() = iproc;
 
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                pp.pos(n) = dpos[uid * AMREX_SPACEDIM + n];
+                pp.pos(n) = dpos[ip * AMREX_SPACEDIM + n];
             }
             pp.idata(IIx::uid) = uid;
             pp.idata(IIx::sid) = probe_id;
