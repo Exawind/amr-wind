@@ -97,9 +97,11 @@ void prepare_netcdf_file(
 
     auto grp = ncf.def_group(info.label);
     grp.put_attr("angle_of_attack", std::vector<double>{meta.pitch});
-    grp.put_attr(
-        "epsilon", std::vector<double>{
-                       meta.eps_inp.x(), meta.eps_inp.y(), meta.eps_inp.z()});
+    // clang-format off
+    grp.put_attr("epsilon",
+        std::vector<double>{meta.eps_inp.x(),
+                         meta.eps_inp.y(), meta.eps_inp.z()});
+    // clang-format on
     grp.def_dim(np_name, meta.num_pts);
     grp.def_var("time", NC_DOUBLE, {nt_name});
     grp.def_var("integrated_lift", NC_DOUBLE, {nt_name});

@@ -7,6 +7,13 @@
 
 namespace amr_wind {
 namespace actuator {
+
+template <>
+struct AirfoilTraits<FlatPlate>
+{
+    using AirfoilLookup = ThinAirfoil;
+};
+
 namespace ops {
 
 template <>
@@ -54,13 +61,12 @@ struct InitDataOp<FlatPlate, ActSrcLine>
         const int npts = wdata.num_pts;
         wdata.chord.assign(npts, wdata.chord_inp);
 
-        wdata.aflookup.cd_fac = wdata.cd_factor;
+        wdata.aflookup.cd_factor() = wdata.cd_factor;
     }
 };
 
 template <>
-inline const wing::AirfoilLookup&
-airfoil_lookup<FlatPlate>(FlatPlate::DataType& data)
+inline const ThinAirfoil& airfoil_lookup<FlatPlate>(FlatPlate::DataType& data)
 {
     return data.meta().aflookup;
 }

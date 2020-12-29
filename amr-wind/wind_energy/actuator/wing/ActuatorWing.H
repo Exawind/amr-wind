@@ -58,15 +58,6 @@ struct WingBaseData
 struct WingType : public ActuatorType
 {};
 
-namespace wing {
-struct AirfoilLookup
-{
-    virtual void operator()(
-        const amrex::Real aoa, amrex::Real& cl, amrex::Real& cd) const = 0;
-};
-
-} // namespace wing
-
 } // namespace actuator
 } // namespace amr_wind
 
