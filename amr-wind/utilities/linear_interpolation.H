@@ -109,10 +109,8 @@ inline typename std::iterator_traits<C2>::value_type linear(
 }
 
 template <typename C1, typename C2>
-inline typename C2::value_type linear(
-    const C1& xinp,
-    const C2& yinp,
-    const typename C1::value_type& xout)
+inline typename C2::value_type
+linear(const C1& xinp, const C2& yinp, const typename C1::value_type& xout)
 {
     return linear(std::begin(xinp), std::end(xinp), std::begin(yinp), xout);
 }
