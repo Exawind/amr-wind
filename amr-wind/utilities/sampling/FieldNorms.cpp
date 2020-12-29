@@ -110,8 +110,7 @@ void FieldNorms::prepare_ascii_file()
     m_out_fname = post_dir + "/" + sname + ".txt";
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
-        std::ofstream f;
-        f.open(m_out_fname.c_str());
+        std::ofstream f(m_out_fname.c_str());
         f << "time_step "
           << "time";
         for (int i = 0; i < m_var_names.size(); ++i) f << ' ' << m_var_names[i];
@@ -127,8 +126,7 @@ void FieldNorms::write_ascii()
     const std::string post_dir = "post_processing";
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
-        std::ofstream f;
-        f.open(m_out_fname.c_str(), std::ios_base::app);
+        std::ofstream f(m_out_fname.c_str(), std::ios_base::app);
         f << m_sim.time().time_index() << std::fixed
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();

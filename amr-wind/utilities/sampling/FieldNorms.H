@@ -4,13 +4,6 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/PostProcessing.H"
 
-/**
- *  \defgroup Field Norm utilities
- *  Field Norm utilities FIXME: need to update this
- *
- *  \ingroup utilities
- */
-
 namespace amr_wind {
 namespace field_norms {
 
