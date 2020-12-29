@@ -33,7 +33,7 @@ public:
     const VecList& polars() const { return m_polar; }
 
 protected:
-    AirfoilTable(const int num_entries);
+    explicit AirfoilTable(const int num_entries);
 
     void convert_aoa_to_radians();
 

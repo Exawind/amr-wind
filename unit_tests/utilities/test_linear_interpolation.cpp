@@ -76,7 +76,7 @@ TEST(LinearInterpolation, find_index)
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
     {
-        const auto idx = interp::find_index(&xvec[0], &(*xvec.end()), 5.0);
+        const auto idx = interp::find_index(xvec.data(), xvec.data() + 10, 5.0);
         EXPECT_EQ(idx.idx, 4);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
