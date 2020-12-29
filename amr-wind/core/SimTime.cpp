@@ -92,8 +92,7 @@ void SimTime::set_current_cfl(
     amrex::Real dt_new = 2.0 * m_max_cfl / cfl_unit_time;
 
     // Restrict timestep during initialization phase
-    if (m_is_init)
-        dt_new = amrex::min(m_init_shrink * dt_new, std::abs(m_fixed_dt));
+    if (m_is_init) dt_new *= m_init_shrink;
 
     // Limit timestep growth to 10% per timestep
     if (m_dt[0] > 0.0) dt_new = amrex::min(dt_new, 1.1 * m_dt[0]);
