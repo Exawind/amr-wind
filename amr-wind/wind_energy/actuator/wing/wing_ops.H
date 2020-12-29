@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/wing/ActuatorWing.H"
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
+#include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -36,7 +37,8 @@ void write_netcdf(
 namespace ops {
 
 template <typename T>
-const wing::AirfoilLookup& airfoil_lookup(typename T::DataType& data);
+const typename AirfoilTraits<T>::AirfoilLookup&
+airfoil_lookup(typename T::DataType& data);
 
 template <typename ActTrait, typename SrcTrait>
 struct UseDefaultOp

@@ -39,8 +39,10 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
     // const amrex::Real fac = 1.0 / std::sqrt(pi() * pi() * pi());
     constexpr amrex::Real fac = 0.17958712212516656;
     const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
-    const vs::Vector rr{
-        dist.x() / eps.x(), dist.y() / eps.y(), dist.z() / eps.z()};
+    // clang-format off
+    const vs::Vector rr{dist.x() / eps.x(), dist.y() / eps.y(),
+                        dist.z() / eps.z()};
+    // clang-format on
 
     return (fac / eps_fac) *
            std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());

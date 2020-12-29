@@ -6,4 +6,5 @@ target_sources(${amr_wind_lib_name}
   ActuatorContainer.cpp
   )
 
+add_subdirectory(aero)
 add_subdirectory(wing)
