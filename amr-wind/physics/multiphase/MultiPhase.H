@@ -14,7 +14,10 @@
  */
 namespace amr_wind {
 
-enum class InterfaceTrackingMethod { VOF, LS };
+enum class InterfaceCapturingMethod {
+    VOF, ///< Volume of fluid
+    LS   ///< Levelset
+};
 
 class MultiPhase : public Physics::Register<MultiPhase>
 {
@@ -41,7 +44,9 @@ public:
 
     void levelset2vof();
 
-    InterfaceTrackingMethod interface_tracking_method();
+    amrex::Real volume_fraction_sum();
+
+    InterfaceCapturingMethod interface_capturing_method();
 
 private:
     const CFDSim& m_sim;
@@ -63,8 +68,14 @@ private:
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};
-    InterfaceTrackingMethod m_interface_tracking_method =
-        InterfaceTrackingMethod::VOF;
+    InterfaceCapturingMethod m_interface_capturing_method =
+        InterfaceCapturingMethod::VOF;
+
+    // Verbose flag for multiphase
+    int m_verbose{0};
+
+    // sum of volume fractions (for vof only)
+    amrex::Real m_total_volfrac;
 };
 
 } // namespace amr_wind
