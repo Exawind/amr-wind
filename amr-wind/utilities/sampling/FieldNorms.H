@@ -45,7 +45,6 @@ public:
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 private:
-
     //! prepare ASCII file and directory
     void prepare_ascii_file();
 
@@ -63,9 +62,6 @@ private:
 
     //! List holding norms for all fields and their components
     amrex::Vector<amrex::Real> m_fnorms;
-
-    //! List of fields to be sampled for this collection of probes
-    amrex::Vector<Field*> m_fields;
 
     /** Name of this sampling object.
      *

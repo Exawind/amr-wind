@@ -18,20 +18,14 @@ void FieldNorms::initialize()
 {
     BL_PROFILE("amr-wind::FieldNorms::initialize");
 
-    // Labels for the different sampler types
-    amrex::Vector<std::string> labels;
-    // Fields to be sampled - requested by user
-    amrex::Vector<std::string> field_names;
-
     {
         amrex::ParmParse pp(m_label);
-        pp.queryarr("fields", field_names);
         pp.query("output_frequency", m_out_freq);
     }
 
-    auto & io_man = m_sim.io_manager();
+    auto& io_mng = m_sim.io_manager();
     int ncomp = 0;
-    for(const auto& fld : io_man.plot_fields()){
+    for (const auto& fld : io_mng.plot_fields()) {
         ncomp += fld->num_comp();
         ioutils::add_var_names(m_var_names, fld->name(), fld->num_comp());
     }
@@ -39,7 +33,6 @@ void FieldNorms::initialize()
     m_fnorms.resize(m_var_names.size(), 0.0);
 
     prepare_ascii_file();
-
 }
 
 amrex::Real FieldNorms::L2_norm(amr_wind::Field& field, const int comp)
@@ -96,8 +89,7 @@ amrex::Real FieldNorms::L2_norm(amr_wind::Field& field, const int comp)
 void FieldNorms::process_field_norms()
 {
     int ind = 0;
-    for (int field = 0; field < m_fields.size(); ++field) {
-        const auto fld = m_fields[field];
+    for (const auto& fld : m_sim.io_manager().plot_fields()) {
         for (int comp = 0; comp < fld->num_comp(); ++comp) {
             m_fnorms[ind++] = L2_norm(*fld, comp);
         }
@@ -115,7 +107,6 @@ void FieldNorms::post_advance_work()
     process_field_norms();
     write_ascii();
 }
-
 
 void FieldNorms::prepare_ascii_file()
 {
