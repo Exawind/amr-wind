@@ -77,6 +77,8 @@ public:
 
     bool is_restart() const { return !m_restart_file.empty(); }
 
+    const amrex::Vector<Field*> plot_fields() const { return m_plt_fields;}
+
 private:
     void write_header(const std::string&);
 

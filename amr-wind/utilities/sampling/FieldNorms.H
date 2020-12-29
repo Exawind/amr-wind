@@ -44,15 +44,7 @@ public:
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
-protected:
-    //! Output data based on user-defined format
-    void process_output();
-
-    //! Prepare NetCDF metadata
-    void prepare_netcdf_file();
-
-    //! Write sampled data into a NetCDF file
-    void write_netcdf();
+private:
 
     //! prepare ASCII file and directory
     void prepare_ascii_file();
@@ -63,12 +55,13 @@ protected:
     //!  process all fields and calculate norms
     void process_field_norms();
 
-private:
+    //! Reference to the CFD sim
     CFDSim& m_sim;
 
     //! List of variable names for output
     amrex::Vector<std::string> m_var_names;
 
+    //! List holding norms for all fields and their components
     amrex::Vector<amrex::Real> m_fnorms;
 
     //! List of fields to be sampled for this collection of probes
@@ -81,17 +74,11 @@ private:
      */
     const std::string m_label;
 
-    //! Format of the data output (native, ascii, netcdf, etc.)
-#ifdef AMR_WIND_USE_NETCDF
-    std::string m_out_fmt{"netcdf"};
-    std::string m_ncfile_name;
-#else
-    std::string m_out_fmt{"native"};
+    //! filename for ASCII output
     std::string m_out_fname;
-#endif
 
     //! Frequency of data sampling and output
-    int m_out_freq{100};
+    int m_out_freq{10};
 
     //! width in ASCII output
     int m_width{18};
