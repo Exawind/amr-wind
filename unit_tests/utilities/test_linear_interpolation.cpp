@@ -43,20 +43,17 @@ TEST(LinearInterpolation, bisection_search)
     const auto* start = xvec.data();
     const auto* end = xvec.data() + xvec.size();
     {
-        const auto idx =
-            interp::bisection_search(start, end, 5.0);
+        const auto idx = interp::bisection_search(start, end, 5.0);
         EXPECT_EQ(idx.idx, 4);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
     {
-        const auto idx =
-            interp::bisection_search(start, end, -1.0);
+        const auto idx = interp::bisection_search(start, end, -1.0);
         EXPECT_EQ(idx.idx, 0);
         EXPECT_EQ(idx.lim, interp::Limits::LOWLIM);
     }
     {
-        const auto idx =
-            interp::bisection_search(start, end, 9.1);
+        const auto idx = interp::bisection_search(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
