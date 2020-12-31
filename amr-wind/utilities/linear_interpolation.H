@@ -99,7 +99,7 @@ inline typename std::iterator_traits<C2>::value_type linear(
         int j = idx.idx;
         const auto denom = (xbegin[j + 1] - xbegin[j]);
         const auto facR = (denom > eps) ? ((xout - xbegin[j]) / denom) : 1.0;
-        const auto facL = static_cast<typename C1::value_type>(1.0) - facR;
+        const auto facL = static_cast<DType1>(1.0) - facR;
         yout = facL * yinp[j] + facR * yinp[j + 1];
         break;
     }
@@ -112,7 +112,7 @@ template <typename C1, typename C2>
 inline typename C2::value_type
 linear(const C1& xinp, const C2& yinp, const typename C1::value_type& xout)
 {
-    return linear(std::begin(xinp), std::end(xinp), std::begin(yinp), xout);
+    return linear(xinp.data(), (xinp.data() + xinp.size()), yinp.data(), xout);
 }
 
 template <typename C1, typename C2>
@@ -127,7 +127,8 @@ linear_monotonic(const C1& xinp, const C2& yinp, const C1& xout, C2& yout)
     int npts = xout.size();
     for (int i = 0; i < npts; ++i) {
         const auto& x = xout[i];
-        const auto idx = find_index(xinp.begin(), xinp.end(), x, hint);
+        const auto idx =
+            find_index(xinp.data(), (xinp.data() + xinp.size()), x, hint);
 
         switch (idx.lim) {
         case Limits::LOWLIM:

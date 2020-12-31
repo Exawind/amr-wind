@@ -14,19 +14,21 @@ TEST(LinearInterpolation, check_bounds)
     std::vector<amrex::Real> xvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0);
 
+    const auto* start = xvec.data();
+    const auto* end = xvec.data() + xvec.size();
     {
-        const auto idx = interp::check_bounds(xvec.begin(), xvec.end(), -1.0);
+        const auto idx = interp::check_bounds(start, end, -1.0);
         EXPECT_EQ(idx.idx, 0);
         EXPECT_EQ(idx.lim, interp::Limits::LOWLIM);
     }
     {
-        const auto idx = interp::check_bounds(xvec.begin(), xvec.end(), 9.1);
+        const auto idx = interp::check_bounds(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
     {
         const amrex::Real xinp = 9.0 * amrex::Random();
-        const auto idx = interp::check_bounds(xvec.begin(), xvec.end(), xinp);
+        const auto idx = interp::check_bounds(start, end, xinp);
         EXPECT_EQ(idx.idx, 0);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
@@ -38,27 +40,23 @@ TEST(LinearInterpolation, bisection_search)
     std::vector<amrex::Real> xvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0);
 
+    const auto* start = xvec.data();
+    const auto* end = xvec.data() + xvec.size();
     {
         const auto idx =
-            interp::bisection_search(xvec.begin(), xvec.end(), 5.0);
+            interp::bisection_search(start, end, 5.0);
         EXPECT_EQ(idx.idx, 4);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
     {
         const auto idx =
-            interp::bisection_search(xvec.data(), xvec.data() + 10, 5.0);
-        EXPECT_EQ(idx.idx, 4);
-        EXPECT_EQ(idx.lim, interp::Limits::VALID);
-    }
-    {
-        const auto idx =
-            interp::bisection_search(xvec.begin(), xvec.end(), -1.0);
+            interp::bisection_search(start, end, -1.0);
         EXPECT_EQ(idx.idx, 0);
         EXPECT_EQ(idx.lim, interp::Limits::LOWLIM);
     }
     {
         const auto idx =
-            interp::bisection_search(xvec.begin(), xvec.end(), 9.1);
+            interp::bisection_search(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
@@ -70,28 +68,25 @@ TEST(LinearInterpolation, find_index)
     std::vector<amrex::Real> xvec(10);
     std::iota(xvec.begin(), xvec.end(), 0.0);
 
+    const auto* start = xvec.data();
+    const auto* end = xvec.data() + xvec.size();
     {
-        const auto idx = interp::find_index(xvec.begin(), xvec.end(), 5.0);
+        const auto idx = interp::find_index(start, end, 5.0);
         EXPECT_EQ(idx.idx, 4);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
     {
-        const auto idx = interp::find_index(xvec.data(), xvec.data() + 10, 5.0);
+        const auto idx = interp::find_index(start, end, 5.0, 3);
         EXPECT_EQ(idx.idx, 4);
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
     {
-        const auto idx = interp::find_index(xvec.begin(), xvec.end(), 5.0, 3);
-        EXPECT_EQ(idx.idx, 4);
-        EXPECT_EQ(idx.lim, interp::Limits::VALID);
-    }
-    {
-        const auto idx = interp::find_index(xvec.begin(), xvec.end(), -1.0);
+        const auto idx = interp::find_index(start, end, -1.0);
         EXPECT_EQ(idx.idx, 0);
         EXPECT_EQ(idx.lim, interp::Limits::LOWLIM);
     }
     {
-        const auto idx = interp::find_index(xvec.begin(), xvec.end(), 9.1);
+        const auto idx = interp::find_index(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
