@@ -35,13 +35,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_advection(
     fluxR(i, j, k) = 0.0;
 
     if (std::abs(volfrac(i, j, k) - 1.0) <= tiny) {
-        fluxL(i, j, k) = std::max(-aL, 0.0);
-        fluxC(i, j, k) = 1.0 - std::max(aL, 0.0) + std::min(aR, 0.0);
-        fluxR(i, j, k) = std::max(aR, 0.0);
+        fluxL(i, j, k) = amrex::max(-aL, 0.0);
+        fluxC(i, j, k) = 1.0 - amrex::max(aL, 0.0) + amrex::min(aR, 0.0);
+        fluxR(i, j, k) = amrex::max(aR, 0.0);
     } else if (volfrac(i, j, k) > 0.0) {
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
-        mmL = std::max(aL, 0.0);
-        mmR = 1.0 - mmL + std::min(0.0, aR);
+        mmL = amrex::max(aL, 0.0);
+        mmR = 1.0 - mmL + amrex::min(0.0, aR);
         if (dim == 1) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
@@ -130,7 +130,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_fluxes(
             fluxR(i, j, k - 1) + fluxC(i, j, k) + fluxL(i, j, k + 1);
     }
     // Do clipping
-    volfrac(i, j, k) = std::max(0.0, std::min(1.0, volfrac(i, j, k)));
+    volfrac(i, j, k) = amrex::max(0.0, amrex::min(1.0, volfrac(i, j, k)));
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void remove_vof_debris(
