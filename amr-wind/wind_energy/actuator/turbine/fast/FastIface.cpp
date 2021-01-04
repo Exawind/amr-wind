@@ -17,7 +17,7 @@ namespace {
 template <typename FType, class... Args>
 inline void fast_func(const FType&& func, Args... args)
 {
-    int ierr;
+    int ierr = ErrID_None;
     char err_msg[fast_strlen()];
     func(std::forward<Args>(args)..., &ierr, err_msg);
     if (ierr >= ErrID_Fatal) {
@@ -45,7 +45,7 @@ FastIface::FastIface(const amr_wind::CFDSim&) {}
 
 FastIface::~FastIface()
 {
-    int ierr;
+    int ierr = ErrID_None;
     char err_msg[fast_strlen()];
     FAST_DeallocateTurbines(&ierr, err_msg);
 

@@ -61,8 +61,7 @@ void Actuator::post_init_actions()
         AMREX_ALWAYS_ASSERT(num_actuators() == nact);
     }
 
-    for (auto& act : m_actuators)
-        act->init_actuator_source();
+    for (auto& act : m_actuators) act->init_actuator_source();
 
     setup_container();
     update_positions();

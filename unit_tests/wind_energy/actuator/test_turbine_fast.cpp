@@ -80,7 +80,8 @@ TEST_F(ActTurbineFastTest, test_ops)
     act::utils::ActParser pp("Actuator.TurbineFastLine", "Actuator.T1");
     act::ActDataHolder<act::TurbineFast> data(sim(), "T1", 0);
     {
-        using ReadOp = act::ops::ReadInputsOp<act::TurbineFast, act::ActSrcLine>;
+        using ReadOp =
+            act::ops::ReadInputsOp<act::TurbineFast, act::ActSrcLine>;
         ReadOp op;
         op(data, pp);
     }
@@ -88,7 +89,7 @@ TEST_F(ActTurbineFastTest, test_ops)
     amrex::Vector<int> act_proc_count(::amrex::ParallelDescriptor::NProcs(), 0);
     act::ops::determine_root_proc<act::TurbineFast>(data, act_proc_count);
 
-#ifdef AW_ENABLE_OPENFAST_UTEST
+#if AW_ENABLE_OPENFAST_UTEST
     {
         using InitOp = act::ops::InitDataOp<act::TurbineFast, act::ActSrcLine>;
         InitOp op;
@@ -132,7 +133,7 @@ TEST_F(ActTurbineFastTest, fast_turbine)
 
     ActTurbPhyTest act(sim());
     act.pre_init_actions();
-#ifdef AW_ENABLE_OPENFAST_UTEST
+#if AW_ENABLE_OPENFAST_UTEST
     act.post_init_actions();
 #else
     GTEST_SKIP();

@@ -17,7 +17,9 @@ struct TurbineInfo : public ActInfo
     //! Hub height of this turbine
     amrex::Real hub_height{0.0};
 
-    TurbineInfo(const std::string& label, const int id) : ActInfo(label, id) {}
+    TurbineInfo(const std::string& label_in, const int id_in)
+        : ActInfo(label_in, id_in)
+    {}
 };
 
 struct ComponentView

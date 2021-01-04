@@ -79,7 +79,7 @@ TEST_F(FastIfaceTest, fast_init)
     fast.init_solution(fi.tid_local);
     EXPECT_FALSE(fi.is_solution0);
 
-    for (int i=0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i) {
         fast.advance_turbine(fi.tid_local);
     }
     EXPECT_EQ(fi.time_index, 20);
@@ -131,6 +131,5 @@ TEST_F(FastIfaceTest, fast_replay)
     GTEST_SKIP();
 #endif
 }
-
 
 } // namespace amr_wind_tests

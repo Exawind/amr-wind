@@ -112,7 +112,7 @@ void NCVar::put(
     const std::vector<ptrdiff_t>& stride) const
 {
     check_nc_error(nc_put_vars_float(
-                       ncid, varid, start.data(), count.data(), stride.data(), dptr));
+        ncid, varid, start.data(), count.data(), stride.data(), dptr));
 }
 
 void NCVar::put(
@@ -184,7 +184,7 @@ void NCVar::get(
     const std::vector<ptrdiff_t>& stride) const
 {
     check_nc_error(nc_get_vars_float(
-                       ncid, varid, start.data(), count.data(), stride.data(), dptr));
+        ncid, varid, start.data(), count.data(), stride.data(), dptr));
 }
 
 void NCVar::get(
@@ -231,7 +231,7 @@ void NCVar::put_attr(
     const std::string& name, const std::vector<float>& value) const
 {
     check_nc_error(nc_put_att_float(
-                       ncid, varid, name.data(), NC_FLOAT, value.size(), value.data()));
+        ncid, varid, name.data(), NC_FLOAT, value.size(), value.data()));
 }
 
 void NCVar::put_attr(
