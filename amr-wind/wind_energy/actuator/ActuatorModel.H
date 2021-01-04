@@ -39,7 +39,9 @@ public:
 
     virtual void read_inputs(const utils::ActParser&) = 0;
 
-    virtual void setup_actuator_source(amrex::Vector<int>&) = 0;
+    virtual void determine_influenced_procs(amrex::Vector<int>&) = 0;
+
+    virtual void init_actuator_source() = 0;
 
     virtual int num_velocity_points() const = 0;
 
@@ -116,7 +118,8 @@ public:
         m_out_op.read_io_options(pp);
     }
 
-    void setup_actuator_source(amrex::Vector<int>& act_proc_count) override;
+    void
+    determine_influenced_procs(amrex::Vector<int>& act_proc_count) override;
 
     int num_velocity_points() const override;
 
@@ -153,10 +156,16 @@ public:
     }
 
     void write_outputs() override { m_out_op.write_outputs(); }
+
+    void init_actuator_source() override
+    {
+        ops::InitDataOp<ActTrait, SrcTrait>()(m_data);
+        m_src_op.initialize();
+    }
 };
 
 template <typename ActTrait, typename SrcTrait>
-void ActModel<ActTrait, SrcTrait>::setup_actuator_source(
+void ActModel<ActTrait, SrcTrait>::determine_influenced_procs(
     amrex::Vector<int>& act_proc_count)
 {
     ops::determine_root_proc<ActTrait>(m_data, act_proc_count);
@@ -167,8 +176,6 @@ void ActModel<ActTrait, SrcTrait>::setup_actuator_source(
         AMREX_ALWAYS_ASSERT(info.root_proc > -1);
         AMREX_ALWAYS_ASSERT(plist.find(info.root_proc) != plist.end());
     }
-    ops::InitDataOp<ActTrait, SrcTrait>()(m_data);
-    m_src_op.initialize();
 }
 
 template <typename ActTrait, typename SrcTrait>
@@ -177,7 +184,7 @@ int ActModel<ActTrait, SrcTrait>::num_velocity_points() const
     auto& info = m_data.info();
     auto& grid = m_data.grid();
 
-    return (info.actuator_in_proc) ? grid.vel.size() : 0;
+    return (info.sample_vel_in_proc) ? grid.vel.size() : 0;
 }
 
 } // namespace actuator

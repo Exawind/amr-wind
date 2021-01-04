@@ -51,7 +51,8 @@ void Actuator::post_init_actions()
     BL_PROFILE("amr-wind::actuator::Actuator::post_init_actions");
 
     amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
-    for (auto& act : m_actuators) act->setup_actuator_source(act_proc_count);
+    for (auto& act : m_actuators)
+        act->determine_influenced_procs(act_proc_count);
 
     {
         // Sanity check that we have processed the turbines correctly
@@ -59,6 +60,9 @@ void Actuator::post_init_actions()
             std::accumulate(act_proc_count.begin(), act_proc_count.end(), 0);
         AMREX_ALWAYS_ASSERT(num_actuators() == nact);
     }
+
+    for (auto& act : m_actuators)
+        act->init_actuator_source();
 
     setup_container();
     update_positions();
@@ -94,13 +98,13 @@ void Actuator::setup_container()
     const int ntotal = num_actuators();
     const int nlocal = std::count_if(
         m_actuators.begin(), m_actuators.end(),
-        [](const auto& obj) { return obj->info().actuator_in_proc; });
+        [](const auto& obj) { return obj->info().sample_vel_in_proc; });
 
     m_container.reset(new ActuatorContainer(m_sim.mesh(), nlocal));
 
     auto& pinfo = m_container->m_data;
     for (int i = 0, il = 0; i < ntotal; ++i) {
-        if (m_actuators[i]->info().actuator_in_proc) {
+        if (m_actuators[i]->info().sample_vel_in_proc) {
             pinfo.global_id[il] = i;
             pinfo.num_pts[il] = m_actuators[i]->num_velocity_points();
             ++il;

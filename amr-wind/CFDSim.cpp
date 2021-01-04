@@ -3,6 +3,7 @@
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
+#include "amr-wind/core/ExtSolver.H"
 
 #ifdef AMREX_USE_DPCPP
 #include "amr-wind/turbulence/turbulence_utils.H"
@@ -19,6 +20,7 @@ CFDSim::CFDSim(amrex::AmrCore& mesh)
     , m_pde_mgr(*this)
     , m_io_mgr(new IOManager(*this))
     , m_post_mgr(new PostProcessManager(*this))
+    , m_ext_solver_mgr(new ExtSolverMgr)
 {}
 
 CFDSim::~CFDSim() = default;

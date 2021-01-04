@@ -109,6 +109,18 @@ public:
     AMREX_FORCE_INLINE
     int regrid_interval() const { return m_regrid_interval; }
 
+    AMREX_FORCE_INLINE
+    amrex::Real start_time() const { return m_start_time; }
+
+    AMREX_FORCE_INLINE
+    amrex::Real stop_time() const { return m_stop_time; }
+
+    AMREX_FORCE_INLINE
+    int start_time_index() const { return m_start_time_index; }
+
+    AMREX_FORCE_INLINE
+    int stop_time_index() const { return m_stop_time_index; }
+
     //! Read user defined options from input file
     void parse_parameters();
 

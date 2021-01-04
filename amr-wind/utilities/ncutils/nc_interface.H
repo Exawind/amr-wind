@@ -19,6 +19,17 @@
 
 namespace ncutils {
 
+//! Wrapper around NetCDF data types
+struct NCDType
+{
+    static constexpr nc_type Int = NC_INT;
+#ifdef AMREX_USE_FLOAT
+    static constexpr nc_type Real = NC_FLOAT;
+#else
+    static constexpr nc_type Real = NC_DOUBLE;
+#endif
+};
+
 //! Representation of NetCDF dimension
 struct NCDim
 {
@@ -55,6 +66,7 @@ struct NCVar
 
     //! Write out the entire variable
     void put(const double*) const;
+    void put(const float*) const;
     void put(const int*) const;
 
     //! Write out a slice of data
@@ -70,6 +82,19 @@ struct NCVar
         const std::vector<size_t>&,
         const std::vector<size_t>&,
         const std::vector<ptrdiff_t>&) const;
+    //! Write out a slice of data
+    void
+    put(const float*,
+        const std::vector<size_t>&,
+        const std::vector<size_t>&) const;
+
+    //! Write out a slice of data with with strides (see hyperslab definition in
+    //! NetCDF)
+    void
+    put(const float*,
+        const std::vector<size_t>&,
+        const std::vector<size_t>&,
+        const std::vector<ptrdiff_t>&) const;
     void put(const int*, const std::vector<size_t>&, const std::vector<size_t>&)
         const;
     void
@@ -80,6 +105,7 @@ struct NCVar
 
     //! Read the entire variable from file
     void get(double*) const;
+    void get(float*) const;
     void get(int*) const;
 
     //! Read a chunk of data from the file
@@ -89,6 +115,17 @@ struct NCVar
     //! Read a chunk of data with strides
     void
     get(double*,
+        const std::vector<size_t>&,
+        const std::vector<size_t>&,
+        const std::vector<ptrdiff_t>&) const;
+
+    //! Read a chunk of data from the file
+    void
+    get(float*, const std::vector<size_t>&, const std::vector<size_t>&) const;
+
+    //! Read a chunk of data with strides
+    void
+    get(float*,
         const std::vector<size_t>&,
         const std::vector<size_t>&,
         const std::vector<ptrdiff_t>&) const;
@@ -105,10 +142,13 @@ struct NCVar
     void put_attr(const std::string& name, const std::string& value) const;
     void
     put_attr(const std::string& name, const std::vector<double>& value) const;
+    void
+    put_attr(const std::string& name, const std::vector<float>& value) const;
     void put_attr(const std::string& name, const std::vector<int>& value) const;
 
     std::string get_attr(const std::string& name) const;
     void get_attr(const std::string& name, std::vector<double>& value) const;
+    void get_attr(const std::string& name, std::vector<float>& value) const;
     void get_attr(const std::string& name, std::vector<int>& value) const;
     void par_access(const int cmode) const;
 };
@@ -201,10 +241,13 @@ public:
     void put_attr(const std::string& name, const std::string& value) const;
     void
     put_attr(const std::string& name, const std::vector<double>& value) const;
+    void
+    put_attr(const std::string& name, const std::vector<float>& value) const;
     void put_attr(const std::string& name, const std::vector<int>& value) const;
 
     std::string get_attr(const std::string& name) const;
     void get_attr(const std::string& name, std::vector<double>& value) const;
+    void get_attr(const std::string& name, std::vector<float>& value) const;
     void get_attr(const std::string& name, std::vector<int>& value) const;
 
     //! Return a list of all groups defined in this group

@@ -11,8 +11,23 @@ namespace utils {
 template <typename T>
 struct Slice
 {
-    T* ptr_begin;
-    T* ptr_end;
+    using value_type = T;
+    using size_t = std::size_t;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+    using reference = T&;
+    using pointer = T*;
+    using iterator = T*;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reference = const T&;
+    using const_pointer = const T*;
+    using const_iterator = const T*;
+    using const_reverse_iterator = const std::reverse_iterator<iterator>;
+
+    pointer ptr_begin;
+    pointer ptr_end;
+
+    explicit Slice() : ptr_begin(nullptr), ptr_end(nullptr) {}
 
     explicit Slice(T* pbegin, const size_t n)
         : ptr_begin(pbegin), ptr_end(pbegin + n)
@@ -20,27 +35,28 @@ struct Slice
 
     explicit Slice(T* pbegin, T* pend) : ptr_begin(pbegin), ptr_end(pend) {}
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& operator[](const size_t idx)
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE reference
+    operator[](const size_t idx)
     {
         return *(ptr_begin + idx);
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T&
-    operator[](const size_t idx) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const_reference
+    operator[](const size_type idx) const
     {
         return *(ptr_begin + idx);
     }
 
-    size_t size() const { return std::distance(ptr_begin, ptr_end); }
+    size_type size() const { return (ptr_end - ptr_begin); }
 
-    T* data() { return ptr_begin; }
-    T* begin() { return ptr_begin; }
-    T* end() { return ptr_end; }
-    const T* data() const { return ptr_begin; }
-    const T* begin() const { return ptr_begin; }
-    const T* end() const { return ptr_end; }
-    const T* cbegin() const { return ptr_begin; }
-    const T* cend() const { return ptr_end; }
+    pointer data() { return ptr_begin; }
+    iterator begin() { return ptr_begin; }
+    iterator end() { return ptr_end; }
+    const_iterator data() const { return ptr_begin; }
+    const_iterator begin() const { return ptr_begin; }
+    const_iterator end() const { return ptr_end; }
+    const_iterator cbegin() const { return ptr_begin; }
+    const_iterator cend() const { return ptr_end; }
 };
 
 template <typename T>

@@ -8,3 +8,4 @@ target_sources(${amr_wind_lib_name}
 
 add_subdirectory(aero)
 add_subdirectory(wing)
+add_subdirectory(turbine)
