@@ -15,6 +15,7 @@ namespace amr_wind {
 class IOManager;
 class PostProcessManager;
 class OversetManager;
+class ExtSolverMgr;
 
 namespace turbulence {
 class TurbulenceModel;
@@ -88,6 +89,9 @@ public:
         return m_overset_mgr.get();
     }
 
+    ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
+    const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
+
     bool has_overset() const { return static_cast<bool>(m_overset_mgr); }
 
     //! Instantiate the turbulence model based on user inputs
@@ -117,6 +121,8 @@ private:
     std::unique_ptr<PostProcessManager> m_post_mgr;
 
     std::unique_ptr<OversetManager> m_overset_mgr;
+
+    std::unique_ptr<ExtSolverMgr> m_ext_solver_mgr;
 };
 
 } // namespace amr_wind

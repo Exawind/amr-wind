@@ -35,6 +35,7 @@ option(AMR_WIND_USE_INTERNAL_AMREX "Add AMReX as subproject" ON)
 option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
+option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 14)
@@ -61,6 +62,10 @@ endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
+endif()
+
+if (AMR_WIND_ENABLE_OPENFAST)
+  enable_language(Fortran)
 endif()
 
 ########################### AMReX #####################################

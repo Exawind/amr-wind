@@ -9,6 +9,9 @@
 
 namespace amr_wind {
 namespace actuator {
+
+struct ActInfo;
+
 namespace utils {
 
 /** Return a set of process IDs (MPI ranks) that contain AMR boxes that interact
@@ -23,6 +26,8 @@ namespace utils {
  */
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbox);
+
+void determine_root_proc(ActInfo&, amrex::Vector<int>&);
 
 /** Return the Gaussian smearing factor
  *

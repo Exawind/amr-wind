@@ -208,7 +208,8 @@ TEST_F(ActFlatPlateTest, act_model_init)
     }
 
     amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
-    flat_plate.setup_actuator_source(act_proc_count);
+    flat_plate.determine_influenced_procs(act_proc_count);
+    flat_plate.init_actuator_source();
 
     const auto& info = flat_plate.info();
     EXPECT_EQ(info.root_proc, 0);

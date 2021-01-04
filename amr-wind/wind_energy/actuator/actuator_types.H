@@ -57,9 +57,11 @@ struct ActSrcDisk : ActSrcType
 };
 
 using RealList = amrex::Vector<amrex::Real>;
+using RealSlice = ::amr_wind::utils::Slice<amrex::Real>;
 using VecList = amrex::Vector<amr_wind::vs::Vector>;
-using VecSlice = utils::Slice<amr_wind::vs::Vector>;
+using VecSlice = ::amr_wind::utils::Slice<amr_wind::vs::Vector>;
 using TensorList = amrex::Vector<amr_wind::vs::Tensor>;
+using TensorSlice = ::amr_wind::utils::Slice<amr_wind::vs::Tensor>;
 using DeviceVecList = amrex::Gpu::DeviceVector<amr_wind::vs::Vector>;
 using DeviceTensorList = amrex::Gpu::DeviceVector<amr_wind::vs::Tensor>;
 
@@ -130,9 +132,16 @@ struct ActInfo
     //! Root process where this turbine is active
     int root_proc{-1};
 
+    //! Flag indicating whether this is root proc
+    bool is_root_proc{false};
+
     //! Flag indicating whether this actuator component is active in the current
     //! MPI rank
     bool actuator_in_proc{false};
+
+    //! Flag indicating whether this process requires velocities sampled at
+    //! actuator point
+    bool sample_vel_in_proc{false};
 
     ActInfo(const std::string& label_in, const int id_in)
         : label(label_in), id(id_in)

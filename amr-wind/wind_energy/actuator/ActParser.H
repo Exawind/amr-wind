@@ -25,6 +25,11 @@ public:
     const amrex::ParmParse& default_params() const { return pp_default; }
     const amrex::ParmParse& params() const { return pp; }
 
+    bool contains(const std::string& name) const
+    {
+        return pp.contains(name.c_str()) || pp_default.contains(name.c_str());
+    }
+
     //! Provide special accessor for obtaining vectors from ParmParse namespaces
     void get(const std::string& name, vs::Vector& value) const
     {
