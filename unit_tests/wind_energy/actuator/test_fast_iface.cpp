@@ -57,6 +57,7 @@ TEST_F(FastIfaceTest, fast_init)
     fi.base_pos[1] = 64.0f;
     fi.base_pos[2] = 0.0f;
     fi.input_file = "./fast_inp/nrel5mw.fst";
+    fi.dt_cfd = 0.0625;
     fi.start_time = 0.0;
     fi.stop_time = 0.625;
 
@@ -111,6 +112,7 @@ TEST_F(FastIfaceTest, fast_replay)
     fi.input_file = "./fast_inp/nrel5mw1.fst";
     fi.start_time = 0.125;
     fi.stop_time = 0.625;
+    fi.dt_cfd = 0.0625;
     fi.sim_mode = ::exw_fast::SimMode::replay;
 
     ::exw_fast::FastIface fast(sim());
