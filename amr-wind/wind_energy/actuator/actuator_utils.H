@@ -41,17 +41,21 @@ void determine_root_proc(ActInfo&, amrex::Vector<int>&);
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
 {
-    BL_PROFILE("amr-wind::actuator::gaussian3d");
-    // const amrex::Real fac = 1.0 / std::sqrt(pi() * pi() * pi());
-    constexpr amrex::Real fac = 0.17958712212516656;
-    const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
     // clang-format off
     const vs::Vector rr{dist.x() / eps.x(), dist.y() / eps.y(),
                         dist.z() / eps.z()};
     // clang-format on
+    const amrex::Real rr_sqr = vs::mag_sqr(rr);
 
-    return (fac / eps_fac) *
-           std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
+    if (rr_sqr < 16.0) {
+        // const amrex::Real fac = 1.0 / std::sqrt(pi() * pi() * pi());
+        constexpr amrex::Real fac = 0.17958712212516656;
+        const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
+        return (fac / eps_fac) *
+            std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
+    } else {
+        return 0.0;
+    }
 }
 
 } // namespace utils
