@@ -170,6 +170,8 @@ void ActuatorContainer::sample_velocities(const Field& vel)
  */
 void ActuatorContainer::populate_vel_buffer()
 {
+    BL_PROFILE(
+        "amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
     amrex::Gpu::DeviceVector<vs::Vector> vel(m_data.velocity.size());
     auto* varr = vel.data();
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -204,6 +206,8 @@ void ActuatorContainer::populate_vel_buffer()
  */
 void ActuatorContainer::interpolate_velocities(const Field& vel)
 {
+    BL_PROFILE(
+        "amr-wind::actuator::ActuatorContainer::interpolate_velocities");
     auto* dptr = m_pos_device.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {

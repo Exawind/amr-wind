@@ -71,6 +71,9 @@ template <typename ActTrait>
 void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
+    const std::string fname = ActTrait::identifier() + ActSrcLine::identifier();
+    BL_PROFILE("amr-wind::ActSrcOp<"+ identifier + ">");
+
     const auto& bx = mfi.tilebox();
     const auto& sarr = m_act_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
