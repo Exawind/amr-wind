@@ -58,6 +58,7 @@ void ActuatorContainer::initialize_container()
 
     // query the particle ID from the container. We should always be starting
     // from 1.
+    ParticleType::NextID(1u);
     const auto id_start = ParticleType::NextID();
     AMREX_ALWAYS_ASSERT(id_start == 1u);
     const int iproc = amrex::ParallelDescriptor::MyProc();
@@ -78,6 +79,7 @@ void ActuatorContainer::initialize_container()
 
                     pp.id() = id_start + ip;
                     pp.cpu() = iproc;
+                    pp.idata(0) = ip;
                 });
             assigned = true;
         }
@@ -117,7 +119,7 @@ void ActuatorContainer::update_positions()
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
-                const auto idx = pp.id() - 1;
+                const auto idx = pp.idata(0);
 
                 auto& pvec = dptr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
@@ -182,7 +184,7 @@ void ActuatorContainer::populate_vel_buffer()
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
-                const auto idx = pp.id() - 1;
+                const auto idx = pp.idata(0);
 
                 auto& vvel = varr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {

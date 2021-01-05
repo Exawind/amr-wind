@@ -43,7 +43,7 @@ struct ActuatorCloud
 //! Number or real entries in Array of Structs (AOS)
 static constexpr int NumPStructReal = AMREX_SPACEDIM;
 //! Number of integer entries in Array of Structs (AOS)
-static constexpr int NumPStructInt = 0;
+static constexpr int NumPStructInt = 1;
 //! Number of real entries in Struct of Arrays (SOA)
 static constexpr int NumPArrayReal = 0;
 //! Number of int entries in Struct of Arrays (SOA)
