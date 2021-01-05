@@ -81,8 +81,12 @@ public:
 
     void populate_vel_buffer();
 
+    void reset_container();
+
 protected:
     void compute_local_coordinates();
+
+    void initialize_particles(const int total_pts);
 
     // Accessor to allow unit testing
     ActuatorCloud& point_data() { return m_data; }

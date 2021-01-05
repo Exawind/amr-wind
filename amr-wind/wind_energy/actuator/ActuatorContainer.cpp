@@ -48,6 +48,11 @@ void ActuatorContainer::initialize_container()
     m_data.position.resize(total_pts);
     m_data.velocity.resize(total_pts);
 
+    initialize_particles(total_pts);
+}
+
+void ActuatorContainer::initialize_particles(const int total_pts)
+{
     // Initialize particle container data structures.
     //
     // We assign all particles into the first available container within this
@@ -89,6 +94,26 @@ void ActuatorContainer::initialize_container()
     // are safe to use
     m_container_initialized = true;
     m_is_scattered = false;
+}
+
+void ActuatorContainer::reset_container()
+{
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto* pstruct = pti.GetArrayOfStructs()().data();
+
+            amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                auto& pp = pstruct[ip];
+                pp.id() = -1;
+            });
+        }
+    }
+    Redistribute();
+
+    const int total_pts = m_data.velocity.size();
+    initialize_particles(total_pts);
 }
 
 /** Update position vectors of the particles within a container based on the
@@ -172,8 +197,7 @@ void ActuatorContainer::sample_velocities(const Field& vel)
  */
 void ActuatorContainer::populate_vel_buffer()
 {
-    BL_PROFILE(
-        "amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
     amrex::Gpu::DeviceVector<vs::Vector> vel(m_data.velocity.size());
     auto* varr = vel.data();
     const int nlevels = m_mesh.finestLevel() + 1;
@@ -208,8 +232,7 @@ void ActuatorContainer::populate_vel_buffer()
  */
 void ActuatorContainer::interpolate_velocities(const Field& vel)
 {
-    BL_PROFILE(
-        "amr-wind::actuator::ActuatorContainer::interpolate_velocities");
+    BL_PROFILE("amr-wind::actuator::ActuatorContainer::interpolate_velocities");
     auto* dptr = m_pos_device.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
