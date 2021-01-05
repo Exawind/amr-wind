@@ -25,6 +25,8 @@ ActuatorContainer::ActuatorContainer(
     , m_data(num_objects)
     , m_proc_pos(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
     , m_pos_device(amrex::ParallelDescriptor::NProcs(), vs::Vector::zero())
+    , m_proc_offsets(amrex::ParallelDescriptor::NProcs() + 1, 0)
+    , m_proc_offsets_device(amrex::ParallelDescriptor::NProcs() + 1)
 {}
 
 /** Allocate memory and initialize the particles within the container
@@ -43,10 +45,29 @@ void ActuatorContainer::initialize_container()
     compute_local_coordinates();
 
     // Initialize global data arrays
-    auto total_pts =
+    const int total_pts =
         std::accumulate(m_data.num_pts.begin(), m_data.num_pts.end(), 0);
     m_data.position.resize(total_pts);
     m_data.velocity.resize(total_pts);
+
+    {
+        const int nproc = amrex::ParallelDescriptor::NProcs();
+        amrex::Vector<int> pts_per_proc(nproc, 0);
+#ifdef AMREX_USE_MPI
+        MPI_Allgather(
+            &total_pts, 1, MPI_INT, pts_per_proc.data(), 1, MPI_INT,
+            amrex::ParallelDescriptor::Communicator());
+#else
+        pts_per_proc[0] = total_pts;
+#endif
+        m_proc_offsets[0] = 0;
+        for (int i = 1; i <= nproc; ++i) {
+            m_proc_offsets[i] = m_proc_offsets[i - 1] + pts_per_proc[i - 1];
+        }
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_proc_offsets.begin(),
+            m_proc_offsets.end(), m_proc_offsets_device.begin());
+    }
 
     initialize_particles(total_pts);
 }
@@ -75,6 +96,7 @@ void ActuatorContainer::initialize_particles(const int total_pts)
         for (auto mfi = MakeMFIter(lev); (mfi.isValid() && !assigned); ++mfi) {
             auto& ptile = GetParticles(
                 lev)[std::make_pair(mfi.index(), mfi.LocalTileIndex())];
+            AMREX_ALWAYS_ASSERT(ptile.size() == 0);
             ptile.resize(total_pts);
             auto* pstruct = ptile.GetArrayOfStructs()().data();
 
@@ -181,7 +203,7 @@ void ActuatorContainer::sample_velocities(const Field& vel)
 
     // Recall particles to the MPI ranks that contains their corresponding
     // turbines
-    Redistribute();
+    // Redistribute();
 
     // Populate the velocity buffer that all actuator instances can access
     populate_vel_buffer();
@@ -198,8 +220,11 @@ void ActuatorContainer::sample_velocities(const Field& vel)
 void ActuatorContainer::populate_vel_buffer()
 {
     BL_PROFILE("amr-wind::actuator::ActuatorContainer::populate_vel_buffer");
-    amrex::Gpu::DeviceVector<vs::Vector> vel(m_data.velocity.size());
+    amrex::Vector<vs::Vector> velh(m_proc_offsets.back());
+    amrex::Gpu::DeviceVector<vs::Vector> vel(
+        m_proc_offsets.back(), vs::Vector::zero());
     auto* varr = vel.data();
+    auto* offsets = m_proc_offsets_device.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
@@ -208,7 +233,8 @@ void ActuatorContainer::populate_vel_buffer()
 
             amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
                 auto& pp = pstruct[ip];
-                const auto idx = pp.idata(0);
+                const auto iproc = pp.cpu();
+                const auto idx = offsets[iproc] + pp.idata(0);
 
                 auto& vvel = varr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
@@ -219,8 +245,20 @@ void ActuatorContainer::populate_vel_buffer()
     }
 
     amrex::Gpu::copy(
-        amrex::Gpu::deviceToHost, vel.begin(), vel.end(),
-        m_data.velocity.begin());
+        amrex::Gpu::deviceToHost, vel.begin(), vel.end(), velh.begin());
+#ifdef AMREX_USE_MPI
+    MPI_Allreduce(
+        MPI_IN_PLACE, &(velh[0][0]), m_proc_offsets.back() * AMREX_SPACEDIM,
+        MPI_DOUBLE, MPI_SUM, amrex::ParallelDescriptor::Communicator());
+#endif
+    {
+        auto& vel_arr = m_data.velocity;
+        const int npts = vel_arr.size();
+        const int ioff = m_proc_offsets[amrex::ParallelDescriptor::MyProc()];
+        for (int i = 0; i < npts; ++i) {
+            vel_arr[i] = velh[ioff + i];
+        }
+    }
 }
 
 /** Helper method for ActuatorContainer::sample_velocities

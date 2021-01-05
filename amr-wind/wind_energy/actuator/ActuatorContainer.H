@@ -104,6 +104,9 @@ private:
     //! Device view of the process position vectors
     amrex::Gpu::DeviceVector<vs::Vector> m_pos_device;
 
+    amrex::Vector<int> m_proc_offsets;
+    amrex::Gpu::DeviceVector<int> m_proc_offsets_device;
+
     //! Flag indicating whether memory has allocated for all data structures
     bool m_container_initialized{false};
 

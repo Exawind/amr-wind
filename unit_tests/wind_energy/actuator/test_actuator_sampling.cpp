@@ -123,6 +123,7 @@ TEST_F(ActuatorTest, act_container)
     }
 
     ac.sample_velocities(vel);
+    ac.Redistribute();
 
     // Check to make sure that the velocity sampling gathered the particles back
     // to their original MPI ranks
