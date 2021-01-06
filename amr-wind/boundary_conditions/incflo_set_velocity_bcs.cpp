@@ -7,7 +7,7 @@ void incflo::set_inflow_velocity(
     int lev, amrex::Real time, MultiFab& vel, int nghost)
 {
     auto& velocity = icns().fields().field;
-    velocity.fillphysbc(lev, time, vel, nghost);
+    velocity.set_inflow(lev, time, vel, nghost);
 #if 0
     auto& bctype = velocity.bc_type();
     Geometry const& gm = Geom(lev);

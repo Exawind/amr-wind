@@ -227,6 +227,19 @@ void Field::apply_bc_funcs(const FieldState rho_state) noexcept
     for (auto& func : m_info->m_bc_func) (*func)(*this, rho_state);
 }
 
+void Field::set_inflow(
+    int lev,
+    amrex::Real time,
+    amrex::MultiFab& mfab,
+    const amrex::IntVect& ng) noexcept
+{
+    BL_PROFILE("amr-wind::Field::set_inflow");
+    BL_ASSERT(m_info->m_fillpatch_op);
+    BL_ASSERT(m_info->bc_initialized() && m_info->m_bc_copied_to_device);
+    auto& fop = *(m_info->m_fillpatch_op);
+    fop.set_inflow(lev, time, mfab, ng, field_state());
+}
+
 void Field::advance_states() noexcept
 {
     BL_PROFILE("amr-wind::Field::advance_states");
