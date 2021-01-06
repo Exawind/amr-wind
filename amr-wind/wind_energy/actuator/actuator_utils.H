@@ -52,7 +52,7 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         constexpr amrex::Real fac = 0.17958712212516656;
         const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
         return (fac / eps_fac) *
-            std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
+               std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
     } else {
         return 0.0;
     }
