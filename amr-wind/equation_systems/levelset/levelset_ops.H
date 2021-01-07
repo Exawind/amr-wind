@@ -2,6 +2,7 @@
 #define LEVELSET_OPS_H
 
 #include "amr-wind/equation_systems/levelset/levelset.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind {
 namespace pde {
@@ -119,6 +120,27 @@ struct ComputeRHSOp<Levelset, Scheme>
     // data members
     PDEFields& fields;
 };
+
+/** Implementation of post-processing actions for the levelset equation
+ *  \ingroup levelset
+ */
+template <>
+struct PostSolveOp<Levelset>
+{
+    PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
+    {}
+
+    void operator()(const amrex::Real)
+    {
+        m_fields.field.fillpatch(m_sim.time().current_time());
+        auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
+        multiphase.set_density_via_levelset();
+    }
+
+    CFDSim& m_sim;
+    PDEFields& m_fields;
+};
+
 } // namespace pde
 } // namespace amr_wind
 

@@ -12,6 +12,7 @@ VortexPatch::VortexPatch(CFDSim& sim)
     amrex::ParmParse pp(identifier());
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
     pp.query("radius", m_radius);
+    pp.query("period", m_TT);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the

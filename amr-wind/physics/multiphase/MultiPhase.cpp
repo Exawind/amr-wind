@@ -67,14 +67,12 @@ void MultiPhase::post_init_actions()
         set_density_via_levelset();
         break;
     };
-    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
-        set_density_via_vof();
         // Compute the print the total volume fraction
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
@@ -89,11 +87,9 @@ void MultiPhase::post_advance_work()
         }
         break;
     case InterfaceCapturingMethod::LS:
-        set_density_via_levelset();
         break;
     };
-    m_density.fillpatch(m_sim.time().current_time());
-} // namespace amr_wind
+}
 
 amrex::Real MultiPhase::volume_fraction_sum()
 {
@@ -178,6 +174,7 @@ void MultiPhase::set_density_via_levelset()
                 });
         }
     }
+    m_density.fillpatch(m_sim.time().current_time());
 }
 
 void MultiPhase::set_density_via_vof()
@@ -201,6 +198,7 @@ void MultiPhase::set_density_via_vof()
                 });
         }
     }
+    m_density.fillpatch(m_sim.time().current_time());
 }
 
 // Reconstructing the volume fraction with the levelset

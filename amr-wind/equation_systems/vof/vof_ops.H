@@ -2,6 +2,7 @@
 #define VOF_OPS_H
 
 #include "amr-wind/equation_systems/vof/vof.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind {
 namespace pde {
@@ -54,6 +55,28 @@ struct ComputeRHSOp<VOF, Scheme>
     // data members
     PDEFields& fields;
 };
+
+/** Implementation of post-processing actions for the VOF equation
+ *  \ingroup vof
+ */
+
+template <>
+struct PostSolveOp<VOF>
+{
+    PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
+    {}
+
+    void operator()(const amrex::Real)
+    {
+        m_fields.field.fillpatch(m_sim.time().current_time());
+        auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
+        multiphase.set_density_via_vof();
+    }
+
+    CFDSim& m_sim;
+    PDEFields& m_fields;
+};
+
 } // namespace pde
 } // namespace amr_wind
 

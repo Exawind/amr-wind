@@ -75,7 +75,8 @@ struct TurbulenceOp<TKE>
 template <>
 struct PostSolveOp<TKE>
 {
-    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
+    {}
 
     void operator()(const amrex::Real time)
     {
@@ -83,6 +84,7 @@ struct PostSolveOp<TKE>
         m_fields.field.fillpatch(time);
     }
 
+    CFDSim& m_sim;
     PDEFields& m_fields;
     amrex::Real clip_value{1.0e-15};
 };

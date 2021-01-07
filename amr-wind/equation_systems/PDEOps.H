@@ -200,10 +200,13 @@ struct BCOp;
 template <typename PDE>
 struct PostSolveOp
 {
-    explicit PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    explicit PostSolveOp(CFDSim& sim, PDEFields& fields)
+        : m_sim(sim), m_fields(fields)
+    {}
 
     void operator()(const amrex::Real time) { m_fields.field.fillpatch(time); }
 
+    CFDSim& m_sim;
     PDEFields& m_fields;
 };
 
