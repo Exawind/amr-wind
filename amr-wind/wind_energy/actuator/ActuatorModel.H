@@ -39,6 +39,8 @@ public:
 
     virtual void read_inputs(const utils::ActParser&) = 0;
 
+    virtual void determine_influenced_procs() = 0;
+
     virtual void determine_root_proc(amrex::Vector<int>&) = 0;
 
     virtual void init_actuator_source() = 0;
@@ -116,6 +118,11 @@ public:
     {
         ops::ReadInputsOp<ActTrait, SrcTrait>()(m_data, pp);
         m_out_op.read_io_options(pp);
+    }
+
+    void determine_influenced_procs() override
+    {
+        ops::determine_influenced_procs<ActTrait>(m_data);
     }
 
     void

@@ -71,6 +71,26 @@ struct ReadInputsOp<TurbineFast, SrcTrait>
 };
 
 template <>
+inline void
+determine_influenced_procs<TurbineFast>(typename TurbineFast::DataType& data)
+{
+    auto& info = data.info();
+    info.procs =
+        utils::determine_influenced_procs(data.sim().mesh(), info.bound_box);
+
+    AMREX_ALWAYS_ASSERT(info.root_proc > -1);
+    // During regrid, the influenced processes might have changed and might
+    // no longer include the root proc. We insert it back to ensure that it
+    // is always present on the list.
+    info.procs.insert(info.root_proc);
+
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    auto in_proc = info.procs.find(iproc);
+    info.actuator_in_proc = (in_proc != info.procs.end());
+    info.sample_vel_in_proc = info.is_root_proc;
+}
+
+template <>
 inline void determine_root_proc<TurbineFast>(
     typename TurbineFast::DataType& data, amrex::Vector<int>& act_proc_count)
 {
