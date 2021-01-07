@@ -43,7 +43,7 @@ struct ActuatorCloud
 //! Number or real entries in Array of Structs (AOS)
 static constexpr int NumPStructReal = AMREX_SPACEDIM;
 //! Number of integer entries in Array of Structs (AOS)
-static constexpr int NumPStructInt = 0;
+static constexpr int NumPStructInt = 1;
 //! Number of real entries in Struct of Arrays (SOA)
 static constexpr int NumPArrayReal = 0;
 //! Number of int entries in Struct of Arrays (SOA)
@@ -69,6 +69,8 @@ public:
 
     void initialize_container();
 
+    void reset_container();
+
     void update_positions();
 
     void sample_velocities(const Field& vel);
@@ -80,6 +82,8 @@ public:
     void interpolate_velocities(const Field& vel);
 
     void populate_vel_buffer();
+
+    void initialize_particles(const int total_pts);
 
 protected:
     void compute_local_coordinates();
@@ -99,6 +103,9 @@ private:
 
     //! Device view of the process position vectors
     amrex::Gpu::DeviceVector<vs::Vector> m_pos_device;
+
+    amrex::Vector<int> m_proc_offsets;
+    amrex::Gpu::DeviceVector<int> m_proc_offsets_device;
 
     //! Flag indicating whether memory has allocated for all data structures
     bool m_container_initialized{false};

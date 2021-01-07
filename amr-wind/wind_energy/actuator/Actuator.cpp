@@ -80,6 +80,7 @@ void Actuator::pre_advance_work()
 {
     BL_PROFILE("amr-wind::actuator::Actuator::pre_advance_work");
 
+    m_container->reset_container();
     update_positions();
     update_velocities();
     compute_forces();
@@ -123,6 +124,7 @@ void Actuator::setup_container()
  */
 void Actuator::update_positions()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::update_positions");
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
@@ -144,6 +146,7 @@ void Actuator::update_positions()
  */
 void Actuator::update_velocities()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::update_velocities");
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
@@ -158,6 +161,7 @@ void Actuator::update_velocities()
  */
 void Actuator::compute_forces()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::compute_forces");
     for (auto& ac : m_actuators) {
         if (ac->info().actuator_in_proc) {
             ac->compute_forces();
@@ -167,6 +171,7 @@ void Actuator::compute_forces()
 
 void Actuator::compute_source_term()
 {
+    BL_PROFILE("amr-wind::actuator::Actuator::compute_source_term");
     m_act_source.setVal(0.0);
     const int nlevels = m_sim.repo().num_active_levels();
 

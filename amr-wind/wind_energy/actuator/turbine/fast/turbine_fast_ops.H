@@ -286,6 +286,7 @@ struct UpdatePosOp<TurbineFast, SrcTrait>
         // This is handled in Actuator class, but we add a check here just as a
         // safeguard
         if (!data.info().is_root_proc) return;
+        BL_PROFILE("amr-wind::actuator::UpdatePosOp<TurbineFast>");
 
         const auto& tdata = data.meta();
         const auto& bp = data.info().base_pos;
@@ -312,6 +313,7 @@ struct UpdateVelOp<TurbineFast, SrcTrait>
         // This is handled in Actuator class, but we add a check here just as a
         // safeguard
         if (!data.info().is_root_proc) return;
+        BL_PROFILE("amr-wind::actuator::UpdateVelOp<TurbineFast>");
 
         auto& from_cfd = data.meta().fast_data.from_cfd;
         auto& uvel = from_cfd.u;
@@ -333,6 +335,7 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
 {
     void operator()(typename TurbineFast::DataType& data)
     {
+        BL_PROFILE("amr-wind::actuator::ComputeForceOp<TurbineFast>");
         // Advance OpenFAST by specified number of sub-steps
         fast_step(data);
         // Broadcast data to all the processes that contain patches influenced
@@ -400,6 +403,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // Copy data into MPI send/recv buffer from the OpenFAST data structure.
         // Note, other procs do not have a valid data in those pointers.
         if (data.info().is_root_proc) {
+            BL_PROFILE(
+                "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter1");
             const auto& tocfd = data.meta().fast_data.to_cfd;
             auto it = buf.begin();
             std::copy(tocfd.fx, tocfd.fx + tocfd.fx_Len, it);
@@ -426,6 +431,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         const auto& procs = data.info().procs;
         const int tag = 1001;
         if (data.info().is_root_proc) {
+            BL_PROFILE(
+                "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter2");
             for (const int ip : procs) {
                 if (ip == data.info().root_proc) continue;
 
@@ -433,6 +440,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
                     buf.data(), dsize, ip, tag, data.meta().tcomm);
             }
         } else {
+            BL_PROFILE(
+                "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter2");
             amrex::ParallelDescriptor::Recv(
                 buf.data(), dsize, data.info().root_proc, tag,
                 data.meta().tcomm);
@@ -441,6 +450,8 @@ struct ComputeForceOp<TurbineFast, SrcTrait>
         // Populate the actuator grid data structures with data from the MPI
         // send/recv buffer.
         {
+            BL_PROFILE(
+                "amr-wind::actuator::ComputeForceOp<TurbineFast>::scatter3");
             const auto& bp = data.info().base_pos;
             auto& grid = data.grid();
             const auto& npts = grid.pos.size();

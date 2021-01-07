@@ -71,6 +71,9 @@ template <typename ActTrait>
 void ActSrcOp<ActTrait, ActSrcLine>::operator()(
     const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
+    const std::string fname = ActTrait::identifier() + ActSrcLine::identifier();
+    BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
+
     const auto& bx = mfi.tilebox();
     const auto& sarr = m_act_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
@@ -89,16 +92,21 @@ void ActSrcOp<ActTrait, ActSrcLine>::operator()(
             problo[2] + (k + 0.5) * dx[2],
         };
 
+        amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         for (int ip = 0; ip < npts; ++ip) {
             const auto dist = cc - pos[ip];
             const auto dist_local = tmat[ip] & dist;
             const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
             const auto& pforce = force[ip];
 
-            sarr(i, j, k, 0) += gauss_fac * pforce.x();
-            sarr(i, j, k, 1) += gauss_fac * pforce.y();
-            sarr(i, j, k, 2) += gauss_fac * pforce.z();
+            src_force[0] += gauss_fac * pforce.x();
+            src_force[1] += gauss_fac * pforce.y();
+            src_force[2] += gauss_fac * pforce.z();
         }
+
+        sarr(i, j, k, 0) += src_force[0];
+        sarr(i, j, k, 1) += src_force[1];
+        sarr(i, j, k, 2) += src_force[2];
     });
 }
 } // namespace ops
