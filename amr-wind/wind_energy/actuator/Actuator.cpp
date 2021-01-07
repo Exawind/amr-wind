@@ -52,7 +52,7 @@ void Actuator::post_init_actions()
 
     amrex::Vector<int> act_proc_count(amrex::ParallelDescriptor::NProcs(), 0);
     for (auto& act : m_actuators)
-        act->determine_influenced_procs(act_proc_count);
+        act->determine_root_proc(act_proc_count);
 
     {
         // Sanity check that we have processed the turbines correctly

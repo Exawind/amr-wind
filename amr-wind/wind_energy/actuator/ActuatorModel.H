@@ -39,7 +39,7 @@ public:
 
     virtual void read_inputs(const utils::ActParser&) = 0;
 
-    virtual void determine_influenced_procs(amrex::Vector<int>&) = 0;
+    virtual void determine_root_proc(amrex::Vector<int>&) = 0;
 
     virtual void init_actuator_source() = 0;
 
@@ -119,7 +119,7 @@ public:
     }
 
     void
-    determine_influenced_procs(amrex::Vector<int>& act_proc_count) override;
+    determine_root_proc(amrex::Vector<int>& act_proc_count) override;
 
     int num_velocity_points() const override;
 
@@ -165,7 +165,7 @@ public:
 };
 
 template <typename ActTrait, typename SrcTrait>
-void ActModel<ActTrait, SrcTrait>::determine_influenced_procs(
+void ActModel<ActTrait, SrcTrait>::determine_root_proc(
     amrex::Vector<int>& act_proc_count)
 {
     ops::determine_root_proc<ActTrait>(m_data, act_proc_count);
