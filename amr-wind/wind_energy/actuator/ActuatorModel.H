@@ -125,8 +125,7 @@ public:
         ops::determine_influenced_procs<ActTrait>(m_data);
     }
 
-    void
-    determine_root_proc(amrex::Vector<int>& act_proc_count) override;
+    void determine_root_proc(amrex::Vector<int>& act_proc_count) override;
 
     int num_velocity_points() const override;
 

@@ -99,7 +99,9 @@ void Actuator::setup_container()
     const int ntotal = num_actuators();
     const int nlocal = std::count_if(
         m_actuators.begin(), m_actuators.end(),
-        [](const auto& obj) { return obj->info().sample_vel_in_proc; });
+        [](const std::unique_ptr<ActuatorModel>& obj) {
+            return obj->info().sample_vel_in_proc;
+        });
 
     m_container.reset(new ActuatorContainer(m_sim.mesh(), nlocal));
 
