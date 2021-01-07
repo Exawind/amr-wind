@@ -324,6 +324,12 @@ public:
         amrex::MultiFab& mfab,
         const amrex::IntVect& nghost) noexcept;
 
+    void set_inflow(
+        int lev,
+        amrex::Real time,
+        amrex::MultiFab& mfab,
+        const amrex::IntVect& nghost) noexcept;
+
     inline void fillpatch(
         int lev,
         amrex::Real time,
@@ -343,6 +349,12 @@ public:
         int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
     {
         fillphysbc(lev, time, mfab, amrex::IntVect(nghost));
+    }
+
+    inline void set_inflow(
+        int lev, amrex::Real time, amrex::MultiFab& mfab, int nghost) noexcept
+    {
+        set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }
 
 protected:

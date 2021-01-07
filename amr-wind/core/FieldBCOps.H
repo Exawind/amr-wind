@@ -63,6 +63,16 @@ struct FieldBCNoOp
         const int /* bcomp */,
         const int /* orig_comp */) const
     {}
+
+    AMREX_GPU_DEVICE
+    inline void set_inflow(
+        const amrex::IntVect&,
+        amrex::Array4<amrex::Real> const&,
+        amrex::GeometryData const&,
+        const amrex::Real,
+        amrex::Orientation,
+        const int) const
+    {}
 };
 
 struct ConstDirichlet
@@ -200,6 +210,18 @@ struct DirichletOp
             }
 #endif
         }
+    }
+
+    AMREX_GPU_DEVICE
+    inline void set_inflow(
+        const amrex::IntVect& iv,
+        amrex::Array4<amrex::Real> const& field,
+        amrex::GeometryData const& geom,
+        const amrex::Real time,
+        amrex::Orientation ori,
+        const int comp) const
+    {
+        m_inflow_op(iv, field, geom, time, ori, comp);
     }
 };
 
