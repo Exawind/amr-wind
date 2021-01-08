@@ -78,14 +78,14 @@ template <typename T>
 inline Slice<T>
 slice(amrex::Vector<T>& vec, const size_t start, const size_t count)
 {
-    AMREX_ASSERT((start + count) <= vec.size());
+    AMREX_ASSERT((start + count) <= static_cast<size_t>(vec.size()));
     return Slice<T>{&vec[start], count};
 }
 
 template <typename T>
 inline Slice<T> slice(amrex::Vector<T>& vec, const size_t start)
 {
-    AMREX_ASSERT(start < vec.size());
+    AMREX_ASSERT(start < static_cast<size_t>(vec.size()));
     return slice(vec, start, vec.size() - start);
 }
 
@@ -93,14 +93,14 @@ template <typename T>
 inline Slice<T>
 slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start, const size_t count)
 {
-    AMREX_ASSERT((start + count) <= vec.size());
+    AMREX_ASSERT((start + count) <= static_cast<size_t>(vec.size()));
     return Slice<T>{(vec.data() + start), count};
 }
 
 template <typename T>
 inline Slice<T> slice(amrex::Gpu::DeviceVector<T>& vec, const size_t start)
 {
-    AMREX_ASSERT(start < vec.size());
+    AMREX_ASSERT(start < static_cast<size_t>(vec.size()));
     return slice(vec, start, vec.size() - start);
 }
 
