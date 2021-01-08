@@ -12,7 +12,7 @@ SloshingTank::SloshingTank(CFDSim& sim)
 {
     amrex::ParmParse pp(identifier());
     pp.query("amplitude", m_amplitude);
-    pp.query("depth", m_depth);
+    pp.query("water_level", m_waterlevel);
 }
 
 /** Initialize the velocity and levelset fields at the beginning of the
@@ -28,7 +28,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
     const amrex::Real Amp = m_amplitude;
-    const amrex::Real depth = m_depth;
+    const amrex::Real water_level = m_waterlevel;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -38,7 +38,9 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                phi(i, j, k) = z - (depth - Amp * std::sin(M_PI * x / 2.0));
+                const amrex::Real z0 =
+                    water_level + Amp * std::sin(M_PI * x / 2.0);
+                phi(i, j, k) = z0 - z;
             });
     }
 }

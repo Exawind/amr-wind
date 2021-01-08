@@ -22,7 +22,6 @@ public:
 
     //! Initialize the levelset and velocity fields for Sloshing Tank
     //! simulations
-
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void post_init_actions() override {}
@@ -41,9 +40,8 @@ private:
     amrex::Real m_amplitude{0.01};
 
     //! Initial zero-level free-surface water depth
-    amrex::Real m_depth{1.0};
+    amrex::Real m_waterlevel{0.0};
 };
 
 } // namespace amr_wind
-
 #endif /* SloshingTank_H */
