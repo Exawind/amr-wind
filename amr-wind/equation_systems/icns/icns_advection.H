@@ -60,12 +60,17 @@ struct AdvectionOp<ICNS, fvm::Godunov>
             godunov_scheme = godunov::scheme::PPM;
         } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
-        } else if (amrex::toLower(godunov_type) == "weno") {
-            godunov_scheme = godunov::scheme::WENO;
+        } else if (
+            amrex::toLower(godunov_type) == "weno" ||
+            amrex::toLower(godunov_type) == "weno_js") {
+            godunov_scheme = godunov::scheme::WENOJS;
+        } else if (amrex::toLower(godunov_type) == "weno_z") {
+            godunov_scheme = godunov::scheme::WENOZ;
         } else {
-            amrex::Print() << "For godunov_type select between plm, ppm, "
-                              "ppm_nolim and weno: it defaults to ppm"
-                           << std::endl;
+            amrex::Print()
+                << "For godunov_type select between plm, ppm, "
+                   "ppm_nolim, weno_js, and weno_z: it defaults to ppm"
+                << std::endl;
             godunov_scheme = godunov::scheme::PPM;
         }
 
@@ -173,10 +178,16 @@ struct AdvectionOp<ICNS, fvm::Godunov>
                             a_vel, a_vel, geom, dt, bcrec_device, false);
                         break;
                     }
-                    case godunov::scheme::WENO: {
+                    case godunov::scheme::WENOJS: {
                         godunov::predict_weno(
                             lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
-                            a_vel, a_vel, geom, dt, bcrec_device);
+                            a_vel, a_vel, geom, dt, bcrec_device, true);
+                        break;
+                    }
+                    case godunov::scheme::WENOZ: {
+                        godunov::predict_weno(
+                            lev, bxg1, ICNS::ndim, Imx, Ipx, Imy, Ipy, Imz, Ipz,
+                            a_vel, a_vel, geom, dt, bcrec_device, false);
                         break;
                     }
                     case godunov::scheme::PLM: {
