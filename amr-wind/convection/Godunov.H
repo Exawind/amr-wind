@@ -10,7 +10,7 @@
 
 namespace godunov {
 
-enum class scheme { PLM, PPM, PPM_NOLIM, WENO };
+enum class scheme { PLM, PPM, PPM_NOLIM, WENOJS, WENOZ };
 
 void compute_advection(
     int lev,
@@ -43,7 +43,8 @@ void predict_weno(
     amrex::Array4<amrex::Real const> const& vel,
     amrex::Vector<amrex::Geometry> geom,
     amrex::Real dt,
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device);
+    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
+    bool weno_js);
 
 void predict_ppm(
     int lev,

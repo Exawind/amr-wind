@@ -17,7 +17,8 @@ void godunov::predict_weno(
     Array4<Real const> const& vel,
     Vector<Geometry> geom,
     Real dt,
-    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device)
+    amrex::Gpu::DeviceVector<amrex::BCRec>& bcrec_device,
+    bool weno_js)
 {
     BL_PROFILE("amr-wind::godunov::predict_weno");
     const auto dx = geom[lev].CellSizeArray();
@@ -36,12 +37,12 @@ void godunov::predict_weno(
         [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Godunov_weno_pred_x(
                 i, j, k, n, l_dtdx, vel(i, j, k, 0), q, Imx, Ipx, pbc[n], dlo.x,
-                dhi.x);
+                dhi.x, weno_js);
             Godunov_weno_pred_y(
                 i, j, k, n, l_dtdy, vel(i, j, k, 1), q, Imy, Ipy, pbc[n], dlo.y,
-                dhi.y);
+                dhi.y, weno_js);
             Godunov_weno_pred_z(
                 i, j, k, n, l_dtdz, vel(i, j, k, 2), q, Imz, Ipz, pbc[n], dlo.z,
-                dhi.z);
+                dhi.z, weno_js);
         });
 }

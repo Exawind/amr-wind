@@ -47,12 +47,17 @@ struct AdvectionOp<
             godunov_scheme = godunov::scheme::PPM;
         } else if (amrex::toLower(godunov_type) == "ppm_nolim") {
             godunov_scheme = godunov::scheme::PPM_NOLIM;
-        } else if (amrex::toLower(godunov_type) == "weno") {
-            godunov_scheme = godunov::scheme::WENO;
+        } else if (
+            amrex::toLower(godunov_type) == "weno" ||
+            amrex::toLower(godunov_type) == "weno_js") {
+            godunov_scheme = godunov::scheme::WENOJS;
+        } else if (amrex::toLower(godunov_type) == "weno_z") {
+            godunov_scheme = godunov::scheme::WENOZ;
         } else {
-            amrex::Print() << "For godunov_type select between plm, ppm, "
-                              "ppm_nolim and weno: it defaults to ppm"
-                           << std::endl;
+            amrex::Print()
+                << "For godunov_type select between plm, ppm, "
+                   "ppm_nolim, weno_js, and weno_z: it defaults to ppm"
+                << std::endl;
             godunov_scheme = godunov::scheme::PPM;
         }
         // TODO: Need iconserv flag to be adjusted???

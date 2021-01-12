@@ -110,19 +110,35 @@ void godunov::compute_advection(
             });
         break;
     }
-    case godunov::scheme::WENO: {
+    case godunov::scheme::WENOJS: {
         amrex::ParallelFor(
             bxg1, ncomp,
             [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                 Godunov_weno_fpu_x(
                     i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
-                    umac, pbc[n], dlo.x, dhi.x);
+                    umac, pbc[n], dlo.x, dhi.x, true);
                 Godunov_weno_fpu_y(
                     i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
-                    vmac, pbc[n], dlo.y, dhi.y);
+                    vmac, pbc[n], dlo.y, dhi.y, true);
                 Godunov_weno_fpu_z(
                     i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
-                    wmac, pbc[n], dlo.z, dhi.z);
+                    wmac, pbc[n], dlo.z, dhi.z, true);
+            });
+        break;
+    }
+    case godunov::scheme::WENOZ: {
+        amrex::ParallelFor(
+            bxg1, ncomp,
+            [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                Godunov_weno_fpu_x(
+                    i, j, k, n, l_dt, dx, Imx(i, j, k, n), Ipx(i, j, k, n), q,
+                    umac, pbc[n], dlo.x, dhi.x, false);
+                Godunov_weno_fpu_y(
+                    i, j, k, n, l_dt, dy, Imy(i, j, k, n), Ipy(i, j, k, n), q,
+                    vmac, pbc[n], dlo.y, dhi.y, false);
+                Godunov_weno_fpu_z(
+                    i, j, k, n, l_dt, dz, Imz(i, j, k, n), Ipz(i, j, k, n), q,
+                    wmac, pbc[n], dlo.z, dhi.z, false);
             });
         break;
     }

@@ -10,33 +10,44 @@
 
 namespace {
 
-AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real weno5js(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real weno5(
     const amrex::Real sm2,
     const amrex::Real sm1,
     const amrex::Real s,
     const amrex::Real sp1,
-    const amrex::Real sp2)
+    const amrex::Real sp2,
+    bool weno_js)
 {
     constexpr amrex::Real eps = 1.e-6;
 
-    amrex::Real beta1 =
+    const amrex::Real beta1 =
         13.0 / 12.0 * (sm2 - 2.0 * sm1 + s) * (sm2 - 2.0 * sm1 + s) +
         0.25 * (sm2 - 4.0 * sm1 + 3.0 * s) * (sm2 - 4.0 * sm1 + 3.0 * s);
-    amrex::Real beta2 =
+    const amrex::Real beta2 =
         13.0 / 12.0 * (sm1 - 2.0 * s + sp1) * (sm1 - 2.0 * s + sp1) +
         0.25 * (sm1 - sp1) * (sm1 - sp1);
-    amrex::Real beta3 =
+    const amrex::Real beta3 =
         13.0 / 12.0 * (s - 2.0 * sp1 + sp2) * (s - 2.0 * sp1 + sp2) +
         0.25 * (3.0 * s - 4.0 * sp1 + sp2) * (3.0 * s - 4.0 * sp1 + sp2);
 
-    amrex::Real omega1 = 0.1 / (eps + beta1);
-    amrex::Real omega2 = 0.6 / (eps + beta2);
-    amrex::Real omega3 = 0.3 / (eps + beta3);
-    amrex::Real omega = omega1 + omega2 + omega3;
+    amrex::Real omega1, omega2, omega3;
 
-    amrex::Real v_1 = 2.0 * sm2 - 7.0 * sm1 + 11.0 * s;
-    amrex::Real v_2 = -sm1 + 5.0 * s + 2.0 * sp1;
-    amrex::Real v_3 = 2.0 * s + 5.0 * sp1 - sp2;
+    if (weno_js) {
+        omega1 = 0.1 / (eps + beta1);
+        omega2 = 0.6 / (eps + beta2);
+        omega3 = 0.3 / (eps + beta3);
+    } else {
+        const amrex::Real t5 = amrex::Math::abs(beta3 - beta1);
+        omega1 = 0.1 * (1.0 + t5 / (eps + beta1));
+        omega2 = 0.6 * (1.0 + t5 / (eps + beta2));
+        omega3 = 0.3 * (1.0 + t5 / (eps + beta3));
+    }
+
+    const amrex::Real omega = omega1 + omega2 + omega3;
+
+    const amrex::Real v_1 = 2.0 * sm2 - 7.0 * sm1 + 11.0 * s;
+    const amrex::Real v_2 = -sm1 + 5.0 * s + 2.0 * sp1;
+    const amrex::Real v_3 = 2.0 * s + 5.0 * sp1 - sp2;
 
     return (omega1 * v_1 + omega2 * v_2 + omega3 * v_3) / (6.0 * omega);
 }
@@ -207,7 +218,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
     const amrex::Array4<amrex::Real>& Ip,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
 
     using namespace amrex;
@@ -220,8 +232,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
     amrex::Real sp1 = S(i + 1, j, k, n);
     amrex::Real sp2 = S(i + 2, j, k, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of i-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of i+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of i-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of i+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -261,7 +275,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
     const amrex::Array4<amrex::Real>& Ip,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
     using namespace amrex;
 
@@ -273,8 +288,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
     amrex::Real sp1 = S(i, j + 1, k, n);
     amrex::Real sp2 = S(i, j + 2, k, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of j-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of j+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of j-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of j+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -313,7 +330,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
     const amrex::Array4<amrex::Real>& Ip,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
     using namespace amrex;
 
@@ -325,8 +343,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
     amrex::Real sp1 = S(i, j, k + 1, n);
     amrex::Real sp2 = S(i, j, k + 2, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of k-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of  k+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of k-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of k+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -369,7 +389,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     const amrex::Array4<const amrex::Real>& vel_edge,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
 
     using namespace amrex;
@@ -382,8 +403,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     amrex::Real sp1 = S(i + 1, j, k, n);
     amrex::Real sp2 = S(i + 2, j, k, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of i-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of i+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of i-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of i+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -423,7 +446,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     const amrex::Array4<const amrex::Real>& vel_edge,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
 
     using namespace amrex;
@@ -436,8 +460,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     amrex::Real sp1 = S(i, j + 1, k, n);
     amrex::Real sp2 = S(i, j + 2, k, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of j-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of j+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of j-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of j+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
@@ -477,7 +503,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     const amrex::Array4<const amrex::Real>& vel_edge,
     const amrex::BCRec bc,
     const int domlo,
-    const int domhi)
+    const int domhi,
+    const bool weno_js)
 {
 
     using namespace amrex;
@@ -490,8 +517,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     amrex::Real sp1 = S(i, j, k + 1, n);
     amrex::Real sp2 = S(i, j, k + 2, n);
 
-    amrex::Real sedge1 = weno5js(sp2, sp1, s0, sm1, sm2); // right of k-1/2
-    amrex::Real sedge2 = weno5js(sm2, sm1, s0, sp1, sp2); // left of  k+1/2
+    amrex::Real sedge1 =
+        weno5(sp2, sp1, s0, sm1, sm2, weno_js); // right of k-1/2
+    amrex::Real sedge2 =
+        weno5(sm2, sm1, s0, sp1, sp2, weno_js); // left of k+1/2
 
     amrex::Real sm = sedge1;
     amrex::Real sp = sedge2;
