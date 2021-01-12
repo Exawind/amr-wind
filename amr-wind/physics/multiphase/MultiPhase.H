@@ -48,6 +48,10 @@ public:
 
     InterfaceCapturingMethod interface_capturing_method();
 
+    amrex::Real rho1() const { return m_rho1; }
+
+    amrex::Real rho2() const { return m_rho2; }
+
 private:
     const CFDSim& m_sim;
 

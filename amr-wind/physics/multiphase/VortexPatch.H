@@ -40,6 +40,7 @@ private:
 
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_density;
 
     //! Initial VortexPatch location
     amrex::Vector<amrex::Real> m_loc{{0.35, 0.35, 0.35}};

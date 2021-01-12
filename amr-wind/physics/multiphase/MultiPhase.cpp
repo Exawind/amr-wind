@@ -31,6 +31,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
         const amrex::Real levelset_default = 0.0;
         BCScalar bc_ls(*m_levelset);
         bc_ls(levelset_default);
+        m_levelset->fillpatch(sim.time().current_time());
     } else if (amrex::toLower(m_interface_model) == "levelset") {
         m_interface_capturing_method = amr_wind::InterfaceCapturingMethod::LS;
         auto& levelset_eqn =
@@ -73,6 +74,7 @@ void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
+        set_density_via_vof();
         // Compute the print the total volume fraction
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
@@ -87,6 +89,7 @@ void MultiPhase::post_advance_work()
         }
         break;
     case InterfaceCapturingMethod::LS:
+        set_density_via_levelset();
         break;
     };
 }
@@ -205,43 +208,38 @@ void MultiPhase::set_density_via_vof()
 void MultiPhase::levelset2vof()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-    const auto& geom = m_sim.mesh().Geom();
-
-    auto& normal = m_sim.repo().get_field("interface_normal");
-    normal.set_default_fillpatch_bc(m_sim.time());
     (*m_levelset).fillpatch(m_sim.time().new_time());
-    fvm::gradient(normal, (*m_levelset));
-    normal.fillpatch(m_sim.time().new_time());
-    field_ops::normalize(normal);
+    const auto& geom = m_sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& levelset = (*m_levelset)(lev);
         auto& vof = (*m_vof)(lev);
+        const auto& dx = geom[lev].CellSizeArray();
+
         for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
-            const auto& dx = geom[lev].CellSizeArray();
-
             const amrex::Array4<amrex::Real>& phi = levelset.array(mfi);
             const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
-            const amrex::Array4<amrex::Real>& ifacenorm =
-                normal(lev).array(mfi);
-
+            const amrex::Real eps = 2. * std::cbrt(dx[0] * dx[1] * dx[2]);
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    // Do a linear recontruction of the interface based on
-                    // least squares
-                    ifacenorm(i, j, k, 0) = -ifacenorm(i, j, k, 0) * dx[0];
-                    ifacenorm(i, j, k, 1) = -ifacenorm(i, j, k, 1) * dx[1];
-                    ifacenorm(i, j, k, 2) = -ifacenorm(i, j, k, 2) * dx[2];
-                    amrex::Real mx = amrex::Math::abs(ifacenorm(i, j, k, 0));
-                    amrex::Real my = amrex::Math::abs(ifacenorm(i, j, k, 1));
-                    amrex::Real mz = amrex::Math::abs(ifacenorm(i, j, k, 2));
-                    amrex::Real normL1 = mx + my + mz;
+                    amrex::Real mx, my, mz;
+                    multiphase::youngs_fd_normal(i, j, k, phi, mx, my, mz);
+                    mx = std::abs(mx / 32.);
+                    my = std::abs(my / 32.);
+                    mz = std::abs(mz / 32.);
+                    amrex::Real normL1 = (mx + my + mz);
                     mx = mx / normL1;
                     my = my / normL1;
                     mz = mz / normL1;
-                    amrex::Real alpha = phi(i, j, k) / normL1;
-                    alpha = alpha + 0.5;
+                    // Make sure that alpha is negative far away from the interface
+                    amrex::Real alpha;
+                    if (phi(i, j, k) < -eps) {
+                        alpha = -1.0;
+                    } else {
+                        alpha = phi(i, j, k) / normL1;
+                        alpha = alpha + 0.5;
+                    }
                     if (alpha >= 1.0) {
                         volfrac(i, j, k) = 1.0;
                     } else if (alpha <= 0.0) {

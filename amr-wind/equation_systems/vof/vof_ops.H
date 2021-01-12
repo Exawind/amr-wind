@@ -21,19 +21,16 @@ struct FieldRegOp<VOF, Scheme>
         auto fields = create_fields_instance<VOF, Scheme>(time, repo, probtype);
 
         auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
-        auto& normal =
-            repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
-        normal.set_default_fillpatch_bc(sim.time());
         curvature.set_default_fillpatch_bc(sim.time());
 
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
-        iomgr.register_output_var(levelset.name());
-        iomgr.register_output_var(curvature.name());
+        // iomgr.register_output_var(levelset.name());
+        // iomgr.register_output_var(curvature.name());
 
         return fields;
     }

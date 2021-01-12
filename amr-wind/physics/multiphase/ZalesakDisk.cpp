@@ -1,3 +1,4 @@
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/ZalesakDisk.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
@@ -10,6 +11,7 @@ ZalesakDisk::ZalesakDisk(CFDSim& sim)
     : m_sim(sim)
     , m_velocity(sim.repo().get_field("velocity"))
     , m_levelset(sim.repo().get_field("levelset"))
+    , m_density(sim.repo().get_field("density"))
 {
     amrex::ParmParse pp(identifier());
     pp.queryarr("location", m_loc, 0, AMREX_SPACEDIM);
@@ -26,8 +28,13 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
+    auto& density = m_density(level);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
+
+    auto& mphase = m_sim.physics_manager().get<MultiPhase>();
+    const amrex::Real rho1 = mphase.rho1();
+    const amrex::Real rho2 = mphase.rho2();
 
     const amrex::Real xc = m_loc[0];
     const amrex::Real yc = m_loc[1];
@@ -41,6 +48,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
         const auto& vbx = mfi.growntilebox();
         auto vel = velocity.array(mfi);
         auto phi = levelset.array(mfi);
+        auto rho = density.array(mfi);
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -50,29 +58,45 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                 vel(i, j, k, 0) = 2.0 * M_PI / TT * (0.5 - y);
                 vel(i, j, k, 1) = 2.0 * M_PI / TT * (x - 0.5);
                 vel(i, j, k, 2) = 0.0;
+                // First define the sphere
 
                 phi(i, j, k) =
                     radius - std::sqrt(
                                  (x - xc) * (x - xc) + (y - yc) * (y - yc) +
                                  (z - zc) * (z - zc));
 
-                if (y - yc <= radius && y - yc > radius - depth &&
+                // then the slot
+                amrex::Real eps = std::cbrt(dx[0] * dx[1] * dx[2]);
+                if (y - yc <= radius && y - yc >= radius - depth &&
                     std::abs(x - xc) <= width &&
                     std::sqrt(
                         (x - xc) * (x - xc) + (y - yc) * (y - yc) +
-                        (z - zc) * (z - zc)) <= radius) {
-                    amrex::Real d1;
+                        (z - zc) * (z - zc)) < radius + eps) {
                     if (x > xc) {
                         d1 = std::abs(xc + width - x);
                     } else {
                         d1 = std::abs(xc - width - x);
                     }
-
-                    amrex::Real d2 = std::abs(y - (yc + radius - depth));
-                    amrex::Real min_dist = amrex::min(d1, d2);
+                    d2 = std::abs(y - (yc + radius - depth));
+                    min_dist = amrex::min(d1, d2);
 
                     phi(i, j, k) = -min_dist;
                 }
+
+                amrex::Real smooth_heaviside;
+                eps = std::cbrt(2. * dx[0] * dx[1] * dx[2]);
+                if (phi(i, j, k) > eps) {
+                    smooth_heaviside = 1.0;
+                } else if (phi(i, j, k) < -eps) {
+                    smooth_heaviside = 0.;
+                } else {
+                    smooth_heaviside =
+                        0.5 *
+                        (1.0 + phi(i, j, k) / eps +
+                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
+                }
+                rho(i, j, k) =
+                    rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
             });
     }
 }
