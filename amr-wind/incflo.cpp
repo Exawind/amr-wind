@@ -208,6 +208,13 @@ void incflo::post_advance_work()
     }
 }
 
+amrex::Long incflo::cellCount() noexcept
+{
+    amrex::Long cnt = 0;
+    for (int i = 0; i <= finest_level; i++) cnt += boxArray(i).numPts();
+    return cnt;
+}
+
 /** Perform time-integration for user-defined time or timesteps.
  *
  *  \callgraph
@@ -221,9 +228,14 @@ void incflo::Evolve()
                        << ", " << ComputeKineticEnergy() << std::endl;
     }
 
+    auto ncells = cellCount();
+
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
-        regrid_and_update();
+
+        bool regrid = regrid_and_update();
+        if (regrid) ncells = cellCount();
+
         pre_advance_stage1();
         pre_advance_stage2();
 
@@ -240,6 +252,9 @@ void incflo::Evolve()
                        << " Solve: " << std::setprecision(4) << (time2 - time1)
                        << " Post: " << std::setprecision(3) << (time3 - time2)
                        << " Total: " << std::setprecision(4) << (time3 - time0)
+                       << " Time/DOF: " << std::setprecision(4)
+                       << amrex::ParallelDescriptor::NProcs() *
+                              (time2 - time1) / static_cast<amrex::Real>(ncells)
                        << std::endl;
     }
     amrex::Print() << "\n======================================================"

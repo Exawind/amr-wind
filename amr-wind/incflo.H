@@ -98,6 +98,9 @@ public:
     void advance();
     void post_advance_work();
 
+    //! returns total number of cells including covered cells
+    amrex::Long cellCount() noexcept;
+
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
     amr_wind::FieldRepo& repo() { return m_repo; }
