@@ -98,9 +98,6 @@ public:
     void advance();
     void post_advance_work();
 
-    //! returns total number of cells including covered cells
-    amrex::Long cellCount() noexcept;
-
     amr_wind::CFDSim& sim() { return m_sim; }
     const amr_wind::SimTime& time() const { return m_time; }
     amr_wind::FieldRepo& repo() { return m_repo; }
@@ -217,6 +214,9 @@ private:
 
     // Default to MOL (not Godunov)
     bool m_use_godunov = false;
+
+    //! number of cells on all levels including covered cells
+    amrex::Long m_cell_count{-1};
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
     int m_KE_int = -1;
