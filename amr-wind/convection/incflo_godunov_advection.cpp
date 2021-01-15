@@ -74,7 +74,6 @@ void godunov::compute_advection(
     Array4<Real> xyzlo = makeArray4(p, bxg1, ncomp);
     p += xyzlo.size();
     Array4<Real> xyzhi = makeArray4(p, bxg1, ncomp);
-    p += xyzhi.size(); // NOLINT: Value not read warning
 
     // Use PPM to generate Im and Ip */
     switch (godunov_scheme) {
