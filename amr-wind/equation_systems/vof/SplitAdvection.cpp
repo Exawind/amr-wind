@@ -38,7 +38,7 @@ void multiphase::split_advection(
     Array4<Real> fluxC = makeArray4(p, bxg1, 1);
     p += fluxC.size();
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
-    p += fluxR.size();
+    p += fluxR.size(); // NOLINT: Value not read warning
 
     if (isweep % 3 == 0) {
         amrex::ParallelFor(

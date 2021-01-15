@@ -171,7 +171,7 @@ void godunov::predict_godunov(
     Array4<Real> zlo = makeArray4(p, zebox, ncomp);
     p += zlo.size();
     Array4<Real> zhi = makeArray4(p, zebox, ncomp);
-    p += zhi.size();
+    p += zhi.size(); // NOLINT: Value not read warning
 
     amrex::ParallelFor(
         xebox, ncomp,
