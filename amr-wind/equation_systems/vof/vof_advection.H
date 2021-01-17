@@ -80,7 +80,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     int isweep = 0;
     // Advection scheme enum
     std::string m_advection_scheme{"eulerian_implicit"};
-    bool m_vof_advection_is_lagrangian{true};
+    bool m_vof_advection_is_lagrangian{false};
 };
 
 } // namespace pde

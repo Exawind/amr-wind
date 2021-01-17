@@ -152,10 +152,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_lagrangian_fluxes(
 {
     int bclo = bc->lo(dir - 1);
     int bchi = bc->hi(dir - 1);
-    /*
-        amrex::Print() << dir << " " << bclo << " " << bchi << std::endl;
-        amrex::Print() << domlo << " " << domhi << std::endl;
-    */
+
     if (dir == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (i == domlo) {
@@ -217,10 +214,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
 {
     int bclo = bc->lo(dir - 1);
     int bchi = bc->hi(dir - 1);
-    /*
-        amrex::Print() << dir << " " << bclo << " " << bchi << std::endl;
-        amrex::Print() << domlo << " " << domhi << std::endl;
-    */
+
     if (dir == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (i == domlo) {
