@@ -17,7 +17,8 @@ void split_advection(
     amrex::BCRec const* pbc,
     amrex::Real* p,
     amrex::Vector<amrex::Geometry> geom,
-    amrex::Real dt);
+    amrex::Real dt,
+    bool is_lagrangian);
 
 } // namespace multiphase
 } // namespace amr_wind
