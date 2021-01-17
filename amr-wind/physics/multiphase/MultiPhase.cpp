@@ -232,7 +232,8 @@ void MultiPhase::levelset2vof()
                     mx = mx / normL1;
                     my = my / normL1;
                     mz = mz / normL1;
-                    // Make sure that alpha is negative far away from the interface
+                    // Make sure that alpha is negative far away from the
+                    // interface
                     amrex::Real alpha;
                     if (phi(i, j, k) < -eps) {
                         alpha = -1.0;
