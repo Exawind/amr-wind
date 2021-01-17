@@ -25,7 +25,9 @@ void IOManager::initialize_io()
     amrex::Vector<std::string> out_vars;
     amrex::Vector<std::string> out_int_vars;
     amrex::Vector<std::string> out_derived_vars;
+    amrex::Vector<std::string> out_skip_vars;
     std::set<std::string> outputs;
+    std::set<std::string> skip_outputs;
     std::set<std::string> int_outputs;
 
     amrex::ParmParse pp("io");
@@ -38,17 +40,21 @@ void IOManager::initialize_io()
     pp.queryarr("outputs", out_vars);
     pp.queryarr("int_outputs", out_int_vars);
     pp.queryarr("derived_outputs", out_derived_vars);
+    pp.queryarr("skip_outputs", out_skip_vars);
 
     // We process the input vector to eliminate duplicates
     for (const auto& name : out_vars) outputs.insert(name);
-
+    for (const auto& name : out_skip_vars) skip_outputs.insert(name);
     for (const auto& name : out_int_vars) int_outputs.insert(name);
 
     // If the user hasn't disabled default output variables, then we append them
     // to the list so that we don't end up with any duplicates (in case user
     // also added the variable explicitly in the input file)
     if (m_output_default_vars) {
-        for (const auto& name : m_pltvars_default) outputs.insert(name);
+        for (const auto& name : m_pltvars_default) {
+            if (skip_outputs.find(name) == skip_outputs.end())
+                outputs.insert(name);
+        }
 
         for (const auto& name : m_int_pltvars_default) int_outputs.insert(name);
     }
