@@ -179,6 +179,14 @@ bool incflo::regrid_and_update()
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
     }
 
+    // update cell counts if unitialized or if a regrid happened
+    if (m_cell_count == -1 || m_time.do_regrid()) {
+        m_cell_count = 0;
+        for (int i = 0; i <= finest_level; i++) {
+            m_cell_count += boxArray(i).numPts();
+        }
+    }
+
     return m_time.do_regrid();
 }
 
@@ -223,6 +231,7 @@ void incflo::Evolve()
 
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
+
         regrid_and_update();
         pre_advance_stage1();
         pre_advance_stage2();
@@ -240,6 +249,12 @@ void incflo::Evolve()
                        << " Solve: " << std::setprecision(4) << (time2 - time1)
                        << " Post: " << std::setprecision(3) << (time3 - time2)
                        << " Total: " << std::setprecision(4) << (time3 - time0)
+                       << std::endl;
+
+        amrex::Print() << "Solve time per cell: " << std::setprecision(4)
+                       << amrex::ParallelDescriptor::NProcs() *
+                              (time2 - time1) /
+                              static_cast<amrex::Real>(m_cell_count)
                        << std::endl;
     }
     amrex::Print() << "\n======================================================"

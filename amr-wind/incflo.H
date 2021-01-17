@@ -215,6 +215,9 @@ private:
     // Default to MOL (not Godunov)
     bool m_use_godunov = false;
 
+    //! number of cells on all levels including covered cells
+    amrex::Long m_cell_count{-1};
+
     DiffusionType m_diff_type = DiffusionType::Implicit;
     int m_KE_int = -1;
 
