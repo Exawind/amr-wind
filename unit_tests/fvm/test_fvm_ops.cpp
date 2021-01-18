@@ -46,7 +46,7 @@ void initialize_scalar(
 }
 
 void initialize_velocity(
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     const int pdegree,
     amrex::Gpu::DeviceVector<amrex::Real>& cu,

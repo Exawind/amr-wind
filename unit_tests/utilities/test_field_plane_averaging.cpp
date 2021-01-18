@@ -69,7 +69,7 @@ namespace {
 void add_linear(
     int dir,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
-    amrex::Geometry& geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     amrex::Array4<amrex::Real>& velocity)
 {
@@ -176,7 +176,7 @@ namespace {
 void add_periodic(
     int dir,
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     amrex::Array4<amrex::Real>& velocity)
 {
