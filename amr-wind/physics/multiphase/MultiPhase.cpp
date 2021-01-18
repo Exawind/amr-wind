@@ -102,8 +102,6 @@ amrex::Real MultiPhase::volume_fraction_sum()
     const int nlevels = m_sim.repo().num_active_levels();
     const auto& geom = m_sim.mesh().Geom();
     auto& mesh = m_sim.mesh();
-    const auto grids = mesh.boxArray();
-    const auto dmap = mesh.DistributionMap();
 
     amrex::Real total_volume_frac = 0.0;
 

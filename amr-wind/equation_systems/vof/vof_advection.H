@@ -30,7 +30,6 @@ struct AdvectionOp<VOF, fvm::Godunov>
         auto& geom = repo.mesh().Geom();
 
         auto& dof_field = fields.field;
-        auto bcrec_device = dof_field.bcrec_device();
         //
         // Advect volume using the Explicit Lagrangian onto-cell Sweeping method
         // with PLIC reconstruction

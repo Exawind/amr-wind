@@ -19,7 +19,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void Godunov_plm_fpu_x(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Real& umac,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domain_ilo,
     const int domain_ihi)
 {
@@ -65,7 +65,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void Godunov_plm_fpu_y(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Real& vmac,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domain_jlo,
     const int domain_jhi)
 {
@@ -111,7 +111,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE void Godunov_plm_fpu_z(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Real& wmac,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domain_klo,
     const int domain_khi)
 {

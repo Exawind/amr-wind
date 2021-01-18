@@ -216,7 +216,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_x(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)
@@ -273,7 +273,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_y(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)
@@ -328,7 +328,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_pred_z(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)
@@ -387,7 +387,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_x(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)
@@ -444,7 +444,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_y(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)
@@ -501,7 +501,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_weno_fpu_z(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi,
     const bool weno_js)

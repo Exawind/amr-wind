@@ -187,7 +187,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_x_nolim(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {
@@ -250,7 +250,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_y_nolim(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {
@@ -312,7 +312,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_pred_z_nolim(
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<amrex::Real>& Im,
     const amrex::Array4<amrex::Real>& Ip,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {
@@ -379,7 +379,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_x_nolim(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {
@@ -444,7 +444,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_y_nolim(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {
@@ -509,7 +509,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void Godunov_ppm_fpu_z_nolim(
     amrex::Real& Ip,
     const amrex::Array4<const amrex::Real>& S,
     const amrex::Array4<const amrex::Real>& vel_edge,
-    const amrex::BCRec bc,
+    const amrex::BCRec& bc,
     const int domlo,
     const int domhi)
 {

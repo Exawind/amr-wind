@@ -117,8 +117,6 @@ void write_netcdf(
 
     auto ncf = ncutils::NCFile::open(ncfile, NC_WRITE);
     const std::string nt_name = "num_time_steps";
-    const std::string np_name = "num_actuator_points";
-    const std::string nvel_name = "num_vel_points";
     // Index of next timestep
     const size_t nt = ncf.dim(nt_name).len();
     const size_t nfpts = grid.force.size();

@@ -664,7 +664,7 @@ void ABLBoundaryPlane::write_data(
 }
 
 void ABLBoundaryPlane::impl_buffer_field(
-    const amrex::Box bx,
+    const amrex::Box& bx,
     const int n1,
     const int nc,
     const amrex::GpuArray<int, 2>& perp,
