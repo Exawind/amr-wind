@@ -61,14 +61,14 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                     std::sqrt(
                         (x - xc) * (x - xc) + (y - yc) * (y - yc) +
                         (z - zc) * (z - zc)) <= radius) {
-                    amrex::Real d1, d2;
+                    amrex::Real d1;
                     if (x > xc) {
                         d1 = std::abs(xc + width - x);
                     } else {
                         d1 = std::abs(xc - width - x);
                     }
 
-                    d2 = std::abs(y - (yc + radius - depth));
+                    amrex::Real d2 = std::abs(y - (yc + radius - depth));
                     amrex::Real min_dist = amrex::min(d1, d2);
 
                     phi(i, j, k) = -min_dist;
