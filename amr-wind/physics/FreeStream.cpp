@@ -51,6 +51,7 @@ void FreeStream::pre_init_actions()
             m_field_funcs[fname] = process_field_func(repo.get_field(fname));
         }
     }
+
 }
 
 /** Initialize the fields at the start of simulation.

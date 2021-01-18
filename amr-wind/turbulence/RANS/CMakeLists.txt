@@ -1,4 +1,4 @@
 target_sources(${amr_wind_lib_name} PRIVATE
-  KsgsM84Src.cpp
-  TKESrc.cpp
+  KOmegaSST.cpp
+  KOmegaSSTIDDES.cpp
   )

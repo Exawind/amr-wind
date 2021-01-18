@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/PDE.H"
+#include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/sdr/SDRSource.H"
 
 namespace amr_wind {
@@ -43,6 +44,46 @@ struct SDR : ScalarTransport
     static constexpr bool has_diffusion = true;
     static constexpr bool need_nph_state = true;
 };
+
+template<>
+struct TurbulenceOp<SDR>
+{
+    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
+                 PDEFields& fields)
+        : m_tmodel(tmodel), m_fields(fields)
+    {}
+
+    void operator()()
+    {
+        auto& mueff = m_fields.mueff;
+        m_tmodel.update_scalar_diff(mueff, "sdr");
+    }
+
+    turbulence::TurbulenceModel& m_tmodel;
+    PDEFields& m_fields;
+};
+
+/** Implementation of post-processing actions for SDR equation
+ *  \ingroup sdr_eqn
+ */
+template <>
+struct PostSolveOp<SDR>
+{
+    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    
+    void operator()(const amrex::Real time)
+    {
+        amrex::Print() << "Min/Max before lower bound op on SDR is "
+                       << m_fields.field(0).min(0) << " - "
+                       << m_fields.field(0).max(0) << std::endl;
+        field_ops::lower_bound(m_fields.field, clip_value);
+        m_fields.field.fillpatch(time);
+    }
+
+    PDEFields& m_fields;
+    amrex::Real clip_value{1.0e-8};
+};
+    
 
 } // namespace pde
 } // namespace amr_wind

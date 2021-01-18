@@ -58,11 +58,8 @@ struct TurbulenceOp<TKE>
 
     void operator()()
     {
-        auto& tvisc = m_tmodel.mu_turb();
         auto& mueff = m_fields.mueff;
-        mueff.setVal(0.0);
-        field_ops::saxpy(
-            mueff, 2.0, tvisc, 0, 0, mueff.num_comp(), mueff.num_grow());
+        m_tmodel.update_scalar_diff(mueff, "tke");
     }
 
     turbulence::TurbulenceModel& m_tmodel;
@@ -80,13 +77,32 @@ struct PostSolveOp<TKE>
 
     void operator()(const amrex::Real time)
     {
-        field_ops::lower_bound(m_fields.field, clip_value);
+        amrex::Print() << "Min/Max before lower bound op on TKE is "
+                  << m_fields.field(0).min(0) << " - "
+                  << m_fields.field(0).max(0) << std::endl;
+
+        auto& field = m_fields.field;
+        const auto& repo = field.repo();
+        const int nlevels = repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+
+            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& field_arr = field(lev).array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            field_arr(i, j, k) =
+                                (field_arr(i,j,k) < 0.0) ? clip_value : field_arr(i,j,k);
+                        });
+            }
+        }
         m_fields.field.fillpatch(time);
     }
 
     CFDSim& m_sim;
     PDEFields& m_fields;
-    amrex::Real clip_value{1.0e-15};
+    amrex::Real clip_value{1.0e-8};
 };
 
 } // namespace pde
