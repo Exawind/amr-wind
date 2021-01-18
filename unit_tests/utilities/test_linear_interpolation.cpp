@@ -30,6 +30,7 @@ TEST(LinearInterpolation, check_bounds)
         const amrex::Real xinp = 9.0 * amrex::Random();
         const auto idx = interp::check_bounds(start, end, xinp);
         EXPECT_EQ(idx.idx, 0);
+        // cppcheck-suppress unreadVariable
         EXPECT_EQ(idx.lim, interp::Limits::VALID);
     }
 }
@@ -55,6 +56,7 @@ TEST(LinearInterpolation, bisection_search)
     {
         const auto idx = interp::bisection_search(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
+        // cppcheck-suppress unreadVariable
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
 }
@@ -85,6 +87,7 @@ TEST(LinearInterpolation, find_index)
     {
         const auto idx = interp::find_index(start, end, 9.1);
         EXPECT_EQ(idx.idx, 9);
+        // cppcheck-suppress unreadVariable
         EXPECT_EQ(idx.lim, interp::Limits::UPLIM);
     }
 }

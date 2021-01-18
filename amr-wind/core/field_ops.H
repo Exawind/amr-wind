@@ -336,7 +336,7 @@ inline amrex::Real global_max_magnitude(FType& field)
     const auto& repo = field.repo();
     const auto ncomp = field.num_comp();
 
-    amrex::Real maxglobal;
+    amrex::Real maxglobal = 0.0;
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         amrex::Real maxglobal_lev = 0.0;
