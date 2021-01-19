@@ -18,7 +18,7 @@ class FvmOpTest : public MeshTest
 namespace {
 
 void initialize_scalar(
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     const int pdegree,
     amrex::Gpu::DeviceVector<amrex::Real>& c,
@@ -46,7 +46,7 @@ void initialize_scalar(
 }
 
 void initialize_velocity(
-    amrex::Geometry geom,
+    const amrex::Geometry& geom,
     const amrex::Box& bx,
     const int pdegree,
     amrex::Gpu::DeviceVector<amrex::Real>& cu,
@@ -453,7 +453,7 @@ amrex::Real curvature_test_impl(amr_wind::Field& scalar, const int pdegree)
 
     amrex::Gpu::DeviceVector<amrex::Real> coeff(ncoeff, 0.00123);
 
-    auto& geom = scalar.repo().mesh().Geom();
+    const auto& geom = scalar.repo().mesh().Geom();
 
     run_algorithm(scalar, [&](const int lev, const amrex::MFIter& mfi) {
         auto scalar_arr = scalar(lev).array(mfi);

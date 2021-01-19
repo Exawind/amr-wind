@@ -24,9 +24,7 @@ void FieldNorms::initialize()
     }
 
     auto& io_mng = m_sim.io_manager();
-    int ncomp = 0;
     for (const auto& fld : io_mng.plot_fields()) {
-        ncomp += fld->num_comp();
         ioutils::add_var_names(m_var_names, fld->name(), fld->num_comp());
     }
 
@@ -122,8 +120,6 @@ void FieldNorms::prepare_ascii_file()
 void FieldNorms::write_ascii()
 {
     BL_PROFILE("amr-wind::FieldNorms::write_ascii");
-
-    const std::string post_dir = "post_processing";
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str(), std::ios_base::app);
