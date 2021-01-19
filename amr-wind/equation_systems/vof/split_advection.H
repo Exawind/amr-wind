@@ -42,7 +42,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         mmL = amrex::max(aL, 0.0);
         mmR = 1.0 - mmL + amrex::min(0.0, aR);
-        if (dir == 1) {
+        if (dir == 0) {
             mx = mx / (1.0 - aL + aR);
             alpha = alpha + mx * aL;
             if (aL < 0.0)
@@ -50,7 +50,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
             if (aR > 0.0)
                 fluxR(i, j, k) = cut_volume(mx, my, mz, alpha, 1.0, aR);
             fluxC(i, j, k) = cut_volume(mx, my, mz, alpha, mmL, mmR);
-        } else if (dir == 2) {
+        } else if (dir == 1) {
             my = my / (1.0 - aL + aR);
             alpha = alpha + my * aL;
             if (aL < 0.0)
@@ -58,7 +58,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void lagrangian_explicit(
             if (aR > 0.0)
                 fluxR(i, j, k) = cut_volume(my, mz, mx, alpha, 1.0, aR);
             fluxC(i, j, k) = cut_volume(my, mz, mx, alpha, mmL, mmR);
-        } else if (dir == 3) {
+        } else if (dir == 2) {
             mz = mz / (1.0 - aL + aR);
             alpha = alpha + mz * aL;
             if (aL < 0.0)
@@ -103,7 +103,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
         // Eulerian advection
         x0 = 0.0;
         deltax = 1.0;
-        if (dir == 1) {
+        if (dir == 0) {
             if (aL < 0.0) {
                 deltax = -aL;
                 fluxL(i, j, k) = cut_volume(mx, my, mz, alpha, x0, deltax);
@@ -113,7 +113,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
                 deltax = aR;
                 fluxR(i, j, k) = cut_volume(mx, my, mz, alpha, x0, deltax);
             }
-        } else if (dir == 2) {
+        } else if (dir == 1) {
             if (aL < 0.0) {
                 deltax = -aL;
                 fluxL(i, j, k) = cut_volume(my, mz, mx, alpha, x0, deltax);
@@ -123,7 +123,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
                 deltax = aR;
                 fluxR(i, j, k) = cut_volume(my, mz, mx, alpha, x0, deltax);
             }
-        } else if (dir == 3) {
+        } else if (dir == 2) {
             if (aL < 0.0) {
                 deltax = -aL;
                 fluxL(i, j, k) = cut_volume(mz, mx, my, alpha, x0, deltax);
@@ -150,10 +150,10 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_lagrangian_fluxes(
     const int domlo,
     const int domhi)
 {
-    int bclo = bc->lo(dir - 1);
-    int bchi = bc->hi(dir - 1);
+    int bclo = bc->lo(dir);
+    int bchi = bc->hi(dir);
 
-    if (dir == 1) {
+    if (dir == 0) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (i == domlo) {
                 fluxR(domlo - 1, j, k) = 0.0;
@@ -166,7 +166,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_lagrangian_fluxes(
         }
         volfrac(i, j, k) =
             fluxR(i - 1, j, k) + fluxC(i, j, k) + fluxL(i + 1, j, k);
-    } else if (dir == 2) {
+    } else if (dir == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (j == domlo) {
                 fluxR(i, domlo - 1, k) = 0.0;
@@ -179,7 +179,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_lagrangian_fluxes(
         }
         volfrac(i, j, k) =
             fluxR(i, j - 1, k) + fluxC(i, j, k) + fluxL(i, j + 1, k);
-    } else if (dir == 3) {
+    } else if (dir == 2) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (k == domlo) {
                 fluxR(i, j, domlo - 1) = 0.0;
@@ -215,7 +215,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     int bclo = bc->lo(dir - 1);
     int bchi = bc->hi(dir - 1);
 
-    if (dir == 1) {
+    if (dir == 0) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (i == domlo) {
                 fluxR(domlo - 1, j, k) = 0.0;
@@ -230,7 +230,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                            (fluxR(i, j, k) - fluxL(i + 1, j, k)) +
                            (fluxR(i - 1, j, k) - fluxL(i, j, k)) +
                            fluxC(i, j, k) * (velR - velL);
-    } else if (dir == 2) {
+    } else if (dir == 1) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (j == domlo) {
                 fluxR(i, domlo - 1, k) = 0.0;
@@ -245,7 +245,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
                            (fluxR(i, j, k) - fluxL(i, j + 1, k)) +
                            (fluxR(i, j - 1, k) - fluxL(i, j, k)) +
                            fluxC(i, j, k) * (velR - velL);
-    } else if (dir == 3) {
+    } else if (dir == 2) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
             if (k == domlo) {
                 fluxR(i, j, domlo - 1) = 0.0;
