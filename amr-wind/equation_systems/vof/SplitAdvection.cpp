@@ -107,14 +107,14 @@ void multiphase::sweep(
     Box const& bxg1 = amrex::grow(bx, 1);
 
     int index[] = {0, 0, 0};
-    amrex::Real velL, velR;
     index[dir] = 1;
 
     if (is_lagrangian) {
         amrex::ParallelFor(
-            bxg1, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                velL = vel_mac(i, j, k);
-                velR = vel_mac(i + index[0], j + index[1], k + index[2]);
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                amrex::Real velL = vel_mac(i, j, k);
+                amrex::Real velR =
+                    vel_mac(i + index[0], j + index[1], k + index[2]);
                 multiphase::lagrangian_explicit(
                     i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxC,
                     fluxR);
@@ -127,16 +127,18 @@ void multiphase::sweep(
             });
     } else {
         amrex::ParallelFor(
-            bxg1, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                velL = vel_mac(i, j, k);
-                velR = vel_mac(i + index[0], j + index[1], k + index[2]);
+            bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                amrex::Real velL = vel_mac(i, j, k);
+                amrex::Real velR =
+                    vel_mac(i + index[0], j + index[1], k + index[2]);
                 multiphase::eulerian_implicit(
                     i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR);
             });
         amrex::ParallelFor(
-            bx, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                velL = vel_mac(i, j, k) * dtdx;
-                velR = vel_mac(i + index[0], j + index[1], k + index[2]) * dtdx;
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                amrex::Real velL = vel_mac(i, j, k) * dtdx;
+                amrex::Real velR =
+                    vel_mac(i + index[0], j + index[1], k + index[2]) * dtdx;
                 multiphase::balance_eulerian_fluxes(
                     i, j, k, dir, velL, velR, volfrac, fluxL, fluxC, fluxR, pbc,
                     dimLow, dimHigh);
