@@ -15,9 +15,10 @@ namespace synth_turb {
 class MeanProfile
 {
 public:
-  MeanProfile(double refVel, double refHeight)
+  MeanProfile(double refVel, double refHeight, int shear_dir=2)
     : refVel_(refVel),
-      refHeight_(refHeight)
+      refHeight_(refHeight),
+      shearDir_(shear_dir)
   {}
 
   virtual ~MeanProfile() = default;
@@ -29,9 +30,12 @@ public:
 
   inline double reference_height() const { return refHeight_; }
 
+  inline int shear_dir() const { return shearDir_; }
+
 protected:
   const double refVel_;
   const double refHeight_;
+  const int shearDir_;
 };
 
 } // namespace synth_turb

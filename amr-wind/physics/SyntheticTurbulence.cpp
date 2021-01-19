@@ -14,8 +14,10 @@ namespace synth_turb {
 class LinearShearProfile : public MeanProfile
 {
 public:
-  LinearShearProfile(amrex::Real refVel, amrex::Real refHeight, amrex::Real slope, amrex::Real height)
-    : MeanProfile(refVel, refHeight),
+    LinearShearProfile(amrex::Real refVel, amrex::Real refHeight,
+                       amrex::Real slope, amrex::Real height,
+                       int shear_dir)
+    : MeanProfile(refVel, refHeight, shear_dir),
       slope_(slope),
       halfHeight_(0.5 * height)
   {}
@@ -41,8 +43,9 @@ private:
 class PowerLawProfile : public MeanProfile
 {
 public:
-  PowerLawProfile(amrex::Real refVel, amrex::Real refHeight, amrex::Real alpha)
-    : MeanProfile(refVel, refHeight),
+  PowerLawProfile(amrex::Real refVel, amrex::Real refHeight, amrex::Real alpha,
+                  int shear_dir)
+    : MeanProfile(refVel, refHeight, shear_dir),
       alpha_(alpha)
   {}
 
@@ -387,13 +390,19 @@ SyntheticTurbulence::SyntheticTurbulence(
       pp.query("shear_slope",shear_slope);
       amrex::Real shear_width;
       pp.query("shear_width",shear_width);
+      int shear_dir=2;
+      pp.query("shear_dir",shear_dir);
       m_wind_profile.reset(new synth_turb::LinearShearProfile(
-                             wind_speed, ref_height, shear_slope, shear_width));
+                               wind_speed, ref_height, shear_slope,
+                               shear_width, shear_dir));
   } else if (mean_wind_type == "power_law") {
       amrex::Real alpha;
       pp.query("power_law_coefficient",alpha);
-      m_wind_profile.reset(new synth_turb::PowerLawProfile(wind_speed, ref_height,
-                                                         alpha));
+      int shear_dir=2;
+      pp.query("shear_dir",shear_dir);
+      m_wind_profile.reset(new synth_turb::PowerLawProfile(wind_speed,
+                                                           ref_height,
+                                                           alpha, shear_dir));
   } else {
     throw std::runtime_error("SyntheticTurbulence: invalid mean wind type specified = " + mean_wind_type);
   }
@@ -444,11 +453,14 @@ SyntheticTurbulence::SyntheticTurbulence(
     << " m; type = " << mean_wind_type << std::endl;
 }
 
-void SyntheticTurbulence::initialize_fields(int level, const amrex::Geometry& geom)
+void SyntheticTurbulence::initialize_fields(
+    int // level
+    ,
+    const amrex::Geometry& // geom)
+)
 {
     //TODO: Figure out what goes here
 }
-
 
 void SyntheticTurbulence::pre_advance_work()
 {
@@ -490,7 +502,7 @@ void SyntheticTurbulence::update()
   auto& repo = m_turb_force.repo();
   auto& geom_vec = repo.mesh().Geom();
 
-  const amrex::Real timestep = m_time.deltaT();
+  const int sdir = (*m_wind_profile).shear_dir();
 
   const int nlevels = repo.num_active_levels();
   for (int lev=0; lev < nlevels; ++lev) {
@@ -504,7 +516,6 @@ void SyntheticTurbulence::update()
       for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
           const auto& bx = mfi.tilebox();
           const auto& turb_force_arr = m_turb_force(lev).array(mfi);
-          const auto& vel_arr = m_velocity(lev).array(mfi);
           const auto& rho_arr = m_density(lev).array(mfi);
 
           amrex::ParallelFor(
@@ -537,17 +548,17 @@ void SyntheticTurbulence::update()
                 interp_perturb_vel(m_turb_grid, wts_loc, velL);
                 // Transform to global coordinates
                 local_to_global_vel(m_turb_grid, velL, velG);
-                
+
                 // Based on the equations in
                 // http://doi.wiley.com/10.1002/we.1608
                 // v_n in Eq. 10
-                const amrex::Real vMag = 
+                const amrex::Real vMag =
                     std::sqrt(velG[0] * velG[0]
                               + velG[1] * velG[1]
                               + velG[2] * velG[2]);
                 // (V_n + 1/2 v_n) in Eq. 10
                 const amrex::Real vMagTotal =
-                    ((*m_wind_profile)(xyzG[0]) + 0.5 * vMag);
+                    ((*m_wind_profile)(xyzG[sdir]) + 0.5 * vMag);
                 // Smearing factor (see Eq. 11). The normal direction to
                 // the grid is the x-axis of the local reference frame by
                 // construction
@@ -558,7 +569,6 @@ void SyntheticTurbulence::update()
                 const amrex::Real factor =
                     vMagTotal * eta;
 
-                
                 turb_force_arr(i,j,k,0) =
                     rho_arr(i,j,k) * velG[0] * factor;
                 turb_force_arr(i,j,k,1) =
