@@ -64,7 +64,7 @@ void ZalesakDisk::initialize_fields(int level, const amrex::Geometry& geom)
                     radius - std::sqrt(
                                  (x - xc) * (x - xc) + (y - yc) * (y - yc) +
                                  (z - zc) * (z - zc));
-
+                amrex::Real d1, d2, min_dist;
                 // then the slot
                 amrex::Real eps = std::cbrt(dx[0] * dx[1] * dx[2]);
                 if (y - yc <= radius && y - yc >= radius - depth &&
