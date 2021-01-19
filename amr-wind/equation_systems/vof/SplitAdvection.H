@@ -20,6 +20,20 @@ void split_advection(
     amrex::Real dt,
     bool is_lagrangian);
 
+void sweep(
+    const int dir,
+    amrex::Box const& bx,
+    amrex::Real dtdx,
+    amrex::Array4<amrex::Real const> const& vel_mac,
+    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxL,
+    amrex::Array4<amrex::Real> const& fluxC,
+    amrex::Array4<amrex::Real> const& fluxR,
+    amrex::BCRec const* pbc,
+    const int dimLow,
+    const int dimHigh,
+    bool is_lagrangian);
+
 } // namespace multiphase
 } // namespace amr_wind
 #endif /* SplitAdvection_H */

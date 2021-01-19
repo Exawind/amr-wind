@@ -42,279 +42,106 @@ void multiphase::split_advection(
     Array4<Real> fluxR = makeArray4(p, bxg1, 1);
     p += fluxR.size(); // NOLINT: Value not read warning
 
-    if (is_lagrangian) {
-        if (isweep % 3 == 0) {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 2, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-                        domhi.z);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 0, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-                        domhi.x);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 1, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-                        domhi.y);
-                });
-        } else if (isweep % 3 == 1) {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 1, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-                        domhi.y);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 2, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-                        domhi.z);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 0, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-                        domhi.x);
-                });
-        } else {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 0, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
-                        domhi.x);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 1, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
-                        domhi.y);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::lagrangian_explicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxC, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    multiphase::balance_lagrangian_fluxes(
-                        i, j, k, 2, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
-                        domhi.z);
-                });
-        }
-    } else {
+    if (!is_lagrangian) {
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 multiphase::c_mask(i, j, k, volfrac, fluxC);
             });
+    }
 
-        if (isweep % 3 == 0) {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k) * dtdz;
-                    amrex::Real wR = wmac(i, j, k + 1) * dtdz;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 2, wL, wR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.z, domhi.z);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k) * dtdx;
-                    amrex::Real uR = umac(i + 1, j, k) * dtdx;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 0, uL, uR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.x, domhi.x);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k) * dtdy;
-                    amrex::Real vR = vmac(i, j + 1, k) * dtdy;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 1, vL, vR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.y, domhi.y);
-                });
-        } else if (isweep % 3 == 1) {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k) * dtdy;
-                    amrex::Real vR = vmac(i, j + 1, k) * dtdy;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 1, vL, vR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.y, domhi.y);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k) * dtdz;
-                    amrex::Real wR = wmac(i, j, k + 1) * dtdz;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 2, wL, wR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.z, domhi.z);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k) * dtdx;
-                    amrex::Real uR = umac(i + 1, j, k) * dtdx;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 0, uL, uR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.x, domhi.x);
-                });
-        } else {
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k);
-                    amrex::Real uR = umac(i + 1, j, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 0, dtdx, uL, uR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real uL = umac(i, j, k) * dtdx;
-                    amrex::Real uR = umac(i + 1, j, k) * dtdx;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 0, uL, uR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.x, domhi.x);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k);
-                    amrex::Real vR = vmac(i, j + 1, k);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 1, dtdy, vL, vR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real vL = vmac(i, j, k) * dtdy;
-                    amrex::Real vR = vmac(i, j + 1, k) * dtdy;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 1, vL, vR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.y, domhi.y);
-                });
-            amrex::ParallelFor(
-                bxg1, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k);
-                    amrex::Real wR = wmac(i, j, k + 1);
-                    multiphase::eulerian_implicit(
-                        i, j, k, 2, dtdz, wL, wR, volfrac, fluxL, fluxR);
-                });
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    amrex::Real wL = wmac(i, j, k) * dtdz;
-                    amrex::Real wR = wmac(i, j, k + 1) * dtdz;
-                    multiphase::balance_eulerian_fluxes(
-                        i, j, k, 2, wL, wR, volfrac, fluxL, fluxC, fluxR, pbc,
-                        domlo.z, domhi.z);
-                });
-        }
+    if (isweep % 3 == 0) {
+        sweep(
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
+            domhi.z, is_lagrangian);
+        sweep(
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
+            domhi.x, is_lagrangian);
+        sweep(
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
+            domhi.y, is_lagrangian);
+    } else if (isweep % 3 == 1) {
+        sweep(
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
+            domhi.y, is_lagrangian);
+        sweep(
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
+            domhi.z, is_lagrangian);
+        sweep(
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
+            domhi.x, is_lagrangian);
+    } else {
+        sweep(
+            0, bx, dtdx, umac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.x,
+            domhi.x, is_lagrangian);
+        sweep(
+            1, bx, dtdy, vmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.y,
+            domhi.y, is_lagrangian);
+        sweep(
+            2, bx, dtdz, wmac, volfrac, fluxL, fluxC, fluxR, pbc, domlo.z,
+            domhi.z, is_lagrangian);
     }
 
     // Remove VOF debris
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         multiphase::remove_vof_debris(i, j, k, volfrac);
     });
+}
+
+void multiphase::sweep(
+    const int dir,
+    amrex::Box const& bx,
+    amrex::Real dtdx,
+    amrex::Array4<amrex::Real const> const& vel_mac,
+    amrex::Array4<amrex::Real> const& volfrac,
+    amrex::Array4<amrex::Real> const& fluxL,
+    amrex::Array4<amrex::Real> const& fluxC,
+    amrex::Array4<amrex::Real> const& fluxR,
+    amrex::BCRec const* pbc,
+    const int dimLow,
+    const int dimHigh,
+    bool is_lagrangian)
+{
+
+    BL_PROFILE("amr-wind::multiphase::sweep");
+
+    Box const& bxg1 = amrex::grow(bx, 1);
+
+    int index[] = {0, 0, 0};
+    amrex::Real velL, velR;
+    index[dir] = 1;
+
+    if (is_lagrangian) {
+        amrex::ParallelFor(
+            bxg1, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                velL = vel_mac(i, j, k);
+                velR = vel_mac(i + index[0], j + index[1], k + index[2]);
+                multiphase::lagrangian_explicit(
+                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxC,
+                    fluxR);
+            });
+        amrex::ParallelFor(
+            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                multiphase::balance_lagrangian_fluxes(
+                    i, j, k, dir, volfrac, fluxL, fluxC, fluxR, pbc, dimLow,
+                    dimHigh);
+            });
+    } else {
+        amrex::ParallelFor(
+            bxg1, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                velL = vel_mac(i, j, k);
+                velR = vel_mac(i + index[0], j + index[1], k + index[2]);
+                multiphase::eulerian_implicit(
+                    i, j, k, dir, dtdx, velL, velR, volfrac, fluxL, fluxR);
+            });
+        amrex::ParallelFor(
+            bx, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                velL = vel_mac(i, j, k) * dtdx;
+                velR = vel_mac(i + index[0], j + index[1], k + index[2]) * dtdx;
+                multiphase::balance_eulerian_fluxes(
+                    i, j, k, dir, velL, velR, volfrac, fluxL, fluxC, fluxR, pbc,
+                    dimLow, dimHigh);
+            });
+    }
 }
 
 } // namespace amr_wind

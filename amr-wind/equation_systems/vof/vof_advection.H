@@ -21,13 +21,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
         , w_mac(fields_in.repo.get_field("w_mac"))
     {
         amrex::ParmParse pp_multiphase("VOF");
-        pp_multiphase.query("advection_scheme", m_advection_scheme);
-
-        if (amrex::toLower(m_advection_scheme) == "lagrangian_explicit") {
-            m_vof_advection_is_lagrangian = true;
-        } else if (amrex::toLower(m_advection_scheme) == "eulerian_implicit") {
-            m_vof_advection_is_lagrangian = false;
-        }
+        pp_multiphase.query("use_lagrangian", m_use_lagrangian);
     }
 
     void operator()(const FieldState, const amrex::Real dt)
@@ -66,7 +60,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi),
                     dof_field.bcrec_device().data(), tmpfab.dataPtr(), geom, dt,
-                    m_vof_advection_is_lagrangian);
+                    m_use_lagrangian);
 
                 amrex::Gpu::streamSynchronize();
             }
@@ -78,9 +72,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
     Field& v_mac;
     Field& w_mac;
     int isweep = 0;
-    // Advection scheme enum
-    std::string m_advection_scheme{"eulerian_implicit"};
-    bool m_vof_advection_is_lagrangian{false};
+    bool m_use_lagrangian{false};
 };
 
 } // namespace pde
