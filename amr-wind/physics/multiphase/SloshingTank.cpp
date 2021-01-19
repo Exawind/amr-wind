@@ -12,6 +12,7 @@ SloshingTank::SloshingTank(CFDSim& sim)
 {
     amrex::ParmParse pp(identifier());
     pp.query("amplitude", m_amplitude);
+    pp.query("wavelength", m_wavelength);
     pp.query("water_level", m_waterlevel);
 }
 
@@ -28,6 +29,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
     const amrex::Real Amp = m_amplitude;
+    const amrex::Real waveL = m_wavelength;
     const amrex::Real water_level = m_waterlevel;
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
@@ -39,7 +41,7 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 const amrex::Real z0 =
-                    water_level + Amp * std::sin(M_PI * x / 2.0);
+                    water_level + Amp * std::sin(2.0 * M_PI * x / waveL);
                 phi(i, j, k) = z0 - z;
             });
     }

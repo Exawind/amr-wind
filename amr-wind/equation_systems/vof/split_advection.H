@@ -212,8 +212,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void balance_eulerian_fluxes(
     const int domlo,
     const int domhi)
 {
-    int bclo = bc->lo(dir - 1);
-    int bchi = bc->hi(dir - 1);
+    int bclo = bc->lo(dir);
+    int bchi = bc->hi(dir);
 
     if (dir == 0) {
         if (bclo == amrex::BCType::ext_dir || bclo == amrex::BCType::hoextrap) {
