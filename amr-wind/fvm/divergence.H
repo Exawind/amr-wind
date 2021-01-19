@@ -37,11 +37,10 @@ struct Divergence
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real cp1, c, cm1;
                 for (int icomp = 0; icomp < ncomp; icomp++) {
-                    cp1 = Stencil::c00;
-                    c = Stencil::c01;
-                    cm1 = Stencil::c02;
+                    amrex::Real cp1 = Stencil::c00;
+                    amrex::Real c = Stencil::c01;
+                    amrex::Real cm1 = Stencil::c02;
                     divphi_arr(i, j, k, icomp) =
                         (cp1 *
                              phi_arr(i + 1, j, k, icomp * AMREX_SPACEDIM + 0) +

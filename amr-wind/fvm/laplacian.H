@@ -33,26 +33,25 @@ struct Laplacian
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real sp1, s, sm1, d2phidx2, d2phidy2, d2phidz2;
                 for (int icomp = 0; icomp < ncomp; icomp++) {
-                    sp1 = Stencil::s00;
-                    s = Stencil::s01;
-                    sm1 = Stencil::s02;
-                    d2phidx2 =
+                    amrex::Real sp1 = Stencil::s00;
+                    amrex::Real s = Stencil::s01;
+                    amrex::Real sm1 = Stencil::s02;
+                    amrex::Real d2phidx2 =
                         (sp1 * phi(i + 1, j, k, 0) + s * phi(i, j, k, 0) +
                          sm1 * phi(i - 1, j, k, 0)) *
                         idx[0] * idx[0];
                     sp1 = Stencil::s10;
                     s = Stencil::s11;
                     sm1 = Stencil::s12;
-                    d2phidy2 =
+                    amrex::Real d2phidy2 =
                         (sp1 * phi(i, j + 1, k, 1) + s * phi(i, j, k, 1) +
                          sm1 * phi(i, j - 1, k, 1)) *
                         idx[1] * idx[1];
                     sp1 = Stencil::s20;
                     s = Stencil::s21;
                     sm1 = Stencil::s22;
-                    d2phidz2 =
+                    amrex::Real d2phidz2 =
                         (sp1 * phi(i, j, k + 1, 2) + s * phi(i, j, k, 2) +
                          sm1 * phi(i, j, k - 1, 2)) *
                         idx[2] * idx[2];
