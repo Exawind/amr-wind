@@ -7,6 +7,7 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/vs/vector_space.H"
 #include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
@@ -15,37 +16,37 @@ namespace synth_turb {
 class MeanProfile
 {
 public:
-  MeanProfile(double refVel, double refHeight, int shear_dir=2)
-    : refVel_(refVel),
-      refHeight_(refHeight),
-      shearDir_(shear_dir)
+  MeanProfile(double ref_vel, double ref_height, int shear_dir=2)
+    : m_ref_vel(ref_vel),
+      m_ref_height(ref_height),
+      m_shear_dir(shear_dir)
   {}
 
   virtual ~MeanProfile() = default;
 
   virtual double operator()(double /* height */) const
-  { return refVel_; }
+  { return m_ref_vel; }
 
-  inline double reference_velocity() const { return refVel_; }
+  inline double reference_velocity() const { return m_ref_vel; }
 
-  inline double reference_height() const { return refHeight_; }
+  inline double reference_height() const { return m_ref_height; }
 
-  inline int shear_dir() const { return shearDir_; }
+  inline int shear_dir() const { return m_shear_dir; }
 
 protected:
-  const double refVel_;
-  const double refHeight_;
-  const int shearDir_;
+  const double m_ref_vel;
+  const double m_ref_height;
+  const int m_shear_dir;
 };
 
 } // namespace synth_turb
 
 struct SynthTurbTraits
 {
-  static constexpr int NDimMax{3};
-  using ArrayType = double[NDimMax];
-  using IntArrayType = int[NDimMax];
-  using TransMatType = double[NDimMax][NDimMax];
+  static constexpr int n_dim_max{3};
+  using ArrayType = double[n_dim_max];
+  using IntArrayType = int[n_dim_max];
+  using TransMatType = double[n_dim_max][n_dim_max];
   // using StructField = Kokkos::View<double*, Kokkos::LayoutRight, MemSpace>;
   using StructField = std::vector<double>;
 };
@@ -53,32 +54,29 @@ struct SynthTurbTraits
 struct SynthTurbData
 {
   // Dimensions of the box
-  SynthTurbTraits::IntArrayType boxDims_;
+  vs::VectorT<int> box_dims;
 
   // Length of the boxes in each direction
-  SynthTurbTraits::ArrayType boxLen_;
+  vs::Vector box_len;
 
-  SynthTurbTraits::ArrayType dx_;
+  vs::Vector dx;
 
   // Reference point for the turbulence box. Reference is the mid-point of the
   // turbulence grid at the plane where it is injected into the CFD flow field.
-  SynthTurbTraits::ArrayType origin_;
+  vs::Vector origin;
 
   // Transformation matrix to convert from global coordinate system to local
   // coordinate system
-  SynthTurbTraits::TransMatType trMat_;
+  vs::Tensor tr_mat;
 
   // Perturbation velocities (2, ny, nz)
-  SynthTurbTraits::StructField uvel_;
-  SynthTurbTraits::StructField vvel_;
-  SynthTurbTraits::StructField wvel_;
-  // SynthTurbTraits::StructField::HostMirror h_uvel_;
-  // SynthTurbTraits::StructField::HostMirror h_vvel_;
-  // SynthTurbTraits::StructField::HostMirror h_wvel_;
+  std::vector<double> uvel;
+  std::vector<double> vvel;
+  std::vector<double> wvel;
 
   // Indices of the two planes stored in the data arrays
-  int iLeft_;
-  int iRight_;
+  int ileft;
+  int iright;
 };
 
 
@@ -109,16 +107,16 @@ public:
     int ncid;
 
     // Dimensions
-    int sDim, xDim, yDim, zDim;
+    int s_dim, x_dim, y_dim, z_dim;
 
     // Perturbation velocity field IDs
     int uid, vid, wid;
 
     // Box length and grid size IDs
-    int boxLenid, dxid;
+    int boxlen_id, dx_id;
 
     // Scale and divergence correction IDs
-    int scaleid, divCorrid;
+    int scale_id, divcorr_id;
   };
 
   SyntheticTurbulence(const CFDSim& sim);
@@ -152,7 +150,7 @@ private:
   Field& m_turb_force;
 
   // Turbulence file read information
-  NCBoxTurb turbFile_;
+  NCBoxTurb m_turb_file;
 
   // Turbulence box data
   SynthTurbData m_turb_grid;
