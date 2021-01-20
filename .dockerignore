@@ -4,3 +4,4 @@ test
 build*
 docs
 tools
+submods/amrex/.git
