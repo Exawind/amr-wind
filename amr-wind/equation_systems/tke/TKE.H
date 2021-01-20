@@ -92,9 +92,10 @@ struct PostSolveOp<TKE>
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            field_arr(i, j, k) =
-                                (field_arr(i,j,k) < 0.0) ? clip_value : field_arr(i,j,k);
-                        });
+                        field_arr(i, j, k) = (field_arr(i, j, k) < 0.0)
+                                                 ? clip_value
+                                                 : field_arr(i, j, k);
+                    });
             }
         }
         m_fields.field.fillpatch(time);
