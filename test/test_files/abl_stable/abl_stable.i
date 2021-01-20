@@ -75,12 +75,3 @@ zhi.temperature = 0.01
 zlo.tke_type = "zero_gradient"
 #zhi.tke_type = "zero_gradient"
 incflo.verbose          =   0
-# MLMG settings
-nodal_proj.mg_rtol = 1.0e-6
-nodal_proj.mg_atol = 1.0e-12
-mac_proj.mg_rtol = 1.0e-6
-mac_proj.mg_atol = 1.0e-12
-diffusion.mg_rtol = 1.0e-6
-diffusion.mg_atol = 1.0e-12
-temperature_diffusion.mg_rtol = 1.0e-10
-temperature_diffusion.mg_atol = 1.0e-13

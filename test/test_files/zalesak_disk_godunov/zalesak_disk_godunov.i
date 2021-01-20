@@ -15,7 +15,8 @@ time.cfl              =   0.95         # CFL factor
 #.......................................#
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
-io.outputs = velocity_mueff
+io.output_default_fields = 0
+io.outputs = density velocity velocity_mueff vof
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -49,14 +50,3 @@ geometry.is_periodic    =   1   1   1     # Periodicity x y z (0/1)
 #              VERBOSITY                #
 #.......................................#
 incflo.verbose          =   0          # incflo_level
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              DEBUGGING                #
-#.......................................#
-incflo.verbose=1
-nodal_proj.mg_rtol= 1.0e-1
-nodal_proj.mg_atol= 1.0e-3
-diffusion.mg_rtol = 1.0e-1
-diffusion.mg_atol = 1.0e-3
-mac_proj.mg_rtol = 1.0e-6
-mac_proj.mg_atol = 1.0e-10
