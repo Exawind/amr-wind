@@ -1,6 +1,6 @@
 #include <AMReX_Orientation.H>
 
-#include "amr-wind/equation_systems/tke/source_terms/TKESrc.H"
+#include "amr-wind/equation_systems/tke/source_terms/KwSSTSrc.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
 
@@ -8,14 +8,14 @@ namespace amr_wind {
 namespace pde {
 namespace tke {
 
-TKESrc::TKESrc(const CFDSim& sim)
+KwSSTSrc::KwSSTSrc(const CFDSim& sim)
   : m_shear_prod(sim.repo().get_field("shear_prod")),
     m_diss(sim.repo().get_field("dissipation"))
 {}
 
-TKESrc::~TKESrc() = default;
+KwSSTSrc::~KwSSTSrc() = default;
 
-void TKESrc::operator()(
+void KwSSTSrc::operator()(
     const int lev,
     const amrex::MFIter& mfi,
     const amrex::Box& bx,
@@ -24,14 +24,16 @@ void TKESrc::operator()(
 {
     const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
     const auto& diss_arr = (this->m_diss)(lev).array(mfi);
-    
+
+    //Keep factor = 1.0 for getting intermediate value of k
     amrex::Real factor = 1.0;
+    // Changing factor to 0.5 for solving tke equation using Crank-Nicolson
     if (fstate == FieldState::NPH)
       factor = 0.5;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
        src_term(i, j, k) += shear_prod_arr(i,j,k) + factor * diss_arr(i,j,k);
     });
-    
+
 }
 
 }

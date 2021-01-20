@@ -1,5 +1,5 @@
-#ifndef TKESRC_H
-#define TKESRC_H
+#ifndef KWSSTSRC_H
+#define KWSSTSRC_H
 
 #include "amr-wind/equation_systems/tke/TKESource.H"
 
@@ -7,19 +7,19 @@ namespace amr_wind {
 namespace pde {
 namespace tke {
 
-/** Source terms for TKE equation
+/** Source terms for TKE equation in K-w-SST turbulence model
  *   \ingroup turb_model
  *
- *  Works for all TKE equations with source and dissipation terms
+ *  Works for all TKE equations with production and dissipation terms
  */
-class TKESrc : public TKESource::Register<TKESrc>
+class KwSSTSrc : public TKESource::Register<KwSSTSrc>
 {
 public:
-    static const std::string identifier() { return "TKESrc"; }
+    static const std::string identifier() { return "KwSSTSrc"; }
 
-    TKESrc(const CFDSim&);
+    KwSSTSrc(const CFDSim&);
 
-    virtual ~TKESrc();
+    virtual ~KwSSTSrc();
 
     virtual void operator()(
         const int lev,
@@ -32,11 +32,11 @@ private:
 
     Field& m_shear_prod;
     Field& m_diss;
-    
+
 };
 
 } // namespace tke
 } // namespace pde
 } // namespace amr_wind
 
-#endif /* TKESRC_H */
+#endif /* KWSSTSRC_H */
