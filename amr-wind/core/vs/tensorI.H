@@ -62,28 +62,28 @@ template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::z() const noexcept
 {
-    return VectorT<T>{vv[7], vv[8], vv[9]};
+    return VectorT<T>{vv[6], vv[7], vv[8]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cx() const noexcept
 {
-    return VectorT<T>{vv[0], vv[3], vv[7]};
+    return VectorT<T>{vv[0], vv[3], vv[6]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cy() const noexcept
 {
-    return VectorT<T>{vv[1], vv[4], vv[8]};
+    return VectorT<T>{vv[1], vv[4], vv[7]};
 }
 
 template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
 VectorT<T> TensorT<T>::cz() const noexcept
 {
-    return VectorT<T>{vv[2], vv[5], vv[9]};
+    return VectorT<T>{vv[2], vv[5], vv[8]};
 }
 // clang-format on
 
