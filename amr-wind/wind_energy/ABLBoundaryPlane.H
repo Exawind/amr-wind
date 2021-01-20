@@ -108,7 +108,7 @@ public:
     populate_data(const int, const amrex::Real, Field&, amrex::MultiFab&) const;
 
     void impl_buffer_field(
-        const amrex::Box,
+        const amrex::Box&,
         const int,
         const int,
         const amrex::GpuArray<int, 2>&,
