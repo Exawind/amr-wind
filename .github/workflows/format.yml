@@ -2,13 +2,13 @@ name: AMR-Wind Formatting
 
 on:
   push:
-    branches: [development]
+    branches: [main]
     paths:
       - 'amr-wind/**'
       - 'unit_tests/**'
       - '.github/workflows/format.yml'
   pull_request:
-    branches: [development]
+    branches: [main]
     paths:
       - 'amr-wind/**'
       - 'unit_tests/**'
