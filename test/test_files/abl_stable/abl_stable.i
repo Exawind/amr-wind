@@ -11,7 +11,10 @@ time.cfl              =   0.95       # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = -1
+io.KE_int = 1
+incflo.post_processing = fnorm
+fnorm.type = FieldNorms
+fnorm.output_frequency = 1
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1         # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -75,12 +78,3 @@ zhi.temperature = 0.01
 zlo.tke_type = "zero_gradient"
 #zhi.tke_type = "zero_gradient"
 incflo.verbose          =   0
-# MLMG settings
-nodal_proj.mg_rtol = 1.0e-6
-nodal_proj.mg_atol = 1.0e-12
-mac_proj.mg_rtol = 1.0e-6
-mac_proj.mg_atol = 1.0e-12
-diffusion.mg_rtol = 1.0e-6
-diffusion.mg_atol = 1.0e-12
-temperature_diffusion.mg_rtol = 1.0e-10
-temperature_diffusion.mg_atol = 1.0e-13
