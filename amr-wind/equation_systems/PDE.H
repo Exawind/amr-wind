@@ -49,7 +49,7 @@ public:
         , m_src_op(m_fields)
         , m_rhs_op(m_fields)
         , m_bc_op(m_fields, m_time)
-        , m_post_solve_op(m_fields)
+        , m_post_solve_op(m_sim, m_fields)
     {
         m_bc_op.init_bcs();
     }

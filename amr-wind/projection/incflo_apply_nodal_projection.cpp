@@ -136,6 +136,37 @@ void incflo::ApplyProjection(
         }
     }
 
+    bool add_surface_tension = m_sim.physics_manager().contains("MultiPhase");
+    if (add_surface_tension && !incremental) {
+        // Create the Surface tension forcing term (Cell-centered)
+        for (int lev = 0; lev <= finest_level; ++lev) {
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+            amrex::MultiFab surf_tens_force;
+            surf_tens_force.define(
+                grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
+                Factory(lev));
+            // At the moment set it to zero
+            surf_tens_force.setVal(0.0);
+            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+                 ++mfi) {
+                Box const& bx = mfi.tilebox();
+                Array4<Real> const& force_st = surf_tens_force.array(mfi);
+                Array4<Real const> const& rho = density[lev]->const_array(mfi);
+                Array4<Real> const& u = velocity(lev).array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        Real soverrho = scaling_factor / rho(i, j, k);
+                        u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
+                    });
+            }
+        }
+    }
+
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -184,13 +215,11 @@ void incflo::ApplyProjection(
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
-
     if (variable_density) {
         nodal_projector.reset(new NodalProjector(
             vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
             options.lpinfo()));
     } else {
-
         amrex::Real rho_0 = 1.0;
         amrex::ParmParse pp("incflo");
         pp.query("density", rho_0);

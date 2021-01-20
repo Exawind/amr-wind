@@ -41,6 +41,7 @@ private:
 
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_density;
 
     //! Initial ZalesakDisk location
     amrex::Vector<amrex::Real> m_loc{{0.5, 0.72, 0.24}};

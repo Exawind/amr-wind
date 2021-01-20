@@ -2,6 +2,7 @@
 #define VOF_OPS_H
 
 #include "amr-wind/equation_systems/vof/vof.H"
+#include "amr-wind/physics/multiphase/MultiPhase.H"
 
 namespace amr_wind {
 namespace pde {
@@ -20,19 +21,16 @@ struct FieldRegOp<VOF, Scheme>
         auto fields = create_fields_instance<VOF, Scheme>(time, repo, probtype);
 
         auto& levelset = repo.declare_cc_field("levelset", 1, 1, 1);
-        auto& normal =
-            repo.declare_cc_field("interface_normal", AMREX_SPACEDIM, 1, 1);
         auto& curvature = repo.declare_cc_field("interface_curvature", 1, 1, 1);
 
         levelset.set_default_fillpatch_bc(sim.time());
-        normal.set_default_fillpatch_bc(sim.time());
         curvature.set_default_fillpatch_bc(sim.time());
 
         // Register fields for output/restart
         auto& iomgr = sim.io_manager();
         iomgr.register_io_var(fields.field.name());
-        iomgr.register_output_var(levelset.name());
-        iomgr.register_output_var(curvature.name());
+        // iomgr.register_output_var(levelset.name());
+        // iomgr.register_output_var(curvature.name());
 
         return fields;
     }
@@ -54,6 +52,28 @@ struct ComputeRHSOp<VOF, Scheme>
     // data members
     PDEFields& fields;
 };
+
+/** Implementation of post-processing actions for the VOF equation
+ *  \ingroup vof
+ */
+
+template <>
+struct PostSolveOp<VOF>
+{
+    PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
+    {}
+
+    void operator()(const amrex::Real)
+    {
+        m_fields.field.fillpatch(m_sim.time().current_time());
+        auto& multiphase = m_sim.physics_manager().get<MultiPhase>();
+        multiphase.set_density_via_vof();
+    }
+
+    CFDSim& m_sim;
+    PDEFields& m_fields;
+};
+
 } // namespace pde
 } // namespace amr_wind
 
