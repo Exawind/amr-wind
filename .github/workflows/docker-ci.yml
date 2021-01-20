@@ -1,0 +1,40 @@
+name: Docker CI
+
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'docker/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/docker-ci.yml'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'cmake/**'
+      - 'amr-wind/**'
+      - 'submods/**'
+      - 'unit_tests/**'
+      - 'docker/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/docker-ci.yml'
+
+jobs:
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{github.token}}
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Build and test
+        run: docker build -t amr-wind -f docker/Dockerfile .
