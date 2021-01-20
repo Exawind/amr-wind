@@ -2,7 +2,7 @@ name: AMR-Wind CodeQL
 
 on:
   push:
-    branches: [development]
+    branches: [main]
     paths:
       - 'cmake/**'
       - 'amr-wind/**'
@@ -10,7 +10,7 @@ on:
       - 'CMakeLists.txt'
       - '.github/workflows/codeql.yml'
   pull_request:
-    branches: [development]
+    branches: [main]
     paths:
       - 'cmake/**'
       - 'amr-wind/**'

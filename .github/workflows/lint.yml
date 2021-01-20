@@ -2,7 +2,7 @@ name: AMR-Wind Lint
 
 on:
   push:
-    branches: [development]
+    branches: [main]
     paths:
       - 'cmake/**'
       - 'amr-wind/**'
@@ -12,7 +12,7 @@ on:
       - 'CMakeLists.txt'
       - '.github/workflows/lint.yml'
   pull_request:
-    branches: [development]
+    branches: [main]
     paths:
       - 'cmake/**'
       - 'amr-wind/**'

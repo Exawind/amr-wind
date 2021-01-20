@@ -3,7 +3,7 @@ name: AMR-Wind HIP CI
 on:
   push:
     branches:
-      - development
+      - main
     paths:
       - 'cmake/**'
       - 'amr-wind/**'
@@ -13,7 +13,7 @@ on:
       - '.github/workflows/hip-ci.yml'
   pull_request:
     branches:
-      - development
+      - main
     paths:
       - 'cmake/**'
       - 'amr-wind/**'

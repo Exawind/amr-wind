@@ -3,7 +3,7 @@ name: AMR-Wind CUDA CI
 on:
   push:
     branches:
-      - development
+      - main
     paths:
       - 'cmake/**'
       - 'amr-wind/**'
@@ -14,7 +14,7 @@ on:
       - '.github/workflows/cuda-ci.yml'
   pull_request:
     branches:
-      - development
+      - main
     paths:
       - 'cmake/**'
       - 'amr-wind/**'
