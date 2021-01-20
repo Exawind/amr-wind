@@ -135,6 +135,7 @@ void ABLStats::calc_sfs_stress_avgs(
 
 void ABLStats::post_advance_work()
 {
+#ifndef AMREX_USE_DPCPP
     BL_PROFILE("amr-wind::ABLStats::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
@@ -158,6 +159,9 @@ void ABLStats::post_advance_work()
     m_pa_uuu();
 
     process_output();
+#else
+    return;
+#endif
 }
 
 template <typename h1_dir, typename h2_dir>
