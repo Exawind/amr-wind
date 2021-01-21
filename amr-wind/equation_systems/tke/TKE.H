@@ -81,7 +81,6 @@ struct PostSolveOp<TKE>
         const auto& repo = field.repo();
         const int nlevels = repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
-
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& field_arr = field(lev).array(mfi);
