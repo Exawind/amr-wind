@@ -133,7 +133,7 @@ void load_turb_plane_data(
   SynthTurbData& turb_grid,
   const int il, const int ir)
 {
-
+#ifdef AMR_WIND_USE_NETCDF
   auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
   std::vector<size_t> start{ {static_cast<size_t>(il), 0, 0} };
@@ -169,6 +169,9 @@ void load_turb_plane_data(
   turb_grid.iright = ir;
 
   ncf.close();
+#else 
+  amrex::ignore_unused(turb_filename, turb_grid, il, ir);
+#endif 
 }
 
 /** Determine the left/right indices for a given point along a particular direction
