@@ -14,50 +14,67 @@ namespace synth_turb {
 class LinearShearProfile : public MeanProfile
 {
 public:
-    LinearShearProfile(amrex::Real ref_vel, amrex::Real ref_height,
-                       amrex::Real slope, amrex::Real height,
+    LinearShearProfile(amrex::Real h_min, amrex::Real h_max,
+                       amrex::Real vel_start, amrex::Real vel_stop,
                        int shear_dir)
-    : MeanProfile(ref_vel, ref_height, shear_dir),
-      m_slope(slope),
-      m_half_height(0.5 * height)
+    : MeanProfile( 0.5*(vel_start + vel_stop), shear_dir),
+      m_hmin(h_min),
+      m_hmax(h_max),
+      m_vstart(vel_start),
+      m_vstop(vel_stop)
   {}
 
   virtual ~LinearShearProfile() = default;
 
   virtual amrex::Real operator()(amrex::Real ht) const
   {
-    const amrex::Real relHt = ht - m_ref_height;
-    if (relHt < -m_half_height)
-      return m_ref_vel * (1.0 - m_slope * m_half_height);
-    else if (relHt > m_half_height)
-      return m_ref_vel * (1.0 + m_slope * m_half_height);
+    if (ht < m_hmin)
+      return m_vstart;
+    else if (ht > m_hmax)
+      return m_vstop;
     else
-      return m_ref_vel * (1.0 + m_slope * relHt);
+      return m_vstop + (m_vstop - m_vstart) * (ht - m_hmin)/(m_hmax - m_hmin);
   }
 
 private:
-  amrex::Real m_slope;
-  amrex::Real m_half_height;
+  const amrex::Real m_hmin;
+  const amrex::Real m_hmax;
+  const amrex::Real m_vstart;
+  const amrex::Real m_vstop;
 };
 
 class PowerLawProfile : public MeanProfile
 {
 public:
   PowerLawProfile(amrex::Real ref_vel, amrex::Real ref_height, amrex::Real alpha,
-                  int shear_dir)
-    : MeanProfile(ref_vel, ref_height, shear_dir),
-      m_alpha(alpha)
+                  int shear_dir, amrex::Real h_offset,
+                  amrex::Real umin, amrex::Real umax)
+    : MeanProfile(ref_vel, shear_dir),
+      m_ref_height(ref_height),
+      m_alpha(alpha),
+      m_hoffset(h_offset),
+      m_umin(umin),
+      m_umax(umax)
   {}
 
   virtual ~PowerLawProfile() = default;
 
+  virtual double reference_height() const { return m_ref_height; }
+
   virtual amrex::Real operator()(amrex::Real height) const override
   {
-    return m_ref_vel * std::pow((height / m_ref_height), m_alpha);
+    const amrex::Real heff = height - m_hoffset;
+    amrex::Real pfac =
+        (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
+    return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
   }
 
 private:
+  const amrex::Real m_ref_height;
   const amrex::Real m_alpha;
+  const amrex::Real m_hoffset;
+  const amrex::Real m_umin;
+  const amrex::Real m_umax;
 };
 
 } // namespace synth_turb
@@ -371,34 +388,63 @@ SyntheticTurbulence::SyntheticTurbulence(
   amrex::Vector<amrex::Real> location{{0.0,0.0,0.0}};
   pp.queryarr("grid_location",location);
 
-  std::string mean_wind_type = "uniform";
-  amrex::Real wind_speed;
-  // Default reference height is the center of the turbulence grid
-  amrex::Real ref_height = location[2];
-  pp.query("mean_wind_speed", wind_speed);
+  std::string mean_wind_type = "ConstValue";
   pp.query("mean_wind_type", mean_wind_type);
-  pp.query("mean_wind_ref_height", ref_height);
 
-  if (mean_wind_type == "constant") {
-      m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, ref_height));
-  } else if (mean_wind_type == "linear_shear") {
-      amrex::Real shear_slope;
-      pp.query("shear_slope",shear_slope);
-      amrex::Real shear_width;
-      pp.query("shear_width",shear_width);
+  if (mean_wind_type == "ConstValue") {
+
+      amrex::ParmParse pp_vel("ConstValue.velocity");
+      amrex::Vector<amrex::Real> vel;
+      pp_vel.getarr("value", vel);
+      amrex::Real wind_speed = vs::mag(vs::Vector{vel[0],vel[1],vel[2]});
+      m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
+
+  } else if (mean_wind_type == "LinearProfile") {
+
+      amrex::ParmParse pp_vel("LinearProfile.velocity");
+
+      amrex::Real zmin, zmax;
+      pp_vel.query("start", zmin);
+      pp_vel.query("stop", zmax);
+
+      amrex::Vector<amrex::Real> start_val, stop_val;
+      pp_vel.getarr("start_val", start_val);
+      pp_vel.getarr("stop_val", stop_val);
+
       int shear_dir=2;
-      pp.query("shear_dir",shear_dir);
+      pp_vel.query("direction", shear_dir);
+
       m_wind_profile.reset(new synth_turb::LinearShearProfile(
-                               wind_speed, ref_height, shear_slope,
-                               shear_width, shear_dir));
-  } else if (mean_wind_type == "power_law") {
-      amrex::Real alpha;
-      pp.query("power_law_coefficient",alpha);
+          zmin, zmax,
+          vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
+          vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
+          shear_dir));
+
+  } else if (mean_wind_type == "PowerLawProfile") {
+
+      amrex::ParmParse pp_vel("PowerLawProfile.velocity");
+
+      // Default reference height is the center of the turbulence grid
+      amrex::Real zref = location[2];
+      pp.get("zref", zref);
+      amrex::Vector<amrex::Real> vel;
+      pp.getarr("uref", vel);
+      amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
+
+      amrex::Real alpha, zoffset, umin, umax;
+      pp.query("shear_exponent",alpha);
+      pp.query("zoffset", zoffset);
+      pp.query("umin", umin);
+      pp.query("umax", umax);
+
       int shear_dir=2;
-      pp.query("shear_dir",shear_dir);
+      pp_vel.query("direction", shear_dir);
+
       m_wind_profile.reset(new synth_turb::PowerLawProfile(wind_speed,
-                                                           ref_height,
-                                                           alpha, shear_dir));
+                                                           zref,
+                                                           alpha, shear_dir,
+                                                           zoffset,
+                                                           umin, umax));
   } else {
     throw std::runtime_error("SyntheticTurbulence: invalid mean wind type specified = " + mean_wind_type);
   }
@@ -446,8 +492,7 @@ SyntheticTurbulence::SyntheticTurbulence(
     << m_turb_grid.origin[1] << ", " << m_turb_grid.origin[2] << "]\n"
     << "  Mean wind profile: U = " << m_wind_profile->reference_velocity()
     << " m/s; Dir = " << wind_direction * 180.0 / pi
-    << " deg; H = " << m_wind_profile->reference_height()
-    << " m; type = " << mean_wind_type << std::endl;
+    << " deg; type = " << mean_wind_type << std::endl;
 }
 
 void SyntheticTurbulence::initialize_fields(
