@@ -73,9 +73,6 @@ struct PostSolveOp<SDR>
     
     void operator()(const amrex::Real time)
     {
-        amrex::Print() << "Min/Max before lower bound op on SDR is "
-                       << m_fields.field(0).min(0) << " - "
-                       << m_fields.field(0).max(0) << std::endl;
         field_ops::lower_bound(m_fields.field, clip_value);
         m_fields.field.fillpatch(time);
     }
