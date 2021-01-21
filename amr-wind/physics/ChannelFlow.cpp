@@ -109,12 +109,6 @@ void ChannelFlow::post_advance_work() {
     auto& den = m_repo.get_field("density");
     auto& tke = m_repo.get_field("tke");
     auto& sdr = m_repo.get_field("sdr");
-
-    amrex::Print() << "Min tke = " << tke(0).min(0) << std::endl;
-    amrex::Print() << "Max tke = " << tke(0).max(0) << std::endl;
-    amrex::Print() << "Min sdr = " << sdr(0).min(0) << std::endl;
-    amrex::Print() << "Max sdr = " << sdr(0).max(0) << std::endl;
-    
     const int nlevels = m_repo.num_active_levels();
 
     // Clip and set values of tke and sdr that are out of bounds
