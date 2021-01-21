@@ -88,21 +88,6 @@ public:
   struct NCBoxTurb
   {
     std::string filename;
-
-    // NetCDF file ID
-    int ncid;
-
-    // Dimensions
-    int s_dim, x_dim, y_dim, z_dim;
-
-    // Perturbation velocity field IDs
-    int uid, vid, wid;
-
-    // Box length and grid size IDs
-    int boxlen_id, dx_id;
-
-    // Scale and divergence correction IDs
-    int scale_id, divcorr_id;
   };
 
   SyntheticTurbulence(const CFDSim& sim);
@@ -135,8 +120,8 @@ private:
   Field& m_density;
   Field& m_turb_force;
 
-  // Turbulence file read information
-  NCBoxTurb m_turb_file;
+  // Turbulence file name
+  std::string m_turb_filename;
 
   // Turbulence box data
   SynthTurbData m_turb_grid;

@@ -3,10 +3,9 @@
 #include "AMReX_iMultiFab.H"
 #include "AMReX_MultiFabUtil.H"
 #include "AMReX_ParmParse.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
-
-#include "netcdf.h"
 
 namespace amr_wind {
 namespace synth_turb {
@@ -80,14 +79,6 @@ private:
 } // namespace synth_turb
 
 namespace {
-/** Check NetCDF errors and throw runtime errors with a message
- */
-inline void check_nc_error(int ierr)
-{
-  if (ierr != NC_NOERR)
-    throw std::runtime_error(
-      "SyntheticTurbulence NetCDF Error: " + std::string(nc_strerror(ierr)));
-}
 
 /** Parse the NetCDF turbulence database and determine details of the turbulence box.
  *
@@ -98,48 +89,31 @@ inline void check_nc_error(int ierr)
  *. @param turbGrid Turbulence data
  */
 void process_nc_file(
-  SyntheticTurbulence::NCBoxTurb& turb_file,
+  std::string& turb_filename,
   SynthTurbData& turb_grid)
 {
-  check_nc_error(nc_open(turb_file.filename.c_str(), NC_NOWRITE, &turb_file.ncid));
 
-  size_t ndim, nx, ny, nz;
-  check_nc_error(nc_inq_dimid(turb_file.ncid, "ndim", &turb_file.s_dim));
-  check_nc_error(nc_inq_dimlen(turb_file.ncid, turb_file.s_dim, &ndim));
-  AMREX_ASSERT(ndim == AMREX_SPACEDIM);
+  auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
   // Grid dimensions
-  check_nc_error(nc_inq_dimid(turb_file.ncid, "nx", &turb_file.x_dim));
-  check_nc_error(nc_inq_dimlen(turb_file.ncid, turb_file.x_dim, &nx));
-  check_nc_error(nc_inq_dimid(turb_file.ncid, "ny", &turb_file.y_dim));
-  check_nc_error(nc_inq_dimlen(turb_file.ncid, turb_file.y_dim, &ny));
-  check_nc_error(nc_inq_dimid(turb_file.ncid, "nz", &turb_file.z_dim));
-  check_nc_error(nc_inq_dimlen(turb_file.ncid, turb_file.z_dim, &nz));
+  AMREX_ASSERT(ncf.dim("ndim").len() == AMREX_SPACEDIM);
+  auto nx = ncf.dim("nx").len();
+  auto ny = ncf.dim("ny").len();
+  auto nz = ncf.dim("nz").len();
 
   turb_grid.box_dims[0] = nx;
   turb_grid.box_dims[1] = ny;
   turb_grid.box_dims[2] = nz;
 
   // Box lengths and resolution
-  check_nc_error(nc_inq_varid(turb_file.ncid, "box_lengths", &turb_file.boxlen_id));
-  check_nc_error(nc_get_var_double(turb_file.ncid, turb_file.boxlen_id, turb_grid.box_len.data()));
-  check_nc_error(nc_inq_varid(turb_file.ncid, "dx", &turb_file.dx_id));
-  check_nc_error(nc_get_var_double(turb_file.ncid, turb_file.dx_id, turb_grid.dx.data()));
+  auto box_len = ncf.var("box_lengths");
+  box_len.get(turb_grid.box_len.data());
+  auto dx = ncf.var("dx");
+  dx.get(turb_grid.dx.data());
 
-  // Perturbation velocity info
-  check_nc_error(nc_inq_varid(turb_file.ncid, "uvel", &turb_file.uid));
-  check_nc_error(nc_inq_varid(turb_file.ncid, "vvel", &turb_file.vid));
-  check_nc_error(nc_inq_varid(turb_file.ncid, "wvel", &turb_file.wid));
-  nc_close(turb_file.ncid);
+  ncf.close();
 
   // Create data structures to store the perturbation velocities for two planes
-  // [t, t+dt] such that the time of interest is within this interval.
-  // turb_grid.uvel = SynthTurbTraits::StructField("SynthTurbData::uvel", 2*ny*nz);
-  // turb_grid.vvel = SynthTurbTraits::StructField("SynthTurbData::vvel", 2*ny*nz);
-  // turb_grid.wvel = SynthTurbTraits::StructField("SynthTurbData::wvel", 2*ny*nz);
-  // turb_grid.h_uvel = Kokkos::create_mirror_view(turb_grid.uvel);
-  // turb_grid.h_vvel = Kokkos::create_mirror_view(turb_grid.vvel);
-  // turb_grid.h_wvel = Kokkos::create_mirror_view(turb_grid.wvel);
   const size_t gridSize = 2 * ny * nz;
   turb_grid.uvel.resize(gridSize);
   turb_grid.vvel.resize(gridSize);
@@ -151,49 +125,46 @@ void process_nc_file(
  *  The data for the y and z directions are loaded for the entire grid at the two planes
  */
 void load_turb_plane_data(
-  SyntheticTurbulence::NCBoxTurb& turb_file,
+  std::string& turb_filename,
   SynthTurbData& turb_grid,
   const int il, const int ir)
 {
-  check_nc_error(nc_open(turb_file.filename.c_str(), NC_NOWRITE, &turb_file.ncid));
 
-  size_t start[AMREX_SPACEDIM]{static_cast<size_t>(il), 0, 0};
-  size_t count[AMREX_SPACEDIM]{
-    2, static_cast<size_t>(turb_grid.box_dims[1]),
-    static_cast<size_t>(turb_grid.box_dims[2])};
+  auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
+
+  std::vector<size_t> start{ {static_cast<size_t>(il), 0, 0} };
+  std::vector<size_t> count{ {
+          2, static_cast<size_t>(turb_grid.box_dims[1]),
+          static_cast<size_t>(turb_grid.box_dims[2])} };
+
+  auto uvel = ncf.var("uvel");
+  auto vvel = ncf.var("vvel");
+  auto wvel = ncf.var("wvel");
+
   if ((ir - il) == 1) {
     // two consequtive planes load them in one shot
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.uid, start, count, &turb_grid.uvel[0]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.vid, start, count, &turb_grid.vvel[0]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.wid, start, count, &turb_grid.wvel[0]));
+    uvel.get(&turb_grid.uvel[0], start, count);
+    vvel.get(&turb_grid.vvel[0], start, count);
+    wvel.get(&turb_grid.wvel[0], start, count);
   } else {
     // Load the planes separately
     count[0] = 1;
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.uid, start, count, &turb_grid.uvel[0]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.vid, start, count, &turb_grid.vvel[0]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.wid, start, count, &turb_grid.wvel[0]));
+    uvel.get(&turb_grid.uvel[0], start, count);
+    vvel.get(&turb_grid.vvel[0], start, count);
+    wvel.get(&turb_grid.wvel[0], start, count);
 
     start[0] = static_cast<size_t>(ir);
     const size_t offset = turb_grid.box_dims[1] * turb_grid.box_dims[2];
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.uid, start, count, &turb_grid.uvel[offset]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.vid, start, count, &turb_grid.vvel[offset]));
-    check_nc_error(nc_get_vara_double(
-      turb_file.ncid, turb_file.wid, start, count, &turb_grid.wvel[offset]));
+    uvel.get(&turb_grid.uvel[offset], start, count);
+    vvel.get(&turb_grid.vvel[offset], start, count);
+    wvel.get(&turb_grid.wvel[offset], start, count);
   }
 
   // Update left and right indices for future checks
   turb_grid.ileft = il;
   turb_grid.iright = ir;
 
-  nc_close(turb_file.ncid);
+  ncf.close();
 }
 
 /** Transform a position vector from global inertial reference frame to local
@@ -212,7 +183,7 @@ void global_to_local(const SynthTurbData& turb_grid, const vs::Vector& inp, vs::
  */
 void local_to_global_vel(const SynthTurbData& turb_grid, const vs::Vector& in, vs::Vector& out)
 {
-  out = turb_grid.tr_mat & in ;
+  out = turb_grid.tr_mat & in;
   // out[0] = tr_mat[0][0] * in[0] + tr_mat[1][0] * in[1] + tr_mat[2][0] * in[2];
   // out[1] = tr_mat[0][1] * in[0] + tr_mat[1][1] * in[1] + tr_mat[2][1] * in[2];
   // out[2] = tr_mat[0][2] * in[0] + tr_mat[1][2] * in[1] + tr_mat[2][2] * in[2];
@@ -360,7 +331,6 @@ void interp_perturb_vel(
     vel[i] = wt.xl * vel_l[i] + wt.xr * vel_r[i];
 }
 
-
 }
 
 SyntheticTurbulence::SyntheticTurbulence(
@@ -377,8 +347,8 @@ SyntheticTurbulence::SyntheticTurbulence(
   amrex::ParmParse pp("SynthTurb");
 
   // NetCDF file containing the turbulence data
-  pp.query("turbulence_file", m_turb_file.filename);
-  process_nc_file(m_turb_file, m_turb_grid);
+  pp.query("turbulence_file", m_turb_filename);
+  process_nc_file(m_turb_filename, m_turb_grid);
 
   // Load position and orientation of the grid
   amrex::Real wind_direction;
@@ -481,7 +451,7 @@ SyntheticTurbulence::SyntheticTurbulence(
 
   amrex::Print()
     << "Synthethic turbulence forcing initialized \n"
-    << "  Turbulence file = " << m_turb_file.filename << "\n"
+    << "  Turbulence file = " << m_turb_filename << "\n"
     << "  Box lengths = [" << m_turb_grid.box_len[0] << ", "
     << m_turb_grid.box_len[1] << ", " << m_turb_grid.box_len[2] << "]\n"
     << "  Box dims = [" << m_turb_grid.box_dims[0] << ", "
@@ -520,7 +490,7 @@ void SyntheticTurbulence::initialize()
   const amrex::Real eqivLen = m_wind_profile->reference_velocity() * curTime;
   int il, ir;
   get_lr_indices(m_turb_grid, 0, eqivLen, il, ir);
-  load_turb_plane_data(m_turb_file, m_turb_grid, il, ir);
+  load_turb_plane_data(m_turb_filename, m_turb_grid, il, ir);
 
   m_is_init = false;
 }
@@ -538,7 +508,7 @@ void SyntheticTurbulence::update()
 
   // Check if we need to refresh the planes
   if (weights.il != m_turb_grid.ileft)
-    load_turb_plane_data(m_turb_file, m_turb_grid, weights.il, weights.ir);
+    load_turb_plane_data(m_turb_filename, m_turb_grid, weights.il, weights.ir);
 
   auto& repo = m_turb_force.repo();
   auto& geom_vec = repo.mesh().Geom();
