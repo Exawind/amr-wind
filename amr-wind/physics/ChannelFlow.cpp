@@ -98,46 +98,7 @@ void ChannelFlow::initialize_fields(
 
 void ChannelFlow::post_init_actions() {}
 
-void ChannelFlow::post_advance_work()
-{
-
-    const amrex::Real lam_mu = 1.0e-3;
-    auto& den = m_repo.get_field("density");
-    auto& tke = m_repo.get_field("tke");
-    auto& sdr = m_repo.get_field("sdr");
-    const int nlevels = m_repo.num_active_levels();
-
-    // Clip and set values of tke and sdr that are out of bounds
-    for (int lev = 0; lev < nlevels; ++lev) {
-
-        for (amrex::MFIter mfi(tke(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.tilebox();
-            const auto& tke_arr = tke(lev).array(mfi);
-            const auto& sdr_arr = sdr(lev).array(mfi);
-            const auto& rho_arr = den(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real tke_old = tke_arr(i, j, k);
-                    const amrex::Real sdr_old = sdr_arr(i, j, k);
-
-                    if ((tke_old < 0) && (sdr_old < 1.0)) {
-                        tke_arr(i, j, k) = 1e-8;
-                        sdr_arr(i, j, k) =
-                            rho_arr(i, j, k) * 1e-8 / (1.0 * lam_mu);
-                    } else if ((tke_old < 0)) {
-                        tke_arr(i, j, k) =
-                            1.0 * lam_mu * sdr_old / rho_arr(i, j, k);
-                    } else if ((sdr_old < 1.0)) {
-                        sdr_arr(i, j, k) =
-                            rho_arr(i, j, k) * tke_old / (1.0 * lam_mu);
-                    }
-                });
-        }
-    }
-    tke.fillpatch(m_time.current_time());
-    sdr.fillpatch(m_time.current_time());
-}
+void ChannelFlow::post_advance_work() {}
 
 } // namespace channel_flow
 } // namespace amr_wind
