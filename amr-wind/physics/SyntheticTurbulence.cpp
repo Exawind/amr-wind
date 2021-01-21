@@ -434,7 +434,6 @@ SyntheticTurbulence::SyntheticTurbulence(
   m_turb_grid.tr_mat.zz() = 1.0;
   // y = z .cross. x
   m_turb_grid.tr_mat.y() = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
-  //utils::cross_prod(&m_turb_grid.tr_mat[2][0], &m_turb_grid.tr_mat[0][0], &m_turb_grid.tr_mat[1][0]);
 
   amrex::Print()
     << "Synthethic turbulence forcing initialized \n"
