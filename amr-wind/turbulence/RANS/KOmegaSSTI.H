@@ -27,10 +27,6 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
 
     auto& sdr_eqn = sim.pde_manager().register_transport_pde(pde::SDR::pde_name());
     m_sdr = &(sdr_eqn.fields().field);
-
-    // Initialize wall distance to a large value
-    m_walldist.setVal(1e6);
-
     {
         const std::string coeffs_dict = this->model_name() + "_coeffs";
         amrex::ParmParse pp(coeffs_dict);
