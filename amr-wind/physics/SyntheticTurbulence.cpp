@@ -326,6 +326,9 @@ SyntheticTurbulence::SyntheticTurbulence(
       m_density(sim.repo().get_field("density")),
       m_turb_force(sim.repo().declare_field("synth_turb_forcing", 3))
 {
+#ifndef AMR_WIND_USE_NETCDF
+    amrex::Abort("SyntheticTurbulence: AMR-Wind was not built with NetCDF support.");
+#endif
   const amrex::Real pi = std::acos(-1.0);
 
   amrex::ParmParse pp("SynthTurb");
