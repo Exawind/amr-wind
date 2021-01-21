@@ -502,6 +502,8 @@ void SyntheticTurbulence::update()
       const amrex::Real dx = geom.CellSize()[0];
       const amrex::Real dy = geom.CellSize()[1];
       const amrex::Real dz = geom.CellSize()[2];
+      const auto& trmat = m_turb_grid.tr_mat;
+      const auto& origin = m_turb_grid.origin;
 
       for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
           const auto& bx = mfi.tilebox();
