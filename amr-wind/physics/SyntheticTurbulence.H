@@ -37,16 +37,6 @@ protected:
 
 } // namespace synth_turb
 
-struct SynthTurbTraits
-{
-  static constexpr int n_dim_max{3};
-  using ArrayType = double[n_dim_max];
-  using IntArrayType = int[n_dim_max];
-  using TransMatType = double[n_dim_max][n_dim_max];
-  // using StructField = Kokkos::View<double*, Kokkos::LayoutRight, MemSpace>;
-  using StructField = std::vector<double>;
-};
-
 struct SynthTurbData
 {
   // Dimensions of the box
