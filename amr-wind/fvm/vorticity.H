@@ -12,7 +12,8 @@ namespace fvm {
 template <typename FTypeIn, typename FTypeOut>
 struct Vorticity
 {
-    Vorticity(FTypeOut& vortphi, const FTypeIn& phi) : m_vortphi(vortphi), m_phi(phi)
+    Vorticity(FTypeOut& vortphi, const FTypeIn& phi)
+        : m_vortphi(vortphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -74,9 +75,9 @@ struct Vorticity
                       cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
-                vortphi(i, j, k) = sqrt(std::pow(uy - vx, 2)
-                                       + std::pow(vz - wy, 2)
-                                       + std::pow(wx - uz, 2));
+                vortphi(i, j, k) = sqrt(
+                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
+                    std::pow(wx - uz, 2));
             });
     }
 

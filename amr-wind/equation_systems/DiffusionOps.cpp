@@ -66,7 +66,7 @@ void DiffSolverIface<LinOp>::setup_operator(
     set_bcoeffs(linop);
 }
 
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
 {
     BL_PROFILE("amr-wind::set_acoeffs");
@@ -79,7 +79,7 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     }
 }
 
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 {
     BL_PROFILE("amr-wind::setup_solver");
@@ -87,7 +87,7 @@ void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
     m_options(mlmg);
 }
 
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::linsys_solve_impl()
 {
     FieldState fstate = FieldState::New;
@@ -130,7 +130,7 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     io::print_mlmg_info(field.name() + "_solve", mlmg);
 }
 
-template<typename LinOp>
+template <typename LinOp>
 void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 {
     FieldState fstate = FieldState::New;

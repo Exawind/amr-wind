@@ -29,10 +29,8 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-
     Field& m_sdr_src;
     Field& m_sdr_diss;
-    
 };
 
 } // namespace tke

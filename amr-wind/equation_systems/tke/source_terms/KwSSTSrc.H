@@ -29,10 +29,8 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-
     Field& m_shear_prod;
     Field& m_diss;
-
 };
 
 } // namespace tke

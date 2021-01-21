@@ -49,7 +49,8 @@ public:
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
     //! Update the effective scalar diffusivity field
-    virtual void update_scalar_diff(Field& deff, const std::string& name) override;
+    virtual void
+    update_scalar_diff(Field& deff, const std::string& name) override;
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
@@ -68,7 +69,6 @@ protected:
     Field* m_tke;
     Field* m_sdr;
 
-
     //! Turbulence constants
     amrex::Real m_beta_star{0.09};
     amrex::Real m_alpha1{0.5555555555555556};
@@ -80,7 +80,6 @@ protected:
     amrex::Real m_sigma_omega1{0.5};
     amrex::Real m_sigma_omega2{0.856};
     amrex::Real m_a1{0.31};
-
 };
 
 } // namespace turbulence

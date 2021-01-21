@@ -21,11 +21,14 @@ public:
     virtual ~ChannelFlow() = default;
 
     void initialize_fields(int level, const amrex::Geometry& geom) override;
-    
+
     //! Use Reichardt function to initialize velocity profile
     template <typename IndexSelector>
-    void initialize_fields(int level, const amrex::Geometry& geom,
-                           const IndexSelector& idxOp, const int n_idx);
+    void initialize_fields(
+        int level,
+        const amrex::Geometry& geom,
+        const IndexSelector& idxOp,
+        const int n_idx);
 
     void post_init_actions() override;
 
@@ -42,7 +45,7 @@ private:
 
     //! Wall normal directon - Default y direction
     int m_norm_dir{1};
-    
+
     //! initial density value
     amrex::Real m_rho{1.0};
 
@@ -54,7 +57,7 @@ private:
 
     //! y_tau
     amrex::Real m_ytau{0.001};
-    
+
     //! initial tke value
     amrex::Real m_tke0{0.0};
 
@@ -63,7 +66,6 @@ private:
 
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
-
 };
 } // namespace channel_flow
 } // namespace amr_wind

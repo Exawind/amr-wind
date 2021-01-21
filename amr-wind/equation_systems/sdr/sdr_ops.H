@@ -10,7 +10,7 @@ namespace pde {
 /** Implementation of Turbulence operator for SDR equation
  *  \ingroup sdr_eqn
  */
-template<>
+template <>
 struct TurbulenceOp<SDR>
 {
     TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
@@ -120,8 +120,7 @@ struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
         auto& density = m_density.state(fstate);
         auto lhs_total = repo.create_scratch_field(1, 1);
         field_ops::lincomb(
-            *lhs_total, 1.0, m_lhs_src_term, 0, 1.0, density, 0, 0, 1,
-            1);
+            *lhs_total, 1.0, m_lhs_src_term, 0, 1.0, density, 0, 0, 1, 1);
 
         for (int lev = 0; lev < nlevels; ++lev) {
             linop.setACoeffs(lev, (*lhs_total)(lev));

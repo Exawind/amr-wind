@@ -42,7 +42,6 @@ private:
     const CFDSim& m_sim;
 
     std::unordered_map<std::string, std::unique_ptr<udf::UDF>> m_field_funcs;
-    
 };
 
 } // namespace amr_wind

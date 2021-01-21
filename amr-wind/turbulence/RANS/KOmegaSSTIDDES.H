@@ -22,7 +22,7 @@ namespace turbulence {
  *
  */
 template <typename Transport>
-class KOmegaSSTIDDES: public KOmegaSST<Transport>
+class KOmegaSSTIDDES : public KOmegaSST<Transport>
 {
 public:
     static std::string identifier()
@@ -43,7 +43,6 @@ public:
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
 protected:
-
     //! Turbulence constants
     amrex::Real m_Cdes1{0.78};
     amrex::Real m_Cdes2{0.61};
@@ -51,9 +50,7 @@ protected:
     amrex::Real m_Cdt2{3.0};
     amrex::Real m_Cw{0.15};
     amrex::Real m_kappa{0.41};
-
 };
-
 
 } // namespace turbulence
 } // namespace amr_wind
