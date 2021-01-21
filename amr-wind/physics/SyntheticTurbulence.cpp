@@ -451,15 +451,8 @@ SyntheticTurbulence::SyntheticTurbulence(
     << " deg; type = " << mean_wind_type << std::endl;
 }
 
-void SyntheticTurbulence::initialize_fields(
-    int // level
-    ,
-    const amrex::Geometry& // geom)
-)
-{
-    //TODO: Figure out what goes here
-}
-
+void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&)
+{}
 void SyntheticTurbulence::pre_advance_work()
 {
   if (m_is_init)
