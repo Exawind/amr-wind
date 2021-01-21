@@ -56,9 +56,9 @@ struct SynthTurbData
   vs::Tensor tr_mat;
 
   // Perturbation velocities (2, ny, nz)
-  std::vector<double> uvel;
-  std::vector<double> vvel;
-  std::vector<double> wvel;
+  amrex::Vector<double> uvel;
+  amrex::Vector<double> vvel;
+  amrex::Vector<double> wvel;
 
   // Indices of the two planes stored in the data arrays
   int ileft;
