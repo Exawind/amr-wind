@@ -25,9 +25,7 @@ void SDRSrc::operator()(
     const auto& sdr_src_arr = (this->m_sdr_src)(lev).array(mfi);
     const auto& sdr_diss_arr = (this->m_sdr_src)(lev).array(mfi);
 
-    amrex::Real factor = 1.0;
-    if (fstate == FieldState::NPH)
-        factor = 0.5;
+    const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
      
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
       src_term(i, j, k) += factor * sdr_diss_arr(i,j,k)
