@@ -42,8 +42,9 @@ public:
      */
     virtual void linsys_solve(const amrex::Real dt);
 
-protected:
     virtual void linsys_solve_impl();
+
+protected:
 
     //! Sets up the linear operator (e.g., setup BCs, etc.)
     virtual void setup_operator(
