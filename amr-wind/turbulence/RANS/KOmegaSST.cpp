@@ -185,14 +185,6 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     }
 
     mu_turb.fillpatch(this->m_sim.time().current_time());
-
-    amrex::Print() << "Min mu turb = " << mu_turb(0).min(0) << std::endl;
-    amrex::Print() << "Max mu turb = " << mu_turb(0).max(0) << std::endl;
-
-    amrex::Print() << "Min/Max on Shear production is "
-                   << m_shear_prod(0).min(0) << " - "
-                   << m_shear_prod(0).max(0) << std::endl;
-    
 }
 
 template <typename Transport>
