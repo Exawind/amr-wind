@@ -77,10 +77,6 @@ struct PostSolveOp<TKE>
 
     void operator()(const amrex::Real time)
     {
-        amrex::Print() << "Min/Max before lower bound op on TKE is "
-                  << m_fields.field(0).min(0) << " - "
-                  << m_fields.field(0).max(0) << std::endl;
-
         auto& field = m_fields.field;
         const auto& repo = field.repo();
         const int nlevels = repo.num_active_levels();
