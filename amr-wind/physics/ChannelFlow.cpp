@@ -31,7 +31,6 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     pp.query("tke0", m_tke0);
     pp.query("sdr0", m_sdr0);
 
-    amrex::Print() << "Density = " << m_rho << std::endl;
 
 }
 
