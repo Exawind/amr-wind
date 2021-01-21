@@ -93,7 +93,7 @@ void process_nc_file(
   std::string& turb_filename,
   SynthTurbData& turb_grid)
 {
-
+#ifdef AMR_WIND_USE_NETCDF
   auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
   // Grid dimensions
@@ -119,6 +119,9 @@ void process_nc_file(
   turb_grid.uvel.resize(gridSize);
   turb_grid.vvel.resize(gridSize);
   turb_grid.wvel.resize(gridSize);
+#else 
+  amrex::ignore_unused(turb_filename, turb_grid);
+#endif 
 }
 
 /** Load two planes of data that bound the current timestep
