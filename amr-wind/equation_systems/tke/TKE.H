@@ -46,61 +46,6 @@ struct TKE : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-/** Implementation of Turbulence operator for TKE equation
- *  \ingroup tke_eqn
- */
-template <>
-struct TurbulenceOp<TKE>
-{
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
-        : m_tmodel(tmodel), m_fields(fields)
-    {}
-
-    void operator()()
-    {
-        auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, "tke");
-    }
-
-    turbulence::TurbulenceModel& m_tmodel;
-    PDEFields& m_fields;
-};
-
-/** Implementation of post-processing actions for TKE equation
- *  \ingroup tke_eqn
- */
-template <>
-struct PostSolveOp<TKE>
-{
-    PostSolveOp(CFDSim& sim, PDEFields& fields) : m_sim(sim), m_fields(fields)
-    {}
-
-    void operator()(const amrex::Real time)
-    {
-        auto& field = m_fields.field;
-        const auto& repo = field.repo();
-        const int nlevels = repo.num_active_levels();
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.tilebox();
-                const auto& field_arr = field(lev).array(mfi);
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        field_arr(i, j, k) = (field_arr(i, j, k) < 0.0)
-                                                 ? clip_value
-                                                 : field_arr(i, j, k);
-                    });
-            }
-        }
-        m_fields.field.fillpatch(time);
-    }
-
-    CFDSim& m_sim;
-    PDEFields& m_fields;
-    amrex::Real clip_value{1.0e-8};
-};
-
 } // namespace pde
 } // namespace amr_wind
 

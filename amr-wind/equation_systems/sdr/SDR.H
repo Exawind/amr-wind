@@ -45,42 +45,6 @@ struct SDR : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-template<>
-struct TurbulenceOp<SDR>
-{
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel,
-                 PDEFields& fields)
-        : m_tmodel(tmodel), m_fields(fields)
-    {}
-
-    void operator()()
-    {
-        auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, SDR::var_name());
-    }
-
-    turbulence::TurbulenceModel& m_tmodel;
-    PDEFields& m_fields;
-};
-
-/** Implementation of post-processing actions for SDR equation
- *  \ingroup sdr_eqn
- */
-template <>
-struct PostSolveOp<SDR>
-{
-    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
-    
-    void operator()(const amrex::Real time)
-    {
-        field_ops::lower_bound(m_fields.field, clip_value);
-        m_fields.field.fillpatch(time);
-    }
-
-    PDEFields& m_fields;
-    amrex::Real clip_value{1.0e-8};
-};
-    
 
 } // namespace pde
 } // namespace amr_wind
