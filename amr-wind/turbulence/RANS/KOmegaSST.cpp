@@ -30,24 +30,11 @@ TurbulenceModel::CoeffsDictType KOmegaSST<Transport>::model_coeffs() const
 }
 
 template <typename Transport>
-void KOmegaSST<Transport>::update_turbulent_viscosity(
-    const FieldState fstate)
+void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 {
-    BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+    BL_PROFILE(
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
 
-        /* Steps
-        1. Calculate CDkw - Needs gradK, gradOmega
-        2. Calculate F1 - Needs CDkw
-        3. Calculate alpha, beta - Needs F1
-        4. Calculate F2
-        5. Calculate S
-        6. Calculate mut - Needs S, F2
-        7. Calculate TKE Shear production term Pk - Needs mut
-        8. Calculate TKE dissipation term 
-        9. Calculate SDR source terms - Needs alpha, beta, F1, gradK, gradOmega
-        */
-
-    
     auto& mu_turb = this->mu_turb();
     const amrex::Real beta_star = this->m_beta_star;
     const amrex::Real alpha1 = this->m_alpha1;
@@ -63,16 +50,15 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
     auto& ibcell = repo.get_int_field("iblank_cell");
-    
+
     const int nlevels = repo.num_active_levels();
 
+    auto gradK = (this->m_sim.repo()).create_scratch_field(3, 0);
+    fvm::gradient(*gradK, tke);
 
-    auto gradK = (this->m_sim.repo()).create_scratch_field(3,0);
-    fvm::gradient(*gradK, tke );
+    auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
+    fvm::gradient(*gradOmega, sdr);
 
-    auto gradOmega = (this->m_sim.repo()).create_scratch_field(3,0);
-    fvm::gradient(*gradOmega, sdr );
-    
     auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
@@ -82,8 +68,8 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
 
     const amrex::Real deltaT = (this->m_sim).time().deltaT();
-    
-    for (int lev=0; lev < nlevels; ++lev) {
+
+    for (int lev = 0; lev < nlevels; ++lev) {
         for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
             const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
@@ -93,7 +79,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
             const auto& gradOmega_arr = (*gradOmega)(lev).array(mfi);
             const auto& tke_arr = tke(lev).array(mfi);
             const auto& sdr_arr = sdr(lev).array(mfi);
-            const auto& wd_arr = (this->m_walldist)(lev).array(mfi);            
+            const auto& wd_arr = (this->m_walldist)(lev).array(mfi);
             const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
             const auto& diss_arr = (this->m_diss)(lev).array(mfi);
             const auto& sdr_src_arr = (this->m_sdr_src)(lev).array(mfi);
@@ -102,53 +88,69 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
             const auto& tke_lhs_arr = tke_lhs(lev).array(mfi);
             const auto& sdr_lhs_arr = sdr_lhs(lev).array(mfi);
             const auto& ib_cell_arr = ibcell(lev).const_array(mfi);
-            
+
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::Real gko =
+                        (gradK_arr(i, j, k, 0) * gradOmega_arr(i, j, k, 0) +
+                         gradK_arr(i, j, k, 1) * gradOmega_arr(i, j, k, 1) +
+                         gradK_arr(i, j, k, 2) * gradOmega_arr(i, j, k, 2));
 
-                  amrex::Real gko =
-                      (gradK_arr(i,j,k,0) * gradOmega_arr(i,j,k,0)
-                        + gradK_arr(i,j,k,1) * gradOmega_arr(i,j,k,1)
-                        + gradK_arr(i,j,k,2) * gradOmega_arr(i,j,k,2));
-                  
+                    amrex::Real cdkomega = std::max(
+                        1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
+                                   (sdr_arr(i, j, k) + 1e-15));
 
-                  amrex::Real cdkomega = std::max(1e-10, 2.0 * rho_arr(i,j,k) * sigma_omega2 * gko / (sdr_arr(i,j,k) + 1e-15) );
-                  
-                  amrex::Real tmp1 = 4.0 * rho_arr(i,j,k) * sigma_omega2 * tke_arr(i,j,k) / (cdkomega * wd_arr(i,j,k) * wd_arr(i,j,k));
-                  amrex::Real tmp2 = std::sqrt(tke_arr(i,j,k))/(beta_star * sdr_arr(i,j,k)*wd_arr(i,j,k) + 1e-15);
-                  amrex::Real tmp3 = 500.0*lam_mu_arr(i,j,k)/(wd_arr(i,j,k)*wd_arr(i,j,k)*sdr_arr(i,j,k)*rho_arr(i,j,k) + 1e-15);
-                  amrex::Real tmp4 = shear_prod_arr(i,j,k);
+                    amrex::Real tmp1 =
+                        4.0 * rho_arr(i, j, k) * sigma_omega2 *
+                        tke_arr(i, j, k) /
+                        (cdkomega * wd_arr(i, j, k) * wd_arr(i, j, k));
+                    amrex::Real tmp2 =
+                        std::sqrt(tke_arr(i, j, k)) /
+                        (beta_star * sdr_arr(i, j, k) * wd_arr(i, j, k) +
+                         1e-15);
+                    amrex::Real tmp3 =
+                        500.0 * lam_mu_arr(i, j, k) /
+                        (wd_arr(i, j, k) * wd_arr(i, j, k) * sdr_arr(i, j, k) *
+                             rho_arr(i, j, k) +
+                         1e-15);
+                    amrex::Real tmp4 = shear_prod_arr(i, j, k);
 
-                  amrex::Real arg1 = std::min( std::max(tmp2,tmp3), tmp1);
-                  amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
+                    amrex::Real arg1 = std::min(std::max(tmp2, tmp3), tmp1);
+                    amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
 
-                  amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
-                  amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
-                  
-                  amrex::Real arg2 = std::max(2.0 * tmp2, tmp3);
-                  amrex::Real f2 = std::tanh(arg2 * arg2);
-                  
-                  mu_arr(i, j, k) = rho_arr(i,j,k) * a1 * tke_arr(i,j,k) /
-                      std::max(a1 * sdr_arr(i,j,k), tmp4 * f2);
+                    amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
+                    amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                  f1_arr(i,j,k) = tmp_f1;
+                    amrex::Real arg2 = std::max(2.0 * tmp2, tmp3);
+                    amrex::Real f2 = std::tanh(arg2 * arg2);
 
-                  //diss_arr(i,j,k) = 0.0;
-                  //tke_lhs_arr(i,j,k) = 0.0;
-                  diss_arr(i,j,k) =  -beta_star * rho_arr(i,j,k) * tke_arr(i,j,k) * sdr_arr(i,j,k) ;
-                  tke_lhs_arr(i,j,k) = 0.5*beta_star * rho_arr(i,j,k) * sdr_arr(i,j,k) * deltaT ;
+                    mu_arr(i, j, k) =
+                        rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
+                        std::max(a1 * sdr_arr(i, j, k), tmp4 * f2);
 
-                  shear_prod_arr(i,j,k) = amrex::max( std::abs(ib_cell_arr(i,j,k)) , 0)
-                      * std::min(mu_arr(i,j,k) * tmp4 * tmp4,
-                                 10.0 * beta_star * rho_arr(i,j,k)
-                                 * tke_arr(i,j,k) * sdr_arr(i,j,k));
+                    f1_arr(i, j, k) = tmp_f1;
 
-                  sdr_lhs_arr(i,j,k) = 0.5*rho_arr(i,j,k) * beta * sdr_arr(i,j,k) * deltaT;
-                  sdr_src_arr(i,j,k) = rho_arr(i,j,k)
-                      * alpha * shear_prod_arr(i,j,k)/amrex::max(mu_arr(i,j,k), 1.0e-16)
-                      + (1.0 - tmp_f1) * cdkomega;
-                  sdr_diss_arr(i,j,k) = - rho_arr(i,j,k) * beta * sdr_arr(i,j,k) * sdr_arr(i,j,k);
-            });
+                    diss_arr(i, j, k) = -beta_star * rho_arr(i, j, k) *
+                                        tke_arr(i, j, k) * sdr_arr(i, j, k);
+                    tke_lhs_arr(i, j, k) = 0.5 * beta_star * rho_arr(i, j, k) *
+                                           sdr_arr(i, j, k) * deltaT;
+
+                    shear_prod_arr(i, j, k) =
+                        amrex::max(std::abs(ib_cell_arr(i, j, k)), 0) *
+                        std::min(
+                            mu_arr(i, j, k) * tmp4 * tmp4,
+                            10.0 * beta_star * rho_arr(i, j, k) *
+                                tke_arr(i, j, k) * sdr_arr(i, j, k));
+
+                    sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
+                                           sdr_arr(i, j, k) * deltaT;
+                    sdr_src_arr(i, j, k) =
+                        rho_arr(i, j, k) * alpha * shear_prod_arr(i, j, k) /
+                            amrex::max(mu_arr(i, j, k), 1.0e-16) +
+                        (1.0 - tmp_f1) * cdkomega;
+                    sdr_diss_arr(i, j, k) = -rho_arr(i, j, k) * beta *
+                                            sdr_arr(i, j, k) * sdr_arr(i, j, k);
+                });
         }
     }
 
@@ -170,7 +172,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
         const amrex::Real sigma_k2 = this->m_sigma_k2;
         auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
-        for (int lev=0; lev < nlevels; ++lev) {
+        for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
@@ -179,19 +181,21 @@ void KOmegaSST<Transport>::update_scalar_diff(
                 const auto& deff_arr = deff(lev).array(mfi);
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
-                    deff_arr(i,j,k) = lam_mu_arr(i,j,k)
-                        + (f1_arr(i,j,k)*(sigma_k1-sigma_k2) + sigma_k2)*mu_arr(i,j,k);
-                });
+                        deff_arr(i, j, k) =
+                            lam_mu_arr(i, j, k) +
+                            (f1_arr(i, j, k) * (sigma_k1 - sigma_k2) +
+                             sigma_k2) *
+                                mu_arr(i, j, k);
+                    });
             }
         }
-        
+
     } else if (name == "sdr") {
         const amrex::Real sigma_omega1 = this->m_sigma_omega1;
         const amrex::Real sigma_omega2 = this->m_sigma_omega2;
         auto& repo = deff.repo();
         const int nlevels = repo.num_active_levels();
-        for (int lev=0; lev < nlevels; ++lev) {
+        for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(deff(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
                 const auto& lam_mu_arr = (*lam_mu)(lev).array(mfi);
@@ -200,18 +204,16 @@ void KOmegaSST<Transport>::update_scalar_diff(
                 const auto& deff_arr = deff(lev).array(mfi);
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-
-                    deff_arr(i,j,k) = lam_mu_arr(i,j,k)
-                        + (f1_arr(i,j,k)*(sigma_omega1-sigma_omega2)
-                           + sigma_omega2)*mu_arr(i,j,k);
-                });
+                        deff_arr(i, j, k) =
+                            lam_mu_arr(i, j, k) +
+                            (f1_arr(i, j, k) * (sigma_omega1 - sigma_omega2) +
+                             sigma_omega2) *
+                                mu_arr(i, j, k);
+                    });
             }
         }
-        
     }
-
 }
-
 
 } // namespace turbulence
 

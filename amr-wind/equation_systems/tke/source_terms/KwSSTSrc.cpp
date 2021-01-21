@@ -9,8 +9,8 @@ namespace pde {
 namespace tke {
 
 KwSSTSrc::KwSSTSrc(const CFDSim& sim)
-  : m_shear_prod(sim.repo().get_field("shear_prod")),
-    m_diss(sim.repo().get_field("dissipation"))
+    : m_shear_prod(sim.repo().get_field("shear_prod"))
+    , m_diss(sim.repo().get_field("dissipation"))
 {}
 
 KwSSTSrc::~KwSSTSrc() = default;
@@ -27,11 +27,11 @@ void KwSSTSrc::operator()(
 
     const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-       src_term(i, j, k) += shear_prod_arr(i,j,k) + factor * diss_arr(i,j,k);
+        src_term(i, j, k) +=
+            shear_prod_arr(i, j, k) + factor * diss_arr(i, j, k);
     });
-
 }
 
-}
-}
-}
+} // namespace tke
+} // namespace pde
+} // namespace amr_wind
