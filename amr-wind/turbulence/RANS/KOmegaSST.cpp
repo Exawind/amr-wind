@@ -67,38 +67,6 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
     const int nlevels = repo.num_active_levels();
 
 
-    // // Clip and set values of tke and sdr that are out of bounds
-    // for (int lev=0; lev < nlevels; ++lev) {
-    //     for (amrex::MFIter mfi(mu_turb(lev)); mfi.isValid(); ++mfi) {
-    //         const auto& bx = mfi.tilebox();
-    //         const auto& tke_arr = tke(lev).array(mfi);
-    //         const auto& sdr_arr = sdr(lev).array(mfi);
-    //         const auto& rho_arr = den(lev).const_array(mfi);
-    // 
-    //         amrex::ParallelFor(
-    //             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-    //               const amrex::Real tke_old = tke_arr(i,j,k);
-    //               const amrex::Real sdr_old = sdr_arr(i,j,k);
-                        
-    //               tke_arr(i,j,k) = (tke_old < 1e-8) ? 1e-8 : tke_arr(i,j,k);
-    //               sdr_arr(i,j,k) = std::max(sdr_old,1e-8);
-    //         });
-    //     }
-    // }
-
-    // amrex::Print() << "Min tke = " << tke(0).min(0) << std::endl;
-    // amrex::Print() << "Max tke = " << tke(0).max(0) << std::endl;
-    // amrex::Print() << "Min sdr = " << sdr(0).min(0) << std::endl;
-    // amrex::Print() << "Max sdr = " << sdr(0).max(0) << std::endl;
-    
-    // tke.fillpatch(this->m_sim.time().current_time());
-    // sdr.fillpatch(this->m_sim.time().current_time());
-
-    // amrex::Print() << "Min tke after fillpatch = " << tke(0).min(0) << std::endl;
-    // amrex::Print() << "Max tke after fillpatch= " << tke(0).max(0) << std::endl;
-    // amrex::Print() << "Min sdr after fillpatch = " << sdr(0).min(0) << std::endl;
-    // amrex::Print() << "Max sdr after fillpatch = " << sdr(0).max(0) << std::endl;
-
     auto gradK = (this->m_sim.repo()).create_scratch_field(3,0);
     fvm::gradient(*gradK, tke );
 
