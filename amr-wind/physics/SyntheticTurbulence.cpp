@@ -527,7 +527,7 @@ void SyntheticTurbulence::update()
             // Transform position vector from global inertial
             // reference frame to local reference frame attached to
             // the turbulence grid.
-            xyz_l = m_turb_grid.tr_mat & ( xyz_g - m_turb_grid.origin);
+            xyz_l = trmat & ( xyz_g - origin);
 
             InterpWeights wts_loc = weights;
 
