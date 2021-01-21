@@ -136,12 +136,6 @@ void ChannelFlow::post_advance_work() {
             });
         }
     }
-
-    amrex::Print() << "Min tke after clip = " << tke(0).min(0) << std::endl;
-    amrex::Print() << "Max tke after clip = " << tke(0).max(0) << std::endl;
-    amrex::Print() << "Min sdr after clip = " << sdr(0).min(0) << std::endl;
-    amrex::Print() << "Max sdr after clip = " << sdr(0).max(0) << std::endl;
-    
     tke.fillpatch(m_time.current_time());
     sdr.fillpatch(m_time.current_time());
     
