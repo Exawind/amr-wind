@@ -90,7 +90,7 @@ public:
     std::string filename;
   };
 
-  SyntheticTurbulence(const CFDSim& sim);
+  explicit SyntheticTurbulence(const CFDSim& sim);
 
   SyntheticTurbulence() = delete;
   SyntheticTurbulence(const SyntheticTurbulence&) = delete;
