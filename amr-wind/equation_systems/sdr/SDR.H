@@ -56,7 +56,7 @@ struct TurbulenceOp<SDR>
     void operator()()
     {
         auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, "sdr");
+        m_tmodel.update_scalar_diff(mueff, SDR::var_name());
     }
 
     turbulence::TurbulenceModel& m_tmodel;
