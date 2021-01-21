@@ -305,8 +305,7 @@ void interp_perturb_vel(
     wt.yr * wt.zr * t_grid.wvel[qidx[2]] + wt.yl * wt.zr * t_grid.wvel[qidx[3]];
 
   // Interpolation in time
-  for (int i=0; i < AMREX_SPACEDIM; ++i)
-    vel[i] = wt.xl * vel_l[i] + wt.xr * vel_r[i];
+  vel = wt.xl * vel_l + wt.xr * vel_r;
 }
 
 }
@@ -544,10 +543,7 @@ void SyntheticTurbulence::update()
                 // Based on the equations in
                 // http://doi.wiley.com/10.1002/we.1608
                 // v_n in Eq. 10
-                const amrex::Real v_mag =
-                    std::sqrt(vel_g[0] * vel_g[0]
-                              + vel_g[1] * vel_g[1]
-                              + vel_g[2] * vel_g[2]);
+                const amrex::Real v_mag = vs::mag(vel_g);
                 // (V_n + 1/2 v_n) in Eq. 10
                 const amrex::Real v_mag_total =
                     ((*m_wind_profile)(xyz_g[sdir]) + 0.5 * v_mag);
