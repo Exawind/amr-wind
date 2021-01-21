@@ -29,7 +29,7 @@ struct FieldRegOp<SDR, Scheme>
 };
 
 /** Diffusion operator for SDR equation
- *  \ingroup pdeop
+ *  \ingroup sdr_eqn
  */
 template <typename Scheme>
 struct DiffusionOp<SDR, Scheme> : public DiffSolverIface<typename SDR::MLDiffOp>
