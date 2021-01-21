@@ -1,11 +1,12 @@
 #include "amr-wind/physics/SyntheticTurbulence.H"
 #include "amr-wind/CFDSim.H"
-#include "AMReX_iMultiFab.H"
-#include "AMReX_MultiFabUtil.H"
-#include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
+
+#include "AMReX_iMultiFab.H"
+#include "AMReX_MultiFabUtil.H"
+#include "AMReX_ParmParse.H"
 
 namespace amr_wind {
 namespace synth_turb {
