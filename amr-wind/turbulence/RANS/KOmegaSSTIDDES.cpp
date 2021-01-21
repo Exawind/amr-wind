@@ -63,12 +63,6 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const FieldState fstate)
 {
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
-
-    amrex::Print() << "Calling update_turbulent_viscosity " << std::endl;
-
-    amrex::Print() << "Ghost cells for tke is " << (this->m_tke)->num_grow() << std::endl;
-    amrex::Print() << "Ghost cells for sdr is " << (this->m_sdr)->num_grow() << std::endl;
-    
     (this->m_tke)->fillpatch(this->m_sim.time().current_time());
     (this->m_sdr)->fillpatch(this->m_sim.time().current_time());
     
