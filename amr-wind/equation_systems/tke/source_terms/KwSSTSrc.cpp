@@ -25,11 +25,7 @@ void KwSSTSrc::operator()(
     const auto& shear_prod_arr = (this->m_shear_prod)(lev).array(mfi);
     const auto& diss_arr = (this->m_diss)(lev).array(mfi);
 
-    //Keep factor = 1.0 for getting intermediate value of k
-    amrex::Real factor = 1.0;
-    // Changing factor to 0.5 for solving tke equation using Crank-Nicolson
-    if (fstate == FieldState::NPH)
-      factor = 0.5;
+    const amrex::Real factor = (fstate == FieldState::NPH) ? 0.5 : 1.0;
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
        src_term(i, j, k) += shear_prod_arr(i,j,k) + factor * diss_arr(i,j,k);
     });
