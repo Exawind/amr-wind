@@ -175,15 +175,6 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(
                                  10.0 * beta_star * rho_arr(i,j,k)
                                  * tke_arr(i,j,k) * sdr_arr(i,j,k));
 
-                  if (shear_prod_arr(i,j,k) < 0.0) {
-
-                      std::cerr <<  "Mu = " << mu_arr(i,j,k)
-                                << ", strain rate = " << tmp4
-                                << ", dissipation = " << 10.0 * beta_star * rho_arr(i,j,k) * tke_arr(i,j,k) * sdr_arr(i,j,k)
-                                << ", tke = " << tke_arr(i,j,k)
-                                << ", sdr = " << sdr_arr(i,j,k) << std::endl;
-                  }
-
                   if ( (1.0 - tmp_f1)*cdkomega < 0)
                       std::cerr << "i,j,k = " << i << " " << j << " " << k << " " << cdkomega << " " << (1-tmp_f1) << ",  " << (1.0-tmp_f1) * cdkomega / sdr_arr(i,j,k) << std::endl;
 
