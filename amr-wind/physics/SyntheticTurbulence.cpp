@@ -167,28 +167,6 @@ void load_turb_plane_data(
   ncf.close();
 }
 
-/** Transform a position vector from global inertial reference frame to local
- *  reference frame attached to the turbulence grid.
- */
-void global_to_local(const SynthTurbData& turb_grid, const vs::Vector& inp, vs::Vector& out)
-{
-  out = turb_grid.tr_mat & (inp - turb_grid.origin);
-  // out[0] = tr_mat[0][0] * in[0] + tr_mat[0][1] * in[1] + tr_mat[0][2] * in[2];
-  // out[1] = tr_mat[1][0] * in[0] + tr_mat[1][1] * in[1] + tr_mat[1][2] * in[2];
-  // out[2] = tr_mat[2][0] * in[0] + tr_mat[2][1] * in[1] + tr_mat[2][2] * in[2];
-}
-
-/** Transform a vector from local reference frame back to the global inertial frame
- *
- */
-void local_to_global_vel(const SynthTurbData& turb_grid, const vs::Vector& in, vs::Vector& out)
-{
-  out = turb_grid.tr_mat & in;
-  // out[0] = tr_mat[0][0] * in[0] + tr_mat[1][0] * in[1] + tr_mat[2][0] * in[2];
-  // out[1] = tr_mat[0][1] * in[0] + tr_mat[1][1] * in[1] + tr_mat[2][1] * in[2];
-  // out[2] = tr_mat[0][2] * in[0] + tr_mat[1][2] * in[1] + tr_mat[2][2] * in[2];
-}
-
 /** Determine the left/right indices for a given point along a particular direction
  *
  *  @param turb_grid Turbulence box data
@@ -543,8 +521,10 @@ void SyntheticTurbulence::update()
             xyz_g[1] = problo[1] + (j + 0.5) * dy;
             xyz_g[2] = problo[2] + (k + 0.5) * dz;
 
-            // Transform to local coordinates
-            global_to_local(m_turb_grid, xyz_g, xyz_l);
+            // Transform position vector from global inertial
+            // reference frame to local reference frame attached to
+            // the turbulence grid.
+            xyz_l = m_turb_grid.tr_mat & ( xyz_g - m_turb_grid.origin);
 
             InterpWeights wts_loc = weights;
 
@@ -557,8 +537,9 @@ void SyntheticTurbulence::update()
                 // Interpolate perturbation velocities in the local
                 // reference frame
                 interp_perturb_vel(m_turb_grid, wts_loc, vel_l);
-                // Transform to global coordinates
-                local_to_global_vel(m_turb_grid, vel_l, vel_g);
+                // Transform velocity vector from local reference
+                // frame back to the global inertial frame
+                vel_g = vel_l & m_turb_grid.tr_mat;
 
                 // Based on the equations in
                 // http://doi.wiley.com/10.1002/we.1608
