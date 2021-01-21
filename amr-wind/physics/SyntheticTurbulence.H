@@ -85,11 +85,6 @@ public:
 
   static const std::string identifier() { return "SyntheticTurbulence"; }
 
-  struct NCBoxTurb
-  {
-    std::string filename;
-  };
-
   explicit SyntheticTurbulence(const CFDSim& sim);
 
   SyntheticTurbulence() = delete;
@@ -108,10 +103,11 @@ public:
 
   void post_advance_work() override {}
 
-private:
   void initialize();
 
   void update();
+
+private:
 
   const amr_wind::SimTime& m_time;
   const FieldRepo& m_repo;
