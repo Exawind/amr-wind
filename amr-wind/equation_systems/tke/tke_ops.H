@@ -33,13 +33,14 @@ struct TurbulenceOp<TKE>
 template <>
 struct PostSolveOp<TKE>
 {
-    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {
         auto& field = m_fields.field;
         const auto& repo = field.repo();
         const int nlevels = repo.num_active_levels();
+        const auto clip_value = m_clip_value;
         for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -57,7 +58,7 @@ struct PostSolveOp<TKE>
     }
 
     PDEFields& m_fields;
-    amrex::Real clip_value{1.0e-8};
+    amrex::Real m_clip_value{1.0e-8};
 };
 
 template <typename Scheme>
