@@ -33,7 +33,7 @@ struct TurbulenceOp<SDR>
 template <>
 struct PostSolveOp<SDR>
 {
-    PostSolveOp(PDEFields& fields) : m_fields(fields) {}
+    PostSolveOp(CFDSim&, PDEFields& fields) : m_fields(fields) {}
 
     void operator()(const amrex::Real time)
     {
