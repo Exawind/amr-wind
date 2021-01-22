@@ -61,7 +61,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const FieldState fstate)
 {
     BL_PROFILE(
-        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
     (this->m_tke)->fillpatch(this->m_sim.time().current_time());
     (this->m_sdr)->fillpatch(this->m_sim.time().current_time());
 

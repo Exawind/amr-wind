@@ -33,7 +33,7 @@ template <typename Transport>
 void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 {
     BL_PROFILE(
-        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity")
+        "amr-wind::" + this->identifier() + "::update_turbulent_viscosity");
 
     auto& mu_turb = this->mu_turb();
     const amrex::Real beta_star = this->m_beta_star;
@@ -167,7 +167,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     auto lam_mu = (this->m_transport).mu();
     auto& mu_turb = this->mu_turb();
 
-    if (name == "tke") {
+    if (name == pde::TKE::var_name()) {
         const amrex::Real sigma_k1 = this->m_sigma_k1;
         const amrex::Real sigma_k2 = this->m_sigma_k2;
         auto& repo = deff.repo();
@@ -190,7 +190,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
             }
         }
 
-    } else if (name == "sdr") {
+    } else if (name == pde::SDR::var_name()) {
         const amrex::Real sigma_omega1 = this->m_sigma_omega1;
         const amrex::Real sigma_omega2 = this->m_sigma_omega2;
         auto& repo = deff.repo();
@@ -212,6 +212,9 @@ void KOmegaSST<Transport>::update_scalar_diff(
                     });
             }
         }
+    } else {
+        amrex::Abort(
+            "KOmegaSST:update_scalar_diff not implemented for field " + name);
     }
 }
 

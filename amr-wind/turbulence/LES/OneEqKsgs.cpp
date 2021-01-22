@@ -66,8 +66,10 @@ OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
 {
+    // clang-format off
     return TurbulenceModel::CoeffsDictType{
         {"Ce", this->m_Ce}, {"Ceps", this->m_Ceps}};
+    // clang-format on
 }
 
 template <typename Transport>
@@ -192,10 +194,15 @@ void OneEqKsgsM84<Transport>::update_scalar_diff(
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
 
-    if (name == "TKE") {
+    if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
+        deff.setVal(0.0, 0, 1);
         field_ops::saxpy(
             deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    } else {
+        amrex::Abort(
+            "OneEqKsgsM84:update_scalar_diff not implemented for field " +
+            name);
     }
 }
 
@@ -239,10 +246,15 @@ void OneEqKsgsS94<Transport>::update_scalar_diff(
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
 
-    if (name == "TKE") {
+    if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
+        deff.setVal(0.0, 0, 1);
         field_ops::saxpy(
             deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    } else {
+        amrex::Abort(
+            "OneEqKsgsM84:update_scalar_diff not implemented for field " +
+            name);
     }
 }
 

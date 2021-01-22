@@ -20,7 +20,7 @@ struct TurbulenceOp<TKE>
     void operator()()
     {
         auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, "tke");
+        m_tmodel.update_scalar_diff(mueff, TKE::var_name());
     }
 
     turbulence::TurbulenceModel& m_tmodel;
@@ -72,7 +72,7 @@ struct FieldRegOp<TKE, Scheme>
         auto fields = create_fields_instance<TKE, Scheme>(time, repo, probtype);
 
         repo.declare_cc_field(
-            TKE::var_name() + "_lhs_src_term", TKE::ndim, 0, 1);
+            TKE::var_name() + "_lhs_src_term", TKE::ndim, 1, 1);
 
         sim.io_manager().register_io_var(fields.field.name());
 
