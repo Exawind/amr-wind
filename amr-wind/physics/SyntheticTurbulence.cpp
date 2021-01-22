@@ -550,6 +550,7 @@ void SyntheticTurbulence::update_impl(
         const auto& trmat = m_turb_grid.tr_mat;
         const auto& origin = m_turb_grid.origin;
         const auto& gauss_scaling = m_gauss_scaling;
+        const auto& epsilon = m_epsilon;
 
         for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -598,11 +599,11 @@ void SyntheticTurbulence::update_impl(
                         // (V_n + 1/2 v_n) in Eq. 10
                         const amrex::Real v_mag_total =
                             (velfunc(xyz_g[sdir]) + 0.5 * v_mag);
+
                         // Smearing factor (see Eq. 11). The normal direction to
                         // the grid is the x-axis of the local reference frame
                         // by construction
-
-                        const amrex::Real term1 = xyz_l[0] / m_epsilon;
+                        const amrex::Real term1 = xyz_l[0] / epsilon;
                         const amrex::Real eta =
                             std::exp(-(term1 * term1)) * gauss_scaling;
                         const amrex::Real factor = v_mag_total * eta;
