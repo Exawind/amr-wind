@@ -124,10 +124,13 @@ void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
 
     // Create data structures to store the perturbation velocities for two
     // planes
-    const size_t gridSize = 2 * ny * nz;
-    turb_grid.uvel.resize(gridSize);
-    turb_grid.vvel.resize(gridSize);
-    turb_grid.wvel.resize(gridSize);
+    const size_t grid_size = 2 * ny * nz;
+    turb_grid.uvel.resize(grid_size);
+    turb_grid.vvel.resize(grid_size);
+    turb_grid.wvel.resize(grid_size);
+    turb_grid.uvel_d.resize(grid_size);
+    turb_grid.vvel_d.resize(grid_size);
+    turb_grid.wvel_d.resize(grid_size);
 #else
     amrex::ignore_unused(turb_filename, turb_grid);
 #endif
@@ -179,6 +182,16 @@ void load_turb_plane_data(
     turb_grid.iright = ir;
 
     ncf.close();
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, turb_grid.uvel.begin(), turb_grid.uvel.end(),
+        turb_grid.uvel_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, turb_grid.vvel.begin(), turb_grid.vvel.end(),
+        turb_grid.vvel_d.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, turb_grid.wvel.begin(), turb_grid.wvel.end(),
+        turb_grid.wvel_d.begin());
 #else
     amrex::ignore_unused(turb_filename, turb_grid, il, ir);
 #endif
@@ -223,7 +236,7 @@ void get_lr_indices(
  *  @param ir Index of the upper bound (populated by this function)
  */
 void get_lr_indices(
-    const SynthTurbData& turb_grid,
+    const SynthTurbDeviceData& turb_grid,
     const int dir,
     const amrex::Real xin,
     int& il,
@@ -238,8 +251,8 @@ void get_lr_indices(
     ir = il + 1;
     if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
 
-    const amrex::Real xFrac = xbox - turb_grid.dx[dir] * il;
-    rxl = xFrac / turb_grid.dx[dir];
+    const amrex::Real xfrac = xbox - turb_grid.dx[dir] * il;
+    rxl = xfrac / turb_grid.dx[dir];
     rxr = (1.0 - rxl);
 }
 
@@ -260,7 +273,7 @@ struct InterpWeights
  *  @return True if the point is inside the 2-D box
  */
 bool find_point_in_box(
-    const SynthTurbData& t_grid, const vs::Vector& pt, InterpWeights& wt)
+    const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
     const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5;
@@ -281,7 +294,7 @@ bool find_point_in_box(
 /** Interpolate the perturbation velocity to a given point from the grid data
  */
 void interp_perturb_vel(
-    const SynthTurbData& t_grid, const InterpWeights& wt, vs::Vector& vel)
+    const SynthTurbDeviceData& t_grid, const InterpWeights& wt, vs::Vector& vel)
 {
     const int nz = t_grid.box_dims[2];
     const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
@@ -494,8 +507,9 @@ void SyntheticTurbulence::update()
         m_wind_profile->reference_velocity() * cur_time;
 
     InterpWeights weights;
+    SynthTurbDeviceData turb_grid(m_turb_grid);
     get_lr_indices(
-        m_turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl,
+        turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl,
         weights.xr);
 
     // Check if we need to refresh the planes
@@ -550,11 +564,11 @@ void SyntheticTurbulence::update()
                     // weights for points that are determined to be within the
                     // box.
                     bool ptInBox =
-                        find_point_in_box(m_turb_grid, xyz_l, wts_loc);
+                        find_point_in_box(turb_grid, xyz_l, wts_loc);
                     if (ptInBox) {
                         // Interpolate perturbation velocities in the local
                         // reference frame
-                        interp_perturb_vel(m_turb_grid, wts_loc, vel_l);
+                        interp_perturb_vel(turb_grid, wts_loc, vel_l);
                         // Transform velocity vector from local reference
                         // frame back to the global inertial frame
                         vel_g = vel_l & trmat;

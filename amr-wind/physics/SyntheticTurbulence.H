@@ -59,9 +59,54 @@ struct SynthTurbData
     amrex::Vector<double> vvel;
     amrex::Vector<double> wvel;
 
+    amrex::Gpu::DeviceVector<double> uvel_d;
+    amrex::Gpu::DeviceVector<double> vvel_d;
+    amrex::Gpu::DeviceVector<double> wvel_d;
+
     // Indices of the two planes stored in the data arrays
     int ileft;
     int iright;
+};
+
+struct SynthTurbDeviceData
+{
+    // Dimensions of the box
+    vs::VectorT<int> box_dims;
+
+    // Length of the boxes in each direction
+    vs::Vector box_len;
+
+    vs::Vector dx;
+
+    // Reference point for the turbulence box. Reference is the mid-point of the
+    // turbulence grid at the plane where it is injected into the CFD flow
+    // field.
+    vs::Vector origin;
+
+    // Transformation matrix to convert from global coordinate system to local
+    // coordinate system
+    vs::Tensor tr_mat;
+
+    amrex::Real* uvel;
+    amrex::Real* vvel;
+    amrex::Real* wvel;
+
+    // Indices of the two planes stored in the data arrays
+    int ileft;
+    int iright;
+
+    explicit SynthTurbDeviceData(SynthTurbData& hdata)
+        : box_dims(hdata.box_dims)
+        , box_len(hdata.box_len)
+        , dx(hdata.dx)
+        , origin(hdata.origin)
+        , tr_mat(hdata.tr_mat)
+        , uvel(hdata.uvel_d.data())
+        , vvel(hdata.vvel_d.data())
+        , wvel(hdata.wvel_d.data())
+        , ileft(hdata.ileft)
+        , iright(hdata.iright)
+    {}
 };
 
 /**
