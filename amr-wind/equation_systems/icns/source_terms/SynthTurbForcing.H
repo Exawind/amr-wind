@@ -2,13 +2,12 @@
 #define SYNTHTURBFORCING_H
 
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
-#include "amr-wind/core/SimTime.H"
 
 namespace amr_wind {
 namespace pde {
 namespace icns {
 
-/** Apply source term to drive synthetic turbulence
+/** Synthetic turbulence momentum source term
  *  \ingroup icns_src synth_turb
  */
 class SynthTurbForcing : public MomentumSource::Register<SynthTurbForcing>
@@ -28,9 +27,7 @@ public:
         const amrex::Array4<amrex::Real>& src_term) const override;
 
 private:
-
     Field& m_turb_force;
-
 };
 
 } // namespace icns
