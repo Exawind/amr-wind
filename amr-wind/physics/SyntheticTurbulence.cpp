@@ -14,74 +14,84 @@ namespace synth_turb {
 class LinearShearProfile : public MeanProfile
 {
 public:
-    LinearShearProfile(amrex::Real h_min, amrex::Real h_max,
-                       amrex::Real vel_start, amrex::Real vel_stop,
-                       int shear_dir)
-    : MeanProfile( 0.5*(vel_start + vel_stop), shear_dir),
-      m_hmin(h_min),
-      m_hmax(h_max),
-      m_vstart(vel_start),
-      m_vstop(vel_stop)
-  {}
+    LinearShearProfile(
+        amrex::Real h_min,
+        amrex::Real h_max,
+        amrex::Real vel_start,
+        amrex::Real vel_stop,
+        int shear_dir)
+        : MeanProfile(0.5 * (vel_start + vel_stop), shear_dir)
+        , m_hmin(h_min)
+        , m_hmax(h_max)
+        , m_vstart(vel_start)
+        , m_vstop(vel_stop)
+    {}
 
-  virtual ~LinearShearProfile() = default;
+    virtual ~LinearShearProfile() = default;
 
-  virtual amrex::Real operator()(amrex::Real ht) const
-  {
-    if (ht < m_hmin)
-      return m_vstart;
-    else if (ht > m_hmax)
-      return m_vstop;
-    else
-      return m_vstop + (m_vstop - m_vstart) * (ht - m_hmin)/(m_hmax - m_hmin);
-  }
+    virtual amrex::Real operator()(amrex::Real ht) const
+    {
+        if (ht < m_hmin)
+            return m_vstart;
+        else if (ht > m_hmax)
+            return m_vstop;
+        else
+            return m_vstop +
+                   (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
+    }
 
 private:
-  const amrex::Real m_hmin;
-  const amrex::Real m_hmax;
-  const amrex::Real m_vstart;
-  const amrex::Real m_vstop;
+    const amrex::Real m_hmin;
+    const amrex::Real m_hmax;
+    const amrex::Real m_vstart;
+    const amrex::Real m_vstop;
 };
 
 class PowerLawProfile : public MeanProfile
 {
 public:
-  PowerLawProfile(amrex::Real ref_vel, amrex::Real ref_height, amrex::Real alpha,
-                  int shear_dir, amrex::Real h_offset,
-                  amrex::Real umin, amrex::Real umax)
-    : MeanProfile(ref_vel, shear_dir),
-      m_ref_height(ref_height),
-      m_alpha(alpha),
-      m_hoffset(h_offset),
-      m_umin(umin),
-      m_umax(umax)
-  {}
+    PowerLawProfile(
+        amrex::Real ref_vel,
+        amrex::Real ref_height,
+        amrex::Real alpha,
+        int shear_dir,
+        amrex::Real h_offset,
+        amrex::Real umin,
+        amrex::Real umax)
+        : MeanProfile(ref_vel, shear_dir)
+        , m_ref_height(ref_height)
+        , m_alpha(alpha)
+        , m_hoffset(h_offset)
+        , m_umin(umin)
+        , m_umax(umax)
+    {}
 
-  virtual ~PowerLawProfile() = default;
+    virtual ~PowerLawProfile() = default;
 
-  virtual double reference_height() const { return m_ref_height; }
+    virtual double reference_height() const { return m_ref_height; }
 
-  virtual amrex::Real operator()(amrex::Real height) const override
-  {
-    const amrex::Real heff = height - m_hoffset;
-    amrex::Real pfac =
-        (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
-    return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
-  }
+    virtual amrex::Real operator()(amrex::Real height) const override
+    {
+        const amrex::Real heff = height - m_hoffset;
+        amrex::Real pfac =
+            (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
+        return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
+    }
 
 private:
-  const amrex::Real m_ref_height;
-  const amrex::Real m_alpha;
-  const amrex::Real m_hoffset;
-  const amrex::Real m_umin;
-  const amrex::Real m_umax;
+    const amrex::Real m_ref_height;
+    const amrex::Real m_alpha;
+    const amrex::Real m_hoffset;
+    const amrex::Real m_umin;
+    const amrex::Real m_umax;
 };
 
 } // namespace synth_turb
 
 namespace {
 
-/** Parse the NetCDF turbulence database and determine details of the turbulence box.
+/** Parse the NetCDF turbulence database and determine details of the turbulence
+ *box.
  *
  *. Initializes the dimensions and grid length, sizes in SynthTurbData. Also
  *  allocates the necessary memory for the perturbation velocities.
@@ -89,116 +99,118 @@ namespace {
  *. @param turbFile Information regarding NetCDF data identifiers
  *. @param turbGrid Turbulence data
  */
-void process_nc_file(
-  std::string& turb_filename,
-  SynthTurbData& turb_grid)
+void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
 {
 #ifdef AMR_WIND_USE_NETCDF
-  auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
+    auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
-  // Grid dimensions
-  AMREX_ASSERT(ncf.dim("ndim").len() == AMREX_SPACEDIM);
-  auto nx = ncf.dim("nx").len();
-  auto ny = ncf.dim("ny").len();
-  auto nz = ncf.dim("nz").len();
+    // Grid dimensions
+    AMREX_ASSERT(ncf.dim("ndim").len() == AMREX_SPACEDIM);
+    auto nx = ncf.dim("nx").len();
+    auto ny = ncf.dim("ny").len();
+    auto nz = ncf.dim("nz").len();
 
-  turb_grid.box_dims[0] = nx;
-  turb_grid.box_dims[1] = ny;
-  turb_grid.box_dims[2] = nz;
+    turb_grid.box_dims[0] = nx;
+    turb_grid.box_dims[1] = ny;
+    turb_grid.box_dims[2] = nz;
 
-  // Box lengths and resolution
-  auto box_len = ncf.var("box_lengths");
-  box_len.get(turb_grid.box_len.data());
-  auto dx = ncf.var("dx");
-  dx.get(turb_grid.dx.data());
+    // Box lengths and resolution
+    auto box_len = ncf.var("box_lengths");
+    box_len.get(turb_grid.box_len.data());
+    auto dx = ncf.var("dx");
+    dx.get(turb_grid.dx.data());
 
-  ncf.close();
+    ncf.close();
 
-  // Create data structures to store the perturbation velocities for two planes
-  const size_t gridSize = 2 * ny * nz;
-  turb_grid.uvel.resize(gridSize);
-  turb_grid.vvel.resize(gridSize);
-  turb_grid.wvel.resize(gridSize);
-#else 
-  amrex::ignore_unused(turb_filename, turb_grid);
-#endif 
+    // Create data structures to store the perturbation velocities for two
+    // planes
+    const size_t gridSize = 2 * ny * nz;
+    turb_grid.uvel.resize(gridSize);
+    turb_grid.vvel.resize(gridSize);
+    turb_grid.wvel.resize(gridSize);
+#else
+    amrex::ignore_unused(turb_filename, turb_grid);
+#endif
 }
 
 /** Load two planes of data that bound the current timestep
  *
- *  The data for the y and z directions are loaded for the entire grid at the two planes
+ *  The data for the y and z directions are loaded for the entire grid at the
+ * two planes
  */
 void load_turb_plane_data(
-  std::string& turb_filename,
-  SynthTurbData& turb_grid,
-  const int il, const int ir)
+    std::string& turb_filename,
+    SynthTurbData& turb_grid,
+    const int il,
+    const int ir)
 {
 #ifdef AMR_WIND_USE_NETCDF
-  auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
+    auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
-  std::vector<size_t> start{ {static_cast<size_t>(il), 0, 0} };
-  std::vector<size_t> count{ {
-          2, static_cast<size_t>(turb_grid.box_dims[1]),
-          static_cast<size_t>(turb_grid.box_dims[2])} };
+    std::vector<size_t> start{{static_cast<size_t>(il), 0, 0}};
+    std::vector<size_t> count{{2, static_cast<size_t>(turb_grid.box_dims[1]),
+                               static_cast<size_t>(turb_grid.box_dims[2])}};
 
-  auto uvel = ncf.var("uvel");
-  auto vvel = ncf.var("vvel");
-  auto wvel = ncf.var("wvel");
+    auto uvel = ncf.var("uvel");
+    auto vvel = ncf.var("vvel");
+    auto wvel = ncf.var("wvel");
 
-  if ((ir - il) == 1) {
-    // two consequtive planes load them in one shot
-    uvel.get(&turb_grid.uvel[0], start, count);
-    vvel.get(&turb_grid.vvel[0], start, count);
-    wvel.get(&turb_grid.wvel[0], start, count);
-  } else {
-    // Load the planes separately
-    count[0] = 1;
-    uvel.get(&turb_grid.uvel[0], start, count);
-    vvel.get(&turb_grid.vvel[0], start, count);
-    wvel.get(&turb_grid.wvel[0], start, count);
+    if ((ir - il) == 1) {
+        // two consequtive planes load them in one shot
+        uvel.get(&turb_grid.uvel[0], start, count);
+        vvel.get(&turb_grid.vvel[0], start, count);
+        wvel.get(&turb_grid.wvel[0], start, count);
+    } else {
+        // Load the planes separately
+        count[0] = 1;
+        uvel.get(&turb_grid.uvel[0], start, count);
+        vvel.get(&turb_grid.vvel[0], start, count);
+        wvel.get(&turb_grid.wvel[0], start, count);
 
-    start[0] = static_cast<size_t>(ir);
-    const size_t offset = turb_grid.box_dims[1] * turb_grid.box_dims[2];
-    uvel.get(&turb_grid.uvel[offset], start, count);
-    vvel.get(&turb_grid.vvel[offset], start, count);
-    wvel.get(&turb_grid.wvel[offset], start, count);
-  }
+        start[0] = static_cast<size_t>(ir);
+        const size_t offset = turb_grid.box_dims[1] * turb_grid.box_dims[2];
+        uvel.get(&turb_grid.uvel[offset], start, count);
+        vvel.get(&turb_grid.vvel[offset], start, count);
+        wvel.get(&turb_grid.wvel[offset], start, count);
+    }
 
-  // Update left and right indices for future checks
-  turb_grid.ileft = il;
-  turb_grid.iright = ir;
+    // Update left and right indices for future checks
+    turb_grid.ileft = il;
+    turb_grid.iright = ir;
 
-  ncf.close();
-#else 
-  amrex::ignore_unused(turb_filename, turb_grid, il, ir);
-#endif 
+    ncf.close();
+#else
+    amrex::ignore_unused(turb_filename, turb_grid, il, ir);
+#endif
 }
 
-/** Determine the left/right indices for a given point along a particular direction
+/** Determine the left/right indices for a given point along a particular
+ * direction
  *
  *  @param turb_grid Turbulence box data
  *  @param dir Direction of search (0 = x, 1 = y, 2 = z)
- *  @param xin Coordinate value in local coordinate frame corresponding to direction provided
+ *  @param xin Coordinate value in local coordinate frame corresponding to
+ * direction provided
  *  @param il Index of the lower bound (populated by this function)
  *  @param ir Index of the upper bound (populated by this function)
  */
 void get_lr_indices(
-  const SynthTurbData& turb_grid,
-  const int dir,
-  const amrex::Real xin,
-  int& il,
-  int& ir)
+    const SynthTurbData& turb_grid,
+    const int dir,
+    const amrex::Real xin,
+    int& il,
+    int& ir)
 {
-  const amrex::Real xbox =
-      xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+    const amrex::Real xbox =
+        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-  il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
-  ir = il + 1;
-  if (ir >= turb_grid.box_dims[dir])
-    ir -= turb_grid.box_dims[dir];
+    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
+    ir = il + 1;
+    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
 }
 
-/** Determine the left/right indices for a given point along a particular direction
+/** Determine the left/right indices for a given point along a particular
+ * direction
  *
  *  This overload also populates the fractions of left/right states to be used
  *  for interpolations.
@@ -211,23 +223,24 @@ void get_lr_indices(
  *  @param ir Index of the upper bound (populated by this function)
  */
 void get_lr_indices(
-  const SynthTurbData& turb_grid,
-  const int dir,
-  const amrex::Real xin,
-  int& il, int& ir,
-  amrex::Real& rxl, amrex::Real& rxr)
+    const SynthTurbData& turb_grid,
+    const int dir,
+    const amrex::Real xin,
+    int& il,
+    int& ir,
+    amrex::Real& rxl,
+    amrex::Real& rxr)
 {
-  const amrex::Real xbox =
-      xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+    const amrex::Real xbox =
+        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-  il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
-  ir = il + 1;
-  if (ir >= turb_grid.box_dims[dir])
-    ir -= turb_grid.box_dims[dir];
+    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
+    ir = il + 1;
+    if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
 
-  const amrex::Real xFrac = xbox - turb_grid.dx[dir] * il;
-  rxl = xFrac / turb_grid.dx[dir];
-  rxr = (1.0 - rxl);
+    const amrex::Real xFrac = xbox - turb_grid.dx[dir] * il;
+    rxl = xFrac / turb_grid.dx[dir];
+    rxr = (1.0 - rxl);
 }
 
 /** Indices and interpolation weights for a given point located within the
@@ -235,8 +248,8 @@ void get_lr_indices(
  */
 struct InterpWeights
 {
-  int il, ir, jl, jr, kl, kr;
-  amrex::Real xl, xr, yl, yr, zl, zr;
+    int il, ir, jl, jr, kl, kr;
+    amrex::Real xl, xr, yl, yr, zl, zr;
 };
 
 /** Determine if a given point (in local frame) is within the turbulence box
@@ -247,332 +260,330 @@ struct InterpWeights
  *  @return True if the point is inside the 2-D box
  */
 bool find_point_in_box(
-  const SynthTurbData& t_grid,
-  const vs::Vector& pt,
-  InterpWeights& wt)
+    const SynthTurbData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
-  // Get y and z w.r.t. the lower corner of the grid
-  const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5;
-  const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5;
+    // Get y and z w.r.t. the lower corner of the grid
+    const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5;
+    const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5;
 
-  bool inBox =
-    ((yy >= 0.0) &&
-     (yy <= t_grid.box_len[1]) &&
-     (zz >= 0.0) &&
-     (zz <= t_grid.box_len[2]));
+    bool inBox =
+        ((yy >= 0.0) && (yy <= t_grid.box_len[1]) && (zz >= 0.0) &&
+         (zz <= t_grid.box_len[2]));
 
-  if (inBox) {
-    get_lr_indices(t_grid, 1, yy, wt.jl, wt.jr, wt.yl, wt.yr);
-    get_lr_indices(t_grid, 2, zz, wt.kl, wt.kr, wt.zl, wt.zr);
-  }
+    if (inBox) {
+        get_lr_indices(t_grid, 1, yy, wt.jl, wt.jr, wt.yl, wt.yr);
+        get_lr_indices(t_grid, 2, zz, wt.kl, wt.kr, wt.zl, wt.zr);
+    }
 
-  return inBox;
+    return inBox;
 }
 
 /** Interpolate the perturbation velocity to a given point from the grid data
  */
 void interp_perturb_vel(
-  const SynthTurbData& t_grid,
-  const InterpWeights& wt,
-  vs::Vector& vel)
+    const SynthTurbData& t_grid, const InterpWeights& wt, vs::Vector& vel)
 {
-  const int nz = t_grid.box_dims[2];
-  const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
-  // Indices of the 2-D cell that contains the sampling point
-  int qidx[4]{wt.jl * nz + wt.kl,
-      wt.jr * nz + wt.kl,
-      wt.jr * nz + wt.kr,
-      wt.jl * nz + wt.kl};
+    const int nz = t_grid.box_dims[2];
+    const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
+    // Indices of the 2-D cell that contains the sampling point
+    int qidx[4]{wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
+                wt.jl * nz + wt.kl};
 
-  vs::Vector vel_l, vel_r;
+    vs::Vector vel_l, vel_r;
 
-  // Left quad (t = t)
-  vel_l[0] =
-    wt.yl * wt.zl * t_grid.uvel[qidx[0]] + wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.uvel[qidx[2]] + wt.yl * wt.zr * t_grid.uvel[qidx[3]];
-  vel_l[1] =
-    wt.yl * wt.zl * t_grid.vvel[qidx[0]] + wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.vvel[qidx[2]] + wt.yl * wt.zr * t_grid.vvel[qidx[3]];
-  vel_l[2] =
-    wt.yl * wt.zl * t_grid.wvel[qidx[0]] + wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.wvel[qidx[2]] + wt.yl * wt.zr * t_grid.wvel[qidx[3]];
+    // Left quad (t = t)
+    vel_l[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.uvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.uvel[qidx[3]];
+    vel_l[1] = wt.yl * wt.zl * t_grid.vvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.vvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.vvel[qidx[3]];
+    vel_l[2] = wt.yl * wt.zl * t_grid.wvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.wvel[qidx[3]];
 
-  for (int i=0; i < 4; ++i)
-    qidx[i] += nynz;
+    for (int i = 0; i < 4; ++i) qidx[i] += nynz;
 
-  // Right quad (t = t+deltaT)
-  vel_r[0] =
-    wt.yl * wt.zl * t_grid.uvel[qidx[0]] + wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.uvel[qidx[2]] + wt.yl * wt.zr * t_grid.uvel[qidx[3]];
-  vel_r[1] =
-    wt.yl * wt.zl * t_grid.vvel[qidx[0]] + wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.vvel[qidx[2]] + wt.yl * wt.zr * t_grid.vvel[qidx[3]];
-  vel_r[2] =
-    wt.yl * wt.zl * t_grid.wvel[qidx[0]] + wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
-    wt.yr * wt.zr * t_grid.wvel[qidx[2]] + wt.yl * wt.zr * t_grid.wvel[qidx[3]];
+    // Right quad (t = t+deltaT)
+    vel_r[0] = wt.yl * wt.zl * t_grid.uvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.uvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.uvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.uvel[qidx[3]];
+    vel_r[1] = wt.yl * wt.zl * t_grid.vvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.vvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.vvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.vvel[qidx[3]];
+    vel_r[2] = wt.yl * wt.zl * t_grid.wvel[qidx[0]] +
+               wt.yr * wt.zl * t_grid.wvel[qidx[1]] +
+               wt.yr * wt.zr * t_grid.wvel[qidx[2]] +
+               wt.yl * wt.zr * t_grid.wvel[qidx[3]];
 
-  // Interpolation in time
-  vel = wt.xl * vel_l + wt.xr * vel_r;
+    // Interpolation in time
+    vel = wt.xl * vel_l + wt.xr * vel_r;
 }
 
-}
+} // namespace
 
-SyntheticTurbulence::SyntheticTurbulence(
-  const CFDSim& sim)
-    : m_time(sim.time()),
-      m_repo(sim.repo()),
-      m_mesh(sim.mesh()),
-      m_velocity(sim.repo().get_field("velocity")),
-      m_density(sim.repo().get_field("density")),
-      m_turb_force(sim.repo().declare_field("synth_turb_forcing", 3))
+SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
+    : m_time(sim.time())
+    , m_repo(sim.repo())
+    , m_mesh(sim.mesh())
+    , m_velocity(sim.repo().get_field("velocity"))
+    , m_density(sim.repo().get_field("density"))
+    , m_turb_force(sim.repo().declare_field("synth_turb_forcing", 3))
 {
 #ifndef AMR_WIND_USE_NETCDF
-    amrex::Abort("SyntheticTurbulence: AMR-Wind was not built with NetCDF support.");
+    amrex::Abort(
+        "SyntheticTurbulence: AMR-Wind was not built with NetCDF support.");
 #endif
-  const amrex::Real pi = std::acos(-1.0);
+    const amrex::Real pi = std::acos(-1.0);
 
-  amrex::ParmParse pp("SynthTurb");
+    amrex::ParmParse pp("SynthTurb");
 
-  // NetCDF file containing the turbulence data
-  pp.query("turbulence_file", m_turb_filename);
-  process_nc_file(m_turb_filename, m_turb_grid);
+    // NetCDF file containing the turbulence data
+    pp.query("turbulence_file", m_turb_filename);
+    process_nc_file(m_turb_filename, m_turb_grid);
 
-  // Load position and orientation of the grid
-  amrex::Real wind_direction;
-  pp.query("wind_direction",wind_direction);
-  // Convert to radians
-  wind_direction *= pi / 180.0;
-  amrex::Vector<amrex::Real> location{{0.0,0.0,0.0}};
-  pp.queryarr("grid_location",location);
+    // Load position and orientation of the grid
+    amrex::Real wind_direction;
+    pp.query("wind_direction", wind_direction);
+    // Convert to radians
+    wind_direction *= pi / 180.0;
+    amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
+    pp.queryarr("grid_location", location);
 
-  std::string mean_wind_type = "ConstValue";
-  pp.query("mean_wind_type", mean_wind_type);
+    std::string mean_wind_type = "ConstValue";
+    pp.query("mean_wind_type", mean_wind_type);
 
-  if (mean_wind_type == "ConstValue") {
+    if (mean_wind_type == "ConstValue") {
 
-      amrex::ParmParse pp_vel("ConstValue.velocity");
-      amrex::Vector<amrex::Real> vel;
-      pp_vel.getarr("value", vel);
-      amrex::Real wind_speed = vs::mag(vs::Vector{vel[0],vel[1],vel[2]});
-      m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
+        amrex::ParmParse pp_vel("ConstValue.velocity");
+        amrex::Vector<amrex::Real> vel;
+        pp_vel.getarr("value", vel);
+        amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
+        m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
 
-  } else if (mean_wind_type == "LinearProfile") {
+    } else if (mean_wind_type == "LinearProfile") {
 
-      amrex::ParmParse pp_vel("LinearProfile.velocity");
+        amrex::ParmParse pp_vel("LinearProfile.velocity");
 
-      amrex::Real zmin, zmax;
-      pp_vel.query("start", zmin);
-      pp_vel.query("stop", zmax);
+        amrex::Real zmin, zmax;
+        pp_vel.query("start", zmin);
+        pp_vel.query("stop", zmax);
 
-      amrex::Vector<amrex::Real> start_val, stop_val;
-      pp_vel.getarr("start_val", start_val);
-      pp_vel.getarr("stop_val", stop_val);
+        amrex::Vector<amrex::Real> start_val, stop_val;
+        pp_vel.getarr("start_val", start_val);
+        pp_vel.getarr("stop_val", stop_val);
 
-      int shear_dir=2;
-      pp_vel.query("direction", shear_dir);
+        int shear_dir = 2;
+        pp_vel.query("direction", shear_dir);
 
-      m_wind_profile.reset(new synth_turb::LinearShearProfile(
-          zmin, zmax,
-          vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
-          vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
-          shear_dir));
+        m_wind_profile.reset(new synth_turb::LinearShearProfile(
+            zmin, zmax,
+            vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
+            vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
+            shear_dir));
 
-  } else if (mean_wind_type == "PowerLawProfile") {
+    } else if (mean_wind_type == "PowerLawProfile") {
 
-      amrex::ParmParse pp_vel("PowerLawProfile.velocity");
+        amrex::ParmParse pp_vel("PowerLawProfile.velocity");
 
-      // Default reference height is the center of the turbulence grid
-      amrex::Real zref = location[2];
-      pp.get("zref", zref);
-      amrex::Vector<amrex::Real> vel;
-      pp.getarr("uref", vel);
-      amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
+        // Default reference height is the center of the turbulence grid
+        amrex::Real zref = location[2];
+        pp.get("zref", zref);
+        amrex::Vector<amrex::Real> vel;
+        pp.getarr("uref", vel);
+        amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
 
-      amrex::Real alpha, zoffset, umin, umax;
-      pp.query("shear_exponent",alpha);
-      pp.query("zoffset", zoffset);
-      pp.query("umin", umin);
-      pp.query("umax", umax);
+        amrex::Real alpha, zoffset, umin, umax;
+        pp.query("shear_exponent", alpha);
+        pp.query("zoffset", zoffset);
+        pp.query("umin", umin);
+        pp.query("umax", umax);
 
-      int shear_dir=2;
-      pp_vel.query("direction", shear_dir);
+        int shear_dir = 2;
+        pp_vel.query("direction", shear_dir);
 
-      m_wind_profile.reset(new synth_turb::PowerLawProfile(wind_speed,
-                                                           zref,
-                                                           alpha, shear_dir,
-                                                           zoffset,
-                                                           umin, umax));
-  } else {
-    throw std::runtime_error("SyntheticTurbulence: invalid mean wind type specified = " + mean_wind_type);
-  }
+        m_wind_profile.reset(new synth_turb::PowerLawProfile(
+            wind_speed, zref, alpha, shear_dir, zoffset, umin, umax));
+    } else {
+        throw std::runtime_error(
+            "SyntheticTurbulence: invalid mean wind type specified = " +
+            mean_wind_type);
+    }
 
-  // Smearing factors
-  pp.query("grid_spacing", m_grid_spacing);
-  m_epsilon = 2.0 * m_grid_spacing;
-  pp.query("gauss_smearing_factor", m_epsilon);
-  m_gauss_scaling = 1.0 / (m_epsilon * std::sqrt(pi));
+    // Smearing factors
+    pp.query("grid_spacing", m_grid_spacing);
+    m_epsilon = 2.0 * m_grid_spacing;
+    pp.query("gauss_smearing_factor", m_epsilon);
+    m_gauss_scaling = 1.0 / (m_epsilon * std::sqrt(pi));
 
-  // Time offsets if any...
-  pp.query("time_offset", m_time_offset);
+    // Time offsets if any...
+    pp.query("time_offset", m_time_offset);
 
-  // Done reading user inputs, process derived data
+    // Done reading user inputs, process derived data
 
-  // Center of the grid
-  m_turb_grid.origin[0] = location[0];
-  m_turb_grid.origin[1] = location[1];
-  m_turb_grid.origin[2] = location[2];
+    // Center of the grid
+    m_turb_grid.origin[0] = location[0];
+    m_turb_grid.origin[1] = location[1];
+    m_turb_grid.origin[2] = location[2];
 
-  // Compute box-fixed reference frame.
-  //
-  // x-direction points to flow direction (convert from compass direction to vector)
-  m_turb_grid.tr_mat.xx() = -std::sin(wind_direction);
-  m_turb_grid.tr_mat.xy() = -std::cos(wind_direction);
-  m_turb_grid.tr_mat.xz() = 0.0;
-  // z always points upwards (for now...)
-  m_turb_grid.tr_mat.zx() = 0.0;
-  m_turb_grid.tr_mat.zy() = 0.0;
-  m_turb_grid.tr_mat.zz() = 1.0;
-  // y = z .cross. x
-  m_turb_grid.tr_mat.y() = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
+    // Compute box-fixed reference frame.
+    //
+    // x-direction points to flow direction (convert from compass direction to
+    // vector)
+    m_turb_grid.tr_mat.xx() = -std::sin(wind_direction);
+    m_turb_grid.tr_mat.xy() = -std::cos(wind_direction);
+    m_turb_grid.tr_mat.xz() = 0.0;
+    // z always points upwards (for now...)
+    m_turb_grid.tr_mat.zx() = 0.0;
+    m_turb_grid.tr_mat.zy() = 0.0;
+    m_turb_grid.tr_mat.zz() = 1.0;
+    // y = z .cross. x
+    m_turb_grid.tr_mat.y() = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
 
-  amrex::Print()
-    << "Synthethic turbulence forcing initialized \n"
-    << "  Turbulence file = " << m_turb_filename << "\n"
-    << "  Box lengths = [" << m_turb_grid.box_len[0] << ", "
-    << m_turb_grid.box_len[1] << ", " << m_turb_grid.box_len[2] << "]\n"
-    << "  Box dims = [" << m_turb_grid.box_dims[0] << ", "
-    << m_turb_grid.box_dims[1] << ", " << m_turb_grid.box_dims[2] << "]\n"
-    << "  Grid dx = [" << m_turb_grid.dx[0] << ", " << m_turb_grid.dx[1] << ", "
-    << m_turb_grid.dx[2] << "]\n"
-    << "  Centroid (forcing plane) = [" << m_turb_grid.origin[0] << ", "
-    << m_turb_grid.origin[1] << ", " << m_turb_grid.origin[2] << "]\n"
-    << "  Mean wind profile: U = " << m_wind_profile->reference_velocity()
-    << " m/s; Dir = " << wind_direction * 180.0 / pi
-    << " deg; type = " << mean_wind_type << std::endl;
+    amrex::Print() << "Synthethic turbulence forcing initialized \n"
+                   << "  Turbulence file = " << m_turb_filename << "\n"
+                   << "  Box lengths = [" << m_turb_grid.box_len[0] << ", "
+                   << m_turb_grid.box_len[1] << ", " << m_turb_grid.box_len[2]
+                   << "]\n"
+                   << "  Box dims = [" << m_turb_grid.box_dims[0] << ", "
+                   << m_turb_grid.box_dims[1] << ", " << m_turb_grid.box_dims[2]
+                   << "]\n"
+                   << "  Grid dx = [" << m_turb_grid.dx[0] << ", "
+                   << m_turb_grid.dx[1] << ", " << m_turb_grid.dx[2] << "]\n"
+                   << "  Centroid (forcing plane) = [" << m_turb_grid.origin[0]
+                   << ", " << m_turb_grid.origin[1] << ", "
+                   << m_turb_grid.origin[2] << "]\n"
+                   << "  Mean wind profile: U = "
+                   << m_wind_profile->reference_velocity()
+                   << " m/s; Dir = " << wind_direction * 180.0 / pi
+                   << " deg; type = " << mean_wind_type << std::endl;
 }
 
-void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&)
-{}
+void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&) {}
 void SyntheticTurbulence::pre_advance_work()
 {
-  if (m_is_init)
-    initialize();
+    if (m_is_init) initialize();
 
-  update();
+    update();
 }
 
 void SyntheticTurbulence::initialize()
 {
-  // Convert current time to an equivalent length based on the reference
-  // velocity to determine the position within the turbulence grid
-  const amrex::Real curTime = m_time.new_time() - m_time_offset;
-  const amrex::Real eqivLen = m_wind_profile->reference_velocity() * curTime;
-  int il, ir;
-  get_lr_indices(m_turb_grid, 0, eqivLen, il, ir);
-  load_turb_plane_data(m_turb_filename, m_turb_grid, il, ir);
+    // Convert current time to an equivalent length based on the reference
+    // velocity to determine the position within the turbulence grid
+    const amrex::Real curTime = m_time.new_time() - m_time_offset;
+    const amrex::Real eqivLen = m_wind_profile->reference_velocity() * curTime;
+    int il, ir;
+    get_lr_indices(m_turb_grid, 0, eqivLen, il, ir);
+    load_turb_plane_data(m_turb_filename, m_turb_grid, il, ir);
 
-  m_is_init = false;
+    m_is_init = false;
 }
 
 void SyntheticTurbulence::update()
 {
-  // Convert current time to an equivalent length based on the reference
-  // velocity to determine the position within the turbulence grid
-  const amrex::Real cur_time = m_time.new_time() - m_time_offset;
-  const amrex::Real eqiv_len = m_wind_profile->reference_velocity() * cur_time;
+    // Convert current time to an equivalent length based on the reference
+    // velocity to determine the position within the turbulence grid
+    const amrex::Real cur_time = m_time.new_time() - m_time_offset;
+    const amrex::Real eqiv_len =
+        m_wind_profile->reference_velocity() * cur_time;
 
-  InterpWeights weights;
-  get_lr_indices(m_turb_grid, 0, eqiv_len,
-                 weights.il, weights.ir, weights.xl, weights.xr);
+    InterpWeights weights;
+    get_lr_indices(
+        m_turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl,
+        weights.xr);
 
-  // Check if we need to refresh the planes
-  if (weights.il != m_turb_grid.ileft)
-    load_turb_plane_data(m_turb_filename, m_turb_grid, weights.il, weights.ir);
+    // Check if we need to refresh the planes
+    if (weights.il != m_turb_grid.ileft)
+        load_turb_plane_data(
+            m_turb_filename, m_turb_grid, weights.il, weights.ir);
 
-  auto& repo = m_turb_force.repo();
-  auto& geom_vec = repo.mesh().Geom();
+    auto& repo = m_turb_force.repo();
+    auto& geom_vec = repo.mesh().Geom();
 
-  const int sdir = (*m_wind_profile).shear_dir();
+    const int sdir = (*m_wind_profile).shear_dir();
 
-  const int nlevels = repo.num_active_levels();
-  for (int lev=0; lev < nlevels; ++lev) {
-      const auto& geom = geom_vec[lev];
-      const auto& problo = geom.ProbLoArray();
+    const int nlevels = repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = geom_vec[lev];
+        const auto& problo = geom.ProbLoArray();
 
-      const amrex::Real dx = geom.CellSize()[0];
-      const amrex::Real dy = geom.CellSize()[1];
-      const amrex::Real dz = geom.CellSize()[2];
-      const auto& trmat = m_turb_grid.tr_mat;
-      const auto& origin = m_turb_grid.origin;
+        const amrex::Real dx = geom.CellSize()[0];
+        const amrex::Real dy = geom.CellSize()[1];
+        const amrex::Real dz = geom.CellSize()[2];
+        const auto& trmat = m_turb_grid.tr_mat;
+        const auto& origin = m_turb_grid.origin;
 
-      for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
-          const auto& bx = mfi.tilebox();
-          const auto& turb_force_arr = m_turb_force(lev).array(mfi);
-          const auto& rho_arr = m_density(lev).array(mfi);
+        for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
+            const auto& turb_force_arr = m_turb_force(lev).array(mfi);
+            const auto& rho_arr = m_density(lev).array(mfi);
 
-          amrex::ParallelFor(
-              bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    vs::Vector xyz_g;
+                    vs::Vector xyz_l;
+                    // velocity in local frame
+                    vs::Vector vel_l;
+                    // velocity in global frame
+                    vs::Vector vel_g;
 
-            vs::Vector xyz_g;
-            vs::Vector xyz_l;
-            // velocity in local frame
-            vs::Vector vel_l;
-            // velocity in global frame
-            vs::Vector vel_g;
+                    xyz_g[0] = problo[0] + (i + 0.5) * dx;
+                    xyz_g[1] = problo[1] + (j + 0.5) * dy;
+                    xyz_g[2] = problo[2] + (k + 0.5) * dz;
 
-            xyz_g[0] = problo[0] + (i + 0.5) * dx;
-            xyz_g[1] = problo[1] + (j + 0.5) * dy;
-            xyz_g[2] = problo[2] + (k + 0.5) * dz;
+                    // Transform position vector from global inertial
+                    // reference frame to local reference frame attached to
+                    // the turbulence grid.
+                    xyz_l = trmat & (xyz_g - origin);
 
-            // Transform position vector from global inertial
-            // reference frame to local reference frame attached to
-            // the turbulence grid.
-            xyz_l = trmat & ( xyz_g - origin);
+                    InterpWeights wts_loc = weights;
 
-            InterpWeights wts_loc = weights;
+                    // Check if the point is in the box, if not we skip this
+                    // node. The function will also populate the interpolation
+                    // weights for points that are determined to be within the
+                    // box.
+                    bool ptInBox =
+                        find_point_in_box(m_turb_grid, xyz_l, wts_loc);
+                    if (ptInBox) {
+                        // Interpolate perturbation velocities in the local
+                        // reference frame
+                        interp_perturb_vel(m_turb_grid, wts_loc, vel_l);
+                        // Transform velocity vector from local reference
+                        // frame back to the global inertial frame
+                        vel_g = vel_l & m_turb_grid.tr_mat;
 
-            // Check if the point is in the box, if not we skip this
-            // node. The function will also populate the interpolation
-            // weights for points that are determined to be within the
-            // box.
-            bool ptInBox = find_point_in_box(m_turb_grid, xyz_l, wts_loc);
-            if (ptInBox) {
-                // Interpolate perturbation velocities in the local
-                // reference frame
-                interp_perturb_vel(m_turb_grid, wts_loc, vel_l);
-                // Transform velocity vector from local reference
-                // frame back to the global inertial frame
-                vel_g = vel_l & m_turb_grid.tr_mat;
+                        // Based on the equations in
+                        // http://doi.wiley.com/10.1002/we.1608
+                        // v_n in Eq. 10
+                        const amrex::Real v_mag = vs::mag(vel_g);
+                        // (V_n + 1/2 v_n) in Eq. 10
+                        const amrex::Real v_mag_total =
+                            ((*m_wind_profile)(xyz_g[sdir]) + 0.5 * v_mag);
+                        // Smearing factor (see Eq. 11). The normal direction to
+                        // the grid is the x-axis of the local reference frame
+                        // by construction
 
-                // Based on the equations in
-                // http://doi.wiley.com/10.1002/we.1608
-                // v_n in Eq. 10
-                const amrex::Real v_mag = vs::mag(vel_g);
-                // (V_n + 1/2 v_n) in Eq. 10
-                const amrex::Real v_mag_total =
-                    ((*m_wind_profile)(xyz_g[sdir]) + 0.5 * v_mag);
-                // Smearing factor (see Eq. 11). The normal direction to
-                // the grid is the x-axis of the local reference frame by
-                // construction
+                        const amrex::Real term1 = xyz_l[0] / m_epsilon;
+                        const amrex::Real eta =
+                            std::exp(-(term1 * term1)) * m_gauss_scaling;
+                        const amrex::Real factor = v_mag_total * eta;
 
-                const amrex::Real term1 = xyz_l[0] / m_epsilon;
-                const amrex::Real eta =
-                    std::exp(-(term1 * term1)) * m_gauss_scaling;
-                const amrex::Real factor =
-                    v_mag_total * eta;
-
-                turb_force_arr(i,j,k,0) =
-                    rho_arr(i,j,k) * vel_g[0] * factor;
-                turb_force_arr(i,j,k,1) =
-                    rho_arr(i,j,k) * vel_g[1] * factor;
-                turb_force_arr(i,j,k,2) =
-                    rho_arr(i,j,k) * vel_g[2] * factor;
-
-            }
-          });
-      }
-  }
-
+                        turb_force_arr(i, j, k, 0) =
+                            rho_arr(i, j, k) * vel_g[0] * factor;
+                        turb_force_arr(i, j, k, 1) =
+                            rho_arr(i, j, k) * vel_g[1] * factor;
+                        turb_force_arr(i, j, k, 2) =
+                            rho_arr(i, j, k) * vel_g[2] * factor;
+                    }
+                });
+        }
+    }
 }
 
-}  // namespace amr_wind
+} // namespace amr_wind
