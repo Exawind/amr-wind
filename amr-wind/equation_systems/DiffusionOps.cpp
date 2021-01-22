@@ -57,26 +57,14 @@ void DiffSolverIface<LinOp>::setup_operator(
     BL_PROFILE("amr-wind::setup_operator");
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
+    auto& density = m_density.state(fstate);
 
     linop.setScalars(alpha, beta);
     for (int lev = 0; lev < nlevels; ++lev) {
+        linop.setACoeffs(lev, density(lev));
         linop.setLevelBC(lev, &m_pdefields.field(lev));
     }
-    this->set_acoeffs(linop, fstate);
     set_bcoeffs(linop);
-}
-
-template <typename LinOp>
-void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
-{
-    BL_PROFILE("amr-wind::set_acoeffs");
-    auto& repo = m_pdefields.repo;
-    const int nlevels = repo.num_active_levels();
-    auto& density = m_density.state(fstate);
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        linop.setACoeffs(lev, density(lev));
-    }
 }
 
 template <typename LinOp>
@@ -88,9 +76,11 @@ void DiffSolverIface<LinOp>::setup_solver(amrex::MLMG& mlmg)
 }
 
 template <typename LinOp>
-void DiffSolverIface<LinOp>::linsys_solve_impl()
+void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
 {
     FieldState fstate = FieldState::New;
+    this->setup_operator(*this->m_solver, 1.0, dt, fstate);
+
     auto& repo = this->m_pdefields.repo;
     auto& field = this->m_pdefields.field;
     auto& density = m_density.state(fstate);
@@ -128,14 +118,6 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
         this->m_options.abs_tol);
 
     io::print_mlmg_info(field.name() + "_solve", mlmg);
-}
-
-template <typename LinOp>
-void DiffSolverIface<LinOp>::linsys_solve(const amrex::Real dt)
-{
-    FieldState fstate = FieldState::New;
-    this->setup_operator(*this->m_solver, 1.0, dt, fstate);
-    this->linsys_solve_impl();
 }
 
 template class DiffSolverIface<amrex::MLABecLaplacian>;

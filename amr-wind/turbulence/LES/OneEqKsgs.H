@@ -61,10 +61,6 @@ public:
     //! Update the effective thermal diffusivity field
     virtual void update_alphaeff(Field& alphaeff) override;
 
-    //! Update the effective scalar diffusivity field
-    virtual void
-    update_scalar_diff(Field& deff, const std::string& name) override;
-
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
 
@@ -102,10 +98,6 @@ public:
 
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
-
-    //! Update the effective scalar diffusivity field
-    virtual void
-    update_scalar_diff(Field& deff, const std::string& name) override;
 
     //! Return turbulence model coefficients
     TurbulenceModel::CoeffsDictType model_coeffs() const override;
