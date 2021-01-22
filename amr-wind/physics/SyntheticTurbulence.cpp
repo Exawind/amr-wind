@@ -147,6 +147,7 @@ void load_turb_plane_data(
     const int il,
     const int ir)
 {
+    BL_PROFILE("amr-wind::SyntheticTurbulence::load_plane_data");
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
@@ -235,7 +236,7 @@ void get_lr_indices(
  *  @param il Index of the lower bound (populated by this function)
  *  @param ir Index of the upper bound (populated by this function)
  */
-void get_lr_indices(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     const SynthTurbDeviceData& turb_grid,
     const int dir,
     const amrex::Real xin,
@@ -256,15 +257,6 @@ void get_lr_indices(
     rxr = (1.0 - rxl);
 }
 
-/** Indices and interpolation weights for a given point located within the
- *  turbulence box
- */
-struct InterpWeights
-{
-    int il, ir, jl, jr, kl, kr;
-    amrex::Real xl, xr, yl, yr, zl, zr;
-};
-
 /** Determine if a given point (in local frame) is within the turbulence box
  *
  *  If the point is found within the box, also determine the indices and
@@ -272,7 +264,7 @@ struct InterpWeights
  *
  *  @return True if the point is inside the 2-D box
  */
-bool find_point_in_box(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     const SynthTurbDeviceData& t_grid, const vs::Vector& pt, InterpWeights& wt)
 {
     // Get y and z w.r.t. the lower corner of the grid
@@ -293,7 +285,7 @@ bool find_point_in_box(
 
 /** Interpolate the perturbation velocity to a given point from the grid data
  */
-void interp_perturb_vel(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     const SynthTurbDeviceData& t_grid, const InterpWeights& wt, vs::Vector& vel)
 {
     const int nz = t_grid.box_dims[2];
@@ -369,18 +361,15 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     pp.queryarr("grid_location", location);
 
     std::string mean_wind_type = "ConstValue";
-    pp.query("mean_wind_type", mean_wind_type);
+    pp.get("mean_wind_type", mean_wind_type);
 
     if (mean_wind_type == "ConstValue") {
-
         amrex::ParmParse pp_vel("ConstValue.velocity");
         amrex::Vector<amrex::Real> vel;
         pp_vel.getarr("value", vel);
         amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
         m_wind_profile.reset(new synth_turb::MeanProfile(wind_speed, 2));
-
     } else if (mean_wind_type == "LinearProfile") {
-
         amrex::ParmParse pp_vel("LinearProfile.velocity");
 
         amrex::Real zmin, zmax;
@@ -399,9 +388,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
             vs::mag(vs::Vector{start_val[0], start_val[1], start_val[2]}),
             vs::mag(vs::Vector{stop_val[0], stop_val[1], stop_val[2]}),
             shear_dir));
-
     } else if (mean_wind_type == "PowerLawProfile") {
-
         amrex::ParmParse pp_vel("PowerLawProfile.velocity");
 
         // Default reference height is the center of the turbulence grid
@@ -423,11 +410,12 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         m_wind_profile.reset(new synth_turb::PowerLawProfile(
             wind_speed, zref, alpha, shear_dir, zoffset, umin, umax));
     } else {
-        throw std::runtime_error(
+        amrex::Abort(
             "SyntheticTurbulence: invalid mean wind type specified = " +
             mean_wind_type);
     }
 
+    m_mean_wind_type = mean_wind_type;
     // Smearing factors
     pp.query("grid_spacing", m_grid_spacing);
     m_epsilon = 2.0 * m_grid_spacing;
@@ -478,6 +466,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
 }
 
 void SyntheticTurbulence::initialize_fields(int, const amrex::Geometry&) {}
+
 void SyntheticTurbulence::pre_advance_work()
 {
     if (m_is_init) initialize();
@@ -487,6 +476,7 @@ void SyntheticTurbulence::pre_advance_work()
 
 void SyntheticTurbulence::initialize()
 {
+    BL_PROFILE("amr-wind::SyntheticTurbulence::initialize");
     // Convert current time to an equivalent length based on the reference
     // velocity to determine the position within the turbulence grid
     const amrex::Real curTime = m_time.new_time() - m_time_offset;
@@ -500,6 +490,7 @@ void SyntheticTurbulence::initialize()
 
 void SyntheticTurbulence::update()
 {
+    BL_PROFILE("amr-wind::SyntheticTurbulence::update");
     // Convert current time to an equivalent length based on the reference
     // velocity to determine the position within the turbulence grid
     const amrex::Real cur_time = m_time.new_time() - m_time_offset;
@@ -509,14 +500,34 @@ void SyntheticTurbulence::update()
     InterpWeights weights;
     SynthTurbDeviceData turb_grid(m_turb_grid);
     get_lr_indices(
-        turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl,
-        weights.xr);
+        turb_grid, 0, eqiv_len, weights.il, weights.ir, weights.xl, weights.xr);
 
     // Check if we need to refresh the planes
     if (weights.il != m_turb_grid.ileft)
         load_turb_plane_data(
             m_turb_filename, m_turb_grid, weights.il, weights.ir);
 
+    if (m_mean_wind_type == "ConstValue") {
+        const auto* vfunc =
+            dynamic_cast<synth_turb::MeanProfile*>(m_wind_profile.get());
+        update_impl(turb_grid, weights, *vfunc);
+    } else if (m_mean_wind_type == "LinearProfile") {
+        const auto* vfunc =
+            dynamic_cast<synth_turb::LinearShearProfile*>(m_wind_profile.get());
+        update_impl(turb_grid, weights, *vfunc);
+    } else if (m_mean_wind_type == "PowerLawProfile") {
+        const auto* vfunc =
+            dynamic_cast<synth_turb::PowerLawProfile*>(m_wind_profile.get());
+        update_impl(turb_grid, weights, *vfunc);
+    }
+}
+
+template <typename T>
+void SyntheticTurbulence::update_impl(
+    const SynthTurbDeviceData& turb_grid,
+    const InterpWeights& weights,
+    const T& velfunc)
+{
     auto& repo = m_turb_force.repo();
     auto& geom_vec = repo.mesh().Geom();
 
@@ -541,16 +552,16 @@ void SyntheticTurbulence::update()
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    vs::Vector xyz_g;
+                    // Position vector in local turbulence grid frame
                     vs::Vector xyz_l;
                     // velocity in local frame
                     vs::Vector vel_l;
                     // velocity in global frame
                     vs::Vector vel_g;
 
-                    xyz_g[0] = problo[0] + (i + 0.5) * dx;
-                    xyz_g[1] = problo[1] + (j + 0.5) * dy;
-                    xyz_g[2] = problo[2] + (k + 0.5) * dz;
+                    vs::Vector xyz_g{problo[0] + (i + 0.5) * dx,
+                                     problo[1] + (j + 0.5) * dy,
+                                     problo[2] + (k + 0.5) * dz};
 
                     // Transform position vector from global inertial
                     // reference frame to local reference frame attached to
@@ -563,8 +574,7 @@ void SyntheticTurbulence::update()
                     // node. The function will also populate the interpolation
                     // weights for points that are determined to be within the
                     // box.
-                    bool ptInBox =
-                        find_point_in_box(turb_grid, xyz_l, wts_loc);
+                    bool ptInBox = find_point_in_box(turb_grid, xyz_l, wts_loc);
                     if (ptInBox) {
                         // Interpolate perturbation velocities in the local
                         // reference frame
@@ -579,7 +589,7 @@ void SyntheticTurbulence::update()
                         const amrex::Real v_mag = vs::mag(vel_g);
                         // (V_n + 1/2 v_n) in Eq. 10
                         const amrex::Real v_mag_total =
-                            ((*m_wind_profile)(xyz_g[sdir]) + 0.5 * v_mag);
+                            (velfunc(xyz_g[sdir]) + 0.5 * v_mag);
                         // Smearing factor (see Eq. 11). The normal direction to
                         // the grid is the x-axis of the local reference frame
                         // by construction

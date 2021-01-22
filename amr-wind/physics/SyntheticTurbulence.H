@@ -109,6 +109,15 @@ struct SynthTurbDeviceData
     {}
 };
 
+/** Indices and interpolation weights for a given point located within the
+ *  turbulence box
+ */
+struct InterpWeights
+{
+    int il, ir, jl, jr, kl, kr;
+    amrex::Real xl, xr, yl, yr, zl, zr;
+};
+
 /**
  *  \defgroup synth_turb Synthetic Turbulence
  *
@@ -148,6 +157,9 @@ public:
 
     void update();
 
+    template <typename T>
+    void update_impl(const SynthTurbDeviceData&, const InterpWeights&, const T&);
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;
@@ -164,6 +176,7 @@ private:
 
     std::unique_ptr<synth_turb::MeanProfile> m_wind_profile;
 
+    std::string m_mean_wind_type{"ConstValue"};
     amrex::Real m_grid_spacing;
     amrex::Real m_epsilon;
     amrex::Real m_gauss_scaling;
