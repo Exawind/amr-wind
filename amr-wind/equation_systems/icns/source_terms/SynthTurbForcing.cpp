@@ -16,7 +16,8 @@ SynthTurbForcing::SynthTurbForcing(const CFDSim& sim)
     : m_turb_force(sim.repo().get_field("synth_turb_forcing"))
 {
     if (!sim.physics_manager().contains("SyntheticTurbulence")) {
-        amrex::Abort("SynthTurbForcing: SyntheticTurbulence physics not enabled");
+        amrex::Abort(
+            "SynthTurbForcing: SyntheticTurbulence physics not enabled");
     }
 }
 
