@@ -29,8 +29,8 @@ public:
 
     virtual ~LinearShearProfile() = default;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    amrex::Real operator()(amrex::Real ht) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(amrex::Real ht) const
     {
         if (ht < m_hmin)
             return m_vstart;
@@ -71,8 +71,8 @@ public:
 
     virtual double reference_height() const { return m_ref_height; }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    amrex::Real operator()(amrex::Real height) const
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(amrex::Real height) const
     {
         const amrex::Real heff = height - m_hoffset;
         amrex::Real pfac =

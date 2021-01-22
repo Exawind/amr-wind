@@ -22,8 +22,11 @@ public:
 
     virtual ~MeanProfile() = default;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE
-    double operator()(double /* height */) const { return m_ref_vel; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE double
+    operator()(double /* height */) const
+    {
+        return m_ref_vel;
+    }
 
     inline double reference_velocity() const { return m_ref_vel; }
 
