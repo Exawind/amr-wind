@@ -151,9 +151,11 @@ void load_turb_plane_data(
 #ifdef AMR_WIND_USE_NETCDF
     auto ncf = ncutils::NCFile::open(turb_filename, NC_NOWRITE);
 
+    // clang-format off
     std::vector<size_t> start{{static_cast<size_t>(il), 0, 0}};
     std::vector<size_t> count{{2, static_cast<size_t>(turb_grid.box_dims[1]),
                                static_cast<size_t>(turb_grid.box_dims[2])}};
+    // clang-format on
 
     auto uvel = ncf.var("uvel");
     auto vvel = ncf.var("vvel");
@@ -290,9 +292,11 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
 {
     const int nz = t_grid.box_dims[2];
     const int nynz = t_grid.box_dims[1] * t_grid.box_dims[2];
+    // clang-format off
     // Indices of the 2-D cell that contains the sampling point
     int qidx[4]{wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
                 wt.jl * nz + wt.kl};
+    // clang-format on
 
     vs::Vector vel_l, vel_r;
 
@@ -559,9 +563,11 @@ void SyntheticTurbulence::update_impl(
                     // velocity in global frame
                     vs::Vector vel_g;
 
+                    // clang-format off
                     vs::Vector xyz_g{problo[0] + (i + 0.5) * dx,
                                      problo[1] + (j + 0.5) * dy,
                                      problo[2] + (k + 0.5) * dz};
+                    // clang-format on
 
                     // Transform position vector from global inertial
                     // reference frame to local reference frame attached to

@@ -158,7 +158,8 @@ public:
     void update();
 
     template <typename T>
-    void update_impl(const SynthTurbDeviceData&, const InterpWeights&, const T&);
+    void
+    update_impl(const SynthTurbDeviceData&, const InterpWeights&, const T&);
 
 private:
     const amr_wind::SimTime& m_time;
