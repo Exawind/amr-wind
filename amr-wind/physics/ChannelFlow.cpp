@@ -13,11 +13,15 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     : m_time(sim.time()), m_repo(sim.repo()), m_mesh(sim.mesh())
 {
 
-    amrex::ParmParse pp("ChannelFlow");
-    pp.query("normal_direction", m_norm_dir);
+    {
+        amrex::ParmParse pp("ChannelFlow");
+        pp.query("normal_direction", m_norm_dir);
 
-    pp.query("density", m_rho);
-    pp.query("re_tau", m_re_tau);
+        pp.query("density", m_rho);
+        pp.query("re_tau", m_re_tau);
+        pp.query("tke0", m_tke0);
+        pp.query("sdr0", m_sdr0);
+    }
     {
         amrex::Real mu;
         amrex::ParmParse pp("transport");
@@ -26,8 +30,6 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         m_utau = mu * m_re_tau / (m_rho * 1.0);
         m_ytau = mu / (m_utau * m_rho);
     }
-    pp.query("tke0", m_tke0);
-    pp.query("sdr0", m_sdr0);
 }
 
 /** Initialize the velocity, density, tke and sdr fields at the beginning of the
