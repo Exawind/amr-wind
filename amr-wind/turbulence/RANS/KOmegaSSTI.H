@@ -44,8 +44,7 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
     }
 
     // TKE source term to be added to PDE
-    turb_utils::inject_turbulence_src_terms(
-        pde::TKE::pde_name(), {"KwSSTSrc"});
+    turb_utils::inject_turbulence_src_terms(pde::TKE::pde_name(), {"KwSSTSrc"});
 }
 
 template <typename Transport>
