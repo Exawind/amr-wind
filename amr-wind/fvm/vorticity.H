@@ -32,14 +32,11 @@ struct Vorticity
 
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real cp1, c, cm1, ux, uy, uz, vx, vy, vz, wx, wy, wz;
+                amrex::Real cp1, c, cm1, uy, uz, vx, vz, wx, wy;
                 cp1 = Stencil::c00;
                 c = Stencil::c01;
                 cm1 = Stencil::c02;
 
-                ux = (cp1 * phi(i + 1, j, k, 0) + c * phi(i, j, k, 0) +
-                      cm1 * phi(i - 1, j, k, 0)) *
-                     idx[0];
                 vx = (cp1 * phi(i + 1, j, k, 1) + c * phi(i, j, k, 1) +
                       cm1 * phi(i - 1, j, k, 1)) *
                      idx[0];
@@ -54,9 +51,6 @@ struct Vorticity
                 uy = (cp1 * phi(i, j + 1, k, 0) + c * phi(i, j, k, 0) +
                       cm1 * phi(i, j - 1, k, 0)) *
                      idx[1];
-                vy = (cp1 * phi(i, j + 1, k, 1) + c * phi(i, j, k, 1) +
-                      cm1 * phi(i, j - 1, k, 1)) *
-                     idx[1];
                 wy = (cp1 * phi(i, j + 1, k, 2) + c * phi(i, j, k, 2) +
                       cm1 * phi(i, j - 1, k, 2)) *
                      idx[1];
@@ -70,9 +64,6 @@ struct Vorticity
                      idx[2];
                 vz = (cp1 * phi(i, j, k + 1, 1) + c * phi(i, j, k, 1) +
                       cm1 * phi(i, j, k - 1, 1)) *
-                     idx[2];
-                wz = (cp1 * phi(i, j, k + 1, 2) + c * phi(i, j, k, 2) +
-                      cm1 * phi(i, j, k - 1, 2)) *
                      idx[2];
 
                 vortphi(i, j, k) = sqrt(
