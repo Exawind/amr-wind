@@ -151,8 +151,6 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
-    // amrex::Real lam_diff = (this->m_transport).thermal_diffusivity();
-
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
@@ -188,6 +186,20 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 }
 
 template <typename Transport>
+void OneEqKsgsM84<Transport>::update_scalar_diff(
+    Field& deff, const std::string& name)
+{
+
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
+
+    if (name == "TKE") {
+        auto& mu_turb = this->mu_turb();
+        field_ops::saxpy(
+            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    }
+}
+
+template <typename Transport>
 OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 {
     const std::string coeffs_dict = this->model_name() + "_coeffs";
@@ -218,6 +230,20 @@ void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
 
     // auto& mu_turb = this->mu_turb();
     // auto& vel = this->m_vel.state(fstate);
+}
+
+template <typename Transport>
+void OneEqKsgsS94<Transport>::update_scalar_diff(
+    Field& deff, const std::string& name)
+{
+
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
+
+    if (name == "TKE") {
+        auto& mu_turb = this->mu_turb();
+        field_ops::saxpy(
+            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    }
 }
 
 } // namespace turbulence

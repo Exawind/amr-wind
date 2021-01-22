@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/PDE.H"
+#include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/sdr/SDRSource.H"
 
 namespace amr_wind {
