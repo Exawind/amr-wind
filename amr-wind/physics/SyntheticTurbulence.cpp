@@ -518,6 +518,7 @@ void SyntheticTurbulence::update()
         const amrex::Real dz = geom.CellSize()[2];
         const auto& trmat = m_turb_grid.tr_mat;
         const auto& origin = m_turb_grid.origin;
+        const auto& gauss_scaling = m_gauss_scaling;
 
         for (amrex::MFIter mfi(m_turb_force(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -556,7 +557,7 @@ void SyntheticTurbulence::update()
                         interp_perturb_vel(m_turb_grid, wts_loc, vel_l);
                         // Transform velocity vector from local reference
                         // frame back to the global inertial frame
-                        vel_g = vel_l & m_turb_grid.tr_mat;
+                        vel_g = vel_l & trmat;
 
                         // Based on the equations in
                         // http://doi.wiley.com/10.1002/we.1608
@@ -571,7 +572,7 @@ void SyntheticTurbulence::update()
 
                         const amrex::Real term1 = xyz_l[0] / m_epsilon;
                         const amrex::Real eta =
-                            std::exp(-(term1 * term1)) * m_gauss_scaling;
+                            std::exp(-(term1 * term1)) * gauss_scaling;
                         const amrex::Real factor = v_mag_total * eta;
 
                         turb_force_arr(i, j, k, 0) =
