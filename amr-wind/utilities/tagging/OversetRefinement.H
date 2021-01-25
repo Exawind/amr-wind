@@ -25,6 +25,8 @@ private:
     const CFDSim& m_sim;
 
     int m_max_lev;
+    bool m_tag_fringe{false};
+    bool m_tag_hole{false};
 };
 
 } // namespace amr_wind
