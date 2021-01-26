@@ -24,13 +24,9 @@ private:
         AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
         operator()(amrex::Real ht) const
         {
-            if (ht < m_hmin)
-                return m_vstart;
-            else if (ht > m_hmax)
-                return m_vstop;
-            else
-                return m_vstop +
-                       (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
+            amrex::Real vel = m_vstart +
+                (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
+            return amrex::max(m_vstart, amrex::min(vel, m_vstop));
         }
     };
 
@@ -228,9 +224,9 @@ void get_lr_indices(
     int& ir)
 {
     const amrex::Real xbox =
-        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
+    il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
     if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
 }
@@ -258,9 +254,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     amrex::Real& rxr)
 {
     const amrex::Real xbox =
-        xin - std::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
 
-    il = static_cast<int>(std::floor(xbox / turb_grid.dx[dir]));
+    il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
     if (ir >= turb_grid.box_dims[dir]) ir -= turb_grid.box_dims[dir];
 
@@ -387,8 +383,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         amrex::ParmParse pp_vel("LinearProfile.velocity");
 
         amrex::Real zmin, zmax;
-        pp_vel.query("start", zmin);
-        pp_vel.query("stop", zmax);
+        pp_vel.get("start", zmin);
+        pp_vel.get("stop", zmax);
 
         amrex::Vector<amrex::Real> start_val, stop_val;
         pp_vel.getarr("start_val", start_val);
@@ -413,14 +409,16 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
         amrex::Real wind_speed = vs::mag(vs::Vector{vel[0], vel[1], vel[2]});
 
         amrex::Real alpha, zoffset, umin, umax;
-        pp.query("shear_exponent", alpha);
-        pp.query("zoffset", zoffset);
-        pp.query("umin", umin);
-        pp.query("umax", umax);
+        pp.get("shear_exponent", alpha);
+        pp.get("zoffset", zoffset);
+        pp.get("umin", umin);
+        pp.get("umax", umax);
 
         int shear_dir = 2;
         pp_vel.query("direction", shear_dir);
 
+        umin /= wind_speed;
+        umax /= wind_speed;
         m_wind_profile.reset(new synth_turb::PowerLawProfile(
             wind_speed, zref, alpha, shear_dir, zoffset, umin, umax));
     } else {
