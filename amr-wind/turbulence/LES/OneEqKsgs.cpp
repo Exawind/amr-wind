@@ -196,7 +196,7 @@ void OneEqKsgsM84<Transport>::update_scalar_diff(
 
     if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
-        deff.setVal(0.0, 0, 1);
+        deff.setVal(0.0);
         field_ops::saxpy(
             deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
     } else {
@@ -248,7 +248,7 @@ void OneEqKsgsS94<Transport>::update_scalar_diff(
 
     if (name == pde::TKE::var_name()) {
         auto& mu_turb = this->mu_turb();
-        deff.setVal(0.0, 0, 1);
+        deff.setVal(0.0);
         field_ops::saxpy(
             deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
     } else {
