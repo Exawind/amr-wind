@@ -10,6 +10,7 @@ target_sources(${amr_wind_lib_name}
   FreeStream.cpp
   ConvectingTaylorVortex.cpp
   EkmanSpiral.cpp
+  SyntheticTurbulence.cpp
   )
 
 add_subdirectory(multiphase)
