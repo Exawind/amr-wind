@@ -21,12 +21,11 @@ struct LinearShearOp
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
     operator()(amrex::Real ht) const
     {
-        amrex::Real vel = m_vstart + (m_vstop - m_vstart) * (ht - m_hmin) /
-            (m_hmax - m_hmin);
+        amrex::Real vel =
+            m_vstart + (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
         return amrex::max(m_vstart, amrex::min(vel, m_vstop));
     }
 };
-
 
 class LinearShearProfile : public MeanProfile
 {

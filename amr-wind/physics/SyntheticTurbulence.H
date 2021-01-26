@@ -25,7 +25,6 @@ struct MeanVelOp
     const amrex::Real m_ref_vel;
 };
 
-
 class MeanProfile
 {
 public:
