@@ -11,25 +11,26 @@
 namespace amr_wind {
 namespace synth_turb {
 
+struct LinearShearOp
+{
+    const amrex::Real m_hmin;
+    const amrex::Real m_hmax;
+    const amrex::Real m_vstart;
+    const amrex::Real m_vstop;
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(amrex::Real ht) const
+    {
+        amrex::Real vel = m_vstart + (m_vstop - m_vstart) * (ht - m_hmin) /
+            (m_hmax - m_hmin);
+        return amrex::max(m_vstart, amrex::min(vel, m_vstop));
+    }
+};
+
+
 class LinearShearProfile : public MeanProfile
 {
 private:
-    struct DeviceOp
-    {
-        const amrex::Real m_hmin;
-        const amrex::Real m_hmax;
-        const amrex::Real m_vstart;
-        const amrex::Real m_vstop;
-
-        AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        operator()(amrex::Real ht) const
-        {
-            amrex::Real vel = m_vstart +
-                (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
-            return amrex::max(m_vstart, amrex::min(vel, m_vstop));
-        }
-    };
-
 public:
     LinearShearProfile(
         amrex::Real h_min,
@@ -43,34 +44,33 @@ public:
 
     virtual ~LinearShearProfile() = default;
 
-    DeviceOp device_instance() const { return m_op; }
+    LinearShearOp device_instance() const { return m_op; }
 
 private:
-    DeviceOp m_op;
+    LinearShearOp m_op;
+};
+
+struct PowerLawOp
+{
+    const amrex::Real m_ref_vel;
+    const amrex::Real m_ref_height;
+    const amrex::Real m_alpha;
+    const amrex::Real m_hoffset;
+    const amrex::Real m_umin;
+    const amrex::Real m_umax;
+
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(amrex::Real height) const
+    {
+        const amrex::Real heff = height - m_hoffset;
+        amrex::Real pfac =
+            (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
+        return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
+    }
 };
 
 class PowerLawProfile : public MeanProfile
 {
-private:
-    struct DeviceOp
-    {
-        const amrex::Real m_ref_vel;
-        const amrex::Real m_ref_height;
-        const amrex::Real m_alpha;
-        const amrex::Real m_hoffset;
-        const amrex::Real m_umin;
-        const amrex::Real m_umax;
-
-        AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        operator()(amrex::Real height) const
-        {
-            const amrex::Real heff = height - m_hoffset;
-            amrex::Real pfac =
-                (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
-            return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
-        }
-    };
-
 public:
     PowerLawProfile(
         amrex::Real ref_vel,
@@ -86,10 +86,10 @@ public:
 
     virtual ~PowerLawProfile() = default;
 
-    DeviceOp device_instance() const { return m_op; }
+    PowerLawOp device_instance() const { return m_op; }
 
 private:
-    DeviceOp m_op;
+    PowerLawOp m_op;
 };
 
 } // namespace synth_turb
@@ -224,7 +224,8 @@ void get_lr_indices(
     int& ir)
 {
     const amrex::Real xbox =
-        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) *
+                  turb_grid.box_len[dir];
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;
@@ -254,7 +255,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void get_lr_indices(
     amrex::Real& rxr)
 {
     const amrex::Real xbox =
-        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) * turb_grid.box_len[dir];
+        xin - amrex::Math::floor(xin / turb_grid.box_len[dir]) *
+                  turb_grid.box_len[dir];
 
     il = static_cast<int>(amrex::Math::floor(xbox / turb_grid.dx[dir]));
     ir = il + 1;

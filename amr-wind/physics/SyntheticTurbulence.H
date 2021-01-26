@@ -13,20 +13,21 @@
 namespace amr_wind {
 
 namespace synth_turb {
+
+struct MeanVelOp
+{
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+    operator()(double /* height */) const
+    {
+        return m_ref_vel;
+    }
+
+    const amrex::Real m_ref_vel;
+};
+
+
 class MeanProfile
 {
-private:
-    struct DeviceOp
-    {
-        AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-        operator()(double /* height */) const
-        {
-            return m_ref_vel;
-        }
-
-        const amrex::Real m_ref_vel;
-    };
-
 public:
     MeanProfile(double ref_vel, int shear_dir = 2)
         : m_op{ref_vel}, m_ref_vel(ref_vel), m_shear_dir(shear_dir)
@@ -38,10 +39,10 @@ public:
 
     inline int shear_dir() const { return m_shear_dir; }
 
-    DeviceOp device_instance() const { return m_op; }
+    MeanVelOp device_instance() const { return m_op; }
 
 private:
-    DeviceOp m_op;
+    MeanVelOp m_op;
 
     const double m_ref_vel;
     const int m_shear_dir;
