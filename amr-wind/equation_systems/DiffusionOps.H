@@ -42,6 +42,8 @@ public:
      */
     virtual void linsys_solve(const amrex::Real dt);
 
+    virtual void linsys_solve_impl();
+
 protected:
     //! Sets up the linear operator (e.g., setup BCs, etc.)
     virtual void setup_operator(
@@ -51,6 +53,8 @@ protected:
         const FieldState fstate);
 
     virtual void setup_solver(amrex::MLMG& mlmg);
+
+    virtual void set_acoeffs(LinOp& linop, const FieldState fstate);
 
     template <typename L>
     void set_bcoeffs(

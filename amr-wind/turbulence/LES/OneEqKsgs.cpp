@@ -66,8 +66,10 @@ OneEqKsgsM84<Transport>::~OneEqKsgsM84() = default;
 template <typename Transport>
 TurbulenceModel::CoeffsDictType OneEqKsgsM84<Transport>::model_coeffs() const
 {
+    // clang-format off
     return TurbulenceModel::CoeffsDictType{
         {"Ce", this->m_Ce}, {"Ceps", this->m_Ceps}};
+    // clang-format on
 }
 
 template <typename Transport>
@@ -151,8 +153,6 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_alphaeff");
 
-    // amrex::Real lam_diff = (this->m_transport).thermal_diffusivity();
-
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
@@ -188,6 +188,25 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
 }
 
 template <typename Transport>
+void OneEqKsgsM84<Transport>::update_scalar_diff(
+    Field& deff, const std::string& name)
+{
+
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
+
+    if (name == pde::TKE::var_name()) {
+        auto& mu_turb = this->mu_turb();
+        deff.setVal(0.0);
+        field_ops::saxpy(
+            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    } else {
+        amrex::Abort(
+            "OneEqKsgsM84:update_scalar_diff not implemented for field " +
+            name);
+    }
+}
+
+template <typename Transport>
 OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
 {
     const std::string coeffs_dict = this->model_name() + "_coeffs";
@@ -218,6 +237,25 @@ void OneEqKsgsS94<Transport>::update_turbulent_viscosity(
 
     // auto& mu_turb = this->mu_turb();
     // auto& vel = this->m_vel.state(fstate);
+}
+
+template <typename Transport>
+void OneEqKsgsS94<Transport>::update_scalar_diff(
+    Field& deff, const std::string& name)
+{
+
+    BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
+
+    if (name == pde::TKE::var_name()) {
+        auto& mu_turb = this->mu_turb();
+        deff.setVal(0.0);
+        field_ops::saxpy(
+            deff, 2.0, mu_turb, 0, 0, deff.num_comp(), deff.num_grow());
+    } else {
+        amrex::Abort(
+            "OneEqKsgsM84:update_scalar_diff not implemented for field " +
+            name);
+    }
 }
 
 } // namespace turbulence

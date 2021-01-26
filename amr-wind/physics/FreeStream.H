@@ -13,8 +13,8 @@ namespace amr_wind {
 /** Freestream physics
  *  \ingroup physics
  *
- *  Initializes the velocity, and density field to user-defined constant values
- *  throughout the domain.
+ *  Initializes the velocity, density and any specified scalar fields to
+ *  user-defined constant values throughout the domain.
  */
 class FreeStream : public Physics::Register<FreeStream>
 {
@@ -25,8 +25,7 @@ public:
 
     virtual ~FreeStream() = default;
 
-    //! Initialize the temperature and velocity fields for BoussinesqBubble
-    //! simulations
+    //! Initialize the fields
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void pre_init_actions() override;
