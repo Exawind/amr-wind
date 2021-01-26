@@ -13,6 +13,27 @@ namespace synth_turb {
 
 class LinearShearProfile : public MeanProfile
 {
+private:
+    struct DeviceOp
+    {
+        const amrex::Real m_hmin;
+        const amrex::Real m_hmax;
+        const amrex::Real m_vstart;
+        const amrex::Real m_vstop;
+
+        AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+        operator()(amrex::Real ht) const
+        {
+            if (ht < m_hmin)
+                return m_vstart;
+            else if (ht > m_hmax)
+                return m_vstop;
+            else
+                return m_vstop +
+                       (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
+        }
+    };
+
 public:
     LinearShearProfile(
         amrex::Real h_min,
@@ -21,35 +42,39 @@ public:
         amrex::Real vel_stop,
         int shear_dir)
         : MeanProfile(0.5 * (vel_start + vel_stop), shear_dir)
-        , m_hmin(h_min)
-        , m_hmax(h_max)
-        , m_vstart(vel_start)
-        , m_vstop(vel_stop)
+        , m_op{h_min, h_max, vel_start, vel_stop}
     {}
 
     virtual ~LinearShearProfile() = default;
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(amrex::Real ht) const
-    {
-        if (ht < m_hmin)
-            return m_vstart;
-        else if (ht > m_hmax)
-            return m_vstop;
-        else
-            return m_vstop +
-                   (m_vstop - m_vstart) * (ht - m_hmin) / (m_hmax - m_hmin);
-    }
+    DeviceOp device_instance() const { return m_op; }
 
 private:
-    const amrex::Real m_hmin;
-    const amrex::Real m_hmax;
-    const amrex::Real m_vstart;
-    const amrex::Real m_vstop;
+    DeviceOp m_op;
 };
 
 class PowerLawProfile : public MeanProfile
 {
+private:
+    struct DeviceOp
+    {
+        const amrex::Real m_ref_vel;
+        const amrex::Real m_ref_height;
+        const amrex::Real m_alpha;
+        const amrex::Real m_hoffset;
+        const amrex::Real m_umin;
+        const amrex::Real m_umax;
+
+        AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+        operator()(amrex::Real height) const
+        {
+            const amrex::Real heff = height - m_hoffset;
+            amrex::Real pfac =
+                (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
+            return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
+        }
+    };
+
 public:
     PowerLawProfile(
         amrex::Real ref_vel,
@@ -60,32 +85,15 @@ public:
         amrex::Real umin,
         amrex::Real umax)
         : MeanProfile(ref_vel, shear_dir)
-        , m_ref_height(ref_height)
-        , m_alpha(alpha)
-        , m_hoffset(h_offset)
-        , m_umin(umin)
-        , m_umax(umax)
+        , m_op{ref_vel, ref_height, alpha, h_offset, umin, umax}
     {}
 
     virtual ~PowerLawProfile() = default;
 
-    virtual double reference_height() const { return m_ref_height; }
-
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-    operator()(amrex::Real height) const
-    {
-        const amrex::Real heff = height - m_hoffset;
-        amrex::Real pfac =
-            (heff > 0.0) ? std::pow((heff / m_ref_height), m_alpha) : 0.0;
-        return m_ref_vel * amrex::min(amrex::max(pfac, m_umin), m_umax);
-    }
+    DeviceOp device_instance() const { return m_op; }
 
 private:
-    const amrex::Real m_ref_height;
-    const amrex::Real m_alpha;
-    const amrex::Real m_hoffset;
-    const amrex::Real m_umin;
-    const amrex::Real m_umax;
+    DeviceOp m_op;
 };
 
 } // namespace synth_turb
@@ -516,15 +524,15 @@ void SyntheticTurbulence::update()
     if (m_mean_wind_type == "ConstValue") {
         const auto* vfunc =
             dynamic_cast<synth_turb::MeanProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, *vfunc);
+        update_impl(turb_grid, weights, vfunc->device_instance());
     } else if (m_mean_wind_type == "LinearProfile") {
         const auto* vfunc =
             dynamic_cast<synth_turb::LinearShearProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, *vfunc);
+        update_impl(turb_grid, weights, vfunc->device_instance());
     } else if (m_mean_wind_type == "PowerLawProfile") {
         const auto* vfunc =
             dynamic_cast<synth_turb::PowerLawProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, *vfunc);
+        update_impl(turb_grid, weights, vfunc->device_instance());
     }
 }
 
