@@ -96,7 +96,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                          gradK_arr(i, j, k, 1) * gradOmega_arr(i, j, k, 1) +
                          gradK_arr(i, j, k, 2) * gradOmega_arr(i, j, k, 2));
 
-                    amrex::Real cdkomega = std::max(
+                    amrex::Real cdkomega = amrex::max(
                         1e-10, 2.0 * rho_arr(i, j, k) * sigma_omega2 * gko /
                                    (sdr_arr(i, j, k) + 1e-15));
 
@@ -115,18 +115,18 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
                          1e-15);
                     amrex::Real tmp4 = shear_prod_arr(i, j, k);
 
-                    amrex::Real arg1 = std::min(std::max(tmp2, tmp3), tmp1);
+                    amrex::Real arg1 = amrex::min(amrex::max(tmp2, tmp3), tmp1);
                     amrex::Real tmp_f1 = std::tanh(arg1 * arg1 * arg1 * arg1);
 
                     amrex::Real alpha = tmp_f1 * (alpha1 - alpha2) + alpha2;
                     amrex::Real beta = tmp_f1 * (beta1 - beta2) + beta2;
 
-                    amrex::Real arg2 = std::max(2.0 * tmp2, tmp3);
+                    amrex::Real arg2 = amrex::max(2.0 * tmp2, tmp3);
                     amrex::Real f2 = std::tanh(arg2 * arg2);
 
                     mu_arr(i, j, k) =
                         rho_arr(i, j, k) * a1 * tke_arr(i, j, k) /
-                        std::max(a1 * sdr_arr(i, j, k), tmp4 * f2);
+                        amrex::max(a1 * sdr_arr(i, j, k), tmp4 * f2);
 
                     f1_arr(i, j, k) = tmp_f1;
 
@@ -137,7 +137,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
                     shear_prod_arr(i, j, k) =
                         amrex::max(std::abs(ib_cell_arr(i, j, k)), 0) *
-                        std::min(
+                        amrex::min(
                             mu_arr(i, j, k) * tmp4 * tmp4,
                             10.0 * beta_star * rho_arr(i, j, k) *
                                 tke_arr(i, j, k) * sdr_arr(i, j, k));
