@@ -174,7 +174,8 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                     const amrex::Real cdes = tmp_f1 * (Cdes1 - Cdes2) + Cdes2;
                     const amrex::Real l_les =
                         cdes *
-                        amrex::min(Cw * amrex::max(wd_arr(i, j, k), hmax), hmax);
+                        amrex::min(
+                            Cw * amrex::max(wd_arr(i, j, k), hmax), hmax);
                     const amrex::Real l_rans = std::sqrt(tke_arr(i, j, k)) /
                                                (beta_star * sdr_arr(i, j, k));
                     const amrex::Real l_iddes =
