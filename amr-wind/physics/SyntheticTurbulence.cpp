@@ -521,17 +521,19 @@ void SyntheticTurbulence::update()
             m_turb_filename, m_turb_grid, weights.il, weights.ir);
 
     if (m_mean_wind_type == "ConstValue") {
-        const auto* vfunc =
-            dynamic_cast<synth_turb::MeanProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, vfunc->device_instance());
+        update_impl(turb_grid, weights, m_wind_profile->device_instance());
     } else if (m_mean_wind_type == "LinearProfile") {
         const auto* vfunc =
             dynamic_cast<synth_turb::LinearShearProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, vfunc->device_instance());
+        if (vfunc != nullptr) {
+            update_impl(turb_grid, weights, vfunc->device_instance());
+        }
     } else if (m_mean_wind_type == "PowerLawProfile") {
         const auto* vfunc =
             dynamic_cast<synth_turb::PowerLawProfile*>(m_wind_profile.get());
-        update_impl(turb_grid, weights, vfunc->device_instance());
+        if (vfunc != nullptr) {
+            update_impl(turb_grid, weights, vfunc->device_instance());
+        }
     }
 }
 
