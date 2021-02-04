@@ -22,6 +22,9 @@ KOmegaSST<Transport>::KOmegaSST(CFDSim& sim)
     , m_rho(sim.repo().get_field("density"))
     , m_walldist(sim.repo().declare_field("wall_dist", 1, 1, 1))
 {
+    m_walldist.set_default_fillpatch_bc(sim.time());
+    m_walldist.fillpatch_on_regrid() = true;
+
     auto& tke_eqn =
         sim.pde_manager().register_transport_pde(pde::TKE::pde_name());
     m_tke = &(tke_eqn.fields().field);
