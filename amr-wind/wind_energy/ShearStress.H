@@ -19,7 +19,7 @@ struct ShearStressConstant
         , theta_mean(mo.theta_mean)
         , theta_surface(mo.surf_temp)
     {
-        term1 = mo.utau * mo.kappa / (mo.vmag_mean * mo.phi_h());
+        term1 = mo.utau * mo.kappa / mo.phi_h();
     }
 
     AMREX_GPU_HOST_DEVICE amrex::Real
@@ -54,7 +54,7 @@ struct ShearStressLocal
     ShearStressLocal(amr_wind::MOData mo)
         : utau2(mo.utau * mo.utau), theta_surface(mo.surf_temp)
     {
-        term1 = mo.utau * mo.kappa / (mo.vmag_mean * mo.phi_h());
+        term1 = mo.utau * mo.kappa / mo.phi_h();
     }
 
     AMREX_GPU_HOST_DEVICE amrex::Real
