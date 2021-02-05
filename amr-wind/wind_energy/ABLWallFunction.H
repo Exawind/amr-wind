@@ -87,7 +87,7 @@ public:
 
 private:
     const ABLWallFunction& m_wall_func;
-    std::string m_model_type{"moeng"};
+    std::string m_wall_shear_stress_type{"moeng"};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -103,7 +103,7 @@ public:
 
 private:
     const ABLWallFunction& m_wall_func;
-    std::string m_model_type{"moeng"};
+    std::string m_wall_shear_stress_type{"moeng"};
 };
 
 } // namespace amr_wind

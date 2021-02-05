@@ -268,10 +268,19 @@ void ABLWallFunction::computeusingheatflux()
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
 {
-    amrex::ParmParse pp("ShearStress");
-    pp.query("model", m_model_type);
-    m_model_type = amrex::toLower(m_model_type);
-    amrex::Print() << "Shear Stress model: " << m_model_type << std::endl;
+    amrex::ParmParse pp("ABL");
+    pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+
+    if (m_wall_shear_stress_type == "constant" ||
+        m_wall_shear_stress_type == "local" ||
+        m_wall_shear_stress_type == "schumann" ||
+        m_wall_shear_stress_type == "moeng")
+        amrex::Print() << "Shear Stress model: " << m_wall_shear_stress_type
+                       << std::endl;
+    else {
+        amrex::Abort("Shear Stress wall model input mistake");
+    }
 }
 
 template <typename ShearStress>
@@ -347,28 +356,25 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
     const auto& mo = m_wall_func.mo();
 
-    if (m_model_type == "moeng") {
+    if (m_wall_shear_stress_type == "moeng") {
 
         auto tau = ShearStressMoeng(mo);
         wall_model(velocity, rho_state, tau);
 
-    } else if (m_model_type == "constant") {
+    } else if (m_wall_shear_stress_type == "constant") {
 
         auto tau = ShearStressConstant(mo);
         wall_model(velocity, rho_state, tau);
 
-    } else if (m_model_type == "local") {
+    } else if (m_wall_shear_stress_type == "local") {
 
         auto tau = ShearStressLocal(mo);
         wall_model(velocity, rho_state, tau);
 
-    } else if (m_model_type == "schumann") {
+    } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
         wall_model(velocity, rho_state, tau);
-
-    } else {
-        amrex::Abort("Shear Stress wall model input mistake");
     }
 
 #else
@@ -380,10 +386,11 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
     : m_wall_func(wall_fuc)
 {
-    amrex::ParmParse pp("HeatFlux");
-    pp.query("model", m_model_type);
-    m_model_type = amrex::toLower(m_model_type);
-    amrex::Print() << "Heat Flux model: " << m_model_type << std::endl;
+    amrex::ParmParse pp("ABL");
+    pp.query("wall_shear_stress_type", m_wall_shear_stress_type);
+    m_wall_shear_stress_type = amrex::toLower(m_wall_shear_stress_type);
+    amrex::Print() << "Heat Flux model: " << m_wall_shear_stress_type
+                   << std::endl;
 }
 
 template <typename HeatFlux>
@@ -449,34 +456,32 @@ void ABLTempWallFunc::wall_model(
         }
     }
 }
+
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
 {
 #if 1
 
     const auto& mo = m_wall_func.mo();
 
-    if (m_model_type == "moeng") {
+    if (m_wall_shear_stress_type == "moeng") {
 
         auto tau = ShearStressMoeng(mo);
         wall_model(temperature, rho_state, tau);
 
-    } else if (m_model_type == "constant") {
+    } else if (m_wall_shear_stress_type == "constant") {
 
         auto tau = ShearStressConstant(mo);
         wall_model(temperature, rho_state, tau);
 
-    } else if (m_model_type == "local") {
+    } else if (m_wall_shear_stress_type == "local") {
 
         auto tau = ShearStressLocal(mo);
         wall_model(temperature, rho_state, tau);
 
-    } else if (m_model_type == "schumann") {
+    } else if (m_wall_shear_stress_type == "schumann") {
 
         auto tau = ShearStressSchumann(mo);
         wall_model(temperature, rho_state, tau);
-
-    } else {
-        amrex::Abort("Shear Stress temperature wall model input mistake");
     }
 
 #else
