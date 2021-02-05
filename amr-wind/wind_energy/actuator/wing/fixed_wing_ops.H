@@ -20,13 +20,20 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
         pp.get("num_points", wdata.num_pts);
         pp.get("start", wdata.start);
         pp.get("end", wdata.end);
-        pp.get("epsilon", wdata.eps_inp);
+        pp.query("epsilon", wdata.eps_inp);
+        pp.query("epsilon_chord", wdata.epsilon_chord);
         pp.get("pitch", wdata.pitch);
-
         pp.get("airfoil_table", wdata.airfoil_file);
         pp.query("airfoil_type", wdata.airfoil_type);
         pp.queryarr("span_locs", wdata.span_locs);
         pp.queryarr("chord", wdata.chord_inp);
+
+        if (!pp.contains("epsilon") && !pp.contains("epsilon_chord")) {
+            amrex::Abort(
+                "Actuator fixed wing requires specification of one or both "
+                "of 'epsilon' or 'epsilon_chord'");
+        }
+
         AMREX_ALWAYS_ASSERT(wdata.span_locs.size() == wdata.chord_inp.size());
 
         amrex::Real max_chord =
@@ -59,7 +66,7 @@ struct InitDataOp<FixedWing, ActSrcLine>
         auto& meta = data.meta();
         {
             const int npts = data.meta().num_pts;
-            const auto& grid = data.grid();
+            auto& grid = data.grid();
             // Process chord information
             const auto wlen = vs::mag(grid.pos.back() - grid.pos.front());
             RealList wx(npts);
@@ -69,6 +76,15 @@ struct InitDataOp<FixedWing, ActSrcLine>
             meta.chord.resize(npts);
             ::amr_wind::interp::linear_monotonic(
                 meta.span_locs, meta.chord_inp, wx, meta.chord);
+            meta.epsilon_chord = {
+                meta.epsilon_chord.x(), meta.epsilon_chord.z(),
+                meta.epsilon_chord.y()};
+            for (int i = 0; i < npts; ++i) {
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    const auto eps = meta.epsilon_chord[n] * meta.chord[i];
+                    grid.epsilon[i][n] = amrex::max(meta.eps_inp[n], eps);
+                }
+            }
         }
 
         meta.aflookup =
