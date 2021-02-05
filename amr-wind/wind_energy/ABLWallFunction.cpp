@@ -388,7 +388,7 @@ ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
 
 template <typename HeatFlux>
 void ABLTempWallFunc::wall_model(
-    Field& temperature, const FieldState rho_state, const HeatFlux& tau_T)
+    Field& temperature, const FieldState rho_state, const HeatFlux& tau)
 {
     constexpr bool extrapolate = false;
     constexpr int idim = 2;
@@ -400,7 +400,7 @@ void ABLTempWallFunc::wall_model(
         repo.mesh().Geom(0).isPeriodic(idim))
         return;
 
-    BL_PROFILE("amr-wind::ABLVelWallFunc");
+    BL_PROFILE("amr-wind::ABLTempWallFunc");
     auto& velocity = repo.get_field("velocity");
     auto& density = repo.get_field("density", rho_state);
     auto& alpha = repo.get_field("temperature_mueff");
@@ -444,7 +444,7 @@ void ABLTempWallFunc::wall_model(
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                     const amrex::Real theta2 = told_arr(i, j, k);
                     tarr(i, j, k - 1) =
-                        den(i, j, k) * tau_T.calc_theta(wspd, theta2) / alphaT;
+                        den(i, j, k) * tau.calc_theta(wspd, theta2) / alphaT;
                 });
         }
     }

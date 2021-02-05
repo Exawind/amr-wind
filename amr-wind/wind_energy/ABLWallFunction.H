@@ -99,7 +99,7 @@ public:
 
     template <typename HeatFlux>
     void wall_model(
-        Field& temperature, const FieldState rho_state, const HeatFlux& tau_T);
+        Field& temperature, const FieldState rho_state, const HeatFlux& tau);
 
 private:
     const ABLWallFunction& m_wall_func;
