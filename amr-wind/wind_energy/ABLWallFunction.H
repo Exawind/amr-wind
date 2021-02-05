@@ -81,8 +81,13 @@ public:
 
     void operator()(Field& velocity, const FieldState rho_state) override;
 
+    template <typename ShearStress>
+    void wall_model(
+        Field& velocity, const FieldState rho_state, const ShearStress& tau);
+
 private:
     const ABLWallFunction& m_wall_func;
+    std::string m_model_type{"moeng"};
 };
 
 class ABLTempWallFunc : public FieldBCIface
@@ -92,8 +97,13 @@ public:
 
     void operator()(Field& temperature, const FieldState rho_state) override;
 
+    template <typename HeatFlux>
+    void wall_model(
+        Field& temperature, const FieldState rho_state, const HeatFlux& tau_T);
+
 private:
     const ABLWallFunction& m_wall_func;
+    std::string m_model_type{"moeng"};
 };
 
 } // namespace amr_wind

@@ -3,6 +3,7 @@
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/diffusion/diffusion.H"
+#include "amr-wind/wind_energy/ShearStress.H"
 
 #include <cmath>
 
@@ -266,12 +267,19 @@ void ABLWallFunction::computeusingheatflux()
 
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
-{}
-
-void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
-#if 1
+    amrex::ParmParse pp("ShearStress");
+    pp.query("model", m_model_type);
+    m_model_type = amrex::toLower(m_model_type);
+    amrex::Print() << "Shear Stress model: " << m_model_type << std::endl;
+}
+
+template <typename ShearStress>
+void ABLVelWallFunc::wall_model(
+    Field& velocity, const FieldState rho_state, const ShearStress& tau)
+{
     BL_PROFILE("amr-wind::ABLVelWallFunc");
+
     constexpr bool extrapolate = false;
     constexpr int idim = 2;
     auto& repo = velocity.repo();
@@ -287,11 +295,6 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
     const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
     const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
-    const amrex::Real utau2 = m_wall_func.utau() * m_wall_func.utau();
-    const auto& mo = m_wall_func.mo();
-    const amrex::Real umeanx = mo.vel_mean[0];
-    const amrex::Real umeany = mo.vel_mean[1];
-    const amrex::Real wspd_mean = mo.vmag_mean;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -329,16 +332,43 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
                     varr(i, j, k - 1, 2) = 0.0;
 
                     // Shear stress BC
-                    amrex::Real taux =
-                        ((uu - umeanx) * wspd_mean + wspd * umeanx) /
-                        (wspd_mean * wspd_mean);
-                    amrex::Real tauy =
-                        ((vv - umeany) * wspd_mean + wspd * umeany) /
-                        (wspd_mean * wspd_mean);
-                    varr(i, j, k - 1, 0) = taux * den(i, j, k) * utau2 / mu;
-                    varr(i, j, k - 1, 1) = tauy * den(i, j, k) * utau2 / mu;
+                    varr(i, j, k - 1, 0) =
+                        tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
+                    varr(i, j, k - 1, 1) =
+                        tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
                 });
         }
+    }
+}
+
+void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
+{
+#if 1
+
+    const auto& mo = m_wall_func.mo();
+
+    if (m_model_type == "moeng") {
+
+        auto tau = ShearStressMoeng(mo);
+        wall_model(velocity, rho_state, tau);
+
+    } else if (m_model_type == "constant") {
+
+        auto tau = ShearStressConstant(mo);
+        wall_model(velocity, rho_state, tau);
+
+    } else if (m_model_type == "local") {
+
+        auto tau = ShearStressLocal(mo);
+        wall_model(velocity, rho_state, tau);
+
+    } else if (m_model_type == "schumann") {
+
+        auto tau = ShearStressSchumann(mo);
+        wall_model(velocity, rho_state, tau);
+
+    } else {
+        amrex::Abort("Shear Stress wall model input mistake");
     }
 
 #else
@@ -349,11 +379,17 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 
 ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
     : m_wall_func(wall_fuc)
-{}
-
-void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
 {
-#if 1
+    amrex::ParmParse pp("HeatFlux");
+    pp.query("model", m_model_type);
+    m_model_type = amrex::toLower(m_model_type);
+    amrex::Print() << "Heat Flux model: " << m_model_type << std::endl;
+}
+
+template <typename HeatFlux>
+void ABLTempWallFunc::wall_model(
+    Field& temperature, const FieldState rho_state, const HeatFlux& tau_T)
+{
     constexpr bool extrapolate = false;
     constexpr int idim = 2;
     auto& repo = temperature.repo();
@@ -372,11 +408,6 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
 
     const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
     const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
-    const auto& mo = m_wall_func.mo();
-    const amrex::Real wspd_mean = mo.vmag_mean;
-    const amrex::Real theta_mean = mo.theta_mean;
-    const amrex::Real theta_surf = mo.surf_temp;
-    const amrex::Real term1 = (mo.utau * mo.kappa) / (wspd_mean * mo.phi_h());
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -411,15 +442,43 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
                     const amrex::Real uu = vold_arr(i, j, k, 0);
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-
                     const amrex::Real theta2 = told_arr(i, j, k);
-                    const amrex::Real num1 = (theta2 - theta_mean) * wspd_mean;
-                    const amrex::Real num2 = (theta_mean - theta_surf) * wspd;
-                    const amrex::Real tauT = term1 * (num1 + num2);
-                    tarr(i, j, k - 1) = den(i, j, k) * tauT / alphaT;
+                    tarr(i, j, k - 1) =
+                        den(i, j, k) * tau_T.calc_theta(wspd, theta2) / alphaT;
                 });
         }
     }
+}
+void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
+{
+#if 1
+
+    const auto& mo = m_wall_func.mo();
+
+    if (m_model_type == "moeng") {
+
+        auto tau = ShearStressMoeng(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else if (m_model_type == "constant") {
+
+        auto tau = ShearStressConstant(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else if (m_model_type == "local") {
+
+        auto tau = ShearStressLocal(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else if (m_model_type == "schumann") {
+
+        auto tau = ShearStressSchumann(mo);
+        wall_model(temperature, rho_state, tau);
+
+    } else {
+        amrex::Abort("Shear Stress temperature wall model input mistake");
+    }
+
 #else
     diffusion::temp_wall_model_bc(
         temperature, m_wall_func.instplanar(), rho_state);
