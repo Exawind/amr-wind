@@ -580,7 +580,13 @@ This section is for setting atmospheric boundary layer parameters.
    **type:** String, optional, default = ""
 
    Variables for IO for ABL inflow
+   
+.. input_param:: ABL.wall_shear_stress_type
 
+    **type:** String, optional, default = "Moeng"
+
+   Wall shear stress model: options include 
+   "constant", "local", "Schumann", and "Moeng"
 
 Section: Momentum Sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
