@@ -212,8 +212,8 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
         if (nrotor_pts == npts) {
             amrex::OutStream()
                 << "OpenFAST model does not include tower for turbine: "
-                << fi.tlabel
-                << " Turning off tower actuator points" << std::endl;
+                << fi.tlabel << " Turning off tower actuator points"
+                << std::endl;
             fi.num_pts_tower = 0;
         }
         AMREX_ALWAYS_ASSERT(npts == (nrotor_pts + fi.num_pts_tower));
