@@ -206,6 +206,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
         &fi.num_blade_elem, &fi.to_cfd, &fi.from_cfd, &fi.to_sc, &fi.from_sc);
 
     {
+#ifdef AMR_WIND_USE_OPENFAST
         // Check if OpenFAST has tower and reset tower nodes appropriately
         const int npts = fi.to_cfd.fx_Len;
         const int nrotor_pts = fi.num_blades * fi.num_pts_blade + 1;
@@ -217,6 +218,7 @@ void FastIface::fast_init_turbine(FastTurbine& fi)
             fi.num_pts_tower = 0;
         }
         AMREX_ALWAYS_ASSERT(npts == (nrotor_pts + fi.num_pts_tower));
+#endif
     }
 
     // Determine the number of substeps for FAST per CFD timestep
