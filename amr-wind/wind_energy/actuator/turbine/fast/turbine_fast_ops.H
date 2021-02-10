@@ -200,7 +200,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
             tdata.blades.emplace_back(std::move(cv));
         }
-        {
+        if (tdata.num_pts_tower > 0) {
             const int num_pts_tower = tdata.num_pts_tower;
             const int ntwr_start = num_blades * num_pts_blade + 1;
             auto& cv = tdata.tower;
