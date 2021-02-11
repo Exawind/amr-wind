@@ -42,12 +42,12 @@ TEST_F(MMSMeshTest, mms_initialization)
     {
         amrex::Vector<amrex::Real> min_vel(3), max_vel(3);
         utils::field_minmax(nlevels, velocity, min_vel, max_vel);
-        EXPECT_NEAR(min_vel[0], -0.085642769737864832, tol);
-        EXPECT_NEAR(min_vel[1], -0.15852984189694036, tol);
-        EXPECT_NEAR(min_vel[2], -0.28208289523131008, tol);
-        EXPECT_NEAR(max_vel[0], 0.085642716690504106, tol);
-        EXPECT_NEAR(max_vel[1], 0.15852994009080945, tol);
-        EXPECT_NEAR(max_vel[2], 0.28208315203480022, tol);
+        EXPECT_NEAR(min_vel[0], -0.085642667425670935, tol);
+        EXPECT_NEAR(min_vel[1], -0.15852969775284545, tol);
+        EXPECT_NEAR(min_vel[2], -0.28208275785136977, tol);
+        EXPECT_NEAR(max_vel[0], 0.085642667425670921, tol);
+        EXPECT_NEAR(max_vel[1], 0.15852969775284548, tol);
+        EXPECT_NEAR(max_vel[2], 0.28208275785136988, tol);
     }
 #endif
 }
