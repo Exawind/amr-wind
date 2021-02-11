@@ -84,7 +84,6 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
     auto& geom_vec = repo.mesh().Geom();
-    auto& ibcell = repo.get_int_field("iblank_cell");
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
@@ -130,7 +129,6 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
             const auto& f1_arr = (this->m_f1)(lev).array(mfi);
             const auto& tke_lhs_arr = tke_lhs(lev).array(mfi);
             const auto& sdr_lhs_arr = sdr_lhs(lev).array(mfi);
-            const auto& ib_cell_arr = ibcell(lev).const_array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -205,12 +203,10 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
                     tke_lhs_arr(i, j, k) =
                         0.5 * std::sqrt(tke_arr(i, j, k)) / l_iddes * deltaT;
 
-                    shear_prod_arr(i, j, k) =
-                        amrex::max(std::abs(ib_cell_arr(i, j, k)), 0) *
-                        amrex::min(
-                            mu_arr(i, j, k) * tmp4 * tmp4,
-                            10.0 * beta_star * rho_arr(i, j, k) *
-                                tke_arr(i, j, k) * sdr_arr(i, j, k));
+                    shear_prod_arr(i, j, k) = amrex::min(
+                        mu_arr(i, j, k) * tmp4 * tmp4,
+                        10.0 * beta_star * rho_arr(i, j, k) * tke_arr(i, j, k) *
+                            sdr_arr(i, j, k));
 
                     sdr_lhs_arr(i, j, k) = 0.5 * rho_arr(i, j, k) * beta *
                                            sdr_arr(i, j, k) * deltaT;
