@@ -45,7 +45,7 @@ public:
     void write_plot_file();
 
     //! Write all necessary fields for restart
-    void write_checkpoint_file(const int start_level=0);
+    void write_checkpoint_file(const int start_level = 0);
 
     //! Read all necessary fields for a restart
     void read_checkpoint_fields(
