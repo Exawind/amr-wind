@@ -107,7 +107,12 @@ include(set_compile_flags)
 
 if (AMR_WIND_ENABLE_NETCDF)
   set(CMAKE_PREFIX_PATH ${NETCDF_DIR} ${CMAKE_PREFIX_PATH})
-  find_package(NetCDF REQUIRED)
+  find_package(NetCDF QUIET REQUIRED)
+  if(NetCDF_FOUND)
+    message(STATUS "Found NetCDF = ${NETCDF_DIR}")
+  endif()
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
+  target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
 endif()
 
 if(AMR_WIND_ENABLE_MASA)

@@ -39,10 +39,6 @@ include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 
 target_link_libraries_system(${amr_wind_lib_name} PUBLIC AMReX::amrex)
-if (AMR_WIND_ENABLE_NETCDF)
-  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_NETCDF)
-  target_link_libraries_system(${amr_wind_lib_name} PUBLIC NetCDF::NetCDF)
-endif()
 target_link_libraries(${amr_wind_exe_name} PRIVATE ${amr_wind_lib_name})
 target_link_libraries(${aw_api_lib} PUBLIC ${amr_wind_lib_name})
 
