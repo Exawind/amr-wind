@@ -180,7 +180,8 @@ void IOManager::read_checkpoint_fields(
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             auto& mfab = field(lev);
-            if (mfab.boxArray() == ba_chk[lev] &&
+            const auto& ba_fab = amrex::convert(ba_chk[lev], mfab.ixType());
+            if (mfab.boxArray() == ba_fab &&
                 mfab.DistributionMap() == dm_chk[lev]) {
                 amrex::VisMF::Read(
                     field(lev),
@@ -188,7 +189,7 @@ void IOManager::read_checkpoint_fields(
                         lev, restart_file, level_prefix, field.name()));
             } else {
                 amrex::MultiFab tmp(
-                    ba_chk[lev], dm_chk[lev], mfab.nComp(), mfab.nGrowVect());
+                    ba_fab, dm_chk[lev], mfab.nComp(), mfab.nGrowVect());
                 amrex::VisMF::Read(
                     tmp, amrex::MultiFabFileFullPrefix(
                              lev, restart_file, level_prefix, field.name()));
