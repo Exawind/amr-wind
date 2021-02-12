@@ -143,7 +143,7 @@ void IOManager::write_plot_file()
     write_info_file(plt_filename);
 }
 
-void IOManager::write_checkpoint_file()
+void IOManager::write_checkpoint_file(const int start_level)
 {
     BL_PROFILE("amr-wind::IOManager::write_checkpoint_file");
     const std::string level_prefix = "Level_";
@@ -154,16 +154,17 @@ void IOManager::write_checkpoint_file()
                    << m_sim.time().new_time() << std::endl;
     const auto& mesh = m_sim.mesh();
     amrex::PreBuildDirectorHierarchy(
-        chkname, level_prefix, mesh.finestLevel() + 1, true);
-    write_header(chkname);
+        chkname, level_prefix, mesh.finestLevel() + 1 - start_level, true);
+    write_header(chkname, start_level);
     write_info_file(chkname);
 
-    for (int lev = 0; lev < mesh.finestLevel() + 1; ++lev) {
+    for (int lev = start_level; lev < mesh.finestLevel() + 1; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
             amrex::VisMF::Write(
-                field(lev), amrex::MultiFabFileFullPrefix(
-                                lev, chkname, level_prefix, field.name()));
+                field(lev),
+                amrex::MultiFabFileFullPrefix(
+                    lev - start_level, chkname, level_prefix, field.name()));
         }
     }
 }
@@ -200,7 +201,7 @@ void IOManager::read_checkpoint_fields(
     }
 }
 
-void IOManager::write_header(const std::string& chkname)
+void IOManager::write_header(const std::string& chkname, const int start_level)
 {
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
 
@@ -222,7 +223,7 @@ void IOManager::write_header(const std::string& chkname)
     const auto& mesh = m_sim.mesh();
     const auto& time = m_sim.time();
     hdr << "Checkpoint version: 1\n"
-        << mesh.finestLevel() << "\n"
+        << mesh.finestLevel() - start_level << "\n"
         << time.time_index() << "\n"
         << time.new_time() << "\n"
         << time.deltaT() << "\n"
@@ -235,7 +236,7 @@ void IOManager::write_header(const std::string& chkname)
     for (int i = 0; i < AMREX_SPACEDIM; ++i) hdr << geom.ProbHi(i) << " ";
     hdr << "\n";
 
-    for (int lev = 0; lev < mesh.finestLevel() + 1; ++lev) {
+    for (int lev = start_level; lev < mesh.finestLevel() + 1; ++lev) {
         mesh.boxArray(lev).writeOn(hdr);
         hdr << "\n";
     }
