@@ -168,7 +168,10 @@ void IOManager::write_checkpoint_file()
     }
 }
 
-void IOManager::read_checkpoint_fields(const std::string& restart_file)
+void IOManager::read_checkpoint_fields(
+    const std::string& restart_file,
+    const amrex::Vector<amrex::BoxArray>& ba_chk,
+    const amrex::Vector<amrex::DistributionMapping>& dm_chk)
 {
     BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
     const std::string level_prefix = "Level_";
@@ -176,9 +179,23 @@ void IOManager::read_checkpoint_fields(const std::string& restart_file)
     for (int lev = 0; lev < nlevels; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
-            amrex::VisMF::Read(
-                field(lev), amrex::MultiFabFileFullPrefix(
-                                lev, restart_file, level_prefix, field.name()));
+            auto& mfab = field(lev);
+            const auto& ba_fab = amrex::convert(ba_chk[lev], mfab.ixType());
+            if (mfab.boxArray() == ba_fab &&
+                mfab.DistributionMap() == dm_chk[lev]) {
+                amrex::VisMF::Read(
+                    field(lev),
+                    amrex::MultiFabFileFullPrefix(
+                        lev, restart_file, level_prefix, field.name()));
+            } else {
+                amrex::MultiFab tmp(
+                    ba_fab, dm_chk[lev], mfab.nComp(), mfab.nGrowVect());
+                amrex::VisMF::Read(
+                    tmp, amrex::MultiFabFileFullPrefix(
+                             lev, restart_file, level_prefix, field.name()));
+                mfab.setBndry(0.0);
+                mfab.ParallelCopy(tmp);
+            }
         }
     }
 }

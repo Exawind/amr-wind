@@ -106,17 +106,29 @@ void incflo::ReadCheckpointFile()
                      Geom(lev).isPeriodic()));
     }
 
+    amrex::Vector<amrex::BoxArray> ba_inp(finest_level + 1);
+    amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level + 1);
     for (int lev = 0; lev <= finest_level; ++lev) {
         // read in level 'lev' BoxArray from Header
-        BoxArray ba;
-        ba.readFrom(is);
+        ba_inp[lev].readFrom(is);
         GotoNextLine(is);
 
         // Create distribution mapping
-        DistributionMapping dm{ba, ParallelDescriptor::NProcs()};
+        dm_inp[lev].define(ba_inp[lev], ParallelDescriptor::NProcs());
+        DistributionMapping dm = dm_inp[lev];
+
+        BoxArray ba(ba_inp[lev].simplified());
+        ba.maxSize(maxGridSize(lev));
+        if (ba == ba_inp[lev]) {
+            ba = ba_inp[lev];
+        } else {
+            if ((lev == 0) || refine_grid_layout)
+                ChopGrids(lev, ba, ParallelDescriptor::NProcs());
+            dm = DistributionMapping{ba, ParallelDescriptor::NProcs()};
+        }
 
         MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }
 
-    m_sim.io_manager().read_checkpoint_fields(restart_file);
+    m_sim.io_manager().read_checkpoint_fields(restart_file, ba_inp, dm_inp);
 }

@@ -6,6 +6,8 @@
 #include <set>
 
 #include "AMReX_Vector.H"
+#include "AMReX_BoxArray.H"
+#include "AMReX_DistributionMapping.H"
 
 namespace amr_wind {
 
@@ -46,7 +48,10 @@ public:
     void write_checkpoint_file();
 
     //! Read all necessary fields for a restart
-    void read_checkpoint_fields(const std::string& restart_file);
+    void read_checkpoint_fields(
+        const std::string& restart_file,
+        const amrex::Vector<amrex::BoxArray>& ba_chk,
+        const amrex::Vector<amrex::DistributionMapping>& dm_chk);
 
     //! Register a variable for output
     void register_output_var(const std::string& fname)
