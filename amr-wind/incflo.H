@@ -189,6 +189,8 @@ public: // for cuda
     //! Initialize Physics instances as well as PDEs (include turbulence models)
     void init_physics_and_pde();
 
+    void ReadCheckpointFile();
+
 private:
     //
     // member variables
@@ -254,9 +256,6 @@ private:
     // utilities
     //
     ///////////////////////////////////////////////////////////////////////////
-
-    void ReadCheckpointFile();
-
     void PrintMaxValues(const std::string& header);
     void PrintMaxVel(int lev);
     void PrintMaxGp(int lev);

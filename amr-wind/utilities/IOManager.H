@@ -45,7 +45,7 @@ public:
     void write_plot_file();
 
     //! Write all necessary fields for restart
-    void write_checkpoint_file();
+    void write_checkpoint_file(const int start_level = 0);
 
     //! Read all necessary fields for a restart
     void read_checkpoint_fields(
@@ -85,7 +85,7 @@ public:
     const amrex::Vector<Field*>& plot_fields() const { return m_plt_fields; }
 
 private:
-    void write_header(const std::string&);
+    void write_header(const std::string&, const int start_level);
 
     void write_info_file(const std::string&);
 
