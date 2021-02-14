@@ -1,6 +1,7 @@
 #include <chrono>
 #include <ctime>
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/AMRWindVersion.H"
 #include "AMReX.H"
 
 namespace amrex {
@@ -18,6 +19,44 @@ const std::string dbl_line = std::string(78, '=') + "\n";
 const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 } // namespace
 
+void print_usage(MPI_Comm comm, std::ostream& out)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#endif
+
+    out << R"doc(Usage:
+    amr_wind <input_file> [param=value] [param=value] ...
+
+Required:
+    input_file   : Input file with simulation settings
+
+Optional:
+    param=value  : Overrides for parameters during runtime
+)doc" << std::endl;
+}
+
+void print_error(MPI_Comm comm, const std::string& msg)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#endif
+
+    std::cout << "ERROR: " << msg << std::endl;
+}
+
 void print_banner(MPI_Comm comm, std::ostream& out)
 {
 #ifdef AMREX_USE_MPI
@@ -32,22 +71,23 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 
     auto exec_time = std::chrono::system_clock::now();
     auto exect = std::chrono::system_clock::to_time_t(exec_time);
-
-    const char* git_hash = amrex::buildInfoGetGitHash(1);
-    const char* amrex_hash = amrex::buildInfoGetGitHash(2);
-    const std::string amrex_git_str = (strlen(amrex_hash) > 0)
-                                          ? std::string(amrex_hash)
-                                          : std::string("Unknown");
+    const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
+                                      ? ("-" + version::amr_wind_dirty_repo)
+                                      : "";
+    const std::string awind_version = version::amr_wind_version + dirty_tag;
+    const std::string awind_git_sha = version::amr_wind_git_sha + dirty_tag;
 
     // clang-format off
     out << dbl_line
         << "                AMR-Wind (https://github.com/exawind/amr-wind)"
         << std::endl << std::endl
-        << "  AMR-Wind Git SHA :: " << git_hash << std::endl
-        << "  AMReX version    :: " << amrex::Version() << " ( "  << amrex_git_str << " )" << std::endl << std::endl
-        << "  Exec. date       :: " << std::ctime(&exect)
-        << "  Build date       :: " << amrex::buildInfoGetBuildDate() << std::endl
-        << "  C++ compiler     :: " << amrex::buildInfoGetComp() << " " << amrex::buildInfoGetCompVersion() << std::endl << std::endl
+        << "  AMR-Wind version :: " << awind_version << std::endl
+        << "  AMR-Wind Git SHA :: " << awind_git_sha << std::endl
+        << "  AMReX version    :: " << amrex::Version() << std::endl << std::endl
+        << "  Exec. time       :: " << std::ctime(&exect)
+        << "  Build time       :: " << amrex::buildInfoGetBuildDate() << std::endl
+        << "  C++ compiler     :: " << amrex::buildInfoGetComp()
+        << " " << amrex::buildInfoGetCompVersion() << std::endl << std::endl
         << "  MPI              :: "
 #ifdef AMREX_USE_MPI
         << "ON    (Num. ranks = " << num_ranks << ")" << std::endl
@@ -56,7 +96,15 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 #endif
         << "  GPU              :: "
 #ifdef AMREX_USE_GPU
-        << "ON" << std::endl
+        << "ON   "
+#if defined(AMREX_USE_CUDA)
+        << "(Backend: CUDA)"
+#elif defined(AMREX_USE_HIP)
+        << "(Backend: HIP)"
+#elif defined(AMREX_USE_DPCPP)
+        << "(Backend: SYCL)"
+#endif
+        << std::endl
 #else
         << "OFF" << std::endl
 #endif
