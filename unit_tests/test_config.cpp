@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "amr-wind/AMRWindVersion.H"
+#include "amr-wind/utilities/console_io.H"
 #include "AMReX_ccse-mpi.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
@@ -85,6 +86,12 @@ TEST(Configuration, CUDA)
     amrex::Print() << "AMR-Wind not build with CUDA support" << std::endl;
     GTEST_SKIP();
 #endif
+}
+
+TEST(Configuration, TPLs)
+{
+    if (amrex::ParallelDescriptor::IOProcessor())
+        amr_wind::io::print_tpls(std::cout);
 }
 
 } // namespace amr_wind_tests
