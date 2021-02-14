@@ -19,6 +19,44 @@ const std::string dbl_line = std::string(78, '=') + "\n";
 const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 } // namespace
 
+void print_usage(MPI_Comm comm, std::ostream& out)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#endif
+
+    out << R"doc(Usage:
+    amr_wind <input_file> [param=value] [param=value] ...
+
+Required:
+    input_file   : Input file with simulation settings
+
+Optional:
+    param=value  : Overrides for parameters during runtime
+)doc" << std::endl;
+}
+
+void print_error(MPI_Comm comm, const std::string& msg)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#endif
+
+    std::cout << "ERROR: " << msg << std::endl;
+}
+
 void print_banner(MPI_Comm comm, std::ostream& out)
 {
 #ifdef AMREX_USE_MPI

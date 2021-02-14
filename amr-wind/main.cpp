@@ -1,23 +1,41 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/utilities/console_io.H"
 
+#include "AMReX_FileSystem.cpp"
+
 int main(int argc, char* argv[])
 {
 #ifdef AMREX_USE_MPI
     MPI_Init(&argc, &argv);
 #endif
 
-    // check to see if it contains --describe
     if (argc >= 2) {
+        // Look for "-h" or "--help" flag and print usage
         for (auto i = 1; i < argc; i++) {
-            if (std::string(argv[i]) == "--describe") {
+            const std::string param(argv[i]);
+            if ((param == "--help") || (param == "-h")) {
                 amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
+                amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
                 return 0;
             }
         }
+    } else if (argc < 2) {
+        // Print usage and exit with error code if no input file was provided.
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_error(
+            MPI_COMM_WORLD, "No input file provided. Exiting!!");
+        return 1;
     }
-    amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
+    if (!amrex::FileSystem::Exists(std::string(argv[1]))) {
+        // Print usage and exit with error code if we cannot find the input file
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_error(
+            MPI_COMM_WORLD, "Input file does not exist = " +
+                                std::string(argv[1]) + ". Exiting!!");
+        return 1;
+    }
 
+    amr_wind::io::print_banner(MPI_COMM_WORLD, std::cout);
     amrex::Initialize(argc, argv, true, MPI_COMM_WORLD, []() {
         amrex::ParmParse pp("amrex");
         // Set the defaults so that we throw an exception instead of attempting
@@ -31,10 +49,6 @@ int main(int argc, char* argv[])
         without explicitly deleting all the incflo member MultiFabs */
 
         BL_PROFILE("amr-wind::main()");
-
-        // Issue an error if input file is not given
-        if (argc < 2)
-            amrex::Abort("Input file must be given as command-line argument.");
 
         // Start timing the program
         amrex::Real start_time = amrex::ParallelDescriptor::second();
@@ -73,4 +87,6 @@ int main(int argc, char* argv[])
 #ifdef AMREX_USE_MPI
     MPI_Finalize();
 #endif
+
+    return 0;
 }
