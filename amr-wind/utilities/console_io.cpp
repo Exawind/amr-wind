@@ -42,6 +42,8 @@ void print_usage(MPI_Comm comm, std::ostream& out)
 
     // Only root process does the printing
     if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
 #endif
 
     out << R"doc(Usage:
@@ -65,6 +67,8 @@ void print_error(MPI_Comm comm, const std::string& msg)
 
     // Only root process does the printing
     if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
 #endif
 
     std::cout << "ERROR: " << msg << std::endl;
@@ -80,6 +84,8 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 
     // Only root process does the printing
     if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
 #endif
 
     auto exec_time = std::chrono::system_clock::now();
