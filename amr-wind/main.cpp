@@ -1,7 +1,7 @@
 #include "amr-wind/incflo.H"
 #include "amr-wind/utilities/console_io.H"
 
-#include "AMReX_FileSystem.cpp"
+#include "AMReX_FileSystem.H"
 
 int main(int argc, char* argv[])
 {
