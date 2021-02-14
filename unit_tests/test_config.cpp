@@ -4,6 +4,7 @@
  */
 
 #include "gtest/gtest.h"
+#include "amr-wind/AMRWindVersion.H"
 #include "AMReX_ccse-mpi.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
@@ -17,9 +18,14 @@ namespace amr_wind_tests {
 
 TEST(Configuration, Build)
 {
-    const char* aw_git = amrex::buildInfoGetGitHash(1);
+    const std::string dirty_tag =
+        (amr_wind::version::amr_wind_dirty_repo == "DIRTY")
+            ? ("-" + amr_wind::version::amr_wind_dirty_repo)
+            : "";
+    const std::string awind_git_sha =
+        amr_wind::version::amr_wind_git_sha + dirty_tag;
     const char* amrex_git = amrex::buildInfoGetGitHash(2);
-    amrex::Print() << "AMR-Wind SHA = " << aw_git
+    amrex::Print() << "AMR-Wind SHA = " << awind_git_sha
                    << "\nAMReX    SHA = " << amrex_git << std::endl;
 }
 

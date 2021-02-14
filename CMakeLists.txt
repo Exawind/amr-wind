@@ -126,6 +126,7 @@ if(AMR_WIND_ENABLE_MASA)
 endif()
 
 #Build amr-wind and link to amrex library
+generate_version_info()
 add_subdirectory(amr-wind)
 
 if (AMR_WIND_ENABLE_CUDA)
