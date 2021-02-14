@@ -68,14 +68,15 @@ TEST(Configuration, GPU)
     // clang-format off
     ss << "[" << myrank << "] " << Dev::deviceId()
        << ": " << Dev::deviceName() << "\n"
-       << "   Global memory      : "
+       << "    Warp size          : " << Dev::warp_size << "\n"
+       << "    Global memory      : "
        << (static_cast<double>(Dev::totalGlobalMem()) / (1 << 30)) << "GB\n"
-       << "   Shared mem/ block  : "
+       << "    Shared mem/ block  : "
        << (Dev::sharedMemPerBlock() / (1 << 10)) << "KB\n"
-       << "   Max. threads/block : " << Dev::maxThreadsPerBlock()
+       << "    Max. threads/block : " << Dev::maxThreadsPerBlock()
        << " (" << Dev::maxThreadsPerBlock(0) << ", "
        << Dev::maxThreadsPerBlock(1) << ", " << Dev::maxThreadsPerBlock(2) << ")\n"
-       << "   Max. blocks/grid   : (" << Dev::maxBlocksPerGrid(0)
+       << "    Max. blocks/grid   : (" << Dev::maxBlocksPerGrid(0)
        << ", " << Dev::maxBlocksPerGrid(1) << ", " << Dev::maxBlocksPerGrid(2) << ")\n"
        << std::endl;
     // clang-format on
