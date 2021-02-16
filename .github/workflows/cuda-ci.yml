@@ -26,7 +26,7 @@ on:
 
 jobs:
   cuda-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     name: CUDA v${{matrix.cuda_ver}}
     strategy:
       matrix:
