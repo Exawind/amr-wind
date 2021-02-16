@@ -96,6 +96,8 @@ class ABLBoundaryPlane
 public:
     explicit ABLBoundaryPlane(CFDSim&);
 
+    void post_init_actions();
+
     void write_header();
 
     void write_file();

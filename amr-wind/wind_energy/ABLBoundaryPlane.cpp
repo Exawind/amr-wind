@@ -194,15 +194,19 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
         amrex::Abort(
             "ABLBoundaryPlane capability with IO mode requires NetCDF");
     }
-#endif
-
-#ifdef AMR_WIND_USE_NETCDF
+#else
     pp.query("bndry_write_frequency", m_write_frequency);
     pp.queryarr("bndry_planes", m_planes);
     pp.query("bndry_output_start_time", m_out_start_time);
     pp.queryarr("bndry_var_names", m_var_names);
     pp.get("bndry_file", m_filename);
 
+#endif
+}
+
+void ABLBoundaryPlane::post_init_actions()
+{
+#ifdef AMR_WIND_USE_NETCDF
     for (const auto& plane : m_planes) {
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
 
@@ -223,8 +227,8 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
             }
             m_fields.emplace_back(&fld);
         } else {
-            amrex::Print() << "  Invalid variable requested: " << fname
-                           << std::endl;
+            amrex::Abort(
+                "ABLBoundaryPlane: invalid variable requested: " + fname);
         }
     }
 #endif
