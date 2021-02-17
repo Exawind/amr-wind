@@ -33,6 +33,8 @@ public:
 
     virtual ~PostProcessBase() = default;
 
+    virtual void pre_init_actions() = 0;
+
     /** Initialize the post-processing utility
      *
      *  When this method is called, the mesh and the solution fields are fully
@@ -61,13 +63,15 @@ public:
 
     ~PostProcessManager() = default;
 
+    void pre_init_actions();
+
     /** Initialize post-processing utilities
      *
      *  Reads user inputs and instantiates all the registered post-processing
      *  utilities. Executes the registered utilities once before starting the
      *  time integration
      */
-    void initialize();
+    void post_init_actions();
 
     //! Call all registered utilities to perform actions after a timestep
     void post_advance_work();
