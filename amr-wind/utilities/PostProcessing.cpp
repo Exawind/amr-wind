@@ -28,7 +28,7 @@ void perform_checks(
 
 PostProcessManager::PostProcessManager(CFDSim& sim) : m_sim(sim) {}
 
-void PostProcessManager::initialize()
+void PostProcessManager::pre_init_actions()
 {
     amrex::Vector<std::string> pnames;
     amrex::ParmParse pp("incflo");
@@ -43,7 +43,10 @@ void PostProcessManager::initialize()
         perform_checks(registered_types, ptype);
         m_post.emplace_back(PostProcessBase::create(ptype, m_sim, label));
     }
+}
 
+void PostProcessManager::post_init_actions()
+{
     for (auto& post : m_post) {
         post->initialize();
         post->post_advance_work();

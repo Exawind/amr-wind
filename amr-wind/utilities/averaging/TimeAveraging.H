@@ -46,6 +46,9 @@ public:
 
     virtual ~TimeAveraging();
 
+    //! Perform actions before mesh is created
+    void pre_init_actions() override {}
+
     void initialize() override;
 
     void post_advance_work() override;

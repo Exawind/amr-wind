@@ -99,7 +99,7 @@ void incflo::init_amr_wind_modules()
     for (auto& eqn : scalar_eqns()) eqn->initialize();
 
     m_sim.pde_manager().fillpatch_state_fields(m_time.current_time());
-    m_sim.post_manager().initialize();
+    m_sim.post_manager().post_init_actions();
 }
 
 /** Initialize flow-field before performing time-integration.
@@ -328,6 +328,9 @@ void incflo::init_physics_and_pde()
 
     // Initialize the refinement criteria
     m_mesh_refiner->initialize();
+
+    // Post-processing actions that need to declare fields
+    m_sim.post_manager().pre_init_actions();
 }
 
 void incflo::ErrorEst(int lev, TagBoxArray& tags, Real time, int ngrow)
