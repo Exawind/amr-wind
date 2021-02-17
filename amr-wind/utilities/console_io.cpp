@@ -1,7 +1,21 @@
 #include <chrono>
 #include <ctime>
 #include "amr-wind/utilities/console_io.H"
+#include "amr-wind/AMRWindVersion.H"
 #include "AMReX.H"
+
+#ifdef AMR_WIND_USE_NETCDF
+#include "netcdf.h"
+#ifdef NC_HAVE_META_H
+#include "netcdf_meta.h"
+#endif
+#endif
+#ifdef AMR_WIND_USE_MASA
+#include "masa.h"
+#endif
+#ifdef AMREX_USE_HYPRE
+#include "HYPRE_config.h"
+#endif
 
 namespace amrex {
 const char* buildInfoGetBuildDate();
@@ -18,6 +32,48 @@ const std::string dbl_line = std::string(78, '=') + "\n";
 const std::string dash_line = "\n" + std::string(78, '-') + "\n";
 } // namespace
 
+void print_usage(MPI_Comm comm, std::ostream& out)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
+#endif
+
+    out << R"doc(Usage:
+    amr_wind <input_file> [param=value] [param=value] ...
+
+Required:
+    input_file   : Input file with simulation settings
+
+Optional:
+    param=value  : Overrides for parameters during runtime
+)doc" << std::endl;
+}
+
+void print_error(MPI_Comm comm, const std::string& msg)
+{
+#ifdef AMREX_USE_MPI
+    int irank = 0;
+    int num_ranks = 1;
+    MPI_Comm_size(comm, &num_ranks);
+    MPI_Comm_rank(comm, &irank);
+
+    // Only root process does the printing
+    if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
+#endif
+
+    std::cout << "ERROR: " << msg << std::endl;
+}
+
 void print_banner(MPI_Comm comm, std::ostream& out)
 {
 #ifdef AMREX_USE_MPI
@@ -28,26 +84,29 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 
     // Only root process does the printing
     if (irank != 0) return;
+#else
+    amrex::ignore_unused(comm);
 #endif
 
     auto exec_time = std::chrono::system_clock::now();
     auto exect = std::chrono::system_clock::to_time_t(exec_time);
-
-    const char* git_hash = amrex::buildInfoGetGitHash(1);
-    const char* amrex_hash = amrex::buildInfoGetGitHash(2);
-    const std::string amrex_git_str = (strlen(amrex_hash) > 0)
-                                          ? std::string(amrex_hash)
-                                          : std::string("Unknown");
+    const std::string dirty_tag = (version::amr_wind_dirty_repo == "DIRTY")
+                                      ? ("-" + version::amr_wind_dirty_repo)
+                                      : "";
+    const std::string awind_version = version::amr_wind_version + dirty_tag;
+    const std::string awind_git_sha = version::amr_wind_git_sha + dirty_tag;
 
     // clang-format off
     out << dbl_line
         << "                AMR-Wind (https://github.com/exawind/amr-wind)"
         << std::endl << std::endl
-        << "  AMR-Wind Git SHA :: " << git_hash << std::endl
-        << "  AMReX version    :: " << amrex::Version() << " ( "  << amrex_git_str << " )" << std::endl << std::endl
-        << "  Exec. date       :: " << std::ctime(&exect)
-        << "  Build date       :: " << amrex::buildInfoGetBuildDate() << std::endl
-        << "  C++ compiler     :: " << amrex::buildInfoGetComp() << " " << amrex::buildInfoGetCompVersion() << std::endl << std::endl
+        << "  AMR-Wind version :: " << awind_version << std::endl
+        << "  AMR-Wind Git SHA :: " << awind_git_sha << std::endl
+        << "  AMReX version    :: " << amrex::Version() << std::endl << std::endl
+        << "  Exec. time       :: " << std::ctime(&exect)
+        << "  Build time       :: " << amrex::buildInfoGetBuildDate() << std::endl
+        << "  C++ compiler     :: " << amrex::buildInfoGetComp()
+        << " " << amrex::buildInfoGetCompVersion() << std::endl << std::endl
         << "  MPI              :: "
 #ifdef AMREX_USE_MPI
         << "ON    (Num. ranks = " << num_ranks << ")" << std::endl
@@ -56,7 +115,15 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 #endif
         << "  GPU              :: "
 #ifdef AMREX_USE_GPU
-        << "ON" << std::endl
+        << "ON    "
+#if defined(AMREX_USE_CUDA)
+        << "(Backend: CUDA)"
+#elif defined(AMREX_USE_HIP)
+        << "(Backend: HIP)"
+#elif defined(AMREX_USE_DPCPP)
+        << "(Backend: SYCL)"
+#endif
+        << std::endl
 #else
         << "OFF" << std::endl
 #endif
@@ -64,9 +131,13 @@ void print_banner(MPI_Comm comm, std::ostream& out)
 #ifdef _OPENMP
         << "ON    (Num. threads = " << omp_get_max_threads() << ")" << std::endl
 #else
-        << "OFF" << std::endl << std::endl
+        << "OFF" << std::endl
 #endif
-        << "           This software is released under the BSD 3-clause license.           "
+        << std::endl;
+
+    print_tpls(out);
+
+    out << "           This software is released under the BSD 3-clause license.           "
         << std::endl
         << " See https://github.com/Exawind/amr-wind/blob/development/LICENSE for details. "
         << dash_line << std::endl;
@@ -95,6 +166,35 @@ void print_mlmg_info(const std::string& solve_name, const amrex::MLMG& mlmg)
                    << std::setw(22) << std::right << mlmg.getInitResidual()
                    << std::setw(22) << std::right << mlmg.getFinalResidual()
                    << std::endl;
+}
+
+void print_tpls(std::ostream& out)
+{
+    amrex::Vector<std::string> tpls;
+
+#ifdef AMR_WIND_USE_NETCDF
+    tpls.push_back(std::string("NetCDF    ") + NC_VERSION);
+#endif
+#ifdef AMREX_USE_HYPRE
+    tpls.push_back(std::string("HYPRE     ") + HYPRE_RELEASE_VERSION);
+#endif
+#ifdef AMR_WIND_USE_OPENFAST
+    tpls.push_back(std::string("OpenFAST  "));
+#endif
+#ifdef AMR_WIND_USE_MASA
+    tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
+#endif
+
+    if (tpls.size() > 0) {
+        out << "  Enabled third-party libraries: ";
+        for (const auto& val : tpls) {
+            out << "\n    " << val;
+        }
+        out << std::endl << std::endl;
+    } else {
+        out << "  No additional third-party libraries enabled" << std::endl
+            << std::endl;
+    }
 }
 
 } // namespace io

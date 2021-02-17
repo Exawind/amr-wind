@@ -15,34 +15,38 @@ TimeAveraging::~TimeAveraging() = default;
 
 void TimeAveraging::initialize()
 {
-    //! Fields to be averaged
-    amrex::Vector<std::string> fnames;
-    std::string default_avg_type = ReAveraging::identifier();
-
+    //! Different averaging types
+    amrex::Vector<std::string> labels;
     {
         amrex::ParmParse pp(m_label);
-        pp.getarr("fields", fnames);
-        pp.query("averaging_type", default_avg_type);
-        pp.get("averaging_window", m_filter);
+        pp.getarr("labels", labels);
     }
 
-    for (const auto& fname : fnames) {
-        std::string avg_type(default_avg_type);
-        amrex::ParmParse pp1(m_label + "/" + fname);
-        pp1.query("averaging_type", avg_type);
+    for (const auto& lbl : labels) {
+        //! Fields to be averaged
+        amrex::Vector<std::string> fnames;
+        std::string avg_type;
+        const std::string pp_key = m_label + "/" + lbl;
 
-        const std::string key = fname + "_" + avg_type;
+        amrex::ParmParse pp1(pp_key);
+        pp1.getarr("fields", fnames);
+        pp1.get("averaging_type", avg_type);
+        pp1.get("averaging_window", m_filter);
 
-        // Guard against multiple registrations of the field
-        const auto found = m_registered.find(key);
-        if (found != m_registered.end()) continue;
+        for (const auto& fname : fnames) {
+            const std::string key = fname + "_" + avg_type;
 
-        // Create the averaging entity
-        m_averages.emplace_back(
-            FieldTimeAverage::create(avg_type, m_sim, fname));
+            // Guard against multiple registrations of the field
+            const auto found = m_registered.find(key);
+            if (found != m_registered.end()) continue;
 
-        // Track fields that have an average
-        m_registered.emplace(key, m_averages.back().get());
+            // Create the averaging entity
+            m_averages.emplace_back(
+                FieldTimeAverage::create(avg_type, m_sim, fname));
+
+            // Track fields that have an average
+            m_registered.emplace(key, m_averages.back().get());
+        }
     }
 }
 

@@ -137,7 +137,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
         amrex::ParallelDescriptor::Comm_dup(
             amrex::ParallelDescriptor::Communicator(), tdata.tcomm);
 
-        int sz_info[3]{0, 0, 0};
+        int sz_info[4]{0, 0, 0, 0};
         if (info.is_root_proc) {
             tdata.fast->init_turbine(tdata.fast_data.tid_local);
 
@@ -145,6 +145,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
             sz_info[0] = tf.num_blades;
             sz_info[1] = tf.to_cfd.fx_Len;
             sz_info[2] = tf.from_cfd.u_Len;
+            sz_info[3] = tf.num_pts_tower;
         }
 
         // Broadcast data to everyone
@@ -155,6 +156,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
             tdata.num_blades = sz_info[0];
             data.grid().resize(sz_info[1], sz_info[2]);
             tdata.chord.resize(sz_info[1]);
+            tdata.num_pts_tower = sz_info[3];
         }
 
         if (info.is_root_proc) {
@@ -200,7 +202,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
 
             tdata.blades.emplace_back(std::move(cv));
         }
-        {
+        if (tdata.num_pts_tower > 0) {
             const int num_pts_tower = tdata.num_pts_tower;
             const int ntwr_start = num_blades * num_pts_blade + 1;
             auto& cv = tdata.tower;

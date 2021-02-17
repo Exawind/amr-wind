@@ -32,7 +32,7 @@ public:
 
     virtual void operator()(const SimTime&, const amrex::Real) = 0;
 
-    virtual const std::string& average_field_name()  = 0;
+    virtual const std::string& average_field_name() = 0;
 };
 
 /** A collection of time-averaged quantities
@@ -45,6 +45,9 @@ public:
     TimeAveraging(CFDSim&, const std::string&);
 
     virtual ~TimeAveraging();
+
+    //! Perform actions before mesh is created
+    void pre_init_actions() override {}
 
     void initialize() override;
 

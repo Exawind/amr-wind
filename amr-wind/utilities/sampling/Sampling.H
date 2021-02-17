@@ -46,11 +46,14 @@ public:
 
     virtual ~Sampling();
 
+    //! Perform actions before mesh is created
+    void pre_init_actions() override {}
+
     //! Read user inputs and create the different data probe instances
-    void initialize();
+    void initialize() override;
 
     //! Interpolate fields at a given timestep and output to disk
-    void post_advance_work();
+    void post_advance_work() override;
 
     // Public for CUDA
 

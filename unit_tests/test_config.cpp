@@ -4,6 +4,8 @@
  */
 
 #include "gtest/gtest.h"
+#include "amr-wind/AMRWindVersion.H"
+#include "amr-wind/utilities/console_io.H"
 #include "AMReX_ccse-mpi.H"
 #include "AMReX_ParallelDescriptor.H"
 #include "AMReX_Print.H"
@@ -17,9 +19,14 @@ namespace amr_wind_tests {
 
 TEST(Configuration, Build)
 {
-    const char* aw_git = amrex::buildInfoGetGitHash(1);
+    const std::string dirty_tag =
+        (amr_wind::version::amr_wind_dirty_repo == "DIRTY")
+            ? ("-" + amr_wind::version::amr_wind_dirty_repo)
+            : "";
+    const std::string awind_git_sha =
+        amr_wind::version::amr_wind_git_sha + dirty_tag;
     const char* amrex_git = amrex::buildInfoGetGitHash(2);
-    amrex::Print() << "AMR-Wind SHA = " << aw_git
+    amrex::Print() << "AMR-Wind SHA = " << awind_git_sha
                    << "\nAMReX    SHA = " << amrex_git << std::endl;
 }
 
@@ -39,46 +46,51 @@ TEST(Configuration, MPI)
 #endif
 }
 
-TEST(Configuration, CUDA)
+TEST(Configuration, GPU)
 {
+#ifdef AMREX_USE_GPU
 #ifdef AMREX_USE_CUDA
+    amrex::Print() << "GPU backend: CUDA" << std::endl;
 #if defined(CUDA_VERSION)
-    amrex::Print() << "CUDA configuration: "
-                   << "CUDA_VERSION: " << CUDA_VERSION << " "
+    amrex::Print() << "CUDA_VERSION: " << CUDA_VERSION << " "
                    << CUDA_VERSION / 1000 << "." << (CUDA_VERSION % 1000) / 10
                    << std::endl;
 #endif
-    cudaError_t error;
-    int ndevices;
-    cudaDeviceProp dev;
+#elif defined(AMREX_USE_HIP)
+    amrex::Print() << "GPU backend: HIP" << std::endl;
+#elif defined(AMREX_USE_DPCPP)
+    amrex::Print() << "GPU backend: SYCL" << std::endl;
+#endif
 
-    error = cudaGetDeviceCount(&ndevices);
-    if (error != cudaSuccess) {
-        ADD_FAILURE() << cudaGetErrorString(error);
-        return;
-    } else {
-        std::cout << "Num. devices = " << ndevices << std::endl;
-    }
-
+    using Dev = amrex::Gpu::Device;
     const int myrank = amrex::ParallelDescriptor::MyProc();
-    const int rankDevice = amrex::Gpu::Device::deviceId();
-    error = cudaGetDeviceProperties(&dev, rankDevice);
-    if (error != cudaSuccess) {
-        ADD_FAILURE() << cudaGetErrorString(error);
-        return;
-    }
-    char busid[512];
-    cudaDeviceGetPCIBusId(busid, 512, rankDevice);
-    std::cout << "[" << myrank << "] " << rankDevice << ": " << dev.name
-              << " CC: " << dev.major << "." << dev.minor << " ID: " << busid
-              << " GM: "
-              << (static_cast<double>(dev.totalGlobalMem) / (1 << 30)) << "GB"
-              << " ShMem/Blk: " << (dev.sharedMemPerBlock / (1 << 10)) << "KB"
-              << std::endl;
+    std::stringstream ss;
+    // clang-format off
+    ss << "[" << myrank << "] " << Dev::deviceId()
+       << ": " << Dev::deviceName() << "\n"
+       << "    Warp size          : " << Dev::warp_size << "\n"
+       << "    Global memory      : "
+       << (static_cast<double>(Dev::totalGlobalMem()) / (1 << 30)) << "GB\n"
+       << "    Shared mem/ block  : "
+       << (Dev::sharedMemPerBlock() / (1 << 10)) << "KB\n"
+       << "    Max. threads/block : " << Dev::maxThreadsPerBlock()
+       << " (" << Dev::maxThreadsPerBlock(0) << ", "
+       << Dev::maxThreadsPerBlock(1) << ", " << Dev::maxThreadsPerBlock(2) << ")\n"
+       << "    Max. blocks/grid   : (" << Dev::maxBlocksPerGrid(0)
+       << ", " << Dev::maxBlocksPerGrid(1) << ", " << Dev::maxBlocksPerGrid(2) << ")\n"
+       << std::endl;
+    // clang-format on
+    amrex::OutStream() << ss.str();
 #else
-    amrex::Print() << "AMR-Wind not build with CUDA support" << std::endl;
+    amrex::Print() << "AMR-Wind not built with GPU support" << std::endl;
     GTEST_SKIP();
 #endif
+}
+
+TEST(Configuration, TPLs)
+{
+    if (amrex::ParallelDescriptor::IOProcessor())
+        amr_wind::io::print_tpls(std::cout);
 }
 
 } // namespace amr_wind_tests

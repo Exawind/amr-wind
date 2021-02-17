@@ -35,6 +35,11 @@ inflow file during an ABL simulation:
    ABL.bndry_output_start_time = 2.0
    ABL.bndry_var_names = velocity temperature
 
+In the case of using the OneEqKsgsM84 model the tke field is also needed.
+
+.. code-block:: none
+
+   ABL.bndry_var_names = velocity temperature tke
 
 Using an inflow file in an ABL simulation
 -----------------------------------------
@@ -48,6 +53,24 @@ inflow file to populate the boundary conditions:
    ABL.bndry_io_mode = 1
    ABL.bndry_var_names = velocity temperature
 
+Again, In the case of using the OneEqKsgsM84 model the tke field is also needed.
+
+.. code-block:: none
+
+   ABL.bndry_var_names = velocity temperature tke
+
+The boundary conditions need to be adjusted from periodic to inflow/outflow.
+The following lines show the changes that need to be made to the input file
+for the x coordinate (similar change for y coordinate when needed):
+
+.. code-block:: none
+
+   geometry.is_periodic           = 0 1 0                          # Periodicity x y z (0/1)
+
+   xlo.type = "mass_inflow"
+   xlo.density = 1.0
+   xhi.type = "pressure_outflow"
+  
 
 Inflow file structure
 ---------------------
