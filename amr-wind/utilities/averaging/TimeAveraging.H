@@ -32,7 +32,7 @@ public:
 
     virtual void operator()(const SimTime&, const amrex::Real) = 0;
 
-    virtual const std::string& average_field_name()  = 0;
+    virtual const std::string& average_field_name() = 0;
 };
 
 /** A collection of time-averaged quantities
