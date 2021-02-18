@@ -128,6 +128,9 @@ private:
 
     //! Flag indicating whether default fields should be output
     bool m_output_default_vars{true};
+
+    //! Flag indicating whether we should allow missing restart fields
+    bool m_allow_missing_restart_fields{true};
 };
 
 } // namespace amr_wind
