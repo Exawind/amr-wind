@@ -12,8 +12,7 @@ class ABLForcing;
 } // namespace icns
 } // namespace pde
 
-enum class ABLStatsMode : int
-{
+enum class ABLStatsMode : int {
     computed = 0, ///! Computed using planar averages
     prescribed    ///! Prescribed as user inputs
 };
@@ -46,7 +45,8 @@ public:
     //! Perform actions at the end of a timestep
     virtual void post_advance_work() = 0;
 
-    virtual void register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
+    virtual void
+    register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
 };
 
 } // namespace amr_wind
