@@ -80,14 +80,9 @@ void ABL::post_init_actions()
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->post_init_actions();
-        m_bndry_plane->write_header();
-        m_bndry_plane->write_file();
-        m_bndry_plane->read_header();
-        m_bndry_plane->read_file();
-    }
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
+
+    m_bndry_plane->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -119,9 +114,7 @@ void ABL::pre_advance_work()
         m_abl_mean_bous->mean_temperature_update(
             m_stats->temperature_plane_stats());
 
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->read_file();
-    }
+    m_bndry_plane->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -132,10 +125,7 @@ void ABL::pre_advance_work()
 void ABL::post_advance_work()
 {
     m_stats->post_advance_work();
-
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->write_file();
-    }
+    m_bndry_plane->post_advance_work();
 }
 
 } // namespace amr_wind

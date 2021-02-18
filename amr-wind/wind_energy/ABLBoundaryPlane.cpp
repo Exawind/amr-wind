@@ -110,9 +110,9 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
-    amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+    amrex::Vector<size_t> start{static_cast<size_t>(idx),
+                                static_cast<size_t>(lo[perp[0]]),
+                                static_cast<size_t>(lo[perp[1]]), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -205,6 +205,28 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 }
 
 void ABLBoundaryPlane::post_init_actions()
+{
+    if (!m_is_initialized) return;
+    initialize_data();
+    write_header();
+    write_file();
+    read_header();
+    read_file();
+}
+
+void ABLBoundaryPlane::pre_advance_work()
+{
+    if (!m_is_initialized) return;
+    read_file();
+}
+
+void ABLBoundaryPlane::post_advance_work()
+{
+    if (!m_is_initialized) return;
+    write_file();
+}
+
+void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
     for (const auto& plane : m_planes) {
@@ -655,9 +677,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
