@@ -9,7 +9,7 @@
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
-#include "amr-wind/wind_energy/ABLStats.H"
+#include "amr-wind/wind_energy/ABLStatsBase.H"
 /**
  *  \defgroup wind Wind energy modeling
  *  Wind energy modeling
@@ -84,7 +84,7 @@ public:
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
 
     //! Return the ABL statistics calculator
-    const ABLStats& abl_statistics() const { return *m_stats; }
+    const ABLStatsBase& abl_statistics() const { return *m_stats; }
 
 private:
     const CFDSim& m_sim;
@@ -107,7 +107,7 @@ private:
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
     //! ABL integrated statistics object
-    std::unique_ptr<ABLStats> m_stats;
+    std::unique_ptr<ABLStatsBase> m_stats;
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 };

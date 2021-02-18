@@ -35,7 +35,7 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 
-    mean_temperature_init(abl.abl_statistics().temperature_plane_stats());
+    mean_temperature_init(abl.abl_statistics().theta_profile());
 }
 
 ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
