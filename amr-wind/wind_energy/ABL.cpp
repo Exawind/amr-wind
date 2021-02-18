@@ -62,8 +62,6 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
             temp.array(mfi));
     }
 
-    m_stats->initialize();
-
     if (m_sim.repo().field_exists("tke")) {
         m_tke = &(m_sim.repo().get_field("tke"));
         auto& tke = (*m_tke)(level);
@@ -73,9 +71,9 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 
 void ABL::post_init_actions()
 {
-    m_abl_wall_func.init_log_law_height();
+    m_stats->post_init_actions();
 
-    m_stats->calc_averages();
+    m_abl_wall_func.init_log_law_height();
 
     m_abl_wall_func.update_umean(
         m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
@@ -133,7 +131,6 @@ void ABL::pre_advance_work()
  */
 void ABL::post_advance_work()
 {
-    m_stats->calc_averages();
     m_stats->post_advance_work();
 
     if (m_bndry_plane->is_initialized()) {

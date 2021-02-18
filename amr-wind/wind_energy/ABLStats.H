@@ -37,6 +37,9 @@ public:
 
     virtual ~ABLStats();
 
+    // Perform initialization actions after the mesh has been created
+    void post_init_actions();
+
     //! Read user inputs and create the necessary files
     void initialize();
 
