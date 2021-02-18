@@ -43,6 +43,10 @@ void PostProcessManager::pre_init_actions()
         perform_checks(registered_types, ptype);
         m_post.emplace_back(PostProcessBase::create(ptype, m_sim, label));
     }
+
+    for (auto& post : m_post) {
+        post->pre_init_actions();
+    }
 }
 
 void PostProcessManager::post_init_actions()

@@ -35,6 +35,7 @@ void IOManager::initialize_io()
     pp.query("plot_file", m_plt_prefix);
     pp.query("check_file", m_chk_prefix);
     pp.query("restart_file", m_restart_file);
+    pp.query("allow_missing_restart_fields", m_allow_missing_restart_fields);
 
     // ParmParse requires us to read in a vector
     pp.queryarr("outputs", out_vars);
@@ -175,11 +176,25 @@ void IOManager::read_checkpoint_fields(
     const amrex::Vector<amrex::DistributionMapping>& dm_chk)
 {
     BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
+
+    // Track set of fields that might be missing at this level
+    std::set<std::string> missing;
     const std::string level_prefix = "Level_";
     const int nlevels = m_sim.mesh().finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
+            const auto& fab_file = amrex::MultiFabFileFullPrefix(
+                lev, restart_file, level_prefix, field.name());
+
+            // Fields might be registered for checkpoint but might not be
+            // necessary for actually performing the simulation. Check if the
+            // field exists before attempting to read the restart field.
+            if (!amrex::VisMF::Exist(fab_file)) {
+                missing.insert(field.name());
+                continue;
+            }
+
             auto& mfab = field(lev);
             const auto& ba_fab = amrex::convert(ba_chk[lev], mfab.ixType());
             if (mfab.boxArray() == ba_fab &&
@@ -197,6 +212,22 @@ void IOManager::read_checkpoint_fields(
                 mfab.setBndry(0.0);
                 mfab.ParallelCopy(tmp);
             }
+        }
+    }
+
+    // If fields were missing, print diagnostic message.
+    if (!missing.empty()) {
+        amrex::Print() << "\nWARNING: The following fields were missing in the "
+                          "restart file for one or more levels. Please check "
+                          "your restart file and inputs."
+                       << std::endl
+                       << "Missing checkpoint fields: " << std::endl;
+        for (const auto& ff : missing) {
+            amrex::Print() << "  - " << ff << std::endl;
+        }
+        amrex::Print() << std::endl;
+        if (!m_allow_missing_restart_fields) {
+            amrex::Abort("Missing fields in restart file.");
         }
     }
 }
