@@ -52,7 +52,7 @@ ABL.surface_roughness_z0 = 0.15
 #.......................................#
 amr.n_cell              = 48 48 48    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
-
+amr.max_grid_size = 8
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#
