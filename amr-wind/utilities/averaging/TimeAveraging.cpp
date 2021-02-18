@@ -13,7 +13,7 @@ TimeAveraging::TimeAveraging(CFDSim& sim, const std::string& label)
 
 TimeAveraging::~TimeAveraging() = default;
 
-void TimeAveraging::initialize()
+void TimeAveraging::pre_init_actions()
 {
     //! Different averaging types
     amrex::Vector<std::string> labels;
@@ -49,6 +49,8 @@ void TimeAveraging::initialize()
         }
     }
 }
+
+void TimeAveraging::initialize() {}
 
 const std::string& TimeAveraging::add_averaging(
     const std::string& field_name, const std::string& avg_type)
