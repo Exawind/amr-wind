@@ -1,4 +1,4 @@
-#include "amr-wind/utilities/tagging/VorticityRefinement.H"
+#include "amr-wind/utilities/tagging/VorticityMagRefinement.H"
 #include "amr-wind/CFDSim.H"
 
 #include "AMReX.H"
@@ -6,13 +6,13 @@
 
 namespace amr_wind {
 
-VorticityRefinement::VorticityRefinement(const CFDSim& sim)
+VorticityMagRefinement::VorticityMagRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_vort_value(
           m_sim.mesh().maxLevel() + 1, std::numeric_limits<amrex::Real>::max())
 {}
 
-void VorticityRefinement::initialize(const std::string& key)
+void VorticityMagRefinement::initialize(const std::string& key)
 {
     std::string fname = "velocity";
 
@@ -28,7 +28,8 @@ void VorticityRefinement::initialize(const std::string& key)
     pp.queryarr("values", vort_value);
 
     if (vort_value.size() == 0u)
-        amrex::Abort("VorticityRefinement: Must specify at least one of value");
+        amrex::Abort(
+            "VorticityMagRefinement: Must specify at least one of value");
 
     {
         size_t fcount = std::min(vort_value.size(), m_vort_value.size());
@@ -37,7 +38,7 @@ void VorticityRefinement::initialize(const std::string& key)
     }
 }
 
-void VorticityRefinement::operator()(
+void VorticityMagRefinement::operator()(
     int level, amrex::TagBoxArray& tags, amrex::Real time, int)
 {
     const bool tag_field = level <= m_max_lev_field;

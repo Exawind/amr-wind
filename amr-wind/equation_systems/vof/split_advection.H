@@ -97,8 +97,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void eulerian_implicit(
         fluxL(i, j, k) = amrex::max(-aL, 0.0);
         fluxR(i, j, k) = amrex::max(aR, 0.0);
     } else if (volfrac(i, j, k) > 0.0) {
-        // mixed_youngs_central_normal(i, j, k, volfrac, mx, my, mz);
-        // alpha = volume_intercept(mx, my, mz, volfrac(i, j, k));
         fit_plane(i, j, k, volfrac, mx, my, mz, alpha);
         // Eulerian advection
         x0 = 0.0;
