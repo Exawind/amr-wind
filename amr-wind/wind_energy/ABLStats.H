@@ -1,8 +1,7 @@
 #ifndef ABLISTATS_H
 #define ABLISTATS_H
 
-#include <memory>
-
+#include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/SecondMomentAveraging.H"
@@ -28,38 +27,40 @@ class ABLForcing;
  *
  * \ingroup we_abl
  */
-class ABLStats
+class ABLStats : public ABLStatsBase::Register<ABLStats>
 {
 public:
-    static const std::string identifier() { return "ABLStats"; }
+    static const std::string identifier() { return "precursor"; }
 
-    ABLStats(CFDSim&, const ABLWallFunction&);
+    ABLStats(CFDSim&, const ABLWallFunction&, const int dir);
 
     virtual ~ABLStats();
 
-    //! Read user inputs and create the necessary files
-    void initialize();
+    ABLStatsMode abl_mode() const override { return ABLStatsMode::computed; }
 
-    //! Calculate plane average profiles
-    void calc_averages();
+    // Perform initialization actions after the mesh has been created
+    void post_init_actions() override;
+
+    //! Perform actions before a new timestep
+    void pre_advance_work() override {}
 
     //! Process fields given timestep and output to disk
-    void post_advance_work();
+    void post_advance_work() override;
 
     //! Compute height of capping inversion
     template <typename h1_dir, typename h2_dir>
     void compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel);
 
     //! Return vel plane averaging instance
-    const VelPlaneAveraging& vel_plane_averaging() { return m_pa_vel; };
+    const VelPlaneAveraging& vel_profile() const override { return m_pa_vel; };
 
     //! Return instance that handles temperature statistics
-    const FieldPlaneAveraging& temperature_plane_stats() const
+    const FieldPlaneAveraging& theta_profile() const override
     {
         return m_pa_temp;
     }
 
-    void register_forcing_term(pde::icns::ABLForcing* forcing) const
+    void register_forcing_term(pde::icns::ABLForcing* forcing) const override
     {
         m_abl_forcing = forcing;
     }
@@ -69,6 +70,12 @@ public:
     calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);
 
 protected:
+    //! Read user inputs and create the necessary files
+    void initialize();
+
+    //! Calculate plane average profiles
+    void calc_averages();
+
     //! Output data based on user-defined format
     virtual void process_output();
 

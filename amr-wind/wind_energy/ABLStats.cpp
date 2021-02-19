@@ -20,20 +20,27 @@ struct TemperatureGradient
 };
 } // namespace
 
-ABLStats::ABLStats(CFDSim& sim, const ABLWallFunction& abl_wall_func)
+ABLStats::ABLStats(
+    CFDSim& sim, const ABLWallFunction& abl_wall_func, const int dir)
     : m_sim(sim)
     , m_abl_wall_func(abl_wall_func)
     , m_temperature(sim.repo().get_field("temperature"))
     , m_mueff(sim.pde_manager().icns().fields().mueff)
-    , m_pa_vel(sim, 2)
-    , m_pa_temp(m_temperature, sim.time(), 2)
-    , m_pa_mueff(m_mueff, sim.time(), 2)
+    , m_pa_vel(sim, dir)
+    , m_pa_temp(m_temperature, sim.time(), dir)
+    , m_pa_mueff(m_mueff, sim.time(), dir)
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
 {}
 
 ABLStats::~ABLStats() = default;
+
+void ABLStats::post_init_actions()
+{
+    initialize();
+    calc_averages();
+}
 
 void ABLStats::initialize()
 {
@@ -135,8 +142,12 @@ void ABLStats::calc_sfs_stress_avgs(
 
 void ABLStats::post_advance_work()
 {
-#ifndef AMREX_USE_DPCPP
     BL_PROFILE("amr-wind::ABLStats::post_advance_work");
+
+    // Always compute mean velocity/temperature profiles
+    calc_averages();
+
+#ifndef AMREX_USE_DPCPP
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep

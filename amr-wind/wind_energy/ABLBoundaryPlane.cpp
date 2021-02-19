@@ -206,6 +206,28 @@ ABLBoundaryPlane::ABLBoundaryPlane(CFDSim& sim)
 
 void ABLBoundaryPlane::post_init_actions()
 {
+    if (!m_is_initialized) return;
+    initialize_data();
+    write_header();
+    write_file();
+    read_header();
+    read_file();
+}
+
+void ABLBoundaryPlane::pre_advance_work()
+{
+    if (!m_is_initialized) return;
+    read_file();
+}
+
+void ABLBoundaryPlane::post_advance_work()
+{
+    if (!m_is_initialized) return;
+    write_file();
+}
+
+void ABLBoundaryPlane::initialize_data()
+{
 #ifdef AMR_WIND_USE_NETCDF
     for (const auto& plane : m_planes) {
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
