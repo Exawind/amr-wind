@@ -11,7 +11,7 @@ time.cfl              =   0.25       # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = 1
+io.KE_int = 0
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -100       # Steps between checkpoint files
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
@@ -21,6 +21,8 @@ incflo.density        =  1.0             # Reference density
 incflo.use_godunov = 1
 transport.viscosity = 1.0e-3
 turbulence.model = KOmegaSST
+
+ICNS.source_terms = BodyForce
 BodyForce.magnitude = 1.0 0 0
 TKE.source_terms = KwSSTSrc
 SDR.source_terms = SDRSrc
