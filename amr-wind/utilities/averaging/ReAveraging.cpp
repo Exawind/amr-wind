@@ -24,7 +24,7 @@ ReAveraging::ReAveraging(CFDSim& sim, const std::string& fname)
     , m_average(sim.repo().declare_field(
           avg_name(m_field.name()),
           m_field.num_comp(),
-          0,
+          1, // 1 ghost cell to account for sampling
           1,
           m_field.field_location()))
 {
@@ -78,6 +78,7 @@ void ReAveraging::operator()(
                 });
         }
     }
+    m_average.fillpatch(time.new_time());
 }
 
 } // namespace averaging
