@@ -11,10 +11,10 @@ class Field;
  *
  *  ```
  *  tagging.labels = t1
- *  tagging/t1.type = FieldRefinement
+ *  tagging/t1.type = CurvatureRefinement
  *  tagging/t1.field_name = density
- *  # Tagging based on field value
- *  # tagging/t1.field_error = 10.0 10.0
+ *  # Tagging based on field's curvature value
+ *  # tagging/t1.values = 10.0 10.0
 
  */
 class CurvatureRefinement
