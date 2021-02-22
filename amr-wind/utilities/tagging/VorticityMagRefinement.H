@@ -11,21 +11,21 @@ class Field;
  *
  *  ```
  *  tagging.labels = v1
- *  tagging/v1.type = VorticityRefinement
+ *  tagging/v1.type = VorticityMagRefinement
  *  # Tagging based on value
  *  tagging/v1.values = 10.0 10.0
 
  *  ```
  */
-class VorticityRefinement
-    : public RefinementCriteria::Register<VorticityRefinement>
+class VorticityMagRefinement
+    : public RefinementCriteria::Register<VorticityMagRefinement>
 {
 public:
-    static std::string identifier() { return "VorticityRefinement"; }
+    static std::string identifier() { return "VorticityMagRefinement"; }
 
-    VorticityRefinement(const CFDSim& sim);
+    VorticityMagRefinement(const CFDSim& sim);
 
-    virtual ~VorticityRefinement() = default;
+    virtual ~VorticityMagRefinement() = default;
 
     //! Read input file and initialize boxarray used to refine each level
     virtual void initialize(const std::string& key) override;

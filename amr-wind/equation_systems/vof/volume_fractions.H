@@ -396,7 +396,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     amrex::Real& alpha)
 {
 
-    youngs_fd_normal(i, j, k, volfrac, mx, my, mz);
+    mixed_youngs_central_normal(i, j, k, volfrac, mx, my, mz);
 
     amrex::Real invx = 1.0;
     amrex::Real invy = 1.0;
@@ -428,11 +428,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void fit_plane(
     mz = invz * mz;
     alpha =
         alpha + amrex::min(0.0, mx) + amrex::min(0.0, my) + amrex::min(0.0, mz);
-
-    // Use the mixed_youngs_centrol_normal function -- DOES NOT WORK AT THE
-    // MOMENT
-    // mixed_youngs_central_normal(i, j, k, volfrac, mx, my, mz);
-    // alpha = volume_intercept(mx, my, mz, volfrac(i, j, k));
 }
 
 } // namespace multiphase
