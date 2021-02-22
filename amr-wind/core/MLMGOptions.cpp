@@ -21,9 +21,9 @@ void MLMGOptions::parse_options(const std::string& prefix)
 
     // LPInfo options
     pp.query("do_agglomeration", m_lpinfo.do_agglomeration);
-    pp.query("do_consolidation", m_lpinfo.do_agglomeration);
-    pp.query("do_semicoarsening", m_lpinfo.do_agglomeration);
-    pp.query("agg_grid_size", m_lpinfo.do_agglomeration);
+    pp.query("do_consolidation", m_lpinfo.do_consolidation);
+    pp.query("do_semicoarsening", m_lpinfo.do_semicoarsening);
+    pp.query("agg_grid_size", m_lpinfo.agg_grid_size);
     pp.query("con_grid_size", m_lpinfo.con_grid_size);
     pp.query("max_coarsening_level", m_lpinfo.max_coarsening_level);
     pp.query("max_semicoarsening_level", m_lpinfo.max_semicoarsening_level);

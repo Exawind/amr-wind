@@ -26,7 +26,15 @@ ABL::ABL(CFDSim& sim)
     auto& teqn = sim.pde_manager().register_transport_pde("Temperature");
     m_temperature = &(teqn.fields().field);
 
-    m_stats.reset(new ABLStats(sim, m_abl_wall_func));
+    {
+        std::string statistics_mode = "precursor";
+        int dir = 2;
+        amrex::ParmParse pp("ABL");
+        pp.query("normal_direction", dir);
+        pp.query("statistics_mode", statistics_mode);
+        m_stats =
+            ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
+    }
 
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
@@ -62,8 +70,6 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
             temp.array(mfi));
     }
 
-    m_stats->initialize();
-
     if (m_sim.repo().field_exists("tke")) {
         m_tke = &(m_sim.repo().get_field("tke"));
         auto& tke = (*m_tke)(level);
@@ -73,23 +79,18 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 
 void ABL::post_init_actions()
 {
+    m_stats->post_init_actions();
+
     m_abl_wall_func.init_log_law_height();
 
-    m_stats->calc_averages();
-
     m_abl_wall_func.update_umean(
-        m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
+        m_stats->vel_profile(), m_stats->theta_profile());
 
     // Register ABL wall function for velocity
     m_velocity.register_custom_bc<ABLVelWallFunc>(m_abl_wall_func);
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->post_init_actions();
-        m_bndry_plane->write_header();
-        m_bndry_plane->write_file();
-        m_bndry_plane->read_header();
-        m_bndry_plane->read_file();
-    }
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
+
+    m_bndry_plane->post_init_actions();
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -104,9 +105,9 @@ void ABL::post_init_actions()
  */
 void ABL::pre_advance_work()
 {
-    const auto& vel_pa = m_stats->vel_plane_averaging();
+    const auto& vel_pa = m_stats->vel_profile();
     m_abl_wall_func.update_umean(
-        m_stats->vel_plane_averaging(), m_stats->temperature_plane_stats());
+        m_stats->vel_profile(), m_stats->theta_profile());
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
@@ -118,12 +119,9 @@ void ABL::pre_advance_work()
     }
 
     if (m_abl_mean_bous != nullptr)
-        m_abl_mean_bous->mean_temperature_update(
-            m_stats->temperature_plane_stats());
+        m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
 
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->read_file();
-    }
+    m_bndry_plane->pre_advance_work();
 }
 
 /** Perform tasks at the end of a new timestep
@@ -133,12 +131,8 @@ void ABL::pre_advance_work()
  */
 void ABL::post_advance_work()
 {
-    m_stats->calc_averages();
     m_stats->post_advance_work();
-
-    if (m_bndry_plane->is_initialized()) {
-        m_bndry_plane->write_file();
-    }
+    m_bndry_plane->post_advance_work();
 }
 
 } // namespace amr_wind
