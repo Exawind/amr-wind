@@ -39,9 +39,8 @@ private:
     //! The stresses <AB>
     Field& m_stress;
 
-    //! The reynolds stresses <ab>=<AB> - <A><B> 
+    //! The reynolds stresses <ab>=<AB> - <A><B>
     Field& m_re_stress;
-
 };
 
 } // namespace averaging
