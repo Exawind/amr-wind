@@ -51,6 +51,7 @@ ReynoldsStress::ReynoldsStress(CFDSim& sim, const std::string& fname)
 
     // Register average field with the IO manager
     auto& iomgr = sim.io_manager();
+    iomgr.register_io_var(m_stress.name());
     iomgr.register_io_var(m_re_stress.name());
 }
 
