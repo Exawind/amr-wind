@@ -24,12 +24,6 @@ public:
     virtual const std::string& average_field_name() override;
 
 private:
-    //! Generate the averaged field name based on the field name
-    static std::string avg_name(const std::string& fname)
-    {
-        return "ReynoldsStress";
-    }
-
     //! Fluctuating field
     const Field& m_field;
 
