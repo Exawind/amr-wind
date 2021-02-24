@@ -128,7 +128,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void mixed_youngs_central_normal(
 
     m1 = volfrac(i - 1, j, k - 1) + volfrac(i - 1, j, k + 1) +
          volfrac(i - 1, j, k);
-    m2 = volfrac(i + 1, j, k - 1) + volfrac(j + 1, j, k + 1) +
+    m2 = volfrac(i + 1, j, k - 1) + volfrac(i + 1, j, k + 1) +
          volfrac(i + 1, j, k);
     m[2][0] = 0.5 * (m1 - m2);
 
