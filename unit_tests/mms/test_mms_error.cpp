@@ -4,7 +4,7 @@
 #include "aw_test_utils/test_utils.H"
 
 #include "masa.h"
-#include "amr-wind/mms/MMS.H"
+#include "amr-wind/physics/mms/MMS.H"
 
 namespace amr_wind_tests {
 

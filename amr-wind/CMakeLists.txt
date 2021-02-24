@@ -31,10 +31,6 @@ add_subdirectory(turbulence)
 add_subdirectory(physics)
 add_subdirectory(overset)
 
-if(AMR_WIND_ENABLE_MASA)
-  add_subdirectory(mms)
-endif()
-
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
 
