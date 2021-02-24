@@ -4,8 +4,6 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
 
-class PlaneAveraging;
-
 namespace amr_wind {
 namespace pde {
 namespace icns {

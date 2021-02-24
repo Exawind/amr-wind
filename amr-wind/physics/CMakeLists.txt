@@ -15,3 +15,7 @@ target_sources(${amr_wind_lib_name}
 
 add_subdirectory(multiphase)
 add_subdirectory(udfs)
+
+if(AMR_WIND_ENABLE_MASA)
+  add_subdirectory(mms)
+endif()

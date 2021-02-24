@@ -1,6 +1,6 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
+
 #include <algorithm>
-#include "amr-wind/incflo.H"
 
 namespace amr_wind {
 
@@ -15,7 +15,7 @@ FPlaneAveraging<FType>::FPlaneAveraging(
     , m_axis(axis_in)
     , m_comp_deriv(compute_deriv)
 {
-    AMREX_ALWAYS_ASSERT(m_axis >= 0 and m_axis <= 2);
+    AMREX_ALWAYS_ASSERT(m_axis >= 0 && m_axis < AMREX_SPACEDIM);
     auto geom = m_field.repo().mesh().Geom();
     // level=0 is default, could later make this an input.
     // Might only makes sense for fully covered levels
@@ -118,7 +118,7 @@ FPlaneAveraging<FType>::line_average_interpolated(amrex::Real x, int comp) const
         c = 1.0;
     }
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
 
     return m_line_average[m_ncomp * ind + comp] * (1.0 - c) +
            m_line_average[m_ncomp * (ind + 1) + comp] * c;
@@ -142,7 +142,7 @@ amrex::Real FPlaneAveraging<FType>::line_average_cell(int ind, int comp) const
     BL_PROFILE("amr-wind::PlaneAveraging::line_average_cell");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
 
     return m_line_average[m_ncomp * ind + comp];
 }
@@ -165,7 +165,7 @@ FPlaneAveraging<FType>::line_derivative_of_average_cell(int ind, int comp) const
     BL_PROFILE("amr-wind::PlaneAveraging::line_derivative_of_average_cell");
 
     AMREX_ALWAYS_ASSERT(comp >= 0 && comp < m_ncomp);
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
 
     amrex::Real dudx;
 
@@ -208,7 +208,7 @@ amrex::Real FPlaneAveraging<FType>::line_derivative_interpolated(
         c = 1.0;
     }
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
 
     return m_line_deriv[m_ncomp * ind + comp] * (1.0 - c) +
            m_line_deriv[m_ncomp * (ind + 1) + comp] * c;
@@ -317,7 +317,7 @@ template class FPlaneAveraging<ScratchField>;
 
 VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in)
     : FieldPlaneAveraging(
-          sim.pde_manager().icns().fields().field, sim.time(), axis_in, true)
+          sim.repo().get_field("velocity"), sim.time(), axis_in, true)
 {
     m_line_hvelmag_average.resize(m_ncell_line, 0.0);
     if (m_comp_deriv) m_line_hvelmag_deriv.resize(m_ncell_line, 0.0);
@@ -432,7 +432,7 @@ VelPlaneAveraging::line_hvelmag_derivative_of_average_cell(int ind) const
 {
     BL_PROFILE("amr-wind::VelPlaneAveraging::line_derivative_of_average_cell");
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
 
     amrex::Real dudx;
 
@@ -472,7 +472,7 @@ VelPlaneAveraging::line_hvelmag_average_interpolated(amrex::Real x) const
         c = 1.0;
     }
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind + 1 < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind + 1 < m_ncell_line);
 
     return m_line_hvelmag_average[ind] * (1.0 - c) +
            m_line_hvelmag_average[ind + 1] * c;
@@ -482,7 +482,7 @@ amrex::Real VelPlaneAveraging::line_hvelmag_average_cell(int ind) const
 {
     BL_PROFILE("amr-wind::VelPlaneAveraging::line_hvelmag_average_cell");
 
-    AMREX_ALWAYS_ASSERT(ind >= 0 and ind < m_ncell_line);
+    AMREX_ALWAYS_ASSERT(ind >= 0 && ind < m_ncell_line);
 
     return m_line_average[ind];
 }

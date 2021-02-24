@@ -1,4 +1,4 @@
-#include "amr-wind/mms/MMSForcing.H"
+#include "amr-wind/physics/mms/MMSForcing.H"
 #include "amr-wind/CFDSim.H"
 #include "masa.h"
 
