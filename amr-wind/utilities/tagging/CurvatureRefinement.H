@@ -15,7 +15,6 @@ class Field;
  *  tagging/t1.field_name = density
  *  # Tagging based on field's curvature value
  *  # tagging/t1.values = 10.0 10.0
-
  */
 class CurvatureRefinement
     : public RefinementCriteria::Register<CurvatureRefinement>
