@@ -135,11 +135,6 @@ public: // for cuda
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
 
-    void ComputeVorticity(
-        int lev,
-        amrex::Real time,
-        amrex::MultiFab& vort,
-        amrex::MultiFab const& vel);
     amrex::Real ComputeKineticEnergy() const;
 
     void ApplyProjection(
