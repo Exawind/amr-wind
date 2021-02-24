@@ -7,10 +7,6 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
-#include "amr-wind/utilities/PlaneAveraging.H"
-#include "amr-wind/utilities/FieldPlaneAveraging.H"
-#include "amr-wind/utilities/SecondMomentAveraging.H"
-#include "amr-wind/utilities/ThirdMomentAveraging.H"
 
 namespace amr_wind {
 

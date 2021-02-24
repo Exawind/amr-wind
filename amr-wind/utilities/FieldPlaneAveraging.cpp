@@ -1,6 +1,6 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
+
 #include <algorithm>
-#include "amr-wind/incflo.H"
 
 namespace amr_wind {
 
@@ -317,7 +317,7 @@ template class FPlaneAveraging<ScratchField>;
 
 VelPlaneAveraging::VelPlaneAveraging(CFDSim& sim, int axis_in)
     : FieldPlaneAveraging(
-          sim.pde_manager().icns().fields().field, sim.time(), axis_in, true)
+          sim.repo().get_field("velocity"), sim.time(), axis_in, true)
 {
     m_line_hvelmag_average.resize(m_ncell_line, 0.0);
     if (m_comp_deriv) m_line_hvelmag_deriv.resize(m_ncell_line, 0.0);

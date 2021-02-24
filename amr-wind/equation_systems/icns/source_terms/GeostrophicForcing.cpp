@@ -1,5 +1,4 @@
 #include "amr-wind/equation_systems/icns/source_terms/GeostrophicForcing.H"
-#include "amr-wind/utilities/PlaneAveraging.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/core/vs/vstraits.H"

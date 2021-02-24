@@ -8,7 +8,7 @@
 #include "AMReX_RealBox.H"
 #include "AMReX_Vector.H"
 
-#include "amr-wind/utilities/PlaneAveraging.H"
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/utilities/trig_ops.H"
 
 namespace amr_wind_tests {
@@ -50,14 +50,14 @@ TEST_F(PlaneAveragingTest, test_constant)
     // test the average of a constant is the same constant
     for (int dir = 0; dir < 3; ++dir) {
 
-        PlaneAveraging pa(dir);
-        pa(mesh().Geom(), density, velocity, mueff, tracer);
+        amr_wind::VelPlaneAveraging pa(sim(), dir);
+        pa();
 
         amrex::Real z = 0.5 * (problo[dir] + probhi[dir]);
 
-        amrex::Real u = pa.line_velocity_xdir(z);
-        amrex::Real v = pa.line_velocity_ydir(z);
-        amrex::Real w = pa.line_velocity_zdir(z);
+        amrex::Real u = pa.line_average_interpolated(z, 0);
+        amrex::Real v = pa.line_average_interpolated(z, 1);
+        amrex::Real w = pa.line_average_interpolated(z, 2);
 
         EXPECT_NEAR(u0, u, tol);
         EXPECT_NEAR(v0, v, tol);
@@ -132,8 +132,8 @@ TEST_F(PlaneAveragingTest, test_linear)
             add_linear(dir, u0, mesh().Geom(0), bx, vel);
         });
 
-    PlaneAveraging pa(dir);
-    pa(mesh().Geom(), density, velocity, mueff, tracer);
+    amr_wind::VelPlaneAveraging pa(sim(), dir);
+    pa();
 
     constexpr int n = 20;
     const amrex::Real L = probhi[dir] - problo[dir];
@@ -149,9 +149,9 @@ TEST_F(PlaneAveragingTest, test_linear)
         const amrex::Real x = problo[dir] + i * dx;
 
         amrex::Real u[3];
-        u[0] = pa.line_velocity_xdir(x);
-        u[1] = pa.line_velocity_ydir(x);
-        u[2] = pa.line_velocity_zdir(x);
+        u[0] = pa.line_average_interpolated(x, 0);
+        u[1] = pa.line_average_interpolated(x, 1);
+        u[2] = pa.line_average_interpolated(x, 2);
 
         amrex::Real xtest;
 
@@ -251,13 +251,13 @@ void PlaneAveragingTest::test_dir(int dir)
             add_periodic(dir, a, mesh().Geom(lev), bx, vel);
         });
 
-    PlaneAveraging pa(dir);
-    pa(mesh().Geom(), density, velocity, mueff, tracer);
+    amr_wind::VelPlaneAveraging pa(sim(), dir);
+    pa();
 
     amrex::Real x = 0.5 * (problo[dir] + probhi[dir]);
-    amrex::Real u = pa.line_velocity_xdir(x);
-    amrex::Real v = pa.line_velocity_ydir(x);
-    amrex::Real w = pa.line_velocity_zdir(x);
+    amrex::Real u = pa.line_average_interpolated(x, 0);
+    amrex::Real v = pa.line_average_interpolated(x, 1);
+    amrex::Real w = pa.line_average_interpolated(x, 2);
 
     // test that a periodic function orthogonal to dir
     // averages out to a constant
