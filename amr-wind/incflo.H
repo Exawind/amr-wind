@@ -132,53 +132,15 @@ public: // for cuda
     void set_inflow_velocity(
         int lev, amrex::Real time, amrex::MultiFab& vel, int nghost);
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // convection
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // derive
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    void ComputeStrainrate(amrex::Real time);
     void ComputeVorticity(
         int lev,
         amrex::Real time,
         amrex::MultiFab& vort,
         amrex::MultiFab const& vel);
-    void ComputeDivU(amrex::Real time);
     amrex::Real ComputeKineticEnergy() const;
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // prob
-    //
-    ///////////////////////////////////////////////////////////////////////////
-
-    void prob_init_fluid(int lev);
-    void prob_set_inflow_velocity(
-        int grid_id,
-        amrex::Orientation ori,
-        amrex::Box const& bx,
-        amrex::Array4<amrex::Real> const& v,
-        int lev,
-        amrex::Real time,
-        amrex::Real bcv);
-
-#include "amr-wind/prob/incflo_prob_I.H"
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    // projection
-    //
-    ///////////////////////////////////////////////////////////////////////////
 
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
