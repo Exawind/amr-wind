@@ -40,7 +40,10 @@ struct ReadInputsOp<FixedWing, ActSrcLine>
             *std::max_element(wdata.chord_inp.begin(), wdata.chord_inp.end());
         amrex::Real max_eps =
             *std::max_element(wdata.eps_inp.begin(), wdata.eps_inp.end());
-        amrex::Real search_radius = max_eps * max_chord * 3.0;
+        amrex::Real max_epsc = *std::max_element(
+            wdata.epsilon_chord.begin(), wdata.epsilon_chord.end());
+        amrex::Real search_radius =
+            amrex::max(max_eps, max_epsc) * max_chord * 3.0;
         const auto& p1 = wdata.start;
         const auto& p2 = wdata.end;
         // clang-format off
@@ -76,9 +79,9 @@ struct InitDataOp<FixedWing, ActSrcLine>
             meta.chord.resize(npts);
             ::amr_wind::interp::linear_monotonic(
                 meta.span_locs, meta.chord_inp, wx, meta.chord);
-            meta.epsilon_chord = {
-                meta.epsilon_chord.x(), meta.epsilon_chord.z(),
-                meta.epsilon_chord.y()};
+            meta.epsilon_chord = {meta.epsilon_chord.x(),
+                                  meta.epsilon_chord.z(),
+                                  meta.epsilon_chord.y()};
             for (int i = 0; i < npts; ++i) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     const auto eps = meta.epsilon_chord[n] * meta.chord[i];
