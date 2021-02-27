@@ -286,16 +286,9 @@ void FPlaneAveraging<FType>::compute_averages(
                             const int ind = idxOp(i, j, k);
 
                             for (int n = 0; n < ncomp; ++n) {
-#ifndef AMREX_USE_DPCPP
                                 amrex::Gpu::deviceReduceSum(
                                     &line_avg[ncomp * ind + n],
                                     fab_arr(i, j, k, n) * denom, handler);
-#else
-                                amrex::ignore_unused(handler);
-                                amrex::HostDevice::Atomic::Add(
-                                    &line_avg[ncomp * ind + n],
-                                    fab_arr(i, j, k, n) * denom);
-#endif
                             }
                         }
                     }
@@ -399,14 +392,8 @@ void VelPlaneAveraging::compute_hvelmag_averages(
                                     fab_arr(i, j, k, h1_idx) +
                                 fab_arr(i, j, k, h2_idx) *
                                     fab_arr(i, j, k, h2_idx));
-#ifndef AMREX_USE_DPCPP
                             amrex::Gpu::deviceReduceSum(
                                 &line_avg[ind], hvelmag * denom, handler);
-#else
-                            amrex::ignore_unused(handler);
-                            amrex::HostDevice::Atomic::Add(
-                                &line_avg[ind], hvelmag * denom);
-#endif
                         }
                     }
                 }
