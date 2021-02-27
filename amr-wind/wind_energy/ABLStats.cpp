@@ -147,7 +147,6 @@ void ABLStats::post_advance_work()
     // Always compute mean velocity/temperature profiles
     calc_averages();
 
-#ifndef AMREX_USE_DPCPP
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep

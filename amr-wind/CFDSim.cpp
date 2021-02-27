@@ -5,10 +5,6 @@
 #include "amr-wind/overset/OversetManager.H"
 #include "amr-wind/core/ExtSolver.H"
 
-#ifdef AMREX_USE_DPCPP
-#include "amr-wind/turbulence/turbulence_utils.H"
-#endif
-
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
@@ -38,12 +34,8 @@ void CFDSim::create_turbulence_model()
         pp.query("model", turbulence_model);
     }
 
-#ifndef AMREX_USE_DPCPP
     const std::string identifier = turbulence_model + "-" + transport_model;
     m_turbulence = turbulence::TurbulenceModel::create(identifier, *this);
-#else
-    m_turbulence = turbulence::create_turbulence_model(turbulence_model, *this);
-#endif
 }
 
 void CFDSim::init_physics()
