@@ -58,11 +58,13 @@ const std::string& ReynoldsStress::average_field_name()
 }
 
 void ReynoldsStress::operator()(
-    const SimTime& time, const amrex::Real filter_width)
+    const SimTime& time,
+    const amrex::Real filter_width,
+    const amrex::Real elapsed_time)
 {
     const amrex::Real dt = time.deltaT();
     const amrex::Real filter =
-        amrex::max(amrex::min(filter_width, time.new_time()), dt);
+        amrex::max(amrex::min(filter_width, elapsed_time), dt);
     const amrex::Real factor = amrex::max(filter - dt, 0.0);
 
     const int ncomp = m_field.num_comp();

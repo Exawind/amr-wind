@@ -20,6 +20,9 @@ void TimeAveraging::pre_init_actions()
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
+        pp.query("averaging_start_time", m_start_time);
+        pp.query("averaging_stop_time", m_stop_time);
+        pp.get("averaging_window", m_filter);
     }
 
     for (const auto& lbl : labels) {
@@ -31,7 +34,6 @@ void TimeAveraging::pre_init_actions()
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
         pp1.get("averaging_type", avg_type);
-        pp1.get("averaging_window", m_filter);
 
         for (const auto& fname : fnames) {
             const std::string key = fname + "_" + avg_type;
@@ -70,8 +72,17 @@ const std::string& TimeAveraging::add_averaging(
 
 void TimeAveraging::post_advance_work()
 {
+    const auto& time = m_sim.time();
+    const auto cur_time = time.new_time();
+
+    // Check if we are within the averaging time period requested by the user
+    const bool do_avg =
+        ((cur_time >= m_start_time) && (cur_time < m_stop_time));
+    if (!do_avg) return;
+
+    const amrex::Real elapsed_time = (cur_time - m_start_time);
     for (auto& avg : m_averages) {
-        (*avg)(m_sim.time(), m_filter);
+        (*avg)(time, m_filter, elapsed_time);
     }
 }
 
