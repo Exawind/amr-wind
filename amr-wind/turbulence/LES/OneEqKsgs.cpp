@@ -48,7 +48,11 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
     {
         amrex::ParmParse pp("ABL");
         pp.get("reference_temperature", m_ref_theta);
+        pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
     }
+
+    if (m_hybrid_rl)
+        m_sdr = &(sim.repo().declare_field("sdr", 1, 1, 1));
 
     {
         amrex::ParmParse pp("incflo");
@@ -205,6 +209,47 @@ void OneEqKsgsM84<Transport>::update_scalar_diff(
             name);
     }
 }
+
+template <typename Transport>
+void OneEqKsgsM84<Transport>::post_advance_work() {
+
+    BL_PROFILE("amr-wind::" + this->identifier() + "::post_advance_work");
+
+    if ( m_hybrid_rl )   {
+        // Update sdr field based on sfs ke
+
+        auto& tke = *(this->m_tke);
+        auto& sdr = *(this->m_sdr);
+        const amrex::Real Ce = this->m_Ce;
+
+        auto& repo = tke.repo();
+        auto& geom_vec = repo.mesh().Geom();
+        const int nlevels = repo.num_active_levels();
+        for (int lev = 0; lev < nlevels; ++lev) {
+            const auto& geom = geom_vec[lev];
+
+            const amrex::Real dx = geom.CellSize()[0];
+            const amrex::Real dy = geom.CellSize()[1];
+            const amrex::Real dz = geom.CellSize()[2];
+            const amrex::Real ds = std::cbrt(dx * dy * dz);
+
+            for (amrex::MFIter mfi(tke(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& tke_arr = tke(lev).array(mfi);
+                const auto& sdr_arr = sdr(lev).array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        sdr_arr(i, j, k) = std::sqrt(tke_arr(i,j,k))/(Ce * ds);
+                    });
+            }
+        }
+
+        sdr.fillpatch(this->m_sim.time().current_time());
+
+    }
+}
+
 
 template <typename Transport>
 OneEqKsgsS94<Transport>::OneEqKsgsS94(CFDSim& sim) : OneEqKsgs<Transport>(sim)
