@@ -170,9 +170,6 @@ void ABLStats::post_advance_work()
     m_pa_uuu();
 
     process_output();
-#else
-    return;
-#endif
 }
 
 template <typename h1_dir, typename h2_dir>
