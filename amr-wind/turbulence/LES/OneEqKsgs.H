@@ -31,6 +31,7 @@ protected:
     //! Turbulence constant
     amrex::Real m_Ce{0.1};
     amrex::Real m_Ceps{0.93};
+
 };
 
 /** 1-equation subgrid scale TKE turbulence model
@@ -58,6 +59,9 @@ public:
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
+    //! Do any post advance work
+    virtual void post_advance_work() override;
+
     //! Update the effective thermal diffusivity field
     virtual void update_alphaeff(Field& alphaeff) override;
 
@@ -76,6 +80,10 @@ private:
 
     //! Reference temperature (Kelvin)
     amrex::Real m_ref_theta{300.0};
+
+    //! Hybrid RANS-LES with Nalu-wind
+    bool m_hybrid_rl{false};
+    Field* m_sdr;
 };
 
 /** 1-equation subgrid scale TKE turbulence model
@@ -102,6 +110,9 @@ public:
 
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
+
+    //! No post advance work for this model
+    virtual void post_advance_work() override {}
 
     //! Update the effective scalar diffusivity field
     virtual void

@@ -30,6 +30,9 @@ public:
     //! Update the effective/turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
+    //! No post advance work for this model
+    virtual void post_advance_work() override {}
+
     //! Return the turbulent viscosity field (just the same as the effective
     //! field)
     virtual Field& mu_turb() override { return this->mueff(); }
