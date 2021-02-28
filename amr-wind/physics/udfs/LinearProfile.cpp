@@ -12,6 +12,9 @@ LinearProfile::LinearProfile(const Field& fld) : m_op()
     amrex::ParmParse pp("LinearProfile." + fld.name());
 
     const int ncomp = fld.num_comp();
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        (ncomp <= AMREX_SPACEDIM),
+        "LinearProfile requires field with 3 or fewer components");
     pp.query("direction", m_op.idir);
     const auto geom = fld.repo().mesh().Geom(0);
     m_op.zmin = geom.ProbLo(m_op.idir);
