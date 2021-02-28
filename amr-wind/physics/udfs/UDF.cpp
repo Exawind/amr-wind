@@ -52,8 +52,7 @@ void UDFImpl<T>::operator()(int level, const amrex::Geometry& geom)
     }
 }
 
-template class UDFImpl<LinearProfile<1>>;
-template class UDFImpl<LinearProfile<AMREX_SPACEDIM>>;
+template class UDFImpl<LinearProfile>;
 template class UDFImpl<PowerLawProfile>;
 
 } // namespace udf
