@@ -19,7 +19,7 @@ void register_inflow_vel_dirichlet(
     const SimTime& time)
 {
     if (inflow_udf == "LinearProfile") {
-        using InflowOp = BCOpCreator<udf::LinearVelProfile, WallOp>;
+        using InflowOp = BCOpCreator<udf::LinearProfile, WallOp>;
         field.register_fill_patch_op<FieldFillPatchOps<InflowOp>>(
             mesh, time, InflowOp(field));
     } else if (inflow_udf == "PowerLawProfile") {

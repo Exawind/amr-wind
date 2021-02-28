@@ -7,12 +7,14 @@
 namespace amr_wind {
 namespace udf {
 
-template <int DIM>
-LinearProfile<DIM>::LinearProfile(const Field& fld) : m_op()
+LinearProfile::LinearProfile(const Field& fld) : m_op()
 {
-    AMREX_ALWAYS_ASSERT(DIM == fld.num_comp());
     amrex::ParmParse pp("LinearProfile." + fld.name());
 
+    const int ncomp = fld.num_comp();
+    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+        (ncomp <= AMREX_SPACEDIM),
+        "LinearProfile requires field with 3 or fewer components");
     pp.query("direction", m_op.idir);
     const auto geom = fld.repo().mesh().Geom(0);
     m_op.zmin = geom.ProbLo(m_op.idir);
@@ -23,17 +25,14 @@ LinearProfile<DIM>::LinearProfile(const Field& fld) : m_op()
     pp.getarr("start_val", start_val);
     pp.getarr("stop_val", end_val);
 
-    AMREX_ASSERT(start_val.size() == DIM);
-    AMREX_ASSERT(end_val.size() == DIM);
+    AMREX_ALWAYS_ASSERT(start_val.size() == ncomp);
+    AMREX_ALWAYS_ASSERT(end_val.size() == ncomp);
 
-    for (int i = 0; i < DIM; ++i) {
+    for (int i = 0; i < ncomp; ++i) {
         m_op.fld_min[i] = start_val[i];
         m_op.fld_max[i] = end_val[i];
     }
 }
-
-template struct LinearProfile<1>;
-template struct LinearProfile<AMREX_SPACEDIM>;
 
 } // namespace udf
 } // namespace amr_wind

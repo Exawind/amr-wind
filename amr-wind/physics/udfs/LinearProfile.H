@@ -10,7 +10,6 @@ class Field;
 
 namespace udf {
 
-template <int DIM>
 struct LinearProfile
 {
     struct DeviceOp
@@ -18,8 +17,8 @@ struct LinearProfile
         int idir{2};
         amrex::Real zmin;
         amrex::Real zmax;
-        amrex::Real fld_min[DIM];
-        amrex::Real fld_max[DIM];
+        amrex::Real fld_min[AMREX_SPACEDIM];
+        amrex::Real fld_max[AMREX_SPACEDIM];
 
         AMREX_GPU_DEVICE
         inline void operator()(
@@ -57,8 +56,6 @@ struct LinearProfile
 
     DeviceOp m_op;
 };
-
-using LinearVelProfile = LinearProfile<AMREX_SPACEDIM>;
 
 } // namespace udf
 } // namespace amr_wind
