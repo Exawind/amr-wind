@@ -52,8 +52,8 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
     }
 
     if (m_hybrid_rl)
-        m_sdr =
-            &(sim.repo().declare_field("sdr", 1, this->m_tke.num_grow()[0], 1));
+        m_sdr = &(sim.repo().declare_field(
+            "sdr", 1, (*this->m_tke).num_grow()[0], 1));
 
     {
         amrex::ParmParse pp("incflo");
