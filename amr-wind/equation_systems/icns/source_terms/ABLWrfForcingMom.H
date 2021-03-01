@@ -32,7 +32,8 @@ public:
 
   void read_forcing_file();
 
-  void get_mean_vel_allheights(amrex::RealArray ux, amrex::RealArray uy);
+  void mean_velocity_heights(const FieldPlaneAveraging&);
+ 
 
  private:
   const SimTime& m_time;
@@ -40,14 +41,23 @@ public:
   std::string m_wrf_file;
   std::string m_forcing_scheme{"direct"};
 
-  amrex::Array<amrex::Real, 3> m_wrf_mom;
+  amrex::Array<amrex::Real> m_wrf_mom;
 
   amrex::Vector<amrex::Real> m_wrf_height;
   amrex::Vector<amrex::Real> m_wrf_time;
 
   int m_nheight;
   int m_ntime;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_velAvg_ht;
+  amrex::Gpu::DeviceVector<amrex::Real> m_uAvg_vals;
+  amrex::Gpu::DeviceVector<amrex::Real> m_vAvg_vals;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
+  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
+
   
+  int m_idx_time;
 
 };
 
