@@ -20,6 +20,9 @@ namespace icns {
 class ABLWrfForcingMom: public MomentumSource::Register<ABLWrfForcingMom>
 {
 public:
+
+  static const std::string identifier() { return "ABLWrfForcingMom"; }
+  
   explicit ABLWrfForcingMom(const CFDSim& sim);
   
   virtual ~ABLWrfForcingMom();
@@ -33,9 +36,9 @@ public:
 
   void read_forcing_file();
 
-  void mean_velocity_heights(const FieldPlaneAveraging&);
+  void mean_velocity_heights(const VelPlaneAveraging&);
 
-  void mean_velocity_init(const FieldPlaneAveraging&);
+  void mean_velocity_init(const VelPlaneAveraging&);
  
 
  private:

@@ -36,7 +36,7 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
 
 }
 
-ABLWrfForcingMom::~ABLWrfForcingMom = default;
+ABLWrfForcingMom::~ABLWrfForcingMom() = default;
 
 void ABLWrfForcingMom::read_forcing_file()
 {
@@ -59,8 +59,6 @@ void ABLWrfForcingMom::read_forcing_file()
 
   ncf.var("wrf_momentum").get(m_wrf_mom.data());
 
-  ncutils::NCFile::close();
-
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, tmpHeights.begin(),
       tmpHeights.end(), m_wrf_height.begin());
@@ -68,7 +66,7 @@ void ABLWrfForcingMom::read_forcing_file()
 
 }
 
-void ABLWrfForcingMom::mean_velocity_init(const FieldPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg)
 {
 
   m_axis = vavg.axis();
@@ -93,7 +91,7 @@ void ABLWrfForcingMom::mean_velocity_init(const FieldPlaneAveraging& vavg)
     mean_velocity_heights(vavg);
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(const FieldPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg)
 {
 
   amrex::Real currtime;
