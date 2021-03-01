@@ -2,7 +2,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
-
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 
@@ -29,9 +29,10 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
 {
 
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-  amrex::ParmParse pp_abl(identifier());
+  abl.register_mean_wrf_forcing(this);
 
-  pp_abl.get("WRF force file", m_wrf_file);
+  amrex::ParmParse pp_wrf_forcing("WRFforcing");
+  pp_wrf_forcing.get("WRF_force_file", m_wrf_file);
 
 }
 
@@ -40,7 +41,7 @@ ABLWrfForcingMom::~ABLWrfForcingMom = default;
 void ABLWrfForcingMom::read_forcing_file()
 {
   auto ncf = ncutils::NCFile::open_par(
-      m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
+      m_wrf_file, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
       amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
   m_nheight  = ncf.dim("nheight").len();

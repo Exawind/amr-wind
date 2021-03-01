@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
 namespace pde {
@@ -19,7 +20,7 @@ namespace icns {
 class ABLWrfForcingMom: public MomentumSource::Register<ABLWrfForcingMom>
 {
 public:
-  explicit ABLWrfForcingMom(){const CFDSim& sim};
+  explicit ABLWrfForcingMom(const CFDSim& sim);
   
   virtual ~ABLWrfForcingMom();
 
@@ -45,7 +46,7 @@ public:
   std::string m_wrf_file;
   std::string m_forcing_scheme{"direct"};
 
-  amrex::Array<amrex::Real> m_wrf_mom;
+  amrex::Vector<amrex::Real> m_wrf_mom;
 
   amrex::Vector<amrex::Real> m_wrf_height;
   amrex::Vector<amrex::Real> m_wrf_time;
