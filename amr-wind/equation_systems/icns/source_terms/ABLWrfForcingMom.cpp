@@ -47,7 +47,7 @@ void ABLWrfForcingMom::read_forcing_file()
   m_nheight  = ncf.dim("nheight").len();
   m_ntime = ncf.dim("ntime").len();
 
-  m_wrf_height.reize(m_nheight);
+  m_wrf_height.resize(m_nheight);
   m_wrf_time.resize(m_ntime);
 
   amrex::Vector<amrex::Real> tmpHeights(m_nheight);
@@ -78,7 +78,7 @@ void ABLWrfForcingMom::mean_velocity_init(const FieldPlaneAveraging& vavg)
   // a check here to catch this.
     AMREX_ALWAYS_ASSERT(
         m_mesh.Geom(0).Domain().length(m_axis) ==
-        static_cast<int>(tavg.line_centroids().size()));
+        static_cast<int>(vavg.line_centroids().size()));
     m_velAvg_ht.resize(vavg.line_centroids().size());
     m_uAvg_vals.resize(vavg.ncell_line());
     m_vAvg_vals.resize(vavg.ncell_line());
@@ -104,14 +104,14 @@ void ABLWrfForcingMom::mean_velocity_heights(const FieldPlaneAveraging& vavg)
 
   amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
-  coeff_interp[0] =  (m_wrf_time[m_idx_time+1] - m_time) /
+  coeff_interp[0] =  (m_wrf_time[m_idx_time+1] - currtime) /
       (m_wrf_time[m_idx_time+1] - m_wrf_time[m_idx_time]);
   coeff_interp[1] = 1.0 - coeff_interp[0];
 
   amrex::Vector<amrex::Real> wrfInterpU(m_nheight);
   amrex::Vector<amrex::Real> wrfInterpV(m_nheight);
 
-  for (i = 0 ; i < m_nheight; i++)
+  for (int i = 0 ; i < m_nheight; i++)
   {
     int lt = m_idx_time*m_nheight*2 + i*2;
     int rt = (m_idx_time+1)*m_nheight*2 + i*2;
@@ -146,8 +146,8 @@ void ABLWrfForcingMom::mean_velocity_heights(const FieldPlaneAveraging& vavg)
       
 }
 
-void ABLForcing::operator()(
-    const int,
+void ABLWrfForcingMom::operator()(
+    const int lev,
     const amrex::MFIter&,
     const amrex::Box& bx,
     const FieldState,
