@@ -1,10 +1,10 @@
 #ifndef ABLWRFFORCINGMOM
 #define ABLWRFFORCINGMOM
 
+#include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
-
-class PlaneAveraging;
+#include "amr-wind/utilities/FieldPlaneAveraging.H"
 
 namespace amr_wind {
 namespace pde {
@@ -33,10 +33,14 @@ public:
   void read_forcing_file();
 
   void mean_velocity_heights(const FieldPlaneAveraging&);
+
+  void mean_velocity_init(const FieldPlaneAveraging&);
  
 
  private:
   const SimTime& m_time;
+
+  const amrex::AmrCore& m_mesh;
 
   std::string m_wrf_file;
   std::string m_forcing_scheme{"direct"};
@@ -55,9 +59,10 @@ public:
 
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
-
   
   int m_idx_time;
+
+  int m_axis{2};
 
 };
 
