@@ -36,9 +36,9 @@ public:
 
   void read_forcing_file();
 
-  void mean_velocity_heights(const VelPlaneAveraging&);
+  void mean_velocity_heights(VelPlaneAveraging&);
 
-  void mean_velocity_init(const VelPlaneAveraging&);
+  void mean_velocity_init(VelPlaneAveraging&);
  
 
  private:

@@ -66,7 +66,7 @@ void ABLWrfForcingMom::read_forcing_file()
 
 }
 
-void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_init(VelPlaneAveraging& vavg)
 {
 
   m_axis = vavg.axis();
@@ -91,7 +91,7 @@ void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg)
     mean_velocity_heights(vavg);
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_heights(VelPlaneAveraging& vavg)
 {
 
   amrex::Real currtime;
@@ -132,12 +132,13 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg)
   // copy the spatially averaged velocity to GPU 
   size_t n_levels = vavg.ncell_line();
   amrex::Vector<amrex::Real> l_vec(n_levels);
-  vavg.line_average(0, l_vec);
+  int icomp = 0;
+  vavg.line_average(icomp, l_vec);
 
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_uAvg_vals.begin());
 
-  vavg.line_average(1, l_vec);
+  // vavg.line_average(1, l_vec);
 
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_vAvg_vals.begin());
