@@ -19,7 +19,15 @@ public:
 
     ReynoldsStress(CFDSim&, const std::string& fname);
 
-    virtual void operator()(const SimTime&, const amrex::Real) override;
+    /** Update field averaging at a given timestep
+     *
+     *  \param time SimTime instance
+     *  \param filter_width Time-averaging window specified by user
+     *
+     *  \param elapsed_time Time elapsed since averaging was initiated
+     */
+    virtual void
+    operator()(const SimTime&, const amrex::Real, const amrex::Real) override;
 
     virtual const std::string& average_field_name() override;
 
