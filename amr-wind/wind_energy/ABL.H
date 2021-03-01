@@ -35,6 +35,7 @@ namespace pde {
 namespace icns {
 class ABLForcing;
 class ABLMeanBoussinesq;
+class ABLWrfForcingMom;
 } // namespace icns
 } // namespace pde
 
