@@ -22,7 +22,7 @@ void GeometryRefinement::initialize(const std::string& key)
     }
 
     for (const auto& geom : shapes) {
-        const std::string& gkey = key + "/" + geom;
+        const std::string& gkey = key + "." + geom;
         amrex::ParmParse pp(gkey);
         std::string gtype;
         pp.get("type", gtype);

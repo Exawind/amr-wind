@@ -39,9 +39,9 @@ ICNS.source_terms = GravityForcing
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 128 16 96    # Grid cells at coarsest AMRlevel
-tagging.labels = sr                                                                                                                                                             
-tagging/sr.type = CartBoxRefinement                                                                                                                                             
-tagging/sr.static_refinement_def = static_box.refine                                                                                                                               
+tagging.labels = sr
+tagging.sr.type = CartBoxRefinement
+tagging.sr.static_refinement_def = static_box.refine
 amr.max_level = 1 
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
