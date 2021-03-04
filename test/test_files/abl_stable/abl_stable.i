@@ -59,7 +59,6 @@ ABL.stats_output_frequency = 100
 #.......................................#
 amr.n_cell              = 48 48 48 # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy
-tagging.static_refinement = false
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#

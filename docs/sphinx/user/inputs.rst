@@ -363,14 +363,14 @@ as initial conditions and discretization options.
      sampling.output_frequency  = 5
      sampling.labels            = line1 line2
      sampling.fields            = velocity
-     sampling/line1.type        = LineSampler
-     sampling/line1.num_points  = 21
-     sampling/line1.start       = 250.0 250.0 10.0
-     sampling/line1.end         = 250.0 250.0 210.0
-     sampling/line2.type        = LineSampler
-     sampling/line2.num_points  = 21
-     sampling/line2.start       = 500.0 500.0 10.0
-     sampling/line2.end         = 500.0 500.0 210.0
+     sampling.line1.type        = LineSampler
+     sampling.line1.num_points  = 21
+     sampling.line1.start       = 250.0 250.0 10.0
+     sampling.line1.end         = 250.0 250.0 210.0
+     sampling.line2.type        = LineSampler
+     sampling.line2.num_points  = 21
+     sampling.line2.start       = 500.0 500.0 10.0
+     sampling.line2.end         = 500.0 500.0 210.0
 
    In the above example, the code will read the parameters with keyword
    ``sampling`` to initialize user-defined probes.
@@ -856,27 +856,27 @@ of tagging logic. Note that this section is only active if
 Example::
 
   tagging.labels = s1 f1 g1
-  tagging/s1.type = CartBoxRefinement
-  tagging/s1.static_refinement_def = static_box.txt
+  tagging.s1.type = CartBoxRefinement
+  tagging.s1.static_refinement_def = static_box.txt
 
-  tagging/f1.type = FieldRefinement
-  tagging/f1.field_name = density
-  tagging/f1.grad_error = 0.1. 0.1 0.1
+  tagging.f1.type = FieldRefinement
+  tagging.f1.field_name = density
+  tagging.f1.grad_error = 0.1. 0.1 0.1
 
-  tagging/g1.type = GeometryRefinement
-  tagging/g1.shapes = c1 b1
+  tagging.g1.type = GeometryRefinement
+  tagging.g1.shapes = c1 b1
 
-  tagging/g1/c1.type = cylinder
-  tagging/g1/c1.start = 500.0 500.0 250.0
-  tagging/g1/c1.end = 500.0 500.0 750.0
-  tagging/g1/c1.outer_radius = 300.0
-  tagging/g1/c1.inner_radius = 275.0
+  tagging.g1.c1.type = cylinder
+  tagging.g1.c1.start = 500.0 500.0 250.0
+  tagging.g1.c1.end = 500.0 500.0 750.0
+  tagging.g1.c1.outer_radius = 300.0
+  tagging.g1.c1.inner_radius = 275.0
 
-  tagging/g1/b1.type = box
-  tagging/g1/b1.origin = 300.0 150.0 250.0
-  tagging/g1/b1.xaxis =  450.0 600.0 0.0
-  tagging/g1/b1.yaxis =  -150.0 100.0 0.0
-  tagging/g1/b1.zaxis = 0.0 0.0 500.0
+  tagging.g1.b1.type = box
+  tagging.g1.b1.origin = 300.0 150.0 250.0
+  tagging.g1.b1.xaxis =  450.0 600.0 0.0
+  tagging.g1.b1.yaxis =  -150.0 100.0 0.0
+  tagging.g1.b1.zaxis = 0.0 0.0 500.0
 
 Each section must contain the keyword ``type`` that is one of the refinement types:
 
@@ -906,8 +906,8 @@ Refinement using Cartesian boxes
 Example::
 
    tagging.labels = static
-   tagging/static.type = CartBoxRefinement
-   tagging/static.static_refinement_def = static_box.txt
+   tagging.static.type = CartBoxRefinement
+   tagging.static.static_refinement_def = static_box.txt
 
 .. input_param:: tagging.CartBoxRefinement.static_refinement_def
 
@@ -921,9 +921,9 @@ Refinement using field error criteria
 
 Example::
 
-  tagging/f1.type = FieldRefinement
-  tagging/f1.field_name = density
-  tagging/f1.grad_error = 0.1. 0.1 0.1
+  tagging.f1.type = FieldRefinement
+  tagging.f1.field_name = density
+  tagging.f1.grad_error = 0.1. 0.1 0.1
 
 .. input_param:: tagging.FieldRefinement.field_name
 
@@ -986,28 +986,28 @@ where refinement regions are active.
 
 Example::
 
-  tagging/g1.type = GeometryRefinement
-  tagging/g1.shapes = b1 b2
-  tagging/g1.level = 0
-  tagging/g1/b1.type = box
-  tagging/g1/b1.origin = 300.0 150.0 250.0
-  tagging/g1/b1.xaxis =  450.0 600.0 0.0
-  tagging/g1/b1.yaxis =  -150.0 100.0 0.0
-  tagging/g1/b1.zaxis = 0.0 0.0 500.0
-  tagging/g1/b2.type = box
-  tagging/g1/b2.origin = 600.0 350.0 250.0
-  tagging/g1/b2.xaxis =  50.0 30.0 0.0
-  tagging/g1/b2.yaxis =  -50.0 60.0 0.0
-  tagging/g1/b2.zaxis = 0.0 0.0 500.0
+  tagging.g1.type = GeometryRefinement
+  tagging.g1.shapes = b1 b2
+  tagging.g1.level = 0
+  tagging.g1.b1.type = box
+  tagging.g1.b1.origin = 300.0 150.0 250.0
+  tagging.g1.b1.xaxis =  450.0 600.0 0.0
+  tagging.g1.b1.yaxis =  -150.0 100.0 0.0
+  tagging.g1.b1.zaxis = 0.0 0.0 500.0
+  tagging.g1.b2.type = box
+  tagging.g1.b2.origin = 600.0 350.0 250.0
+  tagging.g1.b2.xaxis =  50.0 30.0 0.0
+  tagging.g1.b2.yaxis =  -50.0 60.0 0.0
+  tagging.g1.b2.zaxis = 0.0 0.0 500.0
 
-  tagging/g2.type = GeometryRefinement
-  tagging/g2.shapes = c1
-  tagging/g2.level = 1
-  tagging/g2/c1.type = cylinder
-  tagging/g2/c1.start = 500.0 500.0 250.0
-  tagging/g2/c1.end = 500.0 500.0 750.0
-  tagging/g2/c1.outer_radius = 300.0
-  tagging/g2/c1.inner_radius = 275.0
+  tagging.g2.type = GeometryRefinement
+  tagging.g2.shapes = c1
+  tagging.g2.level = 1
+  tagging.g2.c1.type = cylinder
+  tagging.g2.c1.start = 500.0 500.0 250.0
+  tagging.g2.c1.end = 500.0 500.0 750.0
+  tagging.g2.c1.outer_radius = 300.0
+  tagging.g2.c1.inner_radius = 275.0
 
 
 This example defines two different refinement definitions acting on level 0 and
@@ -1045,9 +1045,9 @@ Refinement using Q-Criterion
 
 Example::
 
-  tagging/qc1.type = QCriterionRefinement
-  tagging/qc1.nondim = false
-  tagging/qc1.values = 10.0 20.0 20.0
+  tagging.qc1.type = QCriterionRefinement
+  tagging.qc1.nondim = false
+  tagging.qc1.values = 10.0 20.0 20.0
 
 .. input_param:: tagging.QCriterionRefinement.nondim
 
@@ -1115,8 +1115,8 @@ actual keyword is determined by the labels provided to
 
       sampling.labels = line1 plane1 probe1
 
-   Then the code expects to read ``sampling/line1, sampling/plane1,
-   sampling/probe1`` sections to determine the specific sampling probe information.
+   Then the code expects to read ``sampling.line1, sampling.plane1,
+   sampling.probe1`` sections to determine the specific sampling probe information.
 
 .. input_param:: sampling.fields
 
@@ -1135,10 +1135,10 @@ nodes.
 
 Example::
 
-  sampling/line1.type       = LineSampler
-  sampling/line1.num_points = 21
-  sampling/line1.start      = 250.0 250.0 10.0
-  sampling/line1.end        = 250.0 250.0 210.0
+  sampling.line1.type       = LineSampler
+  sampling.line1.num_points = 21
+  sampling.line1.start      = 250.0 250.0 10.0
+  sampling.line1.end        = 250.0 250.0 210.0
 
 Sampling on one or more planes
 ```````````````````````````````
@@ -1152,13 +1152,13 @@ offset for as many planes as there are entries in the ``offset`` array.
 
 Example::
 
-  sampling/plane1.type        = PlaneSampler
-  sampling/plane1.axis1       = 0.0 1.0 0.0
-  sampling/plane1.axis2       = 0.0 0.0 1.0
-  sampling/plane1.origin      = 0.0 0.0 0.0
-  sampling/plane1.num_points  = 10 10
-  sampling/plane1.normal      = 1.0 0.0 0.0
-  sampling/plane1.offsets     = -10.0 0.0 10.0
+  sampling.plane1.type        = PlaneSampler
+  sampling.plane1.axis1       = 0.0 1.0 0.0
+  sampling.plane1.axis2       = 0.0 0.0 1.0
+  sampling.plane1.origin      = 0.0 0.0 0.0
+  sampling.plane1.num_points  = 10 10
+  sampling.plane1.normal      = 1.0 0.0 0.0
+  sampling.plane1.offsets     = -10.0 0.0 10.0
 
 Sampling at arbitrary locations
 ````````````````````````````````
@@ -1168,8 +1168,8 @@ locations read from a text file (default: ``probe_locations.txt``).
 
 Example::
 
-  sampling/probe1.type = ProbeSampler
-  sampling/probe1.probe_location_file = "probe_locations.txt"
+  sampling.probe1.type = ProbeSampler
+  sampling.probe1.probe_location_file = "probe_locations.txt"
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.

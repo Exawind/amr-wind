@@ -18,7 +18,7 @@ void RefineCriteriaManager::initialize()
     }
 
     for (auto& lbl : labels) {
-        const std::string key = "tagging/" + lbl;
+        const std::string key = "tagging." + lbl;
         amrex::ParmParse pp(key);
         std::string stype;
         pp.get("type", stype);

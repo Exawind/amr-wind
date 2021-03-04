@@ -57,7 +57,6 @@ ABL.wall_shear_stress_type = local
 amr.n_cell              = 36 36 24    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy
 amr.blocking_factor     = 4
-tagging.static_refinement = false
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
 #.......................................#

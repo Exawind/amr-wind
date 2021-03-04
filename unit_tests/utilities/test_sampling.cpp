@@ -203,7 +203,7 @@ TEST_F(SamplingTest, sampling)
             amrex::Vector<std::string>{"density", "pressure", "velocity"});
     }
     {
-        amrex::ParmParse pp("sampling/line1");
+        amrex::ParmParse pp("sampling.line1");
         pp.add("type", std::string("LineSampler"));
         pp.add("num_points", 16);
         pp.addarr("start", amrex::Vector<amrex::Real>{66.0, 66.0, 1.0});

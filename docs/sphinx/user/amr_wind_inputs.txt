@@ -117,16 +117,16 @@ sampling.labels = l_v11 p_h
 sampling.fields = velocity temperature
 
 # sampling along a line
-sampling/l_v11.type = LineSampler
-sampling/l_v11.num_points = 192
-sampling/l_v11.start = 500.0 500.0 5.0
-sampling/l_v11.end = 500.0 500.0 1995.0
+sampling.l_v11.type = LineSampler
+sampling.l_v11.num_points = 192
+sampling.l_v11.start = 500.0 500.0 5.0
+sampling.l_v11.end = 500.0 500.0 1995.0
 
 # Sampling on a plane
-sampling/p_h.type = PlaneSampler
-sampling/p_h.axis1 = 5210.0 0.0 0.0
-sampling/p_h.axis2 = 0.0 5210.0 0.0
-sampling/p_h.origin = 0.0 0.0 50.0
-sampling/p_h.num_points = 288 288
-sampling/p_h.normal = 0.0 0.0 1.0
-sampling/p_h.offsets = 0.0 50.0 150.0
+sampling.p_h.type = PlaneSampler
+sampling.p_h.axis1 = 5210.0 0.0 0.0
+sampling.p_h.axis2 = 0.0 5210.0 0.0
+sampling.p_h.origin = 0.0 0.0 50.0
+sampling.p_h.num_points = 288 288
+sampling.p_h.normal = 0.0 0.0 1.0
+sampling.p_h.offsets = 0.0 50.0 150.0

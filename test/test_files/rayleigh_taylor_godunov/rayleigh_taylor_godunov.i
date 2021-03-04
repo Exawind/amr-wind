@@ -36,9 +36,9 @@ RayleighTaylor.rho_hi = 2.0
 incflo.gravity          = 0. 0. -0.3
 
 tagging.labels = density
-tagging/density.type = FieldRefinement
-tagging/density.field_name = density
-tagging/density.grad_error = 0.1 0.1 0.1 0.1
+tagging.density.type = FieldRefinement
+tagging.density.field_name = density
+tagging.density.grad_error = 0.1 0.1 0.1 0.1
 
 incflo.use_godunov      = true
 incflo.constant_density = false
