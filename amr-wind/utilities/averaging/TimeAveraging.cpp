@@ -29,7 +29,7 @@ void TimeAveraging::pre_init_actions()
         //! Fields to be averaged
         amrex::Vector<std::string> fnames;
         std::string avg_type;
-        const std::string pp_key = m_label + "/" + lbl;
+        const std::string pp_key = m_label + "." + lbl;
 
         amrex::ParmParse pp1(pp_key);
         pp1.getarr("fields", fnames);
