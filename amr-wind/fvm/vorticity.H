@@ -13,7 +13,7 @@ template <typename FTypeIn, typename FTypeOut>
 struct Vorticity
 {
     Vorticity(FTypeOut& vortphi, const FTypeIn& phi)
-        : m_vortphi(vortphi), m_phi(phi)
+        : m_vort(vortphi), m_phi(phi)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -23,7 +23,7 @@ struct Vorticity
     {
         const auto& geom = m_phi.repo().mesh().Geom(lev);
         const auto& idx = geom.InvCellSizeArray();
-        const auto& vortphi = m_vortphi(lev).array(mfi);
+        const auto& vort = m_vort(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
 
         const auto& bx_in = mfi.tilebox();
@@ -66,13 +66,13 @@ struct Vorticity
                       cm1 * phi(i, j, k - 1, 1)) *
                      idx[2];
 
-                vortphi(i, j, k) = sqrt(
-                    std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                    std::pow(wx - uz, 2));
+                vort(i, j, k, 0) = wy - vz;
+                vort(i, j, k, 1) = uz - wx;
+                vort(i, j, k, 2) = vx - uy;
             });
     }
 
-    FTypeOut& m_vortphi;
+    FTypeOut& m_vort;
     const FTypeIn& m_phi;
 };
 
@@ -99,7 +99,7 @@ template <typename FType>
 inline std::unique_ptr<ScratchField> vorticity(const FType& phi)
 {
     const std::string gname = phi.name() + "_vorticity";
-    auto vortphi = phi.repo().create_scratch_field(gname, 1);
+    auto vortphi = phi.repo().create_scratch_field(gname, AMREX_SPACEDIM);
     vorticity(*vortphi, phi);
     return vortphi;
 }
