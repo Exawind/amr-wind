@@ -3,6 +3,7 @@
 #include "amr-wind/incflo.H"
 #include <AMReX_NodalProjector.H>
 #include "amr-wind/fvm/vorticity.H"
+#include "amr-wind/fvm/vorticity_mag.H"
 
 using namespace amrex;
 
@@ -62,7 +63,7 @@ Real incflo::ComputeEnstrophy() const
     // integrated total Enstrophy
     Real Enstrophy = 0.0;
 
-    auto vorticity = amr_wind::fvm::vorticity(velocity());
+    auto vorticity = amr_wind::fvm::vorticity_mag(velocity());
 
     for (int lev = 0; lev <= finest_level; lev++) {
 
@@ -90,9 +91,7 @@ Real incflo::ComputeEnstrophy() const
                     bx, [=, &Enstrophy_Fab](int i, int j, int k) noexcept {
                         Enstrophy_Fab +=
                             cell_vol * mask_arr(i, j, k) * den_arr(i, j, k) *
-                            (vort_arr(i, j, k, 0) * vort_arr(i, j, k, 0) +
-                             vort_arr(i, j, k, 1) * vort_arr(i, j, k, 1) +
-                             vort_arr(i, j, k, 2) * vort_arr(i, j, k, 2));
+                            (vort_arr(i, j, k) * vort_arr(i, j, k));
                     });
                 return Enstrophy_Fab;
             });
