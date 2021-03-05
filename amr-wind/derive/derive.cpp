@@ -2,7 +2,6 @@
 
 #include "amr-wind/incflo.H"
 #include <AMReX_NodalProjector.H>
-#include "amr-wind/fvm/vorticity.H"
 #include "amr-wind/fvm/vorticity_mag.H"
 
 using namespace amrex;
