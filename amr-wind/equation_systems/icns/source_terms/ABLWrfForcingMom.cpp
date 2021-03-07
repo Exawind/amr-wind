@@ -31,40 +31,15 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
   abl.register_mean_wrf_forcing(this);
 
+  std::string filenameWRF; 
   amrex::ParmParse pp_wrf_forcing("WRFforcing");
-  pp_wrf_forcing.get("WRF_force_file", m_wrf_file);
+  pp_wrf_forcing.get("WRF_force_file", filenameWRF);
+  set_forcing_file(filenameWRF);
+  read_forcing_file();
 
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
-
-void ABLWrfForcingMom::read_forcing_file()
-{
-  auto ncf = ncutils::NCFile::open_par(
-      m_wrf_file, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
-      amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
-
-  m_nheight  = ncf.dim("nheight").len();
-  m_ntime = ncf.dim("ntime").len();
-
-  m_wrf_height.resize(m_nheight);
-  m_wrf_time.resize(m_ntime);
-
-  amrex::Vector<amrex::Real> tmpHeights(m_nheight);
-  
-  ncf.var("heights").get(tmpHeights.data());
-  ncf.var("times").get(m_wrf_time.data());
-
-  m_wrf_mom.resize(m_nheight*m_ntime*2);
-
-  ncf.var("wrf_momentum").get(m_wrf_mom.data());
-
-  amrex::Gpu::copy(
-      amrex::Gpu::hostToDevice, tmpHeights.begin(),
-      tmpHeights.end(), m_wrf_height.begin());
-
-
-}
 
 void ABLWrfForcingMom::mean_velocity_init(VelPlaneAveraging& vavg)
 {
@@ -138,7 +113,7 @@ void ABLWrfForcingMom::mean_velocity_heights(VelPlaneAveraging& vavg)
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_uAvg_vals.begin());
 
-  // vavg.line_average(1, l_vec);
+  vavg.line_average(1, l_vec);
 
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_vAvg_vals.begin());
