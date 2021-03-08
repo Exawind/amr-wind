@@ -4,7 +4,7 @@
 
 namespace amr_wind {
 
-ABLWRFfile::ABLWRFfile(std::string filewrf): m_wrf_filename(filewrf)
+ABLWRFfile::ABLWRFfile(const std::string filewrf): m_wrf_filename(filewrf)
 {
 
     auto ncf = ncutils::NCFile::open_par(

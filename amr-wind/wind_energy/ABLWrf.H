@@ -9,9 +9,9 @@ class ABLWRFfile
 {
 
 public:
-    explicit ABLWRFfile(std::string filewrf);
+    explicit ABLWRFfile(const std::string filewrf);
 
-    ~ABLWRFfile() = default;
+    // ~ABLWRFfile() = default;
 
     const amrex::Vector<amrex::Real>& wrf_heights() const
     {
