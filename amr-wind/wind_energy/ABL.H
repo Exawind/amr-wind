@@ -119,7 +119,7 @@ private:
 
   mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-  WRFfile m_wrf_file;
+  ABLWRFfile m_wrf_file;
   
 };
 
