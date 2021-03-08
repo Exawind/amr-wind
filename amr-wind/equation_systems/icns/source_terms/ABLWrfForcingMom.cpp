@@ -31,11 +31,11 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
   abl.register_mean_wrf_forcing(this);
 
-  std::string filenameWRF; 
-  amrex::ParmParse pp_wrf_forcing("WRFforcing");
-  pp_wrf_forcing.get("WRF_force_file", filenameWRF);
-  set_forcing_file(filenameWRF);
-  read_forcing_file();
+  // std::string filenameWRF; 
+  // amrex::ParmParse pp_wrf_forcing("WRFforcing");
+  // pp_wrf_forcing.get("WRF_force_file", filenameWRF);
+  // set_forcing_file(filenameWRF);
+  // read_forcing_file();
 
 }
 
