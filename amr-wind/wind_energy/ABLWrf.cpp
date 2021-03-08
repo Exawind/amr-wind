@@ -4,10 +4,9 @@
 
 namespace amr_wind {
 
-ABLWRFfile::ABLWRFfile(std::string filename)
+ABLWRFfile::ABLWRFfile(std::string filewrf): m_wrf_filename(filewrf)
 {
 
-    m_wrf_filename = filename;
     auto ncf = ncutils::NCFile::open_par(
         m_wrf_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
