@@ -10,7 +10,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
-#include "amr-wind/wind_energy/ABLWrf.H"
+
 /**
  *  \defgroup wind Wind energy modeling
  *  Wind energy modeling
@@ -31,6 +31,8 @@
 class incflo;
 
 namespace amr_wind {
+
+class ABLWRFfile; 
 
 namespace pde {
 namespace icns {
@@ -119,7 +121,7 @@ private:
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-    ABLWRFfile m_wrf_file;
+    std::unique_ptr<ABLWRFfile> m_wrf_file;
 };
 
 } // namespace amr_wind

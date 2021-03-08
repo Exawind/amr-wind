@@ -2,7 +2,6 @@
 #define ABLWRF_H
 
 #include <memory>
-#include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
 
@@ -10,7 +9,7 @@ class ABLWRFfile
 {
 
 public:
-    ABLWRFfile(std::string filename){};
+    explicit ABLWRFfile(std::string filename);
 
     ~ABLWRFfile() = default;
 
