@@ -46,6 +46,7 @@ ABL::ABL(CFDSim& sim)
       pp.query("WRFforcing", file_wrf);
       m_wrf_file.reset(new ABLWRFfile(file_wrf)); 
       }
+#endif
     }
 
     // Instantiate the ABL field initializer
