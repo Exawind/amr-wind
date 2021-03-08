@@ -6,11 +6,11 @@
 
 namespace amr_wind {
 
-class WRFfile
+class ABLWRFfile
 {
 
 public:
-    WRFfile(std::string filename)
+    ABLWRFfile(std::string filename)
     {
       m_wrf_filename = filename; 
       auto ncf = ncutils::NCFile::open_par(
@@ -36,40 +36,40 @@ public:
         ncf.var("wrf_temperature").get(m_wrf_temp.data());
         ncf.var("wrf_tflux").get(m_wrf_tflux.data());
     }
-  ~WRFfile() = default;
+  ~ABLWRFfile() = default;
 
   const amrex::Vector<amrex::Real>& wrf_heights() const
   {
         return m_wrf_height;
-  };
+  }
 
   const amrex::Vector<amrex::Real>& wrf_times() const
   {
         return m_wrf_time;
-  };
+  }
 
   const amrex::Vector<amrex::Real>& wrf_u() const
   {
         return m_wrf_u;
-  };
+  }
 
   const amrex::Vector<amrex::Real>& wrf_v() const
   {
         return m_wrf_v;
-  };
+  }
 
   const amrex::Vector<amrex::Real>& wrf_temp() const
   {
         return m_wrf_temp;
-  };
+  }
 
   const amrex::Vector<amrex::Real>& wrf_tflux() const
   {
         return m_wrf_tflux;
-  };
+  }
 
-  int nheights() const { return m_nheight; };
-  int times() const { return m_ntime; };
+  int nheights() const { return m_nheight; }
+  int times() const { return m_ntime; }
 
 private:
     std::string m_wrf_filename;
