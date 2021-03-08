@@ -1,7 +1,6 @@
-#include "amr-wind/utilities/io_utils.H"
 #include "amr-wind/wind_energy/ABLWrf.H"
-#include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "AMReX_ParallelDescriptor.H"
 
 namespace amr_wind {
 
@@ -32,7 +31,5 @@ ABLWRFfile::ABLWRFfile(std::string filename)
     ncf.var("wrf_temperature").get(m_wrf_temp.data());
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 }
-
-ABLWRFfile::~ABLWRFfile() = default;
 
 } // namespace amr_wind
