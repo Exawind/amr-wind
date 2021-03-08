@@ -10,6 +10,7 @@
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
+#include "amr-wind/wind_energy/ABLWrf.H"
 /**
  *  \defgroup wind Wind energy modeling
  *  Wind energy modeling
@@ -117,6 +118,9 @@ private:
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
   mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
+
+  WRFfile m_wrf_file;
+  
 };
 
 } // namespace amr_wind
