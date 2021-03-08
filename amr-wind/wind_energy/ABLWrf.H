@@ -2,9 +2,6 @@
 #define ABLWRF_H
 
 #include <memory>
-#include "amr-wind/core/Field.H"
-#include "amr-wind/CFDSim.H"
-#include "AMReX_Gpu.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 
 namespace amr_wind {
