@@ -2,6 +2,9 @@
 #define ABLWRF_H
 
 #include <memory>
+#include <string>
+#include "AMReX_REAL.H"
+#include "AMReX_Array.H"
 
 namespace amr_wind {
 
