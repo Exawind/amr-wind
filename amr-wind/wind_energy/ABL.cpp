@@ -32,11 +32,11 @@ ABL::ABL(CFDSim& sim)
         m_stats =
             ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
 
-        if(pp.contains("WRFforcing")) {
-          std::string filename;
-          pp.query("WRFforcing", filename);
-          WRFfile m_wrf_file(filename); 
-        }
+        // if(pp.contains("WRFforcing")) {
+        //   std::string filename;
+        //   pp.query("WRFforcing", filename);
+        //   WRFfile m_wrf_file(filename); 
+        // }
 
    }
         
