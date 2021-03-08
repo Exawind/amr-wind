@@ -82,10 +82,10 @@ public:
     {
         m_abl_mean_bous = term;
     }
-  void register_mean_wrf_forcing(pde::icns::ABLWrfForcingMom* forcing) const
-  {
-    m_abl_wrf_forcing = forcing;
-  }
+    void register_mean_wrf_forcing(pde::icns::ABLWrfForcingMom* forcing) const
+    {
+        m_abl_wrf_forcing = forcing;
+    }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
 
@@ -112,15 +112,14 @@ private:
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
 
-  //! ABL integrated statistics object
+    //! ABL integrated statistics object
     std::unique_ptr<ABLStatsBase> m_stats;
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
-  mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
+    mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-  ABLWRFfile m_wrf_file;
-  
+    ABLWRFfile m_wrf_file;
 };
 
 } // namespace amr_wind
