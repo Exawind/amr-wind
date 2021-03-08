@@ -9,7 +9,7 @@ class ABLWRFfile
 {
 
 public:
-    explicit ABLWRFfile(std::string filename);
+    explicit ABLWRFfile(std::string filewrf);
 
     ~ABLWRFfile() = default;
 
