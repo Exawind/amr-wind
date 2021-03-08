@@ -5,6 +5,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLWrfForcingMom.H"
 #include "amr-wind/incflo.H"
+#include "amr-wind/wind_energy/ABLWrf.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
@@ -31,15 +32,20 @@ ABL::ABL(CFDSim& sim)
         pp.query("statistics_mode", statistics_mode);
         m_stats =
             ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
+    }
 
-        // if(pp.contains("WRFforcing")) {
-        //   std::string filename;
-        //   pp.query("WRFforcing", filename);
-        //   WRFfile m_wrf_file(filename); 
-        // }
-
-   }
-        
+    {
+      amrex::ParmParse pp("ABL");
+      if(pp.contains("WRFforcing")) {
+#ifndef AMR_WIND_USE_NETCDF
+      amrex::Abort(
+          "WRF forcing capability requires NetCDF");
+    
+#else
+      std::string file_wrf;
+      pp.query("WRFforcing", file_wrf);
+      m_wrf_file.reset(new ABLWRFfile(file_wrf)); 
+      }
     }
 
     // Instantiate the ABL field initializer
