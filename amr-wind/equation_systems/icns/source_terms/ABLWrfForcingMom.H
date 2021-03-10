@@ -37,9 +37,9 @@ public:
       const FieldState fstate,
       const amrex::Array4<amrex::Real>& src_term) const override;
 
-  void mean_velocity_heights(const VelPlaneAveraging&, std::shared_ptr<ABLWRFfile>&);
+  void mean_velocity_heights(const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
-  void mean_velocity_init(const VelPlaneAveraging&, std::shared_ptr<ABLWRFfile>&);
+  void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
  
 
  private:

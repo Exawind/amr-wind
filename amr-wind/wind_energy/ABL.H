@@ -94,6 +94,8 @@ public:
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
 
+    const ABLWRFfile& abl_wrf_file() const {return *m_wrf_file; }
+
 private:
     const CFDSim& m_sim;
 
@@ -121,7 +123,7 @@ private:
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-    std::shared_ptr<ABLWRFfile> m_wrf_file;
+    std::unique_ptr<ABLWRFfile> m_wrf_file;
 };
 
 } // namespace amr_wind
