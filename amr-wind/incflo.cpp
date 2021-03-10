@@ -209,7 +209,6 @@ void incflo::post_advance_work()
     if (m_time.write_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
-
 }
 
 /** Perform time-integration for user-defined time or timesteps.
