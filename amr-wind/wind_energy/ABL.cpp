@@ -140,8 +140,8 @@ void ABL::pre_advance_work()
             m_stats->vel_profile(), m_wrf_file);
     }
 
-    if (m_abl_wrf_temp_forcing != nullptr) {
-        m_abl_wrf_temp_forcing->mean_temperature_heights(
+    if (m_abl_wrf_theta_forcing != nullptr) {
+        m_abl_wrf_theta_forcing->mean_temperature_heights(
             m_stats->theta_profile(), m_wrf_file);
     }
 
