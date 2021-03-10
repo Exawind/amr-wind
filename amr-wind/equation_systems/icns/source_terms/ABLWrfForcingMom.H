@@ -1,6 +1,7 @@
 #ifndef ABLWRFFORCINGMOM
 #define ABLWRFFORCINGMOM
 
+#include <memory>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -36,9 +37,9 @@ public:
       const FieldState fstate,
       const amrex::Array4<amrex::Real>& src_term) const override;
 
-  void mean_velocity_heights(VelPlaneAveraging&);
+  void mean_velocity_heights(const VelPlaneAveraging&, std::shared_ptr<ABLWRFfile>&);
 
-  void mean_velocity_init(VelPlaneAveraging&);
+  void mean_velocity_init(const VelPlaneAveraging&, std::shared_ptr<ABLWRFfile>&);
  
 
  private:
@@ -54,6 +55,8 @@ public:
 
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_u_vals;
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
   
   int m_idx_time;
 
