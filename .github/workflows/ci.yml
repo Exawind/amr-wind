@@ -35,7 +35,7 @@ jobs:
             comp: llvm
             procs: $(sysctl -n hw.ncpu)
           - os: ubuntu-latest
-            install_deps: sudo apt-get install mpich libmpich-dev
+            install_deps: sudo apt-get install -y --no-install-recommends mpich libmpich-dev
             comp: gnu
             procs: $(nproc)
           - build_type: RelWithDebInfo
