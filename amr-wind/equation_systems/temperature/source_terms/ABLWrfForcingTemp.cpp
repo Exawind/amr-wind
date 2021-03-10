@@ -15,7 +15,7 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     : m_time(sim.time()), m_mesh(sim.mesh())
 {
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
-  abl.register_mean_wrf_temp_forcing(this);
+  abl.register_wrf_temp_forcing(this);
 
   mean_temperature_init(abl.abl_statistics().theta_profile, abl.abl_wrf_file);
 }

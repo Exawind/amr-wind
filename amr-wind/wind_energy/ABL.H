@@ -32,7 +32,7 @@ class incflo;
 
 namespace amr_wind {
 
- class ABLWRFfile; 
+class ABLWRFfile;
 
 namespace pde {
 namespace icns {
@@ -40,6 +40,9 @@ class ABLForcing;
 class ABLMeanBoussinesq;
 class ABLWrfForcingMom;
 } // namespace icns
+namespace temperature {
+class ABLWrfForcingTemp
+}
 } // namespace pde
 
 /** Atmospheric Boundary Layer physics
@@ -88,13 +91,18 @@ public:
     {
         m_abl_wrf_forcing = forcing;
     }
+    void register_wrf_temp_forcing(
+        pde::temperature::ABLWrfForcingTemp* forcing) const
+    {
+        m_abl_wrf_theta_forcing = forcing;
+    }
 
     const ABLBoundaryPlane& bndry_plane() const { return *m_bndry_plane; }
 
     //! Return the ABL statistics calculator
     const ABLStatsBase& abl_statistics() const { return *m_stats; }
 
-    const ABLWRFfile& abl_wrf_file() const {return *m_wrf_file; }
+    const ABLWRFfile& abl_wrf_file() const { return *m_wrf_file; }
 
 private:
     const CFDSim& m_sim;
@@ -122,6 +130,9 @@ private:
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
+
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{
+        nullptr};
 
     std::unique_ptr<ABLWRFfile> m_wrf_file;
 };
