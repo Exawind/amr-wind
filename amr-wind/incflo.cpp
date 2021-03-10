@@ -209,11 +209,6 @@ void incflo::post_advance_work()
     if (m_time.write_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }
-
-    if (m_KE_int > 0 && (m_time.time_index() % m_KE_int == 0)) {
-        amrex::Print() << "Time, Kinetic Energy: " << m_time.new_time() << ", "
-                       << ComputeKineticEnergy() << std::endl;
-    }
 }
 
 /** Perform time-integration for user-defined time or timesteps.
@@ -223,11 +218,6 @@ void incflo::post_advance_work()
 void incflo::Evolve()
 {
     BL_PROFILE("amr-wind::incflo::Evolve()");
-
-    if (m_KE_int > 0 && m_sim.io_manager().restart_file().empty()) {
-        amrex::Print() << "\nTime, Kinetic Energy: " << m_time.new_time()
-                       << ", " << ComputeKineticEnergy() << std::endl;
-    }
 
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();

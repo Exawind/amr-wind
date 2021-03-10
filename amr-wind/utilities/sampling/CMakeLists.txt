@@ -7,4 +7,6 @@ target_sources(${amr_wind_lib_name}
   PlaneSampler.cpp
   ProbeSampler.cpp
   FieldNorms.cpp
+  KineticEnergy.cpp
+  Enstrophy.cpp
   )

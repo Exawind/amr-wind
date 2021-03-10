@@ -1,19 +1,14 @@
 #include "aw_test_utils/MeshTest.H"
 #include "amr-wind/fvm/gradient.H"
-#include "amr-wind/fvm/strainrate.H"
-#include "amr-wind/fvm/vorticity.H"
-#include "amr-wind/fvm/vorticity_mag.H"
-#include "amr-wind/fvm/qcriterion.H"
 #include "amr-wind/fvm/laplacian.H"
 #include "amr-wind/fvm/divergence.H"
-#include "amr-wind/fvm/curvature.H"
 #include "AnalyticalFunction.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
 
 namespace amr_wind_tests {
 
-class FvmOpTest : public MeshTest
+class FvmOperatorsTest : public MeshTest
 {};
 
 namespace {
@@ -54,7 +49,7 @@ void initialize_velocity(
     });
 }
 
-amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
+amrex::Real grad_test_impl(amr_wind::Field& vel, const int pdegree)
 {
 
     const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
@@ -71,7 +66,7 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
         initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
     });
 
-    auto str = amr_wind::fvm::strainrate(vel);
+    auto grad_vel = amr_wind::fvm::gradient(vel);
 
     const int nlevels = vel.repo().num_active_levels();
     amrex::Real error_total = 0.0;
@@ -86,11 +81,10 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
         const auto& dx = geom[lev].CellSizeArray();
 
         error_total += amrex::ReduceSum(
-            (*str)(lev), 0,
+            (*grad_vel)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& str_arr)
-                -> amrex::Real {
+                amrex::Array4<amrex::Real const> const& gvel) -> amrex::Real {
                 amrex::Real error = 0.0;
 
                 amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
@@ -99,9 +93,34 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     error += amrex::Math::abs(
-                        str_arr(i, j, k) -
-                        analytical_function::strainrate(
-                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
+                        gvel(i, j, k, 0) - analytical_function::dphidx_eval(
+                                               pdegree, cu_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 1) - analytical_function::dphidy_eval(
+                                               pdegree, cu_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 2) - analytical_function::dphidz_eval(
+                                               pdegree, cu_ptr, x, y, z));
+
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 3) - analytical_function::dphidx_eval(
+                                               pdegree, cv_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 4) - analytical_function::dphidy_eval(
+                                               pdegree, cv_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 5) - analytical_function::dphidz_eval(
+                                               pdegree, cv_ptr, x, y, z));
+
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 6) - analytical_function::dphidx_eval(
+                                               pdegree, cw_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 7) - analytical_function::dphidy_eval(
+                                               pdegree, cw_ptr, x, y, z));
+                    error += amrex::Math::abs(
+                        gvel(i, j, k, 8) - analytical_function::dphidz_eval(
+                                               pdegree, cw_ptr, x, y, z));
                 });
 
                 return error;
@@ -111,72 +130,7 @@ amrex::Real strainrate_test_impl(amr_wind::Field& vel, const int pdegree)
     return error_total;
 }
 
-amrex::Real vorticity_test_impl(amr_wind::Field& vel, const int pdegree)
-{
-
-    const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
-
-    amrex::Gpu::DeviceVector<amrex::Real> cu(ncoeff, 0.000193);
-    amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.000463);
-    amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.000386);
-
-    auto& geom = vel.repo().mesh().Geom();
-
-    run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
-        auto vel_arr = vel(lev).array(mfi);
-        const auto& bx = mfi.validbox();
-        initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
-    });
-
-    auto vorticity = amr_wind::fvm::vorticity(vel);
-
-    const int nlevels = vel.repo().num_active_levels();
-    amrex::Real error_total = 0.0;
-
-    const amrex::Real* cu_ptr = cu.data();
-    const amrex::Real* cv_ptr = cv.data();
-    const amrex::Real* cw_ptr = cw.data();
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-
-        const auto& problo = geom[lev].ProbLoArray();
-        const auto& dx = geom[lev].CellSizeArray();
-
-        error_total += amrex::ReduceSum(
-            (*vorticity)(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& vort_arr)
-                -> amrex::Real {
-                amrex::Real error = 0.0;
-
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-                    error += amrex::Math::abs(
-                        vort_arr(i, j, k, 0) -
-                        analytical_function::vorticity_x(
-                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
-                        vort_arr(i, j, k, 1) -
-                        analytical_function::vorticity_y(
-                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                    error += amrex::Math::abs(
-                        vort_arr(i, j, k, 2) -
-                        analytical_function::vorticity_z(
-                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                });
-
-                return error;
-            });
-    }
-
-    return error_total;
-}
-
-amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
+amrex::Real laplacian_test_impl(amr_wind::Field& vel, const int pdegree)
 {
 
     const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
@@ -193,8 +147,7 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
         initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
     });
 
-    auto vrt_mag = amr_wind::fvm::vorticity_mag(vel);
-    auto vorticity = amr_wind::fvm::vorticity(vel);
+    auto lap = amr_wind::fvm::laplacian(vel);
 
     const int nlevels = vel.repo().num_active_levels();
     amrex::Real error_total = 0.0;
@@ -209,11 +162,10 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
         const auto& dx = geom[lev].CellSizeArray();
 
         error_total += amrex::ReduceSum(
-            (*vorticity)(lev), (*vrt_mag)(lev), 0,
+            (*lap)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& vrt_arr,
-                amrex::Array4<amrex::Real const> const& vrt_mag_arr)
+                amrex::Array4<amrex::Real const> const& lap_arr)
                 -> amrex::Real {
                 amrex::Real error = 0.0;
 
@@ -223,16 +175,9 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     error += amrex::Math::abs(
-                        vrt_mag_arr(i, j, k) -
-                        analytical_function::vorticity_mag(
+                        lap_arr(i, j, k) -
+                        analytical_function::laplacian(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-
-                    const amrex::Real vortmag = std::sqrt(
-                        vrt_arr(i, j, k, 0) * vrt_arr(i, j, k, 0) +
-                        vrt_arr(i, j, k, 1) * vrt_arr(i, j, k, 1) +
-                        vrt_arr(i, j, k, 2) * vrt_arr(i, j, k, 2));
-
-                    error += amrex::Math::abs(vrt_mag_arr(i, j, k) - vortmag);
                 });
 
                 return error;
@@ -242,10 +187,11 @@ amrex::Real vorticity_mag_test_impl(amr_wind::Field& vel, const int pdegree)
     return error_total;
 }
 
-amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
+amrex::Real divergence_test_impl(amr_wind::Field& vel, const int pdegree)
 {
 
     const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
+
     amrex::Gpu::DeviceVector<amrex::Real> cu(ncoeff, 0.00123);
     amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
     amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
@@ -258,7 +204,7 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
         initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
     });
 
-    auto qcrit = amr_wind::fvm::q_criterion(vel);
+    auto div = amr_wind::fvm::divergence(vel);
 
     const int nlevels = vel.repo().num_active_levels();
     amrex::Real error_total = 0.0;
@@ -273,10 +219,10 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
         const auto& dx = geom[lev].CellSizeArray();
 
         error_total += amrex::ReduceSum(
-            (*qcrit)(lev), 0,
+            (*div)(lev), 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& qcrit_arr)
+                amrex::Array4<amrex::Real const> const& div_arr)
                 -> amrex::Real {
                 amrex::Real error = 0.0;
 
@@ -286,8 +232,8 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
                     const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                     error += amrex::Math::abs(
-                        qcrit_arr(i, j, k) -
-                        analytical_function::q_criterion(
+                        div_arr(i, j, k) -
+                        analytical_function::divergence(
                             pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
                 });
 
@@ -300,7 +246,33 @@ amrex::Real q_criterion_test_impl(amr_wind::Field& vel, const int pdegree)
 
 } // namespace
 
-TEST_F(FvmOpTest, strainrate)
+TEST_F(FvmOperatorsTest, gradient)
+{
+
+    constexpr double tol = 1.0e-10;
+
+    populate_parameters();
+    {
+        amrex::ParmParse pp("geometry");
+        amrex::Vector<int> periodic{{0, 0, 0}};
+        pp.addarr("is_periodic", periodic);
+    }
+
+    initialize_mesh();
+
+    auto& repo = sim().repo();
+    const int ncomp = 3;
+    const int nghost = 1;
+    auto& vel = repo.declare_field("vel", ncomp, nghost);
+    const int pdegree = 2;
+    auto error_total = grad_test_impl(vel, pdegree);
+
+    amrex::ParallelDescriptor::ReduceRealSum(error_total);
+
+    EXPECT_NEAR(error_total, 0.0, tol);
+}
+
+TEST_F(FvmOperatorsTest, laplacian)
 {
 
     constexpr double tol = 1.0e-11;
@@ -320,14 +292,14 @@ TEST_F(FvmOpTest, strainrate)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = strainrate_test_impl(vel, pdegree);
+    auto error_total = laplacian_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
     EXPECT_NEAR(error_total, 0.0, tol);
 }
 
-TEST_F(FvmOpTest, vorticity)
+TEST_F(FvmOperatorsTest, divergence)
 {
 
     constexpr double tol = 1.0e-11;
@@ -347,61 +319,7 @@ TEST_F(FvmOpTest, vorticity)
     auto& vel = repo.declare_field("vel", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = vorticity_test_impl(vel, pdegree);
-
-    amrex::ParallelDescriptor::ReduceRealSum(error_total);
-
-    EXPECT_NEAR(error_total, 0.0, tol);
-}
-
-TEST_F(FvmOpTest, vorticity_mag)
-{
-
-    constexpr double tol = 1.0e-11;
-
-    populate_parameters();
-    {
-        amrex::ParmParse pp("geometry");
-        amrex::Vector<int> periodic{{0, 0, 0}};
-        pp.addarr("is_periodic", periodic);
-    }
-
-    initialize_mesh();
-
-    auto& repo = sim().repo();
-    const int ncomp = 3;
-    const int nghost = 1;
-    auto& vel = repo.declare_field("vel", ncomp, nghost);
-
-    const int pdegree = 2;
-    auto error_total = vorticity_mag_test_impl(vel, pdegree);
-
-    amrex::ParallelDescriptor::ReduceRealSum(error_total);
-
-    EXPECT_NEAR(error_total, 0.0, tol);
-}
-
-TEST_F(FvmOpTest, q_criterion)
-{
-
-    constexpr double tol = 1.0e-9;
-
-    populate_parameters();
-    {
-        amrex::ParmParse pp("geometry");
-        amrex::Vector<int> periodic{{0, 0, 0}};
-        pp.addarr("is_periodic", periodic);
-    }
-
-    initialize_mesh();
-
-    auto& repo = sim().repo();
-    const int ncomp = 3;
-    const int nghost = 1;
-    auto& vel = repo.declare_field("vel", ncomp, nghost);
-
-    const int pdegree = 2;
-    auto error_total = q_criterion_test_impl(vel, pdegree);
+    auto error_total = divergence_test_impl(vel, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 

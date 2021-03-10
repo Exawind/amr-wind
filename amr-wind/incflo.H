@@ -135,8 +135,6 @@ public: // for cuda
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
 
-    amrex::Real ComputeKineticEnergy() const;
-
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
         amrex::Real time,
@@ -179,6 +177,7 @@ private:
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
     int m_KE_int = -1;
+    int m_enstrophy_int = -1;
 
     //
     // end of member variables

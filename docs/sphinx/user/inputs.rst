@@ -216,13 +216,6 @@ Section: io
 
 This section deals with parameters that control input/output to the simulation.
 
-.. input_param:: io.KE_int
-
-   **type:** Integer, optional, default = -1
-
-   If this value is greater than zero, it indicates the frequency (in timesteps)
-   at which Kinetic Energy is computed and printed to the log file.
-   
 .. input_param:: io.check_file
 
    **type:** String, optional, default = "chk"

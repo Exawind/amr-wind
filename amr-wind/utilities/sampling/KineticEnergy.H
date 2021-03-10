@@ -1,0 +1,79 @@
+#ifndef KINETICENERGY_H
+#define KINETICENERGY_H
+
+#include "amr-wind/CFDSim.H"
+#include "amr-wind/utilities/PostProcessing.H"
+
+namespace amr_wind {
+namespace kinetic_energy {
+
+/** kinetic energy object
+ *  \ingroup Kinetic Energy
+ *
+ *  A concrete impelementation of the post-processing interface that deals with
+ *  integrating total kinetic energy
+ *
+ */
+class KineticEnergy : public PostProcessBase::Register<KineticEnergy>
+{
+public:
+    static const std::string identifier() { return "KineticEnergy"; }
+
+    KineticEnergy(CFDSim&, const std::string&);
+
+    ~KineticEnergy();
+
+    //! Perform actions before mesh is created
+    void pre_init_actions() override {}
+
+    //! Read user inputs and create the different data probe instances
+    void initialize() override;
+
+    //! Interpolate fields at a given timestep and output to disk
+    void post_advance_work() override;
+
+    //! calculate the L2 norm of a given field and component
+    amrex::Real calculate_kinetic_energy();
+
+private:
+    //! prepare ASCII file and directory
+    void prepare_ascii_file();
+
+    //! Output sampled data in ASCII format
+    void write_ascii();
+
+    //! store the total kinetic energy
+    amrex::Real m_total_kinetic_energy;
+
+    //! Reference to the CFD sim
+    CFDSim& m_sim;
+
+    /** Name of this sampling object.
+     *
+     *  The label is used to read user inputs from file and is also used for
+     *  naming files directories depending on the output format.
+     */
+    const std::string m_label;
+
+    //! reference to velocity
+    const Field& m_velocity;
+    //! reference to density
+    const Field& m_density;
+
+    //! filename for ASCII output
+    std::string m_out_fname;
+
+    //! Frequency of data sampling and output
+    int m_out_freq{10};
+
+    //! width in ASCII output
+    int m_width{18};
+
+    //! precision in ASCII output
+    int m_precision{12};
+};
+
+} // namespace kinetic_energy
+} // namespace amr_wind
+
+#endif /* KINETICENERGY_H */
