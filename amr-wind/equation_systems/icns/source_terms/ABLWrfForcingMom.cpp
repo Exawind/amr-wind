@@ -31,17 +31,11 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
   abl.register_mean_wrf_forcing(this);
 
-  // std::string filenameWRF; 
-  // amrex::ParmParse pp_wrf_forcing("WRFforcing");
-  // pp_wrf_forcing.get("WRF_force_file", filenameWRF);
-  // set_forcing_file(filenameWRF);
-  // read_forcing_file();
-
 }
 
 ABLWrfForcingMom::~ABLWrfForcingMom() = default;
 
-void ABLWrfForcingMom::mean_velocity_init(VelPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg, std::shared_ptr<ABLWRFfile>& wrfFile)
 {
 
   m_axis = vavg.axis();
@@ -60,39 +54,48 @@ void ABLWrfForcingMom::mean_velocity_init(VelPlaneAveraging& vavg)
         amrex::Gpu::hostToDevice, vavg.line_centroids().begin(),
         vavg.line_centroids().end(), m_velAvg_ht.begin());
 
-    m_wrf_u_vals.resize(m_nheight);
-    m_wrf_v_vals.resize(m_nheight);
+    m_wrf_u_vals.resize(wrfFile->nheights());
+    m_wrf_v_vals.resize(wrfFile->nheights());
+    m_wrf_ht.resize(wrfFile->nheights());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfFile->wrf_heights().begin(),
+        wrfFile->wrf_heights().end(), m_wrf_ht.begin());
     
-    mean_velocity_heights(vavg);
+    mean_velocity_heights(vavg, wrfFile);
 }
 
-void ABLWrfForcingMom::mean_velocity_heights(VelPlaneAveraging& vavg)
+void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std::shared_ptr<ABLWRFfile>& wrfFile)
 {
 
   amrex::Real currtime;
   currtime = m_time.current_time();
-  
+
   // First the index in time
-  m_idx_time = closest_index(m_wrf_time, currtime);
+  m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
 
   amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
-  coeff_interp[0] =  (m_wrf_time[m_idx_time+1] - currtime) /
-      (m_wrf_time[m_idx_time+1] - m_wrf_time[m_idx_time]);
+  amrex::Real denom  = wrfFile->wrf_times()[m_idx_time+1] -
+      wrfFile->wrf_times()[m_idx_time];
+  
+  coeff_interp[0] =  (wrfFile->wrf_times()[m_idx_time+1] - currtime) / denom; 
   coeff_interp[1] = 1.0 - coeff_interp[0];
 
-  amrex::Vector<amrex::Real> wrfInterpU(m_nheight);
-  amrex::Vector<amrex::Real> wrfInterpV(m_nheight);
+  int num_wrf_ht = wrfFile->nheights();
+  
+  amrex::Vector<amrex::Real> wrfInterpU(num_wrf_ht);
+  amrex::Vector<amrex::Real> wrfInterpV(num_wrf_ht);
 
-  for (int i = 0 ; i < m_nheight; i++)
-  {
-    int lt = m_idx_time*m_nheight*2 + i*2;
-    int rt = (m_idx_time+1)*m_nheight*2 + i*2;
-    wrfInterpU[i] = coeff_interp[0]*m_wrf_mom[lt] +
-        coeff_interp[1]*m_wrf_mom[rt];
+  for (int i = 0 ; i < num_wrf_ht; i++) {
+    int lt = m_idx_time*num_wrf_ht + i;
+    int rt = (m_idx_time+1)*num_wrf_ht + i;
     
-    wrfInterpV[i] = coeff_interp[0]*m_wrf_mom[lt+1] +
-        coeff_interp[1]*m_wrf_mom[rt+1];
+    wrfInterpU[i] = coeff_interp[0]*wrfFile->wrf_u()[lt] +
+        coeff_interp[1]*wrfFile->wrf_u()[rt];
+    
+    wrfInterpV[i] = coeff_interp[0]*wrfFile->wrf_v()[lt] +
+        coeff_interp[1]*wrfFile->wrf_v()[rt];
   }
 
   amrex::Gpu::copy(
@@ -105,18 +108,16 @@ void ABLWrfForcingMom::mean_velocity_heights(VelPlaneAveraging& vavg)
 
 
   // copy the spatially averaged velocity to GPU 
-  size_t n_levels = vavg.ncell_line();
-  amrex::Vector<amrex::Real> l_vec(n_levels);
-  int icomp = 0;
-  vavg.line_average(icomp, l_vec);
+  // size_t n_levels = vavg.ncell_line();
+  // amrex::Vector<amrex::Real> l_vec(n_levels);
 
-  amrex::Gpu::copy(
-      amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_uAvg_vals.begin());
+  // vavg.line_average(0, l_vec);
+  // amrex::Gpu::copy(
+  //     amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_uAvg_vals.begin());
 
-  vavg.line_average(1, l_vec);
-
-  amrex::Gpu::copy(
-      amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_vAvg_vals.begin());
+  // vavg.line_average(1, l_vec);
+  // amrex::Gpu::copy(
+  //     amrex::Gpu::hostToDevice, l_vec.begin(), l_vec.end(), m_vAvg_vals.begin());
       
 }
 
@@ -139,7 +140,6 @@ void ABLWrfForcingMom::operator()(
   const amrex::Real* vvals = m_vAvg_vals.data();
 
   const int idir = m_axis;
-  const int nh_max = m_velAvg_ht.size() - 2;
   const int lp1 = lev + 1;
   
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -147,24 +147,27 @@ void ABLWrfForcingMom::operator()(
     amrex::IntVect iv(i, j, k);
     const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
 
-     // First interpolate WRF output to the cell center
-    int idx_ht;  
-    idx_ht = closest_index(m_wrf_height, ht);
+    // First interpolate WRF output to the cell center
+    // int idx_ht;  
+    // // idx_ht = closest_index(m_wrf_ht, ht);
 
-    int ilh = amrex::min(idx_ht, m_nheight-2);
-    int irh = ilh + 1;
+    // const int nh_max_wrf = m_wrf_ht.size()-2; 
 
-    amrex::Real wrfIntp_u = wrfu[ilh] +
-        ((wrfu[irh] - wrfu[ilh]) /
-         (m_wrf_height[irh] - m_wrf_height[ilh])) *
-        (ht - m_wrf_height[ilh]);
+    // int ilh = amrex::min(idx_ht, nh_max_wrf);
+    // int irh = ilh + 1;
 
-    amrex::Real wrfIntp_v = wrfv[ilh] +
-        ((wrfv[irh] - wrfv[ilh]) /
-         (m_wrf_height[irh] - m_wrf_height[ilh])) *
-        (ht - m_wrf_height[ilh]);
+    // amrex::Real wrfIntp_u = wrfu[ilh] +
+    //     ((wrfu[irh] - wrfu[ilh]) /
+    //     (m_wrf_ht[irh] - m_wrf_ht[ilh])) *
+    //     (ht - m_wrf_ht[ilh]);
+
+    // amrex::Real wrfIntp_v = wrfv[ilh] +
+    //     ((wrfv[irh] - wrfv[ilh]) /
+    //      (m_wrf_ht[irh] - m_wrf_ht[ilh])) *
+    //     (ht - m_wrf_ht[ilh]);
 
     // Read in cell center spatially averaged u and v velocity
+    const int nh_max = m_velAvg_ht.size() - 2;
     const int il = amrex::min(k / lp1, nh_max);
     const int ir = il + 1;
     amrex::Real meanU, meanV;
@@ -178,8 +181,8 @@ void ABLWrfForcingMom::operator()(
         (ht - velheights[il]);
 
     // Compute Source term 
-    src_term(i, j, k, 0) += (wrfIntp_u - meanU) / dt;
-    src_term(i, j, k, 1) += (wrfIntp_v - meanV) / dt;
+    src_term(i, j, k, 0) += (wrfu[k] - meanU) / dt;
+    src_term(i, j, k, 1) += (wrfv[k] - meanV) / dt;
     
     // No forcing in z-direction
   });
