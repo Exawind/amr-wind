@@ -34,20 +34,19 @@ ABL::ABL(CFDSim& sim)
             ABLStatsBase::create(statistics_mode, sim, m_abl_wall_func, dir);
     }
 
-    {
+
       amrex::ParmParse pp("ABL");
       if(pp.contains("WRFforcing")) {
-#ifndef AMR_WIND_USE_NETCDF
-      amrex::Abort(
+ #ifndef AMR_WIND_USE_NETCDF
+       amrex::Abort(
           "WRF forcing capability requires NetCDF");
     
 #else
-      std::string file_wrf;
-      pp.query("WRFforcing", file_wrf);
-      m_wrf_file.reset(new ABLWRFfile(file_wrf)); 
-      }
+       std::string file_wrf;
+       pp.query("WRFforcing", file_wrf);
+       std::shared_ptr<ABLWRFfile> m_wrf_file(new ABLWRFfile(file_wrf));
 #endif
-    }
+       }
 
     // Instantiate the ABL field initializer
     m_field_init.reset(new ABLFieldInit());
@@ -104,6 +103,10 @@ void ABL::post_init_actions()
     (*m_temperature).register_custom_bc<ABLTempWallFunc>(m_abl_wall_func);
 
     m_bndry_plane->post_init_actions();
+
+    if(m_abl_wrf_forcing != nullptr){
+      m_abl_wrf_forcing->mean_velocity_init(m_stats->vel_profile(), m_wrf_file);
+    }
 }
 
 /** Perform tasks at the beginning of a new timestep
@@ -133,6 +136,10 @@ void ABL::pre_advance_work()
 
     if (m_abl_mean_bous != nullptr)
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+
+    if(m_abl_wrf_forcing != nullptr){
+      m_abl_wrf_forcing->mean_velocity_heights(m_stats->vel_profile(), m_wrf_file);
+    }
 
     m_bndry_plane->pre_advance_work();
 }

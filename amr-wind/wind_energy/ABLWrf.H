@@ -1,10 +1,10 @@
-#ifdef ABLWRF_H
+#ifndef ABLWRF_H
 #define ABLWRF_H
 
-#include <memory>
 #include <string>
 #include "AMReX_REAL.H"
 #include "AMReX_Array.H"
+#include "amr-wind/CFDSim.H"
 
 namespace amr_wind {
 
@@ -12,7 +12,7 @@ class ABLWRFfile
 {
 
 public:
-    ABLWRFfile(const std::string);
+  ABLWRFfile(const std::string);
 
     // ~ABLWRFfile() = default;
 
@@ -43,8 +43,8 @@ private:
     amrex::Vector<amrex::Real> m_wrf_temp;
     amrex::Vector<amrex::Real> m_wrf_tflux;
 
-    int m_nheight;
-    int m_ntime;
+    int m_wrf_nheight;
+    int m_wrf_ntime;
 };
 
 } // namespace amr_wind

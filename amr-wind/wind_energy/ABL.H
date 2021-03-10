@@ -32,7 +32,7 @@ class incflo;
 
 namespace amr_wind {
 
-class ABLWRFfile; 
+ class ABLWRFfile; 
 
 namespace pde {
 namespace icns {
@@ -121,7 +121,7 @@ private:
 
     mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_forcing{nullptr};
 
-    std::unique_ptr<ABLWRFfile> m_wrf_file;
+    std::shared_ptr<ABLWRFfile> m_wrf_file;
 };
 
 } // namespace amr_wind
