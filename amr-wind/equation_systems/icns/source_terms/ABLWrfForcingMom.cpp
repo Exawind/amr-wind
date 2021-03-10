@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
+#include "AMReX_Print.H"
 
 namespace amr_wind{
 namespace pde{
@@ -106,6 +107,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
       amrex::Gpu::hostToDevice, wrfInterpV.begin(),
       wrfInterpV.end(), m_wrf_v_vals.begin());
 
+  amrex::Print() << "size of avg array = " << vavg.line_average().size() << "\n";
 
   // copy the spatially averaged velocity to GPU 
   // size_t n_levels = vavg.ncell_line();
