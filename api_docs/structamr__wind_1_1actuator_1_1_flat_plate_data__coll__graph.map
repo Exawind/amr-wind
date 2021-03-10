@@ -1,0 +1,5 @@
+<map id="amr_wind::actuator::FlatPlateData" name="amr_wind::actuator::FlatPlateData">
+<area shape="rect" id="node1" title=" " alt="" coords="91,109,239,151"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1actuator_1_1_wing_base_data.html" title="Base data representation of a fixed&#45;wing." alt="" coords="5,5,153,47"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1actuator_1_1_thin_airfoil.html" title=" " alt="" coords="177,5,325,47"/>
+</map>

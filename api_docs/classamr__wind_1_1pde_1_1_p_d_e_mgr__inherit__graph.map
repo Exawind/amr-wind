@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::PDEMgr" name="amr_wind::pde::PDEMgr">
+<area shape="rect" id="node1" title="PDE systems manager." alt="" coords="5,215,183,241"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="15,124,173,165"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_coll_mgr.html" title="Interface to manage objects of sub&#45;classes based on factory registration." alt="" coords="8,5,180,61"/>
+</map>

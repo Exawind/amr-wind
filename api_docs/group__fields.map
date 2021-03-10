@@ -1,0 +1,7 @@
+<map id="Field management" name="Field management">
+<area shape="rect" id="node1" href="$group__field__fillpatch.html" title="Field fillpatch operators." alt="" coords="373,5,515,31"/>
+<area shape="rect" id="node2" href="$group__field__bc.html" title="Boundary conditions managment." alt="" coords="367,55,521,95"/>
+<area shape="rect" id="node3" href="$group__field__ops.html" title="Operators for manipulating fields and computing derived quantities." alt="" coords="381,120,507,145"/>
+<area shape="rect" id="node4" title="Field management infrastructure." alt="" coords="175,63,319,88"/>
+<area shape="rect" id="node5" href="$group__core.html" title="Core data structures in AMR&#45;Wind." alt="" coords="5,63,127,88"/>
+</map>

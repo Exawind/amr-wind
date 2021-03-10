@@ -1,0 +1,4 @@
+<map id="amr_wind::averaging::ReAveraging" name="amr_wind::averaging::ReAveraging">
+<area shape="rect" id="node1" title="Reynolds averaging to compute mean field from a given CFD field." alt="" coords="27,95,185,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,207,47"/>
+</map>

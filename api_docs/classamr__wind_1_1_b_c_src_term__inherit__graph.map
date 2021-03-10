@@ -1,0 +1,4 @@
+<map id="amr_wind::BCSrcTerm" name="amr_wind::BCSrcTerm">
+<area shape="rect" id="node1" title="Specialization for source terms." alt="" coords="5,80,169,107"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_b_c_iface.html" title="Abstract class that defines the interface for processing BCs." alt="" coords="15,5,159,32"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt;" name="amr_wind::CollMgr&lt; Collection, Type, allow_duplicates &gt;">
+<area shape="rect" id="node1" title="Interface to manage objects of sub&#45;classes based on factory registration." alt="" coords="5,63,177,119"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="417,5,616,47"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="431,71,603,112"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1_coll_mgr.html" title=" " alt="" coords="437,136,596,177"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_ext_solver_mgr.html" title=" " alt="" coords="665,13,847,39"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1_physics_mgr.html" title="A collection of Physics models instances that are active during a simulation." alt="" coords="672,78,840,105"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1pde_1_1_p_d_e_mgr.html" title="PDE systems manager." alt="" coords="667,143,845,170"/>
+</map>

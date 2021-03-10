@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::DiffusionOp&lt; TKE, Scheme &gt;" name="amr_wind::pde::DiffusionOp&lt; TKE, Scheme &gt;">
+<area shape="rect" id="node1" title="Diffusion operator for scalar transport equations." alt="" coords="9,200,193,241"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title=" " alt="" coords="5,109,196,151"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1pde_1_1_diff_solver_iface.html" title="Base class for all diffusion operators." alt="" coords="5,5,196,47"/>
+</map>

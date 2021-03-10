@@ -1,0 +1,7 @@
+<map id="Wind energy modeling" name="Wind energy modeling">
+<area shape="rect" id="node1" href="$group__amr__utils.html" title="Mesh refinement." alt="" coords="612,5,744,31"/>
+<area shape="rect" id="node2" href="$group__actuator.html" title="Actuator source modeling for wind turbines." alt="" coords="595,55,761,80"/>
+<area shape="rect" id="node3" href="$group__physics.html" title="AMR&#45;Wind representation of different physics." alt="" coords="5,55,128,80"/>
+<area shape="rect" id="node5" title="Wind energy modeling." alt="" coords="177,55,347,80"/>
+<area shape="rect" id="node4" href="$group__we__abl.html" title="Atmospheric boundary layer (ABL) modeling." alt="" coords="655,104,701,129"/>
+</map>

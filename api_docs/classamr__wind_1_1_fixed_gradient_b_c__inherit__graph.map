@@ -1,0 +1,4 @@
+<map id="amr_wind::FixedGradientBC" name="amr_wind::FixedGradientBC">
+<area shape="rect" id="node1" title="Applies a non&#45;zero gradient at the domain boundary." alt="" coords="5,80,208,107"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_field_b_c_iface.html" title="Interface to setup up boundary conditions on a field." alt="" coords="19,5,194,32"/>
+</map>

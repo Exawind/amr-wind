@@ -1,0 +1,5 @@
+<map id="Actuator source terms" name="Actuator source terms">
+<area shape="rect" id="node1" title="Actuator source modeling for wind turbines." alt="" coords="224,22,391,47"/>
+<area shape="rect" id="node3" href="$group__icns__src.html" title="Source terms used with incompressible Navier&#45;Stokes momentum equation." alt="" coords="569,22,712,47"/>
+<area shape="rect" id="node2" href="$group__wind.html" title="Wind energy modeling." alt="" coords="5,22,175,47"/>
+</map>

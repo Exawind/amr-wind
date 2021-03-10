@@ -1,0 +1,4 @@
+<map id="amr_wind::BCFillPatchExtrap" name="amr_wind::BCFillPatchExtrap">
+<area shape="rect" id="node1" title="Default BC that can be applied on any field." alt="" coords="5,80,213,107"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_b_c_iface.html" title="Abstract class that defines the interface for processing BCs." alt="" coords="37,5,181,32"/>
+</map>

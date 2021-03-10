@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,39,231,80"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1turbulence_1_1_turbulence_model.html" title="Abstract representation of a turbulence model." alt="" coords="279,39,441,80"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1turbulence_1_1_turb_model.html" title="Turbulence model with a specific transport model." alt="" coords="489,39,676,80"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1turbulence_1_1_laminar.html" title="Laminar model." alt="" coords="747,5,920,47"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1turbulence_1_1_turb_model_base.html" title="Turbulence model aspects common to both LES and RANS models." alt="" coords="724,71,943,112"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t.html" title="K&#45;Omega&#45;SST RANS turbulence model." alt="" coords="993,5,1192,47"/>
+<area shape="rect" id="node8" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs.html" title="Base class for 1&#45;Equation subgrid scale TKE turbulence model." alt="" coords="996,71,1189,112"/>
+<area shape="rect" id="node11" href="$classamr__wind_1_1turbulence_1_1_smagorinsky.html" title="Smagorinsky LES Model." alt="" coords="991,136,1195,177"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t_i_d_d_e_s.html" title="K&#45;Omega&#45;SST&#45;IDDES Hybrid RANS/LES turbulence model." alt="" coords="1243,5,1481,47"/>
+<area shape="rect" id="node9" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_m84.html" title="1&#45;equation subgrid scale TKE turbulence model" alt="" coords="1251,71,1473,112"/>
+<area shape="rect" id="node10" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_s94.html" title="1&#45;equation subgrid scale TKE turbulence model" alt="" coords="1253,136,1471,177"/>
+</map>

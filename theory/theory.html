@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Theory Manual &mdash; AMR-Wind 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Developer Documentation" href="../developer/index.html" />
+    <link rel="prev" title="AMR-Wind ABL Boundary I/O" href="../user/abl_bndry_io.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AMR-Wind
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user/user.html">User Manual</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Theory Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#governing-equations">Governing equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#discretization">Discretization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time-step-mol">Time Step – MOL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-step-godunov">Time Step – Godunov</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multiphase-flow-modelling">Multiphase flow modelling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#navigating-source-code">Navigating source code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AMR-Wind</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Theory Manual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/theory/theory.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="theory-manual">
+<h1>Theory Manual<a class="headerlink" href="#theory-manual" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="governing-equations">
+<h2>Governing equations<a class="headerlink" href="#governing-equations" title="Permalink to this headline">¶</a></h2>
+<p>Conservation of fluid mass:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \rho}{\partial t} + \nabla \cdot (\rho U)  = 0\]</div>
+<p>Conservation of fluid momentum:</p>
+<div class="math notranslate nohighlight">
+\[\frac{ \partial (\rho U)}{\partial t}
++ \nabla \cdot (\rho U g) + \nabla p = \nabla \cdot \tau + \rho g\]</div>
+<p>Incompressibility constraint:</p>
+<div class="math notranslate nohighlight">
+\[\nabla \cdot U = 0\]</div>
+<p>Tracer(s) advection:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \rho s}{\partial t} + \nabla \cdot (\rho U s)  = 0\]</div>
+</div>
+<div class="section" id="discretization">
+<h2>Discretization<a class="headerlink" href="#discretization" title="Permalink to this headline">¶</a></h2>
+<p>The numerical methdology used to solve the partial differential equations (PDEs)
+within AMR-Wind is documented in <a class="reference external" href="https://ccse.lbl.gov/Publications/almgren/abchw.pdf">Almgren et al. (JCP 1998)</a>.</p>
+<div class="section" id="time-step-mol">
+<h3>Time Step – MOL<a class="headerlink" href="#time-step-mol" title="Permalink to this headline">¶</a></h3>
+<p>In the predictor</p>
+<ul class="simple">
+<li><p>Define <span class="math notranslate nohighlight">\(U^{MAC,n}\)</span>, the face-centered (staggered) MAC velocity which is used for advection, using <span class="math notranslate nohighlight">\(U^n\)</span></p></li>
+<li><p>Define an approximation to the new-time state, <span class="math notranslate nohighlight">\((\rho U)^{\ast}\)</span> by setting</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}(\rho U)^{\ast} &amp;= (\rho U)^n -
+\Delta t \left( \nabla \cdot (\rho U^{MAC} U) + \nabla {p}^{n-1/2} \right) \\ &amp;+
+\Delta t \left( \nabla \cdot \tau^n + \sum_p \beta_p (V_p - {U}^{\ast}) + \rho g \right)\end{split}\]</div>
+<ul class="simple">
+<li><p>Project <span class="math notranslate nohighlight">\(U^{\ast}\)</span> by solving</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\nabla \cdot \frac{1}{\rho} \nabla \phi = \nabla \cdot \left( \frac{1}{\Delta t}
+U^{\ast}+ \frac{1}{\rho} \nabla {p}^{n-1/2} \right)\]</div>
+<p>then defining</p>
+<div class="math notranslate nohighlight">
+\[U^{\ast \ast} = U^{\ast} - \frac{\Delta t}{\rho} \nabla \phi\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[{p}^{n+1/2, \ast} = \phi\]</div>
+<p>In the corrector</p>
+<ul class="simple">
+<li><p>Define <span class="math notranslate nohighlight">\(U^{MAC,\ast \ast}\)</span> at the “new” time using <span class="math notranslate nohighlight">\(U^{\ast \ast}\)</span></p></li>
+<li><p>Define a new approximation to the new-time state, <span class="math notranslate nohighlight">\((\rho U)^{\ast \ast \ast}\)</span> by setting</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}(\rho U)^{\ast \ast \ast} &amp;= (\rho U)^n - \frac{\Delta t}{2} \left( \nabla \cdot (\rho U^{MAC} U)^n + \nabla \cdot (\rho U^{MAC} U)^{\ast \ast}\right) + \\ &amp;+ \frac{\Delta t}{2} \left( \nabla \cdot \tau^n + \nabla \cdot \tau^{\ast \ast \ast} \right) + \Delta t \left( - \nabla {p}^{n+1/2,\ast} + \sum_p \beta_p (V_p - {U}^{\ast \ast \ast}) + \rho g \right)\end{split}\]</div>
+<ul class="simple">
+<li><p>Project <span class="math notranslate nohighlight">\(U^{\ast \ast \ast}\)</span> by solving</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\nabla \cdot \frac{1}{\rho} \nabla \phi = \nabla \cdot \left( \frac{1}{\Delta t} U^{\ast \ast \ast} + \frac{1}{\rho} \nabla {p}^{n+1/2,\ast} \right)\]</div>
+<p>then defining</p>
+<div class="math notranslate nohighlight">
+\[U^{n+1} = U^{\ast \ast \ast} - \frac{\Delta t}{\rho} \nabla \phi\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[{p}^{n+1/2} = \phi\]</div>
+</div>
+<div class="section" id="time-step-godunov">
+<h3>Time Step – Godunov<a class="headerlink" href="#time-step-godunov" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Define <span class="math notranslate nohighlight">\(U^{MAC,n+1/2}\)</span>, the time-centerd face-centered (staggered)</dt><dd><p>MAC velocity which is used for advection</p>
+</dd>
+</dl>
+</li>
+<li><p>Define an approximation to the new-time state, <span class="math notranslate nohighlight">\((\rho U)^{\ast}\)</span> by setting</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}(\rho U)^{\ast} &amp;= (\rho U)^n -
+\Delta t \left( \nabla \cdot (\rho U^{MAC} U) + \nabla {p}^{n-1/2} \right) \\ &amp;+
+\Delta t \left( \nabla \cdot \tau^n + \rho g \right)\end{split}\]</div>
+<ul class="simple">
+<li><p>Project <span class="math notranslate nohighlight">\(U^{\ast}\)</span> by solving</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\nabla \cdot \frac{1}{\rho} \nabla \phi = \nabla \cdot \left( \frac{1}{\Delta t}
+U^{\ast}+ \frac{1}{\rho} \nabla {p}^{n-1/2} \right)\]</div>
+<p>then defining</p>
+<div class="math notranslate nohighlight">
+\[U^{\ast \ast} = U^{\ast} - \frac{\Delta t}{\rho} \nabla \phi\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[{p}^{n+1/2, \ast} = \phi\]</div>
+</div>
+</div>
+<div class="section" id="multiphase-flow-modelling">
+<h2>Multiphase flow modelling<a class="headerlink" href="#multiphase-flow-modelling" title="Permalink to this headline">¶</a></h2>
+<p>The level-set (LS) method was introduced by cite{OsherSethian1988} to simulate the motion of a surface with curvature dependent speed. In the LS method, the two-phase interface is represented implicitly by a signed distance function (also called level-set function)</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\phi ( \mathbf{x},t ) = \begin{cases}
+   d , &amp; \text{in water} \\
+   0,  &amp; \text{on surface} \\
+   -d, &amp; \text{in air.}
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(d\)</span> is the distance from point <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> to the interface.</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \phi}{\partial t} + \mathbf{u} \nabla \phi = 0\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{u}=(u_x,u_y,u_z)\)</span> is the velocity vector.
+Re-initialization of the level-set</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial \phi}{\partial \tau} = \text{sgn}(\phi^0)(1-|\nabla \phi|)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi^0=\phi(x,0)\)</span> represents the location of the interface.</p>
+</div>
+<div class="section" id="navigating-source-code">
+<h2>Navigating source code<a class="headerlink" href="#navigating-source-code" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AMR-Wind</span></code> is built on top of <a class="reference external" href="https://amrex-codes.github.io/amrex/docs_html/">AMReX library</a>. Users are strongly
+recommended to read through the AMReX documentation and understand the basic
+AMReX concepts before jumping into the AMR-Wind source code.</p>
+<p>The <a class="reference external" href="https://amrex-codes.github.io/amrex/docs_html/Basics_Chapter.html">Basics section</a> provides a
+thorough overview of the basic datastructures and ways to interact with these
+structures. The <a class="reference external" href="https://amrex-codes.github.io/amrex/docs_html/GPU_Chapter.html">GPU section</a> provides an
+overview of the AMReX GPU strategy and the higher-level functions (e.g.,
+<code class="docutils literal notranslate"><span class="pre">parallel-for</span></code> abstractions) available to write GPU-ready code within
+AMR-Wind. The <a class="reference external" href="https://amrex-codes.github.io/amrex/docs_html/LinearSolvers_Chapter.html">Linear Solvers section</a>
+provides an overview of the multi-level multigrid (MLMG) solvers used to solve
+the various linear systems within AMR-Wind.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../developer/index.html" class="btn btn-neutral float-right" title="Developer Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../user/abl_bndry_io.html" class="btn btn-neutral float-left" title="AMR-Wind ABL Boundary I/O" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

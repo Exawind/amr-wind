@@ -1,0 +1,5 @@
+<map id="amr_wind::Physics" name="amr_wind::Physics">
+<area shape="rect" id="node1" title="Abstract representation of different physics." alt="" coords="16,200,159,227"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,109,169,151"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="11,5,163,47"/>
+</map>

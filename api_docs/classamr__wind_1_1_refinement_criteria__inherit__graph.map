@@ -1,0 +1,5 @@
+<map id="amr_wind::RefinementCriteria" name="amr_wind::RefinementCriteria">
+<area shape="rect" id="node1" title="Abstract interface for tagging cells for refinement." alt="" coords="5,229,223,256"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="37,124,191,180"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="38,5,190,47"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="setup" name="setup">
+<area shape="rect" id="node1" href="dir_073a3c37bc9e3eb3e412aa8cf4eda4c3.html" title="setup" alt="" coords="87,52,159,100"/>
+<area shape="rect" id="node2" href="dir_f2c65bfcbdc19ebacbfc0bbbfb0d01b6.html" title="physics" alt="" coords="124,148,196,196"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000025_000010.html" title="1" alt="" coords="148,121,157,135"/>
+<area shape="rect" id="node3" href="dir_0c368f76a33d967d5b838b5681461de6.html" title="wind_energy" alt="" coords="25,244,130,292"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000025_000001.html" title="1" alt="" coords="91,221,100,235"/>
+<area shape="rect" id="node4" href="dir_e4cd57caa88bf1f4e1bf9521bc47c3c0.html" title="utilities" alt="" coords="206,340,278,388"/>
+<area shape="rect" id="edge9-headlabel" href="dir_000025_000008.html" title="2" alt="" coords="248,314,257,329"/>
+<area shape="rect" id="node5" href="dir_3d3615e9a999cab4f3407307569d6ced.html" title="core" alt="" coords="132,436,204,484"/>
+<area shape="rect" id="edge10-headlabel" href="dir_000025_000012.html" title="1" alt="" coords="122,411,131,425"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000010_000001.html" title="1" alt="" coords="112,229,121,243"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000010_000008.html" title="9" alt="" coords="228,312,237,327"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000010_000012.html" title="47" alt="" coords="167,410,184,425"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000001_000008.html" title="26" alt="" coords="185,318,202,333"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000001_000012.html" title="23" alt="" coords="149,408,166,423"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000008_000012.html" title="19" alt="" coords="187,419,204,433"/>
+<area shape="rect" id="edge11-headlabel" href="dir_000012_000008.html" title="1" alt="" coords="209,391,219,406"/>
+<area shape="rect" id="clust1" href="dir_d85575251dd712327fe3cf057fa568b4.html" title="amr&#45;wind" alt="" coords="76,16,170,111"/>
+</map>

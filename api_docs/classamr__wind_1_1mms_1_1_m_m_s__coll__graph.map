@@ -1,0 +1,20 @@
+<map id="amr_wind::mms::MMS" name="amr_wind::mms::MMS">
+<area shape="rect" id="node1" title="Method of manufactured solutions physics." alt="" coords="1915,229,2081,256"/>
+<area shape="rect" id="node2" title=" " alt="" coords="1584,73,1728,114"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_field.html" title="Computational field." alt="" coords="1593,139,1719,165"/>
+<area shape="rect" id="node4" title=" " alt="" coords="1263,58,1423,99"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1_field_info.html" title="Information common to a field that has multiple states." alt="" coords="961,65,1111,92"/>
+<area shape="rect" id="node6" title=" " alt="" coords="519,57,744,98"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1_field_fill_patch_ops_base.html" title="Abstract interface for classes that handle fill patch and physical boundary condition operations for ..." alt="" coords="115,111,293,153"/>
+<area shape="rect" id="node8" title="STL class." alt="" coords="125,60,283,87"/>
+<area shape="rect" id="node9" title=" " alt="" coords="5,60,44,87"/>
+<area shape="rect" id="node12" title="STL class." alt="" coords="327,5,485,32"/>
+<area shape="rect" id="node15" title="STL class." alt="" coords="555,307,707,349"/>
+<area shape="rect" id="node10" title="STL class." alt="" coords="588,189,675,216"/>
+<area shape="rect" id="node14" title=" " alt="" coords="955,246,1117,287"/>
+<area shape="rect" id="node17" title=" " alt="" coords="960,315,1112,371"/>
+<area shape="rect" id="node11" title="STL class." alt="" coords="135,182,273,223"/>
+<area shape="rect" id="node13" href="$classamr__wind_1_1_field_repo.html" title="Field Repository." alt="" coords="1263,253,1422,280"/>
+<area shape="rect" id="node16" title=" " alt="" coords="185,315,223,341"/>
+<area shape="rect" id="node18" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="1580,380,1732,407"/>
+</map>

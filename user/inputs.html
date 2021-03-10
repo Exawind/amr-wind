@@ -1,0 +1,1769 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>AMR-Wind inputs file &mdash; AMR-Wind 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AMR-Wind ABL Boundary I/O" href="abl_bndry_io.html" />
+    <link rel="prev" title="Compiling AMR-Wind" href="build.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AMR-Wind
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="user.html">User Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="build.html">Compiling AMR-Wind</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AMR-Wind inputs file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input-file-reference">Input file reference</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#section-geometry">Section: geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-amr">Section: amr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-time">Section: time</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-io">Section: io</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-incflo">Section: incflo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-transport">Section: transport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-turbulence">Section: turbulence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-abl">Section: ABL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-momentum-sources">Section: Momentum Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-static-refinement">Section: Static Refinement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-boundary-conditions">Section: Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-mlmg-options">Section: MLMG options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-amr-tagging">Section: AMR Tagging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-sampling">Section: Sampling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="abl_bndry_io.html">AMR-Wind ABL Boundary I/O</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/theory.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/index.html">Developer Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AMR-Wind</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="user.html">User Manual</a> &raquo;</li>
+        
+      <li>AMR-Wind inputs file</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/inputs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="amr-wind-inputs-file">
+<h1>AMR-Wind inputs file<a class="headerlink" href="#amr-wind-inputs-file" title="Permalink to this headline">¶</a></h1>
+<p>To run <strong class="program">amr_wind</strong>, the user must provide a text file containing inputs
+describing the problem and any additional command-line arguments that override
+the parameters in the input file for that particular invocation of the
+executable.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Parse input parameters from <span class="sb">`</span>inputs.abl<span class="sb">`</span> but change max_step to <span class="m">20</span>
+<span class="gp">$ </span>./amr_wind inputs.abl time.max_step<span class="o">=</span><span class="m">20</span>
+</pre></div>
+</div>
+<p>The input file is a simple text file containing <code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">=</span> <span class="pre">value</span></code> entries for the
+input parameters. The text file can include comments, any text beginning with
+<code class="docutils literal notranslate"><span class="pre">#</span></code> till the end of line (EOF) is interpreted as comments and ignored by the
+parser. Input file processing is handled by <a class="reference external" href="https://amrex-codes.github.io/amrex/docs_html/Basics.html#parmparse">AMReX ParmParse library</a>. This
+section documents the various input file parameters and their default values (if
+available). In <strong class="program">amr_wind</strong>, the input file is broken into <em>sections</em>
+indicated by a namespace prefix. For example, all inputs related to the problem
+domain are prefixed with <code class="docutils literal notranslate"><span class="pre">geometry.</span></code> and so on. A sample input file is shown below</p>
+<div class="highlight-default notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># AMR-Wind example input file</span>
+<span class="c1">#</span>
+<span class="c1"># Atmospheric boundary layer (precursor) simulation</span>
+<span class="c1">#</span>
+
+<span class="c1"># Problem domain definition</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">prob_lo</span>                            <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">prob_hi</span>                            <span class="o">=</span> <span class="mf">5120.0</span> <span class="mf">5120.0</span> <span class="mf">1280.0</span>
+<span class="n">geometry</span><span class="o">.</span><span class="n">is_periodic</span>                        <span class="o">=</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">0</span>
+
+<span class="c1"># Mesh resolution and AMR definitions</span>
+<span class="n">amr</span><span class="o">.</span><span class="n">n_cell</span>                                  <span class="o">=</span> <span class="mi">512</span> <span class="mi">512</span> <span class="mi">128</span>
+<span class="n">amr</span><span class="o">.</span><span class="n">max_level</span>                               <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Simulation control parameters</span>
+<span class="n">time</span><span class="o">.</span><span class="n">stop_time</span>                              <span class="o">=</span> <span class="mf">20000.0</span>
+<span class="n">time</span><span class="o">.</span><span class="n">max_step</span>                               <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">time</span><span class="o">.</span><span class="n">fixed_dt</span>                               <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">time</span><span class="o">.</span><span class="n">cfl</span>                                    <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">time</span><span class="o">.</span><span class="n">init_shrink</span>                            <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">time</span><span class="o">.</span><span class="n">regrid_interval</span>                        <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">time</span><span class="o">.</span><span class="n">plot_interval</span>                          <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">time</span><span class="o">.</span><span class="n">checkpoint_interval</span>                    <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">time</span><span class="o">.</span><span class="n">use_force_cfl</span>                          <span class="o">=</span> <span class="n">false</span>
+
+<span class="c1"># input/output settings</span>
+<span class="n">io</span><span class="o">.</span><span class="n">KE_int</span>                                   <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">io</span><span class="o">.</span><span class="n">check_file</span>                               <span class="o">=</span> <span class="s2">&quot;chk&quot;</span>
+<span class="n">io</span><span class="o">.</span><span class="n">plot_file</span>                                <span class="o">=</span> <span class="s2">&quot;plt&quot;</span>
+<span class="n">io</span><span class="o">.</span><span class="n">restart_file</span>                             <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1"># incflo</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">physics</span>                              <span class="o">=</span> <span class="n">ABL</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">density</span>                              <span class="o">=</span> <span class="mf">1.225</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">velocity</span>                             <span class="o">=</span> <span class="mf">6.0</span> <span class="mf">5.0</span> <span class="mf">0.0</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">verbose</span>                              <span class="o">=</span> <span class="mi">0</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">initial_iterations</span>                   <span class="o">=</span> <span class="mi">3</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">do_initial_proj</span>                      <span class="o">=</span> <span class="n">true</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">constant_density</span>                     <span class="o">=</span> <span class="n">true</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">use_godunov</span>                          <span class="o">=</span> <span class="mi">1</span>
+<span class="n">incflow</span><span class="o">.</span><span class="n">godunov_type</span>                        <span class="o">=</span> <span class="s2">&quot;ppm&quot;</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">godunov_use_forces_in_trans</span>          <span class="o">=</span> <span class="n">false</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">diffusion_type</span>                       <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># transport equation parameters</span>
+<span class="n">transport</span><span class="o">.</span><span class="n">model</span>                             <span class="o">=</span> <span class="n">ConstTransport</span>
+<span class="n">transport</span><span class="o">.</span><span class="n">viscosity</span>                         <span class="o">=</span> <span class="mf">1.0e-5</span>
+<span class="n">transport</span><span class="o">.</span><span class="n">laminar_prandtl</span>                   <span class="o">=</span> <span class="mf">0.7</span>
+<span class="n">transport</span><span class="o">.</span><span class="n">turbulent_prandtl</span>                 <span class="o">=</span> <span class="mf">0.333</span>
+
+<span class="c1"># turbulence equation parameters</span>
+<span class="n">turbulence</span><span class="o">.</span><span class="n">model</span>                            <span class="o">=</span> <span class="n">OneEqKsgsM84</span>
+
+<span class="c1"># Atmospheric boundary layer</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">Uperiods</span>                                <span class="o">=</span> <span class="mf">4.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">Vperiods</span>                                <span class="o">=</span> <span class="mf">4.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">cutoff_height</span>                           <span class="o">=</span> <span class="mf">50.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">deltaU</span>                                  <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">deltaV</span>                                  <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">kappa</span>                                   <span class="o">=</span> <span class="o">.</span><span class="mi">41</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">normal_direction</span>                        <span class="o">=</span> <span class="mi">2</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">perturb_ref_height</span>                      <span class="o">=</span> <span class="mf">50.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">perturb_temperature</span>                     <span class="o">=</span> <span class="n">true</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">perturb_velocity</span>                        <span class="o">=</span> <span class="n">true</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">reference_temperature</span>                   <span class="o">=</span> <span class="mf">290.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">stats_output_format</span>                     <span class="o">=</span> <span class="n">netcdf</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">stats_output_frequency</span>                  <span class="o">=</span> <span class="mi">1</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">surface_roughness_z0</span>                    <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">surface_temp_flux</span>                       <span class="o">=</span> <span class="mf">0.005</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">temperature_heights</span>                     <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">2000.0</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">temperature_values</span>                      <span class="o">=</span> <span class="mf">290.0</span> <span class="mf">296.0</span>
+
+<span class="c1"># momentum source term parameters</span>
+<span class="n">ICNS</span><span class="o">.</span><span class="n">source_terms</span>                           <span class="o">=</span> <span class="n">BoussinesqBuoyancy</span> <span class="n">CoriolisForcing</span> <span class="n">ABLForcing</span>
+<span class="n">ABLForcing</span><span class="o">.</span><span class="n">abl_forcing_height</span>               <span class="o">=</span> <span class="mf">90.0</span>
+<span class="n">BoussinesqBuoyancy</span><span class="o">.</span><span class="n">reference_temperature</span>    <span class="o">=</span> <span class="mf">300.0</span>
+<span class="n">BoussinesqBuoyancy</span><span class="o">.</span><span class="n">thermal_expansion_coeff</span>  <span class="o">=</span> <span class="mf">0.003333333333</span>
+<span class="n">CoriolisForcing</span><span class="o">.</span><span class="n">east_vector</span>                 <span class="o">=</span> <span class="mf">1.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+<span class="n">CoriolisForcing</span><span class="o">.</span><span class="n">latitude</span>                    <span class="o">=</span> <span class="mf">41.3</span>
+<span class="n">CoriolisForcing</span><span class="o">.</span><span class="n">north_vector</span>                <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">1.0</span> <span class="mf">0.0</span>
+<span class="n">CoriolisForcing</span><span class="o">.</span><span class="n">rotational_time_period</span>      <span class="o">=</span> <span class="mf">86400.0</span>
+<span class="n">GeostrophicForcing</span><span class="o">.</span><span class="n">geostrophic_wind</span>         <span class="o">=</span> <span class="mf">10.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+
+<span class="c1"># Boundary conditions</span>
+<span class="n">zhi</span><span class="o">.</span><span class="n">type</span>                                    <span class="o">=</span> <span class="s2">&quot;slip_wall&quot;</span>
+<span class="n">zhi</span><span class="o">.</span><span class="n">temperature_type</span>                        <span class="o">=</span> <span class="s2">&quot;fixed_gradient&quot;</span>
+<span class="n">zhi</span><span class="o">.</span><span class="n">temperature</span>                             <span class="o">=</span> <span class="mf">0.003</span>
+<span class="n">zlo</span><span class="o">.</span><span class="n">type</span>                                    <span class="o">=</span> <span class="s2">&quot;wall_model&quot;</span>
+<span class="n">zlo</span><span class="o">.</span><span class="n">tke_type</span>                                <span class="o">=</span> <span class="s2">&quot;fixed_gradient&quot;</span>
+
+<span class="c1"># MLMG options for cell-centered diffusion solve</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_verbose</span>                        <span class="o">=</span> <span class="mi">0</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_cg_verbose</span>                     <span class="o">=</span> <span class="mi">0</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_max_iter</span>                       <span class="o">=</span> <span class="mi">200</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_cg_max_iter</span>                    <span class="o">=</span> <span class="mi">200</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_fmg_max_iter</span>                   <span class="o">=</span> <span class="mi">0</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_max_coarsening_level</span>           <span class="o">=</span> <span class="mi">100</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_max_order</span>                      <span class="o">=</span> <span class="mi">2</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_rtol</span>                           <span class="o">=</span> <span class="mf">1.0e-6</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">mg_atol</span>                           <span class="o">=</span> <span class="mf">1.0e-12</span>
+<span class="n">diffusion</span><span class="o">.</span><span class="n">bottom_solver_type</span>                <span class="o">=</span> <span class="s2">&quot;bicgstab&quot;</span>
+
+<span class="c1"># MLMG options for MAC Projection</span>
+<span class="n">mac_proj</span><span class="o">.</span><span class="n">mg_rtol</span>                            <span class="o">=</span> <span class="mf">1.0e-6</span>
+<span class="n">mac_proj</span><span class="o">.</span><span class="n">mg_atol</span>                            <span class="o">=</span> <span class="mf">1.0e-12</span>
+
+<span class="c1"># MLMG options for Nodal Projection</span>
+<span class="n">nodal_proj</span><span class="o">.</span><span class="n">mg_rtol</span>                          <span class="o">=</span> <span class="mf">1.0e-6</span>
+<span class="n">nodal_proj</span><span class="o">.</span><span class="n">mg_atol</span>                          <span class="o">=</span> <span class="mf">1.0e-12</span>
+
+<span class="c1"># Post processing algorithms</span>
+<span class="n">incflo</span><span class="o">.</span><span class="n">post_processing</span> <span class="o">=</span> <span class="n">sampling</span>
+
+<span class="c1"># Data probe sampling</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">output_frequency</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">l_v11</span> <span class="n">p_h</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">fields</span> <span class="o">=</span> <span class="n">velocity</span> <span class="n">temperature</span>
+
+<span class="c1"># sampling along a line</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">l_v11</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">LineSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">l_v11</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="mi">192</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">l_v11</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">5.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">l_v11</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">1995.0</span>
+
+<span class="c1"># Sampling on a plane</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">PlaneSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">axis1</span> <span class="o">=</span> <span class="mf">5210.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">axis2</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">5210.0</span> <span class="mf">0.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">50.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="mi">288</span> <span class="mi">288</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">1.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">p_h</span><span class="o">.</span><span class="n">offsets</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">50.0</span> <span class="mf">150.0</span>
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="input-file-reference">
+<h2>Input file reference<a class="headerlink" href="#input-file-reference" title="Permalink to this headline">¶</a></h2>
+<p>The AMR-Wind input file is organized in the following sections</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Section</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">geometry</span></code></p></td>
+<td><p>Computational domain information</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">amr</span></code></p></td>
+<td><p>Mesh refinement controls</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">time</span></code></p></td>
+<td><p>Simulation time controls</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">io</span></code></p></td>
+<td><p>Input/Output controls</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">incflo</span></code></p></td>
+<td><p>CFD algorithm and physics controls</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">transport</span></code></p></td>
+<td><p>Transport equation controls</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">turbulence</span></code></p></td>
+<td><p>Turbulence model controls</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ABL</span></code></p></td>
+<td><p>Atmospheric boundary layer (ABL) controls</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Momentum</span> <span class="pre">sources</span></code></p></td>
+<td><p>Activate Momentum source terms and their parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Boundary</span> <span class="pre">conditions</span></code></p></td>
+<td><p>Boundary condition types and gradients</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MLMG</span> <span class="pre">options</span></code></p></td>
+<td><p>Multi-Level Multi-Grid Linear solver options</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Tagging</span></code></p></td>
+<td><p>Static and dynamic refinement options</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Sampling</span></code></p></td>
+<td><p>Data probes to sample field data during simulations</p></td>
+</tr>
+</tbody>
+</table>
+<p>This section documents the parameters available within each section.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Boolean flags (<code class="docutils literal notranslate"><span class="pre">true/false</span></code>) can also be indicated using integers in the text file
+and uses the convention <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">=</span> <span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p></li>
+<li><p>Quotes around strings are optional.</p></li>
+<li><p>If an input is repeated only the last one is used.</p></li>
+</ul>
+</div>
+<div class="section" id="section-geometry">
+<h3>Section: geometry<a class="headerlink" href="#section-geometry" title="Permalink to this headline">¶</a></h3>
+<p>This section deals with inputs related to the problem domain.</p>
+<dl class="std input_param">
+<dt id="input_param-geometry.prob_lo">
+<code class="sig-name descname"><span class="pre">geometry.prob_lo</span></code><a class="headerlink" href="#input_param-geometry.prob_lo" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 real numbers, mandatory</p>
+<p>The coordinates of <em>lower corner</em> of the computational domain bounding box.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-geometry.prob_hi">
+<code class="sig-name descname"><span class="pre">geometry.prob_hi</span></code><a class="headerlink" href="#input_param-geometry.prob_hi" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 real numbers, mandatory</p>
+<p>The coordinates of the <em>upper corner</em> of the computational domain bounding box.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-geometry.is_periodic">
+<code class="sig-name descname"><span class="pre">geometry.is_periodic</span></code><a class="headerlink" href="#input_param-geometry.is_periodic" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 integers, mandatory</p>
+<p>Flags indicating whether the flow is periodic in the <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, or <code class="docutils literal notranslate"><span class="pre">z</span></code>
+directions respectively.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-amr">
+<h3>Section: amr<a class="headerlink" href="#section-amr" title="Permalink to this headline">¶</a></h3>
+<p>This section contains input parameters used by the core AMReX mesh data
+structure <code class="docutils literal notranslate"><span class="pre">AmrCore</span></code> to determine the base mesh and adaptive mesh refinement
+strategies. The refinement criteria is specified through <a class="reference internal" href="#inputs-tagging"><span class="std std-ref">Section: AMR Tagging</span></a></p>
+<dl class="std input_param">
+<dt id="input_param-amr.n_cell">
+<code class="sig-name descname"><span class="pre">amr.n_cell</span></code><a class="headerlink" href="#input_param-amr.n_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 integers, mandatory</p>
+<p>The number of cells in the coarset level of AMR hierarchy</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-amr.max_level">
+<code class="sig-name descname"><span class="pre">amr.max_level</span></code><a class="headerlink" href="#input_param-amr.max_level" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default: 0</p>
+<p>The maximum AMR level in the refinement hierarchy. Default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>
+indicating a single mesh level with uniform resolution in the three
+directions.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-amr.max_grid_size">
+<code class="sig-name descname"><span class="pre">amr.max_grid_size</span></code><a class="headerlink" href="#input_param-amr.max_grid_size" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default: 32</p>
+<p>Maximum number of cells at level 0 in each grid.
+There are also options to specify this value in each direction,
+please refer to AMReX documentation.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-amr.blocking_factor">
+<code class="sig-name descname"><span class="pre">amr.blocking_factor</span></code><a class="headerlink" href="#input_param-amr.blocking_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default: 8</p>
+<p>Each grid must be divisible by <a class="reference internal" href="#input_param-amr.blocking_factor"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">amr.blocking_factor</span></code></a>.
+There are also options to specify this value in each direction,
+please refer to AMReX documentation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-time">
+<h3>Section: time<a class="headerlink" href="#section-time" title="Permalink to this headline">¶</a></h3>
+<p>This section deals with parameters that control the simulation.</p>
+<dl class="std input_param">
+<dt id="input_param-time.stop_time">
+<code class="sig-name descname"><span class="pre">time.stop_time</span></code><a class="headerlink" href="#input_param-time.stop_time" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number</p>
+<p>The time (in seconds) when the simulation should stop. This parameter is
+related to <a class="reference internal" href="#input_param-time.max_step"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.max_step</span></code></a> depending on whether the user
+provides a positive or negative value for this input. If the user provides a
+positive value, then the stop criteria is such that the simulation stops when
+it reaches the <code class="docutils literal notranslate"><span class="pre">stop_time</span></code>. If the user specifies a negative value, then
+the simulation stops when it has completed the prescribed number of steps as
+determined by <a class="reference internal" href="#input_param-time.max_step"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.max_step</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.max_step">
+<code class="sig-name descname"><span class="pre">time.max_step</span></code><a class="headerlink" href="#input_param-time.max_step" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer</p>
+<p>The number of timesteps to run before termination. See also
+<a class="reference internal" href="#input_param-time.stop_time"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.stop_time</span></code></a>.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.fixed_dt">
+<code class="sig-name descname"><span class="pre">time.fixed_dt</span></code><a class="headerlink" href="#input_param-time.fixed_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number</p>
+<p>Fixed timestep size (in seconds) used to advance the simulation. If this
+parameter is negative, then <a class="reference internal" href="#input_param-time.cfl"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.cfl</span></code></a> is used to determine the
+adaptive timestep during the simulation.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.initial_dt">
+<code class="sig-name descname"><span class="pre">time.initial_dt</span></code><a class="headerlink" href="#input_param-time.initial_dt" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number</p>
+<p>Initial timestep size (in seconds) used to initialize the simulation.
+Only activated if <a class="reference internal" href="#input_param-time.fixed_dt"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.fixed_dt</span></code></a> is negative
+(signalling CFL controlled time stepping) and if <code class="docutils literal notranslate"><span class="pre">time.initial_dt</span></code> is positive.
+This parameter can be useful for starting CFL-controlled simulations like
+Rayleigh-Taylor flow that initialize with zero velocity.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.cfl">
+<code class="sig-name descname"><span class="pre">time.cfl</span></code><a class="headerlink" href="#input_param-time.cfl" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number, optional, default = 0.5</p>
+<p>The maximum CFL allowed during the simulation. Adaptive timestepping algorithm is
+used to ensure that the maximum CFL condition is not violated while using the largest
+allowable timestep to advance the simulation.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.init_shrink">
+<code class="sig-name descname"><span class="pre">time.init_shrink</span></code><a class="headerlink" href="#input_param-time.init_shrink" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number, optional, default = 0.1</p>
+<p><code class="docutils literal notranslate"><span class="pre">init_shrink</span></code> indicates a reduction factor applied to the timestep size
+during initialization phased used to perform the initial iterations to
+determine pressure. This factor must be a value greater than zero but less
+than or equal to 1.0.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.regrid_interval">
+<code class="sig-name descname"><span class="pre">time.regrid_interval</span></code><a class="headerlink" href="#input_param-time.regrid_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer</p>
+<p>If <a class="reference internal" href="#input_param-amr.max_level"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">amr.max_level</span></code></a> is greater than zero, this parameter
+indicates the frequency (in timesteps) at which the mesh is adaptively
+refined based on various user-specified criteria. If this value is negative,
+the mesh is only refined once during initialization and remains constant for
+the rest of the simulation.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.plot_interval">
+<code class="sig-name descname"><span class="pre">time.plot_interval</span></code><a class="headerlink" href="#input_param-time.plot_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer</p>
+<p>If this value is greater than zero, it indicates the frequency (in timesteps)
+at which outputs (plot files) are written to disk.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.checkpoint_interval">
+<code class="sig-name descname"><span class="pre">time.checkpoint_interval</span></code><a class="headerlink" href="#input_param-time.checkpoint_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer</p>
+<p>If this value is greater than zero, it indicates the frequency (in timesteps)
+at which checkpoint (restart) files are written to disk.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-time.use_force_cfl">
+<code class="sig-name descname"><span class="pre">time.use_force_cfl</span></code><a class="headerlink" href="#input_param-time.use_force_cfl" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>If this flag is true then the forces (including the pressure gradient) are included
+in the CFL calculation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-io">
+<h3>Section: io<a class="headerlink" href="#section-io" title="Permalink to this headline">¶</a></h3>
+<p>This section deals with parameters that control input/output to the simulation.</p>
+<dl class="std input_param">
+<dt id="input_param-io.check_file">
+<code class="sig-name descname"><span class="pre">io.check_file</span></code><a class="headerlink" href="#input_param-io.check_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “chk”</p>
+<p>If <a class="reference internal" href="#input_param-time.checkpoint_interval"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.checkpoint_interval</span></code></a> is greater than zero this is the name of the checkpoint
+file appended with the current timestep</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-io.plot_file">
+<code class="sig-name descname"><span class="pre">io.plot_file</span></code><a class="headerlink" href="#input_param-io.plot_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “plt”</p>
+<p>If <a class="reference internal" href="#input_param-time.plot_interval"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.plot_interval</span></code></a> is greater than zero this is the name of the plot
+file appended with the current timestep</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-io.restart_file">
+<code class="sig-name descname"><span class="pre">io.restart_file</span></code><a class="headerlink" href="#input_param-io.restart_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “”</p>
+<p>If a string is present <cite>amr-wind</cite> will restart using the specified file in the string.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-incflo">
+<h3>Section: incflo<a class="headerlink" href="#section-incflo" title="Permalink to this headline">¶</a></h3>
+<p>This section deals with parameters that mostly determine how amr-wind is run such
+as initial conditions and discretization options.</p>
+<dl class="std input_param">
+<dt id="input_param-incflo.physics">
+<code class="sig-name descname"><span class="pre">incflo.physics</span></code><a class="headerlink" href="#input_param-incflo.physics" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of strings</p>
+<p>Specify a string or a list of strings for each type of physics to initialize and simulate.
+Physics is additive and more than one type of physics may be used.
+Current implemented physics are FreeStream, ABL, RayleighTaylor, BoussinesqBubble,
+and TaylorGreenVortex</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.density">
+<code class="sig-name descname"><span class="pre">incflo.density</span></code><a class="headerlink" href="#input_param-incflo.density" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real</p>
+<p>Specify reference density.
+For the most part if <a class="reference internal" href="#input_param-incflo.constant_density"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.constant_density</span></code></a> = true then <cite>incflo.density</cite> sets a constant density everywhere.
+Refer to the field initializer for your chosen <a class="reference internal" href="#input_param-incflo.physics"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.physics</span></code></a> for how <cite>incflo.density</cite> is used.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.velocity">
+<code class="sig-name descname"><span class="pre">incflo.velocity</span></code><a class="headerlink" href="#input_param-incflo.velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of three Real numbers, sometimes mandatory depending on the <a class="reference internal" href="#input_param-incflo.physics"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.physics</span></code></a></p>
+<p>Specify reference velocity in the “x-“, “y-“, “z-direction”.
+Refer to the field initializer for your chosen <a class="reference internal" href="#input_param-incflo.physics"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.physics</span></code></a> for how <cite>incflo.velocity</cite> is used.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.verbose">
+<code class="sig-name descname"><span class="pre">incflo.verbose</span></code><a class="headerlink" href="#input_param-incflo.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 0</p>
+<p>Specifies amount of verbosity. A value of 0 is minimal verbosity output and 3 gives full verbosity output.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.initial_iterations">
+<code class="sig-name descname"><span class="pre">incflo.initial_iterations</span></code><a class="headerlink" href="#input_param-incflo.initial_iterations" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 3</p>
+<p>Number of initial pressure iterations to perform when the simulation starts.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.do_initial_proj">
+<code class="sig-name descname"><span class="pre">incflo.do_initial_proj</span></code><a class="headerlink" href="#input_param-incflo.do_initial_proj" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>This flag when true performs a nodal projection
+to ensure the initial velocity is divergence-free.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.constant_density">
+<code class="sig-name descname"><span class="pre">incflo.constant_density</span></code><a class="headerlink" href="#input_param-incflo.constant_density" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>This flag specifies if density is constant throughout the simulation.
+If the flag is true then a constant density field is used, the density field is copied from old to new time steps.
+If the flag is false then density is not constant and an extra advection equation is solved to evolve density.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.use_godunov">
+<code class="sig-name descname"><span class="pre">incflo.use_godunov</span></code><a class="headerlink" href="#input_param-incflo.use_godunov" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = false</p>
+<p>Specifies which advection scheme to use: either method of lines (false) or Godunov (true).
+The method of lines is the default option but Godunov is more accurate,
+can handle a larger CFL number, and more computational efficient.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.use_ppm">
+<code class="sig-name descname"><span class="pre">incflo.use_ppm</span></code><a class="headerlink" href="#input_param-incflo.use_ppm" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>When estimating the two states in a Godunov scheme a piecewise parabolic method (PPM) is used when this flag is true
+or when the flag is false a less accurate piecewise linear method (PLM) is used instead.
+Note: only used when <a class="reference internal" href="#input_param-incflo.use_godunov"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.use_godunov</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.godunov_use_forces_in_trans">
+<code class="sig-name descname"><span class="pre">incflo.godunov_use_forces_in_trans</span></code><a class="headerlink" href="#input_param-incflo.godunov_use_forces_in_trans" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = false</p>
+<p>Specifies if body forces are included in the transverse velocity prediction.
+Note: only used when <a class="reference internal" href="#input_param-incflo.use_godunov"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.use_godunov</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.diffusion_type">
+<code class="sig-name descname"><span class="pre">incflo.diffusion_type</span></code><a class="headerlink" href="#input_param-incflo.diffusion_type" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 2</p>
+<p>Determines how the diffusion term is handled when updating the momentum equations.
+A value of 0 is explicit diffusion and all diffusion terms are moved to the right hand side
+(warning this carries with it a more stringent CFL restriction),
+a value of 1 is Crank-Nicolson and diffusion terms are on both the left and right hand sides,
+and a value of 2 (default) is a fully implicit diffusion where the entire diffusion term is handled on the left hand side.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.rhoerr">
+<code class="sig-name descname"><span class="pre">incflo.rhoerr</span></code><a class="headerlink" href="#input_param-incflo.rhoerr" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number or a list of Real numbers</p>
+<p>When <a class="reference internal" href="#input_param-amr.max_level"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">amr.max_level</span></code></a> &gt; 0 this will trigger mesh adaption for density that is greater than <cite>incflo.rhoerr</cite>.
+This maybe specified as a single number for all levels or a value per AMR level.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.gradrhoerr">
+<code class="sig-name descname"><span class="pre">incflo.gradrhoerr</span></code><a class="headerlink" href="#input_param-incflo.gradrhoerr" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real number or a list of Real numbers</p>
+<p>When <a class="reference internal" href="#input_param-amr.max_level"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">amr.max_level</span></code></a> &gt; 0 this will trigger mesh adaption if the difference
+between density at a cell center and its neighbors is greater than <cite>incflo.gradrhoerr</cite>.
+This maybe specified as a single number for all levels or a value per AMR level.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-incflo.post_processing">
+<code class="sig-name descname"><span class="pre">incflo.post_processing</span></code><a class="headerlink" href="#input_param-incflo.post_processing" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of strings, optional</p>
+<p>When present, this parameter contains list of sections to be read with
+specific post-postprocessing actions. Currently, the code supports
+<a class="reference internal" href="#inputs-sampling"><span class="std std-ref">Sampling</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">incflo</span><span class="o">.</span><span class="n">post_processing</span>     <span class="o">=</span> <span class="n">sampling</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">output_frequency</span>  <span class="o">=</span> <span class="mi">5</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">labels</span>            <span class="o">=</span> <span class="n">line1</span> <span class="n">line2</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">fields</span>            <span class="o">=</span> <span class="n">velocity</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">type</span>        <span class="o">=</span> <span class="n">LineSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">num_points</span>  <span class="o">=</span> <span class="mi">21</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">start</span>       <span class="o">=</span> <span class="mf">250.0</span> <span class="mf">250.0</span> <span class="mf">10.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">end</span>         <span class="o">=</span> <span class="mf">250.0</span> <span class="mf">250.0</span> <span class="mf">210.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line2</span><span class="o">.</span><span class="n">type</span>        <span class="o">=</span> <span class="n">LineSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line2</span><span class="o">.</span><span class="n">num_points</span>  <span class="o">=</span> <span class="mi">21</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line2</span><span class="o">.</span><span class="n">start</span>       <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">10.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line2</span><span class="o">.</span><span class="n">end</span>         <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">210.0</span>
+</pre></div>
+</div>
+<p>In the above example, the code will read the parameters with keyword
+<code class="docutils literal notranslate"><span class="pre">sampling</span></code> to initialize user-defined probes.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-transport">
+<h3>Section: transport<a class="headerlink" href="#section-transport" title="Permalink to this headline">¶</a></h3>
+<p>This section is for setting thermal and momentum diffusivities.</p>
+<dl class="std input_param">
+<dt id="input_param-transport.model">
+<code class="sig-name descname"><span class="pre">transport.model</span></code><a class="headerlink" href="#input_param-transport.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = ConstTransport</p>
+<p>Currently this is the only transport model implemented.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-transport.viscosity">
+<code class="sig-name descname"><span class="pre">transport.viscosity</span></code><a class="headerlink" href="#input_param-transport.viscosity" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0e-5</p>
+<p>Sets the dynamic viscosity</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-transport.laminar_prandtl">
+<code class="sig-name descname"><span class="pre">transport.laminar_prandtl</span></code><a class="headerlink" href="#input_param-transport.laminar_prandtl" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0</p>
+<p>Sets the laminar Prandtl number.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-transport.turbulent_prandtl">
+<code class="sig-name descname"><span class="pre">transport.turbulent_prandtl</span></code><a class="headerlink" href="#input_param-transport.turbulent_prandtl" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0</p>
+<p>Sets the turbulent Prandtl number.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-turbulence">
+<h3>Section: turbulence<a class="headerlink" href="#section-turbulence" title="Permalink to this headline">¶</a></h3>
+<p>This section is for setting turbulence model parameters</p>
+<dl class="std input_param">
+<dt id="input_param-turbulence.model">
+<code class="sig-name descname"><span class="pre">turbulence.model</span></code><a class="headerlink" href="#input_param-turbulence.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = Laminar</p>
+<p>Specifies which turbulence model to use, by default “Laminar” is chosen
+(effectively no turbulence model).
+Currently the only turbulence model is “Smagorinsky”</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-Smagorinsky_coeffs.Cs">
+<code class="sig-name descname"><span class="pre">Smagorinsky_coeffs.Cs</span></code><a class="headerlink" href="#input_param-Smagorinsky_coeffs.Cs" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.135</p>
+<p>Specifies the coefficient used in the <cite>Smagorinsky</cite> turbulence model.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-abl">
+<h3>Section: ABL<a class="headerlink" href="#section-abl" title="Permalink to this headline">¶</a></h3>
+<p>This section is for setting atmospheric boundary layer parameters.</p>
+<dl class="std input_param">
+<dt id="input_param-ABL.kappa">
+<code class="sig-name descname"><span class="pre">ABL.kappa</span></code><a class="headerlink" href="#input_param-ABL.kappa" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.41</p>
+<p>Wall model coefficient.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.surface_roughness_z0">
+<code class="sig-name descname"><span class="pre">ABL.surface_roughness_z0</span></code><a class="headerlink" href="#input_param-ABL.surface_roughness_z0" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.1</p>
+<p>Wall model surface roughness.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.normal_direction">
+<code class="sig-name descname"><span class="pre">ABL.normal_direction</span></code><a class="headerlink" href="#input_param-ABL.normal_direction" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 2</p>
+<p>Wall model normal direction. x-direction = 0, y-direction = 1, z-direction = 2.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.log_law_height">
+<code class="sig-name descname"><span class="pre">ABL.log_law_height</span></code><a class="headerlink" href="#input_param-ABL.log_law_height" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional</p>
+<p>Height to evaluate the log law for the wall model.
+Currently, if this parameter is not specified in the input file, the first half cell height is calculated
+and is used to set the log law height.
+Therefore the log law height depends on the domain size and number of elements in the normal direction.
+If this parameter is set to a number the log law is evaluated at a fixed height.
+Note: currently the fluctuating velocity terms in the shear stress model are only
+available at the first cell center above the wall. This limitation will be removed soon.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.temperature_heights">
+<code class="sig-name descname"><span class="pre">ABL.temperature_heights</span></code><a class="headerlink" href="#input_param-ABL.temperature_heights" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of Reals, mandatory</p>
+<p>Height(s) in meters at which temperature values are prescribed.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.temperature_values">
+<code class="sig-name descname"><span class="pre">ABL.temperature_values</span></code><a class="headerlink" href="#input_param-ABL.temperature_values" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of Reals (has to be same length as <a class="reference internal" href="#input_param-ABL.temperature_heights"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.temperature_heights</span></code></a>), mandatory</p>
+<p>Temperature values in Kelvin at the corresponding <a class="reference internal" href="#input_param-ABL.temperature_heights"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.temperature_heights</span></code></a>.
+The temperature below the first height is assumed to be constant and equal to the
+first temperature value.
+The temperature between values is initialized to have linear variation.
+The final temperature is constant above the last specified height.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.perturb_velocity">
+<code class="sig-name descname"><span class="pre">ABL.perturb_velocity</span></code><a class="headerlink" href="#input_param-ABL.perturb_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>If true this flag turns on perturbations to the freestream flow.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.pertub_ref_height">
+<code class="sig-name descname"><span class="pre">ABL.pertub_ref_height</span></code><a class="headerlink" href="#input_param-ABL.pertub_ref_height" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 50.0</p>
+<p>Reference height for velocity perturbations,
+perturbations exist below this height and decay above this height.
+Only active when <a class="reference internal" href="#input_param-ABL.perturb_velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_velocity</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.Uperiods">
+<code class="sig-name descname"><span class="pre">ABL.Uperiods</span></code><a class="headerlink" href="#input_param-ABL.Uperiods" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 4.0</p>
+<p>Number of sinusoidal waves in x-direction.
+Only active when <a class="reference internal" href="#input_param-ABL.perturb_velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_velocity</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.Vperiods">
+<code class="sig-name descname"><span class="pre">ABL.Vperiods</span></code><a class="headerlink" href="#input_param-ABL.Vperiods" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 4.0</p>
+<p>Number of sinusoidal waves in y-direction.
+Only active when <a class="reference internal" href="#input_param-ABL.perturb_velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_velocity</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.deltaU">
+<code class="sig-name descname"><span class="pre">ABL.deltaU</span></code><a class="headerlink" href="#input_param-ABL.deltaU" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0</p>
+<p>Amplitude of fluctuations in x-direction.
+Only active when <a class="reference internal" href="#input_param-ABL.perturb_velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_velocity</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.deltaV">
+<code class="sig-name descname"><span class="pre">ABL.deltaV</span></code><a class="headerlink" href="#input_param-ABL.deltaV" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0</p>
+<p>Amplitude of fluctuations in y-direction.
+Only active when <a class="reference internal" href="#input_param-ABL.perturb_velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_velocity</span></code></a> = true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.perturb_temperature">
+<code class="sig-name descname"><span class="pre">ABL.perturb_temperature</span></code><a class="headerlink" href="#input_param-ABL.perturb_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = false</p>
+<p>Perturb temperature field with random fluctuations.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.theta_amplitude">
+<code class="sig-name descname"><span class="pre">ABL.theta_amplitude</span></code><a class="headerlink" href="#input_param-ABL.theta_amplitude" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.8 K</p>
+<p>Amplitude of the temperature perturbations added to the initial field. Only
+active when <a class="reference internal" href="#input_param-ABL.perturb_temperature"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">ABL.perturb_temperature</span></code></a> is true.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.cutoff_height">
+<code class="sig-name descname"><span class="pre">ABL.cutoff_height</span></code><a class="headerlink" href="#input_param-ABL.cutoff_height" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = domain height</p>
+<p>Height below which temperature perturbations are added</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.random_gauss_mean">
+<code class="sig-name descname"><span class="pre">ABL.random_gauss_mean</span></code><a class="headerlink" href="#input_param-ABL.random_gauss_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.0</p>
+<p>Mean for the Gaussian random number generator</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.random_gauss_var">
+<code class="sig-name descname"><span class="pre">ABL.random_gauss_var</span></code><a class="headerlink" href="#input_param-ABL.random_gauss_var" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0</p>
+<p>Variance for the Gaussian random number generator</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.bndry_file">
+<code class="sig-name descname"><span class="pre">ABL.bndry_file</span></code><a class="headerlink" href="#input_param-ABL.bndry_file" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “”</p>
+<p>NetCDF-4 file name for ABL inflow</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.bndry_io_mode">
+<code class="sig-name descname"><span class="pre">ABL.bndry_io_mode</span></code><a class="headerlink" href="#input_param-ABL.bndry_io_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Int, optional, default = -1</p>
+<p>IO mode (0=output, 1=input)</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.bndry_planes">
+<code class="sig-name descname"><span class="pre">ABL.bndry_planes</span></code><a class="headerlink" href="#input_param-ABL.bndry_planes" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “”</p>
+<p>IO planes for ABL inflow</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.bndry_output_start_time">
+<code class="sig-name descname"><span class="pre">ABL.bndry_output_start_time</span></code><a class="headerlink" href="#input_param-ABL.bndry_output_start_time" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.0</p>
+<p>Time at which to start ABL inflow output</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.bndry_var_names">
+<code class="sig-name descname"><span class="pre">ABL.bndry_var_names</span></code><a class="headerlink" href="#input_param-ABL.bndry_var_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “”</p>
+<p>Variables for IO for ABL inflow</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABL.wall_shear_stress_type">
+<code class="sig-name descname"><span class="pre">ABL.wall_shear_stress_type</span></code><a class="headerlink" href="#input_param-ABL.wall_shear_stress_type" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p><strong>type:</strong> String, optional, default = “Moeng”</p>
+</div></blockquote>
+<p>Wall shear stress model: options include
+“constant”, “local”, “Schumann”, and “Moeng”</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-momentum-sources">
+<h3>Section: Momentum Sources<a class="headerlink" href="#section-momentum-sources" title="Permalink to this headline">¶</a></h3>
+<dl class="std input_param">
+<dt id="input_param-ICNS.source_terms">
+<code class="sig-name descname"><span class="pre">ICNS.source_terms</span></code><a class="headerlink" href="#input_param-ICNS.source_terms" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String(s), optional</p>
+<p>Activates source terms for the incompressible Navier-Stokes momentum
+equations. These strings can be entered in any order with a space between
+each. Please consult <a class="reference external" href="https://exawind.github.io/amr-wind/group__icns__src.html">AMR-Wind developer documentation</a> for a
+comprehensive list of all momentum source terms available.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-BoussinesqBuoyancy.reference_temperature">
+<code class="sig-name descname"><span class="pre">BoussinesqBuoyancy.reference_temperature</span></code><a class="headerlink" href="#input_param-BoussinesqBuoyancy.reference_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, mandatory</p>
+<p>Reference temperature <span class="math notranslate nohighlight">\(\theta_\mathrm{ref}\)</span> in Kelvin.
+Values of the temperature field that are less than or greater than this value will
+cause a buoyancy force in the direction of the gravity vector.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-BoussinesqBuoyancy.thermal_expansion_coeff">
+<code class="sig-name descname"><span class="pre">BoussinesqBuoyancy.thermal_expansion_coeff</span></code><a class="headerlink" href="#input_param-BoussinesqBuoyancy.thermal_expansion_coeff" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default <span class="math notranslate nohighlight">\(\beta = 1 / \theta_\mathrm{ref}\)</span></p>
+<p>Thermal expansion coefficient, if not specified this value is set to the inverse of the
+<a class="reference internal" href="#input_param-BoussinesqBuoyancy.reference_temperature"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">BoussinesqBuoyancy.reference_temperature</span></code></a> value.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-CoriolisForcing.latitude">
+<code class="sig-name descname"><span class="pre">CoriolisForcing.latitude</span></code><a class="headerlink" href="#input_param-CoriolisForcing.latitude" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, mandatory</p>
+<p>Latitude in degrees where the Coriolis forcing is computed. Positive values
+indicate northern hemisphere.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-CoriolisForcing.rotational_time_period">
+<code class="sig-name descname"><span class="pre">CoriolisForcing.rotational_time_period</span></code><a class="headerlink" href="#input_param-CoriolisForcing.rotational_time_period" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 86400.0</p>
+<p>Rotational time period of a day in seconds.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-CoriolisForcing.east_vector">
+<code class="sig-name descname"><span class="pre">CoriolisForcing.east_vector</span></code><a class="headerlink" href="#input_param-CoriolisForcing.east_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 reals, optional, default = 1.0 0.0 0.0</p>
+<p>East vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
+This vector is automatically normalized within amr-wind.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-CoriolisForcing.north_vector">
+<code class="sig-name descname"><span class="pre">CoriolisForcing.north_vector</span></code><a class="headerlink" href="#input_param-CoriolisForcing.north_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 reals, optional, default = 0.0 1.0 0.0</p>
+<p>North vector that gives the orientation of the grid w.r.t. to planetary coordinate system.
+This vector is automatically normalized within amr-wind.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-GeostrophicForcing.geostrophic_wind">
+<code class="sig-name descname"><span class="pre">GeostrophicForcing.geostrophic_wind</span></code><a class="headerlink" href="#input_param-GeostrophicForcing.geostrophic_wind" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of 3 reals, optional</p>
+<p>The user has to choose between GeostrophicForcing and ABLForcing.
+CoriolisForcing input must be present when using GeostrophicForcing.
+These checks are not enforced for now.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-ABLForcing.abl_forcing_height">
+<code class="sig-name descname"><span class="pre">ABLForcing.abl_forcing_height</span></code><a class="headerlink" href="#input_param-ABLForcing.abl_forcing_height" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, mandatory</p>
+<p>Height in meters at which the flow is forced to maintain the freestream
+inflow velocities specified through <a class="reference internal" href="#input_param-incflo.velocity"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.velocity</span></code></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-static-refinement">
+<h3>Section: Static Refinement<a class="headerlink" href="#section-static-refinement" title="Permalink to this headline">¶</a></h3>
+<p>This section is for controlling the static mesh refinement of the grid.</p>
+<dl class="std input_param">
+<dt id="input_param-tagging.static_refinement">
+<code class="sig-name descname"><span class="pre">tagging.static_refinement</span></code><a class="headerlink" href="#input_param-tagging.static_refinement" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = false</p>
+<p>Static refinement with Cartesian-aligned bounding boxes.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.static_refinement_def">
+<code class="sig-name descname"><span class="pre">tagging.static_refinement_def</span></code><a class="headerlink" href="#input_param-tagging.static_refinement_def" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String</p>
+<p>Static refinement with Cartesian-aligned bounding boxes input file name.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-boundary-conditions">
+<h3>Section: Boundary conditions<a class="headerlink" href="#section-boundary-conditions" title="Permalink to this headline">¶</a></h3>
+<p>This section controls the boundary conditions. Only non-periodic BC’s need to be defined here.</p>
+<dl class="std input_param">
+<dt id="input_param-xlo.type-or-ylo.type-zlo.type-xhi.type-yhi.type-zhi.type">
+<span id="input_param-xlo.type (or ylo.type, zlo.type, xhi.type, yhi.type, zhi.type)"></span><code class="sig-name descname"><span class="pre">xlo.type</span> <span class="pre">(or</span> <span class="pre">ylo.type,</span> <span class="pre">zlo.type,</span> <span class="pre">xhi.type,</span> <span class="pre">yhi.type,</span> <span class="pre">zhi.type)</span></code><a class="headerlink" href="#input_param-xlo.type-or-ylo.type-zlo.type-xhi.type-yhi.type-zhi.type" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, mandatory if non-periodic</p>
+<p>Boundary condition type on the lo (or hi) side of the domain.
+Current options are: periodic, pressure_inflow, pressure_outflow, mass_inflow,
+no_slip_wall, slip_wall, and wall_model.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-xlo.temperature-or-ylo.temperature-etc">
+<span id="input_param-xlo.temperature (or ylo.temperature, etc)"></span><code class="sig-name descname"><span class="pre">xlo.temperature</span> <span class="pre">(or</span> <span class="pre">ylo.temperature,</span> <span class="pre">etc)</span></code><a class="headerlink" href="#input_param-xlo.temperature-or-ylo.temperature-etc" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 0.0</p>
+<p>Specifies a temperature gradient at the wall, only activated for slip_wall and wall_model BC types.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-mlmg-options">
+<h3>Section: MLMG options<a class="headerlink" href="#section-mlmg-options" title="Permalink to this headline">¶</a></h3>
+<p>This section specifies the Multi-Level Multi-Grid (MLMG) options for each type
+of linear solve. There are three types of linear solves performed in amr-wind
+“diffusion” which is a cell based Helmholtz like solve to advance the momentum
+equations, “nodal_proj” is a node based pressure projection, and “mac_proj”
+projects velocities to faces. The options are the same for each and the prefix
+determines which MLMG option is being specified. Below the diffusion options are
+described but the same options apply to “nodal_proj” and “mac_proj”. It is also
+possible to specify diffusion solver options for specific equations such as
+temperature, to do that use “temperature_diffusion” as your prefix.</p>
+<p><strong>Linear operator options</strong></p>
+<dl class="std input_param">
+<dt id="input_param-diffusion.max_coarsening_level">
+<code class="sig-name descname"><span class="pre">diffusion.max_coarsening_level</span></code><a class="headerlink" href="#input_param-diffusion.max_coarsening_level" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 100</p>
+<p>This parameter sets the max number of multigrid coarsening allowed at the lowest amr
+level to the solver.
+Typically setting to a large number means coarsen as much as possible until the grid
+can not be coarsened anymore.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.max_order">
+<code class="sig-name descname"><span class="pre">diffusion.max_order</span></code><a class="headerlink" href="#input_param-diffusion.max_order" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 2</p>
+<p>Order of the one-sided stencil applied near physical boundaries and fine/coarse boundaries.</p>
+</dd></dl>
+
+<p><strong>MLMG options</strong></p>
+<dl class="std input_param">
+<dt id="input_param-diffusion.verbose">
+<code class="sig-name descname"><span class="pre">diffusion.verbose</span></code><a class="headerlink" href="#input_param-diffusion.verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 0</p>
+<p>Sets the verbosity of the MLMG solver.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.maxiter">
+<code class="sig-name descname"><span class="pre">diffusion.maxiter</span></code><a class="headerlink" href="#input_param-diffusion.maxiter" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 200</p>
+<p>Sets the max number of multigrid iterations. If <code class="xref std std-input_param docutils literal notranslate"><span class="pre">do_fixed_iters</span></code>
+is set to True, then AMReX will not abort if specified tolerance is not met
+after max iterations, otherwise it will abort.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.do_fixed_iters">
+<code class="sig-name descname"><span class="pre">diffusion.do_fixed_iters</span></code><a class="headerlink" href="#input_param-diffusion.do_fixed_iters" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, then AMReX will not abort if the specified tolerance is not met
+even after <a class="reference internal" href="#input_param-diffusion.maxiter"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">diffusion.maxiter</span></code></a> iterations have completed.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.mg_rtol">
+<code class="sig-name descname"><span class="pre">diffusion.mg_rtol</span></code><a class="headerlink" href="#input_param-diffusion.mg_rtol" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0e-11</p>
+<p>Set the relative tolerance for the linear solver</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.mg_atol">
+<code class="sig-name descname"><span class="pre">diffusion.mg_atol</span></code><a class="headerlink" href="#input_param-diffusion.mg_atol" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0e-14</p>
+<p>Set the absolute tolerance for the linear solver</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.fmg_maxiter">
+<code class="sig-name descname"><span class="pre">diffusion.fmg_maxiter</span></code><a class="headerlink" href="#input_param-diffusion.fmg_maxiter" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 0</p>
+<p>Sets the number of F-cycle MG iterations to perform before switching to V-cycle MG.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.num_pre_smooth">
+<code class="sig-name descname"><span class="pre">diffusion.num_pre_smooth</span></code><a class="headerlink" href="#input_param-diffusion.num_pre_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 2</p>
+<p>Number of pre smoothing steps</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.num_post_smooth">
+<code class="sig-name descname"><span class="pre">diffusion.num_post_smooth</span></code><a class="headerlink" href="#input_param-diffusion.num_post_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 2</p>
+<p>Number of post smoothing steps</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.num_final_smooth">
+<code class="sig-name descname"><span class="pre">diffusion.num_final_smooth</span></code><a class="headerlink" href="#input_param-diffusion.num_final_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 8</p>
+<p>Number of final smoother steps applied</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.num_bottom_smooth">
+<code class="sig-name descname"><span class="pre">diffusion.num_bottom_smooth</span></code><a class="headerlink" href="#input_param-diffusion.num_bottom_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 0</p>
+<p>Number of smoother steps applied during bottom solve.</p>
+</dd></dl>
+
+<p><strong>Bottom solver options</strong></p>
+<dl class="std input_param">
+<dt id="input_param-diffusion.bottom_solver">
+<code class="sig-name descname"><span class="pre">diffusion.bottom_solver</span></code><a class="headerlink" href="#input_param-diffusion.bottom_solver" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “bicgstab”</p>
+<p>Set the bottom solver type. Current bottom solver options
+include: smoother, bicgstab, cg, bicgcg, cgbicg, hypre, and petsc.
+The hyper and petsc options will require compiling with those libraries.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.bottom_verbose">
+<code class="sig-name descname"><span class="pre">diffusion.bottom_verbose</span></code><a class="headerlink" href="#input_param-diffusion.bottom_verbose" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 0</p>
+<p>Sets the verbosity of the bottom solver within MLMG.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.bottom_rtol">
+<code class="sig-name descname"><span class="pre">diffusion.bottom_rtol</span></code><a class="headerlink" href="#input_param-diffusion.bottom_rtol" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = 1.0e-4</p>
+<p>Set the relative tolerance for the bottom solver for convergence.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.bottom_atol">
+<code class="sig-name descname"><span class="pre">diffusion.bottom_atol</span></code><a class="headerlink" href="#input_param-diffusion.bottom_atol" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Real, optional, default = -1.0</p>
+<p>Set the absolute tolerance for the bottom solve. Setting a negative number
+disables absolute tolerance check.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.bottom_maxiter">
+<code class="sig-name descname"><span class="pre">diffusion.bottom_maxiter</span></code><a class="headerlink" href="#input_param-diffusion.bottom_maxiter" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 200</p>
+<p>Maximum number of iterations for the bottom solver</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.hypre_interface">
+<code class="sig-name descname"><span class="pre">diffusion.hypre_interface</span></code><a class="headerlink" href="#input_param-diffusion.hypre_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = <code class="docutils literal notranslate"><span class="pre">ij</span></code></p>
+<p>The hypre interface to use when <a class="reference internal" href="#input_param-diffusion.bottom_solver"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">diffusion.bottom_solver</span></code></a> is set
+to <code class="docutils literal notranslate"><span class="pre">hypre</span></code>. Valid choices are: <code class="docutils literal notranslate"><span class="pre">ij</span></code>, <code class="docutils literal notranslate"><span class="pre">semi_structured</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">structured</span></code>.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-diffusion.hypre_namespace">
+<code class="sig-name descname"><span class="pre">diffusion.hypre_namespace</span></code><a class="headerlink" href="#input_param-diffusion.hypre_namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ParmParse <code class="docutils literal notranslate"><span class="pre">prefix</span></code> where the hypre options must be read from for this
+solver. For example, to set hypre options for NodalProjector</p>
+</dd></dl>
+
+</div>
+<div class="section" id="section-amr-tagging">
+<span id="inputs-tagging"></span><h3>Section: AMR Tagging<a class="headerlink" href="#section-amr-tagging" title="Permalink to this headline">¶</a></h3>
+<p>This section manages the various mesh refinement criteria that can be used to
+activate either static or adaptive mesh refinement during simulations. The
+parameters are read from the prefix <code class="docutils literal notranslate"><span class="pre">tagging</span></code> and can contain different types
+of tagging logic. Note that this section is only active if
+<a class="reference internal" href="#input_param-amr.max_level"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">amr.max_level</span></code></a> is greater than zero. Regridding interval is controlled by <a class="reference internal" href="#input_param-time.regrid_interval"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">time.regrid_interval</span></code></a> .</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tagging</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">s1</span> <span class="n">f1</span> <span class="n">g1</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">s1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">CartBoxRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">s1</span><span class="o">.</span><span class="n">static_refinement_def</span> <span class="o">=</span> <span class="n">static_box</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">FieldRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">density</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">grad_error</span> <span class="o">=</span> <span class="mf">0.1</span><span class="o">.</span> <span class="mf">0.1</span> <span class="mf">0.1</span>
+
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">GeometryRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="n">c1</span> <span class="n">b1</span>
+
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">cylinder</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">250.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">750.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">outer_radius</span> <span class="o">=</span> <span class="mf">300.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">inner_radius</span> <span class="o">=</span> <span class="mf">275.0</span>
+
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">box</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="mf">300.0</span> <span class="mf">150.0</span> <span class="mf">250.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">xaxis</span> <span class="o">=</span>  <span class="mf">450.0</span> <span class="mf">600.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">yaxis</span> <span class="o">=</span>  <span class="o">-</span><span class="mf">150.0</span> <span class="mf">100.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">zaxis</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">500.0</span>
+</pre></div>
+</div>
+<p>Each section must contain the keyword <code class="docutils literal notranslate"><span class="pre">type</span></code> that is one of the refinement types:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CartBoxRefinement</span></code></p></td>
+<td><p>Nested refinement using Cartesian boxes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FieldRefinement</span></code></p></td>
+<td><p>Refinement based on error metric for field or its gradient</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OversetRefinement</span></code></p></td>
+<td><p>Refinement around fringe/field interface</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GeometryRefinement</span></code></p></td>
+<td><p>Refinement using geometric shapes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">QCriterionRefinement</span></code></p></td>
+<td><p>Refinement using Q-Criterion</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VorticityRefinement</span></code></p></td>
+<td><p>Refinement using vorticity</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="std input_param">
+<dt id="input_param-tagging.labels">
+<code class="sig-name descname"><span class="pre">tagging.labels</span></code><a class="headerlink" href="#input_param-tagging.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of one or more names</p>
+<p>Labels indicate a list of prefixes for different types of refinement criteria
+active during the simulation.</p>
+</dd></dl>
+
+<p>The parameters for the subsections are determined by the type of refinement being performed.</p>
+<div class="section" id="refinement-using-cartesian-boxes">
+<h4>Refinement using Cartesian boxes<a class="headerlink" href="#refinement-using-cartesian-boxes" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">CartBoxRefinement</span></code> allows refining boxes (aligned with the principal axes).</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tagging</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">static</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">static</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">CartBoxRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">static</span><span class="o">.</span><span class="n">static_refinement_def</span> <span class="o">=</span> <span class="n">static_box</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<dl class="std input_param">
+<dt id="input_param-tagging.CartBoxRefinement.static_refinement_def">
+<code class="sig-name descname"><span class="pre">tagging.CartBoxRefinement.static_refinement_def</span></code><a class="headerlink" href="#input_param-tagging.CartBoxRefinement.static_refinement_def" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, required</p>
+<p>The text file that contains a list of bounding boxes used to perform
+refinement at various levels.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="refinement-using-field-error-criteria">
+<h4>Refinement using field error criteria<a class="headerlink" href="#refinement-using-field-error-criteria" title="Permalink to this headline">¶</a></h4>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">FieldRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">density</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">f1</span><span class="o">.</span><span class="n">grad_error</span> <span class="o">=</span> <span class="mf">0.1</span><span class="o">.</span> <span class="mf">0.1</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+<dl class="std input_param">
+<dt id="input_param-tagging.FieldRefinement.field_name">
+<code class="sig-name descname"><span class="pre">tagging.FieldRefinement.field_name</span></code><a class="headerlink" href="#input_param-tagging.FieldRefinement.field_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, required</p>
+<p>The name of the field used to tag cells</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.FieldRefinement.field_error">
+<code class="sig-name descname"><span class="pre">tagging.FieldRefinement.field_error</span></code><a class="headerlink" href="#input_param-tagging.FieldRefinement.field_error" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Vector&lt;Real&gt;, optional</p>
+<p>List of field error values at each level. The user must specify a value for
+each level desired.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.FieldRefinement.grad_error">
+<code class="sig-name descname"><span class="pre">tagging.FieldRefinement.grad_error</span></code><a class="headerlink" href="#input_param-tagging.FieldRefinement.grad_error" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Vector&lt;Real&gt;, optional</p>
+<p>List of gradient error values at each level. The user must specify a value for
+each level desired.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="refinement-using-geometry">
+<h4>Refinement using geometry<a class="headerlink" href="#refinement-using-geometry" title="Permalink to this headline">¶</a></h4>
+<p>This section controls refinement using pre-defined geometric shapes. Currently,
+two options are supported: 1. <code class="docutils literal notranslate"><span class="pre">box</span></code> – refines the region inside a hexahedral
+block, and 2. <code class="docutils literal notranslate"><span class="pre">cylinder</span></code> – refines the region inside a cylindrical block.</p>
+<dl class="std input_param">
+<dt id="input_param-tagging.GeometryRefinement.shapes">
+<code class="sig-name descname"><span class="pre">tagging.GeometryRefinement.shapes</span></code><a class="headerlink" href="#input_param-tagging.GeometryRefinement.shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of strings, required</p>
+<p>Names of the input subsections that define specific geometries for refinement.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.GeoemtryRefinement.level">
+<code class="sig-name descname"><span class="pre">tagging.GeoemtryRefinement.level</span></code><a class="headerlink" href="#input_param-tagging.GeoemtryRefinement.level" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong>  Integer, optional, default: -1</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">level</span></code> is provided and is greater than or equal to 0, then the
+refinement based on geometries defined for this section is only performed at
+that level.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.GeometryRefinement.min_level">
+<code class="sig-name descname"><span class="pre">tagging.GeometryRefinement.min_level</span></code><a class="headerlink" href="#input_param-tagging.GeometryRefinement.min_level" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong>  Integer, optional, default: 0</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">level</span></code> is not specified, then this option specifies the minimum level
+where this refinement is active.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.GeometryRefinement.max_level">
+<code class="sig-name descname"><span class="pre">tagging.GeometryRefinement.max_level</span></code><a class="headerlink" href="#input_param-tagging.GeometryRefinement.max_level" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong>  Integer, optional, default: <code class="docutils literal notranslate"><span class="pre">mesh.maxLevel()</span></code></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">level</span></code> is not specified, then this option specifies the maximum level
+where this refinement is active.</p>
+</dd></dl>
+
+<p>Note that the specification of <code class="docutils literal notranslate"><span class="pre">level</span></code> overrides, <code class="docutils literal notranslate"><span class="pre">min_level</span></code> and
+<code class="docutils literal notranslate"><span class="pre">max_level</span></code> specifications. This can be used to control the different levels
+where refinement regions are active.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">GeometryRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="n">b1</span> <span class="n">b2</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">box</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="mf">300.0</span> <span class="mf">150.0</span> <span class="mf">250.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">xaxis</span> <span class="o">=</span>  <span class="mf">450.0</span> <span class="mf">600.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">yaxis</span> <span class="o">=</span>  <span class="o">-</span><span class="mf">150.0</span> <span class="mf">100.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b1</span><span class="o">.</span><span class="n">zaxis</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">500.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b2</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">box</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b2</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="mf">600.0</span> <span class="mf">350.0</span> <span class="mf">250.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b2</span><span class="o">.</span><span class="n">xaxis</span> <span class="o">=</span>  <span class="mf">50.0</span> <span class="mf">30.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b2</span><span class="o">.</span><span class="n">yaxis</span> <span class="o">=</span>  <span class="o">-</span><span class="mf">50.0</span> <span class="mf">60.0</span> <span class="mf">0.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">b2</span><span class="o">.</span><span class="n">zaxis</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">500.0</span>
+
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">GeometryRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">shapes</span> <span class="o">=</span> <span class="n">c1</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">cylinder</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">250.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="mf">500.0</span> <span class="mf">500.0</span> <span class="mf">750.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">outer_radius</span> <span class="o">=</span> <span class="mf">300.0</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">g2</span><span class="o">.</span><span class="n">c1</span><span class="o">.</span><span class="n">inner_radius</span> <span class="o">=</span> <span class="mf">275.0</span>
+</pre></div>
+</div>
+<p>This example defines two different refinement definitions acting on level 0 and
+1 respectively. The refinement at level 0 (<code class="docutils literal notranslate"><span class="pre">g1</span></code>) contains two box regions,
+whereas the refinement at level 1 (<code class="docutils literal notranslate"><span class="pre">g2</span></code>) only contains one cylinder
+definition.</p>
+<p><strong>Refinement using hexahedral block definitions</strong></p>
+<p>To perform <code class="docutils literal notranslate"><span class="pre">box</span></code> refinement, the user specifies the <code class="docutils literal notranslate"><span class="pre">origin</span></code> of the box and
+three vectors: <code class="docutils literal notranslate"><span class="pre">xaxis,</span> <span class="pre">yaxis,</span> <span class="pre">zaxis</span></code> that defines the directions and the
+extents of the hexahedral block. Denoting <span class="math notranslate nohighlight">\(\mathbf{O}\)</span> as origin vector
+and <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> as the three
+vectors given by the user, the position vectors of the eight corners of the
+hexahedral box are given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{x}_0 &amp;= \mathbf{O} &amp;&amp; \mathbf{x}_4 &amp;= \mathbf{O} + \mathbf{z} \\
+\mathbf{x}_1 &amp;= \mathbf{O} + \mathbf{x} &amp;&amp; \mathbf{x}_5 &amp;= \mathbf{O} + \mathbf{z} + \mathbf{x} \\
+\mathbf{x}_2 &amp;= \mathbf{O} + \mathbf{x} + \mathbf{y} \qquad &amp;&amp; \mathbf{x}_6 &amp;= \mathbf{O} + \mathbf{z} + \mathbf{x} + \mathbf{y} \\
+\mathbf{x}_3 &amp;= \mathbf{O} + \mathbf{y} &amp;&amp; \mathbf{x}_7 &amp;= \mathbf{O} + \mathbf{z} + \mathbf{y} \\\end{split}\]</div>
+<p><strong>Refinement using cylindrical block definitions</strong></p>
+<p>The axis and the extents along the axis are defined by two position vectors
+<code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>. The radial extent is specified by <code class="docutils literal notranslate"><span class="pre">outer_radius</span></code>. An
+optional <code class="docutils literal notranslate"><span class="pre">inner_radius</span></code> can be specified to restrict tagging to an annulus
+between the inner and outer radii.</p>
+</div>
+<div class="section" id="refinement-using-q-criterion">
+<h4>Refinement using Q-Criterion<a class="headerlink" href="#refinement-using-q-criterion" title="Permalink to this headline">¶</a></h4>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tagging</span><span class="o">.</span><span class="n">qc1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">QCriterionRefinement</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">qc1</span><span class="o">.</span><span class="n">nondim</span> <span class="o">=</span> <span class="n">false</span>
+<span class="n">tagging</span><span class="o">.</span><span class="n">qc1</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="mf">20.0</span> <span class="mf">20.0</span>
+</pre></div>
+</div>
+<dl class="std input_param">
+<dt id="input_param-tagging.QCriterionRefinement.nondim">
+<code class="sig-name descname"><span class="pre">tagging.QCriterionRefinement.nondim</span></code><a class="headerlink" href="#input_param-tagging.QCriterionRefinement.nondim" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Boolean, optional, default = true</p>
+<p>Boolean determining if the dimensional or non-dimensional form
+of Q-criterion should be used. Dimensional version may require
+modifying values depending on physical scales. For the non-dimensional
+form positive thresholds indicate regions where the rotational strength is
+larger than the shear rate strength. A threshold of unity indicates
+that the rotational strength is equal to the background shear strength.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-tagging.QCriterionRefinement.values">
+<code class="sig-name descname"><span class="pre">tagging.QCriterionRefinement.values</span></code><a class="headerlink" href="#input_param-tagging.QCriterionRefinement.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Vector&lt;Real&gt;, optional</p>
+<p>List of Q-criterion values at each level.
+If the absolute value of Q-criterion exceeds this value
+the cell is tagged for refinement.
+The user must specify a value for each level desired.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="section-sampling">
+<span id="inputs-sampling"></span><h3>Section: Sampling<a class="headerlink" href="#section-sampling" title="Permalink to this headline">¶</a></h3>
+<p>This section controls data-sampling (post-processing) actions supported within
+AMR-wind. Note that while the input parameters use the keyword <code class="docutils literal notranslate"><span class="pre">sampling</span></code>, the
+actual keyword is determined by the labels provided to
+<a class="reference internal" href="#input_param-incflo.post_processing"><code class="xref std std-input_param docutils literal notranslate"><span class="pre">incflo.post_processing</span></code></a>. So for example, if
+<code class="docutils literal notranslate"><span class="pre">incflo.post_processing</span> <span class="pre">=</span> <span class="pre">my_sampling</span></code>, then the options must be prefixed with
+<code class="docutils literal notranslate"><span class="pre">my_sampling.</span></code>.</p>
+<dl class="std input_param">
+<dt id="input_param-sampling.output_frequency">
+<code class="sig-name descname"><span class="pre">sampling.output_frequency</span></code><a class="headerlink" href="#input_param-sampling.output_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> Integer, optional, default = 100</p>
+<p>Specify the output frequency (in timesteps) when data sampling is performed
+and output to disk.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-sampling.output_format">
+<code class="sig-name descname"><span class="pre">sampling.output_format</span></code><a class="headerlink" href="#input_param-sampling.output_format" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> String, optional, default = “native”</p>
+<p>Specify the format of the data outputs. Currently the code supports the
+following formats</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">native</span></code></dt><dd><p>AMReX particle binary format</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">ascii</span></code></dt><dd><p>AMReX particle ASCII format. Note, this can have significant impact
+on performance and must be used for debugging only.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-sampling.labels">
+<code class="sig-name descname"><span class="pre">sampling.labels</span></code><a class="headerlink" href="#input_param-sampling.labels" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of one or more names</p>
+<p>Labels indicate the names of the different types of samplers (e.g., line,
+plane, probes) that are used to sample data from the flow field.</p>
+<p>For example, if the user uses</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sampling</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">line1</span> <span class="n">plane1</span> <span class="n">probe1</span>
+</pre></div>
+</div>
+<p>Then the code expects to read <code class="docutils literal notranslate"><span class="pre">sampling.line1,</span> <span class="pre">sampling.plane1,</span>
+<span class="pre">sampling.probe1</span></code> sections to determine the specific sampling probe information.</p>
+</dd></dl>
+
+<dl class="std input_param">
+<dt id="input_param-sampling.fields">
+<code class="sig-name descname"><span class="pre">sampling.fields</span></code><a class="headerlink" href="#input_param-sampling.fields" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>type:</strong> List of one or more strings</p>
+<p>List of CFD simulation fields to sample and output</p>
+</dd></dl>
+
+<p>The individual sampling types are documented below</p>
+<div class="section" id="sampling-along-a-line">
+<h4>Sampling along a line<a class="headerlink" href="#sampling-along-a-line" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">LineSampler</span></code> allows the user to sample the flow-field along a line
+defined by <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code> coordinates with <code class="docutils literal notranslate"><span class="pre">num_points</span></code> equidistant
+nodes.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">type</span>       <span class="o">=</span> <span class="n">LineSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">start</span>      <span class="o">=</span> <span class="mf">250.0</span> <span class="mf">250.0</span> <span class="mf">10.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">end</span>        <span class="o">=</span> <span class="mf">250.0</span> <span class="mf">250.0</span> <span class="mf">210.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sampling-on-one-or-more-planes">
+<h4>Sampling on one or more planes<a class="headerlink" href="#sampling-on-one-or-more-planes" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">PlaneSampler</span></code> samples the flow-field on two-dimensional planes defined by
+two axes: <code class="docutils literal notranslate"><span class="pre">axis1</span></code> and <code class="docutils literal notranslate"><span class="pre">axis2</span></code> with the bottom corner located at <code class="docutils literal notranslate"><span class="pre">origin</span></code>
+and is divided into equally spaced nodes defined by the two entries in
+<code class="docutils literal notranslate"><span class="pre">num_points</span></code> vector. Multiple planes parallel to the reference planes can be
+sampled by specifying the <code class="docutils literal notranslate"><span class="pre">normal</span></code> vector along which the the planes are
+offset for as many planes as there are entries in the <code class="docutils literal notranslate"><span class="pre">offset</span></code> array.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">type</span>        <span class="o">=</span> <span class="n">PlaneSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">axis1</span>       <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">1.0</span> <span class="mf">0.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">axis2</span>       <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">1.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">origin</span>      <span class="o">=</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">num_points</span>  <span class="o">=</span> <span class="mi">10</span> <span class="mi">10</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">normal</span>      <span class="o">=</span> <span class="mf">1.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">plane1</span><span class="o">.</span><span class="n">offsets</span>     <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span> <span class="mf">0.0</span> <span class="mf">10.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sampling-at-arbitrary-locations">
+<h4>Sampling at arbitrary locations<a class="headerlink" href="#sampling-at-arbitrary-locations" title="Permalink to this headline">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProbeSampler</span></code> allows the user to sample the flow field at arbitrary
+locations read from a text file (default: <code class="docutils literal notranslate"><span class="pre">probe_locations.txt</span></code>).</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sampling</span><span class="o">.</span><span class="n">probe1</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">ProbeSampler</span>
+<span class="n">sampling</span><span class="o">.</span><span class="n">probe1</span><span class="o">.</span><span class="n">probe_location_file</span> <span class="o">=</span> <span class="s2">&quot;probe_locations.txt&quot;</span>
+</pre></div>
+</div>
+<p>The first line of the file contains the total number of probes for this set.
+This is followed by the coordinates (three real numbers), one line per probe.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="abl_bndry_io.html" class="btn btn-neutral float-right" title="AMR-Wind ABL Boundary I/O" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="build.html" class="btn btn-neutral float-left" title="Compiling AMR-Wind" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

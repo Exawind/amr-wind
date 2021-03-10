@@ -1,0 +1,9 @@
+<map id="amr_wind::actuator::TurbineInfo" name="amr_wind::actuator::TurbineInfo">
+<area shape="rect" id="node1" title=" " alt="" coords="62,379,210,420"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1actuator_1_1_act_info.html" title="Basic information that is common to all actuator types." alt="" coords="62,288,210,329"/>
+<area shape="rect" id="node3" title=" " alt="" coords="15,199,132,225"/>
+<area shape="rect" id="node4" title="STL class." alt="" coords="5,102,115,129"/>
+<area shape="rect" id="node5" title=" " alt="" coords="41,5,79,32"/>
+<area shape="rect" id="node6" title="STL class." alt="" coords="162,199,249,225"/>
+<area shape="rect" id="node7" title="STL class." alt="" coords="139,95,277,136"/>
+</map>

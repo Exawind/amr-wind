@@ -1,0 +1,13 @@
+<map id="amr_wind::turbulence::TurbModelBase&lt; Transport &gt;" name="amr_wind::turbulence::TurbModelBase&lt; Transport &gt;">
+<area shape="rect" id="node1" title="Turbulence model aspects common to both LES and RANS models." alt="" coords="1061,71,1280,112"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t.html" title="K&#45;Omega&#45;SST RANS turbulence model." alt="" coords="1332,5,1531,47"/>
+<area shape="rect" id="node8" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs.html" title="Base class for 1&#45;Equation subgrid scale TKE turbulence model." alt="" coords="1335,71,1528,112"/>
+<area shape="rect" id="node11" href="$classamr__wind_1_1turbulence_1_1_smagorinsky.html" title="Smagorinsky LES Model." alt="" coords="1329,136,1533,177"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1turbulence_1_1_turb_model.html" title="Turbulence model with a specific transport model." alt="" coords="825,71,1012,112"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1turbulence_1_1_turbulence_model.html" title="Abstract representation of a turbulence model." alt="" coords="613,71,776,112"/>
+<area shape="rect" id="node4" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="339,71,564,112"/>
+<area shape="rect" id="node5" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="5,71,157,112"/>
+<area shape="rect" id="node7" href="$classamr__wind_1_1turbulence_1_1_k_omega_s_s_t_i_d_d_e_s.html" title="K&#45;Omega&#45;SST&#45;IDDES Hybrid RANS/LES turbulence model." alt="" coords="1583,5,1821,47"/>
+<area shape="rect" id="node9" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_m84.html" title="1&#45;equation subgrid scale TKE turbulence model" alt="" coords="1591,71,1813,112"/>
+<area shape="rect" id="node10" href="$classamr__wind_1_1turbulence_1_1_one_eq_ksgs_s94.html" title="1&#45;equation subgrid scale TKE turbulence model" alt="" coords="1593,136,1811,177"/>
+</map>

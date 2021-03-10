@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classamr__wind_1_1_field_b_c_iface.html" title="Interface to setup up boundary conditions on a field." alt="" coords="5,56,180,83"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_a_b_l_temp_wall_func.html" title=" " alt="" coords="228,5,439,32"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_a_b_l_vel_wall_func.html" title="Applies a shear&#45;stress value at the domain boundary." alt="" coords="235,56,431,83"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1_fixed_gradient_b_c.html" title="Applies a non&#45;zero gradient at the domain boundary." alt="" coords="232,107,435,133"/>
+</map>

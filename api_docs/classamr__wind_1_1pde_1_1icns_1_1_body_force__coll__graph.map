@@ -1,0 +1,7 @@
+<map id="amr_wind::pde::icns::BodyForce" name="amr_wind::pde::icns::BodyForce">
+<area shape="rect" id="node1" title="Apply a user&#45;defined body force as a source term." alt="" coords="232,200,384,241"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,96,208,137"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="232,103,384,130"/>
+<area shape="rect" id="node4" title="STL class." alt="" coords="409,103,495,130"/>
+<area shape="rect" id="node5" title="STL class." alt="" coords="383,5,521,47"/>
+</map>

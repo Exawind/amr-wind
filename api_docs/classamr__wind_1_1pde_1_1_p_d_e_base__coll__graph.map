@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::PDEBase" name="amr_wind::pde::PDEBase">
+<area shape="rect" id="node1" title="Abstract interface defining a PDE and its solution process withn AMR&#45;Wind." alt="" coords="5,229,189,256"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="16,124,179,180"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="21,5,173,47"/>
+</map>

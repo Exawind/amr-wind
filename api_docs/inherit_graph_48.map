@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,143,81,170"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1averaging_1_1_time_averaging.html" title="A collection of time&#45;averaged quantities." alt="" coords="145,5,304,47"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1enstrophy_1_1_enstrophy.html" title="enstrophy object" alt="" coords="145,71,304,112"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1field__norms_1_1_field_norms.html" title="field norm object" alt="" coords="139,136,310,177"/>
+<area shape="rect" id="node5" href="$classamr__wind_1_1kinetic__energy_1_1_kinetic_energy.html" title="kinetic energy object" alt="" coords="129,201,320,243"/>
+<area shape="rect" id="node6" href="$classamr__wind_1_1sampling_1_1_sampling.html" title="Collection of data sampling objects." alt="" coords="147,267,302,308"/>
+</map>

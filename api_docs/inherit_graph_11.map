@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,46,165,73"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1actuator_1_1_actuator_container.html" title="Specialization of AmrParticleContainer for sampling velocities." alt="" coords="217,5,365,47"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1sampling_1_1_sampling_container.html" title="Specialization of the AMReX ParticleContainer object for sampling data." alt="" coords="213,71,368,112"/>
+</map>

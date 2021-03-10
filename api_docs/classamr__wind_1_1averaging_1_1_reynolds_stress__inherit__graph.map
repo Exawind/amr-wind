@@ -1,0 +1,4 @@
+<map id="amr_wind::averaging::ReynoldsStress" name="amr_wind::averaging::ReynoldsStress">
+<area shape="rect" id="node1" title="Compute correlation from 2 CFD fields The formula used to compute the correlations between two fields..." alt="" coords="27,95,185,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,207,47"/>
+</map>

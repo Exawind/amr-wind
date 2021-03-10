@@ -1,0 +1,4 @@
+<map id="amr_wind::FPlaneAveraging&lt; FType &gt;" name="amr_wind::FPlaneAveraging&lt; FType &gt;">
+<area shape="rect" id="node1" title="Output average of a field on planes normal to a given direction." alt="" coords="5,95,208,136"/>
+<area shape="rect" id="node2" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="31,5,183,32"/>
+</map>

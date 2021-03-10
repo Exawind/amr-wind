@@ -1,0 +1,12 @@
+<map id="amr_wind::channel_flow::ChannelFlow" name="amr_wind::channel_flow::ChannelFlow">
+<area shape="rect" id="node1" title="Channel Flow physics." alt="" coords="160,436,339,477"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,332,149,373"/>
+<area shape="rect" id="node3" href="$classamr__wind_1_1_sim_time.html" title="Time manager for simulations." alt="" coords="173,339,325,366"/>
+<area shape="rect" id="node4" href="$classamr__wind_1_1_field_repo.html" title="Field Repository." alt="" coords="350,339,509,366"/>
+<area shape="rect" id="node5" title=" " alt="" coords="348,213,511,255"/>
+<area shape="rect" id="node6" title="STL class." alt="" coords="315,117,402,143"/>
+<area shape="rect" id="node7" title="STL class." alt="" coords="289,5,428,47"/>
+<area shape="rect" id="node8" title="STL class." alt="" coords="427,109,579,151"/>
+<area shape="rect" id="node9" title=" " alt="" coords="467,13,506,39"/>
+<area shape="rect" id="node10" title=" " alt="" coords="533,13,571,39"/>
+</map>

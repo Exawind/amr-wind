@@ -1,0 +1,5 @@
+<map id="amr_wind::pde::SourceTerm" name="amr_wind::pde::SourceTerm">
+<area shape="rect" id="node1" title="Abstract representation of a source term." alt="" coords="19,215,222,241"/>
+<area shape="rect" id="node2" href="$structamr__wind_1_1_factory.html" title=" " alt="" coords="5,124,236,165"/>
+<area shape="rect" id="node3" href="$structamr__wind_1_1_factory.html" title="Runtime selection of options based on string keyword lookup." alt="" coords="45,5,197,47"/>
+</map>
