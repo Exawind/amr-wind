@@ -5,7 +5,6 @@
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/IOManager.H"
 
-
 namespace amr_wind {
 namespace kinetic_energy {
 
@@ -42,19 +41,24 @@ amrex::Real KineticEnergy::calculate_kinetic_energy()
         amrex::iMultiFab level_mask;
         if (lev < finest_level) {
             level_mask = makeFineMask(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev), m_sim.mesh().boxArray(lev+1), amrex::IntVect(2), 1, 0);
+                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
+                m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
         } else {
-            level_mask.define(m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev), 1, 0, amrex::MFInfo());
+            level_mask.define(
+                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
+                1, 0, amrex::MFInfo());
             level_mask.setVal(1);
         }
 
         const amrex::Real cell_vol = geom[lev].CellSize()[0] *
-                              geom[lev].CellSize()[1] * geom[lev].CellSize()[2];
+                                     geom[lev].CellSize()[1] *
+                                     geom[lev].CellSize()[2];
 
         Kinetic_energy += amrex::ReduceSum(
             m_density(lev), m_velocity(lev), level_mask, 0,
             [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx, amrex::Array4<amrex::Real const> const& den_arr,
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& den_arr,
                 amrex::Array4<amrex::Real const> const& vel_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
                 amrex::Real Kinetic_Energy_Fab = 0.0;

@@ -32,7 +32,6 @@ public:
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
 
-
     //! calculate the L2 norm of a given field and component
     amrex::Real calculate_enstrophy();
 
@@ -60,7 +59,7 @@ private:
     const Field& m_velocity;
     //! reference to density
     const Field& m_density;
-    
+
     //! filename for ASCII output
     std::string m_out_fname;
 
@@ -72,10 +71,6 @@ private:
 
     //! precision in ASCII output
     int m_precision{12};
-
-
-
-    
 };
 
 } // namespace enstrophy
