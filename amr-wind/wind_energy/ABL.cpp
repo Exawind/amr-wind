@@ -4,6 +4,7 @@
 #include "amr-wind/equation_systems/icns/source_terms/ABLForcing.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLMeanBoussinesq.H"
 #include "amr-wind/equation_systems/icns/source_terms/ABLWrfForcingMom.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
 #include "amr-wind/incflo.H"
 #include "amr-wind/wind_energy/ABLWrf.H"
 
@@ -134,8 +135,14 @@ void ABL::pre_advance_work()
     if (m_abl_mean_bous != nullptr)
         m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
 
-    if(m_wrf_file != nullptr){
-      m_abl_wrf_forcing->mean_velocity_heights(m_stats->vel_profile(), m_wrf_file);
+    if (m_abl_wrf_forcing != nullptr) {
+        m_abl_wrf_forcing->mean_velocity_heights(
+            m_stats->vel_profile(), m_wrf_file);
+    }
+
+    if (m_abl_wrf_temp_forcing != nullptr) {
+        m_abl_wrf_temp_forcing->mean_temperature_heights(
+            m_stats->theta_profile(), m_wrf_file);
     }
 
     m_bndry_plane->pre_advance_work();
