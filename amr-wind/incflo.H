@@ -135,9 +135,6 @@ public: // for cuda
     void ApplyPredictor(bool incremental_projection = false);
     void ApplyCorrector();
 
-    amrex::Real ComputeKineticEnergy() const;
-    amrex::Real ComputeEnstrophy() const;
-
     void ApplyProjection(
         amrex::Vector<amrex::MultiFab const*> density,
         amrex::Real time,

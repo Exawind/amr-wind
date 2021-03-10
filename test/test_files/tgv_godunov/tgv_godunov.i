@@ -15,8 +15,12 @@ time.cfl              =   0.45        # CFL factor
 #.......................................#
 time.plot_interval  =  20   # Steps between plot files
 time.checkpoint_interval =   -1  # Steps between checkpoint files
-io.KE_int = 1        # calculate kinetic energy 
-io.enstrophy_int = 1 # calculate enstrophy
+
+incflo.post_processing = enstrophy ke
+ke.type = KineticEnergy
+ke.output_frequency = 1
+enstrophy.type = Enstrophy
+enstrophy.output_frequency = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
