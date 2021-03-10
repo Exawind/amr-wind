@@ -1,4 +1,4 @@
-#include "amr-wind/equation_systems/icns/source_terms/ABLWrfForcingTemp.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/core/FieldUtils.H"
@@ -9,7 +9,22 @@
 
 namespace amr_wind{
 namespace pde{
-namespace icns{
+namespace temperature {
+
+namespace {
+
+    //! Return closest index (from lower) of value in vector
+AMREX_FORCE_INLINE int
+closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
+{
+  auto const it = std::upper_bound(vec.begin(), vec.end(), value);
+  AMREX_ALWAYS_ASSERT(it != vec.end());
+
+  const int idx = std::distance(vec.begin(), it);
+  return std::max(idx - 1, 0);
+}
+}
+
 
 ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
     : m_time(sim.time()), m_mesh(sim.mesh())
@@ -17,21 +32,21 @@ ABLWrfForcingTemp::ABLWrfForcingTemp(const CFDSim& sim)
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
   abl.register_wrf_temp_forcing(this);
 
-  mean_temperature_init(abl.abl_statistics().theta_profile, abl.abl_wrf_file);
+  mean_temperature_init(abl.abl_statistics().theta_profile(), abl.abl_wrf_file());
 }
 
 ABLWrfForcingTemp::~ABLWrfForcingTemp() = default;
 
 void ABLWrfForcingTemp::mean_temperature_init(const FieldPlaneAveraging& tavg, const ABLWRFfile& wrfFile)
 {
-  m_axis = vavg.axis();
+  m_axis = tavg.axis();
   // The implementation depends the assumption that the ABL statistics class
   // computes statistics at the cell-centeres only on level 0. If this
   // assumption changes in future, the implementation will break... so put in
   // a check here to catch this.
   AMREX_ALWAYS_ASSERT(
       m_mesh.Geom(0).Domain().length(m_axis) ==
-      static_cast<int>(vavg.line_centroids().size()));
+      static_cast<int>(tavg.line_centroids().size()));
 
   m_theta_ht.resize(tavg.line_centroids().size());
   m_theta_vals.resize(tavg.ncell_line());
