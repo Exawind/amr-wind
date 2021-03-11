@@ -84,8 +84,8 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 
     amrex::Real interpTflux;
 
-    interpTflux = coeff_interp[0] * wrfFile->wrt_tflux()[m_idx_time] +
-                  coeff_interp[1] * wrfFile->wrt_tflux()[m_idx_time + 1];
+    interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
+                  coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
 
     int num_wrf_ht = wrfFile->nheights();
 

@@ -13,13 +13,13 @@ ABLFieldInit::ABLFieldInit()
 {
     amrex::ParmParse pp_abl("ABL");
 
-    if (pp.contains("init_profile")) {
+    if (pp_abl.contains("init_profile")) {
 #ifndef AMR_WIND_USE_NETCDF
         amrex::Abort("initialization from profile capability requires NetCDF");
 #else
         m_profile_height = true;
         std::string profileFile;
-        pp.query("init_profile", profileFile);
+        pp_abl.query("init_profile", profileFile);
 
         auto ncf = ncutils::NCFile::open_par(
             profileFile, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
@@ -38,11 +38,11 @@ ABLFieldInit::ABLFieldInit()
         ncf.var("u").get(m_u_values.data());
         ncf.var("v").get(m_v_values.data());
 
-        m_thht_d.resize(num_theta_values);
-        m_thvv_d.resize(num_theta_values);
+        m_thht_d.resize(num_prof_val);
+        m_thvv_d.resize(num_prof_val);
 
-        m_prof_u_d.resize(num_theta_values);
-        m_prof_v_d.resize(num_theta_values);
+        m_prof_u_d.resize(num_prof_val);
+        m_prof_v_d.resize(num_prof_val);
 
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, m_theta_heights.begin(),
