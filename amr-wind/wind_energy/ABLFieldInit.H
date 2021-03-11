@@ -52,11 +52,18 @@ private:
     //! terrain
     amrex::Vector<amrex::Real> m_theta_heights;
     amrex::Vector<amrex::Real> m_theta_values;
+
+    amrex::Vector<amrex::Real> m_u_values;
+    amrex::Vector<amrex::Real> m_v_values;
+
     ///@}
 
     // Device copies of the above arrays
     amrex::Gpu::DeviceVector<amrex::Real> m_thht_d;
     amrex::Gpu::DeviceVector<amrex::Real> m_thvv_d;
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_u_d;
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_v_d;
 
     //! Initial density field
     amrex::Real m_rho;
@@ -96,6 +103,9 @@ private:
 
     //! Perturb temperature field with random fluctuations
     bool m_perturb_theta{false};
+
+    bool m_profile_height{false};
+
 };
 
 } // namespace amr_wind
