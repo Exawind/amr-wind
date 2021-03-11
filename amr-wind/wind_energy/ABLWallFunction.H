@@ -40,6 +40,8 @@ public:
 
     void computeusingheatflux();
 
+    void update_tflux(const amrex::Real); 
+
 private:
     const CFDSim& m_sim;
 
