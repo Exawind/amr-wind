@@ -9,7 +9,6 @@
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/wind_energy/ABLWrf.H"
 
-
 namespace amr_wind {
 namespace pde {
 namespace temperature {
@@ -28,24 +27,24 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-  void mean_temperature_heights(const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
-  
-  void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
+    amrex::Real const mean_temperature_heights(
+        const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
- private:
-  const SimTime& m_time;
-  const amrex::AmrCore& m_mesh;
-  std::string m_forcing_scheme{"direct"};
+    void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
 
-  amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
-  amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
-  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
-  
-  int m_idx_time;
+private:
+    const SimTime& m_time;
+    const amrex::AmrCore& m_mesh;
+    std::string m_forcing_scheme{"direct"};
 
-  int m_axis{2};
+    amrex::Gpu::DeviceVector<amrex::Real> m_theta_ht;
+    amrex::Gpu::DeviceVector<amrex::Real> m_theta_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_theta_vals;
+    amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
 
+    int m_idx_time;
+
+    int m_axis{2};
 };
 
 } // namespace temperature
