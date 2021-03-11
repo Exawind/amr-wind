@@ -27,7 +27,7 @@ public:
         const FieldState fstate,
         const amrex::Array4<amrex::Real>& src_term) const override;
 
-    amrex::Real const mean_temperature_heights(
+    amrex::Real mean_temperature_heights(
         const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
     void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
