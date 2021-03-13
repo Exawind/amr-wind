@@ -32,7 +32,7 @@ amrex::Real Enstrophy::calculate_enstrophy()
     BL_PROFILE("amr-wind::Enstrophy::calculate_enstrophy");
 
     // integrated total Enstrophy
-    amrex::Real Enstrophy = 0.0;
+    amrex::Real total_enstrophy = 0.0;
 
     const int finest_level = m_velocity.repo().num_active_levels() - 1;
     const auto& geom = m_velocity.repo().mesh().Geom();
@@ -57,33 +57,33 @@ amrex::Real Enstrophy::calculate_enstrophy()
                                      geom[lev].CellSize()[1] *
                                      geom[lev].CellSize()[2];
 
-        Enstrophy += amrex::ReduceSum(
+        total_enstrophy += amrex::ReduceSum(
             m_density(lev), (*vorticity)(lev), level_mask, 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& den_arr,
                 amrex::Array4<amrex::Real const> const& vort_arr,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real Enstrophy_Fab = 0.0;
+                amrex::Real enstrophy_fab = 0.0;
 
                 amrex::Loop(
-                    bx, [=, &Enstrophy_Fab](int i, int j, int k) noexcept {
-                        Enstrophy_Fab +=
+                    bx, [=, &enstrophy_fab](int i, int j, int k) noexcept {
+                        enstrophy_fab +=
                             cell_vol * mask_arr(i, j, k) * den_arr(i, j, k) *
                             (vort_arr(i, j, k) * vort_arr(i, j, k));
                     });
-                return Enstrophy_Fab;
+                return enstrophy_fab;
             });
     }
 
     // total volume of grid on level 0
     const amrex::Real total_vol = geom[0].ProbDomain().volume();
 
-    Enstrophy *= 0.5 / total_vol;
+    total_enstrophy *= 0.5 / total_vol;
 
-    amrex::ParallelDescriptor::ReduceRealSum(Enstrophy);
+    amrex::ParallelDescriptor::ReduceRealSum(total_enstrophy);
 
-    return Enstrophy;
+    return total_enstrophy;
 }
 
 void Enstrophy::post_advance_work()
