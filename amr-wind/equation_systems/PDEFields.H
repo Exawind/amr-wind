@@ -41,6 +41,12 @@ struct PDEFields
     Field& diff_term;
     //! Convective term for this PDE
     Field& conv_term;
+    //! Flux x term for this PDE
+    Field& flux_x_term;
+    //! Flux y term for this PDE
+    Field& flux_y_term;
+    //! Flux z term for this PDE
+    Field& flux_z_term;
 };
 
 } // namespace pde

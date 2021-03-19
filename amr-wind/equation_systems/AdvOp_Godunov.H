@@ -10,6 +10,7 @@
 
 #include "AMReX_Gpu.H"
 #include "AMReX_ParmParse.H"
+#include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {
 namespace pde {
@@ -74,6 +75,9 @@ struct AdvectionOp<
         const auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
+        auto& flux_x = fields.flux_x_term;
+        auto& flux_y = fields.flux_y_term;
+        auto& flux_z = fields.flux_z_term;
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
@@ -111,8 +115,9 @@ struct AdvectionOp<
 
                 amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
-                godunov::compute_advection(
-                    lev, bx, PDE::ndim, conv_term(lev).array(mfi),
+                godunov::compute_fluxes(
+                    lev, bx, PDE::ndim, flux_x(lev).array(mfi),
+                    flux_y(lev).array(mfi), flux_z(lev).array(mfi),
                     (PDE::multiply_rho ? rhotrac : tra_arr),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
@@ -120,6 +125,41 @@ struct AdvectionOp<
                     tmpfab.dataPtr(), geom, dt, godunov_scheme);
 
                 amrex::Gpu::streamSynchronize();
+            }
+        }
+
+        amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
+            repo.num_active_levels());
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+            fluxes[lev][0] = &flux_x(lev);
+            fluxes[lev][1] = &flux_y(lev);
+            fluxes[lev][2] = &flux_z(lev);
+        }
+
+        // In order to enforce conservation across coarse-fine boundaries we
+        // must be sure to average down the fluxes before we use them
+        for (int lev = repo.num_active_levels() - 1; lev > 0; --lev) {
+            amrex::IntVect rr =
+                geom[lev].Domain().size() / geom[lev - 1].Domain().size();
+            amrex::average_down_faces(
+                GetArrOfConstPtrs(fluxes[lev]), fluxes[lev - 1], rr,
+                geom[lev - 1]);
+        }
+
+        for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(dof_field(lev), amrex::TilingIfNotGPU());
+                 mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+
+                godunov::compute_advection(
+                    lev, bx, PDE::ndim, conv_term(lev).array(mfi),
+                    flux_x(lev).array(mfi), flux_y(lev).array(mfi),
+                    flux_z(lev).array(mfi), u_mac(lev).const_array(mfi),
+                    v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
+                    iconserv.data(), geom);
             }
         }
     }

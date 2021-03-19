@@ -7,11 +7,13 @@
 
 using namespace amrex;
 
-void godunov::compute_advection(
+void godunov::compute_fluxes(
     int lev,
     Box const& bx,
     int ncomp,
-    Array4<Real> const& dqdt,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
     Array4<Real const> const& q,
     Array4<Real const> const& umac,
     Array4<Real const> const& vmac,
@@ -25,7 +27,7 @@ void godunov::compute_advection(
     godunov::scheme godunov_scheme)
 {
 
-    BL_PROFILE("amr-wind::godunov::compute_advection");
+    BL_PROFILE("amr-wind::godunov::compute_fluxes");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
     Box const& ybx = amrex::surroundingNodes(bx, 1);
     Box const& zbx = amrex::surroundingNodes(bx, 2);
@@ -45,7 +47,6 @@ void godunov::compute_advection(
     Box const& domain = geom[lev].Domain();
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
-    const auto dxinv = geom[lev].InvCellSizeArray();
 
     Array4<Real> Imx = makeArray4(p, bxg1, ncomp);
     p += Imx.size();
@@ -359,6 +360,11 @@ void godunov::compute_advection(
                        ? 0.5 * (stl + sth)
                        : temp;
             qx(i, j, k, n) = temp;
+
+            if (iconserv[n])
+                fx(i, j, k, n) = umac(i, j, k) * qx(i, j, k, n);
+            else
+                fx(i, j, k, n) = qx(i, j, k, n);
         });
 
     //
@@ -463,10 +469,15 @@ void godunov::compute_advection(
                        ? 0.5 * (stl + sth)
                        : temp;
             qy(i, j, k, n) = temp;
+
+            if (iconserv[n])
+                fy(i, j, k, n) = vmac(i, j, k) * qy(i, j, k, n);
+            else
+                fy(i, j, k, n) = qy(i, j, k, n);
         });
 
     //
-    // z-direcion
+    // z-direction
     //
     Box const& zbxtmp = amrex::grow(bx, 2, 1);
     Array4<Real> xylo =
@@ -565,26 +576,48 @@ void godunov::compute_advection(
                        ? 0.5 * (stl + sth)
                        : temp;
             qz(i, j, k, n) = temp;
+
+            if (iconserv[n])
+                fz(i, j, k, n) = wmac(i, j, k) * qz(i, j, k, n);
+            else
+                fz(i, j, k, n) = qz(i, j, k, n);
         });
+}
+
+void godunov::compute_advection(
+    int lev,
+    Box const& bx,
+    int ncomp,
+    Array4<Real> const& dqdt,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
+    Array4<Real const> const& umac,
+    Array4<Real const> const& vmac,
+    Array4<Real const> const& wmac,
+    int const* iconserv,
+    Vector<amrex::Geometry> geom)
+{
+
+    BL_PROFILE("amr-wind::godunov::compute_advection");
+
+    const auto dxinv = geom[lev].InvCellSizeArray();
 
     amrex::ParallelFor(
         bx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             if (iconserv[n]) {
                 dqdt(i, j, k, n) =
-                    dxinv[0] * (umac(i, j, k) * qx(i, j, k, n) -
-                                umac(i + 1, j, k) * qx(i + 1, j, k, n)) +
-                    dxinv[1] * (vmac(i, j, k) * qy(i, j, k, n) -
-                                vmac(i, j + 1, k) * qy(i, j + 1, k, n)) +
-                    dxinv[2] * (wmac(i, j, k) * qz(i, j, k, n) -
-                                wmac(i, j, k + 1) * qz(i, j, k + 1, n));
+                    dxinv[0] * (fx(i, j, k, n) - fx(i + 1, j, k, n)) +
+                    dxinv[1] * (fy(i, j, k, n) - fy(i, j + 1, k, n)) +
+                    dxinv[2] * (fz(i, j, k, n) - fz(i, j, k + 1, n));
             } else {
                 dqdt(i, j, k, n) =
                     0.5 * dxinv[0] * (umac(i, j, k) + umac(i + 1, j, k)) *
-                        (qx(i, j, k, n) - qx(i + 1, j, k, n)) +
+                        (fx(i, j, k, n) - fx(i + 1, j, k, n)) +
                     0.5 * dxinv[1] * (vmac(i, j, k) + vmac(i, j + 1, k)) *
-                        (qy(i, j, k, n) - qy(i, j + 1, k, n)) +
+                        (fy(i, j, k, n) - fy(i, j + 1, k, n)) +
                     0.5 * dxinv[2] * (wmac(i, j, k) + wmac(i, j, k + 1)) *
-                        (qz(i, j, k, n) - qz(i, j, k + 1, n));
+                        (fz(i, j, k, n) - fz(i, j, k + 1, n));
             }
         });
 }
