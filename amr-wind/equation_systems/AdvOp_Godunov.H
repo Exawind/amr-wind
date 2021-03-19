@@ -75,9 +75,11 @@ struct AdvectionOp<
         const auto& src_term = fields.src_term;
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
-        auto& flux_x = fields.flux_x_term;
-        auto& flux_y = fields.flux_y_term;
-        auto& flux_z = fields.flux_z_term;
+
+        auto flux_x = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::ZFACE);
+
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
@@ -116,8 +118,8 @@ struct AdvectionOp<
                 amrex::FArrayBox tmpfab(amrex::grow(bx, 1), PDE::ndim * 14);
 
                 godunov::compute_fluxes(
-                    lev, bx, PDE::ndim, flux_x(lev).array(mfi),
-                    flux_y(lev).array(mfi), flux_z(lev).array(mfi),
+                    lev, bx, PDE::ndim, (*flux_x)(lev).array(mfi),
+                    (*flux_y)(lev).array(mfi), (*flux_z)(lev).array(mfi),
                     (PDE::multiply_rho ? rhotrac : tra_arr),
                     u_mac(lev).const_array(mfi), v_mac(lev).const_array(mfi),
                     w_mac(lev).const_array(mfi), src_term(lev).const_array(mfi),
@@ -131,9 +133,9 @@ struct AdvectionOp<
         amrex::Vector<amrex::Array<amrex::MultiFab*, AMREX_SPACEDIM>> fluxes(
             repo.num_active_levels());
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
-            fluxes[lev][0] = &flux_x(lev);
-            fluxes[lev][1] = &flux_y(lev);
-            fluxes[lev][2] = &flux_z(lev);
+            fluxes[lev][0] = &(*flux_x)(lev);
+            fluxes[lev][1] = &(*flux_y)(lev);
+            fluxes[lev][2] = &(*flux_z)(lev);
         }
 
         // In order to enforce conservation across coarse-fine boundaries we
@@ -156,8 +158,8 @@ struct AdvectionOp<
 
                 godunov::compute_advection(
                     lev, bx, PDE::ndim, conv_term(lev).array(mfi),
-                    flux_x(lev).array(mfi), flux_y(lev).array(mfi),
-                    flux_z(lev).array(mfi), u_mac(lev).const_array(mfi),
+                    (*flux_x)(lev).array(mfi), (*flux_y)(lev).array(mfi),
+                    (*flux_z)(lev).array(mfi), u_mac(lev).const_array(mfi),
                     v_mac(lev).const_array(mfi), w_mac(lev).const_array(mfi),
                     iconserv.data(), geom);
             }

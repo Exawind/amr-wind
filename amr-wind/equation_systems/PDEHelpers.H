@@ -12,24 +12,6 @@
 namespace amr_wind {
 namespace pde_impl {
 
-//! Field name that holds the flux_x term
-inline std::string flux_x_term_name(const std::string& var)
-{
-    return var + "_flux_x_term";
-}
-
-//! Field name that holds the flux_y_term
-inline std::string flux_y_term_name(const std::string& var)
-{
-    return var + "_flux_y_term";
-}
-
-//! Field name that holds the flux_z_term
-inline std::string flux_z_term_name(const std::string& var)
-{
-    return var + "_flux_z_term";
-}
-
 //! Field name that holds the convective term
 inline std::string conv_term_name(const std::string& var)
 {
@@ -79,12 +61,6 @@ create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
     repo.declare_field(
         pde_impl::conv_term_name(PDE::var_name()), PDE::ndim, 0,
         Scheme::num_conv_states);
-
-    repo.declare_face_normal_field(
-        {pde_impl::flux_x_term_name(PDE::var_name()),
-         pde_impl::flux_y_term_name(PDE::var_name()),
-         pde_impl::flux_z_term_name(PDE::var_name())},
-        PDE::ndim, 0, 1);
 
     PDEFields fields(repo, PDE::var_name());
     fields.field.register_fill_patch_op<FieldFillPatchOps<FieldBCDirichlet>>(

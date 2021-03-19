@@ -17,9 +17,6 @@ PDEFields::PDEFields(FieldRepo& repo_in, const std::string& var_name)
     , src_term(repo.get_field(pde_impl::src_term_name(var_name)))
     , diff_term(repo.get_field(pde_impl::diff_term_name(var_name)))
     , conv_term(repo.get_field(pde_impl::conv_term_name(var_name)))
-    , flux_x_term(repo.get_field(pde_impl::flux_x_term_name(var_name)))
-    , flux_y_term(repo.get_field(pde_impl::flux_y_term_name(var_name)))
-    , flux_z_term(repo.get_field(pde_impl::flux_z_term_name(var_name)))
 {}
 
 PDEMgr::PDEMgr(CFDSim& sim) : m_sim(sim), m_probtype(0)
