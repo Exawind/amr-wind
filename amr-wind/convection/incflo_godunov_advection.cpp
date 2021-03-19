@@ -308,7 +308,7 @@ void godunov::compute_fluxes(
             yzlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yzhi + l_yzlo);
         });
     //
-    Array4<Real> qx = makeArray4(Ipx.dataPtr(), xbx, ncomp);
+
     amrex::ParallelFor(
         xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -355,16 +355,15 @@ void godunov::compute_fluxes(
             Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
             Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
 
-            Real temp = (umac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(umac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qx(i, j, k, n) = temp;
+            Real qx = (umac(i, j, k) >= 0.) ? stl : sth;
+            qx = (amrex::Math::abs(umac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qx;
 
             if (iconserv[n])
-                fx(i, j, k, n) = umac(i, j, k) * qx(i, j, k, n);
+                fx(i, j, k, n) = umac(i, j, k) * qx;
             else
-                fx(i, j, k, n) = qx(i, j, k, n);
+                fx(i, j, k, n) = qx;
         });
 
     //
@@ -414,9 +413,7 @@ void godunov::compute_fluxes(
             Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
             zxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
         });
-    //
 
-    Array4<Real> qy = makeArray4(Ipy.dataPtr(), ybx, ncomp);
     amrex::ParallelFor(
         ybx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -464,16 +461,15 @@ void godunov::compute_fluxes(
             Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
             Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
 
-            Real temp = (vmac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(vmac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qy(i, j, k, n) = temp;
+            Real qy = (vmac(i, j, k) >= 0.) ? stl : sth;
+            qy = (amrex::Math::abs(vmac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qy;
 
             if (iconserv[n])
-                fy(i, j, k, n) = vmac(i, j, k) * qy(i, j, k, n);
+                fy(i, j, k, n) = vmac(i, j, k) * qy;
             else
-                fy(i, j, k, n) = qy(i, j, k, n);
+                fy(i, j, k, n) = qy;
         });
 
     //
@@ -523,8 +519,7 @@ void godunov::compute_fluxes(
             Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
             yxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yxhi + l_yxlo);
         });
-    //
-    Array4<Real> qz = makeArray4(Ipz.dataPtr(), zbx, ncomp);
+
     amrex::ParallelFor(
         zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -571,16 +566,15 @@ void godunov::compute_fluxes(
             Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2), dlo.z);
             Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, wmac, bc.hi(2), dhi.z);
 
-            Real temp = (wmac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(wmac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qz(i, j, k, n) = temp;
+            Real qz = (wmac(i, j, k) >= 0.) ? stl : sth;
+            qz = (amrex::Math::abs(wmac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qz;
 
             if (iconserv[n])
-                fz(i, j, k, n) = wmac(i, j, k) * qz(i, j, k, n);
+                fz(i, j, k, n) = wmac(i, j, k) * qz;
             else
-                fz(i, j, k, n) = qz(i, j, k, n);
+                fz(i, j, k, n) = qz;
         });
 }
 
