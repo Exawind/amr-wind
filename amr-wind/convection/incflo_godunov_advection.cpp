@@ -7,11 +7,13 @@
 
 using namespace amrex;
 
-void godunov::compute_advection(
+void godunov::compute_fluxes(
     int lev,
     Box const& bx,
     int ncomp,
-    Array4<Real> const& dqdt,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
     Array4<Real const> const& q,
     Array4<Real const> const& umac,
     Array4<Real const> const& vmac,
@@ -25,7 +27,7 @@ void godunov::compute_advection(
     godunov::scheme godunov_scheme)
 {
 
-    BL_PROFILE("amr-wind::godunov::compute_advection");
+    BL_PROFILE("amr-wind::godunov::compute_fluxes");
     Box const& xbx = amrex::surroundingNodes(bx, 0);
     Box const& ybx = amrex::surroundingNodes(bx, 1);
     Box const& zbx = amrex::surroundingNodes(bx, 2);
@@ -45,7 +47,6 @@ void godunov::compute_advection(
     Box const& domain = geom[lev].Domain();
     const auto dlo = amrex::lbound(domain);
     const auto dhi = amrex::ubound(domain);
-    const auto dxinv = geom[lev].InvCellSizeArray();
 
     Array4<Real> Imx = makeArray4(p, bxg1, ncomp);
     p += Imx.size();
@@ -307,7 +308,7 @@ void godunov::compute_advection(
             yzlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yzhi + l_yzlo);
         });
     //
-    Array4<Real> qx = makeArray4(Ipx.dataPtr(), xbx, ncomp);
+
     amrex::ParallelFor(
         xbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -354,11 +355,15 @@ void godunov::compute_advection(
             Godunov_cc_xbc_lo(i, j, k, n, q, stl, sth, umac, bc.lo(0), dlo.x);
             Godunov_cc_xbc_hi(i, j, k, n, q, stl, sth, umac, bc.hi(0), dhi.x);
 
-            Real temp = (umac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(umac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qx(i, j, k, n) = temp;
+            Real qx = (umac(i, j, k) >= 0.) ? stl : sth;
+            qx = (amrex::Math::abs(umac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qx;
+
+            if (iconserv[n])
+                fx(i, j, k, n) = umac(i, j, k) * qx;
+            else
+                fx(i, j, k, n) = qx;
         });
 
     //
@@ -408,9 +413,7 @@ void godunov::compute_advection(
             Real fu = (amrex::Math::abs(wad) < small_vel) ? 0.0 : 1.0;
             zxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_zxhi + l_zxlo);
         });
-    //
 
-    Array4<Real> qy = makeArray4(Ipy.dataPtr(), ybx, ncomp);
     amrex::ParallelFor(
         ybx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -458,15 +461,19 @@ void godunov::compute_advection(
             Godunov_cc_ybc_lo(i, j, k, n, q, stl, sth, vmac, bc.lo(1), dlo.y);
             Godunov_cc_ybc_hi(i, j, k, n, q, stl, sth, vmac, bc.hi(1), dhi.y);
 
-            Real temp = (vmac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(vmac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qy(i, j, k, n) = temp;
+            Real qy = (vmac(i, j, k) >= 0.) ? stl : sth;
+            qy = (amrex::Math::abs(vmac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qy;
+
+            if (iconserv[n])
+                fy(i, j, k, n) = vmac(i, j, k) * qy;
+            else
+                fy(i, j, k, n) = qy;
         });
 
     //
-    // z-direcion
+    // z-direction
     //
     Box const& zbxtmp = amrex::grow(bx, 2, 1);
     Array4<Real> xylo =
@@ -512,8 +519,7 @@ void godunov::compute_advection(
             Real fu = (amrex::Math::abs(vad) < small_vel) ? 0.0 : 1.0;
             yxlo(i, j, k, n) = fu * st + (1.0 - fu) * 0.5 * (l_yxhi + l_yxlo);
         });
-    //
-    Array4<Real> qz = makeArray4(Ipz.dataPtr(), zbx, ncomp);
+
     amrex::ParallelFor(
         zbx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             Real stl, sth;
@@ -560,31 +566,52 @@ void godunov::compute_advection(
             Godunov_cc_zbc_lo(i, j, k, n, q, stl, sth, wmac, bc.lo(2), dlo.z);
             Godunov_cc_zbc_hi(i, j, k, n, q, stl, sth, wmac, bc.hi(2), dhi.z);
 
-            Real temp = (wmac(i, j, k) >= 0.) ? stl : sth;
-            temp = (amrex::Math::abs(wmac(i, j, k)) < small_vel)
-                       ? 0.5 * (stl + sth)
-                       : temp;
-            qz(i, j, k, n) = temp;
+            Real qz = (wmac(i, j, k) >= 0.) ? stl : sth;
+            qz = (amrex::Math::abs(wmac(i, j, k)) < small_vel)
+                     ? 0.5 * (stl + sth)
+                     : qz;
+
+            if (iconserv[n])
+                fz(i, j, k, n) = wmac(i, j, k) * qz;
+            else
+                fz(i, j, k, n) = qz;
         });
+}
+
+void godunov::compute_advection(
+    int lev,
+    Box const& bx,
+    int ncomp,
+    Array4<Real> const& dqdt,
+    Array4<Real> const& fx,
+    Array4<Real> const& fy,
+    Array4<Real> const& fz,
+    Array4<Real const> const& umac,
+    Array4<Real const> const& vmac,
+    Array4<Real const> const& wmac,
+    int const* iconserv,
+    Vector<amrex::Geometry> geom)
+{
+
+    BL_PROFILE("amr-wind::godunov::compute_advection");
+
+    const auto dxinv = geom[lev].InvCellSizeArray();
 
     amrex::ParallelFor(
         bx, ncomp, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
             if (iconserv[n]) {
                 dqdt(i, j, k, n) =
-                    dxinv[0] * (umac(i, j, k) * qx(i, j, k, n) -
-                                umac(i + 1, j, k) * qx(i + 1, j, k, n)) +
-                    dxinv[1] * (vmac(i, j, k) * qy(i, j, k, n) -
-                                vmac(i, j + 1, k) * qy(i, j + 1, k, n)) +
-                    dxinv[2] * (wmac(i, j, k) * qz(i, j, k, n) -
-                                wmac(i, j, k + 1) * qz(i, j, k + 1, n));
+                    dxinv[0] * (fx(i, j, k, n) - fx(i + 1, j, k, n)) +
+                    dxinv[1] * (fy(i, j, k, n) - fy(i, j + 1, k, n)) +
+                    dxinv[2] * (fz(i, j, k, n) - fz(i, j, k + 1, n));
             } else {
                 dqdt(i, j, k, n) =
                     0.5 * dxinv[0] * (umac(i, j, k) + umac(i + 1, j, k)) *
-                        (qx(i, j, k, n) - qx(i + 1, j, k, n)) +
+                        (fx(i, j, k, n) - fx(i + 1, j, k, n)) +
                     0.5 * dxinv[1] * (vmac(i, j, k) + vmac(i, j + 1, k)) *
-                        (qy(i, j, k, n) - qy(i, j + 1, k, n)) +
+                        (fy(i, j, k, n) - fy(i, j + 1, k, n)) +
                     0.5 * dxinv[2] * (wmac(i, j, k) + wmac(i, j, k + 1)) *
-                        (qz(i, j, k, n) - qz(i, j, k + 1, n));
+                        (fz(i, j, k, n) - fz(i, j, k + 1, n));
             }
         });
 }
