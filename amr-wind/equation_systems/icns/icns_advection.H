@@ -88,9 +88,12 @@ struct AdvectionOp<ICNS, fvm::Godunov>
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 
-        auto flux_x = repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto flux_y = repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto flux_z = repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
+        auto flux_x =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
         auto bcrec_device = dof_field.bcrec_device();
 

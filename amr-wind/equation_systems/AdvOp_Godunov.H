@@ -76,10 +76,12 @@ struct AdvectionOp<
         auto& conv_term = fields.conv_term;
         auto& dof_field = fields.field.state(fstate);
 
-        auto flux_x = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
-        auto flux_y = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::YFACE);
-        auto flux_z = repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::ZFACE);
-
+        auto flux_x =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::XFACE);
+        auto flux_y =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::YFACE);
+        auto flux_z =
+            repo.create_scratch_field(PDE::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
         // only needed if multiplying by rho below
         const auto& den = density.state(fstate);
