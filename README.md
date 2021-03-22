@@ -6,7 +6,7 @@
 
 
 AMR-Wind is a massively parallel, block-structured adaptive-mesh, incompressible
-flow sover for wind turbine and wind farm simulations. The codebase is a
+flow solver for wind turbine and wind farm simulations. The codebase is a
 wind-focused fork of [incflo](https://github.com/AMReX-Codes/incflo). The solver
 is built on top of the [AMReX library](https://amrex-codes.github.io/amrex).
 AMReX library provides the mesh data structures, mesh adaptivity, as well as the
