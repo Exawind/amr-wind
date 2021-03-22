@@ -32,7 +32,13 @@ ABLStats::ABLStats(
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
-{}
+{
+
+    if (m_sim.repo().field_exists("tke")) {
+        FieldPlaneAveraging m_pa_ksgs(
+            m_sim.repo().get_field("tke"), m_sim.time(), dir);
+    }
+}
 
 ABLStats::~ABLStats() = default;
 
@@ -90,6 +96,7 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
+    m_pa_ksgs();
 }
 
 //! Calculate sfs stress averages
@@ -264,6 +271,9 @@ void ABLStats::write_ascii()
     m_pa_uuu.output_line_average_ascii(
         stat_dir + "/third_moment_velocity_velocity_velocity.txt",
         time.time_index(), time.current_time());
+    m_pa_ksgs.output_line_average_ascii(
+        stat_dir + "/plane_average_sgs_kinetic_energy.txt", time.time_index(),
+        time.current_time());
 
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
@@ -367,6 +377,7 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("w", NC_DOUBLE, two_dim);
     grp.def_var("hvelmag", NC_DOUBLE, two_dim);
     grp.def_var("theta", NC_DOUBLE, two_dim);
+    grp.def_var("k_sgs", NC_DOUBLE, two_dim);
     grp.def_var("mueff", NC_DOUBLE, two_dim);
     grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
     grp.def_var("v'theta'_r", NC_DOUBLE, two_dim);
@@ -468,6 +479,10 @@ void ABLStats::write_netcdf()
         {
             auto var = grp.var("theta");
             var.put(m_pa_temp.line_average().data(), start, count);
+        }
+        {
+            auto var = grp.var("k_sgs");
+            var.put(m_pa_ksgs.line_average().data(), start, count);
         }
 
         {
