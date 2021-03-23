@@ -399,9 +399,7 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
-    if (m_output_tke) {
-        grp.def_var("k_sgs", NC_DOUBLE, two_dim);
-    }
+    if (m_output_tke) grp.def_var("k_sgs", NC_DOUBLE, two_dim);
 
     ncf.exit_def_mode();
 
