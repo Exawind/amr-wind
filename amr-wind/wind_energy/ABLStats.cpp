@@ -37,6 +37,7 @@ ABLStats::ABLStats(
     if (m_sim.repo().field_exists("tke")) {
         FieldPlaneAveraging m_pa_ksgs(
             m_sim.repo().get_field("tke"), m_sim.time(), dir);
+        m_output_tke = true;
     }
 }
 
@@ -96,7 +97,7 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
-    m_pa_ksgs();
+    if (m_output_tke) m_pa_ksgs();
 }
 
 //! Calculate sfs stress averages
@@ -271,9 +272,11 @@ void ABLStats::write_ascii()
     m_pa_uuu.output_line_average_ascii(
         stat_dir + "/third_moment_velocity_velocity_velocity.txt",
         time.time_index(), time.current_time());
-    m_pa_ksgs.output_line_average_ascii(
-        stat_dir + "/plane_average_sgs_kinetic_energy.txt", time.time_index(),
-        time.current_time());
+    if (m_output_tke) {
+        m_pa_ksgs.output_line_average_ascii(
+            stat_dir + "/plane_average_sgs_kinetic_energy.txt",
+            time.time_index(), time.current_time());
+    }
 
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
@@ -377,7 +380,6 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("w", NC_DOUBLE, two_dim);
     grp.def_var("hvelmag", NC_DOUBLE, two_dim);
     grp.def_var("theta", NC_DOUBLE, two_dim);
-    grp.def_var("k_sgs", NC_DOUBLE, two_dim);
     grp.def_var("mueff", NC_DOUBLE, two_dim);
     grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
     grp.def_var("v'theta'_r", NC_DOUBLE, two_dim);
@@ -397,6 +399,9 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
+    if (m_output_tke) {
+        grp.def_var("k_sgs", NC_DOUBLE, two_dim);
+    }
 
     ncf.exit_def_mode();
 
@@ -480,10 +485,6 @@ void ABLStats::write_netcdf()
             auto var = grp.var("theta");
             var.put(m_pa_temp.line_average().data(), start, count);
         }
-        {
-            auto var = grp.var("k_sgs");
-            var.put(m_pa_ksgs.line_average().data(), start, count);
-        }
 
         {
             auto var = grp.var("mueff");
@@ -540,6 +541,10 @@ void ABLStats::write_netcdf()
                 auto var = grp.var(var_names[i]);
                 var.put(l_vec.data(), start, count);
             }
+        }
+        if (m_output_tke) {
+            auto var = grp.var("k_sgs");
+            var.put(m_pa_ksgs.line_average().data(), start, count);
         }
     }
     ncf.close();
