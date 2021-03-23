@@ -144,6 +144,10 @@ private:
     //! Number of cells in the horizontal direction
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
+
+    bool m_output_tke{false};
+
+  
 };
 
 } // namespace amr_wind
