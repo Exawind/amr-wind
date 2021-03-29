@@ -106,7 +106,6 @@ private:
     SecondMomentAveraging m_pa_tu;
     SecondMomentAveraging m_pa_uu;
     ThirdMomentAveraging m_pa_uuu;
-    FieldPlaneAveraging m_pa_ksgs;
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
@@ -145,7 +144,6 @@ private:
     size_t m_ncells_h1{0};
     size_t m_ncells_h2{0};
 
-    bool m_output_tke{false};
 };
 
 } // namespace amr_wind

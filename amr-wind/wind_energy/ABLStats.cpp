@@ -33,12 +33,6 @@ ABLStats::ABLStats(
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
 {
-
-    if (m_sim.repo().field_exists("tke")) {
-        FieldPlaneAveraging m_pa_ksgs(
-            m_sim.repo().get_field("tke"), m_sim.time(), dir);
-        m_output_tke = true;
-    }
 }
 
 ABLStats::~ABLStats() = default;
@@ -97,7 +91,6 @@ void ABLStats::calc_averages()
 {
     m_pa_vel();
     m_pa_temp();
-    if (m_output_tke) m_pa_ksgs();
 }
 
 //! Calculate sfs stress averages
@@ -272,11 +265,6 @@ void ABLStats::write_ascii()
     m_pa_uuu.output_line_average_ascii(
         stat_dir + "/third_moment_velocity_velocity_velocity.txt",
         time.time_index(), time.current_time());
-    if (m_output_tke) {
-        m_pa_ksgs.output_line_average_ascii(
-            stat_dir + "/plane_average_sgs_kinetic_energy.txt",
-            time.time_index(), time.current_time());
-    }
 
     // Only I/O processor handles this file I/O
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
@@ -399,7 +387,7 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
-    if (m_output_tke) grp.def_var("k_sgs", NC_DOUBLE, two_dim);
+    if (m_sim.repo().field_exists("tke")) grp.def_var("k_sgs", NC_DOUBLE, two_dim);
 
     ncf.exit_def_mode();
 
@@ -430,6 +418,10 @@ void ABLStats::write_netcdf()
     ScratchFieldPlaneAveraging pa_tsfs(
         *t_sfs_stress, m_sim.time(), m_normal_dir);
     pa_tsfs();
+
+    auto& m_ksgs = m_sim.repo().get_field("tke");
+    FieldPlaneAveraging pa_ksgs(m_ksgs, m_sim.time(), m_normal_dir);
+    pa_ksgs();
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
@@ -540,10 +532,14 @@ void ABLStats::write_netcdf()
                 var.put(l_vec.data(), start, count);
             }
         }
-        if (m_output_tke) {
-            auto var = grp.var("k_sgs");
-            var.put(m_pa_ksgs.line_average().data(), start, count);
+
+	{
+	  auto var = grp.var("k_sgs");
+	  var.put(pa_ksgs.line_average().data(), start, count);
         }
+
+	}
+
     }
     ncf.close();
 #endif
