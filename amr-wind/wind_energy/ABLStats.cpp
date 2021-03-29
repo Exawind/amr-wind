@@ -32,8 +32,7 @@ ABLStats::ABLStats(
     , m_pa_tu(m_pa_vel, m_pa_temp)
     , m_pa_uu(m_pa_vel, m_pa_vel)
     , m_pa_uuu(m_pa_vel, m_pa_vel, m_pa_vel)
-{
-}
+{}
 
 ABLStats::~ABLStats() = default;
 
@@ -387,7 +386,8 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("u'v'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("u'w'_sfs", NC_DOUBLE, two_dim);
     grp.def_var("v'w'_sfs", NC_DOUBLE, two_dim);
-    if (m_sim.repo().field_exists("tke")) grp.def_var("k_sgs", NC_DOUBLE, two_dim);
+    if (m_sim.repo().field_exists("tke"))
+        grp.def_var("k_sgs", NC_DOUBLE, two_dim);
 
     ncf.exit_def_mode();
 
@@ -533,14 +533,12 @@ void ABLStats::write_netcdf()
             }
         }
 
-	{
-	  auto var = grp.var("k_sgs");
-	  var.put(pa_ksgs.line_average().data(), start, count);
+        {
+            auto var = grp.var("k_sgs");
+            var.put(pa_ksgs.line_average().data(), start, count);
         }
-
-	}
-
     }
+
     ncf.close();
 #endif
 }
