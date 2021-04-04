@@ -49,7 +49,7 @@ jobs:
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_HIP=ON \
             -DCMAKE_CXX_COMPILER=$(which hipcc) \
-            -DCMAKE_C_COMPILER=$(which hipcc) \
+            -DCMAKE_C_COMPILER=$(which clang) \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DAMReX_AMD_ARCH="gfx906,gfx908" .
           cmake --build build -- -j $(nproc)
