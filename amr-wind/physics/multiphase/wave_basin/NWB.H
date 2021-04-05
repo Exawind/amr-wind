@@ -68,4 +68,4 @@ private:
 
 } // namespace amr_wind
 
-#endif /* ABL_H */
+#endif /* NWB_H */

@@ -14,7 +14,7 @@ NWB::NWB(CFDSim& sim)
 
 NWB::~NWB() = default;
 
-/** Initialize the velocity and temperature fields at the beginning of the
+/** Initialize the velocity and vof fields at the beginning of the
  *  simulation.
  */
 void NWB::initialize_fields(int level, const amrex::Geometry& geom)
