@@ -158,6 +158,7 @@ add_test_re(vortex_patch_godunov)
 add_test_re(zalesak_disk_godunov)
 add_test_re(dam_break_godunov)
 add_test_re(sloshing_tank)
+add_test_re(abl_godunov_weno)
 
 if (NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
