@@ -1,5 +1,5 @@
 time.stop_time               =   6     # Max (simulated) time to evolve
-time.max_step                =   1000          # Max number of time steps
+time.max_step                =   20          # Max number of time steps
 
 time.fixed_dt         =   0.001        # Use this constant dt if > 0
 time.cfl              =   0.95         # CFL factor
@@ -9,15 +9,18 @@ time.checkpoint_interval      =  -100       # Steps between checkpoint files
 
 incflo.use_godunov = 1
 incflo.godunov_type = "weno"
-transport.viscosity = 1.
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1.e-6
+transport.viscosity_fluid2=1.48e-5
+
 transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar 
 
 incflo.physics = MultiPhase DamBreak 
-MultiPhase.density_fluid1=1000
-MultiPhase.density_fluid2=1
-ICNS.source_terms = DensityBuoyancy
+MultiPhase.density_fluid1=1000.
+MultiPhase.density_fluid2=1.
+ICNS.source_terms = GravityForcing 
 
 amr.n_cell              = 64 16 64    # Grid cells at coarsest AMRlevel
 amr.max_level           = 0           # Max AMR level in hierarchy 
@@ -32,4 +35,4 @@ xhi.type =   "slip_wall"
 zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 
-incflo.verbose=1
+incflo.verbose=0

@@ -1,5 +1,6 @@
 #include "amr-wind/physics/multiphase/MultiPhase.H"
 #include "amr-wind/physics/multiphase/wave_basin/NWB.H"
+#include "amr-wind/utilities/trig_ops.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 
@@ -46,7 +47,7 @@ void NWB::initialize_fields(int level, const amrex::Geometry& geom)
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                const amrex::Real kappa = 2.0 * M_PI / lambda;
+                const amrex::Real kappa = 2.0 * utils::pi() / lambda;
                 const amrex::Real epsilon = alpha * kappa;
                 // Compute free surface amplitude
                 const amrex::Real eta =
@@ -78,9 +79,9 @@ void NWB::initialize_fields(int level, const amrex::Geometry& geom)
                     smooth_heaviside = 0.;
                 } else {
                     smooth_heaviside =
-                        0.5 *
-                        (1.0 + phi(i, j, k) / eps +
-                         1.0 / M_PI * std::sin(phi(i, j, k) * M_PI / eps));
+                        0.5 * (1.0 + phi(i, j, k) / eps +
+                               1.0 / utils::pi() *
+                                   std::sin(phi(i, j, k) * utils::pi() / eps));
                 }
                 rho(i, j, k) =
                     rho1 * smooth_heaviside + rho2 * (1.0 - smooth_heaviside);
