@@ -173,6 +173,11 @@ if(AMR_WIND_ENABLE_MASA)
   add_test_re(mms_mol)
 endif()
 
+if (AMR_WIND_ENABLE_HYPRE)
+  add_test_re(abl_godunov_hypre)
+  add_test_re(channel_kwsst_hypre)
+endif()
+
 #=============================================================================
 # Regression tests excluded from CI with a test dependency
 #=============================================================================
