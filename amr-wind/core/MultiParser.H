@@ -96,7 +96,8 @@ public:
         pp.query(name.c_str(), value);
     }
 
-    //! Query a vector of values for the given keyword entry from either namespace
+    //! Query a vector of values for the given keyword entry from either
+    //! namespace
     template <typename T>
     void queryarr(const std::string& name, T& value) const
     {
