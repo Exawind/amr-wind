@@ -5,13 +5,10 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/aero/AirfoilTable.H"
+#include "amr-wind/wind_energy/actuator/ActParser.H"
 
 namespace amr_wind {
 namespace actuator {
-namespace utils {
-class ActParser;
-}
-
 namespace wing {
 
 /** Parse common data for modeling fixed wings as actuators
