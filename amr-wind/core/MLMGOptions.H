@@ -104,6 +104,8 @@ private:
     //! If set to true, AMReX won't abort if linear solver doesn't converge
     //! within max iterations
     bool do_fixed_iters{true};
+
+    bool do_nsolve{false};
 };
 
 } // namespace amr_wind
