@@ -105,7 +105,13 @@ private:
     //! within max iterations
     bool do_fixed_iters{true};
 
+    //! option to use the nsolve bottom solver
+    //! added to help with overset masking
     bool do_nsolve{false};
+
+    //! set grid size for nsolve
+    //! use a larger number on GPUs
+    int nsolve_grid_size{16};
 };
 
 } // namespace amr_wind
