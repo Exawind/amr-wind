@@ -110,8 +110,11 @@ private:
     bool do_nsolve{false};
 
     //! set grid size for nsolve
-    //! use a larger number on GPUs
+#ifdef AMREX_USE_GPU
+    int nsolve_grid_size{64};
+#else
     int nsolve_grid_size{16};
+#endif
 };
 
 } // namespace amr_wind
