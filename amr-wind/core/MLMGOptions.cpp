@@ -52,6 +52,8 @@ void MLMGOptions::parse_options(const std::string& prefix)
     pp.query("bottom_solver", bottom_solver_type);
     pp.query("hypre_namespace", hypre_namespace);
     pp.query("hypre_interface", hypre_interface);
+    pp.query("do_nsolve", do_nsolve);
+    pp.query("nsolve_grid_size", nsolve_grid_size);
 }
 
 void MLMGOptions::operator()(amrex::MLMG& mlmg)
@@ -62,6 +64,8 @@ void MLMGOptions::operator()(amrex::MLMG& mlmg)
 
     if (do_fixed_iters) mlmg.setFixedIter(max_iter);
 
+    mlmg.setNSolve(do_nsolve);
+    mlmg.setNSolveGridSize(nsolve_grid_size);
     mlmg.setPreSmooth(num_pre_smooth);
     mlmg.setPostSmooth(num_post_smooth);
     mlmg.setFinalSmooth(num_final_smooth);

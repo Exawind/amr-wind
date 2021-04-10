@@ -104,6 +104,17 @@ private:
     //! If set to true, AMReX won't abort if linear solver doesn't converge
     //! within max iterations
     bool do_fixed_iters{true};
+
+    //! option to use the nsolve bottom solver
+    //! added to help with overset masking
+    bool do_nsolve{false};
+
+    //! set grid size for nsolve
+#ifdef AMREX_USE_GPU
+    int nsolve_grid_size{64};
+#else
+    int nsolve_grid_size{16};
+#endif
 };
 
 } // namespace amr_wind
