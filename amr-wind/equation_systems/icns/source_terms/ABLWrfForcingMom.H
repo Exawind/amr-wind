@@ -40,8 +40,11 @@ public:
   void mean_velocity_heights(const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
   void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
- 
 
+  void invertMat(const Array2D<amrex::Real,0,3,0,3>&, Array2D<amrex::Real,0,3,0,3>&);
+
+  void indirectForcingInit();
+ 
  private:
   const SimTime& m_time;
 
@@ -57,10 +60,26 @@ public:
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_v_vals;
 
   amrex::Gpu::DeviceVector<amrex::Real> m_wrf_ht;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_wrf_avg_error;
+
+  amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_U;
+  amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
+
+  amrex::Vector<amrex::Real> m_zht;
   
   int m_idx_time;
 
   int m_axis{2};
+
+  int m_ind_polyOrder;
+
+  int m_nht;
+
+  Array2D<amrex::Real,0,3,0,3> m_im_zTz;
+
+  amrex::Array<amrex::Real, 4> m_poly_coeff_U;
+  amrex::Array<amrex::Real, 4> m_poly_coeff_V;
 
 };
 

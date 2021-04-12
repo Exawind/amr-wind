@@ -26,7 +26,7 @@ closest_index(const amrex::Vector<amrex::Real>& vec, const amrex::Real value)
 }
 
 ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
-    : m_time(sim.time()), m_mesh(sim.mesh())
+    : m_time(sim.time()), m_mesh(sim.mesh()) 
 {
 
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
@@ -49,14 +49,25 @@ void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg, const A
   AMREX_ALWAYS_ASSERT(
       m_mesh.Geom(0).Domain().length(m_axis) ==
       static_cast<int>(vavg.line_centroids().size()));
+
+  m_nht = vavg.line_centroids().size();
+  m_zht.resize(m_nht);
   
   m_velAvg_ht.resize(vavg.line_centroids().size());
   m_uAvg_vals.resize(vavg.ncell_line());
   m_vAvg_vals.resize(vavg.ncell_line());
-    
+
+  m_wrf_avg_error.resize(vavg.ncell_line());
+
+  m_error_wrf_avg_U.resize(vavg.ncell_line());
+  m_error_wrf_avg_V.resize(vavg.ncell_line());
+     
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, vavg.line_centroids().begin(),
       vavg.line_centroids().end(), m_velAvg_ht.begin());
+
+  std::copy(vavg.line_centroids().begin(), vavg.line_centroids().end(),
+            m_zht.begin());
 
   m_wrf_u_vals.resize(wrfFile.nheights());
   m_wrf_v_vals.resize(wrfFile.nheights());
@@ -66,6 +77,76 @@ void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg, const A
       amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
       wrfFile.wrf_heights().end(), m_wrf_ht.begin());
     
+}
+void ABLWrfForcingMom::indirectForcingInit()
+{
+
+  amrex::Real scaleFact = 1e-3; 
+
+  Array2D<amrex::Real,0,3,0,3> zTz;
+
+  Array2D<amrex::Real,0,3,0,3> zTz;
+  
+  // Generate the matrix Z^T W Z
+  for (int irow=0; irow < 4; irow++){
+    for (int icol=0; icol< 4; icol++){
+      
+      ztz(i,j) = 0.0;
+
+      for(int iht=0; iht< m_nht; iht++){
+        ztz(i,j) = ztz(i,j) + std::pow(m_zht[ii]*scaleFact, (icol+irow)); 
+      }
+    }
+  }
+  // Invert the matrix Z^T W Z
+  invertMat(ztz, m_im_zTz);
+
+}
+
+void ABLWrfForcingMom::invertMat(const Array2D<amrex::Real,0,3,0,3>& m, Array2D<amrex::Real,0,3,0,3>& im)
+{
+
+  amrex::Real A2323 = m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2);
+  amrex::Real A1323 = m(2, 1) * m(3, 3) - m(2, 3) * m(3, 1);
+  amrex::Real A1223 = m(2, 1) * m(3, 2) - m(2, 2) * m(3, 1);
+  amrex::Real A0323 = m(2, 0) * m(3, 3) - m(2, 3) * m(3, 0);
+  amrex::Real A0223 = m(2, 0) * m(3, 2) - m(2, 2) * m(3, 0);
+  amrex::Real A0123 = m(2, 0) * m(3, 1) - m(2, 1) * m(3, 0);
+  amrex::Real A2313 = m(1, 2) * m(3, 3) - m(1, 3) * m(3, 2);
+  amrex::Real A1313 = m(1, 1) * m(3, 3) - m(1, 3) * m(3, 1);
+  amrex::Real A1213 = m(1, 1) * m(3, 2) - m(1, 2) * m(3, 1);
+  amrex::Real A2312 = m(1, 2) * m(2, 3) - m(1, 3) * m(2, 2);
+  amrex::Real A1312 = m(1, 1) * m(2, 3) - m(1, 3) * m(2, 1);
+  amrex::Real A1212 = m(1, 1) * m(2, 2) - m(1, 2) * m(2, 1);
+  amrex::Real A0313 = m(1, 0) * m(3, 3) - m(1, 3) * m(3, 0);
+  amrex::Real A0213 = m(1, 0) * m(3, 2) - m(1, 2) * m(3, 0);
+  amrex::Real A0312 = m(1, 0) * m(2, 3) - m(1, 3) * m(2, 0);
+  amrex::Real A0212 = m(1, 0) * m(2, 2) - m(1, 2) * m(2, 0);
+  amrex::Real A0113 = m(1, 0) * m(3, 1) - m(1, 1) * m(3, 0);
+  amrex::Real A0112 = m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0);
+
+  amrex::Real = m(0, 0) * ( m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223 )
+      - m(0, 1) * ( m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223 )
+      + m(0, 2) * ( m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123 )
+      - m(0, 3) * ( m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123 );
+  det = 1 / det;
+
+  im(0, 0) = det *   ( m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223 );
+  im(0, 1) = det * - ( m(0, 1) * A2323 - m(0, 2) * A1323 + m(0, 3) * A1223 );
+  im(0, 2) = det *   ( m(0, 1) * A2313 - m(0, 2) * A1313 + m(0, 3) * A1213 );
+  im(0, 3) = det * - ( m(0, 1) * A2312 - m(0, 2) * A1312 + m(0, 3) * A1212 );
+  im(1, 0) = det * - ( m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223 );
+  im(1, 1) = det *   ( m(0, 0) * A2323 - m(0, 2) * A0323 + m(0, 3) * A0223 );
+  im(1, 2) = det * - ( m(0, 0) * A2313 - m(0, 2) * A0313 + m(0, 3) * A0213 );
+  im(1, 3) = det *   ( m(0, 0) * A2312 - m(0, 2) * A0312 + m(0, 3) * A0212 );
+  im(2, 0) = det *   ( m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123 );
+  im(2, 1) = det * - ( m(0, 0) * A1323 - m(0, 1) * A0323 + m(0, 3) * A0123 );
+  im(2, 2) = det *   ( m(0, 0) * A1313 - m(0, 1) * A0313 + m(0, 3) * A0113 );
+  im(2, 3) = det * - ( m(0, 0) * A1312 - m(0, 1) * A0312 + m(0, 3) * A0112 );
+  im(3, 0) = det * - ( m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123 );
+  im(3, 1) = det *   ( m(0, 0) * A1223 - m(0, 1) * A0223 + m(0, 2) * A0123 );
+  im(3, 2) = det * - ( m(0, 0) * A1213 - m(0, 1) * A0213 + m(0, 2) * A0113 );
+  im(3, 3) = det *   ( m(0, 0) * A1212 - m(0, 1) * A0212 + m(0, 2) * A0112 );
 }
 
 void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std::unique_ptr<ABLWRFfile>& wrfFile)
@@ -124,7 +205,63 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
 
  amrex::Gpu::copy(
      amrex::Gpu::hostToDevice, vStats.begin(), vStats.end(), m_vAvg_vals.begin());
-      
+
+
+ amrex::Vector<amrex::Real> error_U(n_levels);
+ amrex::Vector<amrex::Real> error_V(n_levels);
+
+  for (int i = 0 ; i < n_levels; i++) {
+    error_U[i] = wrfInterpU[i]-uStats[i];
+    error_V[i] = wrfInterpV[i]-vStats[i];
+ }
+
+ if (m_forcing_scheme.compare("indirect") == 0) {
+     amrex::Array<amrex::Real, 4> ezP_U;
+     amrex::Array<amrex::Real, 4> ezP_V;
+
+     amrex::Real scaleFact = 1e-3; 
+
+     for (int i = 0; i < 4; i++) {
+         ezP_U[i] = 0.0;
+         ezP_V[i] = 0.0;
+
+         for (int ih = 0; ih < m_nht; ih++) {
+             ezP_U[i] = ezP_U[i] + error_U[i] * std::pow(m_zht[ih], i);
+             ezP_V[i] = ezP_V[i] + error_V[i] * std::pow(m_zht[ih], i);
+         }
+     }
+
+     for (int i = 0; i < 4; i++) {
+         m_poly_coeff_U[i] = 0.0;
+         m_poly_coeff_V[i] = 0.0;
+         for (int j = 0; j < 4; j++) {
+             m_poly_coeff_U[i] = m_poly_coeff_U[i] + m_im_zTz(i, j) * ezP_U[j];
+             m_poly_coeff_V[i] = m_poly_coeff_V[i] + m_im_zTz(i, j) * ezP_V[j];
+         }
+     }
+
+     for (int ih = 0; ih < n_levels; ih++) {
+         error_U[ih] = 0.0;
+         error_V[ih] = 0.0;
+         for (int j = 0; j < 4; j++) {
+             error_U[ih] =
+                 error_U[ih] + m_poly_coeff_U[j] * std::pow(m_zht[ih]*scaleFact, j);
+             error_V[ih] =
+                 error_V[ih] + m_poly_coeff_V[j] * std::pow(m_zht[ih]*scaleFact, j);
+         }
+     }
+
+
+ }
+
+ amrex::Gpu::copy(
+     amrex::Gpu::hostToDevice, error_U.begin(), error_U.end(),
+     m_error_wrf_avg_U.begin());
+ 
+ amrex::Gpu::copy(
+     amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
+     m_error_wrf_avg_V.begin());
+ 
 }
 
 void ABLWrfForcingMom::operator()(
@@ -143,6 +280,7 @@ void ABLWrfForcingMom::operator()(
   const amrex::Real* uvals = m_uAvg_vals.data();
   const amrex::Real* vvals = m_vAvg_vals.data();
 
+ 
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
     // // Compute Source term 
