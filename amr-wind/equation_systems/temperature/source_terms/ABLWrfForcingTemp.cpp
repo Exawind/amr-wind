@@ -55,6 +55,9 @@ void ABLWrfForcingTemp::mean_temperature_init(
     m_theta_ht.resize(tavg.line_centroids().size());
     m_theta_vals.resize(tavg.ncell_line());
 
+    m_nht = tavg.line_centroids().size();
+    m_zht.resize(m_nht);
+
     m_error_wrf_avg_theta.resize(tavg.ncell_line());
 
     amrex::Gpu::copy(
