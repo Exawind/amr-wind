@@ -32,6 +32,9 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
   const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
   abl.register_mean_wrf_forcing(this);
 
+  amrex::ParmParse pp(identifier());
+  pp.query("forcing_scheme", m_forcing_scheme);
+
   mean_velocity_init(abl.abl_statistics().vel_profile(), abl.abl_wrf_file());
   
 }
@@ -76,34 +79,37 @@ void ABLWrfForcingMom::mean_velocity_init(const VelPlaneAveraging& vavg, const A
   amrex::Gpu::copy(
       amrex::Gpu::hostToDevice, wrfFile.wrf_heights().begin(),
       wrfFile.wrf_heights().end(), m_wrf_ht.begin());
+
+  if (amrex::toLower(m_forcing_scheme) == "indirect") {
+    indirectForcingInit();
+  }
     
 }
 void ABLWrfForcingMom::indirectForcingInit()
 {
 
+  amrex::Print() <<  "In indirect" << "\n";
   amrex::Real scaleFact = 1e-3; 
 
-  Array2D<amrex::Real,0,3,0,3> zTz;
+  amrex::Array2D<amrex::Real,0,3,0,3> zTz;
 
-  Array2D<amrex::Real,0,3,0,3> zTz;
-  
   // Generate the matrix Z^T W Z
   for (int irow=0; irow < 4; irow++){
     for (int icol=0; icol< 4; icol++){
       
-      ztz(i,j) = 0.0;
+      zTz(irow, icol) = 0.0;
 
       for(int iht=0; iht< m_nht; iht++){
-        ztz(i,j) = ztz(i,j) + std::pow(m_zht[ii]*scaleFact, (icol+irow)); 
+        zTz(irow,icol) = zTz(irow,icol) + std::pow(m_zht[iht]*scaleFact, (icol+irow)); 
       }
     }
   }
   // Invert the matrix Z^T W Z
-  invertMat(ztz, m_im_zTz);
+  invertMat(zTz, m_im_zTz);
 
 }
 
-void ABLWrfForcingMom::invertMat(const Array2D<amrex::Real,0,3,0,3>& m, Array2D<amrex::Real,0,3,0,3>& im)
+void ABLWrfForcingMom::invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>& m, amrex::Array2D<amrex::Real,0,3,0,3>& im)
 {
 
   amrex::Real A2323 = m(2, 2) * m(3, 3) - m(2, 3) * m(3, 2);
@@ -125,11 +131,11 @@ void ABLWrfForcingMom::invertMat(const Array2D<amrex::Real,0,3,0,3>& m, Array2D<
   amrex::Real A0113 = m(1, 0) * m(3, 1) - m(1, 1) * m(3, 0);
   amrex::Real A0112 = m(1, 0) * m(2, 1) - m(1, 1) * m(2, 0);
 
-  amrex::Real = m(0, 0) * ( m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223 )
+  amrex::Real det = m(0, 0) * ( m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223 )
       - m(0, 1) * ( m(1, 0) * A2323 - m(1, 2) * A0323 + m(1, 3) * A0223 )
       + m(0, 2) * ( m(1, 0) * A1323 - m(1, 1) * A0323 + m(1, 3) * A0123 )
       - m(0, 3) * ( m(1, 0) * A1223 - m(1, 1) * A0223 + m(1, 2) * A0123 );
-  det = 1 / det;
+  det = 1.0 / det;
 
   im(0, 0) = det *   ( m(1, 1) * A2323 - m(1, 2) * A1323 + m(1, 3) * A1223 );
   im(0, 1) = det * - ( m(0, 1) * A2323 - m(0, 2) * A1323 + m(0, 3) * A1223 );
@@ -160,7 +166,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
 
   amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
 
-   amrex::Real denom  = wrfFile->wrf_times()[m_idx_time+1] -
+  amrex::Real denom  = wrfFile->wrf_times()[m_idx_time+1] -
        wrfFile->wrf_times()[m_idx_time];
   
   coeff_interp[0] =  (wrfFile->wrf_times()[m_idx_time+1] - currtime) / denom; 
@@ -195,7 +201,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
   size_t n_levels = vavg.ncell_line();
   amrex::Vector<amrex::Real> uStats(n_levels);
   amrex::Vector<amrex::Real> vStats(n_levels);
- for (int i = 0 ; i < n_levels; i++) {
+ for (size_t i = 0 ; i < n_levels; i++) {
    uStats[i] = vavg.line_average()[numcomp*i];
    vStats[i] = vavg.line_average()[numcomp*i + 1];
  }
@@ -210,12 +216,14 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
  amrex::Vector<amrex::Real> error_U(n_levels);
  amrex::Vector<amrex::Real> error_V(n_levels);
 
-  for (int i = 0 ; i < n_levels; i++) {
+  for (size_t i = 0 ; i < n_levels; i++) {
     error_U[i] = wrfInterpU[i]-uStats[i];
     error_V[i] = wrfInterpV[i]-vStats[i];
+    // amrex::Print() << "errorU = "<< error_U[i] << "\n";
  }
 
- if (m_forcing_scheme.compare("indirect") == 0) {
+  
+ if (amrex::toLower(m_forcing_scheme) == "indirect") {
      amrex::Array<amrex::Real, 4> ezP_U;
      amrex::Array<amrex::Real, 4> ezP_V;
 
@@ -226,8 +234,8 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
          ezP_V[i] = 0.0;
 
          for (int ih = 0; ih < m_nht; ih++) {
-             ezP_U[i] = ezP_U[i] + error_U[i] * std::pow(m_zht[ih], i);
-             ezP_V[i] = ezP_V[i] + error_V[i] * std::pow(m_zht[ih], i);
+             ezP_U[i] = ezP_U[i] + error_U[i] * std::pow(m_zht[ih]*scaleFact, i);
+             ezP_V[i] = ezP_V[i] + error_V[i] * std::pow(m_zht[ih]*scaleFact, i);
          }
      }
 
@@ -240,7 +248,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
          }
      }
 
-     for (int ih = 0; ih < n_levels; ih++) {
+     for (size_t ih = 0; ih < n_levels; ih++) {
          error_U[ih] = 0.0;
          error_V[ih] = 0.0;
          for (int j = 0; j < 4; j++) {
@@ -249,6 +257,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
              error_V[ih] =
                  error_V[ih] + m_poly_coeff_V[j] * std::pow(m_zht[ih]*scaleFact, j);
          }
+         // amrex::Print() << "errorU interp = "<< error_U[ih] << "\n";
      }
 
 
@@ -280,12 +289,20 @@ void ABLWrfForcingMom::operator()(
   const amrex::Real* uvals = m_uAvg_vals.data();
   const amrex::Real* vvals = m_vAvg_vals.data();
 
+  const amrex::Real* u_error_val = m_error_wrf_avg_U.data();
+  const amrex::Real* v_error_val = m_error_wrf_avg_V.data();
+
  
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
 
     // // Compute Source term 
-    src_term(i, j, k, 0) += (wrfu[k] - uvals[k]) / dt;
-    src_term(i, j, k, 1) += (wrfv[k] - vvals[k]) / dt;
+    // src_term(i, j, k, 0) += (wrfu[k] - uvals[k]) / dt;
+    // src_term(i, j, k, 1) += (wrfv[k] - vvals[k]) / dt;
+
+    // // Compute Source term 
+    src_term(i, j, k, 0) += u_error_val[k] / dt;
+    src_term(i, j, k, 1) += v_error_val[k] / dt;
+
     
     // No forcing in z-direction
 
