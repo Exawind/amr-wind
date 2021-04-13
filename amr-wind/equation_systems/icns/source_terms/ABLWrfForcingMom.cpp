@@ -107,6 +107,13 @@ void ABLWrfForcingMom::indirectForcingInit()
   // Invert the matrix Z^T W Z
   invertMat(zTz, m_im_zTz);
 
+  // for (int irow=0; irow < 4; irow++){
+  //   for (int icol=0; icol< 4; icol++){
+  //     amrex::Print() << "Matrix inversion = " <<irow << "\t" << icol<< "\t" <<m_im_zTz(irow,icol) << "\n";
+  //   }
+  // }
+
+
 }
 
 void ABLWrfForcingMom::invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>& m, amrex::Array2D<amrex::Real,0,3,0,3>& im)
@@ -219,7 +226,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
   for (size_t i = 0 ; i < n_levels; i++) {
     error_U[i] = wrfInterpU[i]-uStats[i];
     error_V[i] = wrfInterpV[i]-vStats[i];
-    // amrex::Print() << "errorU = "<< error_U[i] << "\n";
+    // amrex::Print() << error_U[i] << ",";
  }
 
   
@@ -234,8 +241,8 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
          ezP_V[i] = 0.0;
 
          for (int ih = 0; ih < m_nht; ih++) {
-             ezP_U[i] = ezP_U[i] + error_U[i] * std::pow(m_zht[ih]*scaleFact, i);
-             ezP_V[i] = ezP_V[i] + error_V[i] * std::pow(m_zht[ih]*scaleFact, i);
+             ezP_U[i] = ezP_U[i] + error_U[ih] * std::pow(m_zht[ih]*scaleFact, i);
+             ezP_V[i] = ezP_V[i] + error_V[ih] * std::pow(m_zht[ih]*scaleFact, i);
          }
      }
 
@@ -246,6 +253,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
              m_poly_coeff_U[i] = m_poly_coeff_U[i] + m_im_zTz(i, j) * ezP_U[j];
              m_poly_coeff_V[i] = m_poly_coeff_V[i] + m_im_zTz(i, j) * ezP_V[j];
          }
+         // amrex::Print() << "polycoeff = "<< m_poly_coeff_U[i] << "\n";
      }
 
      for (size_t ih = 0; ih < n_levels; ih++) {
@@ -257,7 +265,7 @@ void ABLWrfForcingMom::mean_velocity_heights(const VelPlaneAveraging& vavg, std:
              error_V[ih] =
                  error_V[ih] + m_poly_coeff_V[j] * std::pow(m_zht[ih]*scaleFact, j);
          }
-         // amrex::Print() << "errorU interp = "<< error_U[ih] << "\n";
+         // amrex::Print() << "\n errorU interp = "<< error_U[ih] << "\n";
      }
 
 
@@ -300,8 +308,8 @@ void ABLWrfForcingMom::operator()(
     // src_term(i, j, k, 1) += (wrfv[k] - vvals[k]) / dt;
 
     // // Compute Source term 
-    src_term(i, j, k, 0) += u_error_val[k] / dt;
-    src_term(i, j, k, 1) += v_error_val[k] / dt;
+    src_term(i, j, k, 0) += u_error_val[k]*0.2 / dt;
+    src_term(i, j, k, 1) += v_error_val[k]*0.2 / dt;
 
     
     // No forcing in z-direction
