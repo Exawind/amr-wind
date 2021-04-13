@@ -212,7 +212,7 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
          ezP_T[i] = 0.0;
 
          for (int ih = 0; ih < m_nht; ih++) {
-             ezP_T[i] = ezP_T[i] + error_T[i] * std::pow(m_zht[ih]*scaleFact, i);
+             ezP_T[i] = ezP_T[i] + error_T[ih] * std::pow(m_zht[ih]*scaleFact, i);
          }
      }
 
@@ -258,7 +258,7 @@ void ABLWrfForcingTemp::operator()(
         // // Compute Source term
         // src_term(i, j, k, 0) += (wrftheta[k] - thetavals[k]) / dt;
 
-        src_term(i, j, k, 0) += (theta_error_val[k]) / dt;
+        src_term(i, j, k, 0) += (theta_error_val[k])*0.2 / dt;
     });
 }
 
