@@ -1,111 +1,83 @@
 #include "aw_test_utils/MeshTest.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
+#include "amr-wind/equation_systems/vof/volume_fractions.H"
 
 namespace amr_wind_tests {
 
-class FvmOpTest : public MeshTest
-{};
+class VOFOpTest : public MeshTest
+{
+protected:
+    void populate_parameters() override
+    {
+        MeshTest::populate_parameters();
+
+        {
+            amrex::ParmParse pp("amr");
+            amrex::Vector<int> ncell{{4, 4, 4}};
+            pp.add("max_level", 0);
+            pp.add("max_grid_size", 4);
+            pp.addarr("n_cell", ncell);
+        }
+        {
+            amrex::ParmParse pp("geometry");
+            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
+            amrex::Vector<amrex::Real> probhi{{1.0, 1.0, 1.0}};
+
+            pp.addarr("prob_lo", problo);
+            pp.addarr("prob_hi", probhi);
+        }
+    }
+};
 
 namespace {
 
 void initialize_volume_fractions(
-    const amrex::Geometry& geom,
+    const amrex::Geometry&,
     const amrex::Box& bx,
-    const int pdegree,
-    amrex::Gpu::DeviceVector<amrex::Real>& cu,
-    amrex::Gpu::DeviceVector<amrex::Real>& cv,
-    amrex::Gpu::DeviceVector<amrex::Real>& cw,
-    amrex::Array4<amrex::Real>& vel_arr)
+    const int,
+    amrex::Array4<amrex::Real>& vof_arr)
 {
-    auto problo = geom.ProbLoArray();
-    auto probhi = geom.ProbHiArray();
-    auto dx = geom.CellSizeArray();
-
-    const amrex::Real* cu_ptr = cu.data();
-    const amrex::Real* cv_ptr = cv.data();
-    const amrex::Real* cw_ptr = cw.data();
 
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
     // it and it fills the ghosts with wall values
     amrex::ParallelFor(grow(bx, 1), [=] AMREX_GPU_DEVICE(int i, int j, int k) {
-        const amrex::Real x = amrex::min(
-            amrex::max(problo[0] + (i + 0.5) * dx[0], problo[0]), probhi[0]);
-        const amrex::Real y = amrex::min(
-            amrex::max(problo[1] + (j + 0.5) * dx[1], problo[1]), probhi[1]);
-        const amrex::Real z = amrex::min(
-            amrex::max(problo[2] + (k + 0.5) * dx[2], problo[2]), probhi[2]);
-
-        vel_arr(i, j, k, 0) =
-            analytical_function::phi_eval(pdegree, cu_ptr, x, y, z);
-        vel_arr(i, j, k, 1) =
-            analytical_function::phi_eval(pdegree, cv_ptr, x, y, z);
-        vel_arr(i, j, k, 2) =
-            analytical_function::phi_eval(pdegree, cw_ptr, x, y, z);
+        if (i + k > 3) vof_arr(i, j, k) = 0.0;
+        if (i + k == 3) vof_arr(i, j, k) = 0.5;
+        if (i + k < 3) vof_arr(i, j, k) = 1.0;
     });
 }
 
-amrex::Real normal_vector_test_impl(amr_wind::Field& vel, const int pdegree)
+amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int pdegree)
 {
 
-    const int ncoeff = (pdegree + 1) * (pdegree + 1) * (pdegree + 1);
+    auto& geom = vof.repo().mesh().Geom();
 
-    amrex::Gpu::DeviceVector<amrex::Real> cu(ncoeff, 0.00123);
-    amrex::Gpu::DeviceVector<amrex::Real> cv(ncoeff, 0.00213);
-    amrex::Gpu::DeviceVector<amrex::Real> cw(ncoeff, 0.00346);
-
-    auto& geom = vel.repo().mesh().Geom();
-
-    run_algorithm(vel, [&](const int lev, const amrex::MFIter& mfi) {
-        auto vel_arr = vel(lev).array(mfi);
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto vof_arr = vof(lev).array(mfi);
         const auto& bx = mfi.validbox();
-        initialize_velocity(geom[lev], bx, pdegree, cu, cv, cw, vel_arr);
+        initialize_volume_fractions(geom[lev], bx, pdegree, vof_arr);
     });
 
-    auto str = amr_wind::fvm::strainrate(vel);
-
-    const int nlevels = vel.repo().num_active_levels();
     amrex::Real error_total = 0.0;
 
-    const amrex::Real* cu_ptr = cu.data();
-    const amrex::Real* cv_ptr = cv.data();
-    const amrex::Real* cw_ptr = cw.data();
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-
-        const auto& problo = geom[lev].ProbLoArray();
-        const auto& dx = geom[lev].CellSizeArray();
-
-        error_total += amrex::ReduceSum(
-            (*str)(lev), 0,
-            [=] AMREX_GPU_HOST_DEVICE(
-                amrex::Box const& bx,
-                amrex::Array4<amrex::Real const> const& str_arr)
-                -> amrex::Real {
-                amrex::Real error = 0.0;
-
-                amrex::Loop(bx, [=, &error](int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-                    error += amrex::Math::abs(
-                        str_arr(i, j, k) -
-                        analytical_function::strainrate(
-                            pdegree, cu_ptr, cv_ptr, cw_ptr, x, y, z));
-                });
-
-                return error;
-            });
-    }
-
+    run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
+        auto vof_arr = vof(lev).array(mfi);
+        const auto& bx = mfi.validbox();
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+            amrex::Real mx, my, mz;
+            amr_wind::multiphase::mixed_youngs_central_normal(
+                i, j, k, vof_arr, mx, my, mz);
+            amrex::Print() << vof_arr(i, j, k) << " (" << mx << "," << my << ","
+                           << mz << ") " << std::endl;
+        });
+    });
     return error_total;
 }
 
-
 } // namespace
 
-TEST_F(VOFOpTest, normal)
+TEST_F(VOFOpTest, interface_normal)
 {
 
     constexpr double tol = 1.0e-11;
@@ -122,15 +94,14 @@ TEST_F(VOFOpTest, normal)
     auto& repo = sim().repo();
     const int ncomp = 3;
     const int nghost = 1;
-    auto& vel = repo.declare_field("vel", ncomp, nghost);
+    auto& vof = repo.declare_field("vof", ncomp, nghost);
 
     const int pdegree = 2;
-    auto error_total = strainrate_test_impl(vel, pdegree);
+    auto error_total = normal_vector_test_impl(vof, pdegree);
 
     amrex::ParallelDescriptor::ReduceRealSum(error_total);
 
     EXPECT_NEAR(error_total, 0.0, tol);
 }
-
 
 } // namespace amr_wind_tests
