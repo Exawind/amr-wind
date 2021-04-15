@@ -289,7 +289,6 @@ void ABLVelWallFunc::wall_model(
 {
     BL_PROFILE("amr-wind::ABLVelWallFunc");
 
-    constexpr bool extrapolate = false;
     constexpr int idim = 2;
     auto& repo = velocity.repo();
     auto& density = repo.get_field("density", rho_state);
@@ -301,9 +300,6 @@ void ABLVelWallFunc::wall_model(
     AMREX_ALWAYS_ASSERT(
         ((velocity.bc_type()[zlo] == BC::wall_model) &&
          (!repo.mesh().Geom(0).isPeriodic(idim))));
-
-    const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
-    const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -331,8 +327,7 @@ void ABLVelWallFunc::wall_model(
             amrex::ParallelFor(
                 amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real mu =
-                        c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                    const amrex::Real mu = eta(i, j, k);
                     const amrex::Real uu = vold_arr(i, j, k, 0);
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
@@ -397,7 +392,6 @@ template <typename HeatFlux>
 void ABLTempWallFunc::wall_model(
     Field& temperature, const FieldState rho_state, const HeatFlux& tau)
 {
-    constexpr bool extrapolate = false;
     constexpr int idim = 2;
     auto& repo = temperature.repo();
 
@@ -412,9 +406,6 @@ void ABLTempWallFunc::wall_model(
     auto& density = repo.get_field("density", rho_state);
     auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
-
-    const amrex::Real c0 = (!extrapolate) ? 1.0 : 1.5;
-    const amrex::Real c1 = (!extrapolate) ? 0.0 : -0.5;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -444,8 +435,7 @@ void ABLTempWallFunc::wall_model(
             amrex::ParallelFor(
                 amrex::bdryLo(bx, idim),
                 [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real alphaT =
-                        c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                    const amrex::Real alphaT = eta(i, j, k);
                     const amrex::Real uu = vold_arr(i, j, k, 0);
                     const amrex::Real vv = vold_arr(i, j, k, 1);
                     const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);

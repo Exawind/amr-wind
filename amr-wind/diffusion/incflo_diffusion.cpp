@@ -3,9 +3,6 @@
 
 using namespace amrex;
 
-bool extrapolate = false; // fixme make an input maybe? extrapolate could cause
-                          // negative viscosity if not used carefully
-
 namespace diffusion {
 
 Vector<Array<LinOpBCType, AMREX_SPACEDIM>> get_diffuse_tensor_bc(
@@ -133,16 +130,6 @@ void wall_model_bc(
     amrex::Orientation yhi(amrex::Direction::y, amrex::Orientation::high);
     amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
 
-    // copies cell center to face
-    Real c0 = 1.0;
-    Real c1 = 0.0;
-
-    // linear extrapolate onto face
-    if (extrapolate) {
-        c0 = 1.5;
-        c1 = -0.5;
-    }
-
     const Real utau2 = utau * utau;
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -173,8 +160,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j, k) + c1 * eta(i + 1, j, k);
+                            const Real mu = eta(i, j, k);
                             // Dirichlet BC
                             bc(i - 1, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
@@ -194,8 +180,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i - 1, j, k) + c1 * eta(i - 2, j, k);
+                            const Real mu = eta(i - 1, j, k);
                             // Dirichlet BC's
                             bc(i, j, k, 0) = 0.0;
                             // Inhomogeneous Neumann BC
@@ -219,8 +204,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j, k) + c1 * eta(i, j + 1, k);
+                            const Real mu = eta(i, j, k);
                             // Inhomogeneous Neumann BC
                             bc(i, j - 1, k, 0) =
                                 shear_stress(
@@ -241,8 +225,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j - 1, k) + c1 * eta(i, j - 2, k);
+                            const Real mu = eta(i, j - 1, k);
                             // Inhomogeneous Neumann BC
                             bc(i, j, k, 0) =
                                 shear_stress(
@@ -267,8 +250,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            const Real mu = eta(i, j, k);
                             // Inhomogeneous Neumann BC
                             bc(i, j, k - 1, 0) =
                                 shear_stress(
@@ -288,8 +270,7 @@ void wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryHi(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j, k - 1) + c1 * eta(i, j, k - 2);
+                            const Real mu = eta(i, j, k - 1);
                             // Inhomogeneous Neumann BC
                             bc(i, j, k, 0) =
                                 shear_stress(
@@ -328,16 +309,6 @@ void wall_model_bc_moeng(
 
     const auto planarlo = amrex::lbound(bxPlanar);
 
-    // copies cell center to face
-    Real c0 = 1.0;
-    Real c1 = 0.0;
-
-    // linear extrapolate onto face
-    if (extrapolate) {
-        c0 = 1.5;
-        c1 = -0.5;
-    }
-
     const Real utau2 = utau * utau;
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -367,8 +338,7 @@ void wall_model_bc_moeng(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real mu =
-                                c0 * eta(i, j, k) + c1 * eta(i, j, k + 1);
+                            const Real mu = eta(i, j, k);
                             // Dirichlet BC
                             bc(i, j, k - 1, 2) = 0.0;
                             // Inhomogeneous Neumann BC
@@ -405,16 +375,6 @@ void temp_wall_model_bc(
 
     const auto planarlo = amrex::lbound(bxPlanar);
 
-    // copies cell center to face
-    Real c0 = 1.0;
-    Real c1 = 0.0;
-
-    // linear extrapolate onto face
-    if (extrapolate) {
-        c0 = 1.5;
-        c1 = -0.5;
-    }
-
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
         const auto& domain = geom.Domain();
@@ -442,8 +402,7 @@ void temp_wall_model_bc(
                     amrex::ParallelFor(
                         amrex::bdryLo(bx, idim),
                         [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                            const Real alphaT_wall =
-                                c0 * alphaT(i, j, k) + c1 * alphaT(i, j, k + 1);
+                            const Real alphaT_wall = alphaT(i, j, k);
                             // Inhomogeneous Neumann BC
                             bc(i, j, k - 1) =
                                 den(i, j, k) *
@@ -478,44 +437,12 @@ Array<MultiFab, AMREX_SPACEDIM> average_velocity_eta_to_faces(
     return r;
 }
 
-Array<MultiFab, AMREX_SPACEDIM> average_tracer_eta_to_faces(
-    int comp, const amrex::Geometry& geom, MultiFab const& cc_eta)
-{
-    BL_PROFILE("amr-wind::diffusion::average_tracer_eta_to_faces");
-    const auto& ba = cc_eta.boxArray();
-    const auto& dm = cc_eta.DistributionMap();
-    const auto& fact = cc_eta.Factory();
-    MultiFab cc(cc_eta, amrex::make_alias, comp, 1);
-    Array<MultiFab, AMREX_SPACEDIM> r{
-        {MultiFab(
-             amrex::convert(ba, IntVect::TheDimensionVector(0)), dm, 1, 0,
-             MFInfo(), fact),
-         MultiFab(
-             amrex::convert(ba, IntVect::TheDimensionVector(1)), dm, 1, 0,
-             MFInfo(), fact),
-         MultiFab(
-             amrex::convert(ba, IntVect::TheDimensionVector(2)), dm, 1, 0,
-             MFInfo(), fact)}};
-    amrex::average_cellcenter_to_face(GetArrOfPtrs(r), cc, geom);
-    fixup_eta_on_domain_faces(geom, r, cc);
-    return r;
-}
-
 void fixup_eta_on_domain_faces(
     const amrex::Geometry& geom,
     Array<MultiFab, AMREX_SPACEDIM>& fc,
     MultiFab const& cc)
 {
     BL_PROFILE("amr-wind::diffusion::fixup_eta_on_domain_faces");
-    // copies cell center to face
-    Real c0 = 1.0;
-    Real c1 = 0.0;
-
-    // linear extrapolate onto face
-    if (extrapolate) {
-        c0 = 1.5;
-        c1 = -0.5;
-    }
 
     const Box& domain = geom.Domain();
     MFItInfo mfi_info{};
@@ -534,16 +461,14 @@ void fixup_eta_on_domain_faces(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i, j, k) + c1 * cca(i + 1, j, k);
+                        fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i - 1, j, k) + c1 * cca(i - 2, j, k);
+                        fca(i, j, k) = cca(i - 1, j, k);
                     });
             }
         }
@@ -555,16 +480,14 @@ void fixup_eta_on_domain_faces(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i, j, k) + c1 * cca(i, j + 1, k);
+                        fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i, j - 1, k) + c1 * cca(i, j - 2, k);
+                        fca(i, j, k) = cca(i, j - 1, k);
                     });
             }
         }
@@ -576,16 +499,14 @@ void fixup_eta_on_domain_faces(
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i, j, k) + c1 * cca(i, j, k + 1);
+                        fca(i, j, k) = cca(i, j, k);
                     });
             }
             if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        fca(i, j, k) =
-                            c0 * cca(i, j, k - 1) + c1 * cca(i, j, k - 2);
+                        fca(i, j, k) = cca(i, j, k - 1);
                     });
             }
         }

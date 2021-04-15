@@ -34,9 +34,6 @@ amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> get_diffuse_scalar_bc(
 amrex::Array<amrex::MultiFab, AMREX_SPACEDIM> average_velocity_eta_to_faces(
     const amrex::Geometry& geom, amrex::MultiFab const& cc_eta);
 
-amrex::Array<amrex::MultiFab, AMREX_SPACEDIM> average_tracer_eta_to_faces(
-    int comp, const amrex::Geometry& geom, amrex::MultiFab const& cc_eta);
-
 void fixup_eta_on_domain_faces(
     const amrex::Geometry& geom,
     amrex::Array<amrex::MultiFab, AMREX_SPACEDIM>& fc,
