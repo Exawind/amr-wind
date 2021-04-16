@@ -83,38 +83,6 @@ void ABLWallFunction::init_log_law_height()
         m_mo.zref =
             (geom.ProbLo(m_direction) + 0.5 * geom.CellSize(m_direction));
     }
-
-    const auto& geom = m_mesh.Geom();
-
-    amrex::Box const& domain = geom[m_mesh.finestLevel()].Domain();
-    const auto dlo = amrex::lbound(domain);
-    const auto dhi = amrex::ubound(domain);
-
-    const amrex::Real dz = geom[m_mesh.finestLevel()].CellSize(2);
-    amrex::Real first_cell_height =
-        geom[m_mesh.finestLevel()].ProbLo(2) + 0.5 * dz;
-    m_z_sample_index =
-        dlo.z +
-        static_cast<int>(std::floor((m_mo.zref - first_cell_height) / dz));
-
-    // assuming Z is wall normal direction
-    m_ncells_x = dhi.x - dlo.x + 1;
-    m_ncells_y = dhi.y - dlo.y + 1;
-
-    amrex::Real zcellN = first_cell_height + (m_z_sample_index)*dz;
-
-    m_coeff_interp[0] = 1.0 - (m_mo.zref - zcellN) / dz;
-    m_coeff_interp[1] = 1.0 - m_coeff_interp[0];
-
-    amrex::IntVect lo(AMREX_D_DECL(0, 0, m_z_sample_index));
-    amrex::IntVect hi(
-        AMREX_D_DECL(m_ncells_x - 1, m_ncells_y - 1, m_z_sample_index));
-
-    m_bx_z_sample.setSmall(lo);
-    m_bx_z_sample.setBig(hi);
-
-    // 3 velocity component + potential temperature
-    m_store_xy_vel_temp.resize(m_bx_z_sample, 4);
 }
 
 void ABLWallFunction::update_umean(
@@ -122,147 +90,20 @@ void ABLWallFunction::update_umean(
 {
     const auto& time = m_sim.time();
 
-    if (!m_tempflux)
+    if (!m_tempflux) {
         m_mo.surf_temp =
             m_surf_temp_init +
             m_surf_temp_rate *
                 amrex::max(time.current_time() - m_surf_temp_rate_tstart, 0.0) /
                 3600.0;
-#if 1
-    {
-        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
-        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
-        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
-        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
-    }
-    m_mo.update_fluxes();
-#else
-    computeplanar();
-    computeusingheatflux();
-#endif
-}
-
-void ABLWallFunction::computeplanar()
-{
-    const auto& frepo = m_sim.repo();
-    static constexpr int idir = 2;
-    const int maxlev = m_mesh.finestLevel();
-    const auto& geom = m_mesh.Geom(maxlev);
-    auto const& problo = geom.ProbLoArray();
-    const amrex::Real dz = geom.CellSize(idir);
-
-    auto& velf = frepo.get_field("velocity", amr_wind::FieldState::New);
-    auto& tempf = frepo.get_field("temperature", amr_wind::FieldState::New);
-
-    m_store_xy_vel_temp.setVal<amrex::RunOn::Device>(0.0);
-
-    auto xy_arr = m_store_xy_vel_temp.array();
-
-    const amrex::Real coeff_interp0 = m_coeff_interp[0];
-    const amrex::Real coeff_interp1 = m_coeff_interp[1];
-
-    for (amrex::MFIter mfi(velf(maxlev)); mfi.isValid(); ++mfi) {
-        const auto& bx = mfi.validbox();
-
-        const auto dlo = amrex::lbound(bx);
-        const auto dhi = amrex::ubound(bx);
-
-        amrex::Real zminBox = problo[2] + dz * (dlo.z);
-        amrex::Real zmaxBox = problo[2] + dz * (dhi.z);
-
-        if ((m_mo.zref - zminBox) * (zmaxBox - m_mo.zref) <= 0.0) {
-            continue;
-        }
-
-        auto vel = velf(maxlev).array(mfi);
-        auto temp = tempf(maxlev).array(mfi);
-
-        const amrex::IntVect lo(dlo.x, dlo.y, m_z_sample_index);
-        const amrex::IntVect hi(dhi.x, dhi.y, m_z_sample_index);
-        const amrex::Box z_sample_bx(lo, hi);
-
-        amrex::ParallelFor(
-            z_sample_bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                xy_arr(i, j, k, 0) = coeff_interp0 * vel(i, j, k, 0) +
-                                     coeff_interp1 * vel(i, j, k + 1, 0);
-                xy_arr(i, j, k, 1) = coeff_interp0 * vel(i, j, k, 1) +
-                                     coeff_interp1 * vel(i, j, k + 1, 1);
-                xy_arr(i, j, k, 2) = coeff_interp0 * vel(i, j, k, 2) +
-                                     coeff_interp1 * vel(i, j, k + 1, 2);
-                xy_arr(i, j, k, 3) = coeff_interp0 * temp(i, j, k) +
-                                     coeff_interp1 * temp(i, j, k + 1);
-            });
     }
 
-    amrex::Real numCells = static_cast<amrex::Real>(m_ncells_x * m_ncells_y);
+    m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
+    m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
+    m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
+    m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
 
-    amrex::ParallelDescriptor::ReduceRealSum(
-        m_store_xy_vel_temp.dataPtr(), m_ncells_x * m_ncells_y * 4);
-
-    for (int i = 0; i < AMREX_SPACEDIM; ++i) m_mo.vel_mean[i] = 0.0;
-
-    amrex::Real umean0 = 0.0;
-    amrex::Real umean1 = 0.0;
-    amrex::Real mean_windspd = 0.0;
-    amrex::Real mean_pot_temp = 0.0;
-
-    amrex::Loop(
-        m_bx_z_sample, [=, &umean0, &umean1, &mean_windspd,
-                        &mean_pot_temp](int i, int j, int k) noexcept {
-            umean0 += xy_arr(i, j, k, 0);
-            umean1 += xy_arr(i, j, k, 1);
-            mean_windspd += std::sqrt(
-                xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
-                xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
-            mean_pot_temp += xy_arr(i, j, k, 3);
-        });
-
-    m_mo.vel_mean[0] = umean0 / numCells;
-    m_mo.vel_mean[1] = umean1 / numCells;
-    m_mo.vmag_mean = mean_windspd / numCells;
-    m_mo.theta_mean = mean_pot_temp / numCells;
-}
-
-void ABLWallFunction::computeusingheatflux()
-{
     m_mo.update_fluxes();
-
-    auto xy_arr = m_store_xy_vel_temp.array();
-
-    const amrex::Real umean0 = m_mo.vel_mean[0];
-    const amrex::Real umean1 = m_mo.vel_mean[1];
-    const amrex::Real mean_windspd = m_mo.vmag_mean;
-    const amrex::Real mean_pot_temp = m_mo.theta_mean;
-    const amrex::Real ref_temp = m_mo.ref_temp;
-
-    const amrex::Real tau_xz = umean0 / m_mo.vmag_mean;
-    const amrex::Real tau_yz = umean1 / m_mo.vmag_mean;
-    const amrex::Real tau_thetaz = -m_mo.surf_temp_flux;
-    const amrex::Real denom1 = mean_windspd * (mean_pot_temp - ref_temp);
-
-    amrex::ParallelFor(
-        m_bx_z_sample, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-            const amrex::Real inst_wind_speed = std::sqrt(
-                xy_arr(i, j, k, 0) * xy_arr(i, j, k, 0) +
-                xy_arr(i, j, k, 1) * xy_arr(i, j, k, 1));
-
-            xy_arr(i, j, k, 0) = tau_xz *
-                                 ((xy_arr(i, j, k, 0) - umean0) * mean_windspd +
-                                  inst_wind_speed * umean0) /
-                                 (mean_windspd * umean0);
-
-            xy_arr(i, j, k, 1) = tau_yz *
-                                 ((xy_arr(i, j, k, 1) - umean1) * mean_windspd +
-                                  inst_wind_speed * umean1) /
-                                 (mean_windspd * umean1);
-
-            const amrex::Real num1 =
-                (xy_arr(i, j, k, 3) - mean_pot_temp) * mean_windspd;
-            const amrex::Real num2 =
-                inst_wind_speed * (mean_pot_temp - ref_temp);
-
-            xy_arr(i, j, k, 3) = tau_thetaz * (num1 + num2) / denom1;
-        });
 }
 
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
@@ -347,8 +188,6 @@ void ABLVelWallFunc::wall_model(
 
 void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
 {
-#if 1
-
     const auto& mo = m_wall_func.mo();
 
     if (m_wall_shear_stress_type == "moeng") {
@@ -371,11 +210,6 @@ void ABLVelWallFunc::operator()(Field& velocity, const FieldState rho_state)
         auto tau = ShearStressSchumann(mo);
         wall_model(velocity, rho_state, tau);
     }
-
-#else
-    diffusion::wall_model_bc_moeng(
-        velocity, m_wall_func.utau(), rho_state, m_wall_func.instplanar());
-#endif
 }
 
 ABLTempWallFunc::ABLTempWallFunc(Field&, const ABLWallFunction& wall_fuc)
@@ -449,7 +283,6 @@ void ABLTempWallFunc::wall_model(
 
 void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
 {
-#if 1
 
     const auto& mo = m_wall_func.mo();
 
@@ -473,11 +306,6 @@ void ABLTempWallFunc::operator()(Field& temperature, const FieldState rho_state)
         auto tau = ShearStressSchumann(mo);
         wall_model(temperature, rho_state, tau);
     }
-
-#else
-    diffusion::temp_wall_model_bc(
-        temperature, m_wall_func.instplanar(), rho_state);
-#endif
 }
 
 } // namespace amr_wind
