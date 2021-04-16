@@ -112,7 +112,7 @@ struct Factory
         {
             if (registered) {
                 auto& tbl = Factory::table();
-                const auto& it = tbl.find(T::identifier());
+                const auto it = tbl.find(T::identifier());
                 registered = (it != tbl.end());
             }
         }
