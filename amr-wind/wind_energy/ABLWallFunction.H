@@ -40,8 +40,6 @@ public:
 
     void computeusingheatflux();
 
-    const amrex::FArrayBox& instplanar() const { return m_store_xy_vel_temp; }
-
 private:
     const CFDSim& m_sim;
 
@@ -54,14 +52,6 @@ private:
     bool m_use_fch{true}; ///< Use first cell height?
 
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
-
-    int m_z_sample_index;
-    amrex::Array<amrex::Real, 2> m_coeff_interp{{0.0, 0.0}};
-
-    int m_ncells_x, m_ncells_y;
-
-    amrex::Box m_bx_z_sample;
-    amrex::FArrayBox m_store_xy_vel_temp;
 
     bool m_tempflux{true};
     amrex::Real m_surf_temp_rate{0.0};

@@ -29,8 +29,6 @@ public:
 
 private:
     amrex::Vector<amrex::Real> m_gravity{{0.0, 0.0, -9.81}};
-
-    Field& m_density;
 };
 
 } // namespace icns

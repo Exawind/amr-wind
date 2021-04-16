@@ -15,7 +15,6 @@ namespace icns {
  *  - `gravity` acceleration due to gravity (m/s)
  */
 GravityForcing::GravityForcing(const CFDSim& sim)
-    : m_density(sim.repo().get_field("density"))
 {
     {
         amrex::ParmParse pp("incflo");
@@ -31,8 +30,7 @@ GravityForcing::~GravityForcing() = default;
  *  @param mfi multiFab index
  *  @param bx Box to operate on
  *  @param FieldState field
- *  @param vel_forces Forcing source term, activated when density varies from
- * rho_0
+ *  @param vel_forces Forcing source term
  */
 void GravityForcing::operator()(
     const int,
