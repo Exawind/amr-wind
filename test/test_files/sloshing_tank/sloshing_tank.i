@@ -7,6 +7,10 @@ time.initial_dt =0.001
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  10       # Steps between checkpoint files
 
+io.output_default_variables = 0
+io.outputs = density p
+io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
+
 incflo.use_godunov = 1
 incflo.godunov_type="weno"
 transport.model = TwoPhaseTransport
