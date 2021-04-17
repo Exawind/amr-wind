@@ -8,18 +8,16 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 
-/** Gracity Forcing source term
+/** Gravity Forcing source term
  *
  *  Reads in the following parameters from `incflo` namespace:
  *
  *  - `gravity` acceleration due to gravity (m/s)
  */
-GravityForcing::GravityForcing(const CFDSim& sim)
+GravityForcing::GravityForcing(const CFDSim&)
 {
-    {
-        amrex::ParmParse pp("incflo");
-        pp.queryarr("gravity", m_gravity);
-    }
+    amrex::ParmParse pp("incflo");
+    pp.queryarr("gravity", m_gravity);
 }
 
 GravityForcing::~GravityForcing() = default;
