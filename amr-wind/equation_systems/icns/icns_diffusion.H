@@ -47,10 +47,10 @@ public:
         const int nlevels = repo.num_active_levels();
         const auto& density = m_density.state(fstate);
 
+        for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -69,15 +69,17 @@ public:
     }
 };
 
-class ICNSDiffScalarOp : public DiffSolverIface<amrex::MLABecLaplacian>
+class ICNSDiffScalarOp
 {
 public:
-    ICNSDiffScalarOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<amrex::MLABecLaplacian>(fields, has_overset)
+    ICNSDiffScalarOp(
+        PDEFields& fields,
+        const bool has_overset,
+        const std::string& prefix = "diffusion")
+        : m_pdefields(fields)
+        , m_density(fields.repo.get_field("density"))
+        , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
     {
-
-        this->m_solver.release();
-        this->m_applier.release();
 
         amrex::LPInfo isolve = m_options.lpinfo();
         amrex::LPInfo iapply;
@@ -86,9 +88,9 @@ public:
         const auto& mesh = m_pdefields.repo.mesh();
 
         const auto& bclo = diffusion::get_diffuse_tensor_bc(
-            this->m_pdefields.field, amrex::Orientation::low);
+            m_pdefields.field, amrex::Orientation::low);
         const auto& bchi = diffusion::get_diffuse_tensor_bc(
-            this->m_pdefields.field, amrex::Orientation::high);
+            m_pdefields.field, amrex::Orientation::high);
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             if (!has_overset) {
@@ -130,27 +132,40 @@ public:
         auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
                              ? FieldState::New
                              : fstate;
-        auto& divtau = this->m_pdefields.diff_term.state(tau_state);
+        const auto& repo = m_pdefields.repo;
+        const int nlevels = repo.num_active_levels();
+        const auto& geom = repo.mesh().Geom();
+
+        auto& divtau = m_pdefields.diff_term.state(tau_state);
+        const auto& density = m_density.state(fstate);
+        const auto& viscosity = m_pdefields.mueff;
+        const amrex::Real alpha = 0.0;
+        const amrex::Real beta = -1.0;
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
 
-            this->setup_operator(*m_applier_scalar[i], 0.0, -1.0, fstate, i);
+            m_applier_scalar[i]->setScalars(alpha, beta);
+            for (int lev = 0; lev < nlevels; ++lev) {
+                m_applier_scalar[i]->setLevelBC(
+                    lev, &m_pdefields.field.subview(i)(lev));
+                m_applier_scalar[i]->setACoeffs(lev, density(lev));
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+                m_applier_scalar[i]->setBCoeffs(
+                    lev, amrex::GetArrOfConstPtrs(b));
+            }
 
             auto divtau_comp = divtau.subview(i);
-            auto vel_comp = this->m_pdefields.field.subview(i);
+            auto vel_comp = m_pdefields.field.subview(i);
 
             amrex::MLMG mlmg(*m_applier_scalar[i]);
             mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
         }
 
-        const auto& repo = this->m_pdefields.repo;
-        const int nlevels = repo.num_active_levels();
-        const auto& density = m_density.state(fstate);
-
+        for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -168,15 +183,33 @@ public:
         }
     }
 
-    void linsys_solve_impl()
+    void linsys_solve(const amrex::Real dt)
     {
-        FieldState fstate = FieldState::New;
-        auto& repo = this->m_pdefields.repo;
-        auto& field = this->m_pdefields.field;
+
+        const FieldState fstate = FieldState::New;
+        auto& repo = m_pdefields.repo;
+        auto& field = m_pdefields.field;
         auto& density = m_density.state(fstate);
         const int nlevels = repo.num_active_levels();
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
+        const auto& viscosity = m_pdefields.mueff;
+        const auto& geom = repo.mesh().Geom();
+        const amrex::Real alpha = 1.0;
+        const amrex::Real beta = dt;
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            m_solver_scalar[i]->setScalars(alpha, beta);
+            for (int lev = 0; lev < nlevels; ++lev) {
+                m_solver_scalar[i]->setLevelBC(
+                    lev, &m_pdefields.field.subview(i)(lev));
+                m_solver_scalar[i]->setACoeffs(lev, density(lev));
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+                m_solver_scalar[i]->setBCoeffs(
+                    lev, amrex::GetArrOfConstPtrs(b));
+            }
+        }
 
         // Always multiply with rho since there is no diffusion term for density
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -201,28 +234,24 @@ public:
         }
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            auto vel_comp = this->m_pdefields.field.subview(i);
+            auto vel_comp = m_pdefields.field.subview(i);
             auto rhs_ptr_comp = rhs_ptr->subview(i);
 
             amrex::MLMG mlmg(*m_solver_scalar[i]);
-            this->setup_solver(mlmg);
+            m_options(mlmg);
 
             mlmg.solve(
                 vel_comp.vec_ptrs(), rhs_ptr_comp.vec_const_ptrs(),
-                this->m_options.rel_tol, this->m_options.abs_tol);
+                m_options.rel_tol, m_options.abs_tol);
 
             io::print_mlmg_info(
                 field.name() + std::to_string(i) + "_solve", mlmg);
         }
     }
 
-    void linsys_solve(const amrex::Real dt)
-    {
-        FieldState fstate = FieldState::New;
-        for (int i = 0; i < AMREX_SPACEDIM; ++i)
-            this->setup_operator(*m_solver_scalar[i], 1.0, dt, fstate, i);
-        this->linsys_solve_impl();
-    }
+    PDEFields& m_pdefields;
+    Field& m_density;
+    MLMGOptions m_options;
 
     amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
         m_solver_scalar;
@@ -235,17 +264,15 @@ public:
  */
 template <typename Scheme>
 struct DiffusionOp<ICNS, Scheme>
-    : public DiffSolverIface<typename ICNS::MLDiffOp>
 {
     std::unique_ptr<ICNSDiffTensorOp> m_tensor_op;
     std::unique_ptr<ICNSDiffScalarOp> m_scalar_op;
 
     static_assert(
         ICNS::ndim == AMREX_SPACEDIM,
-        "DiffusionOp invoked for non-scalar PDE type");
+        "DiffusionOp invoked for scalar PDE type");
 
     DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename ICNS::MLDiffOp>(fields, has_overset)
     {
 
         bool use_tensor_op = true;

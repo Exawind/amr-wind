@@ -50,8 +50,7 @@ protected:
         LinOp& linop,
         const amrex::Real alpha,
         const amrex::Real beta,
-        const FieldState fstate,
-        const int index = 0);
+        const FieldState fstate);
 
     virtual void setup_solver(amrex::MLMG& mlmg);
 

@@ -52,8 +52,7 @@ void DiffSolverIface<LinOp>::setup_operator(
     LinOp& linop,
     const amrex::Real alpha,
     const amrex::Real beta,
-    const FieldState fstate,
-    const int index)
+    const FieldState fstate)
 {
     BL_PROFILE("amr-wind::setup_operator");
     auto& repo = m_pdefields.repo;
@@ -61,7 +60,7 @@ void DiffSolverIface<LinOp>::setup_operator(
 
     linop.setScalars(alpha, beta);
     for (int lev = 0; lev < nlevels; ++lev) {
-        linop.setLevelBC(lev, &m_pdefields.field.subview(index)(lev));
+        linop.setLevelBC(lev, &m_pdefields.field(lev));
     }
     this->set_acoeffs(linop, fstate);
     set_bcoeffs(linop);

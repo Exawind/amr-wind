@@ -33,7 +33,6 @@ namespace pde {
  */
 struct ICNS : VectorTransport
 {
-    using MLDiffOp = amrex::MLTensorOp;
     using SrcTerm = MomentumSource;
 
     static std::string pde_name() { return "ICNS"; }
