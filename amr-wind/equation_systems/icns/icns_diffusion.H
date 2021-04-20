@@ -90,7 +90,7 @@ public:
         const auto& bchi = diffusion::get_diffuse_tensor_bc(
             this->m_pdefields.field, amrex::Orientation::high);
 
-        for(int i=0; i< AMREX_SPACEDIM; ++i){
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             if (!has_overset) {
                 m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
@@ -101,15 +101,18 @@ public:
                     mesh.boxArray(0, mesh.finestLevel()),
                     mesh.DistributionMap(0, mesh.finestLevel()), iapply));
             } else {
-                auto imask = fields.repo.get_int_field("mask_cell").vec_const_ptrs();
+                auto imask =
+                    fields.repo.get_int_field("mask_cell").vec_const_ptrs();
                 m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
+                    isolve));
                 m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
+                    iapply));
             }
 
             m_solver_scalar[i]->setMaxOrder(m_options.max_order);
@@ -118,7 +121,6 @@ public:
             m_solver_scalar[i]->setDomainBC(bclo[i], bchi[i]);
             m_applier_scalar[i]->setDomainBC(bclo[i], bchi[i]);
         }
-
     }
 
     template <typename Scheme>
@@ -209,21 +211,23 @@ public:
                 vel_comp.vec_ptrs(), rhs_ptr_comp.vec_const_ptrs(),
                 this->m_options.rel_tol, this->m_options.abs_tol);
 
-            io::print_mlmg_info(field.name() + std::to_string(i) + "_solve", mlmg);
+            io::print_mlmg_info(
+                field.name() + std::to_string(i) + "_solve", mlmg);
         }
     }
 
     void linsys_solve(const amrex::Real dt)
     {
         FieldState fstate = FieldState::New;
-        for(int i=0; i < AMREX_SPACEDIM; ++i)
+        for (int i = 0; i < AMREX_SPACEDIM; ++i)
             this->setup_operator(*m_solver_scalar[i], 1.0, dt, fstate, i);
         this->linsys_solve_impl();
     }
 
-    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM> m_solver_scalar;
-    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM> m_applier_scalar;
-
+    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
+        m_solver_scalar;
+    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
+        m_applier_scalar;
 };
 
 /** Specialization of diffusion operator for ICNS
