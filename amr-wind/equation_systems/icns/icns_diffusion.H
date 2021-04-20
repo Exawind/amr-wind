@@ -216,7 +216,6 @@ public:
     void linsys_solve(const amrex::Real dt)
     {
         FieldState fstate = FieldState::New;
-        //FIXME: does this need to go in the for loop?
         for(int i=0; i < AMREX_SPACEDIM; ++i)
             this->setup_operator(*m_solver_scalar[i], 1.0, dt, fstate, i);
         this->linsys_solve_impl();
@@ -240,9 +239,6 @@ struct DiffusionOp<ICNS, Scheme>
     static_assert(
         ICNS::ndim == AMREX_SPACEDIM,
         "DiffusionOp invoked for non-scalar PDE type");
-    static_assert(
-        std::is_same<typename ICNS::MLDiffOp, amrex::MLTensorOp>::value,
-        "Invalid linear operator for scalar diffusion operator");
 
     DiffusionOp(PDEFields& fields, const bool has_overset)
         : DiffSolverIface<typename ICNS::MLDiffOp>(fields, has_overset)
