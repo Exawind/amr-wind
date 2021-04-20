@@ -76,7 +76,7 @@ public:
 
     void sample_velocities(const Field& vel);
 
-    int num_actuator_points() const { return m_data.position.size(); }
+    int num_ib_points() const { return m_data.position.size(); }
 
     // public for CUDA, not safe for general access
 
@@ -119,4 +119,4 @@ private:
 } // namespace ib
 } // namespace amr_wind
 
-#endif /* ACTUATORCONTAINER_H */
+#endif /* IBONTAINER_H */
