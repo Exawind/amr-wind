@@ -189,7 +189,7 @@ public:
         const FieldState fstate = FieldState::New;
         auto& repo = m_pdefields.repo;
         auto& field = m_pdefields.field;
-        auto& density = m_density.state(fstate);
+        const auto& density = m_density.state(fstate);
         const int nlevels = repo.num_active_levels();
         const int ndim = field.num_comp();
         auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
@@ -276,7 +276,7 @@ struct DiffusionOp<ICNS, Scheme>
     {
 
         bool use_tensor_op = true;
-        amrex::ParmParse pp("velocity_diffusion");
+        amrex::ParmParse pp(fields.field.name() + "_diffusion");
         pp.query("use_tensor_operator", use_tensor_op);
 
         if (use_tensor_op) {
