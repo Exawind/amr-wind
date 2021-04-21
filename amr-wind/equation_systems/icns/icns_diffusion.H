@@ -13,7 +13,6 @@ namespace pde {
 
 class ICNSDiffTensorOp : public DiffSolverIface<amrex::MLTensorOp>
 {
-
 public:
     ICNSDiffTensorOp(PDEFields& fields, const bool has_overset)
         : DiffSolverIface<amrex::MLTensorOp>(fields, has_overset)
@@ -80,7 +79,6 @@ public:
         , m_density(fields.repo.get_field("density"))
         , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
     {
-
         amrex::LPInfo isolve = m_options.lpinfo();
         amrex::LPInfo iapply;
 
@@ -128,7 +126,6 @@ public:
     template <typename Scheme>
     void compute_diff_term(const FieldState fstate)
     {
-
         auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
                              ? FieldState::New
                              : fstate;
@@ -143,7 +140,6 @@ public:
         const amrex::Real beta = -1.0;
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-
             m_applier_scalar[i]->setScalars(alpha, beta);
             for (int lev = 0; lev < nlevels; ++lev) {
                 m_applier_scalar[i]->setLevelBC(
@@ -185,7 +181,6 @@ public:
 
     void linsys_solve(const amrex::Real dt)
     {
-
         const FieldState fstate = FieldState::New;
         auto& repo = m_pdefields.repo;
         auto& field = m_pdefields.field;
@@ -249,6 +244,7 @@ public:
         }
     }
 
+protected:
     PDEFields& m_pdefields;
     Field& m_density;
     MLMGOptions m_options;
