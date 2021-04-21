@@ -6,26 +6,16 @@
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/DiffusionOps.H"
 #include "amr-wind/equation_systems/icns/icns.H"
+#include "amr-wind/utilities/console_io.H"
 
 namespace amr_wind {
 namespace pde {
 
-/** Specialization of diffusion operator for ICNS
- *  \ingroup icns
- */
-template <typename Scheme>
-struct DiffusionOp<ICNS, Scheme>
-    : public DiffSolverIface<typename ICNS::MLDiffOp>
+class ICNSDiffTensorOp : public DiffSolverIface<amrex::MLTensorOp>
 {
-    static_assert(
-        ICNS::ndim == AMREX_SPACEDIM,
-        "DiffusionOp invoked for non-scalar PDE type");
-    static_assert(
-        std::is_same<typename ICNS::MLDiffOp, amrex::MLTensorOp>::value,
-        "Invalid linear operator for scalar diffusion operator");
-
-    DiffusionOp(PDEFields& fields, const bool has_overset)
-        : DiffSolverIface<typename ICNS::MLDiffOp>(fields, has_overset)
+public:
+    ICNSDiffTensorOp(PDEFields& fields, const bool has_overset)
+        : DiffSolverIface<amrex::MLTensorOp>(fields, has_overset)
     {
         this->m_solver->setDomainBC(
             diffusion::get_diffuse_tensor_bc(
@@ -39,6 +29,7 @@ struct DiffusionOp<ICNS, Scheme>
                 this->m_pdefields.field, amrex::Orientation::high));
     }
 
+    template <typename Scheme>
     void compute_diff_term(const FieldState fstate)
     {
         this->setup_operator(*this->m_applier, 0.0, -1.0, fstate);
@@ -55,10 +46,10 @@ struct DiffusionOp<ICNS, Scheme>
         const int nlevels = repo.num_active_levels();
         const auto& density = m_density.state(fstate);
 
+        for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (int lev = 0; lev < nlevels; ++lev) {
             for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
                  mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
@@ -74,6 +65,240 @@ struct DiffusionOp<ICNS, Scheme>
                     });
             }
         }
+    }
+};
+
+class ICNSDiffScalarOp
+{
+public:
+    ICNSDiffScalarOp(
+        PDEFields& fields,
+        const bool has_overset,
+        const std::string& prefix = "diffusion")
+        : m_pdefields(fields)
+        , m_density(fields.repo.get_field("density"))
+        , m_options(prefix, m_pdefields.field.name() + "_" + prefix)
+    {
+        amrex::LPInfo isolve = m_options.lpinfo();
+        amrex::LPInfo iapply;
+
+        iapply.setMaxCoarseningLevel(0);
+        const auto& mesh = m_pdefields.repo.mesh();
+
+        const auto& bclo = diffusion::get_diffuse_tensor_bc(
+            m_pdefields.field, amrex::Orientation::low);
+        const auto& bchi = diffusion::get_diffuse_tensor_bc(
+            m_pdefields.field, amrex::Orientation::high);
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            if (!has_overset) {
+                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.Geom(0, mesh.finestLevel()),
+                    mesh.boxArray(0, mesh.finestLevel()),
+                    mesh.DistributionMap(0, mesh.finestLevel()), isolve));
+                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.Geom(0, mesh.finestLevel()),
+                    mesh.boxArray(0, mesh.finestLevel()),
+                    mesh.DistributionMap(0, mesh.finestLevel()), iapply));
+            } else {
+                auto imask =
+                    fields.repo.get_int_field("mask_cell").vec_const_ptrs();
+                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.Geom(0, mesh.finestLevel()),
+                    mesh.boxArray(0, mesh.finestLevel()),
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
+                    isolve));
+                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.Geom(0, mesh.finestLevel()),
+                    mesh.boxArray(0, mesh.finestLevel()),
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
+                    iapply));
+            }
+
+            m_solver_scalar[i]->setMaxOrder(m_options.max_order);
+            m_applier_scalar[i]->setMaxOrder(m_options.max_order);
+
+            m_solver_scalar[i]->setDomainBC(bclo[i], bchi[i]);
+            m_applier_scalar[i]->setDomainBC(bclo[i], bchi[i]);
+        }
+    }
+
+    template <typename Scheme>
+    void compute_diff_term(const FieldState fstate)
+    {
+        auto tau_state = std::is_same<Scheme, fvm::Godunov>::value
+                             ? FieldState::New
+                             : fstate;
+        const auto& repo = m_pdefields.repo;
+        const int nlevels = repo.num_active_levels();
+        const auto& geom = repo.mesh().Geom();
+
+        auto& divtau = m_pdefields.diff_term.state(tau_state);
+        const auto& density = m_density.state(fstate);
+        const auto& viscosity = m_pdefields.mueff;
+        const amrex::Real alpha = 0.0;
+        const amrex::Real beta = -1.0;
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            m_applier_scalar[i]->setScalars(alpha, beta);
+            for (int lev = 0; lev < nlevels; ++lev) {
+                m_applier_scalar[i]->setLevelBC(
+                    lev, &m_pdefields.field.subview(i)(lev));
+                m_applier_scalar[i]->setACoeffs(lev, density(lev));
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+                m_applier_scalar[i]->setBCoeffs(
+                    lev, amrex::GetArrOfConstPtrs(b));
+            }
+
+            auto divtau_comp = divtau.subview(i);
+            auto vel_comp = m_pdefields.field.subview(i);
+
+            amrex::MLMG mlmg(*m_applier_scalar[i]);
+            mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
+        }
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(divtau(lev), amrex::TilingIfNotGPU());
+                 mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& divtau_arr = divtau(lev).array(mfi);
+                const auto& rho_arr = density(lev).const_array(mfi);
+
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real rhoinv = 1.0 / rho_arr(i, j, k);
+                        divtau_arr(i, j, k, 0) *= rhoinv;
+                        divtau_arr(i, j, k, 1) *= rhoinv;
+                        divtau_arr(i, j, k, 2) *= rhoinv;
+                    });
+            }
+        }
+    }
+
+    void linsys_solve(const amrex::Real dt)
+    {
+        const FieldState fstate = FieldState::New;
+        auto& repo = m_pdefields.repo;
+        auto& field = m_pdefields.field;
+        const auto& density = m_density.state(fstate);
+        const int nlevels = repo.num_active_levels();
+        const int ndim = field.num_comp();
+        auto rhs_ptr = repo.create_scratch_field("rhs", field.num_comp(), 0);
+        const auto& viscosity = m_pdefields.mueff;
+        const auto& geom = repo.mesh().Geom();
+        const amrex::Real alpha = 1.0;
+        const amrex::Real beta = dt;
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            m_solver_scalar[i]->setScalars(alpha, beta);
+            for (int lev = 0; lev < nlevels; ++lev) {
+                m_solver_scalar[i]->setLevelBC(
+                    lev, &m_pdefields.field.subview(i)(lev));
+                m_solver_scalar[i]->setACoeffs(lev, density(lev));
+                auto b = diffusion::average_velocity_eta_to_faces(
+                    geom[lev], viscosity(lev));
+                m_solver_scalar[i]->setBCoeffs(
+                    lev, amrex::GetArrOfConstPtrs(b));
+            }
+        }
+
+        // Always multiply with rho since there is no diffusion term for density
+        for (int lev = 0; lev < nlevels; ++lev) {
+            auto& rhs = (*rhs_ptr)(lev);
+
+#ifdef _OPENMP
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
+#endif
+            for (amrex::MFIter mfi(rhs, amrex::TilingIfNotGPU()); mfi.isValid();
+                 ++mfi) {
+                const auto& bx = mfi.tilebox();
+                const auto& rhs_a = rhs.array(mfi);
+                const auto& fld = field(lev).const_array(mfi);
+                const auto& rho = density(lev).const_array(mfi);
+
+                amrex::ParallelFor(
+                    bx, ndim,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                        rhs_a(i, j, k, n) = rho(i, j, k) * fld(i, j, k, n);
+                    });
+            }
+        }
+
+        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
+            auto vel_comp = m_pdefields.field.subview(i);
+            auto rhs_ptr_comp = rhs_ptr->subview(i);
+
+            amrex::MLMG mlmg(*m_solver_scalar[i]);
+            m_options(mlmg);
+
+            mlmg.solve(
+                vel_comp.vec_ptrs(), rhs_ptr_comp.vec_const_ptrs(),
+                m_options.rel_tol, m_options.abs_tol);
+
+            io::print_mlmg_info(
+                field.name() + std::to_string(i) + "_solve", mlmg);
+        }
+    }
+
+protected:
+    PDEFields& m_pdefields;
+    Field& m_density;
+    MLMGOptions m_options;
+
+    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
+        m_solver_scalar;
+    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
+        m_applier_scalar;
+};
+
+/** Specialization of diffusion operator for ICNS
+ *  \ingroup icns
+ */
+template <typename Scheme>
+struct DiffusionOp<ICNS, Scheme>
+{
+    std::unique_ptr<ICNSDiffTensorOp> m_tensor_op;
+    std::unique_ptr<ICNSDiffScalarOp> m_scalar_op;
+
+    static_assert(
+        ICNS::ndim == AMREX_SPACEDIM,
+        "DiffusionOp invoked for scalar PDE type");
+
+    DiffusionOp(PDEFields& fields, const bool has_overset)
+    {
+
+        bool use_tensor_op = true;
+        amrex::ParmParse pp(fields.field.name() + "_diffusion");
+        pp.query("use_tensor_operator", use_tensor_op);
+
+        if (use_tensor_op) {
+            m_tensor_op =
+                std::make_unique<ICNSDiffTensorOp>(fields, has_overset);
+        } else {
+            m_scalar_op =
+                std::make_unique<ICNSDiffScalarOp>(fields, has_overset);
+        }
+    }
+
+    void compute_diff_term(const FieldState fstate)
+    {
+        if (m_tensor_op) {
+            m_tensor_op->compute_diff_term<Scheme>(fstate);
+        } else {
+            m_scalar_op->compute_diff_term<Scheme>(fstate);
+        }
+    }
+
+    void linsys_solve(const amrex::Real dt)
+    {
+        if (m_tensor_op)
+            m_tensor_op->linsys_solve(dt);
+        else
+            m_scalar_op->linsys_solve(dt);
     }
 };
 

@@ -144,7 +144,12 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
 
     amrex::Real factor = m_has_overset ? 0.5 * dt : 1.0;
 
-    if (m_variable_density) {
+    // TODO: remove the or in the if statement for m_has_overset
+    // For now assume variable viscosity for overset
+    // this can be removed once the nsolve overset
+    // masking is implemented in cell based AMReX poisson solvers
+
+    if (m_variable_density || m_has_overset) {
 
         rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
         rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
