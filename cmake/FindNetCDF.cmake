@@ -50,6 +50,7 @@ if (PkgConfig_FOUND)
     set(NetCDF_INCLUDE_DIRS "${_NetCDF_INCLUDEDIR}")
     set(NetCDF_LIBRARIES "${_NetCDF_LIBRARIES}")
     set(NetCDF_VERSION "${_NetCDF_VERSION}")
+    
     if (NOT TARGET NetCDF::NetCDF)
       add_library(NetCDF::NetCDF INTERFACE IMPORTED)
       set_target_properties(NetCDF::NetCDF PROPERTIES
