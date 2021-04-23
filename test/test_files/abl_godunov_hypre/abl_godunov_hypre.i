@@ -70,24 +70,22 @@ zhi.temperature = 0.003 # tracer is used to specify potential temperature gradie
 #              HYPRE                    #
 #.......................................#
 
-mac_proj.verbose = 1
-mac_proj.mg_verbose = 1
-mac_proj.mg_cg_verbose = 1
+mac_proj.verbose = 0
+mac_proj.bottom_verbose = 0
 mac_proj.mg_rtol = 1.0e-8
-mac_proj.mg_atol = 1.0e-13
+mac_proj.mg_atol = 1.0e-12
 
 mac_proj.max_coarsening_level = 0
 
 mac_proj.bottom_solver = hypre
-mac_proj.bottom_verbose = 3
 mac_proj.bottom_rtol = 1.0e-12
 mac_proj.bottom_atol = 1.0e-16
 mac_proj.bottom_maxiter = 100
 mac_proj.hypre_namespace = "mac_proj.hypre"
 mac_proj.hypre.hypre_solver = GMRES
 mac_proj.hypre.hypre_preconditioner = BoomerAMG
-mac_proj.hypre.verbose = 2
-mac_proj.hypre.bamg_verbose = 1
+mac_proj.hypre.verbose = 0
+mac_proj.hypre.bamg_verbose = 0
 mac_proj.hypre.num_krylov = 40
 mac_proj.hypre.bamg_coarsen_type = 8
 mac_proj.hypre.bamg_interp_type = 6
