@@ -17,17 +17,24 @@ if (netCDF_FOUND)
   set(NetCDF_LIBRARIES "${netCDF_LIBRARIES}")
   set(NetCDF_VERSION "${NetCDFVersion}")
   if (NOT TARGET NetCDF::NetCDF)
+    
     add_library(NetCDF::NetCDF INTERFACE IMPORTED)
     if (TARGET "netCDF::netcdf")
       # 4.7.3
       set_target_properties(NetCDF::NetCDF PROPERTIES
         INTERFACE_LINK_LIBRARIES "netCDF::netcdf")
+      set_target_properties(NetCDF::NetCDF PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_INCLUDE_DIRS}")
     elseif (TARGET "netcdf")
       set_target_properties(NetCDF::NetCDF PROPERTIES
         INTERFACE_LINK_LIBRARIES "netcdf")
+      set_target_properties(NetCDF::NetCDF PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_INCLUDE_DIRS}")
     else ()
       set_target_properties(NetCDF::NetCDF PROPERTIES
         INTERFACE_LINK_LIBRARIES "${netCDF_LIBRARIES}")
+      set_target_properties(NetCDF::NetCDF PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${NetCDF_INCLUDE_DIRS}")
     endif ()
   endif ()
   # Skip the rest of the logic in this file.
@@ -43,6 +50,7 @@ if (PkgConfig_FOUND)
     set(NetCDF_INCLUDE_DIRS "${_NetCDF_INCLUDEDIR}")
     set(NetCDF_LIBRARIES "${_NetCDF_LIBRARIES}")
     set(NetCDF_VERSION "${_NetCDF_VERSION}")
+    
     if (NOT TARGET NetCDF::NetCDF)
       add_library(NetCDF::NetCDF INTERFACE IMPORTED)
       set_target_properties(NetCDF::NetCDF PROPERTIES
