@@ -178,7 +178,7 @@ endif()
 # TODO: Enable hypre capability on GPUs
 if (AMR_WIND_ENABLE_HYPRE)
   add_test_re(abl_godunov_hypre)
-  #add_test_re(channel_kwsst_hypre)
+  add_test_re(channel_kwsst_hypre)
 endif()
 
 #=============================================================================
