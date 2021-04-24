@@ -366,7 +366,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     amrex::Real wind_direction, theta_t;
     pp.query("wind_direction", wind_direction);
     // Compute theta transformation in radians
-    theta_t = ( 270.0 - wind_direction ) * pi / 180.0;
+    theta_t = (270.0 - wind_direction) * pi / 180.0;
     amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
     pp.queryarr("grid_location", location);
 
