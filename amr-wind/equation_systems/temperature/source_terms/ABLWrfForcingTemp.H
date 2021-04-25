@@ -60,6 +60,8 @@ private:
 
     amrex::Array<amrex::Real, 4> m_poly_coeff_theta;
 
+    amrex::Real m_gain_coeff{0.2};
+
 };
 
 } // namespace temperature
