@@ -36,6 +36,14 @@ struct VectorT
         : vv{x, y, z}
     {}
 
+    ~VectorT() = default;
+    VectorT(const VectorT&) = default;
+    VectorT(VectorT&&) = default;
+    VectorT& operator=(const VectorT&) & = default;
+    VectorT& operator=(const VectorT&) && = delete;
+    VectorT& operator=(VectorT&&) & = default;
+    VectorT& operator=(VectorT&&) && = delete;
+
     //! Zero vector
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T> zero()
     {

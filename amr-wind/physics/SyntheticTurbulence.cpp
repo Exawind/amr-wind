@@ -457,7 +457,10 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     m_turb_grid.tr_mat.zy() = 0.0;
     m_turb_grid.tr_mat.zz() = 1.0;
     // y = z .cross. x
-    m_turb_grid.tr_mat.y() = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
+    auto ydir = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
+    m_turb_grid.tr_mat.yx() = ydir.x();
+    m_turb_grid.tr_mat.yy() = ydir.y();
+    m_turb_grid.tr_mat.yz() = ydir.z();
 
     amrex::Print() << "Synthethic turbulence forcing initialized \n"
                    << "  Turbulence file = " << m_turb_filename << "\n"

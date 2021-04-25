@@ -48,6 +48,14 @@ struct TensorT
         const VectorT<T>& z,
         const bool transpose = false);
 
+    ~TensorT() = default;
+    TensorT(const TensorT&) = default;
+    TensorT(TensorT&&) = default;
+    TensorT& operator=(const TensorT&) & = default;
+    TensorT& operator=(const TensorT&) && = delete;
+    TensorT& operator=(TensorT&&) & = default;
+    TensorT& operator=(TensorT&&) && = delete;
+
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr TensorT<T>
     zero() noexcept
     {
