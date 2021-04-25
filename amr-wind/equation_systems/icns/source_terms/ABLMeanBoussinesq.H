@@ -51,6 +51,11 @@ private:
     amrex::Real m_beta{0.0};
 
     int m_axis{2};
+
+    bool m_const_profile{false};
+
+    //! Read a temperature profile from a text file
+    void read_temperature_profile(std::string profile_file_name);
 };
 } // namespace icns
 

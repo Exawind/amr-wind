@@ -16,9 +16,12 @@ namespace icns {
  *  - `reference_temperature` (Mandatory) temperature (`T0`) in Kelvin
  *  - `thermal_expansion_coeff` Optional, default = `1.0 / T0`
  *  - `gravity` acceleration due to gravity (m/s)
+ *  - `read_temperature_profile`
+ *  - `tprofile_filename`
  */
 ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
 {
+
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_boussinesq_term(this);
 
@@ -35,7 +38,19 @@ ABLMeanBoussinesq::ABLMeanBoussinesq(const CFDSim& sim) : m_mesh(sim.mesh())
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.queryarr("gravity", m_gravity);
 
-    mean_temperature_init(abl.abl_statistics().theta_profile());
+    if (pp_boussinesq_buoyancy.contains("read_temperature_profile")) {
+
+        m_const_profile = true;
+
+        std::string tprofile_filename;
+        pp_boussinesq_buoyancy.get("tprofile_filename", tprofile_filename);
+
+        read_temperature_profile(tprofile_filename);
+
+    } else {
+
+        mean_temperature_init(abl.abl_statistics().theta_profile());
+    }
 }
 
 ABLMeanBoussinesq::~ABLMeanBoussinesq() = default;
@@ -105,9 +120,35 @@ void ABLMeanBoussinesq::mean_temperature_init(const FieldPlaneAveraging& tavg)
 
 void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 {
+    if (m_const_profile) return;
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.line_average().begin(),
         tavg.line_average().end(), m_theta_vals.begin());
+}
+
+void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
+{
+    amrex::Vector<amrex::Real> theta_ht, theta_vals;
+    std::ifstream infile;
+    int n_hts;
+    infile.open(profile_file_name.c_str(), std::ios_base::in);
+    infile >> n_hts;
+    theta_ht.resize(n_hts);
+    theta_vals.resize(n_hts);
+    for (int i = 0; i < n_hts; i++) {
+        infile >> theta_ht[i] >> theta_vals[i];
+    }
+    infile.close();
+
+    //Now copy to GPU Device memory
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, theta_ht.begin(),
+        theta_ht.end(), m_theta_ht.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, theta_vals.begin(),
+        theta_vals.end(), m_theta_vals.begin());
+
+
 }
 
 } // namespace icns
