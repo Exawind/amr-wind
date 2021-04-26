@@ -13,32 +13,31 @@ namespace ib {
 
 class IB;
 
-/** Cloud of IB geometry points.
+/** Cloud of ib surface marker points.
  *
- *  \ingroup ibm
+ *  \ingroup ib
  *
- *  Holds the position vector and velocity information for a cloud of immersed
- *  boundary points belonging to all the immersed bodies within a given MPI
- * rank.
+ *  Holds the position vector and velocity information for a cloud of marker
+ *  points belonging to the immersed boundary surface within a given MPI rank.
  */
-struct IBCloud
+struct IBMarkersCloud
 {
     //! Number of nodes per turbine on this MPI rank
     amrex::Vector<int> num_pts;
 
-    //! Global IDs of the ibms on this MPI rank
+    //! Global IDs of the immersed boundary bodies on this MPI rank
     amrex::Vector<int> global_id;
 
-    //! Position vectors of all ibm nodes belonging to this MPI rank
+    //! Position vectors of all ib marker points belonging to this MPI rank
     amrex::Vector<vs::Vector> position;
 
-    //! Velocity vectors of all ibm nodes belonging to this MPI rank
+    //! Velocity vectors of all ib marker points belonging to this MPI rank
     amrex::Vector<vs::Vector> velocity;
 
-    //! Total number of ibms located on this MPI rank
+    //! Total number of ib points located on this MPI rank
     int num_objects;
 
-    explicit ActuatorCloud(const int nobjects);
+    explicit IBMarkersCloud(const int nobjects);
 };
 
 //! Number or real entries in Array of Structs (AOS)
@@ -76,7 +75,7 @@ public:
 
     void sample_velocities(const Field& vel);
 
-    int num_ib_points() const { return m_data.position.size(); }
+    int num_marker_points() const { return m_data.position.size(); }
 
     // public for CUDA, not safe for general access
 
@@ -90,13 +89,13 @@ protected:
     void compute_local_coordinates();
 
     // Accessor to allow unit testing
-    IBCloud& point_data() { return m_data; }
+    IBMarkersCloud& point_data() { return m_data; }
 
 private:
     amrex::AmrCore& m_mesh;
 
     // Object that holds the position and velocity information
-    ActuatorCloud m_data;
+    IBMarkerCloud m_data;
 
     //! Coordinates of points that are contained within boxes assigned to each
     //! MPI rank
@@ -119,4 +118,4 @@ private:
 } // namespace ib
 } // namespace amr_wind
 
-#endif /* IBONTAINER_H */
+#endif /* IBCONTAINER_H */
