@@ -3,9 +3,9 @@
 
 #include "amr-wind/core/Physics.H"
 
-/** \defgroup ibm Immersed boundary source terms
+/** \defgroup ib immersed boundary source terms
  *  Immersed boundary source modeling for turbine
- *  supporting structure (e.g. tower, nacelle, floater)
+ *  supporting structures (e.g. tower, nacelle, floater)
  *  \ingroup wind
  */
 
@@ -27,7 +27,7 @@ class IBContainer;
  *
  *  \sa IBModel, IBContainer
  */
-class IB : public Physics::Register<IBM>
+class IB : public Physics::Register<IB>
 {
 public:
     static const std::string identifier() { return "IB"; }
