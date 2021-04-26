@@ -363,10 +363,8 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     process_nc_file(m_turb_filename, m_turb_grid);
 
     // Load position and orientation of the grid
-    amrex::Real wind_direction, theta_t;
+    amrex::Real wind_direction;
     pp.query("wind_direction", wind_direction);
-    // Compute theta transformation in radians
-    theta_t = (270.0 - wind_direction) * pi / 180.0;
     amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
     pp.queryarr("grid_location", location);
 
@@ -448,16 +446,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     //
     // x-direction points to flow direction (convert from compass direction to
     // vector)
-    m_turb_grid.tr_mat.xx() = std::cos(theta_t);
-    m_turb_grid.tr_mat.xy() = std::sin(theta_t);
-    m_turb_grid.tr_mat.xz() = 0.0;
-    m_turb_grid.tr_mat.yx() = -std::sin(theta_t);
-    m_turb_grid.tr_mat.yy() = std::cos(theta_t);
-    m_turb_grid.tr_mat.yz() = 0.0;
-    // z always points upwards (for now...)
-    m_turb_grid.tr_mat.zx() = 0.0;
-    m_turb_grid.tr_mat.zy() = 0.0;
-    m_turb_grid.tr_mat.zz() = 1.0;
+    m_turb_grid.tr_mat = vs::zrot(270.0 - wind_direction);
 
     amrex::Print() << "Synthethic turbulence forcing initialized \n"
                    << "  Turbulence file = " << m_turb_filename << "\n"
