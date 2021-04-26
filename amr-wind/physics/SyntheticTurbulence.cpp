@@ -279,7 +279,6 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE bool find_point_in_box(
     // Get y and z w.r.t. the lower corner of the grid
     const amrex::Real yy = pt[1] + t_grid.box_len[1] * 0.5;
     const amrex::Real zz = pt[2] + t_grid.box_len[2] * 0.5;
-
     bool inBox =
         ((yy >= 0.0) && (yy <= t_grid.box_len[1]) && (zz >= 0.0) &&
          (zz <= t_grid.box_len[2]));
@@ -302,7 +301,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE void interp_perturb_vel(
     // clang-format off
     // Indices of the 2-D cell that contains the sampling point
     int qidx[4]{wt.jl * nz + wt.kl, wt.jr * nz + wt.kl, wt.jr * nz + wt.kr,
-                wt.jl * nz + wt.kl};
+                wt.jl * nz + wt.kr};
     // clang-format on
 
     vs::Vector vel_l, vel_r;
@@ -366,8 +365,6 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     // Load position and orientation of the grid
     amrex::Real wind_direction;
     pp.query("wind_direction", wind_direction);
-    // Convert to radians
-    wind_direction *= pi / 180.0;
     amrex::Vector<amrex::Real> location{{0.0, 0.0, 0.0}};
     pp.queryarr("grid_location", location);
 
@@ -449,18 +446,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
     //
     // x-direction points to flow direction (convert from compass direction to
     // vector)
-    m_turb_grid.tr_mat.xx() = -std::sin(wind_direction);
-    m_turb_grid.tr_mat.xy() = -std::cos(wind_direction);
-    m_turb_grid.tr_mat.xz() = 0.0;
-    // z always points upwards (for now...)
-    m_turb_grid.tr_mat.zx() = 0.0;
-    m_turb_grid.tr_mat.zy() = 0.0;
-    m_turb_grid.tr_mat.zz() = 1.0;
-    // y = z .cross. x
-    auto ydir = m_turb_grid.tr_mat.z() ^ m_turb_grid.tr_mat.x();
-    m_turb_grid.tr_mat.yx() = ydir.x();
-    m_turb_grid.tr_mat.yy() = ydir.y();
-    m_turb_grid.tr_mat.yz() = ydir.z();
+    m_turb_grid.tr_mat = vs::zrot(270.0 - wind_direction);
 
     amrex::Print() << "Synthethic turbulence forcing initialized \n"
                    << "  Turbulence file = " << m_turb_filename << "\n"
@@ -477,7 +463,7 @@ SyntheticTurbulence::SyntheticTurbulence(const CFDSim& sim)
                    << m_turb_grid.origin[2] << "]\n"
                    << "  Mean wind profile: U = "
                    << m_wind_profile->reference_velocity()
-                   << " m/s; Dir = " << wind_direction * 180.0 / pi
+                   << " m/s; Dir = " << wind_direction
                    << " deg; type = " << mean_wind_type << std::endl;
 }
 
