@@ -48,7 +48,7 @@ AMREX_FORCE_INLINE amrex::IntVect offset(const int face_dir, const int normal)
     return offset;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE int
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE int
 plane_idx(const int i, const int j, const int k, const int perp, const int lo)
 {
     return (static_cast<int>(perp == 0) * i + static_cast<int>(perp == 1) * j +
@@ -119,23 +119,21 @@ void InletData::read_data(
 
     const auto& datn = ((*m_data_n[ori])[lev]).array();
     auto d_buffer = buffer.dataPtr();
-    amrex::LoopOnCpu(
-        bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
-            const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datn(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
-        });
+    amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
+        const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
+        const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
+        datn(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+    });
 
     start[0] = static_cast<size_t>(idxp1);
     grp.var(fld->name()).get(buffer.data(), start, count);
 
     const auto& datnp1 = ((*m_data_np1[ori])[lev]).array();
-    amrex::LoopOnCpu(
-        bx, nc, [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-            const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
-            const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
-            datnp1(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
-        });
+    amrex::LoopOnCpu(bx, nc, [=](int i, int j, int k, int n) noexcept {
+        const int i0 = plane_idx(i, j, k, perp[0], lo[perp[0]]);
+        const int i1 = plane_idx(i, j, k, perp[1], lo[perp[1]]);
+        datnp1(i, j, k, n + nstart) = d_buffer[((i0 * n1) + i1) * nc + n];
+    });
 
     ((*m_data_n[ori])[lev]).prefetchToDevice();
     ((*m_data_np1[ori])[lev]).prefetchToDevice();
