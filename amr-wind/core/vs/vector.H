@@ -36,6 +36,14 @@ struct VectorT
         : vv{x, y, z}
     {}
 
+    ~VectorT() = default;
+    VectorT(const VectorT&) = default;
+    VectorT(VectorT&&) = default;
+    VectorT& operator=(const VectorT&) & = default;
+    VectorT& operator=(const VectorT&) && = delete;
+    VectorT& operator=(VectorT&&) & = default;
+    VectorT& operator=(VectorT&&) && = delete;
+
     //! Zero vector
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE static constexpr VectorT<T> zero()
     {
@@ -86,18 +94,18 @@ struct VectorT
         return VectorT<T>(*this).normalize();
     }
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& x() noexcept { return vv[0]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& y() noexcept { return vv[1]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& z() noexcept { return vv[2]; }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& x() const noexcept
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& x() & noexcept { return vv[0]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& y() & noexcept { return vv[1]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& z() & noexcept { return vv[2]; }
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& x() const& noexcept
     {
         return vv[0];
     }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& y() const noexcept
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& y() const& noexcept
     {
         return vv[1];
     }
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& z() const noexcept
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T& z() const& noexcept
     {
         return vv[2];
     }
@@ -108,12 +116,12 @@ struct VectorT
 
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T> operator/=(const T val);
 
-    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& operator[](size_type pos)
+    AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T& operator[](size_type pos) &
     {
         return vv[pos];
     }
     AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE const T&
-    operator[](size_type pos) const
+    operator[](size_type pos) const&
     {
         return vv[pos];
     }
