@@ -94,7 +94,6 @@ mac_proj.hypre.bamg_num_sweeps = 2
 mac_proj.hypre.bamg_cycle_type = 1
 mac_proj.hypre.bamg_relax_order = 0
 mac_proj.hypre.bamg_trunc_factor = 0.1
-mac_proj.hypre.bamg_strong_threshold = .4
 mac_proj.hypre.bamg_max_levels = 10
 mac_proj.hypre.bamg_agg_num_levels = 2
 mac_proj.hypre.bamg_agg_interp_type = 7
