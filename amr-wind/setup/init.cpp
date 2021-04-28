@@ -15,11 +15,6 @@ using namespace amrex;
  */
 void incflo::ReadParameters()
 {
-    { // Prefix io
-        ParmParse pp("io");
-        pp.query("KE_int", m_KE_int);
-        pp.query("enstrophy_int", m_enstrophy_int);
-    } // end prefix amr
 
     { // Prefix incflo
         ParmParse pp("incflo");

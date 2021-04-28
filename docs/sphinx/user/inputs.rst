@@ -302,6 +302,13 @@ as initial conditions and discretization options.
    The method of lines is the default option but Godunov is more accurate, 
    can handle a larger CFL number, and more computational efficient.
    
+.. input_param:: incflo.godunov_type
+
+   **type:** String, optional, default = ppm
+
+   Specifies which Godunov scheme to use. Options include ``plm``, ``ppm``, 
+   ``ppm_nolim``, ``weno_js``, and ``weno_z``
+   
 .. input_param:: incflo.use_ppm
 
    **type:** Boolean, optional, default = true
@@ -348,11 +355,13 @@ as initial conditions and discretization options.
 
    When present, this parameter contains list of sections to be read with
    specific post-postprocessing actions. Currently, the code supports
-   :ref:`Sampling <inputs_sampling>`.
+   :ref:`Sampling <inputs_sampling>`, :ref:`KineticEnergy <inputs_ke>`,
+   and :ref:`Enstrophy <inputs_enst>`
 
    ::
 
-     incflo.post_processing     = sampling
+     incflo.post_processing     = sampling ke enst
+     sampling.type              = Sampling
      sampling.output_frequency  = 5
      sampling.labels            = line1 line2
      sampling.fields            = velocity
@@ -364,6 +373,8 @@ as initial conditions and discretization options.
      sampling.line2.num_points  = 21
      sampling.line2.start       = 500.0 500.0 10.0
      sampling.line2.end         = 500.0 500.0 210.0
+     ke.type                    = KineticEnergy
+     ke.output_frequency        = 2
 
    In the above example, the code will read the parameters with keyword
    ``sampling`` to initialize user-defined probes.
@@ -1065,7 +1076,7 @@ Example::
 .. _inputs_sampling:
    
 Section: Sampling
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 This section controls data-sampling (post-processing) actions supported within
 AMR-wind. Note that while the input parameters use the keyword ``sampling``, the
@@ -1166,3 +1177,50 @@ Example::
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
+
+  
+.. _inputs_ke:
+  
+Section: KineticEnergy
+~~~~~~~~~~~~~~~~~~~~~~
+
+This section controls  kinetic energy  post processing. 
+The prefix is the label set in ``incflo.post_processing``. For example
+``incflo.post_processing = ke``
+
+
+.. input_param:: ke.type
+
+   **type:** String, mandatory
+
+    To use kinetic energy post processing specify with keyword ``KineticEnergy``
+
+.. input_param:: ke.output_frequency
+
+   **type:** Integer, optional, default = 10
+
+   Specify the output frequency (in timesteps) for integrating kinetic energy
+   and writing to file
+   
+.. _inputs_enst:
+
+Section: Enstrophy
+~~~~~~~~~~~~~~~~~~
+
+This section controls  enstrophy  post processing. 
+The prefix is the label set in ``incflo.post_processing``. For example
+``incflo.post_processing = enst``
+
+
+.. input_param:: enst.type
+
+   **type:** String, mandatory
+
+   To use enstrophy output specify with keyword ``Enstrophy``
+   
+.. input_param:: enst.output_frequency
+
+   **type:** Integer, optional, default = 10
+
+   Specify the output frequency (in timesteps) for integrating enstrophy and 
+   writing to file.

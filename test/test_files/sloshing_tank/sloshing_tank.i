@@ -8,7 +8,7 @@ time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  10       # Steps between checkpoint files
 
 io.output_default_variables = 0
-io.outputs = density p vof
+io.outputs = density vof
 io.derived_outputs = "components(velocity,0,2)" "components(gp,0,2)"
 
 incflo.use_godunov = 1

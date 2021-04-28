@@ -176,8 +176,6 @@ private:
     amrex::Long m_cell_count{-1};
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
-    int m_KE_int = -1;
-    int m_enstrophy_int = -1;
 
     //
     // end of member variables
