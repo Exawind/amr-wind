@@ -43,10 +43,6 @@ struct IBGrid
     //! Force vector at the forcing points
     VecList force;
 
-    // FIXME: Does immersed boundary need different such parameters ?
-    //! Gaussian smearing parameter
-    VecList epsilon;
-
     //! Transformation matrix at the forcing points
     TensorList orientation;
 
@@ -65,7 +61,6 @@ struct IBGrid
     {
         pos.resize(num_force_pts);
         force.resize(num_force_pts);
-        epsilon.resize(num_force_pts);
         orientation.resize(num_force_pts);
         vel_pos.resize(num_vel_pts);
         vel.resize(num_vel_pts);
