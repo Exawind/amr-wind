@@ -22,41 +22,53 @@ namespace utils {
  *
  *  \param mesh AMReX mesh instance
  *  \param rbox The bounding box that defines the region of influence of a
- * turbine
+ *  turbine
  */
 std::set<int> determine_influenced_procs(
     const amrex::AmrCore& mesh, const amrex::RealBox& rbox);
 
 void determine_root_proc(IBInfo&, amrex::Vector<int>&);
 
-// FIXME: Change this function to be specific to immersed boundary
-/** Return the Gaussian smearing factor
+/** Evaluate the Dirac delta phi
+ *
+ *  \param r Normalized distance as defined in https://doi.org/10.1006/jcph.1999.6293
+ *
+ *  \return Dirac delta phi
+ */
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+dirac_delta_phi(const amrex::Real& r)
+{
+    const amrex::Real abs_r = amrex::Math::abs(r);
+
+    if ((abs_r > 0.5) && (abs_r <= 0.5))
+    {
+        return 1/6 * (5 - abs_r - std::sqrt(-3 * std::pow((1 - abs_r), 2) + 1));
+    }
+    else if (abs_r <= 0.5)
+    {
+        return 1/3 * (1 + std::sqrt(-3 * std::pow(abs_r, 2) + 1));
+    }
+    else
+        return 0.0;
+}
+
+/** Evaluate the Dirac delta factor as defined in https://doi.org/10.1006/jcph.1999.6293
  *
  *  \param dist Distance vector of the cell center from the actuator node in
  *  local frame of reference.
  *
- *  \param eps Three-dimensional Gaussian scaling factor
+ *  \param dx mesh size in each direction
  *
- *  \return Gaussian smearing factor
+ *  \return Dirac delta factor
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
-gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
+dirac_delta(const vs::Vector& dist, const vs::Vector& dx)
 {
     // clang-format off
-    const vs::Vector rr{dist.x() / eps.x(), dist.y() / eps.y(),
-                        dist.z() / eps.z()};
+    return 1/dx[0] * dirac_delta_phi(dist[0]/dx[0]) +
+           1/dx[1] * dirac_delta_phi(dist[1]/dx[1]) +
+           1/dx[2] * dirac_delta_phi(dist[2]/dx[2]);
     // clang-format on
-    const amrex::Real rr_sqr = vs::mag_sqr(rr);
-
-    if (rr_sqr < 16.0) {
-        // const amrex::Real fac = 1.0 / std::sqrt(pi() * pi() * pi());
-        constexpr amrex::Real fac = 0.17958712212516656;
-        const amrex::Real eps_fac = eps.x() * eps.y() * eps.z();
-        return (fac / eps_fac) *
-               std::exp(-rr.x() * rr.x() - rr.y() * rr.y() - rr.z() * rr.z());
-    } else {
-        return 0.0;
-    }
 }
 
 } // namespace utils

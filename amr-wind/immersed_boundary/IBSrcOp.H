@@ -96,12 +96,13 @@ void IBSrcOp<GeomTrait>::operator()(
         for (int ip = 0; ip < npts; ++ip) {
             const auto dist = cc - pos[ip];
             const auto dist_local = tmat[ip] & dist;
-            const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            const auto dirac_delta_fac = utils::dirac_delta(dist_local, dx);
             const auto& pforce = force[ip];
 
-            src_force[0] += gauss_fac * pforce.x();
-            src_force[1] += gauss_fac * pforce.y();
-            src_force[2] += gauss_fac * pforce.z();
+            // FIXME: Is this the force definition for immersed boundaries ?
+            src_force[0] += dirac_delta_fac * pforce.x();
+            src_force[1] += dirac_delta_fac * pforce.y();
+            src_force[2] += dirac_delta_fac * pforce.z();
         }
 
         sarr(i, j, k, 0) += src_force[0];
