@@ -22,24 +22,6 @@ namespace ib {
 struct IBType
 {};
 
-// FIXME: Does immersed boundary need any notion of multiple source types ?
-/** Abstract representation of a source type.
- *
- *  \ingroup immersed boundary
- */
-struct IBSrcType
-{};
-
-/** Immersed boundary representation.
- *
- *  \ingroup Immersed boundary
- */
-struct IBSrcLine : IBSrcType
-{
-    // FIXME: Change identifier name
-    static std::string identifier() { return "Line"; }
-};
-
 using RealList = amrex::Vector<amrex::Real>;
 using RealSlice = ::amr_wind::utils::Slice<amrex::Real>;
 using VecList = amrex::Vector<amr_wind::vs::Vector>;

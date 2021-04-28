@@ -17,7 +17,7 @@ namespace ops {
  *  does not have access to mesh data. Actions that require mesh information for
  *  initialization should be deferred until ops::init_data_structures call.
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct ReadInputsOp;
 
 /** Perform one-time initialization of the immersed boundary object.
@@ -29,7 +29,7 @@ struct ReadInputsOp;
  *  physics instance. This function is called once during IB::post_init_actions
  *
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct InitDataOp;
 
 /** Update the positions of the immersed boundary nodes.
@@ -40,7 +40,7 @@ struct InitDataOp;
  *  vel_pos array of the immersed boundary grid instance. These positions will be used
  *  the sample the velocity field during the simulation.
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct UpdatePosOp;
 
 /** Process updated velocities from CFD flow field.
@@ -51,24 +51,24 @@ struct UpdatePosOp;
  *  immersed boundary grid instance before calling this function. The updated velocities
  *  can be further processed by specializing this function.
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct UpdateVelOp;
 
 /** Compute aerodynamic forces at the immersed boundary grid points during a simulation.
  *
  *  \ingroup immersed boundary
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct ComputeForceOp;
 
 /** Compute source term for the momentum equation.
  *
  *  \ingroup immersed boundary
  */
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 class IBSrcOp;
 
-template <typename ActTrait, typename SrcTrait, typename = void>
+template <typename GeomTrait, typename = void>
 struct ProcessOutputsOp;
 
 /** Determine the list of processes (MPI ranks) that is expected to be

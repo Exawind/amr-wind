@@ -63,38 +63,33 @@ public:
     virtual void write_outputs() = 0;
 };
 
-// FIXME: Not sure if the immersed boundary module is expected to possess different source types
-/** Concrete implementation of the ImmersedBoundaryModel for different immersed boundary types.
+/** Concrete implementation of the IBModel for different geometry types.
  *
- *  \ingroup immersed boundary
+ *  \ingroup IB
  *
- *  \tparam IBTrait An immersed boundary type trait that defines the behavior of the
+ *  \tparam GeomTrait A geometry type trait that defines the behavior of the
  *  different actions (initialization, velocity sampling, force computation, and
- *  momentum source term computations) that are executed by the ImmersedBoundaryModel
- *  class through the amr_wind::IB physics driver class.
+ *  momentum source term computations) that are executed by the IBModel
+ *  class through the amr_wind::ib physics driver class.
  *
- *  \tparam SrcTrait A source type trait that defines how the forcing term is
- *  computed, e.g., if the turbine rotor is represented as a line or a disk. For
- *  most cases, like the fixed wing case, this will just be line, therefore, it
- *  is set as default for convenience.
  */
-template <typename IBTrait, typename SrcTrait = IBSrcLine>
-class IBModel : public ImmersedBoundaryModel::Register<IBModel<IBTrait, SrcTrait>>
+template <typename GeomTrait>
+class IBModel : public ImmersedBoundaryModel::Register<IBModel<GeomTrait>>
 {
 private:
     //! Instance that holds all data related to a particular immersed boundary type
-    typename IBTrait::DataType m_data;
+    typename GeomTrait::DataType m_data;
 
     //! Source computation operator
-    ops::IBSrcOp<IBTrait, SrcTrait> m_src_op;
+    ops::IBSrcOp<GeomTrait> m_src_op;
 
     //! Outputs processor
-    ops::ProcessOutputsOp<IBTrait, SrcTrait> m_out_op;
+    ops::ProcessOutputsOp<GeomTrait> m_out_op;
 
 public:
     static std::string identifier()
     {
-        return IBTrait::identifier() + SrcTrait::identifier();
+        return GeomTrait::identifier();
     }
 
     /**
@@ -117,13 +112,13 @@ public:
 
     void read_inputs(const utils::IBParser& pp) override
     {
-        ops::ReadInputsOp<IBTrait, SrcTrait>()(m_data, pp);
+        ops::ReadInputsOp<GeomTrait>()(m_data, pp);
         m_out_op.read_io_options(pp);
     }
 
     void determine_influenced_procs() override
     {
-        ops::determine_influenced_procs<IBTrait>(m_data);
+        ops::determine_influenced_procs<GeomTrait>(m_data);
     }
 
     void determine_root_proc(amrex::Vector<int>& ib_proc_count) override;
@@ -132,7 +127,7 @@ public:
 
     void update_positions(VecSlice& pos) override
     {
-        ops::UpdatePosOp<IBTrait, SrcTrait>()(m_data);
+        ops::UpdatePosOp<GeomTrait>()(m_data);
         const auto& vpos = m_data.grid().vel_pos;
         std::copy(vpos.begin(), vpos.end(), pos.begin());
     }
@@ -140,12 +135,12 @@ public:
     void update_velocities(const VecSlice& vel) override
     {
         std::copy(vel.begin(), vel.end(), m_data.grid().vel.begin());
-        ops::UpdateVelOp<IBTrait, SrcTrait>()(m_data);
+        ops::UpdateVelOp<GeomTrait>()(m_data);
     }
 
     void compute_forces() override
     {
-        ops::ComputeForceOp<IBTrait, SrcTrait>()(m_data);
+        ops::ComputeForceOp<GeomTrait>()(m_data);
         m_src_op.setup_op();
     }
 
@@ -166,16 +161,16 @@ public:
 
     void init_ib_source() override
     {
-        ops::InitDataOp<IBTrait, SrcTrait>()(m_data);
+        ops::InitDataOp<GeomTrait>()(m_data);
         m_src_op.initialize();
     }
 };
 
-template <typename IBTrait, typename SrcTrait>
-void IBModel<IBTrait, SrcTrait>::determine_root_proc(
+template <typename GeomTrait>
+void IBModel<GeomTrait>::determine_root_proc(
     amrex::Vector<int>& ib_proc_count)
 {
-    ops::determine_root_proc<IBTrait>(m_data, ib_proc_count);
+    ops::determine_root_proc<GeomTrait>(m_data, ib_proc_count);
     {
         // Sanity checks
         const auto& info = m_data.info();
@@ -185,8 +180,8 @@ void IBModel<IBTrait, SrcTrait>::determine_root_proc(
     }
 }
 
-template <typename IBTrait, typename SrcTrait>
-int IBModel<IBTrait, SrcTrait>::num_velocity_points() const
+template <typename GeomTrait>
+int IBModel<GeomTrait>::num_velocity_points() const
 {
     auto& info = m_data.info();
     auto& grid = m_data.grid();

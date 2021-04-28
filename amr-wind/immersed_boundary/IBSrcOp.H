@@ -10,11 +10,11 @@ namespace amr_wind {
 namespace ib {
 namespace ops {
 
-template <typename IBTrait>
-class IBSrcOp<IBTrait, IBSrcLine>
+template <typename GeomTrait>
+class IBSrcOp<GeomTrait>
 {
 private:
-    typename IBTrait::DataType& m_data;
+    typename GeomTrait::DataType& m_data;
     Field& m_ib_src;
 
     DeviceVecList m_pos;
@@ -25,7 +25,7 @@ private:
     void copy_to_device();
 
 public:
-    IBSrcOp(typename IBTrait::DataType& data)
+    IBSrcOp(typename GeomTrait::DataType& data)
         : m_data(data)
         , m_ib_src(m_data.sim().repo().get_field("ib_src_term"))
     {}
@@ -38,8 +38,8 @@ public:
         const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom);
 };
 
-template <typename IBTrait>
-void IBSrcOp<IBTrait, IBSrcLine>::initialize()
+template <typename GeomTrait>
+void IBSrcOp<GeomTrait>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
@@ -48,8 +48,8 @@ void IBSrcOp<IBTrait, IBSrcLine>::initialize()
     m_orientation.resize(grid.orientation.size());
 }
 
-template <typename IBTrait>
-void IBSrcOp<IBTrait, IBSrcLine>::copy_to_device()
+template <typename GeomTrait>
+void IBSrcOp<GeomTrait>::copy_to_device()
 {
     const auto& grid = m_data.grid();
 
@@ -67,11 +67,11 @@ void IBSrcOp<IBTrait, IBSrcLine>::copy_to_device()
         grid.orientation.end(), m_orientation.begin());
 }
 
-template <typename IBTrait>
-void IBSrcOp<IBTrait, IBSrcLine>::operator()(
+template <typename GeomTrait>
+void IBSrcOp<GeomTrait>::operator()(
     const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
-    const std::string fname = IBTrait::identifier() + IBSrcLine::identifier();
+    const std::string fname = GeomTrait::identifier();
     BL_PROFILE("amr-wind::IBSrcOp<" + fname + ">");
 
     const auto& bx = mfi.tilebox();
