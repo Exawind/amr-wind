@@ -14,7 +14,6 @@ time.use_force_cfl    = false
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = 1
 time.plot_interval            =   10       # Steps between plot files
 time.checkpoint_interval           =  -1000       # Steps between checkpoint files
 

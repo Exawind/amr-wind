@@ -13,7 +13,6 @@ time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
-io.KE_int = 0
 time.plot_interval            =  10       # Steps between plot files
 time.checkpoint_interval      =  -1       # Steps between checkpoint files
 

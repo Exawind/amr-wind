@@ -352,7 +352,7 @@ as initial conditions and discretization options.
 
    ::
 
-     incflo.post_processing     = sampling
+     incflo.post_processing     = sampling ke
      sampling.output_frequency  = 5
      sampling.labels            = line1 line2
      sampling.fields            = velocity
@@ -364,6 +364,8 @@ as initial conditions and discretization options.
      sampling.line2.num_points  = 21
      sampling.line2.start       = 500.0 500.0 10.0
      sampling.line2.end         = 500.0 500.0 210.0
+     ke.type                    = KineticEnergy
+     ke.output_frequency        = 2
 
    In the above example, the code will read the parameters with keyword
    ``sampling`` to initialize user-defined probes.
@@ -1064,8 +1066,8 @@ Example::
 
 .. _inputs_sampling:
    
-Section: Sampling
-~~~~~~~~~~~~~~~~~~~~~
+Section: Post Processing and Sampling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section controls data-sampling (post-processing) actions supported within
 AMR-wind. Note that while the input parameters use the keyword ``sampling``, the
@@ -1166,3 +1168,26 @@ Example::
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
+
+Total Kinetic Energy 
+`````````````````````
+
+The ``KineticEnergy`` sampling integrates the kinetic energy over the domain 
+and outputs it to a text file identified using the label and output in 
+the post_processing directory.
+Example::
+
+  sampling.ke1.type              = KineticEnergy
+  sampling.ke2.output_frequency  = 2
+
+Total Enstrophy
+`````````````````
+
+The ``Enstrophy`` sampling integrates the enstrophy over the domain and
+outputs it to a text file identified using the label and output in 
+the post_processing directory.
+
+Example::
+
+  sampling.enst1.type              = Enstrophy
+  sampling.enst2.output_frequency  = 2

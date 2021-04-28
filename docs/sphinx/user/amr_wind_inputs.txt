@@ -109,7 +109,7 @@ nodal_proj.mg_rtol                          = 1.0e-6
 nodal_proj.mg_atol                          = 1.0e-12
 
 # Post processing algorithms
-incflo.post_processing = sampling
+incflo.post_processing = sampling enstrophy ke
 
 # Data probe sampling
 sampling.output_frequency = 1
@@ -130,3 +130,9 @@ sampling.p_h.origin = 0.0 0.0 50.0
 sampling.p_h.num_points = 288 288
 sampling.p_h.normal = 0.0 0.0 1.0
 sampling.p_h.offsets = 0.0 50.0 150.0
+
+# kinetic energy and enstrophy integration
+ke.type = KineticEnergy
+ke.output_frequency = 1
+enstrophy.type = Enstrophy
+enstrophy.output_frequency = 1
