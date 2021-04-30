@@ -30,11 +30,7 @@ add_subdirectory(transport_models)
 add_subdirectory(turbulence)
 add_subdirectory(physics)
 add_subdirectory(overset)
-<<<<<<< HEAD
 add_subdirectory(immersed_boundary)
-=======
-add_subdirectory(immersed_boundaries)
->>>>>>> adding vof unit test for the normal vector
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})
