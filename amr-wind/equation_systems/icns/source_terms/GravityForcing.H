@@ -16,7 +16,7 @@ class GravityForcing : public MomentumSource::Register<GravityForcing>
 public:
     static const std::string identifier() { return "GravityForcing"; }
 
-    GravityForcing(const CFDSim& sim);
+    explicit GravityForcing(const CFDSim& sim);
 
     virtual ~GravityForcing();
 

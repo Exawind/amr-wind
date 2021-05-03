@@ -30,7 +30,7 @@ struct AdvectionOp<VOF, fvm::Godunov>
             VOF::ndim == 1, "Invalid number of components for scalar");
 
         auto& repo = fields.repo;
-        auto& geom = repo.mesh().Geom();
+        const auto& geom = repo.mesh().Geom();
 
         auto& dof_field = fields.field;
         //

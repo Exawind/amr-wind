@@ -388,7 +388,7 @@ protected:
 
     void allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
 
-    void allocate_field_data(IntField& field);
+    void allocate_field_data(const IntField& field);
 
     void allocate_field_data(
         const amrex::BoxArray& ba,

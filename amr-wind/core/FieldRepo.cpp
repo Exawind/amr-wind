@@ -352,7 +352,7 @@ void FieldRepo::allocate_field_data(
         amrex::MFInfo(), *level_data.m_int_fact);
 }
 
-void FieldRepo::allocate_field_data(IntField& field)
+void FieldRepo::allocate_field_data(const IntField& field)
 {
     for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
         allocate_field_data(lev, field, *m_leveldata[lev]);

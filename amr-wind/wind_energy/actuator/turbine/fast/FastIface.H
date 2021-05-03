@@ -22,7 +22,7 @@ class FastIface : public ::amr_wind::ExtSolver::Register<FastIface>
 public:
     static std::string identifier() { return "OpenFAST"; }
 
-    FastIface(const ::amr_wind::CFDSim& sim);
+    explicit FastIface(const ::amr_wind::CFDSim& sim);
 
     virtual ~FastIface();
 

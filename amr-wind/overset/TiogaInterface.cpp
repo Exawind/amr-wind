@@ -20,7 +20,7 @@ namespace {
  *  \end{cases}
  *  \f}
  */
-void iblank_to_mask(const IntField& iblank, IntField& maskf)
+void iblank_to_mask(const IntField& iblank, const IntField& maskf)
 {
     const auto& nlevels = iblank.repo().mesh().finestLevel() + 1;
 
@@ -286,8 +286,8 @@ void TiogaInterface::amr_to_tioga_mesh()
 
     // Reset local patch counter
     ilp = 0;
-    auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
-    auto& ibnode = m_sim.repo().get_int_field("iblank_node");
+    const auto& ibcell = m_sim.repo().get_int_field("iblank_cell");
+    const auto& ibnode = m_sim.repo().get_int_field("iblank_node");
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& ad = *m_amr_data;
         auto& ibfab = ibcell(lev);
