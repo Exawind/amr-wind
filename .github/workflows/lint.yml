@@ -67,8 +67,8 @@ jobs:
           submodules: true
       - name: Dependencies
         run: |
-          sudo apt-get install -y clang-tidy-9
-          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-9 100
+          sudo apt-get install -y clang-tidy-10
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-10 100
       - name: Configure
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
@@ -87,7 +87,7 @@ jobs:
         working-directory: build-clang-tidy
         run: |
           cmake --build . --parallel ${{env.NPROCS}} 2> clang-tidy-full-report.txt
-          cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | sort -nr | \
+          cat clang-tidy-full-report.txt | grep "warning:" | grep -v "submods" | sort | uniq | \
             awk 'BEGIN{i=0}{print $0}{i++}END{print "Warnings: "i}' > clang-tidy-ci-report.txt
       - name: Full report
         working-directory: build-clang-tidy
@@ -97,3 +97,5 @@ jobs:
         run: |
           echo "::add-matcher::.github/problem-matchers/gcc.json"
           cat clang-tidy-ci-report.txt
+          export return=$(tail -n 1 clang-tidy-ci-report.txt | awk '{print $2}')
+          exit 0
