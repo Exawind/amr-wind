@@ -386,7 +386,8 @@ protected:
         LevelDataHolder& fdata,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
-    void allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
+    void
+    allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
 
     void allocate_field_data(const IntField& field);
 
