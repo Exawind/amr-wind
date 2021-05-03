@@ -23,7 +23,7 @@ class VorticityMagRefinement
 public:
     static std::string identifier() { return "VorticityMagRefinement"; }
 
-    VorticityMagRefinement(const CFDSim& sim);
+    explicit VorticityMagRefinement(const CFDSim& sim);
 
     virtual ~VorticityMagRefinement() = default;
 

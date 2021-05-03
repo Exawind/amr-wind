@@ -178,7 +178,7 @@ namespace amr_wind_tests {
 class ActPhysicsTest : public ::amr_wind::actuator::Actuator
 {
 public:
-    ActPhysicsTest(::amr_wind::CFDSim& sim)
+    explicit ActPhysicsTest(::amr_wind::CFDSim& sim)
         : ::amr_wind::actuator::Actuator(sim)
     {}
 
