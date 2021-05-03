@@ -372,7 +372,7 @@ protected:
     //! Allocate field data for a single level outside of regrid
     void allocate_field_data(
         int lev,
-        Field& field,
+        const Field& field,
         LevelDataHolder& fdata,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
@@ -386,7 +386,7 @@ protected:
         LevelDataHolder& fdata,
         const amrex::FabFactory<amrex::FArrayBox>& factory);
 
-    void allocate_field_data(int lev, IntField& field, LevelDataHolder& fdata);
+    void allocate_field_data(int lev, const IntField& field, LevelDataHolder& fdata);
 
     void allocate_field_data(IntField& field);
 

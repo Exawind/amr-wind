@@ -55,7 +55,6 @@ TEST_F(ActuatorTest, act_container)
     const int nprocs = amrex::ParallelDescriptor::NProcs();
     if (nprocs > 2) {
         GTEST_SKIP();
-        return;
     }
 
     const int iproc = amrex::ParallelDescriptor::MyProc();

@@ -60,7 +60,6 @@ TEST(Airfoil, read_txt_file)
     auto af = AirfoilLoader::load_text_file(ss);
     EXPECT_EQ(af->num_entries(), 6);
     EXPECT_NEAR(af->aoa().front(), -1.0 * ::amr_wind::utils::pi(), 1.0e-12);
-    // cppcheck-suppress unreadVariable
     EXPECT_NEAR(af->aoa().back(), 1.0 * ::amr_wind::utils::pi(), 1.0e-12);
 }
 
@@ -72,7 +71,6 @@ TEST(Airfoil, read_openfast_file)
     auto af = AirfoilLoader::load_openfast_airfoil(ss);
     EXPECT_EQ(af->num_entries(), 6);
     EXPECT_NEAR(af->aoa().front(), -1.0 * ::amr_wind::utils::pi(), 1.0e-12);
-    // cppcheck-suppress unreadVariable
     EXPECT_NEAR(af->aoa().back(), ::amr_wind::utils::radians(-150.0), 1.0e-12);
 }
 

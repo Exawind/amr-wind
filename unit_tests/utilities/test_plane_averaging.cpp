@@ -72,7 +72,7 @@ void add_linear(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
     const amrex::Geometry& geom,
     const amrex::Box& bx,
-    amrex::Array4<amrex::Real>& velocity)
+    const amrex::Array4<amrex::Real>& velocity)
 {
     auto xlo = geom.ProbLoArray();
     auto dx = geom.CellSizeArray();
@@ -182,7 +182,7 @@ void add_periodic(
     amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> a,
     const amrex::Geometry& geom,
     const amrex::Box& bx,
-    amrex::Array4<amrex::Real>& velocity)
+    const amrex::Array4<amrex::Real>& velocity)
 {
     auto xlo = geom.ProbLoArray();
     auto dx = geom.CellSizeArray();

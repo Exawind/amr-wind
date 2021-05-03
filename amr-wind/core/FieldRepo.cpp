@@ -296,7 +296,7 @@ void FieldRepo::allocate_field_data(
 
 void FieldRepo::allocate_field_data(
     int lev,
-    Field& field,
+    const Field& field,
     LevelDataHolder& level_data,
     const amrex::FabFactory<amrex::FArrayBox>& factory)
 {
@@ -339,7 +339,7 @@ void FieldRepo::allocate_field_data(
 }
 
 void FieldRepo::allocate_field_data(
-    int lev, IntField& field, LevelDataHolder& level_data)
+    int lev, const IntField& field, LevelDataHolder& level_data)
 {
     auto& fab_vec = level_data.m_int_fabs;
     AMREX_ASSERT(fab_vec.size() == field.id());

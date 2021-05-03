@@ -86,7 +86,7 @@ void MacProjOp::init_projector(const amrex::Real beta) noexcept
     m_options(*m_mac_proj);
 
     auto& pressure = m_repo.get_field("p");
-    auto& bctype = pressure.bc_type();
+    const auto& bctype = pressure.bc_type();
 
     m_mac_proj->setDomainBC(
         get_projection_bc(

@@ -95,7 +95,7 @@ Field::~Field() = default;
 
 Field& Field::state(const FieldState fstate)
 {
-    auto& fstates = m_info->m_states;
+    const auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
     AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];
@@ -103,7 +103,7 @@ Field& Field::state(const FieldState fstate)
 
 const Field& Field::state(const FieldState fstate) const
 {
-    auto& fstates = m_info->m_states;
+    const auto& fstates = m_info->m_states;
     const int fint = static_cast<int>(fstate);
     AMREX_ASSERT(fstates[fint] != nullptr);
     return *fstates[fint];

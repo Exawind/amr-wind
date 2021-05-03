@@ -156,7 +156,6 @@ TEST(VectorSpace, vector_create)
 
     EXPECT_NEAR(v1.x(), v6.x(), tol);
     EXPECT_NEAR(v1.y(), v6.y(), tol);
-    // cppcheck-suppress unreadVariable
     EXPECT_NEAR(v1.z(), v6.z(), tol);
 
     test_vector_create_impl();
@@ -179,7 +178,6 @@ TEST(VectorSpace, vector_ops)
 
     EXPECT_NEAR((v1 & v2), 50.0 * v21, tol);
     EXPECT_NEAR((v1 & vs::Vector::khat()), 0.0, tol);
-    // cppcheck-suppress unreadVariable
     EXPECT_NEAR(vs::mag_sqr((v1 + v2) - vs::Vector{11.0, 22.0, 0.0}), 0.0, tol);
 }
 
