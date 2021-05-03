@@ -15,7 +15,7 @@ class SynthTurbForcing : public MomentumSource::Register<SynthTurbForcing>
 public:
     static const std::string identifier() { return "SynthTurbForcing"; }
 
-    SynthTurbForcing(const CFDSim&);
+    explicit SynthTurbForcing(const CFDSim&);
 
     virtual ~SynthTurbForcing();
 

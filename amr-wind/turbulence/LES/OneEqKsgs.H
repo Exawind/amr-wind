@@ -14,7 +14,7 @@ template <typename Transport>
 class OneEqKsgs : public TurbModelBase<Transport>
 {
 public:
-    OneEqKsgs(CFDSim& sim);
+    explicit OneEqKsgs(CFDSim& sim);
 
     virtual ~OneEqKsgs();
 
@@ -49,7 +49,7 @@ public:
         return "OneEqKsgsM84-" + Transport::identifier();
     }
 
-    OneEqKsgsM84(CFDSim& sim);
+    explicit OneEqKsgsM84(CFDSim& sim);
 
     virtual ~OneEqKsgsM84();
 

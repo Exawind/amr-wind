@@ -22,7 +22,7 @@ class CurvatureRefinement
 public:
     static std::string identifier() { return "CurvatureRefinement"; }
 
-    CurvatureRefinement(const CFDSim& sim);
+    explicit CurvatureRefinement(const CFDSim& sim);
 
     virtual ~CurvatureRefinement() = default;
 
