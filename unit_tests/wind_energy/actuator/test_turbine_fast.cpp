@@ -62,7 +62,7 @@ protected:
 class ActTurbPhyTest : public ::amr_wind::actuator::Actuator
 {
 public:
-    ActTurbPhyTest(::amr_wind::CFDSim& sim)
+    explicit ActTurbPhyTest(::amr_wind::CFDSim& sim)
         : ::amr_wind::actuator::Actuator(sim)
     {}
 

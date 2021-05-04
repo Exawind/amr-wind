@@ -42,7 +42,7 @@ TEST_F(FieldOpsTest, compute_max_magnitude)
     initialize_mesh();
     auto& frepo = mesh().field_repo();
     auto& field = frepo.declare_field("scalar_field", 3, 0, 2);
-    auto& geom = mesh().Geom();
+    const auto& geom = mesh().Geom();
     const int nlevels = mesh().finestLevel() + 1;
 
     initialise_default_fields(field, geom, nlevels);
