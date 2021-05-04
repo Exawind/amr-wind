@@ -144,7 +144,8 @@ private:
     int m_out_freq{10};
 
 public:
-    ProcessOutputsOp(typename ActTrait::DataType& data) : m_data(data) {}
+    explicit ProcessOutputsOp(typename ActTrait::DataType& data) : m_data(data)
+    {}
 
     void read_io_options(const utils::ActParser& pp)
     {

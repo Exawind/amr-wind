@@ -25,7 +25,7 @@ class FieldRefinement : public RefinementCriteria::Register<FieldRefinement>
 public:
     static std::string identifier() { return "FieldRefinement"; }
 
-    FieldRefinement(const CFDSim& sim);
+    explicit FieldRefinement(const CFDSim& sim);
 
     virtual ~FieldRefinement() = default;
 

@@ -22,7 +22,7 @@ class GradientMagRefinement
 public:
     static std::string identifier() { return "GradientMagRefinement"; }
 
-    GradientMagRefinement(const CFDSim& sim);
+    explicit GradientMagRefinement(const CFDSim& sim);
 
     virtual ~GradientMagRefinement() = default;
 

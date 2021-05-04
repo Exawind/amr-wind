@@ -17,7 +17,7 @@ public:
 
     static const std::string identifier() { return "ConstTransport"; }
 
-    ConstTransport(CFDSim& sim) : m_repo(sim.repo())
+    explicit ConstTransport(CFDSim& sim) : m_repo(sim.repo())
     {
         amrex::ParmParse pp("transport");
         pp.query("viscosity", m_mu);

@@ -49,7 +49,7 @@ class TiogaInterface : public OversetManager::Register<TiogaInterface>
 public:
     static std::string identifier() { return "TIOGA"; }
 
-    TiogaInterface(CFDSim& sim);
+    explicit TiogaInterface(CFDSim& sim);
 
     /** Perform one-time initialization actions.
      *

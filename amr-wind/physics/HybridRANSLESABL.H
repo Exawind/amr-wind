@@ -16,7 +16,7 @@ class HybridRANSLESABL : public Physics::Register<HybridRANSLESABL>
 public:
     static const std::string identifier() { return "HybridRANSLESABL"; }
 
-    HybridRANSLESABL(CFDSim& sim);
+    explicit HybridRANSLESABL(CFDSim& sim);
 
     virtual ~HybridRANSLESABL() = default;
 

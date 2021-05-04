@@ -39,7 +39,7 @@ public:
         return "KOmegaSST-" + Transport::identifier();
     }
 
-    KOmegaSST(CFDSim& sim);
+    explicit KOmegaSST(CFDSim& sim);
 
     virtual ~KOmegaSST();
 

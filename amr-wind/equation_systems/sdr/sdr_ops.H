@@ -48,7 +48,7 @@ struct PostSolveOp<SDR>
 template <typename Scheme>
 struct FieldRegOp<SDR, Scheme>
 {
-    FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {

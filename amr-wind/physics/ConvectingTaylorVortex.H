@@ -91,7 +91,7 @@ class ConvectingTaylorVortex : public Physics::Register<ConvectingTaylorVortex>
 public:
     static const std::string identifier() { return "ConvectingTaylorVortex"; }
 
-    ConvectingTaylorVortex(const CFDSim& sim);
+    explicit ConvectingTaylorVortex(const CFDSim& sim);
 
     virtual ~ConvectingTaylorVortex() = default;
 

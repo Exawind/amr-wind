@@ -20,7 +20,7 @@ class ZalesakDisk : public Physics::Register<ZalesakDisk>
 public:
     static const std::string identifier() { return "ZalesakDisk"; }
 
-    ZalesakDisk(CFDSim& sim);
+    explicit ZalesakDisk(CFDSim& sim);
 
     virtual ~ZalesakDisk() = default;
 

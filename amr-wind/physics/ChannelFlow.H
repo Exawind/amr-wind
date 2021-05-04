@@ -16,7 +16,7 @@ class ChannelFlow : public Physics::Register<ChannelFlow>
 public:
     static const std::string identifier() { return "ChannelFlow"; }
 
-    ChannelFlow(CFDSim& sim);
+    explicit ChannelFlow(CFDSim& sim);
 
     virtual ~ChannelFlow() = default;
 

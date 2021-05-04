@@ -199,10 +199,10 @@ void incflo::ApplyPredictor(bool incremental_projection)
         }
     }
 
-    // *************************************************************************************
-    // Compute explicit viscous term
-    // *************************************************************************************
     if (need_divtau()) {
+        // *************************************************************************************
+        // Compute explicit viscous term
+        // *************************************************************************************
         // Reuse existing buffer to avoid creating new multifabs
         amr_wind::field_ops::copy(
             velocity_new, velocity_old, 0, 0, velocity_new.num_comp(), 1);
@@ -218,12 +218,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
             amr_wind::field_ops::add(
                 velocity_forces, divtau, 0, 0, AMREX_SPACEDIM, 0);
         }
-    }
-
-    // *************************************************************************************
-    // Compute explicit diffusive terms
-    // *************************************************************************************
-    if (need_divtau()) {
+        // *************************************************************************************
+        // Compute explicit diffusive terms
+        // *************************************************************************************
         for (auto& eqn : scalar_eqns()) {
             auto& field = eqn->fields().field;
             // Reuse existing buffer to avoid creating new multifabs

@@ -15,7 +15,7 @@ class EkmanSpiral : public Physics::Register<EkmanSpiral>
 public:
     static const std::string identifier() { return "EkmanSpiral"; }
 
-    EkmanSpiral(const CFDSim& sim);
+    explicit EkmanSpiral(const CFDSim& sim);
 
     virtual ~EkmanSpiral() = default;
 

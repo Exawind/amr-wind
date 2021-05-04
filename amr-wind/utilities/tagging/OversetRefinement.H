@@ -10,7 +10,7 @@ class OversetRefinement : public RefinementCriteria::Register<OversetRefinement>
 public:
     static std::string identifier() { return "OversetRefinement"; }
 
-    OversetRefinement(const CFDSim& sim);
+    explicit OversetRefinement(const CFDSim& sim);
 
     virtual ~OversetRefinement() = default;
 

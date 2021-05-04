@@ -30,7 +30,7 @@ public:
         return "KOmegaSSTIDDES-" + Transport::identifier();
     }
 
-    KOmegaSSTIDDES(CFDSim& sim);
+    explicit KOmegaSSTIDDES(CFDSim& sim);
 
     virtual ~KOmegaSSTIDDES();
 

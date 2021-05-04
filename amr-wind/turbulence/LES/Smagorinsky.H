@@ -20,7 +20,7 @@ public:
         return "Smagorinsky-" + Transport::identifier();
     }
 
-    Smagorinsky(CFDSim& sim);
+    explicit Smagorinsky(CFDSim& sim);
 
     //! Model name for debugging purposes
     virtual std::string model_name() const override { return "Smagorinsky"; }

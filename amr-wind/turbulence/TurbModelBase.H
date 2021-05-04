@@ -96,7 +96,7 @@ template <typename Transport>
 class TurbModelBase : public TurbModel<Transport>
 {
 public:
-    TurbModelBase(CFDSim& sim)
+    explicit TurbModelBase(CFDSim& sim)
         : TurbModel<Transport>(sim)
         , m_mu_turb(sim.repo().declare_field("mu_turb", 1, 1, 1))
     {

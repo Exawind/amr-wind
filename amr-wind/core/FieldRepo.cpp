@@ -296,7 +296,7 @@ void FieldRepo::allocate_field_data(
 
 void FieldRepo::allocate_field_data(
     int lev,
-    Field& field,
+    const Field& field,
     LevelDataHolder& level_data,
     const amrex::FabFactory<amrex::FArrayBox>& factory)
 {
@@ -339,7 +339,7 @@ void FieldRepo::allocate_field_data(
 }
 
 void FieldRepo::allocate_field_data(
-    int lev, IntField& field, LevelDataHolder& level_data)
+    int lev, const IntField& field, LevelDataHolder& level_data)
 {
     auto& fab_vec = level_data.m_int_fabs;
     AMREX_ASSERT(fab_vec.size() == field.id());
@@ -352,7 +352,7 @@ void FieldRepo::allocate_field_data(
         amrex::MFInfo(), *level_data.m_int_fact);
 }
 
-void FieldRepo::allocate_field_data(IntField& field)
+void FieldRepo::allocate_field_data(const IntField& field)
 {
     for (int lev = 0; lev <= m_mesh.finestLevel(); ++lev) {
         allocate_field_data(lev, field, *m_leveldata[lev]);

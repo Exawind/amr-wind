@@ -23,7 +23,7 @@ class QCriterionRefinement
 public:
     static std::string identifier() { return "QCriterionRefinement"; }
 
-    QCriterionRefinement(const CFDSim& sim);
+    explicit QCriterionRefinement(const CFDSim& sim);
 
     virtual ~QCriterionRefinement() = default;
 
