@@ -20,7 +20,7 @@ void initialize_velocity(
     amrex::Gpu::DeviceVector<amrex::Real>& cu,
     amrex::Gpu::DeviceVector<amrex::Real>& cv,
     amrex::Gpu::DeviceVector<amrex::Real>& cw,
-    amrex::Array4<amrex::Real>& vel_arr)
+    const amrex::Array4<amrex::Real>& vel_arr)
 {
     auto problo = geom.ProbLoArray();
     auto probhi = geom.ProbHiArray();

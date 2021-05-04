@@ -105,9 +105,9 @@ void ThirdMomentAveraging::operator()()
 
     m_last_updated_index = m_plane_average1.last_updated_index();
 
-    auto& field1 = m_plane_average1.field();
-    auto& field2 = m_plane_average2.field();
-    auto& field3 = m_plane_average3.field();
+    const auto& field1 = m_plane_average1.field();
+    const auto& field2 = m_plane_average2.field();
+    const auto& field3 = m_plane_average3.field();
 
     std::fill(m_third_moments_line.begin(), m_third_moments_line.end(), 0.0);
 

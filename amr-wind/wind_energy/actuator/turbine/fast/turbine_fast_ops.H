@@ -130,7 +130,7 @@ struct InitDataOp<TurbineFast, SrcTrait>
         // restart which is only known after reading the checkpoint file.
         check_fast_sim_time(data);
 
-        auto& info = data.info();
+        const auto& info = data.info();
         auto& tdata = data.meta();
 
         // Initialize our communicator for broadcasting data
@@ -550,7 +550,9 @@ private:
     int m_out_freq{10};
 
 public:
-    ProcessOutputsOp(typename TurbineFast::DataType& data) : m_data(data) {}
+    explicit ProcessOutputsOp(typename TurbineFast::DataType& data)
+        : m_data(data)
+    {}
 
     void read_io_options(const utils::ActParser& pp)
     {

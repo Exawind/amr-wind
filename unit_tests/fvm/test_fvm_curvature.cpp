@@ -16,7 +16,7 @@ void initialize_scalar(
     const amrex::Box& bx,
     const int pdegree,
     amrex::Gpu::DeviceVector<amrex::Real>& c,
-    amrex::Array4<amrex::Real>& scalar_arr)
+    const amrex::Array4<amrex::Real>& scalar_arr)
 {
     auto problo = geom.ProbLoArray();
     auto probhi = geom.ProbHiArray();

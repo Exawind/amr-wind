@@ -125,6 +125,17 @@ if(AMR_WIND_ENABLE_MASA)
   target_link_libraries(${amr_wind_lib_name} PUBLIC MASA::MASA)
 endif()
 
+if (AMR_WIND_ENABLE_OPENFAST)
+  set(CMAKE_PREFIX_PATH ${OPENFAST_DIR} ${CMAKE_PREFIX_PATH})
+  find_package(OpenFAST QUIET REQUIRED)
+  if(OpenFAST_FOUND)
+    message(STATUS "Found OpenFAST = ${OPENFAST_DIR}")
+  endif()
+  target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
+  target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
+  target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})
+endif()
+
 #Build amr-wind and link to amrex library
 generate_version_info()
 add_subdirectory(amr-wind)
