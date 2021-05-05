@@ -357,7 +357,7 @@ as initial conditions and discretization options.
    When present, this parameter contains list of sections to be read with
    specific post-postprocessing actions. Currently, the code supports
    :ref:`Sampling <inputs_sampling>`, :ref:`KineticEnergy <inputs_ke>`,
-   and :ref:`Enstrophy <inputs_enst>`
+   :ref:`Enstrophy <inputs_enst>` and :ref:`Averaging <inputs_averaging>`
 
    ::
 
