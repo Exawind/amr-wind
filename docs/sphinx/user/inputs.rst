@@ -47,6 +47,7 @@ Section                 Description
 ``MLMG options``        Multi-Level Multi-Grid Linear solver options
 ``Tagging``             Static and dynamic refinement options
 ``Sampling``            Data probes to sample field data during simulations
+``Averaging``           Time averaging and correlations
 ======================= ============================================================
 
 This section documents the parameters available within each section.
@@ -1177,6 +1178,52 @@ Example::
 
 The first line of the file contains the total number of probes for this set.
 This is followed by the coordinates (three real numbers), one line per probe.
+
+.. _inputs_averaging:
+   
+Section: Averaging
+~~~~~~~~~~~~~~~~~~
+
+This section controls data-averaging actions supported within
+AMR-wind. Time-averaging can be done to compute the means of any variable and 
+is denoted by ``ReAveraging``. The code will add the prefix ``_mean`` 
+to any variable that is time-averaged.
+Reynolds stresses can also be computed using the ``ReynoldsStress`` avreaging 
+type.
+Note that to compute the Reynolds stresses, the mean of the velocity
+field is required.
+
+.. input_param:: averaging.averaging_window
+
+   **type:** Real, required
+   
+   Specify the averaging window over which the time-averaging is done.
+
+.. input_param:: averaging.averaging_start_time
+
+   **type:** Real, optional, default = 0
+
+   Specify the time to start computing averages.
+
+.. input_param:: averaging.averaging_stop_time
+
+   **type:** Real, optional, default = simulation end time
+
+   Specify the time to stop time-averaging.
+
+Example::
+
+   averaging.type = TimeAveraging
+   averaging.labels = means  stress
+
+   averaging.averaging_window = 10.0
+   averaging.averaging_start_time = 0.0
+
+   averaging.means.fields = velocity
+   averaging.means.averaging_type = ReAveraging
+
+   averaging.stress.fields = velocity
+   averaging.stress.averaging_type = ReynoldsStress
 
   
 .. _inputs_ke:
