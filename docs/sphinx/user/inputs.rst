@@ -1185,7 +1185,11 @@ Section: Averaging
 ~~~~~~~~~~~~~~~~~~
 
 This section controls data-averaging actions supported within
-AMR-wind. Time-averaging can be done to compute the means of any variable and 
+AMR-wind. 
+Averaging is included as one of the identifiers of 
+post-processing by
+``incflo.post_processing = averaging``.
+Time-averaging can be done to compute the means of any variable and 
 is denoted by ``ReAveraging``. The code will add the prefix ``_mean`` 
 to any variable that is time-averaged.
 Reynolds stresses can also be computed using the ``ReynoldsStress`` avreaging 
@@ -1212,6 +1216,8 @@ field is required.
    Specify the time to stop time-averaging.
 
 Example::
+
+   incflo.post_processing = averaging
 
    averaging.type = TimeAveraging
    averaging.labels = means  stress
