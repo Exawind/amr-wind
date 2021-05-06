@@ -134,7 +134,7 @@ public:
 
     void update_velocities(const VecSlice& vel) override
     {
-        std::copy(vel.begin(), vel.end(), m_data.grid().vel.begin());
+        std::copy(vel.begin(), vel.end(), m_data.grid().forcing_vel.begin());
         ops::UpdateVelOp<GeomTrait>()(m_data);
     }
 
@@ -186,7 +186,7 @@ int IBModel<GeomTrait>::num_velocity_points() const
     auto& info = m_data.info();
     auto& grid = m_data.grid();
 
-    return (info.sample_vel_in_proc) ? grid.vel.size() : 0;
+    return (info.sample_vel_in_proc) ? grid.forcing_vel.size() : 0;
 }
 
 } // namespace ib

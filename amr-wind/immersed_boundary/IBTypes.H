@@ -40,17 +40,14 @@ struct IBGrid
     //! Position vectors of the immersed boundary forcing points on the grid
     VecList pos;
 
-    //! Force vector at the forcing points
-    VecList force;
-
-    //! Transformation matrix at the forcing points
-    TensorList orientation;
-
     //! Position vectors for the points where velocity is sampled
     VecList vel_pos;
 
-    //! Velocity vector at the sampled locations
-    VecList vel;
+    //! Desired velocity vector at the forcing points
+    VecList forcing_vel;
+
+    //! Interpolated velocity vector at the sampled locations
+    VecList intrp_vel;
 
     /** Helper method to resize the data arrays defined on the grid
      *
@@ -59,11 +56,11 @@ struct IBGrid
      */
     void resize(int num_force_pts, int num_vel_pts)
     {
+        //FIXME: Not sure if it makes sense for pos and vel_pos to be of different sizes
         pos.resize(num_force_pts);
-        force.resize(num_force_pts);
-        orientation.resize(num_force_pts);
+        forcing_vel.resize(num_vel_pts);
         vel_pos.resize(num_vel_pts);
-        vel.resize(num_vel_pts);
+        intrp_vel.resize(num_vel_pts);
     }
 
     /** Convenience function to resize both force/velocity data to same
