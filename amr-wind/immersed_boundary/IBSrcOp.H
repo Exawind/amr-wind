@@ -18,9 +18,8 @@ private:
     Field& m_ib_src;
 
     DeviceVecList m_pos;
-    DeviceVecList m_force;
-    DeviceVecList m_epsilon;
-    DeviceTensorList m_orientation;
+    DeviceVecList m_forcing_vel;
+    DeviceVecList m_intrp_vel;
 
     void copy_to_device();
 
@@ -42,9 +41,8 @@ void IBSrcOp<GeomTrait>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
-    m_force.resize(grid.force.size());
-    m_epsilon.resize(grid.epsilon.size());
-    m_orientation.resize(grid.orientation.size());
+    m_forcing_vel.resize(grid.forcing_vel.size());
+    m_intrp_vel.resize(grid.intrp_vel.size());
 }
 
 template <typename GeomTrait>
@@ -56,14 +54,11 @@ void IBSrcOp<GeomTrait>::copy_to_device()
         amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
         m_pos.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.force.begin(), grid.force.end(),
-        m_force.begin());
+        amrex::Gpu::hostToDevice, grid.forcing_vel.begin(), grid.forcing_vel.end(),
+        m_forcing_vel.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.epsilon.begin(), grid.epsilon.end(),
-        m_epsilon.begin());
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.orientation.begin(),
-        grid.orientation.end(), m_orientation.begin());
+        amrex::Gpu::hostToDevice, grid.intrp_vel.begin(), grid.intrp_vel.end(),
+        m_intrp_vel.begin());
 }
 
 template <typename GeomTrait>
@@ -73,44 +68,40 @@ void IBSrcOp<GeomTrait>::operator()(
     const std::string fname = GeomTrait::identifier();
     BL_PROFILE("amr-wind::IBSrcOp<" + fname + ">");
 
-    // Euler mesh stuff
+    const amrex::Real dt = m_data.sim().deltaT();
+
     const auto& bx = mfi.tilebox();
-    const auto& sarr = m_ib_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
+    const amrex::Real dV = dx[0]*dx[1]*dx[2];
 
-    // Lagrangian body stuff
-    const int npts = m_pos.size();
+    // extract relevant fields
     const auto* pos = m_pos.data();
-    const auto* force = m_force.data();
-    const auto* eps = m_epsilon.data();
-    const auto* tmat = m_orientation.data();
+    const auto* forcing_vel = m_forcing_vel.data();
+    const auto* intrp_vel = m_intrp_vel.data();
+    const auto& sarr = m_ib_src(lev).array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const vs::Vector cc{
+        const vs::Vector ijk_x{
             problo[0] + (i + 0.5) * dx[0],
             problo[1] + (j + 0.5) * dx[1],
-            problo[2] + (k + 0.5) * dx[2],
+            problo[2] + (k + 0.5) * dx[2]
         };
 
-        amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
-        for (int ip = 0; ip < npts; ++ip) {
-            const auto dist = cc - pos[ip];
-            const auto dist_local = tmat[ip] & dist;
-            const auto dirac_delta_fac = utils::dirac_delta(dist_local, dx);
-            const auto& pforce = force[ip];
+        // loop over Lagrangian markers
+        for (int ip = 0; ip < m_pos.size(); ++ip) {
+            const auto lag_force = (forcing_vel[ip] - intrp_vel[ip]) / dt;
 
-            // FIXME: Is this the force definition for immersed boundaries ?
-            src_force[0] += dirac_delta_fac * pforce.x();
-            src_force[1] += dirac_delta_fac * pforce.y();
-            src_force[2] += dirac_delta_fac * pforce.z();
+            const auto dist_x = ijk_x - pos[ip];
+            const auto dirac_delta_fac = utils::dirac_delta(dist_x, ijk_x);
+
+            sarr(i, j, k, 0) += lag_force[0] * dirac_delta_fac * dV;
+            sarr(i, j, k, 1) += lag_force[1] * dirac_delta_fac * dV;
+            sarr(i, j, k, 2) += lag_force[2] * dirac_delta_fac * dV;
         }
-
-        sarr(i, j, k, 0) += src_force[0];
-        sarr(i, j, k, 1) += src_force[1];
-        sarr(i, j, k, 2) += src_force[2];
     });
 }
+
 } // namespace ops
 } // namespace ib
 } // namespace amr_wind
