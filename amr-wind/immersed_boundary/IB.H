@@ -29,7 +29,7 @@ class IBContainer;
 class IB : public Physics::Register<IB>
 {
 public:
-    static const std::string identifier() { return "immersed boundary"; }
+    static const std::string identifier() { return "IB"; }
 
     explicit IB(CFDSim&);
 

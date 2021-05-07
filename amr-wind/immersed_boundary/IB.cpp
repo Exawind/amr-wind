@@ -90,9 +90,9 @@ void IB::pre_advance_work()
 
 /** Set up the container for sampling velocities
  *
- *  Allocates memory and initializes the particles corresponding to immersed boundary
- *  nodes for all turbines that influence the current MPI rank. This method is
- *  invoked once during initialization and during regrid step.
+ *  Allocates memory and initializes the particles corresponding to immersed
+ * boundary nodes for all turbines that influence the current MPI rank. This
+ * method is invoked once during initialization and during regrid step.
  */
 void IB::setup_container()
 {
@@ -165,9 +165,9 @@ void IB::update_velocities()
 void IB::compute_forces()
 {
     BL_PROFILE("amr-wind::ib::IB::compute_forces");
-    for (auto& ac : m_ibs) {
-        if (ac->info().ib_in_proc) {
-            ac->compute_forces();
+    for (auto& ib : m_ibs) {
+        if (ib->info().ib_in_proc) {
+            ib->compute_forces();
         }
     }
 }

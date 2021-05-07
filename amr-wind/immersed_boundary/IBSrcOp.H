@@ -26,8 +26,7 @@ private:
 
 public:
     IBSrcOp(typename GeomTrait::DataType& data)
-        : m_data(data)
-        , m_ib_src(m_data.sim().repo().get_field("ib_src_term"))
+        : m_data(data), m_ib_src(m_data.sim().repo().get_field("ib_src_term"))
     {}
 
     void initialize();
@@ -74,11 +73,13 @@ void IBSrcOp<GeomTrait>::operator()(
     const std::string fname = GeomTrait::identifier();
     BL_PROFILE("amr-wind::IBSrcOp<" + fname + ">");
 
+    // Euler mesh stuff
     const auto& bx = mfi.tilebox();
     const auto& sarr = m_ib_src(lev).array(mfi);
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
 
+    // Lagrangian body stuff
     const int npts = m_pos.size();
     const auto* pos = m_pos.data();
     const auto* force = m_force.data();

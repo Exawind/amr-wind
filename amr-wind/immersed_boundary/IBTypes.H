@@ -97,8 +97,8 @@ struct IBInfo
     //! Flag indicating whether this is root proc
     bool is_root_proc{false};
 
-    //! Flag indicating whether this immersed boundary component is active in the current
-    //! MPI rank
+    //! Flag indicating whether this immersed boundary component is active in
+    //! the current MPI rank
     bool ib_in_proc{false};
 
     //! Flag indicating whether this process requires velocities sampled at
@@ -122,12 +122,12 @@ private:
     //! Instance of the CFD simulation environment
     CFDSim& m_sim;
 
-    //! Basic information about this immersed boundary component in relation to the
-    //! simulation (usually IBInfo)
+    //! Basic information about this immersed boundary component in relation to
+    //! the simulation (usually IBInfo)
     typename IBTrait::InfoType m_info;
 
-    //! Nodal data on the immersed boundary grid defined for this component (usually
-    //! ActGrid)
+    //! Nodal data on the immersed boundary grid defined for this component
+    //! (usually ActGrid)
     typename IBTrait::GridType m_grid;
 
     //! Additional data necessary for a given actuator type
@@ -137,8 +137,9 @@ public:
     /** Initialize the data structures
      *
      *  \param sim Instance of the CFD simulation environment
-     *  \param label Unique string identifier for this immersed boundary component
-     *  \param id Unique global integer identifier for this immersed boundary component
+     *  \param label Unique string identifier for this immersed boundary
+     * component \param id Unique global integer identifier for this immersed
+     * boundary component
      */
     IBDataHolder(CFDSim& sim, const std::string& label, const int id)
         : m_sim(sim), m_info(label, id), m_grid(), m_meta()
