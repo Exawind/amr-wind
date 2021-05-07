@@ -53,7 +53,8 @@ protected:
 
     void write_velocity_data(const FastTurbine&);
 
-    void read_velocity_data(FastTurbine&, const ncutils::NCFile&, const size_t tid);
+    void
+    read_velocity_data(FastTurbine&, const ncutils::NCFile&, const size_t tid);
 
     //! Global to local index lookup map
     std::map<int, int> m_turbine_map;
