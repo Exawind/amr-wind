@@ -94,7 +94,7 @@ public:
         return "OneEqKsgsS94-" + Transport::identifier();
     }
 
-    OneEqKsgsS94(CFDSim& sim);
+    explicit OneEqKsgsS94(CFDSim& sim);
 
     virtual ~OneEqKsgsS94();
 

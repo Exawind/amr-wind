@@ -16,7 +16,7 @@ class DamBreak : public Physics::Register<DamBreak>
 public:
     static const std::string identifier() { return "DamBreak"; }
 
-    DamBreak(CFDSim& sim);
+    explicit DamBreak(CFDSim& sim);
 
     virtual ~DamBreak() = default;
 

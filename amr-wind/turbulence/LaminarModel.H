@@ -20,7 +20,7 @@ public:
         return "Laminar-" + Transport::identifier();
     }
 
-    Laminar(CFDSim& sim) : TurbModel<Transport>(sim) {}
+    explicit Laminar(CFDSim& sim) : TurbModel<Transport>(sim) {}
 
     virtual ~Laminar() = default;
 
