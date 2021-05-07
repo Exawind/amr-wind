@@ -17,8 +17,8 @@ class IB;
  *
  *  \ingroup immersed boundary
  *
- *  Holds the position vector and velocity information for a cloud of immersed boundary
- *  points belonging to all the turbines within a given MPI rank.
+ *  Holds the position vector and velocity information for a cloud of immersed
+ * boundary points belonging to all the turbines within a given MPI rank.
  */
 struct IBCloud
 {
@@ -28,10 +28,12 @@ struct IBCloud
     //! Global IDs of the turbines on this MPI rank
     amrex::Vector<int> global_id;
 
-    //! Position vectors of all immersed boundary nodes belonging to this MPI rank
+    //! Position vectors of all immersed boundary nodes belonging to this MPI
+    //! rank
     amrex::Vector<vs::Vector> position;
 
-    //! Velocity vectors of all immersed boundary nodes belonging to this MPI rank
+    //! Velocity vectors of all immersed boundary nodes belonging to this MPI
+    //! rank
     amrex::Vector<vs::Vector> velocity;
 
     //! Total number of turbines located on this MPI rank
