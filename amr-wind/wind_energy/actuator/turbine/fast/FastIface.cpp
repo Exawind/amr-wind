@@ -335,7 +335,7 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
 #endif
 }
 
-void FastIface::write_velocity_data(FastTurbine& fi)
+void FastIface::write_velocity_data(const FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::write_velocity_data");
@@ -357,7 +357,7 @@ void FastIface::write_velocity_data(FastTurbine& fi)
 }
 
 void FastIface::read_velocity_data(
-    FastTurbine& fi, ncutils::NCFile& ncf, const size_t tid)
+    FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
 #ifdef AMR_WIND_USE_NETCDF
     const size_t nt = static_cast<size_t>(tid);

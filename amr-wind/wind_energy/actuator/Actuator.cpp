@@ -139,7 +139,7 @@ void Actuator::update_positions()
     m_container->update_positions();
 
     // Sample velocities at the new locations
-    auto& vel = m_sim.repo().get_field("velocity");
+    const auto& vel = m_sim.repo().get_field("velocity");
     m_container->sample_velocities(vel);
 }
 

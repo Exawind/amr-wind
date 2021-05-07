@@ -237,7 +237,7 @@ void ABLTempWallFunc::wall_model(
 
     BL_PROFILE("amr-wind::ABLTempWallFunc");
     auto& velocity = repo.get_field("velocity");
-    auto& density = repo.get_field("density", rho_state);
+    const auto& density = repo.get_field("density", rho_state);
     auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
 
