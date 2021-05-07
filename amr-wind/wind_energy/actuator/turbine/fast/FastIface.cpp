@@ -328,7 +328,7 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
     }
 #else
     amrex::ignore_unused(fi);
-    amrex::OutputStream()
+    amrex::OutStream()
         << "WARNING: FastIface: NetCDF support was not enabled during compile "
            "time. FastIface cannot support restart."
         << std::endl;
@@ -378,8 +378,8 @@ void FastIface::read_velocity_data(
 #else
 
 void FastIface::prepare_netcdf_file(FastTurbine&) {}
-void FastIface::write_velocity_data(FastTurbine&) {}
-void FastIface::read_velocity_data(FastTurbine&, ncutils::NCFile&, const size_t)
+void FastIface::write_velocity_data(const FastTurbine&) {}
+void FastIface::read_velocity_data(FastTurbine&, const ncutils::NCFile&, const size_t)
 {}
 
 #endif
