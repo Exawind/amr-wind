@@ -379,7 +379,8 @@ void FastIface::read_velocity_data(
 
 void FastIface::prepare_netcdf_file(FastTurbine&) {}
 void FastIface::write_velocity_data(const FastTurbine&) {}
-void FastIface::read_velocity_data(FastTurbine&, const ncutils::NCFile&, const size_t)
+void FastIface::read_velocity_data(
+    FastTurbine&, const ncutils::NCFile&, const size_t)
 {}
 
 #endif
