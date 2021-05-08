@@ -1,7 +1,7 @@
-#ifndef IBGEOMETRY_H
-#define IBGEOMETRY_H
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
 
-#include "amr-wind/immersed_boundary/IBtypes.H"
+#include "amr-wind/immersed_boundary/IBTypes.H"
 #include "amr-wind/core/vs/vector_space.H"
 
 #include <string>
@@ -13,7 +13,7 @@ namespace ib {
  *
  *  \ingroup ib
  */
-struct IBGeometryBaseData
+struct BluffBodyBaseData
 {
     //! Number of points (markers) along the IB surface
     int num_pts;
@@ -31,10 +31,10 @@ struct IBGeometryBaseData
     amrex::Real drag{0.0};
 };
 
-struct IBGeometryType : public IBType
+struct BluffBodyType : public IBType
 {};
 
 } // namespace ib
 } // namespace amr_wind
 
-#endif /* IBGEOMETRY_H */
+#endif /* GEOMETRY_H */

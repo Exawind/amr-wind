@@ -27,7 +27,7 @@ void determine_influenced_procs(typename T::DataType& data)
     const int iproc = amrex::ParallelDescriptor::MyProc();
     auto in_proc = info.procs.find(iproc);
     info.ib_in_proc = (in_proc != info.procs.end());
-    info.sample_vel_in_proc = info.actuator_in_proc;
+    info.sample_vel_in_proc = info.ib_in_proc;
 }
 
 template <typename T>
