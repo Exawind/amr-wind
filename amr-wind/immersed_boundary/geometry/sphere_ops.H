@@ -1,21 +1,21 @@
-#ifndef GEOMETRY_OPS_H
-#define GEOMETRY_OPS_H
+#ifndef SPHERE_OPS_H
+#define SPHERE_OPS_H
 
-#include "amr-wind/immersed_boundary/geometries/IBGeometry.H"
+#include "amr-wind/immersed_boundary/geometry/Sphere.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
-#include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/immersed_boundary/geometry/bluff_body_ops.H"
 
 namespace amr_wind {
 namespace ib {
+
 namespace ops {
 
 template <>
 struct ReadInputsOp<Sphere>
 {
-    void operator()(Sphere::DataType& data, const utils::ActParser& pp)
+    void operator()(Sphere::DataType& data, const utils::IBParser& pp)
     {
         auto& wdata = data.meta();
-        auto& info = data.info();
         pp.get("num_points", wdata.num_pts);
         // clang-format on
     }
@@ -24,7 +24,8 @@ struct ReadInputsOp<Sphere>
 template <>
 struct InitDataOp<Sphere>
 {
-    void operator()(Sphere::DataType& data){
+    void operator()(Sphere::DataType&)
+    {
         /*
             wing::init_data_structures(data.meta(), data.grid());
 
@@ -55,10 +56,11 @@ struct InitDataOp<Sphere>
             }
         }
         */
-    };
+    }
+};
 
-} // namespace ops
 } // namespace ops
 } // namespace ib
+} // namespace amr_wind
 
-#endif /* FIXED_WING_OPS_H */
+#endif /* SPHERE_OPS_H */

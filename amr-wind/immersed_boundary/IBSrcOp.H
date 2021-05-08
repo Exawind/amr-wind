@@ -16,6 +16,7 @@ class IBSrcOp<GeomTrait>
 private:
     typename GeomTrait::DataType& m_data;
     Field& m_ib_src;
+    amrex::Real m_dt;
 
     DeviceVecList m_pos;
     DeviceVecList m_forcing_vel;
@@ -25,7 +26,9 @@ private:
 
 public:
     IBSrcOp(typename GeomTrait::DataType& data)
-        : m_data(data), m_ib_src(m_data.sim().repo().get_field("ib_src_term"))
+        : m_data(data)
+        , m_ib_src(m_data.sim().repo().get_field("ib_src_term"))
+        , m_dt(m_data.sim().time().deltaT())
     {}
 
     void initialize();
@@ -54,8 +57,8 @@ void IBSrcOp<GeomTrait>::copy_to_device()
         amrex::Gpu::hostToDevice, grid.pos.begin(), grid.pos.end(),
         m_pos.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.forcing_vel.begin(), grid.forcing_vel.end(),
-        m_forcing_vel.begin());
+        amrex::Gpu::hostToDevice, grid.forcing_vel.begin(),
+        grid.forcing_vel.end(), m_forcing_vel.begin());
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.intrp_vel.begin(), grid.intrp_vel.end(),
         m_intrp_vel.begin());
@@ -68,12 +71,12 @@ void IBSrcOp<GeomTrait>::operator()(
     const std::string fname = GeomTrait::identifier();
     BL_PROFILE("amr-wind::IBSrcOp<" + fname + ">");
 
-    const amrex::Real dt = m_data.sim().deltaT();
+    const amrex::Real dt = m_dt;
 
     const auto& bx = mfi.tilebox();
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
-    const amrex::Real dV = dx[0]*dx[1]*dx[2];
+    const amrex::Real dV = dx[0] * dx[1] * dx[2];
 
     // extract relevant fields
     const auto* pos = m_pos.data();
@@ -83,13 +86,11 @@ void IBSrcOp<GeomTrait>::operator()(
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector ijk_x{
-            problo[0] + (i + 0.5) * dx[0],
-            problo[1] + (j + 0.5) * dx[1],
-            problo[2] + (k + 0.5) * dx[2]
-        };
+            problo[0] + (i + 0.5) * dx[0], problo[1] + (j + 0.5) * dx[1],
+            problo[2] + (k + 0.5) * dx[2]};
 
         // loop over Lagrangian markers
-        for (int ip = 0; ip < m_pos.size(); ++ip) {
+        for (unsigned ip = 0; ip < m_pos.size(); ++ip) {
             const auto lag_force = (forcing_vel[ip] - intrp_vel[ip]) / dt;
 
             const auto dist_x = ijk_x - pos[ip];
