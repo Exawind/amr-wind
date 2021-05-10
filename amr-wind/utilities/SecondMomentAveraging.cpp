@@ -92,8 +92,8 @@ void SecondMomentAveraging::operator()()
 
     std::fill(m_second_moments_line.begin(), m_second_moments_line.end(), 0.0);
 
-    auto& field1 = m_plane_average1.field();
-    auto& field2 = m_plane_average2.field();
+    const auto& field1 = m_plane_average1.field();
+    const auto& field2 = m_plane_average2.field();
 
     const int level = m_plane_average1.level();
 

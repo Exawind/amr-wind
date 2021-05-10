@@ -14,7 +14,7 @@ class MMSForcing : public MomentumSource::Register<MMSForcing>
 public:
     static const std::string identifier() { return "MMSForcing"; }
 
-    MMSForcing(const CFDSim&);
+    explicit MMSForcing(const CFDSim&);
 
     virtual ~MMSForcing();
 

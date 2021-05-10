@@ -16,7 +16,7 @@ class SloshingTank : public Physics::Register<SloshingTank>
 public:
     static const std::string identifier() { return "SloshingTank"; }
 
-    SloshingTank(CFDSim& sim);
+    explicit SloshingTank(CFDSim& sim);
 
     virtual ~SloshingTank() = default;
 

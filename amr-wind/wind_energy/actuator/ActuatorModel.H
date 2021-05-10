@@ -187,7 +187,7 @@ void ActModel<ActTrait, SrcTrait>::determine_root_proc(
 template <typename ActTrait, typename SrcTrait>
 int ActModel<ActTrait, SrcTrait>::num_velocity_points() const
 {
-    auto& info = m_data.info();
+    const auto& info = m_data.info();
     auto& grid = m_data.grid();
 
     return (info.sample_vel_in_proc) ? grid.vel.size() : 0;

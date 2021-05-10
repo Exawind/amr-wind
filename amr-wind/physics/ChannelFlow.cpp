@@ -88,7 +88,7 @@ void ChannelFlow::initialize_fields(
                 wd(i, j, k) = h;
                 const amrex::Real hp = h / y_tau;
                 vel(i, j, k, 0) =
-                    utau * (1. / kappa * std::log(1 + kappa * hp) +
+                    utau * (1. / kappa * std::log1p(kappa * hp) +
                             7.8 * (1.0 - std::exp(-hp / 11.0) -
                                    (hp / 11.0) * std::exp(-hp / 3.0)));
                 // vel(i,j,k,0) = 22.0;

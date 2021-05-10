@@ -24,7 +24,7 @@ class MultiPhase : public Physics::Register<MultiPhase>
 public:
     static const std::string identifier() { return "MultiPhase"; }
 
-    MultiPhase(CFDSim& sim);
+    explicit MultiPhase(CFDSim& sim);
 
     virtual ~MultiPhase() = default;
 

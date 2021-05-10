@@ -266,7 +266,7 @@ public:
     void exit_def_mode() const;
 
 protected:
-    NCGroup(const int id) : ncid(id) {}
+    explicit NCGroup(const int id) : ncid(id) {}
     NCGroup(const int id, const NCGroup* par) : ncid(id), m_parent(par) {}
 
     const NCGroup* m_parent{nullptr};
@@ -301,7 +301,7 @@ public:
     void close();
 
 protected:
-    NCFile(const int id) : NCGroup(id), is_open{true} {}
+    explicit NCFile(const int id) : NCGroup(id), is_open{true} {}
 
     bool is_open{false};
 };

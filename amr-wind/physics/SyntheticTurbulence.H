@@ -28,7 +28,7 @@ struct MeanVelOp
 class MeanProfile
 {
 public:
-    MeanProfile(double ref_vel, int shear_dir = 2)
+    explicit MeanProfile(double ref_vel, int shear_dir = 2)
         : m_op{ref_vel}, m_ref_vel(ref_vel), m_shear_dir(shear_dir)
     {}
 

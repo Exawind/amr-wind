@@ -19,7 +19,7 @@ class MMS : public Physics::Register<MMS>
 public:
     static const std::string identifier() { return "MMS"; }
 
-    MMS(const CFDSim& sim);
+    explicit MMS(const CFDSim& sim);
 
     virtual ~MMS() = default;
 

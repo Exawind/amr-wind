@@ -328,14 +328,14 @@ void FastIface::prepare_netcdf_file(FastTurbine& fi)
     }
 #else
     amrex::ignore_unused(fi);
-    amrex::OutputStream()
+    amrex::OutStream()
         << "WARNING: FastIface: NetCDF support was not enabled during compile "
            "time. FastIface cannot support restart."
         << std::endl;
 #endif
 }
 
-void FastIface::write_velocity_data(FastTurbine& fi)
+void FastIface::write_velocity_data(const FastTurbine& fi)
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::FastIface::write_velocity_data");
@@ -357,7 +357,7 @@ void FastIface::write_velocity_data(FastTurbine& fi)
 }
 
 void FastIface::read_velocity_data(
-    FastTurbine& fi, ncutils::NCFile& ncf, const size_t tid)
+    FastTurbine& fi, const ncutils::NCFile& ncf, const size_t tid)
 {
 #ifdef AMR_WIND_USE_NETCDF
     const size_t nt = static_cast<size_t>(tid);
@@ -378,8 +378,9 @@ void FastIface::read_velocity_data(
 #else
 
 void FastIface::prepare_netcdf_file(FastTurbine&) {}
-void FastIface::write_velocity_data(FastTurbine&) {}
-void FastIface::read_velocity_data(FastTurbine&, ncutils::NCFile&, const size_t)
+void FastIface::write_velocity_data(const FastTurbine&) {}
+void FastIface::read_velocity_data(
+    FastTurbine&, const ncutils::NCFile&, const size_t)
 {}
 
 #endif
