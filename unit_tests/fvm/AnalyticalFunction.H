@@ -28,6 +28,18 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     return phi;
 }
 
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+sin_phi_eval(amrex::Real x, amrex::Real y, amrex::Real z) noexcept
+{
+    return 0. * std::sin(25. * x) + .0 * std::sin(0.5 * x) + 0 * y + 0 * z;
+}
+
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
+filterx_eval(amrex::Real x, amrex::Real y, amrex::Real z) noexcept
+{
+    return .0 * std::sin(0.5 * x) + 0 * y + 0 * z;
+}
+
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidx_eval(
     int degree,
     const amrex::Real* coeff,

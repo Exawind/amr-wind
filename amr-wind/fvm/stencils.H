@@ -24,6 +24,15 @@
  *  | j | s10 | s11 | s12 |
  *  | k | s20 | s21 | s22 |
  *  ```
+ *
+ *  Coefficients for the filter
+ *  ```
+ *  |   | +1  | 0   | -1  |
+ *  |---+-----+-----+-----|
+ *  | i | f00 | f01 | f02 |
+ *  | j | f10 | f11 | f12 |
+ *  | k | f20 | f21 | f22 |
+ *  ```
  */
 
 #include "AMReX_REAL.H"
@@ -118,6 +127,17 @@ struct StencilInterior
     static constexpr amrex::Real s21 = s01;
     static constexpr amrex::Real s22 = s02;
 
+    // Filter
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry&)
     {
         return bx;
@@ -148,6 +168,16 @@ struct StencilILO
     static constexpr amrex::Real s20 = s10;     // azz
     static constexpr amrex::Real s21 = s11;     // bzz
     static constexpr amrex::Real s22 = s12;     // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f10;
+    static constexpr amrex::Real f21 = f11;
+    static constexpr amrex::Real f22 = f12;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -180,6 +210,16 @@ struct StencilJLO
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return impl::box_lo(bx, geom, StencilJLO::direction);
@@ -210,6 +250,16 @@ struct StencilKLO
     static constexpr amrex::Real s20 = 4. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 8. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.125;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -242,6 +292,16 @@ struct StencilIHI
     static constexpr amrex::Real s21 = s11;     // bzz
     static constexpr amrex::Real s22 = s12;     // czz
 
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f10;
+    static constexpr amrex::Real f21 = f11;
+    static constexpr amrex::Real f22 = f12;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return impl::box_hi(bx, geom, StencilIHI::direction);
@@ -272,6 +332,16 @@ struct StencilJHI
     static constexpr amrex::Real s20 = s00;     // azz
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -304,6 +374,16 @@ struct StencilKHI
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return impl::box_hi(bx, geom, StencilKHI::direction);
@@ -333,6 +413,16 @@ struct StencilILO_JLO
     static constexpr amrex::Real s20 = 1;       // azz
     static constexpr amrex::Real s21 = -2;      // bzz
     static constexpr amrex::Real s22 = 1;       // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.5;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -364,6 +454,16 @@ struct StencilJLO_KLO
     static constexpr amrex::Real s21 = s11;     // bzz
     static constexpr amrex::Real s22 = s12;     // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = f10;
+    static constexpr amrex::Real f21 = f11;
+    static constexpr amrex::Real f22 = f12;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilJLO::box(bx, geom) & StencilKLO::box(bx, geom);
@@ -393,6 +493,16 @@ struct StencilILO_KLO
     static constexpr amrex::Real s20 = s00;     // azz
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -424,6 +534,16 @@ struct StencilIHI_JHI
     static constexpr amrex::Real s21 = -2.;     // bzz
     static constexpr amrex::Real s22 = 1.;      // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.5;
+    static constexpr amrex::Real f22 = 0.25;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilIHI::box(bx, geom) & StencilJHI::box(bx, geom);
@@ -453,6 +573,16 @@ struct StencilJHI_KHI
     static constexpr amrex::Real s20 = s10;     // azz
     static constexpr amrex::Real s21 = s11;     // bzz
     static constexpr amrex::Real s22 = s12;     // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f10;
+    static constexpr amrex::Real f21 = f11;
+    static constexpr amrex::Real f22 = f12;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -484,6 +614,16 @@ struct StencilIHI_KHI
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
 
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilIHI::box(bx, geom) & StencilKHI::box(bx, geom);
@@ -513,6 +653,16 @@ struct StencilILO_JHI
     static constexpr amrex::Real s20 = 1;       // azz
     static constexpr amrex::Real s21 = -2;      // bzz
     static constexpr amrex::Real s22 = 1;       // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.5;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -544,6 +694,16 @@ struct StencilJLO_KHI
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilJLO::box(bx, geom) & StencilKHI::box(bx, geom);
@@ -573,6 +733,16 @@ struct StencilILO_KHI
     static constexpr amrex::Real s20 = 8. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -604,6 +774,16 @@ struct StencilIHI_JLO
     static constexpr amrex::Real s21 = -2.;     // bzz
     static constexpr amrex::Real s22 = 1.;      // czz
 
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.5;
+    static constexpr amrex::Real f22 = 0.25;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilIHI::box(bx, geom) & StencilJLO::box(bx, geom);
@@ -633,6 +813,16 @@ struct StencilJHI_KLO
     static constexpr amrex::Real s20 = 4. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 8. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.5;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.125;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -664,6 +854,16 @@ struct StencilIHI_KLO
     static constexpr amrex::Real s21 = -4.0;      // bzz
     static constexpr amrex::Real s22 = 8.0 / 3.0; // czz
 
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.5;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.125;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilIHI::box(bx, geom) & StencilKLO::box(bx, geom);
@@ -693,6 +893,16 @@ struct StencilILO_JLO_KLO
     static constexpr amrex::Real s20 = s00;     // azz
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -725,6 +935,16 @@ struct StencilILO_JHI_KLO
     static constexpr amrex::Real s21 = s01;     // bzz
     static constexpr amrex::Real s22 = s02;     // czz
 
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = f00;
+    static constexpr amrex::Real f21 = f01;
+    static constexpr amrex::Real f22 = f02;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilILO::box(bx, geom) & StencilJHI::box(bx, geom) &
@@ -755,6 +975,16 @@ struct StencilIHI_JLO_KLO
     static constexpr amrex::Real s20 = s10;     // azz
     static constexpr amrex::Real s21 = s11;     // bzz
     static constexpr amrex::Real s22 = s12;     // czz
+
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = f10;
+    static constexpr amrex::Real f21 = f11;
+    static constexpr amrex::Real f22 = f12;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -787,6 +1017,16 @@ struct StencilIHI_JHI_KLO
     static constexpr amrex::Real s21 = -4.0;      // bzz
     static constexpr amrex::Real s22 = 8.0 / 3.0; // czz
 
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.25;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.125;
+
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
         return StencilIHI::box(bx, geom) & StencilJHI::box(bx, geom) &
@@ -807,6 +1047,7 @@ struct StencilILO_JLO_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -816,6 +1057,16 @@ struct StencilILO_JLO_KHI
     static constexpr amrex::Real s20 = 8. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = f00;
+    static constexpr amrex::Real f11 = f01;
+    static constexpr amrex::Real f12 = f02;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -837,6 +1088,7 @@ struct StencilILO_JHI_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
     static constexpr amrex::Real s00 = 4. / 3.; // axx
     static constexpr amrex::Real s01 = -4;      // bxx
     static constexpr amrex::Real s02 = 8. / 3.; // cxx
@@ -846,6 +1098,16 @@ struct StencilILO_JHI_KHI
     static constexpr amrex::Real s20 = 8. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.25;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.125;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -867,6 +1129,7 @@ struct StencilIHI_JLO_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -876,6 +1139,16 @@ struct StencilIHI_JLO_KHI
     static constexpr amrex::Real s20 = 8. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.25;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.125;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
@@ -897,6 +1170,7 @@ struct StencilIHI_JHI_KHI
     static constexpr amrex::Real c20 = 4. / 3.;
     static constexpr amrex::Real c21 = -1.;
     static constexpr amrex::Real c22 = -1. / 3.;
+
     static constexpr amrex::Real s00 = 8. / 3.; // axx
     static constexpr amrex::Real s01 = -4.;     // bxx
     static constexpr amrex::Real s02 = 4. / 3.; // cxx
@@ -906,6 +1180,16 @@ struct StencilIHI_JHI_KHI
     static constexpr amrex::Real s20 = 8. / 3.; // azz
     static constexpr amrex::Real s21 = -4.;     // bzz
     static constexpr amrex::Real s22 = 4. / 3.; // czz
+
+    static constexpr amrex::Real f00 = 0.125;
+    static constexpr amrex::Real f01 = 0.625;
+    static constexpr amrex::Real f02 = 0.25;
+    static constexpr amrex::Real f10 = 0.125;
+    static constexpr amrex::Real f11 = 0.625;
+    static constexpr amrex::Real f12 = 0.25;
+    static constexpr amrex::Real f20 = 0.125;
+    static constexpr amrex::Real f21 = 0.625;
+    static constexpr amrex::Real f22 = 0.25;
 
     static amrex::Box box(const amrex::Box& bx, const amrex::Geometry& geom)
     {
