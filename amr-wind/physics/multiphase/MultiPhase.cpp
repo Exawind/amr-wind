@@ -2,7 +2,7 @@
 #include "amr-wind/equation_systems/vof/volume_fractions.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
-#include "amr-wind/fvm/gradient.H"
+#include "amr-wind/fvm/filter.H"
 #include "amr-wind/core/field_ops.H"
 #include "amr-wind/equation_systems/BCOps.H"
 #include <AMReX_MultiFabUtil.H>
