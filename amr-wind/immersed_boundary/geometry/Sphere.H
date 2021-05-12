@@ -8,7 +8,9 @@ namespace ib {
 
 struct SphereData : public BluffBodyBaseData
 {
-    RealList centre_loc{0.0, 0.0, 0.0};
+    vs::Vector center_loc{0.0, 0.0, 0.0};
+
+    amrex::Real radius;
 };
 
 struct Sphere : public BluffBodyType

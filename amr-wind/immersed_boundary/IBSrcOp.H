@@ -77,6 +77,7 @@ void IBSrcOp<GeomTrait>::operator()(
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
     const amrex::Real dV = dx[0] * dx[1] * dx[2];
+    const vs::Vector Dx{dx[0], dx[1], dx[2]};
 
     // extract relevant fields
     const auto* pos = m_pos.data();
@@ -88,8 +89,6 @@ void IBSrcOp<GeomTrait>::operator()(
         const vs::Vector ijk_x{
             problo[0] + (i + 0.5) * dx[0], problo[1] + (j + 0.5) * dx[1],
             problo[2] + (k + 0.5) * dx[2]};
-
-        const vs::Vector Dx{dx[0], dx[1], dx[2]};
 
         // loop over Lagrangian markers
         for (unsigned ip = 0; ip < m_pos.size(); ++ip) {
