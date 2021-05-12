@@ -19,7 +19,7 @@ struct BluffBodyBaseData
     int num_pts;
 
     //! Body velocity at the boundary node
-    VecList vel_body;
+    VecList body_vel;
 
     //! Length of the IB boundary "panel"
     RealList dl;
