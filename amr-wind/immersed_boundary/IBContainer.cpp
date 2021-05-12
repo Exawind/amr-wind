@@ -305,6 +305,7 @@ void IBContainer::interpolate_velocities(const Field& vel)
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
                 const int iproc = pp.cpu();
+                amrex::Real interp_vel = 0.0;
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
                     pp.rdata(ic) = 0;
                     // Interpolating from five neighbouring points
@@ -317,16 +318,17 @@ void IBContainer::interpolate_velocities(const Field& vel)
                                     plo[1] + (j + jj + 0.5) * dx[1] - pp.pos(1),
                                     plo[2] + (k + kk + 0.5) * dx[2] - pp.pos(2)};
 
-                                pp.rdata(ic) +=
+                                interp_vel +=
                                     utils::dirac_delta(deltaX, Dx) *
                                     varr(i + ii, j + jj, k + kk, ic) * dV;
                             }
                         }
                     }
+                    pp.rdata(ic) = interp_vel;
                     // clang-format on
-                    // Reset position vectors so that the particles
-                    // return back to the MPI ranks with the turbines
-                    // upon redistribution
+                    // Reset position vectors so that the
+                    // particles return back to the MPI ranks
+                    // with the turbines upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
             });
