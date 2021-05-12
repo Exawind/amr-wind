@@ -16,7 +16,20 @@ struct ReadInputsOp<Sphere>
     void operator()(Sphere::DataType& data, const utils::IBParser& pp)
     {
         auto& wdata = data.meta();
+        auto& info = data.info();
         pp.get("num_points", wdata.num_pts);
+        pp.get("center", wdata.center_loc);
+        pp.get("radius", wdata.radius);
+        amrex::Real search_radius = 1.5 * wdata.radius;
+        // clang-format off
+        const auto& origin=wdata.center_loc;
+        info.bound_box = amrex::RealBox(
+            origin[0] - search_radius,
+            origin[1] - search_radius,
+            origin[2] - search_radius,
+            origin[0] + search_radius,
+            origin[1] + search_radius,
+            origin[2] + search_radius);
         // clang-format on
     }
 };
@@ -24,38 +37,33 @@ struct ReadInputsOp<Sphere>
 template <>
 struct InitDataOp<Sphere>
 {
-    void operator()(Sphere::DataType&)
+    void operator()(Sphere::DataType& data)
     {
-        /*
-            wing::init_data_structures(data.meta(), data.grid());
+        auto& wdata = data.meta();
+        auto& grid = data.grid();
+        int npts = wdata.num_pts;
+        grid.resize(npts);
 
-            auto& meta = data.meta();
-            {
-                const int npts = data.meta().num_pts;
-                auto& grid = data.grid();
-                // Process chord information
-                const auto wlen = vs::mag(grid.pos.back() - grid.pos.front());
-                RealList wx(npts);
-                for (int i = 0; i < npts; ++i) {
-                    wx[i] = vs::mag(grid.pos[i]) / wlen;
-                }
-                meta.chord.resize(npts);
-                ::amr_wind::interp::linear_monotonic(
-                    meta.span_locs, meta.chord_inp, wx, meta.chord);
-                // clang-format off
-                meta.epsilon_chord = {
-                    meta.epsilon_chord.x(), meta.epsilon_chord.z(),
-                    meta.epsilon_chord.y()};
-                // clang-format on
-                for (int i = 0; i < npts; ++i) {
-                    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                        const auto eps = meta.epsilon_chord[n] * meta.chord[i];
-                        grid.epsilon[i][n] = amrex::max(meta.eps_inp[n], eps);
-                    }
-                }
-            }
+        int Ntheta, Nphi;
+        // We discretise using spherical coordinates
+        if (npts % 2 == 1) {
+            Ntheta = (npts - 1) / 2;
+        } else {
+            Ntheta = npts / 2;
         }
-        */
+        Nphi = npts - Ntheta;
+        int ip = 0;
+        for (int itheta = 0; itheta < Ntheta; ++itheta) {
+            for (int iphi = 0; iphi < Nphi; ++iphi) {
+                grid.pos[ip] = {
+                    wdata.radius * std::sin(iphi * 2.0 * M_PI / Nphi) *
+                        std::cos(itheta * 2.0 * M_PI / Ntheta),
+                    wdata.radius * std::sin(iphi * 2.0 * M_PI / Nphi) *
+                        std::sin(itheta * 2.0 * M_PI / Ntheta),
+                    wdata.radius * std::cos(iphi * 2.0 * M_PI / Nphi)};
+            }
+            ++ip;
+        }
     }
 };
 
