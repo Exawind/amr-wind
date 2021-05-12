@@ -282,6 +282,7 @@ void IBContainer::interpolate_velocities(const Field& vel)
         const auto dxi = geom.InvCellSizeArray();
         const auto plo = geom.ProbLoArray();
         const amrex::Real dV = dx[0] * dx[1] * dx[2];
+        const vs::Vector Dx{dx[0], dx[1], dx[2]};
 
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
@@ -305,6 +306,8 @@ void IBContainer::interpolate_velocities(const Field& vel)
 
                 const int iproc = pp.cpu();
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
+                    pp.rdata(ic) = 0;
+                    // Interpolating from five neighbouring points
                     // clang-format off
                     for (int ii = -2; ii <= 2; ++ii) {
                         for (int jj = -2; jj <= 2; ++jj) {
@@ -314,10 +317,9 @@ void IBContainer::interpolate_velocities(const Field& vel)
                                     plo[1] + (j + jj + 0.5) * dx[1] - pp.pos(1),
                                     plo[2] + (k + kk + 0.5) * dx[2] - pp.pos(2)};
 
-                                const vs::Vector Dx{dx[0], dx[1], dx[2]};
-
-                                pp.rdata(ic) += utils::dirac_delta(deltaX, Dx) *
-                                                varr(i + ii, j+jj, k+kk, ic) * dV;
+                                pp.rdata(ic) +=
+                                    utils::dirac_delta(deltaX, Dx) *
+                                    varr(i + ii, j + jj, k + kk, ic) * dV;
                             }
                         }
                     }
