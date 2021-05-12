@@ -24,7 +24,11 @@ namespace ib {
  *  IBModel and acts on them.
  */
 class ImmersedBoundaryModel
-    : public Factory<ImmersedBoundaryModel, CFDSim&, const std::string&, const int>
+    : public Factory<
+          ImmersedBoundaryModel,
+          CFDSim&,
+          const std::string&,
+          const int>
 {
 public:
     static std::string base_identifier() { return "ImmersedBoundaryModel"; }
@@ -77,7 +81,8 @@ template <typename GeomTrait>
 class IBModel : public ImmersedBoundaryModel::Register<IBModel<GeomTrait>>
 {
 private:
-    //! Instance that holds all data related to a particular immersed boundary type
+    //! Instance that holds all data related to a particular immersed boundary
+    //! type
     typename GeomTrait::DataType m_data;
 
     //! Source computation operator
@@ -87,10 +92,7 @@ private:
     ops::ProcessOutputsOp<GeomTrait> m_out_op;
 
 public:
-    static std::string identifier()
-    {
-        return GeomTrait::identifier();
-    }
+    static std::string identifier() { return GeomTrait::identifier(); }
 
     /**
      *  \param sim CFD simulation environment instance
@@ -134,7 +136,7 @@ public:
 
     void update_velocities(const VecSlice& vel) override
     {
-        std::copy(vel.begin(), vel.end(), m_data.grid().forcing_vel.begin());
+        std::copy(vel.begin(), vel.end(), m_data.grid().intrp_vel.begin());
         ops::UpdateVelOp<GeomTrait>()(m_data);
     }
 
@@ -167,8 +169,7 @@ public:
 };
 
 template <typename GeomTrait>
-void IBModel<GeomTrait>::determine_root_proc(
-    amrex::Vector<int>& ib_proc_count)
+void IBModel<GeomTrait>::determine_root_proc(amrex::Vector<int>& ib_proc_count)
 {
     ops::determine_root_proc<GeomTrait>(m_data, ib_proc_count);
     {

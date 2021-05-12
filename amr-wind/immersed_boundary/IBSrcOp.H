@@ -89,12 +89,15 @@ void IBSrcOp<GeomTrait>::operator()(
             problo[0] + (i + 0.5) * dx[0], problo[1] + (j + 0.5) * dx[1],
             problo[2] + (k + 0.5) * dx[2]};
 
+        const vs::Vector Dx{dx[0], dx[1], dx[2]};
+
         // loop over Lagrangian markers
         for (unsigned ip = 0; ip < m_pos.size(); ++ip) {
             const auto lag_force = (forcing_vel[ip] - intrp_vel[ip]) / dt;
 
             const auto dist_x = ijk_x - pos[ip];
-            const auto dirac_delta_fac = utils::dirac_delta(dist_x, ijk_x);
+
+            const auto dirac_delta_fac = utils::dirac_delta(dist_x, Dx);
 
             sarr(i, j, k, 0) += lag_force[0] * dirac_delta_fac * dV;
             sarr(i, j, k, 1) += lag_force[1] * dirac_delta_fac * dV;

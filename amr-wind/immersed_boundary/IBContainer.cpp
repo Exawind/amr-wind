@@ -1,5 +1,6 @@
 #include "amr-wind/immersed_boundary/IBContainer.H"
 #include "amr-wind/immersed_boundary/IB.H"
+#include "amr-wind/immersed_boundary/IBUtils.H"
 #include "amr-wind/core/gpu_utils.H"
 #include "amr-wind/core/Field.H"
 
@@ -14,8 +15,7 @@ IBCloud::IBCloud(const int nobjects)
     : num_pts(nobjects, 0), global_id(nobjects, -1), num_objects(nobjects)
 {}
 
-IBContainer::IBContainer(
-    amrex::AmrCore& mesh, const int num_objects)
+IBContainer::IBContainer(amrex::AmrCore& mesh, const int num_objects)
     : amrex::AmrParticleContainer<
           NumPStructReal,
           NumPStructInt,
@@ -34,9 +34,9 @@ IBContainer::IBContainer(
  *  This method is only called once during the simulation. It allocates the
  *  arrays for holding the position vector and velocity data on host memory and
  *  also initializes corresponding particles within the first available particle
- *  tile within the container. It is expected that the immersed boundary manager instance
- *  has already populated the number of points per turbine before invoking this
- *  method.
+ *  tile within the container. It is expected that the immersed boundary manager
+ * instance has already populated the number of points per turbine before
+ * invoking this method.
  */
 void IBContainer::initialize_container()
 {
@@ -188,7 +188,8 @@ void IBContainer::update_positions()
  *  This method performs three tasks:
  *    - Sample the velocity field and interpolate onto particle location
  *    - Restore the particles back to their original MPI rank
- *    - Copy data from particles into the buffer used by immersed boundary instances
+ *    - Copy data from particles into the buffer used by immersed boundary
+ * instances
  *
  *  After invocation if this method, the particles are back in their original
  *  rank and the position vectors can be updated safely.
@@ -205,7 +206,8 @@ void IBContainer::sample_velocities(const Field& vel)
     // turbines
     // Redistribute();
 
-    // Populate the velocity buffer that all immersed boundary instances can access
+    // Populate the velocity buffer that all immersed boundary instances can
+    // access
     populate_vel_buffer();
 
     // Indicate that the particles have been restored to their original MPI rank
@@ -271,6 +273,7 @@ void IBContainer::populate_vel_buffer()
 void IBContainer::interpolate_velocities(const Field& vel)
 {
     BL_PROFILE("amr-wind::ib::IBContainer::interpolate_velocities");
+
     auto* dptr = m_pos_device.data();
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -278,6 +281,7 @@ void IBContainer::interpolate_velocities(const Field& vel)
         const auto dx = geom.CellSizeArray();
         const auto dxi = geom.InvCellSizeArray();
         const auto plo = geom.ProbLoArray();
+        const amrex::Real dV = dx[0] * dx[1] * dx[2];
 
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
@@ -299,57 +303,54 @@ void IBContainer::interpolate_velocities(const Field& vel)
                 const int j = static_cast<int>(amrex::Math::floor(y));
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
-                // Interpolation weights in each direction (linear basis)
-                const amrex::Real wx_hi = (x - i);
-                const amrex::Real wy_hi = (y - j);
-                const amrex::Real wz_hi = (z - k);
-
-                const amrex::Real wx_lo = 1.0 - wx_hi;
-                const amrex::Real wy_lo = 1.0 - wy_hi;
-                const amrex::Real wz_lo = 1.0 - wz_hi;
-
                 const int iproc = pp.cpu();
-
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
-                    pp.rdata(ic) =
-                        wx_lo * wy_lo * wz_lo * varr(i, j, k, ic) +
-                        wx_lo * wy_lo * wz_hi * varr(i, j, k + 1, ic) +
-                        wx_lo * wy_hi * wz_lo * varr(i, j + 1, k, ic) +
-                        wx_lo * wy_hi * wz_hi * varr(i, j + 1, k + 1, ic) +
-                        wx_hi * wy_lo * wz_lo * varr(i + 1, j, k, ic) +
-                        wx_hi * wy_lo * wz_hi * varr(i + 1, j, k + 1, ic) +
-                        wx_hi * wy_hi * wz_lo * varr(i + 1, j + 1, k, ic) +
-                        wx_hi * wy_hi * wz_hi * varr(i + 1, j + 1, k + 1, ic);
+                    // clang-format off
+                    for (int ii = -2; ii <= 2; ++ii) {
+                        for (int jj = -2; jj <= 2; ++jj) {
+                            for (int kk = -2; kk <= 2; ++kk) {
+                                const vs::Vector deltaX{
+                                    plo[0] + (i + ii + 0.5) * dx[0] - pp.pos(0),
+                                    plo[1] + (j + jj + 0.5) * dx[1] - pp.pos(1),
+                                    plo[2] + (k + kk + 0.5) * dx[2] - pp.pos(2)};
 
-                    // Reset position vectors so that the particles return back
-                    // to the MPI ranks with the turbines upon redistribution
+                                const vs::Vector Dx{dx[0], dx[1], dx[2]};
+
+                                pp.rdata(ic) += utils::dirac_delta(deltaX, Dx) *
+                                                varr(i + ii, j+jj, k+kk, ic) * dV;
+                            }
+                        }
+                    }
+                    // clang-format on
+                    // Reset position vectors so that the particles
+                    // return back to the MPI ranks with the turbines
+                    // upon redistribution
                     pp.pos(ic) = dptr[iproc][ic];
                 }
             });
         }
     }
-}
+} // namespace ib
 
 /** Determine position vector of a point within each MPI rank
  *
- *  Loops over the boxArray and determines the first patch that belongs to the
- *  current MPI rank. Uses that to generate a position vector that is known to
- *  exist in a given rank. Setting the position vectors of the particles to this
- *  know location will recall particles belonging to this rank during
- *  Redistribute.
+ *  Loops over the boxArray and determines the first patch that belongs
+ * to the current MPI rank. Uses that to generate a position vector that
+ * is known to exist in a given rank. Setting the position vectors of
+ * the particles to this know location will recall particles belonging
+ * to this rank during Redistribute.
  */
 void IBContainer::compute_local_coordinates()
 {
-    BL_PROFILE(
-        "amr-wind::ib::IBContainer::compute_local_coordinates");
+    BL_PROFILE("amr-wind::ib::IBContainer::compute_local_coordinates");
     const int nprocs = amrex::ParallelDescriptor::NProcs();
     const int iproc = amrex::ParallelDescriptor::MyProc();
 
     // Reset position vectors to zero (required for parallel reduce sum)
     m_proc_pos.assign(nprocs, vs::Vector::zero());
 
-    // Flag indicating whether a point within the domain belonging to this rank
-    // has been found
+    // Flag indicating whether a point within the domain belonging to
+    // this rank has been found
     bool assigned = false;
     const int nlevels = m_mesh.finestLevel() + 1;
     for (int lev = 0; ((lev < nlevels) && !assigned); ++lev) {
@@ -371,8 +372,8 @@ void IBContainer::compute_local_coordinates()
             pvec.y() = problo[1] + (lo[1] + 0.5) * dx[1];
             pvec.z() = problo[2] + (lo[2] + 0.5) * dx[2];
 
-            // Indicate that we have found a point and it is safe to exit the
-            // loop
+            // Indicate that we have found a point and it is safe to
+            // exit the loop
             assigned = true;
         }
     }
