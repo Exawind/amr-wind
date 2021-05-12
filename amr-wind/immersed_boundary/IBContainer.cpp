@@ -307,7 +307,6 @@ void IBContainer::interpolate_velocities(const Field& vel)
                 const int iproc = pp.cpu();
                 amrex::Real interp_vel = 0.0;
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
-                    pp.rdata(ic) = 0;
                     // Interpolating from five neighbouring points
                     // clang-format off
                     for (int ii = -2; ii <= 2; ++ii) {
