@@ -42,27 +42,23 @@ struct InitDataOp<Sphere>
         auto& wdata = data.meta();
         auto& grid = data.grid();
         int npts = wdata.num_pts;
-        grid.resize(npts);
+        grid.resize(npts * npts);
 
-        int Ntheta, Nphi;
-        // We discretise using spherical coordinates
-        if (npts % 2 == 1) {
-            Ntheta = (npts - 1) / 2;
-        } else {
-            Ntheta = npts / 2;
-        }
-        Nphi = npts - Ntheta;
         int ip = 0;
-        for (int itheta = 0; itheta < Ntheta; ++itheta) {
-            for (int iphi = 0; iphi < Nphi; ++iphi) {
+        for (int itheta = 0; itheta < npts; ++itheta) {
+            for (int iphi = 0; iphi < npts; ++iphi) {
                 grid.pos[ip] = {
-                    wdata.radius * std::sin(iphi * 2.0 * M_PI / Nphi) *
-                        std::cos(itheta * 2.0 * M_PI / Ntheta),
-                    wdata.radius * std::sin(iphi * 2.0 * M_PI / Nphi) *
-                        std::sin(itheta * 2.0 * M_PI / Ntheta),
-                    wdata.radius * std::cos(iphi * 2.0 * M_PI / Nphi)};
+                    wdata.radius * std::sin(iphi * 2.0 * M_PI / npts) *
+                        std::cos(itheta * 2.0 * M_PI / npts),
+                    wdata.radius * std::sin(iphi * 2.0 * M_PI / npts) *
+                        std::sin(itheta * 2.0 * M_PI / npts),
+                    wdata.radius * std::cos(iphi * 2.0 * M_PI / npts)};
+                ++ip;
             }
-            ++ip;
+        }
+        // This is no-slip only for a fixed sphere
+        for (int i = 0; i < npts * npts; ++i) {
+            grid.forcing_vel[i] = {0.0, 0.0, 0.0};
         }
     }
 };

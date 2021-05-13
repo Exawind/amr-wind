@@ -41,11 +41,12 @@ dirac_delta_phi(const amrex::Real& r)
 {
     const amrex::Real abs_r = amrex::Math::abs(r);
 
-    if ((abs_r > 0.5) && (abs_r <= 0.5)) {
-        return 1 / 6 *
-               (5 - abs_r - std::sqrt(-3 * std::pow((1 - abs_r), 2) + 1));
+    if ((abs_r >= 0.5) && (abs_r <= 1.5)) {
+        return 1.0 / 6.0 *
+               (5.0 - 3.0 * abs_r -
+                std::sqrt(-3.0 * std::pow((1.0 - abs_r), 2.0) + 1.0));
     } else if (abs_r <= 0.5) {
-        return 1 / 3 * (1 + std::sqrt(-3 * std::pow(abs_r, 2) + 1));
+        return 1.0 / 3.0 * (1.0 + std::sqrt(-3.0 * std::pow(abs_r, 2.0) + 1.0));
     } else
         return 0.0;
 }
