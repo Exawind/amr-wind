@@ -6,7 +6,7 @@ namespace amr_wind {
 namespace actuator {
 
 template class ActModel<TurbineFast, ActSrcLine>;
-// template class ActModel<TurbineFast, ActSrcDisk>;
+template class ActModel<TurbineFast, ActSrcDisk>;
 
 } // namespace actuator
 } // namespace amr_wind

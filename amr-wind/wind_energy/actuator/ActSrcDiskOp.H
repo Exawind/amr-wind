@@ -1,5 +1,5 @@
-#ifndef ACTSRCOP_H
-#define ACTSRCOP_H
+#ifndef ACTSRCDISKOP_H_
+#define ACTSRCDISKOP_H_
 
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
@@ -20,12 +20,11 @@ private:
     DeviceVecList m_pos;
     DeviceVecList m_force;
     DeviceVecList m_epsilon;
-    DeviceTensorList m_orientation;
 
     void copy_to_device();
 
 public:
-    ActSrcOp(typename ActTrait::DataType& data)
+    explicit ActSrcOp(typename ActTrait::DataType& data)
         : m_data(data)
         , m_act_src(m_data.sim().repo().get_field("actuator_src_term"))
     {}
@@ -45,7 +44,6 @@ void ActSrcOp<ActTrait, ActSrcDisk>::initialize()
     m_pos.resize(grid.pos.size());
     m_force.resize(grid.force.size());
     m_epsilon.resize(grid.epsilon.size());
-    m_orientation.resize(grid.orientation.size());
 }
 
 template <typename ActTrait>
@@ -62,9 +60,6 @@ void ActSrcOp<ActTrait, ActSrcDisk>::copy_to_device()
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, grid.epsilon.begin(), grid.epsilon.end(),
         m_epsilon.begin());
-    amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, grid.orientation.begin(),
-        grid.orientation.end(), m_orientation.begin());
 }
 
 template <typename ActTrait>
@@ -83,7 +78,12 @@ void ActSrcOp<ActTrait, ActSrcDisk>::operator()(
     const auto* pos = m_pos.data();
     const auto* force = m_force.data();
     const auto* eps = m_epsilon.data();
-    const auto* tmat = m_orientation.data();
+    const amrex::Real dR = 0.1;
+    const amrex::Real dT =
+        2.0 * ::amr_wind::utils::pi() / m_data.meta().num_blades;
+    // assume these will be copied to device by the lambda capture...
+    const vs::Vector m_normal(m_data.meta().rotor_frame.z());
+    const vs::Vector m_origin(m_data.meta().rot_center);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
@@ -94,14 +94,24 @@ void ActSrcOp<ActTrait, ActSrcDisk>::operator()(
 
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         for (int ip = 0; ip < npts; ++ip) {
-            const auto dist = cc - pos[ip];
-            const auto dist_local = tmat[ip] & dist;
-            const auto gauss_fac = utils::gaussian3d(dist_local, eps[ip]);
+            const auto R =
+                utils::delta_pnts_cyl(m_origin, m_normal, m_origin, pos[ip])
+                    .x();
+            const auto dist_on_disk =
+                utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
             const auto& pforce = force[ip];
 
-            src_force[0] += gauss_fac * pforce.x();
-            src_force[1] += gauss_fac * pforce.y();
-            src_force[2] += gauss_fac * pforce.z();
+            const amrex::Real weight_R =
+                utils::linear_basis_1d(dist_on_disk.x(), dR);
+            const amrex::Real weight_T =
+                utils::linear_basis_1d(R * dist_on_disk.y(), dT * R);
+            const amrex::Real weight_N =
+                utils::gaussian1d(dist_on_disk.z(), eps[ip].x());
+            const auto projection_weight = weight_R * weight_T * weight_N;
+
+            src_force[0] += projection_weight * pforce.x();
+            src_force[1] += projection_weight * pforce.y();
+            src_force[2] += projection_weight * pforce.z();
         }
 
         sarr(i, j, k, 0) += src_force[0];
@@ -113,4 +123,4 @@ void ActSrcOp<ActTrait, ActSrcDisk>::operator()(
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* ACTSRCOP_H */
+#endif /* ACTSRCDISKOP_H_ */

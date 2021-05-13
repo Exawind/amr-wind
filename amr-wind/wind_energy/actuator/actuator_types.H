@@ -52,8 +52,8 @@ struct ActSrcDisk : ActSrcType
 {
     static std::string identifier() { return "Disk"; }
 
-    static constexpr bool is_line = true;
-    static constexpr bool is_disk = false;
+    static constexpr bool is_line = false;
+    static constexpr bool is_disk = true;
 };
 
 using RealList = amrex::Vector<amrex::Real>;

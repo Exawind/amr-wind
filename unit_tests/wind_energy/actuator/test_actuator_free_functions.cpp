@@ -25,6 +25,19 @@ TEST(CylindricalTransformation, distances_on_z_aligned_circle)
     EXPECT_DOUBLE_EQ(1.0, d[2]);
 }
 
+TEST(CylindricalTransformation, returns_correct_radius_when_origin_is_a_point)
+{
+    const vs::Vector p2{0, 1, 0};
+    const vs::Vector normal{0, 0, 1};
+    const vs::Vector origin{0, 0, 0};
+    const vs::Vector p1(origin);
+
+    auto d = act::delta_pnts_cyl(origin, normal, p1, p2);
+    EXPECT_DOUBLE_EQ(1.0, d[0]);
+    // theta will be ill defined
+    EXPECT_DOUBLE_EQ(0.0, d[2]);
+}
+
 TEST(CylindricalTransformation, distances_on_shifted_circle)
 {
     const vs::Vector p1{1, 3, 2};

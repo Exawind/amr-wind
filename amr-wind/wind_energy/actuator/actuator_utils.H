@@ -60,6 +60,14 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
     }
 }
 
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
+{
+    // fac = 1.0/sqrt(pi)
+    const amrex::Real fac = 0.5641895835477563;
+    if (std::abs(dist / eps) >= 16.0) return 0.0;
+    return fac / eps * std::exp(-(dist * dist) / (eps * eps));
+}
 
 /** Compute distance between two points
  *
@@ -97,7 +105,13 @@ const amrex::Real eps = vs::DTraits<amrex::Real>::eps();
 
     const amrex::Real theta = std::acos((v1 & v2) / (r1 * r2 + eps));
 
-    return {r1 - r2, theta, norm_dist1 - norm_dist2};
+    return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
+}
+
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
+{
+    return amrex::max(0.0, 1.0 - distance / dX) / dX;
 }
 
 } // namespace utils
