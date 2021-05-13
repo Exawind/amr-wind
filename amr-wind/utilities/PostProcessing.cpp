@@ -10,7 +10,7 @@ namespace amr_wind {
 
 namespace {
 void perform_checks(
-    std::set<std::string>& registered_types, const std::string ptype)
+    std::set<std::string>& registered_types, const std::string& ptype)
 {
     const auto found = registered_types.find(ptype);
 

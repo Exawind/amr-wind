@@ -58,7 +58,7 @@ public:
     }
 
     //! Return the dynamic visocity field
-    inline std::unique_ptr<ScratchField> mu()
+    inline std::unique_ptr<ScratchField> mu() override
     {
         // Select the interface capturing method
         auto mu = m_repo.create_scratch_field(1, 1);
@@ -127,7 +127,7 @@ public:
     }
 
     //! Return the thermal diffusivity field
-    inline std::unique_ptr<ScratchField> alpha()
+    inline std::unique_ptr<ScratchField> alpha() override
     {
         auto alpha = mu();
         amrex::Real inv_Pr = 1.0 / m_Pr;
@@ -138,7 +138,7 @@ public:
     }
 
     inline std::unique_ptr<ScratchField>
-    scalar_diffusivity(const std::string& scalar_name)
+    scalar_diffusivity(const std::string& scalar_name) override
     {
         amrex::Real lam_schmidt = laminar_schmidt(scalar_name);
 
