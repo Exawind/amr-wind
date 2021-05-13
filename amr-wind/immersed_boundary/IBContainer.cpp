@@ -265,10 +265,6 @@ void IBContainer::populate_vel_buffer()
 
 /** Helper method for IBContainer::sample_velocities
  *
- *  Performs a trilinear interpolation of the velocity field to particle
- *  locations. It also updates the particle locations such that the next
- *  Redistribute call restores the particles back to their original MPI rank
- *  where they were created.
  */
 void IBContainer::interpolate_velocities(const Field& vel)
 {
@@ -282,7 +278,6 @@ void IBContainer::interpolate_velocities(const Field& vel)
         const auto dxi = geom.InvCellSizeArray();
         const auto plo = geom.ProbLoArray();
         const amrex::Real dV = dx[0] * dx[1] * dx[2];
-        const vs::Vector Dx{dx[0], dx[1], dx[2]};
 
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
@@ -318,11 +313,12 @@ void IBContainer::interpolate_velocities(const Field& vel)
                                     plo[2] + (k + kk + 0.5) * dx[2] - pp.pos(2)};
 
                                 interp_vel +=
-                                    utils::dirac_delta(deltaX, Dx) *
+                                    utils::dirac_delta(deltaX, {dx[0], dx[1], dx[2]}) *
                                     varr(i + ii, j + jj, k + kk, ic) * dV;
                             }
                         }
                     }
+
                     pp.rdata(ic) = interp_vel;
                     // clang-format on
                     // Reset position vectors so that the
