@@ -25,7 +25,7 @@ void incflo::set_inflow_velocity(
 Array<amrex::LinOpBCType, AMREX_SPACEDIM>
 incflo::get_projection_bc(Orientation::Side side) const noexcept
 {
-    auto& bctype = pressure().bc_type();
+    const auto& bctype = pressure().bc_type();
     Array<LinOpBCType, AMREX_SPACEDIM> r;
     for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
         if (geom[0].isPeriodic(dir)) {

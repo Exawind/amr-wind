@@ -533,7 +533,7 @@ void SyntheticTurbulence::update_impl(
     const T& velfunc)
 {
     auto& repo = m_turb_force.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
 
     const int sdir = (*m_wind_profile).shear_dir();
 

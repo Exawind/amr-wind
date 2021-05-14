@@ -119,9 +119,7 @@ void incflo::ReadCheckpointFile()
 
         BoxArray ba(ba_inp[lev].simplified());
         ba.maxSize(maxGridSize(lev));
-        if (ba == ba_inp[lev]) {
-            ba = ba_inp[lev];
-        } else {
+        if (ba != ba_inp[lev]) {
             if ((lev == 0) || refine_grid_layout)
                 ChopGrids(lev, ba, ParallelDescriptor::NProcs());
             dm = DistributionMapping{ba, ParallelDescriptor::NProcs()};

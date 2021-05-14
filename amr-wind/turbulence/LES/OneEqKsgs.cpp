@@ -82,7 +82,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     auto gradT = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradT, m_temperature.state(fstate));
 
-    auto& vel = this->m_vel.state(fstate);
+    const auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
@@ -92,9 +92,9 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
 
     auto& mu_turb = this->mu_turb();
     const amrex::Real Ce = this->m_Ce;
-    auto& den = this->m_rho.state(fstate);
+    const auto& den = this->m_rho.state(fstate);
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -156,7 +156,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {

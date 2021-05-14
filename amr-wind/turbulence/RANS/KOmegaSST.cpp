@@ -45,9 +45,9 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     const amrex::Real a1 = this->m_a1;
 
     auto lam_mu = (this->m_transport).mu();
-    auto& den = this->m_rho.state(fstate);
-    auto& tke = (*this->m_tke).state(fstate);
-    auto& sdr = (*this->m_sdr).state(fstate);
+    const auto& den = this->m_rho.state(fstate);
+    const auto& tke = (*this->m_tke).state(fstate);
+    const auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
 
     const int nlevels = repo.num_active_levels();
@@ -58,7 +58,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
-    auto& vel = this->m_vel.state(fstate);
+    const auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
@@ -161,7 +161,7 @@ void KOmegaSST<Transport>::update_scalar_diff(
     BL_PROFILE("amr-wind::" + this->identifier() + "::update_scalar_diff");
 
     auto lam_mu = (this->m_transport).mu();
-    auto& mu_turb = this->mu_turb();
+    const auto& mu_turb = this->mu_turb();
 
     if (name == pde::TKE::var_name()) {
         const amrex::Real sigma_k1 = this->m_sigma_k1;

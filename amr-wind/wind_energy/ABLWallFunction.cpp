@@ -132,8 +132,8 @@ void ABLVelWallFunc::wall_model(
 
     constexpr int idim = 2;
     auto& repo = velocity.repo();
-    auto& density = repo.get_field("density", rho_state);
-    auto& viscosity = repo.get_field("velocity_mueff");
+    const auto& density = repo.get_field("density", rho_state);
+    const auto& viscosity = repo.get_field("velocity_mueff");
     const int nlevels = repo.num_active_levels();
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
@@ -238,7 +238,7 @@ void ABLTempWallFunc::wall_model(
     BL_PROFILE("amr-wind::ABLTempWallFunc");
     auto& velocity = repo.get_field("velocity");
     const auto& density = repo.get_field("density", rho_state);
-    auto& alpha = repo.get_field("temperature_mueff");
+    const auto& alpha = repo.get_field("temperature_mueff");
     const int nlevels = repo.num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
