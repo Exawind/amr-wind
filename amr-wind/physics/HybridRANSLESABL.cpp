@@ -78,7 +78,7 @@ void HybridRANSLESABL::compute_sdr_impl()
     auto* sdr = this->m_sdr;
     const amrex::Real Ce = this->m_Ce;
 
-    auto& geom_vec = m_sim.repo().mesh().Geom();
+    const auto& geom_vec = m_sim.repo().mesh().Geom();
     const int nlevels = m_sim.repo().num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = geom_vec[lev];

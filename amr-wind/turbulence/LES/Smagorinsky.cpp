@@ -31,7 +31,7 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto& repo = mu_turb.repo();
     const auto& vel = m_vel.state(fstate);
     const auto& den = m_rho.state(fstate);
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
 
     // Populate strainrate into the turbulent viscosity arrays to avoid creating

@@ -94,7 +94,7 @@ void OneEqKsgsM84<Transport>::update_turbulent_viscosity(
     const amrex::Real Ce = this->m_Ce;
     const auto& den = this->m_rho.state(fstate);
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -156,7 +156,7 @@ void OneEqKsgsM84<Transport>::update_alphaeff(Field& alphaeff)
     auto lam_alpha = (this->m_transport).alpha();
     auto& mu_turb = this->m_mu_turb;
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
 
     const int nlevels = repo.num_active_levels();
     for (int lev = 0; lev < nlevels; ++lev) {

@@ -58,7 +58,7 @@ void KOmegaSST<Transport>::update_turbulent_viscosity(const FieldState fstate)
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
-    auto& vel = this->m_vel.state(fstate);
+    const auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
