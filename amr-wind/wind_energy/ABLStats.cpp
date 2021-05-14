@@ -101,11 +101,11 @@ void ABLStats::calc_sfs_stress_avgs(
 
     auto& repo = m_sim.repo();
 
-    auto& m_vel = repo.get_field("velocity");
+    const auto& m_vel = repo.get_field("velocity");
     auto gradVel = repo.create_scratch_field(9);
     fvm::gradient(*gradVel, m_vel);
 
-    auto& alphaeff = repo.get_field(pde_impl::mueff_name("temperature"));
+    const auto& alphaeff = repo.get_field(pde_impl::mueff_name("temperature"));
     auto gradT = repo.create_scratch_field(3);
     fvm::gradient(*gradT, m_temperature);
 

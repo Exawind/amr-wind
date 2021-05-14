@@ -29,8 +29,8 @@ void Smagorinsky<Transport>::update_turbulent_viscosity(const FieldState fstate)
 
     auto& mu_turb = this->mu_turb();
     auto& repo = mu_turb.repo();
-    auto& vel = m_vel.state(fstate);
-    auto& den = m_rho.state(fstate);
+    const auto& vel = m_vel.state(fstate);
+    const auto& den = m_rho.state(fstate);
     auto& geom_vec = repo.mesh().Geom();
     const amrex::Real Cs_sqr = this->m_Cs * this->m_Cs;
 

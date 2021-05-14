@@ -79,9 +79,9 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
 
     auto& mu_turb = this->mu_turb();
     auto lam_mu = (this->m_transport).mu();
-    auto& den = this->m_rho.state(fstate);
-    auto& tke = (*this->m_tke).state(fstate);
-    auto& sdr = (*this->m_sdr).state(fstate);
+    const auto& den = this->m_rho.state(fstate);
+    const auto& tke = (*this->m_tke).state(fstate);
+    const auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
     auto& geom_vec = repo.mesh().Geom();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
@@ -94,7 +94,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     auto gradOmega = (this->m_sim.repo()).create_scratch_field(3, 0);
     fvm::gradient(*gradOmega, sdr);
 
-    auto& vel = this->m_vel.state(fstate);
+    const auto& vel = this->m_vel.state(fstate);
     // Compute strain rate into shear production term
     fvm::strainrate(this->m_shear_prod, vel);
 
