@@ -86,8 +86,9 @@ void IBSrcOp<GeomTrait>::operator()(
             problo[0] + (i + 0.5) * dx[0], problo[1] + (j + 0.5) * dx[1],
             problo[2] + (k + 0.5) * dx[2]};
 
-        // loop over Lagrangian markers
+        // Local src force at the lagrangian marker
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
+        // loop over Lagrangian markers
         for (unsigned ip = 0; ip < m_pos.size(); ++ip) {
             const auto lag_force = (forcing_vel[ip] - intrp_vel[ip]) / dt;
             const auto dist_x = ijk_x - pos[ip];

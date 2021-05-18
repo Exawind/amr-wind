@@ -263,7 +263,7 @@ void IBContainer::populate_vel_buffer()
     }
 }
 
-/** Helper method for IBContainer::sample_velocities
+/** Helper method for IBContainer::interpolate_velocities
  *
  */
 void IBContainer::interpolate_velocities(const Field& vel)
