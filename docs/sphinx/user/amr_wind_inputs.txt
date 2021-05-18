@@ -98,7 +98,7 @@ diffusion.mg_max_coarsening_level           = 100
 diffusion.mg_max_order                      = 2
 diffusion.mg_rtol                           = 1.0e-6
 diffusion.mg_atol                           = 1.0e-12
-diffusion.bottom_solver.                    = "bicgstab"
+diffusion.bottom_solver                     = "bicgstab"
 
 # MLMG options for MAC Projection
 mac_proj.mg_rtol                            = 1.0e-6
