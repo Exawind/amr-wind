@@ -32,6 +32,8 @@ ABLWRFfile::ABLWRFfile(const std::string filewrf)
     ncf.var("wrf_temperature").get(m_wrf_temp.data());
     ncf.var("wrf_tflux").get(m_wrf_tflux.data());
 
+    ncf.close();
+
 }
 
 const amrex::Vector<amrex::Real>& ABLWRFfile::wrf_heights() const
