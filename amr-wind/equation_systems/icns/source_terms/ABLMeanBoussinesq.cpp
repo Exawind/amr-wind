@@ -151,6 +151,15 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
         m_theta_vals.begin());
 }
 
+void ABLMeanBoussinesq::mean_temperature_update(
+    const amrex::Vector<amrex::Real>& tavg)
+{
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tavg.begin(), tavg.end(),
+        m_theta_vals.begin());
+
+}
+
 } // namespace icns
 } // namespace pde
 } // namespace amr_wind

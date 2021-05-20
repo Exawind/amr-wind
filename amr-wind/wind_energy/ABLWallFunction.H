@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include <AMReX_REAL.H>
 
 namespace amr_wind {
 
@@ -36,7 +37,9 @@ public:
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
-    void update_tflux(const amrex::Real); 
+    void update_tflux(const amrex::Real);
+
+    void update_ustar(const amrex::Real);
 
 private:
     const CFDSim& m_sim;

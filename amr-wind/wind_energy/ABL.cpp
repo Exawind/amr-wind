@@ -7,10 +7,12 @@
 #include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
 #include "amr-wind/incflo.H"
 #include "amr-wind/wind_energy/ABLWrf.H"
+#include "amr-wind/wind_energy/ABLStatsFileRead.H"
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_Print.H"
+#include <AMReX_REAL.H>
 
 namespace amr_wind {
 
@@ -44,6 +46,16 @@ ABL::ABL(CFDSim& sim)
         std::string file_wrf;
         pp.query("WRFforcing", file_wrf);
         m_wrf_file.reset(new ABLWRFfile(file_wrf));
+#endif
+    }
+
+    if (pp.contains("ForceFromStats")) {
+#ifndef AMR_WIND_USE_NETCDF
+        amrex::Abort("Forcing From stats capability requires NetCDF");
+#else
+        std::string file_stats;
+        pp.query("ForceFromStats", file_stats);
+        m_stats_file.reset(new ABLReadStats(file_stats));
 #endif
     }
 
@@ -129,8 +141,22 @@ void ABL::pre_advance_work()
         m_abl_forcing->set_mean_velocities(vx, vy);
     }
 
-    if (m_abl_mean_bous != nullptr)
-        m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+    if (m_stats_file != nullptr) {
+        amrex::Real interpUstar;
+        interpUstar =
+            m_stats_file->interpUstarTime(m_sim.time().current_time());
+        m_abl_wall_func.update_ustar(interpUstar);
+        m_stats_file->interpThetaTime(m_sim.time().current_time());
+
+        if (m_abl_mean_bous != nullptr) {
+            m_abl_mean_bous->mean_temperature_update(
+                m_stats_file->stats_theta());
+        }
+    } else {
+        if (m_abl_mean_bous != nullptr) {
+            m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
+        }
+    }
 
     if (m_abl_wrf_forcing != nullptr) {
         m_abl_wrf_forcing->mean_velocity_heights(
