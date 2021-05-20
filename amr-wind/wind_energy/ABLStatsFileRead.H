@@ -19,6 +19,10 @@ public:
     const amrex::Vector<amrex::Real>& stats_ustar() const;
     const amrex::Vector<amrex::Real>& stats_time() const;
     const amrex::Vector<amrex::Real>& stats_theta() const;
+
+    amrex::Real interpUstarTime(const amrex::Real);
+
+    void interpThetaTime(const amrex::Real);
     
 
 private:
@@ -28,6 +32,8 @@ private:
     amrex::Vector<amrex::Real> m_stats_time;
     amrex::Vector<amrex::Real> m_stats_ustar;
     amrex::Vector<amrex::Real> m_stats_theta;
+    amrex::Vector<amrex::Real> m_stats_theta_1D;
+  
     size_t m_stats_nlevels;
 };
 

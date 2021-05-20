@@ -5,6 +5,7 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/wind_energy/ABLFieldInit.H"
+#include "amr-wind/wind_energy/ABLStatsFileRead.H"
 #include "amr-wind/wind_energy/ABLWallFunction.H"
 #include "amr-wind/wind_energy/ABLBoundaryPlane.H"
 #include "amr-wind/core/SimTime.H"
@@ -33,6 +34,7 @@ class incflo;
 namespace amr_wind {
 
 class ABLWRFfile;
+class ABLReadStats;
 
 namespace pde {
 namespace icns {
@@ -133,6 +135,7 @@ private:
     mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_theta_forcing{nullptr};
 
     std::unique_ptr<ABLWRFfile> m_wrf_file;
+    std::unique_ptr<ABLReadStats> m_stats_file;
 };
 
 } // namespace amr_wind

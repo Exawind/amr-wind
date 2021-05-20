@@ -110,6 +110,14 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
         tavg.line_average().end(), m_theta_vals.begin());
 }
 
+void ABLMeanBoussinesq::mean_temperature_update(
+    const amrex::Vector<amrex::Real>& tavg)
+{
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tavg.begin(), tavg.end(),
+        m_theta_vals.begin());
+}
+
 } // namespace icns
 } // namespace pde
 } // namespace amr_wind

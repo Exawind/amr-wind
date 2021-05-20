@@ -111,6 +111,11 @@ void ABLWallFunction::update_tflux(const amrex::Real wrftflux)
   m_mo.surf_temp_flux = wrftflux; 
 }
 
+void ABLWallFunction::update_ustar(const amrex::Real statustar){
+
+  m_mo.utau = statustar; 
+}
+
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
 {

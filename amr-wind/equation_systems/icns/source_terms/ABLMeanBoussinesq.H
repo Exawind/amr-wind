@@ -1,6 +1,9 @@
 #ifndef ABLMEANBOUSSINESQ_H
 #define ABLMEANBOUSSINESQ_H
 
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
+#include <optional>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
@@ -35,6 +38,8 @@ public:
     void mean_temperature_init(const FieldPlaneAveraging&);
 
     void mean_temperature_update(const FieldPlaneAveraging&);
+
+    void mean_temperature_update(const amrex::Vector<amrex::Real>&);
 
 private:
     const amrex::AmrCore& m_mesh;
