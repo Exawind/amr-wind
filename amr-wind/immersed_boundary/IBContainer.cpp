@@ -278,7 +278,6 @@ void IBContainer::interpolate_velocities(const Field& vel)
         const auto dxi = geom.InvCellSizeArray();
         const auto plo = geom.ProbLoArray();
         const amrex::Real dV = dx[0] * dx[1] * dx[2];
-
         for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
             const int np = pti.numParticles();
             auto* pstruct = pti.GetArrayOfStructs()().data();
@@ -300,8 +299,9 @@ void IBContainer::interpolate_velocities(const Field& vel)
                 const int k = static_cast<int>(amrex::Math::floor(z));
 
                 const int iproc = pp.cpu();
-                amrex::Real interp_vel = 0.0;
+
                 for (int ic = 0; ic < AMREX_SPACEDIM; ++ic) {
+                    amrex::Real interp_vel = 0.0;
                     // Interpolating from five neighbouring points
                     // clang-format off
                     for (int ii = -2; ii <= 2; ++ii) {
@@ -318,7 +318,6 @@ void IBContainer::interpolate_velocities(const Field& vel)
                             }
                         }
                     }
-
                     pp.rdata(ic) = interp_vel;
                     // clang-format on
                     // Reset position vectors so that the

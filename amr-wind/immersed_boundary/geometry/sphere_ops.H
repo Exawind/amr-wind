@@ -21,6 +21,7 @@ struct ReadInputsOp<Sphere>
         pp.get("center", wdata.center_loc);
         pp.get("radius", wdata.radius);
         amrex::Real search_radius = 1.5 * wdata.radius;
+
         // clang-format off
         const auto& origin=wdata.center_loc;
         info.bound_box = amrex::RealBox(
