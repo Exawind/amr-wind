@@ -5,7 +5,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_types.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/wind_energy/actuator/ActSrcLineOp.H"
-#include "amr-wind/wind_energy/actuator/ActSrcDiskOp.H"
+#include "amr-wind/wind_energy/actuator/turbine/ActSrcDiskOp.H"
 #include "amr-wind/wind_energy/actuator/ActParser.H"
 
 namespace amr_wind {
