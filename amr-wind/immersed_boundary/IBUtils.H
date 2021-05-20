@@ -41,7 +41,7 @@ dirac_delta_phi(const amrex::Real& r)
 {
     const amrex::Real abs_r = amrex::Math::abs(r);
 
-    if ((abs_r >= 0.5) && (abs_r <= 1.5)) {
+    if ((abs_r > 0.5) && (abs_r <= 1.5)) {
         return 1.0 / 6.0 *
                (5.0 - 3.0 * abs_r -
                 std::sqrt(-3.0 * std::pow((1.0 - abs_r), 2.0) + 1.0));
@@ -65,9 +65,9 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 dirac_delta(const vs::Vector& dist, const vs::Vector& dx)
 {
     // clang-format off
-    return 1/dx[0] * dirac_delta_phi(dist[0]/dx[0]) *
-           1/dx[1] * dirac_delta_phi(dist[1]/dx[1]) *
-           1/dx[2] * dirac_delta_phi(dist[2]/dx[2]);
+    return 1.0/dx[0] * dirac_delta_phi(dist[0]/dx[0]) *
+           1.0/dx[1] * dirac_delta_phi(dist[1]/dx[1]) *
+           1.0/dx[2] * dirac_delta_phi(dist[2]/dx[2]);
     // clang-format on
 }
 

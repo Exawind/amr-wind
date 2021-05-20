@@ -21,8 +21,8 @@ struct BluffBodyBaseData
     //! Body velocity at the boundary node
     VecList body_vel;
 
-    //! Length of the IB boundary "panel"
-    RealList dl;
+    //! Forcing volume in theory should be equal to dx[0]*dx[1]*dx[2]
+    RealList dVl;
 
     //! Total integrated lift over the wing
     amrex::Real lift{0.0};

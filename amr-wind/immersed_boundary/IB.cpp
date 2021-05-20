@@ -80,7 +80,6 @@ void IB::post_regrid_actions()
 void IB::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ib::IB::pre_advance_work");
-
     m_container->reset_container();
     update_positions();
     update_velocities();

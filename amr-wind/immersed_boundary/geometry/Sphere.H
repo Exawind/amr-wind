@@ -10,7 +10,7 @@ struct SphereData : public BluffBodyBaseData
 {
     vs::Vector center_loc{0.0, 0.0, 0.0};
 
-    amrex::Real radius;
+    amrex::Real radius{0.1};
 };
 
 struct Sphere : public BluffBodyType
