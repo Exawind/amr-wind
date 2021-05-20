@@ -89,4 +89,23 @@ void MOData::update_fluxes(int max_iters)
     }
 }
 
+void MOData::update_aux(){
+
+  // Initialize variables
+  amrex::Real psi_m;
+  amrex::Real psi_h;
+  amrex::Real zeta;
+
+  obukhov_len = -utau * utau * utau * theta_mean /
+      (kappa * gravity * surf_temp_flux);
+  zeta = zref / obukhov_len;
+
+  psi_m = calc_psi_m(zeta);
+  psi_h = calc_psi_h(zeta);
+
+  surf_temp = surf_temp_flux * (std::log(zref / z0) - psi_h) /
+      (utau * kappa) + theta_mean;
+  
+}
+
 } // namespace amr_wind

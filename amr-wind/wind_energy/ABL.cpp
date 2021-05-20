@@ -129,8 +129,13 @@ void ABL::post_init_actions()
 void ABL::pre_advance_work()
 {
     const auto& vel_pa = m_stats->vel_profile();
-    m_abl_wall_func.update_umean(
-        m_stats->vel_profile(), m_stats->theta_profile());
+
+    if (m_abl_wrf_theta_forcing != nullptr) {
+        amrex::Real interpTflux;
+        interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
+            m_stats->theta_profile(), m_wrf_file);
+        m_abl_wall_func.update_tflux(interpTflux);
+    }
 
     if (m_abl_forcing != nullptr) {
         const amrex::Real zh = m_abl_forcing->forcing_height();
@@ -148,6 +153,8 @@ void ABL::pre_advance_work()
         m_abl_wall_func.update_ustar(interpUstar);
         m_stats_file->interpThetaTime(m_sim.time().current_time());
 
+        m_abl_wall_func.update_aux_wall();
+
         if (m_abl_mean_bous != nullptr) {
             m_abl_mean_bous->mean_temperature_update(
                 m_stats_file->stats_theta());
@@ -156,18 +163,13 @@ void ABL::pre_advance_work()
         if (m_abl_mean_bous != nullptr) {
             m_abl_mean_bous->mean_temperature_update(m_stats->theta_profile());
         }
+        m_abl_wall_func.update_umean(
+            m_stats->vel_profile(), m_stats->theta_profile());
     }
 
     if (m_abl_wrf_forcing != nullptr) {
         m_abl_wrf_forcing->mean_velocity_heights(
             m_stats->vel_profile(), m_wrf_file);
-    }
-
-    if (m_abl_wrf_theta_forcing != nullptr) {
-        amrex::Real interpTflux;
-        interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
-            m_stats->theta_profile(), m_wrf_file);
-        m_abl_wall_func.update_tflux(interpTflux);
     }
 
     m_bndry_plane->pre_advance_work();
