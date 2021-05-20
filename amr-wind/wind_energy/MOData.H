@@ -68,6 +68,7 @@ struct MOData
     amrex::Real calc_psi_m(amrex::Real zeta) const;
     amrex::Real calc_psi_h(amrex::Real zeta) const;
     void update_fluxes(int max_iters = 25);
+    void update_aux();
 };
 
 } // namespace amr_wind

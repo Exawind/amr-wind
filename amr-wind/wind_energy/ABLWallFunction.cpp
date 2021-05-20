@@ -136,6 +136,11 @@ void ABLWallFunction::update_ustar(const amrex::Real statustar){
   m_mo.utau = statustar; 
 }
 
+void ABLWallFunction::update_aux_wall(){
+
+  m_mo.update_aux();
+}
+
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
     : m_wall_func(wall_func)
 {
