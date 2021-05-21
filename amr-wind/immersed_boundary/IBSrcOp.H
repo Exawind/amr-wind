@@ -74,7 +74,6 @@ void IBSrcOp<GeomTrait>::operator()(
     const auto& problo = geom.ProbLoArray();
     const auto& dx = geom.CellSizeArray();
     const amrex::Real dV = dx[0] * dx[1] * dx[2];
-
     // extract relevant fields
     const auto* pos = m_pos.data();
     const auto* forcing_vel = m_forcing_vel.data();
