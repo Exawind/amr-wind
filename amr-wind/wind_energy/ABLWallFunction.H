@@ -5,6 +5,7 @@
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
 #include "amr-wind/core/FieldBCOps.H"
 #include "amr-wind/wind_energy/MOData.H"
+#include <AMReX_Array.H>
 #include <AMReX_REAL.H>
 
 namespace amr_wind {
@@ -45,7 +46,7 @@ public:
 
     void update_ustar(const amrex::Real);
 
-    void update_aux_wall(); 
+    void update_aux_wall(const amrex::Array<amrex::Real, 4>&); 
 
 private:
     const CFDSim& m_sim;
