@@ -39,8 +39,9 @@ protected:
         for (int ip = 0; ip < num_pos; ++ip) {
             amr_wind::vs::Vector tmp{amrex::Random(), amrex::Random(), amrex::Random()};
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                // scale random numbers to be in a range well within the physical domain
-                tmp[d] = (tmp[d] * (probhi[d]-problo[d]-2)) + problo[d]-1.0;
+                // scale random numbers to be in a range that allows for
+                // at least a 3 point interpolation stencil in each direction
+                tmp[d] = (tmp[d] * (probhi[d]-problo[d]-2.0)) + problo[d]+1.0;
             }
             pos[ip] = tmp;
         }
@@ -63,10 +64,10 @@ TEST_F(IBDiracDeltaTest, ib_utils)
 
     for (int ip = 0; ip < lag_markers.size(); ++ip) {
 
-        amrex::Real sum  = 0.0;
-        amrex::Real sum1 = 0.0;
+        amrex::Real sum1  = 0.0;
         amrex::Real sum2 = 0.0;
         amrex::Real sum3 = 0.0;
+        amrex::Real sum4 = 0.0;
 
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& dx = geom[lev].CellSizeArray();
@@ -87,14 +88,17 @@ TEST_F(IBDiracDeltaTest, ib_utils)
                     const auto dirac_delta_fac =
                         amr_wind::ib::utils::dirac_delta(dist_x, {dx[0], dx[1], dx[2]});
 
-                    sum  += dirac_delta_fac * dx[0]*dx[1]*dx[2];
-                    sum1 += dist_x[0] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
-                    sum2 += dist_x[1] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
-                    sum3 += dist_x[2] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
+                    sum1  += dirac_delta_fac * dx[0]*dx[1]*dx[2];
+                    sum2 += dist_x[0] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
+                    sum3 += dist_x[1] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
+                    sum4 += dist_x[2] * dirac_delta_fac * dx[0]*dx[1]*dx[2];
                 });
             }
         }
-        amrex::Print() << sum << " " << sum1 << " " << sum2 << " " << sum3 << std::endl;
+        EXPECT_NEAR(sum1, 1.0, 1.0e-15);
+        EXPECT_NEAR(sum2, 0.0, 1.0e-15);
+        EXPECT_NEAR(sum3, 0.0, 1.0e-15);
+        EXPECT_NEAR(sum4, 0.0, 1.0e-15);
     }
 }
 
