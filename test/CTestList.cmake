@@ -16,6 +16,10 @@ ProcessorCount(PROCESSES)
 #=============================================================================
 # Functions for adding tests / Categories of tests
 #=============================================================================
+function(set_current_test_binary TEST_NAME return_name)
+    set(return_name ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
+endfunction(set_current_test_binary)
+
 macro(setup_test)
     set(CURRENT_TEST_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test_files/${TEST_NAME})
     set(CURRENT_TEST_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/test_files/${TEST_NAME})
@@ -45,6 +49,13 @@ macro(setup_test)
     endif()
 endmacro(setup_test)
 
+# function to copy openfast data to specific test directories
+# make this a separate function so if can be used with any of the regression test macros
+function(copy_openfast_data TEST_NAME)
+    setup_test()
+    nrel5mw_copy_to_dir("${CURRENT_TEST_BINARY_DIR}")
+endfunction(copy_openfast_data)
+
 # Standard regression test
 function(add_test_r TEST_NAME)
     setup_test()
@@ -62,6 +73,14 @@ endfunction(add_test_r)
 function(add_test_re TEST_NAME)
     add_test_r(${TEST_NAME})
     set_tests_properties(${TEST_NAME} PROPERTIES LABELS "regression;no_ci")
+endfunction(add_test_re)
+
+# Regression tests excluded from CI copy openfast stuff
+function(add_test_reo TEST_NAME)
+    add_test_re(${TEST_NAME})
+    # re-run setup_test macro to get the binary dir
+    setup_test()
+    nrel5mw_copy_to_dir("${CURRENT_TEST_BINARY_DIR}")
 endfunction(add_test_re)
 
 # Regression test and excluded from CI with dependency
@@ -118,9 +137,6 @@ endfunction(add_test_u)
 # Unit tests
 #=============================================================================
 add_test_u(unit_tests)
-if(AMR_WIND_ENABLE_OPENFAST)
-  #nrel5mw_copy_to_dir("${CURRENT_TEST_BINARY_DIR}")
-endif()
 
 #=============================================================================
 # Regression tests
@@ -163,10 +179,11 @@ add_test_re(zalesak_disk_godunov)
 add_test_re(dam_break_godunov)
 add_test_re(sloshing_tank)
 add_test_re(abl_godunov_weno)
-#if(AMR_WIND_ENABLE_OPENFAST)
-#  add_test_re(act_openfast_nrel5mw)
-#  nrel5mw_copy_to_dir("${CURRENT_TEST_BINARY_DIR}")
-#endif()
+
+if(AMR_WIND_ENABLE_OPENFAST)
+  add_test_re(act_openfast_nrel5mw)
+  copy_openfast_data(act_openfast_nrel5mw)
+endif()
 
 if (NOT AMR_WIND_ENABLE_CUDA)
   add_test_re(ctv_godunov_plm)
