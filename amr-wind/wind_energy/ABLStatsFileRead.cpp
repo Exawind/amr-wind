@@ -30,7 +30,7 @@ ABLReadStats::ABLReadStats(const std::string filestats)
         m_stat_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
         amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-    m_stats_nt_steps = ncf.dim("time").len();
+    m_stats_nt_steps = ncf.dim("num_time_steps").len();
 
     m_stats_time.resize(m_stats_nt_steps);
 
