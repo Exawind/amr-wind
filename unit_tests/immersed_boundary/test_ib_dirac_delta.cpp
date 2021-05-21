@@ -62,7 +62,7 @@ TEST_F(IBDiracDeltaTest, ib_utils)
     fill_lagrangian_markers(lag_markers, 11,
         geom[0].ProbLoArray(), geom[0].ProbHiArray());
 
-    for (int ip = 0; ip < lag_markers.size(); ++ip) {
+    for (unsigned ip = 0; ip < lag_markers.size(); ++ip) {
 
         amrex::Real sum1  = 0.0;
         amrex::Real sum2 = 0.0;
@@ -75,7 +75,6 @@ TEST_F(IBDiracDeltaTest, ib_utils)
 
             for (amrex::MFIter mfi(field(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.tilebox();
-                const auto& field_arr = field(lev).array(mfi);
 
                 amrex::ParallelFor(bx, [&] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amr_wind::vs::Vector ijk_x{
