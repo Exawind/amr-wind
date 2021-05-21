@@ -1,5 +1,4 @@
 #include "aw_test_utils/MeshTest.H"
-
 #include "amr-wind/immersed_boundary/IBUtils.H"
 
 namespace amr_wind_tests {
@@ -31,14 +30,17 @@ protected:
 
     void fill_lagrangian_markers(
         amrex::Gpu::DeviceVector<amr_wind::vs::Vector> & pos,
-        const int num_pos)
+        const int num_pos,
+        const amrex::GpuArray<amrex::Real,AMREX_SPACEDIM> & problo,
+        const amrex::GpuArray<amrex::Real,AMREX_SPACEDIM> & probhi)
     {
         pos.resize(num_pos);
 
         for (int ip = 0; ip < num_pos; ++ip) {
             amr_wind::vs::Vector tmp{amrex::Random(), amrex::Random(), amrex::Random()};
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                tmp[d] = tmp[d] * 32;
+                // scale random numbers to be in a range well within the physical domain
+                tmp[d] = (tmp[d] * (probhi[d]-problo[d]-2)) + problo[d]-1.0;
             }
             pos[ip] = tmp;
         }
@@ -56,7 +58,8 @@ TEST_F(IBDiracDeltaTest, ib_utils)
     const int nlevels = mesh().finestLevel() + 1;
 
     amrex::Gpu::DeviceVector<amr_wind::vs::Vector> lag_markers;
-    fill_lagrangian_markers(lag_markers, 11);
+    fill_lagrangian_markers(lag_markers, 11,
+        geom[0].ProbLoArray(), geom[0].ProbHiArray());
 
     for (int ip = 0; ip < lag_markers.size(); ++ip) {
 
