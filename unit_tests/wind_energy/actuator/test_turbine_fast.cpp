@@ -11,6 +11,7 @@
 namespace amr_wind_tests {
 namespace {
 
+template <typename T>
 class ActTurbineFastTest : public MeshTest
 {
 protected:
@@ -35,10 +36,10 @@ protected:
         }
         {
             amrex::ParmParse pp("Actuator");
-            pp.add("type", std::string("TurbineFastLine"));
+            pp.add("type", std::string("TurbineFast" + T::identifier()));
         }
         {
-            amrex::ParmParse pp("Actuator.TurbineFastLine");
+            amrex::ParmParse pp("Actuator.TurbineFast" + T::identifier());
             pp.addarr(
                 "base_position", amrex::Vector<amrex::Real>{64.0, 64.0, 0.0});
             pp.add("rotor_diameter", 126.0);
@@ -70,18 +71,20 @@ protected:
     void prepare_outputs() override {}
 };
 
-} // namespace
+namespace act = ::amr_wind::actuator;
+using MyTypes = ::testing::Types<act::ActSrcLine, act::ActSrcDisk>;
 
-TEST_F(ActTurbineFastTest, test_ops)
+TYPED_TEST_SUITE(ActTurbineFastTest, MyTypes, );
+
+TYPED_TEST(ActTurbineFastTest, test_ops)
 {
     namespace act = ::amr_wind::actuator;
-
-    initialize_mesh();
-    act::utils::ActParser pp("Actuator.TurbineFastLine", "Actuator.T1");
-    act::ActDataHolder<act::TurbineFast> data(sim(), "T1", 0);
+    MeshTest::initialize_mesh();
+    act::utils::ActParser pp(
+        "Actuator.TurbineFast" + TypeParam::identifier(), "Actuator.T1");
+    act::ActDataHolder<act::TurbineFast> data(MeshTest::sim(), "T1", 0);
     {
-        using ReadOp =
-            act::ops::ReadInputsOp<act::TurbineFast, act::ActSrcLine>;
+        using ReadOp = act::ops::ReadInputsOp<act::TurbineFast, TypeParam>;
         ReadOp op;
         op(data, pp);
     }
@@ -91,7 +94,7 @@ TEST_F(ActTurbineFastTest, test_ops)
 
 #if AW_ENABLE_OPENFAST_UTEST
     {
-        using InitOp = act::ops::InitDataOp<act::TurbineFast, act::ActSrcLine>;
+        using InitOp = act::ops::InitDataOp<act::TurbineFast, TypeParam>;
         InitOp op;
         op(data);
     }
@@ -119,10 +122,10 @@ TEST_F(ActTurbineFastTest, test_ops)
 #endif
 }
 
-TEST_F(ActTurbineFastTest, fast_turbine)
+TYPED_TEST(ActTurbineFastTest, fast_turbine)
 {
-    initialize_mesh();
-    auto& vel = sim().repo().declare_field("velocity", 3, 3);
+    MeshTest::initialize_mesh();
+    auto& vel = MeshTest::sim().repo().declare_field("velocity", 3, 3);
     vel.setVal(10.0, 0, 1, 3);
 
     {
@@ -131,7 +134,7 @@ TEST_F(ActTurbineFastTest, fast_turbine)
         pp.addarr("labels", actuators);
     }
 
-    ActTurbPhyTest act(sim());
+    ActTurbPhyTest act(MeshTest::sim());
     act.pre_init_actions();
 #if AW_ENABLE_OPENFAST_UTEST
     act.post_init_actions();
@@ -139,5 +142,6 @@ TEST_F(ActTurbineFastTest, fast_turbine)
     GTEST_SKIP();
 #endif
 }
+} // namespace
 
 } // namespace amr_wind_tests

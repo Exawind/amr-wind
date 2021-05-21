@@ -85,7 +85,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const vs::Vector& point1,
     const vs::Vector& point2)
 {
-const amrex::Real eps = vs::DTraits<amrex::Real>::eps();
+    const amrex::Real eps = vs::DTraits<amrex::Real>::eps();
     const auto d1 = point1 - origin;
     const auto d2 = point2 - origin;
 
