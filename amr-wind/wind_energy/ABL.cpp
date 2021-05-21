@@ -12,6 +12,7 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_MultiFab.H"
 #include "AMReX_Print.H"
+#include <AMReX_Array.H>
 #include <AMReX_REAL.H>
 
 namespace amr_wind {
@@ -151,9 +152,11 @@ void ABL::pre_advance_work()
         interpUstar =
             m_stats_file->interpUstarTime(m_sim.time().current_time());
         m_abl_wall_func.update_ustar(interpUstar);
-        m_stats_file->interpThetaTime(m_sim.time().current_time());
 
-        m_abl_wall_func.update_aux_wall();
+        amrex::Array<amrex::Real, 4> wallfunc_aux; 
+        m_stats_file->interpThetaTime(m_sim.time().current_time(), wallfunc_aux);
+        
+        m_abl_wall_func.update_aux_wall(wallfunc_aux);
 
         if (m_abl_mean_bous != nullptr) {
             m_abl_mean_bous->mean_temperature_update(

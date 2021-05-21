@@ -47,7 +47,19 @@ ABLReadStats::ABLReadStats(const std::string filestats)
     m_stats_theta.resize(m_stats_nt_steps * m_stats_nlevels);
     m_stats_theta_1D.resize(m_stats_nlevels);
 
+    m_stats_u.resize(m_stats_nt_steps*m_stats_nlevels);
+    m_stats_u_1D.resize(m_stats_nlevels);
+    
+    m_stats_v.resize(m_stats_nt_steps*m_stats_nlevels);
+    m_stats_v_1D.resize(m_stats_nlevels);
+    
+    m_stats_vmag.resize(m_stats_nt_steps*m_stats_nlevels);
+    m_stats_vmag_1D.resize(m_stats_nlevels);
+
     grp.var("theta").get(m_stats_theta.data());
+    grp.var("hvelmag").get(m_stats_vmag.data());
+    grp.var("u").get(m_stats_u.data());
+    grp.var("v").get(m_stats_v.data()); 
 
     ncf.close();
 }
@@ -88,7 +100,7 @@ amrex::Real ABLReadStats::interpUstarTime(const amrex::Real timeSim)
 
     return interpUstar;
 }
-void ABLReadStats::interpThetaTime(const amrex::Real timeSim)
+void ABLReadStats::interpThetaTime(const amrex::Real timeSim, amrex::Array<amrex::Real, 4>& wall_func_aux)
 {
 
     // First the index in time
@@ -108,7 +120,21 @@ void ABLReadStats::interpThetaTime(const amrex::Real timeSim)
 
         m_stats_theta_1D[i] = coeff_interp[0] * m_stats_theta[lt] +
                               coeff_interp[1] * m_stats_theta[rt];
+
+        m_stats_u_1D[i] =
+            coeff_interp[0] * m_stats_u[lt] + coeff_interp[1] * m_stats_u[rt];
+
+        m_stats_v_1D[i] =
+            coeff_interp[0] * m_stats_v[lt] + coeff_interp[1] * m_stats_v[rt];
+
+        m_stats_vmag_1D[i] = coeff_interp[0] * m_stats_vmag[lt] +
+                             coeff_interp[1] * m_stats_vmag[rt];
     }
+    wall_func_aux[0] = m_stats_u_1D[0];
+    wall_func_aux[1] = m_stats_v_1D[0];
+    wall_func_aux[2] = m_stats_vmag_1D[0];
+    wall_func_aux[3] = m_stats_theta_1D[0];
+    
 }
 
 } // namespace amr_wind
