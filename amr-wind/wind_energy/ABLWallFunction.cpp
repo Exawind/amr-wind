@@ -5,6 +5,8 @@
 #include "amr-wind/diffusion/diffusion.H"
 #include "amr-wind/wind_energy/ShearStress.H"
 
+#include <AMReX_Array.H>
+#include <AMReX_REAL.H>
 #include <cmath>
 
 #include "AMReX_ParmParse.H"
@@ -122,6 +124,34 @@ void ABLWallFunction::update_umean(
         m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
         m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
     }
+
+    m_mo.update_fluxes();
+}
+
+void ABLWallFunction::update_umean(
+    const amrex::Array<amrex::Real, 4>& stat_wall_func,
+    const amrex::Real wrftflux,
+    const amrex::Real statustar)
+{
+
+    const auto& time = m_sim.time();
+
+    if (!m_tempflux) {
+        m_mo.surf_temp =
+            m_surf_temp_init +
+            m_surf_temp_rate *
+                amrex::max(time.current_time() - m_surf_temp_rate_tstart, 0.0) /
+                3600.0;
+    }
+
+    m_mo.vel_mean[0] = stat_wall_func[0];
+    m_mo.vel_mean[1] = stat_wall_func[1];
+    m_mo.vmag_mean = stat_wall_func[2];
+    m_mo.theta_mean = stat_wall_func[3];
+
+    m_mo.surf_temp_flux = wrftflux;
+
+    m_mo.utau = statustar;
 
     m_mo.update_fluxes();
 }

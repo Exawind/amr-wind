@@ -38,6 +38,11 @@ public:
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
+    void update_umean(
+        const amrex::Array<amrex::Real, 4>&,
+        const amrex::Real,
+        const amrex::Real);
+
     void update_tflux(const amrex::Real);
 
     void update_ustar(const amrex::Real);
