@@ -130,9 +130,11 @@ void ABL::post_init_actions()
 void ABL::pre_advance_work()
 {
     const auto& vel_pa = m_stats->vel_profile();
+    amrex::Real interpTflux;
+    amrex::Real interpUstar;
+    amrex::Array<amrex::Real, 4> wallfunc_aux; 
 
     if (m_abl_wrf_theta_forcing != nullptr) {
-        amrex::Real interpTflux;
         interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
             m_stats->theta_profile(), m_wrf_file);
         m_abl_wall_func.update_tflux(interpTflux);
@@ -148,15 +150,11 @@ void ABL::pre_advance_work()
     }
 
     if (m_stats_file != nullptr) {
-        amrex::Real interpUstar;
         interpUstar =
             m_stats_file->interpUstarTime(m_sim.time().current_time());
-        m_abl_wall_func.update_ustar(interpUstar);
-
-        amrex::Array<amrex::Real, 4> wallfunc_aux; 
         m_stats_file->interpThetaTime(m_sim.time().current_time(), wallfunc_aux);
         
-        m_abl_wall_func.update_aux_wall(wallfunc_aux);
+        m_abl_wall_func.update_mean(wallfunc_aux, interpTflux, interpUstar);
 
         if (m_abl_mean_bous != nullptr) {
             m_abl_mean_bous->mean_temperature_update(
