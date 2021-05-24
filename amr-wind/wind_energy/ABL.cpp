@@ -154,7 +154,7 @@ void ABL::pre_advance_work()
             m_stats_file->interpUstarTime(m_sim.time().current_time());
         m_stats_file->interpThetaTime(m_sim.time().current_time(), wallfunc_aux);
         
-        m_abl_wall_func.update_mean(wallfunc_aux, interpTflux, interpUstar);
+        m_abl_wall_func.update_umean(wallfunc_aux, interpTflux, interpUstar);
 
         if (m_abl_mean_bous != nullptr) {
             m_abl_mean_bous->mean_temperature_update(
