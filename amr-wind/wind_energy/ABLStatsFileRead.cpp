@@ -78,6 +78,14 @@ const amrex::Vector<amrex::Real>& ABLReadStats::stats_ustar() const
 {
     return m_stats_ustar;
 }
+const amrex::Vector<amrex::Real>& ABLReadStats::stat_u_1D() const
+{
+  return m_stats_u_1D; 
+}
+const amrex::Vector<amrex::Real>& ABLReadStats::stat_v_1D() const
+{
+  return m_stats_v_1D;   
+}
 
 amrex::Real ABLReadStats::interpUstarTime(const amrex::Real timeSim)
 {

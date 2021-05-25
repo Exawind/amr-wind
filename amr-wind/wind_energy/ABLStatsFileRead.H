@@ -20,10 +20,12 @@ public:
     const amrex::Vector<amrex::Real>& stats_time() const;
     const amrex::Vector<amrex::Real>& stats_theta() const;
 
+    const amrex::Vector<amrex::Real>& stat_u_1D() const;
+    const amrex::Vector<amrex::Real>& stat_v_1D() const;
+
     amrex::Real interpUstarTime(const amrex::Real);
 
-  void interpThetaTime(const amrex::Real, amrex::Array<amrex::Real, 4>&);
-    
+    void interpThetaTime(const amrex::Real, amrex::Array<amrex::Real, 4>&);
 
 private:
     std::string m_stat_filename;
