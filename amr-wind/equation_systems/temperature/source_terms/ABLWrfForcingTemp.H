@@ -4,7 +4,6 @@
 #include <AMReX_REAL.H>
 #include <AMReX_Vector.H>
 #include <memory>
-#include <sys/_types/_size_t.h>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
