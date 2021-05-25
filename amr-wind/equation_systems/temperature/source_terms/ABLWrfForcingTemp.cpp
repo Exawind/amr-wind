@@ -6,7 +6,10 @@
 #include "AMReX_ParmParse.H"
 #include "AMReX_Gpu.H"
 #include "AMReX_Print.H"
+#include "amr-wind/wind_energy/ABLWrf.H"
 #include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
+#include <memory>
 
 namespace amr_wind {
 namespace pde {
@@ -81,6 +84,8 @@ void ABLWrfForcingTemp::mean_temperature_init(
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         indirectForcingInit();
     }
+
+    m_nlevels = tavg.ncell_line();
 }
 
 void ABLWrfForcingTemp::indirectForcingInit()
@@ -247,8 +252,97 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     return interpTflux;
 }
 
+amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
+    const amrex::Vector<amrex::Real>& tavg,
+    std::unique_ptr<ABLWRFfile>& wrfFile)
+{
+
+    amrex::Real currtime;
+    currtime = m_time.current_time();
+
+    // First the index in time
+    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+
+    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+
+    amrex::Real denom =
+        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+
+    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[1] = 1.0 - coeff_interp[0];
+
+    amrex::Real interpTflux;
+
+    interpTflux = coeff_interp[0] * wrfFile->wrf_tflux()[m_idx_time] +
+                  coeff_interp[1] * wrfFile->wrf_tflux()[m_idx_time + 1];
+
+    int num_wrf_ht = wrfFile->nheights();
+
+    amrex::Vector<amrex::Real> wrfInterptheta(num_wrf_ht);
+
+    for (int i = 0; i < num_wrf_ht; i++) {
+        int lt = m_idx_time * num_wrf_ht + i;
+        int rt = (m_idx_time + 1) * num_wrf_ht + i;
+
+        wrfInterptheta[i] = coeff_interp[0] * wrfFile->wrf_temp()[lt] +
+                            coeff_interp[1] * wrfFile->wrf_temp()[rt];
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterptheta.begin(), wrfInterptheta.end(),
+        m_wrf_theta_vals.begin());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, tavg.begin(),
+        tavg.end(), m_theta_vals.begin());
+
+    amrex::Vector<amrex::Real> error_T(m_nlevels);
+
+    for (size_t i = 0; i < m_nlevels; i++) {
+        error_T[i] = wrfInterptheta[i] - tavg[i];
+    }
+
+    if (amrex::toLower(m_forcing_scheme) == "indirect") {
+        amrex::Array<amrex::Real, 4> ezP_T;
+
+        amrex::Real scaleFact = 1e-3;
+
+        for (int i = 0; i < 4; i++) {
+            ezP_T[i] = 0.0;
+
+            for (int ih = 0; ih < m_nht; ih++) {
+                ezP_T[i] =
+                    ezP_T[i] + error_T[ih] * std::pow(m_zht[ih] * scaleFact, i);
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            m_poly_coeff_theta[i] = 0.0;
+            for (int j = 0; j < 4; j++) {
+                m_poly_coeff_theta[i] =
+                    m_poly_coeff_theta[i] + m_im_zTz(i, j) * ezP_T[j];
+            }
+        }
+
+        for (size_t ih = 0; ih < m_nlevels; ih++) {
+            error_T[ih] = 0.0;
+            for (int j = 0; j < 4; j++) {
+                error_T[ih] =
+                    error_T[ih] +
+                    m_poly_coeff_theta[j] * std::pow(m_zht[ih] * scaleFact, j);
+            }
+        }
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, error_T.begin(), error_T.end(),
+        m_error_wrf_avg_theta.begin());
+
+    return interpTflux;
+}
+
 void ABLWrfForcingTemp::operator()(
-    const int lev,
+    const int ,
     const amrex::MFIter&,
     const amrex::Box& bx,
     const FieldState,

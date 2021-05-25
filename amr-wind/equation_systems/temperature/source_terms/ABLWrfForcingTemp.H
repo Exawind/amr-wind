@@ -1,7 +1,10 @@
 #ifndef ABLWRFFORCINGTEMP_H
 #define ABLWRFFORCINGTEMP_H
 
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
 #include <memory>
+#include <sys/_types/_size_t.h>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -30,6 +33,9 @@ public:
     amrex::Real mean_temperature_heights(
         const FieldPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
+    amrex::Real mean_temperature_heights(
+        const amrex::Vector<amrex::Real>&, std::unique_ptr<ABLWRFfile>&);
+
     void mean_temperature_init(const FieldPlaneAveraging&, const ABLWRFfile&);
 
     void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
@@ -55,6 +61,7 @@ private:
     amrex::Vector<amrex::Real> m_zht;
 
     int m_nht;
+    size_t m_nlevels;
 
     amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
 

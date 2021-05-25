@@ -135,8 +135,13 @@ void ABL::pre_advance_work()
     amrex::Array<amrex::Real, 4> wallfunc_aux;
 
     if (m_abl_wrf_theta_forcing != nullptr) {
-        interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
-            m_stats->theta_profile(), m_wrf_file);
+        if (m_stats_file != nullptr) {
+            interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
+                m_stats_file->stats_theta(), m_wrf_file);
+        } else {
+            interpTflux = m_abl_wrf_theta_forcing->mean_temperature_heights(
+                m_stats->theta_profile(), m_wrf_file);
+        }
         m_abl_wall_func.update_tflux(interpTflux);
     }
 
