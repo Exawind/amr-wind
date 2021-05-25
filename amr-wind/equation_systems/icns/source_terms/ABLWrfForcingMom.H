@@ -1,7 +1,10 @@
 #ifndef ABLWRFFORCINGMOM
 #define ABLWRFFORCINGMOM
 
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
 #include <memory>
+#include <sys/_types/_size_t.h>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
 #include "amr-wind/core/SimTime.H"
@@ -39,6 +42,11 @@ public:
 
   void mean_velocity_heights(const VelPlaneAveraging&, std::unique_ptr<ABLWRFfile>&);
 
+  void mean_velocity_heights(
+      const amrex::Vector<amrex::Real>&,
+      const amrex::Vector<amrex::Real>&,
+      std::unique_ptr<ABLWRFfile>&);
+
   void mean_velocity_init(const VelPlaneAveraging&, const ABLWRFfile&);
 
   void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
@@ -75,6 +83,8 @@ public:
   int m_ind_polyOrder;
 
   int m_nht;
+
+  size_t m_nlevels; 
 
   amrex::Array2D<amrex::Real,0,3,0,3> m_im_zTz;
 

@@ -89,6 +89,8 @@ void ABLWrfForcingMom::mean_velocity_init(
     if (amrex::toLower(m_forcing_scheme) == "indirect") {
         indirectForcingInit();
     }
+
+    m_nlevels = vavg.ncell_line();
 }
 void ABLWrfForcingMom::indirectForcingInit()
 {
@@ -281,6 +283,128 @@ void ABLWrfForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_wrf_avg_V.begin());
+
+}
+
+void ABLWrfForcingMom::mean_velocity_heights(
+    const amrex::Vector<amrex::Real>& uavg,
+    const amrex::Vector<amrex::Real>& vavg,
+    std::unique_ptr<ABLWRFfile>& wrfFile)
+{
+
+    amrex::Real currtime;
+    currtime = m_time.current_time();
+
+    // First the index in time
+    m_idx_time = closest_index(wrfFile->wrf_times(), currtime);
+
+    amrex::Array<amrex::Real, 2> coeff_interp{{0.0, 0.0}};
+
+    amrex::Real denom =
+        wrfFile->wrf_times()[m_idx_time + 1] - wrfFile->wrf_times()[m_idx_time];
+
+    coeff_interp[0] = (wrfFile->wrf_times()[m_idx_time + 1] - currtime) / denom;
+    coeff_interp[1] = 1.0 - coeff_interp[0];
+
+    int num_wrf_ht = wrfFile->nheights();
+
+    amrex::Vector<amrex::Real> wrfInterpU(num_wrf_ht);
+    amrex::Vector<amrex::Real> wrfInterpV(num_wrf_ht);
+
+    for (int i = 0; i < num_wrf_ht; i++) {
+        int lt = m_idx_time * num_wrf_ht + i;
+        int rt = (m_idx_time + 1) * num_wrf_ht + i;
+
+        wrfInterpU[i] = coeff_interp[0] * wrfFile->wrf_u()[lt] +
+                        coeff_interp[1] * wrfFile->wrf_u()[rt];
+
+        wrfInterpV[i] = coeff_interp[0] * wrfFile->wrf_v()[lt] +
+                        coeff_interp[1] * wrfFile->wrf_v()[rt];
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterpU.begin(), wrfInterpU.end(),
+        m_wrf_u_vals.begin());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, wrfInterpV.begin(), wrfInterpV.end(),
+        m_wrf_v_vals.begin());
+
+    // copy the spatially averaged velocity to GPU
+    amrex::Vector<amrex::Real> uStats(m_nlevels);
+    amrex::Vector<amrex::Real> vStats(m_nlevels);
+    for (size_t i = 0; i < m_nlevels; i++) {
+        uStats[i] = uavg[i];
+        vStats[i] = vavg[i];
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, uStats.begin(), uStats.end(),
+        m_uAvg_vals.begin());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, vStats.begin(), vStats.end(),
+        m_vAvg_vals.begin());
+
+    amrex::Vector<amrex::Real> error_U(m_nlevels);
+    amrex::Vector<amrex::Real> error_V(m_nlevels);
+
+    for (size_t i = 0; i < m_nlevels; i++) {
+        error_U[i] = wrfInterpU[i] - uStats[i];
+        error_V[i] = wrfInterpV[i] - vStats[i];
+    }
+
+    if (amrex::toLower(m_forcing_scheme) == "indirect") {
+        amrex::Array<amrex::Real, 4> ezP_U;
+        amrex::Array<amrex::Real, 4> ezP_V;
+
+        amrex::Real scaleFact = 1e-3;
+
+        for (int i = 0; i < 4; i++) {
+            ezP_U[i] = 0.0;
+            ezP_V[i] = 0.0;
+
+            for (int ih = 0; ih < m_nht; ih++) {
+                ezP_U[i] =
+                    ezP_U[i] + error_U[ih] * std::pow(m_zht[ih] * scaleFact, i);
+                ezP_V[i] =
+                    ezP_V[i] + error_V[ih] * std::pow(m_zht[ih] * scaleFact, i);
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            m_poly_coeff_U[i] = 0.0;
+            m_poly_coeff_V[i] = 0.0;
+            for (int j = 0; j < 4; j++) {
+                m_poly_coeff_U[i] =
+                    m_poly_coeff_U[i] + m_im_zTz(i, j) * ezP_U[j];
+                m_poly_coeff_V[i] =
+                    m_poly_coeff_V[i] + m_im_zTz(i, j) * ezP_V[j];
+            }
+        }
+
+        for (size_t ih = 0; ih < m_nlevels; ih++) {
+            error_U[ih] = 0.0;
+            error_V[ih] = 0.0;
+            for (int j = 0; j < 4; j++) {
+                error_U[ih] =
+                    error_U[ih] +
+                    m_poly_coeff_U[j] * std::pow(m_zht[ih] * scaleFact, j);
+                error_V[ih] =
+                    error_V[ih] +
+                    m_poly_coeff_V[j] * std::pow(m_zht[ih] * scaleFact, j);
+            }
+        }
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, error_U.begin(), error_U.end(),
+        m_error_wrf_avg_U.begin());
+
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
+        m_error_wrf_avg_V.begin());
+    
 }
 
 void ABLWrfForcingMom::operator()(
