@@ -342,21 +342,38 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
 }
 
 void ABLWrfForcingTemp::operator()(
-    const int ,
+    const int lev,
     const amrex::MFIter&,
     const amrex::Box& bx,
     const FieldState,
     const amrex::Array4<amrex::Real>& src_term) const
 {
-
     const auto& dt = m_time.deltaT();
+    const auto& problo = m_mesh.Geom(lev).ProbLoArray();
+    const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
+    const int idir = m_axis;
+    const int nh_max = m_theta_ht.size() - 2;
+    const int lp1 = lev + 1;
+    const amrex::Real* theights = m_theta_ht.data();
     const amrex::Real* theta_error_val = m_error_wrf_avg_theta.data();
     const amrex::Real kcoeff = m_gain_coeff;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        amrex::IntVect iv(i, j, k);
+        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const int il = amrex::min(k / lp1, nh_max);
+        const int ir = il + 1;
+        amrex::Real temp;
+
+        temp =
+            theta_error_val[il] + ((theta_error_val[ir] - theta_error_val[il]) /
+                                   (theights[ir] - theights[il])) *
+                                      (ht - theights[il]);
+
         // Compute Source term
-        src_term(i, j, k, 0) += (theta_error_val[k]) * kcoeff / dt;
+        // src_term(i, j, k, 0) += (theta_error_val[k]) * kcoeff / dt;
+        src_term(i, j, k, 0) += temp * kcoeff / dt;
     });
 }
 
