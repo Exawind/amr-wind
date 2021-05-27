@@ -415,15 +415,39 @@ void ABLWrfForcingMom::operator()(
     const amrex::Array4<amrex::Real>& src_term) const
 {
     const auto& dt = m_time.deltaT();
+    const auto& problo = m_mesh.Geom(lev).ProbLoArray();
+    const auto& dx = m_mesh.Geom(lev).CellSizeArray();
 
+    const int idir = m_axis;
+    const int nh_max = m_velAvg_ht.size() - 2;
+    const int lp1 = lev + 1;
+    const amrex::Real* vheights = m_velAvg_ht.data();
     const amrex::Real* u_error_val = m_error_wrf_avg_U.data();
     const amrex::Real* v_error_val = m_error_wrf_avg_V.data();
     const amrex::Real kcoeff = m_gain_coeff;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+        amrex::IntVect iv(i, j, k);
+        const amrex::Real ht = problo[idir] + (iv[idir] + 0.5) * dx[idir];
+        const int il = amrex::min(k / lp1, nh_max);
+        const int ir = il + 1;
+        amrex::Real Utemp;
+        amrex::Real Vtemp;
+
+        Utemp = u_error_val[il] + ((u_error_val[ir] - u_error_val[il]) /
+                                   (vheights[ir] - vheights[il])) *
+                                      (ht - vheights[il]);
+
+        Vtemp = v_error_val[il] + ((v_error_val[ir] - v_error_val[il]) /
+                                   (vheights[ir] - vheights[il])) *
+                                      (ht - vheights[il]);
+
         // // Compute Source term
-        src_term(i, j, k, 0) += u_error_val[k] * kcoeff / dt;
-        src_term(i, j, k, 1) += v_error_val[k] * kcoeff / dt;
+        // src_term(i, j, k, 0) += u_error_val[k] * kcoeff / dt;
+        // src_term(i, j, k, 1) += v_error_val[k] * kcoeff / dt;
+
+        src_term(i, j, k, 0) += Utemp * kcoeff / dt;
+        src_term(i, j, k, 1) += Vtemp * kcoeff / dt;
 
         // No forcing in z-direction
     });
