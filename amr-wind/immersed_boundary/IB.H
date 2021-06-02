@@ -2,6 +2,7 @@
 #define IB_H
 
 #include "amr-wind/core/Physics.H"
+#include "amr-wind/core/FieldRepo.H"
 
 /** \defgroup immersed boundary Immersed boundary module
  *  Immersed boundary source modeling for wind turbines
@@ -47,8 +48,11 @@ public:
 
     void post_advance_work() override;
 
+    void pre_nph_work() override;
+
 protected:
-    //! Total number of actuator components (e.g., turbines) in the flowfield
+    //! Total number of actuator components (e.g., turbines) in the
+    //! flowfield
     int num_ibs() const { return m_ibs.size(); }
 
     virtual void prepare_outputs();
@@ -58,7 +62,7 @@ private:
 
     void update_positions();
 
-    void update_velocities();
+    void update_velocities(FieldState state);
 
     void compute_forces();
 

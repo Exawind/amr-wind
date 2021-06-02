@@ -22,7 +22,7 @@ struct BluffBodyBaseData
     VecList body_vel;
 
     //! Forcing volume in theory should be equal to dx[0]*dx[1]*dx[2]
-    RealList dVl;
+    amrex::Real dVl;
 
     //! Total integrated lift over the wing
     amrex::Real lift{0.0};

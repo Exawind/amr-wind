@@ -64,7 +64,7 @@ void IB::post_init_actions()
 
     setup_container();
     update_positions();
-    update_velocities();
+    update_velocities(FieldState::Old);
     compute_forces();
     compute_source_term();
     prepare_outputs();
@@ -82,7 +82,15 @@ void IB::pre_advance_work()
     BL_PROFILE("amr-wind::ib::IB::pre_advance_work");
     m_container->reset_container();
     update_positions();
-    update_velocities();
+    update_velocities(FieldState::Old);
+    compute_forces();
+    compute_source_term();
+}
+
+void IB::pre_nph_work()
+{
+    BL_PROFILE("amr-wind::ib::IB::compute_pre_nhp_work");
+    update_velocities(FieldState::NPH);
     compute_forces();
     compute_source_term();
 }
@@ -136,25 +144,25 @@ void IB::update_positions()
         ic += pinfo.num_pts[i];
     }
     m_container->update_positions();
-
-    // Sample velocities at the new locations
-    auto& vel = m_sim.repo().get_field("velocity");
-    m_container->sample_velocities(vel);
 }
 
 /** Provide updated velocities from container to immersed boundary instances
  *
  *  \sa IB::update_positions
  */
-void IB::update_velocities()
+void IB::update_velocities(const FieldState state)
 {
     BL_PROFILE("amr-wind::ib::IB::update_velocities");
+    // Sample velocities at the new locations
+    auto& vel = m_sim.repo().get_field("velocity", state);
+    m_container->sample_velocities(vel);
+
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
-        const auto vel =
+        const auto vel_slice =
             ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
-        m_ibs[ig]->update_velocities(vel);
+        m_ibs[ig]->update_velocities(vel_slice);
         ic += pinfo.num_pts[i];
     }
 }
