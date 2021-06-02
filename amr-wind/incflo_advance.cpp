@@ -8,6 +8,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/core/field_ops.H"
+#include "AMReX_MultiFabUtil.H"
 
 using namespace amrex;
 
@@ -176,6 +177,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     auto& icns_fields = icns().fields();
     auto& velocity_new = icns_fields.field;
     auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
+
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
@@ -257,6 +259,22 @@ void incflo::ApplyPredictor(bool incremental_projection)
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
+
+    // Create a cell-centred field by interpolation -- Hard-coded, needs
+    // refactor
+    /****************************************************************************/
+    auto& velocity_nph = velocity_new.state(amr_wind::FieldState::NPH);
+    auto& umac = m_sim.repo().get_field("u_mac");
+    auto& vmac = m_sim.repo().get_field("v_mac");
+    auto& wmac = m_sim.repo().get_field("w_mac");
+    const int nlevel = m_sim.repo().num_active_levels();
+    for (int lev = 0; lev < nlevel; ++lev) {
+        const Array<const MultiFab*, AMREX_SPACEDIM> fc{
+            &umac(lev), &vmac(lev), &wmac(lev)};
+        average_face_to_cellcenter(velocity_nph(lev), 0, fc, 0);
+    }
+    /*****************************************************************************/
+    for (auto& pp : m_sim.physics()) pp->pre_nph_work();
 
     // *************************************************************************************
     // Update density first
