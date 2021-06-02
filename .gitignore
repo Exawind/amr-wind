@@ -13,3 +13,7 @@ test/*plt*/
 test/chk*/
 test/AMR-WindGoldFiles
 .DS_store
+spack*
+.clangd
+compile_commands.json
+settings.json

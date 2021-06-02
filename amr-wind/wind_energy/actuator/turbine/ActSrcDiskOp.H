@@ -12,7 +12,11 @@ namespace ops {
 
 // TODO make this only work with turbine act traits
 template <typename ActTrait>
-class ActSrcOp<ActTrait, ActSrcDisk>
+class ActSrcOp<
+    ActTrait,
+    ActSrcDisk,
+    typename std::enable_if<
+        std::is_base_of<TurbineType, ActTrait>::value>::type>
 {
 private:
     typename ActTrait::DataType& m_data;
@@ -39,7 +43,11 @@ public:
 };
 
 template <typename ActTrait>
-void ActSrcOp<ActTrait, ActSrcDisk>::initialize()
+void ActSrcOp<
+    ActTrait,
+    ActSrcDisk,
+    typename std::enable_if<
+        std::is_base_of<TurbineType, ActTrait>::value>::type>::initialize()
 {
     const auto& meta = m_data.meta();
     m_blades.resize(meta.num_blades);
@@ -48,7 +56,11 @@ void ActSrcOp<ActTrait, ActSrcDisk>::initialize()
 }
 
 template <typename ActTrait>
-void ActSrcOp<ActTrait, ActSrcDisk>::copy_to_device()
+void ActSrcOp<
+    ActTrait,
+    ActSrcDisk,
+    typename std::enable_if<
+        std::is_base_of<TurbineType, ActTrait>::value>::type>::copy_to_device()
 {
     const auto& meta = m_data.meta();
     std::vector<ComponentView> tower_vec(1, meta.tower);
@@ -62,8 +74,12 @@ void ActSrcOp<ActTrait, ActSrcDisk>::copy_to_device()
 }
 
 template <typename ActTrait>
-void ActSrcOp<ActTrait, ActSrcDisk>::operator()(
-    const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
+void ActSrcOp<
+    ActTrait,
+    ActSrcDisk,
+    typename std::enable_if<
+        std::is_base_of<TurbineType, ActTrait>::value>::type>::
+operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
     const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
@@ -84,7 +100,7 @@ void ActSrcOp<ActTrait, ActSrcDisk>::operator()(
     const amrex::Real dR = vs::mag_sqr(host_pos[0] - host_pos[1]);
     const amrex::Real dT = 2.0 * ::amr_wind::utils::pi() / tdata.num_blades;
     // assume these will be copied to device by the lambda capture...
-    const vs::Vector m_normal(tdata.rotor_frame.z());
+    const vs::Vector m_normal(tdata.rotor_frame.x());
     const vs::Vector m_origin(tdata.rot_center);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
