@@ -31,14 +31,14 @@ std::set<int> determine_influenced_procs(
 
 void determine_root_proc(ActInfo&, amrex::Vector<int>&);
 
-/** Return the Gaussian smearing factor
+/** Return the Gaussian smearing factor in 3D
  *
  *  \param dist Distance vector of the cell center from the actuator node in
  *  local frame of reference.
  *
  *  \param eps Three-dimensional Gaussian scaling factor
  *
- *  \return Gaussian smearing factor
+ *  \return Gaussian smearing factor in 3D
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
@@ -59,7 +59,15 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
         return 0.0;
     }
 }
-
+/** Return the Gaussian smearing factor in 1D
+ *
+ *  \param dist Distance vector of the cell center from the actuator node in
+ *  local frame of reference.
+ *
+ *  \param eps One-dimensional Gaussian scaling factor
+ *
+ *  \return Gaussian smearing factor in 1D
+ */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
 {
@@ -75,9 +83,8 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
  * @param normal Normal  relative to origin (defines cylinder orientation)
  * @param point1 location of the first point in Cartesian coordinates
  * @param point2 location of second point in Cartesian coordinates
- * @return distance between points in cylindrical coordinates (angle is in
- *
- * radians)
+ * @return distance between points in cylindrical coordinates 
+ * (angle is in radians)
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     const vs::Vector& origin,
@@ -108,6 +115,13 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
     return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
 }
 
+/** Compute weighting for a normalized linear interpolant
+ *
+ *
+ * @param distance distance between sample location and the reference points
+ * @param dX spacing between reference points
+ * @return normalized integration weight at the sample location
+ */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
 {

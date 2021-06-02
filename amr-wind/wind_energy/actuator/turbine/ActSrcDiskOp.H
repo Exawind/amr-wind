@@ -10,7 +10,6 @@ namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-// TODO make this only work with turbine act traits
 template <typename ActTrait>
 class ActSrcOp<
     ActTrait,
@@ -95,6 +94,7 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
     const int nPT = tdata.num_pts_tower;
     const auto* blades = m_blades.data();
     const auto* tower = m_tower.data();
+    const auto* hub = m_hub.data();
     // assume constant dr same for all blades
     const auto* host_pos = tdata.blades[0].pos.data();
     const amrex::Real dR = vs::mag_sqr(host_pos[0] - host_pos[1]);
@@ -159,6 +159,20 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
                 }
             }
             // hub
+            {
+                const auto* pos = hub[0].pos.data();
+                const auto* force = hub[0].force.data();
+                const auto* eps = hub[0].epsilon.data();
+                const auto* tmat = hub[0].orientation.data();
+                const auto dist = cc - pos[0];
+                const auto dist_local = tmat[0] & dist;
+                const auto gauss_fac = utils::gaussian3d(dist_local, eps[0]);
+                const auto& pforce = force[0];
+
+                src_force[0] += gauss_fac * pforce.x();
+                src_force[1] += gauss_fac * pforce.y();
+                src_force[2] += gauss_fac * pforce.z();
+            }
         }
 
         sarr(i, j, k, 0) += src_force[0];
