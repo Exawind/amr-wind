@@ -83,7 +83,7 @@ gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
  * @param normal Normal  relative to origin (defines cylinder orientation)
  * @param point1 location of the first point in Cartesian coordinates
  * @param point2 location of second point in Cartesian coordinates
- * @return distance between points in cylindrical coordinates 
+ * @return distance between points in cylindrical coordinates
  * (angle is in radians)
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
