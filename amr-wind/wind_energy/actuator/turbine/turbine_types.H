@@ -35,6 +35,7 @@ struct ComponentView
     RealSlice chord;
 };
 
+using DeviceVecComponent = amrex::Gpu::DeviceVector<ComponentView>;
 struct TurbineBaseData
 {
     //! Number of blades

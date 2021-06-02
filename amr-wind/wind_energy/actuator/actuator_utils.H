@@ -4,6 +4,8 @@
 #include "amr-wind/core/vs/vector.H"
 #include "amr-wind/utilities/trig_ops.H"
 #include "AMReX_AmrCore.H"
+#include "amr-wind/utilities/tensor_ops.H"
+#include <cmath>
 
 #include <set>
 
@@ -29,14 +31,14 @@ std::set<int> determine_influenced_procs(
 
 void determine_root_proc(ActInfo&, amrex::Vector<int>&);
 
-/** Return the Gaussian smearing factor
+/** Return the Gaussian smearing factor in 3D
  *
  *  \param dist Distance vector of the cell center from the actuator node in
  *  local frame of reference.
  *
  *  \param eps Three-dimensional Gaussian scaling factor
  *
- *  \return Gaussian smearing factor
+ *  \return Gaussian smearing factor in 3D
  */
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
 gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
@@ -56,6 +58,74 @@ gaussian3d(const vs::Vector& dist, const vs::Vector& eps)
     } else {
         return 0.0;
     }
+}
+/** Return the Gaussian smearing factor in 1D
+ *
+ *  \param dist Distance vector of the cell center from the actuator node in
+ *  local frame of reference.
+ *
+ *  \param eps One-dimensional Gaussian scaling factor
+ *
+ *  \return Gaussian smearing factor in 1D
+ */
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+gaussian1d(const amrex::Real& dist, const amrex::Real& eps)
+{
+    // fac = 1.0/sqrt(pi)
+    const amrex::Real fac = 0.5641895835477563;
+    if (std::abs(dist / eps) >= 16.0) return 0.0;
+    return fac / eps * std::exp(-(dist * dist) / (eps * eps));
+}
+
+/** Compute distance between two points
+ *
+ * @param origin Origin for the cylindrical coodinate system
+ * @param normal Normal  relative to origin (defines cylinder orientation)
+ * @param point1 location of the first point in Cartesian coordinates
+ * @param point2 location of second point in Cartesian coordinates
+ * @return distance between points in cylindrical coordinates
+ * (angle is in radians)
+ */
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE vs::Vector delta_pnts_cyl(
+    const vs::Vector& origin,
+    const vs::Vector& normal,
+    const vs::Vector& point1,
+    const vs::Vector& point2)
+{
+    const amrex::Real eps = vs::DTraits<amrex::Real>::eps();
+    const auto d1 = point1 - origin;
+    const auto d2 = point2 - origin;
+
+    const amrex::Real norm_dist1 = (d1 & normal) / (normal & normal);
+    const amrex::Real norm_dist2 = (d2 & normal) / (normal & normal);
+
+    const auto proj1 = normal * norm_dist1;
+    const auto proj2 = normal * norm_dist2;
+
+    // compute vector on disk via vector rejection
+    const auto v1 = d1 - proj1;
+    const auto v2 = d2 - proj2;
+
+    // can do magnitude since we've removed the normal component
+    const amrex::Real r1 = vs::mag(v1);
+    const amrex::Real r2 = vs::mag(v2);
+
+    const amrex::Real theta = std::acos((v1 & v2) / (r1 * r2 + eps));
+
+    return {std::abs(r1 - r2), theta, norm_dist1 - norm_dist2};
+}
+
+/** Compute weighting for a normalized linear interpolant
+ *
+ *
+ * @param distance distance between sample location and the reference points
+ * @param dX spacing between reference points
+ * @return normalized integration weight at the sample location
+ */
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real
+linear_basis_1d(const amrex::Real distance, const amrex::Real dX)
+{
+    return amrex::max(0.0, 1.0 - distance / dX) / dX;
 }
 
 } // namespace utils
