@@ -80,6 +80,7 @@ struct TurbineBaseData
 
     std::vector<ComponentView> blades;
     ComponentView tower;
+    ComponentView hub;
 };
 
 struct TurbineType : public ActuatorType

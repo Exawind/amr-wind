@@ -218,6 +218,14 @@ struct InitDataOp<TurbineFast, SrcTrait>
             cv.chord = ::amr_wind::utils::slice(
                 tdata.chord, ntwr_start, num_pts_tower);
         }
+        {
+            auto& cv = tdata.hub;
+            cv.pos = ::amr_wind::utils::slice(grid.pos, 0, 1);
+            cv.force = ::amr_wind::utils::slice(grid.force, 0, 1);
+            cv.epsilon = ::amr_wind::utils::slice(grid.epsilon, 0, 1);
+            cv.orientation = ::amr_wind::utils::slice(grid.orientation, 0, 1);
+            cv.chord = ::amr_wind::utils::slice(tdata.chord, 0, 1);
+        }
     }
 
     void init_epsilon(typename TurbineFast::DataType& data)
