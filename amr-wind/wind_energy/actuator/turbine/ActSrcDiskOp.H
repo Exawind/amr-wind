@@ -63,6 +63,7 @@ void ActSrcOp<
 {
     const auto& meta = m_data.meta();
     std::vector<ComponentView> tower_vec(1, meta.tower);
+    std::vector<ComponentView> hub_vec(1, meta.hub);
 
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, meta.blades.begin(), meta.blades.end(),
@@ -70,6 +71,9 @@ void ActSrcOp<
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tower_vec.begin(), tower_vec.end(),
         m_tower.begin());
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, hub_vec.begin(), hub_vec.end(),
+        m_hub.begin());
 }
 
 template <typename ActTrait>
@@ -168,7 +172,6 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
                 const auto dist_local = tmat[0] & dist;
                 const auto gauss_fac = utils::gaussian3d(dist_local, eps[0]);
                 const auto& pforce = force[0];
-
                 src_force[0] += gauss_fac * pforce.x();
                 src_force[1] += gauss_fac * pforce.y();
                 src_force[2] += gauss_fac * pforce.z();
