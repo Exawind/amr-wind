@@ -1288,6 +1288,10 @@ This section controls  the actuator type models. This includes the actuator
 disk and line models. The prefix is the label set in 
 ``incflo.physics``. For example
 ``incflo.physics = FreeStream Actuator``
+Actuator models are meant to simulate aerodynamic objects by using body forces 
+in the momentum equation. 
+There are capabilities to simulate fixed wings as actuator lines and wind
+turbines as actuator disks and actuator line models.
 
 
 .. input_param:: Actuator.labels
