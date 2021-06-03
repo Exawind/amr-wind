@@ -250,7 +250,7 @@ as initial conditions and discretization options.
 
    Specify a string or a list of strings for each type of physics to initialize and simulate.
    Physics is additive and more than one type of physics may be used.
-   Current implemented physics are FreeStream, ABL, RayleighTaylor, BoussinesqBubble, 
+   Current implemented physics are FreeStream, ABL, Actuator, RayleighTaylor, BoussinesqBubble, 
    and TaylorGreenVortex
    
 .. input_param:: incflo.density
@@ -603,7 +603,7 @@ Section: Momentum Sources
    Activates source terms for the incompressible Navier-Stokes momentum
    equations. These strings can be entered in any order with a space between
    each. Please consult `AMR-Wind developer documentation
-   <https://exawind.github.io/amr-wind/group__icns__src.html>`_ for a
+   <https://exawind.github.io/amr-wind/api_docs/group__icns__src.html>`_ for a
    comprehensive list of all momentum source terms available.
 
 .. input_param:: BoussinesqBuoyancy.reference_temperature
@@ -1277,3 +1277,76 @@ The prefix is the label set in ``incflo.post_processing``. For example
 
    Specify the output frequency (in timesteps) for integrating enstrophy and 
    writing to file.
+
+
+.. _inputs_actuator:
+
+Section: Actuator
+~~~~~~~~~~~~~~~~~~
+
+This section controls  the actuator type models. This includes the actuator 
+disk and line models. The prefix is the label set in 
+``incflo.physics``. For example
+``incflo.physics = FreeStream Actuator``
+
+
+.. input_param:: Actuator.labels
+
+   **type:** String, mandatory
+   
+   Thsi string is used as an identifier for the current actuator.
+
+
+.. input_param:: Actuator.type
+
+   **type:** String, mandatory
+   
+   This string identifies the type of actuator to use. The ones currently
+   supported are: ``TurbineFastLine``, ``TurbineFastDisk``, and 
+   ``FixedWingLine``.
+
+Example for ``FixedWingLine``::
+
+   incflo.physics = FreeStream Actuator 
+   Actuator.labels = F1 
+   Actuator.type = FixedWingLine 
+   Actuator.FixedWingLine.num_points = 21 
+   Actuator.FixedWingLine.epsilon = 3.0 3.0 3.0 
+   Actuator.FixedWingLine.pitch = 4.0 
+   Actuator.FixedWingLine.span_locs = 0.0 1.0 
+   Actuator.FixedWingLine.chord = 2.0 2.0 
+   Actuator.FixedWingLine.airfoil_table = DU21_A17.txt 
+   Actuator.FixedWingLine.airfoil_type = openfast 
+   Actuator.F1.start = 0.0 -4.0 0.0 
+   Actuator.F1.end = 0.0 4.0 0.0 
+   Actuator.F1.output_frequency = 10 
+   ICNS.source_terms = ActuatorForcing 
+
+Example for ``TurbineFastLine``::
+
+   incflo.physics = FreeStream Actuator
+   Actuator.labels = WTG01
+   Actuator.type = TurbineFastLine
+   Actuator.TurbineFastLine.rotor_diameter = 126.0
+   Actuator.TurbineFastLine.hub_height = 90.0
+   Actuator.TurbineFastLine.num_points_blade = 64
+   Actuator.TurbineFastLine.num_points_tower = 12
+   Actuator.TurbineFastLine.epsilon = 10.0 10.0 10.0
+   Actuator.TurbineFastLine.epsilon_tower = 5.0 5.0 5.0
+   Actuator.TurbineFastLine.openfast_start_time = 0.0
+   Actuator.TurbineFastLine.openfast_stop_time = 1.0
+   Actuator.TurbineFastLine.nacelle_drag_coeff = 0.0
+   Actuator.TurbineFastLine.nacelle_area = 0.0
+   Actuator.TurbineFastLine.output_frequency = 10
+   Actuator.TurbineFastLine.density = 1.225
+   Actuator.WTG01.base_position = 5.0191 0. -89.56256
+   Actuator.WTG01.openfast_input_file = "fast_inp/nrel5mw.fst"
+   ICNS.source_terms = ActuatorForcing
+
+
+
+
+
+
+
+
