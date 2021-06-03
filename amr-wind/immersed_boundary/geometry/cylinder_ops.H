@@ -87,9 +87,9 @@ struct InitDataOp<Cylinder>
             const auto& dx = geom[lev].CellSizeArray();
             amrex::Real mesh_size = std::cbrt(dx[0]*dx[1]*dx[2]);
             for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox();
+                    const auto& bx = mfi.growntilebox();
                     auto epsilon_cell = mask_cell(lev).array(mfi);
-                amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
@@ -98,16 +98,14 @@ struct InitDataOp<Cylinder>
                                           (y-wdata.center_loc[1])*(y-wdata.center_loc[1])+
                                           (z-wdata.center_loc[2])*(z-wdata.center_loc[2]));
                 if(r < wdata.radius + mesh_size){
-                   epsilon_cell(i,j,k)=1;
+                   epsilon_cell(i,j,k)=0;
                 }
 
                 });
-            }
 
-            for (amrex::MFIter mfi(mask_node(lev)); mfi.isValid(); ++mfi) {
-                    const auto& vbx = mfi.growntilebox(1);
-                    auto epsilon_node = mask_node(lev).array(mfi);
-                amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                const auto& nbx = mfi.nodaltilebox();
+                auto epsilon_node = mask_node(lev).array(mfi);
+                amrex::ParallelFor(nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + i  * dx[0];
                 const amrex::Real y = problo[1] + j  * dx[1];
                 const amrex::Real z = problo[2] + k  * dx[2];
@@ -116,13 +114,11 @@ struct InitDataOp<Cylinder>
                                           (y-wdata.center_loc[1])*(y-wdata.center_loc[1])+
                                           (z-wdata.center_loc[2])*(z-wdata.center_loc[2]));
                 if(r < wdata.radius + mesh_size){
-                   epsilon_node(i,j,k)=1;
+                   epsilon_node(i,j,k)=0;
                 }
 
                 });
             }
-
-
         }
     }
 };
