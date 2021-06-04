@@ -63,8 +63,8 @@ void IB::post_init_actions()
     for (auto& ib : m_ibs) ib->init_ib_source();
 
     setup_container();
-    update_positions();
-    update_velocities(FieldState::Old);
+    update_positions(FieldState::Old);
+    update_velocities();
     compute_forces();
     compute_source_term();
     prepare_outputs();
@@ -81,18 +81,16 @@ void IB::pre_advance_work()
 {
     BL_PROFILE("amr-wind::ib::IB::pre_advance_work");
     m_container->reset_container();
-    update_positions();
-    update_velocities(FieldState::Old);
+    update_positions(FieldState::Old);
+    update_velocities();
     compute_forces();
     compute_source_term();
 }
 
-void IB::pre_nph_work()
+void IB::pre_pressure_correction_work()
 {
-    BL_PROFILE("amr-wind::ib::IB::compute_pre_nhp_work");
-    update_velocities(FieldState::NPH);
-    compute_forces();
-    compute_source_term();
+    BL_PROFILE("amr-wind::ib::IB::pre_pressure_correction_work");
+    apply_ib_velocities();
 }
 
 /** Set up the container for sampling velocities
@@ -132,7 +130,7 @@ void IB::setup_container()
  *
  *  \sa IB::update_velocities
  */
-void IB::update_positions()
+void IB::update_positions(const FieldState state)
 {
     BL_PROFILE("amr-wind::ib::IB::update_positions");
     auto& pinfo = m_container->m_data;
@@ -144,26 +142,51 @@ void IB::update_positions()
         ic += pinfo.num_pts[i];
     }
     m_container->update_positions();
+
+    // Sample velocities at the new locations
+    auto& vel = m_sim.repo().get_field("velocity", state);
+    m_container->sample_velocities(vel);
 }
 
 /** Provide updated velocities from container to immersed boundary instances
  *
  *  \sa IB::update_positions
  */
-void IB::update_velocities(const FieldState state)
+void IB::update_velocities()
 {
     BL_PROFILE("amr-wind::ib::IB::update_velocities");
-    // Sample velocities at the new locations
-    auto& vel = m_sim.repo().get_field("velocity", state);
-    m_container->sample_velocities(vel);
 
     auto& pinfo = m_container->m_data;
     for (int i = 0, ic = 0; i < pinfo.num_objects; ++i) {
         const auto ig = pinfo.global_id[i];
-        const auto vel_slice =
+        const auto vel =
             ::amr_wind::utils::slice(pinfo.velocity, ic, pinfo.num_pts[i]);
-        m_ibs[ig]->update_velocities(vel_slice);
+        m_ibs[ig]->update_velocities(vel);
         ic += pinfo.num_pts[i];
+    }
+}
+
+void IB::apply_ib_velocities()
+{
+    BL_PROFILE("amr-wind::ib::IB::apply_ib_velocities");
+    const int nlevels = m_sim.repo().num_active_levels();
+    auto& mask_cell = m_sim.repo().get_int_field("mask_cell");
+    auto& velocity = m_sim.repo().get_field("velocity");
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.growntilebox();
+            auto epsilon_cell = mask_cell(lev).array(mfi);
+            auto varr = velocity(lev).array(mfi);
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    if (epsilon_cell(i, j, k) == 0) {
+                        varr(i, j, k, 0) = 0.;
+                        varr(i, j, k, 1) = 0.;
+                        varr(i, j, k, 2) = 0.;
+                    }
+                });
+        }
     }
 }
 

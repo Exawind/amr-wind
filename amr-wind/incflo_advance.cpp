@@ -263,6 +263,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Create a cell-centred field by interpolation -- Hard-coded, needs
     // refactor
     /****************************************************************************/
+
     auto& velocity_nph = velocity_new.state(amr_wind::FieldState::NPH);
     auto& umac = m_sim.repo().get_field("u_mac");
     auto& vmac = m_sim.repo().get_field("v_mac");
@@ -274,18 +275,16 @@ void incflo::ApplyPredictor(bool incremental_projection)
         average_face_to_cellcenter(velocity_nph(lev), 0, fc, 0);
     }
     /*****************************************************************************/
-    for (auto& pp : m_sim.physics()) pp->pre_nph_work();
-
+    // for (auto& pp : m_sim.physics()) pp->pre_nph_work();
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
     if (m_constant_density) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
-
-    // Perform scalar update one at a time. This is to allow an updated density
-    // at `n+1/2` to be computed before other scalars use it when computing
-    // their source terms.
+    // Perform scalar update one at a time. This is to allow an updated
+    // density at `n+1/2` to be computed before other scalars use it when
+    // computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);
