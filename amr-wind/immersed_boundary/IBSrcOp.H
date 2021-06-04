@@ -79,6 +79,16 @@ void IBSrcOp<GeomTrait>::operator()(
     const auto* forcing_vel = m_forcing_vel.data();
     const auto* intrp_vel = m_intrp_vel.data();
     const auto& sarr = m_ib_src(lev).array(mfi);
+    // get the mask fields
+    // auto& mask_cell = m_data.sim().repo().get_int_field("mask_cell");
+    // auto& velocity_old =
+    //    m_data.sim().repo().get_field("velocity", FieldState::Old);
+    // auto& velocity_nph = m_data.sim().repo().get_field("velocity",
+    // FieldState::NPH);
+
+    // const auto& mask_arr = mask_cell(lev).array(mfi);
+    // const auto& velold_arr = velocity_old(lev).array(mfi);
+    // const auto& velnph_arr = velocity_nph(lev).array(mfi);
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector ijk_x{
@@ -86,6 +96,7 @@ void IBSrcOp<GeomTrait>::operator()(
             problo[2] + (k + 0.5) * dx[2]};
 
         // Local src force at the lagrangian marker
+
         amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
         // loop over Lagrangian markers
         for (unsigned ip = 0; ip < m_pos.size(); ++ip) {

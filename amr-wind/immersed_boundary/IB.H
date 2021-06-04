@@ -48,7 +48,7 @@ public:
 
     void post_advance_work() override;
 
-    void pre_nph_work() override;
+    void pre_pressure_correction_work() override;
 
 protected:
     //! Total number of actuator components (e.g., turbines) in the
@@ -60,9 +60,11 @@ protected:
 private:
     void setup_container();
 
-    void update_positions();
+    void update_positions(FieldState state);
 
-    void update_velocities(FieldState state);
+    void apply_ib_velocities();
+
+    void update_velocities();
 
     void compute_forces();
 
