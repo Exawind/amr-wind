@@ -263,7 +263,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // Create a cell-centred field by interpolation -- Hard-coded, needs
     // refactor
     /****************************************************************************/
-
+    /*
     auto& velocity_nph = velocity_new.state(amr_wind::FieldState::NPH);
     auto& umac = m_sim.repo().get_field("u_mac");
     auto& vmac = m_sim.repo().get_field("v_mac");
@@ -274,6 +274,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
             &umac(lev), &vmac(lev), &wmac(lev)};
         average_face_to_cellcenter(velocity_nph(lev), 0, fc, 0);
     }
+    */
     /*****************************************************************************/
     // for (auto& pp : m_sim.physics()) pp->pre_nph_work();
     // *************************************************************************************
