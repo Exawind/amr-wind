@@ -128,8 +128,6 @@ void incflo::ApplyProjection(
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
 
-    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
-
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
@@ -222,6 +220,9 @@ void incflo::ApplyProjection(
     auto bclo = get_projection_bc(Orientation::low);
     auto bchi = get_projection_bc(Orientation::high);
 
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
+
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
@@ -250,8 +251,6 @@ void incflo::ApplyProjection(
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
-
-    // bool has_ib = sim().physics_manager().contains("IB");
 
     // Setup masking for overset simulations
     if (sim().has_overset()) {
