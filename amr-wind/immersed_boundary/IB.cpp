@@ -24,9 +24,9 @@ void IB::pre_init_actions()
     amrex::Vector<std::string> labels;
     pp.getarr("labels", labels);
 
-    const int nturbines = labels.size();
+    const int n_ibs = labels.size();
 
-    for (int i = 0; i < nturbines; ++i) {
+    for (int i = 0; i < n_ibs; ++i) {
         const std::string& tname = labels[i];
         const std::string& prefix = identifier() + "." + tname;
         amrex::ParmParse pp1(prefix);

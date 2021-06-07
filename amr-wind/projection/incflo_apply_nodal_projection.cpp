@@ -214,14 +214,14 @@ void incflo::ApplyProjection(
         }
     }
 
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
+
     // Perform projection
     std::unique_ptr<NodalProjector> nodal_projector;
 
     auto bclo = get_projection_bc(Orientation::low);
     auto bchi = get_projection_bc(Orientation::high);
-
-    // Do the pre pressure correction work -- this applies to IB only
-    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
 
     Vector<MultiFab*> vel;
     for (int lev = 0; lev <= finest_level; ++lev) {
@@ -287,6 +287,9 @@ void incflo::ApplyProjection(
                 0, 0, AMREX_SPACEDIM, 0);
         }
     }
+
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();
