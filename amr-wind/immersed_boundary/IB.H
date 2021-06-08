@@ -51,32 +51,22 @@ public:
     void pre_pressure_correction_work() override;
 
 protected:
-    //! Total number of actuator components (e.g., turbines) in the
-    //! flowfield
+    //! Total number of immersed boundaries
+
     int num_ibs() const { return m_ibs.size(); }
 
     virtual void prepare_outputs();
 
 private:
-    void setup_container();
-
-    void update_positions(FieldState state);
-
-    void apply_ib_velocities();
+    void update_positions();
 
     void update_velocities();
 
     void compute_forces();
 
-    void compute_source_term();
-
     CFDSim& m_sim;
 
-    Field& m_ib_source;
-
     std::vector<std::unique_ptr<ImmersedBoundaryModel>> m_ibs;
-
-    std::unique_ptr<IBContainer> m_container;
 };
 
 } // namespace ib

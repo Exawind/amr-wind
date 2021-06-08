@@ -4,7 +4,6 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/immersed_boundary/IBTypes.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
-#include "amr-wind/immersed_boundary/IBSrcOp.H"
 #include "amr-wind/immersed_boundary/IBParser.H"
 
 namespace amr_wind {
@@ -39,28 +38,15 @@ public:
 
     virtual int id() const = 0;
 
-    virtual const IBInfo& info() const = 0;
-
     virtual void read_inputs(const utils::IBParser&) = 0;
 
-    virtual void determine_influenced_procs() = 0;
+    virtual void init_ib() = 0;
 
-    virtual void determine_root_proc(amrex::Vector<int>&) = 0;
+    virtual void update_positions() = 0;
 
-    virtual void init_ib_source() = 0;
-
-    virtual int num_velocity_points() const = 0;
-
-    virtual void update_positions(VecSlice&) = 0;
-
-    virtual void update_velocities(const VecSlice&) = 0;
+    virtual void update_velocities() = 0;
 
     virtual void compute_forces() = 0;
-
-    virtual void compute_source_term(
-        const int lev,
-        const amrex::MFIter& mfi,
-        const amrex::Geometry& geom) = 0;
 
     virtual void prepare_outputs(const std::string&) = 0;
 
@@ -85,9 +71,6 @@ private:
     //! type
     typename GeomTrait::DataType m_data;
 
-    //! Source computation operator
-    ops::IBSrcOp<GeomTrait> m_src_op;
-
     //! Outputs processor
     ops::ProcessOutputsOp<GeomTrait> m_out_op;
 
@@ -100,7 +83,7 @@ public:
      *  \param id Unique integer tag for this instance
      */
     IBModel(CFDSim& sim, const std::string& label, const int id)
-        : m_data(sim, label, id), m_src_op(m_data), m_out_op(m_data)
+        : m_data(sim, label, id), m_out_op(m_data)
     {}
 
     //! Return the unique identifier (name) for this instance
@@ -109,50 +92,17 @@ public:
     //! Return the unique tag (integer ID) for this instance
     int id() const override { return m_data.info().id; }
 
-    //! Return the core info object for this actuator instance
-    const IBInfo& info() const override { return m_data.info(); }
-
     void read_inputs(const utils::IBParser& pp) override
     {
         ops::ReadInputsOp<GeomTrait>()(m_data, pp);
         m_out_op.read_io_options(pp);
     }
 
-    void determine_influenced_procs() override
-    {
-        ops::determine_influenced_procs<GeomTrait>(m_data);
-    }
+    void update_positions() override {}
 
-    void determine_root_proc(amrex::Vector<int>& ib_proc_count) override;
+    void update_velocities() override {}
 
-    int num_velocity_points() const override;
-
-    void update_positions(VecSlice& pos) override
-    {
-        ops::UpdatePosOp<GeomTrait>()(m_data);
-        const auto& vpos = m_data.grid().vel_pos;
-        std::copy(vpos.begin(), vpos.end(), pos.begin());
-    }
-
-    void update_velocities(const VecSlice& vel) override
-    {
-        std::copy(vel.begin(), vel.end(), m_data.grid().intrp_vel.begin());
-        ops::UpdateVelOp<GeomTrait>()(m_data);
-    }
-
-    void compute_forces() override
-    {
-        ops::ComputeForceOp<GeomTrait>()(m_data);
-        m_src_op.setup_op();
-    }
-
-    void compute_source_term(
-        const int lev,
-        const amrex::MFIter& mfi,
-        const amrex::Geometry& geom) override
-    {
-        m_src_op(lev, mfi, geom);
-    }
+    void compute_forces() override {}
 
     void prepare_outputs(const std::string& out_dir) override
     {
@@ -161,34 +111,8 @@ public:
 
     void write_outputs() override { m_out_op.write_outputs(); }
 
-    void init_ib_source() override
-    {
-        ops::InitDataOp<GeomTrait>()(m_data);
-        m_src_op.initialize();
-    }
+    void init_ib() override { ops::InitDataOp<GeomTrait>()(m_data); }
 };
-
-template <typename GeomTrait>
-void IBModel<GeomTrait>::determine_root_proc(amrex::Vector<int>& ib_proc_count)
-{
-    ops::determine_root_proc<GeomTrait>(m_data, ib_proc_count);
-    {
-        // Sanity checks
-        const auto& info = m_data.info();
-        const auto& plist = info.procs;
-        AMREX_ALWAYS_ASSERT(info.root_proc > -1);
-        AMREX_ALWAYS_ASSERT(plist.find(info.root_proc) != plist.end());
-    }
-}
-
-template <typename GeomTrait>
-int IBModel<GeomTrait>::num_velocity_points() const
-{
-    auto& info = m_data.info();
-    auto& grid = m_data.grid();
-
-    return (info.sample_vel_in_proc) ? grid.forcing_vel.size() : 0;
-}
 
 } // namespace ib
 } // namespace amr_wind

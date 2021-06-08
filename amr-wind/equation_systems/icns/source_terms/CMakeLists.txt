@@ -8,6 +8,5 @@ target_sources(${amr_wind_lib_name} PRIVATE
   BodyForce.cpp
   ABLMeanBoussinesq.cpp
   ActuatorForcing.cpp
-  IBForcing.cpp
   SynthTurbForcing.cpp
   )

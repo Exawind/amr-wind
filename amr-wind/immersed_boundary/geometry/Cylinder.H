@@ -16,7 +16,6 @@ struct CylinderData : public BluffBodyBaseData
 struct Cylinder : public BluffBodyType
 {
     using InfoType = IBInfo;
-    using GridType = IBGrid;
     using MetaType = CylinderData;
     using DataType = IBDataHolder<Cylinder>;
 
