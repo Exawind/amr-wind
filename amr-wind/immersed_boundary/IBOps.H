@@ -2,7 +2,6 @@
 #define IBOPS_H
 
 #include "amr-wind/immersed_boundary/IBTypes.H"
-#include "amr-wind/immersed_boundary/IBParser.H"
 #include "AMReX_Vector.H"
 #include "amr-wind/CFDSim.H"
 

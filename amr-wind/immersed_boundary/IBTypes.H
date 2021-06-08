@@ -7,8 +7,6 @@
 #include "AMReX_Gpu.H"
 #include "AMReX_RealBox.H"
 
-#include <set>
-
 namespace amr_wind {
 
 class CFDSim;

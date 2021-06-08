@@ -66,6 +66,8 @@ private:
 
     CFDSim& m_sim;
 
+    IntField& m_ib_mask;
+
     std::vector<std::unique_ptr<ImmersedBoundaryModel>> m_ibs;
 };
 

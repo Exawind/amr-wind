@@ -4,7 +4,7 @@
 #include "amr-wind/core/Factory.H"
 #include "amr-wind/immersed_boundary/IBTypes.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
-#include "amr-wind/immersed_boundary/IBParser.H"
+#include "amr-wind/core/MultiParser.H"
 
 namespace amr_wind {
 
@@ -38,7 +38,7 @@ public:
 
     virtual int id() const = 0;
 
-    virtual void read_inputs(const utils::IBParser&) = 0;
+    virtual void read_inputs(const ::amr_wind::utils::MultiParser&) = 0;
 
     virtual void init_ib() = 0;
 
@@ -92,7 +92,7 @@ public:
     //! Return the unique tag (integer ID) for this instance
     int id() const override { return m_data.info().id; }
 
-    void read_inputs(const utils::IBParser& pp) override
+    void read_inputs(const ::amr_wind::utils::MultiParser& pp) override
     {
         ops::ReadInputsOp<GeomTrait>()(m_data, pp);
         m_out_op.read_io_options(pp);

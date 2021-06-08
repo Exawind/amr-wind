@@ -1,7 +1,7 @@
 #ifndef CYLINDER_H
 #define CYLINDER_H
 
-#include "amr-wind/immersed_boundary/geometry/BluffBody.H"
+#include "amr-wind/immersed_boundary/bluff_body/BluffBody.H"
 
 namespace amr_wind {
 namespace ib {
