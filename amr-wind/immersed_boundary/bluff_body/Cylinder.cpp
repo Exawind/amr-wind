@@ -1,5 +1,5 @@
-#include "amr-wind/immersed_boundary/geometry/Cylinder.H"
-#include "amr-wind/immersed_boundary/geometry/cylinder_ops.H"
+#include "amr-wind/immersed_boundary/bluff_body/Cylinder.H"
+#include "amr-wind/immersed_boundary/bluff_body/cylinder_ops.H"
 #include "amr-wind/immersed_boundary/IBModel.H"
 
 namespace amr_wind {

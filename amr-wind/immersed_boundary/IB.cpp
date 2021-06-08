@@ -1,15 +1,17 @@
 #include "amr-wind/immersed_boundary/IB.H"
 #include "amr-wind/immersed_boundary/IBModel.H"
-#include "amr-wind/immersed_boundary/IBParser.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/MultiParser.H"
 
 #include <algorithm>
 
 namespace amr_wind {
 namespace ib {
 
-IB::IB(CFDSim& sim) : m_sim(sim) {}
+IB::IB(CFDSim& sim)
+    : m_sim(sim), m_ib_mask(sim.repo().declare_int_field("ib_mask_cell", 1))
+{}
 
 IB::~IB() = default;
 
@@ -36,7 +38,7 @@ void IB::pre_init_actions()
         auto obj = ImmersedBoundaryModel::create(type, m_sim, tname, i);
 
         const std::string default_prefix = identifier() + "." + type;
-        utils::IBParser inp(default_prefix, prefix);
+        ::amr_wind::utils::MultiParser inp(default_prefix, prefix);
 
         obj->read_inputs(inp);
         m_ibs.emplace_back(std::move(obj));

@@ -1,10 +1,10 @@
 #ifndef BLUFF_BODY_OPS_H
 #define BLUFF_BODY_OPS_H
 
-#include "amr-wind/immersed_boundary/geometry/BluffBody.H"
+#include "amr-wind/immersed_boundary/bluff_body/BluffBody.H"
 #include "amr-wind/immersed_boundary/IBTypes.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
-#include "amr-wind/immersed_boundary/IBParser.H"
+#include "amr-wind/core/MultiParser.H"
 
 namespace amr_wind {
 namespace ib {
@@ -13,7 +13,8 @@ namespace bluff_body {
 /** Parse common data for modeling non-blade bluff bodies via an immersed
  * bounary
  */
-void read_inputs(BluffBodyBaseData&, IBInfo&, const utils::IBParser&);
+void read_inputs(
+    BluffBodyBaseData&, IBInfo&, const ::amr_wind::utils::MultiParser&);
 
 /** Initialize core data structures when modeling the IB geometry
  */
@@ -45,8 +46,7 @@ template <typename GeomTrait>
 struct UpdatePosOp<
     GeomTrait,
     typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value &&
-        UseDefaultOp<GeomTrait>::update_pos>::type>
+        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
     void operator()(typename GeomTrait::DataType&) {}
 };
@@ -55,8 +55,7 @@ template <typename GeomTrait>
 struct UpdateVelOp<
     GeomTrait,
     typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value &&
-        UseDefaultOp<GeomTrait>::update_vel>::type>
+        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
     void operator()(typename GeomTrait::DataType&) {}
 };
@@ -65,8 +64,7 @@ template <typename GeomTrait>
 struct ComputeForceOp<
     GeomTrait,
     typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value &&
-        UseDefaultOp<GeomTrait>::compute_force>::type>
+        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
     void operator()(typename GeomTrait::DataType&) {}
 };
@@ -75,8 +73,7 @@ template <typename GeomTrait>
 struct ProcessOutputsOp<
     GeomTrait,
     typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value &&
-        UseDefaultOp<GeomTrait>::process_outputs>::type>
+        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
 private:
     typename GeomTrait::DataType& m_data;
@@ -89,7 +86,7 @@ public:
     explicit ProcessOutputsOp(typename GeomTrait::DataType& data) : m_data(data)
     {}
 
-    void read_io_options(const utils::IBParser& pp)
+    void read_io_options(const ::amr_wind::utils::MultiParser& pp)
     {
         pp.query("output_frequency", m_out_freq);
     }

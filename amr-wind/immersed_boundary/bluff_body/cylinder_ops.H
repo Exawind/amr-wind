@@ -1,10 +1,10 @@
 #ifndef CYLINDER_OPS_H
 #define CYLINDER_OPS_H
 
-#include "amr-wind/immersed_boundary/geometry/Cylinder.H"
+#include "amr-wind/immersed_boundary/bluff_body/Cylinder.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
 #include "amr-wind/immersed_boundary/IB.H"
-#include "amr-wind/immersed_boundary/geometry/bluff_body_ops.H"
+#include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 
 namespace amr_wind {
 namespace ib {
@@ -14,7 +14,8 @@ namespace ops {
 template <>
 struct ReadInputsOp<Cylinder>
 {
-    void operator()(Cylinder::DataType& data, const utils::IBParser& pp)
+    void operator()(
+        Cylinder::DataType& data, const ::amr_wind::utils::MultiParser& pp)
     {
         auto& wdata = data.meta();
         auto& info = data.info();

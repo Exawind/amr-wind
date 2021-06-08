@@ -1,5 +1,5 @@
-#include "amr-wind/immersed_boundary/geometry/bluff_body_ops.H"
-#include "amr-wind/immersed_boundary/IBParser.H"
+#include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
+#include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
 
@@ -9,7 +9,9 @@ namespace amr_wind {
 namespace ib {
 namespace bluff_body {
 
-void read_inputs(BluffBodyBaseData&, IBInfo&, const utils::IBParser&) {}
+void read_inputs(
+    BluffBodyBaseData&, IBInfo&, const ::amr_wind::utils::MultiParser&)
+{}
 
 void init_data_structures(BluffBodyBaseData&) {}
 
