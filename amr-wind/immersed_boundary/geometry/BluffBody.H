@@ -15,15 +15,6 @@ namespace ib {
  */
 struct BluffBodyBaseData
 {
-    //! Number of points (markers) along the IB surface
-    int num_pts;
-
-    //! Body velocity at the boundary node
-    VecList body_vel;
-
-    //! Forcing volume in theory should be equal to dx[0]*dx[1]*dx[2]
-    amrex::Real dVl;
-
     //! Total integrated lift over the wing
     amrex::Real lift{0.0};
 

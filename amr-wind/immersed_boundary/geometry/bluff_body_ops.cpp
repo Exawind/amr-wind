@@ -9,30 +9,25 @@ namespace amr_wind {
 namespace ib {
 namespace bluff_body {
 
-void read_inputs(BluffBodyBaseData& wdata, IBInfo&, const utils::IBParser& pp)
-{
-    pp.get("num_points", wdata.num_pts);
-}
+void read_inputs(BluffBodyBaseData&, IBInfo&, const utils::IBParser&) {}
 
-void init_data_structures(BluffBodyBaseData&, IBGrid&) {}
+void init_data_structures(BluffBodyBaseData&) {}
 
 void prepare_netcdf_file(
     const std::string& ncfile,
     const BluffBodyBaseData& meta,
-    const IBInfo& info,
-    const IBGrid& grid)
+    const IBInfo& info)
 {
-    amrex::ignore_unused(ncfile, meta, info, grid);
+    amrex::ignore_unused(ncfile, meta, info);
 }
 
 void write_netcdf(
     const std::string& ncfile,
     const BluffBodyBaseData& meta,
     const IBInfo& info,
-    const IBGrid& grid,
     const amrex::Real time)
 {
-    amrex::ignore_unused(ncfile, meta, info, grid, time);
+    amrex::ignore_unused(ncfile, meta, info, time);
 }
 
 } // namespace bluff_body

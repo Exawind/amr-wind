@@ -17,16 +17,15 @@ void read_inputs(BluffBodyBaseData&, IBInfo&, const utils::IBParser&);
 
 /** Initialize core data structures when modeling the IB geometry
  */
-void init_data_structures(BluffBodyBaseData&, IBGrid&);
+void init_data_structures(BluffBodyBaseData&);
 
 void prepare_netcdf_file(
-    const std::string&, const BluffBodyBaseData&, const IBInfo&, const IBGrid&);
+    const std::string&, const BluffBodyBaseData&, const IBInfo&);
 
 void write_netcdf(
     const std::string&,
     const BluffBodyBaseData&,
     const IBInfo&,
-    const IBGrid&,
     const amrex::Real);
 
 } // namespace bluff_body
@@ -99,7 +98,7 @@ public:
     {
         m_nc_filename = out_dir + "/" + m_data.info().label + ".nc";
         bluff_body::prepare_netcdf_file(
-            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid());
+            m_nc_filename, m_data.meta(), m_data.info());
     }
 
     void write_outputs()
@@ -109,8 +108,7 @@ public:
         if (tidx % m_out_freq != 0) return;
 
         bluff_body::write_netcdf(
-            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
-            time.new_time());
+            m_nc_filename, m_data.meta(), m_data.info(), time.new_time());
     }
 };
 
