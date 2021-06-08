@@ -192,26 +192,26 @@ Example for ``TurbineFastLine``::
    This is also used to correct the sampled velocity at the location of the
    nacelle actuator point.
 
-.. input_param:: Actuator.TurbineFastLine.nacelle_area = 0.0
+.. input_param:: Actuator.TurbineFastLine.nacelle_area
 
-   **type:** Real, optional
+   **type:** Real, optional, default=0
    
    This is the frontal area of the nacelle which is used to compute the force.
 
 .. input_param:: Actuator.TurbineFastLine.output_frequency
 
-   **type:** int, optional
+   **type:** int, optional, default=10
    
-   This is how often to write actuator output. The default is ``10``.
+   This is how often to write actuator output. 
 
-.. input_param:: Actuator.TurbineFastLine.density = 1.225
+.. input_param:: Actuator.TurbineFastLine.density
 
    **type:** Real, optional
    
    This is the density of the fluid specified in openfast. This is used to 
    non-dimensionalize the forces from openfast.
 
-.. input_param:: Actuator.WTG01.openfast_input_file = "fast_inp/nrel5mw.fst"
+.. input_param:: Actuator.WTG01.openfast_input_file
 
    **type:** String, required
    
