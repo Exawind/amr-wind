@@ -1,7 +1,7 @@
-#ifndef BOX_OPS_H
-#define BOX_OPS_H
+#ifndef SPHERE_OPS_H
+#define SPHERE_OPS_H
 
-#include "amr-wind/immersed_boundary/bluff_body/Box.H"
+#include "amr-wind/immersed_boundary/bluff_body/Sphere.H"
 #include "amr-wind/immersed_boundary/IBOps.H"
 #include "amr-wind/immersed_boundary/IB.H"
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
@@ -12,39 +12,35 @@ namespace ib {
 namespace ops {
 
 template <>
-struct ReadInputsOp<Box>
+struct ReadInputsOp<Sphere>
 {
     void
-    operator()(Box::DataType& data, const ::amr_wind::utils::MultiParser& pp)
+    operator()(Sphere::DataType& data, const ::amr_wind::utils::MultiParser& pp)
     {
         auto& wdata = data.meta();
         auto& info = data.info();
 
         pp.get("center", wdata.center_loc);
-        pp.get("length", wdata.length);
-        pp.get("width", wdata.width);
-        pp.get("height", wdata.height);
+        pp.get("radius", wdata.radius);
 
-        amrex::Real search_radius =
-            2.0 * std::max(wdata.length, std::max(wdata.width, wdata.height));
-
+        amrex::Real search_radius = 3.0 * wdata.radius;
         // clang-format off
-        const auto& origin=wdata.center_loc;
+       const auto& origin=wdata.center_loc;
         info.bound_box = amrex::RealBox(
-            origin[0] - search_radius,
-            origin[1] - search_radius,
-            origin[2] - search_radius,
-            origin[0] + search_radius,
-            origin[1] + search_radius,
-            origin[2] + search_radius);
+                origin[0] - search_radius,
+                origin[1] - search_radius,
+                origin[2] - search_radius,
+                origin[0] + search_radius,
+                origin[1] + search_radius,
+                origin[2] + search_radius);
         // clang-format on
     }
 };
 
 template <>
-struct InitDataOp<Box>
+struct InitDataOp<Sphere>
 {
-    void operator()(Box::DataType& data)
+    void operator()(Sphere::DataType& data)
     {
         auto& wdata = data.meta();
 
@@ -62,18 +58,16 @@ struct InitDataOp<Box>
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
-                amrex::Real l = wdata.length;
-                amrex::Real w = wdata.width;
-                amrex::Real h = wdata.height;
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                        if ((std::abs(x - x0) <= 0.5 * l) &&
-                            (std::abs(y - y0) <= 0.5 * w) &&
-                            (std::abs(z - z0) <= 0.5 * h)) {
+                        amrex::Real r = std::sqrt(
+                            (x - x0) * (x - x0) + (y - y0) * (y - y0) +
+                            (z - z0) * (z - z0));
+                        if (r < wdata.radius) {
                             epsilon_cell(i, j, k) = 0;
                         }
                     });
@@ -86,4 +80,4 @@ struct InitDataOp<Box>
 } // namespace ib
 } // namespace amr_wind
 
-#endif /* BOX_OPS_H */
+#endif /* CYLINDER_OPS_H */

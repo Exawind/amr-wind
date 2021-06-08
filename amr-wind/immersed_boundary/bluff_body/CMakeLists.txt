@@ -4,4 +4,5 @@ target_sources(${amr_wind_lib_name}
   bluff_body_ops.cpp
   Box.cpp
   Cylinder.cpp
+  Sphere.cpp
   )
