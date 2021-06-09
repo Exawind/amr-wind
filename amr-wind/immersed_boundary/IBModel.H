@@ -100,7 +100,7 @@ public:
 
     void update_positions() override {}
 
-    void update_velocities() override {}
+    void update_velocities() override { ops::UpdateVelOp<GeomTrait>()(m_data); }
 
     void compute_forces() override {}
 

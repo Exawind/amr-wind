@@ -57,7 +57,37 @@ struct UpdateVelOp<
     typename std::enable_if<
         std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
-    void operator()(typename GeomTrait::DataType&) {}
+    void operator()(typename GeomTrait::DataType& data)
+    {
+        BL_PROFILE("amr-wind::ib::IB::update_velocities");
+
+        auto& wdata = data.meta();
+        auto& sim = data.sim();
+
+        if (wdata.has_wall_model) {
+            amrex::Abort("IB wall modelling is not available yet.");
+        }
+
+        const int nlevels = sim.repo().num_active_levels();
+        auto& mask_cell = sim.repo().get_int_field("mask_cell");
+        auto& velocity = sim.repo().get_field("velocity");
+
+        for (int lev = 0; lev < nlevels; ++lev) {
+            for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+                const auto& bx = mfi.growntilebox();
+                auto epsilon_cell = mask_cell(lev).array(mfi);
+                auto varr = velocity(lev).array(mfi);
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        if (epsilon_cell(i, j, k) == 0) {
+                            varr(i, j, k, 0) = wdata.vel_bc[0];
+                            varr(i, j, k, 1) = wdata.vel_bc[1];
+                            varr(i, j, k, 2) = wdata.vel_bc[2];
+                        }
+                    });
+            }
+        }
+    }
 };
 
 template <typename GeomTrait>

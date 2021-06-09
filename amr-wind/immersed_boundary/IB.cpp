@@ -82,25 +82,9 @@ void IB::update_positions()
  */
 void IB::update_velocities()
 {
-    BL_PROFILE("amr-wind::ib::IB::update_velocities");
-    const int nlevels = m_sim.repo().num_active_levels();
-    auto& mask_cell = m_sim.repo().get_int_field("mask_cell");
-    auto& velocity = m_sim.repo().get_field("velocity");
-
-    for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox();
-            auto epsilon_cell = mask_cell(lev).array(mfi);
-            auto varr = velocity(lev).array(mfi);
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (epsilon_cell(i, j, k) == 0) {
-                        varr(i, j, k, 0) = 0.;
-                        varr(i, j, k, 1) = 0.;
-                        varr(i, j, k, 2) = 0.;
-                    }
-                });
-        }
+    BL_PROFILE("amr-wind::ib::IB::update_velocity");
+    for (auto& ib : m_ibs) {
+        ib->update_velocities();
     }
 }
 
