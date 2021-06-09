@@ -18,7 +18,15 @@ void read_inputs(
 
 /** Initialize core data structures when modeling the IB geometry
  */
-void init_data_structures(BluffBodyBaseData&);
+void init_data_structures(CFDSim&);
+
+/** Set the velocity inside the IB based on a manufactured solution
+ */
+void apply_mms_vel(CFDSim&);
+
+/** Set the velocity inside the IB based on a dirichlet BC
+ */
+void apply_dirichlet_vel(CFDSim&, amrex::Vector<amrex::Real>& vel_bc);
 
 void prepare_netcdf_file(
     const std::string&, const BluffBodyBaseData&, const IBInfo&);
@@ -64,28 +72,10 @@ struct UpdateVelOp<
         auto& wdata = data.meta();
         auto& sim = data.sim();
 
-        if (wdata.has_wall_model) {
-            amrex::Abort("IB wall modelling is not available yet.");
-        }
-
-        const int nlevels = sim.repo().num_active_levels();
-        auto& mask_cell = sim.repo().get_int_field("mask_cell");
-        auto& velocity = sim.repo().get_field("velocity");
-
-        for (int lev = 0; lev < nlevels; ++lev) {
-            for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
-                const auto& bx = mfi.growntilebox();
-                auto epsilon_cell = mask_cell(lev).array(mfi);
-                auto varr = velocity(lev).array(mfi);
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        if (epsilon_cell(i, j, k) == 0) {
-                            varr(i, j, k, 0) = wdata.vel_bc[0];
-                            varr(i, j, k, 1) = wdata.vel_bc[1];
-                            varr(i, j, k, 2) = wdata.vel_bc[2];
-                        }
-                    });
-            }
+        if (wdata.is_mms) {
+            bluff_body::apply_mms_vel(sim);
+        } else {
+            bluff_body::apply_dirichlet_vel(sim, wdata.vel_bc);
         }
     }
 };

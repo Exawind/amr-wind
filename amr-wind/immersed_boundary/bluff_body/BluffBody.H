@@ -17,6 +17,8 @@ struct BluffBodyBaseData
 {
     bool is_moving{false};
 
+    bool is_mms{false};
+
     bool has_wall_model{false};
 
     amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
