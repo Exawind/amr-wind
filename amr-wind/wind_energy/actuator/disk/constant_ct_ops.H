@@ -69,10 +69,28 @@ struct UpdateVelOp<ConstantCt, ActSrcDisk>
     void operator()(ConstantCt::DataType&) {}
 };
 
+// decide if we want force defined on the grid.  could
+// make grid just for velocity probing and then have
+// seperate points for the force that live in DataType.meta
 template <>
 struct ComputeForceOp<ConstantCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType&) {}
+    void operator()(ConstantCt::DataType& data)
+    {
+        auto& grid = data.grid();
+        auto& ddata = data.meta();
+        const amrex::Real uInf = ddata.reference_velocity;
+        const amrex::Real rho = ddata.density;
+        const amrex::Real cT = ddata.thrust_coeff;
+        const int npts = ddata.num_points;
+        const amrex::Real aeroPressure = 0.5 * uInf * uInf * rho * cT;
+        for (int ip = 0; ip < npts; ++ip) {
+            // get radius at point
+            // get ring area
+            const amrex::Real area = 1.0;
+            grid.force(ip) = aeroPressure * area;
+        }
+    }
 };
 
 template <>

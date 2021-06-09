@@ -15,6 +15,9 @@ struct ConstantCtData
     amrex::Real epsilon;
     amrex::Real diameter;
     amrex::Real dr;
+    amrex::Real density;
+    amrex::Real thrust_coeff;
+    amrex::Real reference_velocity;
 };
 
 struct ConstantCt : public DiskType
