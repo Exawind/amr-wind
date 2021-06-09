@@ -15,10 +15,16 @@ namespace ib {
  */
 struct BluffBodyBaseData
 {
-    //! Total integrated lift over the wing
+    bool is_moving{false};
+
+    bool has_wall_model{false};
+
+    amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
+
+    //! Total integrated lift over the bluff body
     amrex::Real lift{0.0};
 
-    //! Total integrated drag over the wing
+    //! Total integrated drag over the bluff body
     amrex::Real drag{0.0};
 };
 

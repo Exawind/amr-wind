@@ -20,6 +20,8 @@ struct ReadInputsOp<Sphere>
         auto& wdata = data.meta();
         auto& info = data.info();
 
+        bluff_body::read_inputs(wdata, info, pp);
+
         pp.get("center", wdata.center_loc);
         pp.get("radius", wdata.radius);
 
