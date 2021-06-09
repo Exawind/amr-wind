@@ -70,8 +70,8 @@ struct InitDataOp<Cylinder>
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                         amrex::Real r = std::sqrt(
-                            (x - x0) * (x - x0) + (z - z0) * (z - z0));
-                        if (r < wdata.radius && (std::abs(y - y0) <= 0.5 * l)) {
+                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
+                        if (r < wdata.radius && (std::abs(z - z0) <= 0.5 * l)) {
                             epsilon_cell(i, j, k) = 0;
                         }
                     });
