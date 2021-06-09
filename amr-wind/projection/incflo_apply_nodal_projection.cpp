@@ -126,6 +126,7 @@ void incflo::ApplyProjection(
 
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
+    auto& mask_cell = m_repo.get_int_field("mask_cell");
     auto& velocity = icns().fields().field;
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
@@ -227,6 +228,8 @@ void incflo::ApplyProjection(
     for (int lev = 0; lev <= finest_level; ++lev) {
         vel.push_back(&(velocity(lev)));
         vel[lev]->setBndry(0.0);
+        amrex::MultiFab::Multiply(
+            *vel[lev], amrex::ToMultiFab(mask_cell(lev)), 0, 0, 1, 1);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
             //  velocity.fillphysbc(lev, time, *vel[lev], 1);
@@ -279,6 +282,9 @@ void incflo::ApplyProjection(
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
 
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
+
     // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
@@ -287,9 +293,6 @@ void incflo::ApplyProjection(
                 0, 0, AMREX_SPACEDIM, 0);
         }
     }
-
-    // Do the pre pressure correction work -- this applies to IB only
-    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
 
     // Get phi and fluxes
     auto phi = nodal_projector->getPhi();
