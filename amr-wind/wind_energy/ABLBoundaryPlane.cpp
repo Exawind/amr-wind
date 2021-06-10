@@ -537,6 +537,8 @@ void ABLBoundaryPlane::populate_data(
 {
 #ifdef AMR_WIND_USE_NETCDF
 
+    if (lev > 0) return;
+
     if (m_io_mode != io_mode::input) return;
 
     AMREX_ALWAYS_ASSERT(
