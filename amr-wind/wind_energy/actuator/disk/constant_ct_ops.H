@@ -18,43 +18,44 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
         auto& info = data.info();
         pp.get("num_points", ddata.num_points);
         pp.get("disk_center", ddata.center);
-        pp.get("disk_normal", ddata.normal);
+        pp.get("disk_normal", ddata.normal_vec);
         pp.get("epsilon", ddata.epsilon);
         pp.get("diameter", ddata.diameter);
-        // TODO think about center of disk
+
         const amrex::Real radius = ddata.diameter * 0.5;
         ddata.dr = radius / ddata.num_points;
 
         // ensure normal is normalized
-        ddata.normal = ddata.normal.normalize();
-        const vs::Vector& n = ddata.normal;
-        // get a vector in the plane of the disk
-        vs::Vector planeVec = vs::Vector::one();
-        const auto unit = vs::Tensor::I();
+        ddata.normal_vec.normalize();
+        const vs::Vector& norm = ddata.normal_vec;
 
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            std::abs((unit.z() & n) - vs::mag_sqr(n)) >
+            vs::mag_sqr(vs::Vector::khat()^norm) <
                 vs::DTraits<amrex::Real>::eps(),
-            "A constant Ct disk normal is too close to vertical. Vertical axis "
-            "wind turbines are not supported with this model.");
+            "A constant Ct disk normal is too close to vertical.");
+        
+        // compute a coplanar vector that resides in the same plane as the disk
+        // we will use this vector for the bounding box and the force point locations
+        ddata.coplanar_vec = norm ^ vs::Vector::khat();
+        ddata.coplanar_vec.normalize();
+        const vs::Vector& cVec = ddata.coplanar_vec;
 
-        ::amr_wind::utils::cross_prod(
-            n.data(), unit.z().data(), planeVec.data());
-
-        // clang-format off
         const amrex::Real nl = ddata.epsilon * 3.0; // length scale in normal dir
         const amrex::Real dl = radius + ddata.dr*2.0; // length scale in plane of disk
 
         const auto& cc = ddata.center;
-        const amrex::Real xLen = (unit.x()&n)*nl + (unit.x()&planeVec)*dl;
-        const amrex::Real yLen = (unit.y()&n)*nl + (unit.y()&planeVec)*dl;
-        const amrex::Real zLen = (unit.z()&n)*nl + (unit.z()&planeVec)*dl;
-
+        const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
+        const auto p1 = cc - dvec;  // front
+        const auto p2 = cc + dvec;  // back
         info.bound_box = amrex::RealBox(
-          cc.x()-xLen, cc.y()-yLen, cc.z()-zLen, 
-          cc.x()+xLen, cc.y()+yLen, cc.z()+zLen
+            amrex::min(p1.x(), p2.x()),
+            amrex::min(p1.y(), p2.y()),
+            amrex::min(p1.z(), p2.z()),
+            amrex::max(p1.x(), p2.x()),
+            amrex::max(p1.y(), p2.y()),
+            amrex::max(p1.z(), p2.z())
         );
-        // clang-format on
+
     }
 };
 template <>
@@ -69,9 +70,9 @@ struct UpdateVelOp<ConstantCt, ActSrcDisk>
     void operator()(ConstantCt::DataType&) {}
 };
 
-// decide if we want force defined on the grid.  could
-// make grid just for velocity probing and then have
-// seperate points for the force that live in DataType.meta
+// compute the total force over a given radial section
+// this will then be spread uniformly over that area in the
+// projection step
 template <>
 struct ComputeForceOp<ConstantCt, ActSrcDisk>
 {
@@ -84,11 +85,16 @@ struct ComputeForceOp<ConstantCt, ActSrcDisk>
         const amrex::Real cT = ddata.thrust_coeff;
         const int npts = ddata.num_points;
         const amrex::Real aeroPressure = 0.5 * uInf * uInf * rho * cT;
+        const amrex::Real dr = ddata.dr;
+
+        auto* pos = grid.pos.data();
+        
         for (int ip = 0; ip < npts; ++ip) {
-            // get radius at point
-            // get ring area
-            const amrex::Real area = 1.0;
-            grid.force(ip) = aeroPressure * area;
+            const amrex::Real r = (ip+0.5)*dr;
+            const amrex::Real rp = r+dr*0.5;
+            const amrex::Real rm = r-dr*0.5;
+            const amrex::Real a = ::amr_wind::utils::pi()*(rp*rp-rm*rm);
+            grid.force(ip) = aeroPressure * a;
         }
     }
 };

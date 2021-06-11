@@ -11,7 +11,8 @@ struct ConstantCtData
 {
     int num_points;
     vs::Vector center;
-    vs::Vector normal;
+    vs::Vector normal_vec;
+    vs::Vector coplanar_vec;
     amrex::Real epsilon;
     amrex::Real diameter;
     amrex::Real dr;

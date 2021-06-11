@@ -111,7 +111,7 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
             const amrex::Real weight_R =
                 utils::linear_basis_1d(dist_on_disk.x(), dR);
             const amrex::Real weight_T =
-                1.0 / (::amr_wind::utils::two_pi() * dist_on_disk.x());
+                1.0 / (::amr_wind::utils::two_pi() * R);
             const amrex::Real weight_N =
                 utils::gaussian1d(dist_on_disk.z(), epsilon);
             const auto projection_weight = weight_R * weight_T * weight_N;
