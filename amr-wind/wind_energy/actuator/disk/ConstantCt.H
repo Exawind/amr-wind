@@ -9,16 +9,20 @@ namespace actuator {
 
 struct ConstantCtData
 {
-    int num_points;
+    int num_force_pts;
+    int num_vel_pts_r;
+    int num_vel_pts_t;
+    int num_vel_pts;
     vs::Vector center;
     vs::Vector normal_vec;
     vs::Vector coplanar_vec;
+    vs::Vector reference_velocity;
     amrex::Real epsilon;
     amrex::Real diameter;
     amrex::Real dr;
     amrex::Real density;
     amrex::Real thrust_coeff;
-    amrex::Real reference_velocity;
+    amrex::Real diameters_to_sample;
 };
 
 struct ConstantCt : public DiskType

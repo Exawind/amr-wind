@@ -86,11 +86,11 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 
     const amrex::Real dR = data.dr;
     const amrex::Real epsilon = data.epsilon;
-    const vs::Vector m_normal(data.normal);
+    const vs::Vector m_normal(data.normal_vec);
     const vs::Vector m_origin(data.center);
     const auto* pos = m_pos.data();
     const auto* force = m_force.data();
-    const int npts = m_pos.size();
+    const int npts = data.num_force_pts;
 
     amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const vs::Vector cc{
