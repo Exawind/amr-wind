@@ -36,7 +36,7 @@ void GeometryRefinement::operator()(
 {
     // If the user has requested a particular level then check for it and exit
     // early
-    if ((m_set_level > 1) && (level != m_set_level)) return;
+    if ((m_set_level > -1) && (level != m_set_level)) return;
 
     // If the user has specified a range of levels, check and return early
     if ((level < m_min_level) || (level > m_max_level)) return;
