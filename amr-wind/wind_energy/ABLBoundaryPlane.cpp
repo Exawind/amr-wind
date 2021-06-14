@@ -273,7 +273,6 @@ void ABLBoundaryPlane::write_header()
     ncf.def_dim("nt", NC_UNLIMITED);
     ncf.def_var("time", NC_DOUBLE, {"nt"});
 
-    const int nlevels = m_repo.num_active_levels();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const std::string plane = m_plane_names[ori];
@@ -297,11 +296,24 @@ void ABLBoundaryPlane::write_header()
         auto v_perp = plane_grp.def_var("perpendicular", NC_INT, {"pdim"});
         v_perp.put(perp.data());
 
+        const int nlevels = m_repo.num_active_levels();
         for (int lev = 0; lev < nlevels; ++lev) {
 
-            auto lev_grp = plane_grp.def_group(level_name(lev));
-
+            // Only do this if the output plane intersects with data on this
+            // level
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            const amrex::Box& domBox = m_mesh.Geom(lev).Domain();
+            const auto& lo = domBox.loVect();
+            const auto& hi = domBox.hiVect();
+            amrex::IntVect plo(lo);
+            amrex::IntVect phi(hi);
+            plo[normal] = ori.isHigh() ? lo[normal] : 0;
+            phi[normal] = ori.isHigh() ? hi[normal] : 0;
+            const amrex::Box pbx(plo, phi);
+            const auto& bx = minBox & pbx;
+            if (bx.isEmpty()) break;
+
+            auto lev_grp = plane_grp.def_group(level_name(lev));
             lev_grp.def_dim("nx", minBox.length(0));
             lev_grp.def_dim("ny", minBox.length(1));
             lev_grp.def_dim("nz", minBox.length(2));
@@ -334,6 +346,7 @@ void ABLBoundaryPlane::write_header()
         plane_grp.var("normal").get(&normal);
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
+        const int nlevels = plane_grp.num_groups();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto lev_grp = plane_grp.group(level_name(lev));
 
@@ -390,7 +403,6 @@ void ABLBoundaryPlane::write_file()
         fld->fillpatch(m_time.current_time());
     }
 
-    const int nlevels = m_repo.num_active_levels();
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         const std::string plane = m_plane_names[ori];
@@ -399,6 +411,7 @@ void ABLBoundaryPlane::write_file()
             m_planes.end())
             continue;
 
+        const int nlevels = ncf.group(plane).num_groups();
         for (auto* fld : m_fields) {
             for (int lev = 0; lev < nlevels; ++lev) {
                 auto grp = ncf.group(plane).group(level_name(lev));
@@ -435,7 +448,6 @@ void ABLBoundaryPlane::read_header()
     // Sanity check the input file time
     AMREX_ALWAYS_ASSERT(m_in_times[0] <= m_time.current_time());
 
-    const int nlevels = m_repo.num_active_levels();
     m_in_data.resize(6);
     for (auto& plane_grp : ncf.all_groups()) {
         int normal, face_dir;
@@ -446,6 +458,8 @@ void ABLBoundaryPlane::read_header()
             normal, amrex::Orientation::Side(face_dir));
 
         m_in_data.define_plane(ori);
+
+        const int nlevels = plane_grp.num_groups();
         for (int lev = 0; lev < nlevels; ++lev) {
             auto lev_grp = plane_grp.group(level_name(lev));
 
@@ -508,12 +522,12 @@ void ABLBoundaryPlane::read_file()
             m_filename, NC_NOWRITE | NC_NETCDF4 | NC_MPIIO,
             amrex::ParallelContext::CommunicatorSub(), MPI_INFO_NULL);
 
-        const int nlevels = m_repo.num_active_levels();
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
             if (not m_in_data.is_populated(ori)) continue;
 
             const std::string plane = m_plane_names[ori];
+            const int nlevels = ncf.group(plane).num_groups();
             for (auto* fld : m_fields) {
                 for (int lev = 0; lev < nlevels; ++lev) {
                     auto grp = ncf.group(plane).group(level_name(lev));
