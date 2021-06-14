@@ -79,7 +79,7 @@ void InletData::define_plane(const amrex::Orientation ori)
 void InletData::define_level_data(
     const amrex::Orientation ori, const amrex::Box& bx, const size_t nc)
 {
-    if (not this->is_populated(ori)) return;
+    if (!this->is_populated(ori)) return;
     m_data_n[ori]->push_back(amrex::FArrayBox(bx, nc));
     m_data_np1[ori]->push_back(amrex::FArrayBox(bx, nc));
     m_data_interp[ori]->push_back(amrex::FArrayBox(bx, nc));
@@ -100,7 +100,7 @@ void InletData::read_data(
     const int idxp1 = idx + 1;
     m_tn = times[idx];
     m_tnp1 = times[idxp1];
-    AMREX_ALWAYS_ASSERT(((m_tn <= time) and (time <= m_tnp1)));
+    AMREX_ALWAYS_ASSERT(((m_tn <= time) && (time <= m_tnp1)));
 
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
@@ -144,7 +144,7 @@ void InletData::interpolate(const amrex::Real time)
     m_tinterp = time;
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
-        if (not this->is_populated(ori)) continue;
+        if (!this->is_populated(ori)) continue;
 
         const int nlevels = m_data_n[ori]->size();
         for (int lev = 0; lev < nlevels; ++lev) {
@@ -514,7 +514,7 @@ void ABLBoundaryPlane::read_file()
 
     // populate planes and interpolate
     const amrex::Real time = m_time.new_time();
-    AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) and (time < m_in_times.back()));
+    AMREX_ALWAYS_ASSERT((m_in_times[0] <= time) && (time < m_in_times.back()));
 
     if (!((m_in_data.tn() <= time) && (time < m_in_data.tnp1()))) {
 
@@ -524,7 +524,7 @@ void ABLBoundaryPlane::read_file()
 
         for (amrex::OrientationIter oit; oit; ++oit) {
             auto ori = oit();
-            if (not m_in_data.is_populated(ori)) continue;
+            if (!m_in_data.is_populated(ori)) continue;
 
             const std::string plane = m_plane_names[ori];
             const int nlevels = ncf.group(plane).num_groups();
@@ -557,7 +557,7 @@ void ABLBoundaryPlane::populate_data(
 
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
-        if ((not m_in_data.is_populated(ori)) or
+        if ((!m_in_data.is_populated(ori)) ||
             (fld.bc_type()[ori] != BC::mass_inflow))
             continue;
 
@@ -651,7 +651,7 @@ void ABLBoundaryPlane::write_data(
     // Domain info
     const amrex::Box& domain = m_mesh.Geom(lev).Domain();
     const auto& dlo = domain.loVect();
-    AMREX_ALWAYS_ASSERT(dlo[0] == 0 and dlo[1] == 0 and dlo[2] == 0);
+    AMREX_ALWAYS_ASSERT(dlo[0] == 0 && dlo[1] == 0 && dlo[2] == 0);
 
     grp.var(name).par_access(NC_COLLECTIVE);
 
