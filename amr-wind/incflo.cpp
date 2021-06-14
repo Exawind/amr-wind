@@ -65,6 +65,9 @@ void incflo::init_mesh()
     } else {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
+        for (int lev = finestLevel(); lev <= maxLevel(); ++lev) {
+            regrid(lev, m_time.current_time());
+        }
         if (ParallelDescriptor::IOProcessor()) {
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
