@@ -187,6 +187,7 @@ endif()
 add_test_red(abl_godunov_restart abl_godunov)
 if (AMR_WIND_ENABLE_NETCDF)
   add_test_red(abl_bndry_input abl_bndry_output)
+  add_test_red(abl_bndry_input_amr abl_bndry_output)
 endif()
 
 #=============================================================================
