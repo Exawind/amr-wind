@@ -24,7 +24,7 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
         pp.get("disk_center", ddata.center);
         pp.get("disk_normal", ddata.normal_vec);
         pp.get("epsilon", ddata.epsilon);
-        pp.get("diameter", ddata.diameter);
+        pp.get("rotor_diameter", ddata.diameter);
         pp.get("thrust_coeff", ddata.thrust_coeff);
         pp.query("density", ddata.density);
 
@@ -42,10 +42,10 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
         const vs::Vector& norm = ddata.normal_vec;
 
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            vs::mag_sqr(vs::Vector::khat()^norm) <
+            vs::mag_sqr(vs::Vector::khat() ^ norm) >
                 vs::DTraits<amrex::Real>::eps(),
             "A constant Ct disk normal is too close to vertical.");
-        
+
         // compute a coplanar vector that resides in the same plane as the disk
         // we will use this vector for the bounding box and the force point locations
         ddata.coplanar_vec = norm ^ vs::Vector::khat();
@@ -157,7 +157,7 @@ struct ComputeForceOp<ConstantCt, ActSrcDisk>
             const amrex::Real rp = r+dr*0.5;
             const amrex::Real rm = r-dr*0.5;
             const amrex::Real a = ::amr_wind::utils::pi()*(rp*rp-rm*rm);
-            grid.force[ip] = (aeroPressure * a) * normal;
+            grid.force[ip] = -(aeroPressure * a) * normal;
         }
     }
 };
