@@ -132,6 +132,9 @@ public:
 
     bool is_initialized() const { return m_is_initialized; }
 
+    bool box_intersects_boundary(
+        const amrex::Box&, const int, const amrex::Orientation) const;
+
 private:
     const amr_wind::SimTime& m_time;
     const FieldRepo& m_repo;

@@ -302,16 +302,7 @@ void ABLBoundaryPlane::write_header()
             // Only do this if the output plane intersects with data on this
             // level
             const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
-            const amrex::Box& domBox = m_mesh.Geom(lev).Domain();
-            const auto& lo = domBox.loVect();
-            const auto& hi = domBox.hiVect();
-            amrex::IntVect plo(lo);
-            amrex::IntVect phi(hi);
-            plo[normal] = ori.isHigh() ? lo[normal] : 0;
-            phi[normal] = ori.isHigh() ? hi[normal] : 0;
-            const amrex::Box pbx(plo, phi);
-            const auto& bx = minBox & pbx;
-            if (bx.isEmpty()) break;
+            if (!box_intersects_boundary(minBox, lev, ori)) break;
 
             auto lev_grp = plane_grp.def_group(level_name(lev));
             lev_grp.def_dim("nx", minBox.length(0));
@@ -557,9 +548,25 @@ void ABLBoundaryPlane::populate_data(
     for (amrex::OrientationIter oit; oit; ++oit) {
         auto ori = oit();
         if ((!m_in_data.is_populated(ori)) ||
-            (fld.bc_type()[ori] != BC::mass_inflow) ||
-            (lev >= m_in_data.nlevels(ori)))
+            (fld.bc_type()[ori] != BC::mass_inflow))
             continue;
+
+        // Ensure the fine level does not touch the inflow boundary
+        if (lev > 0) {
+            const amrex::Box& minBox = m_mesh.boxArray(lev).minimalBox();
+            if (box_intersects_boundary(minBox, lev, ori)) {
+                amrex::Abort(
+                    "Fine level intersects inflow boundary, not supported "
+                    "yet.");
+            } else {
+                continue;
+            }
+        }
+
+        // Ensure inflow data exists at this level
+        if (lev >= m_in_data.nlevels(ori)) {
+            amrex::Abort("No inflow data at this level.");
+        }
 
         const int normal = ori.coordDir();
         const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
@@ -721,5 +728,23 @@ void ABLBoundaryPlane::impl_buffer_field(
                                              k - v_offset[2], n));
         });
 }
+
+// True if box intersects the boundary
+bool ABLBoundaryPlane::box_intersects_boundary(
+    const amrex::Box& bx, const int lev, const amrex::Orientation ori) const
+{
+    const amrex::Box& domBox = m_mesh.Geom(lev).Domain();
+    const int normal = ori.coordDir();
+    const auto& lo = domBox.loVect();
+    const auto& hi = domBox.hiVect();
+    amrex::IntVect plo(lo);
+    amrex::IntVect phi(hi);
+    plo[normal] = ori.isHigh() ? lo[normal] : 0;
+    phi[normal] = ori.isHigh() ? hi[normal] : 0;
+    const amrex::Box pbx(plo, phi);
+    const auto& intersection = bx & pbx;
+    return !intersection.isEmpty();
+}
+
 #endif
 } // namespace amr_wind
