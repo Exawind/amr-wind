@@ -58,6 +58,11 @@ public:
 
     int component(const int id) const { return m_components.at(id); }
 
+    int nlevels(const amrex::Orientation ori) const
+    {
+        return (*m_data_interp[ori]).size();
+    }
+
     amrex::Real tn() const { return m_tn; }
     amrex::Real tnp1() const { return m_tnp1; }
     amrex::Real tinterp() const { return m_tinterp; }
