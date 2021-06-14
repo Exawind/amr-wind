@@ -729,7 +729,7 @@ void ABLBoundaryPlane::impl_buffer_field(
         });
 }
 
-// True if box intersects the boundary
+//! True if box intersects the boundary
 bool ABLBoundaryPlane::box_intersects_boundary(
     const amrex::Box& bx, const int lev, const amrex::Orientation ori) const
 {
