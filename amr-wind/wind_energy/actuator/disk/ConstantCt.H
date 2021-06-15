@@ -16,6 +16,7 @@ struct ConstantCtData
     vs::Vector center;
     vs::Vector normal_vec;
     vs::Vector coplanar_vec;
+    vs::Vector sample_vec;
     vs::Vector reference_velocity;
     amrex::Real epsilon;
     amrex::Real diameter;

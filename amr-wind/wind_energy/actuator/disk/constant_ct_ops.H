@@ -9,37 +9,54 @@ namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-template <>
-struct ReadInputsOp<ConstantCt, ActSrcDisk>
-{
-    void operator()(ConstantCt::DataType& data, const utils::ActParser& pp)
-    {
-        auto& ddata = data.meta();
-        auto& info = data.info();
-        pp.get("num_force_points", ddata.num_force_pts);
-        // eventually we will change velocity sampling location
-        // pp.get("num_vel_points_r", ddata.num_vel_points_r);
-        // pp.get("num_vel_points_t", ddata.num_vel_points_t);
-        // pp.get("diameters_to_sample_velocity", ddata.diameters_to_sample);
-        pp.get("disk_center", ddata.center);
-        pp.get("disk_normal", ddata.normal_vec);
-        pp.get("epsilon", ddata.epsilon);
-        pp.get("rotor_diameter", ddata.diameter);
-        pp.get("thrust_coeff", ddata.thrust_coeff);
-        pp.query("density", ddata.density);
+namespace{
+    void collect_parse_conflicts(const utils::ActParser& pp, const std::string& p1, const std::string& p2, std::ostringstream& ss){
+        if(pp.contains(p1) && pp.contains(p2)) ss << "ConstantCt Conflict: "<< p1 << " and " << p2 << std::endl;
+    }
 
-        // ddata.num_vel_pts = ddata.num_vel_pts_r * ddata.num_vel_pts_t;
-        ddata.num_vel_pts = ddata.num_force_pts;
-        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-            ddata.num_vel_pts > 0,
-            "num_vel_points_r and num_vel_points_t must both be >=1");
+    void always_required(ConstantCt::MetaType& meta, const utils::ActParser& pp){
+        pp.get("num_force_points", meta.num_force_pts);
+        pp.get("disk_center", meta.center);
+        pp.get("epsilon", meta.epsilon);
+        pp.get("rotor_diameter", meta.diameter);
+        pp.get("thrust_coeff", meta.thrust_coeff);
 
-        const amrex::Real radius = ddata.diameter * 0.5;
-        ddata.dr = radius / ddata.num_force_pts;
+    }
+
+    void optional_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp){
+        pp.query("disk_normal", meta.normal_vec);
+        pp.query("density", meta.density);
+
+        if(pp.contains("yaw")){
+            amrex::Real yaw;
+            pp.get("yaw", yaw);
+            yaw = ::amr_wind::utils::radians(yaw);
+            meta.normal_vec = vs::Vector::ihat() & vs::zrot(yaw);
+        }
+        if(pp.contains("sample_normal")){
+            pp.get("sample_normal", meta.sample_vec);
+        } else{
+            meta.sample_vec = meta.normal_vec;
+        }
+        meta.num_vel_pts = meta.num_force_pts;
+    }
+
+    void check_for_parse_conflicts(const utils::ActParser& pp){
+        std::ostringstream error_collector;
+
+        collect_parse_conflicts(pp, "disk_normal", "yaw", error_collector);
+
+        if(!error_collector.str().empty())
+        amrex::Abort("Conflicts found while parsing a ConstantCt Actuator:\n"+error_collector.str());
+    }
+
+    void compute_and_normalize_vectors(ConstantCt::MetaType& meta){
+        const amrex::Real radius = meta.diameter * 0.5;
+        meta.dr = radius / meta.num_force_pts;
 
         // ensure normal is normalized
-        ddata.normal_vec.normalize();
-        const vs::Vector& norm = ddata.normal_vec;
+        meta.normal_vec.normalize();
+        const vs::Vector& norm = meta.normal_vec;
 
         AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
             vs::mag_sqr(vs::Vector::khat() ^ norm) >
@@ -48,18 +65,29 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
 
         // compute a coplanar vector that resides in the same plane as the disk
         // we will use this vector for the bounding box and the force point locations
-        ddata.coplanar_vec = norm ^ vs::Vector::khat();
-        ddata.coplanar_vec.normalize();
-        const vs::Vector& cVec = ddata.coplanar_vec;
+        meta.coplanar_vec = norm ^ vs::Vector::khat();
+        meta.coplanar_vec.normalize();
+        meta.sample_vec.normalize();
+    }
 
-        const amrex::Real nl = ddata.epsilon * 3.0; // length scale in normal dir
-        const amrex::Real dl = radius + ddata.dr*2.0; // length scale in plane of disk
+    void final_checks(const ConstantCt::MetaType& meta){
+        AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
+            meta.num_vel_pts > 0,
+            "num_vel_points_r and num_vel_points_t must both be >=1");
 
-        const auto& cc = ddata.center;
+    }
+
+    amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta){
+        auto& norm = meta.normal_vec;
+        auto& cVec = meta.coplanar_vec;
+
+        const auto& cc = meta.center;
+        const amrex::Real nl = meta.epsilon * 3.0; // length scale in normal dir
+        const amrex::Real dl = meta.diameter*0.5 + meta.dr*2.0; // length scale in plane of disk
         const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
         const auto p1 = cc - dvec;  // front
         const auto p2 = cc + dvec;  // back
-        info.bound_box = amrex::RealBox(
+        return amrex::RealBox(
             amrex::min(p1.x(), p2.x()),
             amrex::min(p1.y(), p2.y()),
             amrex::min(p1.z(), p2.z()),
@@ -67,6 +95,34 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
             amrex::max(p1.y(), p2.y()),
             amrex::max(p1.z(), p2.z())
         );
+
+    }
+
+    void do_parse_based_computations(ConstantCt::DataType& data){
+        auto& meta = data.meta();
+        auto& info = data.info();
+
+        compute_and_normalize_vectors(meta);
+        info.bound_box = compute_bounding_box(meta);
+    }
+}
+template <>
+struct ReadInputsOp<ConstantCt, ActSrcDisk>
+{
+    void operator()(ConstantCt::DataType& data, const utils::ActParser& pp)
+    {
+        check_for_parse_conflicts(pp);
+        auto& meta = data.meta();
+        auto& info = data.info();
+        always_required(meta, pp);
+        optional_parameters(meta, pp);
+
+        // TODO get density at probe location
+        // TODO add yaw option
+        // TODO add pitch
+
+        final_checks(meta);
+        do_parse_based_computations(data);
 
     }
 };
@@ -149,8 +205,6 @@ struct ComputeForceOp<ConstantCt, ActSrcDisk>
         const amrex::Real aeroPressure = 0.5 * uInf * uInf * rho * cT;
         const amrex::Real dr = ddata.dr;
         const auto& normal = ddata.normal_vec;
-
-        auto* pos = grid.pos.data();
         
         for (int ip = 0; ip < npts; ++ip) {
             const amrex::Real r = (ip+0.5)*dr;
