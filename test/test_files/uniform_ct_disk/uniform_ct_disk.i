@@ -27,8 +27,10 @@ Actuator.labels = WTG01
 Actuator.type = UniformCtDisk
 
 Actuator.UniformCtDisk.rotor_diameter = 126.0
-Actuator.UniformCtDisk.disk_normal = 10 0.0 0.0
-Actuator.UniformCtDisk.disk_center = 0.0 0.0 0.0
+Actuator.UniformCtDisk.base_position = 0.0 0.0 0.0
+Actuator.UniformCtDisk.hub_height = 0.0
+Actuator.UniformCtDisk.yaw = 5.0 # degrees
+Actuator.UniformCtDisk.sample_yaw = 0.0 # set velocity sampling to be un-yawed
 Actuator.UniformCtDisk.num_force_points = 5
 Actuator.UniformCtDisk.thrust_coeff = 0.7
 Actuator.UniformCtDisk.epsilon = 10.0
@@ -80,47 +82,3 @@ nodal_proj.mg_rtol = 1.0e-6
 nodal_proj.mg_atol = 1.0e-12
 mac_proj.mg_rtol = 1.0e-6
 mac_proj.mg_atol = 1.0e-12
-
-#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
-#              Sampling                 #
-#.......................................#
-incflo.post_processing = sampling line_sampling averaging
-# Frequency of output for the data
-sampling.output_frequency = 1000
-sampling.labels = p_hub
-# Fields to output
-sampling.fields = velocity velocity_mean velocity_reynolds_stress
-# Definitions for each probe
-sampling.p_hub.type = PlaneSampler
-sampling.p_hub.axis2 = 0.0 0.0 630.0
-sampling.p_hub.axis1 = 630 0.0 0.0
-sampling.p_hub.origin = -315.0 0.0 -315.0
-sampling.p_hub.num_points = 128 128
-sampling.p_hub.normal = 0.0 1.0 0.0
-
-line_sampling.output_frequency = 10
-line_sampling.labels = line0 line1
-line_sampling.fields = velocity velocity_mean velocity_reynolds_stress
-
-line_sampling.line0.type       = LineSampler
-line_sampling.line0.num_points = 160
-line_sampling.line0.start      = 0.0 0.0 -126.0
-line_sampling.line0.end        = 0.0 0.0  126.0
-
-line_sampling.line1.type       = LineSampler
-line_sampling.line1.num_points = 160
-line_sampling.line1.start      = 126.0 0.0 -126.0
-line_sampling.line1.end        = 126.0 0.0  126.0
-
-# The time averaging
-averaging.type = TimeAveraging
-averaging.labels = means  stress
-
-averaging.averaging_window = 10.0
-averaging.averaging_start_time = 0.0
-
-averaging.means.fields = velocity
-averaging.means.averaging_type = ReAveraging
-
-averaging.stress.fields = velocity
-averaging.stress.averaging_type = ReynoldsStress

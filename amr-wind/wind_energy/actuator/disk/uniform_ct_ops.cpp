@@ -29,7 +29,13 @@ void collect_parse_dependencies(
 void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
 {
     pp.get("num_force_points", meta.num_force_pts);
-    pp.get("disk_center", meta.center);
+    {
+        amrex::Real hub;
+        vs::Vector base;
+        pp.get("base_position", base);
+        pp.get("hub_height", hub);
+        meta.center = base + (hub * vs::Vector::khat());
+    }
     pp.get("epsilon", meta.epsilon);
     pp.get("rotor_diameter", meta.diameter);
     pp.get("thrust_coeff", meta.thrust_coeff);
