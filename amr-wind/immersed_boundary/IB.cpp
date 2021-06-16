@@ -9,15 +9,13 @@
 namespace amr_wind {
 namespace ib {
 
-IB::IB(CFDSim& sim)
-    : m_sim(sim), m_ib_mask(sim.repo().declare_int_field("ib_mask_cell", 1))
-{}
+IB::IB(CFDSim& sim) : m_sim(sim) {}
 
 IB::~IB() = default;
 
 void IB::pre_init_actions()
 {
-    BL_PROFILE("amr-wind::ib::IB::post_init_actions");
+    BL_PROFILE("amr-wind::ib::IB::pre_init_actions");
     amrex::ParmParse pp(identifier());
 
     amrex::Vector<std::string> labels;
@@ -59,6 +57,12 @@ void IB::pre_advance_work()
 }
 
 void IB::pre_pressure_correction_work()
+{
+    BL_PROFILE("amr-wind::ib::IB::pre_pressure_correction_work");
+    update_velocities();
+}
+
+void IB::post_pressure_correction_work()
 {
     BL_PROFILE("amr-wind::ib::IB::pre_pressure_correction_work");
     update_velocities();

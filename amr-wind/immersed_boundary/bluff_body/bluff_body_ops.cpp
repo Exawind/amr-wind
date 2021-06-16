@@ -27,15 +27,14 @@ void apply_mms_vel(CFDSim& sim)
     const int nlevels = sim.repo().num_active_levels();
     auto& mask_cell = sim.repo().get_int_field("mask_cell");
     auto& velocity = sim.repo().get_field("velocity");
-
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
 
     const amrex::Real u0 = m_conv_taylor_green.get_u0();
-    const amrex::Real v0 = m_conv_taylor_green.get_u0();
+    const amrex::Real v0 = m_conv_taylor_green.get_v0();
     const amrex::Real omega = m_conv_taylor_green.get_omega();
 
-    amrex::Real t = sim.time().current_time();
+    amrex::Real t = sim.time().new_time();
     auto& geom = sim.mesh().Geom();
 
     for (int lev = 0; lev < nlevels; ++lev) {
