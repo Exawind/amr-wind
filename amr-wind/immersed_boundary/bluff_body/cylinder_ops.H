@@ -27,7 +27,7 @@ struct ReadInputsOp<Cylinder>
         pp.get("radius", wdata.radius);
         pp.get("length", wdata.length);
 
-        amrex::Real search_radius = 3.0 * wdata.radius;
+        amrex::Real search_radius = 2.0 * wdata.radius;
         // clang-format off
        const auto& origin=wdata.center_loc;
         info.bound_box = amrex::RealBox(
@@ -71,7 +71,8 @@ struct InitDataOp<Cylinder>
 
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
-                        if (r < wdata.radius && (std::abs(z - z0) <= 0.5 * l)) {
+                        if (r <= wdata.radius &&
+                            (std::abs(z - z0) <= 0.5 * l)) {
                             epsilon_cell(i, j, k) = 0;
                         }
                     });

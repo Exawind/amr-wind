@@ -69,7 +69,7 @@ struct InitDataOp<Sphere>
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
-                        if (r < wdata.radius) {
+                        if (r <= wdata.radius) {
                             epsilon_cell(i, j, k) = 0;
                         }
                     });

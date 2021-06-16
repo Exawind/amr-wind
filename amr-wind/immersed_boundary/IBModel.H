@@ -12,15 +12,15 @@ class CFDSim;
 
 namespace ib {
 
-/** Abstract representation of an immersed boundary source in the flowfield.
+/** Abstract representation of an immersed boundary in the flowfield.
  *
  *  \ingroup immersed boundary
  *
- *  This class is intended to represent a single object (e.g., turbine, fixed
- *  wing) that exists in the computational domain. A collection of source
- *  objects (e.g., turbines in a wind farm) is modeled using the
- *  amr_wind::IB physics class that holds a collection of instances of
- *  IBModel and acts on them.
+ * This class is intended to represent a single object (e.g., floating
+ * platform, tower complex terrain) that exists in the computational domain. A
+ * collection of immersed boundary objects (e.g., multiple cylinders) is modeled
+ * using the amr_wind::IB physics class that holds a collection of instances of
+ * IBModel and acts on them.
  */
 class ImmersedBoundaryModel
     : public Factory<
@@ -57,10 +57,10 @@ public:
  *
  *  \ingroup IB
  *
- *  \tparam GeomTrait A geometry type trait that defines the behavior of the
- *  different actions (initialization, velocity sampling, force computation, and
- *  momentum source term computations) that are executed by the IBModel
- *  class through the amr_wind::ib physics driver class.
+ * \tparam GeomTrait A geometry type trait that defines the behavior of the
+ * different actions (initialization, velocity update, force computation)
+ * that are executed by the IBModel class through the amr_wind::ib physics
+ * driver class.
  *
  */
 template <typename GeomTrait>

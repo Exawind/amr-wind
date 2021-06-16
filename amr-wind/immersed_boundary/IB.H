@@ -5,8 +5,8 @@
 #include "amr-wind/core/FieldRepo.H"
 
 /** \defgroup immersed boundary Immersed boundary module
- *  Immersed boundary source modeling for wind turbines
- *  \ingroup wind
+ *  Immersed boundary class
+ *  \ingroup immersed_boundary
  */
 
 namespace amr_wind {
@@ -16,16 +16,14 @@ class Field;
 namespace ib {
 
 class ImmersedBoundaryModel;
-class IBContainer;
 
-/** Immersed boundary modeling for wind turbines.
+/** Immersed boundary modeling for non-blade wind components and complex terrain
  *
  *  \ingroup immersed boundary
  *
- *  This class provides an interface to model wind turbines in a wind farm as
- *  actuator line/disk source terms.
+ *  This class provides an interface to model
  *
- *  \sa ImmersedBoundaryModel, IBContainer
+ *  \sa ImmersedBoundaryModel
  */
 class IB : public Physics::Register<IB>
 {
@@ -50,6 +48,8 @@ public:
 
     void pre_pressure_correction_work() override;
 
+    void post_pressure_correction_work() override;
+
 protected:
     //! Total number of immersed boundaries
 
@@ -65,8 +65,6 @@ private:
     void compute_forces();
 
     CFDSim& m_sim;
-
-    IntField& m_ib_mask;
 
     std::vector<std::unique_ptr<ImmersedBoundaryModel>> m_ibs;
 };

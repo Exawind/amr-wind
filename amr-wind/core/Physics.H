@@ -82,8 +82,11 @@ public:
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
 
-    //! Do work that needs to happen before pressure nodal projection
+    //! Perform tasks necessary before applying the pressure correction
     virtual void pre_pressure_correction_work() {}
+
+    //! Perform tasks necessary after applying the pressure correction
+    virtual void post_pressure_correction_work() {}
 };
 
 /** A collection of \ref physics instances that are active during a simulation
