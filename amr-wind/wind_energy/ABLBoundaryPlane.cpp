@@ -227,6 +227,7 @@ void ABLBoundaryPlane::post_advance_work()
 void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::initialize_data");
     for (const auto& plane : m_planes) {
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
 
@@ -257,6 +258,7 @@ void ABLBoundaryPlane::initialize_data()
 void ABLBoundaryPlane::write_header()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_header");
     if (m_io_mode != io_mode::output) return;
 
     amrex::Print() << "Creating output NetCDF file: " << m_filename
@@ -370,6 +372,7 @@ void ABLBoundaryPlane::write_header()
 void ABLBoundaryPlane::write_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_file");
     const amrex::Real time = m_time.new_time();
     const int t_step = m_time.time_index();
 
@@ -418,6 +421,7 @@ void ABLBoundaryPlane::write_file()
 void ABLBoundaryPlane::read_header()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_data");
     if (m_io_mode != io_mode::input) return;
 
     amrex::Print() << "Reading input NetCDF file: " << m_filename << std::endl;
@@ -500,6 +504,7 @@ void ABLBoundaryPlane::read_header()
 void ABLBoundaryPlane::read_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) return;
 
     // populate planes and interpolate
@@ -538,6 +543,7 @@ void ABLBoundaryPlane::populate_data(
     amrex::MultiFab& mfab) const
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
 
     if (m_io_mode != io_mode::input) return;
 
@@ -646,6 +652,7 @@ void ABLBoundaryPlane::write_data(
     const int lev,
     const Field* fld)
 {
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_data");
     // Plane info
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
