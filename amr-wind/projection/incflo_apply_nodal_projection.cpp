@@ -128,6 +128,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
+    auto& mesh_fac = m_repo.get_field("mesh_scale_fac");
 
     // Do the pre pressure correction work -- this applies to IB only
     for (auto& pp : m_sim.physics()) {
@@ -135,6 +136,7 @@ void incflo::ApplyProjection(
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
+    // Also account for mesh mapping in the RHS -  J/fac * u + 1/fac * grad(p) * dt/rho
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
@@ -147,12 +149,19 @@ void incflo::ApplyProjection(
                 Array4<Real> const& u = velocity(lev).array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& gp = grad_p(lev).const_array(mfi);
+                Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         Real soverrho = scaling_factor / rho(i, j, k);
-                        u(i, j, k, 0) += gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += gp(i, j, k, 2) * soverrho;
+
+                        u(i, j, k, 0) = det_j * 1./fac(i, j, k, 0) * u(i, j, k, 0)
+                                      + 1/fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) = det_j * 1./fac(i, j, k, 1) * u(i, j, k, 1)
+                                      + 1/fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) = det_j * 1./fac(i, j, k, 2) * u(i, j, k, 2)
+                                      + 1/fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
                     });
             }
         }
@@ -201,12 +210,18 @@ void incflo::ApplyProjection(
         }
     }
 
-    // Create sigma
+    // Create sigma and alpha while accounting for mesh mapping
+    // sigma = 1/(fac^2)*J * dt/rho
+    // alpha = J/fac such that sigma/alpha = 1/fac
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    if (variable_density) {
+    Vector<amrex::MultiFab> alpha(finest_level + 1);
+//    if (variable_density)
+    {
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], 1, 0, MFInfo(), Factory(lev));
+                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), Factory(lev));
+            alpha[lev].define(
+                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -214,10 +229,17 @@ void incflo::ApplyProjection(
                  ++mfi) {
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& sig = sigma[lev].array(mfi);
+                Array4<Real> const& alp = alpha[lev].array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        sig(i, j, k) = scaling_factor / rho(i, j, k);
+                Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
+                amrex::ParallelFor(bx, AMREX_SPACEDIM,
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                        Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+
+                        sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) * det_j
+                                        * scaling_factor / rho(i, j, k);
+                        alp(i, j, k, n) = det_j / fac(i, j, k, n);
                     });
             }
         }
@@ -240,19 +262,23 @@ void incflo::ApplyProjection(
     }
 
     amr_wind::MLMGOptions options("nodal_proj");
-    if (variable_density) {
-        nodal_projector = std::make_unique<Hydro::NodalProjector>(
-            vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
-            options.lpinfo());
-    } else {
-        amrex::Real rho_0 = 1.0;
-        amrex::ParmParse pp("incflo");
-        pp.query("density", rho_0);
 
-        nodal_projector = std::make_unique<Hydro::NodalProjector>(
-            vel, scaling_factor / rho_0, Geom(0, finest_level),
-            options.lpinfo());
-    }
+//    if (variable_density) {
+    nodal_projector.reset(std::make_unique<Hydro::NodalProjector>(
+        vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
+        options.lpinfo()));
+
+    nodal_projector->setAlpha(GetVecOfConstPtrs(alpha));
+//    } else {
+//        amrex::Real rho_0 = 1.0;
+//        amrex::ParmParse pp("incflo");
+//        pp.query("density", rho_0);
+//
+//        nodal_projector.reset(std::make_unique<Hydro::NodalProjector>(
+//            vel, scaling_factor / rho_0, Geom(0, finest_level),
+//            options.lpinfo()));
+//    }
+>>>>>>> make nodal projection consistent with mesh mapping
 
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
