@@ -1,5 +1,5 @@
-#ifndef CONSTANTCT_H_
-#define CONSTANTCT_H_
+#ifndef UNIFORMCT_H_
+#define UNIFORMCT_H_
 
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
 #include "amr-wind/core/vs/vector_space.H"
@@ -7,7 +7,7 @@
 namespace amr_wind {
 namespace actuator {
 
-struct ConstantCtData
+struct UniformCtData
 {
     int num_force_pts;
     int num_vel_pts{1};
@@ -26,17 +26,17 @@ struct ConstantCtData
     amrex::Real diameters_to_sample{0.0};
 };
 
-struct ConstantCt : public DiskType
+struct UniformCt : public DiskType
 {
     using InfoType = ActInfo;
     using GridType = ActGrid;
-    using MetaType = ConstantCtData;
-    using DataType = ActDataHolder<ConstantCt>;
+    using MetaType = UniformCtData;
+    using DataType = ActDataHolder<UniformCt>;
 
-    static const std::string identifier() { return "ConstantCt"; }
+    static const std::string identifier() { return "UniformCt"; }
 };
 
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* CONSTANTCT_H_ */
+#endif /* UNIFORMCT_H_ */

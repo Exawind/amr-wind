@@ -24,18 +24,18 @@ Smagorinsky_coeffs.Cs          = 0.16
 
 incflo.physics = FreeStream Actuator
 Actuator.labels = WTG01
-Actuator.type = ConstantCtDisk
+Actuator.type = UniformCtDisk
 
-Actuator.ConstantCtDisk.rotor_diameter = 126.0
-Actuator.ConstantCtDisk.disk_normal = 10 0.0 0.0
-Actuator.ConstantCtDisk.disk_center = 0.0 0.0 0.0
-Actuator.ConstantCtDisk.num_force_points = 5
-Actuator.ConstantCtDisk.thrust_coeff = 0.7
-Actuator.ConstantCtDisk.epsilon = 10.0
-Actuator.ConstantCtDisk.density = 1.225
-Actuator.ConstantCtDisk.diameters_to_sample = 1.0
-Actuator.ConstantCtDisk.num_vel_points_r = 3
-Actuator.ConstantCtDisk.num_vel_points_t = 3
+Actuator.UniformCtDisk.rotor_diameter = 126.0
+Actuator.UniformCtDisk.disk_normal = 10 0.0 0.0
+Actuator.UniformCtDisk.disk_center = 0.0 0.0 0.0
+Actuator.UniformCtDisk.num_force_points = 5
+Actuator.UniformCtDisk.thrust_coeff = 0.7
+Actuator.UniformCtDisk.epsilon = 10.0
+Actuator.UniformCtDisk.density = 1.225
+Actuator.UniformCtDisk.diameters_to_sample = 1.0
+Actuator.UniformCtDisk.num_vel_points_r = 3
+Actuator.UniformCtDisk.num_vel_points_t = 3
 
 ICNS.source_terms = ActuatorForcing
 

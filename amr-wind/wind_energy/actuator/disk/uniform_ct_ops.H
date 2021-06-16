@@ -1,7 +1,7 @@
-#ifndef CONSTANT_CT_OPS_H_
-#define CONSTANT_CT_OPS_H_
+#ifndef UNIFORM_CT_OPS_H_
+#define UNIFORM_CT_OPS_H_
 
-#include "amr-wind/wind_energy/actuator/disk/ConstantCt.H"
+#include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
 
@@ -20,26 +20,24 @@ void collect_parse_dependencies(
     const std::string& p2,
     std::ostringstream& ss);
 
-void required_parameters(
-    ConstantCt::MetaType& meta, const utils::ActParser& pp);
+void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
 
-void optional_parameters(
-    ConstantCt::MetaType& meta, const utils::ActParser& pp);
+void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
 
 void check_for_parse_conflicts(const utils::ActParser& pp);
 
-void compute_and_normalize_vectors(ConstantCt::MetaType& meta);
+void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta);
 
-void final_checks(const ConstantCt::MetaType& meta);
+void final_checks(const UniformCt::MetaType& meta);
 
-amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta);
+amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta);
 
-void do_parse_based_computations(ConstantCt::DataType& data);
+void do_parse_based_computations(UniformCt::DataType& data);
 
 template <>
-struct ReadInputsOp<ConstantCt, ActSrcDisk>
+struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType& data, const utils::ActParser& pp)
+    void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
         // TODO get density at probe location
         check_for_parse_conflicts(pp);
@@ -52,9 +50,9 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
 };
 
 template <>
-struct InitDataOp<ConstantCt, ActSrcDisk>
+struct InitDataOp<UniformCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType& data)
+    void operator()(UniformCt::DataType& data)
     {
         auto& grid = data.grid();
         auto& meta = data.meta();
@@ -102,9 +100,9 @@ struct InitDataOp<ConstantCt, ActSrcDisk>
 };
 
 template <>
-struct UpdateVelOp<ConstantCt, ActSrcDisk>
+struct UpdateVelOp<UniformCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType& data)
+    void operator()(UniformCt::DataType& data)
     {
         auto& meta = data.meta();
         const auto& grid = data.grid();
@@ -120,9 +118,9 @@ struct UpdateVelOp<ConstantCt, ActSrcDisk>
 // this will then be spread uniformly over that area in the
 // projection step
 template <>
-struct ComputeForceOp<ConstantCt, ActSrcDisk>
+struct ComputeForceOp<UniformCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType& data)
+    void operator()(UniformCt::DataType& data)
     {
         auto& grid = data.grid();
         auto& ddata = data.meta();
@@ -145,16 +143,16 @@ struct ComputeForceOp<ConstantCt, ActSrcDisk>
 };
 
 template <>
-struct UpdatePosOp<ConstantCt, ActSrcDisk>
+struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
-    void operator()(ConstantCt::DataType&) {}
+    void operator()(UniformCt::DataType&) {}
 };
 
 template <>
-struct ProcessOutputsOp<ConstantCt, ActSrcDisk>
+struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {
-    explicit ProcessOutputsOp<ConstantCt, ActSrcDisk>(ConstantCt::DataType&) {}
-    void operator()(ConstantCt::DataType&) {}
+    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType&) {}
+    void operator()(UniformCt::DataType&) {}
     void read_io_options(const utils::ActParser&) {}
     void prepare_outputs(const std::string&) {}
     void write_outputs() {}
@@ -164,4 +162,4 @@ struct ProcessOutputsOp<ConstantCt, ActSrcDisk>
 } // namespace actuator
 } // namespace amr_wind
 
-#endif /* CONSTANT_CT_OPS_H_ */
+#endif /* UNIFORM_CT_OPS_H_ */

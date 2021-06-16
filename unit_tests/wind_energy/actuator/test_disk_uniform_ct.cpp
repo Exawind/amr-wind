@@ -1,12 +1,12 @@
 #include "aw_test_utils/AmrexTest.H"
 #include "test_act_utils.H"
 
-#include "amr-wind/wind_energy/actuator/disk/constant_ct_ops.H"
+#include "amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H"
 
 namespace amr_wind_tests {
 
 namespace {
-class ConstantCtTest : public AmrexTest
+class UniformCtTest : public AmrexTest
 {
 protected:
     void SetUp() override
@@ -21,13 +21,13 @@ namespace act = amr_wind::actuator;
 namespace ops = act::ops;
 namespace vs = amr_wind::vs;
 
-TEST_F(ConstantCtTest, compute_vecs_from_yaw)
+TEST_F(UniformCtTest, compute_vecs_from_yaw)
 {
-    act::ConstantCtData meta;
-    amrex::ParmParse pp("Actuator.ConstantCtDisk");
+    act::UniformCtData meta;
+    amrex::ParmParse pp("Actuator.UniformCtDisk");
     pp.add("yaw", 90.0);
     pp.add("sample_yaw", 45.0);
-    act::utils::ActParser ap("Actuator.ConstantCtDisk", "Actuator");
+    act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
     ASSERT_TRUE(ap.contains("yaw"));
     ops::optional_parameters(meta, ap);
     {

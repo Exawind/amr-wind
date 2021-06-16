@@ -1,4 +1,4 @@
-#include "amr-wind/wind_energy/actuator/disk/constant_ct_ops.H"
+#include "amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H"
 namespace amr_wind {
 namespace actuator {
 namespace ops {
@@ -9,7 +9,7 @@ void collect_parse_conflicts(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && pp.contains(p2)) {
-        ss << "ConstantCt Conflict: " << p1 << " and " << p2 << std::endl;
+        ss << "UniformCt Conflict: " << p1 << " and " << p2 << std::endl;
     }
 }
 void collect_parse_dependencies(
@@ -19,14 +19,14 @@ void collect_parse_dependencies(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && !pp.contains(p2))
-        ss << "ConstantCt Dependency Missing: " << p1 << " and " << p2
+        ss << "UniformCt Dependency Missing: " << p1 << " and " << p2
            << std::endl;
     if (!pp.contains(p1) && !pp.contains(p2))
-        ss << "ConstantCt Dependency Missing: " << p1 << " and " << p2
+        ss << "UniformCt Dependency Missing: " << p1 << " and " << p2
            << std::endl;
 }
 
-void required_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
+void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
 {
     pp.get("num_force_points", meta.num_force_pts);
     pp.get("disk_center", meta.center);
@@ -35,7 +35,7 @@ void required_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
     pp.get("thrust_coeff", meta.thrust_coeff);
 }
 
-void optional_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
+void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
 {
     pp.query("disk_normal", meta.normal_vec);
     pp.query("density", meta.density);
@@ -73,11 +73,11 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
 
     if (!error_collector.str().empty())
         amrex::Abort(
-            "Errors found while parsing in Actuator.ConstantCt:\n" +
+            "Errors found while parsing in Actuator.UniformCt:\n" +
             error_collector.str());
 }
 
-void compute_and_normalize_coplanar_vector(ConstantCt::MetaType& meta)
+void compute_and_normalize_coplanar_vector(UniformCt::MetaType& meta)
 {
     const amrex::Real radius = meta.diameter * 0.5;
     meta.dr = radius / meta.num_force_pts;
@@ -99,14 +99,14 @@ void compute_and_normalize_coplanar_vector(ConstantCt::MetaType& meta)
     meta.sample_vec.normalize();
 }
 
-void final_checks(const ConstantCt::MetaType& meta)
+void final_checks(const UniformCt::MetaType& meta)
 {
     AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
         meta.num_vel_pts > 0,
         "num_vel_points_r and num_vel_points_t must both be >=1");
 }
 
-amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta)
+amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta)
 {
     auto& norm = meta.normal_vec;
     auto& cVec = meta.coplanar_vec;
@@ -124,7 +124,7 @@ amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta)
         amrex::max(p1.y(), p2.y()), amrex::max(p1.z(), p2.z()));
 }
 
-void do_parse_based_computations(ConstantCt::DataType& data)
+void do_parse_based_computations(UniformCt::DataType& data)
 {
     auto& meta = data.meta();
     auto& info = data.info();
