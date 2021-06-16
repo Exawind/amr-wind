@@ -48,12 +48,20 @@ void optional_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
     }
     if (pp.contains("sample_normal")) {
         pp.get("sample_normal", meta.sample_vec);
+    } else if (pp.contains("sample_yaw")) {
+        amrex::Real sYaw;
+        pp.get("sample_yaw", sYaw);
+        meta.sample_vec = vs::Vector::ihat() & vs::zrot(sYaw);
     } else {
         meta.sample_vec = meta.normal_vec;
     }
     pp.query("num_vel_points_r", meta.num_vel_pts_r);
     pp.query("num_vel_points_t", meta.num_vel_pts_t);
     meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
+
+    // ensure any computed vectors are normalized
+    meta.normal_vec.normalize();
+    meta.sample_vec.normalize();
 }
 
 void check_for_parse_conflicts(const utils::ActParser& pp)
@@ -61,14 +69,15 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     std::ostringstream error_collector;
 
     collect_parse_conflicts(pp, "disk_normal", "yaw", error_collector);
+    collect_parse_conflicts(pp, "sample_normal", "sample_yaw", error_collector);
 
     if (!error_collector.str().empty())
         amrex::Abort(
-            "Errors found while parsing a ConstantCt Actuator:\n" +
+            "Errors found while parsing in Actuator.ConstantCt:\n" +
             error_collector.str());
 }
 
-void compute_and_normalize_vectors(ConstantCt::MetaType& meta)
+void compute_and_normalize_coplanar_vector(ConstantCt::MetaType& meta)
 {
     const amrex::Real radius = meta.diameter * 0.5;
     meta.dr = radius / meta.num_force_pts;
@@ -120,7 +129,7 @@ void do_parse_based_computations(ConstantCt::DataType& data)
     auto& meta = data.meta();
     auto& info = data.info();
 
-    compute_and_normalize_vectors(meta);
+    compute_and_normalize_coplanar_vector(meta);
     info.bound_box = compute_bounding_box(meta);
 }
 } // namespace ops
