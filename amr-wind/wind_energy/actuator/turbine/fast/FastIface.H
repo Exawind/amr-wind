@@ -26,8 +26,6 @@ public:
 
     virtual ~FastIface();
 
-    void parse_inputs(const amr_wind::CFDSim&, const std::string&);
-
     int register_turbine(FastTurbine& data);
 
     void init_turbine(const int local_id);
