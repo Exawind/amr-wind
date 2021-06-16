@@ -126,7 +126,6 @@ void incflo::ApplyProjection(
 
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
-    auto& mask_cell = m_repo.get_int_field("mask_cell");
     auto& velocity = icns().fields().field;
 
     // Do the pre pressure correction work -- this applies to IB only
@@ -255,20 +254,17 @@ void incflo::ApplyProjection(
 
     bool has_ib = m_sim.physics_manager().contains("IB");
     if (has_ib) {
-        Vector<MultiFab*> vel_rhs;
         auto div_vel_rhs =
             sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
-        // Compute the righ-hand side and do the masking
+        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
+        // Mask the righ-hand side of the Poisson solve for the nodes inside the
+        // body
+        auto& imask_node = repo().get_int_field("mask_node");
         for (int lev = 0; lev <= finest_level; ++lev) {
-            vel_rhs.push_back(&(velocity(lev)));
             amrex::MultiFab::Multiply(
-                *vel_rhs[lev], amrex::ToMultiFab(mask_cell(lev)), 0, 0, 1, 1);
-            if (!proj_for_small_dt and !incremental) {
-                set_inflow_velocity(lev, time, *vel_rhs[lev], 1);
-                //  velocity.fillphysbc(lev, time, *vel[lev], 1);
-            }
+                *div_vel_rhs->vec_ptrs()[lev],
+                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 1);
         }
-        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel_rhs, {}, {});
         nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
     }
 
@@ -361,7 +357,4 @@ void incflo::ApplyProjection(
             PrintMaxValues("after projection");
         }
     }
-
-    // Do the post pressure correction work -- this applies to IB only
-    for (auto& pp : m_sim.physics()) pp->post_pressure_correction_work();
 }
