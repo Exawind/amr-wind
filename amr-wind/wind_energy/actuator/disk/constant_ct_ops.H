@@ -9,130 +9,33 @@ namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-namespace {
 void collect_parse_conflicts(
     const utils::ActParser& pp,
     const std::string& p1,
     const std::string& p2,
-    std::ostringstream& ss)
-{
-    if (pp.contains(p1) && pp.contains(p2)) {
-        ss << "ConstantCt Conflict: " << p1 << " and " << p2 << std::endl;
-    }
-}
+    std::ostringstream& ss);
 void collect_parse_dependencies(
     const utils::ActParser& pp,
     const std::string& p1,
     const std::string& p2,
-    std::ostringstream& ss)
-{
-    if (pp.contains(p1) && !pp.contains(p2))
-        ss << "ConstantCt Dependency Missing: " << p1 << " and " << p2
-           << std::endl;
-    if (!pp.contains(p1) && !pp.contains(p2))
-        ss << "ConstantCt Dependency Missing: " << p1 << " and " << p2
-           << std::endl;
-}
+    std::ostringstream& ss);
 
-void required_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
-{
-    pp.get("num_force_points", meta.num_force_pts);
-    pp.get("disk_center", meta.center);
-    pp.get("epsilon", meta.epsilon);
-    pp.get("rotor_diameter", meta.diameter);
-    pp.get("thrust_coeff", meta.thrust_coeff);
-}
+void required_parameters(
+    ConstantCt::MetaType& meta, const utils::ActParser& pp);
 
-void optional_parameters(ConstantCt::MetaType& meta, const utils::ActParser& pp)
-{
-    pp.query("disk_normal", meta.normal_vec);
-    pp.query("density", meta.density);
-    pp.query("diameters_to_sample", meta.diameters_to_sample);
+void optional_parameters(
+    ConstantCt::MetaType& meta, const utils::ActParser& pp);
 
-    if (pp.contains("yaw")) {
-        amrex::Real yaw;
-        pp.get("yaw", yaw);
-        yaw = ::amr_wind::utils::radians(yaw);
-        meta.normal_vec = vs::Vector::ihat() & vs::zrot(yaw);
-    }
-    if (pp.contains("sample_normal")) {
-        pp.get("sample_normal", meta.sample_vec);
-    } else {
-        meta.sample_vec = meta.normal_vec;
-    }
-    pp.query("num_vel_points_r", meta.num_vel_pts_r);
-    pp.query("num_vel_points_t", meta.num_vel_pts_t);
-    meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
-}
+void check_for_parse_conflicts(const utils::ActParser& pp);
 
-void check_for_parse_conflicts(const utils::ActParser& pp)
-{
-    std::ostringstream error_collector;
+void compute_and_normalize_vectors(ConstantCt::MetaType& meta);
 
-    collect_parse_conflicts(pp, "disk_normal", "yaw", error_collector);
+void final_checks(const ConstantCt::MetaType& meta);
 
-    if (!error_collector.str().empty())
-        amrex::Abort(
-            "Errors found while parsing a ConstantCt Actuator:\n" +
-            error_collector.str());
-}
+amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta);
 
-void compute_and_normalize_vectors(ConstantCt::MetaType& meta)
-{
-    const amrex::Real radius = meta.diameter * 0.5;
-    meta.dr = radius / meta.num_force_pts;
+void do_parse_based_computations(ConstantCt::DataType& data);
 
-    // ensure normal is normalized
-    meta.normal_vec.normalize();
-    const vs::Vector& norm = meta.normal_vec;
-
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        vs::mag_sqr(vs::Vector::khat() ^ norm) >
-            vs::DTraits<amrex::Real>::eps(),
-        "A constant Ct disk normal is too close to vertical.");
-
-    // compute a coplanar vector that resides in the same plane as the disk
-    // we will use this vector for the bounding box and the force point
-    // locations
-    meta.coplanar_vec = norm ^ vs::Vector::khat();
-    meta.coplanar_vec.normalize();
-    meta.sample_vec.normalize();
-}
-
-void final_checks(const ConstantCt::MetaType& meta)
-{
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        meta.num_vel_pts > 0,
-        "num_vel_points_r and num_vel_points_t must both be >=1");
-}
-
-amrex::RealBox compute_bounding_box(const ConstantCt::MetaType& meta)
-{
-    auto& norm = meta.normal_vec;
-    auto& cVec = meta.coplanar_vec;
-
-    const auto& cc = meta.center;
-    const amrex::Real nl = meta.epsilon * 3.0; // length scale in normal dir
-    const amrex::Real dl =
-        meta.diameter * 0.5 + meta.dr * 2.0; // length scale in plane of disk
-    const auto dvec = norm * nl + cVec * dl + vs::Vector::khat() * dl;
-    const auto p1 = cc - dvec; // front
-    const auto p2 = cc + dvec; // back
-    return amrex::RealBox(
-        amrex::min(p1.x(), p2.x()), amrex::min(p1.y(), p2.y()),
-        amrex::min(p1.z(), p2.z()), amrex::max(p1.x(), p2.x()),
-        amrex::max(p1.y(), p2.y()), amrex::max(p1.z(), p2.z()));
-}
-
-void do_parse_based_computations(ConstantCt::DataType& data)
-{
-    auto& meta = data.meta();
-    auto& info = data.info();
-
-    compute_and_normalize_vectors(meta);
-    info.bound_box = compute_bounding_box(meta);
-}
-} // namespace
 template <>
 struct ReadInputsOp<ConstantCt, ActSrcDisk>
 {
@@ -147,6 +50,7 @@ struct ReadInputsOp<ConstantCt, ActSrcDisk>
         do_parse_based_computations(data);
     }
 };
+
 template <>
 struct InitDataOp<ConstantCt, ActSrcDisk>
 {
@@ -163,7 +67,6 @@ struct InitDataOp<ConstantCt, ActSrcDisk>
 
         const auto& cVec = meta.coplanar_vec;
         const auto& sVec = meta.sample_vec;
-        const auto& nVec = meta.normal_vec;
 
         const auto& cc = meta.center;
         {
