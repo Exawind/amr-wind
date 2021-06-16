@@ -52,6 +52,8 @@ struct InitDataOp<Box>
 
         auto& sim = data.sim();
         auto& mask_cell = sim.repo().get_int_field("mask_cell");
+        auto& mask_node = sim.repo().get_int_field("mask_node");
+
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
 
@@ -61,6 +63,7 @@ struct InitDataOp<Box>
             for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
                 auto epsilon_cell = mask_cell(lev).array(mfi);
+                auto epsilon_node = mask_node(lev).array(mfi);
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
@@ -77,6 +80,19 @@ struct InitDataOp<Box>
                             (std::abs(y - y0) <= 0.5 * w) &&
                             (std::abs(z - z0) <= 0.5 * h)) {
                             epsilon_cell(i, j, k) = 0;
+                        }
+                    });
+                const auto& nbx = mfi.nodaltilebox();
+                amrex::ParallelFor(
+                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real x = problo[0] + i * dx[0];
+                        const amrex::Real y = problo[1] + j * dx[1];
+                        const amrex::Real z = problo[2] + k * dx[2];
+
+                        if ((std::abs(x - x0) <= 0.5 * l) &&
+                            (std::abs(y - y0) <= 0.5 * w) &&
+                            (std::abs(z - z0) <= 0.5 * h)) {
+                            epsilon_node(i, j, k) = 0;
                         }
                     });
             }
