@@ -55,53 +55,6 @@ FastIface::~FastIface()
     }
 }
 
-void FastIface::parse_inputs(
-    const amr_wind::CFDSim& sim, const std::string& inp_name)
-{
-    amrex::ParmParse pp(inp_name);
-
-    const auto& time = sim.time();
-    // Check that the user has not enabled adaptive timestepping
-    AMREX_ALWAYS_ASSERT_WITH_MESSAGE(
-        !time.adaptive_timestep(),
-        "Adaptive time-stepping not supported when OpenFAST is enabled");
-
-    m_dt_cfd = time.deltaT();
-
-    // Set OpenFAST end time to be at least as long as the CFD time. User
-    // can choose a longer duration in input file.
-    const amrex::Real stop1 = time.stop_time() > 0.0
-                                  ? time.stop_time()
-                                  : std::numeric_limits<amrex::Real>::max();
-    const amrex::Real stop2 = time.stop_time_index() > 0
-                                  ? time.stop_time_index() * time.deltaT()
-                                  : std::numeric_limits<amrex::Real>::max();
-    const amrex::Real cfd_stop = amrex::min(stop1, stop2);
-    m_stop_time = cfd_stop;
-
-    pp.query("start_time", m_start_time);
-    pp.query("stop_time", m_stop_time);
-
-    // Ensure that the user specified m_stop_time is not shorter than CFD sim
-    AMREX_ALWAYS_ASSERT(m_stop_time > (cfd_stop - 1.0e-6));
-
-    if (m_start_time > 0.0) {
-        m_sim_mode = SimMode::replay;
-
-        std::string sim_mode{"replay"};
-        pp.query("sim_mode", sim_mode);
-        if (sim_mode == "replay") {
-            m_sim_mode = SimMode::replay;
-        } else if (sim_mode == "restart") {
-            m_sim_mode = SimMode::restart;
-        } else {
-            amrex::Abort(
-                "Invalid simulation mode when start time > 0 provided: " +
-                sim_mode);
-        }
-    }
-}
-
 int FastIface::register_turbine(FastTurbine& data)
 {
     BL_PROFILE("amr-wind::FastIface::register_turbine");
