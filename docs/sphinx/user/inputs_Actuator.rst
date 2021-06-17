@@ -111,12 +111,12 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.F1.start
 
-   **type:** Vector, mandatory
+   **type:** List of 3 real numbers, mandatory
    This is the starting point of the wing where the first actuator point will be.
 
 .. input_param:: Actuator.F1.end
 
-   **type:** Vector, mandatory
+   **type:** List of 3 real numbers, mandatory
    This is the end point of the wing where the last actuator point will be.
 
 .. input_param:: Actuator.F1.output_frequency
