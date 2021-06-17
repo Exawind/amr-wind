@@ -49,10 +49,10 @@ struct Slice
 
     size_type size() const { return (ptr_end - ptr_begin); }
 
-    pointer data() { return ptr_begin; }
+    AMREX_GPU_HOST_DEVICE pointer data() { return ptr_begin; }
     iterator begin() { return ptr_begin; }
     iterator end() { return ptr_end; }
-    const_iterator data() const { return ptr_begin; }
+    AMREX_GPU_HOST_DEVICE const_iterator data() const { return ptr_begin; }
     const_iterator begin() const { return ptr_begin; }
     const_iterator end() const { return ptr_end; }
     const_iterator cbegin() const { return ptr_begin; }
