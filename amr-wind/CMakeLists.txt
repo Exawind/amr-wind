@@ -31,6 +31,7 @@ add_subdirectory(turbulence)
 add_subdirectory(physics)
 add_subdirectory(overset)
 add_subdirectory(immersed_boundary)
+add_subdirectory(mesh_mapping_models)
 
 include(AMReXBuildInfo)
 generate_buildinfo(${amr_wind_lib_name} ${CMAKE_SOURCE_DIR})

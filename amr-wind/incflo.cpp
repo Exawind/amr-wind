@@ -77,6 +77,27 @@ void incflo::init_mesh()
     }
 }
 
+/** Create mesh mapping.
+ *
+ *  Calls the AmrMesh/AmrCore functions to initialize the mesh.
+ */
+void incflo::init_mesh_map()
+{
+    auto& mesh_scale_fac = m_repo.declare_cc_field(
+        "mesh_scaling_factor", AMREX_SPACEDIM, 0, 1);
+    mesh_scale_fac.setVal(1.0);
+
+    amrex::ParmParse pp("geometry");
+    std::string mesh_map_name;
+    pp.query("mesh_mapping", mesh_map_name);
+
+    if(!mesh_map_name.empty()) {
+        m_mesh_map = true;
+        m_mesh_map_mgr.create(mesh_map_name, m_sim);
+        this->mapping()->create_map(finest_level);
+    }
+}
+
 /** Initialize AMR-Wind data structures after mesh has been created.
  *
  *  Modules initialized:
@@ -155,6 +176,7 @@ void incflo::InitData()
     BL_PROFILE("amr-wind::incflo::InitData()");
 
     init_mesh();
+    init_mesh_map();
     init_amr_wind_modules();
     prepare_for_time_integration();
 }
@@ -249,7 +271,11 @@ void incflo::Evolve()
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
 
-        regrid_and_update();
+        bool mesh_regrid = regrid_and_update();
+        if(mesh_regrid && m_mesh_map) {
+            this->mapping()->create_map(finest_level);
+        }
+
         pre_advance_stage1();
         pre_advance_stage2();
 

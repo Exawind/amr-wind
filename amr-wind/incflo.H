@@ -11,6 +11,7 @@
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/core/SimTime.H"
 #include "amr-wind/core/FieldRepo.H"
+#include "amr-wind/core/MeshMap.H"
 
 namespace amr_wind {
 namespace pde {
@@ -90,6 +91,7 @@ public:
     virtual void ClearLevel(int lev) override;
 
     void init_mesh();
+    void init_mesh_map();
     void init_amr_wind_modules();
     void prepare_for_time_integration();
     bool regrid_and_update();
@@ -177,6 +179,9 @@ private:
 
     DiffusionType m_diff_type = DiffusionType::Implicit;
 
+    // member variables for mesh mapping
+    amr_wind::MeshMapMgr m_mesh_map_mgr;
+    bool m_mesh_map = false;
     //
     // end of member variables
     //
@@ -193,6 +198,12 @@ private:
 
     amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM>
     get_projection_bc(amrex::Orientation::Side side) const noexcept;
+
+    amr_wind::MeshMapMgr::TypePtr& mapping() { return m_mesh_map_mgr.objects()[0]; }
+    const amr_wind::MeshMapMgr::TypePtr& mapping() const
+    {
+        return m_mesh_map_mgr.objects()[0];
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     //
