@@ -263,7 +263,7 @@ void incflo::ApplyProjection(
         for (int lev = 0; lev <= finest_level; ++lev) {
             amrex::MultiFab::Multiply(
                 *div_vel_rhs->vec_ptrs()[lev],
-                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 1);
+                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
         }
         nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
     }
