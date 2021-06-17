@@ -12,6 +12,12 @@
 #include "AMReX_PlotFileUtil.H"
 #include "AMReX_MultiFabUtil.H"
 
+// Conditionally enable Ascent functionality
+#ifdef AMR_WIND_USE_ASCENT
+#include "AMReX_Conduit_Blueprint.H"
+#include <ascent.hpp>
+#endif
+
 namespace amr_wind {
 
 IOManager::IOManager(CFDSim& sim)
@@ -101,6 +107,64 @@ void IOManager::initialize_io()
     }
 }
 
+#ifdef AMR_WIND_USE_ASCENT
+static void ascent_pass()
+{
+    // Ascent emit
+    amrex::Print() << "Bananas1\n";
+    BL_PROFILE("amr-wind::IOManager::ascent");
+
+    amrex::Vector<int> istep(
+        m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
+    auto outfield = m_sim.repo().create_scratch_field(m_plt_num_comp);
+    const int nlevels = m_sim.repo().num_active_levels();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        int icomp = 0;
+        auto& mf = (*outfield)(lev);
+
+        for (auto* fld : m_plt_fields) {
+            amrex::MultiFab::Copy(
+                mf, (*fld)(lev), 0, icomp, fld->num_comp(), 0);
+            icomp += fld->num_comp();
+        }
+    }
+
+    // const std::string& plt_filename =
+    //    amrex::Concatenate(m_plt_prefix, m_sim.time().time_index());
+    const auto& mesh = m_sim.mesh();
+    amrex::Print() << "Calling Ascent  at time " << m_sim.time().new_time()
+                   << std::endl;
+    conduit::Node bp_mesh;
+    amrex::MultiLevelToBlueprint(
+        nlevels, outfield->vec_const_ptrs(), m_plt_var_names, mesh.Geom(),
+        m_sim.time().new_time(), istep, mesh.refRatio(), bp_mesh);
+
+    ascent::Ascent ascent;
+    conduit::Node open_opts;
+
+#ifdef BL_USE_MPI
+    open_opts["mpi_comm"] =
+        MPI_Comm_c2f(amrex::ParallelDescriptor::Communicator());
+#endif
+    ascent.open(open_opts);
+    conduit::Node verify_info;
+    if (!conduit::blueprint::mesh::verify(bp_mesh, verify_info)) {
+        // verify failed, print error message
+        ASCENT_INFO("Error: Mesh Blueprint Verify Failed!");
+        // show details of what went awry
+        verify_info.print();
+    } else {
+        amrex::Print() << " everything A-ok" << std::endl;
+    }
+    // setup actions
+    conduit::Node actions;
+    ascent.publish(bp_mesh);
+
+    ascent.execute(actions);
+}
+#endif
+
 void IOManager::write_plot_file()
 {
     BL_PROFILE("amr-wind::IOManager::write_plot_file");
@@ -142,6 +206,10 @@ void IOManager::write_plot_file()
         mesh.Geom(), m_sim.time().new_time(), istep, mesh.refRatio());
 
     write_info_file(plt_filename);
+
+#ifdef AMR_WIND_USE_ASCENT
+    ascent_pass();
+#endif
 }
 
 void IOManager::write_checkpoint_file(const int start_level)

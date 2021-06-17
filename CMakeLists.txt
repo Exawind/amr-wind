@@ -36,6 +36,7 @@ option(AMR_WIND_ENABLE_NETCDF "Enable NetCDF library" OFF)
 option(AMR_WIND_ENABLE_MASA "Enable MASA library" OFF)
 option(AMR_WIND_ENABLE_HYPRE "Enable HYPRE integration" OFF)
 option(AMR_WIND_ENABLE_OPENFAST "Enable OpenFAST integration" OFF)
+option(AMR_WIND_ENABLE_ASCENT "Enable Ascent visualization library" OFF)
 
 #Options for C++
 set(CMAKE_CXX_STANDARD 14)
@@ -62,6 +63,15 @@ endif()
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   set(AMR_WIND_ENABLE_FCOMPARE ON)
+endif()
+
+if(AMR_WIND_ENABLE_ASCENT)
+  # Initialization of Acent needs to happen before init_amrex().
+  if (NOT ASCENT_DIR)
+    message(FATAL_ERROR "Ascent requies an explicit 'ASCENT_DIR'")
+  endif()
+  set(Ascent_DIR ${ASCENT_DIR}/lib/cmake/ascent)
+  message(STATUS "USing Ascent_DIR ${Ascent_DIR}")
 endif()
 
 if (AMR_WIND_ENABLE_OPENFAST)
@@ -134,6 +144,10 @@ if (AMR_WIND_ENABLE_OPENFAST)
   target_compile_definitions(${amr_wind_lib_name} PUBLIC AMR_WIND_USE_OPENFAST)
   target_include_directories(${amr_wind_lib_name} PUBLIC ${OpenFAST_INCLUDE_DIRS})
   target_link_libraries(${amr_wind_lib_name} PUBLIC ${OpenFAST_LIBRARIES})
+endif()
+
+if(AMR_WIND_ENABLE_ASCENT)
+  target_compile_definitions(${amr_wind_lib_name} PRIVATE AMR_WIND_USE_ASCENT)
 endif()
 
 #Build amr-wind and link to amrex library

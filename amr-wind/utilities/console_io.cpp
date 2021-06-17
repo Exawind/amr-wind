@@ -184,6 +184,9 @@ void print_tpls(std::ostream& out)
 #ifdef AMR_WIND_USE_MASA
     tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
 #endif
+#ifdef AMR_WIND_USE_ASCENT
+    tlps.push_back(std::string("ASCENT    "));
+#endif
 
     if (tpls.size() > 0) {
         out << "  Enabled third-party libraries: ";
