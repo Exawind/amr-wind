@@ -210,17 +210,13 @@ void incflo::ApplyProjection(
         }
     }
 
-    // Create sigma and alpha while accounting for mesh mapping
+    // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
-    // alpha = J/fac such that sigma/alpha = 1/fac
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-    Vector<amrex::MultiFab> alpha(finest_level + 1);
 //    if (variable_density)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), Factory(lev));
-            alpha[lev].define(
                 grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -229,7 +225,6 @@ void incflo::ApplyProjection(
                  ++mfi) {
                 Box const& bx = mfi.tilebox();
                 Array4<Real> const& sig = sigma[lev].array(mfi);
-                Array4<Real> const& alp = alpha[lev].array(mfi);
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
 
@@ -239,7 +234,6 @@ void incflo::ApplyProjection(
 
                         sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) * det_j
                                         * scaling_factor / rho(i, j, k);
-                        alp(i, j, k, n) = det_j / fac(i, j, k, n);
                     });
             }
         }
@@ -267,8 +261,6 @@ void incflo::ApplyProjection(
     nodal_projector.reset(std::make_unique<Hydro::NodalProjector>(
         vel, GetVecOfConstPtrs(sigma), Geom(0, finest_level),
         options.lpinfo()));
-
-    nodal_projector->setAlpha(GetVecOfConstPtrs(alpha));
 //    } else {
 //        amrex::Real rho_0 = 1.0;
 //        amrex::ParmParse pp("incflo");
