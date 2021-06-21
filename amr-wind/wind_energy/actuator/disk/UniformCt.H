@@ -14,9 +14,9 @@ struct UniformCtData
     int num_vel_pts_r{1};
     int num_vel_pts_t{1};
     vs::Vector center;
-    vs::Vector normal_vec;
-    vs::Vector coplanar_vec;
-    vs::Vector sample_vec;
+    vs::Vector normal_vec{0, 1, 0};
+    vs::Vector coplanar_vec{1, 0, 0};
+    vs::Vector sample_vec{0, 1, 0};
     vs::Vector reference_velocity;
     amrex::Real epsilon;
     amrex::Real diameter;
