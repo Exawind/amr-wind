@@ -12,6 +12,11 @@ struct BoxData : public BluffBodyBaseData
     amrex::Real length{0.1};
     amrex::Real width{0.1};
     amrex::Real height{0.1};
+
+    // force acting on immersed boundary
+    amrex::Real fx{0.0};
+    amrex::Real fy{0.0};
+    amrex::Real fz{0.0};
 };
 
 struct Box : public BluffBodyType
