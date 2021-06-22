@@ -64,6 +64,9 @@ void incflo::init_mesh()
             amrex::Print() << "Grid summary: " << std::endl;
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
+
+        // initialize the mesh map
+        init_mesh_map();
     } else {
         // Read starting configuration from chk file.
         ReadCheckpointFile();
@@ -78,8 +81,6 @@ void incflo::init_mesh()
 }
 
 /** Create mesh mapping.
- *
- *  Calls the AmrMesh/AmrCore functions to initialize the mesh.
  */
 void incflo::init_mesh_map()
 {
@@ -176,7 +177,6 @@ void incflo::InitData()
     BL_PROFILE("amr-wind::incflo::InitData()");
 
     init_mesh();
-    init_mesh_map();
     init_amr_wind_modules();
     prepare_for_time_integration();
 }
