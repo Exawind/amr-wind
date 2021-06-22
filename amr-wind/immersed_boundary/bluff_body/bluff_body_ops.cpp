@@ -113,142 +113,224 @@ void write_netcdf(
 
 namespace ops {
 
-    template <typename GeomTrait>
-    void ComputeForceOp< GeomTrait, typename std::enable_if<
-        std::is_base_of<BluffBodyType, GeomTrait>::value>::type>::operator()(
-            typename GeomTrait::DataType& data)
-    {
-        auto& sim = data.sim();
-        auto geom = sim.mesh().Geom();
-        auto nlevels = sim.repo().num_active_levels();
-        amrex::Real dt = sim.time().deltaT();
+template <typename GeomTrait>
+void ComputeForceOp< GeomTrait, typename std::enable_if<
+    std::is_base_of<BluffBodyType, GeomTrait>::value>::type>::operator()(
+        typename GeomTrait::DataType& data)
+{
+    auto& sim = data.sim();
+    auto geom = sim.mesh().Geom();
+    auto nlevels = sim.repo().num_active_levels();
+    amrex::Real dt = sim.time().deltaT();
 
-        // get relevant fields
-        const auto& velocity = sim.repo().get_field("velocity");
-        const auto& vel_np1  = velocity.state(FieldState::NP1);
-        const auto& vel_n    = velocity.state(FieldState::N);
-        const auto& vel_nm1  = velocity.state(FieldState::NM1);
-        auto grad_vel = sim.repo().create_scratch_field(9);
-        fvm::gradient(*grad_vel, vel_np1); // arranged row-wise
+    // get relevant fields
+    const auto& velocity = sim.repo().get_field("velocity");
+    const auto& vel_np1  = velocity.state(FieldState::NP1);
+    const auto& vel_n    = velocity.state(FieldState::N);
+    const auto& vel_nm1  = velocity.state(FieldState::NM1);
+    auto grad_vel = sim.repo().create_scratch_field(9);
+    fvm::gradient(*grad_vel, vel_np1); // arranged row-wise
 
-        const auto& pressure = sim.repo().get_field("p");
-        auto p_cc = sim.repo().create_scratch_field(1);
+    const auto& pressure = sim.repo().get_field("p");
+    auto p_cc = sim.repo().create_scratch_field(1);
 
-        const auto& density = sim.repo().get_field("density");
-        const auto& viscosity = sim.repo().get_field("velocity_mueff");
+    // scratch field for cell-centered force on immersed boundary
+    auto f_on_ib = sim.repo().create_scratch_field(3);
 
-        const auto& mask_cell = sim.repo().get_int_field("mask_cell");
+    const auto& density = sim.repo().get_field("density");
+    const auto& viscosity = sim.repo().get_field("velocity_mueff");
 
-        amrex::RealBox bounding_box = data().info().bound_box;
-        const amrex::Real* bb_lo = bounding_box.lo();
-        const amrex::Real* bb_hi = bounding_box.hi();
+    // TODO: We should be using a different field for ib_mask because
+    // current field is shared with overset iblank, and this framework
+    // may break if overset and immersed boundary are used together
+    const auto& mask_cell = sim.repo().get_int_field("mask_cell");
 
-        // forces on the immersed boundary as evaluated in all directions
-        amrex::Real fx, fy, fz = 0.0;
+    // get ib bounding box information
+    amrex::RealBox bounding_box = data().info().bound_box;
+    const amrex::Real* bb_lo = bounding_box.lo();
+    const amrex::Real* bb_hi = bounding_box.hi();
 
-        for (int lev = 0; lev < nlevels; ++lev) {
-            const auto& problo = geom[lev].ProbLoArray();
-            const auto& dx = geom[lev].CellSizeArray();
+    // zero out forces
+    data.meta().fx = 0.0;
+    data.meta().fy = 0.0;
+    data.meta().fz = 0.0;
 
-            // average pressure from node to cell centers
-            amrex::average_node_to_cellcenter((*p_cc)(lev), 0, pressure(lev), 0, 1);
+    for (int lev = 0; lev < nlevels; ++lev) {
+        // extract geometry information at this level
+        const auto& problo = geom[lev].ProbLoArray();
+        const auto& dx = geom[lev].CellSizeArray();
 
-            for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
+        // average pressure from node to cell centers
+        amrex::average_node_to_cellcenter((*p_cc)(lev), 0, pressure(lev), 0, 1);
 
-                // only process this box if it intersects with bounding box
-                const auto& bx = mfi.tilebox();
-                amrex::RealBox rbx(bx, dx, problo);
-                if (!(rbx.intersects(bounding_box))) {
-                    continue;
-                }
-
-                amrex::Array4<amrex::Real const> const& unp1   = vel_np1[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& un     = vel_np1[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& unm1   = vel_np1[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& grad_u = grad_vel[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& p      = p_cc[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& rho    = density[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& mu     = viscosity[lev]->const_array(mfi);
-                amrex::Array4<amrex::Real const> const& mask   = mask_cell[lev]->const_array(mfi);
-
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
-                        // compute forces only if cell is inside the bounding box
-                        if((x-dx[0]/2 >= bb_lo[0]) && (x+dx[0]/2 <= bb_hi[0]) &&
-                           (y-dx[1]/2 >= bb_lo[1]) && (y+dx[1]/2 <= bb_hi[1]) &&
-                           (z-dx[2]/2 >= bb_lo[2]) && (z+dx[2]/2 <= bb_hi[2])) {
-
-                            // add volume terms
-                            const amrex::Real dv = dx[0]*dx[1]*dx[2];
-                            const amrex::Real f_v_x =
-                                    (1.5*unp1(i,j,k,0) - 2*un(i,j,k,0) + 0.5*unm1(i,j,k,0)) * dv/dt;
-                            const amrex::Real f_v_y =
-                                    (1.5*unp1(i,j,k,1) - 2*un(i,j,k,1) + 0.5*unm1(i,j,k,1)) * dv/dt;
-                            const amrex::Real f_v_z =
-                                    (1.5*unp1(i,j,k,2) - 2*un(i,j,k,2) + 0.5*unm1(i,j,k,2)) * dv/dt;
-
-                            // add surface terms
-                            amrex::Real f_s_x, f_s_y, f_s_z = 0.0;
-
-                            if(((bb_lo[0] >= x-dx[0]/2) && (bb_lo[0] <= x+dx[0]/2)) ||
-                               ((bb_hi[0] >= x-dx[0]/2) && (bb_hi[0] <= x+dx[0]/2))) { // y-z plane
-                                const amrex::Real da =
-                                    (bb_hi[0] <= x+dx[0]/2) ? (dx[1]*dx[2]) : (-dx[1]*dx[2]);
-
-                                f_s_x += rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,0) * da;
-                                f_s_y += rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,0) * da;
-                                f_s_z += rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,0) * da;
-
-                                f_s_x += rho(i,j,k) * (-p(i,j,k)
-                                                    + 2*mu(i,j,k) * grad_u(i,j,k,0)) * da;
-                                f_s_y += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,1) + grad_u(i,j,k,3))) * da;
-                                f_s_z += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,2) + grad_u(i,j,k,6))) * da;
-                            }
-                            else if(((bb_lo[1] >= y-dx[1]/2) && (bb_lo[1] <= y+dx[1]/2))
-                                    ((bb_hi[1] >= y-dx[1]/2) && (bb_hi[1] <= y+dx[1]/2))) { // x-z plane
-                                const amrex::Real da =
-                                    (bb_hi[1] <= y+dx[1]/2) ? (dx[0]*dx[2]) : (-dx[0]*dx[2]);
-
-                                f_s_x += rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,1) * da;
-                                f_s_y += rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,1) * da;
-                                f_s_z += rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,1) * da;
-
-                                f_s_x += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,1) + grad_u(i,j,k,3))) * da;
-                                f_s_y += rho(i,j,k) * (-p(i,j,k)
-                                                    + 2*mu(i,j,k) * grad_u(i,j,k,4)) * da;
-                                f_s_z += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,5) + grad_u(i,j,k,7))) * da;
-
-                            }
-                            else if(((bb_lo[2] >= z-dx[2]/2) && (bb_lo[2] <= z+dx[2]/2))
-                                    ((bb_hi[2] >= z-dx[2]/2) && (bb_hi[2] <= z+dx[2]/2))) { // x-y plane
-                                const amrex::Real da =
-                                    (bb_hi[2] <= z+dx[2]/2) ? (dx[0]*dx[1]) : (-dx[0]*dx[1]);
-
-                                f_s_x += rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,2) * da;
-                                f_s_y += rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,2) * da;
-                                f_s_z += rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,2) * da;
-
-                                f_s_x += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,2) + grad_u(i,j,k,6))) * da;
-                                f_s_y += rho(i,j,k) * (-p(i,j,k)
-                                                    + mu(i,j,k) * (grad_u(i,j,k,5) + grad_u(i,j,k,7))) * da;
-                                f_s_z += rho(i,j,k) * (-p(i,j,k)
-                                                    + 2*mu(i,j,k) * grad_u(i,j,k,8)) * da;
-
-                            }
-                        }
-                    });
+        for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
+            // only process this box if it intersects with bounding box
+            const auto& bx = mfi.tilebox();
+            amrex::RealBox rbx(bx, dx, problo);
+            if (!(rbx.intersects(bounding_box))) {
+                continue;
             }
+
+            amrex::Array4<amrex::Real const> const& f_arr   = f_on_ib[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& grad_u  = grad_vel[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& ib_mask = mask_cell[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& mu      = viscosity[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& p       = p_cc[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& rho     = density[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& unp1    = vel_np1[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& un      = vel_n[lev]->const_array(mfi);
+            amrex::Array4<amrex::Real const> const& unm1    = vel_nm1[lev]->const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+
+                    // compute forces only if cell is inside the bounding box
+                    // Newton's law -> rho*du/dt * dV + rho * u*(u.n) * dA = tau.n * dA - F
+                    // F is -ve above because it is the force acting on the immersed boundary
+                    if((x-dx[0]/2 >= bb_lo[0]) && (x+dx[0]/2 <= bb_hi[0]) &&
+                       (y-dx[1]/2 >= bb_lo[1]) && (y+dx[1]/2 <= bb_hi[1]) &&
+                       (z-dx[2]/2 >= bb_lo[2]) && (z+dx[2]/2 <= bb_hi[2])) {
+
+                        // add volume terms -> rho*du/dt * dV
+                        const amrex::Real dv = dx[0]*dx[1]*dx[2];
+                        const amrex::Real f_vol_x =
+                                (1.5*unp1(i,j,k,0) - 2*un(i,j,k,0) + 0.5*unm1(i,j,k,0)) * dv/dt;
+                        const amrex::Real f_vol_y =
+                                (1.5*unp1(i,j,k,1) - 2*un(i,j,k,1) + 0.5*unm1(i,j,k,1)) * dv/dt;
+                        const amrex::Real f_vol_z =
+                                (1.5*unp1(i,j,k,2) - 2*un(i,j,k,2) + 0.5*unm1(i,j,k,2)) * dv/dt;
+
+                        // initialize surface forces
+                        amrex::Real f_vel_x = 0.0, f_vel_y = 0.0, f_vel_z = 0.0;
+                        amrex::Real f_tau_x = 0.0, f_tau_y = 0.0, f_tau_z = 0.0;
+
+                        if(((bb_lo[0] >= x-dx[0]/2) && (bb_lo[0] <= x+dx[0]/2)) ||
+                           ((bb_hi[0] >= x-dx[0]/2) && (bb_hi[0] <= x+dx[0]/2))) { // y-z plane
+                            // determine dS while accounting for direction of normal
+                            const amrex::Real da =
+                                (bb_hi[0] <= x+dx[0]/2) ? (dx[1]*dx[2]) : (-dx[1]*dx[2]);
+
+                            // add advection surface force -> rho * u*(u.n) * dA
+                            f_vel_x = rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,0) * da;
+                            f_vel_y = rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,0) * da;
+                            f_vel_z = rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,0) * da;
+
+                            // add viscous surface force -> tau.n * dA
+                            f_tau_x = rho(i,j,k) * (-p(i,j,k)
+                                                 + 2*mu(i,j,k) * grad_u(i,j,k,0)) * da;
+                            f_tau_y = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,1) + grad_u(i,j,k,3))) * da;
+                            f_tau_z = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,2) + grad_u(i,j,k,6))) * da;
+                        }
+                        else if(((bb_lo[1] >= y-dx[1]/2) && (bb_lo[1] <= y+dx[1]/2))
+                                ((bb_hi[1] >= y-dx[1]/2) && (bb_hi[1] <= y+dx[1]/2))) { // x-z plane
+                            // determine dS while accounting for direction of normal
+                            const amrex::Real da =
+                                (bb_hi[1] <= y+dx[1]/2) ? (dx[0]*dx[2]) : (-dx[0]*dx[2]);
+
+                            // add advection surface force -> rho * u*(u.n) * dA
+                            f_vel_x = rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,1) * da;
+                            f_vel_y = rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,1) * da;
+                            f_vel_z = rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,1) * da;
+
+                            // add viscous surface force -> tau.n * dA
+                            f_tau_x = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,1) + grad_u(i,j,k,3))) * da;
+                            f_tau_y = rho(i,j,k) * (-p(i,j,k)
+                                                 + 2*mu(i,j,k) * grad_u(i,j,k,4)) * da;
+                            f_tau_z = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,5) + grad_u(i,j,k,7))) * da;
+
+                        }
+                        else if(((bb_lo[2] >= z-dx[2]/2) && (bb_lo[2] <= z+dx[2]/2))
+                                ((bb_hi[2] >= z-dx[2]/2) && (bb_hi[2] <= z+dx[2]/2))) { // x-y plane
+                            // determine dS while accounting for direction of normal
+                            const amrex::Real da =
+                                (bb_hi[2] <= z+dx[2]/2) ? (dx[0]*dx[1]) : (-dx[0]*dx[1]);
+
+                            // add advection surface force -> rho * u*(u.n) * dA
+                            f_vel_x = rho(i,j,k) * unp1(i,j,k,0) * unp1(i,j,k,2) * da;
+                            f_vel_y = rho(i,j,k) * unp1(i,j,k,1) * unp1(i,j,k,2) * da;
+                            f_vel_z = rho(i,j,k) * unp1(i,j,k,2) * unp1(i,j,k,2) * da;
+
+                            // add viscous surface force -> tau.n * dA
+                            f_tau_x = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,2) + grad_u(i,j,k,6))) * da;
+                            f_tau_y = rho(i,j,k) * (-p(i,j,k)
+                                                 + mu(i,j,k) * (grad_u(i,j,k,5) + grad_u(i,j,k,7))) * da;
+                            f_tau_z = rho(i,j,k) * (-p(i,j,k)
+                                                 + 2*mu(i,j,k) * grad_u(i,j,k,8)) * da;
+                        }
+                        // fill force scratch field
+                        f_on_ib (i,j,k,0) = (f_tau_x - f_vel_x - f_vol_x) * ib_mask(i,j,k);
+                        f_on_ib (i,j,k,1) = (f_tau_y - f_vel_y - f_vol_y) * ib_mask(i,j,k);
+                        f_on_ib (i,j,k,2) = (f_tau_z - f_vel_z - f_vol_z) * ib_mask(i,j,k);
+                    }
+                });
         }
-    };
+
+        // assign level mask to make sure that integration doesn't double count
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                sim.mesh().boxArray(lev), sim.mesh().DistributionMap(lev),
+                sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                sim.mesh().boxArray(lev), sim.mesh().DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        // sum across all GPUs for current level
+        data.meta().fx += amrex::ReduceSum(
+            f_on_ib, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& f_arr,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real force = 0.0;
+                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                    force += f_arr(i,j,k,0);
+                });
+                return force;
+            });
+
+        data.meta().fy += amrex::ReduceSum(
+            f_on_ib, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& f_arr,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real force = 0.0;
+                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                    force += f_arr(i,j,k,1);
+                });
+                return force;
+            });
+
+        data.meta().fz += amrex::ReduceSum(
+            f_on_ib, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& f_arr,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real force = 0.0;
+                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                    force += f_arr(i,j,k,2);
+                });
+                return force;
+            });
+    }
+    // sum across all MPI ranks
+    amrex::ParallelDescriptor::ReduceRealSum(data.meta().fx);
+    amrex::ParallelDescriptor::ReduceRealSum(data.meta().fy);
+    amrex::ParallelDescriptor::ReduceRealSum(data.meta().fz);
+};
 
 } // namespace ops
 
