@@ -81,12 +81,10 @@ struct UpdateVelOp<
 };
 
 template <typename GeomTrait>
-struct ComputeForceOp<
-    GeomTrait,
-    typename std::enable_if<
+struct ComputeForceOp<GeomTrait, typename std::enable_if<
         std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
-    void operator()(typename GeomTrait::DataType&) {}
+    void operator()(typename GeomTrait::DataType&);
 };
 
 template <typename GeomTrait>
