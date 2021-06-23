@@ -59,7 +59,7 @@ void FieldRefinement::operator()(
 
     const auto& mfab = (*m_field)(level);
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {

@@ -185,7 +185,7 @@ void print_tpls(std::ostream& out)
     tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
 #endif
 #ifdef AMR_WIND_USE_ASCENT
-    tlps.push_back(std::string("ASCENT    "));
+    tpls.push_back(std::string("ASCENT    "));
 #endif
 
     if (tpls.size() > 0) {

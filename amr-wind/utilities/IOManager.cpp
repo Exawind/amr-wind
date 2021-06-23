@@ -108,37 +108,38 @@ void IOManager::initialize_io()
 }
 
 #ifdef AMR_WIND_USE_ASCENT
-static void ascent_pass()
+static void ascent_pass(
+    CFDSim& sim,
+    int plt_num_comp,
+    amrex::Vector<Field*> const& plt_fields,
+    amrex::Vector<std::string> const& plt_var_names)
 {
     // Ascent emit
-    amrex::Print() << "Bananas1\n";
     BL_PROFILE("amr-wind::IOManager::ascent");
 
     amrex::Vector<int> istep(
-        m_sim.mesh().finestLevel() + 1, m_sim.time().time_index());
-    auto outfield = m_sim.repo().create_scratch_field(m_plt_num_comp);
-    const int nlevels = m_sim.repo().num_active_levels();
+        sim.mesh().finestLevel() + 1, sim.time().time_index());
+    auto outfield = sim.repo().create_scratch_field(plt_num_comp);
+    const int nlevels = sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
         int icomp = 0;
         auto& mf = (*outfield)(lev);
 
-        for (auto* fld : m_plt_fields) {
+        for (auto* fld : plt_fields) {
             amrex::MultiFab::Copy(
                 mf, (*fld)(lev), 0, icomp, fld->num_comp(), 0);
             icomp += fld->num_comp();
         }
     }
 
-    // const std::string& plt_filename =
-    //    amrex::Concatenate(m_plt_prefix, m_sim.time().time_index());
-    const auto& mesh = m_sim.mesh();
-    amrex::Print() << "Calling Ascent  at time " << m_sim.time().new_time()
+    const auto& mesh = sim.mesh();
+    amrex::Print() << "Calling Ascent at time " << sim.time().new_time()
                    << std::endl;
     conduit::Node bp_mesh;
     amrex::MultiLevelToBlueprint(
-        nlevels, outfield->vec_const_ptrs(), m_plt_var_names, mesh.Geom(),
-        m_sim.time().new_time(), istep, mesh.refRatio(), bp_mesh);
+        nlevels, outfield->vec_const_ptrs(), plt_var_names, mesh.Geom(),
+        sim.time().new_time(), istep, mesh.refRatio(), bp_mesh);
 
     ascent::Ascent ascent;
     conduit::Node open_opts;
@@ -155,7 +156,7 @@ static void ascent_pass()
         // show details of what went awry
         verify_info.print();
     } else {
-        amrex::Print() << " everything A-ok" << std::endl;
+        amrex::Print() << " Mesh Blueprint Verify Success!" << std::endl;
     }
     // setup actions
     conduit::Node actions;
@@ -208,7 +209,7 @@ void IOManager::write_plot_file()
     write_info_file(plt_filename);
 
 #ifdef AMR_WIND_USE_ASCENT
-    ascent_pass();
+    ascent_pass(m_sim, m_plt_num_comp, m_plt_fields, m_plt_var_names);
 #endif
 }
 
