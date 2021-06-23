@@ -136,7 +136,7 @@ void incflo::ApplyProjection(
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
-    // Also account for mesh mapping in the RHS -  J/fac * u + 1/fac * grad(p) * dt/rho
+    // Also account for mesh mapping in ( grad p /ro ) ->  1/fac * grad(p) * dt/rho
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
@@ -153,15 +153,12 @@ void incflo::ApplyProjection(
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         Real soverrho = scaling_factor / rho(i, j, k);
 
-                        u(i, j, k, 0) = det_j * 1./fac(i, j, k, 0) * u(i, j, k, 0)
-                                      + 1/fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) = det_j * 1./fac(i, j, k, 1) * u(i, j, k, 1)
-                                      + 1/fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) = det_j * 1./fac(i, j, k, 2) * u(i, j, k, 2)
-                                      + 1/fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
+                        u(i, j, k, 0) += 1/fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) += 1/fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) += 1/fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
+
                     });
             }
         }
@@ -201,12 +198,32 @@ void incflo::ApplyProjection(
         }
     }
 
-    // Define "vel" to be U^* - U^n rather than U^*
-    if (proj_for_small_dt || incremental) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
+    // scale velocity to accommodate for mesh mapping -> U^bar = J/fac * U
+    for (int lev = 0; lev <= finest_level; lev++) {
+        // Define "vel" to be U^* - U^n rather than U^*
+        if (proj_for_small_dt || incremental) {
             MultiFab::Subtract(
                 velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
                 0, 0, AMREX_SPACEDIM, 0);
+        }
+
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+             ++mfi) {
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& u = velocity(lev).array(mfi);
+            Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+
+                    u(i, j, k, 0) *= det_j / fac(i, j, k, 0);
+                    u(i, j, k, 1) *= det_j / fac(i, j, k, 1);
+                    u(i, j, k, 2) *= det_j / fac(i, j, k, 2);
+                });
         }
     }
 
@@ -251,7 +268,6 @@ void incflo::ApplyProjection(
         vel[lev]->setBndry(0.0);
         if (!proj_for_small_dt and !incremental) {
             set_inflow_velocity(lev, time, *vel[lev], 1);
-            //  velocity.fillphysbc(lev, time, *vel[lev], 1);
         }
     }
 
@@ -319,9 +335,30 @@ void incflo::ApplyProjection(
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
 
-    // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
-    if (proj_for_small_dt || incremental) {
-        for (int lev = 0; lev <= finest_level; ++lev) {
+    // scale velocity back to -> U = fac/J * U^bar
+    for (int lev = 0; lev <= finest_level; lev++) {
+
+#ifdef _OPENMP
+#pragma omp parallel if (Gpu::notInLaunchRegion())
+#endif
+        for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+             ++mfi) {
+            Box const& bx = mfi.tilebox();
+            Array4<Real> const& u = velocity(lev).array(mfi);
+            Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+
+                    u(i, j, k, 0) *= fac(i, j, k, 0) / det_j;
+                    u(i, j, k, 1) *= fac(i, j, k, 1) / det_j;
+                    u(i, j, k, 2) *= fac(i, j, k, 2) / det_j;
+                });
+        }
+
+        // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
+        if (proj_for_small_dt || incremental) {
             MultiFab::Add(
                 velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
                 0, 0, AMREX_SPACEDIM, 0);
