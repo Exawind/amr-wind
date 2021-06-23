@@ -128,7 +128,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
-    auto& mesh_fac = m_repo.get_field("mesh_scale_fac");
+    auto& mesh_fac = m_repo.get_field("mesh_scaling_factor");
 
     // Do the pre pressure correction work -- this applies to IB only
     for (auto& pp : m_sim.physics()) {
