@@ -117,7 +117,10 @@ void IB::prepare_outputs()
 
 void IB::post_advance_work()
 {
+    BL_PROFILE("amr-wind::ib::IB::post_advance_work");
     for (auto& ib : m_ibs) {
+        ib->compute_forces();
+        ib->update_positions();
         ib->write_outputs();
     }
 }
