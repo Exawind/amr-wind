@@ -110,9 +110,9 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
-    amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+    amrex::Vector<size_t> start{static_cast<size_t>(idx),
+                                static_cast<size_t>(lo[perp[0]]),
+                                static_cast<size_t>(lo[perp[1]]), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -582,8 +582,7 @@ void ABLBoundaryPlane::populate_data(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
+        for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
 
             const auto& sbx = mfi.growntilebox(1);
             auto& src = m_in_data.interpolate_data(ori, lev);
@@ -703,9 +702,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
