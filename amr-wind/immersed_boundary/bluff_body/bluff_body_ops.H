@@ -6,6 +6,7 @@
 #include "amr-wind/immersed_boundary/IBOps.H"
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/fvm/gradient.H"
+
 #include "AMReX_MultiFabUtil.H"
 
 namespace amr_wind {
@@ -88,8 +89,8 @@ struct ComputeForceOp<
     typename std::enable_if<
         std::is_base_of<BluffBodyType, GeomTrait>::value>::type>
 {
-    void operator()(typename GeomTrait::DataType&)
-    { /*
+    void operator()(typename GeomTrait::DataType& data)
+    {
       auto& info = data.info();
       auto& wdata = data.meta();
       auto& sim = data.sim();
@@ -129,8 +130,8 @@ struct ComputeForceOp<
 
       for (int lev = 0; lev < nlevels; ++lev) {
           // extract geometry information at this level
-          const auto& problo = geom[lev].ProbLoArray();
-          const auto& dx = geom[lev].CellSizeArray();
+          const amrex::Real* problo = geom[lev].ProbLo();
+          const amrex::Real* dx = geom[lev].CellSize();
 
           // average pressure from node to cell centers
           amrex::average_node_to_cellcenter(
@@ -144,22 +145,24 @@ struct ComputeForceOp<
                   continue;
               }
 
+              amrex::Array4<amrex::Real> const& f_arr =
+                  (*f_on_ib)(lev).array(mfi);
               amrex::Array4<amrex::Real const> const& grad_u =
-                  grad_vel[lev]->const_array(mfi);
-              amrex::Array4<amrex::Real const> const& ib_mask =
-                  mask_cell[lev]->const_array(mfi);
+                  (*grad_vel)(lev).array(mfi);
+              amrex::Array4<int const> const& ib_mask =
+                  mask_cell(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& mu =
-                  viscosity[lev]->const_array(mfi);
+                  viscosity(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& p =
-                  p_cc[lev]->const_array(mfi);
+                  (*p_cc)(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& rho =
-                  density[lev]->const_array(mfi);
+                  density(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& unp1 =
-                  vel_np1[lev]->const_array(mfi);
+                  vel_np1(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& un =
-                  vel_n[lev]->const_array(mfi);
+                  vel_n(lev).const_array(mfi);
               amrex::Array4<amrex::Real const> const& unm1 =
-                  vel_nm1[lev]->const_array(mfi);
+                  vel_nm1(lev).const_array(mfi);
 
               amrex::ParallelFor(
                   bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -182,12 +185,10 @@ struct ComputeForceOp<
                           const amrex::Real dv = dx[0] * dx[1] * dx[2];
                           const amrex::Real f_vol_x =
                               (1.5 * unp1(i, j, k, 0) - 2 * un(i, j, k, 0) +
-                               0.5 * unm1(i, j, k, 0)) *
-                              dv / dt;
+                               0.5 * unm1(i, j, k, 0)) * dv / dt;
                           const amrex::Real f_vol_y =
                               (1.5 * unp1(i, j, k, 1) - 2 * un(i, j, k, 1) +
-                               0.5 * unm1(i, j, k, 1)) *
-                              dv / dt;
+                               0.5 * unm1(i, j, k, 1)) * dv / dt;
                           const amrex::Real f_vol_z =
                               (1.5 * unp1(i, j, k, 2) - 2 * un(i, j, k, 2) +
                                0.5 * unm1(i, j, k, 2)) *
@@ -202,8 +203,7 @@ struct ComputeForceOp<
                           if (((bb_lo[0] >= x - dx[0] / 2) &&
                                (bb_lo[0] <= x + dx[0] / 2)) ||
                               ((bb_hi[0] >= x - dx[0] / 2) &&
-                               (bb_hi[0] <= x + dx[0] / 2))) {
-                              // y-z plane
+                               (bb_hi[0] <= x + dx[0] / 2))) { // y-z plane
                               // determine dS while accounting for direction
                               // of normal
                               const amrex::Real da =
@@ -237,10 +237,9 @@ struct ComputeForceOp<
                                                         grad_u(i, j, k, 6))) *
                                         da;
                           } else if (((bb_lo[1] >= y - dx[1] / 2) &&
-                                      (bb_lo[1] <= y + dx[1] / 2))(
-                                         (bb_hi[1] >= y - dx[1] / 2) &&
-                                         (bb_hi[1] <= y + dx[1] / 2))) {
-                              // x-z plane
+                                      (bb_lo[1] <= y + dx[1] / 2)) ||
+                                     ((bb_hi[1] >= y - dx[1] / 2) &&
+                                      (bb_hi[1] <= y + dx[1] / 2))) { // x-z plane
                               // determine dS while accounting for direction
                               // of normal
                               const amrex::Real da =
@@ -275,10 +274,9 @@ struct ComputeForceOp<
                                         da;
 
                           } else if (((bb_lo[2] >= z - dx[2] / 2) &&
-                                      (bb_lo[2] <= z + dx[2] / 2))(
-                                         (bb_hi[2] >= z - dx[2] / 2) &&
-                                         (bb_hi[2] <= z + dx[2] / 2))) {
-                              // x-y plane
+                                      (bb_lo[2] <= z + dx[2] / 2)) ||
+                                     ((bb_hi[2] >= z - dx[2] / 2) &&
+                                      (bb_hi[2] <= z + dx[2] / 2))) { // x-y plane
                               // determine dS while accounting for direction
                               // of normal
                               const amrex::Real da =
@@ -313,18 +311,19 @@ struct ComputeForceOp<
                                   da;
                           }
                           // fill force scratch field
-                          f_on_ib(i, j, k, 0) =
+                          f_arr(i, j, k, 0) =
                               (f_tau_x - f_vel_x - f_vol_x) *
                               ib_mask(i, j, k);
-                          f_on_ib(i, j, k, 1) =
+                          f_arr(i, j, k, 1) =
                               (f_tau_y - f_vel_y - f_vol_y) *
                               ib_mask(i, j, k);
-                          f_on_ib(i, j, k, 2) =
+                          f_arr(i, j, k, 2) =
                               (f_tau_z - f_vel_z - f_vol_z) *
                               ib_mask(i, j, k);
                       }
                   });
           }
+
           // assign level mask to make sure that integration doesn't
           // double count
           amrex::iMultiFab level_mask;
@@ -339,12 +338,10 @@ struct ComputeForceOp<
               level_mask.setVal(1);
           }
 
-          // amrex::Array4<amrex::Real const> const& f_arr =
-          // f_on_ib[lev]->const_array(mfi);
-
           // sum across all GPUs for current level
+//          const auto& f_lev = (*f_on_ib)(lev);
           wdata.frc[0] += amrex::ReduceSum(
-              f_on_ib, level_mask, 0,
+              (*f_on_ib)(lev), level_mask, 0,
               [=] AMREX_GPU_HOST_DEVICE(
                   amrex::Box const& bx,
                   amrex::Array4<amrex::Real const> const& f_arr,
@@ -357,7 +354,7 @@ struct ComputeForceOp<
               });
 
           wdata.frc[1] += amrex::ReduceSum(
-              f_on_ib, level_mask, 0,
+              (*f_on_ib)(lev), level_mask, 0,
               [=] AMREX_GPU_HOST_DEVICE(
                   amrex::Box const& bx,
                   amrex::Array4<amrex::Real const> const& f_arr,
@@ -370,7 +367,7 @@ struct ComputeForceOp<
               });
 
           wdata.frc[2] += amrex::ReduceSum(
-              f_on_ib, level_mask, 0,
+              (*f_on_ib)(lev), level_mask, 0,
               [=] AMREX_GPU_HOST_DEVICE(
                   amrex::Box const& bx,
                   amrex::Array4<amrex::Real const> const& f_arr,
@@ -391,7 +388,6 @@ struct ComputeForceOp<
       amrex::Print() << " Forces on the immersed boundary " << info.label
                      << std::endl;
       amrex::Print() << wdata.frc[0] << std::endl;
-      */
     }
 };
 

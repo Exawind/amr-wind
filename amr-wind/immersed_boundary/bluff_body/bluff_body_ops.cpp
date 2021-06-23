@@ -1,13 +1,11 @@
 #include "amr-wind/immersed_boundary/bluff_body/bluff_body_ops.H"
 #include "amr-wind/core/MultiParser.H"
-#include "amr-wind/fvm/gradient.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
 
 // Used for mms
 #include "amr-wind/physics/ConvectingTaylorVortex.H"
 
-#include "AMReX_MultiFabUtil.H"
 #include "AMReX_ParmParse.H"
 
 namespace amr_wind {
