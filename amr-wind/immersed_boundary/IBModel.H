@@ -102,7 +102,7 @@ public:
 
     void update_velocities() override { ops::UpdateVelOp<GeomTrait>()(m_data); }
 
-    void compute_forces() override {}
+    void compute_forces() override { ops::ComputeForceOp<GeomTrait>()(m_data); }
 
     void prepare_outputs(const std::string& out_dir) override
     {
