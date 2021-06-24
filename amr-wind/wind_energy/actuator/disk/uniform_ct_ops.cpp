@@ -89,7 +89,7 @@ void write_netcdf(
     grp.var("ct").put(&meta.thrust_coeff, {nt}, {1});
     grp.var("density").put(&meta.density, {nt}, {1});
 #else
-    amrex::ignore_unused(ncfile, meta, info, grid, time);
+    amrex::ignore_unused(ncfile, meta, info, time);
 #endif
 }
 } // namespace disk
