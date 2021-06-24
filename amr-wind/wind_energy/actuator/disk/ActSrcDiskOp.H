@@ -28,8 +28,6 @@ public:
     explicit ActSrcOp(typename ActTrait::DataType& data)
         : m_data(data)
         , m_act_src(m_data.sim().repo().get_field("actuator_src_term"))
-        , m_pos(m_data.grid().pos.size())
-        , m_force(m_data.grid().pos.size())
     {}
 
     void initialize();
@@ -46,7 +44,11 @@ void ActSrcOp<
     ActSrcDisk,
     typename std::enable_if<std::is_base_of<DiskType, ActTrait>::value>::type>::
     initialize()
-{}
+{
+    const auto& grid = m_data.grid();
+    m_pos.resize(grid.pos.size());
+    m_force.resize(grid.force.size());
+}
 
 template <typename ActTrait>
 void ActSrcOp<
