@@ -1,6 +1,98 @@
 #include "amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H"
+#include "amr-wind/utilities/ncutils/nc_interface.H"
+#include "amr-wind/utilities/io_utils.H"
 namespace amr_wind {
 namespace actuator {
+namespace disk {
+void prepare_netcdf_file(
+    const std::string& ncfile,
+    const UniformCtData& meta,
+    const ActInfo& info,
+    const ActGrid& grid)
+{
+    using dvec = std::vector<double>;
+#ifdef AMR_WIND_USE_NETCDF
+    // Only root process handles I/O
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    auto ncf = ncutils::NCFile::create(ncfile, NC_CLOBBER | NC_NETCDF4);
+    const std::string nt_name = "num_time_steps";
+    const std::string np_name = "num_actuator_points";
+    const std::string nv_name = "num_velocity_points";
+
+    ncf.enter_def_mode();
+    ncf.put_attr("title", "AMR-Wind UniformCtDisk actuator output");
+    ncf.put_attr("version", ioutils::amr_wind_version());
+    ncf.put_attr("created_on", ioutils::timestamp());
+    ncf.def_dim(nt_name, NC_UNLIMITED);
+    ncf.def_dim("ndim", AMREX_SPACEDIM);
+
+    auto grp = ncf.def_group(info.label);
+    // clang-format off
+    grp.put_attr("normal",
+        dvec{meta.normal_vec.x(), meta.normal_vec.y(), meta.normal_vec.z()});
+    grp.put_attr("sample_normal",
+        dvec{meta.sample_vec.x(), meta.sample_vec.y(), meta.sample_vec.z()});
+    // clang-format on
+    grp.put_attr("diameter", dvec{meta.diameter});
+    grp.put_attr("epsilon", dvec{meta.epsilon});
+    grp.put_attr("sample_diameters", dvec{meta.diameters_to_sample});
+    grp.def_dim(np_name, meta.num_force_pts);
+    grp.def_dim(nv_name, meta.num_vel_pts);
+    grp.def_var("time", NC_DOUBLE, {nt_name});
+    grp.def_var("xyz", NC_DOUBLE, {np_name});
+    grp.def_var("xyz_v", NC_DOUBLE, {nv_name});
+    grp.def_var("vref", NC_DOUBLE, {nt_name, "ndim"});
+    grp.def_var("vdisk", NC_DOUBLE, {nt_name, "ndim"});
+    grp.def_var("ct", NC_DOUBLE, {nt_name});
+    grp.def_var("density", NC_DOUBLE, {nt_name});
+    ncf.exit_def_mode();
+
+    {
+        {
+            const size_t npts = static_cast<size_t>(meta.num_force_pts);
+            const std::vector<size_t> start{0, 0};
+            const std::vector<size_t> count{npts, AMREX_SPACEDIM};
+            grp.var("xyz").put(&(grid.pos[0][0]), start, count);
+        }
+        {
+            const size_t npts = static_cast<size_t>(meta.num_vel_pts);
+            const std::vector<size_t> start{0, 0};
+            const std::vector<size_t> count{npts, AMREX_SPACEDIM};
+            grp.var("xyz_v").put(&(grid.vel_pos[0][0]), start, count);
+        }
+    }
+#else
+    amrex::ignore_unused(ncfile, meta, info, grid);
+#endif
+}
+
+void write_netcdf(
+    const std::string& ncfile,
+    const UniformCtData& meta,
+    const ActInfo& info,
+    const ActGrid&,
+    const amrex::Real time)
+{
+#ifdef AMR_WIND_USE_NETCDF
+    // Only root process handles I/O
+    if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
+    auto ncf = ncutils::NCFile::open(ncfile, NC_WRITE);
+    const std::string nt_name = "num_time_steps";
+    // Index of next timestep
+    const size_t nt = ncf.dim(nt_name).len();
+    auto grp = ncf.group(info.label);
+    grp.var("time").put(&time, {nt}, {1});
+    grp.var("vref").put(
+        &(meta.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+    grp.var("vdisk").put(
+        &(meta.disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
+    grp.var("ct").put(&meta.thrust_coeff, {nt}, {1});
+    grp.var("density").put(&meta.density, {nt}, {1});
+#else
+    amrex::ignore_unused(ncfile, meta, info, grid, time);
+#endif
+}
+} // namespace disk
 namespace ops {
 
 vs::Vector get_east_orientation()
@@ -135,7 +227,8 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     // params for the sampling disk
     pp.query("num_vel_points_r", meta.num_vel_pts_r);
     pp.query("num_vel_points_t", meta.num_vel_pts_t);
-    meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t;
+    // 2x 1 for sampling up stream and one for sampling at the disk
+    meta.num_vel_pts = meta.num_vel_pts_r * meta.num_vel_pts_t * 2;
 
     // ensure any computed vectors are normalized
     meta.normal_vec.normalize();
@@ -216,6 +309,38 @@ void do_parse_based_computations(UniformCt::DataType& data)
 
     compute_and_normalize_coplanar_vector(meta);
     info.bound_box = compute_bounding_box(meta);
+}
+
+void compute_disk_velocity_points(
+    UniformCt::DataType& data,
+    const vs::Vector& normal,
+    const int offset,
+    const double dOffset)
+{
+    auto& grid = data.grid();
+    auto& meta = data.meta();
+    const auto& cc = meta.center;
+    const auto rotVec = vs::Vector::khat() ^ normal;
+    // vectors are normalized so magnitude of each is 1
+    const amrex::Real angle = std::acos((normal & vs::Vector::ihat()));
+    const auto rotMatrix = vs::quaternion(rotVec, angle);
+
+    const vs::Vector nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
+
+    const amrex::Real dr = meta.diameter / nvp.x();
+    const amrex::Real dt = ::amr_wind::utils::two_pi() / nvp.y();
+    const amrex::Real du = dOffset * meta.diameter;
+
+    int ip = offset;
+    for (int i = 0; i < nvp.x(); i++) {
+        const amrex::Real r = dr * (i + 0.5);
+        for (int j = 0; j < nvp.y(); j++, ip++) {
+            const amrex::Real theta = j * dt;
+            vs::Vector refPoint = {
+                r * std::cos(theta), r * std::sin(theta), du};
+            grid.vel_pos[ip] = (refPoint & rotMatrix) + cc;
+        }
+    }
 }
 } // namespace ops
 } // namespace actuator

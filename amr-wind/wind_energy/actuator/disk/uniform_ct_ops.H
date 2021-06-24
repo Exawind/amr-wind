@@ -7,6 +7,19 @@
 
 namespace amr_wind {
 namespace actuator {
+namespace disk {
+// refactor these when we add more disk types later
+void prepare_netcdf_file(
+    const std::string&, const UniformCtData&, const ActInfo&, const ActGrid&);
+
+void write_netcdf(
+    const std::string&,
+    const UniformCtData&,
+    const ActInfo&,
+    const ActGrid&,
+    const amrex::Real);
+} // namespace disk
+
 namespace ops {
 
 void collect_parse_conflicts(
@@ -33,6 +46,12 @@ void final_checks(const UniformCt::MetaType& meta);
 amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta);
 
 void do_parse_based_computations(UniformCt::DataType& data);
+
+void compute_disk_velocity_points(
+    UniformCt::DataType& data,
+    const vs::Vector& normal,
+    const int offset,
+    const double dOffset);
 
 template <>
 struct ReadInputsOp<UniformCt, ActSrcDisk>
@@ -65,6 +84,7 @@ struct InitDataOp<UniformCt, ActSrcDisk>
 
         const auto& cVec = meta.coplanar_vec;
         const auto& sVec = meta.sample_vec;
+        const auto& nVec = meta.normal_vec;
 
         const auto& cc = meta.center;
         {
@@ -73,29 +93,8 @@ struct InitDataOp<UniformCt, ActSrcDisk>
                 grid.pos[i] = cc + (i + 0.5) * dr * cVec;
             }
         }
-        {
-            const auto rotVec = vs::Vector::khat() ^ sVec;
-            // vectors are normalized so magnitude of each is 1
-            const amrex::Real angle = std::acos((sVec & vs::Vector::ihat()));
-            const auto rotMatrix = vs::quaternion(rotVec, angle);
-
-            const vs::Vector nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
-
-            const amrex::Real dr = meta.diameter / nvp.x();
-            const amrex::Real dt = ::amr_wind::utils::two_pi() / nvp.y();
-            const amrex::Real du = meta.diameters_to_sample * meta.diameter;
-
-            int ip = 0;
-            for (int i = 0; i < nvp.x(); i++) {
-                const amrex::Real r = dr * (i + 0.5);
-                for (int j = 0; j < nvp.y(); j++, ip++) {
-                    const amrex::Real theta = j * dt;
-                    vs::Vector refPoint = {
-                        r * std::cos(theta), r * std::sin(theta), du};
-                    grid.vel_pos[ip] = (refPoint & rotMatrix) + cc;
-                }
-            }
-        }
+        compute_disk_velocity_points(data, sVec, 0, meta.diameters_to_sample);
+        compute_disk_velocity_points(data, nVec, meta.num_vel_pts / 2, 0);
     }
 };
 
@@ -107,10 +106,14 @@ struct UpdateVelOp<UniformCt, ActSrcDisk>
         auto& meta = data.meta();
         const auto& grid = data.grid();
         auto& refVel = meta.reference_velocity;
-        for (auto&& v : grid.vel) {
-            refVel = refVel + v;
+        auto& diskVel = meta.disk_velocity;
+        const int np = meta.num_vel_pts / 2;
+        for (int i = 0; i < np; i++) {
+            refVel = refVel + grid.vel[i];
+            diskVel = diskVel + grid.vel[i + np];
         }
-        refVel /= grid.vel.size();
+        refVel /= np;
+        diskVel /= np;
     }
 };
 
@@ -151,11 +154,42 @@ struct UpdatePosOp<UniformCt, ActSrcDisk>
 template <>
 struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {
-    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType&) {}
+private:
+    UniformCt::DataType& m_data;
+    //! Path to the output directory (specified by Actuator physics class)
+    std::string m_out_dir{""};
+
+    //! NetCDF output filename for this turbine
+    std::string m_nc_filename{""};
+
+    //! Output frequency (specified in input file)
+    int m_out_freq{10};
+
+public:
+    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType& data)
+        : m_data(data)
+    {}
     void operator()(UniformCt::DataType&) {}
-    void read_io_options(const utils::ActParser&) {}
-    void prepare_outputs(const std::string&) {}
-    void write_outputs() {}
+    void read_io_options(const utils::ActParser& pp)
+    {
+        pp.query("output_frequency", m_out_freq);
+    }
+    void prepare_outputs(const std::string& out_dir)
+    {
+        m_nc_filename = out_dir + "/" + m_data.info().label + ".nc";
+        disk::prepare_netcdf_file(
+            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid());
+    }
+    void write_outputs()
+    {
+        const auto& time = m_data.sim().time();
+        const int tidx = time.time_index();
+        if (tidx % m_out_freq != 0) return;
+
+        disk::write_netcdf(
+            m_nc_filename, m_data.meta(), m_data.info(), m_data.grid(),
+            time.new_time());
+    }
 };
 
 } // namespace ops

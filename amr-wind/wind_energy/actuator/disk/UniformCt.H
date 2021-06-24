@@ -18,6 +18,7 @@ struct UniformCtData
     vs::Vector coplanar_vec{1, 0, 0};
     vs::Vector sample_vec{0, 1, 0};
     vs::Vector reference_velocity;
+    vs::Vector disk_velocity;
     amrex::Real epsilon;
     amrex::Real diameter;
     amrex::Real dr;
