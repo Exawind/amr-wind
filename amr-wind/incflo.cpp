@@ -4,9 +4,12 @@
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/turbulence/TurbulenceModel.H"
+#include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
+
+#include "AMReX_ParmParse.H"
 
 using namespace amrex;
 
@@ -84,9 +87,15 @@ void incflo::init_mesh()
  */
 void incflo::init_mesh_map()
 {
-    auto& mesh_scale_fac = m_repo.declare_cc_field(
-        "mesh_scaling_factor", AMREX_SPACEDIM, 0, 1);
-    mesh_scale_fac.setVal(1.0);
+    // declare nodal and cell-centered mesh mapping array
+    auto& mesh_scale_fac_cc = m_repo.declare_cc_field(
+        "mesh_scaling_factor_cc", AMREX_SPACEDIM, m_sim.pde_manager().num_ghost_state(), 1);
+    auto& mesh_scale_fac_nd = m_repo.declare_nd_field(
+        "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_sim.pde_manager().num_ghost_state(), 1);
+
+    // initialize mapping factors to 1.0
+    mesh_scale_fac_cc.setVal(1.0);
+    mesh_scale_fac_nd.setVal(1.0);
 
     amrex::ParmParse pp("geometry");
     std::string mesh_map_name;

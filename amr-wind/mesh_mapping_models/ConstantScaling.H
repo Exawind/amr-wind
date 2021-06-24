@@ -22,7 +22,8 @@ public:
     void create_map(int finest_level) override;
 
 private:
-    Field& m_mesh_scale_fac;
+    Field& m_mesh_scale_fac_cc;
+    Field& m_mesh_scale_fac_nd;
 
     //! Factor to scale the mesh by
     amrex::Vector<amrex::Real> m_fac{{0.0, 0.0, 0.0}};
