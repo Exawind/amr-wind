@@ -325,7 +325,7 @@ void compute_disk_velocity_points(
     const amrex::Real angle = std::acos((normal & vs::Vector::ihat()));
     const auto rotMatrix = vs::quaternion(rotVec, angle);
 
-    const vs::Vector nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
+    const vs::VectorT<int> nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
 
     const amrex::Real dr = meta.diameter / nvp.x();
     const amrex::Real dt = ::amr_wind::utils::two_pi() / nvp.y();
