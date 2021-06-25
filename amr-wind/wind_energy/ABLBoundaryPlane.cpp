@@ -73,11 +73,8 @@ void InletData::define_plane(const amrex::Orientation ori)
 {
     m_data_n[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
     m_data_np1[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
+    m_data_interp[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
 
-    const int normal = ori.coordDir();
-    const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
-    amrex::Box bx_grown = amrex::Box(bx).grow(perp[0], 1).grow(perp[1], 1);
-    m_data_interp[ori]->push_back(amrex::FArrayBox(bx_grown, nc));
 }
 
 void InletData::define_level_data(
@@ -86,7 +83,10 @@ void InletData::define_level_data(
     if (!this->is_populated(ori)) return;
     m_data_n[ori]->push_back(amrex::FArrayBox(bx, nc));
     m_data_np1[ori]->push_back(amrex::FArrayBox(bx, nc));
-    m_data_interp[ori]->push_back(amrex::FArrayBox(bx, nc));
+    const int normal = ori.coordDir();
+    const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+    amrex::Box bx_grown = amrex::Box(bx).grow(perp[0], 1).grow(perp[1], 1);
+    m_data_interp[ori]->push_back(amrex::FArrayBox(bx_grown, nc));
 }
 
 void InletData::read_data(
