@@ -1,13 +1,29 @@
 #include "amr-wind/incflo.H"
 
+#include "AMReX_ParmParse.H"
+
 using namespace amrex;
 
 void incflo::set_background_pressure()
 {
     const auto problo = geom[0].ProbLoArray();
-    const auto probhi = geom[0].ProbHiArray();
+    // determine probhi based on if mesh is mapped
+    amrex::Vector<amrex::Real> probhi_unmapped{{0.0, 0.0, 0.0}};
+    {
+        amrex::ParmParse pp("geometry");
+        if (pp.contains("prob_hi_unmapped")) {
+            pp.getarr("prob_hi_unmapped", probhi_unmapped);
+        }
+        else {
+            for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
+                probhi_unmapped[d] = geom[0].ProbHiArray()[d];
+            }
+        }
+    }
     GpuArray<Real, AMREX_SPACEDIM> problen{
-        {probhi[0] - problo[0], probhi[1] - problo[1], probhi[2] - problo[2]}};
+        {probhi_unmapped[0] - problo[0],
+         probhi_unmapped[1] - problo[1],
+         probhi_unmapped[2] - problo[2]}};
 
     amrex::Vector<amrex::Real> m_gp0{{0.0, 0.0, 0.0}};
 

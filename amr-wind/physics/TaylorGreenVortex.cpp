@@ -15,12 +15,17 @@ TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
         pp.query("density", m_rho);
     }
 
+    // determine probhi based on if mesh is mapped
     {
-        for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
-            m_probhi_unmapped[d] = sim.repo().mesh().Geom(0).ProbHiArray()[d];
-        }
         amrex::ParmParse pp("geometry");
-        pp.queryarr("prob_hi_unmapped", m_probhi_unmapped);
+        if (pp.contains("prob_hi_unmapped")) {
+            pp.getarr("prob_hi_unmapped", m_probhi_unmapped);
+        }
+        else {
+            for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
+                m_probhi_unmapped[d] = sim.repo().mesh().Geom(0).ProbHiArray()[d];
+            }
+        }
     }
 }
 
