@@ -32,6 +32,10 @@ public:
 private:
     Field& m_velocity;
     Field& m_density;
+    Field& m_mesh_fac;
+
+    //! probhi in unmapped mesh
+    amrex::Vector<amrex::Real> m_probhi_unmapped{{0.0, 0.0, 0.0}};
 
     //! initial density value
     amrex::Real m_rho{1.0};

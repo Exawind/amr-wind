@@ -8,9 +8,20 @@ namespace amr_wind {
 TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
+    , m_mesh_fac(sim.repo().get_field("mesh_scaling_factor_cc"))
 {
-    amrex::ParmParse pp("incflo");
-    pp.query("density", m_rho);
+    {
+        amrex::ParmParse pp("incflo");
+        pp.query("density", m_rho);
+    }
+
+    {
+        for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
+            m_probhi_unmapped[d] = sim.repo().mesh().Geom(0).ProbHiArray()[d];
+        }
+        amrex::ParmParse pp("geometry");
+        pp.queryarr("prob_hi_unmapped", m_probhi_unmapped);
+    }
 }
 
 /** Initialize the velocity and density fields at the beginning of the
@@ -27,21 +38,23 @@ void TaylorGreenVortex::initialize_fields(
     density.setVal(m_rho);
 
     const auto& problo = geom.ProbLoArray();
-    const auto& probhi = geom.ProbHiArray();
-    const amrex::Real Lx = probhi[0] - problo[0];
-    const amrex::Real Ly = probhi[1] - problo[1];
-    const amrex::Real Lz = probhi[2] - problo[2];
+    const amrex::Real Lx = m_probhi_unmapped[0] - problo[0];
+    const amrex::Real Ly = m_probhi_unmapped[1] - problo[1];
+    const amrex::Real Lz = m_probhi_unmapped[2] - problo[2];
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& dx = geom.CellSizeArray();
         auto vel = velocity.array(mfi);
+        amrex::Array4<amrex::Real const> const& fac = m_mesh_fac(level).const_array(mfi);
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0] * det_j;
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1] * det_j;
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2] * det_j;
 
                 vel(i, j, k, 0) = std::sin(two_pi() * x / Lx) *
                                   std::cos(two_pi() * y / Ly) *
