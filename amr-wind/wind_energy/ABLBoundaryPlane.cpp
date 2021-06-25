@@ -581,9 +581,10 @@ void ABLBoundaryPlane::populate_data(
 #ifdef _OPENMP
 #pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
-        for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
+             ++mfi) {
 
-            const auto& sbx = amrex::grow(mfi.validbox(), 1);
+            const auto& sbx = mfi.growntilebox(1);
             auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
             if (bx.isEmpty()) continue;
