@@ -128,6 +128,8 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 
 void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
 {
+
+    m_axis = 2; //Fix to be z-direction for now
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
     std::ifstream infile;
     int n_hts;
@@ -135,9 +137,10 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
     infile >> n_hts;
     theta_ht.resize(n_hts);
     theta_vals.resize(n_hts);
-    for (int i = 0; i < n_hts; i++) {
+    m_theta_ht.resize(n_hts);
+    m_theta_vals.resize(n_hts);
+    for (int i = 0; i < n_hts; i++)
         infile >> theta_ht[i] >> theta_vals[i];
-    }
     infile.close();
 
     //Now copy to GPU Device memory
