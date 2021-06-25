@@ -74,7 +74,6 @@ void InletData::define_plane(const amrex::Orientation ori)
     m_data_n[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
     m_data_np1[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
     m_data_interp[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
-
 }
 
 void InletData::define_level_data(
