@@ -55,11 +55,9 @@ void TaylorGreenVortex::initialize_fields(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0] * det_j;
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1] * det_j;
-                const amrex::Real z = problo[2] + (k + 0.5) * dx[2] * det_j;
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0]*fac(i, j, k, 0);
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1]*fac(i, j, k, 1);
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2]*fac(i, j, k, 2);
 
                 vel(i, j, k, 0) = std::sin(two_pi() * x / Lx) *
                                   std::cos(two_pi() * y / Ly) *
