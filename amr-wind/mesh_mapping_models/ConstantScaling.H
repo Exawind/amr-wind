@@ -19,14 +19,14 @@ public:
     virtual ~ConstantScaling() = default;
 
     //! Construct the mesh scaling field
-    void create_map(int finest_level) override;
+    void create_map(int, const amrex::Geometry&) override;
 
 private:
     Field& m_mesh_scale_fac_cc;
     Field& m_mesh_scale_fac_nd;
 
     //! Factor to scale the mesh by
-    amrex::Vector<amrex::Real> m_fac{{0.0, 0.0, 0.0}};
+    amrex::Vector<amrex::Real> m_fac{{1.0, 1.0, 1.0}};
 };
 
 } // namespace amr_wind

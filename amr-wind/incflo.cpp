@@ -80,23 +80,6 @@ void incflo::init_mesh()
     }
 }
 
-/** Create mesh mapping.
- */
-void incflo::init_mesh_map()
-{
-    amrex::ParmParse pp("geometry");
-    std::string mesh_map_name;
-    pp.query("mesh_mapping", mesh_map_name);
-
-    if(!mesh_map_name.empty()) {
-        amrex::Print() << "Creating mesh mapping ... ";
-        m_mesh_map = true;
-        m_mesh_map_mgr.create(mesh_map_name, m_sim);
-        this->mapping()->create_map(finest_level);
-        amrex::Print() << "done" << std::endl;
-    }
-}
-
 /** Initialize AMR-Wind data structures after mesh has been created.
  *
  *  Modules initialized:
@@ -198,6 +181,15 @@ bool incflo::regrid_and_update()
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
 
+        //update mesh map
+        {
+            amrex::Print() << "Creating mesh mapping after regrid ... ";
+            for (int lev = 0; lev <= finest_level; lev++) {
+                m_sim.mesh_mapping()->create_map(lev, Geom(lev));
+            }
+            amrex::Print() << "done" << std::endl;
+        }
+
         if (m_sim.has_overset()) {
             m_sim.overset_manager()->post_regrid_actions();
         } else {
@@ -269,12 +261,7 @@ void incflo::Evolve()
     while (m_time.new_timestep()) {
         amrex::Real time0 = amrex::ParallelDescriptor::second();
 
-        bool mesh_regrid = regrid_and_update();
-        if(mesh_regrid && m_mesh_map) {
-            amrex::Print() << "Creating mesh mapping after regrid... ";
-            this->mapping()->create_map(finest_level);
-            amrex::Print() << "done" << std::endl;
-        }
+        regrid_and_update();
 
         pre_advance_stage1();
         pre_advance_stage2();
@@ -339,13 +326,7 @@ void incflo::MakeNewLevelFromScratch(
     m_repo.make_new_level_from_scratch(lev, time, new_grids, new_dmap);
 
     // initialize the mesh map before initializing physics
-    {
-        std::string restart_file;
-        amrex::ParmParse pp("io");
-        if(!pp.contains("restart_file")) {
-            init_mesh_map();
-        }
-    }
+    m_sim.mesh_mapping()->create_map(lev, Geom(lev));
 
     for (auto& pp : m_sim.physics()) {
         pp->initialize_fields(lev, Geom(lev));
@@ -354,17 +335,8 @@ void incflo::MakeNewLevelFromScratch(
 
 void incflo::init_physics_and_pde()
 {
-    {
-        // declare nodal and cell-centered mesh mapping array
-        auto& mesh_scale_fac_cc = m_repo.declare_cc_field(
-            "mesh_scaling_factor_cc", AMREX_SPACEDIM, m_sim.pde_manager().num_ghost_state(), 1);
-        auto& mesh_scale_fac_nd = m_repo.declare_nd_field(
-            "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_sim.pde_manager().num_ghost_state(), 1);
-
-        // initialize mapping factors to 1.0
-        mesh_scale_fac_cc.setVal(1.0);
-        mesh_scale_fac_nd.setVal(1.0);
-    }
+    // Always register mesh mapping
+    m_sim.activate_mesh_map();
 
     {
         // Query and activate overset before initializing PDEs and physics

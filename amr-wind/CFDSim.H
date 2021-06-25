@@ -6,6 +6,7 @@
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/PDEBase.H"
 #include "amr-wind/core/Physics.H"
+#include "amr-wind/core/MeshMap.H"
 
 /** AMR-Wind
  *
@@ -71,6 +72,12 @@ public:
         return m_physics_mgr.objects();
     }
 
+    MeshMapMgr::TypePtr& mesh_mapping() { return m_mesh_map_mgr.objects()[0]; }
+    const amr_wind::MeshMapMgr::TypePtr& mesh_mapping() const
+    {
+        return m_mesh_map_mgr.objects()[0];
+    }
+
     turbulence::TurbulenceModel& turbulence_model() { return *m_turbulence; }
     const turbulence::TurbulenceModel& turbulence_model() const
     {
@@ -103,6 +110,9 @@ public:
     //! Activate overset connectivity
     void activate_overset();
 
+    //! Activate mesh mapping
+    void activate_mesh_map();
+
 private:
     amrex::AmrCore& m_mesh;
 
@@ -113,6 +123,8 @@ private:
     pde::PDEMgr m_pde_mgr;
 
     PhysicsMgr m_physics_mgr;
+
+    MeshMapMgr m_mesh_map_mgr;
 
     std::unique_ptr<turbulence::TurbulenceModel> m_turbulence;
 

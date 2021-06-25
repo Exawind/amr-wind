@@ -33,7 +33,7 @@ public:
     virtual ~MeshMap() = default;
 
     //! Construct mesh scaling field
-    virtual void create_map(int finest_level) = 0;
+    virtual void create_map(int, const amrex::Geometry&) = 0;
 };
 
 /** A collection of \ref mesh_map instances
