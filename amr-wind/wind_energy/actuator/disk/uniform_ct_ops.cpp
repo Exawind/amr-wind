@@ -311,18 +311,28 @@ void do_parse_based_computations(UniformCt::DataType& data)
     info.bound_box = compute_bounding_box(meta);
 }
 
-void compute_disk_velocity_points(
-    UniformCt::DataType& data,
-    const vs::Vector& normal,
+void compute_disk_points(
+    UniformCt::MetaType& meta,
+    VecList& points,
+    const vs::Vector& cylAxis,
     const int offset,
     const double dOffset)
 {
-    auto& grid = data.grid();
-    auto& meta = data.meta();
     const auto& cc = meta.center;
-    const auto rotVec = vs::Vector::khat() ^ normal;
-    // vectors are normalized so magnitude of each is 1
-    const amrex::Real angle = std::acos((normal & vs::Vector::ihat()));
+    // we define points as if the disk faces the standard cyindrical coordinates
+    // and then rotate it into position
+
+    // first get an angle orthogonal to centerline of the cylinder and the z
+    // direction (standard centerline for a cylinder). this will be the vector
+    // we will rotate about
+    auto rotVec = vs::Vector::khat() ^ cylAxis;
+    rotVec.normalize();
+
+    // nect compute the angle between the center vec and z axis
+    const amrex::Real angle =
+        ::amr_wind::utils::degrees(std::acos((cylAxis & vs::Vector::khat())));
+
+    // finally get the rotation matrix given that angle and rotation vector
     const auto rotMatrix = vs::quaternion(rotVec, angle);
 
     const vs::VectorT<int> nvp = {meta.num_vel_pts_r, meta.num_vel_pts_t, 1};
@@ -333,12 +343,12 @@ void compute_disk_velocity_points(
 
     int ip = offset;
     for (int i = 0; i < nvp.x(); i++) {
-        const amrex::Real r = dr * (i + 0.5);
+        const amrex::Real r = dr * i;
         for (int j = 0; j < nvp.y(); j++, ip++) {
             const amrex::Real theta = j * dt;
             vs::Vector refPoint = {
                 r * std::cos(theta), r * std::sin(theta), du};
-            grid.vel_pos[ip] = (refPoint & rotMatrix) + cc;
+            points[ip] = (refPoint & rotMatrix) + cc;
         }
     }
 }

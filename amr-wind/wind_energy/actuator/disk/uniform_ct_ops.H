@@ -47,9 +47,10 @@ amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta);
 
 void do_parse_based_computations(UniformCt::DataType& data);
 
-void compute_disk_velocity_points(
-    UniformCt::DataType& data,
-    const vs::Vector& normal,
+void compute_disk_points(
+    UniformCt::MetaType& meta,
+    VecList& points,
+    const vs::Vector& cylAxis,
     const int offset,
     const double dOffset);
 
@@ -93,8 +94,9 @@ struct InitDataOp<UniformCt, ActSrcDisk>
                 grid.pos[i] = cc + (i + 0.5) * dr * cVec;
             }
         }
-        compute_disk_velocity_points(data, sVec, 0, meta.diameters_to_sample);
-        compute_disk_velocity_points(data, nVec, meta.num_vel_pts / 2, 0);
+        compute_disk_points(
+            meta, grid.vel_pos, sVec, 0, meta.diameters_to_sample);
+        compute_disk_points(meta, grid.vel_pos, nVec, meta.num_vel_pts / 2, 0);
     }
 };
 
