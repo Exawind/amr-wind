@@ -73,7 +73,11 @@ void InletData::define_plane(const amrex::Orientation ori)
 {
     m_data_n[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
     m_data_np1[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
-    m_data_interp[ori] = std::unique_ptr<PlaneVector>(new PlaneVector);
+
+    const int normal = ori.coordDir();
+    const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+    amrex::Box bx_grown = amrex::Box(bx).grow(perp[0], 1).grow(perp[1], 1);
+    m_data_interp[ori]->push_back(amrex::FArrayBox(bx_grown, nc));
 }
 
 void InletData::define_level_data(
@@ -110,9 +114,9 @@ void InletData::read_data(
     const size_t n0 = bx.length(perp[0]);
     const size_t n1 = bx.length(perp[1]);
 
-    amrex::Vector<size_t> start{
-        static_cast<size_t>(idx), static_cast<size_t>(lo[perp[0]]),
-        static_cast<size_t>(lo[perp[1]]), 0};
+    amrex::Vector<size_t> start{static_cast<size_t>(idx),
+                                static_cast<size_t>(lo[perp[0]]),
+                                static_cast<size_t>(lo[perp[1]]), 0};
     amrex::Vector<size_t> count{1, n0, n1, nc};
     amrex::Vector<amrex::Real> buffer(n0 * n1 * nc);
     grp.var(fld->name()).get(buffer.data(), start, count);
@@ -154,7 +158,7 @@ void InletData::interpolate(const amrex::Real time)
             auto& dati = (*m_data_interp[ori])[lev];
 
             dati.linInterp<amrex::RunOn::Device>(
-                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, dati.box(), 0,
+                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, datn.box(), 0,
                 dati.nComp());
         }
     }
@@ -584,7 +588,7 @@ void ABLBoundaryPlane::populate_data(
 #endif
         for (amrex::MFIter mfi(mfab); mfi.isValid(); ++mfi) {
 
-            const auto& sbx = mfi.growntilebox(1);
+            const auto& sbx = amrex::grow(mfi.validbox(), 1);
             auto& src = m_in_data.interpolate_data(ori, lev);
             const auto& bx = sbx & src.box();
             if (bx.isEmpty()) continue;
@@ -597,48 +601,13 @@ void ABLBoundaryPlane::populate_data(
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                     dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
                 });
-
-            // Fill the edges
-            const auto& lo = bx.loVect();
-            const auto& hi = bx.hiVect();
-
-            // For xlo/ylo combination (currently the only valid
-            // combination), this is perp[0] (FIXME for future)
-            const int pp = perp[0];
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                ehi[pp] = lo[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i - v_offset[0], j - v_offset[1], k - v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                elo[pp] = hi[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i + v_offset[0], j + v_offset[1], k + v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
         }
     }
+
+    const auto& geom = fld.repo().mesh().Geom();
+    mfab.EnforcePeriodicity(
+        0, mfab.nComp(), amrex::IntVect(1), geom[lev].periodicity());
+
 #else
     amrex::ignore_unused(lev, time, fld, mfab);
 #endif
@@ -702,9 +671,8 @@ void ABLBoundaryPlane::write_data(
                 lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
             amrex::Gpu::streamSynchronize();
 
-            buffer.start = {
-                m_out_counter, static_cast<size_t>(lo[perp[0]]),
-                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.start = {m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                            static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
         }
     }
