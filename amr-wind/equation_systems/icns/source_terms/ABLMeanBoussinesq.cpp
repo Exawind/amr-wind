@@ -129,7 +129,7 @@ void ABLMeanBoussinesq::mean_temperature_update(const FieldPlaneAveraging& tavg)
 void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
 {
 
-    m_axis = 2; //Fix to be z-direction for now
+    m_axis = 2; // Fix to be z-direction for now
     amrex::Vector<amrex::Real> theta_ht, theta_vals;
     std::ifstream infile;
     int n_hts;
@@ -139,19 +139,16 @@ void ABLMeanBoussinesq::read_temperature_profile(std::string profile_file_name)
     theta_vals.resize(n_hts);
     m_theta_ht.resize(n_hts);
     m_theta_vals.resize(n_hts);
-    for (int i = 0; i < n_hts; i++)
-        infile >> theta_ht[i] >> theta_vals[i];
+    for (int i = 0; i < n_hts; i++) infile >> theta_ht[i] >> theta_vals[i];
     infile.close();
 
-    //Now copy to GPU Device memory
+    // Now copy to GPU Device memory
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, theta_ht.begin(),
-        theta_ht.end(), m_theta_ht.begin());
+        amrex::Gpu::hostToDevice, theta_ht.begin(), theta_ht.end(),
+        m_theta_ht.begin());
     amrex::Gpu::copy(
-        amrex::Gpu::hostToDevice, theta_vals.begin(),
-        theta_vals.end(), m_theta_vals.begin());
-
-
+        amrex::Gpu::hostToDevice, theta_vals.begin(), theta_vals.end(),
+        m_theta_vals.begin());
 }
 
 } // namespace icns
