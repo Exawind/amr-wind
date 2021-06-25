@@ -40,6 +40,7 @@ void incflo::ComputeDt(bool explicit_diffusion)
     Real force_cfl = 0.0;
 
     const auto& den = density();
+    auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
 
     for (int lev = 0; lev <= finest_level; ++lev) {
         auto const dxinv = geom[lev].InvCellSizeArray();
@@ -47,38 +48,43 @@ void incflo::ComputeDt(bool explicit_diffusion)
         MultiFab const& vel_force = icns().fields().src_term(lev);
         MultiFab const& mu = icns().fields().mueff(lev);
         MultiFab const& rho = den(lev);
+        MultiFab const& mesh_fac_lev = mesh_fac(lev); // accounting for mesh mapping
 
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
         Real force_lev = 0.0;
 
         conv_lev = amrex::ReduceMax(
-            vel, 0,
+            vel, mesh_fac_lev, 0,
             [=] AMREX_GPU_HOST_DEVICE(
-                Box const& b, Array4<Real const> const& v) -> Real {
+                Box const& b,
+                Array4<Real const> const& v,
+                Array4<Real const> const& fac) -> Real {
                 Real mx = -1.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     mx = amrex::max(
-                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0],
-                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1],
-                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2], mx);
+                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0]/fac(i,j,k,0),
+                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1]/fac(i,j,k,1),
+                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2]/fac(i,j,k,2), mx);
                 });
                 return mx;
             });
 
         if (explicit_diffusion) {
 
-            const Real dxinv2 =
-                2.0 * (dxinv[0] * dxinv[0] + dxinv[1] * dxinv[1] +
-                       dxinv[2] * dxinv[2]);
-
             diff_lev = amrex::ReduceMax(
-                rho, mu, 0,
+                rho, mu, mesh_fac_lev, 0,
                 [=] AMREX_GPU_HOST_DEVICE(
                     Box const& b, Array4<Real const> const& rho_arr,
-                    Array4<Real const> const& mu_arr) -> Real {
+                    Array4<Real const> const& mu_arr,
+                    Array4<Real const> const& fac) -> Real {
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
+                        const Real dxinv2 =
+                            2.0 * (dxinv[0]/fac(i,j,k,0) * dxinv[0]/fac(i,j,k,0)
+                                 + dxinv[1]/fac(i,j,k,1) * dxinv[1]/fac(i,j,k,1) +
+                                   dxinv[2]/fac(i,j,k,2) * dxinv[2]/fac(i,j,k,2));
+
                         mx = amrex::max(
                             mu_arr(i, j, k) * dxinv2 / rho_arr(i, j, k), mx);
                     });
@@ -88,15 +94,16 @@ void incflo::ComputeDt(bool explicit_diffusion)
 
         if (m_time.use_force_cfl()) {
             force_lev = amrex::ReduceMax(
-                vel_force, 0,
+                vel_force, mesh_fac_lev, 0,
                 [=] AMREX_GPU_HOST_DEVICE(
-                    Box const& b, Array4<Real const> const& vf) -> Real {
+                    Box const& b, Array4<Real const> const& vf,
+                    Array4<Real const> const& fac) -> Real {
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         mx = amrex::max(
-                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0],
-                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1],
-                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2], mx);
+                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0]/fac(i,j,k,0),
+                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1]/fac(i,j,k,1),
+                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2]/fac(i,j,k,2), mx);
                     });
                     return mx;
                 });
