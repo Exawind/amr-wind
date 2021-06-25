@@ -156,7 +156,7 @@ void InletData::interpolate(const amrex::Real time)
             const auto& datn = (*m_data_n[ori])[lev];
             const auto& datnp1 = (*m_data_np1[ori])[lev];
             auto& dati = (*m_data_interp[ori])[lev];
-
+            dati.setVal(0.0);// FIXME: not sure why this is required
             dati.linInterp<amrex::RunOn::Device>(
                 datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, datn.box(), 0,
                 dati.nComp());
