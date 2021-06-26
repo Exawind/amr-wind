@@ -107,6 +107,8 @@ struct UpdateVelOp<UniformCt, ActSrcDisk>
     {
         auto& meta = data.meta();
         const auto& grid = data.grid();
+        meta.reference_velocity = {0.0, 0.0, 0.0};
+        meta.disk_velocity = {0.0, 0.0, 0.0};
         auto& refVel = meta.reference_velocity;
         auto& diskVel = meta.disk_velocity;
         const int np = meta.num_vel_pts / 2;
@@ -142,7 +144,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             const amrex::Real rp = r + dr * 0.5;
             const amrex::Real rm = r - dr * 0.5;
             const amrex::Real a = ::amr_wind::utils::pi() * (rp * rp - rm * rm);
-            grid.force[ip] = -(aeroPressure * a) * normal;
+            grid.force[ip] = (aeroPressure * a) * normal;
         }
     }
 };
