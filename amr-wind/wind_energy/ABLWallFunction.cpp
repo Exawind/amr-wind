@@ -124,7 +124,6 @@ void ABLWallFunction::update_umean(
     }
 
     m_mo.update_fluxes();
-
 }
 
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
