@@ -111,19 +111,16 @@ void ABLWallFunction::update_umean(
                 3600.0;
     }
 
-#if 1
     if (m_inflow_outflow) {
         m_mo.vel_mean[0] = m_wf_vel[0];
         m_mo.vel_mean[1] = m_wf_vel[1];
         m_mo.vmag_mean = m_wf_vmag;
         m_mo.theta_mean = m_wf_theta;
     } else {
-        {
-            m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
-            m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
-            m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
-            m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
-        }
+        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
+        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
+        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
+        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
     }
 
     m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
@@ -133,12 +130,6 @@ void ABLWallFunction::update_umean(
 
     m_mo.update_fluxes();
 
-#else
-
-    computeplanar();
-    computeusingheatflux();
-
-#endif
 }
 
 ABLVelWallFunc::ABLVelWallFunc(Field&, const ABLWallFunction& wall_func)
