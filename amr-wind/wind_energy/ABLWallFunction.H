@@ -36,10 +36,6 @@ public:
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
-    void computeplanar();
-
-    void computeusingheatflux();
-
 private:
     const CFDSim& m_sim;
 
