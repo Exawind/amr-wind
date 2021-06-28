@@ -26,7 +26,7 @@ void init_data_structures(BluffBodyBaseData&) {}
 void apply_mms_vel(CFDSim& sim)
 {
     const int nlevels = sim.repo().num_active_levels();
-    auto& mask_cell = sim.repo().get_int_field("mask_cell");
+    auto& levelset = sim.repo().get_field("ib_levelset");
     auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
         sim.physics_manager().get<ctv::ConvectingTaylorVortex>();
@@ -43,15 +43,15 @@ void apply_mms_vel(CFDSim& sim)
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
 
-        for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
-            auto epsilon_cell = mask_cell(lev).array(mfi);
+            auto phi = levelset(lev).array(mfi);
             auto varr = velocity(lev).array(mfi);
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    if (epsilon_cell(i, j, k) == 0) {
+                    if (phi(i, j, k) <= 0) {
                         varr(i, j, k, 0) =
                             u0 - std::cos(utils::pi() * (x - u0 * t)) *
                                      std::sin(utils::pi() * (y - v0 * t)) *
@@ -70,17 +70,19 @@ void apply_mms_vel(CFDSim& sim)
 void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
 {
     const int nlevels = sim.repo().num_active_levels();
-    auto& mask_cell = sim.repo().get_int_field("mask_cell");
     auto& velocity = sim.repo().get_field("velocity");
+    auto& levelset = sim.repo().get_field("ib_levelset");
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+
+        for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
-            auto epsilon_cell = mask_cell(lev).array(mfi);
             auto varr = velocity(lev).array(mfi);
+            auto phi = levelset(lev).array(mfi);
+
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (epsilon_cell(i, j, k) == 0) {
+                    if (phi(i, j, k) <= 0) {
                         varr(i, j, k, 0) = vel_bc[0];
                         varr(i, j, k, 1) = vel_bc[1];
                         varr(i, j, k, 2) = vel_bc[2];
@@ -109,4 +111,4 @@ void write_netcdf(
 
 } // namespace bluff_body
 } // namespace ib
-}
+} // namespace amr_wind

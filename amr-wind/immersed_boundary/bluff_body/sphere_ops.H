@@ -47,8 +47,8 @@ struct InitDataOp<Sphere>
         auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        auto& mask_cell = sim.repo().get_int_field("mask_cell");
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -56,13 +56,14 @@ struct InitDataOp<Sphere>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
-            for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+            for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
-                auto epsilon_cell = mask_cell(lev).array(mfi);
                 auto epsilon_node = mask_node(lev).array(mfi);
+                auto phi = levelset(lev).array(mfi);
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
+                amrex::Real R = wdata.radius;
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -72,9 +73,8 @@ struct InitDataOp<Sphere>
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
-                        if (r <= wdata.radius) {
-                            epsilon_cell(i, j, k) = 0;
-                        }
+
+                        phi(i, j, k) = r - R;
                     });
                 const auto& nbx = mfi.nodaltilebox();
                 amrex::ParallelFor(
