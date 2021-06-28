@@ -123,11 +123,6 @@ void ABLWallFunction::update_umean(
         m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
     }
 
-    m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
-    m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
-    m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
-    m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
-
     m_mo.update_fluxes();
 
 }
