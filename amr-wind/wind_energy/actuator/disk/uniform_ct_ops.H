@@ -131,20 +131,25 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
     {
         auto& grid = data.grid();
         auto& ddata = data.meta();
-        const amrex::Real uInf = ddata.reference_velocity & ddata.normal_vec;
+        const auto& normal = ddata.normal_vec;
         const amrex::Real rho = ddata.density;
         const amrex::Real cT = ddata.thrust_coeff;
+        // only use veloocity compnents normal to disk
+        // square the velocity by componet first so normal direction signs will
+        // cancel each other
+        const amrex::Real uInfSqr =
+            (ddata.reference_velocity * ddata.reference_velocity) & normal;
         const int npts = ddata.num_force_pts;
-        const amrex::Real aeroPressure = 0.5 * uInf * uInf * rho * cT;
+        const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * cT;
         const amrex::Real dr = ddata.dr;
-        const auto& normal = ddata.normal_vec;
 
         for (int ip = 0; ip < npts; ++ip) {
             const amrex::Real r = (ip + 0.5) * dr;
             const amrex::Real rp = r + dr * 0.5;
             const amrex::Real rm = r - dr * 0.5;
             const amrex::Real a = ::amr_wind::utils::pi() * (rp * rp - rm * rm);
-            grid.force[ip] = (aeroPressure * a) * normal;
+            // canceling of signes ensures this term will always be negative
+            grid.force[ip] = -(aeroPressure * a) * normal;
         }
     }
 };

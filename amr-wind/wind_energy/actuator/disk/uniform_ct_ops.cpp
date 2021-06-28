@@ -192,8 +192,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     if (pp.contains("yaw")) {
         amrex::Real yaw;
         pp.get("yaw", yaw);
-        // use negative angle to keep with convection E (x-axis) is 90 degree
-        normalRotOp = normalRotOp & vs::zrot(-yaw);
+        normalRotOp = normalRotOp & vs::zrot(yaw);
     }
 
     bool user_specified_sample_vec = false;
@@ -211,8 +210,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
         user_specified_sample_vec = true;
         amrex::Real yaw;
         pp.get("sample_yaw", yaw);
-        // use negative angle to keep with convection E (x-axis) is 90 degree
-        sampleRotOp = sampleRotOp & vs::zrot(-yaw);
+        sampleRotOp = sampleRotOp & vs::zrot(yaw);
     }
 
     meta.normal_vec = meta.normal_vec & normalRotOp;
