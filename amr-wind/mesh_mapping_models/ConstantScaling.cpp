@@ -10,9 +10,7 @@ ConstantScaling::ConstantScaling(const CFDSim& sim)
     , m_mesh_scale_fac_nd(sim.repo().get_field("mesh_scaling_factor_nd"))
 {
     amrex::ParmParse pp("ConstantScaling");
-    if(pp.contains("ConstantScaling")) {
-        pp.getarr("scaling_factor",m_fac,0,AMREX_SPACEDIM);
-    }
+    pp.queryarr("scaling_factor",m_fac,0,AMREX_SPACEDIM);
 }
 
 /** Construct the mesh mapping field
@@ -26,7 +24,7 @@ void ConstantScaling::create_map(
 
     for (amrex::MFIter mfi(m_mesh_scale_fac_cc(lev)); mfi.isValid(); ++mfi) {
 
-        const auto& bx = mfi.growntilebox();
+        const auto& bx = mfi.tilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc = m_mesh_scale_fac_cc(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -35,7 +33,7 @@ void ConstantScaling::create_map(
                 scale_fac_cc(i, j, k, 2) = fac_z;
             });
 
-        const auto& nbx = mfi.grownnodaltilebox();
+        const auto& nbx = mfi.nodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd = m_mesh_scale_fac_nd(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {

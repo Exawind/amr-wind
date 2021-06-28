@@ -347,4 +347,74 @@ void Field::set_default_fillpatch_bc(
     }
 }
 
+void Field::to_mapped_mesh() noexcept
+{
+    if(m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in mapped mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    std::string mesh_fac_name;
+    if(m_info->m_floc == FieldLoc::CELL) {
+        mesh_fac_name = "mesh_scaling_factor_cc";
+    } else if (m_info->m_floc == FieldLoc::NODE) {
+        mesh_fac_name = "mesh_scaling_factor_nd";
+    }
+    else {
+        amrex::Abort("Field location must be CELL or NODE");
+    }
+    auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+
+    // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(operator()(lev)); mfi.isValid(); ++mfi) {
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(mfi);
+            amrex::Array4<amrex::Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
+            amrex::ParallelFor(mfi.tilebox(),  AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+                    field(i, j, k, n) *= det_j / fac(i, j, k, n);
+                });
+        }
+    }
+    m_mesh_mapped = true;
+}
+
+void Field::to_unmapped_mesh() noexcept
+{
+    if(!m_mesh_mapped) {
+        amrex::Print() << "WARNING: Field already in unmapped mesh space: "
+                       << m_name << std::endl;
+        return;
+    }
+
+    std::string mesh_fac_name;
+    if(m_info->m_floc == FieldLoc::CELL) {
+        mesh_fac_name = "mesh_scaling_factor_cc";
+    } else if (m_info->m_floc == FieldLoc::NODE) {
+        mesh_fac_name = "mesh_scaling_factor_nd";
+    }
+    else {
+        amrex::Abort("Field location must be CELL or NODE");
+    }
+    auto& mesh_fac = m_repo.get_field(mesh_fac_name);
+
+    // scale field back to unmapped mesh -> U = U^bar * fac/J
+    for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
+        for (amrex::MFIter mfi(operator()(lev)); mfi.isValid(); ++mfi) {
+            amrex::Array4<amrex::Real> const& field = operator()(lev).array(mfi);
+            amrex::Array4<amrex::Real const> const& fac = mesh_fac(lev).const_array(mfi);
+
+            amrex::ParallelFor(mfi.tilebox(),  AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+                    field(i, j, k, n) *= fac(i, j, k, n) / det_j;
+                });
+        }
+    }
+    m_mesh_mapped = false;
+}
+
 } // namespace amr_wind

@@ -192,6 +192,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // Compute viscosity / diffusive coefficients
     // *************************************************************************************
+    // TODO: This sub-section has not been adjusted for mesh mapping
     m_sim.turbulence_model().update_turbulent_viscosity(
         amr_wind::FieldState::Old);
     icns().compute_mueff(amr_wind::FieldState::Old);
@@ -202,6 +203,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // *************************************************************************************
     // Define the forcing terms to use in the Godunov prediction
     // *************************************************************************************
+    // TODO: This sub-section has not been adjusted for mesh mapping
     if (m_use_godunov) {
         icns().compute_source_term(amr_wind::FieldState::Old);
         for (auto& seqn : scalar_eqns()) {
@@ -209,6 +211,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
         }
     }
 
+    // TODO: This sub-section has not been adjusted for mesh mapping
     if (need_divtau()) {
         // *************************************************************************************
         // Compute explicit viscous term

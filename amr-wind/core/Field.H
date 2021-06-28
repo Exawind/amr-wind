@@ -225,6 +225,24 @@ public:
         const amrex::BCType::mathematicalBndryTypes bctype =
             amrex::BCType::hoextrap) noexcept;
 
+    /** Map field to the mapped mesh
+     *
+     *  This method transforms the field to the mapped mesh based on
+     *  the fields mesh_scaling_factor_cc or mesh_scaling_factor_nd
+     *  depending on whether the field is cell-centered or node-centered,
+     *  respectively.
+     */
+    void to_mapped_mesh() noexcept;
+
+    /** Map field to the mapped mesh
+     *
+     *  This method transforms the field to the unmapped mesh based on
+     *  the fields mesh_scaling_factor_cc or mesh_scaling_factor_nd
+     *  depending on whether the field is cell-centered or node-centered,
+     *  respectively.
+     */
+    void to_unmapped_mesh() noexcept;
+
     //! Return field at a different time state
     Field& state(const FieldState fstate);
     const Field& state(const FieldState fstate) const;
@@ -357,6 +375,9 @@ public:
         set_inflow(lev, time, mfab, amrex::IntVect(nghost));
     }
 
+    inline bool& is_mesh_mapped() { return m_mesh_mapped; }
+    inline bool is_mesh_mapped() const { return m_mesh_mapped; }
+
 protected:
     Field(
         FieldRepo& repo,
@@ -383,6 +404,9 @@ protected:
     //! Flag indicating whether fill patch operation must be performed for this
     //! field during regrid
     bool m_fillpatch_on_regrid{false};
+
+    //! Flag to track mesh mapping of field
+    bool m_mesh_mapped{false};
 };
 
 } // namespace amr_wind

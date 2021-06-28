@@ -130,9 +130,14 @@ void incflo::ApplyProjection(
     auto& velocity = icns().fields().field;
     auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
 
+    // TODO: Mesh mapping doesn't work with immersed boundaries
     // Do the pre pressure correction work -- this applies to IB only
     for (auto& pp : m_sim.physics()) {
         pp->pre_pressure_correction_work();
+
+    // ensure velocity is in unmapped mesh space
+    if (velocity.is_mesh_mapped()) {
+        velocity.to_unmapped_mesh();
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
@@ -198,34 +203,17 @@ void incflo::ApplyProjection(
         }
     }
 
-    // scale velocity to accommodate for mesh mapping -> U^bar = J/fac * U
-    for (int lev = 0; lev <= finest_level; lev++) {
-        // Define "vel" to be U^* - U^n rather than U^*
-        if (proj_for_small_dt || incremental) {
+    // Define "vel" to be U^* - U^n rather than U^*
+    if (proj_for_small_dt || incremental) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Subtract(
                 velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
                 0, 0, AMREX_SPACEDIM, 0);
         }
-
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& u = velocity(lev).array(mfi);
-            Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-
-                    u(i, j, k, 0) *= det_j / fac(i, j, k, 0);
-                    u(i, j, k, 1) *= det_j / fac(i, j, k, 1);
-                    u(i, j, k, 2) *= det_j / fac(i, j, k, 2);
-                });
-        }
     }
+
+    // scale U^* to accommodate for mesh mapping -> U^bar = J/fac * U
+    velocity.to_mapped_mesh();
 
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
@@ -335,30 +323,12 @@ void incflo::ApplyProjection(
     amr_wind::io::print_mlmg_info(
         "Nodal_projection", nodal_projector->getMLMG());
 
-    // scale velocity back to -> U = fac/J * U^bar
-    for (int lev = 0; lev <= finest_level; lev++) {
+    // scale U^* back to -> U = fac/J * U^bar
+    velocity.to_unmapped_mesh();
 
-#ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
-#endif
-        for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-             ++mfi) {
-            Box const& bx = mfi.tilebox();
-            Array4<Real> const& u = velocity(lev).array(mfi);
-            Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
-
-            amrex::ParallelFor(
-                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-
-                    u(i, j, k, 0) *= fac(i, j, k, 0) / det_j;
-                    u(i, j, k, 1) *= fac(i, j, k, 1) / det_j;
-                    u(i, j, k, 2) *= fac(i, j, k, 2) / det_j;
-                });
-        }
-
-        // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
-        if (proj_for_small_dt || incremental) {
+    // Define "vel" to be U^{n+1} rather than (U^{n+1}-U^n)
+    if (proj_for_small_dt || incremental) {
+        for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Add(
                 velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
                 0, 0, AMREX_SPACEDIM, 0);

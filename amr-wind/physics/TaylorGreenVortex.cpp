@@ -68,6 +68,8 @@ void TaylorGreenVortex::initialize_fields(
                 vel(i, j, k, 2) = 0.0;
             });
     }
+
+    m_velocity.is_mesh_mapped() = true;
 }
 
 } // namespace amr_wind
