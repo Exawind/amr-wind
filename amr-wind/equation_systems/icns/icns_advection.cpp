@@ -45,7 +45,6 @@ MacProjOp::MacProjOp(FieldRepo& repo, bool has_overset, bool variable_density)
     : m_repo(repo)
     , m_options("mac_proj")
     , m_has_overset(has_overset)
-    , m_variable_density(variable_density)
 {
     amrex::ParmParse pp("incflo");
     pp.query("rho_0", m_rho_0);
@@ -129,13 +128,17 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     auto& v_mac = m_repo.get_field("v_mac");
     auto& w_mac = m_repo.get_field("w_mac");
     const auto& density = m_repo.get_field("density", fstate);
+    auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
 
-    // This will hold (1/rho) on faces
+    // This will hold density and mesh scaling factor on faces
     std::unique_ptr<ScratchField> rho_xf, rho_yf, rho_zf;
+    std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
 
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> rho_face(
         m_repo.num_active_levels());
     amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> mac_vec(
+        m_repo.num_active_levels());
+    amrex::Vector<amrex::Array<amrex::MultiFab*, ICNS::ndim>> mesh_fac_face(
         m_repo.num_active_levels());
 
     // fixme todo clean this up, this was done to replace
@@ -151,40 +154,96 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
 
-    if (m_variable_density || m_has_overset) {
-
+//    if (m_variable_density || m_has_overset) {
+    {
         rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);
         rho_yf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::YFACE);
         rho_zf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::ZFACE);
+
+        mesh_fac_xf = m_repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::XFACE);
+        mesh_fac_yf = m_repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::YFACE);
+        mesh_fac_zf = m_repo.create_scratch_field(ICNS::ndim, 0, amr_wind::FieldLoc::ZFACE);
 
         for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
             rho_face[lev][0] = &(*rho_xf)(lev);
             rho_face[lev][1] = &(*rho_yf)(lev);
             rho_face[lev][2] = &(*rho_zf)(lev);
 
+            mesh_fac_face[lev][0] = &(*mesh_fac_xf)(lev);
+            mesh_fac_face[lev][1] = &(*mesh_fac_yf)(lev);
+            mesh_fac_face[lev][2] = &(*mesh_fac_zf)(lev);
+
             amrex::average_cellcenter_to_face(
                 rho_face[lev], density(lev), geom[lev]);
-            for (int idim = 0; idim < ICNS::ndim; ++idim) {
-                rho_face[lev][idim]->invert(factor, 0);
-            }
+//            for (int idim = 0; idim < ICNS::ndim; ++idim) {
+//                rho_face[lev][idim]->invert(factor, 0);
+//            }
+            amrex::average_cellcenter_to_face(
+                mesh_fac_face[lev], mesh_fac(lev), geom[lev], ICNS::ndim);
 
+            // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac * U^mac
+            // beta accounted for mesh mapping = J/fac^2 * 1/rho
+            // construct rho and mesh map u_mac on x-face
+            for (amrex::MFIter mfi(*(rho_face[lev][0])); mfi.isValid(); ++mfi) {
+                amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
+                amrex::Array4<amrex::Real> const& rho = rho_face[lev][0]->array(mfi);
+                amrex::Array4<amrex::Real const> const& fac =
+                        mesh_fac_face[lev][0]->const_array(mfi);
+
+                amrex::ParallelFor(mfi.tilebox(),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
+                        // TODO: Store scaling factor fields on cell faces ?
+                        u(i,j,k) *= det_j / fac(i,j,k,0);
+                        rho(i,j,k) = det_j / std::pow(fac(i,j,k,0),2) / rho(i,j,k);
+                    });
+            }
+            // construct rho and mesh map u_mac on y-face
+            for (amrex::MFIter mfi(*(rho_face[lev][1])); mfi.isValid(); ++mfi) {
+                amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
+                amrex::Array4<amrex::Real> const& rho = rho_face[lev][1]->array(mfi);
+                amrex::Array4<amrex::Real const> const& fac =
+                    mesh_fac_face[lev][1]->const_array(mfi);
+
+                amrex::ParallelFor(mfi.tilebox(),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
+                        // TODO: Store scaling factor fields on cell faces ?
+                        v(i,j,k) *= det_j / fac(i,j,k,1);
+                        rho(i,j,k) = det_j / std::pow(fac(i,j,k,1),2) / rho(i,j,k);
+                    });
+            }
+            // construct rho on z-face
+            for (amrex::MFIter mfi(*(rho_face[lev][2])); mfi.isValid(); ++mfi) {
+                amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
+                amrex::Array4<amrex::Real> const& rho = rho_face[lev][2]->array(mfi);
+                amrex::Array4<amrex::Real const> const& fac =
+                    mesh_fac_face[lev][2]->const_array(mfi);
+
+                amrex::ParallelFor(mfi.tilebox(),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
+                        // TODO: Store scaling factor fields on cell faces ?
+                        w(i,j,k) *= det_j / fac(i,j,k,2);
+                        rho(i,j,k) = det_j / std::pow(fac(i,j,k,2),2) / rho(i,j,k);
+                    });
+            }
+            // assemble scaled beta for all faces
             rho_face_const.push_back(GetArrOfConstPtrs(rho_face[lev]));
         }
 
-        if (m_need_init) {
+        if (m_need_init)
             init_projector(rho_face_const);
-        } else {
+        else
             m_mac_proj->updateBeta(rho_face_const);
-        }
-
-    } else {
-
-        if (m_need_init) {
-            init_projector(factor / m_rho_0);
-        } else {
-            m_mac_proj->updateBeta(factor / m_rho_0);
-        }
     }
+    //    } else {
+    //
+    //        if (m_need_init)
+    //            init_projector(factor / m_rho_0);
+    //        else
+    //            m_mac_proj->updateBeta(factor / m_rho_0);
+    //    }
 
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
 

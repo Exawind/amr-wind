@@ -30,7 +30,6 @@ private:
     MLMGOptions m_options;
     bool m_has_overset{false};
     bool m_need_init{true};
-    bool m_variable_density{false};
     amrex::Real m_rho_0{1.0};
 };
 

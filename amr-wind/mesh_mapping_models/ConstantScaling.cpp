@@ -24,7 +24,7 @@ void ConstantScaling::create_map(
 
     for (amrex::MFIter mfi(m_mesh_scale_fac_cc(lev)); mfi.isValid(); ++mfi) {
 
-        const auto& bx = mfi.tilebox();
+        const auto& bx = mfi.growntilebox();
         amrex::Array4<amrex::Real> const& scale_fac_cc = m_mesh_scale_fac_cc(lev).array(mfi);
         amrex::ParallelFor(
             bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -33,7 +33,7 @@ void ConstantScaling::create_map(
                 scale_fac_cc(i, j, k, 2) = fac_z;
             });
 
-        const auto& nbx = mfi.nodaltilebox();
+        const auto& nbx = mfi.grownnodaltilebox();
         amrex::Array4<amrex::Real> const& scale_fac_nd = m_mesh_scale_fac_nd(lev).array(mfi);
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
