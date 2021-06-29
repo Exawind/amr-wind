@@ -31,6 +31,8 @@ public:
 
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
+    
+    void post_regrid_actions() override {}
 
     //! Write sampled data in binary format
     void impl_write_native();
