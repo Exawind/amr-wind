@@ -77,6 +77,9 @@ private:
     //! Immersed boundary levelset for cell-centers
     Field& m_ib_levelset;
 
+    //! Immersed boundary normal vector defined on cell-centers
+    Field& m_ib_normal;
+
 public:
     static std::string identifier() { return GeomTrait::identifier(); }
 
@@ -88,7 +91,8 @@ public:
     IBModel(CFDSim& sim, const std::string& label, const int id)
         : m_data(sim, label, id)
         , m_out_op(m_data)
-        , m_ib_levelset(sim.repo().declare_cc_field("ib_levelset", 1, 0, 1))
+        , m_ib_levelset(sim.repo().declare_field("ib_levelset", 1, 1, 1))
+        , m_ib_normal(sim.repo().declare_field("ib_normal", 3, 1, 1))
     {}
 
     //! Return the unique identifier (name) for this instance

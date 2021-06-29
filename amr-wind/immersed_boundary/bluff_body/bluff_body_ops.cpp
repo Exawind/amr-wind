@@ -2,6 +2,8 @@
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+#include "amr-wind/fvm/gradient.H"
+#include "amr-wind/core/field_ops.H"
 
 // Used for mms
 #include "amr-wind/physics/ConvectingTaylorVortex.H"
@@ -70,19 +72,55 @@ void apply_mms_vel(CFDSim& sim)
 void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
 {
     const int nlevels = sim.repo().num_active_levels();
+    auto& geom = sim.mesh().Geom();
+
     auto& velocity = sim.repo().get_field("velocity");
     auto& levelset = sim.repo().get_field("ib_levelset");
+    auto& normal = sim.repo().get_field("ib_normal");
+    fvm::gradient(normal, levelset);
+    field_ops::normalize(normal);
 
     for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& dx = geom[lev].CellSizeArray();
+        const auto& problo = geom[lev].ProbLoArray();
+        // Defining the "ghost-cell" band distance
+        amrex::Real phi_b = std::cbrt(dx[0] * dx[1] * dx[2]);
 
         for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             auto varr = velocity(lev).array(mfi);
-            auto phi = levelset(lev).array(mfi);
+            auto phi_arr = levelset(lev).array(mfi);
+            auto norm_arr = normal(lev).array(mfi);
 
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    if (phi(i, j, k) <= 0) {
+                    // Pure solid-body points
+                    if (phi_arr(i, j, k) < -phi_b) {
+                        varr(i, j, k, 0) = vel_bc[0];
+                        varr(i, j, k, 1) = vel_bc[1];
+                        varr(i, j, k, 2) = vel_bc[2];
+
+                        // This determines the ghost-cells
+                    } else if (
+                        phi_arr(i, j, k) < 0 && phi_arr(i, j, k) >= -phi_b) {
+                        // For this particular ghost-cell find the
+                        // body-intercept (BI) point and image-point (IP)
+                        // First define the ghost cell point
+                        const amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
+                        const amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
+                        // Then use the local normal vector and levelset to
+                        // compute the image-point
+                        const amrex::Real x_IP =
+                            x_GC - 2.0 * norm_arr(i, j, k, 0) *
+                                       std::abs(phi_arr(i, j, k));
+                        const amrex::Real y_IP =
+                            y_GC - 2.0 * norm_arr(i, j, k, 1) *
+                                       std::abs(phi_arr(i, j, k));
+                        const amrex::Real z_IP =
+                            z_GC - 2.0 * norm_arr(i, j, k, 2) *
+                                       std::abs(phi_arr(i, j, k));
+                        // At the moment you just set the vel_bc
                         varr(i, j, k, 0) = vel_bc[0];
                         varr(i, j, k, 1) = vel_bc[1];
                         varr(i, j, k, 2) = vel_bc[2];
