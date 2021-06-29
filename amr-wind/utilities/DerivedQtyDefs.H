@@ -39,6 +39,23 @@ private:
     const Field& m_vel;
 };
 
+struct QCriterionNondim : public DerivedQty::Register<QCriterionNondim>
+{
+    static constexpr int ncomp = 1;
+    static std::string identifier() { return "q_criterion_nondim"; }
+
+    QCriterionNondim(const FieldRepo& repo, const std::vector<std::string>& args);
+
+    std::string name() const override { return identifier(); }
+
+    int num_comp() const override { return ncomp; }
+
+    void operator()(ScratchField& fld, const int scomp = 0) override;
+
+private:
+    const Field& m_vel;
+};
+
 struct StrainRateMag : public DerivedQty::Register<StrainRateMag>
 {
     static constexpr int ncomp = 1;
