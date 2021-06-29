@@ -2,6 +2,7 @@
 #include "amr-wind/core/MultiParser.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
 #include "amr-wind/utilities/io_utils.H"
+
 #include "amr-wind/fvm/gradient.H"
 #include "amr-wind/core/field_ops.H"
 
@@ -28,6 +29,7 @@ void init_data_structures(BluffBodyBaseData&) {}
 void apply_mms_vel(CFDSim& sim)
 {
     const int nlevels = sim.repo().num_active_levels();
+
     auto& levelset = sim.repo().get_field("ib_levelset");
     auto& velocity = sim.repo().get_field("velocity");
     auto& m_conv_taylor_green =
@@ -45,6 +47,7 @@ void apply_mms_vel(CFDSim& sim)
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
 
+
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             auto phi = levelset(lev).array(mfi);
@@ -53,6 +56,7 @@ void apply_mms_vel(CFDSim& sim)
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                     const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+
                     if (phi(i, j, k) <= 0) {
                         varr(i, j, k, 0) =
                             u0 - std::cos(utils::pi() * (x - u0 * t)) *

@@ -59,6 +59,7 @@ struct InitDataOp<Cylinder>
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
 
+
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 auto epsilon_node = mask_node(lev).array(mfi);
                 auto phi = levelset(lev).array(mfi);
@@ -99,6 +100,7 @@ struct InitDataOp<Cylinder>
 
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
+
                         if (r <= wdata.radius && std::abs(z - z0) <= 0.5 * h) {
                             epsilon_node(i, j, k) = 0;
                         }
