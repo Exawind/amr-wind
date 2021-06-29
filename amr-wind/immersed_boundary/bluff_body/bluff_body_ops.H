@@ -93,7 +93,7 @@ struct ComputeForceOp<
     {
         auto& info = data.info();
         auto& wdata = data.meta();
-        
+
         auto& sim = data.sim();
         auto geom = sim.mesh().Geom();
         auto nlevels = sim.repo().num_active_levels();
@@ -146,140 +146,175 @@ struct ComputeForceOp<
                 }
 
                 amrex::Array4<amrex::Real> const& f_arr =
-                        (*f_on_ib)(lev).array(mfi);
+                    (*f_on_ib)(lev).array(mfi);
                 amrex::Array4<amrex::Real const> const& grad_u =
-                        (*grad_vel)(lev).array(mfi);
+                    (*grad_vel)(lev).array(mfi);
                 amrex::Array4<int const> const& ib_mask =
-                        mask_cell(lev).const_array(mfi);
+                    mask_cell(lev).const_array(mfi);
                 amrex::Array4<amrex::Real const> const& mu =
-                        viscosity(lev).const_array(mfi);
+                    viscosity(lev).const_array(mfi);
                 amrex::Array4<amrex::Real const> const& p =
-                        (*p_cc)(lev).const_array(mfi);
+                    (*p_cc)(lev).const_array(mfi);
                 amrex::Array4<amrex::Real const> const& rho =
-                        density(lev).const_array(mfi);
+                    density(lev).const_array(mfi);
                 amrex::Array4<amrex::Real const> const& unp1 =
-                        vel_np1(lev).const_array(mfi);
+                    vel_np1(lev).const_array(mfi);
                 amrex::Array4<amrex::Real const> const& un =
-                        vel_n(lev).const_array(mfi);
+                    vel_n(lev).const_array(mfi);
 
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                    const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                        const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                    // compute forces only if cell is inside the bounding
-                    // box Newton's law -> rho*du/dt * dV + rho * u*(u.n) *
-                    // dA = tau.n * dA - F F is -ve above because it is the
-                    // force acting on the immersed boundary
-                    if ((x - dx[0] / 2 >= bb_lo[0]) &&
-                        (x + dx[0] / 2 <= bb_hi[0]) &&
-                        (y - dx[1] / 2 >= bb_lo[1]) &&
-                        (y + dx[1] / 2 <= bb_hi[1]) &&
-                        (z - dx[2] / 2 >= bb_lo[2]) &&
-                        (z + dx[2] / 2 <= bb_hi[2])) {
+                        // compute forces only if cell is inside the bounding
+                        // box Newton's law -> rho*du/dt * dV + rho * u*(u.n) *
+                        // dA = tau.n * dA - F F is -ve above because it is the
+                        // force acting on the immersed boundary
+                        if ((x - dx[0] / 2. >= bb_lo[0]) &&
+                            (x + dx[0] / 2. <= bb_hi[0]) &&
+                            (y - dx[1] / 2. >= bb_lo[1]) &&
+                            (y + dx[1] / 2. <= bb_hi[1]) &&
+                            (z - dx[2] / 2. >= bb_lo[2]) &&
+                            (z + dx[2] / 2. <= bb_hi[2])) {
 
-                        // add volume terms -> rho*du/dt * dV
-                        const amrex::Real dv = dx[0] * dx[1] * dx[2];
-                        const amrex::Real f_vol_x =
+                            // add volume terms -> rho*du/dt * dV
+                            const amrex::Real dv = dx[0] * dx[1] * dx[2];
+                            const amrex::Real f_vol_x =
                                 (unp1(i, j, k, 0) - un(i, j, k, 0)) * dv / dt;
-                        const amrex::Real f_vol_y =
+                            const amrex::Real f_vol_y =
                                 (unp1(i, j, k, 1) - un(i, j, k, 1)) * dv / dt;
-                        const amrex::Real f_vol_z =
+                            const amrex::Real f_vol_z =
                                 (unp1(i, j, k, 2) - un(i, j, k, 2)) * dv / dt;
 
-                        // initialize surface forces
-                        amrex::Real f_vel_x = 0.0, f_vel_y = 0.0, f_vel_z = 0.0;
-                        amrex::Real f_tau_x = 0.0, f_tau_y = 0.0, f_tau_z = 0.0;
+                            // initialize surface forces
+                            amrex::Real f_vel_x = 0.0, f_vel_y = 0.0,
+                                        f_vel_z = 0.0;
+                            amrex::Real f_tau_x = 0.0, f_tau_y = 0.0,
+                                        f_tau_z = 0.0;
 
-                        if (((bb_lo[0] >= x - dx[0] / 2) &&
-                             (bb_lo[0] <= x + dx[0] / 2)) ||
-                            ((bb_hi[0] >= x - dx[0] / 2) &&
-                             (bb_hi[0] <= x + dx[0] / 2))) { // y-z plane
-                            // determine dS while accounting for direction
-                            // of normal
-                            const amrex::Real da = (bb_hi[0] <= x + dx[0] / 2) ?
-                                                   (dx[1] * dx[2]) : (-dx[1] * dx[2]);
+                            if (((bb_lo[0] >= x - dx[0] / 2.) &&
+                                 (bb_lo[0] <= x + dx[0] / 2.)) ||
+                                ((bb_hi[0] >= x - dx[0] / 2.) &&
+                                 (bb_hi[0] <= x + dx[0] / 2.))) { // y-z plane
+                                // determine dS while accounting for direction
+                                // of normal
+                                const amrex::Real da =
+                                    (bb_hi[0] <= x + dx[0] / 2)
+                                        ? (dx[1] * dx[2])
+                                        : (-dx[1] * dx[2]);
 
-                            // add advection surface force -> rho * u*(u.n)
-                            // * dA
-                            f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) * unp1(i, j, k, 0) * da;
-                            f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) * unp1(i, j, k, 0) * da;
-                            f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) * unp1(i, j, k, 0) * da;
+                                // add advection surface force -> rho * u*(u.n)
+                                // * dA
+                                f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) *
+                                          unp1(i, j, k, 0) * da;
+                                f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) *
+                                          unp1(i, j, k, 0) * da;
+                                f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) *
+                                          unp1(i, j, k, 0) * da;
 
-                            // add viscous surface force -> tau.n * dA
-                            f_tau_x = rho(i, j, k)
-                                    * (-p(i, j, k) + 2 * mu(i, j, k) * grad_u(i, j, k, 0))
-                                    * da;
-                            f_tau_y = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 1) +
-                                                                    grad_u(i, j, k, 3)))
-                                    * da;
-                            f_tau_z = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 2) +
-                                                                    grad_u(i, j, k, 6)))
-                                    * da;
-                        } else if (((bb_lo[1] >= y - dx[1] / 2) &&
-                                    (bb_lo[1] <= y + dx[1] / 2)) ||
-                                   ((bb_hi[1] >= y - dx[1] / 2) &&
-                                    (bb_hi[1] <= y + dx[1] / 2))) { // x-z plane
-                            // determine dS while accounting for direction
-                            // of normal
-                            const amrex::Real da = (bb_hi[1] <= y + dx[1] / 2) ?
-                                (dx[0] * dx[2]) : (-dx[0] * dx[2]);
+                                // add viscous surface force -> tau.n * dA
+                                f_tau_x =
+                                    rho(i, j, k) *
+                                    (-p(i, j, k) +
+                                     2. * mu(i, j, k) * grad_u(i, j, k, 0)) *
+                                    da;
+                                f_tau_y = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 1) +
+                                                          grad_u(i, j, k, 3))) *
+                                          da;
+                                f_tau_z = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 2) +
+                                                          grad_u(i, j, k, 6))) *
+                                          da;
+                            } else if (
+                                ((bb_lo[1] >= y - dx[1] / 2) &&
+                                 (bb_lo[1] <= y + dx[1] / 2)) ||
+                                ((bb_hi[1] >= y - dx[1] / 2) &&
+                                 (bb_hi[1] <= y + dx[1] / 2))) { // x-z plane
+                                // determine dS while accounting for direction
+                                // of normal
+                                const amrex::Real da =
+                                    (bb_hi[1] <= y + dx[1] / 2)
+                                        ? (dx[0] * dx[2])
+                                        : (-dx[0] * dx[2]);
 
-                            // add advection surface force -> rho *u*(u.n) *
-                            // dA
-                            f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) * unp1(i, j, k, 1) * da;
-                            f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) * unp1(i, j, k, 1) * da;
-                            f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) * unp1(i, j, k, 1) * da;
+                                // add advection surface force -> rho *u*(u.n) *
+                                // dA
+                                f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) *
+                                          unp1(i, j, k, 1) * da;
+                                f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) *
+                                          unp1(i, j, k, 1) * da;
+                                f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) *
+                                          unp1(i, j, k, 1) * da;
 
-                            // add viscous surface force -> tau.n * dA
-                            f_tau_x = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 1) +
-                                                                    grad_u(i, j, k, 3)))
-                                    * da;
-                            f_tau_y = rho(i, j, k)
-                                    * (-p(i, j, k) + 2 * mu(i, j, k) * grad_u(i, j, k, 4))
-                                    * da;
-                            f_tau_z = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 5) +
-                                                                    grad_u(i, j, k, 7)))
-                                    * da;
+                                // add viscous surface force -> tau.n * dA
+                                f_tau_x = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 1) +
+                                                          grad_u(i, j, k, 3))) *
+                                          da;
+                                f_tau_y =
+                                    rho(i, j, k) *
+                                    (-p(i, j, k) +
+                                     2 * mu(i, j, k) * grad_u(i, j, k, 4)) *
+                                    da;
+                                f_tau_z = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 5) +
+                                                          grad_u(i, j, k, 7))) *
+                                          da;
 
-                        } else if (((bb_lo[2] >= z - dx[2] / 2) &&
-                                    (bb_lo[2] <= z + dx[2] / 2)) ||
-                                   ((bb_hi[2] >= z - dx[2] / 2) &&
-                                    (bb_hi[2] <= z + dx[2] / 2))) { // x-y plane
-                            // determine dS while accounting for direction
-                            // of normal
-                            const amrex::Real da = (bb_hi[2] <= z + dx[2] / 2) ?
-                                (dx[0] * dx[1]) : (-dx[0] * dx[1]);
+                            } else if (
+                                ((bb_lo[2] >= z - dx[2] / 2) &&
+                                 (bb_lo[2] <= z + dx[2] / 2)) ||
+                                ((bb_hi[2] >= z - dx[2] / 2) &&
+                                 (bb_hi[2] <= z + dx[2] / 2))) { // x-y plane
+                                // determine dS while accounting for direction
+                                // of normal
+                                const amrex::Real da =
+                                    (bb_hi[2] <= z + dx[2] / 2)
+                                        ? (dx[0] * dx[1])
+                                        : (-dx[0] * dx[1]);
 
-                            // add advection surface force -> rho * u*(u.n)
-                            // * dA
-                            f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) * unp1(i, j, k, 2) * da;
-                            f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) * unp1(i, j, k, 2) * da;
-                            f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) * unp1(i, j, k, 2) * da;
+                                // add advection surface force -> rho * u*(u.n)
+                                // * dA
+                                f_vel_x = rho(i, j, k) * unp1(i, j, k, 0) *
+                                          unp1(i, j, k, 2) * da;
+                                f_vel_y = rho(i, j, k) * unp1(i, j, k, 1) *
+                                          unp1(i, j, k, 2) * da;
+                                f_vel_z = rho(i, j, k) * unp1(i, j, k, 2) *
+                                          unp1(i, j, k, 2) * da;
 
-                            // add viscous surface force -> tau.n * dA
-                            f_tau_x = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 2) +
-                                                                    grad_u(i, j, k, 6)))
-                                    * da;
-                            f_tau_y = rho(i, j, k)
-                                    * (-p(i, j, k) + mu(i, j, k) * (grad_u(i, j, k, 5) +
-                                                                    grad_u(i, j, k, 7)))
-                                    * da;
-                            f_tau_z = rho(i, j, k)
-                                    * (-p(i, j, k) + 2 * mu(i, j, k) * grad_u(i, j, k, 8))
-                                    * da;
+                                // add viscous surface force -> tau.n * dA
+                                f_tau_x = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 2) +
+                                                          grad_u(i, j, k, 6))) *
+                                          da;
+                                f_tau_y = rho(i, j, k) *
+                                          (-p(i, j, k) +
+                                           mu(i, j, k) * (grad_u(i, j, k, 5) +
+                                                          grad_u(i, j, k, 7))) *
+                                          da;
+                                f_tau_z =
+                                    rho(i, j, k) *
+                                    (-p(i, j, k) +
+                                     2 * mu(i, j, k) * grad_u(i, j, k, 8)) *
+                                    da;
+                            }
+                            // fill force scratch field
+                            f_arr(i, j, k, 0) = (f_tau_x - f_vel_x - f_vol_x) *
+                                                ib_mask(i, j, k);
+                            f_arr(i, j, k, 1) = (f_tau_y - f_vel_y - f_vol_y) *
+                                                ib_mask(i, j, k);
+                            f_arr(i, j, k, 2) = (f_tau_z - f_vel_z - f_vol_z) *
+                                                ib_mask(i, j, k);
                         }
-                        // fill force scratch field
-                        f_arr(i, j, k, 0) = (f_tau_x - f_vel_x - f_vol_x) * ib_mask(i, j, k);
-                        f_arr(i, j, k, 1) = (f_tau_y - f_vel_y - f_vol_y) * ib_mask(i, j, k);
-                        f_arr(i, j, k, 2) = (f_tau_z - f_vel_z - f_vol_z) * ib_mask(i, j, k);
-                    }
-                });
+                    });
             }
 
             // assign level mask to make sure that integration doesn't
@@ -304,12 +339,12 @@ struct ComputeForceOp<
                     amrex::Box const& bx,
                     amrex::Array4<amrex::Real const> const& f_arr,
                     amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real force = 0.0;
-                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
-                    force += f_arr(i, j, k, 0) * mask_arr(i, j, k);
+                    amrex::Real force = 0.0;
+                    amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                        force += f_arr(i, j, k, 0) * mask_arr(i, j, k);
+                    });
+                    return force;
                 });
-                return force;
-            });
 
             wdata.frc[1] += amrex::ReduceSum(
                 (*f_on_ib)(lev), level_mask, 0,
@@ -317,12 +352,12 @@ struct ComputeForceOp<
                     amrex::Box const& bx,
                     amrex::Array4<amrex::Real const> const& f_arr,
                     amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real force = 0.0;
-                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
-                    force += f_arr(i, j, k, 1) * mask_arr(i, j, k);
+                    amrex::Real force = 0.0;
+                    amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                        force += f_arr(i, j, k, 1) * mask_arr(i, j, k);
+                    });
+                    return force;
                 });
-                return force;
-            });
 
             wdata.frc[2] += amrex::ReduceSum(
                 (*f_on_ib)(lev), level_mask, 0,
@@ -330,12 +365,12 @@ struct ComputeForceOp<
                     amrex::Box const& bx,
                     amrex::Array4<amrex::Real const> const& f_arr,
                     amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                amrex::Real force = 0.0;
-                amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
-                    force += f_arr(i, j, k, 2) * mask_arr(i, j, k);
+                    amrex::Real force = 0.0;
+                    amrex::Loop(bx, [=, &force](int i, int j, int k) noexcept {
+                        force += f_arr(i, j, k, 2) * mask_arr(i, j, k);
+                    });
+                    return force;
                 });
-                return force;
-            });
         }
 
         // sum across all MPI ranks
