@@ -31,7 +31,7 @@ public:
 
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
-    
+
     void post_regrid_actions() override {}
 
     //! calculate the L2 norm of a given field and component

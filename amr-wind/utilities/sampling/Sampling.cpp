@@ -89,7 +89,8 @@ void Sampling::post_advance_work()
     process_output();
 }
 
-void Sampling::post_regrid_actions(){
+void Sampling::post_regrid_actions()
+{
 
     BL_PROFILE("amr-wind::Sampling::post_regrid_actions");
     m_scontainer->Redistribute();

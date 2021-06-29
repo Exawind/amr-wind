@@ -48,7 +48,6 @@ public:
 
     //! Actions to perform post regrid
     virtual void post_regrid_actions() = 0;
-
 };
 
 /** A collection of post-processing instances that are active during a
@@ -81,7 +80,6 @@ public:
     void post_advance_work();
 
     void post_regrid_actions();
-
 
 private:
     CFDSim& m_sim;
