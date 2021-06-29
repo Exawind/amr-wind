@@ -18,6 +18,8 @@ endif()
 
 if(AMR_WIND_SAVE_GOLDS AND ("${SAVED_GOLDS_DIRECTORY}" STREQUAL ""))
   message(FATAL_ERROR "To save gold files, SAVED_GOLDS_DIRECTORY must be set")
+else()
+  message(STATUS "Gold files will be saved to: ${SAVED_GOLDS_DIRECTORY}")
 endif()
 
 # Have CMake discover the number of cores on the node
