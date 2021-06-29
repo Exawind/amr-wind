@@ -95,13 +95,17 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
             auto phi_arr = levelset(lev).array(mfi);
             auto norm_arr = normal(lev).array(mfi);
 
+            amrex::Real velx = vel_bc[0];
+            amrex::Real vely = vel_bc[1];
+            amrex::Real velz = vel_bc[2];
+
             amrex::ParallelFor(
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     // Pure solid-body points
                     if (phi_arr(i, j, k) < -phi_b) {
-                        varr(i, j, k, 0) = vel_bc[0];
-                        varr(i, j, k, 1) = vel_bc[1];
-                        varr(i, j, k, 2) = vel_bc[2];
+                        varr(i, j, k, 0) = velx;
+                        varr(i, j, k, 1) = vely;
+                        varr(i, j, k, 2) = velz;
 
                         // This determines the ghost-cells
                     } else if (
@@ -109,24 +113,17 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
                         // For this particular ghost-cell find the
                         // body-intercept (BI) point and image-point (IP)
                         // First define the ghost cell point
-                        const amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
-                        const amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
+
+                        // amrex::Real x_GC = problo[0] + (i + 0.5) *dx[0];
+                        // amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
+                        // amrex::Real z_GC = problo[2] + (k +0.5) * dx[2];
+
                         // Then use the local normal vector and levelset to
                         // compute the image-point
-                        const amrex::Real x_IP =
-                            x_GC - 2.0 * norm_arr(i, j, k, 0) *
-                                       std::abs(phi_arr(i, j, k));
-                        const amrex::Real y_IP =
-                            y_GC - 2.0 * norm_arr(i, j, k, 1) *
-                                       std::abs(phi_arr(i, j, k));
-                        const amrex::Real z_IP =
-                            z_GC - 2.0 * norm_arr(i, j, k, 2) *
-                                       std::abs(phi_arr(i, j, k));
                         // At the moment you just set the vel_bc
-                        varr(i, j, k, 0) = vel_bc[0];
-                        varr(i, j, k, 1) = vel_bc[1];
-                        varr(i, j, k, 2) = vel_bc[2];
+                        varr(i, j, k, 0) = velx;
+                        varr(i, j, k, 1) = vely;
+                        varr(i, j, k, 2) = velz;
                     }
                 });
         }
