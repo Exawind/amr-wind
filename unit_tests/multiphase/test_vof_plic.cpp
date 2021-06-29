@@ -68,8 +68,6 @@ amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int pdegree)
             amrex::Real mx, my, mz;
             amr_wind::multiphase::mixed_youngs_central_normal(
                 i, j, k, vof_arr, mx, my, mz);
-            amrex::Print() << vof_arr(i, j, k) << " (" << mx << "," << my << ","
-                           << mz << ") " << std::endl;
         });
     });
     return error_total;
