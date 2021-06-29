@@ -6,7 +6,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}
 
 # Set location of gold files according to system/compiler/compiler_version
 set(GOLD_FILES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/AMR-WindGoldFiles/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
-set(SAVED_GOLD_FILES_DIRECTORY ${AMR_WIND_SAVED_GOLD_FILES_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
+set(SAVED_GOLDS_DIRECTORY ${AMR_WIND_SAVED_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
 
 if(AMR_WIND_TEST_WITH_FCOMPARE)
   message(STATUS "Test golds directory for fcompare: ${GOLD_FILES_DIRECTORY}")
@@ -16,8 +16,8 @@ if(AMR_WIND_ENABLE_MASA AND NOT AMR_WIND_ENABLE_MPI)
   message(WARNING "Running verification tests without MPI enabled will require long run times")
 endif()
 
-if(AMR_WIND_SAVE_GOLDS AND ("${SAVED_GOLD_FILES_DIRECTORY}" STREQUAL ""))
-  message(FATAL_ERROR "To save gold files, SAVED_GOLD_FILES_DIRECTORY must be set")
+if(AMR_WIND_SAVE_GOLDS AND ("${SAVED_GOLDS_DIRECTORY}" STREQUAL ""))
+  message(FATAL_ERROR "To save gold files, SAVED_GOLDS_DIRECTORY must be set")
 else()
 
 # Have CMake discover the number of cores on the node
@@ -55,7 +55,7 @@ macro(setup_test)
       set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
     if(AMR_WIND_SAVE_GOLDS)
-      set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLD_FILES_DIRECTORY}/${TEST_NAME}/")
+      set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
     endif()
 endmacro(setup_test)
 
