@@ -14,6 +14,7 @@ void mol::compute_convective_rate(
     Array4<Real const> const& fz,
     GpuArray<Real, AMREX_SPACEDIM> dxi)
 {
+    // The mesh mapping has already been accounted for in fx, fy, fz
     BL_PROFILE("amr-wind::mol::compute_convective_rate");
     const auto dxinv = dxi;
     amrex::ParallelFor(
