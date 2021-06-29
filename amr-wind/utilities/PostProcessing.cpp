@@ -62,4 +62,9 @@ void PostProcessManager::post_advance_work()
     for (auto& post : m_post) post->post_advance_work();
 }
 
+void PostProcessManager::post_regrid_actions()
+{
+    for (auto& post : m_post) post->post_regrid_actions();
+}
+
 } // namespace amr_wind

@@ -62,6 +62,8 @@ public:
 
     void post_advance_work() override;
 
+    void post_regrid_actions() override {}
+
     const std::string& add_averaging(
         const std::string& field_name,
         const std::string& avg_type = "ReAveraging");

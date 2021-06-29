@@ -180,6 +180,7 @@ bool incflo::regrid_and_update()
         icns().post_regrid_actions();
         for (auto& eqn : scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+        m_sim.post_manager().post_regrid_actions();
     }
 
     // update cell counts if unitialized or if a regrid happened
