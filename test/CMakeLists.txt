@@ -59,19 +59,19 @@ macro(setup_test)
       set(FCOMPARE_TOLERANCE "-r 1e-10 --abs_tol 1.0e-12")
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} io.skip_outputs=p")
     endif()
-    if(AMR_WIND_TEST_WITH_FCOMPARE)
-      set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
-    endif()
     if(AMR_WIND_SAVE_GOLDS)
       file(MAKE_DIRECTORY ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME})
-      set(SAVE_GOLDS_COMMAND "; cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/ || true")
+      set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
+    endif()
+    if(AMR_WIND_TEST_WITH_FCOMPARE)
+      set(FCOMPARE_COMMAND "&& ${MPI_COMMANDS} ${FCOMPARE_EXE} ${FCOMPARE_TOLERANCE} ${PLOT_GOLD} ${PLOT_TEST}")
     endif()
 endmacro(setup_test)
 
 # Standard regression test
 function(add_test_r TEST_NAME)
     setup_test()
-    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${FCOMPARE_COMMAND} ${SAVE_GOLDS_COMMAND}")
+    add_test(${TEST_NAME} sh -c "${MPI_COMMANDS} ${CMAKE_BINARY_DIR}/${amr_wind_exe_name} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.i ${RUNTIME_OPTIONS} > ${TEST_NAME}.log ${SAVE_GOLDS_COMMAND} ${FCOMPARE_COMMAND}")
     # Set properties for test
     set_tests_properties(${TEST_NAME} PROPERTIES
                          TIMEOUT 5400
