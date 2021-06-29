@@ -64,7 +64,7 @@ macro(setup_test)
     endif()
     if(AMR_WIND_SAVE_GOLDS)
       file(MAKE_DIRECTORY ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME})
-      set(SAVE_GOLDS_COMMAND "&& cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/")
+      set(SAVE_GOLDS_COMMAND "; cp -R ${PLOT_TEST} ${SAVED_GOLDS_DIRECTORY}/${TEST_NAME}/ || true")
     endif()
 endmacro(setup_test)
 
