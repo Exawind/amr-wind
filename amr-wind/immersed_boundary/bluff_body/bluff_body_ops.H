@@ -93,6 +93,7 @@ struct ComputeForceOp<
     {
         auto& info = data.info();
         auto& wdata = data.meta();
+        
         auto& sim = data.sim();
         auto geom = sim.mesh().Geom();
         auto nlevels = sim.repo().num_active_levels();
@@ -342,9 +343,9 @@ struct ComputeForceOp<
         amrex::ParallelDescriptor::ReduceRealSum(wdata.frc[1]);
         amrex::ParallelDescriptor::ReduceRealSum(wdata.frc[2]);
 
-        amrex::Print() << " Forces on the immersed boundary " << info.label
-                << std::endl;
-        amrex::Print() << wdata.frc[0] << std::endl;
+        amrex::Print() << "Forces on immersed boundary : " << info.label
+                       << " --> Fx, Fy, Fz = " << wdata.frc[0] << ", "
+                       << wdata.frc[1] << ", " << wdata.frc[2] << std::endl;
     }
 };
 

@@ -25,7 +25,7 @@ struct ReadInputsOp<Cylinder>
 
         pp.get("center", wdata.center_loc);
         pp.get("radius", wdata.radius);
-        pp.get("length", wdata.length);
+        pp.get("height", wdata.height);
 
         amrex::Real search_radius = 2.0 * wdata.radius;
         // clang-format off
@@ -49,8 +49,8 @@ struct InitDataOp<Cylinder>
         auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        auto& mask_cell = sim.repo().get_int_field("mask_cell");
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -58,13 +58,17 @@ struct InitDataOp<Cylinder>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
-            for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
-                auto epsilon_cell = mask_cell(lev).array(mfi);
+
+
+            for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 auto epsilon_node = mask_node(lev).array(mfi);
+                auto phi = levelset(lev).array(mfi);
+
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
-                amrex::Real l = wdata.length;
+                amrex::Real h = wdata.height;
+                amrex::Real R = wdata.radius;
 
                 const auto& bx = mfi.growntilebox();
                 amrex::ParallelFor(
@@ -75,11 +79,18 @@ struct InitDataOp<Cylinder>
 
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
-                        if (r <= wdata.radius &&
-                            (std::abs(z - z0) <= 0.5 * l)) {
-                            epsilon_cell(i, j, k) = 0;
+
+                        if (r <= wdata.radius && std::abs(z - z0) <= 0.5 * h) {
+                            // using std::max inside the body
+                            phi(i, j, k) =
+                                std::max(r - R, std::abs(z - z0) - 0.5 * h);
+                        } else {
+                            phi(i, j, k) = std::min(
+                                std::abs(r - R),
+                                std::abs(std::abs(z - z0) - 0.5 * h));
                         }
                     });
+
                 const auto& nbx = mfi.nodaltilebox();
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -89,8 +100,8 @@ struct InitDataOp<Cylinder>
 
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
-                        if (r <= wdata.radius &&
-                            (std::abs(z - z0) <= 0.5 * l)) {
+
+                        if (r <= wdata.radius && std::abs(z - z0) <= 0.5 * h) {
                             epsilon_node(i, j, k) = 0;
                         }
                     });

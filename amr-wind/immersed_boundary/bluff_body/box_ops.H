@@ -51,8 +51,8 @@ struct InitDataOp<Box>
         auto& wdata = data.meta();
 
         auto& sim = data.sim();
-        auto& mask_cell = sim.repo().get_int_field("mask_cell");
         auto& mask_node = sim.repo().get_int_field("mask_node");
+        auto& levelset = sim.repo().get_field("ib_levelset");
 
         auto nlevels = sim.repo().num_active_levels();
         auto geom = sim.mesh().Geom();
@@ -60,10 +60,12 @@ struct InitDataOp<Box>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
-            for (amrex::MFIter mfi(mask_cell(lev)); mfi.isValid(); ++mfi) {
+
+            for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
-                auto epsilon_cell = mask_cell(lev).array(mfi);
                 auto epsilon_node = mask_node(lev).array(mfi);
+                auto phi = levelset(lev).array(mfi);
+
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
@@ -76,10 +78,21 @@ struct InitDataOp<Box>
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
+
                         if ((std::abs(x - x0) <= 0.5 * l) &&
                             (std::abs(y - y0) <= 0.5 * w) &&
                             (std::abs(z - z0) <= 0.5 * h)) {
-                            epsilon_cell(i, j, k) = 0;
+                            phi(i, j, k) = std::max(
+                                std::abs(x - x0) - 0.5 * l,
+                                std::max(
+                                    std::abs(y - y0) - 0.5 * w,
+                                    std::abs(z - z0) - 0.5 * h));
+                        } else {
+                            phi(i, j, k) = std::min(
+                                std::abs(std::abs(x - x0) - 0.5 * l),
+                                std::min(
+                                    std::abs(std::abs(y - y0) - 0.5 * w),
+                                    std::abs(std::abs(z - z0) - 0.5 * h)));
                         }
                     });
                 const auto& nbx = mfi.nodaltilebox();

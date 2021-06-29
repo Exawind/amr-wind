@@ -10,7 +10,7 @@ struct CylinderData : public BluffBodyBaseData
 {
     vs::Vector center_loc{0.0, 0.0, 0.0};
     amrex::Real radius{0.1};
-    amrex::Real length{1.0};
+    amrex::Real height{1.0};
 };
 
 struct Cylinder : public BluffBodyType
