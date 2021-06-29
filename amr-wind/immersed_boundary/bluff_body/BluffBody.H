@@ -23,9 +23,8 @@ struct BluffBodyBaseData
 
     amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
 
-    //! Total integrated forces on the immersed body 
-    amrex::Vector<amrex::Real> frc{{0.0,0.0,0.0}};
-
+    //! Total integrated forces on the immersed body
+    amrex::Vector<amrex::Real> frc{{0.0, 0.0, 0.0}};
 };
 
 struct BluffBodyType : public IBType

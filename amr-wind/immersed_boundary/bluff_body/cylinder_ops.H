@@ -59,7 +59,6 @@ struct InitDataOp<Cylinder>
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
 
-
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 auto epsilon_node = mask_node(lev).array(mfi);
                 auto phi = levelset(lev).array(mfi);

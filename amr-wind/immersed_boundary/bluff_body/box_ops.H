@@ -78,7 +78,6 @@ struct InitDataOp<Box>
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-
                         if ((std::abs(x - x0) <= 0.5 * l) &&
                             (std::abs(y - y0) <= 0.5 * w) &&
                             (std::abs(z - z0) <= 0.5 * h)) {

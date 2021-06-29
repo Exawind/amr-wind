@@ -47,7 +47,6 @@ void apply_mms_vel(CFDSim& sim)
         const auto& dx = geom[lev].CellSizeArray();
         const auto& problo = geom[lev].ProbLoArray();
 
-
         for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.growntilebox();
             auto phi = levelset(lev).array(mfi);
