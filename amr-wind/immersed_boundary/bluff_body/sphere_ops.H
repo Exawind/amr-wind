@@ -75,7 +75,7 @@ struct InitDataOp<Sphere>
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
 
-                        phi(i, j, k) = r - R;
+                        amrex::Real phi_loc = r - R;
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
