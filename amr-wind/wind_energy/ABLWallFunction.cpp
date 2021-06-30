@@ -71,6 +71,19 @@ ABLWallFunction::ABLWallFunction(const CFDSim& sim)
                        << std::endl;
     }
 
+    if (pp.contains("inflow_outflow_mode")) {
+        pp.query("inflow_outflow_mode", m_inflow_outflow);
+        if (m_inflow_outflow) {
+            pp.query("wf_velocity", m_wf_vel);
+            pp.query("wf_vmag", m_wf_vmag);
+            pp.query("wf_theta", m_wf_theta);
+            amrex::Print() << "ABLWallFunction: Inflow/Outflow mode is turned "
+                              "on. Please make sure wall shear stress type is "
+                              "set to local."
+                           << std::endl;
+        }
+    }
+
     m_mo.alg_type =
         m_tempflux ? MOData::HEAT_FLUX : MOData::SURFACE_TEMPERATURE;
     m_mo.gravity = utils::vec_mag(m_gravity.data());
@@ -98,10 +111,17 @@ void ABLWallFunction::update_umean(
                 3600.0;
     }
 
-    m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
-    m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
-    m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
-    m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
+    if (m_inflow_outflow) {
+        m_mo.vel_mean[0] = m_wf_vel[0];
+        m_mo.vel_mean[1] = m_wf_vel[1];
+        m_mo.vmag_mean = m_wf_vmag;
+        m_mo.theta_mean = m_wf_theta;
+    } else {
+        m_mo.vel_mean[0] = vpa.line_average_interpolated(m_mo.zref, 0);
+        m_mo.vel_mean[1] = vpa.line_average_interpolated(m_mo.zref, 1);
+        m_mo.vmag_mean = vpa.line_hvelmag_average_interpolated(m_mo.zref);
+        m_mo.theta_mean = tpa.line_average_interpolated(m_mo.zref, 0);
+    }
 
     m_mo.update_fluxes();
 }

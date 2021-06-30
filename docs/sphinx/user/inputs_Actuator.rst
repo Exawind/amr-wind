@@ -69,7 +69,9 @@ Example for ``FixedWingLine``::
    This is the value of epsilon/chord. This value will be used to compute 
    epsilon as a function of the chord at every actuator point. A value of 
    epsilon / chord ~ 0.2 is recommended for an optimal representation of the 
-   blade aerodynamics.
+   blade aerodynamics. When this variable is specified, the code will choose
+   the maximum value between ``epsilon_chord * chord`` and ``epsilon`` for
+   every actuator point.
 
 .. input_param:: Actuator.FixedWingLine.pitch
 
@@ -109,11 +111,13 @@ Example for ``FixedWingLine``::
 
 .. input_param:: Actuator.F1.start
 
-   **type:** int, mandatory
+   **type:** List of 3 real numbers, mandatory
+   This is the starting point of the wing where the first actuator point will be.
 
 .. input_param:: Actuator.F1.end
 
-   **type:** int, mandatory
+   **type:** List of 3 real numbers, mandatory
+   This is the end point of the wing where the last actuator point will be.
 
 .. input_param:: Actuator.F1.output_frequency
 

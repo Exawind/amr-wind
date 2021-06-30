@@ -36,10 +36,6 @@ public:
     void
     update_umean(const VelPlaneAveraging& vpa, const FieldPlaneAveraging& tpa);
 
-    void computeplanar();
-
-    void computeusingheatflux();
-
 private:
     const CFDSim& m_sim;
 
@@ -57,6 +53,11 @@ private:
     amrex::Real m_surf_temp_rate{0.0};
     amrex::Real m_surf_temp_rate_tstart{0.0};
     amrex::Real m_surf_temp_init{300.0};
+
+    bool m_inflow_outflow{false};
+    amrex::Real m_wf_vmag{0.0};
+    amrex::Array<amrex::Real, 2> m_wf_vel{{0.0, 0.0}};
+    amrex::Real m_wf_theta{300.0};
 };
 
 /** Applies a shear-stress value at the domain boundary

@@ -152,9 +152,8 @@ void InletData::interpolate(const amrex::Real time)
             const auto& datn = (*m_data_n[ori])[lev];
             const auto& datnp1 = (*m_data_np1[ori])[lev];
             auto& dati = (*m_data_interp[ori])[lev];
-
             dati.linInterp<amrex::RunOn::Device>(
-                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, dati.box(), 0,
+                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, datn.box(), 0,
                 dati.nComp());
         }
     }
@@ -227,6 +226,7 @@ void ABLBoundaryPlane::post_advance_work()
 void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::initialize_data");
     for (const auto& plane : m_planes) {
         amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
 
@@ -257,6 +257,7 @@ void ABLBoundaryPlane::initialize_data()
 void ABLBoundaryPlane::write_header()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_header");
     if (m_io_mode != io_mode::output) return;
 
     amrex::Print() << "Creating output NetCDF file: " << m_filename
@@ -370,6 +371,7 @@ void ABLBoundaryPlane::write_header()
 void ABLBoundaryPlane::write_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_file");
     const amrex::Real time = m_time.new_time();
     const int t_step = m_time.time_index();
 
@@ -418,6 +420,7 @@ void ABLBoundaryPlane::write_file()
 void ABLBoundaryPlane::read_header()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_data");
     if (m_io_mode != io_mode::input) return;
 
     amrex::Print() << "Reading input NetCDF file: " << m_filename << std::endl;
@@ -500,6 +503,7 @@ void ABLBoundaryPlane::read_header()
 void ABLBoundaryPlane::read_file()
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::read_file");
     if (m_io_mode != io_mode::input) return;
 
     // populate planes and interpolate
@@ -538,6 +542,7 @@ void ABLBoundaryPlane::populate_data(
     amrex::MultiFab& mfab) const
 {
 #ifdef AMR_WIND_USE_NETCDF
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::populate_data");
 
     if (m_io_mode != io_mode::input) return;
 
@@ -592,48 +597,13 @@ void ABLBoundaryPlane::populate_data(
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                     dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
                 });
-
-            // Fill the edges
-            const auto& lo = bx.loVect();
-            const auto& hi = bx.hiVect();
-
-            // For xlo/ylo combination (currently the only valid
-            // combination), this is perp[0] (FIXME for future)
-            const int pp = perp[0];
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                ehi[pp] = lo[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i - v_offset[0], j - v_offset[1], k - v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                elo[pp] = hi[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i + v_offset[0], j + v_offset[1], k + v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
         }
     }
+
+    const auto& geom = fld.repo().mesh().Geom();
+    mfab.EnforcePeriodicity(
+        0, mfab.nComp(), amrex::IntVect(1), geom[lev].periodicity());
+
 #else
     amrex::ignore_unused(lev, time, fld, mfab);
 #endif
@@ -646,6 +616,7 @@ void ABLBoundaryPlane::write_data(
     const int lev,
     const Field* fld)
 {
+    BL_PROFILE("amr-wind::ABLBoundaryPlane::write_data");
     // Plane info
     const int normal = ori.coordDir();
     const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
