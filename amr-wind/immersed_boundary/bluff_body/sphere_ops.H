@@ -59,7 +59,6 @@ struct InitDataOp<Sphere>
 
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
-                auto epsilon_node = mask_node(lev).array(mfi);
                 auto phi = levelset(lev).array(mfi);
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
@@ -77,7 +76,9 @@ struct InitDataOp<Sphere>
 
                         phi(i, j, k) = r - R;
                     });
+
                 const auto& nbx = mfi.nodaltilebox();
+                auto epsilon_node = mask_node(lev).array(mfi);
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + i * dx[0];
@@ -87,7 +88,7 @@ struct InitDataOp<Sphere>
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
-                        if (r <= wdata.radius) {
+                        if (r <= R) {
                             epsilon_node(i, j, k) = 0;
                         }
                     });
