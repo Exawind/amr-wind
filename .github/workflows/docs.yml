@@ -4,17 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'amr-wind/**'
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
   pull_request:
     branches:
       - main
-    paths:
-      - 'amr-wind/**'
-      - 'docs/**'
-      - '.github/workflows/docs.yml'
 
 jobs:
   Docs:
