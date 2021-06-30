@@ -79,9 +79,11 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
 
     auto& velocity = sim.repo().get_field("velocity");
     auto& levelset = sim.repo().get_field("ib_levelset");
+    levelset.fillpatch(sim.time().current_time());
     auto& normal = sim.repo().get_field("ib_normal");
     fvm::gradient(normal, levelset);
     field_ops::normalize(normal);
+    normal.fillpatch(sim.time().current_time());
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
@@ -89,8 +91,8 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
         // Defining the "ghost-cell" band distance
         amrex::Real phi_b = std::cbrt(dx[0] * dx[1] * dx[2]);
 
-        for (amrex::MFIter mfi(velocity(lev)); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.growntilebox();
+        for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.tilebox();
             auto varr = velocity(lev).array(mfi);
             auto phi_arr = levelset(lev).array(mfi);
             auto norm_arr = normal(lev).array(mfi);
@@ -106,7 +108,9 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
                         varr(i, j, k, 0) = velx;
                         varr(i, j, k, 1) = vely;
                         varr(i, j, k, 2) = velz;
-
+                        norm_arr(i, j, k, 0) = 0.;
+                        norm_arr(i, j, k, 1) = 0.;
+                        norm_arr(i, j, k, 2) = 0.;
                         // This determines the ghost-cells
                     } else if (
                         phi_arr(i, j, k) < 0 && phi_arr(i, j, k) >= -phi_b) {
@@ -124,6 +128,10 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
                         varr(i, j, k, 0) = velx;
                         varr(i, j, k, 1) = vely;
                         varr(i, j, k, 2) = velz;
+                    } else {
+                        norm_arr(i, j, k, 0) = 0.;
+                        norm_arr(i, j, k, 1) = 0.;
+                        norm_arr(i, j, k, 2) = 0.;
                     }
                 });
         }

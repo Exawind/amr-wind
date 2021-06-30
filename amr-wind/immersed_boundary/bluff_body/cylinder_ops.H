@@ -60,7 +60,6 @@ struct InitDataOp<Cylinder>
             const auto& dx = geom[lev].CellSizeArray();
 
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
-                auto epsilon_node = mask_node(lev).array(mfi);
                 auto phi = levelset(lev).array(mfi);
 
                 amrex::Real x0 = wdata.center_loc[0];
@@ -68,29 +67,23 @@ struct InitDataOp<Cylinder>
                 amrex::Real z0 = wdata.center_loc[2];
                 amrex::Real h = wdata.height;
                 amrex::Real R = wdata.radius;
-
                 const auto& bx = mfi.growntilebox();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
+                        amrex::Real phi_glob = phi(i, j, k);
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
 
-                        if (r <= wdata.radius && std::abs(z - z0) <= 0.5 * h) {
-                            // using std::max inside the body
-                            phi(i, j, k) =
-                                std::max(r - R, std::abs(z - z0) - 0.5 * h);
-                        } else {
-                            phi(i, j, k) = std::min(
-                                std::abs(r - R),
-                                std::abs(std::abs(z - z0) - 0.5 * h));
-                        }
+                        amrex::Real phi_loc = r - R;
+
+                        phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
                 const auto& nbx = mfi.nodaltilebox();
+                auto epsilon_node = mask_node(lev).array(mfi);
                 amrex::ParallelFor(
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + i * dx[0];
@@ -100,7 +93,7 @@ struct InitDataOp<Cylinder>
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
 
-                        if (r <= wdata.radius && std::abs(z - z0) <= 0.5 * h) {
+                        if (r <= R) {
                             epsilon_node(i, j, k) = 0;
                         }
                     });

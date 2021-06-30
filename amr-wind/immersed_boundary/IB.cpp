@@ -9,7 +9,14 @@
 namespace amr_wind {
 namespace ib {
 
-IB::IB(CFDSim& sim) : m_sim(sim) {}
+IB::IB(CFDSim& sim)
+    : m_sim(sim)
+    , m_ib_levelset(sim.repo().declare_field("ib_levelset", 1, 1, 1))
+    , m_ib_normal(sim.repo().declare_field("ib_normal", AMREX_SPACEDIM, 1, 1))
+{
+    m_ib_levelset.set_default_fillpatch_bc(sim.time());
+    m_ib_normal.set_default_fillpatch_bc(sim.time());
+}
 
 IB::~IB() = default;
 
@@ -46,6 +53,8 @@ void IB::pre_init_actions()
 void IB::post_init_actions()
 {
     BL_PROFILE("amr-wind::ib::IB::post_init_actions");
+    m_ib_levelset.setVal(1e30);
+
     for (auto& ib : m_ibs) ib->init_ib();
 }
 

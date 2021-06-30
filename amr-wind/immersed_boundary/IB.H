@@ -67,6 +67,12 @@ private:
     CFDSim& m_sim;
 
     std::vector<std::unique_ptr<ImmersedBoundaryModel>> m_ibs;
+
+    //! Immersed boundary levelset for cell-centers
+    Field& m_ib_levelset;
+
+    //! Immersed boundary normal vector defined on cell-centers
+    Field& m_ib_normal;
 };
 
 } // namespace ib

@@ -60,6 +60,7 @@ struct InitDataOp<Sphere>
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
                 auto phi = levelset(lev).array(mfi);
+
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
                 amrex::Real z0 = wdata.center_loc[2];
@@ -69,12 +70,13 @@ struct InitDataOp<Sphere>
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-
+                        amrex::Real phi_glob = phi(i, j, k);
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
 
                         phi(i, j, k) = r - R;
+                        phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
                 const auto& nbx = mfi.nodaltilebox();
