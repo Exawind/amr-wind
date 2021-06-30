@@ -232,9 +232,10 @@ void ABLBoundaryPlane::initialize_data()
 
         if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
              valid_planes.end())) {
-            throw std::runtime_error(
-                "Requested plane (" + plane +
-                ") does not exist. Pick one of [xlo, ylo].");
+	     amrex::Print() << "WARNING: only xlo and ylo thoroughly tested" << std::endl;
+            //throw std::runtime_error(
+            //    "Requested plane (" + plane +
+             //   ") does not exist. Pick one of [xlo, ylo].");
         }
     }
 
@@ -629,6 +630,8 @@ void ABLBoundaryPlane::write_data(
     // Domain info
     const amrex::Box& domain = m_mesh.Geom(lev).Domain();
     const auto& dlo = domain.loVect();
+    const auto& dhi = domain.hiVect();
+
     AMREX_ALWAYS_ASSERT(dlo[0] == 0 && dlo[1] == 0 && dlo[2] == 0);
 
     grp.var(name).par_access(NC_COLLECTIVE);
@@ -649,7 +652,7 @@ void ABLBoundaryPlane::write_data(
         const auto& blo = bx.loVect();
         const auto& bhi = bx.hiVect();
 
-        if (blo[normal] == dlo[normal]) {
+        if (blo[normal] == dlo[normal] && ori.isLow()) {
             amrex::IntVect lo(blo);
             amrex::IntVect hi(bhi);
             lo[normal] = dlo[normal];
@@ -671,6 +674,31 @@ void ABLBoundaryPlane::write_data(
                 m_out_counter, static_cast<size_t>(lo[perp[0]]),
                 static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
+        } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
+            amrex::IntVect lo(blo);
+            amrex::IntVect hi(bhi);
+            // shift by one to reuse impl_buffer_field
+            lo[normal] = dhi[normal]+1;
+            hi[normal] = dhi[normal]+1;
+            const amrex::Box lbx(lo, hi);
+
+            const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;
+            const size_t n1 = hi[perp[1]] - lo[perp[1]] + 1;
+
+            auto& buffer = buffers[mfi.index()];
+            buffer.data.resize(n0 * n1 * nc);
+
+            auto const& fld_arr = (*fld)(lev).array(mfi);
+            impl_buffer_field(
+                lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
+            amrex::Gpu::streamSynchronize();
+
+            buffer.start = {
+                m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.count = {1, n0, n1, nc};
+        } else if (bhi[normal] == dhi[normal] && blo[normal] == dlo[normal]) {
+            amrex::Abort("oops did not account for this to happen in writing plane data");
         }
     }
 
