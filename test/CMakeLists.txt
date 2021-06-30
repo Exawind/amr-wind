@@ -4,11 +4,8 @@
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
-# Set location of gold files according to system/compiler/compiler_version
-set(GOLD_FILES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/AMR-WindGoldFiles/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
-set(SAVED_GOLDS_DIRECTORY ${AMR_WIND_SAVED_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
-
 if(AMR_WIND_TEST_WITH_FCOMPARE)
+  set(GOLD_FILES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/AMR-WindGoldFiles/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
   message(STATUS "Test golds directory for fcompare: ${GOLD_FILES_DIRECTORY}")
 endif()
 
@@ -21,6 +18,7 @@ if(AMR_WIND_SAVE_GOLDS)
     message(FATAL_ERROR "To save gold files, AMR_WIND_SAVED_GOLDS_DIRECTORY must be set and the directory exist")
   else()
     if(EXISTS ${AMR_WIND_SAVED_GOLDS_DIRECTORY})
+      set(SAVED_GOLDS_DIRECTORY ${AMR_WIND_SAVED_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
       message(STATUS "Gold files will be saved to: ${AMR_WIND_SAVED_GOLDS_DIRECTORY}")
     else()
       message(FATAL_ERROR "Specified directory for saving gold files does not exist: ${AMR_WIND_SAVED_GOLDS_DIRECTORY}")
