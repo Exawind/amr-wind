@@ -111,15 +111,22 @@ void IOManager::initialize_io()
 static void ascent_pass(
     CFDSim& sim,
     int plt_num_comp,
-    amrex::Vector<Field*> const& plt_fields,
-    amrex::Vector<std::string> const& plt_var_names)
+    const amrex::Vector<Field*>& plt_fields,
+    const amrex::Vector<std::string>& plt_var_names)
 {
     // Ascent emit
     BL_PROFILE("amr-wind::IOManager::ascent");
 
+    amrex::Print() << "ASCENT PASS" << std::endl;
+    for (const auto& fld : plt_var_names) {
+        amrex::Print() << "v - " << fld << std::endl;
+    }
+
     amrex::Vector<int> istep(
         sim.mesh().finestLevel() + 1, sim.time().time_index());
+
     auto outfield = sim.repo().create_scratch_field(plt_num_comp);
+
     const int nlevels = sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -134,6 +141,7 @@ static void ascent_pass(
     }
 
     const auto& mesh = sim.mesh();
+
     amrex::Print() << "Calling Ascent at time " << sim.time().new_time()
                    << std::endl;
     conduit::Node bp_mesh;
@@ -157,6 +165,7 @@ static void ascent_pass(
         verify_info.print();
     } else {
         amrex::Print() << " Mesh Blueprint Verify Success!" << std::endl;
+        // verify_info.print();
     }
     // setup actions
     conduit::Node actions;

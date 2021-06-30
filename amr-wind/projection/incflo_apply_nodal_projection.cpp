@@ -167,10 +167,11 @@ void incflo::ApplyProjection(
                 // At the moment set it to zero
                 surf_tens_force.setVal(0.0);
                 for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                    ++mfi) {
+                     ++mfi) {
                     Box const& bx = mfi.tilebox();
                     Array4<Real> const& force_st = surf_tens_force.array(mfi);
-                    Array4<Real const> const& rho = density[lev]->const_array(mfi);
+                    Array4<Real const> const& rho =
+                        density[lev]->const_array(mfi);
                     Array4<Real> const& u = velocity(lev).array(mfi);
 
                     amrex::ParallelFor(
