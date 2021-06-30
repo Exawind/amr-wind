@@ -678,8 +678,8 @@ void ABLBoundaryPlane::write_data(
             amrex::IntVect lo(blo);
             amrex::IntVect hi(bhi);
             // shift by one to reuse impl_buffer_field
-            lo[normal] = dhi[normal]+1;
-            hi[normal] = dhi[normal]+1;
+            lo[normal] = dhi[normal] + 1;
+            hi[normal] = dhi[normal] + 1;
             const amrex::Box lbx(lo, hi);
 
             const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;
@@ -697,9 +697,7 @@ void ABLBoundaryPlane::write_data(
                 m_out_counter, static_cast<size_t>(lo[perp[0]]),
                 static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
-        } else if (bhi[normal] == dhi[normal] && blo[normal] == dlo[normal]) {
-            amrex::Abort("oops did not account for this to happen in writing plane data");
-        }
+        } 
     }
 
     for (const auto& buffer : buffers) {
