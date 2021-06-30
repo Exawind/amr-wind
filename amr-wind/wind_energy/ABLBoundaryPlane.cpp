@@ -574,7 +574,7 @@ void ABLBoundaryPlane::populate_data(
         }
 
         const int normal = ori.coordDir();
-        const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+        //const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
         const size_t nc = mfab.nComp();
 
