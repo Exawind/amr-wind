@@ -17,3 +17,4 @@ spack*
 .clangd
 compile_commands.json
 settings.json
+.vscode*
