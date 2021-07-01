@@ -227,18 +227,6 @@ void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::ABLBoundaryPlane::initialize_data");
-    for (const auto& plane : m_planes) {
-        amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
-
-        if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
-             valid_planes.end())) {
-	     amrex::Print() << "WARNING: only xlo and ylo thoroughly tested" << std::endl;
-            //throw std::runtime_error(
-            //    "Requested plane (" + plane +
-             //   ") does not exist. Pick one of [xlo, ylo].");
-        }
-    }
-
     for (const auto& fname : m_var_names) {
         if (m_repo.field_exists(fname)) {
             auto& fld = m_repo.get_field(fname);
@@ -697,7 +685,7 @@ void ABLBoundaryPlane::write_data(
                 m_out_counter, static_cast<size_t>(lo[perp[0]]),
                 static_cast<size_t>(lo[perp[1]]), 0};
             buffer.count = {1, n0, n1, nc};
-        } 
+        }
     }
 
     for (const auto& buffer : buffers) {
