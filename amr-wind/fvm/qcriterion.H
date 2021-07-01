@@ -12,8 +12,8 @@ namespace fvm {
 template <typename FTypeIn, typename FTypeOut>
 struct Qcriterion
 {
-    Qcriterion(FTypeOut& qcritphi, const FTypeIn& phi)
-        : m_qcritphi(qcritphi), m_phi(phi)
+    Qcriterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
+        : m_qcritphi(qcritphi), m_phi(phi), m_nondim(nondim)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
     }
@@ -25,6 +25,7 @@ struct Qcriterion
         const auto& idx = geom.InvCellSizeArray();
         const auto& qcritphi = m_qcritphi(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
+		const bool nondim = m_nondim;
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
@@ -83,12 +84,17 @@ struct Qcriterion
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
 
-                qcritphi(i, j, k) = 0.5 * (W2 - S2);
+				if(nondim){
+                    qcritphi(i, j, k) = 0.5 * (W2/S2-1);
+                } else{
+                    qcritphi(i, j, k) = 0.5 * (W2 - S2);
+                }
             });
     }
 
     FTypeOut& m_qcritphi;
     const FTypeIn& m_phi;
+	bool m_nondim;
 };
 
 /** Compute the q-criterion
@@ -98,10 +104,10 @@ struct Qcriterion
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void q_criterion(FTypeOut& qcritphi, const FTypeIn& phi)
+inline void q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
 {
     BL_PROFILE("amr-wind::fvm::q_criterion");
-    Qcriterion<FTypeIn, FTypeOut> qcriterion(qcritphi, phi);
+    Qcriterion<FTypeIn, FTypeOut> qcriterion(qcritphi, phi, nondim);
     impl::apply(qcriterion, phi);
 }
 

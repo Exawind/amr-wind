@@ -7,6 +7,7 @@ target_sources(${amr_wind_lib_name}
   RayleighTaylor.cpp
   RayleighTaylorFieldInit.cpp
   TaylorGreenVortex.cpp
+  VortexRing.cpp
   FreeStream.cpp
   ConvectingTaylorVortex.cpp
   EkmanSpiral.cpp

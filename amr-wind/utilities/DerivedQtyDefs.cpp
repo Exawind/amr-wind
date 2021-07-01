@@ -45,7 +45,7 @@ void QCriterionNondim::operator()(ScratchField& fld, const int scomp)
 {
     AMREX_ASSERT(fld.num_comp() > (scomp));
     auto q_crit_nd = fld.subview(scomp, 1);
-    fvm::q_criterion_nondim(q_crit_nd, m_vel);
+    fvm::q_criterion(q_crit_nd, m_vel, true);
 }
 
 StrainRateMag::StrainRateMag(
