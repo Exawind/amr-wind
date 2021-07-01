@@ -484,7 +484,7 @@ void ABLBoundaryPlane::read_header()
             // Create the data structures for the input data
             amrex::IntVect plo(lo);
             amrex::IntVect phi(hi);
-            plo[normal] = ori.isHigh() ? lo[normal] + 1 : -1;
+            plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             const amrex::Box pbx(plo, phi);
             size_t nc = 0;
