@@ -95,6 +95,13 @@ operator^(const VectorT<T>& v1, const VectorT<T>& v2)
 }
 
 template <typename T>
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE VectorT<T>
+operator*(const VectorT<T>& v1, const VectorT<T>& v2)
+{
+    return VectorT<T>{v1.x() * v2.x(), v1.y() * v2.y(), v1.z() * v2.z()};
+}
+
+template <typename T>
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE T mag_sqr(const VectorT<T>& v)
 {
     return (v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
