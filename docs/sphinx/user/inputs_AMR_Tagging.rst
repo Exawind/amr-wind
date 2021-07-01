@@ -42,7 +42,7 @@ Each section must contain the keyword ``type`` that is one of the refinement typ
 ``OversetRefinement``    Refinement around fringe/field interface
 ``GeometryRefinement``   Refinement using geometric shapes
 ``QCriterionRefinement`` Refinement using Q-Criterion
-``VorticityRefinement``  Refinement using vorticity
+``VorticityMagRefinement``  Refinement using vorticity
 ======================== ===================================================================
 
 .. input_param:: tagging.labels
