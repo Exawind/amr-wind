@@ -83,7 +83,8 @@ struct QcriterionNondim
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
 
-                qcritnomdimphi(i, j, k) = 0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
+                qcritnomdimphi(i, j, k) =
+                    0.5 * (W2 / amrex::max(S2, 1.0e-12) - 1.0);
             });
     }
 
