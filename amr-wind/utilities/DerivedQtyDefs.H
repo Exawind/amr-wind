@@ -44,7 +44,8 @@ struct QCriterionNondim : public DerivedQty::Register<QCriterionNondim>
     static constexpr int ncomp = 1;
     static std::string identifier() { return "q_criterion_nondim"; }
 
-    QCriterionNondim(const FieldRepo& repo, const std::vector<std::string>& args);
+    QCriterionNondim(
+        const FieldRepo& repo, const std::vector<std::string>& args);
 
     std::string name() const override { return identifier(); }
 
