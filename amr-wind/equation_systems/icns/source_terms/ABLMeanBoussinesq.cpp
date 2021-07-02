@@ -157,7 +157,6 @@ void ABLMeanBoussinesq::mean_temperature_update(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, tavg.begin(), tavg.end(),
         m_theta_vals.begin());
-
 }
 
 } // namespace icns
