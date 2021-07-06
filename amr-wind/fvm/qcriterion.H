@@ -84,7 +84,6 @@ struct Qcriterion
                 const amrex::Real W2 = std::pow(uy - vx, 2) +
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
-                
                 if (nondim) {
                     qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
                 } else {
