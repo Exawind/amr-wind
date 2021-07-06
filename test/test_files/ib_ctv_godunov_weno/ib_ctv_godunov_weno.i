@@ -29,9 +29,10 @@ turbulence.model = Laminar
 
 incflo.physics = ConvectingTaylorVortex IB   
 IB.labels = IB1  
-IB.IB1.type = Cylinder 
+IB.IB1.type = Box 
 IB.IB1.center = 1.0 1.0 1.0
-IB.IB1.radius = 0.25 
+IB.IB1.length = 0.5 
+IB.IB1.width  = 0.5 
 IB.IB1.height = 2.0
 IB.IB1.is_mms = 1 
 
