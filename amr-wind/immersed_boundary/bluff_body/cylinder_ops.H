@@ -95,7 +95,6 @@ struct InitDataOp<Cylinder>
                     });
             }
         }
-        levelset.fillpatch(sim.time().current_time());
     }
 };
 
