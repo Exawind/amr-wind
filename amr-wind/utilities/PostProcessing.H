@@ -45,6 +45,9 @@ public:
     /** Perform actions at the end of each timestep
      */
     virtual void post_advance_work() = 0;
+
+    //! Actions to perform post regrid
+    virtual void post_regrid_actions() = 0;
 };
 
 /** A collection of post-processing instances that are active during a
@@ -75,6 +78,8 @@ public:
 
     //! Call all registered utilities to perform actions after a timestep
     void post_advance_work();
+
+    void post_regrid_actions();
 
 private:
     CFDSim& m_sim;

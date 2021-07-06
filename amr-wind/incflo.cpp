@@ -1,9 +1,9 @@
-
 #include "amr-wind/incflo.H"
 
 #include "amr-wind/wind_energy/ABL.H"
 #include "amr-wind/utilities/tagging/RefinementCriteria.H"
 #include "amr-wind/equation_systems/PDEBase.H"
+#include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/IOManager.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/overset/OversetManager.H"
@@ -180,6 +180,7 @@ bool incflo::regrid_and_update()
         icns().post_regrid_actions();
         for (auto& eqn : scalar_eqns()) eqn->post_regrid_actions();
         for (auto& pp : m_sim.physics()) pp->post_regrid_actions();
+        m_sim.post_manager().post_regrid_actions();
     }
 
     // update cell counts if unitialized or if a regrid happened
@@ -200,6 +201,9 @@ bool incflo::regrid_and_update()
 void incflo::post_advance_work()
 {
     BL_PROFILE("amr-wind::incflo::post_advance_work");
+
+    m_sim.turbulence_model().post_advance_work();
+
     for (auto& pp : m_sim.physics()) pp->post_advance_work();
 
     m_sim.post_manager().post_advance_work();

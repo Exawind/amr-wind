@@ -573,8 +573,8 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        const int normal = ori.coordDir();
-        const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+        // const int normal = ori.coordDir();
+        // const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
         const size_t nc = mfab.nComp();
 
