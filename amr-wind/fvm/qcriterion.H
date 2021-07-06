@@ -13,7 +13,7 @@ template <typename FTypeIn, typename FTypeOut>
 struct Qcriterion
 {
     Qcriterion(
-	FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
+        FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
         : m_qcritphi(qcritphi), m_phi(phi), m_nondim(nondim)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
@@ -85,7 +85,7 @@ struct Qcriterion
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
                 
-                if(nondim) {
+                if (nondim) {
                     qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
                 } else {
                     qcritphi(i, j, k) = 0.5 * (W2 - S2);
@@ -105,7 +105,7 @@ struct Qcriterion
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void 
+inline void
 q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
 {
     BL_PROFILE("amr-wind::fvm::q_criterion");
