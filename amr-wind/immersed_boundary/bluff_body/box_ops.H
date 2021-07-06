@@ -109,6 +109,7 @@ struct InitDataOp<Box>
                     });
             }
         }
+        levelset.fillpatch(sim.time().current_time());
     }
 };
 

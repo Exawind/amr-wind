@@ -96,6 +96,7 @@ struct InitDataOp<Sphere>
                     });
             }
         }
+        levelset.fillpatch(sim.time().current_time());
     }
 };
 
