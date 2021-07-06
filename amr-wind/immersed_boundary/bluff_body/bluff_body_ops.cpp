@@ -87,7 +87,7 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = geom[lev].CellSizeArray();
-        const auto& problo = geom[lev].ProbLoArray();
+        // const auto& problo = geom[lev].ProbLoArray();
         // Defining the "ghost-cell" band distance
         amrex::Real phi_b = std::cbrt(dx[0] * dx[1] * dx[2]);
 

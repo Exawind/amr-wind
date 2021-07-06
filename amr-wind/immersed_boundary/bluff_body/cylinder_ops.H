@@ -64,15 +64,12 @@ struct InitDataOp<Cylinder>
 
                 amrex::Real x0 = wdata.center_loc[0];
                 amrex::Real y0 = wdata.center_loc[1];
-                amrex::Real z0 = wdata.center_loc[2];
-                amrex::Real h = wdata.height;
                 amrex::Real R = wdata.radius;
                 const auto& bx = mfi.growntilebox();
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                        const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                         amrex::Real phi_glob = phi(i, j, k);
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
@@ -88,7 +85,6 @@ struct InitDataOp<Cylinder>
                     nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + i * dx[0];
                         const amrex::Real y = problo[1] + j * dx[1];
-                        const amrex::Real z = problo[2] + k * dx[2];
 
                         amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0));
