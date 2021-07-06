@@ -12,7 +12,8 @@ namespace fvm {
 template <typename FTypeIn, typename FTypeOut>
 struct Qcriterion
 {
-    Qcriterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
+    Qcriterion(
+	FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
         : m_qcritphi(qcritphi), m_phi(phi), m_nondim(nondim)
     {
         AMREX_ALWAYS_ASSERT(AMREX_SPACEDIM == m_phi.num_comp());
@@ -25,7 +26,7 @@ struct Qcriterion
         const auto& idx = geom.InvCellSizeArray();
         const auto& qcritphi = m_qcritphi(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
-		const bool nondim = m_nondim;
+	const bool nondim = m_nondim;
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
@@ -84,9 +85,9 @@ struct Qcriterion
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
 
-				if(nondim){
-                    qcritphi(i, j, k) = 0.5 * (W2/S2-1.0);
-                } else{
+		if(nondim) {
+                    qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
+                } else {
                     qcritphi(i, j, k) = 0.5 * (W2 - S2);
                 }
             });
@@ -94,7 +95,7 @@ struct Qcriterion
 
     FTypeOut& m_qcritphi;
     const FTypeIn& m_phi;
-	bool m_nondim;
+    bool m_nondim;
 };
 
 /** Compute the q-criterion
