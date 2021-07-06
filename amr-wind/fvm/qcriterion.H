@@ -105,7 +105,8 @@ struct Qcriterion
  *  \param phi [in] The velocity vector field
  */
 template <typename FTypeIn, typename FTypeOut>
-inline void q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
+inline void 
+q_criterion(FTypeOut& qcritphi, const FTypeIn& phi, const bool nondim = false)
 {
     BL_PROFILE("amr-wind::fvm::q_criterion");
     Qcriterion<FTypeIn, FTypeOut> qcriterion(qcritphi, phi, nondim);
