@@ -260,23 +260,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
 
-    // Create a cell-centred field by interpolation -- Hard-coded, needs
-    // refactor
-    /****************************************************************************/
-    /*
-    auto& velocity_nph = velocity_new.state(amr_wind::FieldState::NPH);
-    auto& umac = m_sim.repo().get_field("u_mac");
-    auto& vmac = m_sim.repo().get_field("v_mac");
-    auto& wmac = m_sim.repo().get_field("w_mac");
-    const int nlevel = m_sim.repo().num_active_levels();
-    for (int lev = 0; lev < nlevel; ++lev) {
-        const Array<const MultiFab*, AMREX_SPACEDIM> fc{
-            &umac(lev), &vmac(lev), &wmac(lev)};
-        average_face_to_cellcenter(velocity_nph(lev), 0, fc, 0);
-    }
-    */
-    /*****************************************************************************/
-
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
