@@ -26,7 +26,7 @@ struct Qcriterion
         const auto& idx = geom.InvCellSizeArray();
         const auto& qcritphi = m_qcritphi(lev).array(mfi);
         const auto& phi = m_phi(lev).const_array(mfi);
-	const bool nondim = m_nondim;
+        const bool nondim = m_nondim;
 
         const auto& bx_in = mfi.tilebox();
         const auto& bx = Stencil::box(bx_in, geom);
@@ -84,8 +84,8 @@ struct Qcriterion
                 const amrex::Real W2 = std::pow(uy - vx, 2) +
                                        std::pow(vz - wy, 2) +
                                        std::pow(wx - uz, 2);
-
-		if(nondim) {
+                
+                if(nondim) {
                     qcritphi(i, j, k) = 0.5 * (W2 / S2 - 1.0);
                 } else {
                     qcritphi(i, j, k) = 0.5 * (W2 - S2);
