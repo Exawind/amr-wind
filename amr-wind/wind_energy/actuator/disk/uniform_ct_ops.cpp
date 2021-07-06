@@ -10,8 +10,8 @@ void prepare_netcdf_file(
     const ActInfo& info,
     const ActGrid& grid)
 {
-    using dvec = std::vector<double>;
 #ifdef AMR_WIND_USE_NETCDF
+    using dvec = std::vector<double>;
     // Only root process handles I/O
     if (info.root_proc != amrex::ParallelDescriptor::MyProc()) return;
     auto ncf = ncutils::NCFile::create(ncfile, NC_CLOBBER | NC_NETCDF4);
