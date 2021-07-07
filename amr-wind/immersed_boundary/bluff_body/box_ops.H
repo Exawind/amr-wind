@@ -60,7 +60,6 @@ struct InitDataOp<Box>
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& problo = geom[lev].ProbLoArray();
             const auto& dx = geom[lev].CellSizeArray();
-
             for (amrex::MFIter mfi(levelset(lev)); mfi.isValid(); ++mfi) {
                 const auto& bx = mfi.growntilebox();
                 auto epsilon_node = mask_node(lev).array(mfi);
@@ -101,9 +100,9 @@ struct InitDataOp<Box>
                         const amrex::Real y = problo[1] + j * dx[1];
                         const amrex::Real z = problo[2] + k * dx[2];
 
-                        if ((std::abs(x - x0) <= 0.5 * l) &&
-                            (std::abs(y - y0) <= 0.5 * w) &&
-                            (std::abs(z - z0) <= 0.5 * h)) {
+                        if ((std::abs(x - x0) <= 0.5 * l + 0.5 * dx[0]) &&
+                            (std::abs(y - y0) <= 0.5 * w + 0.5 * dx[1]) &&
+                            (std::abs(z - z0) <= 0.5 * h + 0.5 * dx[2])) {
                             epsilon_node(i, j, k) = 0;
                         }
                     });

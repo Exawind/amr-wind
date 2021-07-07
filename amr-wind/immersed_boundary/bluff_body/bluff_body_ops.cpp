@@ -117,14 +117,10 @@ void apply_dirichlet_vel(CFDSim& sim, amrex::Vector<amrex::Real>& vel_bc)
                         // For this particular ghost-cell find the
                         // body-intercept (BI) point and image-point (IP)
                         // First define the ghost cell point
-
-                        // amrex::Real x_GC = problo[0] + (i + 0.5) *dx[0];
+                        // amrex::Real x_GC = problo[0] + (i + 0.5) * dx[0];
                         // amrex::Real y_GC = problo[1] + (j + 0.5) * dx[1];
-                        // amrex::Real z_GC = problo[2] + (k +0.5) * dx[2];
-
-                        // Then use the local normal vector and levelset to
-                        // compute the image-point
-                        // At the moment you just set the vel_bc
+                        // amrex::Real z_GC = problo[2] + (k + 0.5) * dx[2];
+                        // Find the "image-points"
                         varr(i, j, k, 0) = velx;
                         varr(i, j, k, 1) = vely;
                         varr(i, j, k, 2) = velz;
