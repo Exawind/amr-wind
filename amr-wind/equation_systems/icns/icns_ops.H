@@ -77,7 +77,9 @@ template <>
 struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 {
     explicit SrcTermOp(PDEFields& fields_in)
-        : SrcTermOpBase<ICNS>(fields_in), grad_p(fields_in.repo.get_field("gp"))
+        : SrcTermOpBase<ICNS>(fields_in)
+        , grad_p(fields_in.repo.get_field("gp"))
+        , mesh_fac(fields_in.repo.get_field("mesh_scaling_factor_cc"))
     {}
 
     void operator()(const FieldState fstate)
@@ -97,13 +99,14 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
                 const auto& vf = src_term.array(mfi);
                 const auto& rho = density(lev).const_array(mfi);
                 const auto& gp = grad_p(lev).const_array(mfi);
+                const auto& fac = mesh_fac(lev).const_array(mfi);
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
                         amrex::Real rhoinv = 1.0 / rho(i, j, k);
-                        vf(i, j, k, 0) = -(gp(i, j, k, 0)) * rhoinv;
-                        vf(i, j, k, 1) = -(gp(i, j, k, 1)) * rhoinv;
-                        vf(i, j, k, 2) = -(gp(i, j, k, 2)) * rhoinv;
+                        vf(i, j, k, 0) = -(1/fac(i, j, k, 0) * gp(i, j, k, 0)) * rhoinv;
+                        vf(i, j, k, 1) = -(1/fac(i, j, k, 1) * gp(i, j, k, 1)) * rhoinv;
+                        vf(i, j, k, 2) = -(1/fac(i, j, k, 2) * gp(i, j, k, 2)) * rhoinv;
                     });
 
                 for (auto& src : this->sources) {
@@ -114,6 +117,7 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
     }
 
     Field& grad_p;
+    Field& mesh_fac;
 };
 
 /** Effective turbulent viscosity computation for ICNS

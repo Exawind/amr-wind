@@ -320,7 +320,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     icns().compute_source_term(amr_wind::FieldState::New);
 
     // *************************************************************************************
-    // Update the velocity
+    // Evaluate right hand side
     // *************************************************************************************
     icns().compute_predictor_rhs(m_diff_type);
 
