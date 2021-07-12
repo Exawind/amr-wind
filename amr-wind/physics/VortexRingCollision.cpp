@@ -85,8 +85,10 @@ void VortexRingCollision::initialize_fields(
     auto& mesh = m_velocity.repo().mesh();
     amrex::MLNodeLaplacian linop({mesh.Geom(level)}, {mesh.boxArray(level)}, {mesh.DistributionMap(level)}, info, {}, 1.0);
 
-    linop.setDomainBC({amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic},
-                      {amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic});
+    //linop.setDomainBC({amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic},
+    //                 {amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic});
+    linop.setDomainBC({amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Periodic},
+                      {amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Periodic});
 
     amrex::MLMG mlmg(linop);
 
