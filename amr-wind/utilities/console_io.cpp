@@ -16,6 +16,9 @@
 #ifdef AMREX_USE_HYPRE
 #include "HYPRE_config.h"
 #endif
+#ifdef AMR_WIND_USE_ASCENT
+#include "ascent_config.h"
+#endif
 
 namespace amrex {
 const char* buildInfoGetBuildDate();
@@ -185,7 +188,7 @@ void print_tpls(std::ostream& out)
     tpls.push_back(std::string("MASA      ") + MASA_LIB_VERSION);
 #endif
 #ifdef AMR_WIND_USE_ASCENT
-    tpls.push_back(std::string("ASCENT    "));
+    tpls.push_back(std::string("ASCENT    ") + ASCENT_VERSION);
 #endif
 
     if (tpls.size() > 0) {
