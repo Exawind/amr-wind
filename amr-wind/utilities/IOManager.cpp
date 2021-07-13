@@ -117,11 +117,6 @@ static void ascent_pass(
     // Ascent emit
     BL_PROFILE("amr-wind::IOManager::ascent");
 
-    amrex::Print() << "ASCENT PASS" << std::endl;
-    for (const auto& fld : plt_var_names) {
-        amrex::Print() << "v - " << fld << std::endl;
-    }
-
     amrex::Vector<int> istep(
         sim.mesh().finestLevel() + 1, sim.time().time_index());
 
@@ -159,15 +154,10 @@ static void ascent_pass(
     ascent.open(open_opts);
     conduit::Node verify_info;
     if (!conduit::blueprint::mesh::verify(bp_mesh, verify_info)) {
-        // verify failed, print error message
         ASCENT_INFO("Error: Mesh Blueprint Verify Failed!");
-        // show details of what went awry
         verify_info.print();
-    } else {
-        amrex::Print() << " Mesh Blueprint Verify Success!" << std::endl;
-        // verify_info.print();
     }
-    // setup actions
+
     conduit::Node actions;
     ascent.publish(bp_mesh);
 
