@@ -183,6 +183,7 @@ bool incflo::regrid_and_update()
 
         //update mesh map
         {
+            //TODO: Is this the only change required in presence of regrid ?
             amrex::Print() << "Creating mesh mapping after regrid ... ";
             for (int lev = 0; lev <= finest_level; lev++) {
                 m_sim.mesh_mapping()->create_map(lev, Geom(lev));

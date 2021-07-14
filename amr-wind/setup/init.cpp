@@ -110,6 +110,10 @@ void incflo::InitialIterations()
 
         {
             auto& vel = icns().fields().field;
+            // ensure velocity is in unmapped mesh space
+            if (vel.is_mesh_mapped()) {
+                vel.to_unmapped_mesh();
+            }
             vel.copy_state(
                 amr_wind::FieldState::New, amr_wind::FieldState::Old);
 

@@ -82,8 +82,8 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         const Real dxinv2 =
                             2.0 * (dxinv[0]/fac(i,j,k,0) * dxinv[0]/fac(i,j,k,0)
-                                 + dxinv[1]/fac(i,j,k,1) * dxinv[1]/fac(i,j,k,1) +
-                                   dxinv[2]/fac(i,j,k,2) * dxinv[2]/fac(i,j,k,2));
+                                 + dxinv[1]/fac(i,j,k,1) * dxinv[1]/fac(i,j,k,1)
+                                 + dxinv[2]/fac(i,j,k,2) * dxinv[2]/fac(i,j,k,2));
 
                         mx = amrex::max(
                             mu_arr(i, j, k) * dxinv2 / rho_arr(i, j, k), mx);
