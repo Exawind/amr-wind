@@ -55,6 +55,9 @@ struct ComputeRHSOp
         const int nlevels = fields.repo.num_active_levels();
         auto& field = fields.field;
         auto& field_old = field.state(FieldState::Old);
+        if (field.is_mesh_mapped() || field_old.is_mesh_mapped()) {
+            amrex::Abort("For RHS evaluation, velocity should not be mesh mapped.");
+        }
         auto& den_new = density.state(FieldState::New);
         auto& den_old = density.state(FieldState::Old);
         auto& src_term = fields.src_term;

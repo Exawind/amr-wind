@@ -93,6 +93,9 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     FieldState fstate = FieldState::New;
     auto& repo = this->m_pdefields.repo;
     auto& field = this->m_pdefields.field;
+    if (field.is_mesh_mapped()) {
+        amrex::Abort("For density solve, velocity should not be mesh mapped.");
+    }
     const auto& density = m_density.state(fstate);
     const int nlevels = repo.num_active_levels();
     const int ndim = field.num_comp();
