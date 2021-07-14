@@ -19,7 +19,8 @@ protected:
             pu.add("num_force_points", 3);
             pu.add("epsilon", 1);
             pu.add("rotor_diameter", 1);
-            pu.add("thrust_coeff", 1);
+            std::vector<double> ct{1};
+            pu.addarr("thrust_coeff", ct);
         }
         {
             amrex::ParmParse pp("Coriolis");
@@ -157,7 +158,8 @@ TEST_F(UniformCtTest, required_parameters_dont_throw)
     ASSERT_NO_THROW(ops::required_parameters(meta, ap));
     EXPECT_DOUBLE_EQ(meta.diameter, 1.0);
     EXPECT_DOUBLE_EQ(meta.epsilon, 1.0);
-    EXPECT_DOUBLE_EQ(meta.thrust_coeff, 1.0);
+    EXPECT_DOUBLE_EQ(meta.thrust_coeff[0], 1.0);
+    EXPECT_EQ(meta.thrust_coeff.size(), 1);
     EXPECT_EQ(meta.num_force_pts, 3);
 }
 

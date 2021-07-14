@@ -86,7 +86,7 @@ void write_netcdf(
         &(meta.reference_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
     grp.var("vdisk").put(
         &(meta.disk_velocity[0]), {nt, 0}, {1, AMREX_SPACEDIM});
-    grp.var("ct").put(&meta.thrust_coeff, {nt}, {1});
+    grp.var("ct").put(&meta.current_ct, {nt}, {1});
     grp.var("density").put(&meta.density, {nt}, {1});
 #else
     amrex::ignore_unused(ncfile, meta, info, time);
@@ -148,7 +148,7 @@ void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     pp.get("num_force_points", meta.num_force_pts);
     pp.get("epsilon", meta.epsilon);
     pp.get("rotor_diameter", meta.diameter);
-    pp.get("thrust_coeff", meta.thrust_coeff);
+    pp.getarr("thrust_coeff", meta.thrust_coeff);
 }
 
 void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
@@ -231,6 +231,12 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     // ensure any computed vectors are normalized
     meta.normal_vec.normalize();
     meta.sample_vec.normalize();
+
+    pp.queryarr("wind_speed", meta.table_velocity);
+    if (meta.thrust_coeff.size() == 1) {
+        meta.current_ct = meta.thrust_coeff[0];
+        meta.table_velocity = {1.0};
+    }
 }
 
 void check_for_parse_conflicts(const utils::ActParser& pp)
@@ -246,6 +252,26 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     collect_parse_conflicts(pp, "disk_center", "hub_height", error_collector);
     collect_parse_dependencies(pp, "base_position", "hub_height", error_collector);
     // clang-format on
+    RealList ct;
+    pp.getarr("thrust_coeff", ct);
+    if (ct.size() > 1) {
+        if (!pp.contains("wind_speed")) {
+            error_collector
+                << "UniformCt Dependency Missing: wind_speed is required when "
+                   "there is more than 1 entry for thrust_coeff"
+                << std::endl;
+        }
+    }
+
+    if (pp.contains("wind_speed")) {
+        RealList vel;
+        pp.getarr("wind_speed", vel);
+        if (vel.size() != ct.size())
+            error_collector << "UniformCt Conflict: wind_speed and "
+                               "thrust_coeff must have the same number of "
+                               "values"
+                            << std::endl;
+    }
 
     if (!error_collector.str().empty())
         amrex::Abort(
