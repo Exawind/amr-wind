@@ -21,6 +21,8 @@ struct BluffBodyBaseData
 
     bool has_wall_model{false};
 
+    bool pressure_masking{true};
+
     amrex::Vector<amrex::Real> vel_bc{{0.0, 0.0, 0.0}};
 
     //! Total integrated forces on the immersed body

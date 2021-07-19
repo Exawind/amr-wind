@@ -23,6 +23,7 @@ void read_inputs(
     pp.query("has_wall_model", wdata.has_wall_model);
     pp.query("is_moving", wdata.is_moving);
     pp.query("is_mms", wdata.is_mms);
+    pp.query("pressure_masking", wdata.pressure_masking);
     pp.queryarr("vel_bc", wdata.vel_bc);
 }
 

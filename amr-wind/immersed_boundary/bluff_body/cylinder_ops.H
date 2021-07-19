@@ -81,20 +81,23 @@ struct InitDataOp<Cylinder>
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
 
-                const auto& nbx = mfi.nodaltilebox();
-                auto epsilon_node = mask_node(lev).array(mfi);
-                amrex::ParallelFor(
-                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + i * dx[0];
-                        const amrex::Real y = problo[1] + j * dx[1];
+                if (wdata.pressure_masking) {
+                    const auto& nbx = mfi.nodaltilebox();
+                    auto epsilon_node = mask_node(lev).array(mfi);
+                    amrex::ParallelFor(
+                        nbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real x = problo[0] + i * dx[0];
+                            const amrex::Real y = problo[1] + j * dx[1];
 
-                        amrex::Real r = std::sqrt(
-                            (x - x0) * (x - x0) + (y - y0) * (y - y0));
+                            amrex::Real r = std::sqrt(
+                                (x - x0) * (x - x0) + (y - y0) * (y - y0));
 
-                        if (r <= R) {
-                            epsilon_node(i, j, k) = 0;
-                        }
-                    });
+                            if (r <= R) {
+                                epsilon_node(i, j, k) = 0;
+                            }
+                        });
+                }
             }
         }
     }

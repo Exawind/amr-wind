@@ -95,19 +95,23 @@ struct InitDataOp<Box>
                                     std::abs(std::abs(z - z0) - 0.5 * h)));
                         }
                     });
-                const auto& nbx = mfi.nodaltilebox();
-                amrex::ParallelFor(
-                    nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        const amrex::Real x = problo[0] + i * dx[0];
-                        const amrex::Real y = problo[1] + j * dx[1];
-                        const amrex::Real z = problo[2] + k * dx[2];
 
-                        if ((std::abs(x - x0) <= 0.5 * l + 0.5 * dx[0]) &&
-                            (std::abs(y - y0) <= 0.5 * w + 0.5 * dx[1]) &&
-                            (std::abs(z - z0) <= 0.5 * h + 0.5 * dx[2])) {
-                            epsilon_node(i, j, k) = 0;
-                        }
-                    });
+                if (wdata.pressure_masking) {
+                    const auto& nbx = mfi.nodaltilebox();
+                    amrex::ParallelFor(
+                        nbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real x = problo[0] + i * dx[0];
+                            const amrex::Real y = problo[1] + j * dx[1];
+                            const amrex::Real z = problo[2] + k * dx[2];
+
+                            if ((std::abs(x - x0) <= 0.5 * l + 0.5 * dx[0]) &&
+                                (std::abs(y - y0) <= 0.5 * w + 0.5 * dx[1]) &&
+                                (std::abs(z - z0) <= 0.5 * h + 0.5 * dx[2])) {
+                                epsilon_node(i, j, k) = 0;
+                            }
+                        });
+                }
             }
         }
     }

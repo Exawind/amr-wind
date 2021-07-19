@@ -80,6 +80,7 @@ struct InitDataOp<Sphere>
                         amrex::Real phi_loc = r - R;
                         phi(i, j, k) = std::min(phi_loc, phi_glob);
                     });
+<<<<<<< HEAD
 
                 const auto& nbx = mfi.nodaltilebox();
                 auto epsilon_node = mask_node(lev).array(mfi);
@@ -96,6 +97,26 @@ struct InitDataOp<Sphere>
                             epsilon_node(i, j, k) = 0;
                         }
                     });
+=======
+                if (wdata.pressure_masking) {
+                    const auto& nbx = mfi.nodaltilebox();
+                    auto epsilon_node = mask_node(lev).array(mfi);
+                    amrex::ParallelFor(
+                        nbx,
+                        [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            const amrex::Real x = problo[0] + i * dx[0];
+                            const amrex::Real y = problo[1] + j * dx[1];
+                            const amrex::Real z = problo[2] + k * dx[2];
+
+                            amrex::Real r = std::sqrt(
+                                (x - x0) * (x - x0) + (y - y0) * (y - y0) +
+                                (z - z0) * (z - z0));
+                            if (r <= R) {
+                                epsilon_node(i, j, k) = 0;
+                            }
+                        });
+                }
+>>>>>>> adding a flag for masking
             }
         }
     }
