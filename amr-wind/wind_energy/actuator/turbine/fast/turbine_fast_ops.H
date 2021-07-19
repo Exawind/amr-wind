@@ -237,9 +237,9 @@ struct InitDataOp<TurbineFast, SrcTrait>
                 std::sqrt(2.0 / ::amr_wind::utils::pi() * cd * area);
 
             auto& nac_eps = data.grid().epsilon[0];
-            nac_eps.x() = amrex::max(eps, 1.0);
-            nac_eps.y() = amrex::max(eps, 1.0);
-            nac_eps.z() = amrex::max(eps, 1.0);
+            nac_eps.x() = amrex::max(eps, tdata.eps_min.x());
+            nac_eps.y() = amrex::max(eps, tdata.eps_min.y());
+            nac_eps.z() = amrex::max(eps, tdata.eps_min.z());
         }
 
         for (int ib = 0; ib < tdata.num_blades; ++ib) {
