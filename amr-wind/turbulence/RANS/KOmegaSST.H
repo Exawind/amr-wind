@@ -48,6 +48,9 @@ public:
     //! Update the turbulent viscosity field
     virtual void update_turbulent_viscosity(const FieldState fstate) override;
 
+    //! No post advance work for this model
+    virtual void post_advance_work() override {}
+
     //! Update the effective scalar diffusivity field
     virtual void
     update_scalar_diff(Field& deff, const std::string& name) override;

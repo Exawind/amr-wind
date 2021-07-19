@@ -152,9 +152,8 @@ void InletData::interpolate(const amrex::Real time)
             const auto& datn = (*m_data_n[ori])[lev];
             const auto& datnp1 = (*m_data_np1[ori])[lev];
             auto& dati = (*m_data_interp[ori])[lev];
-
             dati.linInterp<amrex::RunOn::Device>(
-                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, dati.box(), 0,
+                datn, 0, datnp1, 0, m_tn, m_tnp1, m_tinterp, datn.box(), 0,
                 dati.nComp());
         }
     }
@@ -228,17 +227,6 @@ void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::ABLBoundaryPlane::initialize_data");
-    for (const auto& plane : m_planes) {
-        amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
-
-        if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
-             valid_planes.end())) {
-            throw std::runtime_error(
-                "Requested plane (" + plane +
-                ") does not exist. Pick one of [xlo, ylo].");
-        }
-    }
-
     for (const auto& fname : m_var_names) {
         if (m_repo.field_exists(fname)) {
             auto& fld = m_repo.get_field(fname);
@@ -484,7 +472,7 @@ void ABLBoundaryPlane::read_header()
             // Create the data structures for the input data
             amrex::IntVect plo(lo);
             amrex::IntVect phi(hi);
-            plo[normal] = ori.isHigh() ? lo[normal] + 1 : -1;
+            plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             const amrex::Box pbx(plo, phi);
             size_t nc = 0;
@@ -574,8 +562,8 @@ void ABLBoundaryPlane::populate_data(
             amrex::Abort("No inflow data at this level.");
         }
 
-        const int normal = ori.coordDir();
-        const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
+        // const int normal = ori.coordDir();
+        // const amrex::GpuArray<int, 2> perp = perpendicular_idx(normal);
 
         const size_t nc = mfab.nComp();
 
@@ -598,48 +586,13 @@ void ABLBoundaryPlane::populate_data(
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                     dest(i, j, k, n) = src_arr(i, j, k, n + nstart);
                 });
-
-            // Fill the edges
-            const auto& lo = bx.loVect();
-            const auto& hi = bx.hiVect();
-
-            // For xlo/ylo combination (currently the only valid
-            // combination), this is perp[0] (FIXME for future)
-            const int pp = perp[0];
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                ehi[pp] = lo[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i - v_offset[0], j - v_offset[1], k - v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
-
-            {
-                amrex::IntVect elo(lo);
-                amrex::IntVect ehi(hi);
-                elo[pp] = hi[pp];
-                const amrex::Box ebx(elo, ehi);
-
-                amrex::GpuArray<int, 3> v_offset{{pp == 0, pp == 1, pp == 2}};
-                amrex::ParallelFor(
-                    ebx, nc,
-                    [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        dest(
-                            i + v_offset[0], j + v_offset[1], k + v_offset[2],
-                            n) = dest(i, j, k, n);
-                    });
-            }
         }
     }
+
+    const auto& geom = fld.repo().mesh().Geom();
+    mfab.EnforcePeriodicity(
+        0, mfab.nComp(), amrex::IntVect(1), geom[lev].periodicity());
+
 #else
     amrex::ignore_unused(lev, time, fld, mfab);
 #endif
@@ -665,6 +618,8 @@ void ABLBoundaryPlane::write_data(
     // Domain info
     const amrex::Box& domain = m_mesh.Geom(lev).Domain();
     const auto& dlo = domain.loVect();
+    const auto& dhi = domain.hiVect();
+
     AMREX_ALWAYS_ASSERT(dlo[0] == 0 && dlo[1] == 0 && dlo[2] == 0);
 
     grp.var(name).par_access(NC_COLLECTIVE);
@@ -685,11 +640,34 @@ void ABLBoundaryPlane::write_data(
         const auto& blo = bx.loVect();
         const auto& bhi = bx.hiVect();
 
-        if (blo[normal] == dlo[normal]) {
+        if (blo[normal] == dlo[normal] && ori.isLow()) {
             amrex::IntVect lo(blo);
             amrex::IntVect hi(bhi);
             lo[normal] = dlo[normal];
             hi[normal] = dlo[normal];
+            const amrex::Box lbx(lo, hi);
+
+            const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;
+            const size_t n1 = hi[perp[1]] - lo[perp[1]] + 1;
+
+            auto& buffer = buffers[mfi.index()];
+            buffer.data.resize(n0 * n1 * nc);
+
+            auto const& fld_arr = (*fld)(lev).array(mfi);
+            impl_buffer_field(
+                lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
+            amrex::Gpu::streamSynchronize();
+
+            buffer.start = {
+                m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.count = {1, n0, n1, nc};
+        } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
+            amrex::IntVect lo(blo);
+            amrex::IntVect hi(bhi);
+            // shift by one to reuse impl_buffer_field
+            lo[normal] = dhi[normal] + 1;
+            hi[normal] = dhi[normal] + 1;
             const amrex::Box lbx(lo, hi);
 
             const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;

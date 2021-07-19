@@ -49,6 +49,9 @@ public:
      */
     virtual void update_turbulent_viscosity(const FieldState fstate) = 0;
 
+    //! Do any post advance actions for the turbulence model
+    virtual void post_advance_work() = 0;
+
     //! Register the effective viscosity (for momentum field)
     virtual void register_mueff_field(Field& mueff) = 0;
 

@@ -34,6 +34,20 @@ void QCriterion::operator()(ScratchField& fld, const int scomp)
     fvm::q_criterion(q_crit, m_vel);
 }
 
+QCriterionNondim::QCriterionNondim(
+    const FieldRepo& repo, const std::vector<std::string>& args)
+    : m_vel(repo.get_field("velocity"))
+{
+    AMREX_ALWAYS_ASSERT(args.size() == 0u);
+}
+
+void QCriterionNondim::operator()(ScratchField& fld, const int scomp)
+{
+    AMREX_ASSERT(fld.num_comp() > (scomp));
+    auto q_crit_nd = fld.subview(scomp, 1);
+    fvm::q_criterion(q_crit_nd, m_vel, true);
+}
+
 StrainRateMag::StrainRateMag(
     const FieldRepo& repo, const std::vector<std::string>& args)
     : m_vel(repo.get_field("velocity"))
