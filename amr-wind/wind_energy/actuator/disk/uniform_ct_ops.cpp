@@ -39,8 +39,8 @@ void prepare_netcdf_file(
     grp.def_dim(np_name, meta.num_force_pts);
     grp.def_dim(nv_name, meta.num_vel_pts);
     grp.def_var("time", NC_DOUBLE, {nt_name});
-    grp.def_var("xyz", NC_DOUBLE, {np_name});
-    grp.def_var("xyz_v", NC_DOUBLE, {nv_name});
+    grp.def_var("xyz", NC_DOUBLE, {np_name, "ndim"});
+    grp.def_var("xyz_v", NC_DOUBLE, {nv_name, "ndim"});
     grp.def_var("vref", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("vdisk", NC_DOUBLE, {nt_name, "ndim"});
     grp.def_var("ct", NC_DOUBLE, {nt_name});
@@ -192,7 +192,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     if (pp.contains("yaw")) {
         amrex::Real yaw;
         pp.get("yaw", yaw);
-        normalRotOp = normalRotOp & vs::zrot(yaw);
+        normalRotOp = normalRotOp & vs::zrot(-yaw);
     }
 
     bool user_specified_sample_vec = false;
@@ -210,7 +210,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
         user_specified_sample_vec = true;
         amrex::Real yaw;
         pp.get("sample_yaw", yaw);
-        sampleRotOp = sampleRotOp & vs::zrot(yaw);
+        sampleRotOp = sampleRotOp & vs::zrot(-yaw);
     }
 
     meta.normal_vec = meta.normal_vec & normalRotOp;
@@ -352,7 +352,7 @@ void compute_disk_points(
     auto rotVec = vs::Vector::khat() ^ cylAxis;
     rotVec.normalize();
 
-    // nect compute the angle between the center vec and z axis
+    // next compute the angle between the center vec and z axis
     const amrex::Real angle =
         ::amr_wind::utils::degrees(std::acos((cylAxis & vs::Vector::khat())));
 
