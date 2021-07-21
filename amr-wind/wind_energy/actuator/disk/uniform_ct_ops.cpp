@@ -192,6 +192,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     if (pp.contains("yaw")) {
         amrex::Real yaw;
         pp.get("yaw", yaw);
+        // use negative yaw angle to match convention of clockwise rotation
         normalRotOp = normalRotOp & vs::zrot(-yaw);
     }
 
@@ -210,6 +211,7 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
         user_specified_sample_vec = true;
         amrex::Real yaw;
         pp.get("sample_yaw", yaw);
+        // use negative yaw angle to match convention of clockwise rotation
         sampleRotOp = sampleRotOp & vs::zrot(-yaw);
     }
 
