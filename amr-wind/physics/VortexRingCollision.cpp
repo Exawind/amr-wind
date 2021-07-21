@@ -83,33 +83,51 @@ void VortexRingCollision::initialize_fields(
 
 	amrex::LPInfo info;
     auto& mesh = m_velocity.repo().mesh();
-    amrex::MLNodeLaplacian linop({mesh.Geom(level)}, {mesh.boxArray(level)}, {mesh.DistributionMap(level)}, info, {}, 1.0);
+    amrex::MLNodeLaplacian linop(mesh.Geom(0,level), mesh.boxArray(0, level), mesh.DistributionMap(0, level), info, {}, 1.0);
 
-    //linop.setDomainBC({amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic},
-    //                 {amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic,amrex::LinOpBCType::Periodic});
-    linop.setDomainBC({amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Periodic},
-                      {amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Dirichlet,amrex::LinOpBCType::Periodic});
+    amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bclo;
+    amrex::Array<amrex::LinOpBCType, AMREX_SPACEDIM> bchi;
 
-    amrex::MLMG mlmg(linop);
+    const auto& bctype = m_velocity.bc_type();
+    for (int dir = 0; dir < AMREX_SPACEDIM; ++dir) {
+        if (mesh.Geom(0).isPeriodic(dir)) {
+            bclo[dir] = amrex::LinOpBCType::Periodic;
+            bchi[dir] = amrex::LinOpBCType::Periodic;
+        } else {
 
-    if(level == 0) {
-        vectorpotential(level).setVal(0.0,0,3,1);
-    } else {
-        amrex::PhysBCFunctNoOp bcnoop;
-        amrex::Vector<amrex::BCRec> bcrec(1);
-        amrex::InterpFromCoarseLevel(vectorpotential(level), 0.0,
-                                   vectorpotential(level-1), 0, 0, 3,
-                                   mesh.Geom(level-1), mesh.Geom(level),
-                                   bcnoop, 0, bcnoop, 0,
-                                   amrex::IntVect{2},
-                                   & amrex::node_bilinear_interp,
-                                   bcrec, 0);
+            switch (bctype[amrex::Orientation(dir, amrex::Orientation::low)]) {
+                case BC::pressure_inflow:
+                case BC::pressure_outflow: {
+                    bclo[dir] = amrex::LinOpBCType::Dirichlet;
+                    break;
+                }
+                default:
+                    bclo[dir] = amrex::LinOpBCType::Neumann;
+                    break;
+            };
+
+            switch (bctype[amrex::Orientation(dir, amrex::Orientation::high)]) {
+                case BC::pressure_inflow:
+                case BC::pressure_outflow: {
+                    bchi[dir] = amrex::LinOpBCType::Dirichlet;
+                    break;
+                }
+                default:
+                    bchi[dir] = amrex::LinOpBCType::Neumann;
+                    break;
+            };
+        }
     }
 
+    linop.setDomainBC(bclo,bchi);
+    amrex::MLMG mlmg(linop);
+
+    vectorpotential(0).setVal(0.0,0,3,1);
+
 	for(int i=0;i<AMREX_SPACEDIM;++i){
-        auto vectorpot = vectorpotential.subview(i);
-        auto vort = vorticity.subview(i);
-        mlmg.solve({&vectorpot(level)}, {&vort(level)}, 1.0e-6, 0.0);
+        auto vectorpot = vectorpotential.subview(i,1,level+1);
+        auto vort = vorticity.subview(i,1,level+1);
+        mlmg.solve(vectorpot.vec_ptrs(), vort.vec_const_ptrs(), 1.0e-6, 0.0);
     }
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {

@@ -6,10 +6,11 @@
 namespace amr_wind {
 
 template <typename T>
-ViewField<T>::ViewField(T& src, const int scomp, const int ncomp)
+ViewField<T>::ViewField(T& src, const int scomp, const int ncomp, const int nlevels_in)
     : m_src(src), m_scomp(scomp), m_ncomp(ncomp)
 {
     int nlevels = src.repo().num_active_levels();
+    if(nlevels_in > 0) nlevels = nlevels_in;
     for (int lev = 0; lev < nlevels; ++lev) {
         m_data.emplace_back(
             amrex::MultiFab(src(lev), amrex::make_alias, m_scomp, m_ncomp));
