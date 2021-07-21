@@ -224,7 +224,7 @@ jobs:
           cmake -B build \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_HIP=ON \
-            -DCMAKE_CXX_COMPILER=$(which hipcc) \
+            -DCMAKE_CXX_COMPILER=$(which clang++) \
             -DCMAKE_C_COMPILER=$(which clang) \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DAMReX_AMD_ARCH=gfx908 .
