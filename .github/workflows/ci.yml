@@ -226,6 +226,7 @@ jobs:
             -DAMR_WIND_ENABLE_HIP=ON \
             -DCMAKE_CXX_COMPILER=$(which hipcc) \
             -DCMAKE_C_COMPILER=$(which clang) \
+            -DCMAKE_CXX_STANDARD=17 \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DAMReX_AMD_ARCH=gfx908 .
           cmake --build build -- -j $(nproc)
