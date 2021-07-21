@@ -57,7 +57,7 @@ jobs:
     - name: Configure
       run: |
         cmake \
-          -B${{runner.workspace}}/build-ci-${{matrix.build_type}} \
+          -B ${{runner.workspace}}/build-ci-${{matrix.build_type}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
           -DAMR_WIND_ENABLE_MPI:BOOL=ON \
@@ -107,7 +107,7 @@ jobs:
         run: |
           export PATH=/usr/local/nvidia/bin:/usr/local/cuda-${{matrix.cuda_ver}}/bin:${PATH}
           export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda-${{matrix.cuda_ver}}/lib:${LD_LIBRARY_PATH}
-          cmake -Bbuild-${{matrix.cuda_pkg}} \
+          cmake -B build-${{matrix.cuda_pkg}} \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_CUDA=ON \
             -DAMReX_CUDA_ERROR_CAPTURE_THIS:BOOL=ON \
@@ -130,7 +130,7 @@ jobs:
         run: |
           echo "NPROCS=$(sysctl -n hw.ncpu)" >> $GITHUB_ENV
           cmake \
-          -Bbuild-cppcheck \
+          -B build-cppcheck \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
           -DAMR_WIND_ENABLE_TESTS:BOOL=ON \
           -DAMR_WIND_TEST_WITH_FCOMPARE:BOOL=OFF \
@@ -167,7 +167,7 @@ jobs:
         run: |
           echo "NPROCS=$(nproc)" >> $GITHUB_ENV
           cmake \
-          -Bbuild-clang-tidy \
+          -B build-clang-tidy \
           -DCMAKE_CXX_COMPILER:STRING=clang++ \
           -DCMAKE_C_COMPILER:STRING=clang \
           -DAMR_WIND_ENABLE_MPI:BOOL=OFF \
@@ -217,13 +217,13 @@ jobs:
         run: |
           echo 'export PATH=$PATH:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin' | sudo tee -a /etc/profile.d/rocm.sh
           source /etc/profile.d/rocm.sh
-          cmake -Bbuild \
+          cmake -B build \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_HIP=ON \
-            -DCMAKE_CXX_COMPILER=$(which hipcc) \
+            -DCMAKE_CXX_COMPILER=$(which clang++) \
             -DCMAKE_C_COMPILER=$(which clang) \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
-            -DAMReX_AMD_ARCH="gfx906,gfx908" .
+            -DAMReX_AMD_ARCH=gfx908 .
           cmake --build build -- -j $(nproc)
   DPCPP:
     needs: Formatting
@@ -265,10 +265,7 @@ jobs:
           set +e
           source /opt/intel/oneapi/setvars.sh
           set -e
-          cmake -Bbuild-${{matrix.intel_type}} \
-            -DCMAKE_CXX_COMPILER_ID="Clang" \
-            -DCMAKE_CXX_COMPILER_VERSION=12.0 \
-            -DCMAKE_CXX_STANDARD_COMPUTED_DEFAULT=17 \
+          cmake -B build-${{matrix.intel_type}} \
             -DCMAKE_CXX_COMPILER=$(which ${{matrix.cppexe}}) \
             -DCMAKE_C_COMPILER=$(which ${{matrix.cexe}}) \
             -DAMR_WIND_ENABLE_MPI=OFF \
