@@ -77,9 +77,9 @@ struct Qcriterion
                      idx[2];
 
                 const amrex::Real S2 =
-                    std::pow(ux, 2) + std::pow(vy, 2) +
-                    std::pow(wz, 2) + 0.5 * std::pow(uy + vx, 2) +
-                    0.5 * std::pow(vz + wy, 2) + 0.5 * std::pow(wx + uz, 2);
+                    std::pow(ux, 2) + std::pow(vy, 2) + std::pow(wz, 2) +
+                    0.5 * std::pow(uy + vx, 2) + 0.5 * std::pow(vz + wy, 2) +
+                    0.5 * std::pow(wx + uz, 2);
 
                 const amrex::Real W2 = 0.5 * std::pow(uy - vx, 2) +
                                        0.5 * std::pow(vz - wy, 2) +
