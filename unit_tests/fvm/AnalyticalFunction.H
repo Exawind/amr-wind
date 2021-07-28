@@ -345,7 +345,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real q_criterion(
     const amrex::Real W2 =
         (uy - vx) * (uy - vx) + (vz - wy) * (vz - wy) + (wx - uz) * (wx - uz);
 
-    return 0.5 * (W2 - S2);
+    return 0.25 * (W2 - S2);
 }
 
 } // namespace analytical_function
