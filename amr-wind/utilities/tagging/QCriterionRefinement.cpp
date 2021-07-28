@@ -88,12 +88,12 @@ void QCriterionRefinement::operator()(
                 const auto wz =
                     0.5 * (vel(i, j, k + 1, 2) - vel(i, j, k - 1, 2)) * idx[2];
 
-                const auto S2 = 2.0 * ux * ux + 2.0 * vy * vy + 2.0 * wz * wz +
-                                std::pow(uy + vx, 2) + std::pow(vz + wy, 2) +
-                                std::pow(wx + uz, 2);
+                const auto S2 = ux * ux + vy * vy + wz * wz +
+                                0.5 * std::pow(uy + vx, 2) + 0.5 * std::pow(vz + wy, 2) +
+                                0.5 * std::pow(wx + uz, 2);
 
-                const auto W2 = std::pow(uy - vx, 2) + std::pow(vz - wy, 2) +
-                                std::pow(wx - uz, 2);
+                const auto W2 = 0.5 * std::pow(uy - vx, 2) + 0.5 * std::pow(vz - wy, 2) +
+                                0.5 * std::pow(wx - uz, 2);
 
                 const auto qc = 0.5 * (W2 - S2);
                 const auto qc_nondim =
