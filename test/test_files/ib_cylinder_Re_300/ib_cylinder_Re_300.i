@@ -22,7 +22,9 @@ time.checkpoint_interval      =  -1       # Steps between checkpoint files
 ConstValue.density.value = 1.0
 ConstValue.velocity.value = 1.0 0.0 0.0
 
-io.outputs = ib_levelset ib_normal
+io.output_default_variables = 0
+io.outputs = density p
+io.derived_outputs = "components(velocity,0,1)" "components(gp,0,1)"
 
 incflo.use_godunov = 1
 incflo.godunov_type = "weno_z"
