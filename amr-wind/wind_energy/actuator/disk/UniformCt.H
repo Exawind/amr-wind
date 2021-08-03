@@ -23,8 +23,10 @@ struct UniformCtData
     amrex::Real diameter;
     amrex::Real dr;
     amrex::Real density;
-    amrex::Real thrust_coeff;
+    amrex::Real current_ct;
     amrex::Real diameters_to_sample{0.0};
+    RealList thrust_coeff;
+    RealList table_velocity;
 };
 
 struct UniformCt : public DiskType
