@@ -31,6 +31,9 @@ public:
     //! Interpolate fields at a given timestep and output to disk
     void post_advance_work() override;
 
+    //! Actions to perform post regrid e.g. redistribute particles
+    void post_regrid_actions() override;
+
 protected:
 private:
     CFDSim& m_sim;

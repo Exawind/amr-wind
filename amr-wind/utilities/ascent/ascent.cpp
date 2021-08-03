@@ -108,5 +108,10 @@ void AscentPostProcess::post_advance_work()
     ascent.execute(actions);
 }
 
+void AscentPostProcess::post_regrid_actions()
+{
+    // nothing to do here
+}
+
 } // namespace ascent_int
 } // namespace amr_wind
