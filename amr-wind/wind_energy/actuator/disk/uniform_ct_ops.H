@@ -141,7 +141,7 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             (ddata.reference_velocity * ddata.reference_velocity) & normal;
 
         ddata.current_ct = ::amr_wind::interp::linear(
-            ddata.thrust_coeff, ddata.table_velocity,
+            ddata.table_velocity, ddata.thrust_coeff, 
             std::sqrt(std::abs(uInfSqr)));
 
         const int npts = ddata.num_force_pts;
