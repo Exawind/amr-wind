@@ -124,7 +124,7 @@ void KineticEnergy::write_ascii()
 
     if (amrex::ParallelDescriptor::IOProcessor()) {
         std::ofstream f(m_out_fname.c_str(), std::ios_base::app);
-        f << m_sim.time().time_index() << std::fixed
+        f << m_sim.time().time_index() << std::scientific
           << std::setprecision(m_precision) << std::setw(m_width)
           << m_sim.time().new_time();
         f << std::setw(m_width) << m_total_kinetic_energy;
