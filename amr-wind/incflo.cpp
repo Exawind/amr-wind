@@ -244,6 +244,7 @@ void incflo::post_advance_work()
 
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
+        m_sim.io_manager().write_netcdf_file(); 
     }
 
     if (m_time.write_checkpoint()) {
@@ -294,7 +295,12 @@ void incflo::Evolve()
 
     // Output at final time
     if (m_time.write_last_plot_file()) {
+<<<<<<< HEAD
         m_sim.io_manager().write_plot_file();
+=======
+     m_sim.io_manager().write_plot_file();
+     m_sim.io_manager().write_netcdf_file(); 
+>>>>>>> Output netcdf files along with plot files
     }
 
     if (m_time.write_last_checkpoint()) {
