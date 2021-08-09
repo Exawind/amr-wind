@@ -451,8 +451,8 @@ void IOManager::write_netcdf_file(){
     amrex::Vector<size_t> start = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z)};
     amrex::Vector<size_t> count = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1)};
     xvelncf.put(xvel.dataPtr(), start, count);
-    yvelncf.put(xvel.dataPtr(), start, count);
-    zvelncf.put(xvel.dataPtr(), start, count);
+    yvelncf.put(yvel.dataPtr(), start, count);
+    zvelncf.put(zvel.dataPtr(), start, count);
   }
 
   if (velocity.is_mesh_mapped()) {
