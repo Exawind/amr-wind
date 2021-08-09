@@ -55,7 +55,7 @@ void QCriterionRefinement::operator()(
     const auto nondim = m_nondim;
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(mfab, amrex::TilingIfNotGPU()); mfi.isValid();
          ++mfi) {
