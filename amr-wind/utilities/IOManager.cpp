@@ -1,4 +1,5 @@
 #include <AMReX_MultiFab.H>
+#include <AMReX_REAL.H>
 #include <chrono>
 #include <ctime>
 #include <fstream>
@@ -410,16 +411,16 @@ void IOManager::write_netcdf_file(){
   std::vector<double> fill_val_z(dhi.z - dlo.z + 1);
 
   for (int i = dlo.x; i<= dhi.x; i++) {
-    fill_val_x[i] = problo[0] + 0.5*dx[0]*(i+1)*factormap[0];  // perform mapping to the non-uniform space
+    fill_val_x[i] = problo[0] + dx[0]*(static_cast<amrex::Real>(i)+0.5)*factormap[0];  // perform mapping to the non-uniform space
   }
   xcell.put(fill_val_x.data());
 
   for (int j = dlo.y; j<= dhi.y; j++) {
-    fill_val_y[j] = problo[1] + 0.5*dx[1]*(j+1)*factormap[1];  // perform mapping to the non-uniform space
+    fill_val_y[j] = problo[1] + dx[1]*(static_cast<amrex::Real>(j)+0.5)*factormap[1];  // perform mapping to the non-uniform space
   }
   ycell.put(fill_val_y.data());
   for (int k = dlo.z; k<= dhi.z; k++) {
-    fill_val_z[k] = problo[2] + 0.5*dx[2]*(k+1)*factormap[2];  // perform mapping to the non-uniform space
+    fill_val_z[k] = problo[2] + dx[2]*(static_cast<amrex::Real>(k)+0.5)*factormap[2];  // perform mapping to the non-uniform space
   }
   zcell.put(fill_val_z.data());
 
