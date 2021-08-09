@@ -1,3 +1,4 @@
+#include <AMReX_MultiFab.H>
 #include <chrono>
 #include <ctime>
 #include <fstream>
@@ -357,7 +358,7 @@ void IOManager::write_netcdf_file(){
 
   amrex::ParmParse pp("io");
 
-  pp.query("text_file", m_netcdf_prefix);
+  pp.query("ncf_file", m_netcdf_prefix);
 
   const std::string& ncf_filename =
       amrex::Concatenate(m_netcdf_prefix, m_sim.time().time_index());
@@ -365,6 +366,10 @@ void IOManager::write_netcdf_file(){
   auto ncf = ncutils::NCFile::create(ncf_filename, NC_CLOBBER | NC_NETCDF4);
 
   ncf.enter_def_mode();
+
+  amrex::Vector<amrex::Real> factormap; 
+  amrex::ParmParse ppMap("ConstantScaling");
+  ppMap.queryarr("scaling_factor",factormap,0,AMREX_SPACEDIM);
 
   // Get normal direction and associated stuff
   const auto& mesh = m_sim.mesh();
@@ -378,11 +383,6 @@ void IOManager::write_netcdf_file(){
   ncf.def_dim("xc", dhi.x - dlo.x + 1);
   ncf.def_dim("yc", dhi.y - dlo.y + 1);
   ncf.def_dim("zc", dhi.z - dlo.z + 1);
-  ncf.def_dim("ncomp", 3);
-
-  ncf.def_dim("xn", dhi.x - dlo.x + 2);
-  ncf.def_dim("yn", dhi.y - dlo.y + 2);
-  ncf.def_dim("zn", dhi.z - dlo.z + 2);
 
   auto xcell = ncf.def_var("xc", NC_DOUBLE, {"xc"});
   auto ycell = ncf.def_var("yc", NC_DOUBLE, {"yc"});
@@ -397,61 +397,66 @@ void IOManager::write_netcdf_file(){
   zcell.put_attr("units","m");
   zcell.put_attr("axis", "Z");
   
-  ncf.def_var("xn", NC_DOUBLE, {"xn"});
-  ncf.def_var("yn", NC_DOUBLE, {"yn"});
-  ncf.def_var("zn", NC_DOUBLE, {"zn"});
+  const std::vector<std::string> dim_3_c{"xc", "yc", "zc"};
+  
+  auto xvelncf = ncf.def_array("x_velocity", NC_DOUBLE, dim_3_c);
+  auto yvelncf = ncf.def_array("y_velocity", NC_DOUBLE, dim_3_c);
+  auto zvelncf = ncf.def_array("z_velocity", NC_DOUBLE, dim_3_c);
 
-  const std::vector<std::string> dim_4_c{"xc", "yc", "zc", "ncomp"};
-  const std::vector<std::string> dim_3_n{"xn", "yn", "zn"};
-
-  auto velncf = ncf.def_array("velocity", NC_DOUBLE, dim_4_c);
-
-  auto pressncf = ncf.def_array("p", NC_DOUBLE, dim_3_n);
-
+  ncf.exit_def_mode();
+  
   std::vector<double> fill_val_x(dhi.x - dlo.x + 1);
   std::vector<double> fill_val_y(dhi.y - dlo.y + 1);
   std::vector<double> fill_val_z(dhi.z - dlo.z + 1);
 
   for (int i = dlo.x; i<= dhi.x; i++) {
-    fill_val_x[i] = problo[0] + 0.5*dx[0]*(i+1);  // perform mapping to the non-uniform space
+    fill_val_x[i] = problo[0] + 0.5*dx[0]*(i+1)*factormap[0];  // perform mapping to the non-uniform space
   }
   xcell.put(fill_val_x.data());
 
   for (int j = dlo.y; j<= dhi.y; j++) {
-    fill_val_y[j] = problo[1] + 0.5*dx[1]*(j+1);  // perform mapping to the non-uniform space
+    fill_val_y[j] = problo[1] + 0.5*dx[1]*(j+1)*factormap[1];  // perform mapping to the non-uniform space
   }
   ycell.put(fill_val_y.data());
   for (int k = dlo.z; k<= dhi.z; k++) {
-    fill_val_z[k] = problo[2] + 0.5*dx[2]*(k+1);  // perform mapping to the non-uniform space
+    fill_val_z[k] = problo[2] + 0.5*dx[2]*(k+1)*factormap[2];  // perform mapping to the non-uniform space
   }
   zcell.put(fill_val_z.data());
 
   auto& repo = m_sim.repo();
   auto& velocity = repo.get_field("velocity");
-  auto& pressure = repo.get_field("p");
-
+  
   velocity.to_mapped_mesh();
-  pressure.to_mapped_mesh();
 
+  auto velcomp_x = repo.create_scratch_field(1);
+  auto velcomp_y = repo.create_scratch_field(1);
+  auto velcomp_z = repo.create_scratch_field(1);
+
+  amrex::MultiFab::Copy((*velcomp_x)(0), velocity(0), 0, 0, 1, 0);
+  amrex::MultiFab::Copy((*velcomp_y)(0), velocity(0), 1, 0, 1, 0);
+  amrex::MultiFab::Copy((*velcomp_z)(0), velocity(0), 2, 0, 1, 0);
+  
   amrex::MFItInfo mfi_info;
   for (amrex::MFIter mfi(velocity(0), mfi_info); mfi.isValid();
        ++mfi) {
 
     amrex::Box const& bx = mfi.validbox();
-    auto vel = velocity(0).const_array(mfi);
-    auto press = pressure(0).const_array(mfi);
-
+    auto xvel = (*velcomp_x)(0).const_array(mfi);
+    auto yvel = (*velcomp_y)(0).const_array(mfi);
+    auto zvel = (*velcomp_z)(0).const_array(mfi);
+  
     const auto lo = lbound(bx);
     const auto hi = ubound(bx);
 
-    amrex::Vector<size_t> start = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z), 0};
-    amrex::Vector<size_t> count = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1), 3};
-    velncf.put(vel.dataPtr(), start, count);
+    amrex::Vector<size_t> start = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z)};
+    amrex::Vector<size_t> count = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1)};
+    xvelncf.put(xvel.dataPtr(), start, count);
+    yvelncf.put(xvel.dataPtr(), start, count);
+    zvelncf.put(xvel.dataPtr(), start, count);
+  }
 
-    amrex::Vector<size_t> startP = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z)};
-    amrex::Vector<size_t> countP = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1)};
-    pressncf.put(press.dataPtr(), start, count);
-    
+  if (velocity.is_mesh_mapped()) {
+        velocity.to_unmapped_mesh();
   }
   
   ncf.close();
