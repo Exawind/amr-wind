@@ -128,6 +128,7 @@ void incflo::ApplyProjection(
     auto& grad_p = m_repo.get_field("gp");
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
+    auto& velocity_old = icns().fields().field.state(amr_wind::FieldState::Old);
     auto& mesh_fac = m_repo.get_field("mesh_scaling_factor_cc");
 
     // TODO: Mesh mapping doesn't work with immersed boundaries
@@ -203,12 +204,16 @@ void incflo::ApplyProjection(
         }
     }
 
+    // ensure velocity is in unmapped mesh space
+    if (velocity_old.is_mesh_mapped()) {
+        velocity_old.to_unmapped_mesh();
+    }
+
     // Define "vel" to be U^* - U^n rather than U^*
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Subtract(
-                velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
-                0, 0, AMREX_SPACEDIM, 0);
+                velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
@@ -330,8 +335,7 @@ void incflo::ApplyProjection(
     if (proj_for_small_dt || incremental) {
         for (int lev = 0; lev <= finest_level; ++lev) {
             MultiFab::Add(
-                velocity(lev), velocity.state(amr_wind::FieldState::Old)(lev),
-                0, 0, AMREX_SPACEDIM, 0);
+                velocity(lev), velocity_old(lev), 0, 0, AMREX_SPACEDIM, 0);
         }
     }
 
