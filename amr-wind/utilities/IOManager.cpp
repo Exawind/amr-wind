@@ -427,7 +427,9 @@ void IOManager::write_netcdf_file(){
   auto& repo = m_sim.repo();
   auto& velocity = repo.get_field("velocity");
   
-  velocity.to_mapped_mesh();
+  if (velocity.is_mesh_mapped()) {
+        velocity.to_unmapped_mesh();
+  }
 
   auto velcomp_x = repo.create_scratch_field(1);
   auto velcomp_y = repo.create_scratch_field(1);
@@ -454,10 +456,6 @@ void IOManager::write_netcdf_file(){
     xvelncf.put(xvel.dataPtr(), start, count);
     yvelncf.put(yvel.dataPtr(), start, count);
     zvelncf.put(zvel.dataPtr(), start, count);
-  }
-
-  if (velocity.is_mesh_mapped()) {
-        velocity.to_unmapped_mesh();
   }
   
   ncf.close();

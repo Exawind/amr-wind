@@ -181,11 +181,9 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
             amrex::average_cellcenter_to_face(
                 mesh_fac_face[lev], mesh_fac(lev), geom[lev], ICNS::ndim);
 
-            // scale U^mac to accommodate for mesh mapping -> U^bar = J/fac * U^mac
             // beta accounted for mesh mapping = J/fac^2 * 1/rho
-            // construct rho and mesh map u_mac on x-face
+            // construct rho on x-face
             for (amrex::MFIter mfi(*(rho_face[lev][0])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& u = u_mac(lev).array(mfi);
                 amrex::Array4<amrex::Real> const& rho = rho_face[lev][0]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                         mesh_fac_face[lev][0]->const_array(mfi);
@@ -194,13 +192,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        u(i,j,k) *= det_j / fac(i,j,k,0);
                         rho(i,j,k) = det_j / std::pow(fac(i,j,k,0),2) / rho(i,j,k);
                     });
             }
-            // construct rho and mesh map u_mac on y-face
+            // construct rho on y-face
             for (amrex::MFIter mfi(*(rho_face[lev][1])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& v = v_mac(lev).array(mfi);
                 amrex::Array4<amrex::Real> const& rho = rho_face[lev][1]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_face[lev][1]->const_array(mfi);
@@ -209,13 +205,11 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        v(i,j,k) *= det_j / fac(i,j,k,1);
                         rho(i,j,k) = det_j / std::pow(fac(i,j,k,1),2) / rho(i,j,k);
                     });
             }
             // construct rho on z-face
             for (amrex::MFIter mfi(*(rho_face[lev][2])); mfi.isValid(); ++mfi) {
-                amrex::Array4<amrex::Real> const& w = w_mac(lev).array(mfi);
                 amrex::Array4<amrex::Real> const& rho = rho_face[lev][2]->array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
                     mesh_fac_face[lev][2]->const_array(mfi);
@@ -224,7 +218,6 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        w(i,j,k) *= det_j / fac(i,j,k,2);
                         rho(i,j,k) = det_j / std::pow(fac(i,j,k,2),2) / rho(i,j,k);
                     });
             }
