@@ -72,6 +72,7 @@ This section documents the parameters available within each section.
    inputs_incflo.rst
    inputs_transport.rst
    inputs_turbulence.rst
+   inputs_Momentum_Sources.rst
    inputs_ABL.rst
    inputs_Static_Refinement.rst
    inputs_Boundary_conditions.rst
