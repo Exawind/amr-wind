@@ -34,6 +34,7 @@ ABLWrfForcingMom::ABLWrfForcingMom(const CFDSim& sim)
 
     const auto& abl = sim.physics_manager().get<amr_wind::ABL>();
     abl.register_mean_wrf_forcing(this);
+    abl.abl_statistics().register_wrf_forcing_mom(this);
 
     amrex::ParmParse pp(identifier());
     pp.query("forcing_scheme", m_forcing_scheme);

@@ -71,6 +71,15 @@ public:
         m_abl_forcing = forcing;
     }
 
+  void register_wrf_forcing_mom(pde::icns::ABLWrfForcingMom* forcing) const override
+  {
+    m_abl_wrf_mom_forcing = forcing; 
+  }
+
+  void register_wrf_forcing_temp(pde::temperature::ABLWrfForcingTemp* forcing) const override{
+    m_abl_wrf_temp_forcing = forcing; 
+  }
+
     //! Calculate sfs stress averages
     void
     calc_sfs_stress_avgs(ScratchField& sfs_stress, ScratchField& t_sfs_stress);

@@ -9,7 +9,11 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 class ABLForcing;
+class ABLWrfForcingMom;
 } // namespace icns
+namespace temperature{
+class ABLWrfForcingTemp; 
+}
 } // namespace pde
 
 enum class ABLStatsMode : int {
@@ -47,6 +51,13 @@ public:
 
     virtual void
     register_forcing_term(pde::icns::ABLForcing* forcing) const = 0;
+
+    virtual void
+    register_wrf_forcing_mom(pde::icns::ABLWrfForcingMom* forcing) const = 0;
+
+    virtual void
+    register_wrf_forcing_temp(pde::temperature::ABLWrfForcingTemp* forcing) const = 0;
+
 };
 
 } // namespace amr_wind
