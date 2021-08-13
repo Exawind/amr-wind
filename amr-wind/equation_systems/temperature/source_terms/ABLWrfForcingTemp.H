@@ -1,6 +1,7 @@
 #ifndef ABLWRFFORCINGTEMP_H
 #define ABLWRFFORCINGTEMP_H
 
+#include <AMReX_REAL.H>
 #include <memory>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/temperature/TemperatureSource.H"
@@ -36,6 +37,9 @@ public:
 
     void indirectForcingInit();
 
+  amrex::Vector<amrex::Real>& theta_wrf_error(){
+    return m_err_Theta;} 
+
 private:
     const SimTime& m_time;
     const amrex::AmrCore& m_mesh;
@@ -53,6 +57,7 @@ private:
     int m_axis{2};
 
     amrex::Vector<amrex::Real> m_zht;
+    amrex::Vector<amrex::Real> m_err_Theta;
 
     int m_nht;
 

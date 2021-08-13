@@ -61,6 +61,8 @@ void ABLWrfForcingTemp::mean_temperature_init(
     m_nht = tavg.line_centroids().size();
     m_zht.resize(m_nht);
 
+    m_err_Theta.resize(tavg.ncell_line());
+
     m_error_wrf_avg_theta.resize(tavg.ncell_line());
 
     amrex::Gpu::copy(
@@ -243,6 +245,10 @@ amrex::Real ABLWrfForcingTemp::mean_temperature_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_T.begin(), error_T.end(),
         m_error_wrf_avg_theta.begin());
+
+    for (size_t ih = 0; ih < n_levels; ih++) {
+      m_err_Theta[ih] = error_T[ih]*m_gain_coeff;
+    }
 
     return interpTflux;
 }

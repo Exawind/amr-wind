@@ -70,6 +70,9 @@ void ABLWrfForcingMom::mean_velocity_init(
     m_error_wrf_avg_U.resize(vavg.ncell_line());
     m_error_wrf_avg_V.resize(vavg.ncell_line());
 
+    m_err_U.resize(vavg.ncell_line());
+    m_err_V.resize(vavg.ncell_line());
+
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, vavg.line_centroids().begin(),
         vavg.line_centroids().end(), m_velAvg_ht.begin());
@@ -281,6 +284,12 @@ void ABLWrfForcingMom::mean_velocity_heights(
     amrex::Gpu::copy(
         amrex::Gpu::hostToDevice, error_V.begin(), error_V.end(),
         m_error_wrf_avg_V.begin());
+
+        for (size_t ih = 0; ih < n_levels; ih++) {
+            m_err_U[ih] = error_U[ih]*m_gain_coeff;
+            m_err_V[ih] = error_V[ih]*m_gain_coeff;
+        }
+    
 }
 
 void ABLWrfForcingMom::operator()(

@@ -1,6 +1,8 @@
 #ifndef ABLWRFFORCINGMOM
 #define ABLWRFFORCINGMOM
 
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
 #include <memory>
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/equation_systems/icns/MomentumSource.H"
@@ -44,6 +46,11 @@ public:
   void invertMat(const amrex::Array2D<amrex::Real,0,3,0,3>&, amrex::Array2D<amrex::Real,0,3,0,3>&);
 
   void indirectForcingInit();
+
+  amrex::Vector<amrex::Real>& mom_u_wrf_error(){
+    return m_err_U;}
+  amrex::Vector<amrex::Real>& mom_v_wrf_error(){
+    return m_err_V;}
  
  private:
   const SimTime& m_time;
@@ -67,6 +74,9 @@ public:
   amrex::Gpu::DeviceVector<amrex::Real> m_error_wrf_avg_V;
 
   amrex::Vector<amrex::Real> m_zht;
+
+  amrex::Vector<amrex::Real> m_err_U;
+  amrex::Vector<amrex::Real> m_err_V;
   
   int m_idx_time;
 

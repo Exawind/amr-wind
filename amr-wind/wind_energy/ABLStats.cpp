@@ -9,6 +9,8 @@
 
 #include "AMReX_ParmParse.H"
 #include "AMReX_ParallelDescriptor.H"
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
 
 namespace amr_wind {
 
@@ -367,6 +369,12 @@ void ABLStats::prepare_netcdf_file()
     grp.def_var("w", NC_DOUBLE, two_dim);
     grp.def_var("hvelmag", NC_DOUBLE, two_dim);
     grp.def_var("theta", NC_DOUBLE, two_dim);
+    amrex::ParmParse pp("ABL");
+    if (pp.contains("WRFforcing")) {
+      grp.def_var("abl_wrf_forcing_mom_x", NC_DOUBLE, two_dim);
+      grp.def_var("abl_wrf_forcing_mom_y", NC_DOUBLE, two_dim);
+      grp.def_var("abl_wrf_forcing_theta", NC_DOUBLE, two_dim);
+    }
     grp.def_var("mueff", NC_DOUBLE, two_dim);
     grp.def_var("u'theta'_r", NC_DOUBLE, two_dim);
     grp.def_var("v'theta'_r", NC_DOUBLE, two_dim);
@@ -474,6 +482,29 @@ void ABLStats::write_netcdf()
         {
             auto var = grp.var("theta");
             var.put(m_pa_temp.line_average().data(), start, count);
+        }
+
+        {
+          if (m_abl_wrf_mom_forcing != nullptr) {
+            amrex::Vector<amrex::Real> wrf_forcing_mom_u(n_levels);
+            amrex::Vector<amrex::Real> wrf_forcing_mom_v(n_levels);
+            
+            wrf_forcing_mom_u = m_abl_wrf_mom_forcing->mom_u_wrf_error();
+            auto var_x = grp.var("abl_wrf_forcing_mom_x");
+            var_x.put(wrf_forcing_mom_u.data(), start, count);
+
+            wrf_forcing_mom_v = m_abl_wrf_mom_forcing->mom_v_wrf_error();
+            auto var_y = grp.var("abl_wrf_forcing_mom_y");
+            var_y.put(wrf_forcing_mom_v.data(), start, count);
+          }
+          if(m_abl_wrf_temp_forcing != nullptr){
+            amrex::Vector<amrex::Real> wrf_forcing_theta(n_levels);
+
+            wrf_forcing_theta = m_abl_wrf_temp_forcing->theta_wrf_error();
+            auto var_theta = grp.var("abl_wrf_forcing_theta");
+            var_theta.put(wrf_forcing_theta.data(), start, count);
+            
+          }
         }
 
         {

@@ -1,6 +1,8 @@
 #ifndef ABLISTATS_H
 #define ABLISTATS_H
 
+#include "amr-wind/equation_systems/icns/source_terms/ABLWrfForcingMom.H"
+#include "amr-wind/equation_systems/temperature/source_terms/ABLWrfForcingTemp.H"
 #include "amr-wind/wind_energy/ABLStatsBase.H"
 #include "amr-wind/CFDSim.H"
 #include "amr-wind/utilities/FieldPlaneAveraging.H"
@@ -109,6 +111,9 @@ private:
 
     //! Reference to ABL forcing term if present
     mutable pde::icns::ABLForcing* m_abl_forcing{nullptr};
+
+    mutable pde::icns::ABLWrfForcingMom* m_abl_wrf_mom_forcing{nullptr};
+    mutable pde::temperature::ABLWrfForcingTemp* m_abl_wrf_temp_forcing{nullptr};
 
     //! Format of the data output (ascii, netcdf, etc.)
 #ifdef AMR_WIND_USE_NETCDF
