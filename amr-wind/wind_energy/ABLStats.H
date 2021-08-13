@@ -18,7 +18,11 @@ namespace amr_wind {
 namespace pde {
 namespace icns {
 class ABLForcing;
+class ABLWrfForcingMom;
 } // namespace icns
+namespace temperature{
+class ABLWrfForcingTemp; 
+}
 } // namespace pde
 
 /**
