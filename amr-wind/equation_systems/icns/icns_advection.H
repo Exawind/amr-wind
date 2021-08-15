@@ -400,10 +400,11 @@ struct AdvectionOp<ICNS, fvm::MOL>
         // Advect velocity
         //
 
-        // evaluation of advection flux requires
-        // dof field to be in mapped mesh space
-        if (!dof_field.is_mesh_mapped()) {
-            dof_field.to_mapped_mesh();
+        // FIXME: Using the dof_field in the unmapped mesh space
+        // presents an incompatibility with the computation of
+        // convective fluxes which assumed uniform spaced (mapped) mesh
+        if (dof_field.is_mesh_mapped()) {
+            dof_field.to_unmapped_mesh();
         }
 
         int nmaxcomp = AMREX_SPACEDIM;
