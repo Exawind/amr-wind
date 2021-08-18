@@ -36,6 +36,10 @@ private:
 
     //! initial density value
     amrex::Real m_rho{1.0};
+
+    amrex::Real m_R{1.0};
+    amrex::Real m_Gamma{1.0};
+    amrex::Real m_alpha{0.54857674};
 };
 
 struct VorticityTheta
