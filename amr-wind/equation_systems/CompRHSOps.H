@@ -70,6 +70,7 @@ struct ComputeRHSOp
         auto& diff_term = fields.diff_term.state(fstate);
         auto& conv_term = fields.conv_term.state(fstate);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
+        auto& mesh_fac = fields.repo.get_field("mesh_scaling_factor_cc");
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -85,6 +86,7 @@ struct ComputeRHSOp
                 const auto diff = diff_term(lev).const_array(mfi);
                 const auto ddt_o = conv_term(lev).const_array(mfi);
                 const auto imask = mask_cell(lev).const_array(mfi);
+                const auto mfac = mesh_fac(lev).const_array(mfi);
 
                 if (PDE::multiply_rho) {
                     // Remove multiplication by density as it will be added back
@@ -93,9 +95,12 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
                                     (ddt_o(i, j, k, n) + src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
 
@@ -106,9 +111,12 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j =
+                                mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+
                             fld(i, j, k, n) =
                                 fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
                                     (ddt_o(i, j, k, n) + src(i, j, k, n) +
                                      factor * diff(i, j, k, n));
                         });
@@ -166,6 +174,7 @@ struct ComputeRHSOp
         auto& diff_term_old = fields.diff_term.state(FieldState::Old);
         auto& conv_term_old = fields.conv_term.state(FieldState::Old);
         auto& mask_cell = fields.repo.get_int_field("mask_cell");
+        auto& mesh_fac = fields.repo.get_field("mesh_scaling_factor_cc");
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -183,6 +192,7 @@ struct ComputeRHSOp
                 const auto diff_o = diff_term_old(lev).const_array(mfi);
                 const auto ddt_o = conv_term_old(lev).const_array(mfi);
                 const auto imask = mask_cell(lev).const_array(mfi);
+                const auto mfac = mesh_fac(lev).const_array(mfi);
 
                 if (PDE::multiply_rho) {
                     // Remove multiplication by density as it will be added back
@@ -191,9 +201,12 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j
+                                = mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +
@@ -206,9 +219,12 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
+                            amrex::Real det_j
+                                = mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+
                             fld(i, j, k, n) =
                                 fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
                                     (0.5 *
                                          (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
                                      ofac * diff_o(i, j, k, n) +

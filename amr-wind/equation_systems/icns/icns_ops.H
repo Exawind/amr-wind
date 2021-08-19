@@ -103,10 +103,12 @@ struct SrcTermOp<ICNS> : SrcTermOpBase<ICNS>
 
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                        amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
                         amrex::Real rhoinv = 1.0 / rho(i, j, k);
-                        vf(i, j, k, 0) = -(1/fac(i, j, k, 0) * gp(i, j, k, 0)) * rhoinv;
-                        vf(i, j, k, 1) = -(1/fac(i, j, k, 1) * gp(i, j, k, 1)) * rhoinv;
-                        vf(i, j, k, 2) = -(1/fac(i, j, k, 2) * gp(i, j, k, 2)) * rhoinv;
+
+                        vf(i, j, k, 0) = -(det_j/fac(i, j, k, 0) * gp(i, j, k, 0)) * rhoinv;
+                        vf(i, j, k, 1) = -(det_j/fac(i, j, k, 1) * gp(i, j, k, 1)) * rhoinv;
+                        vf(i, j, k, 2) = -(det_j/fac(i, j, k, 2) * gp(i, j, k, 2)) * rhoinv;
                     });
 
                 for (auto& src : this->sources) {
