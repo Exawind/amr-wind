@@ -104,8 +104,8 @@ void BodyForce::operator()(
                                     (force_ht[ir] - force_ht[il])) *
                                        (ht - force_ht[il]);
 
-                src_term(i, j, k, 0) += fx / dt;
-                src_term(i, j, k, 1) += fy / dt;
+                src_term(i, j, k, 0) += fx;
+                src_term(i, j, k, 1) += fy;
             });
 
     } else {
