@@ -353,8 +353,8 @@ struct AdvectionOp<ICNS, fvm::MOL>
 
         // computation of velocity on faces requires
         // dof field to be in mapped mesh space
-        if (!dof_field.is_mesh_mapped()) {
-            dof_field.to_mapped_mesh();
+        if (dof_field.is_mesh_mapped()) {
+            dof_field.to_unmapped_mesh();
         }
 
         //
@@ -399,13 +399,6 @@ struct AdvectionOp<ICNS, fvm::MOL>
         //
         // Advect velocity
         //
-
-        // FIXME: Using the dof_field in the unmapped mesh space
-        // presents an incompatibility with the computation of
-        // convective fluxes which assumed uniform spaced (mapped) mesh
-        if (dof_field.is_mesh_mapped()) {
-            dof_field.to_unmapped_mesh();
-        }
 
         int nmaxcomp = AMREX_SPACEDIM;
         for (int lev = 0; lev < repo.num_active_levels(); ++lev) {
