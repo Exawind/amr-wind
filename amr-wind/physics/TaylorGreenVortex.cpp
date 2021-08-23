@@ -18,12 +18,12 @@ TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
     // determine probhi based on if mesh is mapped
     {
         amrex::ParmParse pp("geometry");
-        if (pp.contains("prob_hi_unmapped")) {
-            pp.getarr("prob_hi_unmapped", m_probhi_unmapped);
+        if (pp.contains("prob_hi_physical")) {
+            pp.getarr("prob_hi_physical", m_probhi_physical);
         }
         else {
             for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
-                m_probhi_unmapped[d] = sim.repo().mesh().Geom(0).ProbHiArray()[d];
+                m_probhi_physical[d] = sim.repo().mesh().Geom(0).ProbHiArray()[d];
             }
         }
     }
@@ -43,9 +43,9 @@ void TaylorGreenVortex::initialize_fields(
     density.setVal(m_rho);
 
     const auto& problo = geom.ProbLoArray();
-    const amrex::Real Lx = m_probhi_unmapped[0] - problo[0];
-    const amrex::Real Ly = m_probhi_unmapped[1] - problo[1];
-    const amrex::Real Lz = m_probhi_unmapped[2] - problo[2];
+    const amrex::Real Lx = m_probhi_physical[0] - problo[0];
+    const amrex::Real Ly = m_probhi_physical[1] - problo[1];
+    const amrex::Real Lz = m_probhi_physical[2] - problo[2];
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
