@@ -70,6 +70,23 @@ void KsgsM84Src::operator()(
                     });
             }
         }
+
+        amrex::Orientation ohi(dir, amrex::Orientation::high);
+        if (bctype[ohi] == BC::wall_model) {
+            amrex::Box bhi = amrex::adjCellHi(bx, dir, 0) & bx;
+            if (bhi.ok()) {
+                amrex::ParallelFor(
+                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        amrex::Real ceps_local =
+                            (Ceps / 0.93) *
+                            (0.19 + (0.74 * tlscale_arr(i, j, k) / ds));
+                        src_term(i, j, k) += (ceps_local - CepsGround) *
+                                             std::sqrt(tke_arr(i, j, k)) *
+                                             tke_arr(i, j, k) /
+                                             tlscale_arr(i, j, k);
+                    });
+            }
+        }
     }
 }
 
