@@ -183,25 +183,45 @@ void ABLVelWallFunc::wall_model(
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
-            if (!(bx.smallEnd(idim) == domain.smallEnd(idim))) continue;
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real mu = eta(i, j, k);
+                        const amrex::Real uu = vold_arr(i, j, k, 0);
+                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
 
-            amrex::ParallelFor(
-                amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real mu = eta(i, j, k);
-                    const amrex::Real uu = vold_arr(i, j, k, 0);
-                    const amrex::Real vv = vold_arr(i, j, k, 1);
-                    const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        // Dirichlet BC
+                        varr(i, j, k - 1, 2) = 0.0;
 
-                    // Dirichlet BC
-                    varr(i, j, k - 1, 2) = 0.0;
+                        // Shear stress BC
+                        varr(i, j, k - 1, 0) =
+                            tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
+                        varr(i, j, k - 1, 1) =
+                            tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
+                    });
+            }
 
-                    // Shear stress BC
-                    varr(i, j, k - 1, 0) =
-                        tau.calc_vel_x(uu, wspd) * den(i, j, k) / mu;
-                    varr(i, j, k - 1, 1) =
-                        tau.calc_vel_y(vv, wspd) * den(i, j, k) / mu;
-                });
+            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+                amrex::ParallelFor(
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real mu = eta(i, j, k - 1);
+                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
+                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+
+                        // Dirichlet BC
+                        varr(i, j, k, 2) = 0.0;
+
+                        // Shear stress BC
+                        varr(i, j, k, 0) =
+                            tau.calc_vel_x(uu, wspd) * den(i, j, k - 1) / mu;
+                        varr(i, j, k, 1) =
+                            tau.calc_vel_y(vv, wspd) * den(i, j, k - 1) / mu;
+                    });
+            }
         }
     }
 }
@@ -284,19 +304,35 @@ void ABLTempWallFunc::wall_model(
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
-            if (!(bx.smallEnd(idim) == domain.smallEnd(idim))) continue;
+            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+                amrex::ParallelFor(
+                    amrex::bdryLo(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real alphaT = eta(i, j, k);
+                        const amrex::Real uu = vold_arr(i, j, k, 0);
+                        const amrex::Real vv = vold_arr(i, j, k, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        const amrex::Real theta2 = told_arr(i, j, k);
+                        tarr(i, j, k - 1) = den(i, j, k) *
+                                            tau.calc_theta(wspd, theta2) /
+                                            alphaT;
+                    });
+            }
 
-            amrex::ParallelFor(
-                amrex::bdryLo(bx, idim),
-                [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real alphaT = eta(i, j, k);
-                    const amrex::Real uu = vold_arr(i, j, k, 0);
-                    const amrex::Real vv = vold_arr(i, j, k, 1);
-                    const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
-                    const amrex::Real theta2 = told_arr(i, j, k);
-                    tarr(i, j, k - 1) =
-                        den(i, j, k) * tau.calc_theta(wspd, theta2) / alphaT;
-                });
+            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+
+                amrex::ParallelFor(
+                    amrex::bdryHi(bx, idim),
+                    [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                        const amrex::Real alphaT = eta(i, j, k - 1);
+                        const amrex::Real uu = vold_arr(i, j, k - 1, 0);
+                        const amrex::Real vv = vold_arr(i, j, k - 1, 1);
+                        const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
+                        const amrex::Real theta2 = told_arr(i, j, k - 1);
+                        tarr(i, j, k) = den(i, j, k - 1) *
+                                        tau.calc_theta(wspd, theta2) / alphaT;
+                    });
+            }
         }
     }
 }
