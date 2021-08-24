@@ -27,7 +27,7 @@ private:
 
     //! User input parameters
     amrex::Vector<amrex::Real> m_alpha{{0.0, 0.5, 0.0}};
-    amrex::Vector<amrex::Real> m_beta{{0.0, 1.005, 0.0}};
+    amrex::Vector<amrex::Real> m_beta{{0.0, 1.0005, 0.0}};
     amrex::Vector<int> m_map{{0, 1, 0}};
 };
 

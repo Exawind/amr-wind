@@ -22,7 +22,7 @@ void ChannelFlowScaling::create_map(
 {
     const auto& dx = geom.CellSizeArray();
     const auto& prob_lo = geom.ProbLoArray();
-    const auto& prob_hi = geom.ProbLoArray();
+    const auto& prob_hi = geom.ProbHiArray();
     amrex::Vector<amrex::Real> ht{{
         prob_hi[0] - prob_lo[0],
         prob_hi[1] - prob_lo[1],
@@ -39,22 +39,25 @@ void ChannelFlowScaling::create_map(
                 amrex::Real y = prob_lo[1] + (j+0.5) * dx[1];
                 amrex::Real z = prob_lo[2] + (k+0.5) * dx[2];
 
-                amrex::Real num_x = ht[0] * (m_beta[0] + 2*m_alpha[0])
-                                  * std::pow(((m_beta[0]+1)/(m_beta[0]-1)),((x-m_alpha[0])/(1-m_alpha[0])))
-                                  - m_beta[0] + 2*m_alpha[0];
-                amrex::Real num_y = ht[1] * (m_beta[1] + 2*m_alpha[1])
-                                  * std::pow(((m_beta[1]+1)/(m_beta[1]-1)),((y-m_alpha[1])/(1-m_alpha[1])))
-                                  - m_beta[1] + 2*m_alpha[1];
-                amrex::Real num_z = ht[2] * (m_beta[2] + 2*m_alpha[2])
-                                  * std::pow(((m_beta[2]+1)/(m_beta[2]-1)),((z-m_alpha[2])/(1-m_alpha[2])))
-                                  - m_beta[2] + 2*m_alpha[2];
+                amrex::Real num_x = -(2*m_beta[0]*ht[0]
+                                  * log((m_beta[0] + 1)/(m_beta[0] - 1))
+                                  * std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),((m_alpha[0] + x)/(1 - m_alpha[0]))));
+                amrex::Real num_y = -(2*m_beta[1]*ht[1]
+                                  * log((m_beta[1] + 1)/(m_beta[1] - 1))
+                                  * std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),((m_alpha[1] + y)/(1 - m_alpha[1]))));
+                amrex::Real num_z = -(2*m_beta[2]*ht[2]
+                                  * log((m_beta[2] + 1)/(m_beta[2] - 1))
+                                  * std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),((m_alpha[2] + z)/(1 - m_alpha[2]))));
 
-                amrex::Real den_x = (2*m_alpha[0] + 1) * (1
-                                  + std::pow(((m_beta[0]+1)/(m_beta[0]-1)),((x-m_alpha[0])/(1-m_alpha[0]))));
-                amrex::Real den_y = (2*m_alpha[1] + 1) * (1
-                                  + std::pow(((m_beta[1]+1)/(m_beta[1]-1)),((y-m_alpha[1])/(1-m_alpha[1]))));
-                amrex::Real den_z = (2*m_alpha[2] + 1) * (1
-                                  + std::pow(((m_beta[2]+1)/(m_beta[2]-1)),((z-m_alpha[2])/(1-m_alpha[2]))));
+                amrex::Real den_x = ((m_alpha[0] - 1) * (2*m_alpha[0] + 1)
+                                  * std::pow((std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),(x/(1 - m_alpha[0])))
+                                  + std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),(m_alpha[0]/(1 - m_alpha[0])))),2));
+                amrex::Real den_y = ((m_alpha[1] - 1) * (2*m_alpha[1] + 1)
+                                  * std::pow((std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),(y/(1 - m_alpha[1])))
+                                  + std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),(m_alpha[1]/(1 - m_alpha[1])))),2));
+                amrex::Real den_z = ((m_alpha[2] - 1) * (2*m_alpha[2] + 1)
+                                  * std::pow((std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),(z/(1 - m_alpha[2])))
+                                  + std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),(m_alpha[2]/(1 - m_alpha[2])))),2));
 
                 scale_fac_cc(i, j, k, 0) = m_map[0] ? num_x/den_x/dx[0] : 1.0;
                 scale_fac_cc(i, j, k, 1) = m_map[1] ? num_y/den_y/dx[1] : 1.0;
@@ -69,22 +72,25 @@ void ChannelFlowScaling::create_map(
                 amrex::Real y = prob_lo[1] + j * dx[1];
                 amrex::Real z = prob_lo[2] + k * dx[2];
 
-                amrex::Real num_x = ht[0] * (m_beta[0] + 2*m_alpha[0])
-                                  * std::pow(((m_beta[0]+1)/(m_beta[0]-1)),((x-m_alpha[0])/(1-m_alpha[0])))
-                                  - m_beta[0] + 2*m_alpha[0];
-                amrex::Real num_y = ht[1] * (m_beta[1] + 2*m_alpha[1])
-                                  * std::pow(((m_beta[1]+1)/(m_beta[1]-1)),((y-m_alpha[1])/(1-m_alpha[1])))
-                                  - m_beta[1] + 2*m_alpha[1];
-                amrex::Real num_z = ht[2] * (m_beta[2] + 2*m_alpha[2])
-                                  * std::pow(((m_beta[2]+1)/(m_beta[2]-1)),((z-m_alpha[2])/(1-m_alpha[2])))
-                                  - m_beta[2] + 2*m_alpha[2];
+                amrex::Real num_x = -(2*m_beta[0]*ht[0]
+                                  * log((m_beta[0] + 1)/(m_beta[0] - 1))
+                                  * std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),((m_alpha[0] + x)/(1 - m_alpha[0]))));
+                amrex::Real num_y = -(2*m_beta[1]*ht[1]
+                                  * log((m_beta[1] + 1)/(m_beta[1] - 1))
+                                  * std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),((m_alpha[1] + y)/(1 - m_alpha[1]))));
+                amrex::Real num_z = -(2*m_beta[2]*ht[2]
+                                  * log((m_beta[2] + 1)/(m_beta[2] - 1))
+                                  * std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),((m_alpha[2] + z)/(1 - m_alpha[2]))));
 
-                amrex::Real den_x = (2*m_alpha[0] + 1) * (1
-                                  + std::pow(((m_beta[0]+1)/(m_beta[0]-1)),((x-m_alpha[0])/(1-m_alpha[0]))));
-                amrex::Real den_y = (2*m_alpha[1] + 1) * (1
-                                  + std::pow(((m_beta[1]+1)/(m_beta[1]-1)),((y-m_alpha[1])/(1-m_alpha[1]))));
-                amrex::Real den_z = (2*m_alpha[2] + 1) * (1
-                                  + std::pow(((m_beta[2]+1)/(m_beta[2]-1)),((z-m_alpha[2])/(1-m_alpha[2]))));
+                amrex::Real den_x = ((m_alpha[0] - 1) * (2*m_alpha[0] + 1)
+                                  * std::pow((std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),(x/(1 - m_alpha[0])))
+                                  + std::pow(((m_beta[0] + 1)/(m_beta[0] - 1)),(m_alpha[0]/(1 - m_alpha[0])))),2));
+                amrex::Real den_y = ((m_alpha[1] - 1) * (2*m_alpha[1] + 1)
+                                  * std::pow((std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),(y/(1 - m_alpha[1])))
+                                  + std::pow(((m_beta[1] + 1)/(m_beta[1] - 1)),(m_alpha[1]/(1 - m_alpha[1])))),2));
+                amrex::Real den_z = ((m_alpha[2] - 1) * (2*m_alpha[2] + 1)
+                                  * std::pow((std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),(z/(1 - m_alpha[2])))
+                                  + std::pow(((m_beta[2] + 1)/(m_beta[2] - 1)),(m_alpha[2]/(1 - m_alpha[2])))),2));
 
                 scale_fac_nd(i, j, k, 0) = m_map[0] ? num_x/den_x/dx[0] : 1.0;
                 scale_fac_nd(i, j, k, 1) = m_map[1] ? num_y/den_y/dx[1] : 1.0;
