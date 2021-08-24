@@ -1,4 +1,4 @@
-#include "amr-wind/physics/VortexRingCollision.H"
+#include "amr-wind/physics/FatCoredVortexRing.H"
 #include "amr-wind/CFDSim.H"
 #include "AMReX_ParmParse.H"
 #include "amr-wind/utilities/trig_ops.H"
@@ -9,16 +9,20 @@
 namespace amr_wind {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real VorticityTheta::operator()(
-    const amrex::Real r,
-    const amrex::Real z,
+    const amrex::Real s,
+    const amrex::Real ssq,
     const amrex::Real R,
     const amrex::Real Gamma,
-    const amrex::Real delta) const
+    const amrex::Real alpha) const
 {
-    return Gamma / (utils::pi() * std::pow(delta, 2)) * std::exp(- (std::pow(z, 2) + std::pow((r - R), 2)) / std::pow(delta, 2));
+    if (s <= R) {
+		return alpha * Gamma / std::pow(R, 2) * std::exp(- 4 * ssq / (std::pow(R, 2) - ssq));
+	} else {
+		return 0.0;
+	}
 }
 
-VortexRingCollision::VortexRingCollision(const CFDSim& sim)
+FatCoredVortexRing::FatCoredVortexRing(const CFDSim& sim)
     : m_repo(sim.repo())
 	, m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
@@ -29,11 +33,10 @@ VortexRingCollision::VortexRingCollision(const CFDSim& sim)
 	}
 
 	{
-    	amrex::ParmParse pp("vortexringcollision");
+    	amrex::ParmParse pp("fatcoredvortexring");
     	pp.query("R", m_R);
     	pp.query("Gamma", m_Gamma);
-    	pp.query("delta", m_delta);
-    	pp.query("dz", m_dz);
+    	pp.query("alpha", m_alpha);
 	}
 
 	sim.repo().declare_nd_field("vorticity", 3, 1, 1);    
@@ -43,7 +46,7 @@ VortexRingCollision::VortexRingCollision(const CFDSim& sim)
 /** Initialize the velocity and density fields at the beginning of the
  *  simulation.
  */
-void VortexRingCollision::initialize_fields(
+void FatCoredVortexRing::initialize_fields(
     int level, const amrex::Geometry& geom)
 {
     using namespace utils;
@@ -63,6 +66,10 @@ void VortexRingCollision::initialize_fields(
     const amrex::Real Ly = probhi[1] - problo[1];
     const amrex::Real Lz = probhi[2] - problo[2];
 
+	const amrex::Real R = m_R;
+	const amrex::Real Gamma = m_Gamma;
+	const amrex::Real alpha = m_alpha;
+
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& dx = geom.CellSizeArray();
 		const auto& nbx = mfi.nodaltilebox();
@@ -70,13 +77,16 @@ void VortexRingCollision::initialize_fields(
 
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+
                 const amrex::Real x = problo[0] + i * dx[0];
                 const amrex::Real y = problo[1] + j * dx[1];
                 const amrex::Real z = problo[2] + k * dx[2];
                 const amrex::Real r = std::sqrt(std::pow(x, 2) + std::pow(y, 2));
                 const amrex::Real theta = std::atan2(y, x);
-                vort(i, j, k, 0) = -std::sin(theta) * (vorticity_theta(r, z + 0.5 * m_dz, m_R, m_Gamma, m_delta) + vorticity_theta(r, z - 0.5 * m_dz, m_R, -m_Gamma, m_delta));
-                vort(i, j, k, 1) = std::cos(theta) * (vorticity_theta(r, z + 0.5 * m_dz, m_R, m_Gamma, m_delta) + vorticity_theta(r, z - 0.5 * m_dz, m_R, -m_Gamma, m_delta));
+				const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
+				const amrex::Real s = std::sqrt(ssq);
+                vort(i, j, k, 0) = -std::sin(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
+                vort(i, j, k, 1) = std::cos(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
                 vort(i, j, k, 2) = 0.0;
             });
     }

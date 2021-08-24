@@ -1,5 +1,5 @@
-#ifndef VortexRingCollision_H
-#define VortexRingCollision_H
+#ifndef FatCoredVortexRing_H
+#define FatCoredVortexRing_H
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
@@ -9,14 +9,14 @@ namespace amr_wind {
 /** Vortex ring physics
  *  \ingroup physics
  */
-class VortexRingCollision : public Physics::Register<VortexRingCollision>
+class FatCoredVortexRing : public Physics::Register<FatCoredVortexRing>
 {
 public:
-    static const std::string identifier() { return "VortexRingCollision"; }
+    static const std::string identifier() { return "FatCoredVortexRing"; }
 
-    explicit VortexRingCollision(const CFDSim& sim);
+    explicit FatCoredVortexRing(const CFDSim& sim);
 
-    virtual ~VortexRingCollision() = default;
+    virtual ~FatCoredVortexRing() = default;
     //! Initialize the temperature and velocity fields for BoussinesqBubble
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
@@ -39,8 +39,7 @@ private:
 
     amrex::Real m_R{1.0};
     amrex::Real m_Gamma{1.0};
-    amrex::Real m_delta{0.2};
-    amrex::Real m_dz{1.2};
+    amrex::Real m_alpha{0.54857674};
 };
 
 struct VorticityTheta
@@ -56,4 +55,4 @@ struct VorticityTheta
 
 } // namespace amr_wind
 
-#endif /* VortexRingCollision_H */
+#endif /* FatCoredVortexRing_H */
