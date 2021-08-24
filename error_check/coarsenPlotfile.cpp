@@ -46,11 +46,11 @@ main (int   argc,
         int Nlev = finest_level + 1;
         //int Nlev = 1; pp.query("levels",Nlev);
         int ratio = 2;// pp.query("ratio",ratio);
-        int referenceRefinement = 2;// pp.query("ratio",ratio);
+        int referenceRefinement = 2; pp.query("referenceratio",referenceRefinement);
   
         const auto& dx_1 = pf1.cellSize(0);
         const auto& dx_2 = pf2.cellSize(Nlev-1);
-  	    std::cout << "dx_1 = " << dx_1 << "; dx_2 = " << dx_2 << std::endl;
+  	    amrex::Print() << "dx_1 = " << dx_1 << "; dx_2 = " << dx_2 << std::endl;
         bool not_match = AMREX_D_TERM(   dx_1[0] * referenceRefinement != dx_2[0],
                                       || dx_1[1] * referenceRefinement != dx_2[1],
                                       || dx_1[2] * referenceRefinement != dx_2[2] );
@@ -78,7 +78,7 @@ main (int   argc,
         }
   
   	    for (int j=0; j<varnames.size(); ++j){
-  	    	std::cout << "varnames[" << j << "] = " << varnames[j] << std::endl;
+  	    	amrex::Print() << "varnames[" << j << "] = " << varnames[j] << std::endl;
   	    }
   
         Vector<MultiFab *> data(Nlev);
@@ -98,15 +98,21 @@ main (int   argc,
   
   
   	    amrex::Real L2error = 0.0;
+  	    amrex::Real L2exact = 0.0;
+  	    amrex::Real Linferror = 0.0;
+
         for (int lev=0; lev<=finest_level; ++lev) {
   
   	        int r = std::pow(ratio,finest_level-lev) * referenceRefinement;
-  	        std::cout << "coarsening reference solution (level " << Nlev  << ") to level " << lev << "; ratio from reference = " << r << std::endl;
+  	        amrex::Print() << "coarsening reference solution (level " << Nlev  << ") to level " << lev << "; ratio from reference = " << r << std::endl;
   
             Box cpd = Box(fpd).coarsen(r);
             geoms[lev].define(cpd,rb,coordSys,is_per);
             levelSteps[lev] = pf1.levelStep(0);
-            refRatio[lev] = IntVect(AMREX_D_DECL(ratio,ratio,ratio));
+       	    if (lev < finest_level) {
+            	refRatio[lev] = IntVect(AMREX_D_DECL(ratio,ratio,ratio));
+				amrex::Print() << "refRatio[" << lev << "] = " << refRatio[lev] << std::endl;
+			}
   
             BoxArray cba = BoxArray(fba).coarsen(r);
             AMREX_ALWAYS_ASSERT_WITH_MESSAGE(BoxArray(cba).refine(r) == fba,"BoxArray doesn't coarsen correctly");
@@ -138,37 +144,51 @@ main (int   argc,
             const auto& dx = pf2.cellSize(lev);
   	        for (amrex::MFIter mfi(mf2_lev); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
-  	            std::cout << "box: " << vbx << std::endl;
+  	       //     std::cout << "box: " << vbx << std::endl;
   	            auto mask = level_mask.array(mfi); 
 			    auto var1 = mf_b.array(mfi);
   	            auto var2 = mf2_lev.array(mfi);
   	            amrex::Loop(
-                      vbx, [=, &L2error] (int i, int j, int k) noexcept {
-						  const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
-                		  const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
-                		  const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
+                      vbx, [=, &L2error, &L2exact, &Linferror] (int i, int j, int k) noexcept {
+						const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                		const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                		const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
-                          const amrex::Real diff = mask(i, j ,k) * (var2(i, j, k, 0) - var1(i, j, k, 0));
-                          L2error += std::pow(diff,2);
+                        const amrex::Real diff = mask(i, j ,k) * (var2(i, j, k, 0) - var1(i, j, k, 0));
+                        L2error += std::pow(diff, 2);
+						L2exact += std::pow(mask(i, j, k) * var1(i, j, k, 0), 2);
 
-						 // if(diff != 0.0){
-						 // 	  std::cout << "y + z = " << y + z << std::endl;
-						 //     std::cout << "var1 = " << var1(i,j,k,0) << "; var2 = " << var2(i,j,k,0) << std::endl;
-						 // }
+						if (std::abs(diff) > Linferror) {
+							Linferror = std::abs(diff);
+						}
+						
+
+						// if(diff != 0.0){
+						// 	  std::cout << "y + z = " << y + z << std::endl;
+						//     std::cout << "var1 = " << var1(i,j,k,0) << "; var2 = " << var2(i,j,k,0) << std::endl;
+						// }
                       });
   	        }
-  	        std::cout << "level " << lev << " done; L2error squared = " << L2error << std::endl;
+  	        amrex::Print() << "level " << lev << " done; L2error squared = " << L2error << std::endl;
   
         }
 
+		amrex::ParallelDescriptor::ReduceRealSum(L2error);
+		amrex::ParallelDescriptor::ReduceRealSum(L2exact);
+		amrex::ParallelDescriptor::ReduceRealMax(Linferror);
+
 		L2error = std::sqrt(L2error);
-  		std::cout << "L2error = " << L2error << std::endl;	
+		L2exact = std::sqrt(L2exact);
+  		amrex::Print() << "L2error = " << L2error << std::endl;	
+  		amrex::Print() << "L2exact = " << L2exact << std::endl;	
+  		amrex::Print() << "relL2error= " << L2error/L2exact << std::endl;	
+  		amrex::Print() << "Linferror = " << Linferror << std::endl;	
   
         Vector<const MultiFab*> dat(Nlev);
         for (int i=0; i<Nlev; ++i) {
           dat[i] = data[i];
         }
-        WriteMultiLevelPlotfile(getFileRoot(plotFileName1)+"_crse",Nlev,dat,varnames,geoms,pf1.time(),levelSteps,refRatio);
+        //WriteMultiLevelPlotfile(getFileRoot(plotFileName1)+"_crse",Nlev,dat,varnames,geoms,pf1.time(),levelSteps,refRatio);
     }
     Finalize();
     return 0;
