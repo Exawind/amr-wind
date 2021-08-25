@@ -36,8 +36,8 @@ private:
     IntField* m_iblank{nullptr};
     Field* m_tracer{nullptr};
     amrex::Real m_src_threshold{0.1};
-    bool tag_hole{false};
-    bool tag_fringe{true};
+    bool m_tag_hole{false};
+    bool m_tag_fringe{true};
 };
 
 } // namespace amr_wind

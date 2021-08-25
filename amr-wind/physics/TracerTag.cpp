@@ -47,7 +47,9 @@ void TracerTag::post_advance_work()
             auto tracer = (*m_tracer)(level).array(mfi);
 
             if (m_act_src) {
+
                 auto src = (*m_act_src)(level).array(mfi);
+                const amrex::Real src_threshold = m_src_threshold;
 
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -56,12 +58,14 @@ void TracerTag::post_advance_work()
                             src(i, j, k, 1) * src(i, j, k, 1) +
                             src(i, j, k, 2) * src(i, j, k, 2));
 
-                        if (srcmag > m_src_threshold) tracer(i, j, k) = 1.0;
+                        if (srcmag > src_threshold) tracer(i, j, k) = 1.0;
                     });
             }
 
             if (m_iblank) {
                 auto iblank = (*m_iblank)(level).array(mfi);
+                const bool tag_fringe = m_tag_fringe;
+                const bool tag_hole = m_tag_hole;
                 amrex::ParallelFor(
                     vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         if (tag_fringe && iblank(i, j, k) == -1)
