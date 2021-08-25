@@ -274,7 +274,7 @@ public:
 
     /** Return a sub-view of the Field instance
      */
-    ViewField<Field> 
+    ViewField<Field>
     subview(const int scomp = 0, const int ncomp = 1, const int nlevels = -1)
     {
         return {*this, scomp, ncomp, nlevels};
