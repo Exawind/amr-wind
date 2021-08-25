@@ -18,8 +18,7 @@ public:
     explicit TracerTag(CFDSim& sim);
 
     virtual ~TracerTag() = default;
-    //! Initialize the temperature and velocity fields for BoussinesqBubble
-    //! simulations
+
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void post_init_actions() override;

@@ -13,9 +13,6 @@ TracerTag::TracerTag(CFDSim& sim) : m_sim(sim)
     pp.query("act_src_threshold", m_src_threshold);
 }
 
-/** Initialize the velocity and density fields at the beginning of the
- *  simulation.
- */
 void TracerTag::initialize_fields(int level, const amrex::Geometry&)
 {
     (*m_tracer)(level).setVal(0.0);
