@@ -10,7 +10,6 @@ TracerTag::TracerTag(CFDSim& sim)
     auto& teqn = sim.pde_manager().register_transport_pde("TaggingScalar");
     m_tracer = &(teqn.fields().field);
 
-    m_src_threshold = 0.1;
     amrex::ParmParse pp("TracerTag");
     pp.query("act_src_threshold", m_src_threshold);
 }
@@ -23,7 +22,7 @@ void TracerTag::initialize_fields(int level, const amrex::Geometry&)
     (*m_tracer)(level).setVal(0.0);
 }
 
-void TracerTag::pre_advance_work()
+void TracerTag::post_advance_work()
 {
 
     for (int level = 0; level <= m_sim.mesh().finestLevel(); ++level) {
