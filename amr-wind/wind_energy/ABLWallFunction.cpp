@@ -217,9 +217,9 @@ void ABLVelWallFunc::wall_model(
 
                         // Shear stress BC
                         varr(i, j, k, 0) =
-                            tau.calc_vel_x(uu, wspd) * den(i, j, k - 1) / mu;
+                            -tau.calc_vel_x(uu, wspd) * den(i, j, k - 1) / mu;
                         varr(i, j, k, 1) =
-                            tau.calc_vel_y(vv, wspd) * den(i, j, k - 1) / mu;
+                            -tau.calc_vel_y(vv, wspd) * den(i, j, k - 1) / mu;
                     });
             }
         }
@@ -329,7 +329,7 @@ void ABLTempWallFunc::wall_model(
                         const amrex::Real vv = vold_arr(i, j, k - 1, 1);
                         const amrex::Real wspd = std::sqrt(uu * uu + vv * vv);
                         const amrex::Real theta2 = told_arr(i, j, k - 1);
-                        tarr(i, j, k) = den(i, j, k - 1) *
+                        tarr(i, j, k) = -den(i, j, k - 1) *
                                         tau.calc_theta(wspd, theta2) / alphaT;
                     });
             }
