@@ -5,7 +5,6 @@
 #include "amr-wind/equation_systems/SchemeTraits.H"
 #include "amr-wind/equation_systems/PDEHelpers.H"
 #include "amr-wind/equation_systems/PDE.H"
-#include "amr-wind/equation_systems/tagging_scalar/TaggingScalarSource.H"
 #include "amr-wind/equation_systems/SourceTerm.H"
 
 namespace amr_wind {
@@ -32,7 +31,7 @@ namespace pde {
 struct TaggingScalar : ScalarTransport
 {
     using MLDiffOp = amrex::MLABecLaplacian;
-    using SrcTerm = SourceTerm; // TaggingScalarSource;
+    using SrcTerm = SourceTerm;
 
     static std::string pde_name() { return "TaggingScalar"; }
     static std::string var_name() { return "tagging_scalar"; }
