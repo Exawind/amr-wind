@@ -3,6 +3,7 @@
 
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
+#include "amr-wind/core/IntField.H"
 
 namespace amr_wind {
 
@@ -21,7 +22,7 @@ public:
     //! simulations
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
-    void post_init_actions() override {}
+    void post_init_actions() override;
 
     void post_regrid_actions() override {}
 
@@ -31,9 +32,12 @@ public:
 
 private:
     CFDSim& m_sim;
-    Field& m_act_src;
+    Field* m_act_src{nullptr};
+    IntField* m_iblank{nullptr};
     Field* m_tracer{nullptr};
     amrex::Real m_src_threshold{0.1};
+    bool tag_hole{false};
+    bool tag_fringe{true};
 };
 
 } // namespace amr_wind
