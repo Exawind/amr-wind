@@ -39,7 +39,7 @@ FatCoredVortexRing::FatCoredVortexRing(const CFDSim& sim)
     	pp.query("alpha", m_alpha);
 	}
 
-	sim.repo().declare_nd_field("vorticity", 3, 1, 1);    
+	sim.repo().declare_nd_field("minvorticity", 3, 1, 1);    
 	sim.repo().declare_nd_field("vectorpotential", 3, 1, 1);    
 }
 
@@ -53,7 +53,7 @@ void FatCoredVortexRing::initialize_fields(
 
     auto& velocity = m_velocity(level);
     auto& density = m_density(level);
-	auto& vorticity = m_repo.get_field("vorticity");
+	auto& minvorticity = m_repo.get_field("minvorticity");
     auto& vectorpotential = m_repo.get_field("vectorpotential");
 
 	VorticityTheta vorticity_theta;
@@ -70,10 +70,12 @@ void FatCoredVortexRing::initialize_fields(
 	const amrex::Real Gamma = m_Gamma;
 	const amrex::Real alpha = m_alpha;
 
+	amrex::Print() << "Gamma = " << m_Gamma << std::endl;
+
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& dx = geom.CellSizeArray();
 		const auto& nbx = mfi.nodaltilebox();
-        auto vort = vorticity(level).array(mfi);
+        auto minvort = minvorticity(level).array(mfi);
 
         amrex::ParallelFor(
             nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -85,9 +87,9 @@ void FatCoredVortexRing::initialize_fields(
                 const amrex::Real theta = std::atan2(y, x);
 				const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
 				const amrex::Real s = std::sqrt(ssq);
-                vort(i, j, k, 0) = -std::sin(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
-                vort(i, j, k, 1) = std::cos(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
-                vort(i, j, k, 2) = 0.0;
+                minvort(i, j, k, 0) = std::sin(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
+                minvort(i, j, k, 1) = -std::cos(theta) * vorticity_theta(s, ssq, R, Gamma, alpha);
+                minvort(i, j, k, 2) = 0.0;
             });
     }
 
@@ -136,8 +138,8 @@ void FatCoredVortexRing::initialize_fields(
 
 	for(int i=0;i<AMREX_SPACEDIM;++i){
         auto vectorpot = vectorpotential.subview(i,1,level+1);
-        auto vort = vorticity.subview(i,1,level+1);
-        mlmg.solve(vectorpot.vec_ptrs(), vort.vec_const_ptrs(), 1.0e-6, 0.0);
+        auto minvort = minvorticity.subview(i,1,level+1);
+        mlmg.solve(vectorpot.vec_ptrs(), minvort.vec_const_ptrs(), 1.0e-6, 0.0);
     }
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
