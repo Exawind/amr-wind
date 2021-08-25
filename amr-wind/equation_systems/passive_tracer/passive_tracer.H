@@ -44,26 +44,6 @@ struct PassiveTracer : ScalarTransport
     static constexpr bool need_nph_state = true;
 };
 
-/** Effective scalar diffusivity update operator
- *  \ingroup temp_eqn
- */
-template <>
-struct TurbulenceOp<PassiveTracer>
-{
-    TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
-        : m_tmodel(tmodel), m_fields(fields)
-    {}
-
-    void operator()()
-    {
-        auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, PassiveTracer::var_name());
-    }
-
-    turbulence::TurbulenceModel& m_tmodel;
-    PDEFields& m_fields;
-};
-
 } // namespace pde
 } // namespace amr_wind
 
