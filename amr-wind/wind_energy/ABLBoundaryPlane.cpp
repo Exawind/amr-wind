@@ -227,17 +227,6 @@ void ABLBoundaryPlane::initialize_data()
 {
 #ifdef AMR_WIND_USE_NETCDF
     BL_PROFILE("amr-wind::ABLBoundaryPlane::initialize_data");
-    for (const auto& plane : m_planes) {
-        amrex::Vector<std::string> valid_planes{"xlo", "ylo"};
-
-        if ((std::find(valid_planes.begin(), valid_planes.end(), plane) ==
-             valid_planes.end())) {
-            throw std::runtime_error(
-                "Requested plane (" + plane +
-                ") does not exist. Pick one of [xlo, ylo].");
-        }
-    }
-
     for (const auto& fname : m_var_names) {
         if (m_repo.field_exists(fname)) {
             auto& fld = m_repo.get_field(fname);
@@ -483,7 +472,7 @@ void ABLBoundaryPlane::read_header()
             // Create the data structures for the input data
             amrex::IntVect plo(lo);
             amrex::IntVect phi(hi);
-            plo[normal] = ori.isHigh() ? lo[normal] + 1 : -1;
+            plo[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             phi[normal] = ori.isHigh() ? hi[normal] + 1 : -1;
             const amrex::Box pbx(plo, phi);
             size_t nc = 0;
@@ -629,6 +618,8 @@ void ABLBoundaryPlane::write_data(
     // Domain info
     const amrex::Box& domain = m_mesh.Geom(lev).Domain();
     const auto& dlo = domain.loVect();
+    const auto& dhi = domain.hiVect();
+
     AMREX_ALWAYS_ASSERT(dlo[0] == 0 && dlo[1] == 0 && dlo[2] == 0);
 
     grp.var(name).par_access(NC_COLLECTIVE);
@@ -649,11 +640,34 @@ void ABLBoundaryPlane::write_data(
         const auto& blo = bx.loVect();
         const auto& bhi = bx.hiVect();
 
-        if (blo[normal] == dlo[normal]) {
+        if (blo[normal] == dlo[normal] && ori.isLow()) {
             amrex::IntVect lo(blo);
             amrex::IntVect hi(bhi);
             lo[normal] = dlo[normal];
             hi[normal] = dlo[normal];
+            const amrex::Box lbx(lo, hi);
+
+            const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;
+            const size_t n1 = hi[perp[1]] - lo[perp[1]] + 1;
+
+            auto& buffer = buffers[mfi.index()];
+            buffer.data.resize(n0 * n1 * nc);
+
+            auto const& fld_arr = (*fld)(lev).array(mfi);
+            impl_buffer_field(
+                lbx, n1, nc, perp, v_offset, fld_arr, buffer.data);
+            amrex::Gpu::streamSynchronize();
+
+            buffer.start = {
+                m_out_counter, static_cast<size_t>(lo[perp[0]]),
+                static_cast<size_t>(lo[perp[1]]), 0};
+            buffer.count = {1, n0, n1, nc};
+        } else if (bhi[normal] == dhi[normal] && ori.isHigh()) {
+            amrex::IntVect lo(blo);
+            amrex::IntVect hi(bhi);
+            // shift by one to reuse impl_buffer_field
+            lo[normal] = dhi[normal] + 1;
+            hi[normal] = dhi[normal] + 1;
             const amrex::Box lbx(lo, hi);
 
             const size_t n0 = hi[perp[0]] - lo[perp[0]] + 1;

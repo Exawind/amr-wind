@@ -55,4 +55,6 @@ void CFDSim::activate_overset()
     m_overset_mgr = OversetManager::create(otype, *this);
 }
 
+bool CFDSim::has_overset() const { return (static_cast<bool>(m_overset_mgr)); }
+
 } // namespace amr_wind

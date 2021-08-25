@@ -92,7 +92,7 @@ public:
     ExtSolverMgr& ext_solver_manager() { return *m_ext_solver_mgr; }
     const ExtSolverMgr& ext_solver_manager() const { return *m_ext_solver_mgr; }
 
-    bool has_overset() const { return static_cast<bool>(m_overset_mgr); }
+    bool has_overset() const;
 
     //! Instantiate the turbulence model based on user inputs
     void create_turbulence_model();

@@ -48,7 +48,7 @@ void GeometryRefinement::operator()(
     const auto& field_fab = (*m_sim.repo().fields()[0])(level);
 
 #ifdef _OPENMP
-#pragma omp parallel if (Gpu::notInLaunchRegion())
+#pragma omp parallel if (amrex::Gpu::notInLaunchRegion())
 #endif
     for (amrex::MFIter mfi(field_fab); mfi.isValid(); ++mfi) {
         const auto& bx = mfi.tilebox();

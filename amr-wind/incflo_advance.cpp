@@ -8,6 +8,7 @@
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
 #include "amr-wind/core/field_ops.H"
+#include "AMReX_MultiFabUtil.H"
 
 using namespace amrex;
 
@@ -176,6 +177,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     auto& icns_fields = icns().fields();
     auto& velocity_new = icns_fields.field;
     auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
+
     auto& density_new = density();
     auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
@@ -264,10 +266,9 @@ void incflo::ApplyPredictor(bool incremental_projection)
     if (m_constant_density) {
         amr_wind::field_ops::copy(density_nph, density_old, 0, 0, 1, 1);
     }
-
-    // Perform scalar update one at a time. This is to allow an updated density
-    // at `n+1/2` to be computed before other scalars use it when computing
-    // their source terms.
+    // Perform scalar update one at a time. This is to allow an updated
+    // density at `n+1/2` to be computed before other scalars use it when
+    // computing their source terms.
     for (auto& eqn : scalar_eqns()) {
         // Compute (recompute for Godunov) the scalar forcing terms
         eqn->compute_source_term(amr_wind::FieldState::NPH);

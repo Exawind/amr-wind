@@ -30,6 +30,11 @@ actual keyword is determined by the labels provided to
    ``ascii``
        AMReX particle ASCII format. Note, this can have significant impact
        on performance and must be used for debugging only.
+       
+   ``netcdf``
+       This is the preferred output format and requires linking to the
+       netcdf library. If netcdf is linked to AMR-Wind and output format 
+       is not specified then netcdf is chosen by default.
 
 .. input_param:: sampling.labels
 

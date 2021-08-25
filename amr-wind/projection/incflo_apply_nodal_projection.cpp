@@ -128,6 +128,9 @@ void incflo::ApplyProjection(
     auto& pressure = m_repo.get_field("p");
     auto& velocity = icns().fields().field;
 
+    // Do the pre pressure correction work -- this applies to IB only
+    for (auto& pp : m_sim.physics()) pp->pre_pressure_correction_work();
+
     // Add the ( grad p /ro ) back to u* (note the +dt)
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
@@ -159,26 +162,29 @@ void incflo::ApplyProjection(
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
-            amrex::MultiFab surf_tens_force;
-            surf_tens_force.define(
-                grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
-                Factory(lev));
-            // At the moment set it to zero
-            surf_tens_force.setVal(0.0);
-            for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
-                 ++mfi) {
-                Box const& bx = mfi.tilebox();
-                Array4<Real> const& force_st = surf_tens_force.array(mfi);
-                Array4<Real const> const& rho = density[lev]->const_array(mfi);
-                Array4<Real> const& u = velocity(lev).array(mfi);
+            {
+                amrex::MultiFab surf_tens_force;
+                surf_tens_force.define(
+                    grids[lev], dmap[lev], AMREX_SPACEDIM, 1, MFInfo(),
+                    Factory(lev));
+                // At the moment set it to zero
+                surf_tens_force.setVal(0.0);
+                for (MFIter mfi(velocity(lev), TilingIfNotGPU()); mfi.isValid();
+                     ++mfi) {
+                    Box const& bx = mfi.tilebox();
+                    Array4<Real> const& force_st = surf_tens_force.array(mfi);
+                    Array4<Real const> const& rho =
+                        density[lev]->const_array(mfi);
+                    Array4<Real> const& u = velocity(lev).array(mfi);
 
-                amrex::ParallelFor(
-                    bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        Real soverrho = scaling_factor / rho(i, j, k);
-                        u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
-                    });
+                    amrex::ParallelFor(
+                        bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                            Real soverrho = scaling_factor / rho(i, j, k);
+                            u(i, j, k, 0) += force_st(i, j, k, 0) * soverrho;
+                            u(i, j, k, 1) += force_st(i, j, k, 1) * soverrho;
+                            u(i, j, k, 2) += force_st(i, j, k, 2) * soverrho;
+                        });
+                }
             }
         }
     }
@@ -248,6 +254,22 @@ void incflo::ApplyProjection(
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
     nodal_projector->setDomainBC(bclo, bchi);
+
+    bool has_ib = m_sim.physics_manager().contains("IB");
+    if (has_ib) {
+        auto div_vel_rhs =
+            sim().repo().create_scratch_field(1, 0, amr_wind::FieldLoc::NODE);
+        nodal_projector->computeRHS(div_vel_rhs->vec_ptrs(), vel, {}, {});
+        // Mask the righ-hand side of the Poisson solve for the nodes inside the
+        // body
+        auto& imask_node = repo().get_int_field("mask_node");
+        for (int lev = 0; lev <= finest_level; ++lev) {
+            amrex::MultiFab::Multiply(
+                *div_vel_rhs->vec_ptrs()[lev],
+                amrex::ToMultiFab(imask_node(lev)), 0, 0, 1, 0);
+        }
+        nodal_projector->setCustomRHS(div_vel_rhs->vec_const_ptrs());
+    }
 
     // Setup masking for overset simulations
     if (sim().has_overset()) {

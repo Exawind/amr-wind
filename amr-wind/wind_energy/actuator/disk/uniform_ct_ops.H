@@ -4,6 +4,7 @@
 #include "amr-wind/wind_energy/actuator/disk/UniformCt.H"
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
+#include "amr-wind/utilities/linear_interpolation.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -133,14 +134,18 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
         auto& ddata = data.meta();
         const auto& normal = ddata.normal_vec;
         const amrex::Real rho = ddata.density;
-        const amrex::Real cT = ddata.thrust_coeff;
         // only use veloocity compnents normal to disk
         // square the velocity by componet first so normal direction signs will
         // cancel each other
         const amrex::Real uInfSqr =
             (ddata.reference_velocity * ddata.reference_velocity) & normal;
+
+        ddata.current_ct = ::amr_wind::interp::linear(
+            ddata.table_velocity, ddata.thrust_coeff,
+            std::sqrt(std::abs(uInfSqr)));
+
         const int npts = ddata.num_force_pts;
-        const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * cT;
+        const amrex::Real aeroPressure = 0.5 * uInfSqr * rho * ddata.current_ct;
         const amrex::Real dr = ddata.dr;
 
         for (int ip = 0; ip < npts; ++ip) {

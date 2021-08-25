@@ -69,7 +69,7 @@ private:
     int m_out_freq{10};
 
     //! width in ASCII output
-    int m_width{18};
+    int m_width{22};
 
     //! precision in ASCII output
     int m_precision{12};
