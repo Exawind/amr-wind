@@ -1,2 +1,2 @@
 target_sources(${amr_wind_lib_name} PRIVATE
-  tagging_scalar.cpp)
+  passive_tracer.cpp)

@@ -10,5 +10,5 @@ add_subdirectory(tke)
 add_subdirectory(sdr)
 add_subdirectory(levelset)
 add_subdirectory(vof)
-add_subdirectory(tagging_scalar)
+add_subdirectory(passive_tracer)
 

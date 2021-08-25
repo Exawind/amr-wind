@@ -6,7 +6,7 @@ namespace amr_wind {
 
 TracerTag::TracerTag(CFDSim& sim) : m_sim(sim)
 {
-    auto& teqn = sim.pde_manager().register_transport_pde("TaggingScalar");
+    auto& teqn = sim.pde_manager().register_transport_pde("PassiveTracer");
     m_tracer = &(teqn.fields().field);
 
     amrex::ParmParse pp("TracerTag");

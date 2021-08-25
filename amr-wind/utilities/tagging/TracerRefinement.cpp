@@ -9,7 +9,7 @@ namespace amr_wind {
 TracerRefinement::TracerRefinement(const CFDSim& sim)
     : m_sim(sim)
     , m_max_lev(m_sim.mesh().maxLevel())
-    , m_tracer_scalar(sim.repo().get_field("tagging_scalar"))
+    , m_tracer_scalar(sim.repo().get_field("passive_tracer"))
 {}
 
 void TracerRefinement::initialize(const std::string& key)

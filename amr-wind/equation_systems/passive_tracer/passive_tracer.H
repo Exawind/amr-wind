@@ -1,5 +1,5 @@
-#ifndef TAGGINGSCALAR_H
-#define TAGGINGSCALAR_H
+#ifndef PassiveTracer_H
+#define PassiveTracer_H
 
 #include "amr-wind/equation_systems/PDETraits.H"
 #include "amr-wind/equation_systems/SchemeTraits.H"
@@ -28,13 +28,13 @@ namespace pde {
 /** Characteristics of tagging scalar transport equation
  *  \ingroup tagging_eqn
  */
-struct TaggingScalar : ScalarTransport
+struct PassiveTracer : ScalarTransport
 {
     using MLDiffOp = amrex::MLABecLaplacian;
     using SrcTerm = SourceTerm;
 
-    static std::string pde_name() { return "TaggingScalar"; }
-    static std::string var_name() { return "tagging_scalar"; }
+    static std::string pde_name() { return "PassiveTracer"; }
+    static std::string var_name() { return "passive_tracer"; }
 
     static constexpr amrex::Real default_bc_value = 0.0;
 
@@ -48,7 +48,7 @@ struct TaggingScalar : ScalarTransport
  *  \ingroup temp_eqn
  */
 template <>
-struct TurbulenceOp<TaggingScalar>
+struct TurbulenceOp<PassiveTracer>
 {
     TurbulenceOp(turbulence::TurbulenceModel& tmodel, PDEFields& fields)
         : m_tmodel(tmodel), m_fields(fields)
@@ -57,7 +57,7 @@ struct TurbulenceOp<TaggingScalar>
     void operator()()
     {
         auto& mueff = m_fields.mueff;
-        m_tmodel.update_scalar_diff(mueff, TaggingScalar::var_name());
+        m_tmodel.update_scalar_diff(mueff, PassiveTracer::var_name());
     }
 
     turbulence::TurbulenceModel& m_tmodel;
@@ -67,4 +67,4 @@ struct TurbulenceOp<TaggingScalar>
 } // namespace pde
 } // namespace amr_wind
 
-#endif /* TAGGINGSCALAR_H */
+#endif /* PassiveTracer_H */
