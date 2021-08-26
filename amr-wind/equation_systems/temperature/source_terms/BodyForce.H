@@ -1,0 +1,48 @@
+#ifndef BODYFORCE_H
+#define BODYFORCE_H
+
+#include "amr-wind/equation_systems/temperature/TemperatureSource.H"
+#include "amr-wind/core/SimTime.H"
+#include <AMReX_GpuContainers.H>
+#include <AMReX_REAL.H>
+#include <AMReX_Vector.H>
+#include <cstddef>
+
+namespace amr_wind {
+namespace pde {
+namespace temperature {
+
+class BodyForce : public TemperatureSource::Register<BodyForce>
+{
+
+public:
+    static const std::string identifier() { return "BodyForce"; }
+    explicit BodyForce(const CFDSim&);
+    virtual ~BodyForce();
+
+    virtual void operator()(
+        const int lev,
+        const amrex::MFIter& mfi,
+        const amrex::Box& box,
+        const FieldState fstate,
+        const amrex::Array4<amrex::Real>& src_term) const override;
+
+    void read_bforce_profile(std::string filename);
+
+private:
+    const SimTime& m_time;
+    const amrex::AmrCore& m_mesh;
+
+    std::string m_type{"height-varying"};
+    std::string m_bforce_file;
+    size_t m_bforce_profile_nhts;
+
+    amrex::Gpu::DeviceVector<amrex::Real> m_prof_theta;
+    amrex::Gpu::DeviceVector<amrex::Real> m_ht;
+};
+
+} // namespace temperature
+} // namespace pde
+} // namespace amr_wind
+
+#endif
