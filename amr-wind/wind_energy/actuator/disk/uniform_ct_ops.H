@@ -137,8 +137,8 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
         // only use velocity components normal to disk
 	// make sure uInfSqr is always positive by squaring the projection of
 	// reference_velocity onto the normal
-        const amrex::Real uInfSqr =
-	  (ddata.reference_velocity & normal) *  (ddata.reference_velocity & normal);
+        const amrex::Real uInfSqr = (ddata.reference_velocity & normal) *
+	                            (ddata.reference_velocity & normal);
 
         ddata.current_ct = ::amr_wind::interp::linear(
             ddata.table_velocity, ddata.thrust_coeff,
