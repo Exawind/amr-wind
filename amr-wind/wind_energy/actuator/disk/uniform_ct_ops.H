@@ -134,11 +134,11 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
         auto& ddata = data.meta();
         const auto& normal = ddata.normal_vec;
         const amrex::Real rho = ddata.density;
-        // only use veloocity compnents normal to disk
-        // square the velocity by componet first so normal direction signs will
-        // cancel each other
-        const amrex::Real uInfSqr =
-            (ddata.reference_velocity * ddata.reference_velocity) & normal;
+        // only use velocity components normal to disk
+        // make sure uInfSqr is always positive by squaring the projection of
+        // reference_velocity onto the normal
+        const amrex::Real uInfSqr = (ddata.reference_velocity & normal) *
+                                    (ddata.reference_velocity & normal);
 
         ddata.current_ct = ::amr_wind::interp::linear(
             ddata.table_velocity, ddata.thrust_coeff,
@@ -153,8 +153,8 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
             const amrex::Real rp = r + dr * 0.5;
             const amrex::Real rm = r - dr * 0.5;
             const amrex::Real a = ::amr_wind::utils::pi() * (rp * rp - rm * rm);
-            // canceling of signes ensures this term will always be negative
-            grid.force[ip] = -(aeroPressure * a) * normal;
+            // disk force should always point in direction of the normal
+            grid.force[ip] = (aeroPressure * a) * normal;
         }
     }
 };
