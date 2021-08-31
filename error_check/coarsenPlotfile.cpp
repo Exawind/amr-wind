@@ -169,7 +169,7 @@ main (int   argc,
 						// }
                       });
   	        }
-  	        amrex::Print() << "level " << lev << " done; L2error squared = " << L2error << std::endl;
+  	        amrex::Print() << "level " << lev << " done; intermediate L2error squared = " << L2error << std::endl;
   
         }
 
@@ -181,7 +181,7 @@ main (int   argc,
 		L2exact = std::sqrt(L2exact);
   		amrex::Print() << "L2error = " << L2error << std::endl;	
   		amrex::Print() << "L2exact = " << L2exact << std::endl;	
-  		amrex::Print() << "relL2error= " << L2error/L2exact << std::endl;	
+  		amrex::Print() << "relL2error = " << L2error/L2exact << std::endl;	
   		amrex::Print() << "Linferror = " << Linferror << std::endl;	
   
         Vector<const MultiFab*> dat(Nlev);
