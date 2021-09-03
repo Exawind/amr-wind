@@ -5,16 +5,6 @@
 
 using namespace amrex;
 
-static
-void 
-print_usage (int,
-             char* argv[])
-{
-  std::cerr << "usage:\n";
-  std::cerr << argv[0] << " infile=f1 [options] \n\tOptions:\n";
-  exit(1);
-}
-
 std::string
 getFileRoot(const std::string& infile)
 {
@@ -28,13 +18,7 @@ main (int   argc,
 {
     Initialize(argc,argv);
     {
-        if (argc < 2)
-          print_usage(argc,argv);
-  
         ParmParse pp;
-  
-        if (pp.contains("help"))
-          print_usage(argc,argv);
   
         // Open plotfile headers and create an amrData objects pointing into it
         // Reference file: (should be finer than the finest level of the multilevel file)
