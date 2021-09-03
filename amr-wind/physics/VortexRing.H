@@ -29,10 +29,9 @@ public:
     void post_advance_work() override {}
 
     template <typename VortexRingType> 
-	void initialize_velocity(const VortexRingType& core);
+    void initialize_velocity(const VortexRingType& core);
 
 private:
-
     const FieldRepo& m_repo;
     Field& m_velocity;
     Field& m_density;
