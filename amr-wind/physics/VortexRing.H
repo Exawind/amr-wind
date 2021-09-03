@@ -63,9 +63,10 @@ struct FatCore
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
-        const amrex::Vector<int>,
-        const amrex::Vector<double>,
-        const amrex::Vector<double>) const;
+        const int,
+        const int*
+        const amrex::Real*,
+        const amrex::Real*) const;
 };
 
 struct CollidingRings
@@ -79,9 +80,10 @@ struct CollidingRings
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
-        const amrex::Vector<int>,
-        const amrex::Vector<double>,
-        const amrex::Vector<double>) const;
+        const int,
+        const int*
+        const amrex::Real*,
+        const amrex::Real*) const;
 };
 
 } // namespace amr_wind
