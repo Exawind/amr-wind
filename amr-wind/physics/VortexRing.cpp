@@ -53,7 +53,7 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
             std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
     }
     amrex::Real dr2 = 0.0;
-    for (int i = 0; i < num_modes); ++i) {
+    for (int i = 0; i < num_modes; ++i) {
         dr2 +=
             perturbation_amplitude *
             std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
@@ -133,23 +133,22 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     amrex::Gpu::DeviceVector<int> perturbation_modes_d;
     amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_1_d;
     amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_2_d;
-    
     const int num_modes = m_perturbation_modes.size();
     if(num_modes > 0) {
 
-       perturbation_modes_d.resize(num_modes);
-       perturbation_phases_1_d.resize(num_modes);
-       perturbation_phases_2_d.resize(num_modes);
+        perturbation_modes_d.resize(num_modes);
+        perturbation_phases_1_d.resize(num_modes);
+        perturbation_phases_2_d.resize(num_modes);
 
-       amrex::Gpu::copy(
-           amrex::Gpu::hostToDevice, m_perturbation_modes.begin(),
-           m_perturbation_modes.end(), perturbation_modes_d.begin());
-       amrex::Gpu::copy(
-           amrex::Gpu::hostToDevice, m_perturbation_phases_1.begin(),
-           m_perturbation_phases_1.end(), perturbation_phases_1_d.begin());
-       amrex::Gpu::copy(
-           amrex::Gpu::hostToDevice, m_perturbation_phases_2.begin(),
-           m_perturbation_phases_2.end(), perturbation_phases_2_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_perturbation_modes.begin(),
+            m_perturbation_modes.end(), perturbation_modes_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_perturbation_phases_1.begin(),
+            m_perturbation_phases_1.end(), perturbation_phases_1_d.begin());
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, m_perturbation_phases_2.begin(),
+            m_perturbation_phases_2.end(), perturbation_phases_2_d.begin());
     }
 
     const int* pm = perturbation_modes_d.data();
