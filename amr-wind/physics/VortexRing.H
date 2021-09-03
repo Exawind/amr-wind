@@ -17,8 +17,7 @@ public:
     explicit VortexRing(const CFDSim& sim);
 
     virtual ~VortexRing() = default;
-    //! Initialize the temperature and velocity fields for BoussinesqBubble
-    //! simulations
+
     void initialize_fields(int level, const amrex::Geometry& geom) override;
 
     void post_init_actions() override;
@@ -29,9 +28,10 @@ public:
 
     void post_advance_work() override {}
 
-private:
     template <typename VortexRingType>
     void initialize_velocity(const VortexRingType& core);
+
+private:
 
     const FieldRepo& m_repo;
     Field& m_velocity;
