@@ -16,17 +16,16 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real R,
     const amrex::Real Gamma,
     const amrex::Real delta,
-	const amrex::Real dz,
-	const amrex::Real perturbation_amplitude,
-	const amrex::Vector<int> perturbation_modes,
-	const amrex::Vector<double> perturbation_phases_1,
+    const amrex::Real dz,
+    const amrex::Real perturbation_amplitude,
+    const amrex::Vector<int> perturbation_modes,
+    const amrex::Vector<double> perturbation_phases_1,
     const amrex::Vector<double> perturbation_phases_2) const
 {
-	amrex::Real Rsq = std::pow(R, 2);
+    amrex::Real Rsq = std::pow(R, 2);
     const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
     if (ssq <= Rsq) {
-        return 0.54857674 * Gamma / Rsq *
-               std::exp(-4 * ssq / (Rsq - ssq));
+        return 0.54857674 * Gamma / Rsq * std::exp(-4 * ssq / (Rsq - ssq));
     } else {
         return 0.0;
     }
@@ -39,22 +38,34 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
     const amrex::Real R,
     const amrex::Real Gamma,
     const amrex::Real delta,
-	const amrex::Real dz,
-	const amrex::Real perturbation_amplitude,
-	const amrex::Vector<int> perturbation_modes,
-	const amrex::Vector<double> perturbation_phases_1,
+    const amrex::Real dz,
+    const amrex::Real perturbation_amplitude,
+    const amrex::Vector<int> perturbation_modes,
+    const amrex::Vector<double> perturbation_phases_1,
     const amrex::Vector<double> perturbation_phases_2) const
 {
-	amrex::Real dr1 = 0.0;
-    for (int i = 0; i < perturbation_modes.size(); ++i){
-		dr1 += perturbation_amplitude * std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
+    amrex::Real dr1 = 0.0;
+    for (int i = 0; i < perturbation_modes.size(); ++i) {
+        dr1 +=
+            perturbation_amplitude *
+            std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
     }
-	amrex::Real dr2 = 0.0;
-    for (int i = 0; i < perturbation_modes.size(); ++i){
-		dr2 += perturbation_amplitude * std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
+    amrex::Real dr2 = 0.0;
+    for (int i = 0; i < perturbation_modes.size(); ++i) {
+        dr2 +=
+            perturbation_amplitude *
+            std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
     }
-    amrex::Real vortheta_1 = -Gamma / (utils::pi() * std::pow(delta, 2)) * std::exp(- (std::pow(z + dz / 2, 2) + std::pow((r * (1 + dr1) - R), 2)) / std::pow(delta, 2));
-    amrex::Real vortheta_2 = Gamma / (utils::pi() * std::pow(delta, 2)) * std::exp(- (std::pow(z - dz / 2, 2) + std::pow((r * (1 + dr2) - R), 2)) / std::pow(delta, 2));
+    amrex::Real vortheta_1 =
+        -Gamma / (utils::pi() * std::pow(delta, 2)) *
+        std::exp(
+            -(std::pow(z + dz / 2, 2) + std::pow((r * (1 + dr1) - R), 2)) /
+            std::pow(delta, 2));
+    amrex::Real vortheta_2 =
+        Gamma / (utils::pi() * std::pow(delta, 2)) *
+        std::exp(
+            -(std::pow(z - dz / 2, 2) + std::pow((r * (1 + dr2) - R), 2)) /
+            std::pow(delta, 2));
     return vortheta_1 + vortheta_2;
 }
 
@@ -75,18 +86,17 @@ VortexRing::VortexRing(const CFDSim& sim)
         pp.query("Gamma", m_Gamma);
         pp.query("delta", m_delta);
         pp.query("dz", m_dz);
-		pp.query("perturbation_amplitude", m_perturbation_amplitude);
-		pp.queryarr("perturbation_modes", m_perturbation_modes);
-		pp.queryarr("perturbation_phases_1", m_perturbation_phases_1);
-		pp.queryarr("perturbation_phases_2", m_perturbation_phases_2);
+        pp.query("perturbation_amplitude", m_perturbation_amplitude);
+        pp.queryarr("perturbation_modes", m_perturbation_modes);
+        pp.queryarr("perturbation_phases_1", m_perturbation_phases_1);
+        pp.queryarr("perturbation_phases_2", m_perturbation_phases_2);
     }
 }
 
 /** Initialize the velocity and density fields at the beginning of the
  *  simulation.
  */
-void VortexRing::initialize_fields(
-    int level, const amrex::Geometry& /*geom*/)
+void VortexRing::initialize_fields(int level, const amrex::Geometry& /*geom*/)
 {
     m_density(level).setVal(m_rho);
     m_velocity(level).setVal(0.0, 0, AMREX_SPACEDIM);
@@ -138,7 +148,10 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
                     const amrex::Real r =
                         std::sqrt(std::pow(x, 2) + std::pow(y, 2));
                     const amrex::Real theta = std::atan2(y, x);
-					const amrex::Real vortheta = vorticity_theta(r, theta, z, R, Gamma, delta, dz, perturbation_amplitude, perturbation_modes, perturbation_phases_1, perturbation_phases_2);
+                    const amrex::Real vortheta = vorticity_theta(
+                        r, theta, z, R, Gamma, delta, dz,
+                        perturbation_amplitude, perturbation_modes,
+                        perturbation_phases_1, perturbation_phases_2);
                     minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
                     minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
                     minusvort(i, j, k, 2) = 0.0;

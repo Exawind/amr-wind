@@ -30,10 +30,9 @@ public:
     void post_advance_work() override {}
 
 private:
-
     template <typename VortexRingType>
     void initialize_velocity(const VortexRingType& core);
-    
+
     const FieldRepo& m_repo;
     Field& m_velocity;
     Field& m_density;
@@ -45,14 +44,13 @@ private:
     amrex::Real m_Gamma{1.0};
     amrex::Real m_delta{0.2};
     amrex::Real m_dz{2.0};
-	amrex::Vector<int> m_perturbation_modes;
-	amrex::Vector<double> m_perturbation_phases_1;
-	amrex::Vector<double> m_perturbation_phases_2;
-	// amplitude relative to the unperturbed vortex ring diameter
-	amrex::Real m_perturbation_amplitude{1e-4};
+    amrex::Vector<int> m_perturbation_modes;
+    amrex::Vector<double> m_perturbation_phases_1;
+    amrex::Vector<double> m_perturbation_phases_2;
+    // amplitude relative to the unperturbed vortex ring diameter
+    amrex::Real m_perturbation_amplitude{1e-4};
 
     std::string m_vortexringtype{"fatcore"};
-
 };
 
 struct FatCore
@@ -66,9 +64,9 @@ struct FatCore
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
-		const amrex::Vector<int>,
-		const amrex::Vector<double>,
-		const amrex::Vector<double>) const;
+        const amrex::Vector<int>,
+        const amrex::Vector<double>,
+        const amrex::Vector<double>) const;
 };
 
 struct CollidingRings
@@ -82,9 +80,9 @@ struct CollidingRings
         const amrex::Real,
         const amrex::Real,
         const amrex::Real,
-		const amrex::Vector<int>,
-		const amrex::Vector<double>,
-		const amrex::Vector<double>) const;
+        const amrex::Vector<int>,
+        const amrex::Vector<double>,
+        const amrex::Vector<double>) const;
 };
 
 } // namespace amr_wind
