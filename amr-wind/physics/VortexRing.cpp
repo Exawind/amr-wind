@@ -11,16 +11,17 @@ namespace amr_wind {
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real FatCore::operator()(
     const amrex::Real r,
-    const amrex::Real theta,
+    const amrex::Real,
     const amrex::Real z,
     const amrex::Real R,
     const amrex::Real Gamma,
-    const amrex::Real delta,
-    const amrex::Real dz,
-    const amrex::Real perturbation_amplitude,
-    const amrex::Vector<int> perturbation_modes,
-    const amrex::Vector<double> perturbation_phases_1,
-    const amrex::Vector<double> perturbation_phases_2) const
+    const amrex::Real,
+    const amrex::Real,
+    const amrex::Real,
+    const int,
+    const int*,
+    const amrex::Real*,
+    const amrex::Real*) const
 {
     amrex::Real Rsq = std::pow(R, 2);
     const amrex::Real ssq = std::pow(z, 2) + std::pow(r - R, 2);
@@ -40,18 +41,19 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
     const amrex::Real delta,
     const amrex::Real dz,
     const amrex::Real perturbation_amplitude,
-    const amrex::Vector<int> perturbation_modes,
-    const amrex::Vector<double> perturbation_phases_1,
-    const amrex::Vector<double> perturbation_phases_2) const
+    const int num_modes,
+    const int* perturbation_modes,
+    const amrex::Real* perturbation_phases_1,
+    const amrex::Real* perturbation_phases_2) const
 {
     amrex::Real dr1 = 0.0;
-    for (int i = 0; i < perturbation_modes.size(); ++i) {
+    for (int i = 0; i < num_modes; ++i) {
         dr1 +=
             perturbation_amplitude *
             std::cos(perturbation_modes[i] * theta - perturbation_phases_1[i]);
     }
     amrex::Real dr2 = 0.0;
-    for (int i = 0; i < perturbation_modes.size(); ++i) {
+    for (int i = 0; i < num_modes); ++i) {
         dr2 +=
             perturbation_amplitude *
             std::cos(perturbation_modes[i] * theta - perturbation_phases_2[i]);
@@ -127,9 +129,32 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     const amrex::Real delta = m_delta;
     const amrex::Real dz = m_dz;
     const amrex::Real perturbation_amplitude = m_perturbation_amplitude;
-    const amrex::Vector<int> perturbation_modes = m_perturbation_modes;
-    const amrex::Vector<double> perturbation_phases_1 = m_perturbation_phases_1;
-    const amrex::Vector<double> perturbation_phases_2 = m_perturbation_phases_2;
+
+    amrex::Gpu::DeviceVector<int> perturbation_modes_d;
+    amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_1_d;
+    amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_2_d;
+    
+    const int num_modes = m_perturbation_modes.size();
+    if(num_modes > 0) {
+
+       perturbation_modes_d.resize(num_modes);
+       perturbation_phases_1_d.resize(num_modes);
+       perturbation_phases_2_d.resize(num_modes);
+
+       amrex::Gpu::copy(
+           amrex::Gpu::hostToDevice, m_perturbation_modes.begin(),
+           m_perturbation_modes.end(), perturbation_modes_d.begin());
+       amrex::Gpu::copy(
+           amrex::Gpu::hostToDevice, m_perturbation_phases_1.begin(),
+           m_perturbation_phases_1.end(), perturbation_phases_1_d.begin());
+       amrex::Gpu::copy(
+           amrex::Gpu::hostToDevice, m_perturbation_phases_2.begin(),
+           m_perturbation_phases_2.end(), perturbation_phases_2_d.begin());
+    }
+
+    const int* pm = perturbation_modes_d.data();
+    const amrex::Real* pp1 = perturbation_phases_1_d.data();
+    const amrex::Real* pp2 = perturbation_phases_2_d.data();
 
     for (int level = 0; level <= m_repo.mesh().finestLevel(); ++level) {
 
@@ -150,8 +175,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
                     const amrex::Real theta = std::atan2(y, x);
                     const amrex::Real vortheta = vorticity_theta(
                         r, theta, z, R, Gamma, delta, dz,
-                        perturbation_amplitude, perturbation_modes,
-                        perturbation_phases_1, perturbation_phases_2);
+                        perturbation_amplitude, num_modes, pp1, pp2);
                     minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
                     minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
                     minusvort(i, j, k, 2) = 0.0;
