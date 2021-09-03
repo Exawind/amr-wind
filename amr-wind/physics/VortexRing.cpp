@@ -134,7 +134,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
     amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_1_d;
     amrex::Gpu::DeviceVector<amrex::Real> perturbation_phases_2_d;
     const int num_modes = m_perturbation_modes.size();
-    if(num_modes > 0) {
+    if (num_modes > 0) {
 
         perturbation_modes_d.resize(num_modes);
         perturbation_phases_1_d.resize(num_modes);
