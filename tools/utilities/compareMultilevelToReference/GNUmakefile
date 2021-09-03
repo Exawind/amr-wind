@@ -1,4 +1,4 @@
-AMREX_HOME ?= /home/dbeckers/amr-wind/submods/amrex
+AMREX_HOME ?= ../../../submods/amrex
 
 PRECISION  = DOUBLE
 PROFILE    = FALSE
