@@ -28,8 +28,8 @@ public:
 
     void post_advance_work() override {}
 
-    template <typename VortexRingType>
-    void initialize_velocity(const VortexRingType& core);
+    template <typename VortexRingType> 
+	void initialize_velocity(const VortexRingType& core);
 
 private:
 
