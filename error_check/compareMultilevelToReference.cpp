@@ -36,16 +36,21 @@ main (int   argc,
         if (pp.contains("help"))
           print_usage(argc,argv);
   
-        // Open plotfile header and create an amrData object pointing into it
+        // Open plotfile headers and create an amrData objects pointing into it
+        // Reference file: (should be finer than the finest level of the multilevel file)
         std::string plotFileName1; pp.get("referencefile",plotFileName1);
-        std::string plotFileName2; pp.get("amrfile",plotFileName2);
+        // Multilevel file
+        std::string plotFileName2; pp.get("multilevelfile",plotFileName2);
   
         PlotFileData pf1(plotFileName1);
         PlotFileData pf2(plotFileName2);
         int finest_level = pf2.finestLevel();
         int Nlev = finest_level + 1;
-        //int Nlev = 1; pp.query("levels",Nlev);
-        int ratio = 2;// pp.query("ratio",ratio);
+
+		// Refinement ratio between levels of multilevelfile
+        int ratio = 2; pp.query("ratio",ratio);
+
+		// Ratio of finest level to reference
         int referenceRefinement = 2; pp.query("referenceratio",referenceRefinement);
   
         const auto& dx_1 = pf1.cellSize(0);
@@ -55,7 +60,7 @@ main (int   argc,
                                       || dx_1[1] * referenceRefinement != dx_2[1],
                                       || dx_1[2] * referenceRefinement != dx_2[2] );
         if (not_match) {
-            amrex::Abort("ERROR: grid dx at finest level does not match");
+            amrex::Abort("ERROR: grid dx at finest level does not match ratio to reference dx");
         }
   
         int nComp, sComp;
@@ -126,6 +131,8 @@ main (int   argc,
 		    mf_b.define(mf2_lev.boxArray(), mf2_lev.DistributionMap(), 1, 0);
 			mf_b.ParallelCopy(*data[lev]);
 
+			// create mask to avoid counting the error in the refined area multiple times
+
 			amrex::iMultiFab level_mask;
        	    if (lev < finest_level) {
 				auto mf2_levp1 = (nComp == 1 ? pf2.get(lev + 1,varnames[0]) : pf2.get(lev + 1));
@@ -144,7 +151,6 @@ main (int   argc,
             const auto& dx = pf2.cellSize(lev);
   	        for (amrex::MFIter mfi(mf2_lev); mfi.isValid(); ++mfi) {
                 const auto& vbx = mfi.validbox();
-  	       //     std::cout << "box: " << vbx << std::endl;
   	            auto mask = level_mask.array(mfi); 
 			    auto var1 = mf_b.array(mfi);
   	            auto var2 = mf2_lev.array(mfi);
@@ -162,14 +168,8 @@ main (int   argc,
 							Linferror = std::abs(diff);
 						}
 						
-
-						// if(diff != 0.0){
-						// 	  std::cout << "y + z = " << y + z << std::endl;
-						//     std::cout << "var1 = " << var1(i,j,k,0) << "; var2 = " << var2(i,j,k,0) << std::endl;
-						// }
                       });
   	        }
-  	        amrex::Print() << "level " << lev << " done; intermediate L2error squared = " << L2error << std::endl;
   
         }
 
@@ -184,10 +184,12 @@ main (int   argc,
   		amrex::Print() << "relL2error = " << L2error/L2exact << std::endl;	
   		amrex::Print() << "Linferror = " << Linferror << std::endl;	
   
-        Vector<const MultiFab*> dat(Nlev);
-        for (int i=0; i<Nlev; ++i) {
-          dat[i] = data[i];
-        }
+		// Create multilevel plotfile from coarsened reference solution
+
+        //Vector<const MultiFab*> dat(Nlev);
+        //for (int i=0; i<Nlev; ++i) {
+        //  dat[i] = data[i];
+        //}
         //WriteMultiLevelPlotfile(getFileRoot(plotFileName1)+"_crse",Nlev,dat,varnames,geoms,pf1.time(),levelSteps,refRatio);
     }
     Finalize();

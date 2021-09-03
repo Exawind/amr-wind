@@ -15,7 +15,7 @@ USE_CUDA = FALSE
 
 BL_NO_FORT = TRUE
 
-EBASE = coarsenPlotfile
+EBASE = compareMultilevelToReference
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
