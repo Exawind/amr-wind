@@ -274,10 +274,9 @@ public:
 
     /** Return a sub-view of the Field instance
      */
-    ViewField<Field>
-    subview(const int scomp = 0, const int ncomp = 1, const int nlevels = -1)
+    ViewField<Field> subview(const int scomp = 0, const int ncomp = 1)
     {
-        return {*this, scomp, ncomp, nlevels};
+        return {*this, scomp, ncomp};
     }
 
     /** Register a custom fillpatch class instance for this field
