@@ -174,7 +174,7 @@ void VortexRing::initialize_velocity(const VortexRingType& vorticity_theta)
                     const amrex::Real theta = std::atan2(y, x);
                     const amrex::Real vortheta = vorticity_theta(
                         r, theta, z, R, Gamma, delta, dz,
-                        perturbation_amplitude, num_modes, pp1, pp2);
+                        perturbation_amplitude, num_modes, pm, pp1, pp2);
                     minusvort(i, j, k, 0) = std::sin(theta) * vortheta;
                     minusvort(i, j, k, 1) = -std::cos(theta) * vortheta;
                     minusvort(i, j, k, 2) = 0.0;
