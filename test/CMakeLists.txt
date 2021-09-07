@@ -186,6 +186,8 @@ add_test_re(abl_godunov_weno)
 add_test_re(ib_ctv_godunov_weno)
 add_test_re(ib_cylinder_Re_300)
 add_test_re(ib_sphere_Re_100)
+add_test_re(vortex_ring_collision)
+add_test_re(fat_cored_vortex_ring)
 
 
 if (NOT AMR_WIND_ENABLE_CUDA)
