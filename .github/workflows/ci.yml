@@ -207,26 +207,21 @@ jobs:
           submodules: true
       - name: Prepare HIP environment
         run: |
-          export DEBIAN_FRONTEND=noninteractive
           wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
           echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main' | sudo tee /etc/apt/sources.list.d/rocm.list
-          echo 'export PATH=/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
+          echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand rocprim
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
-          hipcc --version
           which clang
           which clang++
           cmake -B build \
             -DAMR_WIND_ENABLE_MPI=OFF \
             -DAMR_WIND_ENABLE_HIP=ON \
-            -DCMAKE_CXX_COMPILER=$(which hipcc) \
+            -DCMAKE_CXX_COMPILER=$(which clang++) \
             -DCMAKE_C_COMPILER=$(which clang) \
-            -DCMAKE_CXX_COMPILER_ID=Clang \
-            -DCMAKE_CXX_COMPILER_VERSION=12.0 \
-            -DCMAKE_CXX_STANDARD_COMPUTED_DEFAULT=17 \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DAMReX_AMD_ARCH=gfx908 .
           cmake --build build -- -j $(nproc)
