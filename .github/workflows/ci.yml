@@ -209,15 +209,13 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           wget -q -O - http://repo.radeon.com/rocm/rocm.gpg.key | sudo apt-key add -
-          #Use HIP 4.1.1 until 4.2 is fixed
-          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/4.1.1/ xenial main' | sudo tee /etc/apt/sources.list.d/rocm.list
-          echo 'export PATH=$PATH:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin' | sudo tee -a /etc/profile.d/rocm.sh
+          echo 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main' | sudo tee /etc/apt/sources.list.d/rocm.list
+          echo 'export PATH=/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends build-essential rocm-dev roctracer-dev rocprofiler-dev rocrand rocprim
       - name: Configure and build
         run: |
           source /etc/profile.d/rocm.sh
-          export PATH=/opt/rocm-4.1.1/llvm/bin:$PATH
           hipcc --version
           which clang
           which clang++
