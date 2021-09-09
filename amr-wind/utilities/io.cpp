@@ -21,8 +21,10 @@ void incflo::ReadCheckpointFile()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
-    // make me an input
-    IntVect Nrep(2, 3, 1);
+    amrex::ParmParse pp("amr");
+    amrex::Vector<int> rep{{1, 1, 1}};
+    pp.queryarr("replicate", rep);
+    IntVect Nrep(rep[0], rep[1], rep[2]);
 
     bool replicate = (Nrep == IntVect::TheUnitVector()) ? false : true;
 
