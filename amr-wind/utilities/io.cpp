@@ -21,13 +21,6 @@ void incflo::ReadCheckpointFile()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
-    //    amrex::ParmParse pp("io");
-    //    amrex::Vector<int> repvec{{1, 1, 1}};
-    //    pp.queryarr("replicate", repvec);
-    //    IntVect rep(repvec[0], repvec[1], repvec[2]);
-    //    IntVect rep(1,1,1);
-    //    bool replicate = (rep == IntVect::TheUnitVector()) ? false : true;
-
     const std::string& restart_file = m_sim.io_manager().restart_file();
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
