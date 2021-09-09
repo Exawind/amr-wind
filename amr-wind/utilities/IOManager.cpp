@@ -217,17 +217,18 @@ void IOManager::read_checkpoint_fields(
                 for (int k = 0; k < rep[2]; k++) {
                     for (int j = 0; j < rep[1]; j++) {
                         for (int i = 0; i < rep[0]; i++) {
+
                             amrex::IntVect shift_vec(
                                 i * orig_domain.length(0),
                                 j * orig_domain.length(1),
                                 k * orig_domain.length(2));
 
-                            tmp.shift(shift_vec * (1 << lev));
+                            // equivalent to 2^lev
+                            shift_vec *= (1 << lev);
 
-                            mfab.ParallelCopy(tmp);
-
-                            shift_vec *= -1;
                             tmp.shift(shift_vec);
+                            mfab.ParallelCopy(tmp);
+                            tmp.shift(-shift_vec);
                         }
                     }
                 }

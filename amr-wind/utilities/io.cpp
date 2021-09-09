@@ -174,7 +174,11 @@ void incflo::ReadCheckpointFile()
                             i * orig_domain.length(0),
                             j * orig_domain.length(1),
                             k * orig_domain.length(2));
-                        b.shift(shift_vec * (1 << lev));
+
+                        // equivalent to 2^lev
+                        shift_vec *= (1 << lev);
+
+                        b.shift(shift_vec);
                         bl.push_back(b);
                     }
                 }
