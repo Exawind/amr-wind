@@ -21,19 +21,19 @@ void incflo::ReadCheckpointFile()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
-    amrex::ParmParse pp("amr");
-    amrex::Vector<int> rep{{1, 1, 1}};
-    pp.queryarr("replicate", rep);
-    IntVect Nrep(rep[0], rep[1], rep[2]);
-
-    bool replicate = (Nrep == IntVect::TheUnitVector()) ? false : true;
+    //    amrex::ParmParse pp("io");
+    //    amrex::Vector<int> repvec{{1, 1, 1}};
+    //    pp.queryarr("replicate", repvec);
+    //    IntVect rep(repvec[0], repvec[1], repvec[2]);
+    //    IntVect rep(1,1,1);
+    //    bool replicate = (rep == IntVect::TheUnitVector()) ? false : true;
 
     const std::string& restart_file = m_sim.io_manager().restart_file();
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
 
-    Real prob_lo[BL_SPACEDIM];
-    Real prob_hi[BL_SPACEDIM];
+    Real prob_lo[AMREX_SPACEDIM];
+    Real prob_hi[AMREX_SPACEDIM];
 
     /***************************************************************************
      * Load header: set up problem domain (including BoxArray)                 *
@@ -103,15 +103,37 @@ void incflo::ReadCheckpointFile()
         }
     }
 
+    amrex::Vector<amrex::Real> prob_lo_input(AMREX_SPACEDIM);
+    amrex::Vector<amrex::Real> prob_hi_input(AMREX_SPACEDIM);
+
+    {
+        amrex::ParmParse pp("geometry");
+        pp.getarr("prob_lo", prob_lo_input);
+        pp.getarr("prob_hi", prob_hi_input);
+    }
+
+    amrex::Vector<int> n_cell_input(AMREX_SPACEDIM);
+
+    {
+        amrex::ParmParse pp("amr");
+        pp.getarr("n_cell", n_cell_input);
+    }
+
+    IntVect rep(1, 1, 1);
+    for (int d = 0; d < AMREX_SPACEDIM; d++) {
+        AMREX_ALWAYS_ASSERT(prob_hi[d] - prob_lo[d] > 0.0);
+        rep[d] = static_cast<int>(
+            (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]));
+    }
+
+    bool replicate = (rep == IntVect::TheUnitVector()) ? false : true;
+
     if (replicate) {
-        for (int d = 0; d < BL_SPACEDIM; d++) {
-            prob_lo[d] = Nrep[d] * prob_lo[d];
-            prob_hi[d] = Nrep[d] * prob_hi[d];
-        }
+        amrex::Print() << "replicating restart file: " << rep << std::endl;
     }
 
     // Set up problem domain
-    RealBox rb(prob_lo, prob_hi);
+    RealBox rb(prob_lo_input.data(), prob_hi_input.data());
     Geometry::ResetDefaultProbDomain(rb);
     for (int lev = 0; lev <= max_level; ++lev) {
         SetGeometry(
@@ -137,9 +159,9 @@ void incflo::ReadCheckpointFile()
 
         BoxList bl;
         for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
-            for (int k = 0; k < Nrep[2]; k++) {
-                for (int j = 0; j < Nrep[1]; j++) {
-                    for (int i = 0; i < Nrep[0]; i++) {
+            for (int k = 0; k < rep[2]; k++) {
+                for (int j = 0; j < rep[1]; j++) {
+                    for (int i = 0; i < rep[0]; i++) {
                         Box b(ba_inp[lev][nb]);
                         IntVect shift_vec(
                             i * orig_domain.length(0),
@@ -155,6 +177,20 @@ void incflo::ReadCheckpointFile()
         ba_rep.define(bl);
 
         if (replicate) {
+
+            for (int d = 0; d < AMREX_SPACEDIM; d++) {
+                auto new_domain = ba_rep.minimalBox();
+                auto hi_vect = new_domain.hiVect();
+
+                if (hi_vect[d] + 1 != n_cell_input[d]) {
+                    amrex::Abort(
+                        "input file error, domain size changed which indicated "
+                        "replication, but the amr.n_cell is inconsistent with "
+                        "that change in domain size, please adjust amr.n_cell, "
+                        "or geometry.prob_lo, or geometry.prob_hi");
+                }
+            }
+
             amrex::Print() << " NEW BA had " << ba_rep.size() << " GRIDS "
                            << std::endl;
             amrex::Print() << " NEW Domain" << ba_rep.minimalBox() << std::endl;
@@ -174,5 +210,5 @@ void incflo::ReadCheckpointFile()
     }
 
     m_sim.io_manager().read_checkpoint_fields(
-        restart_file, ba_inp, dm_inp, Nrep);
+        restart_file, ba_inp, dm_inp, rep);
 }
