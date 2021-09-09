@@ -211,7 +211,8 @@ void IOManager::read_checkpoint_fields(
                     tmp, amrex::MultiFabFileFullPrefix(
                              lev, restart_file, level_prefix, field.name()));
 
-                amrex::Box orig_domain(ba_chk[lev].minimalBox());
+                // always use the level 0 domain
+                amrex::Box orig_domain(ba_chk[0].minimalBox());
 
                 for (int k = 0; k < rep[2]; k++) {
                     for (int j = 0; j < rep[1]; j++) {
@@ -221,7 +222,7 @@ void IOManager::read_checkpoint_fields(
                                 j * orig_domain.length(1),
                                 k * orig_domain.length(2));
 
-                            tmp.shift(shift_vec);
+                            tmp.shift(shift_vec * (1 << lev));
 
                             mfab.ParallelCopy(tmp);
 

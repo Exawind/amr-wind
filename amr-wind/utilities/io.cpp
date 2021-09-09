@@ -149,14 +149,16 @@ void incflo::ReadCheckpointFile()
 
     amrex::Vector<amrex::BoxArray> ba_inp(finest_level + 1);
     amrex::Vector<amrex::DistributionMapping> dm_inp(finest_level + 1);
+
     for (int lev = 0; lev <= finest_level; ++lev) {
         // read in level 'lev' BoxArray from Header
         ba_inp[lev].readFrom(is);
         GotoNextLine(is);
 
-        Box orig_domain(ba_inp[lev].minimalBox());
+        // always use level 0 to check domain size
+        Box orig_domain(ba_inp[0].minimalBox());
 
-        if (replicate) {
+        if (replicate && lev == 0) {
             amrex::Print() << " OLD BA had " << ba_inp[lev].size() << " GRIDS "
                            << std::endl;
             amrex::Print() << " OLD Domain" << orig_domain << std::endl;
@@ -172,7 +174,7 @@ void incflo::ReadCheckpointFile()
                             i * orig_domain.length(0),
                             j * orig_domain.length(1),
                             k * orig_domain.length(2));
-                        b.shift(shift_vec);
+                        b.shift(shift_vec * (1 << lev));
                         bl.push_back(b);
                     }
                 }
@@ -181,7 +183,7 @@ void incflo::ReadCheckpointFile()
         BoxArray ba_rep;
         ba_rep.define(bl);
 
-        if (replicate) {
+        if (replicate && lev == 0) {
 
             for (int d = 0; d < AMREX_SPACEDIM; d++) {
                 auto new_domain = ba_rep.minimalBox();
