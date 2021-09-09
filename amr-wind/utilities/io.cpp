@@ -115,8 +115,20 @@ void incflo::ReadCheckpointFile()
     IntVect rep(1, 1, 1);
     for (int d = 0; d < AMREX_SPACEDIM; d++) {
         AMREX_ALWAYS_ASSERT(prob_hi[d] - prob_lo[d] > 0.0);
-        rep[d] = static_cast<int>(
-            (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]));
+
+        const amrex::Real domain_ratio =
+            (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]);
+
+        rep[d] = static_cast<int>(domain_ratio);
+
+        constexpr amrex::Real domain_eps = 1.0e-6;
+        if (amrex::Math::abs(static_cast<amrex::Real>(rep[d]) - domain_ratio) >
+            domain_eps) {
+            amrex::Abort(
+                "Domain size changed which indicates replication but there is "
+                "either some precision issues or a non integer domain size "
+                "change was input");
+        }
     }
 
     bool replicate = (rep == IntVect::TheUnitVector()) ? false : true;
