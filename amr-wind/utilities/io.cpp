@@ -21,6 +21,11 @@ void incflo::ReadCheckpointFile()
 {
     BL_PROFILE("amr-wind::incflo::ReadCheckpointFile()");
 
+    // make me an input
+    IntVect Nrep(2, 3, 1);
+
+    bool replicate = (Nrep == IntVect::TheUnitVector()) ? false : true;
+
     const std::string& restart_file = m_sim.io_manager().restart_file();
     amrex::Print() << "Restarting from checkpoint " << restart_file
                    << std::endl;
@@ -96,6 +101,13 @@ void incflo::ReadCheckpointFile()
         }
     }
 
+    if (replicate) {
+        for (int d = 0; d < BL_SPACEDIM; d++) {
+            prob_lo[d] = Nrep[d] * prob_lo[d];
+            prob_hi[d] = Nrep[d] * prob_hi[d];
+        }
+    }
+
     // Set up problem domain
     RealBox rb(prob_lo, prob_hi);
     Geometry::ResetDefaultProbDomain(rb);
@@ -113,20 +125,52 @@ void incflo::ReadCheckpointFile()
         ba_inp[lev].readFrom(is);
         GotoNextLine(is);
 
+        Box orig_domain(ba_inp[lev].minimalBox());
+
+        if (replicate) {
+            amrex::Print() << " OLD BA had " << ba_inp[lev].size() << " GRIDS "
+                           << std::endl;
+            amrex::Print() << " OLD Domain" << orig_domain << std::endl;
+        }
+
+        BoxList bl;
+        for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
+            for (int k = 0; k < Nrep[2]; k++) {
+                for (int j = 0; j < Nrep[1]; j++) {
+                    for (int i = 0; i < Nrep[0]; i++) {
+                        Box b(ba_inp[lev][nb]);
+                        IntVect shift_vec(
+                            i * orig_domain.length(0),
+                            j * orig_domain.length(1),
+                            k * orig_domain.length(2));
+                        b.shift(shift_vec);
+                        bl.push_back(b);
+                    }
+                }
+            }
+        }
+        BoxArray ba_rep;
+        ba_rep.define(bl);
+
+        if (replicate) {
+            amrex::Print() << " NEW BA had " << ba_rep.size() << " GRIDS "
+                           << std::endl;
+            amrex::Print() << " NEW Domain" << ba_rep.minimalBox() << std::endl;
+        }
+
         // Create distribution mapping
         dm_inp[lev].define(ba_inp[lev], ParallelDescriptor::NProcs());
         DistributionMapping dm = dm_inp[lev];
 
-        BoxArray ba(ba_inp[lev].simplified());
+        BoxArray ba(ba_rep.simplified());
         ba.maxSize(maxGridSize(lev));
-        if (ba != ba_inp[lev]) {
-            if ((lev == 0) || refine_grid_layout)
-                ChopGrids(lev, ba, ParallelDescriptor::NProcs());
-            dm = DistributionMapping{ba, ParallelDescriptor::NProcs()};
-        }
+        if (refine_grid_layout)
+            ChopGrids(lev, ba, ParallelDescriptor::NProcs());
+        dm = DistributionMapping{ba, ParallelDescriptor::NProcs()};
 
         MakeNewLevelFromScratch(lev, m_time.current_time(), ba, dm);
     }
 
-    m_sim.io_manager().read_checkpoint_fields(restart_file, ba_inp, dm_inp);
+    m_sim.io_manager().read_checkpoint_fields(
+        restart_file, ba_inp, dm_inp, Nrep);
 }

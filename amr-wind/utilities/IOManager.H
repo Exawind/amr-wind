@@ -51,7 +51,8 @@ public:
     void read_checkpoint_fields(
         const std::string& restart_file,
         const amrex::Vector<amrex::BoxArray>& ba_chk,
-        const amrex::Vector<amrex::DistributionMapping>& dm_chk);
+        const amrex::Vector<amrex::DistributionMapping>& dm_chk,
+        const amrex::IntVect& rep);
 
     //! Register a variable for output
     void register_output_var(const std::string& fname)
