@@ -182,6 +182,10 @@ void IOManager::read_checkpoint_fields(
     std::set<std::string> missing;
     const std::string level_prefix = "Level_";
     const int nlevels = m_sim.mesh().finestLevel() + 1;
+
+    // always use the level 0 domain
+    amrex::Box orig_domain(ba_chk[0].minimalBox());
+
     for (int lev = 0; lev < nlevels; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
@@ -210,9 +214,6 @@ void IOManager::read_checkpoint_fields(
                 amrex::VisMF::Read(
                     tmp, amrex::MultiFabFileFullPrefix(
                              lev, restart_file, level_prefix, field.name()));
-
-                // always use the level 0 domain
-                amrex::Box orig_domain(ba_chk[0].minimalBox());
 
                 for (int k = 0; k < rep[2]; k++) {
                     for (int j = 0; j < rep[1]; j++) {

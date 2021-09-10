@@ -154,16 +154,19 @@ void incflo::ReadCheckpointFile()
         // read in level 'lev' BoxArray from Header
         ba_inp[lev].readFrom(is);
         GotoNextLine(is);
+    }
 
-        // always use level 0 to check domain size
-        Box orig_domain(ba_inp[0].minimalBox());
+    // always use level 0 to check domain size
+    constexpr int lev0{0};
+    Box orig_domain(ba_inp[lev0].minimalBox());
 
-        if (replicate && lev == 0) {
-            amrex::Print() << " OLD BA had " << ba_inp[lev].size() << " GRIDS "
-                           << std::endl;
-            amrex::Print() << " OLD Domain" << orig_domain << std::endl;
-        }
+    if (replicate) {
+        amrex::Print() << " OLD BA had " << ba_inp[lev0].size() << " GRIDS "
+                       << std::endl;
+        amrex::Print() << " OLD Domain" << orig_domain << std::endl;
+    }
 
+    for (int lev = 0; lev <= finest_level; ++lev) {
         BoxList bl;
         for (int nb = 0; nb < ba_inp[lev].size(); nb++) {
             for (int k = 0; k < rep[2]; k++) {
