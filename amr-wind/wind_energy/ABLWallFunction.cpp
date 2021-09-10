@@ -157,10 +157,11 @@ void ABLVelWallFunc::wall_model(
     const int nlevels = repo.num_active_levels();
 
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
-
-    AMREX_ALWAYS_ASSERT(
-        ((velocity.bc_type()[zlo] == BC::wall_model) &&
-         (!repo.mesh().Geom(0).isPeriodic(idim))));
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+    if (!(velocity.bc_type()[zlo] == BC::wall_model ||
+          velocity.bc_type()[zhi] == BC::wall_model)) {
+        return;
+    }
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& geom = repo.mesh().Geom(lev);
@@ -183,7 +184,8 @@ void ABLVelWallFunc::wall_model(
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
-            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+            if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                velocity.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -203,7 +205,8 @@ void ABLVelWallFunc::wall_model(
                     });
             }
 
-            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+            if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
+                velocity.bc_type()[zhi] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -271,9 +274,12 @@ void ABLTempWallFunc::wall_model(
 
     // Return early if the user hasn't requested a wall model BC for temperature
     amrex::Orientation zlo(amrex::Direction::z, amrex::Orientation::low);
-    if ((temperature.bc_type()[zlo] != BC::wall_model) ||
-        repo.mesh().Geom(0).isPeriodic(idim))
+    amrex::Orientation zhi(amrex::Direction::z, amrex::Orientation::high);
+
+    if (!(temperature.bc_type()[zlo] == BC::wall_model ||
+          temperature.bc_type()[zhi] == BC::wall_model)) {
         return;
+    }
 
     BL_PROFILE("amr-wind::ABLTempWallFunc");
     auto& velocity = repo.get_field("velocity");
@@ -304,7 +310,8 @@ void ABLTempWallFunc::wall_model(
             auto den = rho_lev.array(mfi);
             auto eta = eta_lev.array(mfi);
 
-            if (bx.smallEnd(idim) == domain.smallEnd(idim)) {
+            if (bx.smallEnd(idim) == domain.smallEnd(idim) &&
+                temperature.bc_type()[zlo] == BC::wall_model) {
                 amrex::ParallelFor(
                     amrex::bdryLo(bx, idim),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -319,7 +326,8 @@ void ABLTempWallFunc::wall_model(
                     });
             }
 
-            if (bx.bigEnd(idim) == domain.bigEnd(idim)) {
+            if (bx.bigEnd(idim) == domain.bigEnd(idim) &&
+                temperature.bc_type()[zhi] == BC::wall_model) {
 
                 amrex::ParallelFor(
                     amrex::bdryHi(bx, idim),
