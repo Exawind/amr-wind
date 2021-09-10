@@ -72,7 +72,8 @@ AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real CollidingRings::operator()(
 }
 
 VortexRing::VortexRing(const CFDSim& sim)
-    : m_repo(sim.repo())
+    : m_sim(sim)
+    , m_repo(sim.repo())
     , m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
 {
@@ -106,6 +107,9 @@ void VortexRing::initialize_fields(int level, const amrex::Geometry& /*geom*/)
 
 void VortexRing::post_init_actions()
 {
+
+    // only call for startup and not for restart
+    if (m_sim.time().time_index() > 0) return;
 
     if (m_vortexringtype == "fatcore") {
         initialize_velocity(FatCore());

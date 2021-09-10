@@ -32,6 +32,7 @@ public:
     void initialize_velocity(const VortexRingType& core);
 
 private:
+    const CFDSim& m_sim;
     const FieldRepo& m_repo;
     Field& m_velocity;
     Field& m_density;
