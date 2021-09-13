@@ -75,3 +75,4 @@ hypre.bamg_verbose = 0
 hypre.num_krylov = 20
 hypre.bamg_max_levels = 4
 hypre.bamg_num_sweeps = 1
+hypre.bamg_relax_order = 0
