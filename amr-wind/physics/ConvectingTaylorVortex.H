@@ -119,9 +119,13 @@ private:
     const amr_wind::CFDSim& m_sim;
     const FieldRepo& m_repo;
     const amrex::AmrCore& m_mesh;
+
     Field& m_velocity;
     Field& m_gradp;
     Field& m_density;
+    Field& m_mesh_fac_cc;
+    Field& m_mesh_fac_nd;
+
     void output_error();
 
     //! initial density value
