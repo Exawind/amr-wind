@@ -173,7 +173,8 @@ void IOManager::write_checkpoint_file(const int start_level)
 void IOManager::read_checkpoint_fields(
     const std::string& restart_file,
     const amrex::Vector<amrex::BoxArray>& ba_chk,
-    const amrex::Vector<amrex::DistributionMapping>& dm_chk)
+    const amrex::Vector<amrex::DistributionMapping>& dm_chk,
+    const amrex::IntVect& rep)
 {
     BL_PROFILE("amr-wind::IOManager::read_checkpoint_fields");
 
@@ -181,6 +182,10 @@ void IOManager::read_checkpoint_fields(
     std::set<std::string> missing;
     const std::string level_prefix = "Level_";
     const int nlevels = m_sim.mesh().finestLevel() + 1;
+
+    // always use the level 0 domain
+    amrex::Box orig_domain(ba_chk[0].minimalBox());
+
     for (int lev = 0; lev < nlevels; ++lev) {
         for (auto* fld : m_chk_fields) {
             auto& field = *fld;
@@ -209,8 +214,27 @@ void IOManager::read_checkpoint_fields(
                 amrex::VisMF::Read(
                     tmp, amrex::MultiFabFileFullPrefix(
                              lev, restart_file, level_prefix, field.name()));
+
+                for (int k = 0; k < rep[2]; k++) {
+                    for (int j = 0; j < rep[1]; j++) {
+                        for (int i = 0; i < rep[0]; i++) {
+
+                            amrex::IntVect shift_vec(
+                                i * orig_domain.length(0),
+                                j * orig_domain.length(1),
+                                k * orig_domain.length(2));
+
+                            // equivalent to 2^lev
+                            shift_vec *= (1 << lev);
+
+                            tmp.shift(shift_vec);
+                            mfab.ParallelCopy(tmp);
+                            tmp.shift(-shift_vec);
+                        }
+                    }
+                }
+
                 mfab.setBndry(0.0);
-                mfab.ParallelCopy(tmp);
             }
         }
     }
