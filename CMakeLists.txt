@@ -92,7 +92,7 @@ set(aw_api_lib "amrwind_api")
 
 #Create main target executable
 add_library(${amr_wind_lib_name} OBJECT)
-add_library(${aw_api_lib} SHARED)
+add_library(${aw_api_lib})
 add_executable(${amr_wind_exe_name})
 
 init_code_checks()
