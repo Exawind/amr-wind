@@ -46,10 +46,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(AMR_WIND_ENABLE_CUDA)
   enable_language(CUDA)
-  # Fix issues with GPU builds
   if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS "10.0")
     message(FATAL_ERROR "Your nvcc version is ${CMAKE_CUDA_COMPILER_VERSION} which is unsupported."
       "Please use CUDA toolkit version 10.0 or newer.")
+  endif()
+  # Fix issues with GPU builds
+  if(AMR_WIND_ENABLE_OPENFAST)
+    enable_language(Fortran)
   endif()
 endif()
 
