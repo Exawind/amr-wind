@@ -51,9 +51,9 @@ if(AMR_WIND_ENABLE_CUDA)
       "Please use CUDA toolkit version 10.0 or newer.")
   endif()
   # Fix issues with GPU builds
-  # if(AMR_WIND_ENABLE_OPENFAST)
-  #  enable_language(Fortran)
-  # endif()
+  if(AMR_WIND_ENABLE_OPENFAST)
+    enable_language(Fortran)
+  endif()
 endif()
 
 if (AMR_WIND_ENABLE_HIP)
