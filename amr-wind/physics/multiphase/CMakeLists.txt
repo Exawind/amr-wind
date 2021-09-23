@@ -8,5 +8,5 @@ target_sources(${amr_wind_lib_name}
   RainDrop.cpp
   )
 
-add_subdirectory(wave_basin)
+add_subdirectory(numerical_wave_tank)
 
