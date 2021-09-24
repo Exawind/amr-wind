@@ -186,7 +186,7 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
     auto* tgrad_ptr = tgrad.data();
     {
         const int normal_dir = m_normal_dir;
-        const size_t ncells_h2 = m_ncells_h2;
+        const size_t ncells_h1 = m_ncells_h1;
         amrex::Real dnval = m_dn;
         for (amrex::MFIter mfi(m_temperature(0)); mfi.isValid(); ++mfi) {
             const auto& bx = mfi.tilebox();
@@ -195,11 +195,11 @@ void ABLStats::compute_zi(const h1_dir& h1Sel, const h2_dir& h2Sel)
                 bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     int h1 = h1Sel(i, j, k);
                     int h2 = h2Sel(i, j, k);
-                    if (tgrad_ptr[h2 * ncells_h2 + h1].grad_z <
+                    if (tgrad_ptr[h2 * ncells_h1 + h1].grad_z <
                         gradT_arr(i, j, k, normal_dir)) {
-                        tgrad_ptr[h2 * ncells_h2 + h1].grad_z =
+                        tgrad_ptr[h2 * ncells_h1 + h1].grad_z =
                             gradT_arr(i, j, k, normal_dir);
-                        tgrad_ptr[h2 * ncells_h2 + h1].max_grad_loc =
+                        tgrad_ptr[h2 * ncells_h1 + h1].max_grad_loc =
                             (k + 0.5) * dnval;
                     }
                 });
