@@ -26,11 +26,15 @@ public:
         const amrex::Geometry& geom,
         const amrex::Array4<amrex::Real>& velocity,
         const amrex::Array4<amrex::Real>& density,
-        const amrex::Array4<amrex::Real>& tracer) const;
+        const amrex::Array4<amrex::Real>& tracer,
+        const amrex::Array4<amrex::Real>& mesh_fac) const;
 
 private:
     //! Initial bubble location
     amrex::Vector<amrex::Real> m_loc{{0.25, 0.25, 0.5}};
+
+    //! Initial velocity
+    amrex::Vector<amrex::Real> m_init_vel{{0.0, 0.0, 0.0}};
 
     //! Initial density field
     amrex::Real m_rho{1.0};

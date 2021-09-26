@@ -36,6 +36,7 @@ public:
 private:
     Field& m_velocity;
     Field& m_density;
+    Field& m_mesh_fac;
 
     //! Temperature field
     Field* m_temperature{nullptr};
