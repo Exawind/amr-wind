@@ -56,8 +56,8 @@ void ThirdMomentAveraging::output_line_average_ascii(
                 for (int p = 0; p < ncomp3; ++p)
                     outfile << ", " << std::scientific
                             << m_third_moments_line
-                                   [m_num_moments * i + ncomp1 * ncomp2 * m +
-                                    ncomp2 * n + p];
+                                   [m_num_moments * i + ncomp2 * ncomp3 * m +
+                                    ncomp3 * n + p];
 
         outfile << std::endl;
     }

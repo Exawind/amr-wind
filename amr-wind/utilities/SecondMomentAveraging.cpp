@@ -52,7 +52,7 @@ void SecondMomentAveraging::output_line_average_ascii(
             for (int n = 0; n < ncomp2; ++n)
                 outfile << ", " << std::scientific
                         << m_second_moments_line
-                               [m_num_moments * i + ncomp1 * m + n];
+                               [m_num_moments * i + ncomp2 * m + n];
 
         outfile << std::endl;
     }
