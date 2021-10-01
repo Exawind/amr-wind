@@ -163,8 +163,8 @@ bool SimTime::continue_simulation()
 bool SimTime::do_regrid()
 {
     return (
-        (m_regrid_interval > 0) && (m_time_index > 0) &&
-        (m_time_index % m_regrid_interval == 0));
+        (m_regrid_interval > 0) && ((m_time_index - m_start_time_index) > 0) &&
+        ((m_time_index - m_start_time_index) % m_regrid_interval == 0));
 }
 
 bool SimTime::write_plot_file()
@@ -181,12 +181,14 @@ bool SimTime::write_checkpoint()
 
 bool SimTime::write_last_plot_file()
 {
-    return ((m_plt_interval > 0) && (m_time_index % m_plt_interval != 0));
+    return ((m_plt_interval > 0) &&
+            ((m_time_index - m_start_time_index) % m_plt_interval != 0));
 }
 
 bool SimTime::write_last_checkpoint()
 {
-    return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval != 0));
+    return ((m_chkpt_interval > 0) &&
+            ((m_time_index - m_start_time_index) % m_chkpt_interval != 0));
 }
 
 void SimTime::set_restart_time(int tidx, amrex::Real time)
