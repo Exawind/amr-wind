@@ -25,8 +25,8 @@ void SimTime::parse_parameters()
     pp.query("plot_interval", m_plt_interval);
     pp.query("checkpoint_interval", m_chkpt_interval);
     pp.query("regrid_start", m_regrid_start_index);
-    pp.query("plt_start", m_plt_start_index);
-    pp.query("chkpt_start", m_chkpt_start_index);
+    pp.query("plot_start", m_plt_start_index);
+    pp.query("checkpoint_start", m_chkpt_start_index);
     pp.query("use_force_cfl", m_use_force_cfl);
 
     if (m_fixed_dt > 0.0) {
