@@ -161,6 +161,15 @@ private:
     //! Initial starting time index
     int m_start_time_index{0};
 
+    //! Initial starting time index for generating checkpoint files
+    int m_chkpt_start_index{0};
+
+    //! Initial starting time index for generating ouput files
+    int m_plt_start_index{0};
+
+    //! Initial starting time index for regriding
+    int m_regrid_start_index{0};
+
     //! Maximum timesteps for simulation
     int m_stop_time_index{-1};
 

@@ -24,6 +24,9 @@ void SimTime::parse_parameters()
     pp.query("regrid_interval", m_regrid_interval);
     pp.query("plot_interval", m_plt_interval);
     pp.query("checkpoint_interval", m_chkpt_interval);
+    pp.query("regrid_start", m_regrid_start_index);
+    pp.query("plot_start", m_plt_start_index);
+    pp.query("checkpoint_start", m_chkpt_start_index);
     pp.query("use_force_cfl", m_use_force_cfl);
 
     if (m_fixed_dt > 0.0) {
@@ -163,28 +166,37 @@ bool SimTime::continue_simulation()
 bool SimTime::do_regrid()
 {
     return (
-        (m_regrid_interval > 0) && (m_time_index > 0) &&
-        (m_time_index % m_regrid_interval == 0));
+        (m_regrid_interval > 0) &&
+        ((m_time_index - m_regrid_start_index) > 0) &&
+        ((m_time_index - m_regrid_start_index) % m_regrid_interval == 0));
 }
 
 bool SimTime::write_plot_file()
 {
-    return ((m_plt_interval > 0) && (m_time_index % m_plt_interval == 0));
+    return (
+        (m_plt_interval > 0) &&
+        ((m_time_index - m_plt_start_index) % m_plt_interval == 0));
 }
 
 bool SimTime::write_checkpoint()
 {
-    return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval == 0));
+    return (
+        (m_chkpt_interval > 0) &&
+        ((m_time_index - m_chkpt_start_index) % m_chkpt_interval == 0));
 }
 
 bool SimTime::write_last_plot_file()
 {
-    return ((m_plt_interval > 0) && (m_time_index % m_plt_interval != 0));
+    return (
+        (m_plt_interval > 0) &&
+        ((m_time_index - m_plt_start_index) % m_plt_interval != 0));
 }
 
 bool SimTime::write_last_checkpoint()
 {
-    return ((m_chkpt_interval > 0) && (m_time_index % m_chkpt_interval != 0));
+    return (
+        (m_chkpt_interval > 0) &&
+        ((m_time_index - m_chkpt_start_index) % m_chkpt_interval != 0));
 }
 
 void SimTime::set_restart_time(int tidx, amrex::Real time)
