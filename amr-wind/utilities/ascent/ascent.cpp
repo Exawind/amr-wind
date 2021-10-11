@@ -106,6 +106,8 @@ void AscentPostProcess::post_advance_work()
     ascent.publish(bp_mesh);
 
     ascent.execute(actions);
+
+    ascent.close();
 }
 
 void AscentPostProcess::post_regrid_actions()
