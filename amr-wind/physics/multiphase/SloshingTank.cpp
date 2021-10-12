@@ -32,8 +32,8 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
     const amrex::Real Amp = m_amplitude;
     const amrex::Real kappa = m_kappa;
     const amrex::Real water_level = m_waterlevel;
-    const amrex::Real Lx = probhi[0]-problo[0];
-    const amrex::Real Ly = probhi[1]-problo[1];
+    const amrex::Real Lx = probhi[0] - problo[0];
+    const amrex::Real Ly = probhi[1] - problo[1];
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -45,8 +45,10 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
                 const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 const amrex::Real z0 =
-                    water_level + Amp * std::exp(-kappa*(
-                      std::pow(x-0.5*Lx,2)+std::pow(y-0.5*Ly,2)));
+                    water_level +
+                    Amp * std::exp(
+                              -kappa * (std::pow(x - 0.5 * Lx, 2) +
+                                        std::pow(y - 0.5 * Ly, 2)));
                 phi(i, j, k) = z0 - z;
             });
     }
