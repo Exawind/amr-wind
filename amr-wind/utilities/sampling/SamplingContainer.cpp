@@ -214,6 +214,11 @@ void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
     }
 }
 
+void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::iso_relocate");
+}
+
 void SamplingContainer::populate_buffer(std::vector<double>& buf)
 {
     BL_PROFILE("amr-wind::SamplingContainer::populate_buffer");

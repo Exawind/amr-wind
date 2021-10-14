@@ -85,6 +85,9 @@ public:
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);
 
+    //! Perform find location of value - isosampling
+    void iso_relocate(const amrex::Vector<Field*> fields);
+
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
 
