@@ -19,37 +19,19 @@ void IsoSampling::initialize()
 
     // Labels for the different sampler types
     amrex::Vector<std::string> labels;
-    // Fields to be sampled - requested by user
-    amrex::Vector<std::string> field_names;
 
     {
         amrex::ParmParse pp(m_label);
         pp.getarr("labels", labels);
-        pp.getarr("fields", field_names);
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
-    }
-
-    // Process field information
-    int ncomp = 0;
-    auto& repo = m_sim.repo();
-    for (const auto& fname : field_names) {
-        if (!repo.field_exists(fname)) {
-            amrex::Print()
-                << "WARNING: IsoSampling: Non-existent field requested: " << fname
-                << std::endl;
-            continue;
-        }
-
-        auto& fld = repo.get_field(fname);
-        ncomp += fld.num_comp();
-        m_fields.emplace_back(&fld);
-        ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
 
     // Load different probe types, default probe type is line
     int idx = 0;
     m_total_particles = 0;
+    int ncomp = 0;
+    auto& repo = m_sim.repo();
     for (auto& lbl : labels) {
         const std::string key = m_label + "." + lbl;
         amrex::ParmParse pp1(key);
@@ -63,6 +45,26 @@ void IsoSampling::initialize()
 
         m_total_particles += obj->num_points();
         m_samplers.emplace_back(std::move(obj));
+
+        // Process field information (one per sampler)
+        std::string fname;
+        pp1.query("field", fname);
+        if (!repo.field_exists(fname)) {
+            amrex::Print()
+                << "WARNING: IsoSampling: Non-existent field requested: "
+                << fname << std::endl;
+            continue;
+        }
+        auto& fld = repo.get_field(fname);
+        if (fld.num_comp()!=1) {
+            amrex::Abort("IsoSampling: Non-scalar field requested: " + fname);
+        }
+        ncomp = fld.num_comp(); // Only one data field per particle
+        m_fields.emplace_back(&fld);
+        ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
+        SamplerBase::SampleValType fval;
+        pp1.query("field value", fval);
+        m_field_values.emplace_back(fval);
     }
 
     // Initialize the particle container based on user inputs
@@ -84,8 +86,7 @@ void IsoSampling::post_advance_work()
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
 
-    //m_scontainer->iso_relocate(m_fields);
-    m_scontainer->interpolate_fields(m_fields);
+    m_scontainer->iso_relocate(m_fields);
 
     process_output();
 }
@@ -130,8 +131,9 @@ void IsoSampling::impl_write_native()
 void IsoSampling::write_ascii()
 {
     BL_PROFILE("amr-wind::IsoSampling::write_ascii");
-    amrex::Print() << "WARNING: IsoSampling: ASCII output will impact performance"
-                   << std::endl;
+    amrex::Print()
+        << "WARNING: IsoSampling: ASCII output will impact performance"
+        << std::endl;
 
     const std::string post_dir = "post_processing";
     const std::string sname =

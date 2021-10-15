@@ -47,7 +47,6 @@ void IsoProbeSampler::initialize(const std::string& key)
         ifo >> m_oris[i][0] >> m_oris[i][1] >> m_oris[i][2];
         ifo.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
-    std::cout << "!!out\n";
 }
 
 void IsoProbeSampler::sampling_locations(SampleLocType& locs) const

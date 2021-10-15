@@ -22,6 +22,7 @@ class SamplerBase : public Factory<SamplerBase, CFDSim&>
 public:
     using SampleLocType =
         amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>>;
+    using SampleValType = amrex::Real;
 
     static const std::string base_identifier() { return "SamplerBase"; }
 

@@ -98,6 +98,8 @@ private:
 
     //! List of fields to be sampled for this collection of probes
     amrex::Vector<Field*> m_fields;
+    //! List of target field values for this collection of probes
+    amrex::Vector<SamplerBase::SampleValType> m_field_values;
 
     /** Name of this sampling object.
      *
