@@ -69,7 +69,13 @@ void IsoSampling::initialize()
 
     // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
-    m_scontainer->setup_container(ncomp);
+    // Number of components (1)
+    if (m_out_fmt == "netcdf") {
+        m_scontainer->setup_container(ncomp);
+    } else {
+        // Position is stored as real components for output
+        m_scontainer->setup_container(ncomp+AMREX_SPACEDIM);
+    }
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
@@ -101,8 +107,12 @@ void IsoSampling::post_regrid_actions()
 void IsoSampling::process_output()
 {
     if (m_out_fmt == "native") {
+        // Update position fields prior to output
+        m_scontainer->position_components();
         impl_write_native();
     } else if (m_out_fmt == "ascii") {
+        // Update position fields prior to output
+        m_scontainer->position_components();
         write_ascii();
     } else if (m_out_fmt == "netcdf") {
         write_netcdf();
