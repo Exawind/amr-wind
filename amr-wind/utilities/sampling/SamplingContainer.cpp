@@ -338,6 +338,36 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
     }
 }
 
+void SamplingContainer::position_components()
+{
+    // Loop through levels, particles to record position of particles
+    const int nlevels = m_mesh.finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto& pvec = pti.GetArrayOfStructs()();
+
+            for (int idim = 0; idim < AMREX_SPACEDIM; ++idim) {
+                // Consider the real components that store position
+                int ic = idim + NumRuntimeRealComps() - AMREX_SPACEDIM;
+                auto& pavec = pti.GetStructOfArrays().GetRealData(ic);
+
+                auto* pstruct = pvec.data();
+                auto* parr = &(pavec[0]);
+
+                amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+                    // Struct of current particle
+                    auto& p = pstruct[ip];
+                    // Copy position to real data component
+                    parr[ip] = p.pos(idim);
+                });
+            }
+        }
+    }
+}
+
 void SamplingContainer::populate_buffer(std::vector<double>& buf)
 {
     BL_PROFILE("amr-wind::SamplingContainer::populate_buffer");
