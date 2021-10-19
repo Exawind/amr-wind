@@ -63,20 +63,23 @@ void IsoSampling::initialize()
         m_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
         SamplerBase::SampleValType fval;
-        pp1.query("field value", fval);
+        pp1.query("field_value", fval);
         m_field_values.emplace_back(fval);
     }
 
     // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
     // Number of components (1)
-    if (m_out_fmt == "netcdf") {
-        m_scontainer->setup_container(ncomp);
-    } else {
+    // + target field value
+    // + sample init location
+    // + sample orientation
+    ncomp += ncomp + 2 * AMREX_SPACEDIM;
+    if (m_out_fmt != "netcdf") {
         // Position is stored as real components for output
-        m_scontainer->setup_container(ncomp+AMREX_SPACEDIM);
+        ncomp += AMREX_SPACEDIM;
     }
-    m_scontainer->initialize_particles(m_samplers);
+    m_scontainer->setup_container(ncomp);
+    m_scontainer->initialize_particles(m_samplers,m_field_values);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;
