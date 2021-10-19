@@ -45,6 +45,8 @@ public:
 
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
+    //! Populate the vector with sampling orientation direction
+    virtual void sampling_orientations(SampleLocType&) const {}
 
     //! Populate metadata in the NetCDF file
     virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}

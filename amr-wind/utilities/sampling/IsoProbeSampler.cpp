@@ -46,6 +46,10 @@ void IsoProbeSampler::initialize(const std::string& key)
     for (int i = 0; i < m_npts; ++i) {
         ifo >> m_oris[i][0] >> m_oris[i][1] >> m_oris[i][2];
         ifo.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // Normalize values
+        amrex::Real mag = std::sqrt(
+            pow(m_oris[i][0],2) + pow(m_oris[i][1],2) + pow(m_oris[i][2],2));
+        m_oris[i][0] /= mag; m_oris[i][1] /= mag; m_oris[i][2] /= mag;
     }
 }
 
@@ -54,6 +58,13 @@ void IsoProbeSampler::sampling_locations(SampleLocType& locs) const
     locs.resize(m_npts);
     for (int i = 0; i < m_npts; ++i)
         for (int d = 0; d < AMREX_SPACEDIM; ++d) locs[i][d] = m_probes[i][d];
+}
+
+void IsoProbeSampler::sampling_orientations(SampleLocType& oris) const
+{
+    oris.resize(m_npts);
+    for (int i = 0; i < m_npts; ++i)
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) oris[i][d] = m_oris[i][d];
 }
 
 #ifdef AMR_WIND_USE_NETCDF

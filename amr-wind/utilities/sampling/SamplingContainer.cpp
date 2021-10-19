@@ -200,6 +200,84 @@ void SamplingContainer::initialize_particles(
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
 }
 
+void SamplingContainer::initialize_particles(
+    const amrex::Vector<std::unique_ptr<SamplerBase>>& samplers,
+    const amrex::Vector<amrex::Real>& field_vals)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::initialize_iso");
+
+    // We will assign all particles to the first box in level 0 and let
+    // redistribute scatter it to the appropriate rank and box.
+    const int lev = 0;
+    const int iproc = amrex::ParallelDescriptor::MyProc();
+    const int owner = ParticleDistributionMap(lev)[0];
+
+    // Let only the MPI rank owning the first box do the work
+    if (owner != iproc) return;
+
+    int num_particles = 0;
+    for (auto& probes : samplers) num_particles += probes->num_points();
+    m_total_particles = num_particles;
+
+    const int grid_id = 0;
+    const int tile_id = 0;
+    // Setup has already processed runtime array information, safe to do
+    // GetParticles here.
+    auto& ptile = GetParticles(lev)[std::make_pair(grid_id, tile_id)];
+    ptile.resize(num_particles);
+
+    int pidx = 0;
+    const int nextid = ParticleType::NextID();
+    auto* pstruct = ptile.GetArrayOfStructs()().data();
+    // Get data access for target values, initial locations, orientations
+    auto* pvalues = &((ptile.GetStructOfArrays().GetRealData(1))[0]);
+    amrex::Array<decltype(pvalues),AMREX_SPACEDIM> pinitloc;
+    amrex::Array<decltype(pvalues),AMREX_SPACEDIM> porients;
+    for (int n = 2; n < 2+AMREX_SPACEDIM; ++n) {
+      pinitloc[n-2] = &((ptile.GetStructOfArrays().GetRealData(n))[0]);
+      int nn = n + AMREX_SPACEDIM;
+      porients[n-2] = &((ptile.GetStructOfArrays().GetRealData(nn))[0]);
+    }
+    SamplerBase::SampleLocType locs, oris;
+    for (auto& probe : samplers) {
+        probe->sampling_locations(locs);
+        probe->sampling_orientations(oris);
+        const int npts = locs.size();
+        const auto probe_id = probe->id();
+        amrex::Gpu::DeviceVector<amrex::Real> dlocs(npts * AMREX_SPACEDIM);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, locs.begin(), locs.end(), dlocs.begin());
+        const auto* dpos = dlocs.data();
+        amrex::Gpu::DeviceVector<amrex::Real> doris(npts * AMREX_SPACEDIM);
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, oris.begin(), oris.end(), doris.begin());
+        const auto* dors = doris.data();
+
+        amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+            const auto uid = pidx + ip;
+            auto& pp = pstruct[uid];
+            pp.id() = nextid + uid;
+            pp.cpu() = iproc;
+
+            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                pp.pos(n) = dpos[ip * AMREX_SPACEDIM + n];
+                // Data members - vector
+                (pinitloc[n])[uid] = dpos[ip * AMREX_SPACEDIM + n];
+                (porients[n])[uid] = dors[ip * AMREX_SPACEDIM + n];
+            }
+            pp.idata(IIx::uid) = uid;
+            pp.idata(IIx::sid) = probe_id;
+            pp.idata(IIx::nid) = ip;
+            // Data members - scalar
+            pvalues[uid] = field_vals[probe_id];
+        });
+        amrex::Gpu::streamSynchronize();
+        pidx += npts;
+    }
+
+    AMREX_ALWAYS_ASSERT(pidx == num_particles);
+}
+
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate");

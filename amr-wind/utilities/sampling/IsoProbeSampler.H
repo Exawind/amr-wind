@@ -24,6 +24,7 @@ public:
     void initialize(const std::string& key) override;
 
     void sampling_locations(SampleLocType&) const override;
+    void sampling_orientations(SampleLocType&) const override;
 
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
 
