@@ -46,8 +46,11 @@ namespace pde {
  *  \tparam Scheme The numerical scheme (e.g., Godnuov, MOL)
  */
 template <typename PDE, typename Scheme>
-PDEFields
-create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
+PDEFields create_fields_instance(
+    const SimTime& time,
+    FieldRepo& repo,
+    const int probtype,
+    const FieldInterpolator itype = FieldInterpolator::CellConsLinear)
 {
     repo.declare_field(
         PDE::var_name(), PDE::ndim, Scheme::nghost_state, Scheme::num_states);
@@ -64,7 +67,7 @@ create_fields_instance(const SimTime& time, FieldRepo& repo, const int probtype)
 
     PDEFields fields(repo, PDE::var_name());
     fields.field.register_fill_patch_op<FieldFillPatchOps<FieldBCDirichlet>>(
-        repo.mesh(), time, probtype);
+        repo.mesh(), time, probtype, itype);
     fields.src_term.register_fill_patch_op<FieldFillPatchOps<FieldBCNoOp>>(
         repo.mesh(), time, probtype, FieldInterpolator::PiecewiseConstant);
     fields.mueff.set_default_fillpatch_bc(time);
