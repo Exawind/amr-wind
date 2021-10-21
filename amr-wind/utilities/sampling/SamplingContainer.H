@@ -94,9 +94,6 @@ public:
     //! Perform find location of value - isosampling
     void iso_relocate(const amrex::Vector<Field*> fields);
 
-    //! Copy position to data components for certain output types
-    void position_components();
-
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
 

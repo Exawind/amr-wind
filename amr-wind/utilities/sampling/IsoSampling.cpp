@@ -81,10 +81,6 @@ void IsoSampling::initialize()
     // Integer components
     // = flag used in searching algorithm (index=0)
     ncomp += 3 + 4 * AMREX_SPACEDIM;
-    if (m_out_fmt != "netcdf") {
-        // Position is stored as real components for output
-        ncomp += AMREX_SPACEDIM;
-    }
     m_scontainer->setup_container(ncomp,1);
     m_scontainer->initialize_particles(m_samplers,m_field_values);
     // Redistribute particles to appropriate boxes/MPI ranks
@@ -119,12 +115,8 @@ void IsoSampling::post_regrid_actions()
 void IsoSampling::process_output()
 {
     if (m_out_fmt == "native") {
-        // Update position fields prior to output
-        m_scontainer->position_components();
         impl_write_native();
     } else if (m_out_fmt == "ascii") {
-        // Update position fields prior to output
-        m_scontainer->position_components();
         write_ascii();
     } else if (m_out_fmt == "netcdf") {
         write_netcdf();
