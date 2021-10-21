@@ -18,7 +18,7 @@ void IsoLineSampler::initialize(const std::string& key)
     pp.get("num_points", m_npts);
     pp.getarr("start", m_start);
     pp.getarr("end", m_end);
-    pp.getarr("iso_orientation", m_oris);
+    pp.getarr("orientation", m_oris);
     amrex::Real mag = 0;
     for (int i = 0; i < m_oris.size(); ++i) {
         // Get norm

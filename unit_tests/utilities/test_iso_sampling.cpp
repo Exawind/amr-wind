@@ -105,7 +105,7 @@ TEST_F(IsoSamplingTest, sampling)
         pp.add("num_points", 16);
         pp.addarr("start", amrex::Vector<amrex::Real>{64.0,0.0,0.0});
         pp.addarr("end", amrex::Vector<amrex::Real>{64.0,128.0,0.0});
-        pp.addarr("iso_orientation", amrex::Vector<amrex::Real>{0.0,0.0,1.0});
+        pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0,0.0,1.0});
     }
     {
         amrex::ParmParse pp("isosampling.IL2");
@@ -114,13 +114,13 @@ TEST_F(IsoSamplingTest, sampling)
         pp.add("num_points", 16);
         pp.addarr("start", amrex::Vector<amrex::Real>{0.0,0.0,0.0});
         pp.addarr("end", amrex::Vector<amrex::Real>{0.0,128.0,0.0});
-        pp.addarr("iso_orientation", amrex::Vector<amrex::Real>{1.0,0.0,1.0});
+        pp.addarr("orientation", amrex::Vector<amrex::Real>{1.0,0.0,1.0});
     }
 
     // amr_wind::sampling::Sampling probes(sim(), "sampling");
     IsoSamplingImpl probes(sim(), "isosampling");
     probes.initialize();
-    //probes.post_advance_work();
+    probes.post_advance_work();
 }
 
 } // namespace amr_wind_tests
