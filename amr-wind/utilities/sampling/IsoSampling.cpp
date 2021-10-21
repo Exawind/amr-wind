@@ -81,7 +81,11 @@ void IsoSampling::initialize()
     // Integer components
     // = flag used in searching algorithm (index=0)
     ncomp += 3 + 4 * AMREX_SPACEDIM;
-    m_scontainer->setup_container(ncomp,1);
+    const int nicomp = 1;
+    // Store number of components
+    m_preals = ncomp;
+    m_pints = nicomp;
+    m_scontainer->setup_container(m_preals,m_pints);
     m_scontainer->initialize_particles(m_samplers,m_field_values);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
@@ -221,7 +225,7 @@ void IsoSampling::prepare_netcdf_file()
 void IsoSampling::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
+    std::vector<double> buf(m_total_particles * m_preals, 0.0);
     m_scontainer->populate_buffer(buf);
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;

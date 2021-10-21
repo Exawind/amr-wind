@@ -54,7 +54,7 @@ protected:
     {
         // Test buffer populate for GPU runs
         std::vector<double> buf(
-            num_total_particles() * var_names().size(), 0.0);
+            num_total_particles() * realcomps_per_particle(), 0.0);
         sampling_container().populate_buffer(buf);
     }
 };

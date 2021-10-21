@@ -66,6 +66,9 @@ public:
 
     int num_total_particles() const { return m_total_particles; }
 
+    int realcomps_per_particle() const { return m_preals; }
+    int intcomps_per_particle() const { return m_pints; }
+
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
@@ -121,6 +124,11 @@ private:
 
     //! Frequency of data sampling and output
     int m_out_freq{100};
+
+    //! Number of real components for each particle
+    int m_preals;
+    //! Number of integer components for each particle
+    int m_pints;
 };
 
 } // namespace sampling
