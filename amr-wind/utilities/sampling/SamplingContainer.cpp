@@ -124,6 +124,132 @@ void sample_field(
                    wx_hi * wy_hi * wz_hi * farr(i + 1, j + 1, k + 1, ic);
     });
 }
+
+void init_bounds(
+    const int np,
+    SamplingContainer::ParticleVector& pvec,
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM>& plvec,
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM>& prvec,
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM>& povec,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& probhi,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::init_bounds");
+
+    auto* pstruct = pvec.data();
+
+    amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+        auto& p = pstruct[ip];
+        amrex::Real dxmag = 0.0;
+        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+            // Store current location as left bound
+            (plvec[n])[ip] = p.pos(n);
+            // Calculate the magnitude of dx
+            dxmag += std::pow(dx[n],2);
+        }
+        dxmag = std::sqrt(dxmag);
+        // Step along orientation vector until bounds are exceeded
+        bool flag = false;
+        int  nn = 0;
+        while (!flag) {
+            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                // Start at left bound
+                if (nn == 0) (prvec[n])[ip] = (plvec[n])[ip];
+                // Increment with dx size
+                (prvec[n])[ip] += (povec[n])[ip]*dxmag;
+                // Check bounds
+                if ((prvec[n])[ip] > probhi[n] || (prvec[n])[ip] < problo[n]) {
+                    // Flag to indicate finished
+                    flag = true;
+                }
+            }
+            // After bounds have been exceeded, remove latest contribution
+            // to stay in domain
+            if (flag) {
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    (prvec[n])[ip] -= (povec[n])[ip]*dxmag;
+                }
+            }
+            ++nn;
+        }
+    });
+}
+
+void iso_fields(
+    const int lev,
+    const int np,
+    const amrex::Vector<Field*> fields,
+    SamplingContainer::ParIterType& pti,
+    SamplingContainer::ParticleVector& pvec,
+    SamplingContainer::RealVector& parr,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& plo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxi,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::iso_fields");
+    int fidx = 0;
+    for (const auto* fld : fields) {
+        const auto farr = (*fld)(lev).const_array(pti);
+
+        switch (fld->field_location()) {
+        case FieldLoc::NODE: {
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
+                {0.0, 0.0, 0.0}};
+            sample_field(np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
+            break;
+        }
+
+        case FieldLoc::CELL: {
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
+                {0.5, 0.5, 0.5}};
+            sample_field(np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
+            break;
+        }
+
+        case FieldLoc::XFACE: {
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
+                {0.0, 0.5, 0.5}};
+            sample_field(np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
+            break;
+        }
+
+        case FieldLoc::YFACE: {
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
+                {0.5, 0.0, 0.5}};
+            sample_field(np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
+            break;
+        }
+
+        case FieldLoc::ZFACE: {
+            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
+                {0.5, 0.5, 0.0}};
+            sample_field(np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
+            break;
+        }
+        }
+        // Increment field counter
+        ++fidx;
+    }
+}
+
+void update_position(
+    const int np,
+    SamplingContainer::ParticleVector& pvec,
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM>& posvec)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::init_bounds");
+
+    auto* pstruct = pvec.data();
+
+    amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+        auto& p = pstruct[ip];
+        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+            // Copy
+            p.pos(n) = (posvec[n])[ip];
+        }
+    });
+}
 } // namespace
 
 void SamplingContainer::setup_container(
@@ -233,10 +359,14 @@ void SamplingContainer::initialize_particles(
     auto* pvalues = &((ptile.GetStructOfArrays().GetRealData(1))[0]);
     amrex::Array<decltype(pvalues),AMREX_SPACEDIM> pinitloc;
     amrex::Array<decltype(pvalues),AMREX_SPACEDIM> porients;
-    for (int n = 2; n < 2+AMREX_SPACEDIM; ++n) {
-      pinitloc[n-2] = &((ptile.GetStructOfArrays().GetRealData(n))[0]);
-      int nn = n + AMREX_SPACEDIM;
-      porients[n-2] = &((ptile.GetStructOfArrays().GetRealData(nn))[0]);
+    // First index where initial position is stored, among real components
+    int roffset = 4 + 2*AMREX_SPACEDIM;
+    for (int n = roffset; n < roffset + AMREX_SPACEDIM; ++n) {
+        pinitloc[n - roffset] =
+            &((ptile.GetStructOfArrays().GetRealData(n))[0]);
+        int nn = n + AMREX_SPACEDIM;
+        porients[n - roffset] =
+            &((ptile.GetStructOfArrays().GetRealData(nn))[0]);
     }
     SamplerBase::SampleLocType locs, oris;
     for (auto& probe : samplers) {
@@ -276,6 +406,77 @@ void SamplingContainer::initialize_particles(
     }
 
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
+}
+
+void SamplingContainer::iso_initbounds(const amrex::Vector<Field*> fields)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::iso_initbounds");
+
+    const int nlevels = m_mesh.finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+        const auto phi = geom.ProbHiArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto& pvec = pti.GetArrayOfStructs()();
+
+            // Set up real and int array components
+            auto& plvals = pti.GetStructOfArrays().GetRealData(2);
+            amrex::Array<amrex::Real*,AMREX_SPACEDIM> pllocs;
+            amrex::Array<amrex::Real*,AMREX_SPACEDIM> prlocs;
+            amrex::Array<amrex::Real*,AMREX_SPACEDIM> porients;
+
+            // First index where left location is stored, among real components
+            int roffset = 4;
+            for (int n = roffset; n < roffset + AMREX_SPACEDIM; ++n) {
+                pllocs[n - roffset] =
+                    &(pti.GetStructOfArrays().GetRealData(n))[0];
+                int nn = n + AMREX_SPACEDIM;
+                prlocs[n - roffset] =
+                    &(pti.GetStructOfArrays().GetRealData(nn))[0];
+                nn += 2 * AMREX_SPACEDIM;
+                porients[n - roffset] =
+                    &(pti.GetStructOfArrays().GetRealData(nn))[0];
+            }
+
+            // Get left and right positions
+            init_bounds(np,pvec,pllocs,prlocs,porients,plo,phi,dx);
+
+            // Get current value and set as left value
+            iso_fields(lev,np,fields,pti,pvec,plvals,plo,dxi,dx);
+
+            // Update location of particles to current right value
+            update_position(np,pvec,prlocs);
+        }
+    }
+
+    // Redistribute, since position has changed
+    this->Redistribute();
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto& pvec = pti.GetArrayOfStructs()();
+
+            // Set up real components
+            auto& prvals = pti.GetStructOfArrays().GetRealData(3);
+
+            // Get current value and set as right value
+            iso_fields(lev,np,fields,pti,pvec,prvals,plo,dxi,dx);
+
+        }
+
+    }
 }
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
@@ -364,54 +565,7 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
             auto& pvec = pti.GetArrayOfStructs()();
             auto& parr = pti.GetStructOfArrays().GetRealData(0);
 
-            int fidx = 0;
-            for (const auto* fld : fields) {
-                const auto farr = (*fld)(lev).const_array(pti);
-
-                switch (fld->field_location()) {
-                case FieldLoc::NODE: {
-                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                        {0.0, 0.0, 0.0}};
-                    sample_field(
-                        np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
-                    break;
-                }
-
-                case FieldLoc::CELL: {
-                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                        {0.5, 0.5, 0.5}};
-                    sample_field(
-                        np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
-                    break;
-                }
-
-                case FieldLoc::XFACE: {
-                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                        {0.0, 0.5, 0.5}};
-                    sample_field(
-                        np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
-                    break;
-                }
-
-                case FieldLoc::YFACE: {
-                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                        {0.5, 0.0, 0.5}};
-                    sample_field(
-                        np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
-                    break;
-                }
-
-                case FieldLoc::ZFACE: {
-                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
-                        {0.5, 0.5, 0.0}};
-                    sample_field(
-                        np, pvec, parr, fidx, farr, plo, dxi, dx, offset);
-                    break;
-                }
-                }
-                // Increment field counter
-                ++fidx;
-            }
+            iso_fields(lev,np,fields,pti,pvec,parr,plo,dxi,dx);
         }
     }
 }

@@ -69,20 +69,29 @@ void IsoSampling::initialize()
 
     // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
-    // Number of components (1)
-    // + target field value
-    // + sample init location
-    // + sample orientation
-    ncomp += ncomp + 2 * AMREX_SPACEDIM;
+    // Real components
+    // = current value     (index = 0)
+    // + target field value        (1)
+    // + current left value        (2)
+    // + current right value       (3)
+    // + current left location     (4           :3+  spacedim)
+    // + current right location    (4+  spacedim:3+2*spacedim)
+    // + sample init location      (4+2*spacedim:3+3*spacedim)
+    // + sample orientation        (4+3*spacedim:3+4*spacedim)
+    // Integer components
+    // = flag used in searching algorithm (index=0)
+    ncomp += 3 + 4 * AMREX_SPACEDIM;
     if (m_out_fmt != "netcdf") {
         // Position is stored as real components for output
         ncomp += AMREX_SPACEDIM;
     }
-    m_scontainer->setup_container(ncomp);
+    m_scontainer->setup_container(ncomp,1);
     m_scontainer->initialize_particles(m_samplers,m_field_values);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;
+    // Set up initial bounds for bisection
+    m_scontainer->iso_initbounds(m_fields);
 
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
 }
