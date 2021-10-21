@@ -10,5 +10,6 @@ target_sources(${amr_wind_lib_name}
   KineticEnergy.cpp
   Enstrophy.cpp
   IsoProbeSampler.cpp
+  IsoLineSampler.cpp
   IsoSampling.cpp
   )

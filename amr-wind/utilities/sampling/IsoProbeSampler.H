@@ -37,8 +37,6 @@ public:
 private:
     SampleLocType m_probes, m_oris;
 
-    SampleLocType l_probes, r_probes;
-
     std::string m_label;
     int m_id{-1};
     int m_npts{0};
