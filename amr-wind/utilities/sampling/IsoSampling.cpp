@@ -208,14 +208,23 @@ void IsoSampling::prepare_netcdf_file()
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
     // Define groups for each sampler
+    int is = 0;
     for (const auto& obj : m_samplers) {
         auto grp = ncf.def_group(obj->label());
 
         grp.def_dim(npart_name, obj->num_points());
         obj->define_netcdf_metadata(grp);
         grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname : m_var_names)
-            grp.def_var(vname, NC_DOUBLE, two_dim);
+        int iv = 0;
+        for (const auto& vname : m_pcomp_names) {
+            if (iv == 0) {
+                grp.def_var(m_var_names[is],NC_DOUBLE, two_dim);
+            } else {
+                grp.def_var(vname, NC_DOUBLE, two_dim);
+            }
+            ++iv;
+        }
+        ++is;
     }
     ncf.exit_def_mode();
 
@@ -260,17 +269,25 @@ void IsoSampling::write_netcdf()
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
 
-    const int nvars = m_var_names.size();
+    const int nvars = m_pcomp_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
         start[1] = 0;
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
+        int is = 0;
         for (const auto& obj : m_samplers) {
             count[1] = obj->num_points();
             auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
+            if (iv == 0) {
+                // Use variable name corresponding to current sampler
+                auto var = grp.var(m_var_names[is]);
+            } else {
+                // Use particle component name
+                auto var = grp.var(m_pcomp_names[iv]);
+            }
             var.put(&buf[offset], start, count);
             offset += count[1];
+            ++is;
         }
     }
     ncf.close();
