@@ -56,6 +56,9 @@ protected:
         std::vector<double> buf(
             num_total_particles() * realcomps_per_particle(), 0.0);
         sampling_container().populate_buffer(buf);
+        std::vector<int> ibuf(
+            num_total_particles() * intcomps_per_particle(), 0);
+        sampling_container().populate_buffer(ibuf);
     }
 };
 
@@ -120,6 +123,15 @@ TEST_F(IsoSamplingTest, sampling)
     // amr_wind::sampling::Sampling probes(sim(), "sampling");
     IsoSamplingImpl probes(sim(), "isosampling");
     probes.initialize();
+    // Check variable names
+    auto var_names = probes.var_names();
+    auto nvar = var_names.size();
+    auto pcomp_names = probes.pcomp_names();
+    auto ncomp = pcomp_names.size();
+    EXPECT_EQ(nvar,2);
+    EXPECT_EQ(var_names[0],"vof");
+    EXPECT_EQ(var_names[1],"vof");
+    EXPECT_EQ(ncomp,16);
     probes.post_advance_work();
 }
 

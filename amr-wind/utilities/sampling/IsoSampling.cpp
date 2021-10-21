@@ -87,6 +87,23 @@ void IsoSampling::initialize()
     m_pints = nicomp;
     m_scontainer->setup_container(m_preals,m_pints);
     m_scontainer->initialize_particles(m_samplers,m_field_values);
+    // Populate particle real component names
+    m_pcomp_names.emplace_back("field"); // will be replaced
+    m_pcomp_names.emplace_back("target");
+    m_pcomp_names.emplace_back("lval");
+    m_pcomp_names.emplace_back("rval");
+    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+        m_pcomp_names.emplace_back("lpos"+std::to_string(n+1));
+    }
+    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+        m_pcomp_names.emplace_back("rpos"+std::to_string(n+1));
+    }
+    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+        m_pcomp_names.emplace_back("pos0"+std::to_string(n+1));
+    }
+    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+        m_pcomp_names.emplace_back("ori"+std::to_string(n+1));
+    }
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;
@@ -227,6 +244,8 @@ void IsoSampling::write_netcdf()
 #ifdef AMR_WIND_USE_NETCDF
     std::vector<double> buf(m_total_particles * m_preals, 0.0);
     m_scontainer->populate_buffer(buf);
+    std::vector<int> ibuf(m_total_particles * m_pints, 0);
+    m_scontainer->populate_buffer(ibuf);
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);

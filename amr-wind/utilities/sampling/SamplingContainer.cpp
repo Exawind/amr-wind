@@ -835,5 +835,37 @@ void SamplingContainer::populate_buffer(std::vector<double>& buf)
         buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
 }
 
+void SamplingContainer::populate_buffer(std::vector<int>& buf)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::populate_buffer_int");
+
+    amrex::Gpu::DeviceVector<int> dbuf(buf.size(), 0.0);
+    auto* dbuf_ptr = dbuf.data();
+    const int nlevels = m_mesh.finestLevel() + 1;
+    for (int lev = 0; lev < nlevels; ++lev) {
+        for (int fid = 0; fid < NumRuntimeIntComps(); ++fid) {
+            const int offset = fid * num_sampling_particles();
+            for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+                const int np = pti.numParticles();
+                auto* pstruct = pti.GetArrayOfStructs()().data();
+                auto* parr = &pti.GetStructOfArrays().GetIntData(fid)[0];
+
+                amrex::ParallelFor(
+                    np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                        auto& pp = pstruct[ip];
+                        const int pidx = pp.idata(IIx::uid);
+                        const int ii = offset + pidx;
+                        dbuf_ptr[ii] = parr[ip];
+                    });
+            }
+        }
+    }
+
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, dbuf.begin(), dbuf.end(), buf.begin());
+    amrex::ParallelDescriptor::ReduceIntSum(
+        buf.data(), buf.size(), amrex::ParallelDescriptor::IOProcessorNumber());
+}
+
 } // namespace sampling
 } // namespace amr_wind

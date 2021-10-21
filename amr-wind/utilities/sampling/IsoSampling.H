@@ -70,6 +70,7 @@ public:
     int intcomps_per_particle() const { return m_pints; }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
+    const amrex::Vector<std::string>& pcomp_names() const { return m_pcomp_names; }
 
 protected:
     //! Output data based on user-defined format
@@ -103,6 +104,8 @@ private:
     amrex::Vector<Field*> m_fields;
     //! List of target field values for this collection of probes
     amrex::Vector<SamplerBase::SampleValType> m_field_values;
+    //! List of real component names for isosampling
+    amrex::Vector<std::string> m_pcomp_names;
 
     /** Name of this sampling object.
      *

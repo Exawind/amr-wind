@@ -96,6 +96,7 @@ public:
 
     //! Populate the buffer with data for all the particles
     void populate_buffer(std::vector<double>& buf);
+    void populate_buffer(std::vector<int>& buf);
 
     int num_sampling_particles() const { return m_total_particles; }
 
