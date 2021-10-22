@@ -162,50 +162,61 @@ protected:
         }
         {
             amrex::ParmParse pp("geometry");
-            amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-            amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 128.0}};
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
         }
     }
+    void setup_samplers()
+    {
+        {
+            amrex::ParmParse pp("isosampling");
+            pp.add("output_frequency", 1);
+            pp.addarr("labels", amrex::Vector<std::string>{"IL1", "IL2"});
+        }
+        {
+            amrex::ParmParse pp("isosampling.IL1");
+            pp.add("type", std::string("IsoLineSampler"));
+            pp.add("field", std::string("vof"));
+            pp.add("num_points", 3);
+            pp.addarr("start", IL1_start);
+            pp.addarr(
+                "end", amrex::Vector<amrex::Real>{
+                           probhi[0], IL1_start[1], IL1_start[2]});
+            pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
+        }
+        {
+            amrex::ParmParse pp("isosampling.IL2");
+            pp.add("type", std::string("IsoLineSampler"));
+            pp.add("field", std::string("vof"));
+            pp.add("num_points", 3);
+            pp.addarr("start", IL2_start);
+            pp.addarr(
+                "end", amrex::Vector<amrex::Real>{
+                           probhi[0], IL2_start[1], IL2_start[2]});
+            pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 1.0, 1.0});
+        }
+    }
+    // Parameters to reuse
+    const amrex::Real water_level0 = 64.0, water_level1 = 31.5;
+    const amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
+    const amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 128.0}};
+    const amrex::Vector<amrex::Real> IL1_start{{0.0, 64.0, 0.0}};
+    const amrex::Vector<amrex::Real> IL2_start{{0.0, 0.0, 0.0}};
 };
 
-TEST_F(IsoSamplingTest, isosampling)
+TEST_F(IsoSamplingTest, setup)
 {
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    init_vof(vof, 0.5 * (128.0 - 0.0));
+    setup_samplers();
 
-    {
-        amrex::ParmParse pp("isosampling");
-        pp.add("output_frequency", 1);
-        pp.addarr("labels", amrex::Vector<std::string>{"IL1", "IL2"});
-    }
-    {
-        amrex::ParmParse pp("isosampling.IL1");
-        pp.add("type", std::string("IsoLineSampler"));
-        pp.add("field", std::string("vof"));
-        pp.add("num_points", 3);
-        pp.addarr("start", amrex::Vector<amrex::Real>{0.0, 64.0, 0.0});
-        pp.addarr("end", amrex::Vector<amrex::Real>{128.0, 64.0, 0.0});
-        pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
-    }
-    {
-        amrex::ParmParse pp("isosampling.IL2");
-        pp.add("type", std::string("IsoLineSampler"));
-        pp.add("field", std::string("vof"));
-        pp.add("num_points", 3);
-        pp.addarr("start", amrex::Vector<amrex::Real>{0.0, 0.0, 0.0});
-        pp.addarr("end", amrex::Vector<amrex::Real>{128.0, 0.0, 0.0});
-        pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 1.0, 1.0});
-    }
-
-    // amr_wind::sampling::Sampling probes(sim(), "sampling");
+    init_vof(vof, water_level0);
     auto& m_sim = sim();
     IsoSamplingImpl probes(m_sim, "isosampling");
     probes.initialize();
+
     // Check variable names
     auto var_names = probes.var_names();
     auto nvar = var_names.size();
@@ -221,18 +232,18 @@ TEST_F(IsoSamplingTest, isosampling)
     // Sampler 1
     int sid = 0;
     // Left location should match initial location
-    check_two[0] = 64.0;
-    check_two[1] = 0.0;
+    check_two[0] = IL1_start[1];
+    check_two[1] = IL1_start[2];
     auto* check_ptr = &(check_two)[0];
-    probes.check_parr(3+2,3+3,sid,"=",check_ptr,m_sim.mesh());
+    probes.check_parr(4+1,4+2,sid,"=",check_ptr,m_sim.mesh());
     // Left value should be vof = 1 (for this case)
     check_one[0] = 1.0;
     check_ptr = &(check_one)[0];
     probes.check_parr(2,2,sid,"=",check_ptr,m_sim.mesh());
     // Right location should be within bounds
-    check_one[0] = 128.0;
+    check_one[0] = probhi[2];
     check_ptr = &(check_one)[0];
-    probes.check_parr(3+3+3,3+3+3,sid,"<",check_ptr,m_sim.mesh());
+    probes.check_parr(4+3+2,4+3+2,sid,"<",check_ptr,m_sim.mesh());
     // Right value should be vof = 0 (for this case)
     check_one[0] = 0.0;
     check_ptr = &(check_one)[0];
@@ -240,23 +251,39 @@ TEST_F(IsoSamplingTest, isosampling)
     // Sampler 2
     sid = 1;
     // Right location should be within bounds
-    check_two[0] = 128.0;
-    check_two[1] = 128.0;
+    check_two[0] = probhi[1];
+    check_two[1] = probhi[2];
     check_ptr = &(check_two)[0];
-    probes.check_parr(3+3+2,3+3+3,sid,"<",check_ptr,m_sim.mesh());
+    probes.check_parr(4+3+1,4+3+2,sid,"<",check_ptr,m_sim.mesh());
 
-    // Perform IsoSampling
+}
+
+TEST_F(IsoSamplingTest, once)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    setup_samplers();
+
+    init_vof(vof, water_level0);
+    auto& m_sim = sim();
+    IsoSamplingImpl probes(m_sim, "isosampling");
+    probes.initialize();
+
+    // Perform isosampling
     probes.post_advance_work();
 
-    // Check results (water_level = 64.0)
+    // Check results (water_level0)
     // Sampler 1
-    sid = 0;
+    int sid = 0;
     // Sample value should be near target
+    amrex::Array<amrex::Real,2> check_two;
+    amrex::Array<amrex::Real,1> check_one;
     check_one[0] = 0.5;
-    check_ptr = &(check_one)[0];
+    auto* check_ptr = &(check_one)[0];
     probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
     // Current position should be at water_level
-    check_one[0] = 64.0;
+    check_one[0] = water_level0;
     check_ptr = &(check_one)[0];
     probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
     // Sampler 2
@@ -266,17 +293,58 @@ TEST_F(IsoSamplingTest, isosampling)
     check_ptr = &(check_one)[0];
     probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
     // Current position should be intersect of water_level and orientation
-    check_two[0] = 64.0;
-    check_two[1] = 64.0;
+    check_two[0] = water_level0;
+    check_two[1] = water_level0;
+    check_ptr = &(check_two)[0];
+    probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
+}
+
+TEST_F(IsoSamplingTest, twice)
+{
+    initialize_mesh();
+    auto& repo = sim().repo();
+    auto& vof = repo.declare_field("vof", 1, 2);
+    setup_samplers();
+
+    init_vof(vof, water_level0);
+    auto& m_sim = sim();
+    IsoSamplingImpl probes(m_sim, "isosampling");
+    probes.initialize();
+
+    // Perform isosampling
+    probes.post_advance_work();
+
+    // Check results (water_level0)
+    // Sampler 1
+    int sid = 0;
+    // Sample value should be near target
+    amrex::Array<amrex::Real,2> check_two;
+    amrex::Array<amrex::Real,1> check_one;
+    check_one[0] = 0.5;
+    auto* check_ptr = &(check_one)[0];
+    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    // Current position should be at water_level
+    check_one[0] = water_level0;
+    check_ptr = &(check_one)[0];
+    probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
+    // Sampler 2
+    sid = 1;
+    // Sample value should be near target
+    check_one[0] = 0.5;
+    check_ptr = &(check_one)[0];
+    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    // Current position should be intersect of water_level and orientation
+    check_two[0] = water_level0;
+    check_two[1] = water_level0;
     check_ptr = &(check_two)[0];
     probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
 
     // Change vof distribution
-    init_vof(vof, 0.25 * (128.0 - 0.0));
+    init_vof(vof, water_level1);
     // Perform IsoSampling again
     probes.post_advance_work();
 
-    // Check results (water_level = 32.0)
+    // Check results (water_level1)
     // Sampler 1
     sid = 0;
     // Sample value should be near target
@@ -284,7 +352,7 @@ TEST_F(IsoSamplingTest, isosampling)
     check_ptr = &(check_one)[0];
     probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
     // Current position should be at water_level
-    check_one[0] = 32.0;
+    check_one[0] = water_level1;
     check_ptr = &(check_one)[0];
     probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
     // Sampler 2
@@ -294,10 +362,11 @@ TEST_F(IsoSamplingTest, isosampling)
     check_ptr = &(check_one)[0];
     probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
     // Current position should be intersect of water_level and orientation
-    check_two[0] = 32.0;
-    check_two[1] = 32.0;
+    check_two[0] = water_level1;
+    check_two[1] = water_level1;
     check_ptr = &(check_two)[0];
     probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
+
 }
 
 } // namespace amr_wind_tests
