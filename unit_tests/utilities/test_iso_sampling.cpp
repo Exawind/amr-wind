@@ -178,6 +178,7 @@ protected:
             amrex::ParmParse pp("isosampling.IL1");
             pp.add("type", std::string("IsoLineSampler"));
             pp.add("field", std::string("vof"));
+            pp.add("field_value", 0.5);
             pp.add("num_points", 3);
             pp.addarr("start", IL1_start);
             pp.addarr(
@@ -189,6 +190,7 @@ protected:
             amrex::ParmParse pp("isosampling.IL2");
             pp.add("type", std::string("IsoLineSampler"));
             pp.add("field", std::string("vof"));
+            pp.add("field_value", 0.5);
             pp.add("num_points", 3);
             pp.addarr("start", IL2_start);
             pp.addarr(
@@ -248,6 +250,10 @@ TEST_F(IsoSamplingTest, setup)
     check_one[0] = 0.0;
     check_ptr = &(check_one)[0];
     probes.check_parr(3,3,sid,"=",check_ptr,m_sim.mesh());
+    // Target value should be recorded
+    check_one[0] = 0.5;
+    check_ptr = &(check_one)[0];
+    probes.check_parr(1,1,sid,"=",check_ptr,m_sim.mesh());
     // Sampler 2
     sid = 1;
     // Right location should be within bounds
