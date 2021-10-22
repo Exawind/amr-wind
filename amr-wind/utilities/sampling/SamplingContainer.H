@@ -85,8 +85,10 @@ public:
         const amrex::Vector<std::unique_ptr<SamplerBase>>&,
         const amrex::Vector<amrex::Real>&);
 
-    //! Initialize the bounds of bisection algorithm
-    void iso_initbounds(const amrex::Vector<Field*> fields);
+    //! Initialize the position of bounds of bisection algorithm
+    void iso_bounds_pos();
+    //! Measure the values at bounds of bisection algorithm
+    void iso_bounds_val(const amrex::Vector<Field*> fields);
 
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);
@@ -106,6 +108,8 @@ private:
     amrex::AmrCore& m_mesh;
 
     int m_total_particles{0};
+
+    const amrex::Real m_tol = 1e-9;
 };
 
 } // namespace sampling

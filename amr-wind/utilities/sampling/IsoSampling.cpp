@@ -108,7 +108,8 @@ void IsoSampling::initialize()
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;
     // Set up initial bounds for bisection
-    m_scontainer->iso_initbounds(m_fields);
+    m_scontainer->iso_bounds_pos();
+    m_scontainer->iso_bounds_val(m_fields);
 
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
 }
@@ -121,6 +122,8 @@ void IsoSampling::post_advance_work()
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
 
+    // Update values at left and right points
+    m_scontainer->iso_bounds_val(m_fields);
     m_scontainer->iso_relocate(m_fields);
 
     process_output();
