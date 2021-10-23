@@ -193,6 +193,7 @@ protected:
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
+            pp.addarr("is_periodic", amrex::Vector<int> {{1, 1, 0}});
         }
     }
     void setup_samplers()

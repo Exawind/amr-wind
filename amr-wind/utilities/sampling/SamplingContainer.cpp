@@ -145,14 +145,13 @@ void init_bounds(
 
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
-        amrex::Real dxmag = 0.0;
+        amrex::Real dxmag = dx[0];
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Store current location as left bound
             (plvec[n])[ip] = p.pos(n);
             // Calculate the magnitude of dx
-            dxmag += std::pow(dx[n], 2);
+            dxmag = std::min(dx[n], dxmag);
         }
-        dxmag = std::sqrt(dxmag);
         // Step along orientation vector until bounds are exceeded
         bool flag = false;
         int nn = 0;
@@ -337,12 +336,11 @@ void pre_bisect_work(
 
         // Take a dx step along orientation vector
         auto& p = pstruct[ip];
-        amrex::Real dxmag = 0.0;
+        amrex::Real dxmag = dx[0];
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Calculate the magnitude of dx
-            dxmag += std::pow(dx[n], 2);
+            dxmag = std::min(dx[n], dxmag);
         }
-        dxmag = std::sqrt(dxmag);
 
         // Left or right depends on modulus of loop counter
         switch (ct % 2) {
