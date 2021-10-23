@@ -586,20 +586,16 @@ void SamplingContainer::initialize_particles(
     int pidx = 0;
     const int nextid = ParticleType::NextID();
     auto* pstruct = ptile.GetArrayOfStructs()().data();
-    // Get data access for target values, initial locations, orientations
+    // Get data access for target values and orientations
     auto* pvalues = &((ptile.GetStructOfArrays().GetRealData(1))[0]);
-    amrex::Array<decltype(pvalues), AMREX_SPACEDIM> pinitloc;
     amrex::Array<decltype(pvalues), AMREX_SPACEDIM> porients;
     // Data access for lone integer array
     auto* pints = &((ptile.GetStructOfArrays().GetIntData(0))[0]);
-    // First index where initial position is stored, among real components
+    // First index where orientation is stored
     int roffset = 4 + 2 * AMREX_SPACEDIM;
     for (int n = roffset; n < roffset + AMREX_SPACEDIM; ++n) {
-        pinitloc[n - roffset] =
-            &((ptile.GetStructOfArrays().GetRealData(n))[0]);
-        int nn = n + AMREX_SPACEDIM;
         porients[n - roffset] =
-            &((ptile.GetStructOfArrays().GetRealData(nn))[0]);
+            &((ptile.GetStructOfArrays().GetRealData(n))[0]);
     }
     SamplerBase::SampleLocType locs, oris;
     for (auto& probe : samplers) {
@@ -625,7 +621,6 @@ void SamplingContainer::initialize_particles(
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 pp.pos(n) = dpos[ip * AMREX_SPACEDIM + n];
                 // Data members - vector
-                (pinitloc[n])[uid] = dpos[ip * AMREX_SPACEDIM + n];
                 (porients[n])[uid] = dors[ip * AMREX_SPACEDIM + n];
             }
             pp.idata(IIx::uid) = uid;
@@ -671,7 +666,7 @@ void SamplingContainer::iso_bounds_pos()
                 int nn = n + AMREX_SPACEDIM;
                 prlocs[n - roffset] =
                     &(pti.GetStructOfArrays().GetRealData(nn))[0];
-                nn += 2 * AMREX_SPACEDIM;
+                nn += AMREX_SPACEDIM;
                 porients[n - roffset] =
                     &(pti.GetStructOfArrays().GetRealData(nn))[0];
             }
@@ -870,7 +865,7 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                     int nn = n + AMREX_SPACEDIM;
                     prlocs[n - roffset] =
                         &(pti.GetStructOfArrays().GetRealData(nn))[0];
-                    nn += 2 * AMREX_SPACEDIM;
+                    nn += AMREX_SPACEDIM;
                     porients[n - roffset] =
                         &(pti.GetStructOfArrays().GetRealData(nn))[0];
                 }

@@ -76,11 +76,10 @@ void IsoSampling::initialize()
     // + current right value       (3)
     // + current left location     (4           :3+  spacedim)
     // + current right location    (4+  spacedim:3+2*spacedim)
-    // + sample init location      (4+2*spacedim:3+3*spacedim)
-    // + sample orientation        (4+3*spacedim:3+4*spacedim)
+    // + sample orientation        (4+2*spacedim:3+3*spacedim)
     // Integer components
     // = flag used in searching algorithm (index=0)
-    ncomp += 3 + 4 * AMREX_SPACEDIM;
+    ncomp += 3 + 3 * AMREX_SPACEDIM;
     const int nicomp = 1;
     // Store number of components
     m_preals = ncomp;
@@ -97,9 +96,6 @@ void IsoSampling::initialize()
     }
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
         m_pcomp_names.emplace_back("rpos" + std::to_string(n + 1));
-    }
-    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        m_pcomp_names.emplace_back("pos0" + std::to_string(n + 1));
     }
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
         m_pcomp_names.emplace_back("ori" + std::to_string(n + 1));

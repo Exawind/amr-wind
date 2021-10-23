@@ -255,7 +255,7 @@ TEST_F(IsoSamplingTest, setup)
     EXPECT_EQ(nvar, 2);
     EXPECT_EQ(var_names[0], "vof");
     EXPECT_EQ(var_names[1], "vof");
-    EXPECT_EQ(ncomp, 16);
+    EXPECT_EQ(ncomp, 13);
     // Check probe location bounds after iso_initbounds
     amrex::Array<amrex::Real, 2> check_two;
     amrex::Array<amrex::Real, 1> check_one;
