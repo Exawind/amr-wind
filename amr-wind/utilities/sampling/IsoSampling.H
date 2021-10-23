@@ -70,7 +70,10 @@ public:
     int intcomps_per_particle() const { return m_pints; }
 
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
-    const amrex::Vector<std::string>& pcomp_names() const { return m_pcomp_names; }
+    const amrex::Vector<std::string>& pcomp_names() const
+    {
+        return m_pcomp_names;
+    }
 
 protected:
     //! Output data based on user-defined format

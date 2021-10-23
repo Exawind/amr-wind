@@ -29,21 +29,25 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
             auto bx = mfi.growntilebox();
             const auto& farr = vof_fld(lev).array(mfi);
 
-            amrex::ParallelFor(bx, [=, &liwl] AMREX_GPU_DEVICE(int i, int j, int k) {
-                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+            amrex::ParallelFor(
+                bx, [=, &liwl] AMREX_GPU_DEVICE(int i, int j, int k) {
+                    const amrex::Real z = problo[2] + (k + offset) * dx[2];
 
-                amrex::Real local_vof = std::min(1.0, std::max(0.0,
-                    (water_level - (z - offset*dx[2])) / dx[2]));
-                farr(i, j, k, d) = local_vof;
+                    amrex::Real local_vof = std::min(
+                        1.0,
+                        std::max(
+                            0.0, (water_level - (z - offset * dx[2])) / dx[2]));
+                    farr(i, j, k, d) = local_vof;
 
-                // Only needs to be calculated once
-                if (liwl < 0) {
-                    // Check for multiphase cell
-                    if (local_vof > 0 && local_vof < 1) {
-                        liwl = z + (0.5 - local_vof)/(0.0 - local_vof)*dx[2];
+                    // Only needs to be calculated once
+                    if (liwl < 0) {
+                        // Check for multiphase cell
+                        if (local_vof > 0 && local_vof < 1) {
+                            liwl = z + (0.5 - local_vof) / (0.0 - local_vof) *
+                                           dx[2];
+                        }
                     }
-                }
-            });
+                });
         }
     }
     // If only single-phase cells, no interpolation needed
@@ -85,11 +89,14 @@ protected:
         sampling_container().populate_buffer(ibuf);
     }
     const amrex::Real tol = 1e-8;
-
 };
 
-void IsoSamplingImpl::check_parr(const int& i_begin, const int& i_end,
-    const int& sid, const std::string& op, amrex::Real* carr,
+void IsoSamplingImpl::check_parr(
+    const int& i_begin,
+    const int& i_end,
+    const int& sid,
+    const std::string& op,
+    amrex::Real* carr,
     const amrex::AmrCore& mesh)
 {
     auto* scont = &(this->sampling_container());
@@ -98,11 +105,12 @@ void IsoSamplingImpl::check_parr(const int& i_begin, const int& i_end,
     for (int lev = 0; lev < nlevels; ++lev) {
 
         for (amr_wind::sampling::SamplingContainer::ParIterType pti(
-                 *scont, lev); pti.isValid(); ++pti) {
+                 *scont, lev);
+             pti.isValid(); ++pti) {
             const int np = pti.numParticles();
             auto& pvec = pti.GetArrayOfStructs()();
 
-            for (int i = i_begin; i < i_end+1; ++i) {
+            for (int i = i_begin; i < i_end + 1; ++i) {
                 // Get specified real component
                 auto* parr = &(pti.GetStructOfArrays().GetRealData(i))[0];
                 // Loop through particles
@@ -130,8 +138,12 @@ void IsoSamplingImpl::check_parr(const int& i_begin, const int& i_end,
     }
 }
 
-void IsoSamplingImpl::check_pos(const int& i_begin, const int& i_end,
-    const int& sid, amrex::Real* carr, const amrex::AmrCore& mesh)
+void IsoSamplingImpl::check_pos(
+    const int& i_begin,
+    const int& i_end,
+    const int& sid,
+    amrex::Real* carr,
+    const amrex::AmrCore& mesh)
 {
     auto* scont = &(this->sampling_container());
     const int nlevels = mesh.finestLevel() + 1;
@@ -139,11 +151,12 @@ void IsoSamplingImpl::check_pos(const int& i_begin, const int& i_end,
     for (int lev = 0; lev < nlevels; ++lev) {
 
         for (amr_wind::sampling::SamplingContainer::ParIterType pti(
-                 *scont, lev); pti.isValid(); ++pti) {
+                 *scont, lev);
+             pti.isValid(); ++pti) {
             const int np = pti.numParticles();
             auto& pvec = pti.GetArrayOfStructs()();
 
-            for (int i = i_begin; i < i_end+1; ++i) {
+            for (int i = i_begin; i < i_end + 1; ++i) {
                 // Loop through particles
                 auto* pstruct = pvec.data();
 
@@ -244,39 +257,38 @@ TEST_F(IsoSamplingTest, setup)
     EXPECT_EQ(var_names[1], "vof");
     EXPECT_EQ(ncomp, 16);
     // Check probe location bounds after iso_initbounds
-    amrex::Array<amrex::Real,2> check_two;
-    amrex::Array<amrex::Real,1> check_one;
+    amrex::Array<amrex::Real, 2> check_two;
+    amrex::Array<amrex::Real, 1> check_one;
     // Sampler 1
     int sid = 0;
     // Left location should match initial location
     check_two[0] = IL1_start[1];
     check_two[1] = IL1_start[2];
     auto* check_ptr = &(check_two)[0];
-    probes.check_parr(4+1,4+2,sid,"=",check_ptr,m_sim.mesh());
+    probes.check_parr(4 + 1, 4 + 2, sid, "=", check_ptr, m_sim.mesh());
     // Left value should be vof = 1 (for this case)
     check_one[0] = 1.0;
     check_ptr = &(check_one)[0];
-    probes.check_parr(2,2,sid,"=",check_ptr,m_sim.mesh());
+    probes.check_parr(2, 2, sid, "=", check_ptr, m_sim.mesh());
     // Right location should be within bounds
     check_one[0] = probhi[2];
     check_ptr = &(check_one)[0];
-    probes.check_parr(4+3+2,4+3+2,sid,"<",check_ptr,m_sim.mesh());
+    probes.check_parr(4 + 3 + 2, 4 + 3 + 2, sid, "<", check_ptr, m_sim.mesh());
     // Right value should be vof = 0 (for this case)
     check_one[0] = 0.0;
     check_ptr = &(check_one)[0];
-    probes.check_parr(3,3,sid,"=",check_ptr,m_sim.mesh());
+    probes.check_parr(3, 3, sid, "=", check_ptr, m_sim.mesh());
     // Target value should be recorded
     check_one[0] = 0.5;
     check_ptr = &(check_one)[0];
-    probes.check_parr(1,1,sid,"=",check_ptr,m_sim.mesh());
+    probes.check_parr(1, 1, sid, "=", check_ptr, m_sim.mesh());
     // Sampler 2
     sid = 1;
     // Right location should be within bounds
     check_two[0] = probhi[1];
     check_two[1] = probhi[2];
     check_ptr = &(check_two)[0];
-    probes.check_parr(4+3+1,4+3+2,sid,"<",check_ptr,m_sim.mesh());
-
+    probes.check_parr(4 + 3 + 1, 4 + 3 + 2, sid, "<", check_ptr, m_sim.mesh());
 }
 
 TEST_F(IsoSamplingTest, once)
@@ -298,26 +310,26 @@ TEST_F(IsoSamplingTest, once)
     // Sampler 1
     int sid = 0;
     // Sample value should be near target
-    amrex::Array<amrex::Real,2> check_two;
-    amrex::Array<amrex::Real,1> check_one;
+    amrex::Array<amrex::Real, 2> check_two;
+    amrex::Array<amrex::Real, 1> check_one;
     check_one[0] = 0.5;
     auto* check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be at water_level
     check_one[0] = liwl;
     check_ptr = &(check_one)[0];
-    probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
+    probes.check_pos(2, 2, sid, check_ptr, m_sim.mesh());
     // Sampler 2
     sid = 1;
     // Sample value should be near target
     check_one[0] = 0.5;
     check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be intersect of water_level and orientation
     check_two[0] = liwl;
     check_two[1] = liwl;
     check_ptr = &(check_two)[0];
-    probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
+    probes.check_pos(1, 2, sid, check_ptr, m_sim.mesh());
 }
 
 TEST_F(IsoSamplingTest, twice)
@@ -339,26 +351,26 @@ TEST_F(IsoSamplingTest, twice)
     // Sampler 1
     int sid = 0;
     // Sample value should be near target
-    amrex::Array<amrex::Real,2> check_two;
-    amrex::Array<amrex::Real,1> check_one;
+    amrex::Array<amrex::Real, 2> check_two;
+    amrex::Array<amrex::Real, 1> check_one;
     check_one[0] = 0.5;
     auto* check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be at water_level
     check_one[0] = liwl;
     check_ptr = &(check_one)[0];
-    probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
+    probes.check_pos(2, 2, sid, check_ptr, m_sim.mesh());
     // Sampler 2
     sid = 1;
     // Sample value should be near target
     check_one[0] = 0.5;
     check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be intersect of water_level and orientation
     check_two[0] = liwl;
     check_two[1] = liwl;
     check_ptr = &(check_two)[0];
-    probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
+    probes.check_pos(1, 2, sid, check_ptr, m_sim.mesh());
 
     // Change vof distribution
     liwl = init_vof(vof, water_level1);
@@ -371,23 +383,22 @@ TEST_F(IsoSamplingTest, twice)
     // Sample value should be near target
     check_one[0] = 0.5;
     check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be at water_level
     check_one[0] = liwl;
     check_ptr = &(check_one)[0];
-    probes.check_pos(2,2,sid,check_ptr,m_sim.mesh());
+    probes.check_pos(2, 2, sid, check_ptr, m_sim.mesh());
     // Sampler 2
     sid = 1;
     // Sample value should be near target
     check_one[0] = 0.5;
     check_ptr = &(check_one)[0];
-    probes.check_parr(0,0,sid,"~",check_ptr,m_sim.mesh());
+    probes.check_parr(0, 0, sid, "~", check_ptr, m_sim.mesh());
     // Current position should be intersect of water_level and orientation
     check_two[0] = liwl;
     check_two[1] = liwl;
     check_ptr = &(check_two)[0];
-    probes.check_pos(1,2,sid,check_ptr,m_sim.mesh());
-
+    probes.check_pos(1, 2, sid, check_ptr, m_sim.mesh());
 }
 
 } // namespace amr_wind_tests

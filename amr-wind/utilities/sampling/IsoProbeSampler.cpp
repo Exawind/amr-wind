@@ -48,8 +48,10 @@ void IsoProbeSampler::initialize(const std::string& key)
         ifo.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         // Normalize values
         amrex::Real mag = std::sqrt(
-            pow(m_oris[i][0],2) + pow(m_oris[i][1],2) + pow(m_oris[i][2],2));
-        m_oris[i][0] /= mag; m_oris[i][1] /= mag; m_oris[i][2] /= mag;
+            pow(m_oris[i][0], 2) + pow(m_oris[i][1], 2) + pow(m_oris[i][2], 2));
+        m_oris[i][0] /= mag;
+        m_oris[i][1] /= mag;
+        m_oris[i][2] /= mag;
     }
 }
 

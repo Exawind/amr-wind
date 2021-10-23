@@ -56,7 +56,7 @@ void IsoSampling::initialize()
             continue;
         }
         auto& fld = repo.get_field(fname);
-        if (fld.num_comp()!=1) {
+        if (fld.num_comp() != 1) {
             amrex::Abort("IsoSampling: Non-scalar field requested: " + fname);
         }
         ncomp = fld.num_comp(); // Only one data field per particle
@@ -85,24 +85,24 @@ void IsoSampling::initialize()
     // Store number of components
     m_preals = ncomp;
     m_pints = nicomp;
-    m_scontainer->setup_container(m_preals,m_pints);
-    m_scontainer->initialize_particles(m_samplers,m_field_values);
+    m_scontainer->setup_container(m_preals, m_pints);
+    m_scontainer->initialize_particles(m_samplers, m_field_values);
     // Populate particle real component names
     m_pcomp_names.emplace_back("field"); // will be replaced
     m_pcomp_names.emplace_back("target");
     m_pcomp_names.emplace_back("lval");
     m_pcomp_names.emplace_back("rval");
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        m_pcomp_names.emplace_back("lpos"+std::to_string(n+1));
+        m_pcomp_names.emplace_back("lpos" + std::to_string(n + 1));
     }
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        m_pcomp_names.emplace_back("rpos"+std::to_string(n+1));
+        m_pcomp_names.emplace_back("rpos" + std::to_string(n + 1));
     }
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        m_pcomp_names.emplace_back("pos0"+std::to_string(n+1));
+        m_pcomp_names.emplace_back("pos0" + std::to_string(n + 1));
     }
     for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-        m_pcomp_names.emplace_back("ori"+std::to_string(n+1));
+        m_pcomp_names.emplace_back("ori" + std::to_string(n + 1));
     }
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
@@ -221,7 +221,7 @@ void IsoSampling::prepare_netcdf_file()
         int iv = 0;
         for (const auto& vname : m_pcomp_names) {
             if (iv == 0) {
-                grp.def_var(m_var_names[is],NC_DOUBLE, two_dim);
+                grp.def_var(m_var_names[is], NC_DOUBLE, two_dim);
             } else {
                 grp.def_var(vname, NC_DOUBLE, two_dim);
             }

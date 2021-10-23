@@ -82,7 +82,7 @@ void sample_field(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& offset)
 {
-    BL_PROFILE("amr-wind::SamplingContainer::sample_impl");
+    BL_PROFILE("amr-wind::SamplingContainer::sample_field_iso");
     const int ic = 0;
 
     auto* pstruct = pvec.data();
@@ -150,18 +150,18 @@ void init_bounds(
             // Store current location as left bound
             (plvec[n])[ip] = p.pos(n);
             // Calculate the magnitude of dx
-            dxmag += std::pow(dx[n],2);
+            dxmag += std::pow(dx[n], 2);
         }
         dxmag = std::sqrt(dxmag);
         // Step along orientation vector until bounds are exceeded
         bool flag = false;
-        int  nn = 0;
+        int nn = 0;
         while (!flag) {
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 // Start at left bound
                 if (nn == 0) (prvec[n])[ip] = (plvec[n])[ip];
                 // Increment with dx size
-                (prvec[n])[ip] += (povec[n])[ip]*dxmag;
+                (prvec[n])[ip] += (povec[n])[ip] * dxmag;
                 // Check bounds
                 if ((prvec[n])[ip] > probhi[n] || (prvec[n])[ip] < problo[n]) {
                     // Flag to indicate finished
@@ -172,7 +172,7 @@ void init_bounds(
             // to stay in domain
             if (flag) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (prvec[n])[ip] -= (povec[n])[ip]*dxmag;
+                    (prvec[n])[ip] -= (povec[n])[ip] * dxmag;
                 }
             }
             ++nn;
@@ -180,9 +180,7 @@ void init_bounds(
     });
 }
 
-void reset_iflag(
-    const int np,
-    SamplingContainer::IntVector& piarr)
+void reset_iflag(const int np, SamplingContainer::IntVector& piarr)
 {
     BL_PROFILE("amr-wind::SamplingContainer::reset_iflag");
 
@@ -288,7 +286,7 @@ void update_position(
         auto& p = pstruct[ip];
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Copy
-            p.pos(n) = 0.5*((posvecl[n])[ip]+(posvecr[n])[ip]);
+            p.pos(n) = 0.5 * ((posvecl[n])[ip] + (posvecr[n])[ip]);
         }
     });
 }
@@ -458,7 +456,7 @@ void bisect_work(
         }
         auto& p = pstruct[ip];
         // Use sign change to determine new middle, reassign bounds
-        if ((current[ip] - target[ip])*(lval[ip] - target[ip]) <= 0) {
+        if ((current[ip] - target[ip]) * (lval[ip] - target[ip]) <= 0) {
             // Sign change is in left interval
             // (or could be that left or middle is at target)
             rval[ip] = current[ip];
@@ -466,7 +464,7 @@ void bisect_work(
                 // Right position moves to current
                 (prvec[n])[ip] = p.pos(n);
                 // Particle is moved to new middle
-                p.pos(n) = 0.5*((plvec[n])[ip]+(prvec[n])[ip]);
+                p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
             }
         } else {
             // Sign change is in right interval
@@ -475,7 +473,7 @@ void bisect_work(
                 // Left position moves to current
                 (plvec[n])[ip] = p.pos(n);
                 // Particle is moved to new middle
-                p.pos(n) = 0.5*((plvec[n])[ip]+(prvec[n])[ip]);
+                p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
             }
         }
         loopsum += not_finished;
@@ -590,12 +588,12 @@ void SamplingContainer::initialize_particles(
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     // Get data access for target values, initial locations, orientations
     auto* pvalues = &((ptile.GetStructOfArrays().GetRealData(1))[0]);
-    amrex::Array<decltype(pvalues),AMREX_SPACEDIM> pinitloc;
-    amrex::Array<decltype(pvalues),AMREX_SPACEDIM> porients;
+    amrex::Array<decltype(pvalues), AMREX_SPACEDIM> pinitloc;
+    amrex::Array<decltype(pvalues), AMREX_SPACEDIM> porients;
     // Data access for lone integer array
     auto* pints = &((ptile.GetStructOfArrays().GetIntData(0))[0]);
     // First index where initial position is stored, among real components
-    int roffset = 4 + 2*AMREX_SPACEDIM;
+    int roffset = 4 + 2 * AMREX_SPACEDIM;
     for (int n = roffset; n < roffset + AMREX_SPACEDIM; ++n) {
         pinitloc[n - roffset] =
             &((ptile.GetStructOfArrays().GetRealData(n))[0]);
@@ -661,9 +659,9 @@ void SamplingContainer::iso_bounds_pos()
             auto& pvec = pti.GetArrayOfStructs()();
 
             // Set up real array components
-            amrex::Array<amrex::Real*,AMREX_SPACEDIM> pllocs;
-            amrex::Array<amrex::Real*,AMREX_SPACEDIM> prlocs;
-            amrex::Array<amrex::Real*,AMREX_SPACEDIM> porients;
+            amrex::Array<amrex::Real*, AMREX_SPACEDIM> pllocs;
+            amrex::Array<amrex::Real*, AMREX_SPACEDIM> prlocs;
+            amrex::Array<amrex::Real*, AMREX_SPACEDIM> porients;
 
             // First index where left location is stored, among real components
             int roffset = 4;
@@ -679,7 +677,7 @@ void SamplingContainer::iso_bounds_pos()
             }
 
             // Get left and right positions
-            init_bounds(np,pvec,pllocs,prlocs,porients,plo,phi,dx);
+            init_bounds(np, pvec, pllocs, prlocs, porients, plo, phi, dx);
         }
     }
 }
@@ -698,7 +696,7 @@ void SamplingContainer::iso_bounds_val(const amrex::Vector<Field*> fields)
             auto& pvec = pti.GetArrayOfStructs()();
 
             // Get left location data
-            amrex::Array<amrex::Real*,AMREX_SPACEDIM> pllocs;
+            amrex::Array<amrex::Real*, AMREX_SPACEDIM> pllocs;
             // First index where left location is stored, among real components
             int roffset = 4;
             for (int n = roffset; n < roffset + AMREX_SPACEDIM; ++n) {
@@ -706,7 +704,7 @@ void SamplingContainer::iso_bounds_val(const amrex::Vector<Field*> fields)
                     &(pti.GetStructOfArrays().GetRealData(n))[0];
             }
             // Update location of particles to current left
-            update_position(np,pvec,pllocs);
+            update_position(np, pvec, pllocs);
         }
     }
     // Redistribute, since position has changed
@@ -726,7 +724,7 @@ void SamplingContainer::iso_bounds_val(const amrex::Vector<Field*> fields)
             // Set up real and int array components
             auto& plvals = pti.GetStructOfArrays().GetRealData(2);
             auto& pints = pti.GetStructOfArrays().GetIntData(0);
-            amrex::Array<amrex::Real*,AMREX_SPACEDIM> prlocs;
+            amrex::Array<amrex::Real*, AMREX_SPACEDIM> prlocs;
 
             // First index where right location is stored, among real components
             int roffset = 4 + AMREX_SPACEDIM;
@@ -738,9 +736,9 @@ void SamplingContainer::iso_bounds_val(const amrex::Vector<Field*> fields)
             // Reset integer flag
             reset_iflag(np, pints);
             // Get current value and set as left value
-            iso_fields(lev,np,fields,pti,pvec,plvals,pints,plo,dxi,dx);
+            iso_fields(lev, np, fields, pti, pvec, plvals, pints, plo, dxi, dx);
             // Update location of particles to current right value
-            update_position(np,pvec,prlocs);
+            update_position(np, pvec, prlocs);
         }
     }
     // Redistribute, since position has changed
@@ -763,10 +761,8 @@ void SamplingContainer::iso_bounds_val(const amrex::Vector<Field*> fields)
             auto& pints = pti.GetStructOfArrays().GetIntData(0);
 
             // Get current value and set as right value
-            iso_fields(lev,np,fields,pti,pvec,prvals,pints,plo,dxi,dx);
-
+            iso_fields(lev, np, fields, pti, pvec, prvals, pints, plo, dxi, dx);
         }
-
     }
 }
 
@@ -844,9 +840,9 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
     BL_PROFILE("amr-wind::SamplingContainer::iso_relocate");
 
     const int nlevels = m_mesh.finestLevel() + 1;
-    amrex::Array<amrex::Real*,AMREX_SPACEDIM> pllocs;
-    amrex::Array<amrex::Real*,AMREX_SPACEDIM> prlocs;
-    amrex::Array<amrex::Real*,AMREX_SPACEDIM> porients;
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM> pllocs;
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM> prlocs;
+    amrex::Array<amrex::Real*, AMREX_SPACEDIM> porients;
 
     //! Pre-bisection loop - for adjusting bounds
     bool flag = false;
@@ -881,8 +877,8 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                 bool out = false;
                 // Check sign change, get new position, update flag
                 pre_bisect_work(
-                    np, pvec, ptvals, plvals, prvals, pllocs, prlocs,
-                    porients, pints, plo, phi, dx, ct, out);
+                    np, pvec, ptvals, plvals, prvals, pllocs, prlocs, porients,
+                    pints, plo, phi, dx, ct, out);
                 if (!out) flag = false;
             }
             ++ct;
@@ -902,7 +898,7 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                 auto& pints = pti.GetStructOfArrays().GetIntData(0);
 
                 // Use left or right based on modulus
-                auto& parr = pti.GetStructOfArrays().GetRealData(2 + ct%2);
+                auto& parr = pti.GetStructOfArrays().GetRealData(2 + ct % 2);
                 // Get value at current location
                 iso_fields(
                     lev, np, fields, pti, pvec, parr, pints, plo, dxi, dx);
@@ -926,7 +922,7 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
             }
 
             // Send particle to center position
-            update_position(np,pvec,pllocs,prlocs);
+            update_position(np, pvec, pllocs, prlocs);
         }
     }
     // With particles having moved, go to new position
