@@ -11,5 +11,6 @@ target_sources(${amr_wind_lib_name}
   Enstrophy.cpp
   IsoProbeSampler.cpp
   IsoLineSampler.cpp
+  IsoPlaneSampler.cpp
   IsoSampling.cpp
   )
