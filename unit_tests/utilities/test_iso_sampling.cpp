@@ -427,7 +427,7 @@ TEST_F(IsoSamplingTest, setup)
     check_ptr = &(check_one)[0];
     int nrightloc = probes.check_parr(
         4 + 3 + 2, 4 + 3 + 2, sid, "<", check_ptr, m_sim.mesh());
-    ASSERT_EQ(nrightloc, npts * 2);
+    ASSERT_EQ(nrightloc, npts);
     // Right value should be vof = 0 (for this case)
     check_one[0] = 0.0;
     check_ptr = &(check_one)[0];
