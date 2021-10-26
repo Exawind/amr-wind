@@ -64,12 +64,30 @@ struct PostSolveOp<TKE>
 template <typename Scheme>
 struct FieldRegOp<TKE, Scheme>
 {
-    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in) {}
+    explicit FieldRegOp(CFDSim& sim_in) : sim(sim_in)
+    {
+        amrex::ParmParse pp("TKE");
+
+        std::string interpolation;
+        pp.query("interpolation", interpolation);
+
+        if (interpolation == "PiecewiseConstant") {
+            m_itype = FieldInterpolator::PiecewiseConstant;
+            amrex::Print()
+                << "using PiecewiseConstant interpolation for TKE fillpatch"
+                << std::endl;
+        } else {
+            amrex::Print() << "using default CellConsLinear interpolation for "
+                              "TKE fillpatch"
+                           << std::endl;
+        }
+    }
 
     PDEFields operator()(const SimTime& time, const int probtype)
     {
         auto& repo = sim.repo();
-        auto fields = create_fields_instance<TKE, Scheme>(time, repo, probtype);
+        auto fields =
+            create_fields_instance<TKE, Scheme>(time, repo, probtype, m_itype);
 
         repo.declare_cc_field(
             TKE::var_name() + "_lhs_src_term", TKE::ndim, 1, 1);
@@ -80,6 +98,7 @@ struct FieldRegOp<TKE, Scheme>
     }
 
     CFDSim& sim;
+    FieldInterpolator m_itype{FieldInterpolator::CellConsLinear};
 };
 
 /** Diffusion operator for scalar transport equations
