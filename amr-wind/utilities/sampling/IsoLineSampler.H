@@ -11,7 +11,10 @@ namespace sampling {
  *
  *  Defines probes along a line defined by `start` and `end` coordinates and
  *  divides it into equal segements as determined by `num_points`. The length of
- *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
+ *  each segment is given by \f[ (end - start) / (num_points - 1) \f] . The
+ *  line itself is just the initial location for the isosampling routine, which
+ *  searches along a single orientation vector for the points belonging to the
+ *  line sampler.
  */
 class IsoLineSampler : public SamplerBase::Register<IsoLineSampler>
 {

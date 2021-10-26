@@ -7,10 +7,11 @@ namespace amr_wind {
 namespace sampling {
 
 /** Sample data on a cloud of points
- *  \ingroup sampling
+ *  \ingroup isosampling
  *
- *  Reads a cloud of point locations from a text file and samples data on those
- *  points.
+ *  Reads a cloud of point locations from a text file, along with a list of
+ *  search directions (orientations) from another text file and performs
+ *  isosampling for these location - orientation pairs.
  */
 class IsoProbeSampler : public SamplerBase::Register<IsoProbeSampler>
 {

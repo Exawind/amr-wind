@@ -9,10 +9,10 @@
 #include "amr-wind/utilities/sampling/SamplingContainer.H"
 
 /**
- *  \defgroup sampling Data-sampling utilities
+ *  \defgroup isosampling Data-sampling utilities
  *  Data-sampling utilities
  *
- *  Sampling contains various data-probes sampling utilities that are
+ *  IsoSampling contains various data-probes sampling utilities that are
  *  implemented in using the [AMReX
  *  particles](https://amrex-codes.github.io/amrex/docs_html/Particle.html)
  *  interface. It supports output in native AMReX particles binary format as
@@ -25,7 +25,7 @@ namespace amr_wind {
 namespace sampling {
 
 /** Collection of data sampling objects
- *  \ingroup sampling
+ *  \ingroup isosampling
  *
  *  A concrete impelementation of the post-processing interface that deals with
  *  isosurface data probes. Multiple instances of sampling entities (e.g.,
