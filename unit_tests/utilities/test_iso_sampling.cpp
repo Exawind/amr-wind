@@ -320,8 +320,11 @@ protected:
             pp.add("num_points", npts);
             pp.addarr("start", IL1_start);
             pp.addarr(
-                "end", amrex::Vector<amrex::Real>{
-                           probhi[0], IL1_start[1], IL1_start[2]});
+                "end",
+                amrex::Vector<amrex::Real>{
+                    probhi[0] *
+                        (1.0 - std::numeric_limits<amrex::Real>::epsilon()),
+                    IL1_start[1], IL1_start[2]});
             pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
         }
         {
@@ -332,8 +335,11 @@ protected:
             pp.add("num_points", npts);
             pp.addarr("start", IL2_start);
             pp.addarr(
-                "end", amrex::Vector<amrex::Real>{
-                           probhi[0], IL2_start[1], IL2_start[2]});
+                "end",
+                amrex::Vector<amrex::Real>{
+                    probhi[0] *
+                        (1.0 - std::numeric_limits<amrex::Real>::epsilon()),
+                    IL2_start[1], IL2_start[2]});
             pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 1.0, 1.0});
         }
     }
@@ -351,8 +357,19 @@ protected:
             pp.add("field_value", 0.5);
             pp.addarr("num_points", amrex::Vector<int>{npts, npts});
             pp.addarr("origin", problo);
-            pp.addarr("axis1", amrex::Vector<amrex::Real>{probhi[0], 0.0, 0.0});
-            pp.addarr("axis2", amrex::Vector<amrex::Real>{0.0, probhi[1], 0.0});
+            pp.addarr(
+                "axis1",
+                amrex::Vector<amrex::Real>{
+                    probhi[0] *
+                        (1.0 - std::numeric_limits<amrex::Real>::epsilon()),
+                    0.0, 0.0});
+            pp.addarr(
+                "axis2",
+                amrex::Vector<amrex::Real>{
+                    0.0,
+                    probhi[1] *
+                        (1.0 - std::numeric_limits<amrex::Real>::epsilon()),
+                    0.0});
             pp.addarr("orientation", amrex::Vector<amrex::Real>{0.0, 0.0, 1.0});
         }
         {
@@ -415,7 +432,7 @@ TEST_F(IsoSamplingTest, setup)
     check_two[1] = IL1_start[2];
     auto* check_ptr = &(check_two)[0];
     int nleftloc =
-        probes.check_parr(4 + 1, 4 + 2, sid, "=", check_ptr, m_sim.mesh());
+        probes.check_parr(4 + 1, 4 + 2, sid, "~", check_ptr, m_sim.mesh());
     ASSERT_EQ(nleftloc,npts*2);
     // Left value should be vof = 1 (for this case)
     check_one[0] = 1.0;

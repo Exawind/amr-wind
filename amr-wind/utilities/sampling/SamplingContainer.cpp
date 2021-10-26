@@ -146,14 +146,18 @@ void init_bounds(
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
         amrex::Real dxmag = dx[0];
+        amrex::Real scale = 0.0;
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Store current location as left bound
             (plvec[n])[ip] = p.pos(n);
             // Calculate the magnitude of dx
             dxmag = std::min(dx[n], dxmag);
+            // Calculate the max dimension of domain to use with epsilon
+            scale = std::max(scale, probhi[n] - problo[n]);
         }
         // Step along orientation vector until bounds are exceeded
         bool flag = false;
+        amrex::Real dist = 0.0;
         int nn = 0;
         while (!flag) {
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
@@ -162,16 +166,25 @@ void init_bounds(
                 // Increment with dx size
                 (prvec[n])[ip] += (povec[n])[ip] * dxmag;
                 // Check bounds
-                if ((prvec[n])[ip] > probhi[n] || (prvec[n])[ip] < problo[n]) {
+                if ((prvec[n])[ip] >= probhi[n] ||
+                    (prvec[n])[ip] < problo[n]) {
                     // Flag to indicate finished
                     flag = true;
+                    // Distance that bounds have been exceeded, along vector
+                    dist = std::max(
+                        dist, std::max(
+                                  (prvec[n])[ip] - probhi[n],
+                                  problo[n] - (prvec[n])[ip]) / (povec[n])[ip]);
                 }
             }
             // After bounds have been exceeded, remove latest contribution
             // to stay in domain
             if (flag) {
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (prvec[n])[ip] -= (povec[n])[ip] * dxmag;
+                    (prvec[n])[ip] -=
+                        (povec[n])[ip] *
+                        (dist +
+                         scale * std::numeric_limits<amrex::Real>::epsilon());
                 }
             }
             ++nn;
