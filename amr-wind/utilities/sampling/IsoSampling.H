@@ -27,7 +27,7 @@ namespace sampling {
 /** Collection of data sampling objects
  *  \ingroup isosampling
  *
- *  A concrete impelementation of the post-processing interface that deals with
+ *  A concrete implementation of the post-processing interface that deals with
  *  isosurface data probes. Multiple instances of sampling entities (e.g.,
  *  probes, line, or plane samplers) can be registered. These samplers also
  *  include directions of search and target field values. Internally, the data
@@ -35,8 +35,9 @@ namespace sampling {
  *  tracking their position within the CFD mesh and updating the fields of
  *  interest.
  *
- *  This class manages the interpolation and the field management. The actual
- *  definition of probes are managed by subclasses of SamplerBase.
+ *  This class manages the relocation of probes to target values, using
+ *  functions in the SamplingContainer class. The actual definition of probes
+ *  are managed by subclasses of SamplerBase.
  */
 class IsoSampling : public PostProcessBase::Register<IsoSampling>
 {
