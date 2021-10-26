@@ -94,6 +94,8 @@ void MultiPhase::post_advance_work()
     };
 }
 
+void MultiPhase::pre_mac_projection_work() { favre_filtering(); }
+
 amrex::Real MultiPhase::volume_fraction_sum()
 {
     using namespace amrex;
@@ -202,6 +204,61 @@ void MultiPhase::set_density_via_vof()
         }
     }
     m_density.fillpatch(m_sim.time().current_time());
+}
+
+void MultiPhase::favre_filtering()
+{
+    const int nlevels = m_sim.repo().num_active_levels();
+
+    // create scratch fields
+    auto density_filter =
+        m_sim.repo().create_scratch_field(1, 1, FieldLoc::CELL);
+    auto momentum =
+        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
+    auto momentum_filter =
+        m_sim.repo().create_scratch_field(AMREX_SPACEDIM, 1, FieldLoc::CELL);
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& mom = (*momentum)(lev);
+        auto& velocity = m_velocity(lev);
+        auto& density = m_density(lev);
+
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& bx = mfi.validbox();
+            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
+            const amrex::Array4<amrex::Real>& rho = density.array(mfi);
+            const amrex::Array4<amrex::Real>& rhou = mom.array(mfi);
+            amrex::ParallelFor(
+                bx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    rhou(i, j, k, n) = vel(i, j, k, n) * rho(i, j, k);
+                });
+        }
+    }
+    // Do the filtering
+    fvm::filter((*density_filter), m_density);
+    fvm::filter((*momentum_filter), (*momentum));
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        auto& velocity = m_velocity(lev);
+        auto& vof = (*m_vof)(lev);
+        auto& mom_fil = *momentum_filter->vec_ptrs()[lev];
+        auto& rho_fil = *density_filter->vec_ptrs()[lev];
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+            const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
+            const amrex::Array4<amrex::Real>& volfrac = vof.array(mfi);
+            const amrex::Array4<amrex::Real>& rho_u_f = mom_fil.array(mfi);
+            const amrex::Array4<amrex::Real>& rho_f = rho_fil.array(mfi);
+            amrex::ParallelFor(
+                vbx, AMREX_SPACEDIM,
+                [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
+                    if (volfrac(i, j, k) <= 0.5) {
+                        vel(i, j, k, n) = rho_u_f(i, j, k, n) / rho_f(i, j, k);
+                    }
+                });
+        }
+    }
 }
 
 // Reconstructing the volume fraction with the levelset

@@ -28,16 +28,44 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     return phi;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-sin_phi_eval(amrex::Real x, amrex::Real y, amrex::Real z) noexcept
+AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
+    int degree,
+    const amrex::Real* coeff,
+    amrex::Real x,
+    amrex::Real y,
+    amrex::Real z,
+    amrex::Real dx,
+    amrex::Real dy,
+    amrex::Real dz) noexcept
 {
-    return 0. * std::sin(25. * x) + .0 * std::sin(0.5 * x) + 0 * y + 0 * z;
-}
+    amrex::Real filt_phi = 0.0;
+    amrex::Real filt_phi_x = 0.0;
+    amrex::Real filt_phi_y = 0.0;
+    amrex::Real filt_phi_z = 0.0;
+    int ind = 0;
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real
-filterx_eval(amrex::Real x, amrex::Real y, amrex::Real z) noexcept
-{
-    return .0 * std::sin(0.5 * x) + 0 * y + 0 * z;
+    for (int i = 0; i <= degree; ++i) {
+        for (int j = 0; j <= degree; ++j) {
+            for (int k = 0; k <= degree; ++k) {
+                filt_phi_x +=
+                    1. / (2. * dx) * coeff[ind] *
+                    (std::pow(x + dx, i + 1) - std::pow(x - dx, i + 1)) /
+                    (i + 1) * std::pow(y, j) * std::pow(z, k);
+                filt_phi_y +=
+                    1. / (2. * dy) * coeff[ind] * std::pow(x, i) *
+                    (std::pow(y + dy, j + 1) - std::pow(y - dy, j + 1)) /
+                    (j + 1) * std::pow(z, k);
+                filt_phi_z +=
+                    1. / (2. * dz) * coeff[ind] * std::pow(x, i) *
+                    std::pow(y, j) *
+                    (std::pow(z + dz, k + 1) - std::pow(z - dz, k + 1)) /
+                    (k + 1);
+                ++ind;
+            }
+        }
+    }
+    filt_phi = 1. / 3. * (filt_phi_x + filt_phi_y + filt_phi_z);
+    return filt_phi;
 }
 
 AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real dphidx_eval(

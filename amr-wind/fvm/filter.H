@@ -22,8 +22,7 @@ struct Filter
     Filter(FTypeOut& filterphi, const FTypeIn& phi)
         : m_filterphi(filterphi), m_phi(phi)
     {
-        AMREX_ALWAYS_ASSERT(
-            filterphi.num_comp() == AMREX_SPACEDIM * phi.num_comp());
+        AMREX_ALWAYS_ASSERT(filterphi.num_comp() == phi.num_comp());
     }
 
     template <typename Stencil>
@@ -44,7 +43,7 @@ struct Filter
                     amrex::Real fp1 = Stencil::f00;
                     amrex::Real f = Stencil::f01;
                     amrex::Real fm1 = Stencil::f02;
-                    filterphi_arr(i, j, k, icomp * AMREX_SPACEDIM + 0) =
+                    const amrex::Real filx =
                         (fp1 * phi_arr(i + 1, j, k, icomp) +
                          f * phi_arr(i, j, k, icomp) +
                          fm1 * phi_arr(i - 1, j, k, icomp));
@@ -52,7 +51,7 @@ struct Filter
                     fp1 = Stencil::f10;
                     f = Stencil::f11;
                     fm1 = Stencil::f12;
-                    filterphi_arr(i, j, k, icomp * AMREX_SPACEDIM + 1) =
+                    const amrex::Real fily =
                         (fp1 * phi_arr(i, j + 1, k, icomp) +
                          f * phi_arr(i, j, k, icomp) +
                          fm1 * phi_arr(i, j - 1, k, icomp));
@@ -60,10 +59,12 @@ struct Filter
                     fp1 = Stencil::f20;
                     f = Stencil::f21;
                     fm1 = Stencil::f22;
-                    filterphi_arr(i, j, k, icomp * AMREX_SPACEDIM + 2) =
+                    const amrex::Real filz =
                         (fp1 * phi_arr(i, j, k + 1, icomp) +
                          f * phi_arr(i, j, k, icomp) +
                          fm1 * phi_arr(i, j, k - 1, icomp));
+                    filterphi_arr(i, j, k, icomp) =
+                        1. / 3. * (filx + fily + filz);
                 }
             });
     }
@@ -95,8 +96,7 @@ template <typename FType>
 inline std::unique_ptr<ScratchField> filter(const FType& phi)
 {
     const std::string gname = phi.name() + "_filter";
-    auto filterphi =
-        phi.repo().create_scratch_field(gname, phi.num_comp() * AMREX_SPACEDIM);
+    auto filterphi = phi.repo().create_scratch_field(gname, phi.num_comp());
     filter(*filterphi, phi);
     return filterphi;
 }

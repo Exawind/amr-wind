@@ -82,6 +82,9 @@ public:
     //! Perform tasks necessary after advancing timestep
     virtual void post_advance_work() = 0;
 
+    //! Perform tasks necessary before mac projection
+    virtual void pre_mac_projection_work() {}
+
     //! Perform tasks necessary before applying the pressure correction
     virtual void pre_pressure_correction_work() {}
 
