@@ -95,7 +95,7 @@ void sample_field(
         // Check if current particle is concerned with current field
         if (p.idata(IIx::sid) != nf) return;
         // Check if current particle has no discernible valid range
-        for (auto is:iskip) {
+        for (auto is : iskip) {
             if (piarr[ip] == is) return;
         }
 
@@ -283,9 +283,7 @@ void iso_fields(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
 {
     amrex::Vector<int> iskip{-3};
-    iso_fields(
-        lev, np, fields, pti, pvec, parr, piarr, iskip, plo,
-        dxi, dx);
+    iso_fields(lev, np, fields, pti, pvec, parr, piarr, iskip, plo, dxi, dx);
 }
 
 void update_position(
