@@ -26,6 +26,18 @@ void IsoPlaneSampler::initialize(const std::string& key)
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
     AMREX_ALWAYS_ASSERT(static_cast<int>(m_oris.size()) == AMREX_SPACEDIM);
 
+    // Normalize orientation
+    amrex::Real mag = 0;
+    for (int i = 0; i < m_oris.size(); ++i) {
+        // Get norm
+        mag += std::pow(m_oris[i], 2);
+    }
+    mag = std::sqrt(mag);
+    for (int i = 0; i < m_oris.size(); ++i) {
+        // Normalize orientation vector
+        m_oris[i] /= mag;
+    }
+
     // Update total number of points
     const size_t tmp = m_npts_dir[0] * m_npts_dir[1];
     if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {

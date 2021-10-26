@@ -24,6 +24,7 @@ void IsoLineSampler::initialize(const std::string& key)
         // Get norm
         mag += std::pow(m_oris[i], 2);
     }
+    mag = std::sqrt(mag);
     for (int i = 0; i < m_oris.size(); ++i) {
         // Normalize orientation vector
         m_oris[i] /= mag;
