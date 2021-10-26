@@ -1,6 +1,5 @@
 #include "amr-wind/wind_energy/actuator/disk/uniform_ct_ops.H"
 #include "amr-wind/utilities/ncutils/nc_interface.H"
-#include "amr-wind/utilities/io_utils.H"
 namespace amr_wind {
 namespace actuator {
 namespace disk {
@@ -141,14 +140,6 @@ void collect_parse_dependencies(
     if (!pp.contains(p1) && pp.contains(p2))
         ss << "UniformCt Dependency Missing: " << p1 << " and " << p2
            << std::endl;
-}
-
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
-{
-    pp.get("num_force_points", meta.num_force_pts);
-    pp.get("epsilon", meta.epsilon);
-    pp.get("rotor_diameter", meta.diameter);
-    pp.getarr("thrust_coeff", meta.thrust_coeff);
 }
 
 void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
@@ -378,6 +369,20 @@ void compute_disk_points(
         }
     }
 }
+// clang-format off
+template <> void required_parameters<UniformGaussian>(UniformCt::MetaType &meta, const utils::ActParser &pp);
+template <> struct ReadInputsOp<UniformCt, ActSrcDiskBase<UniformGaussian>>;
+template <> struct InitDataOp<UniformCt, ActSrcDiskBase<UniformGaussian>>;
+template <> struct UpdateVelOp<UniformCt, ActSrcDiskBase<UniformGaussian>>;
+template <> struct ComputeForceOp<UniformCt, ActSrcDiskBase<UniformGaussian>>;
+template <> struct ProcessOutputsOp<UniformCt, ActSrcDiskBase<UniformGaussian>>;
+template <> void required_parameters<LinearBasis>(UniformCt::MetaType &meta, const utils::ActParser &pp);
+template <> struct ReadInputsOp<UniformCt, ActSrcDiskBase<LinearBasis>>;
+template <> struct InitDataOp<UniformCt, ActSrcDiskBase<LinearBasis>>;
+template <> struct UpdateVelOp<UniformCt, ActSrcDiskBase<LinearBasis>>;
+template <> struct ComputeForceOp<UniformCt, ActSrcDiskBase<LinearBasis>>;
+template <> struct ProcessOutputsOp<UniformCt, ActSrcDiskBase<LinearBasis>>;
+// clang-format on
 } // namespace ops
 } // namespace actuator
 } // namespace amr_wind

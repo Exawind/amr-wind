@@ -10,6 +10,7 @@ namespace actuator {
 struct UniformCtData
 {
     int num_force_pts;
+    int num_force_theta_pts;
     int num_vel_pts{1};
     int num_vel_pts_r{1};
     int num_vel_pts_t{1};

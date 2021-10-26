@@ -31,12 +31,18 @@ void Actuator::pre_init_actions()
         const std::string& prefix = identifier() + "." + tname;
         amrex::ParmParse pp1(prefix);
 
-        std::string type;
+        std::string type, spreading, key;
         pp.query("type", type);
+        pp.query("spreading", spreading);
         pp1.query("type", type);
+        pp1.query("spreading", spreading);
+        key = type + spreading;
+        // type is the key for the factory so we must append this if we
+        // want to specify a subinstances of finer granularity i.e. different
+        // spreading functions
         AMREX_ALWAYS_ASSERT(!type.empty());
 
-        auto obj = ActuatorModel::create(type, m_sim, tname, i);
+        auto obj = ActuatorModel::create(key, m_sim, tname, i);
 
         const std::string default_prefix = identifier() + "." + type;
         utils::ActParser inp(default_prefix, prefix);

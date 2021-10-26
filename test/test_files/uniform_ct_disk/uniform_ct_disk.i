@@ -25,6 +25,7 @@ Smagorinsky_coeffs.Cs          = 0.16
 incflo.physics = FreeStream Actuator
 Actuator.labels = WTG01
 Actuator.type = UniformCtDisk
+Actuator.spreading = LinearBasis
 
 Actuator.UniformCtDisk.rotor_diameter = 126.0
 Actuator.UniformCtDisk.base_position = 0.0 0.0 0.0

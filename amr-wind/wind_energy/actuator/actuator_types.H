@@ -44,18 +44,33 @@ struct ActSrcLine : ActSrcType
     static constexpr bool is_disk = false;
 };
 
+struct UniformGaussian
+{
+    static std::string identifier() { return "UniformGaussian"; }
+};
+struct LinearBasis
+{
+    static std::string identifier() { return "LinearBasis"; }
+};
+
 /** Acutator disk representation.
  *
  *  \ingroup actuator
  */
-struct ActSrcDisk : ActSrcType
+template <typename SpreadingModel>
+struct ActSrcDiskBase : ActSrcType
 {
-    static std::string identifier() { return "Disk"; }
+    static std::string identifier()
+    {
+        return "Disk" + SpreadingModel::identifier();
+    }
 
     static constexpr bool is_line = false;
     static constexpr bool is_disk = true;
 };
 
+using ActSrcDisk = ActSrcDiskBase<LinearBasis>;
+using ActScrDiskUniGauss = ActSrcDiskBase<UniformGaussian>;
 using RealList = amrex::Vector<amrex::Real>;
 using RealSlice = ::amr_wind::utils::Slice<amrex::Real>;
 using VecList = amrex::Vector<amr_wind::vs::Vector>;

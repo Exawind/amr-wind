@@ -5,6 +5,7 @@
 namespace amr_wind {
 namespace actuator {
 
-template class ActModel<UniformCt, ActSrcDisk>;
+template class ActModel<UniformCt, ActSrcDiskBase<LinearBasis>>;
+template class ActModel<UniformCt, ActSrcDiskBase<UniformGaussian>>;
 }
 } // namespace amr_wind

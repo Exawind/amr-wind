@@ -5,6 +5,7 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
+#include "amr-wind/utilities/io_utils.H"
 
 namespace amr_wind {
 namespace actuator {
@@ -34,7 +35,17 @@ void collect_parse_dependencies(
     const std::string& p2,
     std::ostringstream& ss);
 
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
+template <typename SpreadingType>
+void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
+{
+    pp.get("num_force_points", meta.num_force_pts);
+    pp.get("epsilon", meta.epsilon);
+    pp.get("rotor_diameter", meta.diameter);
+    pp.getarr("thrust_coeff", meta.thrust_coeff);
+    if (std::is_same<SpreadingType, UniformGaussian>::value) {
+        pp.get("num_theta_force_points", meta.num_force_theta_pts);
+    }
+}
 
 void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
 
@@ -55,23 +66,23 @@ void compute_disk_points(
     const int offset,
     const double dOffset);
 
-template <>
-struct ReadInputsOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct ReadInputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
         // TODO get density at probe location
         check_for_parse_conflicts(pp);
         auto& meta = data.meta();
-        required_parameters(meta, pp);
+        required_parameters<SpreadingType>(meta, pp);
         optional_parameters(meta, pp);
         final_checks(meta);
         do_parse_based_computations(data);
     }
 };
 
-template <>
-struct InitDataOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct InitDataOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -101,8 +112,8 @@ struct InitDataOp<UniformCt, ActSrcDisk>
     }
 };
 
-template <>
-struct UpdateVelOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct UpdateVelOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -125,8 +136,8 @@ struct UpdateVelOp<UniformCt, ActSrcDisk>
 // compute the total force over a given radial section
 // this will then be spread uniformly over that area in the
 // projection step
-template <>
-struct ComputeForceOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct ComputeForceOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -159,14 +170,14 @@ struct ComputeForceOp<UniformCt, ActSrcDisk>
     }
 };
 
-template <>
-struct UpdatePosOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct UpdatePosOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
     void operator()(UniformCt::DataType&) {}
 };
 
-template <>
-struct ProcessOutputsOp<UniformCt, ActSrcDisk>
+template <typename SpreadingType>
+struct ProcessOutputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 {
 private:
     UniformCt::DataType& m_data;
@@ -180,7 +191,8 @@ private:
     int m_out_freq{10};
 
 public:
-    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType& data)
+    explicit ProcessOutputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>(
+        UniformCt::DataType& data)
         : m_data(data)
     {}
     void operator()(UniformCt::DataType&) {}
