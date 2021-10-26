@@ -72,7 +72,7 @@ private:
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
 
-    bool m_interface_smoothing{false};
+    // bool m_interface_smoothing{false };
 
     int m_smooth_freq{10};
 
