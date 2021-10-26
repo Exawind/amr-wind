@@ -11,7 +11,10 @@ namespace sampling {
  *
  *  Defines probes along a line defined by `start` and `end` coordinates and
  *  divides it into equal segements as determined by `num_points`. The length of
- *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
+ *  each segment is given by \f[ (end - start) / (num_points - 1) \f]. If called
+ *  from IsoSampling, the line is just the initial location for the isosampling
+ *  routine, which searches along a single orientation vector for the points
+ *  belonging to the line sampler.
  */
 class LineSampler : public SamplerBase::Register<LineSampler>
 {
@@ -27,9 +30,13 @@ public:
      *  \param key Prefix used to parse inputs from file
      */
     void initialize(const std::string& key) override;
+    void initialize_iso(const std::string& key) override;
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType&) const override;
+    //! Populate and return a vector of probe orientations to be sampled
+    //  (the orientation is constant for a each point in a line sampler)
+    void sampling_orientations(SampleLocType&) const override;
 
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
     void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
@@ -50,6 +57,7 @@ private:
 
     amrex::Vector<amrex::Real> m_start;
     amrex::Vector<amrex::Real> m_end;
+    amrex::Vector<amrex::Real> m_oris;
 
     std::string m_label;
     int m_id{-1};

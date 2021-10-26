@@ -10,7 +10,9 @@ namespace sampling {
  *  \ingroup sampling
  *
  *  Reads a cloud of point locations from a text file and samples data on those
- *  points.
+ *  points. If called from IsoSampling, also reads a list of search directions
+ *  (orientations) from another text file and performs isosampling for these
+ *  location - orientation pairs.
  */
 class ProbeSampler : public SamplerBase::Register<ProbeSampler>
 {
@@ -22,8 +24,10 @@ public:
     virtual ~ProbeSampler();
 
     void initialize(const std::string& key) override;
+    void initialize_iso(const std::string& key) override;
 
     void sampling_locations(SampleLocType&) const override;
+    void sampling_orientations(SampleLocType&) const override;
 
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
 
@@ -34,7 +38,7 @@ public:
     int num_points() const override { return m_npts; }
 
 private:
-    SampleLocType m_probes;
+    SampleLocType m_probes, m_oris;
 
     std::string m_label;
     int m_id{-1};

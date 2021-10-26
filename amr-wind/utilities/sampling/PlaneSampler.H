@@ -23,6 +23,8 @@ namespace sampling {
  *  `offset` is specified, then the implementation will not create a default
  *  plane at `origin`, the user must include a zero translation offset if
  *  sampling on the plane at `origin` is desired.
+ *
+ *  In the case of IsoSampling, offset and normal are not used.
  */
 class PlaneSampler : public SamplerBase::Register<PlaneSampler>
 {
@@ -38,9 +40,13 @@ public:
      *  \param key Prefix used to parse inputs from file
      */
     void initialize(const std::string& key) override;
+    void initialize_iso(const std::string& key) override;
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType&) const override;
+    //! Populate and return a vector of probe orientations to be sampled
+    //  (the orientation is constant for a each point in a plane sampler)
+    void sampling_orientations(SampleLocType&) const override;
 
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
     void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
@@ -62,6 +68,7 @@ private:
     amrex::Vector<amrex::Real> m_origin;
     amrex::Vector<amrex::Real> m_normal{0.0, 0.0, 0.0};
     amrex::Vector<amrex::Real> m_poffsets;
+    amrex::Vector<amrex::Real> m_oris;
     amrex::Vector<int> m_npts_dir;
 
     std::string m_label;

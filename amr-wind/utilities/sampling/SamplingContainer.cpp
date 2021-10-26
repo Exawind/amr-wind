@@ -75,6 +75,7 @@ void sample_field(
     SamplingContainer::ParticleVector& pvec,
     SamplingContainer::RealVector& pavec,
     SamplingContainer::IntVector& piavec,
+    const amrex::Vector<int>& iskip,
     const int nf,
     const amrex::Array4<const amrex::Real>& farr,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
@@ -94,7 +95,9 @@ void sample_field(
         // Check if current particle is concerned with current field
         if (p.idata(IIx::sid) != nf) return;
         // Check if current particle has no discernible valid range
-        if (piarr[ip] == -3) return;
+        for (auto is:iskip) {
+            if (piarr[ip] == is) return;
+        }
 
         // Determine offsets within the containing cell
         const amrex::Real x =
@@ -211,6 +214,7 @@ void iso_fields(
     SamplingContainer::ParticleVector& pvec,
     SamplingContainer::RealVector& parr,
     SamplingContainer::IntVector& piarr,
+    const amrex::Vector<int>& iskip,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& plo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxi,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
@@ -225,7 +229,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.0, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -233,7 +237,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -241,7 +245,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -249,7 +253,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.0, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -257,13 +261,31 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
         }
         // Increment field counter
         ++fidx;
     }
+}
+
+void iso_fields(
+    const int lev,
+    const int np,
+    const amrex::Vector<Field*> fields,
+    SamplingContainer::ParIterType& pti,
+    SamplingContainer::ParticleVector& pvec,
+    SamplingContainer::RealVector& parr,
+    SamplingContainer::IntVector& piarr,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& plo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxi,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
+{
+    amrex::Vector<int> iskip{-3};
+    iso_fields(
+        lev, np, fields, pti, pvec, parr, piarr, iskip, plo,
+        dxi, dx);
 }
 
 void update_position(
@@ -387,6 +409,7 @@ void pre_bisect_work(
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 p.pos(n) = (plvec[n])[ip];
             }
+            break;
         }
         case 1: {
             // Check if bounds have been exceeded in this direction
@@ -418,6 +441,7 @@ void pre_bisect_work(
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 p.pos(n) = (prvec[n])[ip];
             }
+            break;
         }
         }
         loopsum += not_finished;
@@ -887,8 +911,9 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                     pints, plo, phi, dx, ct, out);
                 if (!out) flag = false;
             }
-            ++ct;
         }
+        // Break while loop if completed
+        if (flag) break;
         // With particles having moved, go to new position
         this->Redistribute();
         // Get value at new position
@@ -905,11 +930,14 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
 
                 // Use left or right based on modulus
                 auto& parr = pti.GetStructOfArrays().GetRealData(2 + ct % 2);
-                // Get value at current location
+                // Get value at current location, but skip finished points
                 iso_fields(
-                    lev, np, fields, pti, pvec, parr, pints, plo, dxi, dx);
+                    lev, np, fields, pti, pvec, parr, pints,
+                    amrex::Vector<int>{{-3, 1}}, plo, dxi, dx);
             }
         }
+        // Increment
+        ++ct;
     }
 
     //! In prep for main loop

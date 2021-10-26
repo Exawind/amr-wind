@@ -2,9 +2,6 @@
 #include "aw_test_utils/MeshTest.H"
 
 #include "amr-wind/utilities/sampling/IsoSampling.H"
-#include "amr-wind/utilities/sampling/SamplingContainer.H"
-#include "amr-wind/utilities/sampling/IsoLineSampler.H"
-#include "amr-wind/utilities/sampling/IsoPlaneSampler.H"
 
 namespace amr_wind_tests {
 
@@ -314,7 +311,7 @@ protected:
         }
         {
             amrex::ParmParse pp("isosampling.IL1");
-            pp.add("type", std::string("IsoLineSampler"));
+            pp.add("type", std::string("LineSampler"));
             pp.add("field", std::string("vof"));
             pp.add("field_value", 0.5);
             pp.add("num_points", npts);
@@ -329,7 +326,7 @@ protected:
         }
         {
             amrex::ParmParse pp("isosampling.IL2");
-            pp.add("type", std::string("IsoLineSampler"));
+            pp.add("type", std::string("LineSampler"));
             pp.add("field", std::string("vof"));
             pp.add("field_value", 0.5);
             pp.add("num_points", npts);
@@ -352,7 +349,7 @@ protected:
         }
         {
             amrex::ParmParse pp("isosampling.IP1");
-            pp.add("type", std::string("IsoPlaneSampler"));
+            pp.add("type", std::string("PlaneSampler"));
             pp.add("field", std::string("vof"));
             pp.add("field_value", 0.5);
             pp.addarr("num_points", amrex::Vector<int>{npts, npts});
@@ -374,7 +371,7 @@ protected:
         }
         {
             amrex::ParmParse pp("isosampling.IP2");
-            pp.add("type", std::string("IsoPlaneSampler"));
+            pp.add("type", std::string("PlaneSampler"));
             pp.add("field", std::string("phi"));
             pp.add("field_value", 0.9 * probhi[0]);
             pp.addarr("num_points", amrex::Vector<int>{npts, npts});

@@ -42,6 +42,7 @@ public:
 
     //! Read inputs and perform initialization actions
     virtual void initialize(const std::string& key) = 0;
+    virtual void initialize_iso(const std::string& key) = 0;
 
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;

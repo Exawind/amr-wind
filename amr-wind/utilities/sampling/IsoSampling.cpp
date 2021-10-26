@@ -35,13 +35,13 @@ void IsoSampling::initialize()
     for (auto& lbl : labels) {
         const std::string key = m_label + "." + lbl;
         amrex::ParmParse pp1(key);
-        std::string stype = "IsoProbeSampler";
+        std::string stype = "ProbeSampler";
 
         pp1.query("type", stype);
         auto obj = SamplerBase::create(stype, m_sim);
         obj->label() = lbl;
         obj->id() = idx++;
-        obj->initialize(key);
+        obj->initialize_iso(key);
 
         m_total_particles += obj->num_points();
         m_samplers.emplace_back(std::move(obj));

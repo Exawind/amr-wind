@@ -44,6 +44,46 @@ void PlaneSampler::initialize(const std::string& key)
     m_npts = static_cast<int>(tmp);
 }
 
+void PlaneSampler::initialize_iso(const std::string& key)
+{
+    amrex::ParmParse pp(key);
+
+    pp.getarr("axis1", m_axis1);
+    pp.getarr("axis2", m_axis2);
+    pp.getarr("origin", m_origin);
+    pp.getarr("num_points", m_npts_dir);
+    pp.getarr("orientation", m_oris);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_axis1.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_axis2.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_npts_dir.size()) == 2);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_oris.size()) == AMREX_SPACEDIM);
+
+    // No offsets or normals
+    m_poffsets.push_back(0.0);
+
+    // Normalize orientation
+    amrex::Real mag = 0;
+    for (int i = 0; i < m_oris.size(); ++i) {
+        // Get norm
+        mag += std::pow(m_oris[i], 2);
+    }
+    mag = std::sqrt(mag);
+    for (int i = 0; i < m_oris.size(); ++i) {
+        // Normalize orientation vector
+        m_oris[i] /= mag;
+    }
+
+    // Update total number of points
+    const size_t tmp = m_npts_dir[0] * m_npts_dir[1];
+    if (tmp > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        amrex::Abort(
+            "IsoPlaneSampler: Plane definition " + key +
+            " exceeds 32-bit integer limits");
+    }
+    m_npts = static_cast<int>(tmp);
+}
+
 void PlaneSampler::sampling_locations(SampleLocType& locs) const
 {
     locs.resize(m_npts);
@@ -71,6 +111,21 @@ void PlaneSampler::sampling_locations(SampleLocType& locs) const
     }
 }
 
+void PlaneSampler::sampling_orientations(SampleLocType& oris) const
+{
+    oris.resize(m_npts);
+
+    int idx = 0;
+    for (int j = 0; j < m_npts_dir[1]; ++j) {
+        for (int i = 0; i < m_npts_dir[0]; ++i) {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                oris[idx][d] = m_oris[d];
+            }
+            ++idx;
+        }
+    }
+}
+
 #ifdef AMR_WIND_USE_NETCDF
 void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
 {
@@ -83,6 +138,8 @@ void PlaneSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
     grp.put_attr("axis2", m_axis2);
     grp.put_attr("axis3", m_normal);
     grp.put_attr("offsets", m_poffsets);
+
+    // needs attention
 }
 
 void PlaneSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
