@@ -166,15 +166,15 @@ void init_bounds(
                 // Increment with dx size
                 (prvec[n])[ip] += (povec[n])[ip] * dxmag;
                 // Check bounds
-                if ((prvec[n])[ip] >= probhi[n] ||
-                    (prvec[n])[ip] < problo[n]) {
+                if ((prvec[n])[ip] >= probhi[n] || (prvec[n])[ip] < problo[n]) {
                     // Flag to indicate finished
                     flag = true;
                     // Distance that bounds have been exceeded, along vector
                     dist = std::max(
                         dist, std::max(
                                   (prvec[n])[ip] - probhi[n],
-                                  problo[n] - (prvec[n])[ip]) / (povec[n])[ip]);
+                                  problo[n] - (prvec[n])[ip]) /
+                                  (povec[n])[ip]);
                 }
             }
             // After bounds have been exceeded, remove latest contribution

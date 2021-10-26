@@ -302,7 +302,7 @@ protected:
 
             pp.addarr("prob_lo", problo);
             pp.addarr("prob_hi", probhi);
-            pp.addarr("is_periodic", amrex::Vector<int> {{1, 1, 0}});
+            pp.addarr("is_periodic", amrex::Vector<int>{{1, 1, 0}});
         }
     }
     void setup_line_samplers()
@@ -376,18 +376,18 @@ protected:
             amrex::ParmParse pp("isosampling.IP2");
             pp.add("type", std::string("IsoPlaneSampler"));
             pp.add("field", std::string("phi"));
-            pp.add("field_value", 0.9*probhi[0]);
-            pp.addarr("num_points", amrex::Vector<int>{npts,npts});
+            pp.add("field_value", 0.9 * probhi[0]);
+            pp.addarr("num_points", amrex::Vector<int>{npts, npts});
             pp.addarr(
                 "origin",
                 amrex::Vector<amrex::Real>{
                     0.5 * probhi[0], 0.5 * probhi[1], 0.5 * probhi[2]});
             pp.addarr(
-                "axis1",
-                amrex::Vector<amrex::Real>{0.2*probhi[0], 0.0, 0.2*probhi[2]});
+                "axis1", amrex::Vector<amrex::Real>{
+                             0.2 * probhi[0], 0.0, 0.2 * probhi[2]});
             pp.addarr(
-                "axis2",
-                amrex::Vector<amrex::Real>{0.0, 0.2*probhi[0], 0.2*probhi[2]});
+                "axis2", amrex::Vector<amrex::Real>{
+                             0.0, 0.2 * probhi[0], 0.2 * probhi[2]});
             pp.addarr(
                 "orientation", amrex::Vector<amrex::Real>{-1.0, -1.0, 1.0});
         }
@@ -433,12 +433,12 @@ TEST_F(IsoSamplingTest, setup)
     auto* check_ptr = &(check_two)[0];
     int nleftloc =
         probes.check_parr(4 + 1, 4 + 2, sid, "~", check_ptr, m_sim.mesh());
-    ASSERT_EQ(nleftloc,npts*2);
+    ASSERT_EQ(nleftloc, npts * 2);
     // Left value should be vof = 1 (for this case)
     check_one[0] = 1.0;
     check_ptr = &(check_one)[0];
     int nleftval = probes.check_parr(2, 2, sid, "=", check_ptr, m_sim.mesh());
-    ASSERT_EQ(nleftval,npts);
+    ASSERT_EQ(nleftval, npts);
     // Right location should be within bounds
     check_one[0] = probhi[2];
     check_ptr = &(check_one)[0];
@@ -596,7 +596,7 @@ TEST_F(IsoSamplingTest, plane)
     auto& phi = repo.declare_field("phi", 1, 2);
     setup_plane_samplers();
 
-    init_vof(vof,probhi[2]+1.0); // Put interface above domain
+    init_vof(vof, probhi[2] + 1.0); // Put interface above domain
     init_field(phi);
     auto& m_sim = sim();
     IsoSamplingImpl probes(m_sim, "isosampling");
