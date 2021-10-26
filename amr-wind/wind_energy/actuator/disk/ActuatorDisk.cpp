@@ -7,5 +7,6 @@ namespace actuator {
 
 template class ActModel<UniformCt, ActSrcDiskBase<LinearBasis>>;
 template class ActModel<UniformCt, ActSrcDiskBase<UniformGaussian>>;
-}
+
+} // namespace actuator
 } // namespace amr_wind
