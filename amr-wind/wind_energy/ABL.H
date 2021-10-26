@@ -94,6 +94,7 @@ private:
     Field& m_density;
     Field* m_temperature{nullptr};
     Field* m_tke{nullptr};
+    Field* m_sdr{nullptr};
 
     ABLWallFunction m_abl_wall_func;
 
@@ -110,6 +111,12 @@ private:
     std::unique_ptr<ABLStatsBase> m_stats;
 
     mutable pde::icns::ABLMeanBoussinesq* m_abl_mean_bous{nullptr};
+
+    //! Default value set based on https://turbmodels.larc.nasa.gov/sst.html
+    amrex::Real m_init_sdr{25.0};
+
+    //! Hybrid RANS-LES with Nalu-wind
+    bool m_hybrid_rl{false};
 };
 
 } // namespace amr_wind
