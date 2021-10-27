@@ -20,6 +20,7 @@ MultiPhase::MultiPhase(CFDSim& sim)
     pp_multiphase.query("density_fluid1", m_rho1);
     pp_multiphase.query("density_fluid2", m_rho2);
     pp_multiphase.query("verbose", m_verbose);
+    pp_multiphase.query("interface_smoothing", m_interface_smoothing);
 
     // Register either the VOF or levelset equation
     if (amrex::toLower(m_interface_model) == "vof") {
@@ -94,7 +95,10 @@ void MultiPhase::post_advance_work()
     };
 }
 
-void MultiPhase::pre_mac_projection_work() { favre_filtering(); }
+void MultiPhase::pre_mac_projection_work()
+{
+    if (m_interface_smoothing) favre_filtering();
+}
 
 amrex::Real MultiPhase::volume_fraction_sum()
 {
