@@ -103,19 +103,18 @@ public:
                     mesh.DistributionMap(0, mesh.finestLevel()), iapply, {},
                     AMREX_SPACEDIM));
             } else {
-                amrex::Abort("need to add ncomp to overset interface");
                 auto imask =
                     fields.repo.get_int_field("mask_cell").vec_const_ptrs();
                 m_solver_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    isolve));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve,
+                    {}, AMREX_SPACEDIM));
                 m_applier_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply,
+                    {}, AMREX_SPACEDIM));
             }
 
             m_solver_scalar->setMaxOrder(m_options.max_order);
