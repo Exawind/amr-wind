@@ -42,25 +42,25 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
     amrex::Real filt_phi_x = 0.0;
     amrex::Real filt_phi_y = 0.0;
     amrex::Real filt_phi_z = 0.0;
+    amrex::Real C = 0.0;
     int ind = 0;
 
     for (int i = 0; i <= degree; ++i) {
         for (int j = 0; j <= degree; ++j) {
             for (int k = 0; k <= degree; ++k) {
+                C = coeff[ind++];
                 filt_phi_x +=
-                    1. / (2. * dx) * coeff[ind] *
+                    1. / (2. * dx) * C *
                     (std::pow(x + dx, i + 1) - std::pow(x - dx, i + 1)) /
                     (i + 1) * std::pow(y, j) * std::pow(z, k);
                 filt_phi_y +=
-                    1. / (2. * dy) * coeff[ind] * std::pow(x, i) *
+                    1. / (2. * dy) * C * std::pow(x, i) *
                     (std::pow(y + dy, j + 1) - std::pow(y - dy, j + 1)) /
                     (j + 1) * std::pow(z, k);
                 filt_phi_z +=
-                    1. / (2. * dz) * coeff[ind] * std::pow(x, i) *
-                    std::pow(y, j) *
+                    1. / (2. * dz) * C * std::pow(x, i) * std::pow(y, j) *
                     (std::pow(z + dz, k + 1) - std::pow(z - dz, k + 1)) /
                     (k + 1);
-                ++ind;
             }
         }
     }

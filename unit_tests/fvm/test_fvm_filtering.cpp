@@ -101,7 +101,7 @@ TEST_F(FvmOpTestFiltering, filter)
     populate_parameters();
     {
         amrex::ParmParse pp("geometry");
-        amrex::Vector<int> periodic{{1, 1, 1}};
+        amrex::Vector<int> periodic{{0, 0, 0}};
         pp.addarr("is_periodic", periodic);
     }
 
