@@ -154,9 +154,9 @@ void init_bounds(
             // Store current location as left bound
             (plvec[n])[ip] = p.pos(n);
             // Calculate the magnitude of dx
-            dxmag = std::min(dx[n], dxmag);
+            dxmag = amrex::min(dx[n], dxmag);
             // Calculate the max dimension of domain to use with epsilon
-            scale = std::max(scale, probhi[n] - problo[n]);
+            scale = amrex::max(scale, probhi[n] - problo[n]);
         }
         // Step along orientation vector until bounds are exceeded
         bool flag = false;
@@ -173,8 +173,8 @@ void init_bounds(
                     // Flag to indicate finished
                     flag = true;
                     // Distance that bounds have been exceeded, along vector
-                    dist = std::max(
-                        dist, std::max(
+                    dist = amrex::max(
+                        dist, amrex::max(
                                   (prvec[n])[ip] - probhi[n],
                                   problo[n] - (prvec[n])[ip]) /
                                   (povec[n])[ip]);
@@ -372,7 +372,7 @@ void pre_bisect_work(
         amrex::Real dxmag = dx[0];
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Calculate the magnitude of dx
-            dxmag = std::min(dx[n], dxmag);
+            dxmag = amrex::min(dx[n], dxmag);
         }
 
         // Left or right depends on modulus of loop counter
