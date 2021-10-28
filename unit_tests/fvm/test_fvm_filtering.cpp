@@ -81,7 +81,10 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
                     error += amrex::Math::abs(
                         filter_arr(i, j, k) -
                         analytical_function::filter_eval(
-                            pdegree, coeff_ptr, x, y, z, dx[0], dx[1], dx[2]));
+                            pdegree, coeff_ptr, x, y, z,
+                            static_cast<amrex::Real>(dx[0]),
+                            static_cast<amrex::Real>(dx[1]),
+                            static_cast<amrex::Real>(dx[2])));
                 });
 
                 return error;

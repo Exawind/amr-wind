@@ -246,8 +246,8 @@ void MultiPhase::favre_filtering()
     for (int lev = 0; lev < nlevels; ++lev) {
         auto& velocity = m_velocity(lev);
         auto& vof = (*m_vof)(lev);
-        auto& mom_fil = *momentum_filter->vec_ptrs()[lev];
-        auto& rho_fil = *density_filter->vec_ptrs()[lev];
+        auto& mom_fil = (*momentum_filter)(lev);
+        auto& rho_fil = (*density_filter)(lev);
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
             const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
