@@ -109,7 +109,6 @@ public:
 
         auto& data = m_data.meta();
 
-        const amrex::Real dR = data.dr;
         const vs::Vector epsilon = vs::Vector::one() * data.epsilon;
         const vs::Vector m_normal(data.normal_vec);
         const vs::Vector m_origin(data.center);
@@ -140,12 +139,30 @@ public:
                             dist_ref_pnt - vs::Vector(0, it * dTheta, 0);
                         // need to convert from cylindrical coordinates to
                         // cartesian distance is between points so we can use
-                        // origin as second point
-                        const vs::Vector cart_dist(
+                        // origin as second point not this distance is aligned
+                        // with the normal vector of the disk so we need to do
+                        // further manipulation
+                        const vs::Vector norm_dist(
                             cyl_dist.x() * std::cos(cyl_dist.y()),
                             cyl_dist.x() * std::sin(cyl_dist.y()),
                             cyl_dist.z());
 
+                        // get the angle between the disk normal and the z
+                        // aligned vector
+                        const amrex::Real angle = ::amr_wind::utils::degrees(
+                            std::acos((vs::Vector::khat() & m_normal)));
+
+                        // get a vector to rotate about that will align the disk
+                        // normal with the z axis
+                        auto rotVec = vs::Vector::khat() ^ m_normal;
+                        rotVec.normalize();
+
+                        // rotation matrix given that angle and
+                        // rotation vector
+                        const auto rotMatrix = vs::quaternion(rotVec, angle);
+
+                        // perform the rotation
+                        const vs::Vector cart_dist = norm_dist & rotMatrix;
                         const auto projection_weight =
                             utils::gaussian3d(cart_dist, epsilon);
 
