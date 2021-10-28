@@ -112,6 +112,7 @@ public:
         const vs::Vector epsilon = vs::Vector::one() * data.epsilon;
         const vs::Vector m_normal(data.normal_vec);
         const vs::Vector m_origin(data.center);
+        const vs::Vector m_coplanar(data.coplanar_vec);
         const auto* pos = m_pos.data();
         const auto* force = m_force.data();
         const int npts = data.num_force_pts;
@@ -128,43 +129,17 @@ public:
 
                 amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
                 for (int ip = 0; ip < npts; ++ip) {
-                    const auto dist_ref_pnt =
-                        utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
-                    const auto& pforce = force[ip];
+                    const auto& pforce = force[ip] / nForceTheta;
+                    const auto pLoc = pos[ip];
 
                     for (int it = 0; it < nForceTheta; ++it) {
-                        // loop over num points in theta and subtract theta
-                        // change to get force point location
-                        const auto cyl_dist =
-                            dist_ref_pnt - vs::Vector(0, it * dTheta, 0);
-                        // need to convert from cylindrical coordinates to
-                        // cartesian distance is between points so we can use
-                        // origin as second point not this distance is aligned
-                        // with the normal vector of the disk so we need to do
-                        // further manipulation
-                        const vs::Vector norm_dist(
-                            cyl_dist.x() * std::cos(cyl_dist.y()),
-                            cyl_dist.x() * std::sin(cyl_dist.y()),
-                            cyl_dist.z());
-
-                        // get the angle between the disk normal and the z
-                        // aligned vector
-                        const amrex::Real angle = ::amr_wind::utils::degrees(
-                            std::acos((vs::Vector::khat() & m_normal)));
-
-                        // get a vector to rotate about that will align the disk
-                        // normal with the z axis
-                        auto rotVec = vs::Vector::khat() ^ m_normal;
-                        rotVec.normalize();
-
-                        // rotation matrix given that angle and
-                        // rotation vector
-                        const auto rotMatrix = vs::quaternion(rotVec, angle);
-
-                        // perform the rotation
-                        const vs::Vector cart_dist = norm_dist & rotMatrix;
+                        const amrex::Real angle =
+                            ::amr_wind::utils::degrees(it * dTheta);
+                        const auto rotMatrix = vs::quaternion(m_normal, angle);
+                        const auto diskPoint = pLoc & rotMatrix;
+                        const auto distance = diskPoint - cc;
                         const auto projection_weight =
-                            utils::gaussian3d(cart_dist, epsilon);
+                            utils::gaussian3d(distance, epsilon);
 
                         src_force[0] += projection_weight * pforce.x();
                         src_force[1] += projection_weight * pforce.y();
