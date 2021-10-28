@@ -3,7 +3,6 @@
 #include "AnalyticalFunction.H"
 #include "aw_test_utils/iter_tools.H"
 #include "aw_test_utils/test_utils.H"
-#include "AMReX_ParmParse.H"
 
 namespace amr_wind_tests {
 
@@ -58,6 +57,7 @@ amrex::Real filtering_test_impl(amr_wind::Field& scalar, const int pdegree)
 
     const int nlevels = scalar.repo().num_active_levels();
     amrex::Real error_total = 0.0;
+
     const amrex::Real* coeff_ptr = coeff.data();
 
     for (int lev = 0; lev < nlevels; ++lev) {

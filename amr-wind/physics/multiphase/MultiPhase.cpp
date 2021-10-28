@@ -229,7 +229,6 @@ void MultiPhase::set_density_via_vof()
 void MultiPhase::favre_filtering()
 {
     const int nlevels = m_sim.repo().num_active_levels();
-
     // create scratch fields
     auto density_filter =
         m_sim.repo().create_scratch_field(1, 1, FieldLoc::CELL);

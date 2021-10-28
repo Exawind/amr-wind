@@ -111,7 +111,6 @@ TEST_F(FvmOpTestCurvature, curvature)
     const int ncomp = 1;
     const int nghost = 1;
     auto& scalar = repo.declare_field("scalar", ncomp, nghost);
-
     const int pdegree = 2;
     auto error_total = curvature_test_impl(scalar, pdegree);
 
