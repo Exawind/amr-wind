@@ -36,10 +36,13 @@ void Actuator::pre_init_actions()
         pp.query("spreading", spreading);
         pp1.query("type", type);
         pp1.query("spreading", spreading);
+
+        // hacky stirng check for now.  will make this logic generic in a follow
+        // on PR
+        if (spreading.empty() && type == "UniformCtDisk")
+            spreading = LinearBasis::identifier();
         key = type + spreading;
-        // type is the key for the factory so we must append this if we
-        // want to specify a subinstances of finer granularity i.e. different
-        // spreading functions
+
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(key, m_sim, tname, i);
