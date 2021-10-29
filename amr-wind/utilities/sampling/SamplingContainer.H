@@ -82,6 +82,9 @@ public:
     void
     initialize_particles(const amrex::Vector<std::unique_ptr<SamplerBase>>&);
 
+    //! Update sampling locations
+    void update_particles(const amrex::Vector<Field*> fields);
+
     //! Perform field interpolation to sampling locations
     void interpolate_fields(const amrex::Vector<Field*> fields);
 

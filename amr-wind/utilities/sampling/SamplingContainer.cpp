@@ -145,6 +145,57 @@ void SamplingContainer::initialize_particles(
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
 }
 
+void SamplingContainer::update_particles(const amrex::Vector<Field*> fields)
+{
+    BL_PROFILE("amr-wind::SamplingContainer::update_particles");
+
+    const int nlevels = m_mesh.finestLevel() + 1;
+
+    for (int lev = 0; lev < nlevels; ++lev) {
+        const auto& geom = m_mesh.Geom(lev);
+        const auto dx = geom.CellSizeArray();
+        const auto dxi = geom.InvCellSizeArray();
+        const auto plo = geom.ProbLoArray();
+
+        for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            const int np = pti.numParticles();
+            auto& pvec = pti.GetArrayOfStructs()();
+		}
+	}
+	
+
+
+
+
+
+    
+    //~ const auto dptr = dpos.data();
+    //~ const int nlevels = m_mesh.finestLevel() + 1;
+    //~ for (int lev = 0; lev < nlevels; ++lev) {
+        //~ for (ParIterType pti(*this, lev); pti.isValid(); ++pti) {
+            //~ const int np = pti.numParticles();
+            //~ auto* pstruct = pti.GetArrayOfStructs()().data();
+
+            //~ amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
+                //~ auto& pp = pstruct[ip];
+                //~ const auto idx = pp.idata(0);
+
+                //~ auto& pvec = dptr[idx];
+                //~ for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    //~ pp.pos(n) = pvec[n];
+                //~ }
+            //~ });
+        //~ }
+    //~ }
+
+    //~ // Scatter particles to appropriate MPI ranks
+    //~ Redistribute();
+
+    //~ // Indicate that it is safe to sample velocities
+    //~ m_is_scattered = true;
+
+}
+
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate");

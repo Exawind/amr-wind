@@ -84,6 +84,9 @@ void Sampling::post_advance_work()
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
 
+	// Update the particle locations
+	m_scontainer->update_particles(m_fields);
+
     m_scontainer->interpolate_fields(m_fields);
 
     process_output();

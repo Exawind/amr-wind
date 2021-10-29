@@ -45,7 +45,7 @@ public:
     //! Number of probe locations along the line
     int num_points() const override { return m_npts; }
 
-private:
+protected:
     const CFDSim& m_sim;
 
     amrex::Vector<amrex::Real> m_start;
