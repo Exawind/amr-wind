@@ -370,9 +370,12 @@ void pre_bisect_work(
         // Take a dx step along orientation vector
         auto& p = pstruct[ip];
         amrex::Real dxmag = dx[0];
+        amrex::Real scale = 0.0;
         for (int n = 0; n < AMREX_SPACEDIM; ++n) {
             // Calculate the magnitude of dx
             dxmag = amrex::min(dx[n], dxmag);
+            // Calculate the max dimension of domain to use with epsilon
+            scale = amrex::max(scale, probhi[n] - problo[n]);
         }
 
         // Left or right depends on modulus of loop counter
@@ -383,11 +386,17 @@ void pre_bisect_work(
                 loopsum += not_finished;
                 return;
             }
+            amrex::Real dist = 0.0;
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 (plvec[n])[ip] -= (povec[n])[ip] * dxmag;
-                if ((plvec[n])[ip] > probhi[n] || (plvec[n])[ip] < problo[n]) {
+                if ((plvec[n])[ip] >= probhi[n] || (plvec[n])[ip] < problo[n]) {
                     // If domain has been exceeded in other direction
                     // this sampling point is hopeless (-3)
+                    dist = amrex::max(
+                        dist, amrex::max(
+                                  (plvec[n])[ip] - probhi[n],
+                                  problo[n] - (plvec[n])[ip]) /
+                                  (povec[n])[ip]);
                     if (iflag[ip] == -2) {
                         iflag[ip] = -3;
                         not_finished = 0;
@@ -400,7 +409,10 @@ void pre_bisect_work(
             if (iflag[ip] == -1 || iflag[ip] == -3) {
                 // Make sure point remains in domain by removing last increment
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (plvec[n])[ip] += (povec[n])[ip] * dxmag;
+                    (plvec[n])[ip] +=
+                        (povec[n])[ip] *
+                        (dist +
+                         scale * std::numeric_limits<amrex::Real>::epsilon());
                 }
             }
             // Position of particle assigned to left position
@@ -415,9 +427,15 @@ void pre_bisect_work(
                 loopsum += not_finished;
                 return;
             }
+            amrex::Real dist = 0.0;
             for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                 (prvec[n])[ip] += (povec[n])[ip] * dxmag;
-                if ((prvec[n])[ip] > probhi[n] || (prvec[n])[ip] < problo[n]) {
+                if ((prvec[n])[ip] >= probhi[n] || (prvec[n])[ip] < problo[n]) {
+                    dist = amrex::max(
+                        dist, amrex::max(
+                                  (prvec[n])[ip] - probhi[n],
+                                  problo[n] - (prvec[n])[ip]) /
+                                  (povec[n])[ip]);
                     // If domain has been exceeded in other direction
                     // this sampling point is hopeless (-3)
                     if (iflag[ip] == -1) {
@@ -432,7 +450,10 @@ void pre_bisect_work(
             if (iflag[ip] == -2 || iflag[ip] == -3) {
                 // Make sure point remains in domain by removing last increment
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (prvec[n])[ip] -= (povec[n])[ip] * dxmag;
+                    (prvec[n])[ip] -=
+                        (povec[n])[ip] *
+                        (dist +
+                         scale * std::numeric_limits<amrex::Real>::epsilon());
                 }
             }
             // Position of particle assigned to right position
