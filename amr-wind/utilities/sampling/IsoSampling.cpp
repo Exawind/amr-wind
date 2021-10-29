@@ -280,11 +280,11 @@ void IsoSampling::write_netcdf()
             if (iv == 0) {
                 // Use variable name corresponding to current sampler
                 auto var = grp.var(m_var_names[is]);
-		var.put(&buf[offset], start, count);
+                var.put(&buf[offset], start, count);
             } else {
                 // Use particle component name
                 auto var = grp.var(m_pcomp_names[iv]);
-		var.put(&buf[offset], start, count);
+                var.put(&buf[offset], start, count);
             }
             offset += count[1];
             ++is;
