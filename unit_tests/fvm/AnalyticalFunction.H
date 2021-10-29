@@ -28,7 +28,7 @@ AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real phi_eval(
     return phi;
 }
 
-AMREX_GPU_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
+AMREX_GPU_HOST_DEVICE AMREX_FORCE_INLINE amrex::Real filter_eval(
     int degree,
     const amrex::Real* coeff,
     amrex::Real x,
