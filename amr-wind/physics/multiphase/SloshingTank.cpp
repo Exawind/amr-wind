@@ -23,7 +23,7 @@ SloshingTank::SloshingTank(CFDSim& sim)
 void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
-    velocity.setVal(0.0, 0, AMREX_SPACEDIM);
+    velocity.setVal(0.0);
 
     auto& levelset = m_levelset(level);
     const auto& dx = geom.CellSizeArray();

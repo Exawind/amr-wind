@@ -9,6 +9,7 @@
 #include "amr-wind/fvm/vorticity.H"
 #include "amr-wind/fvm/vorticity_mag.H"
 #include "amr-wind/fvm/qcriterion.H"
+#include "amr-wind/fvm/filter.H"
 
 /**
  *  \defgroup fvm Finite-Volume Operators
