@@ -76,7 +76,7 @@ void ABL::initialize_fields(int level, const amrex::Geometry& geom)
 }
 
 void ABL::post_init_actions()
-{ 
+{
     if (m_hybrid_rl) {
         m_sdr = &(m_sim.repo().get_field("sdr"));
         m_sdr->setVal(m_init_sdr);
