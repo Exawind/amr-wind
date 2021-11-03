@@ -94,43 +94,45 @@ void sample_field(
 
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
-        // Check if current particle is concerned with current field
-        if (p.idata(IIx::sid) != nf) return;
         // Check if current particle has no discernible valid range
+        bool noskip = true;
         for (int is = 0; is < nskip; ++is) {
-            if (piarr[ip] == diskip[is]) return;
+            if (piarr[ip] == diskip[is]) noskip = false;
         }
+        // Also if current particle is concerned with current field
+        if (p.idata(IIx::sid) == nf && noskip) {
 
-        // Determine offsets within the containing cell
-        const amrex::Real x =
-            (p.pos(0) - problo[0] - offset[0] * dx[0]) * dxi[0];
-        const amrex::Real y =
-            (p.pos(1) - problo[1] - offset[1] * dx[1]) * dxi[1];
-        const amrex::Real z =
-            (p.pos(2) - problo[2] - offset[2] * dx[2]) * dxi[2];
+            // Determine offsets within the containing cell
+            const amrex::Real x =
+                (p.pos(0) - problo[0] - offset[0] * dx[0]) * dxi[0];
+            const amrex::Real y =
+                (p.pos(1) - problo[1] - offset[1] * dx[1]) * dxi[1];
+            const amrex::Real z =
+                (p.pos(2) - problo[2] - offset[2] * dx[2]) * dxi[2];
 
-        // Index of the low corner
-        const int i = static_cast<int>(amrex::Math::floor(x));
-        const int j = static_cast<int>(amrex::Math::floor(y));
-        const int k = static_cast<int>(amrex::Math::floor(z));
+            // Index of the low corner
+            const int i = static_cast<int>(amrex::Math::floor(x));
+            const int j = static_cast<int>(amrex::Math::floor(y));
+            const int k = static_cast<int>(amrex::Math::floor(z));
 
-        // Interpolation weights in each direction (linear basis)
-        const amrex::Real wx_hi = (x - i);
-        const amrex::Real wy_hi = (y - j);
-        const amrex::Real wz_hi = (z - k);
+            // Interpolation weights in each direction (linear basis)
+            const amrex::Real wx_hi = (x - i);
+            const amrex::Real wy_hi = (y - j);
+            const amrex::Real wz_hi = (z - k);
 
-        const amrex::Real wx_lo = 1.0 - wx_hi;
-        const amrex::Real wy_lo = 1.0 - wy_hi;
-        const amrex::Real wz_lo = 1.0 - wz_hi;
+            const amrex::Real wx_lo = 1.0 - wx_hi;
+            const amrex::Real wy_lo = 1.0 - wy_hi;
+            const amrex::Real wz_lo = 1.0 - wz_hi;
 
-        parr[ip] = wx_lo * wy_lo * wz_lo * farr(i, j, k, ic) +
-                   wx_lo * wy_lo * wz_hi * farr(i, j, k + 1, ic) +
-                   wx_lo * wy_hi * wz_lo * farr(i, j + 1, k, ic) +
-                   wx_lo * wy_hi * wz_hi * farr(i, j + 1, k + 1, ic) +
-                   wx_hi * wy_lo * wz_lo * farr(i + 1, j, k, ic) +
-                   wx_hi * wy_lo * wz_hi * farr(i + 1, j, k + 1, ic) +
-                   wx_hi * wy_hi * wz_lo * farr(i + 1, j + 1, k, ic) +
-                   wx_hi * wy_hi * wz_hi * farr(i + 1, j + 1, k + 1, ic);
+            parr[ip] = wx_lo * wy_lo * wz_lo * farr(i, j, k, ic) +
+                       wx_lo * wy_lo * wz_hi * farr(i, j, k + 1, ic) +
+                       wx_lo * wy_hi * wz_lo * farr(i, j + 1, k, ic) +
+                       wx_lo * wy_hi * wz_hi * farr(i, j + 1, k + 1, ic) +
+                       wx_hi * wy_lo * wz_lo * farr(i + 1, j, k, ic) +
+                       wx_hi * wy_lo * wz_hi * farr(i + 1, j, k + 1, ic) +
+                       wx_hi * wy_hi * wz_lo * farr(i + 1, j + 1, k, ic) +
+                       wx_hi * wy_hi * wz_hi * farr(i + 1, j + 1, k + 1, ic);
+        }
     });
 }
 
