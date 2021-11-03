@@ -75,7 +75,8 @@ void sample_field(
     SamplingContainer::ParticleVector& pvec,
     SamplingContainer::RealVector& pavec,
     SamplingContainer::IntVector& piavec,
-    const amrex::Vector<int>& iskip,
+    const amrex::Gpu::DeviceVector<int>& iskip,
+    const int nskip,
     const int nf,
     const amrex::Array4<const amrex::Real>& farr,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
@@ -89,14 +90,15 @@ void sample_field(
     auto* pstruct = pvec.data();
     auto* parr = &(pavec[0]);
     auto* piarr = &(piavec[0]);
+    const auto* diskip = iskip.data();
 
     amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
         auto& p = pstruct[ip];
         // Check if current particle is concerned with current field
         if (p.idata(IIx::sid) != nf) return;
         // Check if current particle has no discernible valid range
-        for (auto is : iskip) {
-            if (piarr[ip] == is) return;
+        for (int is = 0; is < nskip; ++is) {
+            if (piarr[ip] == diskip[is]) return;
         }
 
         // Determine offsets within the containing cell
@@ -214,7 +216,8 @@ void iso_fields(
     SamplingContainer::ParticleVector& pvec,
     SamplingContainer::RealVector& parr,
     SamplingContainer::IntVector& piarr,
-    const amrex::Vector<int>& iskip,
+    const amrex::Gpu::DeviceVector<int>& iskip,
+    const int nskip,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& plo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxi,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
@@ -229,7 +232,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.0, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -237,7 +240,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -245,7 +248,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -253,7 +256,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.0, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
 
@@ -261,7 +264,7 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, iskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
             break;
         }
         }
@@ -282,8 +285,9 @@ void iso_fields(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dxi,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
 {
-    amrex::Vector<int> iskip{-3};
-    iso_fields(lev, np, fields, pti, pvec, parr, piarr, iskip, plo, dxi, dx);
+    amrex::Gpu::DeviceVector<int> iskip{-3};
+    int nskip = 1;
+    iso_fields(lev, np, fields, pti, pvec, parr, piarr, iskip, nskip, plo, dxi, dx);
 }
 
 void update_position(
@@ -337,8 +341,7 @@ void pre_bisect_work(
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& probhi,
     const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
-    const int ct,
-    bool& flag)
+    const int ct)
 {
     BL_PROFILE("amr-wind::SamplingContainer::pre_bisect_work");
 
@@ -349,124 +352,118 @@ void pre_bisect_work(
     auto* rval = &(prarr[0]);
     auto* iflag = &(piarr[0]);
 
-    int loopsum = 0;
-    amrex::ParallelFor(np, [=, &loopsum] AMREX_GPU_DEVICE(int ip) noexcept {
-        int not_finished = 1;
-        // Check for flags indicating done
+    amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+        // Check for flags indicating already done
         if (iflag[ip] == -3 || iflag[ip] == 1) {
-            not_finished = 0;
-            loopsum += not_finished;
-            return;
-        }
-        // Check for sign change
-        if ((lval[ip] - target[ip]) * (rval[ip] - target[ip]) <= 0) {
-            // Sign change is present, signify that work is done
-            iflag[ip] = 1;
-            not_finished = 0;
-            loopsum += not_finished;
-            return;
-        }
+            // Nothing to do
+        } else {
+            // Check for sign change
+            if ((lval[ip] - target[ip]) * (rval[ip] - target[ip]) <= 0) {
+                // Sign change is present, signify that work is done
+                iflag[ip] = 1;
+            } else {
 
-        // Take a dx step along orientation vector
-        auto& p = pstruct[ip];
-        amrex::Real dxmag = dx[0];
-        amrex::Real scale = 0.0;
-        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-            // Calculate the magnitude of dx
-            dxmag = amrex::min(dx[n], dxmag);
-            // Calculate the max dimension of domain to use with epsilon
-            scale = amrex::max(scale, probhi[n] - problo[n]);
-        }
+                // Take a dx step along orientation vector
+                auto& p = pstruct[ip];
+                amrex::Real dxmag = dx[0];
+                amrex::Real scale = 0.0;
+                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                    // Calculate the magnitude of dx
+                    dxmag = amrex::min(dx[n], dxmag);
+                    // Calculate the max dimension of domain to use with epsilon
+                    scale = amrex::max(scale, probhi[n] - problo[n]);
+                }
 
-        // Left or right depends on modulus of loop counter
-        switch (ct % 2) {
-        case 0: {
-            // Check if bounds have been exceeded in this direction
-            if (iflag[ip] == -1) {
-                loopsum += not_finished;
-                return;
-            }
-            amrex::Real dist = 0.0;
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                (plvec[n])[ip] -= (povec[n])[ip] * dxmag;
-                if ((plvec[n])[ip] >= probhi[n] || (plvec[n])[ip] < problo[n]) {
-                    // If domain has been exceeded in other direction
-                    // this sampling point is hopeless (-3)
-                    dist = amrex::max(
-                        dist, amrex::max(
-                                  (plvec[n])[ip] - probhi[n],
-                                  problo[n] - (plvec[n])[ip]) /
-                                  (povec[n])[ip]);
-                    if (iflag[ip] == -2) {
-                        iflag[ip] = -3;
-                        not_finished = 0;
-                    } else {
-                        // Flag to indicate bounds exceeded
-                        iflag[ip] = -1;
+                // Left or right depends on modulus of loop counter
+                switch (ct % 2) {
+                case 0: {
+                    // Check if bounds have been exceeded in this direction
+                    if (iflag[ip] != -1) {
+                        amrex::Real dist = 0.0;
+                        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                            (plvec[n])[ip] -= (povec[n])[ip] * dxmag;
+                            if ((plvec[n])[ip] >= probhi[n] ||
+                                (plvec[n])[ip] < problo[n]) {
+                                // If domain has been exceeded in other
+                                // direction this sampling point is hopeless
+                                // (-3)
+                                dist = amrex::max(
+                                    dist, amrex::max(
+                                              (plvec[n])[ip] - probhi[n],
+                                              problo[n] - (plvec[n])[ip]) /
+                                              (povec[n])[ip]);
+                                if (iflag[ip] == -2) {
+                                    iflag[ip] = -3;
+                                } else {
+                                    // Flag to indicate bounds exceeded
+                                    iflag[ip] = -1;
+                                }
+                            }
+                        }
+                        if (iflag[ip] == -1 || iflag[ip] == -3) {
+                            // Make sure point remains in domain by removing
+                            // last increment
+                            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                                (plvec[n])[ip] +=
+                                    (povec[n])[ip] *
+                                    (dist +
+                                     scale * std::numeric_limits<
+                                                 amrex::Real>::epsilon());
+                            }
+                        }
+                        // Position of particle assigned to left position
+                        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                            p.pos(n) = (plvec[n])[ip];
+                        }
                     }
+                    break;
                 }
-            }
-            if (iflag[ip] == -1 || iflag[ip] == -3) {
-                // Make sure point remains in domain by removing last increment
-                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (plvec[n])[ip] +=
-                        (povec[n])[ip] *
-                        (dist +
-                         scale * std::numeric_limits<amrex::Real>::epsilon());
-                }
-            }
-            // Position of particle assigned to left position
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                p.pos(n) = (plvec[n])[ip];
-            }
-            break;
-        }
-        case 1: {
-            // Check if bounds have been exceeded in this direction
-            if (iflag[ip] == -2) {
-                loopsum += not_finished;
-                return;
-            }
-            amrex::Real dist = 0.0;
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                (prvec[n])[ip] += (povec[n])[ip] * dxmag;
-                if ((prvec[n])[ip] >= probhi[n] || (prvec[n])[ip] < problo[n]) {
-                    dist = amrex::max(
-                        dist, amrex::max(
-                                  (prvec[n])[ip] - probhi[n],
-                                  problo[n] - (prvec[n])[ip]) /
-                                  (povec[n])[ip]);
-                    // If domain has been exceeded in other direction
-                    // this sampling point is hopeless (-3)
-                    if (iflag[ip] == -1) {
-                        iflag[ip] = -3;
-                        not_finished = 0;
-                    } else {
-                        // Flag to indicate bounds exceeded
-                        iflag[ip] = -2;
+                case 1: {
+                    // Check if bounds have been exceeded in this direction
+                    if (iflag[ip] != -2) {
+                        amrex::Real dist = 0.0;
+                        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                            (prvec[n])[ip] += (povec[n])[ip] * dxmag;
+                            if ((prvec[n])[ip] >= probhi[n] ||
+                                (prvec[n])[ip] < problo[n]) {
+                                dist = amrex::max(
+                                    dist, amrex::max(
+                                              (prvec[n])[ip] - probhi[n],
+                                              problo[n] - (prvec[n])[ip]) /
+                                              (povec[n])[ip]);
+                                // If domain has been exceeded in other
+                                // direction this sampling point is hopeless
+                                // (-3)
+                                if (iflag[ip] == -1) {
+                                    iflag[ip] = -3;
+                                } else {
+                                    // Flag to indicate bounds exceeded
+                                    iflag[ip] = -2;
+                                }
+                            }
+                        }
+                        if (iflag[ip] == -2 || iflag[ip] == -3) {
+                            // Make sure point remains in domain by removing
+                            // last increment
+                            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                                (prvec[n])[ip] -=
+                                    (povec[n])[ip] *
+                                    (dist +
+                                     scale * std::numeric_limits<
+                                                 amrex::Real>::epsilon());
+                            }
+                        }
+                        // Position of particle assigned to right position
+                        for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                            p.pos(n) = (prvec[n])[ip];
+                        }
                     }
+                    break;
+                }
                 }
             }
-            if (iflag[ip] == -2 || iflag[ip] == -3) {
-                // Make sure point remains in domain by removing last increment
-                for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                    (prvec[n])[ip] -=
-                        (povec[n])[ip] *
-                        (dist +
-                         scale * std::numeric_limits<amrex::Real>::epsilon());
-                }
-            }
-            // Position of particle assigned to right position
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                p.pos(n) = (prvec[n])[ip];
-            }
-            break;
         }
-        }
-        loopsum += not_finished;
-        return;
     });
-    if (loopsum == 0) flag = true;
 }
 
 // Update flag, send to new middle position
@@ -480,8 +477,7 @@ void bisect_work(
     amrex::Array<amrex::Real*, AMREX_SPACEDIM>& plvec,
     amrex::Array<amrex::Real*, AMREX_SPACEDIM>& prvec,
     SamplingContainer::IntVector& piarr,
-    const amrex::Real& tol,
-    bool& flag)
+    const amrex::Real& tol)
 {
     BL_PROFILE("amr-wind::SamplingContainer::bisect_work");
 
@@ -493,47 +489,42 @@ void bisect_work(
     auto* rval = &(prarr[0]);
     auto* iflag = &(piarr[0]);
 
-    int loopsum = 0;
-    amrex::ParallelFor(np, [=, &loopsum] AMREX_GPU_DEVICE(int ip) noexcept {
-        int not_finished = 1;
-        // Check for flags indicating no solution for current probe
-        if (iflag[ip] == -3) {
-            not_finished = 0;
-            loopsum += not_finished;
-            return;
-        }
-        // Check if tolerance is satisfied for target value
-        if (std::abs(current[ip] - target[ip]) < tol) {
-            not_finished = 0;
-            loopsum += not_finished;
-            return;
-        }
-        auto& p = pstruct[ip];
-        // Use sign change to determine new middle, reassign bounds
-        if ((current[ip] - target[ip]) * (lval[ip] - target[ip]) <= 0) {
-            // Sign change is in left interval
-            // (or could be that left or middle is at target)
-            rval[ip] = current[ip];
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                // Right position moves to current
-                (prvec[n])[ip] = p.pos(n);
-                // Particle is moved to new middle
-                p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
-            }
+    amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+        // Check for flags indicating no solution for current probe or solution
+        // has been found already
+        if (iflag[ip] == -3 || iflag[ip] == 2) {
+            // Nothing to do
         } else {
-            // Sign change is in right interval
-            lval[ip] = current[ip];
-            for (int n = 0; n < AMREX_SPACEDIM; ++n) {
-                // Left position moves to current
-                (plvec[n])[ip] = p.pos(n);
-                // Particle is moved to new middle
-                p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
+            // Check if tolerance is satisfied for target value
+            if (std::abs(current[ip] - target[ip]) < tol) {
+                // Update flag to signify done
+                iflag[ip] = 2;
+            } else {
+                auto& p = pstruct[ip];
+                // Use sign change to determine new middle, reassign bounds
+                if ((current[ip] - target[ip]) * (lval[ip] - target[ip]) <= 0) {
+                    // Sign change is in left interval
+                    // (or could be that left or middle is at target)
+                    rval[ip] = current[ip];
+                    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                        // Right position moves to current
+                        (prvec[n])[ip] = p.pos(n);
+                        // Particle is moved to new middle
+                        p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
+                    }
+                } else {
+                    // Sign change is in right interval
+                    lval[ip] = current[ip];
+                    for (int n = 0; n < AMREX_SPACEDIM; ++n) {
+                        // Left position moves to current
+                        (plvec[n])[ip] = p.pos(n);
+                        // Particle is moved to new middle
+                        p.pos(n) = 0.5 * ((plvec[n])[ip] + (prvec[n])[ip]);
+                    }
+                }
             }
         }
-        loopsum += not_finished;
-        return;
     });
-    if (loopsum == 0) flag = true;
 }
 } // namespace
 
@@ -665,6 +656,7 @@ void SamplingContainer::initialize_particles(
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, oris.begin(), oris.end(), doris.begin());
         const auto* dors = doris.data();
+        const auto fval = field_vals[probe_id];
 
         amrex::ParallelFor(npts, [=] AMREX_GPU_DEVICE(const int ip) noexcept {
             const auto uid = pidx + ip;
@@ -681,7 +673,7 @@ void SamplingContainer::initialize_particles(
             pp.idata(IIx::sid) = probe_id;
             pp.idata(IIx::nid) = ip;
             // Data members - scalar
-            pvalues[uid] = field_vals[probe_id];
+            pvalues[uid] = fval;
             pints[uid] = 0;
         });
         amrex::Gpu::streamSynchronize();
@@ -897,7 +889,6 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
     bool flag = false;
     int ct = 0;
     while (!flag) {
-        flag = true;
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& geom = m_mesh.Geom(lev);
             const auto dx = geom.CellSizeArray();
@@ -923,14 +914,25 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                     porients[n - roffset] =
                         &(pti.GetStructOfArrays().GetRealData(nn))[0];
                 }
-                bool out = false;
                 // Check sign change, get new position, update flag
                 pre_bisect_work(
                     np, pvec, ptvals, plvals, prvals, pllocs, prlocs, porients,
-                    pints, plo, phi, dx, ct, out);
-                if (!out) flag = false;
+                    pints, plo, phi, dx, ct);
             }
         }
+        // Check flags of particles to determine if done
+        flag = amrex::ReduceLogicalAnd(
+            *this,
+            [=] AMREX_GPU_DEVICE(const SuperParticleType& p) noexcept -> bool {
+                bool flag_pt = false;
+                const int istat = p.idata(NStructInt + 0);
+                if (istat == -3 || istat == 1) {
+                    flag_pt = true;
+                }
+                return flag_pt;
+            });
+        // In case of non-GPU parallelization
+        amrex::ParallelDescriptor::ReduceBoolAnd(flag);
         // Break while loop if completed
         if (flag) break;
         // With particles having moved, go to new position
@@ -952,7 +954,7 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                 // Get value at current location, but skip finished points
                 iso_fields(
                     lev, np, fields, pti, pvec, parr, pints,
-                    amrex::Vector<int>{{-3, 1}}, plo, dxi, dx);
+                    amrex::Gpu::DeviceVector<int>{{-3, 1}}, 2, plo, dxi, dx);
             }
         }
         // Increment
@@ -984,7 +986,6 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
     //! Bisection loop
     flag = false;
     while (!flag) {
-        flag = true;
         for (int lev = 0; lev < nlevels; ++lev) {
             const auto& geom = m_mesh.Geom(lev);
             const auto dx = geom.CellSizeArray();
@@ -1008,19 +1009,29 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                     prlocs[n - roffset] =
                         &(pti.GetStructOfArrays().GetRealData(nn))[0];
                 }
-                bool out = false;
-                // Get middle value
+                // Get middle value, skip finished points
                 iso_fields(
-                    lev, np, fields, pti, pvec, pcvals, pints, plo, dxi, dx);
+                    lev, np, fields, pti, pvec, pcvals, pints,
+                    amrex::Gpu::DeviceVector<int>{{-3, 2}}, 2, plo, dxi, dx);
                 // Update flag, send to new middle position
                 bisect_work(
                     np, pvec, pcvals, ptvals, plvals, prvals, pllocs, prlocs,
-                    pints, m_tol, out);
-                if (!out) flag = false;
+                    pints, m_tol);
             }
         }
         // With particles having moved, go to new position
         this->Redistribute();
+        // Check flags of particles to determine if done
+        flag = amrex::ReduceLogicalAnd(
+            *this,
+            [=] AMREX_GPU_DEVICE(const SuperParticleType& p) noexcept -> bool {
+                bool flag_pt = false;
+                const int istat = p.idata(NStructInt + 0);
+                if (istat == -3 || istat == 2) {
+                    flag_pt = true;
+                }
+                return flag_pt;
+            });
     }
 }
 

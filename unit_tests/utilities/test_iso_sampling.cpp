@@ -17,7 +17,7 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
     // VOF has only one component
     int d = 0;
     // Linearly interpolated water level
-    amrex::Real liwl = -1;
+    amrex::Real liwl_max = -100.0;
 
     for (int lev = 0; lev < nlevels; ++lev) {
         const auto& dx = mesh.Geom(lev).CellSizeArray();
@@ -27,31 +27,41 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
             auto bx = mfi.growntilebox();
             const auto& farr = vof_fld(lev).array(mfi);
 
-            amrex::ParallelFor(
-                bx, [=, &liwl] AMREX_GPU_DEVICE(int i, int j, int k) {
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                const amrex::Real z = problo[2] + (k + offset) * dx[2];
+
+                amrex::Real local_vof = std::min(
+                    1.0,
+                    std::max(
+                        0.0, (water_level - (z - offset * dx[2])) / dx[2]));
+                farr(i, j, k, d) = local_vof;
+            });
+        }
+        // Use ReduceMax to get linearly interpolated water level
+        amrex::Real liwl_lev = -100.0;
+        liwl_lev = amrex::ReduceMax(
+            vof_fld(lev), 0.,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& b,
+                amrex::Array4<amrex::Real const> const& field_arr)
+                -> amrex::Real {
+                amrex::Real liwl = -100.0;
+                amrex::Loop(b, [=, &liwl](int i, int j, int k) noexcept {
                     const amrex::Real z = problo[2] + (k + offset) * dx[2];
-
-                    amrex::Real local_vof = std::min(
-                        1.0,
-                        std::max(
-                            0.0, (water_level - (z - offset * dx[2])) / dx[2]));
-                    farr(i, j, k, d) = local_vof;
-
-                    // Only needs to be calculated once
-                    if (liwl < 0) {
-                        // Check for multiphase cell
-                        if (local_vof > 0 && local_vof < 1) {
-                            liwl = z + (0.5 - local_vof) / (0.0 - local_vof) *
-                                           dx[2];
-                        }
+                    auto local_vof = field_arr(i, j, k, 0);
+                    if (local_vof > 0 && local_vof < 1) {
+                        liwl =
+                            z + (0.5 - local_vof) / (0.0 - local_vof) * dx[2];
                     }
                 });
-        }
+                return liwl;
+            });
+        liwl_max = amrex::max(liwl_max, liwl_lev);
     }
     // If only single-phase cells, no interpolation needed
-    if (liwl < 0) liwl = water_level;
+    if (liwl_max < 0) liwl_max = water_level;
     // Return result
-    return liwl;
+    return liwl_max;
 }
 
 void init_field(amr_wind::Field& fld)
@@ -135,7 +145,24 @@ int IsoSamplingImpl::check_parr(
 {
     auto* scont = &(this->sampling_container());
     const int nlevels = mesh.finestLevel() + 1;
-    int ncheck = 0;
+
+    // Record number of checks though a reduce loop
+    int ncheck = amrex::ReduceSum(
+        *scont,
+        [=] AMREX_GPU_DEVICE(
+            const amr_wind::sampling::SamplingContainer::SuperParticleType&
+                p) noexcept -> int {
+            if (p.idata(amr_wind::sampling::IIx::sid) != sid) return 0;
+            return 1;
+        });
+    amrex::ParallelDescriptor::ReduceIntSum(ncheck);
+    // Multiply by number of fields being checked
+    int ncheck_tot = ncheck * (1 + i_end - i_begin);
+
+    // Initialize vectors to store particle information
+    amrex::Gpu::DeviceVector<amrex::Real> pdvec(ncheck_tot);
+    auto* pdarr = pdvec.data();
+    amrex::Vector<amrex::Real> pharr(ncheck_tot);
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -151,34 +178,42 @@ int IsoSamplingImpl::check_parr(
                 // Loop through particles
                 auto* pstruct = pvec.data();
 
-                amrex::ParallelFor(
-                    np, [=, &ncheck] AMREX_GPU_DEVICE(int ip) noexcept {
-                        auto& p = pstruct[ip];
-                        // Check if current particle is concerned with current
-                        // field
-                        if (p.idata(amr_wind::sampling::IIx::sid) != sid)
-                            return;
-                        // Check against reference with specified operation
-                        if (op == "=") {
-                            EXPECT_EQ(parr[ip], carr[i - i_begin]);
-                            ++ncheck;
-                        } else {
-                            if (op == "<") {
-                                EXPECT_LT(parr[ip], carr[i - i_begin]);
-                                ++ncheck;
-                            } else {
-                                if (op == "~") {
-                                    EXPECT_NEAR(
-                                        parr[ip], carr[i - i_begin], tol);
-                                    ++ncheck;
-                                }
-                            }
-                        }
-                    });
+                amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+                    auto& p = pstruct[ip];
+                    // Check if current particle is concerned with current
+                    // field
+                    if (p.idata(amr_wind::sampling::IIx::sid) == sid) {
+                        // Check should be performed
+                        pdarr
+                            [(i - i_begin) * ncheck +
+                             p.idata(amr_wind::sampling::IIx::nid)] = parr[ip];
+                    }
+                });
             }
         }
     }
-    return ncheck;
+    // Copy from device to host
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, pdvec.begin(), pdvec.end(), pharr.begin());
+    // Loop through data and perform checks
+    int icheck = 0;
+    for (int i = i_begin; i < i_end + 1; ++i) {
+        for (int n = 0; n < ncheck; ++n) {
+            if (op == "=") {
+                EXPECT_EQ(pharr[icheck], carr[i - i_begin]);
+            } else {
+                if (op == "<") {
+                    EXPECT_LT(pharr[icheck], carr[i - i_begin]);
+                } else {
+                    if (op == "~") {
+                        EXPECT_NEAR(pharr[icheck], carr[i - i_begin], tol);
+                    }
+                }
+            }
+            ++icheck;
+        }
+    }
+    return ncheck_tot;
 }
 
 int IsoSamplingImpl::check_parr(
@@ -190,7 +225,24 @@ int IsoSamplingImpl::check_parr(
 {
     auto* scont = &(this->sampling_container());
     const int nlevels = mesh.finestLevel() + 1;
-    int ncheck = 0;
+
+    // Record number of checks though a reduce loop
+    int ncheck = amrex::ReduceSum(
+        *scont,
+        [=] AMREX_GPU_DEVICE(
+            const amr_wind::sampling::SamplingContainer::SuperParticleType&
+                p) noexcept -> int {
+            if (p.idata(amr_wind::sampling::IIx::sid) != sid) return 0;
+            return 1;
+        });
+    amrex::ParallelDescriptor::ReduceIntSum(ncheck);
+    // Multiply by number of fields being checked
+    int ncheck_tot = ncheck * (1 + i_end - i_begin);
+
+    // Initialize vectors to store particle information
+    amrex::Gpu::DeviceVector<int> pdvec(ncheck_tot);
+    auto* pdarr = pdvec.data();
+    amrex::Vector<int> pharr(ncheck_tot);
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -206,21 +258,34 @@ int IsoSamplingImpl::check_parr(
                 // Loop through particles
                 auto* pstruct = pvec.data();
 
-                amrex::ParallelFor(
-                    np, [=, &ncheck] AMREX_GPU_DEVICE(int ip) noexcept {
-                        auto& p = pstruct[ip];
-                        // Check if current particle is concerned with current
-                        // field
-                        if (p.idata(amr_wind::sampling::IIx::sid) != sid)
-                            return;
-                        // Check against reference
-                        EXPECT_EQ(parr[ip], carr[i - i_begin]);
-                        ++ncheck;
-                    });
+                amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+                    auto& p = pstruct[ip];
+                    // Check if current particle is concerned with current
+                    // field
+                    if (p.idata(amr_wind::sampling::IIx::sid) == sid)
+                        // Check should be performed
+                        pdarr
+                            [(i - i_begin) * ncheck +
+                             p.idata(amr_wind::sampling::IIx::nid)] = parr[ip];
+                });
             }
         }
     }
-    return ncheck;
+
+    // Copy from device to host
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, pdvec.begin(), pdvec.end(), pharr.begin());
+    // Loop through data and perform checks
+    int icheck = 0;
+    for (int i = i_begin; i < i_end + 1; ++i) {
+        for (int n = 0; n < ncheck; ++n) {
+            // Check against reference
+            EXPECT_EQ(pharr[icheck], carr[i - i_begin]);
+            ++icheck;
+        }
+    }
+
+    return ncheck_tot;
 }
 
 int IsoSamplingImpl::check_pos(
@@ -233,7 +298,24 @@ int IsoSamplingImpl::check_pos(
 {
     auto* scont = &(this->sampling_container());
     const int nlevels = mesh.finestLevel() + 1;
-    int ncheck = 0;
+
+    // Record number of checks though a reduce loop
+    int ncheck = amrex::ReduceSum(
+        *scont,
+        [=] AMREX_GPU_DEVICE(
+            const amr_wind::sampling::SamplingContainer::SuperParticleType&
+                p) noexcept -> int {
+            if (p.idata(amr_wind::sampling::IIx::sid) != sid) return 0;
+            return 1;
+        });
+    amrex::ParallelDescriptor::ReduceIntSum(ncheck);
+    // Multiply by number of fields being checked
+    int ncheck_tot = ncheck * (1 + i_end - i_begin);
+
+    // Initialize vectors to store particle information
+    amrex::Gpu::DeviceVector<amrex::Real> pdvec(ncheck_tot);
+    auto* pdarr = pdvec.data();
+    amrex::Vector<amrex::Real> pharr(ncheck_tot);
 
     for (int lev = 0; lev < nlevels; ++lev) {
 
@@ -247,35 +329,42 @@ int IsoSamplingImpl::check_pos(
                 // Loop through particles
                 auto* pstruct = pvec.data();
 
-                amrex::ParallelFor(
-                    np, [=, &ncheck] AMREX_GPU_DEVICE(int ip) noexcept {
-                        auto& p = pstruct[ip];
-                        // Check if current particle is concerned with current
-                        // field
-                        if (p.idata(amr_wind::sampling::IIx::sid) != sid)
-                            return;
-                        // Check position against reference with specified
-                        // component
-                        if (op == "=") {
-                            EXPECT_EQ(p.pos(i), carr[i - i_begin]);
-                            ++ncheck;
-                        } else {
-                            if (op == "<") {
-                                EXPECT_LT(p.pos(i), carr[i - i_begin]);
-                                ++ncheck;
-                            } else {
-                                if (op == "~") {
-                                    EXPECT_NEAR(
-                                        p.pos(i), carr[i - i_begin], tol);
-                                    ++ncheck;
-                                }
-                            }
-                        }
-                    });
+                amrex::ParallelFor(np, [=] AMREX_GPU_DEVICE(int ip) noexcept {
+                    auto& p = pstruct[ip];
+                    // Check if current particle is concerned with current
+                    // field
+                    if (p.idata(amr_wind::sampling::IIx::sid) == sid) {
+                        // Check should be performed
+                        pdarr
+                            [(i - i_begin) * ncheck +
+                             p.idata(amr_wind::sampling::IIx::nid)] = p.pos(i);
+                    }
+                });
             }
         }
     }
-    return ncheck;
+    // Copy from device to host
+    amrex::Gpu::copy(
+        amrex::Gpu::deviceToHost, pdvec.begin(), pdvec.end(), pharr.begin());
+    // Loop through data and perform checks
+    int icheck = 0;
+    for (int i = i_begin; i < i_end + 1; ++i) {
+        for (int n = 0; n < ncheck; ++n) {
+            if (op == "=") {
+                EXPECT_EQ(pharr[icheck], carr[i - i_begin]);
+            } else {
+                if (op == "<") {
+                    EXPECT_LT(pharr[icheck], carr[i - i_begin]);
+                } else {
+                    if (op == "~") {
+                        EXPECT_NEAR(pharr[icheck], carr[i - i_begin], tol);
+                    }
+                }
+            }
+            ++icheck;
+        }
+    }
+    return ncheck_tot;
 }
 
 } // namespace
@@ -613,8 +702,8 @@ TEST_F(IsoSamplingTest, plane)
     ASSERT_EQ(niflag, npts * npts);
     // Sampler 2
     sid = 1;
-    // Sampler can find target
-    check_int_one[0] = 1;
+    // Sampler can find sign change and bisection reaches target
+    check_int_one[0] = 2;
     check_int_ptr = &(check_int_one)[0];
     niflag = probes.check_parr(0, 0, sid, check_int_ptr, m_sim.mesh());
     ASSERT_EQ(niflag, npts * npts);

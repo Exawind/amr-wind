@@ -84,7 +84,7 @@ void IsoSampling::initialize()
     // Store number of components
     m_preals = ncomp;
     m_pints = nicomp;
-    m_scontainer->setup_container(m_preals, m_pints);
+    m_scontainer->setup_container(m_preals, 0);
     m_scontainer->initialize_particles(m_samplers, m_field_values);
     // Populate particle real component names
     m_pcomp_names.emplace_back("field"); // will be replaced

@@ -16,7 +16,7 @@ class SamplerBase;
 static constexpr int SNStructReal = 0;
 static constexpr int SNStructInt = 3;
 static constexpr int SNArrayReal = 0;
-static constexpr int SNArrayInt = 0;
+static constexpr int SNArrayInt = 1;
 
 /** Indexing for the integer variables defined on the AMReX particle
  *  \ingroup sampling
