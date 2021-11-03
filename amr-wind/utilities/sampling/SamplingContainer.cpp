@@ -234,7 +234,8 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.0, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx,
+                offset);
             break;
         }
 
@@ -242,7 +243,8 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx,
+                offset);
             break;
         }
 
@@ -250,7 +252,8 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.0, 0.5, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx,
+                offset);
             break;
         }
 
@@ -258,7 +261,8 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.0, 0.5}};
             sample_field(
-                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx,
+                offset);
             break;
         }
 
@@ -266,7 +270,8 @@ void iso_fields(
             amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> offset{
                 {0.5, 0.5, 0.0}};
             sample_field(
-                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx, offset);
+                np, pvec, parr, piarr, iskip, nskip, fidx, farr, plo, dxi, dx,
+                offset);
             break;
         }
         }
@@ -289,7 +294,8 @@ void iso_fields(
 {
     amrex::Gpu::DeviceVector<int> iskip{-3};
     int nskip = 1;
-    iso_fields(lev, np, fields, pti, pvec, parr, piarr, iskip, nskip, plo, dxi, dx);
+    iso_fields(
+        lev, np, fields, pti, pvec, parr, piarr, iskip, nskip, plo, dxi, dx);
 }
 
 void update_position(
