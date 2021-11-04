@@ -31,7 +31,6 @@ void Sampling::initialize()
     }
 
     // Process field information
-    //~ int ncomp = 0;
     m_ncomp = 0;
     auto& repo = m_sim.repo();
     for (const auto& fname : field_names) {
@@ -69,34 +68,31 @@ void Sampling::initialize()
 	update_container();
 
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
+        
 }
 
 void Sampling::update_container() {
     BL_PROFILE("amr-wind::Sampling::update_container");
 
-	// Update the particle locations
-	//~ m_scontainer->update_particles(m_fields);
-	m_scontainer->update_particles(m_samplers);
-	
     // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
     m_scontainer->setup_container(m_ncomp);
     m_scontainer->initialize_particles(m_samplers);
-    
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
     m_scontainer->num_sampling_particles() = m_total_particles;	
+
 }
 
 
 void Sampling::pre_advance_work()
 {
     BL_PROFILE("amr-wind::Sampling::pre_advance_work");
-    
-    //~ for (const auto& obj : m_samplers) {
-		//~ obj -> update_sampling_locations(locs);
-	//~ }
-	m_scontainer->update_particles(m_samplers);
+
+	SamplerBase::SampleLocType locs;
+    for (const auto& obj : m_samplers) {
+		obj -> update_sampling_locations();
+	}
 
 	update_container();
 
@@ -104,15 +100,19 @@ void Sampling::pre_advance_work()
 
 void Sampling::post_advance_work()
 {
+
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
 	
+	pre_advance_work();
+	
     m_scontainer->interpolate_fields(m_fields);
 
     process_output();
+    
 }
 
 void Sampling::post_regrid_actions()

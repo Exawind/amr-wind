@@ -72,7 +72,7 @@ protected:
 	//! Update the container by re-initializing the particles
 	void update_container();
 	
-	//! 
+	//! Conduct work to update the particles
 	void pre_advance_work();
 
     //! Output data based on user-defined format

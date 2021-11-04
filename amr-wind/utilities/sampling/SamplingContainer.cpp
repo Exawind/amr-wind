@@ -145,15 +145,6 @@ void SamplingContainer::initialize_particles(
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
 }
 
-void SamplingContainer::update_particles(const amrex::Vector<std::unique_ptr<SamplerBase>>& samplers)
-{
-    BL_PROFILE("amr-wind::SamplingContainer::update_particles");
-    
-	SamplerBase::SampleLocType locs;
-	for (auto& probe : samplers)
-        probe->sampling_locations(locs);
-}
-
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
 {
     BL_PROFILE("amr-wind::SamplingContainer::interpolate");

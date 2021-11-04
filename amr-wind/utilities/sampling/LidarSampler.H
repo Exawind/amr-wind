@@ -16,11 +16,17 @@ namespace sampling {
  *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
  */
 //~ class LidarSampler : public SamplerBase::Register<LidarSampler>
-//~ class LidarSampler : public LineSampler::Register<LidarSampler>
+//~ class LidarSampler : public LineSampler::SamplerBase::Register<LidarSampler>
 class LidarSampler : public LineSampler
+//~ class LidarSampler : public LineSampler, SamplerBase::Register<LidarSampler>
+//~ LineSampler LidarSampler()
+//~ class LidarSampler : public LineSampler : SamplerBase::Register<LidarSampler>
 {
 public:
+
     static const std::string identifier() { return "LidarSampler"; }
+
+    explicit LidarSampler(const CFDSim&);
 
     /** Read user inputs and initialize the sampling object
      *
@@ -32,8 +38,8 @@ public:
 	 * 
 	 * 
 	 */
-    void update_sampling_locations(SampleLocType& locs) override;
-
+    //~ void update_sampling_locations(SampleLocType& locs) override;
+    void update_sampling_locations() override;
 
 private:
 
@@ -51,4 +57,4 @@ private:
 } // namespace sampling
 } // namespace amr_wind
 
-#endif /* LINESAMPLER_H */
+#endif /* LIDARSAMPLER_H */

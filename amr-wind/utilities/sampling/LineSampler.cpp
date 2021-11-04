@@ -18,7 +18,12 @@ void LineSampler::initialize(const std::string& key)
     pp.get("num_points", m_npts);
     pp.getarr("start", m_start);
     pp.getarr("end", m_end);
+    
+    check_bounds();
+}
 
+void LineSampler::check_bounds()
+{
     const int lev = 0;
     const auto* prob_lo = m_sim.mesh().Geom(lev).ProbLo();
     const auto* prob_hi = m_sim.mesh().Geom(lev).ProbHi();
