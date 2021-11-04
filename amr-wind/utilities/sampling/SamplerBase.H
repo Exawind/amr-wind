@@ -45,9 +45,6 @@ public:
     //! Populate the vector with coordinates of the sampling locations
     virtual void sampling_locations(SampleLocType&) const = 0;
 
-    //! Update the sampling locations
-    virtual void update_sampling_locations() {}
-
     //! Populate metadata in the NetCDF file
     virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}
     virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
