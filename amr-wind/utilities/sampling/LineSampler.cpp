@@ -18,7 +18,7 @@ void LineSampler::initialize(const std::string& key)
     pp.get("num_points", m_npts);
     pp.getarr("start", m_start);
     pp.getarr("end", m_end);
-    
+
     check_bounds();
 }
 

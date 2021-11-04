@@ -18,7 +18,6 @@ namespace sampling {
 class LidarSampler : public LineSampler
 {
 public:
-
     static const std::string identifier() { return "LidarSampler"; }
 
     explicit LidarSampler(const CFDSim&);
@@ -29,23 +28,21 @@ public:
      */
     void initialize(const std::string& key) override;
 
-	/** Update the position of the sampling locations in time
-	 * 
-	 * 
-	 */
+    /** Update the position of the sampling locations in time
+     *
+     *
+     */
     void update_sampling_locations() override;
 
 private:
-
     amrex::Vector<amrex::Real> m_origin;
     amrex::Vector<amrex::Real> m_time_table;
     amrex::Vector<amrex::Real> m_azimuth_table;
     amrex::Vector<amrex::Real> m_elevation_table;
     amrex::Vector<amrex::Real> m_distribution;
-	amrex::Real m_current_azimuth{0};
-	amrex::Real m_current_elevation{0};
-	amrex::Real m_length{0};
-
+    amrex::Real m_current_azimuth{0};
+    amrex::Real m_current_elevation{0};
+    amrex::Real m_length{0};
 };
 
 } // namespace sampling

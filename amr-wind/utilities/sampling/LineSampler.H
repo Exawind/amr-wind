@@ -28,7 +28,7 @@ public:
      */
     void initialize(const std::string& key) override;
 
-	void check_bounds();
+    void check_bounds();
 
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType&) const override;

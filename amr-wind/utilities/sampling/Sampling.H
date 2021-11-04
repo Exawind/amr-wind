@@ -68,12 +68,11 @@ public:
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
+    //! Update the container by re-initializing the particles
+    void update_container();
 
-	//! Update the container by re-initializing the particles
-	void update_container();
-	
-	//! Conduct work to update the particles
-	void pre_advance_work();
+    //! Conduct work to update the particles
+    void pre_advance_work();
 
     //! Output data based on user-defined format
     virtual void process_output();

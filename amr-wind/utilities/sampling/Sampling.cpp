@@ -65,13 +65,13 @@ void Sampling::initialize()
         m_samplers.emplace_back(std::move(obj));
     }
 
-	update_container();
+    update_container();
 
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
-        
 }
 
-void Sampling::update_container() {
+void Sampling::update_container()
+{
     BL_PROFILE("amr-wind::Sampling::update_container");
 
     // Initialize the particle container based on user inputs
@@ -80,22 +80,19 @@ void Sampling::update_container() {
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
     m_scontainer->Redistribute();
-    m_scontainer->num_sampling_particles() = m_total_particles;	
-
+    m_scontainer->num_sampling_particles() = m_total_particles;
 }
-
 
 void Sampling::pre_advance_work()
 {
     BL_PROFILE("amr-wind::Sampling::pre_advance_work");
 
-	SamplerBase::SampleLocType locs;
+    SamplerBase::SampleLocType locs;
     for (const auto& obj : m_samplers) {
-		obj -> update_sampling_locations();
-	}
+        obj->update_sampling_locations();
+    }
 
-	update_container();
-
+    update_container();
 }
 
 void Sampling::post_advance_work()
@@ -106,13 +103,12 @@ void Sampling::post_advance_work()
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
-	
-	pre_advance_work();
-	
+
+    pre_advance_work();
+
     m_scontainer->interpolate_fields(m_fields);
 
     process_output();
-    
 }
 
 void Sampling::post_regrid_actions()
