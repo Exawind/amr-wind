@@ -27,15 +27,15 @@ MultiPhase.density_fluid1=1000.
 MultiPhase.density_fluid2=1.
 ICNS.source_terms = GravityForcing
 
-# Target resolution at interface is dx = dy = 0.1, dz = 0.02 (using max of 2 levels)
+# Target resolution at interface is dx = dy = 0.3125, dz = 0.125
 amr.n_cell              = 64 64 16   # Grid cells at coarsest AMRlevel
 tagging.labels = sr
-tagging.sr.type = CartBoxRefinement
-tagging.sr.static_refinement_def = static_box.refine
-amr.max_level = 1
+#tagging.sr.type = CartBoxRefinement
+#tagging.sr.static_refinement_def = static_box.refine
+amr.max_level = 0
 
 geometry.prob_lo        =   0.   0.   -1.   # Lo corner coordinates
-geometry.prob_hi        =   20.  20.  0.5  # Hi corner coordinates
+geometry.prob_hi        =   20.  20.   1.  # Hi corner coordinates
 geometry.is_periodic    =    0   0    0   # Periodicity x y z (0/1)
 
 xlo.type =   "slip_wall"

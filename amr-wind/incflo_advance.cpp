@@ -255,6 +255,8 @@ void incflo::ApplyPredictor(bool incremental_projection)
     // if (!m_use_godunov) Compute the explicit advective terms
     //                     R_u^n      , R_s^n       and R_t^n
     // *************************************************************************************
+    for (auto& pp : m_sim.physics()) pp->pre_mac_projection_work();
+
     icns().compute_advection_term(amr_wind::FieldState::Old);
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);

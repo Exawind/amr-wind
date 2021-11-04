@@ -51,9 +51,12 @@ OneEqKsgsM84<Transport>::OneEqKsgsM84(CFDSim& sim)
         pp.query("enable_hybrid_rl_mode", m_hybrid_rl);
     }
 
-    if (m_hybrid_rl)
+    if (m_hybrid_rl) {
         m_sdr = &(sim.repo().declare_field(
             "sdr", 1, (*this->m_tke).num_grow()[0], 1));
+
+        m_sdr->set_default_fillpatch_bc(sim.time());
+    }
 
     {
         amrex::ParmParse pp("incflo");

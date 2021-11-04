@@ -36,6 +36,8 @@ public:
 
     void pre_advance_work() override {}
 
+    void pre_mac_projection_work() override;
+
     void post_advance_work() override;
 
     void set_density_via_levelset();
@@ -43,6 +45,8 @@ public:
     void set_density_via_vof();
 
     void levelset2vof();
+
+    void favre_filtering();
 
     amrex::Real volume_fraction_sum();
 
@@ -69,6 +73,8 @@ private:
 
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
+
+    bool m_interface_smoothing{false};
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};

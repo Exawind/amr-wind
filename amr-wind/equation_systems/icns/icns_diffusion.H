@@ -92,34 +92,36 @@ public:
 
         for (int i = 0; i < AMREX_SPACEDIM; ++i) {
             if (!has_overset) {
-                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                m_solver_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), isolve));
-                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.DistributionMap(0, mesh.finestLevel()), isolve, {},
+                    AMREX_SPACEDIM));
+                m_applier_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), iapply, {},
+                    AMREX_SPACEDIM));
             } else {
                 auto imask =
                     fields.repo.get_int_field("mask_cell").vec_const_ptrs();
-                m_solver_scalar[i].reset(new amrex::MLABecLaplacian(
+                m_solver_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    isolve));
-                m_applier_scalar[i].reset(new amrex::MLABecLaplacian(
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, isolve,
+                    {}, AMREX_SPACEDIM));
+                m_applier_scalar.reset(new amrex::MLABecLaplacian(
                     mesh.Geom(0, mesh.finestLevel()),
                     mesh.boxArray(0, mesh.finestLevel()),
-                    mesh.DistributionMap(0, mesh.finestLevel()), imask,
-                    iapply));
+                    mesh.DistributionMap(0, mesh.finestLevel()), imask, iapply,
+                    {}, AMREX_SPACEDIM));
             }
 
-            m_solver_scalar[i]->setMaxOrder(m_options.max_order);
-            m_applier_scalar[i]->setMaxOrder(m_options.max_order);
+            m_solver_scalar->setMaxOrder(m_options.max_order);
+            m_applier_scalar->setMaxOrder(m_options.max_order);
 
-            m_solver_scalar[i]->setDomainBC(bclo[i], bchi[i]);
-            m_applier_scalar[i]->setDomainBC(bclo[i], bchi[i]);
+            m_solver_scalar->setDomainBC(bclo, bchi);
+            m_applier_scalar->setDomainBC(bclo, bchi);
         }
     }
 
@@ -139,24 +141,17 @@ public:
         const amrex::Real alpha = 0.0;
         const amrex::Real beta = -1.0;
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            m_applier_scalar[i]->setScalars(alpha, beta);
-            for (int lev = 0; lev < nlevels; ++lev) {
-                m_applier_scalar[i]->setLevelBC(
-                    lev, &m_pdefields.field.subview(i)(lev));
-                m_applier_scalar[i]->setACoeffs(lev, density(lev));
-                auto b = diffusion::average_velocity_eta_to_faces(
-                    geom[lev], viscosity(lev));
-                m_applier_scalar[i]->setBCoeffs(
-                    lev, amrex::GetArrOfConstPtrs(b));
-            }
-
-            auto divtau_comp = divtau.subview(i);
-            auto vel_comp = m_pdefields.field.subview(i);
-
-            amrex::MLMG mlmg(*m_applier_scalar[i]);
-            mlmg.apply(divtau_comp.vec_ptrs(), vel_comp.vec_ptrs());
+        m_applier_scalar->setScalars(alpha, beta);
+        for (int lev = 0; lev < nlevels; ++lev) {
+            m_applier_scalar->setLevelBC(lev, &m_pdefields.field(lev));
+            m_applier_scalar->setACoeffs(lev, density(lev));
+            auto b = diffusion::average_velocity_eta_to_faces(
+                geom[lev], viscosity(lev));
+            m_applier_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
+
+        amrex::MLMG mlmg(*m_applier_scalar);
+        mlmg.apply(divtau.vec_ptrs(), m_pdefields.field.vec_ptrs());
 
         for (int lev = 0; lev < nlevels; ++lev) {
 #ifdef _OPENMP
@@ -193,17 +188,13 @@ public:
         const amrex::Real alpha = 1.0;
         const amrex::Real beta = dt;
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            m_solver_scalar[i]->setScalars(alpha, beta);
-            for (int lev = 0; lev < nlevels; ++lev) {
-                m_solver_scalar[i]->setLevelBC(
-                    lev, &m_pdefields.field.subview(i)(lev));
-                m_solver_scalar[i]->setACoeffs(lev, density(lev));
-                auto b = diffusion::average_velocity_eta_to_faces(
-                    geom[lev], viscosity(lev));
-                m_solver_scalar[i]->setBCoeffs(
-                    lev, amrex::GetArrOfConstPtrs(b));
-            }
+        m_solver_scalar->setScalars(alpha, beta);
+        for (int lev = 0; lev < nlevels; ++lev) {
+            m_solver_scalar->setLevelBC(lev, &m_pdefields.field(lev));
+            m_solver_scalar->setACoeffs(lev, density(lev));
+            auto b = diffusion::average_velocity_eta_to_faces(
+                geom[lev], viscosity(lev));
+            m_solver_scalar->setBCoeffs(lev, amrex::GetArrOfConstPtrs(b));
         }
 
         // Always multiply with rho since there is no diffusion term for density
@@ -228,20 +219,13 @@ public:
             }
         }
 
-        for (int i = 0; i < AMREX_SPACEDIM; ++i) {
-            auto vel_comp = m_pdefields.field.subview(i);
-            auto rhs_ptr_comp = rhs_ptr->subview(i);
+        amrex::MLMG mlmg(*m_solver_scalar);
+        m_options(mlmg);
+        mlmg.solve(
+            m_pdefields.field.vec_ptrs(), rhs_ptr->vec_const_ptrs(),
+            m_options.rel_tol, m_options.abs_tol);
 
-            amrex::MLMG mlmg(*m_solver_scalar[i]);
-            m_options(mlmg);
-
-            mlmg.solve(
-                vel_comp.vec_ptrs(), rhs_ptr_comp.vec_const_ptrs(),
-                m_options.rel_tol, m_options.abs_tol);
-
-            io::print_mlmg_info(
-                field.name() + std::to_string(i) + "_solve", mlmg);
-        }
+        io::print_mlmg_info(field.name() + "_multicomponent_solve", mlmg);
     }
 
 protected:
@@ -249,10 +233,8 @@ protected:
     Field& m_density;
     MLMGOptions m_options;
 
-    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
-        m_solver_scalar;
-    amrex::Array<std::unique_ptr<amrex::MLABecLaplacian>, AMREX_SPACEDIM>
-        m_applier_scalar;
+    std::unique_ptr<amrex::MLABecLaplacian> m_solver_scalar;
+    std::unique_ptr<amrex::MLABecLaplacian> m_applier_scalar;
 };
 
 /** Specialization of diffusion operator for ICNS

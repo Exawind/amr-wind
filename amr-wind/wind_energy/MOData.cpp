@@ -30,7 +30,7 @@ amrex::Real MOData::calc_psi_h(amrex::Real zeta) const
     if (zeta > 0) {
         return -gamma_h * zeta;
     } else {
-        amrex::Real x = std::sqrt(1 - beta_m * zeta);
+        amrex::Real x = std::sqrt(1 - beta_h * zeta);
         return 2.0 * std::log(0.5 * (1 + x));
     }
 }
