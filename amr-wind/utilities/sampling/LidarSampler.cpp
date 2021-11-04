@@ -63,23 +63,11 @@ void LidarSampler::update_sampling_locations()
 
     // Need to assign start point as the origin
     m_start = m_origin;
-    // Initialize the end point
-    m_end = m_origin;
-
-    // End point of the beam
-    vs::Vector beam_vector = {m_length, 0., 0.};
-
+    const vs::Vector beam_vector = {m_length, 0., 0.};
     // The rotation matrix (takes in angles in degrees)
-    vs::Tensor r1 = vs::yrot(m_current_elevation) & vs::zrot(m_current_azimuth);
-
-    // Perform the vector rotation
-    beam_vector = r1 & beam_vector;
-
-    // Add the origin location to the beam vector
-    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-        beam_vector[d] += m_origin[d];
-        m_end[d] = beam_vector[d];
-    }
+    vs::Tensor r1 = vs::yrot(current_elevation) & vs::zrot(current_azimuth);
+    
+    m_end = m_start + (r1 & beam_vector);
 }
 
 } // namespace sampling
