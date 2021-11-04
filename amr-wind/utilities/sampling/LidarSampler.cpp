@@ -55,10 +55,10 @@ void LidarSampler::update_sampling_locations()
     amrex::Real time = m_sim.time().current_time();
 
     // The current azimuth angle
-    m_current_azimuth =
+    const amrex::Real current_azimuth =
         ::amr_wind::interp::linear(m_time_table, m_azimuth_table, time);
 
-    m_current_elevation =
+    const amrex::Real current_elevation =
         ::amr_wind::interp::linear(m_time_table, m_elevation_table, time);
 
     // Need to assign start point as the origin
