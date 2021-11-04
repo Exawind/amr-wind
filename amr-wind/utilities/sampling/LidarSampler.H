@@ -15,12 +15,7 @@ namespace sampling {
  *  divides it into equal segements as determined by `num_points`. The length of
  *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
  */
-//~ class LidarSampler : public SamplerBase::Register<LidarSampler>
-//~ class LidarSampler : public LineSampler::SamplerBase::Register<LidarSampler>
 class LidarSampler : public LineSampler
-//~ class LidarSampler : public LineSampler, SamplerBase::Register<LidarSampler>
-//~ LineSampler LidarSampler()
-//~ class LidarSampler : public LineSampler : SamplerBase::Register<LidarSampler>
 {
 public:
 
@@ -38,7 +33,6 @@ public:
 	 * 
 	 * 
 	 */
-    //~ void update_sampling_locations(SampleLocType& locs) override;
     void update_sampling_locations() override;
 
 private:
