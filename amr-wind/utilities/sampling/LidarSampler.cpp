@@ -84,7 +84,6 @@ void LidarSampler::update_sampling_locations()
 
 } // namespace sampling
 
-// Register the derived class as a samplerBase
 template struct ::amr_wind::sampling::SamplerBase::Register<
     ::amr_wind::sampling::LidarSampler>;
 

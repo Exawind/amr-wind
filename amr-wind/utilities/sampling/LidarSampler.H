@@ -1,7 +1,6 @@
 #ifndef LIDARSAMPLER_H
 #define LIDARSAMPLER_H
 
-//~ #include "amr-wind/utilities/sampling/SamplerBase.H"
 #include "amr-wind/utilities/sampling/LineSampler.H"
 #include "amr-wind/core/vs/vector_space.H"
 

@@ -47,7 +47,7 @@ actual keyword is determined by the labels provided to
 
    Example::
 
-      sampling.labels = line1 plane1 probe1
+      sampling.labels = line1 lidar1 plane1 probe1
 
    Then the code expects to read ``sampling.line1, sampling.plane1,
    sampling.probe1`` sections to determine the specific sampling probe information.
@@ -73,6 +73,27 @@ Example::
   sampling.line1.num_points = 21
   sampling.line1.start      = 250.0 250.0 10.0
   sampling.line1.end        = 250.0 250.0 210.0
+
+Sampling along a line moving in time (virtual lidar)
+``````````````````````````````````````````````````````
+
+The ``LidarSampler`` allows the user to sample the flow-field along a line
+defined by ``origin`` and spanning to ``length`` 
+with ``num_points`` equidistant nodes.
+Location of the line is given by the time histories 
+``azimuth_table`` and ``elevation_table``.
+Angles are given in degrees with 0 azimuth and 0 elevation being the 
+x direction.
+
+Example::
+
+  sampling.lidar1.type            = LidarSampler
+  sampling.lidar1.num_points      = 21
+  sampling.lidar1.origin          = 250.0 250.0 10.0
+  sampling.lidar1.length          = 500.0
+  sampling.lidar1.time_table      = 0 10.0
+  sampling.lidar1.azimuth_table   = 0 90.0
+  sampling.lidar1.elevation_table = 0 45.0
 
 Sampling on one or more planes
 ```````````````````````````````
