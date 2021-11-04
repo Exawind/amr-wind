@@ -34,7 +34,7 @@ public:
     void update_sampling_locations() override;
 
 private:
-    amrex::Vector<amrex::Real> m_origin;
+    vs::Vector m_origin;
     amrex::Vector<amrex::Real> m_time_table;
     amrex::Vector<amrex::Real> m_azimuth_table;
     amrex::Vector<amrex::Real> m_elevation_table;
