@@ -87,7 +87,6 @@ void Sampling::pre_advance_work()
 {
     BL_PROFILE("amr-wind::Sampling::pre_advance_work");
 
-    SamplerBase::SampleLocType locs;
     for (const auto& obj : m_samplers) {
         obj->update_sampling_locations();
     }
