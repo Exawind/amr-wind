@@ -39,8 +39,6 @@ private:
     amrex::Vector<amrex::Real> m_time_table;
     amrex::Vector<amrex::Real> m_azimuth_table;
     amrex::Vector<amrex::Real> m_elevation_table;
-    amrex::Real m_current_azimuth{0};
-    amrex::Real m_current_elevation{0};
     amrex::Real m_length{0};
 };
 
