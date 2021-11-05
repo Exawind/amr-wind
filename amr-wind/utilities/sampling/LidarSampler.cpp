@@ -17,6 +17,7 @@ void LidarSampler::initialize(const std::string& key)
 
     // This is the origin of the scan (x, y, z) [m]
     pp.getarr("origin", m_origin);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
 
     // The number of points
     pp.get("num_points", m_npts);
@@ -61,13 +62,26 @@ void LidarSampler::update_sampling_locations()
     const amrex::Real current_elevation =
         ::amr_wind::interp::linear(m_time_table, m_elevation_table, time);
 
-    // Need to assign start point as the origin
+     // Need to assign start point as the origin
     m_start = m_origin;
-    const vs::Vector beam_vector = {m_length, 0., 0.};
+    // Initialize the end point
+    m_end = m_origin;
+
+    // End point of the beam
+    vs::Vector beam_vector = {m_length, 0., 0.};
+
     // The rotation matrix (takes in angles in degrees)
     vs::Tensor r1 = vs::yrot(current_elevation) & vs::zrot(current_azimuth);
-    
-    m_end = m_start + (r1 & beam_vector);
+
+    // Perform the vector rotation
+    beam_vector = r1 & beam_vector;
+
+    // Add the origin location to the beam vector
+    for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+        beam_vector[d] += m_origin[d];
+        m_end[d] = beam_vector[d];
+    }
+
 }
 
 } // namespace sampling

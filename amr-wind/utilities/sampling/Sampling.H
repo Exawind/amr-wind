@@ -72,7 +72,7 @@ protected:
     void update_container();
 
     //! Conduct work to update the particles
-    void pre_advance_work();
+    void update_sampling_locations();
 
     //! Output data based on user-defined format
     virtual void process_output();

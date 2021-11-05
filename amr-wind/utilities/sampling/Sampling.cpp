@@ -83,7 +83,7 @@ void Sampling::update_container()
     m_scontainer->num_sampling_particles() = m_total_particles;
 }
 
-void Sampling::pre_advance_work()
+void Sampling::update_sampling_locations()
 {
     BL_PROFILE("amr-wind::Sampling::pre_advance_work");
 
@@ -103,7 +103,7 @@ void Sampling::post_advance_work()
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
 
-    pre_advance_work();
+    update_sampling_locations();
 
     m_scontainer->interpolate_fields(m_fields);
 
