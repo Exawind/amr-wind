@@ -58,6 +58,7 @@ amrex::Real init_vof(amr_wind::Field& vof_fld, amrex::Real water_level)
             });
         liwl_max = amrex::max(liwl_max, liwl_lev);
     }
+    amrex::ParallelDescriptor::ReduceRealMax(liwl_max);
     // If only single-phase cells, no interpolation needed
     if (liwl_max < 0) liwl_max = water_level;
     // Return result

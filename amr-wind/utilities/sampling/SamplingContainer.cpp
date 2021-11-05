@@ -1040,6 +1040,8 @@ void SamplingContainer::iso_relocate(const amrex::Vector<Field*> fields)
                 }
                 return flag_pt;
             });
+        // In case of non-GPU parallelization
+        amrex::ParallelDescriptor::ReduceBoolAnd(flag);
     }
 }
 
