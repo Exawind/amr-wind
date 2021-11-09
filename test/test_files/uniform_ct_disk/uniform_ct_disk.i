@@ -77,9 +77,3 @@ zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 
 incflo.verbose          =   0          # incflo_level
-nodal_proj.verbose = 0
-
-nodal_proj.mg_rtol = 1.0e-6
-nodal_proj.mg_atol = 1.0e-12
-mac_proj.mg_rtol = 1.0e-6
-mac_proj.mg_atol = 1.0e-12
