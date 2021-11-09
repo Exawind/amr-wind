@@ -92,6 +92,11 @@ void MultiPhase::pre_advance_work()
     };
 }
 
+void MultiPhase::pre_advance_work()
+{
+    if (m_interface_smoothing) favre_filtering();
+}
+
 void MultiPhase::post_advance_work()
 {
     switch (m_interface_capturing_method) {
@@ -202,12 +207,12 @@ void MultiPhase::set_density_via_levelset()
     m_density.fillpatch(m_sim.time().current_time());
 }
 
-void MultiPhase::set_density_via_vof()
+void MultiPhase::set_density_via_vof(const FieldState State)
 {
     const int nlevels = m_sim.repo().num_active_levels();
 
     for (int lev = 0; lev < nlevels; ++lev) {
-        auto& density = m_density(lev);
+        auto& density = m_density.state(State)(lev);
         auto& vof = (*m_vof)(lev);
 
         for (amrex::MFIter mfi(density); mfi.isValid(); ++mfi) {
