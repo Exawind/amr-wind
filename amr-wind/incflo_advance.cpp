@@ -7,7 +7,6 @@
 #include "amr-wind/turbulence/TurbulenceModel.H"
 #include "amr-wind/utilities/console_io.H"
 #include "amr-wind/utilities/PostProcessing.H"
-#include "amr-wind/core/field_ops.H"
 #include "AMReX_MultiFabUtil.H"
 
 using namespace amrex;
@@ -276,7 +275,6 @@ void incflo::ApplyPredictor(bool incremental_projection)
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::Old);
     }
-
     // *************************************************************************************
     // Update density first
     // *************************************************************************************
@@ -381,24 +379,24 @@ void incflo::ApplyPredictor(bool incremental_projection)
 //
 //      rhs += dt * ( g - grad(p + p0) / rho )
 //
-//      Note that in order to add the pressure gradient terms divided by rho,
-//      we convert the velocity to momentum before adding and then convert them
-//      back.
+//      Note that in order to add the pressure gradient terms divided by
+//      rho, we convert the velocity to momentum before adding and then
+//      convert them back.
 //
 //  3. A. If (m_diff_type == DiffusionType::Implicit)
 //        solve implicit diffusion equation for u*
 //
 //     ( 1 - dt / rho * div ( eta grad ) ) u* = u^n + dt * conv_u
-//                                                  + dt * ( g - grad(p + p0) /
-//                                                  rho )
+//                                                  + dt * ( g - grad(p +
+//                                                  p0) / rho )
 //
 //     B. If (m_diff_type == DiffusionType::Crank-Nicolson)
 //        solve semi-implicit diffusion equation for u*
 //
-//     ( 1 - (dt/2) / rho * div ( eta grad ) ) u* = u^n + dt * conv_u + (dt/2) /
-//     rho * div (eta_old grad) u^n
-//                                                      + dt * ( g - grad(p +
-//                                                      p0) / rho )
+//     ( 1 - (dt/2) / rho * div ( eta grad ) ) u* = u^n + dt * conv_u +
+//     (dt/2) / rho * div (eta_old grad) u^n
+//                                                      + dt * ( g - grad(p
+//                                                      + p0) / rho )
 //
 //  4. Apply projection
 //
@@ -463,9 +461,9 @@ void incflo::ApplyCorrector()
     icns().pre_advection_actions(amr_wind::FieldState::New);
 
     // *************************************************************************************
-    // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*) and
-    // R_t^(n+1,*) We only reach the corrector if !m_use_godunov which means we
-    // don't use the forces in constructing the advection term
+    // Compute the explicit "new" advective terms R_u^(n+1,*), R_r^(n+1,*)
+    // and R_t^(n+1,*) We only reach the corrector if !m_use_godunov which
+    // means we don't use the forces in constructing the advection term
     // *************************************************************************************
     for (auto& seqn : scalar_eqns()) {
         seqn->compute_advection_term(amr_wind::FieldState::New);
@@ -511,7 +509,8 @@ void incflo::ApplyCorrector()
 
         // Update (note that dtdt already has rho in it)
         // (rho trac)^new = (rho trac)^old + dt * (
-        //                   div(rho trac u) + div (mu grad trac) + rho * f_t
+        //                   div(rho trac u) + div (mu grad trac) + rho *
+        //                   f_t
         eqn->compute_corrector_rhs(m_diff_type);
 
         auto& field = eqn->fields().field;
@@ -545,8 +544,8 @@ void incflo::ApplyCorrector()
 
     // *************************************************************************************
     //
-    // Solve diffusion equation for u* at t^{n+1} but using eta at predicted new
-    // time
+    // Solve diffusion equation for u* at t^{n+1} but using eta at predicted
+    // new time
     //
     // *************************************************************************************
 
