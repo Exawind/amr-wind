@@ -196,25 +196,12 @@ void Sampling::prepare_netcdf_file()
 
         grp.def_dim(npart_name, obj->num_points());
         obj->define_netcdf_metadata(grp);
-        grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
+        grp.def_var("coordinates", NC_DOUBLE, {nt_name, npart_name, "ndim"});
         for (const auto& vname : m_var_names)
             grp.def_var(vname, NC_DOUBLE, two_dim);
     }
     ncf.exit_def_mode();
 
-    {
-        const std::vector<size_t> start{0, 0};
-        std::vector<size_t> count{0, AMREX_SPACEDIM};
-        SamplerBase::SampleLocType locs;
-        for (const auto& obj : m_samplers) {
-            auto grp = ncf.group(obj->label());
-            obj->populate_netcdf_metadata(grp);
-            obj->sampling_locations(locs);
-            auto xyz = grp.var("coordinates");
-            count[0] = obj->num_points();
-            xyz.put(&locs[0][0], start, count);
-        }
-    }
 #else
     amrex::Abort(
         "NetCDF support was not enabled during build time. Please recompile or "
@@ -240,6 +227,19 @@ void Sampling::write_netcdf()
 
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
+
+    // Write the coordinates every time
+    std::vector<size_t> start3{nt, 0, 0};
+    std::vector<size_t> count3{1, 0, AMREX_SPACEDIM};
+    SamplerBase::SampleLocType locs;
+    for (const auto& obj : m_samplers) {
+        count[1] = obj->num_points();
+        auto grp = ncf.group(obj->label());
+        obj->sampling_locations(locs);
+        auto xyz = grp.var("coordinates");
+        count3[1] = obj->num_points();
+        xyz.put(&locs[0][0], start3, count3);
+        }
 
     const int nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
