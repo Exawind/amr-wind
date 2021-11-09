@@ -36,8 +36,6 @@ public:
 
     void pre_advance_work() override {}
 
-    void pre_mac_projection_work() override;
-
     void post_advance_work() override;
 
     void set_density_via_levelset();
