@@ -62,7 +62,7 @@ void LidarSampler::update_sampling_locations()
     const amrex::Real current_elevation =
         ::amr_wind::interp::linear(m_time_table, m_elevation_table, time);
 
-     // Need to assign start point as the origin
+    // Need to assign start point as the origin
     m_start = m_origin;
     // Initialize the end point
     m_end = m_origin;
@@ -81,7 +81,6 @@ void LidarSampler::update_sampling_locations()
         beam_vector[d] += m_origin[d];
         m_end[d] = beam_vector[d];
     }
-
 }
 
 } // namespace sampling

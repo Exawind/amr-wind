@@ -239,7 +239,7 @@ void Sampling::write_netcdf()
         auto xyz = grp.var("coordinates");
         count3[1] = obj->num_points();
         xyz.put(&locs[0][0], start3, count3);
-        }
+    }
 
     const int nvars = m_var_names.size();
     for (int iv = 0; iv < nvars; ++iv) {
