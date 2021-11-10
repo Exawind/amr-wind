@@ -233,7 +233,6 @@ void Sampling::write_netcdf()
     std::vector<size_t> count3{1, 0, AMREX_SPACEDIM};
     SamplerBase::SampleLocType locs;
     for (const auto& obj : m_samplers) {
-        count[1] = obj->num_points();
         auto grp = ncf.group(obj->label());
         obj->sampling_locations(locs);
         auto xyz = grp.var("coordinates");
