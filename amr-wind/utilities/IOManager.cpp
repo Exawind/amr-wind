@@ -355,110 +355,110 @@ void IOManager::write_info_file(const std::string& path)
 void IOManager::write_netcdf_file(){
 
 #ifdef AMR_WIND_USE_NETCDF
-  BL_PROFILE("amr-wind::IOManager::write_netcdf_file");
-
-  amrex::ParmParse pp("io");
-
-  pp.query("ncf_file", m_netcdf_prefix);
-
-  const std::string& ncf_filename =
-      amrex::Concatenate(m_netcdf_prefix, m_sim.time().time_index());
-
-  auto ncf = ncutils::NCFile::create(ncf_filename, NC_CLOBBER | NC_NETCDF4);
-
-  ncf.enter_def_mode();
-
-  amrex::Vector<amrex::Real> factormap; 
-  amrex::ParmParse ppMap("ConstantScaling");
-  ppMap.queryarr("scaling_factor",factormap,0,AMREX_SPACEDIM);
-
-  // Get normal direction and associated stuff
-  const auto& mesh = m_sim.mesh();
-  const auto& geom = mesh.Geom()[0];
-  amrex::Box const& domain = geom.Domain();
-  const auto dlo = amrex::lbound(domain);
-  const auto dhi = amrex::ubound(domain);
-  const auto* problo = mesh.Geom(0).ProbLo();
-  const amrex::Real* dx = mesh.Geom(0).CellSize();
-  
-  ncf.def_dim("xc", dhi.x - dlo.x + 1);
-  ncf.def_dim("yc", dhi.y - dlo.y + 1);
-  ncf.def_dim("zc", dhi.z - dlo.z + 1);
-
-  auto xcell = ncf.def_var("xc", NC_DOUBLE, {"xc"});
-  auto ycell = ncf.def_var("yc", NC_DOUBLE, {"yc"});
-  auto zcell = ncf.def_var("zc", NC_DOUBLE, {"zc"});
-
-  xcell.put_attr("units","m");
-  xcell.put_attr("axis", "X");
-
-  ycell.put_attr("units","m");
-  ycell.put_attr("axis", "Y");
-
-  zcell.put_attr("units","m");
-  zcell.put_attr("axis", "Z");
-  
-  const std::vector<std::string> dim_3_c{"xc", "yc", "zc"};
-  
-  auto xvelncf = ncf.def_array("x_velocity", NC_DOUBLE, dim_3_c);
-  auto yvelncf = ncf.def_array("y_velocity", NC_DOUBLE, dim_3_c);
-  auto zvelncf = ncf.def_array("z_velocity", NC_DOUBLE, dim_3_c);
-
-  ncf.exit_def_mode();
-  
-  std::vector<double> fill_val_x(dhi.x - dlo.x + 1);
-  std::vector<double> fill_val_y(dhi.y - dlo.y + 1);
-  std::vector<double> fill_val_z(dhi.z - dlo.z + 1);
-
-  for (int i = dlo.x; i<= dhi.x; i++) {
-    fill_val_x[i] = problo[0] + dx[0]*(static_cast<amrex::Real>(i)+0.5)*factormap[0];  // perform mapping to the non-uniform space
-  }
-  xcell.put(fill_val_x.data());
-
-  for (int j = dlo.y; j<= dhi.y; j++) {
-    fill_val_y[j] = problo[1] + dx[1]*(static_cast<amrex::Real>(j)+0.5)*factormap[1];  // perform mapping to the non-uniform space
-  }
-  ycell.put(fill_val_y.data());
-  for (int k = dlo.z; k<= dhi.z; k++) {
-    fill_val_z[k] = problo[2] + dx[2]*(static_cast<amrex::Real>(k)+0.5)*factormap[2];  // perform mapping to the non-uniform space
-  }
-  zcell.put(fill_val_z.data());
-
-  auto& repo = m_sim.repo();
-  auto& velocity = repo.get_field("velocity");
-  
-  if (velocity.is_mesh_mapped()) {
-        velocity.to_unmapped_mesh();
-  }
-
-  auto velcomp_x = repo.create_scratch_field(1);
-  auto velcomp_y = repo.create_scratch_field(1);
-  auto velcomp_z = repo.create_scratch_field(1);
-
-  amrex::MultiFab::Copy((*velcomp_x)(0), velocity(0), 0, 0, 1, 0);
-  amrex::MultiFab::Copy((*velcomp_y)(0), velocity(0), 1, 0, 1, 0);
-  amrex::MultiFab::Copy((*velcomp_z)(0), velocity(0), 2, 0, 1, 0);
-  
-  amrex::MFItInfo mfi_info;
-  for (amrex::MFIter mfi(velocity(0), mfi_info); mfi.isValid();
-       ++mfi) {
-
-    amrex::Box const& bx = mfi.validbox();
-    auto xvel = (*velcomp_x)(0).const_array(mfi);
-    auto yvel = (*velcomp_y)(0).const_array(mfi);
-    auto zvel = (*velcomp_z)(0).const_array(mfi);
-  
-    const auto lo = lbound(bx);
-    const auto hi = ubound(bx);
-
-    amrex::Vector<size_t> start = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z)};
-    amrex::Vector<size_t> count = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1)};
-    xvelncf.put(xvel.dataPtr(), start, count);
-    yvelncf.put(yvel.dataPtr(), start, count);
-    zvelncf.put(zvel.dataPtr(), start, count);
-  }
-  
-  ncf.close();
+//  BL_PROFILE("amr-wind::IOManager::write_netcdf_file");
+//
+//  amrex::ParmParse pp("io");
+//
+//  pp.query("ncf_file", m_netcdf_prefix);
+//
+//  const std::string& ncf_filename =
+//      amrex::Concatenate(m_netcdf_prefix, m_sim.time().time_index());
+//
+//  auto ncf = ncutils::NCFile::create(ncf_filename, NC_CLOBBER | NC_NETCDF4);
+//
+//  ncf.enter_def_mode();
+//
+//  amrex::Vector<amrex::Real> factormap;
+//  amrex::ParmParse ppMap("ConstantScaling");
+//  ppMap.queryarr("scaling_factor",factormap,0,AMREX_SPACEDIM);
+//
+//  // Get normal direction and associated stuff
+//  const auto& mesh = m_sim.mesh();
+//  const auto& geom = mesh.Geom()[0];
+//  amrex::Box const& domain = geom.Domain();
+//  const auto dlo = amrex::lbound(domain);
+//  const auto dhi = amrex::ubound(domain);
+//  const auto* problo = mesh.Geom(0).ProbLo();
+//  const amrex::Real* dx = mesh.Geom(0).CellSize();
+//
+//  ncf.def_dim("xc", dhi.x - dlo.x + 1);
+//  ncf.def_dim("yc", dhi.y - dlo.y + 1);
+//  ncf.def_dim("zc", dhi.z - dlo.z + 1);
+//
+//  auto xcell = ncf.def_var("xc", NC_DOUBLE, {"xc"});
+//  auto ycell = ncf.def_var("yc", NC_DOUBLE, {"yc"});
+//  auto zcell = ncf.def_var("zc", NC_DOUBLE, {"zc"});
+//
+//  xcell.put_attr("units","m");
+//  xcell.put_attr("axis", "X");
+//
+//  ycell.put_attr("units","m");
+//  ycell.put_attr("axis", "Y");
+//
+//  zcell.put_attr("units","m");
+//  zcell.put_attr("axis", "Z");
+//
+//  const std::vector<std::string> dim_3_c{"xc", "yc", "zc"};
+//
+//  auto xvelncf = ncf.def_array("x_velocity", NC_DOUBLE, dim_3_c);
+//  auto yvelncf = ncf.def_array("y_velocity", NC_DOUBLE, dim_3_c);
+//  auto zvelncf = ncf.def_array("z_velocity", NC_DOUBLE, dim_3_c);
+//
+//  ncf.exit_def_mode();
+//
+//  std::vector<double> fill_val_x(dhi.x - dlo.x + 1);
+//  std::vector<double> fill_val_y(dhi.y - dlo.y + 1);
+//  std::vector<double> fill_val_z(dhi.z - dlo.z + 1);
+//
+//  for (int i = dlo.x; i<= dhi.x; i++) {
+//    fill_val_x[i] = problo[0] + dx[0]*(static_cast<amrex::Real>(i)+0.5)*factormap[0];  // perform mapping to the non-uniform space
+//  }
+//  xcell.put(fill_val_x.data());
+//
+//  for (int j = dlo.y; j<= dhi.y; j++) {
+//    fill_val_y[j] = problo[1] + dx[1]*(static_cast<amrex::Real>(j)+0.5)*factormap[1];  // perform mapping to the non-uniform space
+//  }
+//  ycell.put(fill_val_y.data());
+//  for (int k = dlo.z; k<= dhi.z; k++) {
+//    fill_val_z[k] = problo[2] + dx[2]*(static_cast<amrex::Real>(k)+0.5)*factormap[2];  // perform mapping to the non-uniform space
+//  }
+//  zcell.put(fill_val_z.data());
+//
+//  auto& repo = m_sim.repo();
+//  auto& velocity = repo.get_field("velocity");
+//
+//  if (velocity.is_mesh_mapped()) {
+//        velocity.to_unmapped_mesh();
+//  }
+//
+//  auto velcomp_x = repo.create_scratch_field(1);
+//  auto velcomp_y = repo.create_scratch_field(1);
+//  auto velcomp_z = repo.create_scratch_field(1);
+//
+//  amrex::MultiFab::Copy((*velcomp_x)(0), velocity(0), 0, 0, 1, 0);
+//  amrex::MultiFab::Copy((*velcomp_y)(0), velocity(0), 1, 0, 1, 0);
+//  amrex::MultiFab::Copy((*velcomp_z)(0), velocity(0), 2, 0, 1, 0);
+//
+//  amrex::MFItInfo mfi_info;
+//  for (amrex::MFIter mfi(velocity(0), mfi_info); mfi.isValid();
+//       ++mfi) {
+//
+//    amrex::Box const& bx = mfi.validbox();
+//    auto xvel = (*velcomp_x)(0).const_array(mfi);
+//    auto yvel = (*velcomp_y)(0).const_array(mfi);
+//    auto zvel = (*velcomp_z)(0).const_array(mfi);
+//
+//    const auto lo = lbound(bx);
+//    const auto hi = ubound(bx);
+//
+//    amrex::Vector<size_t> start = {static_cast<unsigned long>(lo.x), static_cast<unsigned long>(lo.y), static_cast<unsigned long>(lo.z)};
+//    amrex::Vector<size_t> count = {static_cast<unsigned long>(hi.x-lo.x+1), static_cast<unsigned long>(hi.y-lo.y+1), static_cast<unsigned long>(hi.z-lo.z+1)};
+//    xvelncf.put(xvel.dataPtr(), start, count);
+//    yvelncf.put(yvel.dataPtr(), start, count);
+//    zvelncf.put(zvel.dataPtr(), start, count);
+//  }
+//
+//  ncf.close();
 #endif
 }
 
