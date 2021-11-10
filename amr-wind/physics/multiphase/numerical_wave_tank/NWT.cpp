@@ -141,7 +141,8 @@ void NWT::apply_relaxation_method()
                     }
                     if (x > x_start_beach) {
                         const amrex::Real Gamma = nwt::Gamma_absorb(
-                            x, absorb_length, absorb_length_factor);
+                            x - x_start_beach, absorb_length,
+                            absorb_length_factor);
                         volfrac(i, j, k) =
                             (1.0 - Gamma) *
                                 nwt::free_surface_to_vof(eta, z, dx[2]) +
