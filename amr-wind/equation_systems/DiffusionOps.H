@@ -90,7 +90,7 @@ protected:
             amrex::average_cellcenter_to_face(
                 mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
-            // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (x-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -98,12 +98,11 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,0),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,0),2);
                     });
             }
-            // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (y-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -111,12 +110,11 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,1),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,1),2);
                     });
             }
-            // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (z-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -124,9 +122,8 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,2),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,2),2);
                     });
             }
 
@@ -167,7 +164,7 @@ protected:
             amrex::average_cellcenter_to_face(
                 mesh_fac_face[lev], mesh_fac(lev), geom[lev], AMREX_SPACEDIM);
 
-            // beta accounted for mesh mapping (x-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (x-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[0]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[0].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -175,12 +172,11 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,0),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,0),2);
                     });
             }
-            // beta accounted for mesh mapping (y-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (y-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[1]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[1].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -188,12 +184,11 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,1),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,1),2);
                     });
             }
-            // beta accounted for mesh mapping (z-face) = J/fac^2 * mu
+            // beta accounted for mesh mapping (z-face) = 1/fac^2 * mu
             for (amrex::MFIter mfi(b[2]); mfi.isValid(); ++mfi) {
                 amrex::Array4<amrex::Real> const& mu = b[2].array(mfi);
                 amrex::Array4<amrex::Real const> const& fac =
@@ -201,9 +196,8 @@ protected:
 
                 amrex::ParallelFor(mfi.tilebox(),
                     [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                        amrex::Real det_j = fac(i,j,k,0) * fac(i,j,k,1) * fac(i,j,k,2);
                         // TODO: Store scaling factor fields on cell faces ?
-                        mu(i,j,k) = mu(i,j,k) * det_j / std::pow(fac(i,j,k,2),2);
+                        mu(i,j,k) = mu(i,j,k) / std::pow(fac(i,j,k,2),2);
                     });
             }
 

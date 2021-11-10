@@ -100,8 +100,8 @@ struct ComputeRHSOp
 
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
-                                    (ddt_o(i, j, k, n) + src(i, j, k, n) +
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                    (ddt_o(i, j, k, n)/det_j + src(i, j, k, n)/det_j +
                                      factor * diff(i, j, k, n));
 
                             fld(i, j, k, n) /= rho(i, j, k);
@@ -116,8 +116,8 @@ struct ComputeRHSOp
 
                             fld(i, j, k, n) =
                                 fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
-                                    (ddt_o(i, j, k, n) + src(i, j, k, n) +
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
+                                    (ddt_o(i, j, k, n)/det_j + src(i, j, k, n)/det_j +
                                      factor * diff(i, j, k, n));
                         });
                 }
@@ -206,11 +206,11 @@ struct ComputeRHSOp
 
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
                                     (0.5 *
-                                         (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
+                                         (ddt_o(i, j, k, n)/det_j + ddt(i, j, k, n)/det_j) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) + src(i, j, k, n)/det_j);
 
                             fld(i, j, k, n) /= rho(i, j, k);
                         });
@@ -224,11 +224,11 @@ struct ComputeRHSOp
 
                             fld(i, j, k, n) =
                                 fld_o(i, j, k, n) +
-                                static_cast<amrex::Real>(imask(i, j, k)) * dt/det_j *
+                                static_cast<amrex::Real>(imask(i, j, k)) * dt *
                                     (0.5 *
-                                         (ddt_o(i, j, k, n) + ddt(i, j, k, n)) +
+                                         (ddt_o(i, j, k, n)/det_j + ddt(i, j, k, n)/det_j) +
                                      ofac * diff_o(i, j, k, n) +
-                                     nfac * diff(i, j, k, n) + src(i, j, k, n));
+                                     nfac * diff(i, j, k, n) + src(i, j, k, n)/det_j);
                         });
                 }
             }
