@@ -76,6 +76,7 @@ void MultiPhase::post_advance_work()
     switch (m_interface_capturing_method) {
     case InterfaceCapturingMethod::VOF:
         set_density_via_vof();
+        if (m_interface_smoothing) favre_filtering();
         // Compute the print the total volume fraction
         if (m_verbose > 0) {
             m_total_volfrac = volume_fraction_sum();
@@ -93,11 +94,6 @@ void MultiPhase::post_advance_work()
         set_density_via_levelset();
         break;
     };
-}
-
-void MultiPhase::pre_mac_projection_work()
-{
-    if (m_interface_smoothing) favre_filtering();
 }
 
 amrex::Real MultiPhase::volume_fraction_sum()
@@ -228,7 +224,7 @@ void MultiPhase::favre_filtering()
         auto& density = m_density(lev);
 
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-            const auto& bx = mfi.validbox();
+            const auto& bx = mfi.growntilebox(1);
             const amrex::Array4<amrex::Real>& vel = velocity.array(mfi);
             const amrex::Array4<amrex::Real>& rho = density.array(mfi);
             const amrex::Array4<amrex::Real>& rhou = mom.array(mfi);
