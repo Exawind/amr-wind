@@ -33,6 +33,11 @@ public:
      */
     void update_sampling_locations() override;
 
+    void define_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
+    void
+    output_netcdf_data(const ncutils::NCGroup&, const size_t) const override;
+
 private:
     amrex::Vector<amrex::Real> m_origin;
     amrex::Vector<amrex::Real> m_time_table;

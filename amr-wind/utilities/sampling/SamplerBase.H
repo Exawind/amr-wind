@@ -51,6 +51,8 @@ public:
     //! Populate metadata in the NetCDF file
     virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}
     virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+    virtual void output_netcdf_data(const ncutils::NCGroup&, const size_t) const
+    {}
 };
 
 } // namespace sampling

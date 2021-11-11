@@ -83,6 +83,37 @@ void LidarSampler::update_sampling_locations()
     }
 }
 
+#ifdef AMR_WIND_USE_NETCDF
+void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
+{
+    grp.put_attr("sampling_type", identifier());
+    grp.put_attr("start", m_start);
+    grp.put_attr("end", m_end);
+    grp.put_attr("time_table", m_time_table);
+    grp.put_attr("azimuth_table", m_azimuth_table);
+    grp.put_attr("elevation_table", m_elevation_table);
+    grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
+}
+
+void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LidarSampler::output_netcdf_data(
+    const ncutils::NCGroup& grp, const size_t nt) const
+{
+    // Write the coordinates every time
+    std::vector<size_t> start{nt, 0, 0};
+    std::vector<size_t> count{1, 0, AMREX_SPACEDIM};
+    SamplerBase::SampleLocType locs;
+    sampling_locations(locs);
+    auto xyz = grp.var("points");
+    count[1] = num_points();
+    xyz.put(&locs[0][0], start, count);
+}
+#else
+void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void LidarSampler::output_netcdf_data(const ncutils::NCGroup&) const {}
+#endif
+
 } // namespace sampling
 
 template struct ::amr_wind::sampling::SamplerBase::Register<
