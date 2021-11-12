@@ -105,6 +105,7 @@ void NWT::apply_relaxation_method()
             const amrex::Real absorb_length = m_absorb_length;
             const amrex::Real absorb_length_factor = m_absorb_length_factor;
             const amrex::Real grav = 9.81;
+            const amrex::Real zsl = m_zsl;
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
@@ -145,7 +146,7 @@ void NWT::apply_relaxation_method()
                             absorb_length_factor);
                         volfrac(i, j, k) =
                             (1.0 - Gamma) *
-                                nwt::free_surface_to_vof(eta, z, dx[2]) +
+                                nwt::free_surface_to_vof(eta, zsl, dx[2]) +
                             Gamma * volfrac(i, j, k);
                         vel(i, j, k, 0) = Gamma * vel(i, j, k, 0);
                         vel(i, j, k, 2) = Gamma * vel(i, j, k, 2);
