@@ -146,7 +146,7 @@ void NWT::apply_relaxation_method()
                             absorb_length_factor);
                         volfrac(i, j, k) =
                             (1.0 - Gamma) *
-                                nwt::free_surface_to_vof(eta, zsl, dx[2]) +
+                                nwt::free_surface_to_vof(zsl, z, dx[2]) +
                             Gamma * volfrac(i, j, k);
                         vel(i, j, k, 0) = Gamma * vel(i, j, k, 0);
                         vel(i, j, k, 2) = Gamma * vel(i, j, k, 2);
