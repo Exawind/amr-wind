@@ -7,12 +7,14 @@
 namespace amr_wind {
 namespace sampling {
 
-/** Sample data along a line
+/** Sample data along a line that moves in time
  *  \ingroup sampling
  *
- *  Defines probes along a line defined by `start` and `end` coordinates and
- *  divides it into equal segements as determined by `num_points`. The length of
- *  each segment is given by \f[ (end - start) / (num_points - 1) \f]
+ *  Defines probes along a line defined by a time history from `m_azimuth_table`
+ *  and `m_elevation_table` with a length of `m_length`. This determines the
+ * `start` and `end` points at every time-step and divides the line into equal
+ * segements as determined by `num_points`. The length of each segment is given
+ * by \f[ m_length / (num_points - 1) \f]
  */
 class LidarSampler : public LineSampler
 {
