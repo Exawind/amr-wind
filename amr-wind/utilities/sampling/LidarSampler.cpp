@@ -111,7 +111,9 @@ void LidarSampler::output_netcdf_data(
 #else
 void LidarSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
 void LidarSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
-void LidarSampler::output_netcdf_data(const ncutils::NCGroup&, const size_t) const {}
+void LidarSampler::output_netcdf_data(
+    const ncutils::NCGroup&, const size_t) const
+{}
 #endif
 
 } // namespace sampling
