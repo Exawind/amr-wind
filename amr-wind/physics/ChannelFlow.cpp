@@ -16,11 +16,21 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     {
         amrex::ParmParse pp("ChannelFlow");
         pp.query("normal_direction", m_norm_dir);
+        pp.query("Laminar_Channel", m_laminar);
+        pp.query("Turbulent_DNS", m_dns);
 
-        pp.query("density", m_rho);
-        pp.query("re_tau", m_re_tau);
-        pp.query("tke0", m_tke0);
-        pp.query("sdr0", m_sdr0);
+        if (m_laminar) {
+            pp.query("density", m_rho);
+            pp.query("Mean_Velocity", m_mean_vel);
+        } else {
+            pp.query("density", m_rho);
+            pp.query("re_tau", m_re_tau);
+
+            if (!m_dns) {
+                pp.query("tke0", m_tke0);
+                pp.query("sdr0", m_sdr0);
+            }
+        }
     }
     {
         amrex::Real mu;
@@ -64,39 +74,55 @@ void ChannelFlow::initialize_fields(
     const amrex::Real utau = m_utau;
     auto& velocity = m_repo.get_field("velocity")(level);
     auto& density = m_repo.get_field("density")(level);
-    auto& tke = m_repo.get_field("tke")(level);
-    auto& sdr = m_repo.get_field("sdr")(level);
-    auto& walldist = m_repo.get_field("wall_dist")(level);
-
     density.setVal(m_rho);
-    tke.setVal(m_tke0);
-    sdr.setVal(m_sdr0);
 
-    for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
-        const auto& vbx = mfi.validbox();
+    if (!m_laminar && !m_dns) {
+        auto& tke = m_repo.get_field("tke")(level);
+        auto& sdr = m_repo.get_field("sdr")(level);
+        auto& walldist = m_repo.get_field("wall_dist")(level);
+        tke.setVal(m_tke0);
+        sdr.setVal(m_sdr0);
 
-        const auto& dx = geom.CellSizeArray();
-        const auto& problo = geom.ProbLoArray();
-        auto vel = velocity.array(mfi);
-        auto wd = walldist.array(mfi);
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
 
-        amrex::ParallelFor(
-            vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const int n_ind = idxOp(i, j, k);
-                amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
-                if (h > 1.0) {
-                    h = 2.0 - h;
-                }
-                wd(i, j, k) = h;
-                const amrex::Real hp = h / y_tau;
-                vel(i, j, k, 0) =
-                    utau * (1. / kappa * std::log1p(kappa * hp) +
-                            7.8 * (1.0 - std::exp(-hp / 11.0) -
-                                   (hp / 11.0) * std::exp(-hp / 3.0)));
-                // vel(i,j,k,0) = 22.0;
-                vel(i, j, k, 1) = 0.0;
-                vel(i, j, k, 2) = 0.0;
-            });
+            const auto& dx = geom.CellSizeArray();
+            const auto& problo = geom.ProbLoArray();
+            auto vel = velocity.array(mfi);
+            auto wd = walldist.array(mfi);
+
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    const int n_ind = idxOp(i, j, k);
+                    amrex::Real h = problo[n_idx] + (n_ind + 0.5) * dx[n_idx];
+                    if (h > 1.0) h = 2.0 - h;
+                    wd(i, j, k) = h;
+                    const amrex::Real hp = h / y_tau;
+                    vel(i, j, k, 0) =
+                        utau * (1. / kappa * std::log1p(kappa * hp) +
+                                7.8 * (1.0 - std::exp(-hp / 11.0) -
+                                       (hp / 11.0) * std::exp(-hp / 3.0)));
+                    // vel(i,j,k,0) = 22.0;
+                    vel(i, j, k, 1) = 0.0;
+                    vel(i, j, k, 2) = 0.0;
+                });
+        }
+    } else if (m_laminar) {
+        const amrex::Real meanVel = m_mean_vel;
+        for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
+            const auto& vbx = mfi.validbox();
+
+            const auto& dx = geom.CellSizeArray();
+            const auto& problo = geom.ProbLoArray();
+            auto vel = velocity.array(mfi);
+
+            amrex::ParallelFor(
+                vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    vel(i, j, k, 0) = meanVel;
+                    vel(i, j, k, 1) = 0.0;
+                    vel(i, j, k, 2) = 0.0;
+                });
+        }
     }
 }
 

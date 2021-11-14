@@ -4,6 +4,7 @@
 #include "amr-wind/core/Physics.H"
 #include "amr-wind/core/Field.H"
 #include "amr-wind/CFDSim.H"
+#include <AMReX_REAL.H>
 
 namespace amr_wind {
 namespace channel_flow {
@@ -66,6 +67,13 @@ private:
 
     //! Von-Karman constant
     amrex::Real m_kappa{0.41};
+
+    bool m_laminar{false};
+
+    bool m_dns{false};
+
+    amrex::Real m_mean_vel;
+
 };
 } // namespace channel_flow
 } // namespace amr_wind
