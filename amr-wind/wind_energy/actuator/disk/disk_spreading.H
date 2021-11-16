@@ -33,8 +33,6 @@ public:
     SpreadingFunction(const SpreadingFunction&) = delete;
     void operator=(const SpreadingFunction&) = delete;
 
-private:
-    // FunctionPointerType m_function;
     void (SpreadingFunction::*m_function)(
         T* actObj, const int, const amrex::MFIter&, const amrex::Geometry&);
 
@@ -153,7 +151,6 @@ private:
             });
     }
 
-public:
     SpreadingFunction() : m_function(&SpreadingFunction::linear_basis_spreading)
     {}
     void initialize(std::string key)
