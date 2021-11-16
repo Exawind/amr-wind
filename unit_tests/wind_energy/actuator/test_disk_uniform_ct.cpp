@@ -155,7 +155,7 @@ TEST_F(UniformCtTest, required_parameters_dont_throw)
     amrex::ParmParse pp("Actuator.UniformCtDisk");
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
     ASSERT_TRUE(ap.contains("rotor_diameter"));
-    ASSERT_NO_THROW(ops::required_parameters<act::LinearBasis>(meta, ap));
+    ASSERT_NO_THROW(ops::required_parameters(meta, ap));
     EXPECT_DOUBLE_EQ(meta.diameter, 1.0);
     EXPECT_DOUBLE_EQ(meta.epsilon, 1.0);
     EXPECT_DOUBLE_EQ(meta.thrust_coeff[0], 1.0);
@@ -174,7 +174,7 @@ TEST_F(
     pp.add("sample_tilt", -45.0);
     pp.add("diameters_to_sample", 1.0);
     act::utils::ActParser ap("Actuator.UniformCtDisk", "Actuator");
-    ops::required_parameters<act::LinearBasis>(meta, ap);
+    ops::required_parameters(meta, ap);
     ops::optional_parameters(meta, ap);
 
     {

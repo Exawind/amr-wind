@@ -57,20 +57,14 @@ struct LinearBasis
  *
  *  \ingroup actuator
  */
-template <typename SpreadingModel>
-struct ActSrcDiskBase : ActSrcType
+struct ActSrcDisk : ActSrcType
 {
-    static std::string identifier()
-    {
-        return "Disk" + SpreadingModel::identifier();
-    }
+    static std::string identifier() { return "Disk"; }
 
     static constexpr bool is_line = false;
     static constexpr bool is_disk = true;
 };
 
-using ActSrcDisk = ActSrcDiskBase<LinearBasis>;
-using ActScrDiskUniGauss = ActSrcDiskBase<UniformGaussian>;
 using RealList = amrex::Vector<amrex::Real>;
 using RealSlice = ::amr_wind::utils::Slice<amrex::Real>;
 using VecList = amrex::Vector<amr_wind::vs::Vector>;

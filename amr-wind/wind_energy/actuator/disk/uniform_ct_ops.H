@@ -35,17 +35,7 @@ void collect_parse_dependencies(
     const std::string& p2,
     std::ostringstream& ss);
 
-template <typename SpreadingType>
-void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
-{
-    pp.get("num_force_points", meta.num_force_pts);
-    pp.get("epsilon", meta.epsilon);
-    pp.get("rotor_diameter", meta.diameter);
-    pp.getarr("thrust_coeff", meta.thrust_coeff);
-    if (std::is_same<SpreadingType, UniformGaussian>::value) {
-        pp.get("num_theta_force_points", meta.num_force_theta_pts);
-    }
-}
+void required_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
 
 void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp);
 
@@ -66,23 +56,23 @@ void compute_disk_points(
     const int offset,
     const double dOffset);
 
-template <typename SpreadingType>
-struct ReadInputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct ReadInputsOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data, const utils::ActParser& pp)
     {
         // TODO get density at probe location
         check_for_parse_conflicts(pp);
         auto& meta = data.meta();
-        required_parameters<SpreadingType>(meta, pp);
+        required_parameters(meta, pp);
         optional_parameters(meta, pp);
         final_checks(meta);
         do_parse_based_computations(data);
     }
 };
 
-template <typename SpreadingType>
-struct InitDataOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct InitDataOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -112,8 +102,8 @@ struct InitDataOp<UniformCt, ActSrcDiskBase<SpreadingType>>
     }
 };
 
-template <typename SpreadingType>
-struct UpdateVelOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct UpdateVelOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -136,8 +126,8 @@ struct UpdateVelOp<UniformCt, ActSrcDiskBase<SpreadingType>>
 // compute the total force over a given radial section
 // this will then be spread uniformly over that area in the
 // projection step
-template <typename SpreadingType>
-struct ComputeForceOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct ComputeForceOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType& data)
     {
@@ -170,14 +160,14 @@ struct ComputeForceOp<UniformCt, ActSrcDiskBase<SpreadingType>>
     }
 };
 
-template <typename SpreadingType>
-struct UpdatePosOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct UpdatePosOp<UniformCt, ActSrcDisk>
 {
     void operator()(UniformCt::DataType&) {}
 };
 
-template <typename SpreadingType>
-struct ProcessOutputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>
+template <>
+struct ProcessOutputsOp<UniformCt, ActSrcDisk>
 {
 private:
     UniformCt::DataType& m_data;
@@ -191,8 +181,7 @@ private:
     int m_out_freq{10};
 
 public:
-    explicit ProcessOutputsOp<UniformCt, ActSrcDiskBase<SpreadingType>>(
-        UniformCt::DataType& data)
+    explicit ProcessOutputsOp<UniformCt, ActSrcDisk>(UniformCt::DataType& data)
         : m_data(data)
     {}
     void operator()(UniformCt::DataType&) {}

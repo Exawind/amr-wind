@@ -4,19 +4,31 @@
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/FieldRepo.H"
 #include "amr-wind/wind_energy/actuator/disk/disk_types.H"
+#include "amr-wind/wind_energy/actuator/disk/disk_spreading.H"
 
 namespace amr_wind {
 namespace actuator {
 namespace ops {
 
-template <typename ActTrait, typename SpreadingType>
+template <typename ActTrait>
 class ActSrcOp<
     ActTrait,
-    ActSrcDiskBase<SpreadingType>,
+    ActSrcDisk,
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>
 {
-private:
+    template <typename T>
+    using MyType = ActSrcOp<
+        T,
+        ActSrcDisk,
+        std::enable_if_t<std::is_base_of<DiskType, T>::value>>;
+
+    using SpreadType = SpreadingFunction<MyType<ActTrait>>;
+
+    friend SpreadType;
+
+protected:
     typename ActTrait::DataType& m_data;
+    SpreadType m_spreading;
     Field& m_act_src;
 
     DeviceVecList m_pos;
@@ -34,141 +46,38 @@ public:
 
     void setup_op() { copy_to_device(); }
 
-    template <typename U = SpreadingType>
-    std::enable_if_t<std::is_same<U, LinearBasis>::value> operator()(
-        const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
-    {
-        const std::string fname =
-            ActTrait::identifier() + ActSrcDisk::identifier();
-        BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
-
-        const auto& bx = mfi.tilebox();
-        const auto& sarr = m_act_src(lev).array(mfi);
-        const auto& problo = geom.ProbLoArray();
-        const auto& dx = geom.CellSizeArray();
-
-        auto& data = m_data.meta();
-
-        const amrex::Real dR = data.dr;
-        const amrex::Real epsilon = data.epsilon;
-        const vs::Vector m_normal(data.normal_vec);
-        const vs::Vector m_origin(data.center);
-        const auto* pos = m_pos.data();
-        const auto* force = m_force.data();
-        const int npts = data.num_force_pts;
-
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const vs::Vector cc{
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2],
-                };
-
-                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
-                for (int ip = 0; ip < npts; ++ip) {
-                    const auto R = utils::delta_pnts_cyl(
-                                       m_origin, m_normal, m_origin, pos[ip])
-                                       .x();
-                    const auto dist_on_disk =
-                        utils::delta_pnts_cyl(m_origin, m_normal, cc, pos[ip]);
-                    const auto& pforce = force[ip];
-
-                    const amrex::Real weight_R =
-                        utils::linear_basis_1d(dist_on_disk.x(), dR);
-                    const amrex::Real weight_T =
-                        1.0 / (::amr_wind::utils::two_pi() * R);
-                    const amrex::Real weight_N =
-                        utils::gaussian1d(dist_on_disk.z(), epsilon);
-                    const auto projection_weight =
-                        weight_R * weight_T * weight_N;
-
-                    src_force[0] += projection_weight * pforce.x();
-                    src_force[1] += projection_weight * pforce.y();
-                    src_force[2] += projection_weight * pforce.z();
-                }
-
-                sarr(i, j, k, 0) += src_force[0];
-                sarr(i, j, k, 1) += src_force[1];
-                sarr(i, j, k, 2) += src_force[2];
-            });
-    }
-
-    template <typename U = SpreadingType>
-    std::enable_if_t<std::is_same<U, UniformGaussian>::value> operator()(
-        const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
-    {
-        const std::string fname =
-            ActTrait::identifier() + ActSrcDisk::identifier();
-        BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
-
-        const auto& bx = mfi.tilebox();
-        const auto& sarr = m_act_src(lev).array(mfi);
-        const auto& problo = geom.ProbLoArray();
-        const auto& dx = geom.CellSizeArray();
-
-        auto& data = m_data.meta();
-
-        const vs::Vector epsilon = vs::Vector::one() * data.epsilon;
-        const vs::Vector m_normal(data.normal_vec);
-        const vs::Vector m_origin(data.center);
-        const vs::Vector m_coplanar(data.coplanar_vec);
-        const auto* pos = m_pos.data();
-        const auto* force = m_force.data();
-        const int npts = data.num_force_pts;
-        const int nForceTheta = data.num_force_theta_pts;
-        const auto dTheta = ::amr_wind::utils::two_pi() / nForceTheta;
-
-        amrex::ParallelFor(
-            bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const vs::Vector cc{
-                    problo[0] + (i + 0.5) * dx[0],
-                    problo[1] + (j + 0.5) * dx[1],
-                    problo[2] + (k + 0.5) * dx[2],
-                };
-
-                amrex::Real src_force[AMREX_SPACEDIM]{0.0, 0.0, 0.0};
-                for (int ip = 0; ip < npts; ++ip) {
-                    const auto& pforce = force[ip] / nForceTheta;
-                    const auto pLoc = pos[ip];
-
-                    for (int it = 0; it < nForceTheta; ++it) {
-                        const amrex::Real angle =
-                            ::amr_wind::utils::degrees(it * dTheta);
-                        const auto rotMatrix = vs::quaternion(m_normal, angle);
-                        const auto diskPoint = pLoc & rotMatrix;
-                        const auto distance = diskPoint - cc;
-                        const auto projection_weight =
-                            utils::gaussian3d(distance, epsilon);
-
-                        src_force[0] += projection_weight * pforce.x();
-                        src_force[1] += projection_weight * pforce.y();
-                        src_force[2] += projection_weight * pforce.z();
-                    }
-                }
-
-                sarr(i, j, k, 0) += src_force[0];
-                sarr(i, j, k, 1) += src_force[1];
-                sarr(i, j, k, 2) += src_force[2];
-            });
-    }
+    void operator()(
+        const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom);
 };
 
-template <typename ActTrait, typename SpreadingType>
+template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
-    ActSrcDiskBase<SpreadingType>,
+    ActSrcDisk,
+    std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::
+operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
+{
+    const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
+    BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
+    m_spreading(this, lev, mfi, geom);
+}
+
+template <typename ActTrait>
+void ActSrcOp<
+    ActTrait,
+    ActSrcDisk,
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::initialize()
 {
     const auto& grid = m_data.grid();
     m_pos.resize(grid.pos.size());
     m_force.resize(grid.force.size());
+    m_spreading.initialize(m_data.meta().spreading_type);
 }
 
-template <typename ActTrait, typename SpreadingType>
+template <typename ActTrait>
 void ActSrcOp<
     ActTrait,
-    ActSrcDiskBase<SpreadingType>,
+    ActSrcDisk,
     std::enable_if_t<std::is_base_of<DiskType, ActTrait>::value>>::
     copy_to_device()
 {

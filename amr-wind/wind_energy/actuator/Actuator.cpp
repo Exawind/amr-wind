@@ -31,21 +31,13 @@ void Actuator::pre_init_actions()
         const std::string& prefix = identifier() + "." + tname;
         amrex::ParmParse pp1(prefix);
 
-        std::string type, spreading, key;
+        std::string type;
         pp.query("type", type);
-        pp.query("spreading", spreading);
         pp1.query("type", type);
-        pp1.query("spreading", spreading);
-
-        // hacky stirng check for now.  will make this logic generic in a follow
-        // on PR
-        if (spreading.empty() && type == "UniformCtDisk")
-            spreading = LinearBasis::identifier();
-        key = type + spreading;
 
         AMREX_ALWAYS_ASSERT(!type.empty());
 
-        auto obj = ActuatorModel::create(key, m_sim, tname, i);
+        auto obj = ActuatorModel::create(type, m_sim, tname, i);
 
         const std::string default_prefix = identifier() + "." + type;
         utils::ActParser inp(default_prefix, prefix);
