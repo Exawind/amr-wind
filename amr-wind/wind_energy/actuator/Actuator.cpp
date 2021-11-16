@@ -34,7 +34,6 @@ void Actuator::pre_init_actions()
         std::string type;
         pp.query("type", type);
         pp1.query("type", type);
-
         AMREX_ALWAYS_ASSERT(!type.empty());
 
         auto obj = ActuatorModel::create(type, m_sim, tname, i);

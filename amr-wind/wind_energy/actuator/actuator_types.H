@@ -44,15 +44,6 @@ struct ActSrcLine : ActSrcType
     static constexpr bool is_disk = false;
 };
 
-struct UniformGaussian
-{
-    static std::string identifier() { return "UniformGaussian"; }
-};
-struct LinearBasis
-{
-    static std::string identifier() { return "LinearBasis"; }
-};
-
 /** Acutator disk representation.
  *
  *  \ingroup actuator

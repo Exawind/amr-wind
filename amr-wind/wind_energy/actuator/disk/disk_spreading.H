@@ -11,9 +11,8 @@ namespace ops {
 
 /**
  * @brief  A collection of spreading functions
- * This class returns function pointers to the spreading functions
- * to allow for polymorphic spreading functions
- * the concept is around Impossibly Fast C++ Delegates proposed here:
+ * This class allows for polymorphic spreading functions.
+ * The concept is based on Impossibly Fast C++ Delegates proposed here:
  * https://www.codeproject.com/Articles/11015/The-Impossibly-Fast-C-Delegates
  *
  * @tparam T
@@ -22,10 +21,6 @@ template <typename T>
 class SpreadingFunction
 {
 public:
-    // the interface that all functions must meet to be called
-    // using FunctionPointerType = void (SpreadingFunction::*)(
-    //  T* actObj, const int, const amrex::MFIter&, const amrex::Geometry&);
-
     void operator()(
         T* actObj,
         const int lev,
