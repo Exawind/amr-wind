@@ -43,7 +43,8 @@ stokes_waves(
     amrex::Real x,
     amrex::Real y,
     amrex::Real z,
-    amrex::Real time int order)
+    amrex::Real time,
+    int order)
 {}
 
 } // namespace nwt

@@ -20,7 +20,6 @@ NWT::NWT(CFDSim& sim)
     pp.query("zero_sea_level", m_zsl);
     pp.query("water_depth", m_waterdepth);
 
-    
     // Wave generation/absorption parameters
     pp.query("relax_zone_gen_length", m_gen_length);
     pp.query("numerical_beach_length", m_beach_length);
@@ -148,10 +147,10 @@ void NWT::apply_relaxation_method()
                             (1.0 - Gamma) *
                                 nwt::free_surface_to_vof(zsl, z, dx[2]) +
                             Gamma * volfrac(i, j, k);
-                        vel(i, j, k, 0) = Gamma * vel(i, j, k, 0) *
-                                          volfrac(i, j, k) * volfrac(i, j, k);
-                        vel(i, j, k, 2) = Gamma * vel(i, j, k, 2) *
-                                          volfrac(i, j, k) * volfrac(i, j, k);
+                        vel(i, j, k, 0) =
+                            Gamma * vel(i, j, k, 0) * volfrac(i, j, k);
+                        vel(i, j, k, 2) =
+                            Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
                     }
                 });
         }
