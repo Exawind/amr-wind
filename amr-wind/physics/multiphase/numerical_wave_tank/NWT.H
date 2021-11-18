@@ -57,6 +57,14 @@ private:
 
     // bool m_has_ramp;
 
+    // Enumerator for wave generation theory
+    enum class wave_generator {
+        LinearWaves,
+        StokesWaves,
+        BiChromatic,
+        Spectrum
+    };
+
     //! Initial free surface amplitude magnitude
     amrex::Real m_amplitude{0.1};
 
@@ -76,7 +84,7 @@ private:
     amrex::Real m_gen_length{1.0};
 
     //! Numerical beach absorption length
-    amrex::Real m_absorb_length{2.0};
+    amrex::Real m_beach_length{2.0};
 
     //! Numerical beach absorption length factor
     amrex::Real m_absorb_length_factor{1.0};
