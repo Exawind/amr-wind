@@ -20,7 +20,7 @@ NWT::NWT(CFDSim& sim)
     pp.query("zero_sea_level", m_zsl);
     pp.query("water_depth", m_waterdepth);
 
-    // Wave generation/absorption parameters
+        // Wave generation/absorption parameters
     pp.query("relax_zone_gen_length", m_gen_length);
     pp.query("numerical_beach_length", m_beach_length);
     pp.query("numerical_beach_start", m_x_start_beach);
