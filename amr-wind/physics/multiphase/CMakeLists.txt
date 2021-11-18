@@ -5,6 +5,7 @@ target_sources(${amr_wind_lib_name}
   ZalesakDisk.cpp
   DamBreak.cpp
   SloshingTank.cpp
+  BreakingWaves.cpp
   RainDrop.cpp
   )
 
