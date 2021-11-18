@@ -40,7 +40,7 @@ private:
     amrex::Real m_amplitude{0.1};
 
     //! Wave length
-    amrex::Real m_wavelength{1.0};
+    amrex::Real m_wavelength{2.0};
 
     //! Initial zero-level free-surface water depth
     amrex::Real m_waterlevel{0.0};
