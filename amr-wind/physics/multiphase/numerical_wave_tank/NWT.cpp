@@ -133,7 +133,7 @@ void NWT::apply_relaxation_method()
                         vel(i, j, k, 1) = (1.0 - Gamma) * wave_out[2] *
                                               volfrac(i, j, k) *
                                               nwt::ramp(time, ramp_period) +
-                                          Gamma * vel(i, j, k, 0);
+                                          Gamma * vel(i, j, k, 1);
                         vel(i, j, k, 2) = (1.0 - Gamma) * wave_out[3] *
                                               volfrac(i, j, k) *
                                               nwt::ramp(time, ramp_period) +
@@ -149,6 +149,8 @@ void NWT::apply_relaxation_method()
                             Gamma * volfrac(i, j, k);
                         vel(i, j, k, 0) =
                             Gamma * vel(i, j, k, 0) * volfrac(i, j, k);
+                        vel(i, j, k, 1) =
+                            Gamma * vel(i, j, k, 1) * volfrac(i, j, k);
                         vel(i, j, k, 2) =
                             Gamma * vel(i, j, k, 2) * volfrac(i, j, k);
                     }
