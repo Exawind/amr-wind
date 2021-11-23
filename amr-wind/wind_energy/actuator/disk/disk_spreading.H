@@ -53,8 +53,6 @@ public:
 
         const vs::Vector epsilon = vs::Vector::one() * data.epsilon;
         const vs::Vector m_normal(data.normal_vec);
-        const vs::Vector m_origin(data.center);
-        const vs::Vector m_coplanar(data.coplanar_vec);
         const auto* pos = actObj.m_pos.data();
         const auto* force = actObj.m_force.data();
         const int npts = data.num_force_pts;
