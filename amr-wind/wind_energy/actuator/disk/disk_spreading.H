@@ -106,7 +106,7 @@ public:
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
 
-        auto& data = actObj.m_data.meta();
+        const auto& data = actObj.m_data.meta();
 
         const amrex::Real dR = data.dr;
         const amrex::Real epsilon = data.epsilon;
