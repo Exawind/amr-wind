@@ -21,7 +21,7 @@ class SpreadingFunction
 {
 public:
     void operator()(
-        T* actObj,
+        const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Geometry& geom)
@@ -33,27 +33,30 @@ public:
     void operator=(const SpreadingFunction&) = delete;
 
     void (SpreadingFunction::*m_function)(
-        T* actObj, const int, const amrex::MFIter&, const amrex::Geometry&);
+        const T& actObj,
+        const int,
+        const amrex::MFIter&,
+        const amrex::Geometry&);
 
     void uniform_gaussian_spreading(
-        T* actObj,
+        const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Geometry& geom)
     {
         const auto& bx = mfi.tilebox();
-        const auto& sarr = actObj->m_act_src(lev).array(mfi);
+        const auto& sarr = actObj.m_act_src(lev).array(mfi);
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
 
-        auto& data = actObj->m_data.meta();
+        const auto& data = actObj.m_data.meta();
 
         const vs::Vector epsilon = vs::Vector::one() * data.epsilon;
         const vs::Vector m_normal(data.normal_vec);
         const vs::Vector m_origin(data.center);
         const vs::Vector m_coplanar(data.coplanar_vec);
-        const auto* pos = actObj->m_pos.data();
-        const auto* force = actObj->m_force.data();
+        const auto* pos = actObj.m_pos.data();
+        const auto* force = actObj.m_force.data();
         const int npts = data.num_force_pts;
         const int nForceTheta = data.num_force_theta_pts;
         const auto dTheta = ::amr_wind::utils::two_pi() / nForceTheta;
@@ -93,24 +96,24 @@ public:
     }
 
     void linear_basis_spreading(
-        T* actObj,
+        const T& actObj,
         const int lev,
         const amrex::MFIter& mfi,
         const amrex::Geometry& geom)
     {
         const auto& bx = mfi.tilebox();
-        const auto& sarr = actObj->m_act_src(lev).array(mfi);
+        const auto& sarr = actObj.m_act_src(lev).array(mfi);
         const auto& problo = geom.ProbLoArray();
         const auto& dx = geom.CellSizeArray();
 
-        auto& data = actObj->m_data.meta();
+        auto& data = actObj.m_data.meta();
 
         const amrex::Real dR = data.dr;
         const amrex::Real epsilon = data.epsilon;
         const vs::Vector m_normal(data.normal_vec);
         const vs::Vector m_origin(data.center);
-        const auto* pos = actObj->m_pos.data();
-        const auto* force = actObj->m_force.data();
+        const auto* pos = actObj.m_pos.data();
+        const auto* force = actObj.m_force.data();
         const int npts = data.num_force_pts;
 
         amrex::ParallelFor(
@@ -152,7 +155,7 @@ public:
 
     SpreadingFunction() : m_function(&SpreadingFunction::linear_basis_spreading)
     {}
-    void initialize(std::string key)
+    void initialize(const std::string& key)
     {
         if (key == "UniformGaussian") {
             m_function = &SpreadingFunction::uniform_gaussian_spreading;

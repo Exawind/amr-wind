@@ -5,7 +5,6 @@
 #include "amr-wind/wind_energy/actuator/actuator_ops.H"
 #include "amr-wind/utilities/tensor_ops.H"
 #include "amr-wind/utilities/linear_interpolation.H"
-#include "amr-wind/utilities/io_utils.H"
 
 namespace amr_wind {
 namespace actuator {

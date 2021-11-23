@@ -59,7 +59,7 @@ operator()(const int lev, const amrex::MFIter& mfi, const amrex::Geometry& geom)
 {
     const std::string fname = ActTrait::identifier() + ActSrcDisk::identifier();
     BL_PROFILE("amr-wind::ActSrcOp<" + fname + ">");
-    m_spreading(this, lev, mfi, geom);
+    m_spreading(*this, lev, mfi, geom);
 }
 
 template <typename ActTrait>
