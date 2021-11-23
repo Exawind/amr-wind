@@ -3,7 +3,6 @@
 
 #include "amr-wind/wind_energy/actuator/actuator_utils.H"
 #include "amr-wind/core/FieldRepo.H"
-#include <stdexcept>
 
 namespace amr_wind {
 namespace actuator {
@@ -160,7 +159,7 @@ public:
         } else if (key == "LinearBasis") {
             m_function = &SpreadingFunction::linear_basis_spreading;
         } else {
-            throw std::runtime_error("Invalide spreading type");
+            amrex::Abort("Invalide spreading type");
         }
     }
 };
