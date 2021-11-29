@@ -181,9 +181,9 @@ bool incflo::regrid_and_update()
             printGridSummary(amrex::OutStream(), 0, finest_level);
         }
 
-        //update mesh map
+        // update mesh map
         {
-            //TODO: Is this the only change required in presence of regrid ?
+            // TODO: Is this the only change required in presence of regrid ?
             amrex::Print() << "Creating mesh mapping after regrid ... ";
             for (int lev = 0; lev <= finest_level; lev++) {
                 m_sim.mesh_mapping()->create_map(lev, Geom(lev));
@@ -244,7 +244,7 @@ void incflo::post_advance_work()
 
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
-        m_sim.io_manager().write_netcdf_file(); 
+        m_sim.io_manager().write_netcdf_file();
     }
 
     if (m_time.write_checkpoint()) {
@@ -295,14 +295,8 @@ void incflo::Evolve()
 
     // Output at final time
     if (m_time.write_last_plot_file()) {
-<<<<<<< HEAD
         m_sim.io_manager().write_plot_file();
-=======
-     m_sim.io_manager().write_plot_file();
-     m_sim.io_manager().write_netcdf_file(); 
->>>>>>> Output netcdf files along with plot files
     }
-
     if (m_time.write_last_checkpoint()) {
         m_sim.io_manager().write_checkpoint_file();
     }

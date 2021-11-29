@@ -16,7 +16,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
     {
         amrex::ParmParse pp("ChannelFlow");
         pp.query("normal_direction", m_norm_dir);
-        pp.query("Laminar_Channel", m_laminar);
+        pp.query("Laminar", m_laminar);
         pp.query("Turbulent_DNS", m_dns);
 
         if (m_laminar) {

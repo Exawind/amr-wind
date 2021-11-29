@@ -15,7 +15,8 @@ class CFDSim;
  *
  *  AMR-Wind representation of different mesh mapping models
  *
- *  In AMR-Wind, different mesh mappings are implemented using the MeshMap class.
+ *  In AMR-Wind, different mesh mappings are implemented using the MeshMap
+ * class.
  */
 
 /** Abstract representation of different physics

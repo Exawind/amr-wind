@@ -48,7 +48,8 @@ void incflo::ComputeDt(bool explicit_diffusion)
         MultiFab const& vel_force = icns().fields().src_term(lev);
         MultiFab const& mu = icns().fields().mueff(lev);
         MultiFab const& rho = den(lev);
-        MultiFab const& mesh_fac_lev = mesh_fac(lev); // accounting for mesh mapping
+        MultiFab const& mesh_fac_lev =
+            mesh_fac(lev); // accounting for mesh mapping
 
         Real conv_lev = 0.0;
         Real diff_lev = 0.0;
@@ -57,15 +58,18 @@ void incflo::ComputeDt(bool explicit_diffusion)
         conv_lev = amrex::ReduceMax(
             vel, mesh_fac_lev, 0,
             [=] AMREX_GPU_HOST_DEVICE(
-                Box const& b,
-                Array4<Real const> const& v,
+                Box const& b, Array4<Real const> const& v,
                 Array4<Real const> const& fac) -> Real {
                 Real mx = -1.0;
                 amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                     mx = amrex::max(
-                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0]/fac(i,j,k,0),
-                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1]/fac(i,j,k,1),
-                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2]/fac(i,j,k,2), mx);
+                        amrex::Math::abs(v(i, j, k, 0)) * dxinv[0] /
+                            fac(i, j, k, 0),
+                        amrex::Math::abs(v(i, j, k, 1)) * dxinv[1] /
+                            fac(i, j, k, 1),
+                        amrex::Math::abs(v(i, j, k, 2)) * dxinv[2] /
+                            fac(i, j, k, 2),
+                        mx);
                 });
                 return mx;
             });
@@ -81,9 +85,12 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         const Real dxinv2 =
-                            2.0 * (dxinv[0]/fac(i,j,k,0) * dxinv[0]/fac(i,j,k,0)
-                                 + dxinv[1]/fac(i,j,k,1) * dxinv[1]/fac(i,j,k,1)
-                                 + dxinv[2]/fac(i,j,k,2) * dxinv[2]/fac(i,j,k,2));
+                            2.0 * (dxinv[0] / fac(i, j, k, 0) * dxinv[0] /
+                                       fac(i, j, k, 0) +
+                                   dxinv[1] / fac(i, j, k, 1) * dxinv[1] /
+                                       fac(i, j, k, 1) +
+                                   dxinv[2] / fac(i, j, k, 2) * dxinv[2] /
+                                       fac(i, j, k, 2));
 
                         mx = amrex::max(
                             mu_arr(i, j, k) * dxinv2 / rho_arr(i, j, k), mx);
@@ -101,9 +108,13 @@ void incflo::ComputeDt(bool explicit_diffusion)
                     Real mx = -1.0;
                     amrex::Loop(b, [=, &mx](int i, int j, int k) noexcept {
                         mx = amrex::max(
-                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0]/fac(i,j,k,0),
-                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1]/fac(i,j,k,1),
-                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2]/fac(i,j,k,2), mx);
+                            amrex::Math::abs(vf(i, j, k, 0)) * dxinv[0] /
+                                fac(i, j, k, 0),
+                            amrex::Math::abs(vf(i, j, k, 1)) * dxinv[1] /
+                                fac(i, j, k, 1),
+                            amrex::Math::abs(vf(i, j, k, 2)) * dxinv[2] /
+                                fac(i, j, k, 2),
+                            mx);
                     });
                     return mx;
                 });

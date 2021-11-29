@@ -63,17 +63,18 @@ void CFDSim::activate_mesh_map()
 {
     // declare nodal and cell-centered mesh mapping array
     auto& mesh_scale_fac_cc = m_repo.declare_cc_field(
-        "mesh_scaling_factor_cc", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
+        "mesh_scaling_factor_cc", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
+        1);
     auto& mesh_scale_fac_nd = m_repo.declare_nd_field(
-        "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
+        "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
+        1);
 
     amrex::ParmParse pp("geometry");
-    if(pp.contains("mesh_mapping")) {
+    if (pp.contains("mesh_mapping")) {
         std::string mesh_map_name;
         pp.query("mesh_mapping", mesh_map_name);
         m_mesh_map_mgr.create(mesh_map_name, *this);
-    }
-    else {
+    } else {
         // always create default mesh mapping
         m_mesh_map_mgr.create("ConstantScaling", *this);
     }

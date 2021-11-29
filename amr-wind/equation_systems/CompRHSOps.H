@@ -95,8 +95,9 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+                            amrex::Real det_j = mfac(i, j, k, 0) *
+                                                mfac(i, j, k, 1) *
+                                                mfac(i, j, k, 2);
 
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
@@ -115,8 +116,9 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j =
-                                mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+                            amrex::Real det_j = mfac(i, j, k, 0) *
+                                                mfac(i, j, k, 1) *
+                                                mfac(i, j, k, 2);
 
                             fld(i, j, k, n) =
                                 det_j * fld_o(i, j, k, n) +
@@ -209,8 +211,9 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j
-                                = mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+                            amrex::Real det_j = mfac(i, j, k, 0) *
+                                                mfac(i, j, k, 1) *
+                                                mfac(i, j, k, 2);
 
                             fld(i, j, k, n) =
                                 rho_o(i, j, k) * det_j * fld_o(i, j, k, n) +
@@ -231,8 +234,9 @@ struct ComputeRHSOp
                         bx, PDE::ndim,
                         [=] AMREX_GPU_DEVICE(
                             int i, int j, int k, int n) noexcept {
-                            amrex::Real det_j
-                                = mfac(i, j, k, 0) * mfac(i, j, k, 1) * mfac(i, j, k, 2);
+                            amrex::Real det_j = mfac(i, j, k, 0) *
+                                                mfac(i, j, k, 1) *
+                                                mfac(i, j, k, 2);
 
                             fld(i, j, k, n) =
                                 det_j * fld_o(i, j, k, n) +

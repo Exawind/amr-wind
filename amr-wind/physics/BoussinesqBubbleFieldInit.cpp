@@ -14,7 +14,8 @@ BoussinesqBubbleFieldInit::BoussinesqBubbleFieldInit()
     pp_boussinesq_bubble.query("inner_value", m_tracer_inner);
     pp_boussinesq_bubble.query("outer_value", m_tracer_outer);
 
-    pp_boussinesq_bubble.queryarr("init_velocity",m_init_vel,0,AMREX_SPACEDIM);
+    pp_boussinesq_bubble.queryarr(
+        "init_velocity", m_init_vel, 0, AMREX_SPACEDIM);
 
     amrex::ParmParse pp_incflo("incflo");
     pp_incflo.query("density", m_rho);
@@ -44,9 +45,12 @@ void BoussinesqBubbleFieldInit::operator()(
     const amrex::Real init_v_z = m_init_vel[2];
 
     amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-        const amrex::Real x = problo[0] + (i + 0.5) * dx[0]*mesh_fac(i, j, k, 0);
-        const amrex::Real y = problo[1] + (j + 0.5) * dx[1]*mesh_fac(i, j, k, 1);
-        const amrex::Real z = problo[2] + (k + 0.5) * dx[2]*mesh_fac(i, j, k, 2);
+        const amrex::Real x =
+            problo[0] + (i + 0.5) * dx[0] * mesh_fac(i, j, k, 0);
+        const amrex::Real y =
+            problo[1] + (j + 0.5) * dx[1] * mesh_fac(i, j, k, 1);
+        const amrex::Real z =
+            problo[2] + (k + 0.5) * dx[2] * mesh_fac(i, j, k, 2);
 
         density(i, j, k) = rho;
 

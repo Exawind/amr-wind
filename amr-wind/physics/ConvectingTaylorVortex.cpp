@@ -162,8 +162,10 @@ void ConvectingTaylorVortex::initialize_fields(
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x = problo[0] + (i + 0.5) * dx[0]*fac_cc(i, j, k, 0);
-                const amrex::Real y = problo[1] + (j + 0.5) * dx[1]*fac_cc(i, j, k, 1);
+                const amrex::Real x =
+                    problo[0] + (i + 0.5) * dx[0] * fac_cc(i, j, k, 0);
+                const amrex::Real y =
+                    problo[1] + (j + 0.5) * dx[1] * fac_cc(i, j, k, 1);
                 vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 2) = w_exact(u0, v0, omega, x, y, 0.0);
@@ -182,8 +184,10 @@ void ConvectingTaylorVortex::initialize_fields(
 
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + i * dx[0]*fac_nd(i, j, k, 0);
-                    const amrex::Real y = problo[1] + j * dx[1]*fac_nd(i, j, k, 1);
+                    const amrex::Real x =
+                        problo[0] + i * dx[0] * fac_nd(i, j, k, 0);
+                    const amrex::Real y =
+                        problo[1] + j * dx[1] * fac_nd(i, j, k, 1);
                     pres(i, j, k, 0) =
                         -0.25 * (std::cos(2.0 * utils::pi() * x) +
                                  std::cos(2.0 * utils::pi() * y));
@@ -251,16 +255,19 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
                 amrex::Real err_fab = 0.0;
 
                 amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
-                    const amrex::Real x = problo[0] + (i + 0.5) * dx[0]*fac_cc(i, j, k, 0);
-                    const amrex::Real y = problo[1] + (j + 0.5) * dx[1]*fac_cc(i, j, k, 1);
+                    const amrex::Real x =
+                        problo[0] + (i + 0.5) * dx[0] * fac_cc(i, j, k, 0);
+                    const amrex::Real y =
+                        problo[1] + (j + 0.5) * dx[1] * fac_cc(i, j, k, 1);
 
                     const amrex::Real u = fld_arr(i, j, k, comp);
 
-                    const amrex::Real u_exact = f_exact(u0, v0, omega, x, y, time);
+                    const amrex::Real u_exact =
+                        f_exact(u0, v0, omega, x, y, time);
 
-                    const amrex::Real cell_vol = dx[0]*fac_cc(i, j, k, 0)
-                                               * dx[1]*fac_cc(i, j, k, 1)
-                                               * dx[2]*fac_cc(i, j, k, 2);
+                    const amrex::Real cell_vol = dx[0] * fac_cc(i, j, k, 0) *
+                                                 dx[1] * fac_cc(i, j, k, 1) *
+                                                 dx[2] * fac_cc(i, j, k, 2);
 
                     err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
                                (u - u_exact);

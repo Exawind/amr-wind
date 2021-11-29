@@ -75,8 +75,8 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     auto& density = m_density.state(fstate);
     const auto& mesh_fac = repo.get_field("mesh_scaling_factor_cc");
 
-    //TODO: Create a permanent field for det_j updated only upon regrid
-    // scratch field for determinant
+    // TODO: Create a permanent field for det_j updated only upon regrid
+    //  scratch field for determinant
     auto rho_times_det_j =
         repo.create_scratch_field(1, m_density.num_grow()[0], FieldLoc::CELL);
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -85,19 +85,20 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
 
     // multiply density with detJ
     for (int lev = 0; lev < nlevels; ++lev) {
-      for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(density(lev)); mfi.isValid(); ++mfi) {
 
-          const auto& rho = density(lev).array(mfi);
-          const auto& fac = mesh_fac(lev).array(mfi);
-          const auto& prod = (*rho_times_det_j)(lev).array(mfi);
+            const auto& rho = density(lev).array(mfi);
+            const auto& fac = mesh_fac(lev).array(mfi);
+            const auto& prod = (*rho_times_det_j)(lev).array(mfi);
 
-          const auto& bx = mfi.growntilebox();
-          amrex::ParallelFor(
-              bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                  amrex::Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
-                  prod(i, j, k, 0) = rho(i, j, k, 0) * det_j;
-              });
-      }
+            const auto& bx = mfi.growntilebox();
+            amrex::ParallelFor(
+                bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
+                    amrex::Real det_j =
+                        fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+                    prod(i, j, k, 0) = rho(i, j, k, 0) * det_j;
+                });
+        }
     }
 
     for (int lev = 0; lev < nlevels; ++lev) {
@@ -120,7 +121,8 @@ void DiffSolverIface<LinOp>::linsys_solve_impl()
     auto& repo = this->m_pdefields.repo;
     auto& field = this->m_pdefields.field;
     if (field.is_mesh_mapped()) {
-        amrex::Abort("For diffusion solve, velocity should not be mesh mapped.");
+        amrex::Abort(
+            "For diffusion solve, velocity should not be mesh mapped.");
     }
     const auto& density = m_density.state(fstate);
     const int nlevels = repo.num_active_levels();

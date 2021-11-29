@@ -73,7 +73,6 @@ private:
     bool m_dns{false};
 
     amrex::Real m_mean_vel;
-
 };
 } // namespace channel_flow
 } // namespace amr_wind

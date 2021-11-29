@@ -142,7 +142,8 @@ void incflo::ApplyProjection(
     }
 
     // Add the ( grad p /ro ) back to u* (note the +dt)
-    // Also account for mesh mapping in ( grad p /ro ) ->  1/fac * grad(p) * dt/rho
+    // Also account for mesh mapping in ( grad p /ro ) ->  1/fac * grad(p) *
+    // dt/rho
     if (!incremental) {
         for (int lev = 0; lev <= finest_level; lev++) {
 
@@ -161,10 +162,12 @@ void incflo::ApplyProjection(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         Real soverrho = scaling_factor / rho(i, j, k);
 
-                        u(i, j, k, 0) += 1/fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
-                        u(i, j, k, 1) += 1/fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
-                        u(i, j, k, 2) += 1/fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
-
+                        u(i, j, k, 0) +=
+                            1 / fac(i, j, k, 0) * gp(i, j, k, 0) * soverrho;
+                        u(i, j, k, 1) +=
+                            1 / fac(i, j, k, 1) * gp(i, j, k, 1) * soverrho;
+                        u(i, j, k, 2) +=
+                            1 / fac(i, j, k, 2) * gp(i, j, k, 2) * soverrho;
                     });
             }
         }
@@ -223,11 +226,12 @@ void incflo::ApplyProjection(
     // Create sigma while accounting for mesh mapping
     // sigma = 1/(fac^2)*J * dt/rho
     Vector<amrex::MultiFab> sigma(finest_level + 1);
-//    if (variable_density)
+    //    if (variable_density)
     {
         for (int lev = 0; lev <= finest_level; ++lev) {
             sigma[lev].define(
-                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(), Factory(lev));
+                grids[lev], dmap[lev], AMREX_SPACEDIM, 0, MFInfo(),
+                Factory(lev));
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
 #endif
@@ -238,12 +242,14 @@ void incflo::ApplyProjection(
                 Array4<Real const> const& rho = density[lev]->const_array(mfi);
                 Array4<Real const> const& fac = mesh_fac(lev).const_array(mfi);
 
-                amrex::ParallelFor(bx, AMREX_SPACEDIM,
+                amrex::ParallelFor(
+                    bx, AMREX_SPACEDIM,
                     [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
-                        Real det_j = fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
+                        Real det_j =
+                            fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
 
-                        sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) * det_j
-                                        * scaling_factor / rho(i, j, k);
+                        sig(i, j, k, n) = std::pow(fac(i, j, k, n), -2.) *
+                                          det_j * scaling_factor / rho(i, j, k);
                     });
             }
         }
@@ -279,7 +285,6 @@ void incflo::ApplyProjection(
 //            vel, scaling_factor / rho_0, Geom(0, finest_level),
 //            options.lpinfo()));
 //    }
->>>>>>> make nodal projection consistent with mesh mapping
 
     // Set MLMG and NodalProjector options
     options(*nodal_projector);
