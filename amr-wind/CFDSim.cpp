@@ -69,6 +69,8 @@ void CFDSim::activate_mesh_map()
         "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
         1);
 
+    // TODO: Create BCNoOP fill patch operators for mesh scaling fields
+
     amrex::ParmParse pp("geometry");
     if (pp.contains("mesh_mapping")) {
         std::string mesh_map_name;

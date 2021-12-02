@@ -371,14 +371,15 @@ void Field::to_mapped_mesh() noexcept
 
     // scale velocity to accommodate for mesh mapping -> U^bar = U * J/fac
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(operator()(lev)); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
+
             amrex::Array4<amrex::Real> const& field = operator()(lev).array(
                 mfi);
             amrex::Array4<amrex::Real const> const& fac =
                 mesh_fac(lev).const_array(mfi);
 
             amrex::ParallelFor(
-                mfi.tilebox(), AMREX_SPACEDIM,
+                mfi.growntilebox(), AMREX_SPACEDIM,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                     amrex::Real det_j =
                         fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
@@ -413,14 +414,14 @@ void Field::to_unmapped_mesh() noexcept
 
     // scale field back to unmapped mesh -> U = U^bar * fac/J
     for (int lev = 0; lev < m_repo.num_active_levels(); ++lev) {
-        for (amrex::MFIter mfi(operator()(lev)); mfi.isValid(); ++mfi) {
+        for (amrex::MFIter mfi(mesh_fac(lev)); mfi.isValid(); ++mfi) {
             amrex::Array4<amrex::Real> const& field = operator()(lev).array(
                 mfi);
             amrex::Array4<amrex::Real const> const& fac =
                 mesh_fac(lev).const_array(mfi);
 
             amrex::ParallelFor(
-                mfi.tilebox(), AMREX_SPACEDIM,
+                mfi.growntilebox(), AMREX_SPACEDIM,
                 [=] AMREX_GPU_DEVICE(int i, int j, int k, int n) noexcept {
                     amrex::Real det_j =
                         fac(i, j, k, 0) * fac(i, j, k, 1) * fac(i, j, k, 2);
