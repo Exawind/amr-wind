@@ -44,6 +44,8 @@ public:
 
     void levelset2vof();
 
+    void favre_filtering();
+
     amrex::Real volume_fraction_sum();
 
     InterfaceCapturingMethod interface_capturing_method();
@@ -69,6 +71,8 @@ private:
 
     // Density value for Fluid 2
     amrex::Real m_rho2{1.0};
+
+    bool m_interface_smoothing{false};
 
     // Multiphase model enum
     std::string m_interface_model{"vof"};

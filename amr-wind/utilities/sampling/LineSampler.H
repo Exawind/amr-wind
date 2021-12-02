@@ -28,6 +28,8 @@ public:
      */
     void initialize(const std::string& key) override;
 
+    void check_bounds();
+
     //! Populate and return a vector of probe locations to be sampled
     void sampling_locations(SampleLocType&) const override;
 
@@ -45,7 +47,7 @@ public:
     //! Number of probe locations along the line
     int num_points() const override { return m_npts; }
 
-private:
+protected:
     const CFDSim& m_sim;
 
     amrex::Vector<amrex::Real> m_start;

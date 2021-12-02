@@ -31,7 +31,7 @@ void Sampling::initialize()
     }
 
     // Process field information
-    int ncomp = 0;
+    m_ncomp = 0;
     auto& repo = m_sim.repo();
     for (const auto& fname : field_names) {
         if (!repo.field_exists(fname)) {
@@ -42,7 +42,7 @@ void Sampling::initialize()
         }
 
         auto& fld = repo.get_field(fname);
-        ncomp += fld.num_comp();
+        m_ncomp += fld.num_comp();
         m_fields.emplace_back(&fld);
         ioutils::add_var_names(m_var_names, fld.name(), fld.num_comp());
     }
@@ -65,24 +65,45 @@ void Sampling::initialize()
         m_samplers.emplace_back(std::move(obj));
     }
 
-    // Initialize the particle container based on user inputs
-    m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
-    m_scontainer->setup_container(ncomp);
-    m_scontainer->initialize_particles(m_samplers);
-    // Redistribute particles to appropriate boxes/MPI ranks
-    m_scontainer->Redistribute();
-    m_scontainer->num_sampling_particles() = m_total_particles;
+    update_container();
 
     if (m_out_fmt == "netcdf") prepare_netcdf_file();
 }
 
+void Sampling::update_container()
+{
+    BL_PROFILE("amr-wind::Sampling::update_container");
+
+    // Initialize the particle container based on user inputs
+    m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
+    m_scontainer->setup_container(m_ncomp);
+    m_scontainer->initialize_particles(m_samplers);
+    // Redistribute particles to appropriate boxes/MPI ranks
+    m_scontainer->Redistribute();
+    m_scontainer->num_sampling_particles() = m_total_particles;
+}
+
+void Sampling::update_sampling_locations()
+{
+    BL_PROFILE("amr-wind::Sampling::pre_advance_work");
+
+    for (const auto& obj : m_samplers) {
+        obj->update_sampling_locations();
+    }
+
+    update_container();
+}
+
 void Sampling::post_advance_work()
 {
+
     BL_PROFILE("amr-wind::Sampling::post_advance_work");
     const auto& time = m_sim.time();
     const int tidx = time.time_index();
     // Skip processing if it is not an output timestep
     if (!(tidx % m_out_freq == 0)) return;
+
+    update_sampling_locations();
 
     m_scontainer->interpolate_fields(m_fields);
 
@@ -194,6 +215,7 @@ void Sampling::prepare_netcdf_file()
             xyz.put(&locs[0][0], start, count);
         }
     }
+
 #else
     amrex::Abort(
         "NetCDF support was not enabled during build time. Please recompile or "
@@ -215,6 +237,11 @@ void Sampling::write_netcdf()
     {
         auto time = m_sim.time().new_time();
         ncf.var("time").put(&time, {nt}, {1});
+    }
+
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.group(obj->label());
+        obj->output_netcdf_data(grp, nt);
     }
 
     std::vector<size_t> start{nt, 0};

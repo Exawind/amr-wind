@@ -10,6 +10,7 @@ namespace actuator {
 struct UniformCtData
 {
     int num_force_pts;
+    int num_force_theta_pts{1};
     int num_vel_pts{1};
     int num_vel_pts_r{1};
     int num_vel_pts_t{1};
@@ -27,6 +28,7 @@ struct UniformCtData
     amrex::Real diameters_to_sample{0.0};
     RealList thrust_coeff;
     RealList table_velocity;
+    std::string spreading_type{"LinearBasis"};
 };
 
 struct UniformCt : public DiskType

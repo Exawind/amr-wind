@@ -25,6 +25,7 @@ Smagorinsky_coeffs.Cs          = 0.16
 incflo.physics = FreeStream Actuator
 Actuator.labels = WTG01
 Actuator.type = UniformCtDisk
+Actuator.UniformCtDisk.spreading = UniformGaussian
 
 Actuator.UniformCtDisk.rotor_diameter = 126.0
 Actuator.UniformCtDisk.base_position = 0.0 0.0 0.0
@@ -39,6 +40,7 @@ Actuator.UniformCtDisk.density = 1.225
 Actuator.UniformCtDisk.diameters_to_sample = 1.0
 Actuator.UniformCtDisk.num_vel_points_r = 3
 Actuator.UniformCtDisk.num_vel_points_t = 3
+Actuator.UniformCtDisk.num_theta_force_points = 20
 
 ICNS.source_terms = ActuatorForcing
 
@@ -77,3 +79,9 @@ zlo.type =   "slip_wall"
 zhi.type =   "slip_wall"
 
 incflo.verbose          =   0          # incflo_level
+nodal_proj.verbose = 0
+
+nodal_proj.mg_rtol = 1.0e-6
+nodal_proj.mg_atol = 1.0e-12
+mac_proj.mg_rtol = 1.0e-6
+mac_proj.mg_atol = 1.0e-12

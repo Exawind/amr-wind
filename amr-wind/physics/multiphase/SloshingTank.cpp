@@ -12,7 +12,7 @@ SloshingTank::SloshingTank(CFDSim& sim)
 {
     amrex::ParmParse pp(identifier());
     pp.query("amplitude", m_amplitude);
-    pp.query("wavelength", m_wavelength);
+    pp.query("peak_enhance", m_kappa);
     pp.query("water_level", m_waterlevel);
 }
 
@@ -23,14 +23,17 @@ SloshingTank::SloshingTank(CFDSim& sim)
 void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
-    velocity.setVal(0.0, 0, AMREX_SPACEDIM);
+    velocity.setVal(0.0);
 
     auto& levelset = m_levelset(level);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
+    const auto& probhi = geom.ProbHiArray();
     const amrex::Real Amp = m_amplitude;
-    const amrex::Real waveL = m_wavelength;
+    const amrex::Real kappa = m_kappa;
     const amrex::Real water_level = m_waterlevel;
+    const amrex::Real Lx = probhi[0] - problo[0];
+    const amrex::Real Ly = probhi[1] - problo[1];
 
     for (amrex::MFIter mfi(levelset); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
@@ -39,9 +42,13 @@ void SloshingTank::initialize_fields(int level, const amrex::Geometry& geom)
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                 const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                 const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
                 const amrex::Real z0 =
-                    water_level + Amp * std::sin(2.0 * M_PI * x / waveL);
+                    water_level +
+                    Amp * std::exp(
+                              -kappa * (std::pow(x - 0.5 * Lx, 2) +
+                                        std::pow(y - 0.5 * Ly, 2)));
                 phi(i, j, k) = z0 - z;
             });
     }

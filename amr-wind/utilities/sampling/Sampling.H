@@ -68,6 +68,12 @@ public:
     const amrex::Vector<std::string>& var_names() const { return m_var_names; }
 
 protected:
+    //! Update the container by re-initializing the particles
+    void update_container();
+
+    //! Conduct work to update the particles
+    void update_sampling_locations();
+
     //! Output data based on user-defined format
     virtual void process_output();
 
@@ -112,6 +118,9 @@ private:
 #else
     std::string m_out_fmt{"native"};
 #endif
+
+    // number of field components
+    int m_ncomp{0};
 
     //! Number of particles:
     size_t m_total_particles{0};

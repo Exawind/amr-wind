@@ -136,10 +136,10 @@ void collect_parse_dependencies(
     std::ostringstream& ss)
 {
     if (pp.contains(p1) && !pp.contains(p2))
-        ss << "UniformCt Dependency Missing: " << p1 << " and " << p2
+        ss << "UniformCt Dependency Missing: " << p2 << " required with " << p1
            << std::endl;
     if (!pp.contains(p1) && pp.contains(p2))
-        ss << "UniformCt Dependency Missing: " << p1 << " and " << p2
+        ss << "UniformCt Dependency Missing: " << p1 << " required with " << p2
            << std::endl;
 }
 
@@ -173,6 +173,8 @@ void optional_parameters(UniformCt::MetaType& meta, const utils::ActParser& pp)
     pp.query("disk_normal", meta.normal_vec);
     pp.query("density", meta.density);
     pp.query("diameters_to_sample", meta.diameters_to_sample);
+    pp.query("num_theta_force_points", meta.num_force_theta_pts);
+    pp.query("spreading_type", meta.spreading_type);
 
     // make sure we compute normal vec contribution from tilt before yaw
     // since we won't know a reference axis to rotate for tilt after
@@ -253,6 +255,7 @@ void check_for_parse_conflicts(const utils::ActParser& pp)
     collect_parse_conflicts(pp, "disk_center", "base_position", error_collector);
     collect_parse_conflicts(pp, "disk_center", "hub_height", error_collector);
     collect_parse_dependencies(pp, "base_position", "hub_height", error_collector);
+    collect_parse_dependencies(pp, "num_theta_force_points", "spreading", error_collector);
     // clang-format on
     RealList ct;
     pp.getarr("thrust_coeff", ct);
