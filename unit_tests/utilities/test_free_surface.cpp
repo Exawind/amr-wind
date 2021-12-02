@@ -161,7 +161,6 @@ protected:
             amrex::ParmParse pp("amr");
             amrex::Vector<int> ncell{{32, 32, 64}};
             pp.add("max_level", 0);
-            pp.add("max_grid_size", 16);
             pp.addarr("n_cell", ncell);
         }
         {
