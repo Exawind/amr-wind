@@ -101,7 +101,7 @@ void FreeSurface::initialize()
         }
     }
 
-    //if (m_out_fmt == "netcdf") prepare_netcdf_file();
+    if (m_out_fmt == "netcdf") prepare_netcdf_file();
 }
 
 void FreeSurface::post_advance_work()
@@ -184,133 +184,161 @@ void FreeSurface::process_output()
 {
     // Add problo back to heights
     if (m_out_fmt == "ascii") {
-        // write_ascii();
+        write_ascii();
     } else if (m_out_fmt == "netcdf") {
-        // write_netcdf();
+        write_netcdf();
     } else {
         amrex::Abort("FreeSurface: Invalid output format encountered");
     }
 }
 
-    /*void FreeSurface::write_ascii()
-    {
-        BL_PROFILE("amr-wind::FreeSurface::write_ascii");
-        amrex::Print()
-            << "WARNING: FreeSurface: ASCII output will impact performance"
-            << std::endl;
+void FreeSurface::write_ascii()
+{
+    BL_PROFILE("amr-wind::FreeSurface::write_ascii");
+    amrex::Print()
+        << "WARNING: FreeSurface: ASCII output will impact performance"
+        << std::endl;
 
-        const std::string post_dir = "post_processing";
-        const std::string sname =
-            amrex::Concatenate(m_label, m_sim.time().time_index());
+    const std::string post_dir = "post_processing";
+    const std::string sname =
+        amrex::Concatenate(m_label, m_sim.time().time_index());
 
-        if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-            amrex::CreateDirectoryFailed(post_dir);
-        }
-        const std::string fname = post_dir + "/" + sname + ".txt";
-        m_scontainer->WriteAsciiFile(fname);
+    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
+        amrex::CreateDirectoryFailed(post_dir);
     }
+    const std::string fname = post_dir + "/" + sname + ".txt";
 
-    void FreeSurface::prepare_netcdf_file()
+    if (amrex::ParallelDescriptor::IOProcessor())
     {
+        //
+        // Have I/O processor open file and write everything.
+        //
+        std::ofstream File;
+
+        File.open(fname.c_str(), std::ios::out|std::ios::trunc);
+
+        if (!File.good())
+            amrex::FileOpenFailed(fname);
+
+        // Metadata
+        File << m_npts  << '\n';
+        File << m_npts_dir[0] <<' ' << m_npts_dir[1] << '\n';
+
+        // Points in grid
+        for (int n = 0; n < m_npts; ++n) {
+            File << m_locs[n][0] << ' ' << m_locs[n][1] << ' ' << m_out[n]
+                 << '\n';
+        }
+
+        File.flush();
+
+        File.close();
+
+        if (!File.good())
+            amrex::Abort("FreeSurface::write_ascii(): problem writing file");
+    }
+}
+
+void FreeSurface::prepare_netcdf_file()
+{
 #ifdef AMR_WIND_USE_NETCDF
 
-        const std::string post_dir = "post_processing";
-        const std::string sname =
-            amrex::Concatenate(m_label, m_sim.time().time_index());
-        if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
-            amrex::CreateDirectoryFailed(post_dir);
-        }
-        m_ncfile_name = post_dir + "/" + sname + ".nc";
-
-        // Only I/O processor handles NetCDF generation
-        if (!amrex::ParallelDescriptor::IOProcessor()) return;
-
-        auto ncf =
-            ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
-        const std::string nt_name = "num_time_steps";
-        const std::string npart_name = "num_points";
-        const std::vector<std::string> two_dim{nt_name, npart_name};
-        ncf.enter_def_mode();
-        ncf.put_attr("title", "AMR-Wind data sampling output");
-        ncf.put_attr("version", ioutils::amr_wind_version());
-        ncf.put_attr("created_on", ioutils::timestamp());
-        ncf.def_dim(nt_name, NC_UNLIMITED);
-        ncf.def_dim("ndim", AMREX_SPACEDIM);
-        ncf.def_var("time", NC_DOUBLE, {nt_name});
-        // Define groups for each sampler
-        for (const auto& obj : m_samplers) {
-            auto grp = ncf.def_group(obj->label());
-
-            grp.def_dim(npart_name, obj->num_points());
-            obj->define_netcdf_metadata(grp);
-            grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-            for (const auto& vname : m_var_names)
-                grp.def_var(vname, NC_DOUBLE, two_dim);
-        }
-        ncf.exit_def_mode();
-
-        {
-            const std::vector<size_t> start{0, 0};
-            std::vector<size_t> count{0, AMREX_SPACEDIM};
-            SamplerBase::SampleLocType locs;
-            for (const auto& obj : m_samplers) {
-                auto grp = ncf.group(obj->label());
-                obj->populate_netcdf_metadata(grp);
-                obj->sampling_locations(locs);
-                auto xyz = grp.var("coordinates");
-                count[0] = obj->num_points();
-                xyz.put(&locs[0][0], start, count);
-            }
-        }
-
-#else
-        amrex::Abort(
-            "NetCDF support was not enabled during build time. Please "
-            "recompile or "
-            "use native format");
-#endif
+    const std::string post_dir = "post_processing";
+    const std::string sname =
+        amrex::Concatenate(m_label, m_sim.time().time_index());
+    if (!amrex::UtilCreateDirectory(post_dir, 0755)) {
+        amrex::CreateDirectoryFailed(post_dir);
     }
+    m_ncfile_name = post_dir + "/" + sname + ".nc";
 
-    void FreeSurface::write_netcdf()
+    // Only I/O processor handles NetCDF generation
+    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+
+    auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
+    const std::string nt_name = "num_time_steps";
+    const std::string npart_name = "num_points";
+    const std::vector<std::string> two_dim{nt_name, npart_name};
+    ncf.enter_def_mode();
+    ncf.put_attr("title", "AMR-Wind data sampling output");
+    ncf.put_attr("version", ioutils::amr_wind_version());
+    ncf.put_attr("created_on", ioutils::timestamp());
+    ncf.def_dim(nt_name, NC_UNLIMITED);
+    ncf.def_dim("ndim", AMREX_SPACEDIM);
+    ncf.def_var("time", NC_DOUBLE, {nt_name});
+    // Define groups for each sampler
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.def_group(obj->label());
+
+        grp.def_dim(npart_name, obj->num_points());
+        obj->define_netcdf_metadata(grp);
+        grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
+        for (const auto& vname : m_var_names)
+            grp.def_var(vname, NC_DOUBLE, two_dim);
+    }
+    ncf.exit_def_mode();
+
     {
-#ifdef AMR_WIND_USE_NETCDF
-        std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
-        m_scontainer->populate_buffer(buf);
-
-        if (!amrex::ParallelDescriptor::IOProcessor()) return;
-        auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
-        const std::string nt_name = "num_time_steps";
-        // Index of the next timestep
-        const size_t nt = ncf.dim(nt_name).len();
-        {
-            auto time = m_sim.time().new_time();
-            ncf.var("time").put(&time, {nt}, {1});
-        }
-
+        const std::vector<size_t> start{0, 0};
+        std::vector<size_t> count{0, AMREX_SPACEDIM};
+        SamplerBase::SampleLocType locs;
         for (const auto& obj : m_samplers) {
             auto grp = ncf.group(obj->label());
-            obj->output_netcdf_data(grp, nt);
+            obj->populate_netcdf_metadata(grp);
+            obj->sampling_locations(locs);
+            auto xyz = grp.var("coordinates");
+            count[0] = obj->num_points();
+            xyz.put(&locs[0][0], start, count);
         }
+    }
 
-        std::vector<size_t> start{nt, 0};
-        std::vector<size_t> count{1, 0};
-
-        const int nvars = m_var_names.size();
-        for (int iv = 0; iv < nvars; ++iv) {
-            start[1] = 0;
-            count[1] = 0;
-            int offset = iv * m_scontainer->num_sampling_particles();
-            for (const auto& obj : m_samplers) {
-                count[1] = obj->num_points();
-                auto grp = ncf.group(obj->label());
-                auto var = grp.var(m_var_names[iv]);
-                var.put(&buf[offset], start, count);
-                offset += count[1];
-            }
-        }
-        ncf.close();
+#else
+    amrex::Abort(
+        "NetCDF support was not enabled during build time. Please "
+        "recompile or "
+        "use native format");
 #endif
-}*/
+}
+
+void FreeSurface::write_netcdf()
+{
+#ifdef AMR_WIND_USE_NETCDF
+    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
+    m_scontainer->populate_buffer(buf);
+
+    if (!amrex::ParallelDescriptor::IOProcessor()) return;
+    auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
+    const std::string nt_name = "num_time_steps";
+    // Index of the next timestep
+    const size_t nt = ncf.dim(nt_name).len();
+    {
+        auto time = m_sim.time().new_time();
+        ncf.var("time").put(&time, {nt}, {1});
+    }
+
+    for (const auto& obj : m_samplers) {
+        auto grp = ncf.group(obj->label());
+        obj->output_netcdf_data(grp, nt);
+    }
+
+    std::vector<size_t> start{nt, 0};
+    std::vector<size_t> count{1, 0};
+
+    const int nvars = m_var_names.size();
+    for (int iv = 0; iv < nvars; ++iv) {
+        start[1] = 0;
+        count[1] = 0;
+        int offset = iv * m_scontainer->num_sampling_particles();
+        for (const auto& obj : m_samplers) {
+            count[1] = obj->num_points();
+            auto grp = ncf.group(obj->label());
+            auto var = grp.var(m_var_names[iv]);
+            var.put(&buf[offset], start, count);
+            offset += count[1];
+        }
+    }
+    ncf.close();
+#endif
+}
 
 } // namespace free_surface
 } // namespace amr_wind

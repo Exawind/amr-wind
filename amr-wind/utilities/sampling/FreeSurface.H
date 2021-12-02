@@ -61,17 +61,17 @@ protected:
     void process_output();
 
     //! Prepare NetCDF metadata
-    // void prepare_netcdf_file();
+    void prepare_netcdf_file();
 
     //! Write sampled data into a NetCDF file
-    // void write_netcdf();
+    void write_netcdf();
 
     /** Output sampled data in ASCII format
      *
      *  Note that this should be used for debugging only and not in production
      *  runs as it can have significant impacts on code performance.
      */
-    // void write_ascii();
+    void write_ascii();
 
 private:
     CFDSim& m_sim;
