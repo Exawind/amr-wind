@@ -219,7 +219,7 @@ jobs:
           which clang++
           cmake -B build \
             -DAMR_WIND_ENABLE_MPI=OFF \
-            -DAMR_WIND_ENABLE_HIP=ON \
+            -DAMR_WIND_ENABLE_ROCM=ON \
             -DCMAKE_CXX_COMPILER=$(which clang++) \
             -DCMAKE_C_COMPILER=$(which clang) \
             -DCMAKE_VERBOSE_MAKEFILE=ON \
