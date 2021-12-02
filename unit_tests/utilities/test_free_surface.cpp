@@ -190,8 +190,8 @@ protected:
     }
     // Parameters to reuse
     const amrex::Real water_level0 = 64.0, water_level1 = 31.5;
-    const amrex::Vector<amrex::Real> problo{{0.0, 0.0, 0.0}};
-    const amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 128.0}};
+    const amrex::Vector<amrex::Real> problo{{0.0, 0.0, -4.0}};
+    const amrex::Vector<amrex::Real> probhi{{128.0, 128.0, 124.0}};
     const amrex::Vector<amrex::Real> pt_coord{{63.0, 65.0, 0.0}};
     const amrex::Vector<amrex::Real> pl_start{{0.0, 0.0, 0.0}};
     const amrex::Vector<amrex::Real> pl_end{{128.0, 128.0, 0.0}};
