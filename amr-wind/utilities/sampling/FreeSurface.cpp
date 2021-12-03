@@ -109,76 +109,83 @@ void FreeSurface::post_advance_work()
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
                 loc[d] = m_locs[n][d];
             }
-            m_out[n] += amrex::ReduceSum(
-                vof, level_mask, 0,
-                [=] AMREX_GPU_HOST_DEVICE(
-                    amrex::Box const& bx,
-                    amrex::Array4<amrex::Real const> const& vof_arr,
-                    amrex::Array4<int const> const& mask_arr) -> amrex::Real {
-                    amrex::Real height_fab = 0.0;
+            m_out[n] = amrex::max(
+                m_out[n],
+                amrex::ReduceMax(
+                    vof, level_mask, 0,
+                    [=] AMREX_GPU_HOST_DEVICE(
+                        amrex::Box const& bx,
+                        amrex::Array4<amrex::Real const> const& vof_arr,
+                        amrex::Array4<int const> const& mask_arr)
+                        -> amrex::Real {
+                        amrex::Real height_fab = 0.0;
 
-                    amrex::Loop(
-                        bx, [=, &height_fab](int i, int j, int k) noexcept {
-                            // Initialize height measurement
-                            amrex::Real ht = plo[2];
-                            // Cell location
-                            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                            xm[0] = plo[0] + (i + 0.5) * dx[0];
-                            xm[1] = plo[1] + (j + 0.5) * dx[1];
-                            xm[2] = plo[2] + (k + 0.5) * dx[2];
-                            // Check if cell contains 2D grid point: complicated
-                            // conditional is to avoid double-counting and
-                            // includes exception for lo boundary
-                            if (((plo[0] == loc[0] &&
-                                  xm[0] - loc[0] == 0.5 * dx[0]) ||
-                                 (xm[0] - loc[0] < 0.5 * dx[0] &&
-                                  loc[0] - xm[0] <= 0.5 * dx[0])) &&
-                                ((plo[1] == loc[1] &&
-                                  xm[1] - loc[1] == 0.5 * dx[1]) ||
-                                 (xm[1] - loc[1] < 0.5 * dx[1] &&
-                                  loc[1] - xm[1] <= 0.5 * dx[1]))) {
-                                // Check if cell is obviously multiphase, then
-                                // check if cell might have interface at top or
-                                // bottom
-                                if ((vof_arr(i, j, k) < 1.0 &&
-                                     vof_arr(i, j, k) > 0.0) ||
-                                    (vof_arr(i, j, k) == 0.0 &&
-                                     (vof_arr(i, j, k + 1) == 1.0 ||
-                                      vof_arr(i, j, k - 1) == 1.0))) {
-                                    // Determine which cell to interpolate with
-                                    if (amrex::max(
-                                            vof_arr(i, j, k),
-                                            vof_arr(i, j, k + 1)) > 0.5 &&
-                                        amrex::min(
-                                            vof_arr(i, j, k),
-                                            vof_arr(i, j, k + 1)) <= 0.5) {
-                                        // Interpolate positive direction
-                                        ht = xm[2] +
-                                             (dx[2]) /
-                                                 (vof_arr(i, j, k + 1) -
-                                                  vof_arr(i, j, k)) *
-                                                 (0.5 - vof_arr(i, j, k));
-                                    } else {
-                                        // Interpolate negative direction
-                                        ht = xm[2] -
-                                             (dx[2]) /
-                                                 (vof_arr(i, j, k - 1) -
-                                                  vof_arr(i, j, k)) *
-                                                 (0.5 - vof_arr(i, j, k));
+                        amrex::Loop(
+                            bx, [=, &height_fab](int i, int j, int k) noexcept {
+                                // Initialize height measurement
+                                amrex::Real ht = plo[2];
+                                // Cell location
+                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
+                                xm[0] = plo[0] + (i + 0.5) * dx[0];
+                                xm[1] = plo[1] + (j + 0.5) * dx[1];
+                                xm[2] = plo[2] + (k + 0.5) * dx[2];
+                                // Check if cell contains 2D grid point:
+                                // complicated conditional is to avoid
+                                // double-counting and includes exception for lo
+                                // boundary
+                                if (((plo[0] == loc[0] &&
+                                      xm[0] - loc[0] == 0.5 * dx[0]) ||
+                                     (xm[0] - loc[0] < 0.5 * dx[0] &&
+                                      loc[0] - xm[0] <= 0.5 * dx[0])) &&
+                                    ((plo[1] == loc[1] &&
+                                      xm[1] - loc[1] == 0.5 * dx[1]) ||
+                                     (xm[1] - loc[1] < 0.5 * dx[1] &&
+                                      loc[1] - xm[1] <= 0.5 * dx[1]))) {
+                                    // Check if cell is obviously multiphase,
+                                    // then check if cell might have interface
+                                    // at top or bottom
+                                    if ((vof_arr(i, j, k) < 1.0 &&
+                                         vof_arr(i, j, k) > 0.0) ||
+                                        (vof_arr(i, j, k) == 0.0 &&
+                                         (vof_arr(i, j, k + 1) == 1.0 ||
+                                          vof_arr(i, j, k - 1) == 1.0))) {
+                                        // Determine which cell to interpolate
+                                        // with
+                                        if (amrex::max(
+                                                vof_arr(i, j, k),
+                                                vof_arr(i, j, k + 1)) > 0.5 &&
+                                            amrex::min(
+                                                vof_arr(i, j, k),
+                                                vof_arr(i, j, k + 1)) <= 0.5) {
+                                            // Interpolate positive direction
+                                            ht = xm[2] +
+                                                 (dx[2]) /
+                                                     (vof_arr(i, j, k + 1) -
+                                                      vof_arr(i, j, k)) *
+                                                     (0.5 - vof_arr(i, j, k));
+                                        } else {
+                                            // Interpolate negative direction
+                                            ht = xm[2] -
+                                                 (dx[2]) /
+                                                     (vof_arr(i, j, k - 1) -
+                                                      vof_arr(i, j, k)) *
+                                                     (0.5 - vof_arr(i, j, k));
+                                        }
                                     }
                                 }
-                            }
-                            // Offset by removing lo and contribute to whole
-                            height_fab += mask_arr(i, j, k) * (ht - plo[2]);
-                        });
-                    return height_fab;
-                });
+                                // Offset by removing lo and contribute to whole
+                                height_fab = amrex::max(
+                                    height_fab,
+                                    mask_arr(i, j, k) * (ht - plo[2]));
+                            });
+                        return height_fab;
+                    }));
         }
     }
 
     // Loop points in 2D grid
     for (int n = 0; n < m_npts; n++) {
-        amrex::ParallelDescriptor::ReduceRealSum(m_out[n]);
+        amrex::ParallelDescriptor::ReduceRealMax(m_out[n]);
     }
     // Add problo back to heights, making them absolute, not relative
     const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
