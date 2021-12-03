@@ -75,14 +75,8 @@ public:
     int check_pos(int cidx, const std::string& op, amrex::Real check_val);
 
 protected:
-    /*void prepare_netcdf_file() override {}
-    void process_output() override
-    {
-        // Test buffer populate for GPU runs
-        std::vector<double> buf(num_gridpoints());
-        //sampling_container().populate_buffer(buf);
-
-    }*/
+    // No file output during test
+    void process_output() override {}
     const amrex::Real tol = 1e-8;
 };
 

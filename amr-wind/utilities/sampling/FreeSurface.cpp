@@ -179,17 +179,17 @@ void FreeSurface::post_advance_work()
     for (int n = 0; n < m_npts; n++) {
         amrex::ParallelDescriptor::ReduceRealSum(m_out[n]);
     }
+    // Add problo back to heights
+    const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
+    for (int n = 0; n < m_npts; n++) {
+        m_out[n] += plo0[m_orient];
+    }
 
     process_output();
 }
 
 void FreeSurface::process_output()
 {
-    // Add problo back to heights
-    const auto& plo = m_sim.mesh().Geom(0).ProbLoArray();
-    for (int n = 0; n < m_npts; n++) {
-        m_out[n] += plo[m_orient];
-    }
     if (m_out_fmt == "ascii") {
         write_ascii();
     } else if (m_out_fmt == "netcdf") {

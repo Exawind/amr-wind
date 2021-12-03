@@ -58,7 +58,7 @@ public:
 
 protected:
     //! Output data based on user-defined format
-    void process_output();
+    virtual void process_output();
 
     //! Prepare NetCDF metadata
     void prepare_netcdf_file();
