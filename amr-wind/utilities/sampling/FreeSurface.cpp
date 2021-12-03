@@ -262,7 +262,6 @@ void FreeSurface::prepare_netcdf_file()
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
     const std::string ngp_name = "num_grid_points";
-    const std::vector<std::string> two_dim{nt_name, npart_name};
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind data sampling output");
     ncf.put_attr("version", ioutils::amr_wind_version());
@@ -279,8 +278,9 @@ void FreeSurface::prepare_netcdf_file()
     ncf.put_attr("end", m_end);
 
     // Set up array of data for locations
-    ncf.def_var("coordinates", NC_DOUBLE, {nt_name, ndata_name, "ndim"})
-        ncf.exit_def_mode();
+    ncf.def_var("coordinates", NC_DOUBLE, {nt_name, ngp_name, "ndim"});
+
+    ncf.exit_def_mode();
 
 #else
     amrex::Abort(
