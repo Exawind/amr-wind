@@ -8,12 +8,14 @@
 namespace amr_wind {
 namespace free_surface {
 
-amrex::Real get_height (
-  const int i, const int j, const int k,
-  const amrex::GpuArray<amrex::Real, 3>& vof_arr,
-  const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& loc,
-  const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
-  const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
+amrex::Real get_height(
+    const int i,
+    const int j,
+    const int k,
+    const amrex::GpuArray<amrex::Real, 3>& vof_arr,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& loc,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
+    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
 {
     // Initialize height measurement
     amrex::Real height = problo[2];
@@ -25,9 +27,9 @@ amrex::Real get_height (
     // Check if cell contains 2D grid point: complicated conditional is to avoid
     // double-counting and includes exception for lo boundary
     if (((problo[0] == loc[0] && xm[0] - loc[0] == 0.5 * dx[0]) ||
-        (xm[0] - loc[0] < 0.5 * dx[0] && loc[0] - xm[0] <= 0.5 * dx[0])) &&
+         (xm[0] - loc[0] < 0.5 * dx[0] && loc[0] - xm[0] <= 0.5 * dx[0])) &&
         ((problo[1] == loc[1] && xm[1] - loc[1] == 0.5 * dx[1]) ||
-        (xm[1] - loc[1] < 0.5 * dx[1] && loc[1] - xm[1] <= 0.5 * dx[1]))) {
+         (xm[1] - loc[1] < 0.5 * dx[1] && loc[1] - xm[1] <= 0.5 * dx[1]))) {
         // Check if cell is obviously multiphase, then check if cell might have
         // interface at top or bottom
         if ((vof_arr[1] < 1.0 && vof_arr[1] > 0.0) ||
@@ -36,12 +38,12 @@ amrex::Real get_height (
             if (amrex::max(vof_arr[1], vof_arr[2]) > 0.5 &&
                 amrex::min(vof_arr[1], vof_arr[2]) <= 0.5) {
                 // Interpolate positive direction
-                height = xm[2] +
-                     (dx[2]) / (vof_arr[2] - vof_arr[1]) * (0.5 - vof_arr[1]);
+                height = xm[2] + (dx[2]) / (vof_arr[2] - vof_arr[1]) *
+                                     (0.5 - vof_arr[1]);
             } else {
                 // Interpolate negative direction
-                height = xm[2] -
-                     (dx[2]) / (vof_arr[0] - vof_arr[1]) * (0.5 - vof_arr[1]);
+                height = xm[2] - (dx[2]) / (vof_arr[0] - vof_arr[1]) *
+                                     (0.5 - vof_arr[1]);
             }
         }
     }
@@ -95,7 +97,8 @@ void FreeSurface::initialize()
             m_out[idx] = m_start[m_orient];
             for (int nd = 0; nd < 2; ++nd) {
                 int d = m_griddim[nd];
-                m_locs[idx][d] = m_start[d] + dx[nd] * (i * (1 - nd) + j * (nd));
+                m_locs[idx][d] =
+                    m_start[d] + dx[nd] * (i * (1 - nd) + j * (nd));
             }
             ++idx;
         }
@@ -212,21 +215,19 @@ void FreeSurface::write_ascii()
     }
     const std::string fname = post_dir + "/" + sname + ".txt";
 
-    if (amrex::ParallelDescriptor::IOProcessor())
-    {
+    if (amrex::ParallelDescriptor::IOProcessor()) {
         //
         // Have I/O processor open file and write everything.
         //
         std::ofstream File;
 
-        File.open(fname.c_str(), std::ios::out|std::ios::trunc);
+        File.open(fname.c_str(), std::ios::out | std::ios::trunc);
 
-        if (!File.good())
-            amrex::FileOpenFailed(fname);
+        if (!File.good()) amrex::FileOpenFailed(fname);
 
         // Metadata
-        File << m_npts  << '\n';
-        File << m_npts_dir[0] <<' ' << m_npts_dir[1] << '\n';
+        File << m_npts << '\n';
+        File << m_npts_dir[0] << ' ' << m_npts_dir[1] << '\n';
 
         // Points in grid
         for (int n = 0; n < m_npts; ++n) {
@@ -278,8 +279,8 @@ void FreeSurface::prepare_netcdf_file()
     ncf.put_attr("end", m_end);
 
     // Set up array of data for locations
-    ncf.def_var("coordinates", NC_DOUBLE, {nt_name,ndata_name,"ndim"})
-    ncf.exit_def_mode();
+    ncf.def_var("coordinates", NC_DOUBLE, {nt_name, ndata_name, "ndim"})
+        ncf.exit_def_mode();
 
 #else
     amrex::Abort(
@@ -311,10 +312,10 @@ void FreeSurface::write_netcdf()
         m_locs[n][m_orient] = m_out[n];
     }
 
+    count[1] = m_npts;
     auto var = ncf.var("coordinates");
     var.put(&m_locs[0][0], start, count);
 
-    }
     ncf.close();
 #endif
 }

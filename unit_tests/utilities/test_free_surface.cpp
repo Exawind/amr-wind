@@ -71,13 +71,8 @@ public:
     FreeSurfaceImpl(amr_wind::CFDSim& sim, const std::string& label)
         : amr_wind::free_surface::FreeSurface(sim, label)
     {}
-    int check_output(
-        const std::string& op,
-        amrex::Real check_val);
-    int check_pos(
-        int cidx,
-        const std::string& op,
-        amrex::Real check_val);
+    int check_output(const std::string& op, amrex::Real check_val);
+    int check_pos(int cidx, const std::string& op, amrex::Real check_val);
 
 protected:
     /*void prepare_netcdf_file() override {}
@@ -91,9 +86,7 @@ protected:
     const amrex::Real tol = 1e-8;
 };
 
-int FreeSurfaceImpl::check_output(
-    const std::string& op,
-    amrex::Real check_val)
+int FreeSurfaceImpl::check_output(const std::string& op, amrex::Real check_val)
 {
     // Get number of points and output array
     auto npts_tot = num_gridpoints();
@@ -120,9 +113,7 @@ int FreeSurfaceImpl::check_output(
 }
 
 int FreeSurfaceImpl::check_pos(
-    const int cidx,
-    const std::string& op,
-    amrex::Real check_val)
+    const int cidx, const std::string& op, amrex::Real check_val)
 {
     // Get number of points and position array
     auto npts_tot = num_gridpoints();
@@ -181,11 +172,11 @@ protected:
     }
     void setup_grid2D()
     {
-      amrex::ParmParse pp("freesurface");
-      pp.add("output_frequency", 1);
-      pp.addarr("num_points", amrex::Vector<int>{npts, npts});
-      pp.addarr("start", pl_start);
-      pp.addarr("end", pl_end);
+        amrex::ParmParse pp("freesurface");
+        pp.add("output_frequency", 1);
+        pp.addarr("num_points", amrex::Vector<int>{npts, npts});
+        pp.addarr("start", pl_start);
+        pp.addarr("end", pl_end);
     }
     // Parameters to reuse
     const amrex::Real water_level0 = 64.0, water_level1 = 31.5;
@@ -238,10 +229,10 @@ TEST_F(FreeSurfaceTest, plane)
 
     // Check number of points
     auto ngp = tool.num_gridpoints();
-    EXPECT_EQ(ngp, npts*npts);
+    EXPECT_EQ(ngp, npts * npts);
     // Check output value
     int nout = tool.check_output("~", liwl);
-    ASSERT_EQ(nout, npts*npts);
+    ASSERT_EQ(nout, npts * npts);
 }
 
 } // namespace amr_wind_tests
