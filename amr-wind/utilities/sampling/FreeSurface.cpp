@@ -260,40 +260,26 @@ void FreeSurface::prepare_netcdf_file()
 
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
-    const std::string npart_name = "num_points";
+    const std::string ngp_name = "num_grid_points";
     const std::vector<std::string> two_dim{nt_name, npart_name};
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind data sampling output");
     ncf.put_attr("version", ioutils::amr_wind_version());
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
+    ncf.def_dim(ngp_name, m_npts);
     ncf.def_dim("ndim", AMREX_SPACEDIM);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
-    // Define groups for each sampler
-    for (const auto& obj : m_samplers) {
-        auto grp = ncf.def_group(obj->label());
 
-        grp.def_dim(npart_name, obj->num_points());
-        obj->define_netcdf_metadata(grp);
-        grp.def_var("coordinates", NC_DOUBLE, {npart_name, "ndim"});
-        for (const auto& vname : m_var_names)
-            grp.def_var(vname, NC_DOUBLE, two_dim);
-    }
+    // Metadata related to the 2D grid used to sample
+    const std::vector<int> ijk{m_npts_dir[0], m_npts_dir[1]};
+    ncf.put_attr("ijk_dims", ijk);
+    ncf.put_attr("start", m_start);
+    ncf.put_attr("end", m_end);
+
+    // Set up array of data for locations
+    ncf.def_var("coordinates", NC_DOUBLE, {nt_name,ndata_name,"ndim"})
     ncf.exit_def_mode();
-
-    {
-        const std::vector<size_t> start{0, 0};
-        std::vector<size_t> count{0, AMREX_SPACEDIM};
-        SamplerBase::SampleLocType locs;
-        for (const auto& obj : m_samplers) {
-            auto grp = ncf.group(obj->label());
-            obj->populate_netcdf_metadata(grp);
-            obj->sampling_locations(locs);
-            auto xyz = grp.var("coordinates");
-            count[0] = obj->num_points();
-            xyz.put(&locs[0][0], start, count);
-        }
-    }
 
 #else
     amrex::Abort(
@@ -306,8 +292,6 @@ void FreeSurface::prepare_netcdf_file()
 void FreeSurface::write_netcdf()
 {
 #ifdef AMR_WIND_USE_NETCDF
-    std::vector<double> buf(m_total_particles * m_var_names.size(), 0.0);
-    m_scontainer->populate_buffer(buf);
 
     if (!amrex::ParallelDescriptor::IOProcessor()) return;
     auto ncf = ncutils::NCFile::open(m_ncfile_name, NC_WRITE);
@@ -319,26 +303,17 @@ void FreeSurface::write_netcdf()
         ncf.var("time").put(&time, {nt}, {1});
     }
 
-    for (const auto& obj : m_samplers) {
-        auto grp = ncf.group(obj->label());
-        obj->output_netcdf_data(grp, nt);
-    }
-
     std::vector<size_t> start{nt, 0};
     std::vector<size_t> count{1, 0};
 
-    const int nvars = m_var_names.size();
-    for (int iv = 0; iv < nvars; ++iv) {
-        start[1] = 0;
-        count[1] = 0;
-        int offset = iv * m_scontainer->num_sampling_particles();
-        for (const auto& obj : m_samplers) {
-            count[1] = obj->num_points();
-            auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
-            var.put(&buf[offset], start, count);
-            offset += count[1];
-        }
+    // Copy m_out into m_locs for simplicity
+    for (int n = 0; n < m_npts; ++n) {
+        m_locs[n][m_orient] = m_out[n];
+    }
+
+    auto var = ncf.var("coordinates");
+    var.put(&m_locs[0][0], start, count);
+
     }
     ncf.close();
 #endif
