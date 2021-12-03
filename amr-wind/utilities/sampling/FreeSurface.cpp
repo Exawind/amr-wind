@@ -8,49 +8,6 @@
 namespace amr_wind {
 namespace free_surface {
 
-amrex::Real get_height(
-    const int i,
-    const int j,
-    const int k,
-    const amrex::GpuArray<amrex::Real, 3>& vof_arr,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& loc,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& problo,
-    const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx)
-{
-    // Initialize height measurement
-    amrex::Real height = problo[2];
-    // Cell location
-    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-    xm[0] = problo[0] + (i + 0.5) * dx[0];
-    xm[1] = problo[1] + (j + 0.5) * dx[1];
-    xm[2] = problo[2] + (k + 0.5) * dx[2];
-    // Check if cell contains 2D grid point: complicated conditional is to avoid
-    // double-counting and includes exception for lo boundary
-    if (((problo[0] == loc[0] && xm[0] - loc[0] == 0.5 * dx[0]) ||
-         (xm[0] - loc[0] < 0.5 * dx[0] && loc[0] - xm[0] <= 0.5 * dx[0])) &&
-        ((problo[1] == loc[1] && xm[1] - loc[1] == 0.5 * dx[1]) ||
-         (xm[1] - loc[1] < 0.5 * dx[1] && loc[1] - xm[1] <= 0.5 * dx[1]))) {
-        // Check if cell is obviously multiphase, then check if cell might have
-        // interface at top or bottom
-        if ((vof_arr[1] < 1.0 && vof_arr[1] > 0.0) ||
-            (vof_arr[1] == 0.0 && (vof_arr[2] == 1.0 || vof_arr[0] == 1.0))) {
-            // Determine which cell to interpolate with
-            if (amrex::max(vof_arr[1], vof_arr[2]) > 0.5 &&
-                amrex::min(vof_arr[1], vof_arr[2]) <= 0.5) {
-                // Interpolate positive direction
-                height = xm[2] + (dx[2]) / (vof_arr[2] - vof_arr[1]) *
-                                     (0.5 - vof_arr[1]);
-            } else {
-                // Interpolate negative direction
-                height = xm[2] - (dx[2]) / (vof_arr[0] - vof_arr[1]) *
-                                     (0.5 - vof_arr[1]);
-            }
-        }
-    }
-    height -= problo[2];
-    return height;
-}
-
 FreeSurface::FreeSurface(CFDSim& sim, const std::string& label)
     : m_sim(sim), m_label(label), m_vof(sim.repo().get_field("vof"))
 {}
@@ -162,13 +119,57 @@ void FreeSurface::post_advance_work()
 
                     amrex::Loop(
                         bx, [=, &height_fab](int i, int j, int k) noexcept {
-                            amrex::GpuArray<amrex::Real, 3> vof_3 = {
-                                vof_arr(i, j, k - 1), vof_arr(i, j, k),
-                                vof_arr(i, j, k + 1)};
-                            amrex::Real ht =
-                                get_height(i, j, k, vof_3, loc, plo, dx);
-
-                            height_fab += mask_arr(i, j, k) * ht;
+                            // Initialize height measurement
+                            amrex::Real ht = plo[2];
+                            // Cell location
+                            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
+                            xm[0] = plo[0] + (i + 0.5) * dx[0];
+                            xm[1] = plo[1] + (j + 0.5) * dx[1];
+                            xm[2] = plo[2] + (k + 0.5) * dx[2];
+                            // Check if cell contains 2D grid point: complicated
+                            // conditional is to avoid double-counting and
+                            // includes exception for lo boundary
+                            if (((plo[0] == loc[0] &&
+                                  xm[0] - loc[0] == 0.5 * dx[0]) ||
+                                 (xm[0] - loc[0] < 0.5 * dx[0] &&
+                                  loc[0] - xm[0] <= 0.5 * dx[0])) &&
+                                ((plo[1] == loc[1] &&
+                                  xm[1] - loc[1] == 0.5 * dx[1]) ||
+                                 (xm[1] - loc[1] < 0.5 * dx[1] &&
+                                  loc[1] - xm[1] <= 0.5 * dx[1]))) {
+                                // Check if cell is obviously multiphase, then
+                                // check if cell might have interface at top or
+                                // bottom
+                                if ((vof_arr(i, j, k) < 1.0 &&
+                                     vof_arr(i, j, k) > 0.0) ||
+                                    (vof_arr(i, j, k) == 0.0 &&
+                                     (vof_arr(i, j, k + 1) == 1.0 ||
+                                      vof_arr(i, j, k - 1) == 1.0))) {
+                                    // Determine which cell to interpolate with
+                                    if (amrex::max(
+                                            vof_arr(i, j, k),
+                                            vof_arr(i, j, k + 1)) > 0.5 &&
+                                        amrex::min(
+                                            vof_arr(i, j, k),
+                                            vof_arr(i, j, k + 1)) <= 0.5) {
+                                        // Interpolate positive direction
+                                        ht = xm[2] +
+                                             (dx[2]) /
+                                                 (vof_arr(i, j, k + 1) -
+                                                  vof_arr(i, j, k)) *
+                                                 (0.5 - vof_arr(i, j, k));
+                                    } else {
+                                        // Interpolate negative direction
+                                        ht = xm[2] -
+                                             (dx[2]) /
+                                                 (vof_arr(i, j, k - 1) -
+                                                  vof_arr(i, j, k)) *
+                                                 (0.5 - vof_arr(i, j, k));
+                                    }
+                                }
+                            }
+                            // Offset by removing lo and contribute to whole
+                            height_fab += mask_arr(i, j, k) * (ht - plo[2]);
                         });
                     return height_fab;
                 });
@@ -179,7 +180,7 @@ void FreeSurface::post_advance_work()
     for (int n = 0; n < m_npts; n++) {
         amrex::ParallelDescriptor::ReduceRealSum(m_out[n]);
     }
-    // Add problo back to heights
+    // Add problo back to heights, making them absolute, not relative
     const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
     for (int n = 0; n < m_npts; n++) {
         m_out[n] += plo0[m_orient];
