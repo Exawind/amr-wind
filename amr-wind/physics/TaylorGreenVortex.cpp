@@ -8,25 +8,9 @@ namespace amr_wind {
 TaylorGreenVortex::TaylorGreenVortex(const CFDSim& sim)
     : m_velocity(sim.repo().get_field("velocity"))
     , m_density(sim.repo().get_field("density"))
-    , m_mesh_fac(sim.repo().get_field("mesh_scaling_factor_cc"))
 {
-    {
-        amrex::ParmParse pp("incflo");
-        pp.query("density", m_rho);
-    }
-
-    // determine probhi based on if mesh is mapped
-    {
-        amrex::ParmParse pp("geometry");
-        if (pp.contains("prob_hi_physical")) {
-            pp.getarr("prob_hi_physical", m_probhi_physical);
-        } else {
-            for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
-                m_probhi_physical[d] =
-                    sim.repo().mesh().Geom(0).ProbHiArray()[d];
-            }
-        }
-    }
+    amrex::ParmParse pp("incflo");
+    pp.query("density", m_rho);
 }
 
 /** Initialize the velocity and density fields at the beginning of the
@@ -43,25 +27,21 @@ void TaylorGreenVortex::initialize_fields(
     density.setVal(m_rho);
 
     const auto& problo = geom.ProbLoArray();
-    const amrex::Real Lx = m_probhi_physical[0] - problo[0];
-    const amrex::Real Ly = m_probhi_physical[1] - problo[1];
-    const amrex::Real Lz = m_probhi_physical[2] - problo[2];
+    const auto& probhi = geom.ProbHiArray();
+    const amrex::Real Lx = probhi[0] - problo[0];
+    const amrex::Real Ly = probhi[1] - problo[1];
+    const amrex::Real Lz = probhi[2] - problo[2];
 
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         const auto& dx = geom.CellSizeArray();
         auto vel = velocity.array(mfi);
-        amrex::Array4<amrex::Real const> const& fac =
-            m_mesh_fac(level).const_array(mfi);
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x =
-                    problo[0] + (i + 0.5) * dx[0] * fac(i, j, k, 0);
-                const amrex::Real y =
-                    problo[1] + (j + 0.5) * dx[1] * fac(i, j, k, 1);
-                const amrex::Real z =
-                    problo[2] + (k + 0.5) * dx[2] * fac(i, j, k, 2);
+                const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
+                const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
+                const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
 
                 vel(i, j, k, 0) = std::sin(two_pi() * x / Lx) *
                                   std::cos(two_pi() * y / Ly) *
@@ -72,8 +52,6 @@ void TaylorGreenVortex::initialize_fields(
                 vel(i, j, k, 2) = 0.0;
             });
     }
-
-    m_velocity.is_mesh_mapped() = false;
 }
 
 } // namespace amr_wind
