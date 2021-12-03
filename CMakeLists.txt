@@ -27,7 +27,7 @@ option(AMR_WIND_SAVE_GOLDS "Provide a directory in which to save golds during te
 option(AMR_WIND_ENABLE_MPI "Enable MPI" OFF)
 option(AMR_WIND_ENABLE_OPENMP "Enable OpenMP" OFF)
 option(AMR_WIND_ENABLE_CUDA "Enable CUDA" OFF)
-option(AMR_WIND_ENABLE_HIP "Enable HIP/ROCm" OFF)
+option(AMR_WIND_ENABLE_ROCM "Enable ROCm/HIP" OFF)
 option(AMR_WIND_ENABLE_DPCPP "Enable Intel OneAPI DPC++" OFF)
 option(AMR_WIND_ENABLE_TINY_PROFILE "Enable AMReX TinyProfile support" OFF)
 
@@ -56,7 +56,7 @@ if(AMR_WIND_ENABLE_CUDA)
   endif()
 endif()
 
-if (AMR_WIND_ENABLE_HIP)
+if (AMR_WIND_ENABLE_ROCM)
   find_package(HIP REQUIRED)
   if (NOT DEFINED AMD_ARCH)
     # Set default AMD architectures (based on Spock)
