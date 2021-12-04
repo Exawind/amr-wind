@@ -69,6 +69,12 @@ void CFDSim::activate_mesh_map()
         "mesh_scaling_factor_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(),
         1);
 
+    // declare nodal and cell-centered non-uniform mesh
+    auto& non_uniform_coord_cc = m_repo.declare_cc_field(
+        "non_uniform_coord_cc", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
+    auto& non_uniform_coord_nd = m_repo.declare_nd_field(
+        "non_uniform_coord_nd", AMREX_SPACEDIM, m_pde_mgr.num_ghost_state(), 1);
+
     // TODO: Create BCNoOP fill patch operators for mesh scaling fields
 
     amrex::ParmParse pp("geometry");

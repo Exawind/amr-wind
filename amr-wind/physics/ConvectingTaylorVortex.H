@@ -124,7 +124,8 @@ private:
     Field& m_gradp;
     Field& m_density;
     Field& m_mesh_fac_cc;
-    Field& m_mesh_fac_nd;
+    Field& m_nu_coord_cc;
+    Field& m_nu_coord_nd;
 
     void output_error();
 

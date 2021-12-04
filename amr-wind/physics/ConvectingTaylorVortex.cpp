@@ -95,7 +95,8 @@ ConvectingTaylorVortex::ConvectingTaylorVortex(const CFDSim& sim)
     , m_gradp(sim.repo().get_field("gp"))
     , m_density(sim.repo().get_field("density"))
     , m_mesh_fac_cc(sim.repo().get_field("mesh_scaling_factor_cc"))
-    , m_mesh_fac_nd(sim.repo().get_field("mesh_scaling_factor_nd"))
+    , m_nu_coord_cc(sim.repo().get_field("non_uniform_coord_cc"))
+    , m_nu_coord_nd(sim.repo().get_field("non_uniform_coord_nd"))
 {
     {
         amrex::ParmParse pp("CTV");
@@ -139,8 +140,8 @@ void ConvectingTaylorVortex::initialize_fields(
     auto& density = m_density(level);
     auto& pressure = m_repo.get_field("p")(level);
     auto& gradp = m_repo.get_field("gp")(level);
-    auto& mesh_fac_cc = m_mesh_fac_cc(level);
-    auto& mesh_fac_nd = m_mesh_fac_nd(level);
+    auto& nu_coord_cc = m_nu_coord_cc(level);
+    auto& nu_coord_nd = m_nu_coord_nd(level);
 
     density.setVal(m_rho);
 
@@ -154,18 +155,15 @@ void ConvectingTaylorVortex::initialize_fields(
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
 
-        const auto& dx = geom.CellSizeArray();
-        const auto& problo = geom.ProbLoArray();
         auto vel = velocity.array(mfi);
         auto gp = gradp.array(mfi);
-        auto fac_cc = mesh_fac_cc.array(mfi);
+        auto nu_cc = nu_coord_cc.array(mfi);
 
         amrex::ParallelFor(
             vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                const amrex::Real x =
-                    problo[0] + (i + 0.5) * dx[0] * fac_cc(i, j, k, 0);
-                const amrex::Real y =
-                    problo[1] + (j + 0.5) * dx[1] * fac_cc(i, j, k, 1);
+                amrex::Real x = nu_cc(i, j, k, 0);
+                amrex::Real y = nu_cc(i, j, k, 1);
+
                 vel(i, j, k, 0) = u_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 1) = v_exact(u0, v0, omega, x, y, 0.0);
                 vel(i, j, k, 2) = w_exact(u0, v0, omega, x, y, 0.0);
@@ -180,14 +178,13 @@ void ConvectingTaylorVortex::initialize_fields(
         if (activate_pressure) {
             const auto& nbx = mfi.nodaltilebox();
             auto pres = pressure.array(mfi);
-            auto fac_nd = mesh_fac_nd.array(mfi);
+            auto nu_nd = nu_coord_nd.array(mfi);
 
             amrex::ParallelFor(
                 nbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                    const amrex::Real x =
-                        problo[0] + i * dx[0] * fac_nd(i, j, k, 0);
-                    const amrex::Real y =
-                        problo[1] + j * dx[1] * fac_nd(i, j, k, 1);
+                    amrex::Real x = nu_nd(i, j, k, 0);
+                    amrex::Real y = nu_nd(i, j, k, 1);
+
                     pres(i, j, k, 0) =
                         -0.25 * (std::cos(2.0 * utils::pi() * x) +
                                  std::cos(2.0 * utils::pi() * y));
@@ -240,25 +237,23 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
         }
 
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
-        const auto& problo = m_mesh.Geom(lev).ProbLoArray();
-
         auto& mesh_fac_cc = m_mesh_fac_cc(lev);
+        auto& nu_coord_cc = m_nu_coord_cc(lev);
         const auto& fld = field(lev);
 
         error += amrex::ReduceSum(
-            fld, mesh_fac_cc, level_mask, 0,
+            fld, mesh_fac_cc, nu_coord_cc, level_mask, 0,
             [=] AMREX_GPU_HOST_DEVICE(
                 amrex::Box const& bx,
                 amrex::Array4<amrex::Real const> const& fld_arr,
                 amrex::Array4<amrex::Real const> const& fac_cc,
+                amrex::Array4<amrex::Real const> const& nu_cc,
                 amrex::Array4<int const> const& mask_arr) -> amrex::Real {
                 amrex::Real err_fab = 0.0;
 
                 amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
-                    const amrex::Real x =
-                        problo[0] + (i + 0.5) * dx[0] * fac_cc(i, j, k, 0);
-                    const amrex::Real y =
-                        problo[1] + (j + 0.5) * dx[1] * fac_cc(i, j, k, 1);
+                    amrex::Real x = nu_cc(i, j, k, 0);
+                    amrex::Real y = nu_cc(i, j, k, 1);
 
                     const amrex::Real u = fld_arr(i, j, k, comp);
 
@@ -284,6 +279,7 @@ amrex::Real ConvectingTaylorVortex::compute_error(const Field& field)
 
 void ConvectingTaylorVortex::output_error()
 {
+    // TODO: gradp analytical solution has not been adjusted for mesh mapping
     const amrex::Real u_err = compute_error<UExact>(m_velocity);
     const amrex::Real v_err = compute_error<VExact>(m_velocity);
     const amrex::Real w_err = compute_error<WExact>(m_velocity);

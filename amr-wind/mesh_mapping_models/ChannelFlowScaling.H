@@ -21,6 +21,9 @@ public:
     //! Construct the mesh scaling field
     void create_map(int, const amrex::Geometry&) override;
 
+    //! Construct the non-uniform mesh field
+    void create_non_uniform_mesh(int, const amrex::Geometry&) override{};
+
 private:
     Field& m_mesh_scale_fac_cc;
     Field& m_mesh_scale_fac_nd;

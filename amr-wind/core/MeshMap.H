@@ -35,6 +35,9 @@ public:
 
     //! Construct mesh scaling field
     virtual void create_map(int, const amrex::Geometry&) = 0;
+
+    //! Construct the non-uniform mesh field
+    virtual void create_non_uniform_mesh(int, const amrex::Geometry&) = 0;
 };
 
 /** A collection of \ref mesh_map instances
