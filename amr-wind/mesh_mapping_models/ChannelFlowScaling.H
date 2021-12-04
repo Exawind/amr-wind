@@ -25,11 +25,9 @@ private:
     Field& m_mesh_scale_fac_cc;
     Field& m_mesh_scale_fac_nd;
 
-    amrex::Real m_eps{1e-15};
-
     //! User input parameters
     amrex::Vector<int> n_cell{{0, 0, 0}};
-    amrex::Vector<amrex::Real> m_beta{{0.0, m_eps, 0.0}};
+    amrex::Vector<amrex::Real> m_beta{{0.0, 3.0, 0.0}};
     amrex::Vector<int> m_map{{0, 1, 0}};
 };
 
