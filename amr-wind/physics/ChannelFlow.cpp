@@ -184,7 +184,7 @@ amrex::Real ChannelFlow::compute_error()
                     const amrex::Real u = vel_arr(i, j, k, 0);
 
                     const amrex::Real u_exact =
-                        1 / (4 * mu) * dpdx * (y * y - y * ht);
+                        1 / (2 * mu) * -dpdx * (y * y - y * ht);
 
                     const amrex::Real cell_vol =
                         dx[0] * fac_cc_arr(i, j, k, 0) * dx[1] *
