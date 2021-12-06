@@ -23,6 +23,7 @@ void FreeSurface::initialize()
         pp.query("output_frequency", m_out_freq);
         pp.query("output_format", m_out_fmt);
         // Load parameters of freesurface sampling
+        pp.query("num_instances", m_ninst);
         pp.getarr("num_points", m_npts_dir);
         pp.getarr("start", m_start);
         pp.getarr("end", m_end);
@@ -36,7 +37,7 @@ void FreeSurface::initialize()
 
     // Turn parameters into 2D grid
     m_locs.resize(m_npts);
-    m_out.resize(m_npts);
+    m_out.resize(m_npts * m_ninst);
 
     // Get size of spacing
     amrex::Vector<amrex::Real> dx = {0.0, 0.0};
@@ -49,12 +50,13 @@ void FreeSurface::initialize()
     int idx = 0;
     for (int j = 0; j < m_npts_dir[1]; ++j) {
         for (int i = 0; i < m_npts_dir[0]; ++i) {
-            m_locs[idx][m_orient] = m_start[m_orient];
-            // Initialize output values to initial position
-            m_out[idx] = m_start[m_orient];
+            // Initialize output values to 0.0
+            for (int ni = 0; ni < m_ninst; ++ni) {
+                m_out[idx * m_ninst + ni] = m_start[m_orient];
+            }
             for (int nd = 0; nd < 2; ++nd) {
                 int d = m_griddim[nd];
-                m_locs[idx][d] =
+                m_locs[idx][nd] =
                     m_start[d] + dx[nd] * (i * (1 - nd) + j * (nd));
             }
             ++idx;
@@ -74,81 +76,91 @@ void FreeSurface::post_advance_work()
     if (!(tidx % m_out_freq == 0)) return;
 
     // Zero data in output array
-    for (int n = 0; n < m_npts; n++) {
+    for (int n = 0; n < m_npts * m_ninst; n++) {
         m_out[n] = 0.0;
     }
 
     // Sum of interface locations at each point (assumes one interface only)
     const int finest_level = m_vof.repo().num_active_levels() - 1;
 
-    for (int lev = 0; lev <= finest_level; lev++) {
+    // Loop instances
+    for (int ni = 0; ni < m_ninst; ++ni) {
+        for (int lev = 0; lev <= finest_level; lev++) {
 
-        // Use level_mask to identify smallest volume
-        amrex::iMultiFab level_mask;
-        if (lev < finest_level) {
-            level_mask = makeFineMask(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
-        } else {
-            level_mask.define(
-                m_sim.mesh().boxArray(lev), m_sim.mesh().DistributionMap(lev),
-                1, 0, amrex::MFInfo());
-            level_mask.setVal(1);
-        }
-
-        auto& vof = m_vof(lev);
-        const auto& geom = m_sim.mesh().Geom(lev);
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx =
-            geom.CellSizeArray();
-        const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
-            geom.ProbLoArray();
-
-        // Loop points in 2D grid
-        for (int n = 0; n < m_npts; n++) {
-            amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> loc;
-            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                loc[d] = m_locs[n][d];
+            // Use level_mask to identify smallest volume
+            amrex::iMultiFab level_mask;
+            if (lev < finest_level) {
+                level_mask = makeFineMask(
+                    m_sim.mesh().boxArray(lev),
+                    m_sim.mesh().DistributionMap(lev),
+                    m_sim.mesh().boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+            } else {
+                level_mask.define(
+                    m_sim.mesh().boxArray(lev),
+                    m_sim.mesh().DistributionMap(lev), 1, 0, amrex::MFInfo());
+                level_mask.setVal(1);
             }
-            m_out[n] = amrex::max(
-                m_out[n],
-                amrex::ReduceMax(
-                    vof, level_mask, 0,
-                    [=] AMREX_GPU_HOST_DEVICE(
-                        amrex::Box const& bx,
-                        amrex::Array4<amrex::Real const> const& vof_arr,
-                        amrex::Array4<int const> const& mask_arr)
-                        -> amrex::Real {
-                        amrex::Real height_fab = 0.0;
 
-                        amrex::Loop(
-                            bx, [=, &height_fab](int i, int j, int k) noexcept {
-                                // Initialize height measurement
-                                amrex::Real ht = plo[2];
-                                // Cell location
-                                amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> xm;
-                                xm[0] = plo[0] + (i + 0.5) * dx[0];
-                                xm[1] = plo[1] + (j + 0.5) * dx[1];
-                                xm[2] = plo[2] + (k + 0.5) * dx[2];
-                                // Check if cell contains 2D grid point:
-                                // complicated conditional is to avoid
-                                // double-counting and includes exception for lo
-                                // boundary
-                                if (((plo[0] == loc[0] &&
-                                      xm[0] - loc[0] == 0.5 * dx[0]) ||
-                                     (xm[0] - loc[0] < 0.5 * dx[0] &&
-                                      loc[0] - xm[0] <= 0.5 * dx[0])) &&
-                                    ((plo[1] == loc[1] &&
-                                      xm[1] - loc[1] == 0.5 * dx[1]) ||
-                                     (xm[1] - loc[1] < 0.5 * dx[1] &&
-                                      loc[1] - xm[1] <= 0.5 * dx[1]))) {
-                                    // Check if cell is obviously multiphase,
-                                    // then check if cell might have interface
-                                    // at top or bottom
-                                    if ((vof_arr(i, j, k) < 1.0 &&
-                                         vof_arr(i, j, k) > 0.0) ||
-                                        (vof_arr(i, j, k) == 0.0 &&
-                                         (vof_arr(i, j, k + 1) == 1.0 ||
-                                          vof_arr(i, j, k - 1) == 1.0))) {
+            auto& vof = m_vof(lev);
+            const auto& geom = m_sim.mesh().Geom(lev);
+            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx =
+                geom.CellSizeArray();
+            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
+                geom.ProbLoArray();
+
+            // Loop points in 2D grid
+            for (int n = 0; n < m_npts; ++n) {
+                amrex::GpuArray<amrex::Real, 2> loc;
+                for (int d = 0; d < 2; ++d) {
+                    loc[d] = m_locs[n][d];
+                }
+
+                m_out[n * m_ninst + ni] = amrex::max(
+                    m_out[n * m_ninst + ni],
+                    amrex::ReduceMax(
+                        vof, level_mask, 0,
+                        [=] AMREX_GPU_HOST_DEVICE(
+                            amrex::Box const& bx,
+                            amrex::Array4<amrex::Real const> const& vof_arr,
+                            amrex::Array4<int const> const& mask_arr)
+                            -> amrex::Real {
+                            amrex::Real height_fab = 0.0;
+
+                            amrex::Loop(
+                                bx,
+                                [=, &height_fab](int i, int j, int k) noexcept {
+                                    // Initialize height measurement
+                                    amrex::Real ht = plo[2];
+                                    // Cell location
+                                    amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>
+                                        xm;
+                                    xm[0] = plo[0] + (i + 0.5) * dx[0];
+                                    xm[1] = plo[1] + (j + 0.5) * dx[1];
+                                    xm[2] = plo[2] + (k + 0.5) * dx[2];
+                                    // (1) If not zeroth instance, check that
+                                    // cell height is below previous instance.
+                                    // (2) Check if cell contains 2D grid point:
+                                    // complicated conditional is to avoid
+                                    // double-counting and includes exception
+                                    // for lo boundary. (3) Check if cell is
+                                    // obviously multiphase, then check if cell
+                                    // might have interface at top or bottom
+                                    if ((ni == 0 ||
+                                         (m_out[n * m_ninst + (ni - 1)] >
+                                          xm[2] + 0.5 * dx[2])) &&
+                                        (((plo[0] == loc[0] &&
+                                           xm[0] - loc[0] == 0.5 * dx[0]) ||
+                                          (xm[0] - loc[0] < 0.5 * dx[0] &&
+                                           loc[0] - xm[0] <= 0.5 * dx[0])) &&
+                                         ((plo[1] == loc[1] &&
+                                           xm[1] - loc[1] == 0.5 * dx[1]) ||
+                                          (xm[1] - loc[1] < 0.5 * dx[1] &&
+                                           loc[1] - xm[1] <= 0.5 * dx[1]))) &&
+                                        ((vof_arr(i, j, k) < 1.0 &&
+                                          vof_arr(i, j, k) > 0.0) ||
+                                         (vof_arr(i, j, k) == 0.0 &&
+                                          (vof_arr(i, j, k + 1) == 1.0 ||
+                                           vof_arr(i, j, k - 1) == 1.0)))) {
                                         // Determine which cell to interpolate
                                         // with
                                         if (amrex::max(
@@ -172,25 +184,26 @@ void FreeSurface::post_advance_work()
                                                      (0.5 - vof_arr(i, j, k));
                                         }
                                     }
-                                }
-                                // Offset by removing lo and contribute to whole
-                                height_fab = amrex::max(
-                                    height_fab,
-                                    mask_arr(i, j, k) * (ht - plo[2]));
-                            });
-                        return height_fab;
-                    }));
+                                    // Offset by removing lo and contribute to
+                                    // whole
+                                    height_fab = amrex::max(
+                                        height_fab,
+                                        mask_arr(i, j, k) * (ht - plo[2]));
+                                });
+                            return height_fab;
+                        }));
+            }
         }
-    }
 
-    // Loop points in 2D grid
-    for (int n = 0; n < m_npts; n++) {
-        amrex::ParallelDescriptor::ReduceRealMax(m_out[n]);
-    }
-    // Add problo back to heights, making them absolute, not relative
-    const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
-    for (int n = 0; n < m_npts; n++) {
-        m_out[n] += plo0[m_orient];
+        // Loop points in 2D grid
+        for (int n = 0; n < m_npts; n++) {
+            amrex::ParallelDescriptor::ReduceRealMax(m_out[n * m_ninst + ni]);
+        }
+        // Add problo back to heights, making them absolute, not relative
+        const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
+        for (int n = 0; n < m_npts; n++) {
+            m_out[n * m_ninst + ni] += plo0[m_orient];
+        }
     }
 
     process_output();
@@ -237,10 +250,13 @@ void FreeSurface::write_ascii()
         File << m_npts << '\n';
         File << m_npts_dir[0] << ' ' << m_npts_dir[1] << '\n';
 
-        // Points in grid
+        // Points in grid (x, y, z0, z1, ...)
         for (int n = 0; n < m_npts; ++n) {
-            File << m_locs[n][0] << ' ' << m_locs[n][1] << ' ' << m_out[n]
-                 << '\n';
+            File << m_locs[n][0] << ' ' << m_locs[n][1] << ' ';
+            for (int ni = 0; ni < m_ninst; ++ni) {
+              File << m_out[n * m_ninst + ni];
+            }
+            File << '\n';
         }
 
         File.flush();
@@ -270,13 +286,15 @@ void FreeSurface::prepare_netcdf_file()
     auto ncf = ncutils::NCFile::create(m_ncfile_name, NC_CLOBBER | NC_NETCDF4);
     const std::string nt_name = "num_time_steps";
     const std::string ngp_name = "num_grid_points";
+    const std::string ninst_name = "num_instances";
     ncf.enter_def_mode();
     ncf.put_attr("title", "AMR-Wind data sampling output");
     ncf.put_attr("version", ioutils::amr_wind_version());
     ncf.put_attr("created_on", ioutils::timestamp());
     ncf.def_dim(nt_name, NC_UNLIMITED);
     ncf.def_dim(ngp_name, m_npts);
-    ncf.def_dim("ndim", AMREX_SPACEDIM);
+    ncf.def_dim(ninst_name, m_ninst);
+    ncf.def_dim("ndim2", 2);
     ncf.def_var("time", NC_DOUBLE, {nt_name});
 
     // Metadata related to the 2D grid used to sample
@@ -285,10 +303,20 @@ void FreeSurface::prepare_netcdf_file()
     ncf.put_attr("start", m_start);
     ncf.put_attr("end", m_end);
 
-    // Set up array of data for locations
-    ncf.def_var("coordinates", NC_DOUBLE, {nt_name, ngp_name, "ndim"});
+    // Set up array of data for locations in 2D grid
+    ncf.def_var("coordinates2D", NC_DOUBLE, {ngp_name, "ndim2"});
+
+    // Set up array for height outputs
+    ncf.def_var("heights", NC_DOUBLE, {nt_name, ninst_name, ngp_name});
 
     ncf.exit_def_mode();
+
+    // Populate data that doesn't change
+    const std::vector<size_t> start{0, 0};
+    std::vector<size_t> count{0, 2};
+    count[0] = m_npts;
+    auto xy = ncf.var("coordinates");
+    xy.put(&m_locs[0][0], start, count);
 
 #else
     amrex::Abort(
@@ -312,17 +340,13 @@ void FreeSurface::write_netcdf()
         ncf.var("time").put(&time, {nt}, {1});
     }
 
-    std::vector<size_t> start{nt, 0};
-    std::vector<size_t> count{1, 0};
+    std::vector<size_t> start{nt, 0, 0};
+    std::vector<size_t> count{1, 0, 0};
 
-    // Copy m_out into m_locs for simplicity
-    for (int n = 0; n < m_npts; ++n) {
-        m_locs[n][m_orient] = m_out[n];
-    }
-
-    count[1] = m_npts;
-    auto var = ncf.var("coordinates");
-    var.put(&m_locs[0][0], start, count);
+    count[1] = m_ninst;
+    count[2] = m_npts;
+    auto var = ncf.var("heights");
+    var.put(&m_out[0], start, count);
 
     ncf.close();
 #endif

@@ -50,10 +50,14 @@ public:
     //! Output functions for private variables
     //! Number of points
     int num_gridpoints() const { return m_npts; }
-    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> locations() const
+    //! Number of instances
+    int num_instances() const { return m_ninst; }
+    //! Locations
+    amrex::Vector<amrex::Array<amrex::Real, 2>> locations() const
     {
         return m_locs;
     }
+    //! Outputs (heights)
     amrex::Vector<amrex::Real> heights() const { return m_out; }
 
 protected:
@@ -97,11 +101,14 @@ private:
     //! Number or points on 2D grid in each direction
     amrex::Vector<int> m_npts_dir;
     int m_npts;
+    //! Number of instances (possible sampling points per location, like in the
+    //! case of a breaking wave)
+    int m_ninst{1};
 
     //! Parameters to set up plane
     amrex::Vector<amrex::Real> m_start, m_end;
     //! Locations of points in 2D grid
-    amrex::Vector<amrex::Array<amrex::Real, AMREX_SPACEDIM>> m_locs;
+    amrex::Vector<amrex::Array<amrex::Real, 2>> m_locs;
     //! Output coordinate
     amrex::Vector<amrex::Real> m_out;
 
