@@ -18,6 +18,7 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         pp.query("normal_direction", m_norm_dir);
         pp.query("Laminar", m_laminar);
         pp.query("Turbulent_DNS", m_dns);
+        pp.query("error_log_file", m_output_fname);
 
         if (m_laminar) {
             pp.query("density", m_rho);
@@ -33,12 +34,17 @@ ChannelFlow::ChannelFlow(CFDSim& sim)
         }
     }
     {
-        amrex::Real mu;
         amrex::ParmParse pp("transport");
-        pp.query("viscosity", mu);
+        pp.query("viscosity", m_mu);
         // Assumes a boundary layer height of 1.0
-        m_utau = mu * m_re_tau / (m_rho * 1.0);
-        m_ytau = mu / (m_utau * m_rho);
+        m_utau = m_mu * m_re_tau / (m_rho * 1.0);
+        m_ytau = m_mu / (m_utau * m_rho);
+    }
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        std::ofstream f;
+        f.open(m_output_fname.c_str());
+        f << std::setw(m_w) << "time" << std::setw(m_w) << "L2_u" << std::endl;
+        f.close();
     }
 }
 
@@ -107,14 +113,12 @@ void ChannelFlow::initialize_fields(
                 });
         }
     } else if (m_laminar) {
+        // assumes flow in x-direction
         const amrex::Real meanVel = m_mean_vel;
         for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
             const auto& vbx = mfi.validbox();
 
-            const auto& dx = geom.CellSizeArray();
-            const auto& problo = geom.ProbLoArray();
             auto vel = velocity.array(mfi);
-
             amrex::ParallelFor(
                 vbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                     vel(i, j, k, 0) = meanVel;
@@ -125,9 +129,103 @@ void ChannelFlow::initialize_fields(
     }
 }
 
-void ChannelFlow::post_init_actions() {}
+amrex::Real ChannelFlow::compute_error()
+{
+    amrex::Real error = 0.0;
+    const auto mu = m_mu;
+    amrex::Real dpdx = 0;
+    {
+        amrex::Vector<amrex::Real> body_force{{0.0, 0.0, 0.0}};
+        amrex::ParmParse pp("BodyForce");
+        pp.queryarr("magnitude", body_force, 0, AMREX_SPACEDIM);
+        dpdx = body_force[0];
+    }
 
-void ChannelFlow::post_advance_work() {}
+    auto& velocity = m_repo.get_field("velocity");
+    auto& mesh_fac_cc = m_repo.get_field("mesh_scaling_factor_cc");
+    auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
+
+    const int nlevels = m_repo.num_active_levels();
+    for (int lev = 0; lev < nlevels; ++lev) {
+
+        amrex::iMultiFab level_mask;
+        if (lev < nlevels - 1) {
+            level_mask = makeFineMask(
+                m_mesh.boxArray(lev), m_mesh.DistributionMap(lev),
+                m_mesh.boxArray(lev + 1), amrex::IntVect(2), 1, 0);
+        } else {
+            level_mask.define(
+                m_mesh.boxArray(lev), m_mesh.DistributionMap(lev), 1, 0,
+                amrex::MFInfo());
+            level_mask.setVal(1);
+        }
+
+        const auto& problo = m_mesh.Geom(lev).ProbLoArray();
+        const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
+        const amrex::Real ht = probhi[1] - problo[1];
+        const auto& dx = m_mesh.Geom(lev).CellSizeArray();
+        const auto& mesh_fac = mesh_fac_cc(lev);
+        const auto& nu_coord = nu_coord_cc(lev);
+        const auto& vel = velocity(lev);
+
+        error += amrex::ReduceSum(
+            vel, mesh_fac, nu_coord, level_mask, 0,
+            [=] AMREX_GPU_HOST_DEVICE(
+                amrex::Box const& bx,
+                amrex::Array4<amrex::Real const> const& vel_arr,
+                amrex::Array4<amrex::Real const> const& fac_cc_arr,
+                amrex::Array4<amrex::Real const> const& nu_coord_arr,
+                amrex::Array4<int const> const& mask_arr) -> amrex::Real {
+                amrex::Real err_fab = 0.0;
+
+                amrex::Loop(bx, [=, &err_fab](int i, int j, int k) noexcept {
+                    amrex::Real y = nu_coord_arr(i, j, k, 1);
+
+                    const amrex::Real u = vel_arr(i, j, k, 0);
+
+                    const amrex::Real u_exact =
+                        1 / (4 * mu) * dpdx * (y * y - y * ht);
+
+                    const amrex::Real cell_vol =
+                        dx[0] * fac_cc_arr(i, j, k, 0) * dx[1] *
+                        fac_cc_arr(i, j, k, 1) * dx[2] * fac_cc_arr(i, j, k, 2);
+
+                    err_fab += cell_vol * mask_arr(i, j, k) * (u - u_exact) *
+                               (u - u_exact);
+                });
+                return err_fab;
+            });
+    }
+
+    amrex::ParallelDescriptor::ReduceRealSum(error);
+
+    const amrex::Real total_vol = m_mesh.Geom(0).ProbDomain().volume();
+    return std::sqrt(error / total_vol);
+}
+
+void ChannelFlow::output_error()
+{
+    // analytical solution exists only for flow in streamwise direction
+    const amrex::Real u_err = compute_error();
+
+    if (amrex::ParallelDescriptor::IOProcessor()) {
+        std::ofstream f;
+        f.open(m_output_fname.c_str(), std::ios_base::app);
+        f << std::setprecision(12) << std::setw(m_w) << m_time.new_time()
+          << std::setw(m_w) << u_err << std::endl;
+        f.close();
+    }
+}
+
+void ChannelFlow::post_init_actions()
+{
+    if (m_laminar) output_error();
+}
+
+void ChannelFlow::post_advance_work()
+{
+    if (m_laminar) output_error();
+}
 
 } // namespace channel_flow
 } // namespace amr_wind

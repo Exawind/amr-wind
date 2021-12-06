@@ -22,16 +22,19 @@ public:
     void create_map(int, const amrex::Geometry&) override;
 
     //! Construct the non-uniform mesh field
-    void create_non_uniform_mesh(int, const amrex::Geometry&) override{};
+    void create_non_uniform_mesh(int, const amrex::Geometry&) override;
 
 private:
     Field& m_mesh_scale_fac_cc;
     Field& m_mesh_scale_fac_nd;
+    Field& m_non_uniform_coord_cc;
+    Field& m_non_uniform_coord_nd;
 
     //! User input parameters
-    amrex::Vector<int> n_cell{{0, 0, 0}};
     amrex::Vector<amrex::Real> m_beta{{0.0, 3.0, 0.0}};
     amrex::Vector<int> m_map{{0, 1, 0}};
+
+    amrex::Real m_eps{1e-11};
 };
 
 } // namespace amr_wind
