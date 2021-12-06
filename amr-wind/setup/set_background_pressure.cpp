@@ -14,7 +14,7 @@ void incflo::set_background_pressure()
         if (pp.contains("prob_hi_physical")) {
             pp.getarr("prob_hi_physical", probhi_physical);
         } else {
-            for (int d = 0; d <= AMREX_SPACEDIM; ++d) {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
                 probhi_physical[d] = geom[0].ProbHiArray()[d];
             }
         }
