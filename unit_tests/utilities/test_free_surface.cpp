@@ -137,12 +137,12 @@ void init_vof_multival(
                         // Multiphase cell
                         if (local_vof > 0.5) {
                             // Cell at k + 1 is vof = 0
-                            liwl = z + (0.5 - local_vof) /
-                                           (0.0 - local_vof) * dx[2];
+                            liwl = z + (0.5 - local_vof) / (0.0 - local_vof) *
+                                           dx[2];
                         } else {
                             // Cell at k - 1 is vof = 1
-                            liwl = z - (0.5 - local_vof) /
-                                           (1.0 - local_vof) * dx[2];
+                            liwl = z - (0.5 - local_vof) / (1.0 - local_vof) *
+                                           dx[2];
                         }
                     } else {
                         if (local_vof == 1 && field_arr(i, j, k + 1, d) == 0) {
@@ -278,7 +278,8 @@ int FreeSurfaceImpl::check_output(
     return icheck;
 }
 
-int FreeSurfaceImpl::check_output(const std::string& op, amrex::Real check_val) {
+int FreeSurfaceImpl::check_output(const std::string& op, amrex::Real check_val)
+{
     return check_output(0, op, check_val);
 }
 
@@ -336,7 +337,7 @@ protected:
     {
         amrex::ParmParse pp("freesurface");
         pp.add("output_frequency", 1);
-        pp.add("num_instances",ninst);
+        pp.add("num_instances", ninst);
         pp.addarr("num_points", amrex::Vector<int>{1, 1});
         pp.addarr("start", pt_coord);
         pp.addarr("end", pt_coord);

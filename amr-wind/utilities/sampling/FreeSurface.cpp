@@ -252,9 +252,9 @@ void FreeSurface::write_ascii()
 
         // Points in grid (x, y, z0, z1, ...)
         for (int n = 0; n < m_npts; ++n) {
-            File << m_locs[n][0] << ' ' << m_locs[n][1] << ' ';
+            File << m_locs[n][0] << ' ' << m_locs[n][1];
             for (int ni = 0; ni < m_ninst; ++ni) {
-              File << m_out[n * m_ninst + ni];
+                File << ' ' << m_out[n * m_ninst + ni];
             }
             File << '\n';
         }
