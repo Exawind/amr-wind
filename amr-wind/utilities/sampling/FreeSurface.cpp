@@ -323,7 +323,7 @@ void FreeSurface::prepare_netcdf_file()
     const std::vector<size_t> start{0, 0};
     std::vector<size_t> count{0, 2};
     count[0] = m_npts;
-    auto xy = ncf.var("coordinates");
+    auto xy = ncf.var("coordinates2D");
     xy.put(&m_locs[0][0], start, count);
 
 #else
