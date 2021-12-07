@@ -65,7 +65,7 @@ protected:
     virtual void process_output();
 
     //! Prepare NetCDF metadata
-    void prepare_netcdf_file();
+    virtual void prepare_netcdf_file();
 
     //! Write sampled data into a NetCDF file
     void write_netcdf();

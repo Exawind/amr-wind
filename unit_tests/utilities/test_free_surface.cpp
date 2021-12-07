@@ -245,6 +245,7 @@ public:
 
 protected:
     // No file output during test
+    void prepare_netcdf_file() override {}
     void process_output() override {}
     const amrex::Real tol = 1e-8;
 };
