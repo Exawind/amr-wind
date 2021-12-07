@@ -141,6 +141,21 @@ amrex::Real ChannelFlow::compute_error()
         dpdx = body_force[0];
     }
 
+    const auto& problo = m_mesh.Geom(0).ProbLoArray();
+    amrex::Real ht = 0.0;
+    {
+        amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
+        amrex::ParmParse pp("geometry");
+        if (pp.contains("prob_hi_physical")) {
+            pp.getarr("prob_hi_physical", probhi_physical);
+        } else {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                probhi_physical[d] = m_mesh.Geom(0).ProbHiArray()[d];
+            }
+        }
+        ht = probhi_physical[1] - problo[1];
+    }
+
     auto& velocity = m_repo.get_field("velocity");
     auto& mesh_fac_cc = m_repo.get_field("mesh_scaling_factor_cc");
     auto& nu_coord_cc = m_repo.get_field("non_uniform_coord_cc");
@@ -160,9 +175,6 @@ amrex::Real ChannelFlow::compute_error()
             level_mask.setVal(1);
         }
 
-        const auto& problo = m_mesh.Geom(lev).ProbLoArray();
-        const auto& probhi = m_mesh.Geom(lev).ProbHiArray();
-        const amrex::Real ht = probhi[1] - problo[1];
         const auto& dx = m_mesh.Geom(lev).CellSizeArray();
         const auto& mesh_fac = mesh_fac_cc(lev);
         const auto& nu_coord = nu_coord_cc(lev);

@@ -139,6 +139,18 @@ void ChannelFlowScaling::create_map(int lev, const amrex::Geometry& geom)
 void ChannelFlowScaling::create_non_uniform_mesh(
     int lev, const amrex::Geometry& geom)
 {
+    amrex::Vector<amrex::Real> probhi_physical{{0.0, 0.0, 0.0}};
+    {
+        amrex::ParmParse pp("geometry");
+        if (pp.contains("prob_hi_physical")) {
+            pp.getarr("prob_hi_physical", probhi_physical);
+        } else {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                probhi_physical[d] = geom.ProbHiArray()[d];
+            }
+        }
+    }
+
     const auto beta = m_beta;
     const auto do_map = m_map;
     const auto eps = m_eps;
@@ -148,8 +160,8 @@ void ChannelFlowScaling::create_non_uniform_mesh(
     const auto& prob_hi = geom.ProbHiArray();
 
     amrex::Vector<amrex::Real> len{
-        {prob_hi[0] - prob_lo[0], prob_hi[1] - prob_lo[1],
-         prob_hi[2] - prob_lo[2]}};
+        {probhi_physical[0] - prob_lo[0], probhi_physical[1] - prob_lo[1],
+         probhi_physical[2] - prob_lo[2]}};
 
     for (amrex::MFIter mfi(m_non_uniform_coord_cc(lev)); mfi.isValid(); ++mfi) {
 
