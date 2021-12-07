@@ -79,6 +79,11 @@ void FreeSurface::post_advance_work()
     for (int n = 0; n < m_npts * m_ninst; n++) {
         m_out[n] = 0.0;
     }
+    // Set up device vector of outputs, initialize to above phi0
+    const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
+    const auto& phi0 = m_sim.mesh().Geom(0).ProbHiArray();
+    amrex::Gpu::DeviceVector<double> dout(m_npts, phi0[2] + 1.0);
+    auto* dout_ptr = dout.data();
 
     // Sum of interface locations at each point (assumes one interface only)
     const int finest_level = m_vof.repo().num_active_levels() - 1;
@@ -115,8 +120,8 @@ void FreeSurface::post_advance_work()
                     loc[d] = m_locs[n][d];
                 }
 
-                m_out[n * m_ninst + ni] = amrex::max(
-                    m_out[n * m_ninst + ni],
+                m_out[ni * m_npts + n] = amrex::max(
+                    m_out[ni * m_npts + n],
                     amrex::ReduceMax(
                         vof, level_mask, 0,
                         [=] AMREX_GPU_HOST_DEVICE(
@@ -137,17 +142,15 @@ void FreeSurface::post_advance_work()
                                     xm[0] = plo[0] + (i + 0.5) * dx[0];
                                     xm[1] = plo[1] + (j + 0.5) * dx[1];
                                     xm[2] = plo[2] + (k + 0.5) * dx[2];
-                                    // (1) If not zeroth instance, check that
-                                    // cell height is below previous instance.
-                                    // (2) Check if cell contains 2D grid point:
-                                    // complicated conditional is to avoid
-                                    // double-counting and includes exception
-                                    // for lo boundary. (3) Check if cell is
-                                    // obviously multiphase, then check if cell
-                                    // might have interface at top or bottom
-                                    if ((ni == 0 ||
-                                         (m_out[n * m_ninst + (ni - 1)] >
-                                          xm[2] + 0.5 * dx[2])) &&
+                                    // (1) Check that cell height is below
+                                    // previous instance. (2) Check if cell
+                                    // contains 2D grid point: complicated
+                                    // conditional is to avoid double-counting
+                                    // and includes exception for lo boundary.
+                                    // (3) Check if cell is obviously
+                                    // multiphase, then check if cell might have
+                                    // interface at top or bottom
+                                    if ((dout_ptr[n] > xm[2] + 0.5 * dx[2]) &&
                                         (((plo[0] == loc[0] &&
                                            xm[0] - loc[0] == 0.5 * dx[0]) ||
                                           (xm[0] - loc[0] < 0.5 * dx[0] &&
@@ -161,22 +164,24 @@ void FreeSurface::post_advance_work()
                                          (vof_arr(i, j, k) == 0.0 &&
                                           (vof_arr(i, j, k + 1) == 1.0 ||
                                            vof_arr(i, j, k - 1) == 1.0)))) {
-                                        // Determine which cell to interpolate
-                                        // with
+                                        // Determine which cell to
+                                        // interpolate with
                                         if (amrex::max(
                                                 vof_arr(i, j, k),
                                                 vof_arr(i, j, k + 1)) > 0.5 &&
                                             amrex::min(
                                                 vof_arr(i, j, k),
                                                 vof_arr(i, j, k + 1)) <= 0.5) {
-                                            // Interpolate positive direction
+                                            // Interpolate positive
+                                            // direction
                                             ht = xm[2] +
                                                  (dx[2]) /
                                                      (vof_arr(i, j, k + 1) -
                                                       vof_arr(i, j, k)) *
                                                      (0.5 - vof_arr(i, j, k));
                                         } else {
-                                            // Interpolate negative direction
+                                            // Interpolate negative
+                                            // direction
                                             ht = xm[2] -
                                                  (dx[2]) /
                                                      (vof_arr(i, j, k - 1) -
@@ -197,13 +202,16 @@ void FreeSurface::post_advance_work()
 
         // Loop points in 2D grid
         for (int n = 0; n < m_npts; n++) {
-            amrex::ParallelDescriptor::ReduceRealMax(m_out[n * m_ninst + ni]);
+            amrex::ParallelDescriptor::ReduceRealMax(m_out[ni * m_npts + n]);
         }
         // Add problo back to heights, making them absolute, not relative
-        const auto& plo0 = m_sim.mesh().Geom(0).ProbLoArray();
         for (int n = 0; n < m_npts; n++) {
-            m_out[n * m_ninst + ni] += plo0[m_orient];
+            m_out[ni * m_npts + n] += plo0[2];
         }
+        // Copy last m_out to device vector
+        amrex::Gpu::copy(
+            amrex::Gpu::hostToDevice, &m_out[ni * m_npts],
+            &m_out[ni * m_npts + m_npts], dout.begin());
     }
 
     process_output();
@@ -254,7 +262,7 @@ void FreeSurface::write_ascii()
         for (int n = 0; n < m_npts; ++n) {
             File << m_locs[n][0] << ' ' << m_locs[n][1];
             for (int ni = 0; ni < m_ninst; ++ni) {
-                File << ' ' << m_out[n * m_ninst + ni];
+                File << ' ' << m_out[ni * m_npts + n];
             }
             File << '\n';
         }
@@ -307,7 +315,7 @@ void FreeSurface::prepare_netcdf_file()
     ncf.def_var("coordinates2D", NC_DOUBLE, {ngp_name, "ndim2"});
 
     // Set up array for height outputs
-    ncf.def_var("heights", NC_DOUBLE, {nt_name, ninst_name, ngp_name});
+    ncf.def_var("heights", NC_DOUBLE, {nt_name, ngp_name, ninst_name});
 
     ncf.exit_def_mode();
 
@@ -343,8 +351,8 @@ void FreeSurface::write_netcdf()
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, 0};
 
-    count[1] = m_ninst;
-    count[2] = m_npts;
+    count[1] = m_npts;
+    count[2] = m_ninst;
     auto var = ncf.var("heights");
     var.put(&m_out[0], start, count);
 

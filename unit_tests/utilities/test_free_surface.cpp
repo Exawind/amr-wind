@@ -255,21 +255,20 @@ int FreeSurfaceImpl::check_output(
 {
     // Get number of points and output array
     auto npts_tot = num_gridpoints();
-    auto ninst = num_instances();
     auto out = heights();
     // Loop through grid points and check output
     int icheck = 0;
     for (int n = 0; n < npts_tot; ++n) {
         if (op == "=") {
-            EXPECT_EQ(out[n * ninst + cidx], check_val);
+            EXPECT_EQ(out[cidx * npts_tot + n], check_val);
             ++icheck;
         } else {
             if (op == "<") {
-                EXPECT_LT(out[n * ninst + cidx], check_val);
+                EXPECT_LT(out[cidx * npts_tot + n], check_val);
                 ++icheck;
             } else {
                 if (op == "~") {
-                    EXPECT_NEAR(out[n * ninst + cidx], check_val, tol);
+                    EXPECT_NEAR(out[cidx * npts_tot + n], check_val, tol);
                     ++icheck;
                 }
             }
@@ -342,10 +341,11 @@ protected:
         pp.addarr("start", pt_coord);
         pp.addarr("end", pt_coord);
     }
-    void setup_grid2D()
+    void setup_grid2D(int ninst)
     {
         amrex::ParmParse pp("freesurface");
         pp.add("output_frequency", 1);
+        pp.add("num_instances", ninst);
         pp.addarr("num_points", amrex::Vector<int>{npts, npts});
         pp.addarr("start", pl_start);
         pp.addarr("end", pl_end);
@@ -391,7 +391,7 @@ TEST_F(FreeSurfaceTest, plane)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid2D();
+    setup_grid2D(1);
 
     amrex::Real liwl = init_vof(vof, water_level1);
     auto& m_sim = sim();
@@ -412,7 +412,7 @@ TEST_F(FreeSurfaceTest, multivalued)
     initialize_mesh();
     auto& repo = sim().repo();
     auto& vof = repo.declare_field("vof", 1, 2);
-    setup_grid0D(3);
+    setup_grid2D(3);
 
     // Parameters of water level
     amrex::Real wl0 = probhi[2] * 2 / 3;
@@ -427,15 +427,15 @@ TEST_F(FreeSurfaceTest, multivalued)
 
     // Check number of outputs
     auto heights = tool.heights();
-    EXPECT_EQ(heights.size(), 3 * 1);
+    EXPECT_EQ(heights.size(), 3 * npts * npts);
 
     // Check output values
     int nout = tool.check_output(0, "~", wl0);
-    ASSERT_EQ(nout, 1);
+    ASSERT_EQ(nout, npts * npts);
     nout = tool.check_output(1, "~", wl1);
-    ASSERT_EQ(nout, 1);
+    ASSERT_EQ(nout, npts * npts);
     nout = tool.check_output(2, "~", wl2);
-    ASSERT_EQ(nout, 1);
+    ASSERT_EQ(nout, npts * npts);
 }
 
 } // namespace amr_wind_tests
