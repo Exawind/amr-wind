@@ -159,8 +159,8 @@ void FreeSurface::post_advance_work()
                                            xm[1] - loc[1] == 0.5 * dx[1]) ||
                                           (xm[1] - loc[1] < 0.5 * dx[1] &&
                                            loc[1] - xm[1] <= 0.5 * dx[1]))) &&
-                                        ((vof_arr(i, j, k) < 1.0 &&
-                                          vof_arr(i, j, k) > 0.0) ||
+                                        ((vof_arr(i, j, k) < (1.0 - 1e-15) &&
+                                          vof_arr(i, j, k) > 1e-15) ||
                                          (vof_arr(i, j, k) == 0.0 &&
                                           (vof_arr(i, j, k + 1) == 1.0 ||
                                            vof_arr(i, j, k - 1) == 1.0)))) {
