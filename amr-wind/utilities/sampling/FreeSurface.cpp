@@ -211,7 +211,7 @@ void FreeSurface::post_advance_work()
         // Copy last m_out to device vector
         amrex::Gpu::copy(
             amrex::Gpu::hostToDevice, &m_out[ni * m_npts],
-            &m_out[ni * m_npts + m_npts], dout.begin());
+            &m_out[(ni + 1) * m_npts - 1] + 1, dout.begin());
     }
 
     process_output();
