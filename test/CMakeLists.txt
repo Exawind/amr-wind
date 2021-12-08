@@ -4,13 +4,17 @@
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake)
 
-if(AMR_WIND_TEST_WITH_FCOMPARE)
-  set(GOLD_FILES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/AMR-WindGoldFiles/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
-  message(STATUS "Test golds directory for fcompare: ${GOLD_FILES_DIRECTORY}")
-endif()
-
 if(AMR_WIND_ENABLE_MASA AND NOT AMR_WIND_ENABLE_MPI)
   message(WARNING "Running verification tests without MPI enabled will require long run times")
+endif()
+
+if(AMR_WIND_TEST_WITH_FCOMPARE)
+  if("${AMR_WIND_REFERENCE_GOLDS_DIRECTORY}" STREQUAL "")
+    message(FATAL_ERROR "To reference gold files, AMR_WIND_REFERENCE_GOLDS_DIRECTORY must be set and exist")
+  else()
+    set(GOLD_FILES_DIRECTORY ${AMR_WIND_REFERENCE_GOLDS_DIRECTORY}/${CMAKE_SYSTEM_NAME}/${CMAKE_CXX_COMPILER_ID}/${CMAKE_CXX_COMPILER_VERSION})
+    message(STATUS "Test golds directory for fcompare: ${GOLD_FILES_DIRECTORY}")
+  endif()
 endif()
 
 if(AMR_WIND_SAVE_GOLDS)
