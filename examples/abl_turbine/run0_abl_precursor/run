@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#SBATCH --job-name=amr_abl2
+#SBATCH --account=hfm
+#SBATCH --nodes=8
+######SBATCH --nodes=4
+#####SBATCH --time=14:15:00
+#SBATCH --time=47:15:00
+#SBATCH --output=out.%x_%j
+##SBATCH --qos=high
+
+source ~/.bash_profile
+#amr_env
+#source /projects/hfm/lcheung/spack-manager/environments/test2/load.sh
+source /nopt/nrel/ecom/exawind/exawind/scripts/amr-wind-gcc.sh
+
+
+ranks_per_node=36
+mpi_ranks=$(expr $SLURM_JOB_NUM_NODES \* $ranks_per_node)
+export OMP_NUM_THREADS=1  # Max hardware threads = 4
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+#amr_exec=/home/lmartine/amr-wind-tony/build/amr_wind
+#amr_exec=/home/lmartine/amr-wind/build/amr_wind
+#amr_exec=/projects/hfm/lcheung/spack-manager/environments/test2/.spack-env/view/bin/amr_wind
+amr_exec=/home/nmatula/amr_build/amr-wind/build/amr_wind
+
+echo "Job name       = $SLURM_JOB_NAME"
+echo "Num. nodes     = $SLURM_JOB_NUM_NODES"
+echo "Num. MPI Ranks = $mpi_ranks"
+echo "Num. threads   = $OMP_NUM_THREADS"
+echo "Working dir    = $PWD"
+
+cp ${amr_exec} $(pwd)/amr_wind
+
+#srun -n 512  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_output.i  > out.log 2>&1
+srun -n 256  -c 1 --cpu_bind=cores $(pwd)/amr_wind abl_bndry_output.i  > out.log 2>&1
