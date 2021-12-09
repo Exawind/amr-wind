@@ -168,12 +168,15 @@ void FreeSurface::post_advance_work()
                                                (1.0 - 1e-12))))) {
                                         // Determine which cell to
                                         // interpolate with
-                                        if (amrex::max(
-                                                vof_arr(i, j, k),
-                                                vof_arr(i, j, k + 1)) > 0.5 &&
-                                            amrex::min(
-                                                vof_arr(i, j, k),
-                                                vof_arr(i, j, k + 1)) <= 0.5) {
+                                        bool above =
+                                            (vof_arr(i, j, k + 1) - 0.5) *
+                                                (vof_arr(i, j, k) - 0.5) <
+                                            0.0;
+                                        bool below =
+                                            (vof_arr(i, j, k - 1) - 0.5) *
+                                                (vof_arr(i, j, k) - 0.5) <
+                                            0.0;
+                                        if (above) {
                                             // Interpolate positive
                                             // direction
                                             ht = xm[2] +
@@ -182,13 +185,19 @@ void FreeSurface::post_advance_work()
                                                       vof_arr(i, j, k)) *
                                                      (0.5 - vof_arr(i, j, k));
                                         } else {
-                                            // Interpolate negative
-                                            // direction
-                                            ht = xm[2] -
-                                                 (dx[2]) /
-                                                     (vof_arr(i, j, k - 1) -
-                                                      vof_arr(i, j, k)) *
-                                                     (0.5 - vof_arr(i, j, k));
+                                            if (below) {
+                                                // Interpolate negative
+                                                // direction
+                                                ht = xm[2] -
+                                                     (dx[2]) /
+                                                         (vof_arr(i, j, k - 1) -
+                                                          vof_arr(i, j, k)) *
+                                                         (0.5 -
+                                                          vof_arr(i, j, k));
+                                            }
+                                            // If none satisfy requirement, then
+                                            // the isosurface vof = 0.5 cannot
+                                            // be detected in the z-direction
                                         }
                                     }
                                     // Offset by removing lo and contribute to
