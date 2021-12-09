@@ -5,6 +5,7 @@ target_sources(${amr_wind_lib_name}
   SamplingContainer.cpp
   LineSampler.cpp
   LidarSampler.cpp
+  DTUSpinnerSampler.cpp
   PlaneSampler.cpp
   ProbeSampler.cpp
   FieldNorms.cpp

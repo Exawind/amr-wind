@@ -87,8 +87,11 @@ void Sampling::update_sampling_locations()
 {
     BL_PROFILE("amr-wind::Sampling::pre_advance_work");
 
+    m_total_particles = 0;
+
     for (const auto& obj : m_samplers) {
         obj->update_sampling_locations();
+        m_total_particles += obj->num_points();
     }
 
     update_container();
