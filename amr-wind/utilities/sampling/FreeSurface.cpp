@@ -159,11 +159,13 @@ void FreeSurface::post_advance_work()
                                            xm[1] - loc[1] == 0.5 * dx[1]) ||
                                           (xm[1] - loc[1] < 0.5 * dx[1] &&
                                            loc[1] - xm[1] <= 0.5 * dx[1]))) &&
-                                        ((vof_arr(i, j, k) < (1.0 - 1e-15) &&
-                                          vof_arr(i, j, k) > 1e-15) ||
-                                         (vof_arr(i, j, k) == 0.0 &&
-                                          (vof_arr(i, j, k + 1) == 1.0 ||
-                                           vof_arr(i, j, k - 1) == 1.0)))) {
+                                        ((vof_arr(i, j, k) < (1.0 - 1e-12) &&
+                                          vof_arr(i, j, k) > 1e-12) ||
+                                         (vof_arr(i, j, k) < 1e-12 &&
+                                          (vof_arr(i, j, k + 1) >
+                                               (1.0 - 1e-12) ||
+                                           vof_arr(i, j, k - 1) >
+                                               (1.0 - 1e-12))))) {
                                         // Determine which cell to
                                         // interpolate with
                                         if (amrex::max(
@@ -315,7 +317,7 @@ void FreeSurface::prepare_netcdf_file()
     ncf.def_var("coordinates2D", NC_DOUBLE, {ngp_name, "ndim2"});
 
     // Set up array for height outputs
-    ncf.def_var("heights", NC_DOUBLE, {nt_name, ngp_name, ninst_name});
+    ncf.def_var("heights", NC_DOUBLE, {nt_name, ninst_name, ngp_name});
 
     ncf.exit_def_mode();
 
@@ -351,10 +353,13 @@ void FreeSurface::write_netcdf()
     std::vector<size_t> start{nt, 0, 0};
     std::vector<size_t> count{1, 0, 0};
 
-    count[1] = m_npts;
-    count[2] = m_ninst;
+    count[1] = 1;
+    count[2] = m_npts;
     auto var = ncf.var("heights");
-    var.put(&m_out[0], start, count);
+    for (int ni = 0; ni < m_ninst; ++ni) {
+        var.put(&m_out[ni * m_npts], start, count);
+        ++start[1];
+    }
 
     ncf.close();
 #endif
