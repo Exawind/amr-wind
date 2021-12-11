@@ -40,7 +40,7 @@ public:
     /** Determine how the subsampling will be done
      *
      */
-    void subsampling() override;
+    //~ void subsampling() override;
     void update_sampling_locations() override;
 
     int num_points() const override { return (m_npts * m_ns); }

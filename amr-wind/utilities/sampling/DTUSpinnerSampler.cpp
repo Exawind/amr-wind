@@ -61,31 +61,11 @@ void DTUSpinnerSampler::initialize(const std::string& key)
 
 
 
-void DTUSpinnerSampler::subsampling()
-{
-    amrex::Real time = m_sim.time().current_time();
-    amrex::Real dt_sim = m_sim.time().deltaT();
-
-    // Determine the number of subsamples
-    m_ns = 0;
-
-    // Loop to see how many times we will subsample
-    while (m_time_sampling  < time + dt_sim) {
-//~ std::cout << "m_time_sampling " << m_time_sampling << " time + dt_sim " <<  time + dt_sim << std::endl;
-        m_ns +=1;
-        m_time_sampling += m_dt_s;
-    }
-
-    // Resize these variables so they can store all the locations
-    m_start.resize(AMREX_SPACEDIM * m_ns);
-    m_end.resize(AMREX_SPACEDIM * m_ns);
-
-std::cout <<" m_ns " << m_ns << std::endl;    
-
-}
 
 void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
+
+std::cout <<" sampling locations call " << std::endl;    
 
 std::cout <<" m_npts m_ns "<< m_npts << " " << m_ns << std::endl;    
 
@@ -99,15 +79,21 @@ std::cout <<" m_npts m_ns "<< m_npts << " " << m_ns << std::endl;
     for (int k = 0; k < m_ns; ++k)
     {
         // Loop per spacial dimension
-        for (int d = 0; d < AMREX_SPACEDIM; ++d)
-            dx[d] = (m_end[d + k * m_npts] - m_start[d + k * m_npts]) / ndiv;
-    
-        for (int i = 0; i < m_npts; ++i) {
-            for (int d = 0; d < AMREX_SPACEDIM; ++d)
-                locs[i + k * m_ns][d] = m_start[d + k * m_npts] + i * dx[d];
+        for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+            dx[d] = (m_end[k + d * m_ns] - m_start[k + d * m_ns]) / ndiv;
+std::cout <<" ndiv " << ndiv << std::endl;    
+std::cout <<" dx[d] " << dx[d] << std::endl;    
         }
-        
+
+        for (int i = 0; i < m_npts; ++i) {
+            for (int d = 0; d < AMREX_SPACEDIM; ++d) {
+                locs[i + k * m_npts][d] = m_start[k + d * m_ns] + i * dx[d];
+//~ std::cout <<" locs[i + k * m_npts][d] " << locs[i + k * m_npts][d] << std::endl;    
+            }
+        }
     }
+std::cout <<" sampling locations call end" << std::endl;    
+
 }
 
 
@@ -116,8 +102,34 @@ std::cout <<" m_npts m_ns "<< m_npts << " " << m_ns << std::endl;
 
 void DTUSpinnerSampler::update_sampling_locations()
 {
+std::cout << "Error NOT Here update_sampling_locations 1" << std::endl;
 
+std::cout << "Subsampling CALL" << std::endl;
+    
     amrex::Real time = m_sim.time().current_time();
+    amrex::Real dt_sim = m_sim.time().deltaT();
+
+    // Determine the number of subsamples
+    m_ns = 0;
+
+    // Initialize the sampling time to the current time in the simulation
+    m_time_sampling = time;
+    // Loop to see how many times we will subsample
+    while (m_time_sampling  < time + dt_sim) {
+//~ std::cout << "m_time_sampling " << m_time_sampling << " time + dt_sim " <<  time + dt_sim << std::endl;
+        m_ns +=1;
+        m_time_sampling += m_dt_s;
+    }
+
+    // Resize these variables so they can store all the locations
+    m_start.resize(AMREX_SPACEDIM * m_ns);
+    m_end.resize(AMREX_SPACEDIM * m_ns);
+
+std::cout <<"subsampling m_ns " << m_ns << std::endl;    
+std::cout << "Error NOT Here update_sampling_locations2" << std::endl;
+
+    //~ amrex::Real time = m_sim.time().current_time();
+    time = m_sim.time().current_time();
     
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k)
@@ -133,9 +145,9 @@ void DTUSpinnerSampler::update_sampling_locations()
     
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             // Need to assign start point as the origin
-            m_start[d + k * m_npts] = m_origin[d];
+            m_start[k + d * m_ns] = m_origin[d];
             // Initialize the end point
-            m_end[d + k * m_npts] = m_origin[d];
+            m_end[k + d * m_ns] = m_origin[d];
         }
     
         // End point of the beam
@@ -149,10 +161,13 @@ void DTUSpinnerSampler::update_sampling_locations()
     
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            beam_vector[d] += m_origin[d + k * m_npts];
-            m_end[d + k * m_npts] = beam_vector[d];
+            beam_vector[d] += m_origin[k + d * m_ns];
+            m_end[k + d * m_ns] = beam_vector[d];
         }
     }
+    
+std::cout << "Error NOT Here update_sampling_locations 3" << std::endl;
+
 }
 
 #ifdef AMR_WIND_USE_NETCDF

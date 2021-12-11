@@ -102,7 +102,6 @@ void SamplingContainer::initialize_particles(
     if (owner != iproc) return;
 
     int num_particles = 0;
-    for (auto& probes : samplers) probes->subsampling();
     for (auto& probes : samplers) num_particles += probes->num_points();
     m_total_particles = num_particles;
 
@@ -118,7 +117,6 @@ void SamplingContainer::initialize_particles(
     auto* pstruct = ptile.GetArrayOfStructs()().data();
     SamplerBase::SampleLocType locs;
     for (auto& probe : samplers) {
-        //~ probe->subsampling();
         probe->sampling_locations(locs);
         const int npts = locs.size();
         const auto probe_id = probe->id();
@@ -145,6 +143,8 @@ void SamplingContainer::initialize_particles(
     }
 std::cout << "pidx " << pidx << " num_particles " << num_particles << std::endl;
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
+std::cout << "pidx " << pidx << " num_particles asserted!" << num_particles << std::endl;
+    
 }
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)
