@@ -80,14 +80,14 @@ std::cout <<" m_npts m_ns "<< m_npts << " " << m_ns << std::endl;
     {
         // Loop per spacial dimension
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            dx[d] = (m_end[k + d * m_ns] - m_start[k + d * m_ns]) / ndiv;
-std::cout <<" ndiv " << ndiv << std::endl;    
-std::cout <<" dx[d] " << dx[d] << std::endl;    
+            dx[d] = (m_end[d + k * AMREX_SPACEDIM] - m_start[d + k * AMREX_SPACEDIM]) / ndiv;
+//~ std::cout <<" ndiv " << d << " " << k << " " << ndiv << std::endl;    
+//~ std::cout <<" dx[d] " << dx[d] << std::endl;    
         }
 
         for (int i = 0; i < m_npts; ++i) {
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                locs[i + k * m_npts][d] = m_start[k + d * m_ns] + i * dx[d];
+                locs[i + k * m_npts][d] = m_start[d + k * AMREX_SPACEDIM] + i * dx[d];
 //~ std::cout <<" locs[i + k * m_npts][d] " << locs[i + k * m_npts][d] << std::endl;    
             }
         }
@@ -145,9 +145,9 @@ std::cout << "Error NOT Here update_sampling_locations2" << std::endl;
     
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             // Need to assign start point as the origin
-            m_start[k + d * m_ns] = m_origin[d];
+            m_start[d + k * AMREX_SPACEDIM] = m_origin[d];
             // Initialize the end point
-            m_end[k + d * m_ns] = m_origin[d];
+            //~ m_end[d + k * AMREX_SPACEDIM] = m_origin[d];
         }
     
         // End point of the beam
@@ -158,11 +158,23 @@ std::cout << "Error NOT Here update_sampling_locations2" << std::endl;
     
         // Perform the vector rotation
         beam_vector = r1 & beam_vector;
+
+//~ std::cout << "beam_vector" << " " << beam_vector << " "  << std::endl;
+//~ std::cout << "r1" << " " << r1 << " "  << std::endl;
     
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            beam_vector[d] += m_origin[k + d * m_ns];
-            m_end[k + d * m_ns] = beam_vector[d];
+std::cout << "beam_vector[d] " << beam_vector[d] << std::endl;
+
+            beam_vector[d] += m_origin[d];
+
+std::cout << "beam_vector[d] " << beam_vector[d] << std::endl;
+            
+            m_end[d + k * AMREX_SPACEDIM] = beam_vector[d];
+
+std::cout << "m_start[d + k * AMREX_SPACEDIM]" << " " << m_start[d + k * AMREX_SPACEDIM] << " "  << std::endl;
+std::cout << "m_end[d + k * AMREX_SPACEDIM]" << " " << m_end[d + k * AMREX_SPACEDIM] << " "  << std::endl;
+//~ std::cout << d + k * AMREX_SPACEDIM << std::endl;
         }
     }
     
