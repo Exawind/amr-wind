@@ -52,9 +52,6 @@ public:
     //! within a time step
     virtual void subsampling() {}
 
-    //! Run specific output for the sampler
-    virtual bool output_netcdf_field(float*, ncutils::NCVar&) { return true; }
-
     //! Populate metadata in the NetCDF file
     virtual void define_netcdf_metadata(const ncutils::NCGroup&) const {}
     virtual void populate_netcdf_metadata(const ncutils::NCGroup&) const {}
