@@ -37,6 +37,10 @@ public:
 private:
     Field& m_velocity;
     Field& m_levelset;
+    Field& m_vof;
+
+    //! Not const because calculation of VOF takes place during initialize
+    CFDSim& m_sim;
 
     //! Not const because calculation of VOF takes place during initialize
     CFDSim& m_sim;
