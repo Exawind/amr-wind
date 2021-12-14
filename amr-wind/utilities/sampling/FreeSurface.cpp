@@ -110,6 +110,8 @@ void FreeSurface::post_advance_work()
             const auto& geom = m_sim.mesh().Geom(lev);
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx =
                 geom.CellSizeArray();
+            const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dxi =
+                geom.InvCellSizeArray();
             const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> plo =
                 geom.ProbLoArray();
 
@@ -166,34 +168,89 @@ void FreeSurface::post_advance_work()
                                                (1.0 - 1e-12) ||
                                            vof_arr(i, j, k - 1) >
                                                (1.0 - 1e-12))))) {
+                                        // Interpolate in x and y for the
+                                        // current cell and the ones above and
+                                        // below
+                                        amrex::Real wx_hi;
+                                        amrex::Real wy_hi;
+                                        int iup, idn, jup, jdn;
+
+                                        // Determine which cells to use for x, y
+                                        if (loc[0] < xm[0]) {
+                                            iup = i;
+                                            idn = i - 1;
+                                            wx_hi = (loc[0] - (xm[0] - dx[0])) *
+                                                    dxi[0];
+                                        } else {
+                                            iup = i + 1;
+                                            idn = i;
+                                            wx_hi = (loc[0] - xm[0]) * dxi[0];
+                                        }
+                                        if (loc[1] < xm[1]) {
+                                            jup = j;
+                                            jdn = j - 1;
+                                            wy_hi = (loc[1] - (xm[1] - dx[1])) *
+                                                    dxi[1];
+                                        } else {
+                                            jup = j + 1;
+                                            jdn = j;
+                                            wy_hi = (loc[1] - xm[1]) * dxi[1];
+                                        }
+                                        amrex::Real wx_lo = 1.0 - wx_hi;
+                                        amrex::Real wy_lo = 1.0 - wy_hi;
+
+                                        amrex::Real vof_above =
+                                            wx_lo * wy_lo *
+                                                vof_arr(idn, jdn, k + 1) +
+                                            wx_lo * wy_hi *
+                                                vof_arr(idn, jup, k + 1) +
+                                            wx_hi * wy_lo *
+                                                vof_arr(iup, jdn, k + 1) +
+                                            wx_hi * wy_hi *
+                                                vof_arr(iup, jup, k + 1);
+                                        amrex::Real vof_here =
+                                            wx_lo * wy_lo *
+                                                vof_arr(idn, jdn, k) +
+                                            wx_lo * wy_hi *
+                                                vof_arr(idn, jup, k) +
+                                            wx_hi * wy_lo *
+                                                vof_arr(iup, jdn, k) +
+                                            wx_hi * wy_hi *
+                                                vof_arr(iup, jup, k);
+                                        amrex::Real vof_below =
+                                            wx_lo * wy_lo *
+                                                vof_arr(idn, jdn, k - 1) +
+                                            wx_lo * wy_hi *
+                                                vof_arr(idn, jup, k - 1) +
+                                            wx_hi * wy_lo *
+                                                vof_arr(iup, jdn, k - 1) +
+                                            wx_hi * wy_hi *
+                                                vof_arr(iup, jup, k - 1);
+
                                         // Determine which cell to
                                         // interpolate with
-                                        bool above =
-                                            (vof_arr(i, j, k + 1) - 0.5) *
-                                                (vof_arr(i, j, k) - 0.5) <
-                                            0.0;
-                                        bool below =
-                                            (vof_arr(i, j, k - 1) - 0.5) *
-                                                (vof_arr(i, j, k) - 0.5) <
-                                            0.0;
+                                        bool above = (vof_above - 0.5) *
+                                                         (vof_here - 0.5) <=
+                                                     0.0;
+                                        bool below = (vof_below - 0.5) *
+                                                         (vof_here - 0.5) <=
+                                                     0.0;
                                         if (above) {
                                             // Interpolate positive
                                             // direction
                                             ht = xm[2] +
                                                  (dx[2]) /
-                                                     (vof_arr(i, j, k + 1) -
-                                                      vof_arr(i, j, k)) *
-                                                     (0.5 - vof_arr(i, j, k));
+                                                     (vof_above - vof_here) *
+                                                     (0.5 - vof_here);
                                         } else {
                                             if (below) {
                                                 // Interpolate negative
                                                 // direction
-                                                ht = xm[2] -
-                                                     (dx[2]) /
-                                                         (vof_arr(i, j, k - 1) -
-                                                          vof_arr(i, j, k)) *
-                                                         (0.5 -
-                                                          vof_arr(i, j, k));
+                                                ht =
+                                                    xm[2] -
+                                                    (dx[2]) /
+                                                        (vof_below - vof_here) *
+                                                        (0.5 - vof_here);
                                             }
                                             // If none satisfy requirement, then
                                             // the isosurface vof = 0.5 cannot
