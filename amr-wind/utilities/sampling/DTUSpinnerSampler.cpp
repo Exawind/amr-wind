@@ -13,177 +13,168 @@ DTUSpinnerSampler::DTUSpinnerSampler(const CFDSim& sim) : LidarSampler(sim) {}
 void DTUSpinnerSampler::initialize(const std::string& key)
 {
     // Initialize the sampling time to be the same as simulation time
-    //~ m_time_sampling = m_sim.time().current_time();
+    m_time_sampling = m_sim.time().current_time();
 
-    LidarSampler::initialize(key);
+    /*
+     * Use this as a guide to implement the reading of the input
+     * variables for the scanning pattern
+     */
 
-    //~ subsampling();
+    // Read in new inputs specific to this class
+    amrex::ParmParse pp(key);
 
+    // This is the origin of the scan (x, y, z) [m]
+    pp.getarr("origin", m_origin);
+    AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
 
-    //~ // Read in new inputs specific to this class
-    //~ amrex::ParmParse pp(key);
+    // The number of points
+    pp.get("num_points", m_npts);
 
-    //~ // This is the origin of the scan (x, y, z) [m]
-    //~ pp.getarr("origin", m_origin);
-    //~ AMREX_ALWAYS_ASSERT(static_cast<int>(m_origin.size()) == AMREX_SPACEDIM);
+    // The length of the beam [m]
+    pp.get("length", m_length);
 
-    //~ // The number of points
-    //~ pp.get("num_points", m_npts);
+    // The time table [s]
+    pp.getarr("time_table", m_time_table);
+    // Azimuth angle (this is in the N, E, S, W direction) [degrees]
+    pp.getarr("azimuth_table", m_azimuth_table);
+    // Elevation angle [degrees]
+    pp.getarr("elevation_table", m_elevation_table);
 
-    //~ // The length of the beam [m]
-    //~ pp.get("length", m_length);
+    // Number of elements in the table
+    int np = m_time_table.size();
 
-    //~ // The time table [s]
-    //~ pp.getarr("time_table", m_time_table);
-    //~ // Azimuth angle (this is in the N, E, S, W direction) [degrees]
-    //~ pp.getarr("azimuth_table", m_azimuth_table);
-    //~ // Elevation angle [degrees]
-    //~ pp.getarr("elevation_table", m_elevation_table);
+    // Ensure that the tables have the same size
+    if (m_azimuth_table.size() != np) {
+        amrex::Abort(
+            "azimuth_table must have same number of entries as time_table ");
+    }
+    if (m_elevation_table.size() != np) {
+        amrex::Abort(
+            "elevation_table must have same number of entries as time_table ");
+    }
 
-    //~ // Number of elements in the table
-    //~ int np = m_time_table.size();
+    update_sampling_locations();
 
-    //~ // Ensure that the tables have the same size
-    //~ if (m_azimuth_table.size() != np) {
-        //~ amrex::Abort(
-            //~ "azimuth_table must have same number of entries as time_table ");
-    //~ }
-    //~ if (m_elevation_table.size() != np) {
-        //~ amrex::Abort(
-            //~ "elevation_table must have same number of entries as time_table ");
-    //~ }
-
-    //~ DTUSpinnerSampler::update_sampling_locations();
-
-    //~ check_bounds();
+    check_bounds();
 }
-
-
-
-
 
 void DTUSpinnerSampler::sampling_locations(SampleLocType& locs) const
 {
 
-std::cout <<" sampling locations call " << std::endl;    
+    // Index used to offset the 1d array lookup
+    int offset = 0;
 
-std::cout <<" m_npts m_ns "<< m_npts << " " << m_ns << std::endl;    
+    // The total number of points at this time step
+    int n_samples = m_npts * m_ns;
 
     // Resize to number of points in line times number of sampling times
-    locs.resize(m_npts * m_ns);
+    //~ if (locs.size() < n_samples)
+    locs.resize(n_samples);
 
     const amrex::Real ndiv = amrex::max(m_npts - 1, 1);
     amrex::Array<amrex::Real, AMREX_SPACEDIM> dx;
 
     // Loop per subsampling
-    for (int k = 0; k < m_ns; ++k)
-    {
+    for (int k = 0; k < m_ns; ++k) {
+
+        offset = k * AMREX_SPACEDIM;
+
         // Loop per spacial dimension
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-            dx[d] = (m_end[d + k * AMREX_SPACEDIM] - m_start[d + k * AMREX_SPACEDIM]) / ndiv;
-//~ std::cout <<" ndiv " << d << " " << k << " " << ndiv << std::endl;    
-//~ std::cout <<" dx[d] " << dx[d] << std::endl;    
+            dx[d] = (m_end[d + offset] - m_start[d + offset]) / ndiv;
         }
 
         for (int i = 0; i < m_npts; ++i) {
             for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-                locs[i + k * m_npts][d] = m_start[d + k * AMREX_SPACEDIM] + i * dx[d];
-//~ std::cout <<" locs[i + k * m_npts][d] " << locs[i + k * m_npts][d] << std::endl;    
+                locs[i + k * m_npts][d] = m_start[d + offset] + i * dx[d];
             }
         }
     }
-std::cout <<" sampling locations call end" << std::endl;    
-
 }
-
-
-
-
 
 void DTUSpinnerSampler::update_sampling_locations()
 {
-std::cout << "Error NOT Here update_sampling_locations 1" << std::endl;
 
-std::cout << "Subsampling CALL" << std::endl;
-    
+    BL_PROFILE(
+        "amr-wind::Sampling::DTUSpinnerSampler::update_sampling_locations");
+
+    // Index used to offset the 1d array lookup
+    int offset = 0;
+
     amrex::Real time = m_sim.time().current_time();
+    amrex::Real start_time = m_sim.time().start_time();
     amrex::Real dt_sim = m_sim.time().deltaT();
 
     // Determine the number of subsamples
     m_ns = 0;
 
-    // Initialize the sampling time to the current time in the simulation
-    m_time_sampling = time;
+    // Initialize the sampling time to the first time in the simulation
+    if (time == start_time) m_time_sampling = time;
+    //~ m_time_sampling=time;
+
     // Loop to see how many times we will subsample
-    while (m_time_sampling  < time + dt_sim) {
-//~ std::cout << "m_time_sampling " << m_time_sampling << " time + dt_sim " <<  time + dt_sim << std::endl;
-        m_ns +=1;
+    while (m_time_sampling < time + dt_sim) {
+        m_ns += 1;
         m_time_sampling += m_dt_s;
     }
 
+    int n_size = AMREX_SPACEDIM * m_ns;
     // Resize these variables so they can store all the locations
-    m_start.resize(AMREX_SPACEDIM * m_ns);
-    m_end.resize(AMREX_SPACEDIM * m_ns);
+    if (m_start.size() < n_size) m_start.resize(n_size);
+    if (m_end.size() < n_size) m_end.resize(n_size);
 
-std::cout <<"subsampling m_ns " << m_ns << std::endl;    
-std::cout << "Error NOT Here update_sampling_locations2" << std::endl;
+    //~ time = m_sim.time().current_time();
+    time = m_time_sampling - m_dt_s * m_ns;
 
-    //~ amrex::Real time = m_sim.time().current_time();
-    time = m_sim.time().current_time();
-    
     // Loop per subsampling
-    for (int k = 0; k < m_ns; ++k)
-    {
-        time += m_dt_s * k;
-        
+    for (int k = 0; k < m_ns; ++k) {
+
+        offset = k * AMREX_SPACEDIM;
+
+        time += m_dt_s;
+
         // The current azimuth angle
         const amrex::Real current_azimuth =
             ::amr_wind::interp::linear(m_time_table, m_azimuth_table, time);
-    
+
         const amrex::Real current_elevation =
             ::amr_wind::interp::linear(m_time_table, m_elevation_table, time);
-    
+
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
             // Need to assign start point as the origin
-            m_start[d + k * AMREX_SPACEDIM] = m_origin[d];
+            m_start[d + offset] = m_origin[d];
             // Initialize the end point
-            //~ m_end[d + k * AMREX_SPACEDIM] = m_origin[d];
+            //~ m_end[d + offset] = m_origin[d];
         }
-    
+
         // End point of the beam
         vs::Vector beam_vector = {m_length, 0., 0.};
-    
+
         // The rotation matrix (takes in angles in degrees)
         vs::Tensor r1 = vs::yrot(current_elevation) & vs::zrot(current_azimuth);
-    
+
         // Perform the vector rotation
         beam_vector = r1 & beam_vector;
 
-//~ std::cout << "beam_vector" << " " << beam_vector << " "  << std::endl;
-//~ std::cout << "r1" << " " << r1 << " "  << std::endl;
-    
         // Add the origin location to the beam vector
         for (int d = 0; d < AMREX_SPACEDIM; ++d) {
-std::cout << "beam_vector[d] " << beam_vector[d] << std::endl;
 
             beam_vector[d] += m_origin[d];
-
-std::cout << "beam_vector[d] " << beam_vector[d] << std::endl;
-            
-            m_end[d + k * AMREX_SPACEDIM] = beam_vector[d];
-
-std::cout << "m_start[d + k * AMREX_SPACEDIM]" << " " << m_start[d + k * AMREX_SPACEDIM] << " "  << std::endl;
-std::cout << "m_end[d + k * AMREX_SPACEDIM]" << " " << m_end[d + k * AMREX_SPACEDIM] << " "  << std::endl;
-//~ std::cout << d + k * AMREX_SPACEDIM << std::endl;
+            m_end[d + offset] = beam_vector[d];
         }
     }
-    
-std::cout << "Error NOT Here update_sampling_locations 3" << std::endl;
-
 }
 
 #ifdef AMR_WIND_USE_NETCDF
-void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) const
+
+bool DTUSpinnerSampler::output_netcdf_field(float* buf, ncutils::NCVar& var)
+{
+    //~ var.put(buf, start, count);
+    return false;
+}
+
+void DTUSpinnerSampler::define_netcdf_metadata(
+    const ncutils::NCGroup& grp) const
 {
     grp.put_attr("sampling_type", identifier());
     grp.put_attr("start", m_start);
@@ -194,7 +185,8 @@ void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup& grp) cons
     grp.def_var("points", NC_DOUBLE, {"num_time_steps", "num_points", "ndim"});
 }
 
-void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
+{}
 void DTUSpinnerSampler::output_netcdf_data(
     const ncutils::NCGroup& grp, const size_t nt) const
 {
@@ -208,11 +200,17 @@ void DTUSpinnerSampler::output_netcdf_data(
     xyz.put(&locs[0][0], start, count);
 }
 #else
+bool DTUSpinnerSampler::output_netcdf_field(float* buf, ncutils::NCVar& var)
+{
+    return false;
+}
 void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
-void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const {}
+void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
+{}
 void DTUSpinnerSampler::output_netcdf_data(
     const ncutils::NCGroup&, const size_t) const
 {}
+
 #endif
 
 } // namespace sampling

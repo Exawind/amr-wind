@@ -46,8 +46,6 @@ protected:
     amrex::Vector<amrex::Real> m_azimuth_table;
     amrex::Vector<amrex::Real> m_elevation_table;
     amrex::Real m_length{0};
-    amrex::Real m_dt_s{0};
-    amrex::Real m_time_s{0};
 };
 
 } // namespace sampling

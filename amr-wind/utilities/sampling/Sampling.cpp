@@ -74,44 +74,24 @@ void Sampling::update_container()
 {
     BL_PROFILE("amr-wind::Sampling::update_container");
 
-std::cout << "Error Not Here update_container 1" << std::endl;
-
     // Initialize the particle container based on user inputs
     m_scontainer.reset(new SamplingContainer(m_sim.mesh()));
-std::cout << "Error Not Here update_container 2" << std::endl;
     m_scontainer->setup_container(m_ncomp);
-std::cout << "Error Not Here update_container 3" << std::endl;
     m_scontainer->initialize_particles(m_samplers);
     // Redistribute particles to appropriate boxes/MPI ranks
-std::cout << "Error Not Here update_container 4" << std::endl;
     m_scontainer->Redistribute();
-std::cout << "Error Not Here update_container 5" << std::endl;
     m_scontainer->num_sampling_particles() = m_total_particles;
 }
 
 void Sampling::update_sampling_locations()
 {
-    BL_PROFILE("amr-wind::Sampling::pre_advance_work");
-
-std::cout << "Error NOT Here 1" << std::endl;
-
-    //~ m_total_particles = 0;
+    BL_PROFILE("amr-wind::Sampling::update_sampling_locations");
 
     for (const auto& obj : m_samplers) {
         obj->update_sampling_locations();
-        std::cout << "Error NOT Here 1a" << std::endl;
-
-        //~ m_total_particles += obj->num_points();
-        //~ std::cout << "Error NOT Here 1b" << std::endl;
     }
 
-//~ std::cout << "m_total_particles " << m_total_particles << std::endl;
-std::cout << "Error NOT Here 2" << std::endl;
-// The error is somewhere in this call
     update_container();
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::cout << "Error YES Here 3" << std::endl;
-
 }
 
 void Sampling::post_advance_work()
@@ -124,12 +104,10 @@ void Sampling::post_advance_work()
     if (!(tidx % m_out_freq == 0)) return;
 
     update_sampling_locations();
-std::cout << "Error YES Here" << std::endl;
 
     m_scontainer->interpolate_fields(m_fields);
 
     process_output();
-
 }
 
 void Sampling::post_regrid_actions()
@@ -275,11 +253,18 @@ void Sampling::write_netcdf()
         count[1] = 0;
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
-            count[1] = obj->num_points();
-            auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
-            var.put(&buf[offset], start, count);
-            offset += count[1];
+
+            // Do sampler specific output if needed
+            do_output = sampler->output_netcdf_field(buf, var);
+
+            // Do generic output if specific output returns true
+            if (do_output) {
+                count[1] = obj->num_points();
+                auto grp = ncf.group(obj->label());
+                auto var = grp.var(m_var_names[iv]);
+                var.put(&buf[offset], start, count);
+                offset += count[1];
+            }
         }
     }
     ncf.close();

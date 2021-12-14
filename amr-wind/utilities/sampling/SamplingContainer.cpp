@@ -141,10 +141,8 @@ void SamplingContainer::initialize_particles(
         amrex::Gpu::streamSynchronize();
         pidx += npts;
     }
-std::cout << "pidx " << pidx << " num_particles " << num_particles << std::endl;
+
     AMREX_ALWAYS_ASSERT(pidx == num_particles);
-std::cout << "pidx " << pidx << " num_particles asserted!" << num_particles << std::endl;
-    
 }
 
 void SamplingContainer::interpolate_fields(const amrex::Vector<Field*> fields)

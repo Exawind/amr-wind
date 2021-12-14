@@ -45,6 +45,8 @@ public:
 
     int num_points() const override { return (m_npts * m_ns); }
 
+    bool output_netcdf_field(float*, ncutils::NCVar&) override;
+
     void define_netcdf_metadata(const ncutils::NCGroup&) const override;
     void populate_netcdf_metadata(const ncutils::NCGroup&) const override;
     void
