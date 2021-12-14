@@ -25,6 +25,7 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
 {
     auto& velocity = m_velocity(level);
     auto& levelset = m_levelset(level);
+    auto& volfrac = m_vof(level);
     const auto& dx = geom.CellSizeArray();
     const auto& problo = geom.ProbLoArray();
 
