@@ -1,37 +1,40 @@
-if(NOT "${TESTING_ROOT_DIR}" STREQUAL "")
+if("${TESTING_ROOT_DIR}" STREQUAL "")
+  message(FATAL_ERROR "TESTING_ROOT_DIR variable must be set." )
+else()
   message("Testing root directory is ${TESTING_ROOT_DIR}")
-else()
-  message(FATAL_ERROR "You need to set the TESTING_ROOT_DIR variable. CMake will exit." )
 endif()
 
-if(NOT "${HOST_NAME}" STREQUAL "")
-  message("Hostname is ${HOST_NAME}")
+if("${HOST_NAME}" STREQUAL "")
+  message(FATAL_ERROR "HOST_NAME variable must be set." )
 else()
-  message(FATAL_ERROR "You need to set the HOST_NAME variable. CMake will exit." )
+  message("HOST_NAME is ${HOST_NAME}")
 endif()
 
-if(NOT "${AMR_WIND_DIR}" STREQUAL "")
-  message("AMR_WIND_DIR is ${AMR_WIND_DIR}")
+if("${SOURCE_DIR}" STREQUAL "")
+  message(FATAL_ERROR "SOURCE_DIR variable must be set." )
 else()
-  message(FATAL_ERROR "You need to set the AMR_WIND_DIR variable. CMake will exit." )
+  message("SOURCE_DIR is ${SOURCE_DIR}")
 endif()
 
-# -----------------------------------------------------------
-# -- Configure CTest
-# -----------------------------------------------------------
+if("${BUILD_DIR}" STREQUAL "")
+  set(BUILD_DIR "${SOURCE_DIR}/build")
+  message("BUILD_DIR is ${BUILD_DIR}")
+else()
+  message("BUILD_DIR is ${BUILD_DIR}")
+endif()
 
-# Set important configuration variables
 set(CTEST_SITE "${HOST_NAME}")
 set(CTEST_BUILD_NAME "${CMAKE_SYSTEM_NAME}${EXTRA_BUILD_NAME}")
-set(CTEST_SOURCE_DIRECTORY "${AMR_WIND_DIR}")
-set(CTEST_BINARY_DIRECTORY "${AMR_WIND_DIR}/build")
+set(CTEST_SOURCE_DIRECTORY "${SOURCE_DIR}")
+set(CTEST_BINARY_DIRECTORY "${BUILD_DIR}")
 set(CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE)
 find_program(CTEST_GIT_COMMAND NAMES git)
 find_program(MAKE NAMES make)
 
-# Add parallelism capability to testing
-include(ProcessorCount)
-ProcessorCount(NP)
+if("${NP}" STREQUAL "")
+  include(ProcessorCount)
+  ProcessorCount(NP)
+endif()
 message(STATUS "\nNumber of processors detected: ${NP}")
 set(CTEST_BUILD_FLAGS "-j${NP}")
 if(CTEST_DISABLE_OVERLAPPING_TESTS)
@@ -43,10 +46,6 @@ endif()
 set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
 set(CTEST_CONFIGURE_COMMAND "cmake ${CMAKE_CONFIGURE_ARGS} -DAMR_WIND_ENABLE_TESTS:BOOL=ON ${CTEST_SOURCE_DIRECTORY}")
 set(CTEST_BUILD_COMMAND "${MAKE} ${CTEST_BUILD_FLAGS}")
-
-# -----------------------------------------------------------
-# -- Run CTest
-# -----------------------------------------------------------
 
 message("\n -- Start dashboard - ${CTEST_BUILD_NAME} --")
 ctest_start("Nightly" TRACK "Nightly")
