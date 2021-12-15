@@ -58,6 +58,10 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
     // Use density to calculate mixed velocity in multiphase cells
     amrex::Real rhol = mphase.rho1();
     amrex::Real rhog = mphase.rho2();
+    amrex::Gpu::DeviceVector<amrex::Real> dvel(AMREX_SPACEDIM);
+    amrex::Gpu::copy(
+        amrex::Gpu::hostToDevice, m_vel.begin(), m_vel.end(), dvel.begin());
+    const auto* vptr = dvel.data();
     for (amrex::MFIter mfi(velocity); mfi.isValid(); ++mfi) {
         const auto& vbx = mfi.validbox();
         auto vof_arr = volfrac.array(mfi);
@@ -67,9 +71,9 @@ void RainDrop::initialize_fields(int level, const amrex::Geometry& geom)
                 // Calculate mass-weighted velocity (gas vel is 0)
                 amrex::Real vof = vof_arr(i, j, k);
                 amrex::Real dens = (1.0 - vof) * rhog + vof * rhol;
-                vel(i, j, k, 0) = vof * rhol * m_vel[0] / dens;
-                vel(i, j, k, 1) = vof * rhol * m_vel[1] / dens;
-                vel(i, j, k, 2) = vof * rhol * m_vel[2] / dens;
+                vel(i, j, k, 0) = vof * rhol * vptr[0] / dens;
+                vel(i, j, k, 1) = vof * rhol * vptr[1] / dens;
+                vel(i, j, k, 2) = vof * rhol * vptr[2] / dens;
             });
     }
 }
