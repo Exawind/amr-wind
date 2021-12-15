@@ -10,7 +10,11 @@ namespace free_surface {
 
 FreeSurface::FreeSurface(CFDSim& sim, const std::string& label)
     : m_sim(sim), m_label(label), m_vof(sim.repo().get_field("vof"))
-{}
+{
+#ifdef AMREX_USE_GPU
+    amrex::Print() << "WARNING: FreeSurface: Running on GPUs..." << std::endl;
+#endif
+}
 
 FreeSurface::~FreeSurface() = default;
 
