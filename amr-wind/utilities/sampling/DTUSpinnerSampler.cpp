@@ -167,6 +167,12 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_NETCDF
 
+bool DTUSpinnerSampler::output_netcdf_field(float* buf, ncutils::NCVar& var)
+{
+    //~ var.put(buf, start, count);
+    return false;
+}
+
 void DTUSpinnerSampler::define_netcdf_metadata(
     const ncutils::NCGroup& grp) const
 {
@@ -193,8 +199,11 @@ void DTUSpinnerSampler::output_netcdf_data(
     count[1] = num_points();
     xyz.put(&locs[0][0], start, count);
 }
-
 #else
+bool DTUSpinnerSampler::output_netcdf_field(float* buf, ncutils::NCVar& var)
+{
+    return false;
+}
 void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
 void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
 {}

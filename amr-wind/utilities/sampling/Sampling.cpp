@@ -254,13 +254,17 @@ void Sampling::write_netcdf()
         int offset = iv * m_scontainer->num_sampling_particles();
         for (const auto& obj : m_samplers) {
 
-            count[1] = obj->num_points();
-            auto grp = ncf.group(obj->label());
-            auto var = grp.var(m_var_names[iv]);
-            // Do generic output if specific output returns true
-            var.put(&buf[offset], start, count);
-            offset += count[1];
+            // Do sampler specific output if needed
+            do_output = sampler->output_netcdf_field(buf, var);
 
+            // Do generic output if specific output returns true
+            if (do_output) {
+                count[1] = obj->num_points();
+                auto grp = ncf.group(obj->label());
+                auto var = grp.var(m_var_names[iv]);
+                var.put(&buf[offset], start, count);
+                offset += count[1];
+            }
         }
     }
     ncf.close();
