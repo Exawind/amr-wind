@@ -30,6 +30,7 @@ void DTUSpinnerSampler::initialize(const std::string& key)
     // The number of points
     pp.get("num_points", m_npts);
 
+    // The time step of the sampling
     pp.query("dt_s", m_dt_s);
 
     // The length of the beam [m]
@@ -150,7 +151,7 @@ void DTUSpinnerSampler::update_sampling_locations()
             // Need to assign start point as the origin
             m_start[d + offset] = m_origin[d];
             // Initialize the end point
-            //~ m_end[d + offset] = m_origin[d];
+            m_end[d + offset] = m_origin[d];
         }
 
         // End point of the beam
@@ -175,19 +176,7 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 bool DTUSpinnerSampler::output_netcdf_field(double* buf, ncutils::NCVar& var)
 {
-
-    std::vector<size_t> start{m_nt, 0};
-    std::vector<size_t> count{1, 0};
-    for (int k = 0; k < m_ns; ++k) {
-        start[0] = m_nt + k * m_npts;
-        count[1] = m_ns;
-        // count[1]=m_npts;
-        var.put(buf, start, count);
-    }
-
-    m_nt += m_ns;
-
-    return false;
+    return true;
 }
 
 void DTUSpinnerSampler::define_netcdf_metadata(
@@ -214,16 +203,12 @@ void DTUSpinnerSampler::output_netcdf_data(
     sampling_locations(locs);
     auto xyz = grp.var("points");
     count[1] = num_points();
-    for (int k = 0; k < m_ns; ++k) {
-        start[0] = m_nt + k * m_npts;
-        count[1] = m_npts;
-        xyz.put(&locs[0][0], start, count);
-    }
+    xyz.put(&locs[0][0], start, count);
 }
 #else
 bool DTUSpinnerSampler::output_netcdf_field(double* buf, ncutils::NCVar& var)
 {
-    return false;
+    return true;
 }
 void DTUSpinnerSampler::define_netcdf_metadata(const ncutils::NCGroup&) const {}
 void DTUSpinnerSampler::populate_netcdf_metadata(const ncutils::NCGroup&) const
