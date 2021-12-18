@@ -128,10 +128,6 @@ void DTUSpinnerSampler::update_sampling_locations()
     if (m_start.size() < n_size) m_start.resize(n_size);
     if (m_end.size() < n_size) m_end.resize(n_size);
 
-    // time = m_sim.time().current_time();
-    // time = m_time_sampling - m_dt_s * m_ns;
-    time = m_time_sampling;
-
     // Loop per subsampling
     for (int k = 0; k < m_ns; ++k) {
 
@@ -174,7 +170,7 @@ void DTUSpinnerSampler::update_sampling_locations()
 
 #ifdef AMR_WIND_USE_NETCDF
 
-bool DTUSpinnerSampler::output_netcdf_field(double* buf, ncutils::NCVar& var)
+bool DTUSpinnerSampler::output_netcdf_field(double*, ncutils::NCVar&)
 {
     return true;
 }
@@ -206,7 +202,7 @@ void DTUSpinnerSampler::output_netcdf_data(
     xyz.put(&locs[0][0], start, count);
 }
 #else
-bool DTUSpinnerSampler::output_netcdf_field(double* buf, ncutils::NCVar& var)
+bool DTUSpinnerSampler::output_netcdf_field(double*, ncutils::NCVar&)
 {
     return true;
 }

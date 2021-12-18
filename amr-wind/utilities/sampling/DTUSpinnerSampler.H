@@ -54,7 +54,6 @@ public:
 
 private:
     int m_ns{1};
-    size_t m_nt{0};
     amrex::Real m_dt_s{0.01};
     amrex::Real m_time_sampling{0};
 };
