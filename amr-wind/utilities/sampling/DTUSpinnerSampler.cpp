@@ -111,7 +111,6 @@ void DTUSpinnerSampler::update_sampling_locations()
 
     // Initialize the sampling time to the first time in the simulation
     if (time == start_time) m_time_sampling = time;
-    // m_time_sampling=time;
     amrex::Real time_tmp = m_time_sampling;
     bool cond = true;
     constexpr double eps = 1.0e-12;
@@ -133,7 +132,6 @@ void DTUSpinnerSampler::update_sampling_locations()
 
         offset = k * AMREX_SPACEDIM;
 
-        //        time += m_dt_s;
         m_time_sampling += m_dt_s;
 
         // The current azimuth angle

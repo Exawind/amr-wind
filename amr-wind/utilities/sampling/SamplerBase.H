@@ -48,10 +48,6 @@ public:
     //! Update the sampling locations
     virtual void update_sampling_locations() {}
 
-    //! This routine does prework needed for sampling more than once
-    //! within a time step
-    virtual void subsampling() {}
-
     //! Run specific output for the sampler
     virtual bool output_netcdf_field(double*, ncutils::NCVar&) { return true; }
 
