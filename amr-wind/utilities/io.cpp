@@ -114,7 +114,7 @@ void incflo::ReadCheckpointFile()
 
     IntVect rep(1, 1, 1);
     for (int d = 0; d < AMREX_SPACEDIM; d++) {
-        AMREX_ALWAYS_ASSERT(prob_hi[d] > prob_lo[d]);
+        AMREX_ALWAYS_ASSERT(prob_hi[d] > prob_lo[d]); // NOLINT
 
         const amrex::Real domain_ratio =
             (prob_hi_input[d] - prob_lo_input[d]) / (prob_hi[d] - prob_lo[d]);

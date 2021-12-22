@@ -179,7 +179,7 @@ void incflo::ApplyPredictor(bool incremental_projection)
     auto& velocity_old = velocity_new.state(amr_wind::FieldState::Old);
 
     auto& density_new = density();
-    auto& density_old = density_new.state(amr_wind::FieldState::Old);
+    const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
@@ -431,7 +431,7 @@ void incflo::ApplyCorrector()
     amr_wind::io::print_mlmg_header("Corrector:");
 
     auto& density_new = density();
-    auto& density_old = density_new.state(amr_wind::FieldState::Old);
+    const auto& density_old = density_new.state(amr_wind::FieldState::Old);
     auto& density_nph = density_new.state(amr_wind::FieldState::NPH);
 
     // *************************************************************************************
