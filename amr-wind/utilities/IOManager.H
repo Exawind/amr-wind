@@ -47,8 +47,6 @@ public:
     //! Write all necessary fields for restart
     void write_checkpoint_file(const int start_level = 0);
 
-    void write_netcdf_file();
-
     //! Read all necessary fields for a restart
     void read_checkpoint_fields(
         const std::string& restart_file,

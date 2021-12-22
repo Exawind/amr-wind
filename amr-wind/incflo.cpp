@@ -244,7 +244,6 @@ void incflo::post_advance_work()
 
     if (m_time.write_plot_file()) {
         m_sim.io_manager().write_plot_file();
-        m_sim.io_manager().write_netcdf_file();
     }
 
     if (m_time.write_checkpoint()) {
