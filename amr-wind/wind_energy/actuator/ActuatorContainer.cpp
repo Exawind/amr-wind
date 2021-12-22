@@ -168,7 +168,7 @@ void ActuatorContainer::update_positions()
                 auto& pp = pstruct[ip];
                 const auto idx = pp.idata(0);
 
-                auto& pvec = dptr[idx];
+                const auto& pvec = dptr[idx];
                 for (int n = 0; n < AMREX_SPACEDIM; ++n) {
                     pp.pos(n) = pvec[n];
                 }

@@ -162,7 +162,7 @@ public:
         Field& field,
         const amrex::AmrCore& mesh,
         const SimTime& time,
-        BCOpCreator bc_op,
+        const BCOpCreator& bc_op,
         FieldInterpolator itype = FieldInterpolator::CellConsLinear)
         : m_time(time)
         , m_mesh(mesh)
