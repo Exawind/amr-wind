@@ -36,7 +36,7 @@ void initialize_volume_fractions(
     const amrex::Geometry&,
     const amrex::Box& bx,
     const int,
-    amrex::Array4<amrex::Real>& vof_arr)
+    const amrex::Array4<amrex::Real>& vof_arr)
 {
 
     // grow the box by 1 so that x,y,z go out of bounds and min(max()) corrects
@@ -51,7 +51,7 @@ void initialize_volume_fractions(
 amrex::Real normal_vector_test_impl(amr_wind::Field& vof, const int pdegree)
 {
 
-    auto& geom = vof.repo().mesh().Geom();
+    const auto& geom = vof.repo().mesh().Geom();
 
     run_algorithm(vof, [&](const int lev, const amrex::MFIter& mfi) {
         auto vof_arr = vof(lev).array(mfi);

@@ -72,7 +72,7 @@ void DiffSolverIface<LinOp>::set_acoeffs(LinOp& linop, const FieldState fstate)
     BL_PROFILE("amr-wind::set_acoeffs");
     auto& repo = m_pdefields.repo;
     const int nlevels = repo.num_active_levels();
-    auto& density = m_density.state(fstate);
+    const auto& density = m_density.state(fstate);
 
     for (int lev = 0; lev < nlevels; ++lev) {
         linop.setACoeffs(lev, density(lev));

@@ -83,7 +83,7 @@ void KOmegaSSTIDDES<Transport>::update_turbulent_viscosity(
     const auto& tke = (*this->m_tke).state(fstate);
     const auto& sdr = (*this->m_sdr).state(fstate);
     auto& repo = mu_turb.repo();
-    auto& geom_vec = repo.mesh().Geom();
+    const auto& geom_vec = repo.mesh().Geom();
     auto& tke_lhs = (this->m_sim).repo().get_field("tke_lhs_src_term");
     tke_lhs.setVal(0.0);
     auto& sdr_lhs = (this->m_sim).repo().get_field("sdr_lhs_src_term");
