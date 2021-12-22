@@ -152,6 +152,8 @@ void MacProjOp::operator()(const FieldState fstate, const amrex::Real dt)
     // this can be removed once the nsolve overset
     // masking is implemented in cell based AMReX poisson solvers
 
+    // TODO: should box loops below be over grown tile box ?
+
     //    if (m_variable_density || m_has_overset) {
     {
         rho_xf = m_repo.create_scratch_field(1, 0, amr_wind::FieldLoc::XFACE);

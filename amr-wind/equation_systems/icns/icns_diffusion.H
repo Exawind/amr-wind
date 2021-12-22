@@ -181,6 +181,7 @@ public:
 
         //////////////////////////B coeffs/////////////////////////////////
         // Hold mesh scaling factor on faces
+        // TODO: should box loops below be over grown tile box ?
         std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
         mesh_fac_xf = m_pdefields.repo.create_scratch_field(
             AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
@@ -337,6 +338,7 @@ public:
 
         //////////////////////////B coeffs/////////////////////////////////
         // Hold mesh scaling factor on faces
+        // TODO: should box loops below be over grown tile box ?
         std::unique_ptr<ScratchField> mesh_fac_xf, mesh_fac_yf, mesh_fac_zf;
         mesh_fac_xf = m_pdefields.repo.create_scratch_field(
             AMREX_SPACEDIM, 0, amr_wind::FieldLoc::XFACE);
