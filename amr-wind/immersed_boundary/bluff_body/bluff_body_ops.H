@@ -29,7 +29,7 @@ void apply_mms_vel(CFDSim&);
 
 /** Set the velocity inside the IB based on a dirichlet BC
  */
-void apply_dirichlet_vel(CFDSim&, amrex::Vector<amrex::Real>& vel_bc);
+void apply_dirichlet_vel(CFDSim&, const amrex::Vector<amrex::Real>& vel_bc);
 
 void prepare_netcdf_file(
     const std::string&, const BluffBodyBaseData&, const IBInfo&);

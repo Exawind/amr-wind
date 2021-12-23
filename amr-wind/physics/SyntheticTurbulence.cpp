@@ -147,7 +147,7 @@ void process_nc_file(std::string& turb_filename, SynthTurbData& turb_grid)
  * two planes
  */
 void load_turb_plane_data(
-    std::string& turb_filename,
+    const std::string& turb_filename,
     SynthTurbData& turb_grid,
     const int il,
     const int ir)
