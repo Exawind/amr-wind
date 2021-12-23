@@ -236,7 +236,7 @@ void BCVelocity::set_bcrec()
 
 void BCVelocity::read_values()
 {
-    auto& fname = m_field.name();
+    const auto& fname = m_field.name();
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
@@ -316,7 +316,7 @@ void BCScalar::set_bcrec()
 
 void BCScalar::read_values()
 {
-    auto& fname = m_field.name();
+    const auto& fname = m_field.name();
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
@@ -340,7 +340,7 @@ void BCScalar::read_values()
 
 void BCPressure::read_values()
 {
-    auto& fname = m_field.name();
+    const auto& fname = m_field.name();
     const auto& bctype = m_field.bc_type();
     auto& bcval = m_field.bc_values();
     const int ndim = m_field.num_comp();
