@@ -44,7 +44,7 @@ struct InitDataOp<Sphere>
 {
     void operator()(Sphere::DataType& data)
     {
-        auto& wdata = data.meta();
+        const auto& wdata = data.meta();
 
         auto& sim = data.sim();
         auto& mask_node = sim.repo().get_int_field("mask_node");
@@ -61,17 +61,17 @@ struct InitDataOp<Sphere>
                 const auto& bx = mfi.growntilebox();
                 auto phi = levelset(lev).array(mfi);
 
-                amrex::Real x0 = wdata.center_loc[0];
-                amrex::Real y0 = wdata.center_loc[1];
-                amrex::Real z0 = wdata.center_loc[2];
-                amrex::Real R = wdata.radius;
+                const amrex::Real x0 = wdata.center_loc[0];
+                const amrex::Real y0 = wdata.center_loc[1];
+                const amrex::Real z0 = wdata.center_loc[2];
+                const amrex::Real R = wdata.radius;
                 amrex::ParallelFor(
                     bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
                         const amrex::Real x = problo[0] + (i + 0.5) * dx[0];
                         const amrex::Real y = problo[1] + (j + 0.5) * dx[1];
                         const amrex::Real z = problo[2] + (k + 0.5) * dx[2];
-                        amrex::Real phi_glob = phi(i, j, k);
-                        amrex::Real r = std::sqrt(
+                        const amrex::Real phi_glob = phi(i, j, k);
+                        const amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
 
@@ -87,7 +87,7 @@ struct InitDataOp<Sphere>
                         const amrex::Real y = problo[1] + j * dx[1];
                         const amrex::Real z = problo[2] + k * dx[2];
 
-                        amrex::Real r = std::sqrt(
+                        const amrex::Real r = std::sqrt(
                             (x - x0) * (x - x0) + (y - y0) * (y - y0) +
                             (z - z0) * (z - z0));
                         if (r <= R) {

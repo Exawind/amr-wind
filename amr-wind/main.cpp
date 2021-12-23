@@ -9,7 +9,13 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
 #endif
 
-    if (argc >= 2) {
+    if (argc < 2) {
+        // Print usage and exit with error code if no input file was provided.
+        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
+        amr_wind::io::print_error(
+            MPI_COMM_WORLD, "No input file provided. Exiting!!");
+        return 1;
+    } else if (argc >= 2) {
         // Look for "-h" or "--help" flag and print usage
         for (auto i = 1; i < argc; i++) {
             const std::string param(argv[i]);
@@ -19,13 +25,8 @@ int main(int argc, char* argv[])
                 return 0;
             }
         }
-    } else if (argc < 2) {
-        // Print usage and exit with error code if no input file was provided.
-        amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);
-        amr_wind::io::print_error(
-            MPI_COMM_WORLD, "No input file provided. Exiting!!");
-        return 1;
     }
+
     if (!amrex::FileSystem::Exists(std::string(argv[1]))) {
         // Print usage and exit with error code if we cannot find the input file
         amr_wind::io::print_usage(MPI_COMM_WORLD, std::cout);

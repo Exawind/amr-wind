@@ -315,8 +315,8 @@ void final_checks(const UniformCt::MetaType& meta)
 
 amrex::RealBox compute_bounding_box(const UniformCt::MetaType& meta)
 {
-    auto& norm = meta.normal_vec;
-    auto& cVec = meta.coplanar_vec;
+    const auto& norm = meta.normal_vec;
+    const auto& cVec = meta.coplanar_vec;
 
     const auto& cc = meta.center;
     const amrex::Real nl = meta.epsilon * 3.0; // length scale in normal dir
